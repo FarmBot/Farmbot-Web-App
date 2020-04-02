@@ -773,7 +773,7 @@ export namespace Content {
     trim(`Click and drag or use the inputs to draw a weed.`);
 
   export const BOX_SELECT_DESCRIPTION =
-    trim(`Drag a box around the plants you would like to select.
+    trim(`Drag a box around the items you would like to select.
     Press the back arrow to exit.`);
 
   export const SAVED_GARDENS =
@@ -1139,7 +1139,8 @@ export enum Actions {
 
   // Designer
   SEARCH_QUERY_CHANGE = "SEARCH_QUERY_CHANGE",
-  SELECT_PLANT = "SELECT_PLANT",
+  SELECT_POINT = "SELECT_POINT",
+  SET_SELECTION_POINT_TYPE = "SET_SELECTION_POINT_TYPE",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
@@ -1148,7 +1149,8 @@ export enum Actions {
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
-  SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
+  SET_DRAWN_POINT_DATA = "SET_DRAWN_POINT_DATA",
+  SET_DRAWN_WEED_DATA = "SET_DRAWN_WEED_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
   EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",

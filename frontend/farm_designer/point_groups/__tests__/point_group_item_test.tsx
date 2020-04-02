@@ -9,10 +9,11 @@ jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 import React from "react";
 import {
   PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON,
+  genericWeedIcon,
 } from "../point_group_item";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
-  fakePlant, fakePointGroup, fakePoint, fakeToolSlot,
+  fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed,
 } from "../../../__test_support__/fake_state/resources";
 import {
   maybeGetCachedPlantIcon, setImgSrc,
@@ -22,7 +23,8 @@ import { overwrite } from "../../../api/crud";
 import { cloneDeep } from "lodash";
 import { imgEvent } from "../../../__test_support__/fake_html_events";
 import { error } from "../../../toast/toast";
-import { svgToUrl } from "../../../open_farm/icons";
+import { svgToUrl, DEFAULT_ICON } from "../../../open_farm/icons";
+import { DEFAULT_WEED_ICON } from "../../map/layers/weeds/garden_weed";
 
 describe("<PointGroupItem/>", () => {
   const fakeProps = (): PointGroupItemProps => ({
@@ -61,25 +63,36 @@ describe("<PointGroupItem/>", () => {
     expect(i.setState).toHaveBeenCalledWith({ icon: "fake icon" });
   });
 
-  it("fetches point icon", () => {
+  it("displays default plant icon", () => {
+    const p = fakeProps();
+    p.point = fakePlant();
+    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
+    expect(wrapper.find("img").props().src).toEqual(DEFAULT_ICON);
+  });
+
+  it("displays point icon", () => {
     const p = fakeProps();
     p.point = fakePoint();
-    const i = new PointGroupItem(p);
-    const fakeImgEvent = imgEvent();
-    i.maybeGetCachedIcon(fakeImgEvent);
-    expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();
-    expect(setImgSrc).toHaveBeenCalledWith(expect.any(Object),
+    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
+    expect(wrapper.find("img").props().src).toEqual(
       svgToUrl(genericPointIcon(undefined)));
   });
 
-  it("fetches other icon", () => {
+  it("displays weed icon", () => {
+    const p = fakeProps();
+    p.point = fakeWeed();
+    p.point.body.meta.color = undefined;
+    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
+    expect(wrapper.find("img").first().props().src).toEqual(DEFAULT_WEED_ICON);
+    expect(wrapper.find("img").last().props().src).toEqual(
+      svgToUrl(genericWeedIcon(undefined)));
+  });
+
+  it("displays other icon", () => {
     const p = fakeProps();
     p.point = fakeToolSlot();
-    const i = new PointGroupItem(p);
-    const fakeImgEvent = imgEvent();
-    i.maybeGetCachedIcon(fakeImgEvent);
-    expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();
-    expect(setImgSrc).toHaveBeenCalledWith(expect.any(Object),
+    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
+    expect(wrapper.find("img").props().src).toEqual(
       svgToUrl(OTHER_POINT_ICON));
   });
 

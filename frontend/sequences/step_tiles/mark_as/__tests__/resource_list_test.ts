@@ -10,5 +10,9 @@ describe("resourceList()", () => {
     expect(headings).toContain("Device");
     expect(headings).toContain("Plants");
     expect(headings).toContain("Points");
+    expect(headings).toContain("Weeds");
+    const weeds = result.filter(x => x.headingId == "Weed");
+    expect(weeds.length).toEqual(2);
+    expect(weeds[1].label).toEqual("weed 1 (200, 400, 0)");
   });
 });

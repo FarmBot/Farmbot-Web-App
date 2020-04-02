@@ -19,10 +19,12 @@ describe("<PointLayer/>", () => {
     mapTransformProps: fakeMapTransformProps(),
     hoveredPoint: undefined,
     dispatch: jest.fn(),
+    interactions: true,
   });
 
   it("shows points", () => {
     const p = fakeProps();
+    p.interactions = false;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find(GardenPoint).html()).toContain("r=\"100\"");
@@ -40,6 +42,7 @@ describe("<PointLayer/>", () => {
   it("allows point mode interaction", () => {
     mockPath = "/app/designer/points";
     const p = fakeProps();
+    p.interactions = true;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.props().style).toEqual({});

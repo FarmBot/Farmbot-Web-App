@@ -26,6 +26,7 @@ import {
   TaggedAlert,
   TaggedPointGroup,
   TaggedFolder,
+  TaggedWeedPointer,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
@@ -171,6 +172,19 @@ export function fakePoint(): TaggedGenericPointer {
   });
 }
 
+export function fakeWeed(): TaggedWeedPointer {
+  return fakeResource("Point", {
+    id: idCounter++,
+    name: "Weed 1",
+    pointer_type: "Weed",
+    x: 200,
+    y: 400,
+    z: 0,
+    radius: 100,
+    meta: { created_by: "plant-detection", color: "red" }
+  });
+}
+
 export function fakeSavedGarden(): TaggedSavedGarden {
   return fakeResource("SavedGarden", {
     id: idCounter++,
@@ -289,6 +303,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_sensor_readings: false,
     show_plants: true,
     show_points: true,
+    show_weeds: true,
     x_axis_inverted: false,
     y_axis_inverted: false,
     z_axis_inverted: true,

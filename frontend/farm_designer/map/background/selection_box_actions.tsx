@@ -3,18 +3,20 @@ import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
 import { history } from "../../../history";
-import { selectPlant } from "../actions";
+import { selectPoint } from "../actions";
 import { getMode } from "../util";
 import { editGtLtCriteria } from "../../point_groups/criteria";
-import { TaggedPointGroup } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { overwrite } from "../../../api/crud";
 import { unpackUUID } from "../../../util";
 import { UUID } from "../../../resources/interfaces";
+import { getFilteredPoints } from "../../plants/select_plants";
+import { GetWebAppConfigValue } from "../../../config_storage/actions";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
-  plants: TaggedPlant[],
+  plants: (TaggedPlant | TaggedPoint)[],
   box: SelectionBoxData | undefined,
 ): string[] | undefined => {
   const arraySelected = plants.filter(p => {
@@ -35,6 +37,9 @@ export const getSelected = (
 export interface ResizeSelectionBoxProps {
   selectionBox: SelectionBoxData | undefined;
   plants: TaggedPlant[];
+  allPoints: TaggedPoint[];
+  selectionPointType: PointType[] | undefined;
+  getConfigValue: GetWebAppConfigValue;
   gardenCoords: AxisNumberProperty | undefined;
   setMapState: (x: Partial<GardenMapState>) => void;
   dispatch: Function;
@@ -54,11 +59,16 @@ export const resizeBox = (props: ResizeSelectionBoxProps) => {
       props.setMapState({ selectionBox: newSelectionBox });
       if (props.plantActions) {
         // Select all plants within the updated selection box
-        const payload = getSelected(props.plants, newSelectionBox);
+        const { plants, allPoints, selectionPointType, getConfigValue } = props;
+        const points =
+          getFilteredPoints({
+            plants, allPoints, selectionPointType, getConfigValue
+          });
+        const payload = getSelected(points, newSelectionBox);
         if (payload && getMode() === Mode.none) {
           history.push("/app/designer/plants/select");
         }
-        props.dispatch(selectPlant(payload));
+        props.dispatch(selectPoint(payload));
       }
     }
   }
@@ -84,7 +94,7 @@ export const startNewSelectionBox = (props: StartNewSelectionBoxProps) => {
   }
   if (props.plantActions) {
     // Clear the previous plant selection when starting a new selection box
-    props.dispatch(selectPlant(undefined));
+    props.dispatch(selectPoint(undefined));
   }
 };
 
@@ -112,7 +122,7 @@ export const maybeUpdateGroup =
         nextGroupBody.point_ids = uniq(nextGroupBody.point_ids);
         if (!isEqual(props.group.body.point_ids, nextGroupBody.point_ids)) {
           props.dispatch(overwrite(props.group, nextGroupBody));
-          props.dispatch(selectPlant(undefined));
+          props.dispatch(selectPoint(undefined));
         }
       }
     }

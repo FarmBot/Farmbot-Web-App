@@ -3,12 +3,15 @@ import { TaggedGenericPointer } from "farmbot";
 import { Saucer } from "../../ui";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { t } from "../../i18next_wrapper";
+import { getMode } from "../map/util";
+import { Mode } from "../map/interfaces";
+import { mapPointClickAction } from "../map/actions";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
   dispatch: Function;
   hovered: boolean;
-  navName: "points" | "weeds";
 }
 
 // The individual points that show up in the farm designer sub nav.
@@ -29,12 +32,14 @@ export class PointInventoryItem extends
     };
 
     const click = () => {
-      push(`/app/designer/${this.props.navName}/${pointId}`);
-      dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: [tpp.uuid] });
+      if (getMode() == Mode.boxSelect) {
+        mapPointClickAction(dispatch, tpp.uuid)();
+        toggle("leave");
+      } else {
+        push(`/app/designer/points/${pointId}`);
+        dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: [tpp.uuid] });
+      }
     };
-
-    // Name given from OpenFarm's API.
-    const label = point.name || "Unknown plant";
 
     return <div
       className={`point-search-item ${this.props.hovered ? "hovered" : ""}`}
@@ -44,7 +49,7 @@ export class PointInventoryItem extends
       onClick={click}>
       <Saucer color={point.meta.color || "green"} />
       <span className="point-search-item-name">
-        {label}
+        {point.name || t("Untitled point")}
       </span>
       <p className="point-search-item-info">
         <i>{`(${point.x}, ${point.y}) ⌀${point.radius * 2}`}</i>

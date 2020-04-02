@@ -16,6 +16,7 @@ import {
   TaggedPlantTemplate,
   TaggedSavedGarden,
   TaggedPointGroup,
+  TaggedWeedPointer,
 } from "farmbot";
 
 export interface TaggedResourceBase {
@@ -102,6 +103,8 @@ export const isTaggedGenericPointer =
   (x: object): x is TaggedGenericPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "GenericPointer");
   };
+export const isTaggedWeedPointer = (x: object): x is TaggedWeedPointer =>
+  isTaggedPoint(x) && (x.body.pointer_type === "Weed");
 export const isTaggedSavedGarden =
   (x: object): x is TaggedSavedGarden => is("SavedGarden")(x);
 export const isTaggedPlantTemplate =

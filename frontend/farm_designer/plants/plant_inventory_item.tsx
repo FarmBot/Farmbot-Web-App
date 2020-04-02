@@ -1,12 +1,13 @@
 import * as React from "react";
 import { DEFAULT_ICON } from "../../open_farm/icons";
 import { push } from "../../history";
-import { TaggedPlant } from "../map/interfaces";
+import { TaggedPlant, Mode } from "../map/interfaces";
 import { unpackUUID } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
-import { selectPlant, setHoveredPlant } from "../map/actions";
+import { selectPoint, setHoveredPlant, mapPointClickAction } from "../map/actions";
 import { plantAge } from "./map_state_to_props";
+import { getMode } from "../map/util";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
@@ -21,8 +22,9 @@ interface PlantInventoryItemState {
 // The individual plants that show up in the farm designer sub nav.
 export class PlantInventoryItem extends
   React.Component<PlantInventoryItemProps, PlantInventoryItemState> {
-
   state: PlantInventoryItemState = { icon: "" };
+
+  updateStateIcon = (i: string) => this.setState({ icon: i });
 
   render() {
     const { plant, dispatch } = this.props;
@@ -36,17 +38,21 @@ export class PlantInventoryItem extends
     };
 
     const click = () => {
-      const plantCategory =
-        unpackUUID(plant.uuid).kind === "PlantTemplate"
-          ? "gardens/templates"
-          : "plants";
-      push(`/app/designer/${plantCategory}/${plantId}`);
-      dispatch(selectPlant([plant.uuid]));
+      if (getMode() == Mode.boxSelect) {
+        mapPointClickAction(dispatch, plant.uuid)();
+        toggle("leave");
+      } else {
+        const plantCategory =
+          unpackUUID(plant.uuid).kind === "PlantTemplate"
+            ? "gardens/templates"
+            : "plants";
+        push(`/app/designer/${plantCategory}/${plantId}`);
+        dispatch(selectPoint([plant.uuid]));
+      }
     };
 
-    const updateStateIcon = (i: string) => this.setState({ icon: i });
     const onLoad = (e: React.SyntheticEvent<HTMLImageElement>) =>
-      maybeGetCachedPlantIcon(slug, e.currentTarget, updateStateIcon);
+      maybeGetCachedPlantIcon(slug, e.currentTarget, this.updateStateIcon);
 
     // Name given from OpenFarm's API.
     const label = plant.body.name || "Unknown plant";

@@ -291,6 +291,7 @@
   .panel-action-buttons {
     position: absolute;
     z-index: 9;
+    height: 19rem;
     width: 100%;
     background: $panel_medium_light_gray;
     padding: 0.5rem;
@@ -307,6 +308,9 @@
       float: left;
       width: 100%;
     }
+    .filter-search {
+      padding-right: 1rem;
+    }
     .plant-status-bulk-update {
       display: inline-flex;
       width: 100%;
@@ -321,15 +325,13 @@
     }
   }
   .panel-content {
-    padding-top: 15rem;
+    padding-top: 19rem;
     padding-right: 0;
     padding-left: 0;
     padding-bottom: 5rem;
     max-height: calc(100vh - 13rem);
     overflow-y: auto;
     overflow-x: hidden;
-    .plant-search-item,
-    .group-search-item { pointer-events: none; }
   }
 }
 
@@ -377,9 +379,13 @@
 
 .weed-info-panel-content,
 .point-info-panel-content {
-  .saucer {
-    margin: 1rem;
-    margin-left: 2rem;
+  .point-color-input {
+    div[class*=col-] {
+      padding-left: 0.5rem;
+    }
+    .saucer {
+      margin-top: 4.5rem;
+    }
   }
   .fb-button & .red {
     display: block;
@@ -557,22 +563,8 @@
     overflow-x: hidden;
     .tool-search-item,
     .tool-slot-search-item {
-      line-height: 4rem;
-      cursor: pointer;
       margin-left: -15px;
       margin-right: -15px;
-      .row {
-        margin-left: 0;
-        margin-right: 0;
-      }
-      p {
-        font-size: 1.2rem;
-        line-height: 4rem;
-        &.tool-status,
-        &.tool-slot-position {
-          float: right;
-        }
-      }
       .filter-search {
         .bp3-button {
           min-height: 2.5rem;
@@ -584,13 +576,6 @@
         i {
           line-height: 2rem;
         }
-      }
-      svg {
-        vertical-align: middle;
-      }
-      .tool-slot-position-info {
-        padding: 0;
-        padding-right: 1rem;
       }
     }
     .mounted-tool-header {
@@ -818,6 +803,19 @@
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.weed-item-icon,
+.group-item-icon {
+  display: inline-block;
+  position: relative;
+  .weed-icon {
+    position: absolute;
+    top: 13%;
+    left: 12%;
+    width: 70%;
+    height: 70%;
   }
 }
 

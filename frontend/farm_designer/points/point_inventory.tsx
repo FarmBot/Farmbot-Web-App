@@ -13,7 +13,6 @@ import {
 import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";
 import { t } from "../../i18next_wrapper";
-import { isAWeed } from "./weeds_inventory";
 
 export interface PointsProps {
   genericPoints: TaggedGenericPointer[];
@@ -29,8 +28,7 @@ export function mapStateToProps(props: Everything): PointsProps {
   const { hoveredPoint } = props.resources.consumers.farm_designer;
   return {
     genericPoints: selectAllGenericPointers(props.resources.index)
-      .filter(x => !x.body.discarded_at)
-      .filter(x => !isAWeed(x.body.name, x.body.meta.type)),
+      .filter(x => !x.body.discarded_at),
     dispatch: props.dispatch,
     hoveredPoint,
   };
@@ -65,7 +63,6 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PointInventoryItem
               key={p.uuid}
-              navName={"points"}
               tpp={p}
               hovered={this.props.hoveredPoint === p.uuid}
               dispatch={this.props.dispatch} />)}

@@ -1,11 +1,12 @@
 import * as React from "react";
 import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
-import { setImgSrc, maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
+import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import { setHoveredPlant } from "../map/actions";
 import { TaggedPointGroup, uuid, TaggedPoint } from "farmbot";
 import { overwrite } from "../../api/crud";
 import { error } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
+import { DEFAULT_WEED_ICON } from "../map/layers/weeds/garden_weed";
 
 export interface PointGroupItemProps {
   point: TaggedPoint;
@@ -25,9 +26,23 @@ const removePoint = (group: TaggedPointGroup, pointId: number) => {
 
 export const genericPointIcon = (color: string | undefined) =>
   `<svg xmlns='http://www.w3.org/2000/svg'
-    fill='none' stroke-width='1.5' stroke='${color || "gray"}'>
+    fill='none' stroke-width='1.5' stroke='${color || "green"}'>
     <circle cx='15' cy='15' r='12' />
     <circle cx='15' cy='15' r='2' />
+  </svg>`;
+
+export const genericWeedIcon = (color: string | undefined) =>
+  `<svg xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <radialGradient id='WeedGradient'>
+          <stop offset='90%' stop-color='${color || "red"}'
+            stop-opacity='0.25'></stop>
+          <stop offset='100%' stop-color='${color || "red"}'
+            stop-opacity='0'></stop>
+        </radialGradient>
+      </defs>
+      <circle id='weed-radius' cx='15' cy='15' r='14'
+        fill='url(#WeedGradient)' opacity='0.5'></circle>
     </svg>`;
 
 export const OTHER_POINT_ICON =
@@ -66,36 +81,46 @@ export class PointGroupItem
 
   maybeGetCachedIcon = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    switch (this.props.point.body.pointer_type) {
-      case "Plant":
-        const slug = this.props.point.body.openfarm_slug;
-        maybeGetCachedPlantIcon(slug, img, this.setIconState);
-        break;
-      case "GenericPointer":
-        const { color } = this.props.point.body.meta;
-        const pointIcon = svgToUrl(genericPointIcon(color));
-        setImgSrc(img, pointIcon);
-        break;
-      default:
-        const otherIcon = svgToUrl(OTHER_POINT_ICON);
-        setImgSrc(img, otherIcon);
-        break;
+    if (this.props.point.body.pointer_type == "Plant") {
+      const slug = this.props.point.body.openfarm_slug;
+      maybeGetCachedPlantIcon(slug, img, this.setIconState);
     }
   };
+
+  get initIcon() {
+    switch (this.props.point.body.pointer_type) {
+      case "Plant":
+        return DEFAULT_ICON;
+      case "GenericPointer":
+        const { color } = this.props.point.body.meta;
+        return svgToUrl(genericPointIcon(color));
+      case "Weed":
+        const weedColor = this.props.point.body.meta.color;
+        return svgToUrl(genericWeedIcon(weedColor));
+      default:
+        return svgToUrl(OTHER_POINT_ICON);
+    }
+  }
 
   render() {
     return <span
       key={this.key}
+      className={"group-item-icon"}
       onMouseEnter={this.enter}
       onMouseLeave={this.leave}
       onClick={this.click}>
+      {this.props.point.body.pointer_type == "Weed" &&
+        <img className={"weed-icon"}
+          src={DEFAULT_WEED_ICON}
+          width={32}
+          height={32} />}
       <img
         style={{
           border: this.criteriaIcon ? "1px solid gray" : "none",
           borderRadius: "5px",
           background: this.props.hovered ? "lightgray" : "none",
         }}
-        src={DEFAULT_ICON}
+        src={this.initIcon}
         onLoad={this.maybeGetCachedIcon}
         width={32}
         height={32} />

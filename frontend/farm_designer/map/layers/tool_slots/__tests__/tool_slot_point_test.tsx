@@ -1,4 +1,7 @@
-jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../../../../history", () => ({
+  history: { push: jest.fn() },
+  getPathArray: jest.fn(),
+}));
 
 import * as React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";

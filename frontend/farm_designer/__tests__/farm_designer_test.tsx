@@ -15,7 +15,6 @@ import * as React from "react";
 import { RawFarmDesigner as FarmDesigner } from "../index";
 import { mount } from "enzyme";
 import { Props } from "../interfaces";
-import { GardenMapLegendProps } from "../map/interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   fakeImage, fakeWebAppConfig,
@@ -28,6 +27,8 @@ import {
 import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
+import { GardenMapLegend } from "../map/legend/garden_map_legend";
+import { GardenMap } from "../map/garden_map";
 
 describe("<FarmDesigner/>", () => {
   const fakeProps = (): Props => ({
@@ -36,6 +37,7 @@ describe("<FarmDesigner/>", () => {
     designer: fakeDesignerState(),
     hoveredPlant: undefined,
     genericPoints: [],
+    weeds: [],
     allPoints: [],
     plants: [],
     toolSlots: [],
@@ -67,8 +69,7 @@ describe("<FarmDesigner/>", () => {
 
   it("loads default map settings", () => {
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    const legendProps =
-      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps = wrapper.find(GardenMapLegend).props();
     expect(legendProps.legendMenuOpen).toBeFalsy();
     expect(legendProps.showPlants).toBeTruthy();
     expect(legendProps.showPoints).toBeTruthy();
@@ -76,8 +77,7 @@ describe("<FarmDesigner/>", () => {
     expect(legendProps.showFarmbot).toBeTruthy();
     expect(legendProps.showImages).toBeFalsy();
     expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
-    // tslint:disable-next-line:no-any
-    const gardenMapProps = wrapper.find("GardenMap").props() as any;
+    const gardenMapProps = wrapper.find(GardenMap).props();
     expect(gardenMapProps.gridSize.x).toEqual(2900);
     expect(gardenMapProps.gridSize.y).toEqual(1400);
   });
@@ -90,8 +90,7 @@ describe("<FarmDesigner/>", () => {
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
     const wrapper = mount(<FarmDesigner {...p} />);
-    const legendProps =
-      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps = wrapper.find(GardenMapLegend).props();
     expect(legendProps.imageAgeInfo)
       .toEqual({ newestDate: "2001-01-03T00:00:00.000Z", toOldest: 2 });
   });
@@ -136,5 +135,19 @@ describe("<FarmDesigner/>", () => {
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       bot_origin_quadrant: 2
     });
+  });
+
+  it("initializes setting", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => false;
+    const i = new FarmDesigner(p);
+    expect(i.initializeSetting(BooleanSetting.show_farmbot, true)).toBeFalsy();
+  });
+
+  it("gets bot origin quadrant", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => 1;
+    const i = new FarmDesigner(p);
+    expect(i.getBotOriginQuadrant()).toEqual(1);
   });
 });

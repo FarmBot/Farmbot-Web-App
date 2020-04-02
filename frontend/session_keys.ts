@@ -17,6 +17,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   legend_menu_open: "legend_menu_open",
   show_plants: "show_plants",
   show_points: "show_points",
+  show_weeds: "show_weeds",
   show_historic_points: "show_historic_points",
   show_spread: "show_spread",
   show_farmbot: "show_farmbot",

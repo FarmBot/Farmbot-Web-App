@@ -2,8 +2,7 @@ import * as React from "react";
 import { GardenPointProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { Actions } from "../../../../constants";
-import { history } from "../../../../history";
-import { isAWeed } from "../../../points/weeds_inventory";
+import { mapPointClickAction } from "../../actions";
 
 export const GardenPoint = (props: GardenPointProps) => {
 
@@ -19,11 +18,11 @@ export const GardenPoint = (props: GardenPointProps) => {
   const { id, x, y, meta } = point.body;
   const { qx, qy } = transformXY(x, y, mapTransformProps);
   const color = meta.color || "green";
-  const panel = isAWeed(point.body.name, meta.type) ? "weeds" : "points";
-  return <g id={"point-" + id} className={"map-point"} stroke={color}
+  return <g id={`point-${id}`} className={"map-point"} stroke={color}
     onMouseEnter={iconHover("start")}
     onMouseLeave={iconHover("end")}
-    onClick={() => history.push(`/app/designer/${panel}/${id}`)}>
+    onClick={mapPointClickAction(props.dispatch, point.uuid,
+      `/app/designer/points/${id}`)}>
     <circle id="point-radius" cx={qx} cy={qy} r={point.body.radius}
       fill={hovered ? color : "transparent"} />
     <circle id="point-center" cx={qx} cy={qy} r={2} />

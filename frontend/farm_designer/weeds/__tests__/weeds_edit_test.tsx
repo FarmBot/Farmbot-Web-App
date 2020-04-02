@@ -9,7 +9,7 @@ import { mount, shallow } from "enzyme";
 import {
   RawEditWeed as EditWeed, EditWeedProps, mapStateToProps,
 } from "../weeds_edit";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import { fakeWeed } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -32,9 +32,9 @@ describe("<EditWeed />", () => {
   it("renders", () => {
     mockPath = "/app/designer/weeds/1";
     const p = fakeProps();
-    const point = fakePoint();
-    point.body.id = 1;
-    p.findPoint = () => point;
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    p.findPoint = () => weed;
     const wrapper = mount(<EditWeed {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("edit");
   });
@@ -42,9 +42,9 @@ describe("<EditWeed />", () => {
   it("goes back", () => {
     mockPath = "/app/designer/weeds/1";
     const p = fakeProps();
-    const point = fakePoint();
-    point.body.id = 1;
-    p.findPoint = () => point;
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    p.findPoint = () => weed;
     const wrapper = shallow(<EditWeed {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("back");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -56,10 +56,10 @@ describe("<EditWeed />", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
-    const point = fakePoint();
-    point.body.id = 1;
-    state.resources = buildResourceIndex([point]);
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    state.resources = buildResourceIndex([weed]);
     const props = mapStateToProps(state);
-    expect(props.findPoint(1)).toEqual(point);
+    expect(props.findPoint(1)).toEqual(weed);
   });
 });

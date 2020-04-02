@@ -39,7 +39,7 @@ export class WeedDetector
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
     this.props.dispatch(deletePoints(t("weeds"),
-      { created_by: "plant-detection" }, progress));
+      { meta: { created_by: "plant-detection" } }, progress));
     this.setState({ deletionProgress: t("Deleting...") });
   }
 

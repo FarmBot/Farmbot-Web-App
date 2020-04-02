@@ -38,6 +38,7 @@ describe("<ToolSlotLayer/>", () => {
       mapTransformProps: fakeMapTransformProps(),
       dispatch: jest.fn(),
       hoveredToolSlot: undefined,
+      interactions: true,
     };
   }
   it("toggles visibility off", () => {
@@ -61,9 +62,19 @@ describe("<ToolSlotLayer/>", () => {
     expect(history.push).not.toHaveBeenCalled();
   });
 
+  it("is in clickable mode", () => {
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    const p = fakeProps();
+    p.interactions = true;
+    const wrapper = shallow(<ToolSlotLayer {...p} />);
+    expect(wrapper.find("g").props().style)
+      .toEqual({ cursor: "pointer" });
+  });
+
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/crop_search/mint/add";
     const p = fakeProps();
+    p.interactions = false;
     const wrapper = shallow(<ToolSlotLayer {...p} />);
     expect(wrapper.find("g").props().style)
       .toEqual({ pointerEvents: "none" });

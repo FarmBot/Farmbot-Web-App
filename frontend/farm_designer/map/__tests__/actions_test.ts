@@ -16,8 +16,9 @@ jest.mock("../../point_groups/group_detail", () => ({
 }));
 
 import {
-  movePlant, closePlantInfo, setDragIcon, clickMapPlant, selectPlant,
+  movePlant, closePlantInfo, setDragIcon, clickMapPlant, selectPoint,
   setHoveredPlant,
+  mapPointClickAction,
 } from "../actions";
 import { MovePlantProps } from "../../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
@@ -74,7 +75,7 @@ describe("closePlantInfo()", () => {
     closePlantInfo(dispatch)();
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
-      payload: undefined, type: Actions.SELECT_PLANT
+      payload: undefined, type: Actions.SELECT_POINT
     });
   });
 
@@ -84,7 +85,7 @@ describe("closePlantInfo()", () => {
     closePlantInfo(dispatch)();
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
-      payload: undefined, type: Actions.SELECT_PLANT
+      payload: undefined, type: Actions.SELECT_POINT
     });
   });
 });
@@ -115,7 +116,7 @@ describe("clickMapPlant", () => {
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant("fakeUuid", "fakeIcon")(dispatch, getState);
-    expect(dispatch).toHaveBeenCalledWith(selectPlant(["fakeUuid"]));
+    expect(dispatch).toHaveBeenCalledWith(selectPoint(["fakeUuid"]));
     expect(dispatch).toHaveBeenCalledWith(setHoveredPlant("fakeUuid", "fakeIcon"));
     expect(dispatch).toHaveBeenCalledTimes(2);
   });
@@ -133,6 +134,18 @@ describe("clickMapPlant", () => {
     expect(overwrite).toHaveBeenCalledWith(mockGroup, expect.objectContaining({
       name: "Fake", point_ids: [1, 23]
     }));
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("doesn't add a point to current group", () => {
+    mockPath = "/app/designer/groups/1";
+    mockGroup.body.point_ids = [1];
+    const state = fakeState();
+    state.resources = buildResourceIndex([]);
+    const dispatch = jest.fn();
+    const getState: GetState = jest.fn(() => state);
+    clickMapPlant("missing plant uuid", "fakeIcon")(dispatch, getState);
+    expect(overwrite).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
@@ -162,7 +175,7 @@ describe("clickMapPlant", () => {
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT, payload: [plant.uuid]
+      type: Actions.SELECT_POINT, payload: [plant.uuid]
     });
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
@@ -173,13 +186,39 @@ describe("clickMapPlant", () => {
     const plant = fakePlant();
     plant.uuid = "fakePlantUuid";
     state.resources = buildResourceIndex([plant]);
-    state.resources.consumers.farm_designer.selectedPlants = [plant.uuid];
+    state.resources.consumers.farm_designer.selectedPoints = [plant.uuid];
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT, payload: []
+      type: Actions.SELECT_POINT, payload: []
     });
     expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("mapPointClickAction()", () => {
+  it("navigates", () => {
+    mockPath = "/app/designer/plants";
+    const dispatch = jest.fn();
+    mapPointClickAction(dispatch, "uuid", "fake path")();
+    expect(history.push).toHaveBeenCalledWith("fake path");
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("doesn't navigate: box select", () => {
+    mockPath = "/app/designer/plants/select";
+    const dispatch = jest.fn();
+    mapPointClickAction(dispatch, "uuid", "fake path")();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalled();
+  });
+
+  it("doesn't navigate: group edit", () => {
+    mockPath = "/app/designer/groups/edit/1";
+    const dispatch = jest.fn();
+    mapPointClickAction(dispatch, "uuid", "fake path")();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalled();
   });
 });

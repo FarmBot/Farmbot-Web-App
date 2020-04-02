@@ -125,7 +125,7 @@ describe("<SavedGardenHUD />", () => {
     clickButton(wrapper, 1, "edit");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
+      type: Actions.SELECT_POINT,
       payload: undefined
     });
   });
