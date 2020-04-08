@@ -5,20 +5,19 @@ import { API } from "../../api";
 import { Progress, ProgressCallback, trim } from "../../util";
 import { getDevice } from "../../device";
 import { noop, chunk } from "lodash";
-import { GenericPointer } from "farmbot/dist/resources/api_resources";
+import { Point } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
 export function deletePoints(
   pointName: string,
-  metaQuery: { [key: string]: string },
+  query: Partial<Point>,
   cb?: ProgressCallback): Thunk {
   // TODO: Generalize and add to api/crud.ts
   return async function (dispatch) {
     const URL = API.current.pointSearchPath;
-    const QUERY = { meta: metaQuery };
     try {
-      const resp = await axios.post<GenericPointer[]>(URL, QUERY);
+      const resp = await axios.post<Point[]>(URL, query);
       const ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.

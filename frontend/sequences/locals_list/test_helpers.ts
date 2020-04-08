@@ -52,6 +52,16 @@ export function fakeResourceIndex(extra: TaggedResource[] = []): ResourceIndex {
       "y": 200,
       "z": 300,
     }),
+    ...newTaggedResource("Point", {
+      id: 5,
+      meta: {},
+      name: "Weed 1",
+      pointer_type: "Weed",
+      radius: 15,
+      x: 15,
+      y: 25,
+      z: 35,
+    }),
     ...newTaggedResource("Tool", {
       "id": 1,
       "name": "Generic Tool",

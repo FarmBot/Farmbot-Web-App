@@ -10,12 +10,12 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
-import { TaggedGenericPointer } from "farmbot";
-import { selectAllGenericPointers } from "../../resources/selectors";
-import { PointInventoryItem } from "./point_inventory_item";
+import { TaggedWeedPointer } from "farmbot";
+import { selectAllWeedPointers } from "../../resources/selectors";
+import { WeedInventoryItem } from "./weed_inventory_item";
 
 export interface WeedsProps {
-  genericPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
   dispatch: Function;
   hoveredPoint: string | undefined;
 }
@@ -24,13 +24,8 @@ interface WeedsState {
   searchTerm: string;
 }
 
-export const isAWeed = (pointName: string, type?: string) =>
-  type == "weed" || pointName.toLowerCase().includes("weed");
-
 export const mapStateToProps = (props: Everything): WeedsProps => ({
-  genericPoints: selectAllGenericPointers(props.resources.index)
-    .filter(x => !x.body.discarded_at)
-    .filter(x => isAWeed(x.body.name, x.body.meta.type)),
+  weeds: selectAllWeedPointers(props.resources.index),
   dispatch: props.dispatch,
   hoveredPoint: props.resources.consumers.farm_designer.hoveredPoint,
 });
@@ -54,17 +49,16 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
         <EmptyStateWrapper
-          notEmpty={this.props.genericPoints.length > 0}
+          notEmpty={this.props.weeds.length > 0}
           graphic={EmptyStateGraphic.weeds}
           title={t("No weeds yet.")}
           text={Content.NO_WEEDS}
           colorScheme={"weeds"}>
-          {this.props.genericPoints
+          {this.props.weeds
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => <PointInventoryItem
+            .map(p => <WeedInventoryItem
               key={p.uuid}
-              navName={"weeds"}
               tpp={p}
               hovered={this.props.hoveredPoint === p.uuid}
               dispatch={this.props.dispatch} />)}

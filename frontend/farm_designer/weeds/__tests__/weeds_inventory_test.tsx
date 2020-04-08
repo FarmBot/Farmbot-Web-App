@@ -4,11 +4,11 @@ import {
   RawWeeds as Weeds, WeedsProps, mapStateToProps,
 } from "../weeds_inventory";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import { fakeWeed } from "../../../__test_support__/fake_state/resources";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
-    genericPoints: [],
+    weeds: [],
     dispatch: jest.fn(),
     hoveredPoint: undefined,
   });
@@ -27,9 +27,9 @@ describe("<Weeds> />", () => {
 
   it("filters points", () => {
     const p = fakeProps();
-    p.genericPoints = [fakePoint(), fakePoint()];
-    p.genericPoints[0].body.name = "weed 0";
-    p.genericPoints[1].body.name = "weed 1";
+    p.weeds = [fakeWeed(), fakeWeed()];
+    p.weeds[0].body.name = "weed 0";
+    p.weeds[1].body.name = "weed 1";
     const wrapper = mount(<Weeds {...p} />);
     wrapper.setState({ searchTerm: "0" });
     expect(wrapper.text()).toContain("weed 0");

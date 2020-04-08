@@ -21,6 +21,8 @@ import {
   mapPanelClassName,
   getMode,
   cursorAtPlant,
+  allowInteraction,
+  allowGroupAreaInteraction,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -32,10 +34,34 @@ import {
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
-describe("Utils", () => {
+describe("round()", () => {
   it("rounds a number", () => {
     expect(round(44)).toEqual(40);
     expect(round(98)).toEqual(100);
+  });
+});
+
+describe("mapPanelClassName()", () => {
+  it("returns correct panel status: short panel", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    mockPath = "/app/designer/move_to";
+    expect(mapPanelClassName()).toEqual("short-panel");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("short-panel");
+  });
+
+  it("returns correct panel status: panel open", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    mockPath = "/app/designer/move_to";
+    expect(mapPanelClassName()).toEqual("panel-open");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("panel-open");
   });
 });
 
@@ -344,6 +370,10 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.points);
     mockPath = "/app/designer/points/add";
     expect(getMode()).toEqual(Mode.createPoint);
+    mockPath = "/app/designer/weeds";
+    expect(getMode()).toEqual(Mode.weeds);
+    mockPath = "/app/designer/weeds/add";
+    expect(getMode()).toEqual(Mode.createWeed);
     mockPath = "/app/designer/gardens";
     mockGardenOpen = true;
     expect(getMode()).toEqual(Mode.templateView);
@@ -396,27 +426,37 @@ describe("getGardenCoordinates()", () => {
   });
 });
 
-describe("mapPanelClassName()", () => {
-  it("returns correct panel status: short panel", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
-    mockPath = "/app/designer/move_to";
-    expect(mapPanelClassName()).toEqual("short-panel");
-    mockPath = "/app/designer/plants/crop_search/mint/add";
-    expect(mapPanelClassName()).toEqual("short-panel");
+describe("allowInteraction()", () => {
+  it("allows interaction", () => {
+    mockPath = "/app/designer/plants";
+    expect(allowInteraction()).toBeTruthy();
   });
 
-  it("returns correct panel status: panel open", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 500,
-      configurable: true
-    });
-    mockPath = "/app/designer/move_to";
-    expect(mapPanelClassName()).toEqual("panel-open");
+  it("disallows interaction", () => {
     mockPath = "/app/designer/plants/crop_search/mint/add";
-    expect(mapPanelClassName()).toEqual("panel-open");
+    expect(allowInteraction()).toBeFalsy();
+    mockPath = "/app/designer/move_to";
+    expect(allowInteraction()).toBeFalsy();
+    mockPath = "/app/designer/points/add";
+    expect(allowInteraction()).toBeFalsy();
+    mockPath = "/app/designer/weeds/add";
+    expect(allowInteraction()).toBeFalsy();
+  });
+});
+
+describe("allowGroupAreaInteraction()", () => {
+  it("allows interaction", () => {
+    mockPath = "/app/designer/plants";
+    expect(allowGroupAreaInteraction()).toBeTruthy();
+  });
+
+  it("disallows interaction", () => {
+    mockPath = "/app/designer/plants/select";
+    expect(allowGroupAreaInteraction()).toBeFalsy();
+    mockPath = "/app/designer/move_to";
+    expect(allowGroupAreaInteraction()).toBeFalsy();
+    mockPath = "/app/designer/groups/1";
+    expect(allowGroupAreaInteraction()).toBeFalsy();
   });
 });
 

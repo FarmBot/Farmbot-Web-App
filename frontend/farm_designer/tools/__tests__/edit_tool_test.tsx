@@ -38,6 +38,7 @@ describe("<EditTool />", () => {
     dispatch: jest.fn(),
     mountedToolId: undefined,
     isActive: jest.fn(),
+    existingToolNames: [],
   });
 
   it("renders", () => {
@@ -69,6 +70,23 @@ describe("<EditTool />", () => {
     wrapper.find("input").simulate("change",
       { currentTarget: { value: "new name" } });
     expect(wrapper.state().toolName).toEqual("new name");
+  });
+
+  it("disables save until name in entered", () => {
+    const wrapper = shallow<EditTool>(<EditTool {...fakeProps()} />);
+    wrapper.setState({ toolName: "" });
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
+    wrapper.setState({ toolName: "fake tool name" });
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeFalsy();
+  });
+
+  it("shows name collision message", () => {
+    const p = fakeProps();
+    p.existingToolNames = ["tool"];
+    const wrapper = shallow<EditTool>(<EditTool {...p} />);
+    wrapper.setState({ toolName: "tool" });
+    expect(wrapper.find("p").first().text()).toEqual("Name already taken.");
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
   });
 
   it("saves", () => {

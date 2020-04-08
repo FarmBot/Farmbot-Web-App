@@ -10,15 +10,16 @@ import {
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedDevice,
+  TaggedWeedPointer,
 } from "farmbot";
 import {
   isTaggedPlantPointer,
   isTaggedGenericPointer,
   isTaggedRegimen,
   isTaggedSequence,
-  isTaggedTool,
   isTaggedToolSlotPointer,
   sanityCheck,
+  isTaggedWeedPointer,
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
@@ -94,6 +95,13 @@ export function selectAllGenericPointers(index: ResourceIndex):
   return betterCompact(genericPointers);
 }
 
+export function selectAllWeedPointers(index: ResourceIndex):
+  TaggedWeedPointer[] {
+  const weedPointers = selectAllPoints(index)
+    .map(p => isTaggedWeedPointer(p) ? p : undefined);
+  return betterCompact(weedPointers);
+}
+
 export function selectAllPlantPointers(index: ResourceIndex): TaggedPlantPointer[] {
   const plantPointers = selectAllActivePoints(index)
     .map(p => isTaggedPlantPointer(p) ? p : undefined);
@@ -140,22 +148,6 @@ export function getSequenceByUUID(index: ResourceIndex,
     throw new Error("BAD Sequence UUID;");
   }
 }
-
-/** GIVEN: a slot UUID.
- *  FINDS: Tool in that slot (if any) */
-export const currentToolInSlot = (index: ResourceIndex) =>
-  (toolSlotUUID: string): TaggedTool | undefined => {
-    const currentSlot = selectCurrentToolSlot(index, toolSlotUUID);
-    if (currentSlot
-      && currentSlot.kind === "Point") {
-      const toolUUID = index
-        .byKindAndId[joinKindAndId("Tool", currentSlot.body.tool_id)];
-      const tool = index.references[toolUUID || "NOPE!"];
-      if (tool && isTaggedTool(tool)) {
-        return tool;
-      }
-    }
-  };
 
 /** FINDS: All tools that are in use. */
 export function toolsInUse(index: ResourceIndex): TaggedTool[] {

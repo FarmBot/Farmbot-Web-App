@@ -78,7 +78,7 @@ const toolVar = (value: string | number) =>
     });
 
 const pointVar = (
-  pointer_type: "Plant" | "GenericPointer",
+  pointer_type: "Plant" | "GenericPointer" | "Weed",
   value: string | number,
 ) => ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
@@ -123,7 +123,9 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
   if (ddi.isNull) { return nothingVar(props); } // Empty form. Nothing selected yet.
   switch (ddi.headingId) {
     case "Plant":
-    case "GenericPointer": return pointVar(ddi.headingId, ddi.value)(props);
+    case "GenericPointer":
+    case "Weed":
+      return pointVar(ddi.headingId, ddi.value)(props);
     case "Tool": return toolVar(ddi.value)(props);
     case "parameter": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);

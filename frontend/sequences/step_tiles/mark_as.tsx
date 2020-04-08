@@ -11,7 +11,7 @@ import { commitStepChanges } from "./mark_as/commit_step_changes";
 import { t } from "../../i18next_wrapper";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
-const NONE: DropDownItem = { value: 0, label: "" };
+const NONE = (): DropDownItem => ({ label: t("Select one"), value: 0 });
 
 export class MarkAs extends React.Component<StepParams, MarkAsState> {
   state: MarkAsState = { nextResource: undefined };
@@ -57,7 +57,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
               list={actionList(this.state.nextResource, step, this.props.resources)}
               onChange={this.commitSelection}
               key={JSON.stringify(rightSide) + JSON.stringify(this.state)}
-              selectedItem={this.state.nextResource ? NONE : rightSide} />
+              selectedItem={this.state.nextResource ? NONE() : rightSide} />
           </Col>
         </Row>
       </StepContent>

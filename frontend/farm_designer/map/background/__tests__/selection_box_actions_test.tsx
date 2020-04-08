@@ -55,6 +55,9 @@ describe("resizeBox", () => {
   const fakeProps = (): ResizeSelectionBoxProps => ({
     selectionBox: { x0: 0, y0: 0, x1: undefined, y1: undefined },
     plants: [],
+    allPoints: [],
+    selectionPointType: undefined,
+    getConfigValue: () => true,
     gardenCoords: { x: 100, y: 200 },
     setMapState: jest.fn(),
     dispatch: jest.fn(),
@@ -68,7 +71,7 @@ describe("resizeBox", () => {
       selectionBox: { x0: 0, y0: 0, x1: 100, y1: 200 }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
+      type: Actions.SELECT_POINT,
       payload: undefined
     });
   });
@@ -113,7 +116,7 @@ describe("resizeBox", () => {
       selectionBox: { x0: 0, y0: 0, x1: 100, y1: 200 }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
+      type: Actions.SELECT_POINT,
       payload: [plant.uuid]
     });
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
@@ -135,7 +138,7 @@ describe("startNewSelectionBox", () => {
       selectionBox: { x0: 100, y0: 200, x1: undefined, y1: undefined }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
+      type: Actions.SELECT_POINT,
       payload: undefined
     });
   });
@@ -157,7 +160,7 @@ describe("startNewSelectionBox", () => {
     startNewSelectionBox(p);
     expect(p.setMapState).not.toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
+      type: Actions.SELECT_POINT,
       payload: undefined
     });
   });

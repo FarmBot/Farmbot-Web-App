@@ -11,6 +11,7 @@ import {
   isTaggedGenericPointer,
   isTaggedSavedGarden,
   isTaggedFolder,
+  isTaggedWeedPointer,
 } from "./tagged_resources";
 import {
   ResourceName,
@@ -123,6 +124,13 @@ export function maybeFindGenericPointerById(index: ResourceIndex, id: number) {
   const uuid = index.byKindAndId[joinKindAndId("Point", id)];
   const resource = index.references[uuid || "nope"];
   if (resource && isTaggedGenericPointer(resource)) { return resource; }
+}
+
+/** Unlike other findById methods, this one allows undefined (missed) values */
+export function maybeFindWeedPointerById(index: ResourceIndex, id: number) {
+  const uuid = index.byKindAndId[joinKindAndId("Point", id)];
+  const resource = index.references[uuid || "nope"];
+  if (resource && isTaggedWeedPointer(resource)) { return resource; }
 }
 
 /** Unlike other findById methods, this one allows undefined (missed) values */

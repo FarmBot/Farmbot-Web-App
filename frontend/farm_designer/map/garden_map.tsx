@@ -6,7 +6,7 @@ import {
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import {
-  getMapSize, getGardenCoordinates, getMode, cursorAtPlant,
+  getMapSize, getGardenCoordinates, getMode, cursorAtPlant, allowInteraction,
 } from "./util";
 import {
   Grid, MapBackground,
@@ -17,6 +17,7 @@ import {
   PlantLayer,
   SpreadLayer,
   PointLayer,
+  WeedLayer,
   ToolSlotLayer,
   FarmBotLayer,
   ImageLayer,
@@ -34,9 +35,11 @@ import { NNPath } from "../point_groups/paths";
 import { history } from "../../history";
 import { ZonesLayer } from "./layers/zones/zones_layer";
 import { ErrorBoundary } from "../../error_boundary";
-import { TaggedPoint, TaggedPointGroup } from "farmbot";
+import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../point_groups/group_detail";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
+import { DrawnWeed } from "./drawn_point/drawn_weed";
+import { UUID } from "../../resources/interfaces";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -81,6 +84,10 @@ export class GardenMap extends
       pointsSelectedByGroup(this.group, this.props.allPoints) : [];
   }
 
+  get groupSelected(): UUID[] {
+    return this.pointsSelectedByGroup.map(point => point.uuid);
+  }
+
   /** Save the current plant (if needed) and reset drag state. */
   endDrag = () => {
     maybeSavePlantLocation({
@@ -94,7 +101,7 @@ export class GardenMap extends
       dispatch: this.props.dispatch,
       shouldDisplay: this.props.shouldDisplay,
       editGroupAreaInMap: this.props.designer.editGroupAreaInMap,
-      boxSelected: this.props.designer.selectedPlants,
+      boxSelected: this.props.designer.selectedPoints,
     });
     this.setState({
       isDragging: false, qPageX: 0, qPageY: 0,
@@ -152,6 +159,15 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
+          type: "point",
+        });
+        break;
+      case Mode.createWeed:
+        startNewPoint({
+          gardenCoords: this.getGardenCoordinates(e),
+          dispatch: this.props.dispatch,
+          setMapState: this.setMapState,
+          type: "weed",
         });
         break;
       case Mode.clickToAdd:
@@ -163,8 +179,8 @@ export class GardenMap extends
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
       case Mode.moveTo:
-        break;
       case Mode.createPoint:
+      case Mode.createWeed:
       case Mode.clickToAdd:
       case Mode.editPlant:
         break;
@@ -196,17 +212,26 @@ export class GardenMap extends
     }
   }
 
+  interactions = (pointerType: PointType): boolean => {
+    if (allowInteraction()) {
+      switch (getMode()) {
+        case Mode.boxSelect:
+          return (this.props.designer.selectionPointType || ["Plant"])
+            .includes(pointerType);
+      }
+    }
+    return allowInteraction();
+  };
+
   /** Return the selected plant, mode-allowing. */
   getPlant = (): TaggedPlant | undefined => {
-    switch (getMode()) {
-      case Mode.boxSelect:
-      case Mode.moveTo:
-      case Mode.points:
-      case Mode.createPoint:
-        return undefined; // For modes without plant interaction
-      default:
-        return this.props.selectedPlant;
-    }
+    return allowInteraction()
+      ? this.props.selectedPlant
+      : undefined;
+  }
+
+  get currentPoint(): UUID | undefined {
+    return this.props.designer.selectedPoints?.[0];
   }
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
@@ -273,15 +298,28 @@ export class GardenMap extends
       case Mode.createPoint:
         resizePoint({
           gardenCoords: this.getGardenCoordinates(e),
-          currentPoint: this.props.designer.currentPoint,
+          drawnPoint: this.props.designer.drawnPoint,
           dispatch: this.props.dispatch,
           isDragging: this.state.isDragging,
+          type: "point",
+        });
+        break;
+      case Mode.createWeed:
+        resizePoint({
+          gardenCoords: this.getGardenCoordinates(e),
+          drawnPoint: this.props.designer.drawnWeed,
+          dispatch: this.props.dispatch,
+          isDragging: this.state.isDragging,
+          type: "weed",
         });
         break;
       case Mode.editGroup:
         resizeBox({
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,
+          allPoints: this.props.allPoints,
+          selectionPointType: this.props.designer.selectionPointType,
+          getConfigValue: this.props.getConfigValue,
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -293,6 +331,9 @@ export class GardenMap extends
         resizeBox({
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,
+          allPoints: this.props.allPoints,
+          selectionPointType: this.props.designer.selectionPointType,
+          getConfigValue: this.props.getConfigValue,
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -308,7 +349,7 @@ export class GardenMap extends
       case Mode.moveTo:
         return () => { };
       case Mode.boxSelect:
-        return this.props.designer.selectedPlants
+        return this.props.designer.selectedPoints
           ? () => { }
           : closePlantInfo(this.props.dispatch);
       default:
@@ -362,6 +403,7 @@ export class GardenMap extends
     botSize={this.props.botSize}
     mapTransformProps={this.mapTransformProps}
     groups={this.props.groups}
+    startDrag={this.startDragOnBackground}
     currentGroup={this.group?.uuid} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
@@ -385,7 +427,20 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredPoint={this.props.designer.hoveredPoint}
     visible={!!this.props.showPoints}
+    interactions={this.interactions("GenericPointer")}
     genericPoints={this.props.genericPoints} />
+  WeedLayer = () => <WeedLayer
+    mapTransformProps={this.mapTransformProps}
+    dispatch={this.props.dispatch}
+    hoveredPoint={this.props.designer.hoveredPoint}
+    visible={!!this.props.showWeeds}
+    spreadVisible={!!this.props.showSpread}
+    currentPoint={this.currentPoint}
+    boxSelected={this.props.designer.selectedPoints}
+    groupSelected={this.groupSelected}
+    interactions={this.interactions("Weed")}
+    weeds={this.props.weeds}
+    animate={this.animate} />
   PlantLayer = () => <PlantLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -395,10 +450,11 @@ export class GardenMap extends
     hoveredPlant={this.props.hoveredPlant}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
-    boxSelected={this.props.designer.selectedPlants}
-    groupSelected={this.pointsSelectedByGroup.map(point => point.uuid)}
+    boxSelected={this.props.designer.selectedPoints}
+    groupSelected={this.groupSelected}
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
+    interactions={this.interactions("Plant")}
     animate={this.animate} />
   ToolSlotLayer = () => <ToolSlotLayer
     mapTransformProps={this.mapTransformProps}
@@ -406,6 +462,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredToolSlot={this.props.designer.hoveredToolSlot}
     botPositionX={this.props.botLocationData.position.x}
+    interactions={this.interactions("ToolSlot")}
     slots={this.props.toolSlots} />
   FarmBotLayer = () => <FarmBotLayer
     mapTransformProps={this.mapTransformProps}
@@ -443,8 +500,10 @@ export class GardenMap extends
     chosenLocation={this.props.designer.chosenLocation}
     mapTransformProps={this.mapTransformProps} />
   DrawnPoint = () => <DrawnPoint
-    data={this.props.designer.currentPoint}
-    key={"currentPoint"}
+    data={this.props.designer.drawnPoint}
+    mapTransformProps={this.mapTransformProps} />
+  DrawnWeed = () => <DrawnWeed
+    data={this.props.designer.drawnWeed}
     mapTransformProps={this.mapTransformProps} />
   GroupOrder = () => <GroupOrder
     group={this.group}
@@ -468,6 +527,7 @@ export class GardenMap extends
             <this.SensorReadingsLayer />
             <this.SpreadLayer />
             <this.PointLayer />
+            <this.WeedLayer />
             <this.PlantLayer />
             <this.ToolSlotLayer />
             <this.FarmBotLayer />
@@ -476,6 +536,7 @@ export class GardenMap extends
             <this.SelectionBox />
             <this.TargetCoordinate />
             <this.DrawnPoint />
+            <this.DrawnWeed />
             <this.GroupOrder />
             <this.NNPath />
             <this.Bugs />

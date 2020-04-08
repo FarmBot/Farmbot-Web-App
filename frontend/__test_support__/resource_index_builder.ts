@@ -316,6 +316,27 @@ const tr15: TaggedResource = {
   "uuid": "Tool.15.50"
 };
 
+const tr16: TaggedPoint = {
+  specialStatus: SpecialStatus.SAVED,
+  kind: "Point",
+  body: {
+    id: 1395,
+    created_at: "2017-05-24T20:41:19.889Z",
+    updated_at: "2017-05-24T20:41:19.889Z",
+    meta: {
+      color: "gray",
+      created_by: "plant-detection"
+    },
+    name: "untitled",
+    pointer_type: "Weed",
+    radius: 10,
+    x: 490,
+    y: 421,
+    z: 5
+  },
+  uuid: "Point.1397.11"
+};
+
 const log: TaggedLog = {
   kind: "Log",
   specialStatus: SpecialStatus.SAVED,
@@ -345,6 +366,7 @@ export const FAKE_RESOURCES: TaggedResource[] = [
   tr0,
   tr14,
   tr15,
+  tr16,
   log,
 ];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.

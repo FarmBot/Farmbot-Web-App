@@ -1,11 +1,11 @@
 import * as React from "react";
 import { MapTransformProps } from "../interfaces";
 import { transformXY } from "../util";
-import { CurrentPointPayl } from "../../interfaces";
+import { DrawnPointPayl } from "../../interfaces";
 
 export interface DrawnPointProps {
   mapTransformProps: MapTransformProps;
-  data: CurrentPointPayl | undefined;
+  data: DrawnPointPayl | undefined;
 }
 
 export function DrawnPoint(props: DrawnPointProps) {

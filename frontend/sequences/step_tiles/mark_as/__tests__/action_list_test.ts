@@ -10,7 +10,7 @@ describe("actionList()", () => {
     const step = resourceUpdate({ resource_type: "Plant" });
     const { index } = markAsResourceFixture();
     const result = actionList(undefined, step, index);
-    expect(result).toEqual(PLANT_OPTIONS);
+    expect(result).toEqual(PLANT_OPTIONS());
   });
 
   it("provides a list of tool mount actions", () => {
@@ -27,6 +27,16 @@ describe("actionList()", () => {
 
   it("provides a list of generic pointer actions", () => {
     const ddi = { label: "test case", value: 1, headingId: "GenericPointer" };
+    const step = resourceUpdate({});
+    const { index } = markAsResourceFixture();
+    const result = actionList(ddi, step, index);
+    expect(result.length).toBe(1);
+    const labels = result.map(x => x.label);
+    expect(labels).toContain("Removed");
+  });
+
+  it("provides a list of weed pointer actions", () => {
+    const ddi = { label: "test case", value: 1, headingId: "Weed" };
     const step = resourceUpdate({});
     const { index } = markAsResourceFixture();
     const result = actionList(ddi, step, index);

@@ -5,8 +5,8 @@ import { MapTransformProps } from "../../interfaces";
 import { ToolbaySlot, ToolNames, Tool, GantryToolSlot } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
 import { includes } from "lodash";
-import { history } from "../../../../history";
 import { t } from "../../../../i18next_wrapper";
+import { mapPointClickAction } from "../../actions";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -30,25 +30,27 @@ export const reduceToolName = (raw: string | undefined) => {
 };
 
 export const ToolSlotPoint = (props: TSPProps) => {
+  const { tool, toolSlot } = props.slot;
   const {
     id, x, y, pullout_direction, gantry_mounted
-  } = props.slot.toolSlot.body;
+  } = toolSlot.body;
   const { mapTransformProps, botPositionX } = props;
   const { quadrant, xySwap } = mapTransformProps;
   const xPosition = gantry_mounted ? (botPositionX || 0) : x;
   const { qx, qy } = transformXY(xPosition, y, props.mapTransformProps);
-  const toolName = props.slot.tool ? props.slot.tool.body.name : t("Empty");
-  const hovered = props.slot.toolSlot.uuid === props.hoveredToolSlot;
+  const toolName = tool ? tool.body.name : t("Empty");
+  const hovered = toolSlot.uuid === props.hoveredToolSlot;
   const toolProps = {
     x: qx,
     y: qy,
     hovered,
     dispatch: props.dispatch,
-    uuid: props.slot.toolSlot.uuid,
+    uuid: toolSlot.uuid,
     xySwap,
   };
   return <g id={"toolslot-" + id}
-    onClick={() => history.push(`/app/designer/tool-slots/${id}`)}>
+    onClick={mapPointClickAction(props.dispatch, toolSlot.uuid,
+      `/app/designer/tool-slots/${id}`)}>
     {pullout_direction && !gantry_mounted &&
       <ToolbaySlot
         id={id}

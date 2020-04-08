@@ -376,7 +376,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds",
     getModule,
     key,
-    getChild: () => import("./farm_designer/points/weeds_inventory"),
+    getChild: () => import("./farm_designer/weeds/weeds_inventory"),
     childKey: "Weeds"
   }),
   route({
@@ -392,7 +392,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds/:point_id",
     getModule,
     key,
-    getChild: () => import("./farm_designer/points/weeds_edit"),
+    getChild: () => import("./farm_designer/weeds/weeds_edit"),
     childKey: "EditWeed"
   }),
   route({

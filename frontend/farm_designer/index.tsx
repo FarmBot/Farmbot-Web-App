@@ -70,6 +70,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       legend_menu_open: init(BooleanSetting.legend_menu_open, false),
       show_plants: init(BooleanSetting.show_plants, true),
       show_points: init(BooleanSetting.show_points, true),
+      show_weeds: init(BooleanSetting.show_weeds, true),
       show_spread: init(BooleanSetting.show_spread, false),
       show_farmbot: init(BooleanSetting.show_farmbot, true),
       show_images: init(BooleanSetting.show_images, false),
@@ -116,6 +117,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       legend_menu_open,
       show_plants,
       show_points,
+      show_weeds,
       show_spread,
       show_farmbot,
       show_images,
@@ -155,6 +157,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
         showPoints={show_points}
+        showWeeds={show_weeds}
         showSpread={show_spread}
         showFarmbot={show_farmbot}
         showImages={show_images}
@@ -181,6 +184,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         <GardenMap
           showPoints={show_points}
           showPlants={show_plants}
+          showWeeds={show_weeds}
           showSpread={show_spread}
           showFarmbot={show_farmbot}
           showImages={show_images}
@@ -192,6 +196,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           designer={this.props.designer}
           plants={this.props.plants}
           genericPoints={this.props.genericPoints}
+          weeds={this.props.weeds}
           allPoints={this.props.allPoints}
           toolSlots={this.props.toolSlots}
           botLocationData={this.props.botLocationData}
