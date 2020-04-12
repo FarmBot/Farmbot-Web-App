@@ -150,8 +150,8 @@ ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -262,7 +262,7 @@ CREATE TABLE public.devices (
     id integer NOT NULL,
     name character varying DEFAULT 'FarmBot'::character varying,
     max_log_count integer DEFAULT 1000,
-    max_images_count integer DEFAULT 100,
+    max_images_count integer DEFAULT 450,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
     last_saw_mq timestamp without time zone,
@@ -1364,7 +1364,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1644,8 +1644,7 @@ CREATE TABLE public.users (
     agreed_to_terms_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    inactivity_warning_sent_at timestamp without time zone,
-    inactivity_warning_count integer
+    inactivity_warning_sent_at timestamp without time zone
 );
 
 
@@ -1729,7 +1728,9 @@ CREATE TABLE public.web_app_configs (
     confirm_sequence_deletion boolean DEFAULT true,
     discard_unsaved_sequences boolean DEFAULT false,
     user_interface_read_only_mode boolean DEFAULT false,
-    assertion_log integer DEFAULT 1
+    assertion_log integer DEFAULT 1,
+    show_zones boolean DEFAULT false,
+    show_weeds boolean DEFAULT false
 );
 
 
@@ -3376,6 +3377,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191219212755'),
 ('20191220010646'),
 ('20200116140201'),
-('20200204192005');
+('20200204192005'),
+('20200204230135'),
+('20200323235926'),
+('20200412152208');
 
 
