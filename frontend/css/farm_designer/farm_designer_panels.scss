@@ -367,9 +367,13 @@
         margin-top: 1rem;
       }
     }
-    .saucer {
-      margin: 1rem;
-      margin-left: 2rem;
+    .point-color-input {
+      div[class*=col-] {
+        padding-left: 0.5rem;
+      }
+      .saucer {
+        margin-top: 2.75rem;
+      }
     }
     .delete-row {
       margin: 1.5rem;
@@ -391,8 +395,27 @@
     display: block;
     margin-top: 3rem;
   }
+  font-size: 1.4rem;
   p {
     margin-top: 1rem;
+    margin-bottom: 0.5rem !important;
+    font-size: 1.2rem;
+  }
+  .weed-removal-method-section {
+    .weed-removal-method {
+      display: flex;
+      input {
+        margin: 0;
+        width: 10%;
+        box-shadow: none;
+      }
+      label {
+        margin: 0;
+        margin-top: auto;
+        font-size: 1.25rem;
+        font-weight: normal;
+      }
+    }
   }
 }
 
@@ -517,6 +540,7 @@
     margin-top: 1rem;
     p {
       font-size: 1.25rem;
+      margin-bottom: 0.5rem !important;
     }
   }
   input {
@@ -836,6 +860,11 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 5rem;
+    .clear-day-criteria,
+    .clear-point-ids,
+    .clear-criteria {
+      margin-top: 0.2rem;
+    }
     .group-member-display {
       i[class*=fa-caret-] {
         float: right;
@@ -862,20 +891,43 @@
       .criteria-heading {
         margin-top: 0;
       }
+      .alpha-icon {
+        display: inline;
+        float: none !important;
+        margin-left: 1rem;
+        color: $orange;
+        font-size: 1.4rem;
+      }
+      p {
+        &.category {
+          display: block;
+          padding-top: 1rem;
+          padding-bottom: 1rem;
+          text-transform: none;
+          font-size: 1.2rem;
+          font-weight: bold;
+        }
+      }
+      .bp3-popover-wrapper {
+        float: right;
+      }
       .fb-button {
         margin-top: 0.5rem;
       }
+      .point-type-section,
+      .criteria-checkbox-list-item {
+        .fb-checkbox {
+          display: inline;
+          margin-right: 1rem;
+          vertical-align: top;
+        }
+        p {
+          display: inline;
+          text-transform: uppercase;
+        }
+      }
       .point-type-checkboxes {
         .point-type-section {
-          .fb-checkbox {
-            display: inline;
-            margin-right: 1rem;
-            vertical-align: top;
-          }
-          p {
-            display: inline;
-            text-transform: uppercase;
-          }
           .point-type-checkbox {
             position: relative;
             height: 2rem;
@@ -894,19 +946,9 @@
             }
           }
           .plant-criteria-options,
+          .weed-criteria-options,
           .point-criteria-options,
           .tool-criteria-options {
-            margin-left: 3rem;
-            p {
-              &.category {
-                display: block;
-                padding-top: 1rem;
-                padding-bottom: 1rem;
-                text-transform: none;
-                font-size: 1.2rem;
-                font-weight: bold;
-              }
-            }
             hr {
               margin: 0.5rem;
             }
@@ -936,7 +978,13 @@
         margin-top: 1rem;
       }
       .day-criteria {
-        p {
+        .criteria-checkbox-list-item {
+          margin-bottom: 1rem;
+          p {
+            vertical-align: middle;
+          }
+        }
+        .days-old-text {
           display: inline;
           vertical-align: bottom;
         }
@@ -944,6 +992,7 @@
           line-height: 1.75rem;
         }
       }
+      .number-eq-criteria,
       .string-eq-criteria {
         margin-top: 1rem;
         .row {
@@ -970,19 +1019,13 @@
           font-size: 1.2rem;
         }
       }
-      .fb-toggle-button {
-        width: 85px;
-        margin-top: 0;
-        &.red {
-          background: $dark_gray !important;
-        }
-      }
-      .clear-criteria {
-        margin-top: 2rem;
-      }
       .basic,
       .advanced {
         margin-left: 1rem;
+        .filter-search {
+          height: 3rem;
+          margin-bottom: 1rem;
+        }
         .day-criteria {
           .row {
             margin-left: 0;
@@ -994,6 +1037,12 @@
         }
       }
       .advanced {
+        .bp3-popover-wrapper {
+          display: inline;
+          float: none;
+          margin-left: 1rem;
+          font-size: 1.4rem;
+        }
         .row {
           margin-left: 0;
         }
@@ -1011,29 +1060,28 @@
         }
       }
     }
-    .criteria-point-count-breakdown {
-      margin-bottom: 1rem;
-      .manual-group-member-count,
-      .criteria-group-member-count {
-        margin-left: 2rem;
-        div {
-          display: inline;
-          padding: 0.25rem;
-          font-size: 1.2rem;
-          border: 1px solid $panel_light_blue;
-        }
-        p {
-          display: inline;
-          margin-left: 1rem;
-        }
-      }
-      .criteria-group-member-count {
-        div {
-          border: 1px solid gray;
-          border-radius: 5px;
-        }
-      }
+  }
+}
+
+.group-member-count-breakdown {
+  margin-bottom: 1rem;
+  .manual-group-member-count,
+  .criteria-group-member-count {
+    div {
+      display: inline;
+      padding: 0.25rem;
+      font-size: 1.2rem;
     }
+    p {
+      display: inline;
+      margin-left: 1rem;
+    }
+  }
+}
+
+.criteria-options-menu {
+  label {
+    margin-right: 1rem;
   }
 }
 
@@ -1042,6 +1090,7 @@
   display: inline-block;
   .row {
     margin-left: 0;
+    margin-right: -2.5rem;
     div[class*=col-] {
       padding: 0;
       text-align: center;
@@ -1057,14 +1106,26 @@
       margin-top: 0.5rem;
     }
   }
+  button {
+    margin-top: 2rem !important;
+  }
   .edit-in-map {
     float: right;
     button {
       margin: 1rem !important;
       width: 5rem !important;
+      margin-right: 0 !important;
     }
     label {
       margin-top: 1.1rem !important;
+    }
+  }
+  .location-selection-warning {
+    i,
+    p {
+      display: inline;
+      margin-right: 1rem;
+      color: $darkest_red;
     }
   }
 }

@@ -8,9 +8,8 @@ jest.mock("../../../point_groups/criteria", () => ({
   editGtLtCriteria: jest.fn(),
 }));
 
-jest.mock("../../../../api/crud", () => ({
-  overwrite: jest.fn(),
-  save: jest.fn(),
+jest.mock("../../../point_groups/actions", () => ({
+  overwriteGroup: jest.fn(),
 }));
 
 import {
@@ -25,8 +24,8 @@ import {
 import { Actions } from "../../../../constants";
 import { history } from "../../../../history";
 import { editGtLtCriteria } from "../../../point_groups/criteria";
-import { overwrite, save } from "../../../../api/crud";
 import { cloneDeep } from "lodash";
+import { overwriteGroup } from "../../../point_groups/actions";
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -189,8 +188,7 @@ describe("maybeUpdateGroup()", () => {
     expectedBody && (expectedBody.point_ids = [
       plant1.body.id || 0, plant2.body.id || 0,
     ]);
-    expect(overwrite).toHaveBeenCalledWith(p.group, expectedBody);
-    expect(save).not.toHaveBeenCalled();
+    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("updates criteria", () => {
@@ -214,7 +212,6 @@ describe("maybeUpdateGroup()", () => {
     maybeUpdateGroup(p);
     expect(p.dispatch).not.toHaveBeenCalled();
     expect(editGtLtCriteria).not.toHaveBeenCalled();
-    expect(overwrite).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(overwriteGroup).not.toHaveBeenCalled();
   });
 });

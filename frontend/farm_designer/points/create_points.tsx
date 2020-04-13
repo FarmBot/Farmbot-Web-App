@@ -196,14 +196,25 @@ export class RawCreatePoints
   PointProperties = () =>
     <ul>
       <li>
-        <div className={"point-name-input"}>
-          <label>{t("Name")}</label>
-          <BlurableInput
-            name="name"
-            type="text"
-            onCommit={this.updateValue("name")}
-            value={this.attr("name") || this.defaultName} />
-        </div>
+        <Row>
+          <div className={"point-name-input"}>
+            <Col xs={10}>
+              <label>{t("Name")}</label>
+              <BlurableInput
+                name="name"
+                type="text"
+                onCommit={this.updateValue("name")}
+                value={this.attr("name") || this.defaultName} />
+            </Col>
+          </div>
+          <div className={"point-color-input"}>
+            <Col xs={2}>
+              <ColorPicker
+                current={(this.attr("color") || this.defaultColor) as ResourceColor}
+                onChange={this.changeColor} />
+            </Col>
+          </div>
+        </Row>
       </li>
       <ListItem name={t("Location")}>
         <Row>
@@ -236,13 +247,6 @@ export class RawCreatePoints
               value={this.attr("r")}
               min={0} />
           </Col>
-        </Row>
-      </ListItem>
-      <ListItem name={t("Color")}>
-        <Row>
-          <ColorPicker
-            current={(this.attr("color") || this.defaultColor) as ResourceColor}
-            onChange={this.changeColor} />
         </Row>
       </ListItem>
     </ul>

@@ -5,10 +5,11 @@ import { destroy, edit, save } from "../../api/crud";
 import { ResourceColor } from "../../interfaces";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { ListItem } from "../plants/plant_panel";
-import { round } from "lodash";
+import { round, cloneDeep } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
 import { parseIntInput } from "../../util";
 import { UUID } from "../../resources/interfaces";
+import { plantAge } from "../plants/map_state_to_props";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -51,6 +52,51 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         updatePoint={props.updatePoint} />
     </ListItem>
   </ul>;
+
+export const AdditionalWeedProperties = (props: EditPointPropertiesProps) =>
+  <ul className="additional-weed-properties">
+    <ListItem name={t("Age")}>
+      {`${plantAge(props.point)} ${t("days old")}`}
+    </ListItem>
+    {Object.entries(props.point.body.meta).map(([key, value]) => {
+      switch (key) {
+        case "color":
+        case "type": return <div key={key}
+          className={`meta-${key}-not-displayed`} />;
+        case "created_by":
+          return <ListItem name={t("Source")}>
+            {SOURCE_LOOKUP()[value || ""] || t("unknown")}
+          </ListItem>;
+        case "removal_method":
+          return <ListItem name={t("Removal method")}>
+            <div className="weed-removal-method-section">
+              {REMOVAL_METHODS.map(method =>
+                <div className={"weed-removal-method"} key={method}>
+                  <input type="radio" name="weed-removal-method"
+                    checked={value == method}
+                    onChange={() => {
+                      const newMeta = cloneDeep(props.point.body.meta);
+                      newMeta.removal_method = method;
+                      props.updatePoint({ meta: newMeta });
+                    }} />
+                  <label>{t(method)}</label>
+                </div>)}
+            </div>
+          </ListItem>;
+        default:
+          return <ListItem name={key}>
+            {value || ""}
+          </ListItem>;
+      }
+    })}
+  </ul>;
+
+const REMOVAL_METHODS = ["automatic", "manual"];
+
+const SOURCE_LOOKUP = (): Record<string, string> => ({
+  "plant-detection": t("Weed Detector"),
+  "farm-designer": t("Farm Designer"),
+});
 
 export interface PointActionsProps {
   x: number;

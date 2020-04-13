@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
-import { TaggedPointGroup, TaggedPoint } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import {
   selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups,
 } from "../../resources/selectors";
@@ -16,6 +16,8 @@ import {
 } from "../designer_panel";
 import { Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
+import { BotSize } from "../map/interfaces";
+import { botSize } from "../state_to_props";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -25,6 +27,8 @@ interface GroupDetailProps {
   slugs: string[];
   hovered: UUID | undefined;
   editGroupAreaInMap: boolean;
+  botSize: BotSize;
+  selectionPointType: PointType[] | undefined;
 }
 
 /** Find a group from a URL-provided ID. */
@@ -36,7 +40,7 @@ export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
 };
 
 function mapStateToProps(props: Everything): GroupDetailProps {
-  const { hoveredPlantListItem, editGroupAreaInMap } =
+  const { hoveredPlantListItem, editGroupAreaInMap, selectionPointType } =
     props.resources.consumers.farm_designer;
   return {
     allPoints: selectAllActivePoints(props.resources.index),
@@ -47,6 +51,8 @@ function mapStateToProps(props: Everything): GroupDetailProps {
       .map(p => p.body.openfarm_slug)),
     hovered: hoveredPlantListItem,
     editGroupAreaInMap,
+    botSize: botSize(props),
+    selectionPointType,
   };
 }
 

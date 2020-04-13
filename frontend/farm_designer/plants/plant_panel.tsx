@@ -186,6 +186,14 @@ export function PlantPanel(props: PlantPanelProps) {
             updatePlant={updatePlant} />
           : t(startCase(plantStatus))}
       </ListItem>
+      {Object.entries(info.meta || []).map(([key, value]) => {
+        switch (key) {
+          case "gridId":
+            return <div key={key} className={`meta-${key}-not-displayed`} />;
+          default:
+            return <ListItem key={key} name={key}>{value || ""}</ListItem>;
+        }
+      })}
     </ul>
     <DeleteButtons destroy={destroy} />
   </DesignerPanelContent>;

@@ -48,7 +48,7 @@ export class AddEqCriteria<T extends string | number>
         </Col>
         <Col xs={2}>
           <button className="fb-button green"
-            title={t("add criteria")}
+            title={t("add filter")}
             onClick={this.commit}>
             <i className="fa fa-plus" />
           </button>
@@ -97,7 +97,7 @@ export class AddNumberCriteria
         </Col>
         <Col xs={2}>
           <button className="fb-button green"
-            title={t("add number criteria")}
+            title={t("add number filter")}
             onClick={this.commit}>
             <i className="fa fa-plus" />
           </button>

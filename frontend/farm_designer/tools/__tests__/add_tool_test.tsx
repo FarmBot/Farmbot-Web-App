@@ -17,6 +17,7 @@ import { initSave, init, destroy } from "../../../api/crud";
 import { history } from "../../../history";
 import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
@@ -58,7 +59,7 @@ describe("<AddTool />", () => {
   it("saves", async () => {
     mockSave = () => Promise.resolve();
     const p = fakeProps();
-    p.dispatch = jest.fn(x => typeof x === "function" && x());
+    p.dispatch = mockDispatch();
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
     await wrapper.find(SaveBtn).simulate("click");
@@ -70,7 +71,7 @@ describe("<AddTool />", () => {
   it("removes unsaved tool on exit", async () => {
     mockSave = () => Promise.reject();
     const p = fakeProps();
-    p.dispatch = jest.fn(x => typeof x === "function" && x());
+    p.dispatch = mockDispatch();
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
     await wrapper.find(SaveBtn).simulate("click");

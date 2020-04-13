@@ -8,6 +8,11 @@ const eqCriteriaEmpty =
   (eqCriteria: Record<string, (string | number)[] | undefined>) =>
     every(Object.values(eqCriteria).map(values => !values?.length));
 
+/** Check if day criteria field is unset. */
+export const dayCriteriaEmpty =
+  (dayCriteria: { op: ">" | "<", days_ago: number }) =>
+    isEqual(dayCriteria, { op: "<", days_ago: 0 });
+
 /** Check if a point matches the criteria in the provided category. */
 const checkCriteria =
   (criteria: PointGroupCriteria, now: moment.Moment) =>
@@ -31,11 +36,11 @@ const checkCriteria =
             ? point.body.planted_at
             : point.body.created_at);
           const compareDate = moment(now)
-            .subtract(criteria[criteriaKey].days_ago, "days");
-          const matchesDays = criteria[criteriaKey].op == "<"
+            .subtract(criteria.day.days_ago, "days");
+          const matchesDays = criteria.day.op == "<"
             ? pointDate.isAfter(compareDate)
             : pointDate.isBefore(compareDate);
-          return matchesDays || !criteria[criteriaKey].days_ago;
+          return matchesDays || dayCriteriaEmpty(criteria.day);
       }
     };
 

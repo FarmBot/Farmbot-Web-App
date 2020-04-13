@@ -8,11 +8,11 @@ import { getMode } from "../util";
 import { editGtLtCriteria } from "../../point_groups/criteria";
 import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
-import { overwrite } from "../../../api/crud";
 import { unpackUUID } from "../../../util";
 import { UUID } from "../../../resources/interfaces";
 import { getFilteredPoints } from "../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
+import { overwriteGroup } from "../../point_groups/actions";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -109,19 +109,20 @@ export interface MaybeUpdateGroupProps {
 
 export const maybeUpdateGroup =
   (props: MaybeUpdateGroupProps) => {
-    if (props.selectionBox && props.group) {
+    const { group } = props;
+    if (props.selectionBox && group) {
       if (props.editGroupAreaInMap
         && props.shouldDisplay(Feature.criteria_groups)) {
-        props.dispatch(editGtLtCriteria(props.group, props.selectionBox));
+        props.dispatch(editGtLtCriteria(group, props.selectionBox));
       } else {
-        const nextGroupBody = cloneDeep(props.group.body);
+        const nextGroupBody = cloneDeep(group.body);
         props.boxSelected?.map(uuid => {
           const { kind, remoteId } = unpackUUID(uuid);
           remoteId && kind == "Point" && nextGroupBody.point_ids.push(remoteId);
         });
         nextGroupBody.point_ids = uniq(nextGroupBody.point_ids);
-        if (!isEqual(props.group.body.point_ids, nextGroupBody.point_ids)) {
-          props.dispatch(overwrite(props.group, nextGroupBody));
+        if (!isEqual(group.body.point_ids, nextGroupBody.point_ids)) {
+          props.dispatch(overwriteGroup(group, nextGroupBody));
           props.dispatch(selectPoint(undefined));
         }
       }

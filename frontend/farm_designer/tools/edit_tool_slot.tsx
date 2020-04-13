@@ -52,6 +52,17 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
               quadrant={this.props.quadrant}
               isActive={this.props.isActive}
               updateToolSlot={this.updateSlot(toolSlot)} />
+            <ul className="meta">
+              {Object.entries(toolSlot.body.meta).map(([key, value]) => {
+                switch (key) {
+                  default:
+                    return <li key={key}>
+                      <label>{key}</label>
+                      <div>{value}</div>
+                    </li>;
+                }
+              })}
+            </ul>
             <button
               className="fb-button gray no-float"
               title={t("move to this location")}

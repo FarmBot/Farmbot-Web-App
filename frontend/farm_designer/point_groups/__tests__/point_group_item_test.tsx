@@ -4,7 +4,7 @@ jest.mock("../../../open_farm/cached_crop", () => ({
 }));
 
 jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
+jest.mock("../actions", () => ({ overwriteGroup: jest.fn() }));
 
 import React from "react";
 import {
@@ -19,16 +19,17 @@ import {
   maybeGetCachedPlantIcon, setImgSrc,
 } from "../../../open_farm/cached_crop";
 import { setHoveredPlant } from "../../map/actions";
-import { overwrite } from "../../../api/crud";
 import { cloneDeep } from "lodash";
 import { imgEvent } from "../../../__test_support__/fake_html_events";
 import { error } from "../../../toast/toast";
 import { svgToUrl, DEFAULT_ICON } from "../../../open_farm/icons";
 import { DEFAULT_WEED_ICON } from "../../map/layers/weeds/garden_weed";
+import { overwriteGroup } from "../actions";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<PointGroupItem/>", () => {
   const fakeProps = (): PointGroupItemProps => ({
-    dispatch: jest.fn(),
+    dispatch: mockDispatch(),
     point: fakePlant(),
     group: fakePointGroup(),
     hovered: true
@@ -53,6 +54,16 @@ describe("<PointGroupItem/>", () => {
       i.props.point.body.openfarm_slug : "slug";
     expect(maybeGetCachedPlantIcon)
       .toHaveBeenCalledWith(slug, expect.any(Object), expect.any(Function));
+    expect(setImgSrc).not.toHaveBeenCalled();
+  });
+
+  it("doesn't fetch non-plant icon", async () => {
+    const p = fakeProps();
+    p.point = fakeWeed();
+    const i = new PointGroupItem(p);
+    const fakeImgEvent = imgEvent();
+    await i.maybeGetCachedIcon(fakeImgEvent);
+    expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();
     expect(setImgSrc).not.toHaveBeenCalled();
   });
 
@@ -121,7 +132,7 @@ describe("<PointGroupItem/>", () => {
     expect(i.props.dispatch).toHaveBeenCalledTimes(2);
     const expectedGroupBody = cloneDeep(p.group.body);
     expectedGroupBody.point_ids = [];
-    expect(overwrite).toHaveBeenCalledWith(p.group, expectedGroupBody);
+    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
     expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
@@ -132,9 +143,9 @@ describe("<PointGroupItem/>", () => {
     const i = new PointGroupItem(p);
     i.click();
     expect(i.props.dispatch).not.toHaveBeenCalled();
-    expect(overwrite).not.toHaveBeenCalled();
+    expect(overwriteGroup).not.toHaveBeenCalled();
     expect(setHoveredPlant).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
-      "Cannot remove points selected by criteria.");
+      "Cannot remove points selected by filters.");
   });
 });

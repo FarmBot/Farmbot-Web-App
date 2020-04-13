@@ -5,7 +5,7 @@ import {
   maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeSettings,
 } from "../../resources/selectors";
 import { history } from "../../history";
-import { PlantStage } from "farmbot";
+import { PlantStage, TaggedPoint } from "farmbot";
 import { TaggedPlant } from "../map/interfaces";
 import { isNumber, get } from "lodash";
 import { getWebAppConfigValue } from "../../config_storage/actions";
@@ -47,17 +47,18 @@ export interface FormattedPlantInfo {
   plantedAt: moment.Moment;
   slug: string;
   plantStatus: PlantStage;
+  meta?: Record<string, string | undefined>;
 }
 
 /** Get date planted or fallback to creation date. */
-const plantDate = (plant: TaggedPlant): moment.Moment => {
+const plantDate = (plant: TaggedPlant | TaggedPoint): moment.Moment => {
   const plantedAt = get(plant, "body.planted_at");
   const createdAt = get(plant, "body.created_at", moment());
   return plantedAt ? moment(plantedAt) : moment(createdAt);
 };
 
 /** Compare planted or created date vs time now to determine age. */
-export const plantAge = (plant: TaggedPlant): number => {
+export const plantAge = (plant: TaggedPlant | TaggedPoint): number => {
   const currentDate = moment();
   const daysOld = currentDate.diff(plantDate(plant), "days") + 1;
   return daysOld;
@@ -73,6 +74,7 @@ export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
     y: plant.body.y,
     uuid: plant.uuid,
     plantedAt: plantDate(plant),
-    plantStatus: get(plant, "plant_stage", "planned"),
+    plantStatus: get(plant, "body.plant_stage", "planned"),
+    meta: plant.kind == "Point" ? plant.body.meta : undefined,
   };
 }

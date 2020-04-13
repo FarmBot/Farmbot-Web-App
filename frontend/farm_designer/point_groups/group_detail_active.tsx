@@ -1,20 +1,19 @@
 import * as React from "react";
 import { t } from "../../i18next_wrapper";
-import { TaggedPointGroup, TaggedPoint } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";
-import { sortGroupBy } from "./point_group_sort";
-import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
-import { PointGroupItem } from "./point_group_item";
 import { Paths } from "./paths";
 import { Feature, ShouldDisplay } from "../../devices/interfaces";
 import { ErrorBoundary } from "../../error_boundary";
 import {
   GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup,
 } from "./criteria";
-import { Content } from "../../constants";
+import { ToolTips } from "../../constants";
 import { UUID } from "../../resources/interfaces";
 import { Help } from "../../ui";
+import { BotSize } from "../map/interfaces";
+import { setSelectionPointType } from "../plants/select_plants";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -24,10 +23,11 @@ export interface GroupDetailActiveProps {
   slugs: string[];
   hovered: UUID | undefined;
   editGroupAreaInMap: boolean;
+  botSize: BotSize;
+  selectionPointType: PointType[] | undefined;
 }
 
 interface GroupDetailActiveState {
-  timerId?: ReturnType<typeof setInterval>;
   iconDisplay: boolean;
 }
 
@@ -35,51 +35,12 @@ export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, GroupDetailActiveState> {
   state: GroupDetailActiveState = { iconDisplay: true };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
-  };
-
   get pointsSelectedByGroup() {
     return pointsSelectedByGroup(this.props.group, this.props.allPoints);
   }
 
-  get icons() {
-    const sortedPoints =
-      sortGroupBy(this.props.group.body.sort_type, this.pointsSelectedByGroup);
-    return sortedPoints.map(point => {
-      return <PointGroupItem
-        key={point.uuid}
-        hovered={point.uuid === this.props.hovered}
-        group={this.props.group}
-        point={point}
-        dispatch={this.props.dispatch} />;
-    });
-  }
-
-  get saved(): boolean {
-    return !this.props.group.specialStatus;
-  }
-
-  saveGroup = () => {
-    if (!this.saved) {
-      this.props.dispatch(save(this.props.group.uuid));
-    }
-  }
-
-  changeSortType = (sort_type: PointGroupSortType) => {
-    const { dispatch, group } = this.props;
-    dispatch(edit(group, { sort_type }));
-  }
-
-  componentDidMount() {
-    // There are better ways to do this.
-    this.setState({ timerId: setInterval(this.saveGroup, 900) });
-  }
-
-  componentWillUnmount() {
-    const { timerId } = this.state;
-    (typeof timerId == "number") && clearInterval(timerId);
-  }
+  componentWillUnmount = () =>
+    this.props.dispatch(setSelectionPointType(undefined));
 
   toggleIconShow = () => this.setState({ iconDisplay: !this.state.iconDisplay });
 
@@ -87,24 +48,29 @@ export class GroupDetailActive
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
       <label>{t("GROUP NAME")}</label>
-      <i style={{ float: "right" }}>{this.saved ? "" : "  saving..."}</i>
       <input
         name="name"
         defaultValue={group.body.name}
-        onChange={this.update}
-        onBlur={this.saveGroup} />
+        onBlur={e => {
+          const newGroupName = e.currentTarget.value;
+          if (newGroupName != "" && newGroupName != this.props.group.body.name) {
+            this.props.dispatch(edit(this.props.group, { name: newGroupName }));
+            this.props.dispatch(save(this.props.group.uuid));
+          }
+        }} />
       <GroupSortSelection group={group} dispatch={dispatch}
         pointsSelectedByGroup={this.pointsSelectedByGroup} />
       <GroupMemberDisplay group={group} dispatch={dispatch}
         pointsSelectedByGroup={this.pointsSelectedByGroup}
-        icons={this.icons}
+        hovered={this.props.hovered}
         iconDisplay={this.state.iconDisplay}
         toggleIconShow={this.toggleIconShow}
         shouldDisplay={this.props.shouldDisplay} />
       {this.props.shouldDisplay(Feature.criteria_groups) &&
         <GroupCriteria dispatch={dispatch}
-          group={group} slugs={this.props.slugs}
-          editGroupAreaInMap={this.props.editGroupAreaInMap} />}
+          group={group} slugs={this.props.slugs} botSize={this.props.botSize}
+          editGroupAreaInMap={this.props.editGroupAreaInMap}
+          selectionPointType={this.props.selectionPointType} />}
       <DeleteButton
         className="group-delete-btn"
         dispatch={dispatch}
@@ -130,7 +96,7 @@ const GroupSortSelection = (props: GroupSortSelectionProps) =>
     </label>
     {props.group.body.sort_type == "random" &&
       <Help
-        text={Content.SORT_DESCRIPTION}
+        text={ToolTips.SORT_DESCRIPTION}
         customIcon={"exclamation-triangle"} />}
     <Paths
       key={JSON.stringify(props.pointsSelectedByGroup
@@ -145,32 +111,34 @@ interface GroupMemberDisplayProps {
   dispatch: Function;
   pointsSelectedByGroup: TaggedPoint[];
   shouldDisplay: ShouldDisplay;
-  icons: JSX.Element[];
   iconDisplay: boolean;
   toggleIconShow(): void;
+  hovered: UUID | undefined;
 }
 
 /** View group point counts and icon list. */
-const GroupMemberDisplay = (props: GroupMemberDisplayProps) =>
-  <div className="group-member-display">
+const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
+  return <div className="group-member-display">
     <label>
-      {t("GROUP MEMBERS ({{count}})", { count: props.icons.length })}
+      {t("GROUP MEMBERS ({{count}})", {
+        count: props.pointsSelectedByGroup.length
+      })}
     </label>
     <Help text={`${t("Click plants in map to add or remove.")} ${(
       props.shouldDisplay(Feature.criteria_groups) &&
       props.pointsSelectedByGroup.length != props.group.body.point_ids.length)
-      ? t(Content.CRITERIA_SELECTION_COUNT) : ""}`} />
+      ? t(ToolTips.CRITERIA_SELECTION_COUNT) : ""}`} />
     <i onClick={props.toggleIconShow}
       className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
       title={props.iconDisplay
         ? t("hide icons")
         : t("show icons")} />
-    {props.shouldDisplay(Feature.criteria_groups) &&
-      <GroupPointCountBreakdown
-        manualCount={props.group.body.point_ids.length}
-        totalCount={props.pointsSelectedByGroup.length} />}
-    {props.iconDisplay &&
-      <div className="groups-list-wrapper">
-        {props.icons}
-      </div>}
+    <GroupPointCountBreakdown
+      group={props.group}
+      dispatch={props.dispatch}
+      shouldDisplay={props.shouldDisplay}
+      iconDisplay={props.iconDisplay}
+      hovered={props.hovered}
+      pointsSelectedByGroup={props.pointsSelectedByGroup} />
   </div>;
+};

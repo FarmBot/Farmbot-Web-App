@@ -9,6 +9,7 @@ interface CheckboxProps {
   partial?: boolean;
   onClick?: (e: React.FormEvent) => void;
   customDisabledText?: string;
+  color?: string;
 }
 
 export const Checkbox = (props: CheckboxProps) =>
@@ -19,6 +20,7 @@ export const Checkbox = (props: CheckboxProps) =>
     title={props.disabled ? props.customDisabledText ?? t("incompatible") : ""}
     onClick={props.onClick}>
     <input type="checkbox"
+      className={props.color ?? ""}
       title={props.title}
       onChange={props.onChange}
       checked={props.checked} />

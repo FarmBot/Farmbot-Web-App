@@ -1,10 +1,10 @@
-import { mapStateToProps, plantAge } from "../map_state_to_props";
+import { mapStateToProps, plantAge, formatPlantInfo } from "../map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate,
+  fakePlant, fakePlantTemplate, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
@@ -31,6 +31,15 @@ describe("mapStateToProps()", () => {
     expect(result.findPlant("10")).toEqual(
       expect.objectContaining({ uuid }));
   });
+
+  it("returns getConfigValue()", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.show_plants = false;
+    state.resources = buildResourceIndex([webAppConfig]);
+    const result = mapStateToProps(state);
+    expect(result.getConfigValue("show_plants")).toEqual(false);
+  });
 });
 
 describe("plantAge()", () => {
@@ -46,5 +55,22 @@ describe("plantAge()", () => {
     plant.body.planted_at = undefined;
     plant.body.created_at = "2018-01-11T20:20:38.362Z";
     expect(plantAge(plant)).toBeGreaterThan(100);
+  });
+});
+
+describe("formatPlantInfo()", () => {
+  it("returns info for plant", () => {
+    const plant = fakePlant();
+    plant.body.plant_stage = "planted";
+    const result = formatPlantInfo(plant);
+    expect(result.meta).toEqual({});
+    expect(result.plantStatus).toEqual("planted");
+  });
+
+  it("returns info for plant template", () => {
+    const plant = fakePlantTemplate();
+    const result = formatPlantInfo(plant);
+    expect(result.meta).toBeUndefined();
+    expect(result.plantStatus).toEqual("planned");
   });
 });
