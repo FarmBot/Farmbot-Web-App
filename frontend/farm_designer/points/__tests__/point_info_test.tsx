@@ -45,8 +45,24 @@ describe("<EditPoint />", () => {
 
   it("renders with points", () => {
     mockPath = "/app/designer/points/1";
-    const wrapper = mount(<EditPoint {...fakeProps()} />);
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.meta = { meta_key: "meta value" };
+    p.findPoint = () => point;
+    const wrapper = mount(<EditPoint {...p} />);
     expect(wrapper.text()).toContain("Edit point");
+    expect(wrapper.text()).toContain("meta value");
+  });
+
+  it("doesn't render duplicate values", () => {
+    mockPath = "/app/designer/points/1";
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.meta = { color: "red", meta_key: undefined };
+    p.findPoint = () => point;
+    const wrapper = mount(<EditPoint {...p} />);
+    expect(wrapper.text()).toContain("Edit point");
+    expect(wrapper.text()).not.toContain("red");
   });
 
   it("moves the device to a particular point", () => {

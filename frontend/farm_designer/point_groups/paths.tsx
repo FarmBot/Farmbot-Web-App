@@ -7,7 +7,7 @@ import { Color } from "../../ui";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { Actions } from "../../constants";
-import { edit } from "../../api/crud";
+import { edit, save } from "../../api/crud";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { error } from "../../toast/toast";
 import { DevSettings } from "../../account/dev/dev_support";
@@ -73,10 +73,14 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
       dispatch({ type: Actions.TRY_SORT_TYPE, payload: sortTypeKey })}
     onMouseLeave={() =>
       dispatch({ type: Actions.TRY_SORT_TYPE, payload: undefined })}
-    onClick={() =>
-      sortTypeKey == "nn"
-        ? error(t("Not supported yet."))
-        : dispatch(edit(group, { sort_type: sortTypeKey }))}>
+    onClick={() => {
+      if (sortTypeKey == "nn") {
+        error(t("Not supported yet."));
+      } else {
+        dispatch(edit(group, { sort_type: sortTypeKey }));
+        dispatch(save(group.uuid));
+      }
+    }}>
     <div className={"sort-path-info-bar"}
       style={{ width: `${normalizedLength}%` }}>
       {`${sortLabel}: ${Math.round(pathLength / 10) / 100}m`}

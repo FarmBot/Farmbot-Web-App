@@ -37,10 +37,15 @@ export const criteriaHasKey = (
   key: string,
 ) =>
   some(categories.map(category => {
-    if (category == "string_eq") {
-      return strCriteriaHasKey(criteria.string_eq)(key);
-    } else {
-      return numCriteriaHasKey(criteria)(key);
+    switch (category) {
+      case "string_eq":
+        return strCriteriaHasKey(criteria.string_eq)(key);
+      case "number_eq":
+        return (criteria.number_eq[key]?.length || 0) > 0;
+      case "number_lt":
+        return isNumber(criteria.number_lt[key]);
+      case "number_gt":
+        return isNumber(criteria.number_gt[key]);
     }
   }));
 
@@ -52,9 +57,12 @@ export const hasSubCriteria = (criteria: PointGroupCriteria) =>
     switch (pointerType) {
       case "GenericPointer":
         return !!(
-          selected("meta.type")
+          selected("meta.color")
+          || numSelected("radius"));
+      case "Weed":
+        return !!(
+          selected("meta.created_by")
           || selected("meta.color")
-          || selected("meta.created_by")
           || numSelected("radius"));
       case "Plant":
         return !!(

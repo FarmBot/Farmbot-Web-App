@@ -456,6 +456,16 @@ describe("<GardenMap/>", () => {
     expect(allowed).toBeTruthy();
   });
 
+  it("allows interactions: group edit", () => {
+    mockMode = Mode.editGroup;
+    mockInteractionAllow = true;
+    const p = fakeProps();
+    p.designer.selectionPointType = undefined;
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    const allowed = wrapper.instance().interactions("Plant");
+    expect(allowed).toBeTruthy();
+  });
+
   it("disallows interactions: default", () => {
     mockMode = Mode.none;
     mockInteractionAllow = false;

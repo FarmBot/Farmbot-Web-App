@@ -6,6 +6,12 @@ jest.mock("../../../api/crud", () => ({
 
 jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
+jest.mock("../../plants/select_plants", () => ({
+  setSelectionPointType: jest.fn(),
+  validPointTypes: jest.fn(),
+  POINTER_TYPE_LIST: () => [],
+}));
+
 import React from "react";
 import {
   GroupDetailActive, GroupDetailActiveProps,
@@ -14,9 +20,10 @@ import { mount, shallow } from "enzyme";
 import {
   fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
-import { save, edit } from "../../../api/crud";
+import { edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
+import { setSelectionPointType } from "../../plants/select_plants";
 
 describe("<GroupDetailActive/>", () => {
   const fakeProps = (): GroupDetailActiveProps => {
@@ -35,25 +42,13 @@ describe("<GroupDetailActive/>", () => {
       slugs: [],
       hovered: undefined,
       editGroupAreaInMap: false,
+      botSize: {
+        x: { value: 3000, isDefault: true },
+        y: { value: 1500, isDefault: true },
+      },
+      selectionPointType: undefined,
     };
   };
-
-  it("saves", () => {
-    const p = fakeProps();
-    const el = new GroupDetailActive(p);
-    el.saveGroup();
-    expect(p.dispatch).toHaveBeenCalled();
-    expect(save).toHaveBeenCalledWith(p.group.uuid);
-  });
-
-  it("is already saved", () => {
-    const p = fakeProps();
-    p.group.specialStatus = SpecialStatus.SAVED;
-    const el = new GroupDetailActive(p);
-    el.saveGroup();
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
-  });
 
   it("toggles icon view", () => {
     const p = fakeProps();
@@ -68,54 +63,24 @@ describe("<GroupDetailActive/>", () => {
     p.group.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<GroupDetailActive {...p} />);
     expect(wrapper.find("input").first().prop("defaultValue")).toContain("XYZ");
-    expect(wrapper.find(".groups-list-wrapper").length).toEqual(1);
-    expect(wrapper.text()).not.toContain("saving");
-  });
-
-  it("shows saving indicator", () => {
-    const p = fakeProps();
-    p.group.specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount(<GroupDetailActive {...p} />);
-    expect(wrapper.text()).toContain("saving");
-  });
-
-  it("changes group name", () => {
-    const NEW_NAME = "new group name";
-    const wrapper = shallow(<GroupDetailActive {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: NEW_NAME }
-    });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: NEW_NAME });
-  });
-
-  it("changes the sort type", () => {
-    const p = fakeProps();
-    const { dispatch } = p;
-    const el = new GroupDetailActive(p);
-    el.changeSortType("random");
-    expect(dispatch).toHaveBeenCalled();
-    expect(edit).toHaveBeenCalledWith({
-      body: {
-        name: "XYZ",
-        point_ids: [1],
-        sort_type: "xy_ascending",
-        criteria: DEFAULT_CRITERIA
-      },
-      kind: "PointGroup",
-      specialStatus: "DIRTY",
-      uuid: p.group.uuid,
-    },
-      { sort_type: "random" });
+    expect(wrapper.find(".group-member-display").length).toEqual(1);
   });
 
   it("unmounts", () => {
-    window.clearInterval = jest.fn();
     const p = fakeProps();
-    const el = new GroupDetailActive(p);
-    // tslint:disable-next-line:no-any
-    el.state.timerId = 123 as any;
-    el.componentWillUnmount && el.componentWillUnmount();
-    expect(clearInterval).toHaveBeenCalledWith(123);
+    p.group.body.criteria.string_eq.pointer_type = ["Weed"];
+    const wrapper = mount(<GroupDetailActive {...p} />);
+    wrapper.unmount();
+    expect(setSelectionPointType).toHaveBeenCalledWith(undefined);
+  });
+
+  it("changes group name", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GroupDetailActive {...p} />);
+    wrapper.find("input").first().simulate("blur", {
+      currentTarget: { value: "new group name" }
+    });
+    expect(edit).toHaveBeenCalledWith(p.group, { name: "new group name" });
   });
 
   it("shows paths", () => {

@@ -40,6 +40,7 @@ import { findGroupFromUrl } from "../point_groups/group_detail";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
+import { throttle } from "lodash";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -89,7 +90,7 @@ export class GardenMap extends
   }
 
   /** Save the current plant (if needed) and reset drag state. */
-  endDrag = () => {
+  endDrag = throttle(() => {
     maybeSavePlantLocation({
       plant: this.getPlant(),
       isDragging: this.state.isDragging,
@@ -109,7 +110,7 @@ export class GardenMap extends
       activeDragSpread: undefined,
       selectionBox: undefined
     });
-  }
+  }, 400);
 
   getGardenCoordinates =
     (e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>):
@@ -215,6 +216,7 @@ export class GardenMap extends
   interactions = (pointerType: PointType): boolean => {
     if (allowInteraction()) {
       switch (getMode()) {
+        case Mode.editGroup:
         case Mode.boxSelect:
           return (this.props.designer.selectionPointType || ["Plant"])
             .includes(pointerType);

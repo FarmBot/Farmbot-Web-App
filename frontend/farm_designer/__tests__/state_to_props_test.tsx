@@ -1,4 +1,4 @@
-import { mapStateToProps, getPlants } from "../state_to_props";
+import { mapStateToProps, getPlants, botSize } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice,
@@ -11,6 +11,7 @@ import {
   fakeWebAppConfig,
   fakeFarmwareEnv,
   fakeSensorReading,
+  fakeFirmwareConfig,
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
@@ -38,13 +39,6 @@ describe("mapStateToProps()", () => {
     checkValue(-1, false);
     checkValue(1, true);
     checkValue(2, true);
-  });
-
-  it("stepsPerMm is defined", () => {
-    const state = fakeState();
-    state.bot.hardware.mcu_params.movement_step_per_mm_x = 3;
-    state.bot.hardware.mcu_params.movement_step_per_mm_y = 4;
-    expect(mapStateToProps(state).stepsPerMmXY).toEqual({ x: 3, y: 4 });
   });
 
   it("returns selected plant", () => {
@@ -142,5 +136,47 @@ describe("getPlants()", () => {
     const props = mapStateToProps(state);
     expect(props.cameraCalibrationData).toEqual(
       expect.objectContaining({ rotation: "15" }));
+  });
+});
+
+describe("botSize()", () => {
+  it("returns default bot size", () => {
+    const state = fakeState();
+    expect(botSize(state)).toEqual({
+      x: { value: 2900, isDefault: true },
+      y: { value: 1400, isDefault: true },
+    });
+  });
+
+  it("returns map setting bot size", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.map_size_x = 1000;
+    webAppConfig.body.map_size_y = 1000;
+    state.resources = buildResourceIndex([fakeDevice(), webAppConfig]);
+    expect(botSize(state)).toEqual({
+      x: { value: 1000, isDefault: true },
+      y: { value: 1000, isDefault: true },
+    });
+  });
+
+  it("returns axis length setting bot size", () => {
+    const state = fakeState();
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_step_per_mm_x = 2;
+    firmwareConfig.body.movement_step_per_mm_y = 4;
+    firmwareConfig.body.movement_stop_at_max_x = 1;
+    firmwareConfig.body.movement_stop_at_max_y = 1;
+    firmwareConfig.body.movement_axis_nr_steps_x = 100;
+    firmwareConfig.body.movement_axis_nr_steps_y = 100;
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.map_size_x = 1000;
+    webAppConfig.body.map_size_y = 1000;
+    state.resources = buildResourceIndex([
+      fakeDevice(), firmwareConfig, webAppConfig]);
+    expect(mapStateToProps(state).botSize).toEqual({
+      x: { value: 50, isDefault: false },
+      y: { value: 25, isDefault: false },
+    });
   });
 });

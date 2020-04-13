@@ -4,11 +4,14 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import * as React from "react";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
   EditPointLocation, EditPointLocationProps,
   EditPointRadius, EditPointRadiusProps,
-  EditPointColor, EditPointColorProps, updatePoint, EditPointName, EditPointNameProps,
+  EditPointColor, EditPointColorProps, updatePoint, EditPointName,
+  EditPointNameProps,
+  AdditionalWeedProperties,
+  EditPointPropertiesProps,
 } from "../point_edit_actions";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";
@@ -87,5 +90,32 @@ describe("<EditPointColor />", () => {
     const wrapper = shallow(<EditPointColor {...p} />);
     wrapper.find("ColorPicker").first().simulate("change", "blue");
     expect(p.updatePoint).toHaveBeenCalledWith({ meta: { color: "blue" } });
+  });
+});
+
+describe("<AdditionalWeedProperties />", () => {
+  const fakeProps = (): EditPointPropertiesProps => ({
+    point: fakePoint(),
+    updatePoint: jest.fn(),
+  });
+
+  it("renders unknown source", () => {
+    const p = fakeProps();
+    p.point.body.meta = {
+      meta_key: "meta value", created_by: undefined, key: undefined
+    };
+    const wrapper = mount(<AdditionalWeedProperties {...p} />);
+    expect(wrapper.text()).toContain("unknown");
+    expect(wrapper.text()).toContain("meta value");
+  });
+
+  it("changes method", () => {
+    const p = fakeProps();
+    p.point.body.meta = { removal_method: "automatic" };
+    const wrapper = shallow(<AdditionalWeedProperties {...p} />);
+    wrapper.find("input").last().simulate("change");
+    expect(p.updatePoint).toHaveBeenCalledWith({
+      meta: { removal_method: "manual" }
+    });
   });
 });

@@ -19,13 +19,15 @@ import {
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { Props } from "./interfaces";
-import { TaggedPlant } from "./map/interfaces";
+import { TaggedPlant, BotSize } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString, uniq, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import { getFirmwareConfig } from "../resources/getters";
 import { calcMicrostepsPerMm } from "../controls/move/direction_axes_props";
+import { getBotSize } from "./map/util";
+import { getDefaultAxisLength } from ".";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -61,12 +63,6 @@ export function mapStateToProps(props: Everything): Props {
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
   const firmwareSettings = fwConfig || mcu_params;
-
-  const fw = firmwareSettings;
-  const stepsPerMmXY = {
-    x: calcMicrostepsPerMm(fw.movement_step_per_mm_x, fw.movement_microsteps_x),
-    y: calcMicrostepsPerMm(fw.movement_step_per_mm_y, fw.movement_microsteps_y),
-  };
 
   const mountedToolId =
     getDeviceAccountSettings(props.resources.index).body.mounted_tool_id;
@@ -122,7 +118,7 @@ export function mapStateToProps(props: Everything): Props {
     plants,
     botLocationData: validBotLocationData(props.bot.hardware.location_data),
     botMcuParams: firmwareSettings,
-    stepsPerMmXY,
+    botSize: botSize(props),
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,
@@ -136,3 +132,19 @@ export function mapStateToProps(props: Everything): Props {
     mountedToolName,
   };
 }
+
+export const botSize = (props: Everything): BotSize => {
+  const getConfigValue = getWebAppConfigValue(() => props);
+  const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
+  const { mcu_params } = props.bot.hardware;
+  const firmwareSettings = fwConfig || mcu_params;
+  const fw = firmwareSettings;
+  const stepsPerMmXY = {
+    x: calcMicrostepsPerMm(fw.movement_step_per_mm_x, fw.movement_microsteps_x),
+    y: calcMicrostepsPerMm(fw.movement_step_per_mm_y, fw.movement_microsteps_y),
+  };
+  return getBotSize(
+    firmwareSettings,
+    stepsPerMmXY,
+    getDefaultAxisLength(getConfigValue));
+};

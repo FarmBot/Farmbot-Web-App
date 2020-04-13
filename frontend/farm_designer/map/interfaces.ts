@@ -5,7 +5,9 @@ import {
   TaggedWeedPointer,
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
-import { BotPosition, BotLocationData } from "../../devices/interfaces";
+import {
+  BotPosition, BotLocationData, ShouldDisplay,
+} from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
@@ -48,6 +50,7 @@ export interface GardenMapLegendProps {
   imageAgeInfo: { newestDate: string, toOldest: number };
   gardenId?: number;
   className?: string;
+  shouldDisplay: ShouldDisplay;
 }
 
 export type MapTransformProps = {

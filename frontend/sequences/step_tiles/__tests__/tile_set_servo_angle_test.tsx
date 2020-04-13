@@ -10,6 +10,7 @@ import { SetServoAngle } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<TileSetServoAngle/>", () => {
   const currentStep: SetServoAngle = {
@@ -23,7 +24,7 @@ describe("<TileSetServoAngle/>", () => {
   const fakeProps = (): StepParams => ({
     currentSequence: fakeSequence(),
     currentStep: currentStep,
-    dispatch: jest.fn((fn: Function) => typeof fn === "function" && fn()),
+    dispatch: mockDispatch(),
     index: 0,
     resources: emptyState().index,
     confirmStepDeletion: false,

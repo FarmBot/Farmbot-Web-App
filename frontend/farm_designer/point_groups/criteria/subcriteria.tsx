@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "../../../i18next_wrapper";
-import { capitalize, uniq } from "lodash";
+import { capitalize, uniq, some, isEqual } from "lodash";
 import {
   NumberLtGtInput,
   toggleAndEditEqCriteria,
@@ -13,20 +13,54 @@ import {
   SubCriteriaProps,
   PlantSubCriteriaProps,
   ClearCategoryProps,
+  PointSubCriteriaProps,
+  SubCriteriaSectionProps,
+  CheckboxListItem,
 } from "./interfaces";
 import { PLANT_STAGE_LIST } from "../../plants/edit_plant_status";
 import { DIRECTION_CHOICES } from "../../tools/tool_slot_edit_components";
 import { Checkbox } from "../../../ui";
+import { PointType } from "farmbot";
+
+export const SubCriteriaSection = (props: SubCriteriaSectionProps) => {
+  const { group, dispatch, disabled } = props;
+  const pointTypes = props.pointerTypes.sort();
+  if (pointTypes.length > 1 &&
+    !isEqual(pointTypes, ["GenericPointer", "Weed"])) {
+    return <div className={"criteria-checkboxes"} />;
+  }
+  switch (pointTypes[0]) {
+    case "Plant":
+      return <PlantCriteria
+        disabled={disabled}
+        group={group} dispatch={dispatch} slugs={props.slugs} />;
+    case "GenericPointer":
+      return <PointCriteria
+        disabled={disabled}
+        group={group} dispatch={dispatch} />;
+    case "Weed":
+      return <WeedCriteria
+        disabled={disabled}
+        group={group} dispatch={dispatch} />;
+    case "ToolSlot":
+      return <ToolCriteria
+        disabled={disabled}
+        group={group} dispatch={dispatch} />;
+    default:
+      return <div className={"criteria-checkboxes"} />;
+  }
+};
 
 /** "All" (any) checkbox to show or choose state of criteria subcategory. */
-const ClearCategory = (props: ClearCategoryProps) => {
-  const { group, criteriaCategories, criteriaKey, dispatch } = props;
+export const ClearCategory = (props: ClearCategoryProps) => {
+  const { group, criteriaCategories, criteriaKeys, dispatch } = props;
   const all =
-    !criteriaHasKey(group.body.criteria, criteriaCategories, criteriaKey);
+    !some(criteriaKeys.map(criteriaKey =>
+      criteriaHasKey(group.body.criteria, criteriaCategories, criteriaKey)));
   return <div className="criteria-checkbox-list-item">
     <Checkbox
       onChange={() =>
-        dispatch(clearCriteriaField(group, criteriaCategories, criteriaKey))}
+        dispatch(clearCriteriaField(group, criteriaCategories, criteriaKeys))}
       checked={all}
       disabled={all}
       title={t("clear selections")}
@@ -42,13 +76,14 @@ export const CheckboxList =
     const selected = eqCriteriaSelected<T>(criteria);
     const toggle = toggleAndEditEqCriteria;
     return <div className={"criteria-checkbox-list"}>
-      {props.list.map(({ label, value }: { label: string, value: T }, index) =>
+      {props.list.map(({ label, value, color }: CheckboxListItem<T>, index) =>
         <div className="criteria-checkbox-list-item" key={index}>
           <Checkbox
             onChange={() => props.dispatch(toggle<T>(
               props.group, props.criteriaKey, value, props.pointerType))}
             checked={selected(props.criteriaKey, value)}
             title={t(label)}
+            color={color}
             disabled={props.disabled} />
           <p>{label}</p>
         </div>)}
@@ -71,7 +106,7 @@ const PlantStage = (props: SubCriteriaProps) =>
     <ClearCategory
       group={props.group}
       criteriaCategories={["string_eq"]}
-      criteriaKey={"plant_stage"}
+      criteriaKeys={["plant_stage"]}
       dispatch={props.dispatch} />
     <CheckboxList<string>
       disabled={props.disabled}
@@ -89,7 +124,7 @@ const PlantType = (props: PlantSubCriteriaProps) =>
     <ClearCategory
       group={props.group}
       criteriaCategories={["string_eq"]}
-      criteriaKey={"openfarm_slug"}
+      criteriaKeys={["openfarm_slug"]}
       dispatch={props.dispatch} />
     <CheckboxList<string>
       disabled={props.disabled}
@@ -103,49 +138,40 @@ const PlantType = (props: PlantSubCriteriaProps) =>
           ({ label: capitalize(slug).replace("-", " "), value: slug }))} />
   </div>;
 
-/** Criteria specific to map points. */
-export const PointCriteria = (props: SubCriteriaProps) => {
+/** Criteria specific to weeds. */
+export const WeedCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
-  const commonProps = { group, dispatch, disabled };
-  return <div className={"point-criteria-options"}>
-    <PointType {...commonProps} />
+  const pointerType: PointType = "Weed";
+  const commonProps = { group, dispatch, disabled, pointerType };
+  return <div className={"weed-criteria-options"}>
     <PointSource {...commonProps} />
     <Color {...commonProps} />
     <Radius {...commonProps} />
   </div>;
 };
 
-const PointType = (props: SubCriteriaProps) =>
-  <div className={"point-type-criteria"}>
-    <p className={"category"}>{t("Type")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKey={"meta.type"}
-      dispatch={props.dispatch} />
-    <CheckboxList
-      disabled={props.disabled}
-      pointerType={"GenericPointer"}
-      criteriaKey={"meta.type"}
-      group={props.group}
-      dispatch={props.dispatch}
-      list={[
-        { label: t("Weeds"), value: "weed" },
-        { label: t("Points"), value: "point" },
-      ]} />
+/** Criteria specific to map points. */
+export const PointCriteria = (props: SubCriteriaProps) => {
+  const { group, dispatch, disabled } = props;
+  const pointerType: PointType = "GenericPointer";
+  const commonProps = { group, dispatch, disabled, pointerType };
+  return <div className={"point-criteria-options"}>
+    <Color {...commonProps} />
+    <Radius {...commonProps} />
   </div>;
+};
 
-const PointSource = (props: SubCriteriaProps) =>
+const PointSource = (props: PointSubCriteriaProps) =>
   <div className={"point-source-criteria"}>
     <p className={"category"}>{t("Source")}</p>
     <ClearCategory
       group={props.group}
       criteriaCategories={["string_eq"]}
-      criteriaKey={"meta.created_by"}
+      criteriaKeys={["meta.created_by"]}
       dispatch={props.dispatch} />
     <CheckboxList
       disabled={props.disabled}
-      pointerType={"GenericPointer"}
+      pointerType={props.pointerType}
       criteriaKey={"meta.created_by"}
       group={props.group}
       dispatch={props.dispatch}
@@ -155,13 +181,13 @@ const PointSource = (props: SubCriteriaProps) =>
       ]} />
   </div>;
 
-const Radius = (props: SubCriteriaProps) =>
+const Radius = (props: PointSubCriteriaProps) =>
   <div className={"radius-criteria"}>
     <p className={"category"}>{t("Radius")}</p>
     <ClearCategory
       group={props.group}
       criteriaCategories={["number_gt", "number_lt"]}
-      criteriaKey={"radius"}
+      criteriaKeys={["radius"]}
       dispatch={props.dispatch} />
     <div className={"lt-gt-criteria"}>
       <NumberLtGtInput
@@ -170,35 +196,34 @@ const Radius = (props: SubCriteriaProps) =>
         inputWidth={3}
         labelWidth={2}
         group={props.group}
-        pointerType={"GenericPointer"}
+        pointerType={props.pointerType}
         dispatch={props.dispatch} />
     </div>
   </div>;
 
-const Color = (props: SubCriteriaProps) =>
+const Color = (props: PointSubCriteriaProps) =>
   <div className={"color-criteria"}>
     <p className={"category"}>{t("Color")}</p>
     <ClearCategory
       group={props.group}
       criteriaCategories={["string_eq"]}
-      criteriaKey={"meta.color"}
+      criteriaKeys={["meta.color"]}
       dispatch={props.dispatch} />
     <CheckboxList
       disabled={props.disabled}
-      pointerType={"GenericPointer"}
+      pointerType={props.pointerType}
       criteriaKey={"meta.color"}
       group={props.group}
       dispatch={props.dispatch}
       list={[
-        { label: t("Green"), value: "green" },
-        { label: t("Red"), value: "red" },
-        { label: t("Cyan"), value: "cyan" },
-        { label: t("Blue"), value: "blue" },
-        { label: t("Yellow"), value: "yellow" },
-        { label: t("Orange"), value: "orange" },
-        { label: t("Purple"), value: "purple" },
-        { label: t("Pink"), value: "pink" },
-        { label: t("Gray"), value: "gray" },
+        { label: t("Green"), value: "green", color: "green" },
+        { label: t("Red"), value: "red", color: "red" },
+        { label: t("Blue"), value: "blue", color: "blue" },
+        { label: t("Yellow"), value: "yellow", color: "yellow" },
+        { label: t("Orange"), value: "orange", color: "orange" },
+        { label: t("Purple"), value: "purple", color: "purple" },
+        { label: t("Pink"), value: "pink", color: "pink" },
+        { label: t("Gray"), value: "gray", color: "gray" },
       ]} />
   </div>;
 
@@ -217,7 +242,7 @@ const PulloutDirection = (props: SubCriteriaProps) =>
     <ClearCategory
       group={props.group}
       criteriaCategories={["number_eq"]}
-      criteriaKey={"pullout_direction"}
+      criteriaKeys={["pullout_direction"]}
       dispatch={props.dispatch} />
     <CheckboxList<number>
       disabled={props.disabled}

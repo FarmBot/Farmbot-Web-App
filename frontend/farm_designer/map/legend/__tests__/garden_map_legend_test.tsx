@@ -46,6 +46,7 @@ describe("<GardenMapLegend />", () => {
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
+    shouldDisplay: () => true,
   });
 
   it("renders", () => {

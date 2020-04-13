@@ -10,6 +10,7 @@ import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
 import { t } from "../../../i18next_wrapper";
+import { Feature } from "../../../devices/interfaces";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -81,7 +82,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
-    {DevSettings.futureFeaturesEnabled() &&
+    {props.shouldDisplay(Feature.criteria_groups) &&
       <LayerToggle
         value={props.showZones}
         label={t("areas?")}

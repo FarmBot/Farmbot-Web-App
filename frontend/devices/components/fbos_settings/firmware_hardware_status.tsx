@@ -8,6 +8,8 @@ import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
 import { Alert } from "farmbot";
 import { isFwHardwareValue, boardType } from "../firmware_hardware_support";
+import { Help } from "../../../ui";
+import { ToolTips } from "../../../constants";
 
 export interface FirmwareHardwareStatusIconProps {
   firmwareHardware: string | undefined;
@@ -59,10 +61,13 @@ export const FirmwareHardwareStatusDetails =
   (props: FirmwareHardwareStatusDetailsProps) => {
     return <div className="firmware-hardware-status-details">
       <label>{t("Web App")}</label>
+      <Help text={ToolTips.FIRMWARE_VALUE_API} />
       <p>{lookup(props.apiFirmwareValue) || t("unknown")}</p>
       <label>{t("FarmBot OS")}</label>
+      <Help text={ToolTips.FIRMWARE_VALUE_FBOS} />
       <p>{lookup(props.botFirmwareValue) || t("unknown")}</p>
       <label>{t("Arduino/Farmduino")}</label>
+      <Help text={ToolTips.FIRMWARE_VALUE_MCU} />
       <p>{lookup(props.mcuFirmwareValue) || t("unknown")}</p>
       <FirmwareAlerts
         alerts={props.alerts}

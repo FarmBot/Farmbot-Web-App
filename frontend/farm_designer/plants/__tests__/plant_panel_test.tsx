@@ -48,9 +48,12 @@ describe("<PlantPanel/>", () => {
 
   it("renders: editing", () => {
     const p = fakeProps();
+    p.info.meta = { meta_key: "meta value", gridId: "1", key: undefined };
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
+    expect(txt).toContain("meta value");
+    expect(txt).not.toContain("gridId");
     const x = wrapper.find("input").at(1).props().value;
     const y = wrapper.find("input").at(2).props().value;
     expect(x).toEqual(12);
@@ -59,6 +62,7 @@ describe("<PlantPanel/>", () => {
 
   it("calls destroy", () => {
     const p = fakeProps();
+    p.info.meta = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 2, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
