@@ -42,10 +42,12 @@ describe("<EditToolSlot />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    p.findToolSlot = () => fakeToolSlot();
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.meta = { meta_key: "meta value" };
+    p.findToolSlot = () => toolSlot;
     const wrapper = mount(<EditToolSlot {...p} />);
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "direction", "gantry-mounted",
+      "direction", "gantry-mounted", "meta value",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

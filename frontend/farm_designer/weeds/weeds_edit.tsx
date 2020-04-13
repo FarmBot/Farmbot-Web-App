@@ -10,7 +10,7 @@ import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../../resources/selectors";
 import { Panel } from "../panel_header";
 import {
-  EditPointProperties, PointActions, updatePoint,
+  EditPointProperties, PointActions, updatePoint, AdditionalWeedProperties,
 } from "../points/point_edit_actions";
 import { Actions } from "../../constants";
 
@@ -49,6 +49,8 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
         {this.point
           ? <div className={"weed-panel-content-wrapper"}>
             <EditPointProperties point={this.point}
+              updatePoint={updatePoint(this.point, this.props.dispatch)} />
+            <AdditionalWeedProperties point={this.point}
               updatePoint={updatePoint(this.point, this.props.dispatch)} />
             <PointActions
               x={this.point.body.x}

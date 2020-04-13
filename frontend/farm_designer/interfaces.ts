@@ -16,7 +16,7 @@ import {
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
-  BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay,
+  BotPosition, BotLocationData, ShouldDisplay,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
@@ -73,7 +73,7 @@ export interface Props {
   crops: TaggedCrop[];
   botLocationData: BotLocationData;
   botMcuParams: McuParams;
-  stepsPerMmXY: StepsPerMmXY;
+  botSize: BotSize;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
   latestImages: TaggedImage[];

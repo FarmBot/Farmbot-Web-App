@@ -1,5 +1,6 @@
 jest.mock("../../../api/crud", () => ({
   init: jest.fn(() => ({ payload: { uuid: "???" } })),
+  overwrite: jest.fn(),
   save: jest.fn()
 }));
 
@@ -10,18 +11,19 @@ jest.mock("../../../resources/selectors", () => ({
   selectAllRegimens: jest.fn()
 }));
 
-import { createGroup } from "../actions";
-import { init, save } from "../../../api/crud";
+import { createGroup, overwriteGroup } from "../actions";
+import { init, save, overwrite } from "../../../api/crud";
 import { history } from "../../../history";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakePoint, fakePlant, fakeToolSlot,
+  fakePoint, fakePlant, fakeToolSlot, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { DeepPartial } from "redux";
 import { Everything } from "../../../interfaces";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
+import { cloneDeep } from "lodash";
 
 describe("group action creators and thunks", () => {
   it("creates groups", async () => {
@@ -42,5 +44,16 @@ describe("group action creators and thunks", () => {
     expect(save).toHaveBeenCalledWith("???");
     expect(history.push)
       .toHaveBeenCalledWith("/app/designer/groups/323232332");
+  });
+});
+
+describe("overwriteGroup()", () => {
+  it("overwrites and saves", () => {
+    const group = fakePointGroup();
+    const newGroupBody = cloneDeep(group.body);
+    newGroupBody.point_ids = [1, 2, 3];
+    overwriteGroup(group, newGroupBody)(jest.fn());
+    expect(overwrite).toHaveBeenCalledWith(group, newGroupBody);
+    expect(save).toHaveBeenCalledWith(group.uuid);
   });
 });

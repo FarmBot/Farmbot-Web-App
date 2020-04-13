@@ -1,4 +1,7 @@
-jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
+}));
 
 let mockDev = false;
 jest.mock("../../../account/dev/dev_support", () => ({

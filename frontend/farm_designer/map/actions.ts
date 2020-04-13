@@ -1,6 +1,6 @@
 import { MovePlantProps, DraggableEvent } from "../interfaces";
 import { defensiveClone } from "../../util";
-import { edit, overwrite } from "../../api/crud";
+import { edit } from "../../api/crud";
 import { history } from "../../history";
 import { Actions } from "../../constants";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
@@ -12,6 +12,7 @@ import { TaggedPoint } from "farmbot";
 import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
+import { overwriteGroup } from "../point_groups/actions";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -33,23 +34,24 @@ export const setHoveredPlant = (plantUUID: string | undefined, icon = "") => ({
 });
 
 const addOrRemoveFromGroup =
-  (clickedPlantUuid: UUID, resources: ResourceIndex) => {
-    const group = findGroupFromUrl(selectAllPointGroups(resources));
-    const point =
-      resources.references[clickedPlantUuid] as TaggedPoint | undefined;
-    if (group && point?.body.id) {
-      type Body = (typeof group)["body"];
-      const nextGroup: Body = ({
-        ...group.body,
-        point_ids: [...group.body.point_ids.filter(p => p != point.body.id)]
-      });
-      if (!group.body.point_ids.includes(point.body.id)) {
-        nextGroup.point_ids.push(point.body.id);
+  (clickedPlantUuid: UUID, resources: ResourceIndex) =>
+    (dispatch: Function) => {
+      const group = findGroupFromUrl(selectAllPointGroups(resources));
+      const point =
+        resources.references[clickedPlantUuid] as TaggedPoint | undefined;
+      if (group && point?.body.id) {
+        type Body = (typeof group)["body"];
+        const nextGroup: Body = ({
+          ...group.body,
+          point_ids: [...group.body.point_ids.filter(p => p != point.body.id)]
+        });
+        if (!group.body.point_ids.includes(point.body.id)) {
+          nextGroup.point_ids.push(point.body.id);
+        }
+        nextGroup.point_ids = uniq(nextGroup.point_ids);
+        dispatch(overwriteGroup(group, nextGroup));
       }
-      nextGroup.point_ids = uniq(nextGroup.point_ids);
-      return overwrite(group, nextGroup);
-    }
-  };
+    };
 
 const addOrRemoveFromSelection =
   (clickedPointUuid: UUID, selectedPoints: UUID[] | undefined) => {

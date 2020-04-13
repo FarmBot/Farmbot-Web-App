@@ -1,20 +1,25 @@
 import * as React from "react";
-import { Row, Col, FBSelect, DropDownItem } from "../../../ui";
+import { Row, Col, FBSelect, DropDownItem, Checkbox } from "../../../ui";
 import {
   AddEqCriteria, editCriteria, AddNumberCriteria,
   editGtLtCriteriaField,
   removeEqCriteriaValue,
   clearCriteriaField,
+  dayCriteriaEmpty,
+  ClearCategory,
 } from ".";
 import {
-  EqCriteriaSelectionProps, NumberCriteriaProps,
-  CriteriaSelectionProps, LocationSelectionProps,
+  EqCriteriaSelectionProps,
+  NumberCriteriaProps,
+  LocationSelectionProps,
   NumberLtGtInputProps,
   PointGroupCriteria,
+  DaySelectionProps,
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { Actions } from "../../../constants";
+import { spaceSelected } from "../../map/layers/zones/zones";
 
 /** Add and view string or number equal criteria. */
 export class EqCriteriaSelection<T extends string | number>
@@ -39,7 +44,7 @@ export class EqCriteriaSelection<T extends string | number>
                 </Col>
                 <Col xs={2}>
                   <button className="fb-button red"
-                    title={t("remove criteria")}
+                    title={t("remove filter")}
                     onClick={() => dispatch(removeEqCriteriaValue(
                       group, eqCriteria, criteriaKey, key, value))}>
                     <i className="fa fa-minus" />
@@ -73,7 +78,7 @@ export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
               <button className="fb-button red"
                 title={t("remove number criteria")}
                 onClick={() => props.dispatch(clearCriteriaField(
-                  props.group, [props.criteriaKey], key))}>
+                  props.group, [props.criteriaKey], [key]))}>
                 <i className="fa fa-minus" />
               </button>
             </Col>
@@ -88,34 +93,59 @@ const DAY_OPERATOR_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
 });
 
 /** Edit and view day criteria. */
-export const DaySelection = (props: CriteriaSelectionProps) => {
-  const { group, criteria, dispatch } = props;
+export const DaySelection = (props: DaySelectionProps) => {
+  const { group, criteria, dispatch, advanced } = props;
   const dayCriteria = criteria.day;
+  const noDayCriteria = !advanced &&
+    dayCriteriaEmpty(dayCriteria) && !props.dayChanged;
   return <div className="day-criteria">
-    <label>{t("Age selection")}</label>
+    {advanced
+      ? <label>{t("Age")}</label>
+      : <p className={"category"}>{t("Age")}</p>}
+    {!advanced &&
+      <div className="criteria-checkbox-list-item">
+        <Checkbox
+          onChange={() => {
+            dispatch(editCriteria(group, { day: { op: "<", days_ago: 0 } }));
+            props.changeDay(false);
+          }}
+          checked={noDayCriteria}
+          disabled={noDayCriteria}
+          title={t("clear age selection")}
+          customDisabledText={t("age selection empty")} />
+        <p>{t("all")}</p>
+      </div>}
     <Row>
       <Col xs={5}>
         <FBSelect key={JSON.stringify(criteria)}
           list={[DAY_OPERATOR_DDI_LOOKUP()["<"],
           DAY_OPERATOR_DDI_LOOKUP()[">"]]}
-          selectedItem={DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
-          onChange={ddi => dispatch(editCriteria(group, {
-            day: {
-              days_ago: dayCriteria.days_ago,
-              op: ddi.value as PointGroupCriteria["day"]["op"]
-            }
-          }))} />
+          selectedItem={noDayCriteria
+            ? { label: t("Select one"), value: "" }
+            : DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
+          onChange={ddi => {
+            dispatch(editCriteria(group, {
+              day: {
+                days_ago: dayCriteria.days_ago,
+                op: ddi.value as PointGroupCriteria["day"]["op"]
+              }
+            }));
+            props.changeDay(true);
+          }} />
       </Col>
       <Col xs={3}>
-        <input type="number" value={dayCriteria.days_ago} name="days_ago"
+        <input type="number" name="days_ago"
+          value={noDayCriteria ? "" : dayCriteria.days_ago}
+          disabled={noDayCriteria}
           onChange={e => {
             const { op } = dayCriteria;
             const days_ago = parseInt(e.currentTarget.value);
             dispatch(editCriteria(group, { day: { days_ago, op } }));
+            props.changeDay(true);
           }} />
       </Col>
       <Col xs={4}>
-        <p>{t("days old")}</p>
+        <p className={"days-old-text"}>{t("days old")}</p>
       </Col>
     </Row>
   </div>;
@@ -160,7 +190,17 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
 /** Form inputs to define a 2D group criteria area. */
 export const LocationSelection = (props: LocationSelectionProps) =>
   <div className="location-criteria">
-    <label>{t("Location selection")}</label>
+    <p className={"category"}>{t("Location")}</p>
+    <ClearCategory
+      group={props.group}
+      criteriaCategories={["number_lt", "number_gt"]}
+      criteriaKeys={["x", "y"]}
+      dispatch={props.dispatch} />
+    {!spaceSelected(props.group, props.botSize) &&
+      <div className="location-selection-warning">
+        <i className="fa fa-exclamation-triangle" />
+        <p>{t("Invalid selection.")}</p>
+      </div>}
     {["x", "y"].map((axis: "x" | "y") =>
       <NumberLtGtInput
         key={axis}
@@ -170,7 +210,7 @@ export const LocationSelection = (props: LocationSelectionProps) =>
     <div className={"edit-in-map"}>
       <ToggleButton
         title={props.editGroupAreaInMap
-          ? t("map boxes will change location criteria")
+          ? t("map boxes will change location filter")
           : t("map boxes will manually add plants")}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         toggleValue={props.editGroupAreaInMap}

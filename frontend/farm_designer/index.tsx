@@ -11,8 +11,7 @@ import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last, isFinite } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import {
-  getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName,
-  getMapPadding,
+  round, getPanelStatus, MapPanelStatus, mapPanelClassName, getMapPadding,
 } from "./map/util";
 import {
   calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex,
@@ -126,11 +125,6 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       zoom_level
     } = this.state;
 
-    const botSize = getBotSize(
-      this.props.botMcuParams,
-      this.props.stepsPerMmXY,
-      getDefaultAxisLength(this.props.getConfigValue));
-
     const stopAtHome = {
       x: !!this.props.botMcuParams.movement_stop_at_home_x,
       y: !!this.props.botMcuParams.movement_stop_at_home_y
@@ -167,6 +161,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
+        shouldDisplay={this.props.shouldDisplay}
         imageAgeInfo={imageAgeInfo} />
 
       <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
@@ -200,12 +195,12 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           allPoints={this.props.allPoints}
           toolSlots={this.props.toolSlots}
           botLocationData={this.props.botLocationData}
-          botSize={botSize}
+          botSize={this.props.botSize}
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
           botOriginQuadrant={this.getBotOriginQuadrant()}
-          gridSize={getGridSize(this.props.getConfigValue, botSize)}
+          gridSize={getGridSize(this.props.getConfigValue, this.props.botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
           eStopStatus={this.props.eStopStatus}

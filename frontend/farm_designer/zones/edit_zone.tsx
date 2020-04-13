@@ -11,16 +11,20 @@ import { selectAllPointGroups } from "../../resources/selectors";
 import { TaggedPointGroup } from "farmbot";
 import { edit, save } from "../../api/crud";
 import { LocationSelection } from "../point_groups/criteria";
+import { BotSize } from "../map/interfaces";
+import { botSize } from "../state_to_props";
 
 export interface EditZoneProps {
   dispatch: Function;
   findZone(id: number): TaggedPointGroup | undefined;
+  botSize: BotSize;
 }
 
 export const mapStateToProps = (props: Everything): EditZoneProps => ({
   dispatch: props.dispatch,
   findZone: id => selectAllPointGroups(props.resources.index)
     .filter(g => g.body.id == id)[0],
+  botSize: botSize(props),
 });
 
 export class RawEditZone extends React.Component<EditZoneProps, {}> {
@@ -54,6 +58,7 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
               group={zone}
               criteria={zone.body.criteria}
               dispatch={this.props.dispatch}
+              botSize={this.props.botSize}
               editGroupAreaInMap={true} />
           </div>
           : <span>{t("Redirecting")}...</span>}

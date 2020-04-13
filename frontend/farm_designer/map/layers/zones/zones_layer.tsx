@@ -23,7 +23,6 @@ export function ZonesLayer(props: ZonesLayerProps) {
     ? { cursor: "pointer" }
     : { pointerEvents: "none" }} onMouseDown={props.startDrag}>
     {groups.map(group => visible(group) &&
-      getZoneType(group) === ZoneType.area &&
       <Zones2D {...commonProps} key={group.uuid} group={group} />)}
     {groups.map(group => visible(group) &&
       getZoneType(group) === ZoneType.lines &&

@@ -1424,6 +1424,11 @@ ul {
   button {
     float: none !important;
   }
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    font-size: 1.3rem;
+  }
 }
 
 .problem-alert {

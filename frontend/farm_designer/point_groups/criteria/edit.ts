@@ -1,11 +1,13 @@
-import { overwrite, save } from "../../../api/crud";
 import { TaggedPointGroup } from "farmbot";
-import { cloneDeep, isNumber } from "lodash";
+import { cloneDeep, isNumber, isUndefined } from "lodash";
 import { SelectionBoxData } from "../../map/background";
 import {
   PointGroupCriteria, POINTER_TYPES, EqCriteria, PointerType,
   StrAndNumCriteriaKeys,
 } from "./interfaces";
+import { error } from "../../../toast/toast";
+import { t } from "../../../i18next_wrapper";
+import { overwriteGroup } from "../actions";
 
 /** Update and save group criteria. */
 export const editCriteria =
@@ -18,8 +20,7 @@ export const editCriteria =
         number_gt: update.number_gt || group.body.criteria.number_gt,
         number_lt: update.number_lt || group.body.criteria.number_lt,
       };
-      dispatch(overwrite(group, { ...group.body, criteria }));
-      dispatch(save(group.uuid));
+      dispatch(overwriteGroup(group, { ...group.body, criteria }));
     };
 
 /** Toggle string or number equal criteria. */
@@ -64,29 +65,28 @@ export const toggleAndEditEqCriteria = <T extends string | number>(
   };
 
 /** Clear incompatible criteria. */
-const clearSubCriteria = (
+export const clearSubCriteria = (
   pointerTypes: PointerType[],
   tempCriteria: PointGroupCriteria,
 ) => {
   const toggleStrEq = toggleEqCriteria<string>(tempCriteria.string_eq, "off");
   const toggleNumEq = toggleEqCriteria<number>(tempCriteria.number_eq, "off");
+  const toggleStrEqMapper = (key: string) =>
+    tempCriteria.string_eq[key]?.map(value => toggleStrEq(key, value));
   if (pointerTypes.includes("Plant")) {
-    Object.entries(tempCriteria.string_eq).map(([key, values]) =>
-      ["openfarm_slug", "plant_stage"].includes(key)
-      && values?.map(v => toggleStrEq(key, v)));
-    toggleStrEq("pointer_type", "Plant");
+    ["openfarm_slug", "plant_stage"].map(toggleStrEqMapper);
   }
-  if (pointerTypes.includes("GenericPointer")) {
-    Object.entries(tempCriteria.string_eq).map(([key, values]) =>
-      key.includes("meta") && values?.map(v => toggleStrEq(key, v)));
+  if (pointerTypes.includes("Weed")) {
+    ["meta.created_by"].map(toggleStrEqMapper);
+  }
+  if (pointerTypes.includes("GenericPointer") && pointerTypes.includes("Weed")) {
+    ["meta.color"].map(toggleStrEqMapper);
     delete tempCriteria.number_lt.radius;
     delete tempCriteria.number_gt.radius;
-    toggleStrEq("pointer_type", "GenericPointer");
   }
   if (pointerTypes.includes("ToolSlot")) {
     tempCriteria.number_eq.pullout_direction?.map(value =>
       toggleNumEq("pullout_direction", value));
-    toggleStrEq("pointer_type", "ToolSlot");
   }
 };
 
@@ -95,13 +95,14 @@ const clearSubCriteria = (
  * When removing pointer_type criteria, clear pointer_type-specific criteria.
  */
 export const togglePointTypeCriteria =
-  (group: TaggedPointGroup, pointerType: PointerType) =>
+  (group: TaggedPointGroup, pointerType: PointerType, clear = false) =>
     (dispatch: Function) => {
       const tempCriteria = cloneDeep(group.body.criteria);
-      const wasOn = tempCriteria.string_eq.pointer_type?.includes(pointerType);
       const toggle = toggleEqCriteria<string>(tempCriteria.string_eq);
+      clear && (tempCriteria.string_eq.pointer_type = []);
       toggle("pointer_type", pointerType);
-      wasOn && clearSubCriteria([pointerType], tempCriteria);
+      clearSubCriteria(
+        POINTER_TYPES.filter(x => x != pointerType), tempCriteria);
       dispatch(editCriteria(group, tempCriteria));
     };
 
@@ -109,11 +110,12 @@ export const togglePointTypeCriteria =
 export const clearCriteriaField = (
   group: TaggedPointGroup,
   categories: StrAndNumCriteriaKeys,
-  field: string,
+  fields: string[],
 ) =>
   (dispatch: Function) => {
     const tempCriteria = cloneDeep(group.body.criteria);
-    categories.map(category => delete tempCriteria[category][field]);
+    categories.map(category => fields.map(field =>
+      delete tempCriteria[category][field]));
     dispatch(editCriteria(group, tempCriteria));
   };
 
@@ -163,7 +165,23 @@ export const editGtLtCriteriaField = (
       const tempCriteria = cloneDeep(group.body.criteria);
       pointerType && clearSubCriteria(
         POINTER_TYPES.filter(x => x != pointerType), tempCriteria);
-      tempCriteria[criteriaField][criteriaKey] =
-        parseInt(e.currentTarget.value);
+      const value = e.currentTarget.value != ""
+        ? parseInt(e.currentTarget.value)
+        : undefined;
+      if (!isUndefined(value)) {
+        const ltValue = tempCriteria.number_lt[criteriaKey];
+        const gtValue = tempCriteria.number_gt[criteriaKey];
+        if (criteriaField == "number_lt" && !isUndefined(gtValue) &&
+          !(value > gtValue)) {
+          return error(t("Value must be greater than {{ num }}.",
+            { num: gtValue }));
+        }
+        if (criteriaField == "number_gt" && !isUndefined(ltValue) &&
+          !(value < ltValue)) {
+          return error(t("Value must be less than {{ num }}.",
+            { num: ltValue }));
+        }
+      }
+      tempCriteria[criteriaField][criteriaKey] = value;
       dispatch(editCriteria(group, tempCriteria));
     };
