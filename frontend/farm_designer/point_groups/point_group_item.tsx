@@ -3,10 +3,11 @@ import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import { setHoveredPlant } from "../map/actions";
 import { TaggedPointGroup, uuid, TaggedPoint } from "farmbot";
-import { overwrite } from "../../api/crud";
 import { error } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
 import { DEFAULT_WEED_ICON } from "../map/layers/weeds/garden_weed";
+import { uniq } from "lodash";
+import { overwriteGroup } from "./actions";
 
 export interface PointGroupItemProps {
   point: TaggedPoint;
@@ -17,12 +18,13 @@ export interface PointGroupItemProps {
 
 interface PointGroupItemState { icon: string; }
 
-const removePoint = (group: TaggedPointGroup, pointId: number) => {
-  type Body = (typeof group)["body"];
-  const nextGroup: Body = { ...group.body };
-  nextGroup.point_ids = nextGroup.point_ids.filter(x => x !== pointId);
-  return overwrite(group, nextGroup);
-};
+const removePoint = (group: TaggedPointGroup, pointId: number) =>
+  (dispatch: Function) => {
+    type Body = (typeof group)["body"];
+    const nextGroup: Body = { ...group.body };
+    nextGroup.point_ids = uniq(nextGroup.point_ids.filter(x => x !== pointId));
+    dispatch(overwriteGroup(group, nextGroup));
+  };
 
 export const genericPointIcon = (color: string | undefined) =>
   `<svg xmlns='http://www.w3.org/2000/svg'
@@ -65,7 +67,7 @@ export class PointGroupItem
 
   click = () => {
     if (this.criteriaIcon) {
-      return error(t("Cannot remove points selected by criteria."));
+      return error(t("Cannot remove points selected by filters."));
     }
     this.props.dispatch(
       removePoint(this.props.group, this.props.point.body.id || 0));
@@ -115,11 +117,7 @@ export class PointGroupItem
           width={32}
           height={32} />}
       <img
-        style={{
-          border: this.criteriaIcon ? "1px solid gray" : "none",
-          borderRadius: "5px",
-          background: this.props.hovered ? "lightgray" : "none",
-        }}
+        style={{ background: this.props.hovered ? "lightgray" : "none" }}
         src={this.initIcon}
         onLoad={this.maybeGetCachedIcon}
         width={32}

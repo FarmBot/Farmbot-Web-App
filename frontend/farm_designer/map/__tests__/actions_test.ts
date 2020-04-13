@@ -4,10 +4,9 @@ jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  overwrite: jest.fn(),
-}));
+jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
+
+jest.mock("../../point_groups/actions", () => ({ overwriteGroup: jest.fn() }));
 
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 const mockGroup = fakePointGroup();
@@ -22,7 +21,7 @@ import {
 } from "../actions";
 import { MovePlantProps } from "../../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { edit, overwrite } from "../../../api/crud";
+import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { DEFAULT_ICON, svgToUrl } from "../../../open_farm/icons";
 import { history } from "../../../history";
@@ -31,6 +30,8 @@ import { GetState } from "../../../redux/interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { overwriteGroup } from "../../point_groups/actions";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("movePlant", () => {
   it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
@@ -128,12 +129,13 @@ describe("clickMapPlant", () => {
     const plant = fakePlant();
     plant.body.id = 23;
     state.resources = buildResourceIndex([plant]);
-    const dispatch = jest.fn();
+    const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
-    expect(overwrite).toHaveBeenCalledWith(mockGroup, expect.objectContaining({
-      name: "Fake", point_ids: [1, 23]
-    }));
+    expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
+      expect.objectContaining({
+        name: "Fake", point_ids: [1, 23]
+      }));
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
@@ -142,10 +144,10 @@ describe("clickMapPlant", () => {
     mockGroup.body.point_ids = [1];
     const state = fakeState();
     state.resources = buildResourceIndex([]);
-    const dispatch = jest.fn();
+    const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant("missing plant uuid", "fakeIcon")(dispatch, getState);
-    expect(overwrite).not.toHaveBeenCalled();
+    expect(overwriteGroup).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
@@ -156,12 +158,13 @@ describe("clickMapPlant", () => {
     const plant = fakePlant();
     plant.body.id = 2;
     state.resources = buildResourceIndex([plant]);
-    const dispatch = jest.fn();
+    const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
-    expect(overwrite).toHaveBeenCalledWith(mockGroup, expect.objectContaining({
-      name: "Fake", point_ids: [1]
-    }));
+    expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
+      expect.objectContaining({
+        name: "Fake", point_ids: [1]
+      }));
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 

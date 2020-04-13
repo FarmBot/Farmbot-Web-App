@@ -2,6 +2,27 @@ import { trim } from "./util";
 
 export namespace ToolTips {
 
+  // Farm Designer: Groups
+  export const SORT_DESCRIPTION =
+    trim(`When executing a sequence over a Group of locations, FarmBot will
+    travel to each group member in the order of the chosen sort method.
+    If the random option is chosen, FarmBot will travel in a random order
+    every time, so the ordering shown below will only be representative.`);
+
+  export const CRITERIA_SELECTION_COUNT =
+    trim(`Filter additions can only be removed by changing filters.
+    Click and drag in the map to modify selection filters.
+    Filters will be applied at the time of sequence execution. The final
+    selection at that time may differ from the selection currently
+    displayed.`);
+
+  export const CRITERIA_ALPHA_FEATURE =
+    trim(`Group filters is a new feature under active development.
+    Use with caution.`);
+
+  export const DOT_NOTATION_TIP =
+    trim(`Tip: Use dot notation (i.e., 'meta.color') to access meta fields.`);
+
   // Controls
   export const MOVE =
     trim(`Use these manual control buttons to move FarmBot in realtime.
@@ -12,7 +33,12 @@ export namespace ToolTips {
 
   export const WEBCAM =
     trim(`If you have a webcam, you can view the video stream in this widget.
-    Press the edit button to update and save your webcam URL.`);
+    Press the edit button to update and save your webcam URL.
+    Note: Some webcam services do not allow webcam feeds to be embedded in
+    other sites. If you see a web browser error after adding a webcam feed,
+    there is unfortunately nothing FarmBot can do to fix the problem.
+    Please contact your webcam's customer support to see if the security
+    policy for embedding feeds into other sites can be changed.`);
 
   export const PERIPHERALS =
     trim(`Use these toggle switches to control FarmBot's peripherals in
@@ -26,10 +52,19 @@ export namespace ToolTips {
   export const SENSOR_HISTORY =
     trim(`View and filter historical sensor reading data.`);
 
-  // Device
-  export const OS_SETTINGS =
-    trim(`View and change device settings.`);
+  // FarmBot OS Settings: Firmware
+  export const FIRMWARE_VALUE_API =
+    trim(`Firmware value from your choice in the dropdown to the left, as
+    understood by the Web App.`);
 
+  export const FIRMWARE_VALUE_FBOS =
+    trim(`Firmware value reported from the firmware, as understood by
+    FarmBot OS.`);
+
+  export const FIRMWARE_VALUE_MCU =
+    trim(`Firmware value reported from the firmware.`);
+
+  // Hardware Settings
   export const HW_SETTINGS =
     trim(`Change settings of your FarmBot hardware with the fields below.
     Caution: Changing these settings to extreme values can cause hardware
@@ -37,18 +72,6 @@ export namespace ToolTips {
     FarmBot use them unsupervised.
     Tip: Recalibrate FarmBot after changing settings and test a
     few sequences to verify that everything works as expected.`);
-
-  export const PIN_BINDINGS =
-    trim(`Assign an action or sequence to execute when a Raspberry Pi
-    GPIO pin is activated.`);
-
-  export const PIN_BINDING_WARNING =
-    trim(`Warning: Binding to a pin without a physical button and
-    pull-down resistor connected may put FarmBot into an unstable state.`);
-
-  // Connectivity
-  export const CONNECTIVITY =
-    trim(`Diagnose connectivity issues with FarmBot and the browser.`);
 
   // Hardware Settings: Homing and Calibration
   export const HOMING_ENCODERS =
@@ -202,13 +225,16 @@ export namespace ToolTips {
     trim(`The number of the pin to guard. This pin will be set to the specified
     state after the duration specified by TIMEOUT.`);
 
+  // Hardware Settings: Pin Bindings
+  export const PIN_BINDINGS =
+    trim(`Assign an action or sequence to execute when a Raspberry Pi
+    GPIO pin is activated.`);
+
+  export const PIN_BINDING_WARNING =
+    trim(`Warning: Binding to a pin without a physical button and
+    pull-down resistor connected may put FarmBot into an unstable state.`);
+
   // Farmware
-  export const FARMWARE =
-    trim(`Manage Farmware (plugins).`);
-
-  export const FARMWARE_LIST =
-    trim(`View, select, and install new Farmware.`);
-
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
 
@@ -231,9 +257,6 @@ export namespace ToolTips {
     Press the Test button to immediately try your sequence with FarmBot.
     You can also edit, copy, and delete existing sequences;
     assign a color; and give your commands custom names.`);
-
-  export const SEQUENCE_LIST =
-    trim(`Here is the list of all of your sequences. Click one to edit.`);
 
   export const DEFAULT_VALUE =
     trim(`Select a location to be used as the default value for this variable.
@@ -312,6 +335,7 @@ export namespace ToolTips {
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type
     on the Device page.`);
+
   export const EMERGENCY_LOCK =
     trim(`Stops a device from moving until it is unlocked by a user.`);
 
@@ -363,20 +387,6 @@ export namespace ToolTips {
     growing at the same or different times. Multiple regimens can be
     applied to any one plant.`);
 
-  export const REGIMEN_LIST =
-    trim(`This is a list of all of your regimens. Click one to begin
-    editing it.`);
-
-  // Tools
-  export const TOOL_LIST =
-    trim(`This is a list of all your FarmBot tools and seed containers.
-    Click the Edit button to add, edit, or delete tools or seed containers.`);
-
-  export const TOOLBAY_LIST =
-    trim(`Tool slots are where you store your FarmBot tools and seed
-    containers, which should be reflective of your real FarmBot hardware
-    configuration.`);
-
   // Logs
   export const LOGS =
     trim(`View and filter log messages.`);
@@ -399,16 +409,6 @@ export namespace ToolTips {
 
   export const FIRMWARE_DEBUG_MESSAGES =
     trim(`Log all debug received from firmware (clears after refresh).`);
-
-  export const MESSAGES =
-    trim(`View messages.`);
-
-  // App
-  export const LABS =
-    trim(`Customize your web app experience.`);
-
-  export const TOURS =
-    trim(`Take a guided tour of the Web App.`);
 }
 
 export namespace Content {
@@ -512,11 +512,9 @@ export namespace Content {
     real account at`);
 
   // App Settings
-  export const CONFIRM_STEP_DELETION =
-    trim(`Show a confirmation dialog when deleting a sequence step.`);
-
-  export const CONFIRM_SEQUENCE_DELETION =
-    trim(`Show a confirmation dialog when deleting a sequence.`);
+  export const TIME_FORMAT_24_HOUR =
+    trim(`Display time using the 24-hour notation,
+    i.e., 23:00 instead of 11:00pm`);
 
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
@@ -525,14 +523,6 @@ export namespace Content {
   export const HIDE_SENSORS_WIDGET =
     trim(`If not using sensors, use this setting to remove the
     widget from the Controls page.`);
-
-  export const DYNAMIC_MAP_SIZE =
-    trim(`Change the garden map size based on axis length.
-    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
-    the HARDWARE widget. Overrides MAP SIZE values.`);
-
-  export const PLANT_ANIMATIONS =
-    trim(`Enable plant animations in the garden map.`);
 
   export const BROWSER_SPEAK_LOGS =
     trim(`Have the browser also read aloud log messages on the
@@ -546,22 +536,25 @@ export namespace Content {
     trim(`Warning! When enabled, any unsaved changes
     will be discarded when refreshing or closing the page. Are you sure?`);
 
-  export const DISCARD_UNSAVED_SEQUENCE_CHANGES =
-    trim(`Don't ask about saving sequence work before
-    closing browser tab. Warning: may cause loss of data.`);
+  export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
+    trim(`Confirm when unlocking FarmBot after an emergency stop.`);
 
-  export const DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM =
-    trim(`Warning! When enabled, any unsaved changes to sequences
-    will be discarded when refreshing or closing the page. Are you sure?`);
+  export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
+    trim(`Warning! When disabled, clicking the UNLOCK button will immediately
+    unlock FarmBot instead of confirming that it is safe to do so.
+    As a result, double-clicking the E-STOP button may not stop FarmBot.
+    Are you sure you want to disable this feature?`);
 
-  export const VIRTUAL_TRAIL =
-    trim(`Display a virtual trail for FarmBot in the garden map to show
-    movement and watering history while the map is open. Toggling this setting
-    will clear data for the current trail.`);
+  export const USER_INTERFACE_READ_ONLY_MODE =
+    trim(`Disallow account data changes. This does
+    not prevent Farmwares or FarmBot OS from changing settings.`);
 
-  export const TIME_FORMAT_24_HOUR =
-    trim(`Display time using the 24-hour notation,
-    i.e., 23:00 instead of 11:00pm`);
+  // Sequence Settings
+  export const CONFIRM_STEP_DELETION =
+    trim(`Show a confirmation dialog when deleting a sequence step.`);
+
+  export const CONFIRM_SEQUENCE_DELETION =
+    trim(`Show a confirmation dialog when deleting a sequence.`);
 
   export const SHOW_PINS =
     trim(`Show raw pin lists in Read Sensor, Control Peripheral, and
@@ -570,18 +563,27 @@ export namespace Content {
   export const EXPAND_STEP_OPTIONS =
     trim(`Choose whether advanced step options are open or closed by default.`);
 
-  export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
-    trim(`Confirm when unlocking FarmBot after an emergency stop.`);
+  export const DISCARD_UNSAVED_SEQUENCE_CHANGES =
+    trim(`Don't ask about saving sequence work before
+    closing browser tab. Warning: may cause loss of data.`);
 
-  export const USER_INTERFACE_READ_ONLY_MODE =
-    trim(`Disallow account data changes. This does
-    not prevent Farmwares or FarmBot OS from changing settings.`);
+  export const DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM =
+    trim(`Warning! When enabled, any unsaved changes to sequences
+    will be discarded when refreshing or closing the page. Are you sure?`);
 
-  export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
-    trim(`Warning! When disabled, clicking the UNLOCK button will immediately
-    unlock FarmBot instead of confirming that it is safe to do so.
-    As a result, double-clicking the E-STOP button may not stop FarmBot.
-    Are you sure you want to disable this feature?`);
+  // Farm Designer Settings
+  export const PLANT_ANIMATIONS =
+    trim(`Enable plant animations in the garden map.`);
+
+  export const VIRTUAL_TRAIL =
+    trim(`Display a virtual trail for FarmBot in the garden map to show
+    movement and watering history while the map is open. Toggling this setting
+    will clear data for the current trail.`);
+
+  export const DYNAMIC_MAP_SIZE =
+    trim(`Change the garden map size based on axis length.
+    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+    the HARDWARE widget. Overrides MAP SIZE values.`);
 
   export const MAP_SIZE =
     trim(`Specify custom map dimensions (in millimeters).
@@ -600,13 +602,41 @@ export namespace Content {
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
-  // Device
-  export const NOT_HTTPS =
-    trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
+  // FarmBot OS Settings
+  export const DIFFERENT_TZ_WARNING =
+    trim(`Note: The selected timezone for your FarmBot is different than
+    your local browser time.`);
 
-  export const CONTACT_SYSADMIN =
-    trim(`Please contact the system(s) administrator(s) and ask them to enable
-    HTTPS://`);
+  export const OS_BETA_RELEASES =
+    trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
+    FarmBot system stability. Are you sure?`);
+
+  export const DEVICE_NEVER_SEEN =
+    trim(`The device has never been seen. Most likely,
+    there is a network connectivity issue on the device's end.`);
+
+  export const TOO_OLD_TO_UPDATE =
+    trim(`Please re-flash your FarmBot's SD card.`);
+
+  export const OS_AUTO_UPDATE =
+    trim(`When enabled, FarmBot OS will automatically download and install
+    software updates at the chosen time.`);
+
+  export const AUTO_SYNC =
+    trim(`When enabled, device resources such as sequences and regimens
+    will be sent to the device automatically. This removes the need to push
+    "SYNC" after making changes in the web app. Changes to running
+    sequences and regimens while auto sync is enabled will result in
+    instantaneous change.`);
+
+  // FarmBot OS Settings: Power and Reset
+  export const RESTART_FARMBOT =
+    trim(`This will restart FarmBot's Raspberry Pi and controller
+    software.`);
+
+  export const SHUTDOWN_FARMBOT =
+    trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
+    back on, unplug FarmBot and plug it back in.`);
 
   export const FACTORY_RESET_WARNING =
     trim(`Factory resetting your FarmBot will destroy all data on the device,
@@ -624,10 +654,6 @@ export namespace Content {
     not delete data stored in your web app account. Are you sure you wish
     to continue?`);
 
-  export const MCU_RESET_ALERT =
-    trim(`Warning: This will reset all hardware settings to the default values.
-    Are you sure you wish to continue?`);
-
   export const AUTO_FACTORY_RESET =
     trim(`Automatically factory reset when the WiFi network cannot be
     detected. Useful for network changes.`);
@@ -636,53 +662,25 @@ export namespace Content {
     trim(`Time in minutes to attempt connecting to WiFi before a factory
     reset.`);
 
-  export const DIFFERENT_TZ_WARNING =
-    trim(`Note: The selected timezone for your FarmBot is different than
-    your local browser time.`);
+  export const NOT_HTTPS =
+    trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
 
-  export const RESTART_FARMBOT =
-    trim(`This will restart FarmBot's Raspberry Pi and controller
-    software.`);
+  export const CONTACT_SYSADMIN =
+    trim(`Please contact the system(s) administrator(s) and ask them to enable
+    HTTPS://`);
 
+  // FarmBot OS Settings: Firmware
   export const RESTART_FIRMWARE =
     trim(`Restart the Farmduino or Arduino firmware.`);
 
-  export const OS_AUTO_UPDATE =
-    trim(`When enabled, FarmBot OS will automatically download and install
-    software updates at the chosen time.`);
-
-  export const AUTO_SYNC =
-    trim(`When enabled, device resources such as sequences and regimens
-    will be sent to the device automatically. This removes the need to push
-    "SYNC" after making changes in the web app. Changes to running
-    sequences and regimens while auto sync is enabled will result in
-    instantaneous change.`);
-
-  export const SHUTDOWN_FARMBOT =
-    trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
-    back on, unplug FarmBot and plug it back in.`);
-
-  export const OS_BETA_RELEASES =
-    trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
-    FarmBot system stability. Are you sure?`);
-
-  export const DIAGNOSTIC_CHECK =
-    trim(`Save snapshot of FarmBot OS system information, including
-    user and device identity, to the database. A code will be returned
-    that you can provide in support requests to allow FarmBot to look up
-    data relevant to the issue to help us identify the problem.`);
-
-  export const DEVICE_NEVER_SEEN =
-    trim(`The device has never been seen. Most likely,
-    there is a network connectivity issue on the device's end.`);
-
-  export const TOO_OLD_TO_UPDATE =
-    trim(`Please re-flash your FarmBot's SD card.`);
-
-  // Hardware Settings
+  // Hardware Settings: Danger Zone
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
     current settings, resetting them to default values.`);
+
+  export const MCU_RESET_ALERT =
+    trim(`Warning: This will reset all hardware settings to the default values.
+    Are you sure you wish to continue?`);
 
   // App
   export const APP_LOAD_TIMEOUT_MESSAGE =
@@ -710,10 +708,6 @@ export namespace Content {
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
     broken and may break or otherwise hinder your usage of the rest of the
     app. This feature may disappear or break at any time.`);
-
-  export const NEW_TOS =
-    trim(`Before logging in, you must agree to our latest Terms of Service and
-    Privacy Policy`);
 
   export const FORCE_REFRESH_CONFIRM =
     trim(`A new version of the FarmBot web app has been released.
@@ -819,7 +813,8 @@ export namespace Content {
 
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
-    a MARK AS step in a sequence.`);
+    a MARK AS step in a sequence. Use the verify button or read the tool
+    verification pin in a sequence to verify that a tool is attached.`);
 
   // Farm Events
   export const NOTHING_SCHEDULED =
@@ -830,10 +825,6 @@ export namespace Content {
     running a regimen too late in the day may result in skipped
     regimen tasks. Consider rescheduling this event to tomorrow if
     this is a concern.`);
-
-  export const INVALID_RUN_TIME =
-    trim(`This event does not appear to have a valid run time.
-    Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
     trim(`Note: Times displayed according to FarmBot's local time, which
@@ -849,27 +840,14 @@ export namespace Content {
     trim(`You haven't made any sequences or regimens yet. To add an event,
     first create a sequence or regimen.`);
 
-  // Groups
-  export const SORT_DESCRIPTION =
-    trim(`When executing a sequence over a Group of locations, FarmBot will
-    travel to each group member in the order of the chosen sort method.
-    If the random option is chosen, FarmBot will travel in a random order
-    every time, so the ordering shown below will only be representative.`);
-
-  export const CRITERIA_SELECTION_COUNT =
-    trim(`Criteria additions can only be removed by changing criteria.
-    Click and drag in the map to modify selection criteria.
-    Criteria will be applied at the time of sequence execution. The final
-    selection at that time may differ from the selection currently
-    displayed.`);
-
   // Farmware
   export const NO_IMAGES_YET =
     trim(`You haven't yet taken any photos with your FarmBot.
     Once you do, they will show up here.`);
 
   export const PROCESSING_PHOTO =
-    trim(`Processing now. Results usually available in one minute.`);
+    trim(`Processing now. Results usually available in one minute.
+    Check log messages for result status.`);
 
   export const NOT_AVAILABLE_WHEN_OFFLINE =
     trim(`Not available when device is offline.`);
@@ -1020,7 +998,6 @@ export enum DeviceSetting {
   powerAndReset = `Power and Reset`,
   restartFarmbot = `Restart Farmbot`,
   shutdownFarmbot = `Shutdown Farmbot`,
-  restartFirmware = `Restart Firmware`,
   factoryReset = `Factory Reset`,
   autoFactoryReset = `Automatic Factory Reset`,
   connectionAttemptPeriod = `Connection Attempt Period`,
@@ -1038,6 +1015,7 @@ export enum DeviceSetting {
 
   // Firmware
   firmwareSection = `Firmware`,
+  restartFirmware = `Restart Firmware`,
   flashFirmware = `Flash firmware`,
 }
 

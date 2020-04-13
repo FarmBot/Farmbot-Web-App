@@ -18,11 +18,12 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
-  getFilteredPoints, GetFilteredPointsProps,
+  getFilteredPoints, GetFilteredPointsProps, validPointTypes,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
   fakePlantTemplate,
+  fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { Actions, Content } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -30,6 +31,10 @@ import { destroy } from "../../../api/crud";
 import { createGroup } from "../../point_groups/actions";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { error } from "../../../toast/toast";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -85,6 +90,20 @@ describe("<SelectPlants />", () => {
     expect(wrapper.text()).toContain(weed.body.name);
   });
 
+  it("displays selected points and weeds", () => {
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.name = "fake point";
+    const weed = fakeWeed();
+    weed.body.name = "fake weed";
+    p.allPoints = [point, weed];
+    p.selected = [point.uuid, weed.uuid];
+    p.selectionPointType = ["GenericPointer", "Weed"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain(point.body.name);
+    expect(wrapper.text()).toContain(weed.body.name);
+  });
+
   it("displays selected slot", () => {
     const p = fakeProps();
     const tool = fakeTool();
@@ -100,11 +119,13 @@ describe("<SelectPlants />", () => {
     expect(wrapper.text()).toContain(tool.body.name);
   });
 
-  it("clears point section type", () => {
+  it("clears point selection type", () => {
     const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
     const wrapper = mount(<SelectPlants {...p} />);
     wrapper.unmount();
-    expect(p.dispatch).toHaveBeenCalledWith({
+    expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: undefined,
     });
@@ -148,13 +169,29 @@ describe("<SelectPlants />", () => {
 
   it("changes selection type", () => {
     const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
     const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
     const actionsWrapper = shallow(wrapper.instance().ActionButtons());
     actionsWrapper.find("FBSelect").first().simulate("change",
       { label: "", value: "All" });
-    expect(p.dispatch).toHaveBeenCalledWith({
+    expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
-      payload: ["Plant", "GenericPointer", "ToolSlot", "Weed"],
+      payload: ["Plant", "GenericPointer", "Weed", "ToolSlot"],
+    });
+  });
+
+  it("changes selection type: Plant pointer_type", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
+    actionsWrapper.find("FBSelect").first().simulate("change",
+      { label: "", value: "Plant" });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: ["Plant"],
     });
   });
 
@@ -213,8 +250,8 @@ describe("<SelectPlants />", () => {
     const wrapper = mount(<SelectPlants {...p} />);
     window.confirm = () => true;
     await clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    expect(destroy).toHaveBeenCalledWith("plant.1", true);
-    expect(destroy).toHaveBeenCalledWith("plant.2", true);
+    await expect(destroy).toHaveBeenCalledWith("plant.1", true);
+    await expect(destroy).toHaveBeenCalledWith("plant.2", true);
   });
 
   it("shows other buttons", () => {
@@ -247,6 +284,14 @@ describe("mapStateToProps", () => {
     expect(result.selected).toBeUndefined();
     expect(result.plants.length).toBe(2);
     expect(result.dispatch).toBe(state.dispatch);
+  });
+
+  it("returns quadrant", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.bot_origin_quadrant = 2;
+    state.resources = buildResourceIndex([webAppConfig]);
+    expect(mapStateToProps(state).quadrant).toEqual(2);
   });
 });
 
@@ -287,5 +332,15 @@ describe("getFilteredPoints()", () => {
     const p = fakeProps();
     p.selectionPointType = ["ToolSlot"];
     expect(getFilteredPoints(p)).toEqual([slot]);
+  });
+});
+
+describe("validPointTypes()", () => {
+  it("returns valid pointer types", () => {
+    expect(validPointTypes(["Plant"])).toEqual(["Plant"]);
+  });
+
+  it("returns undefined", () => {
+    expect(validPointTypes(["nope"])).toEqual(undefined);
   });
 });

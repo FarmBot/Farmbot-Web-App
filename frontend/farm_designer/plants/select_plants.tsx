@@ -28,7 +28,9 @@ import {
 } from "../../resources/selectors";
 import { PointInventoryItem } from "../points/point_inventory_item";
 import { ToolSlotInventoryItem } from "../tools";
-import { getWebAppConfigValue, GetWebAppConfigValue } from "../../config_storage/actions";
+import {
+  getWebAppConfigValue, GetWebAppConfigValue,
+} from "../../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { isBotOriginQuadrant, BotOriginQuadrant } from "../interfaces";
 import { isActive } from "../tools/edit_tool";
@@ -36,12 +38,27 @@ import { uniq } from "lodash";
 import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { WeedInventoryItem } from "../weeds/weed_inventory_item";
 
+// tslint:disable-next-line:no-any
+export const isPointType = (x: any): x is PointType => POINTER_TYPES.includes(x);
+
+export const validPointTypes =
+  (pointerTypes: unknown[] | undefined): PointType[] | undefined => {
+    const validValues = (pointerTypes || [])
+      .filter(x => isPointType(x)).map(x => x as PointType);
+    return validValues.length > 0 ? validValues : undefined;
+  };
+
+export const setSelectionPointType = (payload: PointType[] | undefined) =>
+  (dispatch: Function) =>
+    dispatch({ type: Actions.SET_SELECTION_POINT_TYPE, payload });
+
 export const POINTER_TYPE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   Plant: { label: t("Plants"), value: "Plant" },
   GenericPointer: { label: t("Points"), value: "GenericPointer" },
   Weed: { label: t("Weeds"), value: "Weed" },
   ToolSlot: { label: t("Slots"), value: "ToolSlot" },
   All: { label: t("All"), value: "All" },
+  Other: { label: t("Other"), value: "Other" },
 });
 export const POINTER_TYPE_LIST = () => [
   POINTER_TYPE_DDI_LOOKUP().Plant,
@@ -96,10 +113,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
-  componentWillUnmount = () => this.props.dispatch({
-    type: Actions.SET_SELECTION_POINT_TYPE,
-    payload: undefined,
-  });
+  componentWillUnmount = () =>
+    this.props.dispatch(setSelectionPointType(undefined));
 
   get selected() { return this.props.selected || []; }
 
@@ -127,10 +142,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         selectedItem={POINTER_TYPE_DDI_LOOKUP()[this.selectionPointType]}
         onChange={ddi => {
           this.props.dispatch(selectPoint(undefined));
-          this.props.dispatch({
-            type: Actions.SET_SELECTION_POINT_TYPE,
-            payload: ddi.value == "All" ? POINTER_TYPES : [ddi.value],
-          });
+          this.props.dispatch(setSelectionPointType(
+            ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
         }} />
       <div className="button-row">
         <button className="fb-button gray"

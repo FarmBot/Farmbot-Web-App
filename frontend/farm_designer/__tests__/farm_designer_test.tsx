@@ -48,7 +48,10 @@ describe("<FarmDesigner/>", () => {
       raw_encoders: { x: undefined, y: undefined, z: undefined },
     },
     botMcuParams: bot.hardware.mcu_params,
-    stepsPerMmXY: { x: undefined, y: undefined },
+    botSize: {
+      x: { value: 3000, isDefault: true },
+      y: { value: 1500, isDefault: true },
+    },
     peripherals: [],
     eStopStatus: false,
     latestImages: [],

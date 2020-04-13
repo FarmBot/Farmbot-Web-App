@@ -13,6 +13,7 @@ import { Actions } from "../../constants";
 import {
   EditPointProperties, updatePoint, PointActions,
 } from "./point_edit_actions";
+import { ListItem } from "../plants/plant_panel";
 
 export interface EditPointProps {
   dispatch: Function;
@@ -50,6 +51,21 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
           ? <div className={"point-panel-content-wrapper"}>
             <EditPointProperties point={this.point}
               updatePoint={updatePoint(this.point, this.props.dispatch)} />
+            <ul className="meta">
+              {Object.entries(this.point.body.meta).map(([key, value]) => {
+                switch (key) {
+                  case "color":
+                  case "created_by":
+                  case "type":
+                    return <div key={key}
+                      className={`meta-${key}-not-displayed`} />;
+                  default:
+                    return <ListItem key={key} name={key}>
+                      {value || ""}
+                    </ListItem>;
+                }
+              })}
+            </ul>
             <PointActions
               x={this.point.body.x}
               y={this.point.body.y}

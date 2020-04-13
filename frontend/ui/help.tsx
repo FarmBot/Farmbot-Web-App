@@ -9,6 +9,7 @@ interface HelpProps {
   onHover?: boolean;
   position?: PopoverPosition;
   customIcon?: string;
+  customClass?: string;
 }
 
 export function Help(props: HelpProps) {
@@ -17,6 +18,7 @@ export function Help(props: HelpProps) {
     interactionKind={props.onHover
       ? PopoverInteractionKind.HOVER
       : PopoverInteractionKind.CLICK}
+    className={props.customClass}
     popoverClassName={"help"}>
     <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`} />
     <div className={"help-text-content"}>{t(props.text)}</div>

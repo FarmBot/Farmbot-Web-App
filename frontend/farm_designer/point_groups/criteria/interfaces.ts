@@ -1,5 +1,8 @@
-import { TaggedPointGroup, PointType } from "farmbot";
+import { TaggedPointGroup, PointType, TaggedPoint } from "farmbot";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
+import { BotSize } from "../../map/interfaces";
+import { ShouldDisplay } from "../../../devices/interfaces";
+import { UUID } from "../../../resources/interfaces";
 
 export type PointGroupCriteria = PointGroup["criteria"];
 export type StringEqCriteria = PointGroupCriteria["string_eq"];
@@ -8,7 +11,7 @@ export type StrAndNumCriteriaKeys = (keyof Omit<PointGroupCriteria, "day">)[];
 export type EqCriteria<T> = Record<string, T[] | undefined>;
 
 export const POINTER_TYPES: PointerType[] =
-  ["Plant", "GenericPointer", "ToolSlot", "Weed"];
+  ["Plant", "GenericPointer", "Weed", "ToolSlot"];
 
 export const DEFAULT_CRITERIA: Readonly<PointGroupCriteria> = {
   day: { op: "<", days_ago: 0 },
@@ -23,11 +26,14 @@ export interface GroupCriteriaProps {
   group: TaggedPointGroup;
   slugs: string[];
   editGroupAreaInMap: boolean;
+  botSize: BotSize;
+  selectionPointType: PointType[] | undefined;
 }
 
 export interface GroupCriteriaState {
   advanced: boolean;
   clearCount: number;
+  dayChanged: boolean;
 }
 
 export interface ClearCriteriaProps {
@@ -35,9 +41,24 @@ export interface ClearCriteriaProps {
   group: TaggedPointGroup;
 }
 
+export interface ClearPointIdsProps {
+  dispatch: Function;
+  group: TaggedPointGroup;
+}
+
 export interface GroupPointCountBreakdownProps {
-  manualCount: number;
-  totalCount: number;
+  group: TaggedPointGroup;
+  dispatch: Function;
+  shouldDisplay: ShouldDisplay;
+  pointsSelectedByGroup: TaggedPoint[];
+  iconDisplay: boolean;
+  hovered: UUID | undefined;
+}
+
+export interface PointTypeSelectionProps {
+  dispatch: Function;
+  group: TaggedPointGroup;
+  pointTypes: PointerType[];
 }
 
 export interface CriteriaSelectionProps {
@@ -46,8 +67,15 @@ export interface CriteriaSelectionProps {
   dispatch: Function;
 }
 
+export interface DaySelectionProps extends CriteriaSelectionProps {
+  dayChanged: boolean;
+  changeDay(state: boolean): void;
+  advanced: boolean;
+}
+
 export interface LocationSelectionProps extends CriteriaSelectionProps {
   editGroupAreaInMap: boolean;
+  botSize: BotSize;
 }
 
 export interface EqCriteriaSelectionProps<T> extends CriteriaSelectionProps {
@@ -84,6 +112,10 @@ export interface SubCriteriaProps {
   disabled: boolean;
 }
 
+export interface PointSubCriteriaProps extends SubCriteriaProps {
+  pointerType: PointerType;
+}
+
 export interface PlantSubCriteriaProps extends SubCriteriaProps {
   slugs: string[];
 }
@@ -92,6 +124,7 @@ export interface CheckboxSelectionsProps {
   dispatch: Function;
   group: TaggedPointGroup;
   slugs: string[];
+  pointerTypes: PointType[] | undefined;
 }
 
 export interface CheckboxSelectionsState {
@@ -111,16 +144,26 @@ export interface NumberLtGtInputProps {
   pointerType?: PointerType;
 }
 
+export interface SubCriteriaSectionProps {
+  dispatch: Function;
+  group: TaggedPointGroup;
+  disabled: boolean;
+  pointerTypes: PointerType[];
+  slugs: string[];
+}
+
 export interface ClearCategoryProps {
   group: TaggedPointGroup;
   criteriaCategories: StrAndNumCriteriaKeys;
-  criteriaKey: string;
+  criteriaKeys: string[];
   dispatch: Function;
 }
 
+export type CheckboxListItem<T> = { label: string, value: T, color?: string };
+
 export interface CheckboxListProps<T> {
   criteriaKey: string;
-  list: { label: string, value: T }[];
+  list: CheckboxListItem<T>[];
   dispatch: Function;
   group: TaggedPointGroup;
   pointerType: PointerType;
