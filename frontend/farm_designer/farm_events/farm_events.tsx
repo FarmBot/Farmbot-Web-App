@@ -16,6 +16,7 @@ import {
 } from "../../ui/empty_state_wrapper";
 import { some, uniq, map, sortBy } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { SearchField } from "../../ui/search_field";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -105,14 +106,12 @@ export class PureFarmEvents
       <DesignerPanelTop
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events/add"}
-        title={t("Add event")}
-        noIcon={true}>
-        <i className="fa fa-calendar" onClick={this.resetCalendar} />
-        <input
-          name="searchTerm"
-          value={this.state.searchTerm}
-          onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
-          placeholder={t("Search your events...")} />
+        title={t("Add event")}>
+        <SearchField searchTerm={this.state.searchTerm}
+          customLeftIcon={
+            <i className="fa fa-calendar" onClick={this.resetCalendar} />}
+          placeholder={t("Search your events...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"farm-event"}>
         <div className="farm-events">

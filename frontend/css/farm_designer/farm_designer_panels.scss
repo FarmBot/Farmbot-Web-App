@@ -925,6 +925,10 @@
           display: inline;
           text-transform: uppercase;
         }
+        input[type="text"] {
+          width: 50%;
+          height: 2rem;
+        }
       }
       .point-type-checkboxes {
         .point-type-section {
@@ -1043,6 +1047,11 @@
           margin-left: 1rem;
           font-size: 1.4rem;
         }
+        .filter-search {
+          .bp3-popover-wrapper {
+            margin-left: 0;
+          }
+        }
         .row {
           margin-left: 0;
         }
@@ -1074,7 +1083,7 @@
     }
     p {
       display: inline;
-      margin-left: 1rem;
+      margin-left: 0.5rem;
     }
   }
 }

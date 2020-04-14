@@ -41,7 +41,7 @@ export const formatDate = (input: string, timeSettings: TimeSettings) => {
   return moment(iso).utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD");
 };
 
-export const repeatOptions = [
+export const repeatOptions = () => [
   { label: t("Minutes"), value: "minutely", name: "time_unit" },
   { label: t("Hours"), value: "hourly", name: "time_unit" },
   { label: t("Days"), value: "daily", name: "time_unit" },
@@ -147,7 +147,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     sequencesById,
     farmEventsById,
     executableOptions: executableList,
-    repeatOptions,
+    repeatOptions: repeatOptions(),
     handleTime,
     farmEvents,
     getFarmEvent,

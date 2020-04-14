@@ -13,6 +13,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { mapStateToProps } from "../point_inventory";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<Points> />", () => {
   const fakeProps = (): PointsProps => ({
@@ -48,8 +49,7 @@ describe("<Points> />", () => {
     p.genericPoints[0].body.name = "point 0";
     p.genericPoints[1].body.name = "point 1";
     const wrapper = shallow<Points>(<Points {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "0" } });
+    wrapper.find(SearchField).simulate("change", "0");
     expect(wrapper.state().searchTerm).toEqual("0");
   });
 

@@ -38,10 +38,10 @@ export function TileAssertion(props: StepParams) {
       </Row>
       <Row>
         <Col xs={6}>
-          <TypePart {...p} />
+          <TypePart key={JSON.stringify(props.currentSequence)} {...p} />
         </Col>
         <Col xs={6}>
-          <SequencePart {...p} />
+          <SequencePart key={JSON.stringify(props.currentSequence)} {...p} />
         </Col>
       </Row>
     </StepContent>

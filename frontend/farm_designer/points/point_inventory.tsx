@@ -13,6 +13,7 @@ import {
 import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";
 import { t } from "../../i18next_wrapper";
+import { SearchField } from "../../ui/search_field";
 
 export interface PointsProps {
   genericPoints: TaggedGenericPointer[];
@@ -37,10 +38,6 @@ export function mapStateToProps(props: Everything): PointsProps {
 export class RawPoints extends React.Component<PointsProps, PointsState> {
   state: PointsState = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
-
   render() {
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
       <DesignerNavTabs />
@@ -48,8 +45,9 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         panel={Panel.Points}
         linkTo={"/app/designer/points/add"}
         title={t("Add point")}>
-        <input type="text" onChange={this.update} name="searchTerm"
-          placeholder={t("Search your points...")} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={t("Search your points...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
         <EmptyStateWrapper

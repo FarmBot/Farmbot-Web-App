@@ -4,11 +4,6 @@ jest.mock("../../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
-let mockGardenOpen = true;
-jest.mock("../../saved_gardens/saved_gardens", () => ({
-  savedGardenOpen: () => mockGardenOpen,
-}));
-
 import {
   round,
   translateScreenToGarden,
@@ -23,6 +18,7 @@ import {
   cursorAtPlant,
   allowInteraction,
   allowGroupAreaInteraction,
+  savedGardenOpen,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -374,14 +370,19 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.weeds);
     mockPath = "/app/designer/weeds/add";
     expect(getMode()).toEqual(Mode.createWeed);
-    mockPath = "/app/designer/gardens";
-    mockGardenOpen = true;
+    mockPath = "/app/designer/gardens/1";
     expect(getMode()).toEqual(Mode.templateView);
     mockPath = "/app/designer/groups/1";
     expect(getMode()).toEqual(Mode.editGroup);
     mockPath = "";
-    mockGardenOpen = false;
     expect(getMode()).toEqual(Mode.none);
+  });
+});
+
+describe("savedGardenOpen", () => {
+  it("is open", () => {
+    const result = savedGardenOpen(["", "", "", "gardens", "4", ""]);
+    expect(result).toEqual(4);
   });
 });
 

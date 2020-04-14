@@ -22,6 +22,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { createGroup } from "../actions";
 import { DesignerPanelTop } from "../../designer_panel";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
@@ -55,8 +56,7 @@ describe("<GroupListPanel />", () => {
   it("changes search term", () => {
     const p = fakeProps();
     const wrapper = shallow<GroupListPanel>(<GroupListPanel {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "one" } });
+    wrapper.find(SearchField).simulate("change", "one");
     expect(wrapper.state().searchTerm).toEqual("one");
   });
 

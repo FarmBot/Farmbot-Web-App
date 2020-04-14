@@ -13,6 +13,7 @@ import { t } from "../../i18next_wrapper";
 import { TaggedWeedPointer } from "farmbot";
 import { selectAllWeedPointers } from "../../resources/selectors";
 import { WeedInventoryItem } from "./weed_inventory_item";
+import { SearchField } from "../../ui/search_field";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -33,10 +34,6 @@ export const mapStateToProps = (props: Everything): WeedsProps => ({
 export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
   state: WeedsState = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
-
   render() {
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
       <DesignerNavTabs />
@@ -44,8 +41,9 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds/add"}
         title={t("Add weed")}>
-        <input type="text" onChange={this.update} name="searchTerm"
-          placeholder={t("Search your weeds...")} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={t("Search your weeds...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
         <EmptyStateWrapper

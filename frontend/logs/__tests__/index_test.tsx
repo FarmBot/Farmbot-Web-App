@@ -10,6 +10,7 @@ import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { LogsProps } from "../interfaces";
 import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { SearchField } from "../../ui/search_field";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -176,8 +177,7 @@ describe("<Logs />", () => {
   it("changes search term", () => {
     const p = fakeProps();
     const wrapper = shallow<Logs>(<Logs {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "one" } });
+    wrapper.find(SearchField).first().simulate("change", "one");
     expect(wrapper.state().searchTerm).toEqual("one");
   });
 });
