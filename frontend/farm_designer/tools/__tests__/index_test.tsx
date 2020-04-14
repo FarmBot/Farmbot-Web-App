@@ -34,6 +34,7 @@ import { edit, save } from "../../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { ToolsProps } from "../interfaces";
 import { mapPointClickAction } from "../../map/actions";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -117,8 +118,7 @@ describe("<Tools />", () => {
     p.tools[0].body.name = "tool 0";
     p.tools[1].body.name = "tool 1";
     const wrapper = shallow<Tools>(<Tools {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "0" } });
+    wrapper.find(SearchField).simulate("change", "0");
     expect(wrapper.state().searchTerm).toEqual("0");
   });
 

@@ -7,7 +7,6 @@ import {
 } from "./interfaces";
 import { trim } from "../../util";
 import { history, getPathArray } from "../../history";
-import { savedGardenOpen } from "../saved_gardens/saved_gardens";
 
 /*
  * Farm Designer Map Utilities
@@ -293,6 +292,7 @@ export const getMode = (): Mode => {
     if ((pathArray[3] === "groups" || pathArray[3] === "zones")
       && pathArray[4]) { return Mode.editGroup; }
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
+    if (savedGardenOpen(pathArray)) { return Mode.templateView; }
     if (!isNaN(parseInt(pathArray.slice(-1)[0]))) { return Mode.editPlant; }
     if (pathArray[5] === "edit") { return Mode.editPlant; }
     if (pathArray[6] === "edit") { return Mode.editPlant; }
@@ -307,10 +307,14 @@ export const getMode = (): Mode => {
       if (pathArray[4] === "add") { return Mode.createWeed; }
       return Mode.weeds;
     }
-    if (savedGardenOpen(pathArray)) { return Mode.templateView; }
   }
   return Mode.none;
 };
+
+/** Check if a SavedGarden is currently open (URL approach). */
+export const savedGardenOpen = (pathArray: string[]) =>
+  pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
+    ? parseInt(pathArray[4]) : false;
 
 export const getZoomLevelFromMap = (map: Element) =>
   parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);

@@ -13,6 +13,7 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
+import { SearchField } from "../../ui/search_field";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -34,11 +35,7 @@ export function mapStateToProps(props: Everything): PlantInventoryProps {
 }
 
 export class RawPlants extends React.Component<PlantInventoryProps, State> {
-
   state: State = { searchTerm: "" };
-
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) =>
-    this.setState({ searchTerm: currentTarget.value })
 
   render() {
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
@@ -47,8 +44,9 @@ export class RawPlants extends React.Component<PlantInventoryProps, State> {
         panel={Panel.Plants}
         linkTo={"/app/designer/plants/crop_search"}
         title={t("Add plant")}>
-        <input type="text" onChange={this.update} name="searchTerm"
-          placeholder={t("Search your plants...")} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={t("Search your plants...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
         <EmptyStateWrapper

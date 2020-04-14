@@ -17,6 +17,7 @@ import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { timeFormatString } from "../util";
+import { SearchField } from "../ui/search_field";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime =
@@ -125,15 +126,10 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
       </Row>
       <Row>
         <Col xs={12} md={5} lg={4}>
-          <div className="thin-search-wrapper">
-            <div className="text-input-wrapper">
-              <i className="fa fa-search" />
-              <input name="searchTerm"
-                onChange={e =>
-                  this.setState({ searchTerm: e.currentTarget.value })}
-                placeholder={t("Search logs...")} />
-            </div>
-          </div>
+          <SearchField
+            placeholder={t("Search logs...")}
+            searchTerm={this.state.searchTerm}
+            onChange={searchTerm => this.setState({ searchTerm })} />
         </Col>
       </Row>
       <Row>

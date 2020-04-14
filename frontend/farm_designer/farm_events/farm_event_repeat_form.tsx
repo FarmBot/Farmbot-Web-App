@@ -26,7 +26,7 @@ export interface FarmEventRepeatFormProps {
 }
 
 const indexKey: keyof DropDownItem = "value";
-const OPTN_LOOKUP = keyBy(repeatOptions, indexKey);
+const OPTN_LOOKUP = () => keyBy(repeatOptions(), indexKey);
 
 export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
   const { disabled, fieldSet, repeat, endDate, endTime, timeUnit } = props;
@@ -50,9 +50,9 @@ export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
         </Col>
         <Col xs={8}>
           <FBSelect
-            list={repeatOptions}
+            list={repeatOptions()}
             onChange={ddi => fieldSet("timeUnit", "" + ddi.value)}
-            selectedItem={OPTN_LOOKUP[timeUnit] || OPTN_LOOKUP["daily"]} />
+            selectedItem={OPTN_LOOKUP()[timeUnit] || OPTN_LOOKUP()["daily"]} />
         </Col>
       </Row>
       <label>

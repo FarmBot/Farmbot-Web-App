@@ -5,6 +5,7 @@ import {
 } from "../weeds_inventory";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakeWeed } from "../../../__test_support__/fake_state/resources";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -20,8 +21,7 @@ describe("<Weeds> />", () => {
 
   it("changes search term", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "0" } });
+    wrapper.find(SearchField).simulate("change", "0");
     expect(wrapper.state().searchTerm).toEqual("0");
   });
 

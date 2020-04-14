@@ -81,21 +81,12 @@ interface DesignerPanelTopProps {
   onClick?(): void;
   title?: string;
   children?: React.ReactNode;
-  noIcon?: boolean;
 }
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   const withBtn = !!props.linkTo || !!props.onClick;
   return <div className={`panel-top ${withBtn ? "with-button" : ""}`}>
-    <div className="thin-search-wrapper">
-      <div className="text-input-wrapper">
-        {!props.noIcon &&
-          <i className="fa fa-search" />}
-        <ErrorBoundary>
-          {props.children}
-        </ErrorBoundary>
-      </div>
-    </div>
+    {props.children}
     {props.onClick &&
       <a>
         <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}
