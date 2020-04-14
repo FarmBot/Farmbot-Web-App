@@ -153,10 +153,7 @@ export const GroupPointCountBreakdown =
         dispatch={props.dispatch} />;
     return <div className={"group-member-count-breakdown"}>
       <div className={"manual-group-member-count"}>
-        <div className={"manual-selection-count"}>
-          {manualPoints.length}
-        </div>
-        <p>{t("manually selected")}</p>
+        <p>{`${manualPoints.length} ${t("manually selected")}`}</p>
         <ClearPointIds dispatch={props.dispatch} group={props.group} />
       </div>
       {props.iconDisplay && manualPoints.length > 0 &&
@@ -166,10 +163,7 @@ export const GroupPointCountBreakdown =
       {props.shouldDisplay(Feature.criteria_groups) &&
         <div className={"group-member-section"}>
           <div className={"criteria-group-member-count"}>
-            <div className={"criteria-selection-count"}>
-              {criteriaPoints.length}
-            </div>
-            <p>{t("selected by filters")}</p>
+            <p>{`${criteriaPoints.length} ${t("selected by filters")}`}</p>
             <ClearCriteria dispatch={props.dispatch} group={props.group} />
           </div>
           {props.iconDisplay && criteriaPoints.length > 0 &&
@@ -186,7 +180,7 @@ export const PointTypeSelection = (props: PointTypeSelectionProps) =>
   <div className={"point-type-selection"}>
     <p className={"category"}>{t("Select all")}</p>
     <FBSelect
-      key={JSON.stringify(props.group.body.criteria)}
+      key={JSON.stringify(props.group.body)}
       list={POINTER_TYPE_LIST().slice(0, -1)}
       customNullLabel={t("Select one")}
       selectedItem={props.pointTypes[0]

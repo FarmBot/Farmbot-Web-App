@@ -95,7 +95,7 @@ describe("<GroupPointCountBreakdown />", () => {
     p.pointsSelectedByGroup = [point1, point2, point3];
     p.group.body.point_ids = [1];
     const wrapper = mount(<GroupPointCountBreakdown {...p} />);
-    ["1manually selected", "2selected by filters"].map(string =>
+    ["1 manually selected", "2 selected by filters"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
@@ -108,7 +108,7 @@ describe("<GroupPointCountBreakdown />", () => {
     p.pointsSelectedByGroup = [point1, point2];
     p.group.body.point_ids = [];
     const wrapper = mount(<GroupPointCountBreakdown {...p} />);
-    ["0manually selected", "2selected by filters"].map(string =>
+    ["0 manually selected", "2 selected by filters"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 

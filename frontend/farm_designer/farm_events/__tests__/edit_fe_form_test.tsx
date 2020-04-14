@@ -223,7 +223,7 @@ describe("<EditFEForm />", () => {
       ]}
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
-      repeatOptions={repeatOptions}
+      repeatOptions={repeatOptions()}
       timeSettings={fakeTimeSettings()}
       autoSyncEnabled={false}
       resources={buildResourceIndex([]).index}

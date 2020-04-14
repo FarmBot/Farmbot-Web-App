@@ -17,6 +17,7 @@ import {
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { history } from "../../history";
 import { initSaveGetId } from "../../api/crud";
+import { SearchField } from "../../ui/search_field";
 
 export interface ZonesProps {
   dispatch: Function;
@@ -37,10 +38,6 @@ export const mapStateToProps = (props: Everything): ZonesProps => ({
 export class RawZones extends React.Component<ZonesProps, ZonesState> {
   state: ZonesState = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
-
   navigate = (id: number) => history.push(`/app/designer/zones/${id}`);
 
   render() {
@@ -53,8 +50,9 @@ export class RawZones extends React.Component<ZonesProps, ZonesState> {
         }))
           .then((id: number) => this.navigate(id)).catch(() => { })}
         title={t("Add zone")}>
-        <input type="text" onChange={this.update} name="searchTerm"
-          placeholder={t("Search your zones...")} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={t("Search your zones...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"zones-inventory"}>
         <EmptyStateWrapper

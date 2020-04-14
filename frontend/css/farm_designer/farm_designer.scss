@@ -120,46 +120,57 @@
 
 .thin-search-wrapper {
   width: 100%;
-  .text-input-wrapper {
-    position: relative;
-    margin: 1rem;
-    border-bottom: 1px solid $dark_gray;
-    &:before,
-    &:after {
-      content: "";
+  .thin-search {
+    .spinner-container {
       position: absolute;
-      bottom: 0;
-      background: $dark_gray;
-      width: 1px;
-      height: 3px;
-    }
-    &:before {
-      left: 0;
-    }
-    &:after {
+      top: 0;
       right: 0;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      margin-right: 1rem;
     }
-    i {
-      font-size: 1.5rem;
+    .text-input-wrapper {
+      position: relative;
+      margin: 1rem;
+      border-bottom: 1px solid $dark_gray;
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        background: $dark_gray;
+        width: 1px;
+        height: 3px;
+      }
+      &:before {
+        left: 0;
+      }
+      &:after {
+        right: 0;
+      }
+      i {
+        font-size: 1.5rem;
+      }
+      .fa-search {
+        position: absolute;
+        top: 0.8rem;
+        left: 1rem;
+        cursor: default !important;
+      }
     }
-    .fa-search {
-      position: absolute;
-      top: 0.8rem;
-      left: 1rem;
-      cursor: default !important;
-    }
-  }
-  input {
-    background: transparent;
-    box-shadow: none !important;
-    padding-left: 3rem !important;
-    font-size: 1.4rem !important;
-    &:active,
-    &:focus {
-      background: transparent !important;
-    }
-    &::-webkit-input-placeholder {
-      color: $placeholder_gray;
+    input {
+      background: transparent;
+      box-shadow: none !important;
+      padding-left: 3rem !important;
+      font-size: 1.4rem !important;
+      &:active,
+      &:focus {
+        background: transparent !important;
+      }
+      &::-webkit-input-placeholder {
+        color: $placeholder_gray;
+      }
     }
   }
 }
@@ -286,18 +297,6 @@
       padding: 0;
       padding-right: 1.75rem;
     }
-  }
-}
-
-.thin-search {
-  .spinner-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    margin-right: 1rem;
   }
 }
 

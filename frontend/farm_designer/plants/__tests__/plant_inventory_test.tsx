@@ -9,6 +9,7 @@ import {
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<PlantInventory />", () => {
   const fakeProps = (): PlantInventoryProps => ({
@@ -31,11 +32,10 @@ describe("<PlantInventory />", () => {
     expect(wrapper.html()).toContain("/app/designer/plants/crop_search");
   });
 
-  it("updates search term", () => {
+  it("changes search term", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
     expect(wrapper.state().searchTerm).toEqual("");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "mint" } });
+    wrapper.find(SearchField).simulate("change", "mint");
     expect(wrapper.state().searchTerm).toEqual("mint");
   });
 });

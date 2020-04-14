@@ -117,7 +117,7 @@ export const DaySelection = (props: DaySelectionProps) => {
       </div>}
     <Row>
       <Col xs={5}>
-        <FBSelect key={JSON.stringify(criteria)}
+        <FBSelect key={JSON.stringify(group.body)}
           list={[DAY_OPERATOR_DDI_LOOKUP()["<"],
           DAY_OPERATOR_DDI_LOOKUP()[">"]]}
           selectedItem={noDayCriteria

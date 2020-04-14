@@ -18,6 +18,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
+import { SearchField } from "../../ui/search_field";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -35,9 +36,6 @@ export class RawSavedGardens
     unselectPlant(this.props.dispatch)();
   }
 
-  onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
-    this.setState({ searchTerm: e.currentTarget.value });
-
   render() {
     return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
       <DesignerNavTabs />
@@ -46,8 +44,9 @@ export class RawSavedGardens
           panel={Panel.SavedGardens}
           linkTo={"/app/designer/gardens/add"}
           title={t("Add garden")}>
-          <input type="text" onChange={this.onChange} name="searchTerm"
-            placeholder={t("Search your gardens...")} />
+          <SearchField searchTerm={this.state.searchTerm}
+            placeholder={t("Search your gardens...")}
+            onChange={searchTerm => this.setState({ searchTerm })} />
         </DesignerPanelTop>
         <EmptyStateWrapper
           notEmpty={this.props.savedGardens.length > 0}
@@ -61,11 +60,6 @@ export class RawSavedGardens
     </DesignerPanel>;
   }
 }
-
-/** Check if a SavedGarden is currently open (URL approach). */
-export const savedGardenOpen = (pathArray: string[]) =>
-  pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
-    ? parseInt(pathArray[4]) : false;
 
 /** Sticky an indicator and actions menu when a SavedGarden is open. */
 export const SavedGardenHUD = (props: { dispatch: Function }) =>

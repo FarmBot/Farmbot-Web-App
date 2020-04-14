@@ -18,6 +18,7 @@ import { history } from "../../../history";
 import {
   fakeCropLiveSearchResult,
 } from "../../../__test_support__/fake_crop_search_result";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => {
@@ -40,9 +41,7 @@ describe("<CropCatalog />", () => {
   it("handles search term change", () => {
     const p = fakeProps();
     const wrapper = shallow(<CropCatalog {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "apple" }
-    });
+    wrapper.find(SearchField).simulate("change", "apple");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: "apple",
       type: Actions.SEARCH_QUERY_CHANGE
@@ -69,7 +68,7 @@ describe("<CropCatalog />", () => {
     p.cropSearchQuery = "abc";
     p.cropSearchInProgress = true;
     p.cropSearchResults = [fakeCropLiveSearchResult()];
-    const wrapper = shallow(<CropCatalog {...p} />);
-    expect(wrapper.find("Spinner").length).toEqual(1);
+    const wrapper = mount(<CropCatalog {...p} />);
+    expect(wrapper.find(".spinner").length).toEqual(1);
   });
 });

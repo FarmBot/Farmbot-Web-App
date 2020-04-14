@@ -7,23 +7,21 @@ import { sortResourcesById } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
+import { SearchField } from "../../ui/search_field";
 
 interface RegimenListHeaderProps {
-  onChange(e: React.SyntheticEvent<HTMLInputElement>): void;
+  searchTerm: string;
+  onChange(searchTerm: string): void;
   regimenCount: number;
   dispatch: Function;
 }
 
 const RegimenListHeader = (props: RegimenListHeaderProps) =>
   <div className={"panel-top with-button"}>
-    <div className="thin-search-wrapper">
-      <div className="text-input-wrapper">
-        <i className="fa fa-search" />
-        <input name="searchTerm"
-          onChange={props.onChange}
-          placeholder={t("Search regimens...")} />
-      </div>
-    </div>
+    <SearchField
+      placeholder={t("Search regimens...")}
+      searchTerm={props.searchTerm}
+      onChange={props.onChange} />
     <AddRegimen dispatch={props.dispatch} length={props.regimenCount} />
   </div>;
 
@@ -55,16 +53,13 @@ export class RegimensList extends
     </Col>;
   }
 
-  onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: e.currentTarget.value });
-  }
-
   render() {
     return <div className={"regimens-list-wrapper"}>
       <RegimenListHeader
         dispatch={this.props.dispatch}
         regimenCount={this.props.regimens.length}
-        onChange={this.onChange} />
+        searchTerm={this.state.searchTerm}
+        onChange={searchTerm => this.setState({ searchTerm })} />
       <Row>
         <EmptyStateWrapper
           notEmpty={this.props.regimens.length > 0}

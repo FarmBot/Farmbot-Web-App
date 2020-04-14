@@ -29,6 +29,7 @@ import { BotOriginQuadrant } from "../interfaces";
 import { mapPointClickAction } from "../map/actions";
 import { getMode } from "../map/util";
 import { Mode } from "../map/interfaces";
+import { SearchField } from "../../ui/search_field";
 
 const toolStatus = (value: number | undefined): string => {
   switch (value) {
@@ -40,10 +41,6 @@ const toolStatus = (value: number | undefined): string => {
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "" };
-
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
 
   getToolName = (toolId: number | undefined): string | undefined => {
     const foundTool = this.props.tools.filter(tool => tool.body.id === toolId)[0];
@@ -183,8 +180,9 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         panel={Panel.Tools}
         linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
         title={!hasTools ? this.strings.titleText : undefined}>
-        <input type="text" onChange={this.update} name="searchTerm"
-          placeholder={this.strings.placeholder} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={this.strings.placeholder}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"tools"}>
         <EmptyStateWrapper
