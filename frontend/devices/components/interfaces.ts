@@ -65,7 +65,7 @@ export interface NumericMCUInputGroupProps {
 export interface PinGuardMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
-  label: string;
+  label: DeviceSetting;
   pinNumKey: McuParamName;
   timeoutKey: McuParamName;
   activeStateKey: McuParamName;
