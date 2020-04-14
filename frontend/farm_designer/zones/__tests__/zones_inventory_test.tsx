@@ -15,6 +15,7 @@ import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { initSaveGetId } from "../../../api/crud";
 import { DesignerPanelTop } from "../../designer_panel";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<Zones> />", () => {
   const fakeProps = (): ZonesProps => ({
@@ -30,8 +31,7 @@ describe("<Zones> />", () => {
 
   it("changes search term", () => {
     const wrapper = shallow<Zones>(<Zones {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "0" } });
+    wrapper.find(SearchField).simulate("change", "0");
     expect(wrapper.state().searchTerm).toEqual("0");
   });
 

@@ -46,6 +46,7 @@ import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { variableList } from "../sequences/locals_list/variable_support";
 import { UUID } from "../resources/interfaces";
+import { SearchField } from "../ui/search_field";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid } = props;
@@ -328,16 +329,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
 export const FolderPanelTop = (props: FolderPanelTopProps) =>
   <div className="panel-top with-button">
-    <div className="thin-search-wrapper">
-      <div className="text-input-wrapper">
-        <i className="fa fa-search" />
-        <input
-          value={props.searchTerm || ""}
-          onChange={e => updateSearchTerm(e.currentTarget.value)}
-          type="text" name="searchTerm"
-          placeholder={t("Search sequences...")} />
-      </div>
-    </div>
+    <SearchField
+      placeholder={t("Search sequences...")}
+      searchTerm={props.searchTerm || ""}
+      onChange={updateSearchTerm} />
     <ToggleFolderBtn
       expanded={props.toggleDirection}
       onClick={props.toggleAll} />

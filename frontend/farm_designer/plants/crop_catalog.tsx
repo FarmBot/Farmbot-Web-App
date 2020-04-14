@@ -15,6 +15,7 @@ import {
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { SearchField } from "../../ui/search_field";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const { cropSearchQuery, cropSearchInProgress, cropSearchResults
@@ -34,8 +35,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
     this.props.openfarmSearch(searchTerm)(this.props.dispatch);
   }, 500);
 
-  handleChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget;
+  handleChange = (value: string) => {
     this.props.dispatch({ type: Actions.SEARCH_QUERY_CHANGE, payload: value });
     this.debouncedOFSearch(value);
   }
@@ -67,18 +67,14 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
         title={t("Choose a crop")}
         backTo={"/app/designer/plants"} />
       <DesignerPanelTop panel={Panel.Plants}>
-        <div className="thin-search">
-          <input
-            autoFocus={true}
-            value={this.props.cropSearchQuery}
-            onChange={this.handleChange}
-            onKeyPress={this.handleChange}
-            className="search"
-            name="searchTerm"
-            placeholder={t("Search OpenFarm...")} />
-          {this.showResultChangeSpinner &&
-            <Spinner radius={10} strokeWidth={3} />}
-        </div>
+        <SearchField
+          searchTerm={this.props.cropSearchQuery}
+          placeholder={t("Search OpenFarm...")}
+          onChange={this.handleChange}
+          onKeyPress={this.handleChange}
+          autoFocus={true}
+          customRightIcon={this.showResultChangeSpinner ?
+            <Spinner radius={10} strokeWidth={3} /> : undefined} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"crop-catalog"}>
         <div className="crop-search-result-wrapper row">

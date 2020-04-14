@@ -56,6 +56,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
                 switch (key) {
                   case "color":
                   case "created_by":
+                  case "removal_method":
                   case "type":
                     return <div key={key}
                       className={`meta-${key}-not-displayed`} />;

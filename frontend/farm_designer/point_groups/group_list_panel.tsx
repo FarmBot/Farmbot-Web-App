@@ -16,6 +16,7 @@ import {
 import { Content } from "../../constants";
 import { selectAllActivePoints } from "../../resources/selectors";
 import { createGroup } from "./actions";
+import { SearchField } from "../../ui/search_field";
 
 export interface GroupListPanelProps {
   dispatch: Function;
@@ -39,10 +40,6 @@ export class RawGroupListPanel
   extends React.Component<GroupListPanelProps, State> {
   state: State = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
-
   navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
 
   render() {
@@ -52,10 +49,9 @@ export class RawGroupListPanel
         panel={Panel.Groups}
         onClick={() => this.props.dispatch(createGroup({ pointUuids: [] }))}
         title={t("Add group")}>
-        <input type="text"
-          name="searchTerm"
-          onChange={this.update}
-          placeholder={t("Search your groups...")} />
+        <SearchField searchTerm={this.state.searchTerm}
+          placeholder={t("Search your groups...")}
+          onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"groups"}>
         <EmptyStateWrapper

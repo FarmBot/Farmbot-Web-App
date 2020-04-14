@@ -16,8 +16,7 @@ jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawSavedGardens as SavedGardens, mapStateToProps,
-  SavedGardenHUD, savedGardenOpen,
+  RawSavedGardens as SavedGardens, mapStateToProps, SavedGardenHUD,
 } from "../saved_gardens";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
@@ -31,6 +30,7 @@ import {
 import { SavedGardensProps } from "../interfaces";
 import { closeSavedGarden } from "../actions";
 import { Actions } from "../../../constants";
+import { SearchField } from "../../../ui/search_field";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -60,8 +60,7 @@ describe("<SavedGardens />", () => {
   it("changes search term", () => {
     const wrapper = shallow<SavedGardens>(<SavedGardens {...fakeProps()} />);
     expect(wrapper.state().searchTerm).toEqual("");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "spring" } });
+    wrapper.find(SearchField).simulate("change", "spring");
     expect(wrapper.state().searchTerm).toEqual("spring");
   });
 
@@ -96,13 +95,6 @@ describe("mapStateToProps()", () => {
   it("has plants in garden", () => {
     const result = mapStateToProps(fakeState());
     expect(result.plantPointerCount).toBeGreaterThan(0);
-  });
-});
-
-describe("savedGardenOpen", () => {
-  it("is open", () => {
-    const result = savedGardenOpen(["", "", "", "gardens", "4", ""]);
-    expect(result).toEqual(4);
   });
 });
 

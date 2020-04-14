@@ -59,6 +59,7 @@ import {
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color } from "farmbot";
+import { SearchField } from "../../ui/search_field";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -540,9 +541,7 @@ describe("<FolderPanelTop />", () => {
   it("changes search term", () => {
     const p = fakeProps();
     const wrapper = shallow(<FolderPanelTop {...p} />);
-    wrapper.find("input").simulate("change", {
-      currentTarget: { value: "new" }
-    });
+    wrapper.find(SearchField).simulate("change", "new");
     expect(updateSearchTerm).toHaveBeenCalledWith("new");
   });
 
