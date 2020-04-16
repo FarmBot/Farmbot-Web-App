@@ -167,13 +167,25 @@ describe Points::Destroy do
 
   def mark_as(resource)
     {
-      kind: "resource_update",
+      kind: "update_resource",
       args: {
-        resource_type: resource.class.to_s,
-        resource_id: resource.id,
-        label: "foo",
-        value: "bar",
+        resource: {
+          kind: "resource",
+          args: {
+            resource_type: resource.class.to_s,
+            resource_id: resource.id,
+          },
+        },
       },
+      body: [
+        {
+          kind: "pair",
+          args: {
+            label: "foo",
+            value: "bar",
+          },
+        },
+      ],
     }
   end
 
