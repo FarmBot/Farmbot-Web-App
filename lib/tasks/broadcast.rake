@@ -1,6 +1,4 @@
 class BroadcastToAll < Mutations::Command
-  RELEVANT_TIMEFRAME = 7.months.ago
-
   required do
     string :title
     string :content
@@ -31,7 +29,7 @@ class BroadcastToAll < Mutations::Command
   end
 
   def devices
-    @devices ||= Device.where("updated_at > ?", RELEVANT_TIMEFRAME)
+    @devices ||= Device.all
   end
 
   def attach_alerts

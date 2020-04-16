@@ -19,4 +19,5 @@ export const fakeDesignerState = (): DesignerState => ({
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
+  settingsSearchTerm: "",
 });

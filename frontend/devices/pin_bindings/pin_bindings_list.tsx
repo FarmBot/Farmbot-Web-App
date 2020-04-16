@@ -15,6 +15,7 @@ import { DevSettings } from "../../account/dev/dev_support";
 import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
+import { DeviceSetting } from "../../constants";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
   const { pinBindings, resources, dispatch } = props;
@@ -41,7 +42,7 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
 
   const newFormat = DevSettings.futureFeaturesEnabled();
   return <div className={"bindings-list"}>
-    {newFormat && <Row><label>{t("saved pin bindings")}</label></Row>}
+    {newFormat && <Row><label>{t(DeviceSetting.savedPinBindings)}</label></Row>}
     {pinBindings
       .sort((a, b) => sortByNameAndPin(a.pin_number, b.pin_number))
       .map(x => {

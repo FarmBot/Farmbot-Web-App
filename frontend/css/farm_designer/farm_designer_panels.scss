@@ -773,19 +773,101 @@
   }
 }
 
+.no-pad {
+  padding: 0;
+}
+
 .settings-panel-content {
-  max-height: calc(100vh - 15rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 5rem;
+  padding: 0;
+  margin-top: 6rem;
   padding-bottom: 5rem;
-  button {
-    margin-top: 1.75rem;
+  .section {
+    margin-bottom: 2rem;
   }
-  p {
-    padding: 0.5rem;
+  .bulk-expand-controls {
     margin-left: 1rem;
+  }
+  .row:first-child {
+    margin-right: 0;
+    margin-top: 1rem;
+  }
+  .row:nth-child(2) {
+    padding-left: 1.5rem;
+    padding-right: 3rem;
+  }
+  .label-headings {
+    margin-right: 2rem;
+    label {
+      line-height: 1rem;
+    }
+  }
+  .release-notes-wrapper {
+    float: right !important;
+  }
+  .network-not-found-timer {
+    margin-top: 1rem;
+  }
+  .pin-guard-input-row {
+    .row {
+      margin-left: -15px;
+      margin-right: -15px;
+      padding-left: 0;
+      padding-right: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+  .pin-bindings {
     margin-right: 1rem;
+    .row {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 1rem;
+      margin-right: 0;
+      margin-top: 1rem;
+    }
+    div[class*=col-] {
+      padding: 0;
+      padding-right: 1rem;
+    }
+    .bindings-list {
+      margin-left: -5px;
+      .binding-action {
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+    }
+    .pin-binding-input-rows {
+      margin-right: 1rem;
+      margin-left: -15px;
+      label {
+        margin-left: 1rem !important;
+      }
+      .green {
+        float: left;
+        margin-left: 1rem;
+      }
+      .row:last-child {
+        margin-top: 0;
+      }
+    }
+    .stock-pin-bindings-button {
+      display: inline;
+      button {
+        margin: 0;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  label {
+    margin: 0 !important;
+    line-height: 3rem;
+  }
+  .bp3-popover-wrapper {
+    display: inline;
+    float: none;
   }
   .map-size-inputs {
     .row {
@@ -794,6 +876,31 @@
     label {
       margin-top: 0.5rem;
     }
+  }
+  .help-icon {
+    margin-left: 1rem;
+  }
+  .all-settings-content {
+    max-height: calc(100vh - 22rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 1rem;
+    padding-left: 1rem;
+    .expandable-header {
+      margin-top: 1.5rem;
+      margin-bottom: 0;
+    }
+    .section {
+      margin-bottom: 0;
+    }
+  }
+  .designer-settings {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -10px;
+    padding-right: 1rem;
+    padding-left: 1rem;
   }
   .designer-setting {
     &.disabled {

@@ -40,4 +40,12 @@ describe("<SearchField />", () => {
     wrapper.find("input").simulate("KeyPress", e);
     expect(p.onChange).not.toHaveBeenCalled();
   });
+
+  it("clears search term", () => {
+    const p = fakeProps();
+    p.searchTerm = "old";
+    const wrapper = shallow(<SearchField {...p} />);
+    wrapper.find("i").last().simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith("");
+  });
 });

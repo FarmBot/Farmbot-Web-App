@@ -9,11 +9,12 @@ import { settingToggle } from "../../actions";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { DeviceSetting } from "../../../constants";
 
 describe("<PinGuardMCUInputGroup/>", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => {
     return {
-      label: "Pin Guard 1",
+      label: DeviceSetting.pinGuard1,
       pinNumKey: "pin_guard_1_pin_nr",
       timeoutKey: "pin_guard_1_time_out",
       activeStateKey: "pin_guard_1_active_state",

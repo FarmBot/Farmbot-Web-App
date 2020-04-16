@@ -125,6 +125,7 @@ export interface DesignerState {
   openedSavedGarden: string | undefined;
   tryGroupSortType: PointGroupSortType | "nn" | undefined;
   editGroupAreaInMap: boolean;
+  settingsSearchTerm: string;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
