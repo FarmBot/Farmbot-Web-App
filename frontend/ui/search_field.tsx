@@ -23,7 +23,8 @@ export const SearchField = (props: SearchFieldProps) =>
             onChange={e => props.onChange(e.currentTarget.value)}
             onKeyPress={e => props.onKeyPress?.(e.currentTarget.value)}
             placeholder={props.placeholder} />
-          {props.searchTerm && props.customRightIcon}
+          {props.searchTerm && (props.customRightIcon ||
+            <i className="fa fa-times" onClick={() => props.onChange("")} />)}
         </ErrorBoundary>
       </div>
     </div>

@@ -25,6 +25,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { DevSettings } from "../../account/dev/dev_support";
+import { DeviceSetting } from "../../constants";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -129,7 +130,7 @@ export class PinBindingInputGroup
   render() {
     const newFormat = DevSettings.futureFeaturesEnabled();
     return <div className="pin-binding-input-rows">
-      {newFormat && <Row><label>{t("add new pin binding")}</label></Row>}
+      {newFormat && <Row><label>{t(DeviceSetting.addNewPinBinding)}</label></Row>}
       {newFormat && <this.Number />}
       {newFormat && <Row>
         <Col xs={5}>
