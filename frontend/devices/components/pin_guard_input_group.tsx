@@ -10,6 +10,7 @@ import { PinNumberDropdown } from "./pin_number_dropdown";
 import { DevSettings } from "../../account/dev/dev_support";
 import { ToolTips } from "../../constants";
 import { Position } from "@blueprintjs/core";
+import { Highlight } from "./maybe_highlight";
 
 export class PinGuardMCUInputGroup
   extends React.Component<PinGuardMCUInputGroupProps> {
@@ -50,7 +51,7 @@ export class PinGuardMCUInputGroup
       ? <Row>
         <Col xs={3}>
           <label>
-            {label}
+            {t(label)}
           </label>
         </Col>
         <Col xs={3}>
@@ -63,46 +64,48 @@ export class PinGuardMCUInputGroup
           <this.State />
         </Col>
       </Row>
-      : <div className={"pin-guard-input-row"}>
-        <Row>
-          <Col xs={12}>
-            <label>
-              {label}
-            </label>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={5} xsOffset={1} className="no-pad">
-            <label>
-              {t("Pin Number")}
-            </label>
-            <Help text={ToolTips.PIN_GUARD_PIN_NUMBER}
-              position={Position.TOP_RIGHT} />
-          </Col>
-          <Col xs={5} className="no-pad">
-            <this.Number />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={5} xsOffset={1} className="no-pad">
-            <label>
-              {t("Timeout (sec)")}
-            </label>
-          </Col>
-          <Col xs={5} className="no-pad">
-            <this.Timeout />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={5} xsOffset={1} className="no-pad">
-            <label>
-              {t("To State")}
-            </label>
-          </Col>
-          <Col xs={5} className="no-pad">
-            <this.State />
-          </Col>
-        </Row>
-      </div>;
+      : <Highlight settingName={label}>
+        <div className={"pin-guard-input-row"}>
+          <Row>
+            <Col xs={12}>
+              <label>
+                {t(label)}
+              </label>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={5} xsOffset={1} className="no-pad">
+              <label>
+                {t("Pin Number")}
+              </label>
+              <Help text={ToolTips.PIN_GUARD_PIN_NUMBER}
+                position={Position.TOP_RIGHT} />
+            </Col>
+            <Col xs={5} className="no-pad">
+              <this.Number />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={5} xsOffset={1} className="no-pad">
+              <label>
+                {t("Timeout (sec)")}
+              </label>
+            </Col>
+            <Col xs={5} className="no-pad">
+              <this.Timeout />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={5} xsOffset={1} className="no-pad">
+              <label>
+                {t("To State")}
+              </label>
+            </Col>
+            <Col xs={5} className="no-pad">
+              <this.State />
+            </Col>
+          </Row>
+        </div>
+      </Highlight>;
   }
 }

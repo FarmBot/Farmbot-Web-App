@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col, Help } from "../../ui";
-import { ToolTips } from "../../constants";
+import { ToolTips, DeviceSetting } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
 import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
@@ -17,6 +17,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { DevSettings } from "../../account/dev/dev_support";
+import { Highlight } from "../components/maybe_highlight";
 
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {
@@ -73,32 +74,38 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const pinBindings = apiPinBindings(resources);
   const newFormat = DevSettings.futureFeaturesEnabled();
   return <div className="pin-bindings">
-    <Row>
-      {newFormat && <Help text={ToolTips.PIN_BINDINGS}
-        position={Position.TOP_RIGHT} />}
-      <StockPinBindingsButton
-        dispatch={dispatch} firmwareHardware={firmwareHardware} />
-      <Popover
-        position={Position.TOP_RIGHT}
-        interactionKind={PopoverInteractionKind.HOVER}
-        portalClassName={"bindings-warning-icon"}
-        popoverClassName={"help"}>
-        <i className="fa fa-exclamation-triangle" />
-        <div className={"pin-binding-warning"}>
-          {t(ToolTips.PIN_BINDING_WARNING)}
-        </div>
-      </Popover>
-    </Row>
+    <Highlight settingName={DeviceSetting.pinBindings}>
+      <Row>
+        {newFormat && <Help text={ToolTips.PIN_BINDINGS}
+          position={Position.TOP_RIGHT} />}
+        <StockPinBindingsButton
+          dispatch={dispatch} firmwareHardware={firmwareHardware} />
+        <Popover
+          position={Position.TOP_RIGHT}
+          interactionKind={PopoverInteractionKind.HOVER}
+          portalClassName={"bindings-warning-icon"}
+          popoverClassName={"help"}>
+          <i className="fa fa-exclamation-triangle" />
+          <div className={"pin-binding-warning"}>
+            {t(ToolTips.PIN_BINDING_WARNING)}
+          </div>
+        </Popover>
+      </Row>
+    </Highlight>
     <div className={"pin-bindings-list-and-input"}>
       {!newFormat && <PinBindingsListHeader />}
-      <PinBindingsList
-        pinBindings={pinBindings}
-        dispatch={dispatch}
-        resources={resources} />
-      <PinBindingInputGroup
-        pinBindings={pinBindings}
-        dispatch={dispatch}
-        resources={resources} />
+      <Highlight settingName={DeviceSetting.savedPinBindings}>
+        <PinBindingsList
+          pinBindings={pinBindings}
+          dispatch={dispatch}
+          resources={resources} />
+      </Highlight>
+      <Highlight settingName={DeviceSetting.addNewPinBinding}>
+        <PinBindingInputGroup
+          pinBindings={pinBindings}
+          dispatch={dispatch}
+          resources={resources} />
+      </Highlight>
     </div>
   </div>;
 };
