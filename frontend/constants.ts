@@ -923,6 +923,8 @@ export namespace TourContent {
 }
 
 export enum DeviceSetting {
+  axisHeadingLabels = ``,
+
   // Homing and calibration
   homingAndCalibration = `Homing and Calibration`,
   homing = `Homing`,
@@ -974,6 +976,11 @@ export enum DeviceSetting {
 
   // Pin Guard
   pinGuard = `Pin Guard`,
+  pinGuard1 = `Pin Guard 1`,
+  pinGuard2 = `Pin Guard 2`,
+  pinGuard3 = `Pin Guard 3`,
+  pinGuard4 = `Pin Guard 4`,
+  pinGuard5 = `Pin Guard 5`,
 
   // Danger Zone
   dangerZone = `Danger Zone`,
@@ -981,6 +988,8 @@ export enum DeviceSetting {
 
   // Pin Bindings
   pinBindings = `Pin Bindings`,
+  savedPinBindings = `Saved pin bindings`,
+  addNewPinBinding = `Add new pin binding`,
 
   // FarmBot OS
   farmbot = `FarmBot`,
@@ -1131,6 +1140,7 @@ export enum Actions {
   SET_DRAWN_WEED_DATA = "SET_DRAWN_WEED_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
+  SET_SETTINGS_SEARCH_TERM = "SET_SETTINGS_SEARCH_TERM",
   EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",
 
   // Regimens

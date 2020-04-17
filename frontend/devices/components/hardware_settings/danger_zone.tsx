@@ -24,7 +24,7 @@ export function DangerZone(props: DangerZoneProps) {
       <Highlight settingName={DeviceSetting.resetHardwareParams}>
         <Row>
           <Col xs={newFormat ? 8 : 4}>
-            <label>
+            <label style={{ lineHeight: "1.5rem" }}>
               {t(DeviceSetting.resetHardwareParams)}
             </label>
           </Col>

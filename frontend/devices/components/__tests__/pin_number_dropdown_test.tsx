@@ -13,11 +13,12 @@ import {
 import { TaggedFirmwareConfig } from "farmbot";
 import { FBSelect } from "../../../ui";
 import { updateMCU } from "../../actions";
+import { DeviceSetting } from "../../../constants";
 
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
     (firmwareConfig?: TaggedFirmwareConfig): PinGuardMCUInputGroupProps => ({
-      label: "Pin Guard 1",
+      label: DeviceSetting.pinGuard1,
       pinNumKey: "pin_guard_1_pin_nr",
       timeoutKey: "pin_guard_1_time_out",
       activeStateKey: "pin_guard_1_active_state",

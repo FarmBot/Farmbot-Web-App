@@ -158,6 +158,17 @@
         left: 1rem;
         cursor: default !important;
       }
+      .fa-times {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 0.5rem;
+        color: $darkest_red;
+        font-size: 1.3rem;
+        &:hover {
+          color: $medium_dark_red;
+        }
+      }
     }
     input {
       background: transparent;

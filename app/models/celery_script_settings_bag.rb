@@ -16,9 +16,9 @@ module CeleryScriptSettingsBag
   end
 
   PIN_TYPE_MAP = { "Peripheral" => Peripheral,
-                  "Sensor" => Sensor,
-                  "BoxLed3" => BoxLed,
-                  "BoxLed4" => BoxLed }
+                   "Sensor" => Sensor,
+                   "BoxLed3" => BoxLed,
+                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
   ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover continue)
   ALLOWED_CHANGES = %w(add remove update)
@@ -33,16 +33,16 @@ module CeleryScriptSettingsBag
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed GenericPointer)
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
-                         check_updates dump_info emergency_lock
+                         check_updates emergency_lock
                          emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
                          install_farmware install_first_party_farmware _if
                          move_absolute move_relative power_off read_pin
-                         read_status reboot remove_farmware resource_update
+                         read_status reboot remove_farmware update_resource
                          send_message set_servo_angle set_user_env sync
                          take_photo toggle_pin update_farmware wait
                          write_pin zero)
-  ALLOWED_SPEC_ACTION = %w(dump_info emergency_lock emergency_unlock power_off
+  ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off
                            read_status reboot sync take_photo)
   ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
@@ -73,8 +73,7 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
   "as input. Please change your selection to a single" \
   " location."
-  PLANT_STAGES = %w(planned planted harvested sprouted)
-  RESOURCE_UPDATE_ARGS = [:resource_type, :resource_id, :label, :value]
+  PLANT_STAGES = %w(planned planted harvested sprouted removed)
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
   MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
@@ -82,6 +81,13 @@ module CeleryScriptSettingsBag
     "A single wait node cannot exceed #{MAX_WAIT_MS / 1000 / 60} minutes. " +
     "Consider lowering the wait time or using multiple WAIT blocks."
   Corpus = CeleryScript::Corpus.new
+  THIS_IS_DEPRECATED = {
+    args: [:resource_type, :resource_id, :label, :value],
+    tags: [:function, :api_writer, :network_user],
+    blk: ->(n) do
+      n.invalidate!("Deprecated `mark_as` detected. Delete it and re-add")
+    end,
+  }
 
   CORPUS_VALUES = {
     boolean: [TrueClass, FalseClass],
@@ -278,6 +284,9 @@ module CeleryScriptSettingsBag
     lua: {
       defn: [v(:string)],
     },
+    resource: {
+      defn: [n(:identifier), n(:resource)],
+    },
   }.map do |(name, conf)|
     blk = conf[:blk]
     defn = conf.fetch(:defn)
@@ -316,10 +325,6 @@ module CeleryScriptSettingsBag
     coordinate: {
       args: [:x, :y, :z],
       tags: [:data, :location_like],
-    },
-    dump_info: {
-      tags: [:function, :network_user, :disk_user, :api_writer],
-      docs: "Sends an info dump to server administrators for troubleshooting.",
     },
     emergency_lock: {
       tags: [:function, :firmware_user, :control_flow],
@@ -513,14 +518,21 @@ module CeleryScriptSettingsBag
       tags: [:function, :firmware_user, :rpi_user],
       blk: ->(n) { no_rpi_analog(n) },
     },
-    resource_update: {
-      args: RESOURCE_UPDATE_ARGS,
-      tags: [:function, :api_writer, :network_user],
+    # DEPRECATED- Get rid of this node ASAP -RC 15 APR 2020
+    resource_update: THIS_IS_DEPRECATED,
+    resource: {
+      args: [:resource_type, :resource_id],
+      tags: [:network_user],
       blk: ->(n) do
         resource_type = n.args.fetch(:resource_type).value
         resource_id = n.args.fetch(:resource_id).value
         check_resource_type(n, resource_type, resource_id, Device.current)
       end,
+    },
+    update_resource: {
+      args: [:resource],
+      body: [:pair],
+      tags: [:function, :api_writer, :network_user],
     },
     point_group: {
       args: [:point_group_id],
@@ -529,7 +541,7 @@ module CeleryScriptSettingsBag
         resource_id = n.args.fetch(:point_group_id).value
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
-    }
+    },
   }.map { |(name, list)| Corpus.node(name, **list) }
 
   HASH = Corpus.as_json
