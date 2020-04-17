@@ -326,10 +326,6 @@ module CeleryScriptSettingsBag
       args: [:x, :y, :z],
       tags: [:data, :location_like],
     },
-    dump_info: {
-      tags: [:function, :network_user, :disk_user, :api_writer],
-      docs: "Sends an info dump to server administrators for troubleshooting.",
-    },
     emergency_lock: {
       tags: [:function, :firmware_user, :control_flow],
     },
