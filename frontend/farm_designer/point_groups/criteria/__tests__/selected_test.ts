@@ -107,7 +107,7 @@ describe("typeDisabled()", () => {
 
   it("isn't disabled", () => {
     const criteria = fakeCriteria();
-    criteria.string_eq = { plant_stage: ["planted"] };
+    criteria.string_eq = { openfarm_slug: ["mint"] };
     const result = typeDisabled(criteria, "Plant");
     expect(result).toBeFalsy();
   });

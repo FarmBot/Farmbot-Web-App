@@ -1,13 +1,8 @@
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import * as React from "react";
 import {
-  PlantPanel, PlantPanelProps, EditPlantStatusProps,
+  PlantPanel, PlantPanelProps,
   EditDatePlantedProps, EditDatePlanted, EditPlantLocationProps,
   EditPlantLocation,
 } from "../plant_panel";
@@ -18,11 +13,6 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { edit } from "../../../api/crud";
-import {
-  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate,
-} from "../edit_plant_status";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -103,70 +93,6 @@ describe("<PlantPanel/>", () => {
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 12, y: 34, z: undefined }
     });
-  });
-});
-
-describe("<EditPlantStatus />", () => {
-  const fakeProps = (): EditPlantStatusProps => ({
-    uuid: "Plant.0.0",
-    plantStatus: "planned",
-    updatePlant: jest.fn(),
-  });
-
-  it("changes stage to planted", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<EditPlantStatus {...p} />);
-    wrapper.find("FBSelect").simulate("change", { value: "planted" });
-    expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      plant_stage: "planted",
-      planted_at: expect.stringContaining("Z")
-    });
-  });
-
-  it("changes stage to planned", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<EditPlantStatus {...p} />);
-    wrapper.find("FBSelect").simulate("change", { value: "planned" });
-    expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      plant_stage: "planned",
-      planted_at: undefined
-    });
-  });
-});
-
-describe("<PlantStatusBulkUpdate />", () => {
-  const fakeProps = (): PlantStatusBulkUpdateProps => ({
-    plants: [],
-    selected: [],
-    dispatch: jest.fn(),
-  });
-
-  it("doesn't update plant statuses", () => {
-    const p = fakeProps();
-    const plant1 = fakePlant();
-    const plant2 = fakePlant();
-    p.plants = [plant1, plant2];
-    p.selected = [plant1.uuid];
-    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
-    window.confirm = jest.fn(() => false);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
-    expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
-  });
-
-  it("updates plant statuses", () => {
-    const p = fakeProps();
-    const plant1 = fakePlant();
-    const plant2 = fakePlant();
-    const plant3 = fakePlant();
-    p.plants = [plant1, plant2, plant3];
-    p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
-    window.confirm = jest.fn(() => true);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
-    expect(window.confirm).toHaveBeenCalledWith(
-      "Change the plant status to 'planted' for 2 plants?");
-    expect(edit).toHaveBeenCalledTimes(2);
   });
 });
 

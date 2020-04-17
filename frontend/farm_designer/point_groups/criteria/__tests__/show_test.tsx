@@ -161,7 +161,6 @@ describe("<NumberLtGtInput />", () => {
       p.group,
       "number_gt",
       "x",
-      undefined,
     );
   });
 
@@ -175,7 +174,6 @@ describe("<NumberLtGtInput />", () => {
       p.group,
       "number_lt",
       "x",
-      undefined,
     );
   });
 });

@@ -158,7 +158,7 @@ export function renderCeleryNode(props: StepParams) {
     case "reboot": return <TileReboot {...props} />;
     case "emergency_lock": return <TileEmergencyStop {...props} />;
     case "assertion": return <TileAssertion {...props} />;
-    case "sync": case "dump_info": case "power_off": case "read_status":
+    case "sync": case "power_off": case "read_status":
     case "emergency_unlock": case "install_first_party_farmware":
       return <TileSystemAction {...props} />;
     case "check_updates": case "factory_reset":

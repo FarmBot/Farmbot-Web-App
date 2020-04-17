@@ -10,6 +10,7 @@ import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
 import { parseIntInput } from "../../util";
 import { UUID } from "../../resources/interfaces";
 import { plantAge } from "../plants/map_state_to_props";
+import { EditWeedStatus } from "../plants/edit_plant_status";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -26,6 +27,11 @@ export const updatePoint =
 
 export interface EditPointPropertiesProps {
   point: TaggedGenericPointer | TaggedWeedPointer;
+  updatePoint(update: PointUpdate): void;
+}
+
+export interface AdditionalWeedPropertiesProps {
+  point: TaggedWeedPointer;
   updatePoint(update: PointUpdate): void;
 }
 
@@ -53,10 +59,13 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     </ListItem>
   </ul>;
 
-export const AdditionalWeedProperties = (props: EditPointPropertiesProps) =>
+export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
   <ul className="additional-weed-properties">
     <ListItem name={t("Age")}>
       {`${plantAge(props.point)} ${t("days old")}`}
+    </ListItem>
+    <ListItem name={t("Status")}>
+      <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
     </ListItem>
     {Object.entries(props.point.body.meta).map(([key, value]) => {
       switch (key) {

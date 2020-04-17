@@ -25,7 +25,6 @@ function translate(input: Step): string {
     "wait": t("Wait"),
     "write_pin": t("Control Peripheral"),
     "sync": t("Sync"),
-    "dump_info": t("Diagnostic Report"),
     "power_off": t("Shutdown"),
     "read_status": t("Read status"),
     "emergency_unlock": t("UNLOCK"),

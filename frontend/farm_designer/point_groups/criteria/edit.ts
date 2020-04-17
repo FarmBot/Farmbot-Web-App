@@ -60,7 +60,7 @@ export const toggleAndEditEqCriteria = <T extends string | number>(
     const wasOff = !tempEqCriteria[key]?.includes(value);
     toggleEqCriteria<T>(tempEqCriteria)(key, value);
     pointerType && wasOff && clearSubCriteria(
-      POINTER_TYPES.filter(x => x != pointerType), tempCriteria);
+      POINTER_TYPES.filter(x => x != pointerType), tempCriteria, key);
     dispatch(editCriteria(group, tempCriteria));
   };
 
@@ -68,16 +68,17 @@ export const toggleAndEditEqCriteria = <T extends string | number>(
 export const clearSubCriteria = (
   pointerTypes: PointerType[],
   tempCriteria: PointGroupCriteria,
+  keepKey: string,
 ) => {
   const toggleStrEq = toggleEqCriteria<string>(tempCriteria.string_eq, "off");
   const toggleNumEq = toggleEqCriteria<number>(tempCriteria.number_eq, "off");
-  const toggleStrEqMapper = (key: string) =>
+  const toggleStrEqMapper = (key: string) => key != keepKey &&
     tempCriteria.string_eq[key]?.map(value => toggleStrEq(key, value));
   if (pointerTypes.includes("Plant")) {
     ["openfarm_slug", "plant_stage"].map(toggleStrEqMapper);
   }
   if (pointerTypes.includes("Weed")) {
-    ["meta.created_by"].map(toggleStrEqMapper);
+    ["meta.created_by", "plant_stage"].map(toggleStrEqMapper);
   }
   if (pointerTypes.includes("GenericPointer") && pointerTypes.includes("Weed")) {
     ["meta.color"].map(toggleStrEqMapper);
@@ -101,8 +102,8 @@ export const togglePointTypeCriteria =
       const toggle = toggleEqCriteria<string>(tempCriteria.string_eq);
       clear && (tempCriteria.string_eq.pointer_type = []);
       toggle("pointer_type", pointerType);
-      clearSubCriteria(
-        POINTER_TYPES.filter(x => x != pointerType), tempCriteria);
+      clearSubCriteria(POINTER_TYPES.filter(x => x != pointerType),
+        tempCriteria, "pointer_type");
       dispatch(editCriteria(group, tempCriteria));
     };
 
@@ -164,7 +165,7 @@ export const editGtLtCriteriaField = (
     (dispatch: Function) => {
       const tempCriteria = cloneDeep(group.body.criteria);
       pointerType && clearSubCriteria(
-        POINTER_TYPES.filter(x => x != pointerType), tempCriteria);
+        POINTER_TYPES.filter(x => x != pointerType), tempCriteria, criteriaKey);
       const value = e.currentTarget.value != ""
         ? parseInt(e.currentTarget.value)
         : undefined;

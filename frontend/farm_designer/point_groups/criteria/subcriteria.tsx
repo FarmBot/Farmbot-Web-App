@@ -17,7 +17,7 @@ import {
   SubCriteriaSectionProps,
   CheckboxListItem,
 } from "./interfaces";
-import { PLANT_STAGE_LIST } from "../../plants/edit_plant_status";
+import { PLANT_STAGE_LIST, WEED_STATUSES } from "../../plants/edit_plant_status";
 import { DIRECTION_CHOICES } from "../../tools/tool_slot_edit_components";
 import { Checkbox } from "../../../ui";
 import { PointType } from "farmbot";
@@ -80,7 +80,7 @@ export const CheckboxList =
         <div className="criteria-checkbox-list-item" key={index}>
           <Checkbox
             onChange={() => props.dispatch(toggle<T>(
-              props.group, props.criteriaKey, value, props.pointerType))}
+              props.group, props.criteriaKey, value))}
             checked={selected(props.criteriaKey, value)}
             title={t(label)}
             color={color}
@@ -95,14 +95,16 @@ export const PlantCriteria = (props: PlantSubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const commonProps = { group, dispatch, disabled };
   return <div className={"plant-criteria-options"}>
-    <PlantStage {...commonProps} />
+    <PlantStage {...commonProps} pointerType={"Plant"} />
     <PlantType {...commonProps} slugs={props.slugs} />
   </div>;
 };
 
-const PlantStage = (props: SubCriteriaProps) =>
+const PlantStage = (props: PointSubCriteriaProps) =>
   <div className={"plant-stage-criteria"}>
-    <p className={"category"}>{t("Stage")}</p>
+    <p className={"category"}>
+      {props.pointerType == "Plant" ? t("Stage") : t("Status")}
+    </p>
     <ClearCategory
       group={props.group}
       criteriaCategories={["string_eq"]}
@@ -110,12 +112,15 @@ const PlantStage = (props: SubCriteriaProps) =>
       dispatch={props.dispatch} />
     <CheckboxList<string>
       disabled={props.disabled}
-      pointerType={"Plant"}
+      pointerType={props.pointerType}
       criteriaKey={"plant_stage"}
       group={props.group}
       dispatch={props.dispatch}
-      list={PLANT_STAGE_LIST().map(ddi =>
-        ({ label: ddi.label, value: "" + ddi.value }))} />
+      list={PLANT_STAGE_LIST().filter(ddi =>
+        props.pointerType == "Plant" || WEED_STATUSES.includes("" + ddi.value))
+        .map(ddi => ({ label: ddi.label, value: "" + ddi.value }))
+        .concat(props.pointerType == "Weed"
+          ? [{ label: t("Remaining"), value: "planned" }] : [])} />
   </div>;
 
 const PlantType = (props: PlantSubCriteriaProps) =>
@@ -145,6 +150,7 @@ export const WeedCriteria = (props: SubCriteriaProps) => {
   const commonProps = { group, dispatch, disabled, pointerType };
   return <div className={"weed-criteria-options"}>
     <PointSource {...commonProps} />
+    <PlantStage {...commonProps} />
     <Color {...commonProps} />
     <Radius {...commonProps} />
   </div>;

@@ -291,7 +291,7 @@
   .panel-action-buttons {
     position: absolute;
     z-index: 9;
-    height: 19rem;
+    height: 25rem;
     width: 100%;
     background: $panel_medium_light_gray;
     padding: 0.5rem;
@@ -303,6 +303,7 @@
       min-width: -webkit-fill-available;
       margin-bottom: 0px;
       margin-left: .5rem;
+      margin-top: 1rem;
     }
     .button-row {
       float: left;
@@ -325,7 +326,7 @@
     }
   }
   .panel-content {
-    padding-top: 19rem;
+    padding-top: 25rem;
     padding-right: 0;
     padding-left: 0;
     padding-bottom: 5rem;

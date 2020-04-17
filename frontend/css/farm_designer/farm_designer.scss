@@ -564,10 +564,10 @@
     cursor: pointer;
   }
   .more-bugs,
+  .select-mode,
   .move-to-mode {
-    button {
-      margin-right: 1rem;
-    }
+    margin: auto;
+    margin-top: 1rem;
     p {
       text-align: center;
       padding-top: 2rem;
