@@ -33,7 +33,7 @@ module CeleryScriptSettingsBag
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed GenericPointer)
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
-                         check_updates dump_info emergency_lock
+                         check_updates emergency_lock
                          emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
                          install_farmware install_first_party_farmware _if
@@ -42,7 +42,7 @@ module CeleryScriptSettingsBag
                          send_message set_servo_angle set_user_env sync
                          take_photo toggle_pin update_farmware wait
                          write_pin zero)
-  ALLOWED_SPEC_ACTION = %w(dump_info emergency_lock emergency_unlock power_off
+  ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off
                            read_status reboot sync take_photo)
   ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
@@ -325,10 +325,6 @@ module CeleryScriptSettingsBag
     coordinate: {
       args: [:x, :y, :z],
       tags: [:data, :location_like],
-    },
-    dump_info: {
-      tags: [:function, :network_user, :disk_user, :api_writer],
-      docs: "Sends an info dump to server administrators for troubleshooting.",
     },
     emergency_lock: {
       tags: [:function, :firmware_user, :control_flow],
