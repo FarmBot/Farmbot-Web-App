@@ -215,6 +215,18 @@ describe("<SelectPlants />", () => {
       { payload: undefined, type: Actions.SELECT_POINT });
   });
 
+  it("toggles more", () => {
+    const p = fakeProps();
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    expect(wrapper.state().more).toEqual(false);
+    expect(wrapper.find(".select-more").props().hidden).toBeTruthy();
+    expect(wrapper.html()).not.toContain(" more status");
+    wrapper.find(".more").simulate("click");
+    expect(wrapper.state().more).toEqual(true);
+    expect(wrapper.find(".select-more").props().hidden).toBeFalsy();
+    expect(wrapper.html()).toContain(" more status");
+  });
+
   it("selects group items", () => {
     const p = fakeProps();
     p.selected = undefined;
@@ -236,7 +248,7 @@ describe("<SelectPlants />", () => {
     expect(wrapper.state().group_id).toEqual(1);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
-      payload: POINTER_TYPES,
+      payload: ["Plant"],
     });
     expect(p.dispatch).toHaveBeenLastCalledWith({
       type: Actions.SELECT_POINT,
@@ -262,6 +274,30 @@ describe("<SelectPlants />", () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant"],
+    });
+  });
+
+  it("selects selection type without criteria", () => {
+    const p = fakeProps();
+    const group = fakePointGroup();
+    group.body.id = 1;
+    group.body.criteria.string_eq = {};
+    const plant = fakePlant();
+    plant.body.id = 1;
+    const weed = fakeWeed();
+    weed.body.id = 2;
+    group.body.point_ids = [1, 2];
+    p.groups = [group];
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
+    actionsWrapper.find("FBSelect").at(1).simulate("change", {
+      label: "", value: 1
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: POINTER_TYPES,
     });
   });
 

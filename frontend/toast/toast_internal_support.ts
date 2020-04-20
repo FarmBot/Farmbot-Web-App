@@ -3,7 +3,9 @@ import { FBToast } from "./fb_toast";
 /**
  * The function responsible for attaching the messages to the container.
  */
-export const createToast = (message: string, title: string, color: string) => {
+export const createToast = (
+  message: string, title: string, color: string, idPrefix: string,
+) => {
 
   /**
    * Container element for all of the messages created from init().
@@ -17,18 +19,20 @@ export const createToast = (message: string, title: string, color: string) => {
   /**
    * Create elements.
    */
-  const t = new FBToast(parent, title, message, color);
+  const t = new FBToast(parent, title, message, color, idPrefix);
   t.run();
 };
 
 export const createToastOnce = (message: string,
   title: string,
   color: string,
-  fallbackLogger = console.warn) => {
+  idPrefix: string,
+  fallbackLogger = console.warn,
+) => {
   if (FBToast.everyMessage[message]) {
     fallbackLogger(message);
   } else {
-    createToast(message, title, color);
+    createToast(message, title, color, idPrefix);
     FBToast.everyMessage[message] = true;
   }
 };

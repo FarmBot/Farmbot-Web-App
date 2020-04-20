@@ -1,3 +1,5 @@
+import { uuid } from "farmbot";
+
 /** This is a [surprisingly reliable] legacy component.
  * TODO: Convert this to React. */
 export class FBToast {
@@ -29,7 +31,10 @@ export class FBToast {
   constructor(public parent: Element,
     title: string,
     raw_message: string,
-    color: string) {
+    color: string,
+    idPrefix: string) {
+
+    idPrefix && (this.toastEl.id = `${idPrefix}-toast-${uuid()}`);
 
     this.message = raw_message.replace(/\s+/g, " ");
     /** Fill contents. */
@@ -84,7 +89,7 @@ export class FBToast {
   detach = () => {
     clearInterval(this.intervalId);
     delete FBToast.everyMessage[this.message];
-    if (this.isAttached) {
+    if (this.isAttached && this.parent.contains(this.toastEl)) {
       this.parent.removeChild(this.toastEl);
       this.isAttached = false;
     }

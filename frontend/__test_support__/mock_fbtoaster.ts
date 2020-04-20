@@ -7,4 +7,5 @@ jest.mock("../toast/toast", () => ({
   error: jest.fn(),
   warning: jest.fn(),
   busy: jest.fn(),
+  removeToast: jest.fn(),
 }));

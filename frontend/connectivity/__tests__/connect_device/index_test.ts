@@ -37,7 +37,9 @@ import { getDevice } from "../../../device";
 import { talk } from "browser-speech";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
-import { info, error, success, warning, fun, busy } from "../../../toast/toast";
+import {
+  info, error, success, warning, fun, busy, removeToast,
+} from "../../../toast/toast";
 import { onLogs } from "../../log_handlers";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { globalQueue } from "../../batch_queue";
@@ -177,7 +179,8 @@ describe("onOffline", () => {
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
-    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
+    expect(error).toHaveBeenCalledWith(
+      Content.MQTT_DISCONNECTED, "Error", "red", "offline");
   });
 });
 
@@ -186,13 +189,17 @@ describe("onOnline", () => {
     jest.resetAllMocks();
     onOnline();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
+    expect(removeToast).toHaveBeenCalledWith("offline");
   });
 });
 
-describe("onReconnect", () => {
-  onReconnect();
-  expect(warning).toHaveBeenCalledWith(
-    "Attempting to reconnect to the message broker", "Offline", "yellow");
+describe("onReconnect()", () => {
+  it("sends reconnect toast", () => {
+    onReconnect();
+    expect(warning).toHaveBeenCalledWith(
+      "Attempting to reconnect to the message broker",
+      "Offline", "yellow", "offline");
+  });
 });
 
 describe("changeLastClientConnected", () => {
@@ -268,7 +275,8 @@ describe("onPublicBroadcast", () => {
     console.log = jest.fn();
     onPublicBroadcast({});
     expectBroadcastLog();
-    expect(window.alert).toHaveBeenCalledWith(Content.FORCE_REFRESH_CANCEL_WARNING);
+    expect(window.alert).toHaveBeenCalledWith(
+      Content.FORCE_REFRESH_CANCEL_WARNING);
     expect(location.assign).not.toHaveBeenCalled();
   });
 });
