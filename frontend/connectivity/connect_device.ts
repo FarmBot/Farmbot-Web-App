@@ -4,7 +4,9 @@ import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { noop } from "lodash";
-import { success, error, info, warning, fun, busy } from "../toast/toast";
+import {
+  success, error, info, warning, fun, busy, removeToast,
+} from "../toast/toast";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
@@ -102,11 +104,6 @@ export function readStatus() {
     .then(() => { commandOK(noun); }, commandErr(noun));
 }
 
-export const onOffline = () => {
-  dispatchNetworkDown("user.mqtt", now());
-  error(t(Content.MQTT_DISCONNECTED));
-};
-
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
@@ -157,14 +154,20 @@ export function onMalformed() {
   }
 }
 
-export const onOnline =
-  () => {
-    success(t("Reconnected to the message broker."), t("Online"));
-    dispatchNetworkUp("user.mqtt", now());
-  };
-export const onReconnect =
-  () => warning(t("Attempting to reconnect to the message broker"),
-    t("Offline"), "yellow");
+export const onOnline = () => {
+  removeToast("offline");
+  success(t("Reconnected to the message broker."), t("Online"));
+  dispatchNetworkUp("user.mqtt", now());
+};
+
+export const onReconnect = () =>
+  warning(t("Attempting to reconnect to the message broker"),
+    t("Offline"), "yellow", "offline");
+
+export const onOffline = () => {
+  dispatchNetworkDown("user.mqtt", now());
+  error(t(Content.MQTT_DISCONNECTED), t("Error"), "red", "offline");
+};
 
 export function onPublicBroadcast(payl: unknown) {
   console.log(FbjsEventName.publicBroadcast, payl);
