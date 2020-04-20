@@ -41,6 +41,13 @@ export function Diagnosis(props: DiagnosisProps) {
         <div className={"saucer-connector last " + diagnosisColor} />
       </Col>
       <Col xs={10} className={"connectivity-diagnosis"}>
+        <p className="blinking">
+          {t("Always")}&nbsp;
+          <a className="blinking" href="/app/device?highlight=farmbot_os">
+            <u>{t("upgrade FarmBot OS")}</u>
+          </a>
+            &nbsp;{t("before troubleshooting.")}
+        </p>
         <p>
           {diagnose(props)}
         </p>

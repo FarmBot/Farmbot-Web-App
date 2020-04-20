@@ -11,6 +11,7 @@ import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
 import { t } from "../../../i18next_wrapper";
 import { Feature } from "../../../devices/interfaces";
+import { SelectModeLink } from "../../plants/select_plants";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -109,6 +110,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
       <LayerToggles {...props} />
       <MoveModeLink />
+      <SelectModeLink />
       <BugsControls />
     </div>
   </div>;

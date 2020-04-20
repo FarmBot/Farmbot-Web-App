@@ -11,9 +11,11 @@ import {
   EditPointColor, EditPointColorProps, updatePoint, EditPointName,
   EditPointNameProps,
   AdditionalWeedProperties,
-  EditPointPropertiesProps,
+  AdditionalWeedPropertiesProps,
 } from "../point_edit_actions";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePoint, fakeWeed,
+} from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";
 
 describe("updatePoint()", () => {
@@ -94,8 +96,8 @@ describe("<EditPointColor />", () => {
 });
 
 describe("<AdditionalWeedProperties />", () => {
-  const fakeProps = (): EditPointPropertiesProps => ({
-    point: fakePoint(),
+  const fakeProps = (): AdditionalWeedPropertiesProps => ({
+    point: fakeWeed(),
     updatePoint: jest.fn(),
   });
 

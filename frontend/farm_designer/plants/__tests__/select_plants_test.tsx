@@ -18,12 +18,13 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
-  getFilteredPoints, GetFilteredPointsProps, validPointTypes,
+  getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
   fakePlantTemplate,
   fakeWebAppConfig,
+  fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { Actions, Content } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -35,6 +36,8 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { history } from "../../../history";
+import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -60,6 +63,7 @@ describe("<SelectPlants />", () => {
       quadrant: 2,
       isActive: () => false,
       tools: [],
+      groups: [],
     };
   }
 
@@ -211,7 +215,57 @@ describe("<SelectPlants />", () => {
       { payload: undefined, type: Actions.SELECT_POINT });
   });
 
-  const DELETE_BTN_INDEX = 3;
+  it("selects group items", () => {
+    const p = fakeProps();
+    p.selected = undefined;
+    const group = fakePointGroup();
+    group.body.id = 1;
+    const plant = fakePlant();
+    plant.body.id = 1;
+    group.body.point_ids = [1];
+    p.groups = [group];
+    p.allPoints = [plant];
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
+    expect(wrapper.state().group_id).toEqual(undefined);
+    actionsWrapper.find("FBSelect").at(1).simulate("change", {
+      label: "", value: 1
+    });
+    expect(wrapper.state().group_id).toEqual(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: POINTER_TYPES,
+    });
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: [plant.uuid],
+    });
+  });
+
+  it("selects selection type", () => {
+    const p = fakeProps();
+    const group0 = fakePointGroup();
+    group0.body.id = 0;
+    const group1 = fakePointGroup();
+    group1.body.id = 1;
+    group1.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    p.groups = [group0, group1];
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
+    actionsWrapper.find("FBSelect").at(1).simulate("change", {
+      label: "", value: 1
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: ["Plant"],
+    });
+  });
+
+  const DELETE_BTN_INDEX = 4;
 
   it("confirms deletion of selected plants", () => {
     const p = fakeProps();
@@ -342,5 +396,13 @@ describe("validPointTypes()", () => {
 
   it("returns undefined", () => {
     expect(validPointTypes(["nope"])).toEqual(undefined);
+  });
+});
+
+describe("<SelectModeLink />", () => {
+  it("navigates to panel", () => {
+    const wrapper = shallow(<SelectModeLink />);
+    wrapper.find("button").simulate("click");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 });

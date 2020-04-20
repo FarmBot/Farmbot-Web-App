@@ -62,6 +62,7 @@ export const hasSubCriteria = (criteria: PointGroupCriteria) =>
       case "Weed":
         return !!(
           selected("meta.created_by")
+          || selected("plant_stage")
           || selected("meta.color")
           || numSelected("radius"));
       case "Plant":

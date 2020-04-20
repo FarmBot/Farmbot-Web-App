@@ -81,6 +81,6 @@ describe("<CheckboxList />", () => {
     expect(wrapper.text()).toContain("label");
     wrapper.find("input").first().simulate("change");
     expect(toggleAndEditEqCriteria).toHaveBeenCalledWith(
-      p.group, "openfarm_slug", "value", "Plant");
+      p.group, "openfarm_slug", "value");
   });
 });
