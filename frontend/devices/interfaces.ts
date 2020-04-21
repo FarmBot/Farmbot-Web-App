@@ -81,6 +81,7 @@ export enum Feature {
   ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",
   sensors = "sensors",
+  update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",
 }

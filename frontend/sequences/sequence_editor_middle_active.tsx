@@ -12,7 +12,7 @@ import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
 import { LocalsList, localListCallback } from "./locals_list/locals_list";
-import { betterCompact } from "../util";
+import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
@@ -135,7 +135,8 @@ const SequenceBtnGroup = ({
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
-      onClick={() => dispatch(save(sequence.uuid))} />
+      onClick={() => dispatch(save(sequence.uuid)).then(() =>
+        push(`/app/sequences/${urlFriendly(sequence.body.name)}`))} />
     <TestButton
       syncStatus={syncStatus}
       sequence={sequence}

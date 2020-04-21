@@ -1,5 +1,5 @@
 import { resourceList } from "../resource_list";
-import { markAsResourceFixture } from "../assertion_support";
+import { markAsResourceFixture } from "../test_support";
 
 describe("resourceList()", () => {
   it("lists defaults, plus saved points", () => {

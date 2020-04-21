@@ -8,7 +8,7 @@ export const DISMOUNT = (): DropDownItem =>
   ({ label: t("Not Mounted"), value: 0 });
 
 /** Legal "actions" for "Mark As.." block when marking Point resources */
-export const POINT_OPTIONS: DropDownItem[] = [
+export const POINT_OPTIONS = (): DropDownItem[] => [
   { label: t("Removed"), value: "removed" },
 ];
 

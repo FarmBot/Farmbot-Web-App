@@ -1,6 +1,6 @@
-import { fakeMarkAsProps } from "../assertion_support";
+import { fakeMarkAsProps } from "../test_support";
 import { commitStepChanges } from "../commit_step_changes";
-import { ResourceUpdate, TaggedSequence } from "farmbot";
+import { UpdateResource, TaggedSequence } from "farmbot";
 import { Actions } from "../../../../constants";
 import { unpackUUID } from "../../../../util";
 
@@ -10,7 +10,7 @@ describe("commitSelection", () => {
     const results = commitStepChanges({
       nextAction: { label: "X", value: "some_action" },
       nextResource: undefined,
-      step: p.currentStep as ResourceUpdate,
+      step: p.currentStep as UpdateResource,
       index: p.index,
       sequence: p.currentSequence
     });
@@ -19,7 +19,7 @@ describe("commitSelection", () => {
     expect(unpackUUID(payload.uuid).kind).toBe("Sequence");
     const s = payload.update as TaggedSequence["body"];
     expect(s.kind).toBe("sequence");
-    const step = (s.body || [])[0] as ResourceUpdate;
-    expect(step.args.value).toBe("some_action");
+    const step = (s.body || [])[0] as UpdateResource;
+    expect(step.body?.[0].args.value).toBe("some_action");
   });
 });

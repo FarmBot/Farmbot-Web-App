@@ -7,7 +7,7 @@ import * as React from "react";
 import { shallow, mount } from "enzyme";
 import { MarkAs } from "../../mark_as";
 import { FBSelect } from "../../../../ui";
-import { fakeMarkAsProps } from "../assertion_support";
+import { fakeMarkAsProps } from "../test_support";
 import { commitStepChanges } from "../commit_step_changes";
 
 describe("<MarkAs/>", () => {

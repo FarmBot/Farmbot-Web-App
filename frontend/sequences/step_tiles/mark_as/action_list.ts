@@ -2,7 +2,7 @@ import { Dictionary } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ListBuilder } from "./interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { ResourceUpdate } from "farmbot";
+import { UpdateResource } from "farmbot";
 import { selectAllTools } from "../../../resources/selectors";
 import {
   MOUNTED_TO,
@@ -27,16 +27,19 @@ const DEFAULT = "Default";
 const ACTION_LIST: Dictionary<ListBuilder> = {
   "Device": (i) => [DISMOUNT(), ...allToolsAsDDI(i)],
   "Plant": () => PLANT_OPTIONS(),
-  "GenericPointer": () => POINT_OPTIONS,
-  "Weed": () => POINT_OPTIONS,
+  "GenericPointer": () => POINT_OPTIONS(),
+  "Weed": () => POINT_OPTIONS(),
   [DEFAULT]: () => []
 };
 
-const getList =
-  (t = DEFAULT): ListBuilder => (ACTION_LIST[t] || ACTION_LIST[DEFAULT]);
+const getList = (t: string): ListBuilder =>
+  (ACTION_LIST[t] || ACTION_LIST[DEFAULT]);
 
-export const actionList = (d: DropDownItem | undefined,
-  r: ResourceUpdate,
+export const actionList = (d: string | undefined,
+  r: UpdateResource,
   i: ResourceIndex): DropDownItem[] => {
-  return getList(d ? d.headingId : r.args.resource_type)(i);
+  const resourceType = r.args.resource.kind == "identifier"
+    ? DEFAULT
+    : r.args.resource.args.resource_type;
+  return getList(d || resourceType)(i);
 };

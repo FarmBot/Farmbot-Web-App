@@ -179,16 +179,19 @@ export function StepButtonCluster(props: StepButtonProps) {
     {t("ASSERTION")}
   </StepButton>);
 
-  shouldDisplay(Feature.mark_as_step) && ALL_THE_BUTTONS.push(<StepButton
+  shouldDisplay(Feature.update_resource) && ALL_THE_BUTTONS.push(<StepButton
     {...commonStepProps}
     step={{
-      kind: "resource_update",
+      kind: "update_resource",
       args: {
-        resource_type: "Device",
-        resource_id: 0,
-        label: "mounted_tool_id",
-        value: 0
-      }
+        resource: {
+          kind: "resource",
+          args: { resource_id: 0, resource_type: "Device" }
+        }
+      },
+      body: [
+        { kind: "pair", args: { label: "mounted_tool_id", value: 0 } },
+      ],
     }}
     color="brown">
     {t("Mark As...")}

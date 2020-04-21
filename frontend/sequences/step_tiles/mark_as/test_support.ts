@@ -1,4 +1,6 @@
-import { ResourceUpdate, TaggedSequence, resource_type } from "farmbot";
+import {
+  UpdateResource, TaggedSequence, resource_type, Pair, Resource, Identifier,
+} from "farmbot";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -11,18 +13,26 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { betterMerge } from "../../../util";
 import { MarkAs } from "../mark_as";
-import { ResourceUpdateArgs } from "./interfaces";
 
-export function resourceUpdate(i: ResourceUpdateArgs): ResourceUpdate {
+export function updateResource(
+  resource?: Resource | Identifier, pairArgs?: Pair["args"]): UpdateResource {
   return {
-    kind: "resource_update",
+    kind: "update_resource",
     args: {
-      resource_type: "Other" as resource_type,
-      resource_id: 1,
-      label: "some_attr",
-      value: "some_value",
-      ...i
-    }
+      resource: resource || {
+        kind: "resource", args: {
+          resource_type: "Other" as resource_type,
+          resource_id: 1,
+        }
+      },
+    },
+    body: [{
+      kind: "pair", args: {
+        label: "some_attr",
+        value: "some_value",
+        ...pairArgs,
+      }
+    }],
   };
 }
 
@@ -38,13 +48,14 @@ export const markAsResourceFixture = () => buildResourceIndex([
 export function fakeMarkAsProps() {
   const steps: TaggedSequence["body"]["body"] = [
     {
-      kind: "resource_update",
+      kind: "update_resource",
       args: {
-        resource_type: "Device",
-        resource_id: 0,
-        label: "mounted_tool_id",
-        value: 0
-      }
+        resource: {
+          kind: "resource",
+          args: { resource_id: 0, resource_type: "Device" }
+        }
+      },
+      body: [{ kind: "pair", args: { label: "mounted_tool_id", value: 0 } }],
     },
   ];
   const currentSequence: TaggedSequence =

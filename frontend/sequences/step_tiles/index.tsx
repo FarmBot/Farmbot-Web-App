@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   CeleryNode, LegalArgString, If, Execute, Nothing,
-  SequenceBodyItem as Step, TaggedSequence,
+  SequenceBodyItem as Step, TaggedSequence, LegalSequenceKind,
 } from "farmbot";
 import { FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
@@ -33,6 +33,7 @@ import { t } from "../../i18next_wrapper";
 import { TileAssertion } from "./tile_assertion";
 import { TileEmergencyStop } from "./tile_emergency_stop";
 import { TileReboot } from "./tile_reboot";
+import { TileOldMarkAs } from "./tile_old_mark_as";
 
 interface MoveParams {
   step: Step;
@@ -149,7 +150,9 @@ export function renderCeleryNode(props: StepParams) {
     case "take_photo": return <TileTakePhoto {...props} />;
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
-    case "resource_update": return <MarkAs {...props} />;
+    case "update_resource": return <MarkAs {...props} />;
+    case "resource_update" as LegalSequenceKind:
+      return <TileOldMarkAs {...props} />;
     case "set_servo_angle": return <TileSetServoAngle {...props} />;
     case "toggle_pin": return <TileTogglePin {...props} />;
     case "zero": return <TileSetZero {...props} />;
