@@ -1,4 +1,4 @@
-import { ResourceUpdate } from "farmbot";
+import { UpdateResource } from "farmbot";
 import { editStep } from "../../../api/crud";
 import { packStep } from "./pack_step";
 import { MarkAsEditProps } from "./interfaces";
@@ -11,8 +11,10 @@ export const commitStepChanges = (p: MarkAsEditProps) => {
     step,
     index,
     sequence,
-    executor(c: ResourceUpdate) {
-      c.args = packStep(step, nextResource, nextAction).args;
+    executor(c: UpdateResource) {
+      const { args, body } = packStep(step, nextResource, nextAction);
+      c.args = args;
+      c.body = body;
     }
   });
 };

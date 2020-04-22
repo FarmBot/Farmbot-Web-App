@@ -149,15 +149,30 @@ describe("renderCeleryNode()", () => {
     },
     {
       node: {
+        kind: "update_resource",
+        args: {
+          resource: {
+            kind: "resource",
+            args: { resource_id: 23, resource_type: "Plant" }
+          },
+          body: [
+            { kind: "pair", args: { label: "plant_stage", value: "planted" } },
+          ]
+        }
+      },
+      expected: "markplant 23 as"
+    },
+    {
+      node: {
         kind: "resource_update",
         args: {
           resource_id: 23,
           resource_type: "Plant",
-          label: "x",
-          value: 300
+          label: "plant_stage",
+          value: "planted",
         }
       },
-      expected: "MarkPlantasx = 300"
+      expected: "mark plant 23 plant_stage as plantedthis step has been deprecated."
     },
     {
       node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90 } },

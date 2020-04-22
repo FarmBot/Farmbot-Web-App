@@ -66,32 +66,45 @@ interface NewVarProps {
   newVarLabel?: string;
 }
 
-const nothingVar =
-  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
-    createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED);
+const nothingVar = ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED);
 
-const toolVar = (value: string | number) =>
-  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
-    createVariableNode(allowedVariableNodes)(label, {
-      kind: "tool",
-      args: { tool_id: parseInt("" + value) }
-    });
+const toolVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "tool",
+    args: { tool_id: parseInt("" + value) }
+  });
 
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer" | "Weed",
   value: string | number,
-) => ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
 
-const manualEntry = (value: string | number) =>
-  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
-    createVariableNode(allowedVariableNodes)(label, {
-      kind: "coordinate",
-      args: value ? JSON.parse("" + value) : { x: 0, y: 0, z: 0 }
-    });
+const groupVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "point_group",
+    args: { point_group_id: parseInt("" + value) }
+  });
+
+const manualEntry = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "coordinate",
+    args: value ? JSON.parse("" + value) : { x: 0, y: 0, z: 0 }
+  });
 
 /**
  * Create a parameter declaration or a parameter application containing an
@@ -129,15 +142,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Tool": return toolVar(ddi.value)(props);
     case "parameter": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
-    case "PointGroup":
-      const point_group_id = parseInt("" + ddi.value, 10);
-      return {
-        kind: "parameter_application",
-        args: {
-          label: props.identifierLabel,
-          data_value: { kind: "point_group", args: { point_group_id } }
-        }
-      };
+    case "PointGroup": return groupVar(ddi.value)(props);
   }
   console.error("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
   return undefined;

@@ -1,25 +1,29 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { DropDownItem } from "../../../ui";
-import { ResourceUpdate, TaggedSequence } from "farmbot";
+import { UpdateResource, TaggedSequence, Resource, Identifier } from "farmbot";
 
 /** Function that converts resources into dropdown selections based on
  * use-case specific rules */
 export type ListBuilder = (i: ResourceIndex) => DropDownItem[];
 
-/** Shape of step.args when step.kind = "resource_update" */
-export type ResourceUpdateArgs = Partial<ResourceUpdate["args"]>;
-
 /** Input data for calls to commitStepChanges() */
 export interface MarkAsEditProps {
   nextAction: DropDownItem;
   nextResource: DropDownItem | undefined;
-  step: ResourceUpdate;
+  step: UpdateResource;
   index: number;
   sequence: TaggedSequence
 }
 
-export interface StepWithResourceIndex {
-  step: ResourceUpdate;
+export interface PackedStepWithResourceIndex {
+  step: UpdateResource;
+  resourceIndex: ResourceIndex;
+}
+
+export interface UnpackedStepWithResourceIndex {
+  resource: Resource | Identifier;
+  field: string;
+  value: string | number | boolean;
   resourceIndex: ResourceIndex;
 }
 

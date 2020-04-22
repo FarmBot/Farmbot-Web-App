@@ -1,12 +1,17 @@
 import { DropDownItem } from "../../../ui";
 import {
-  findToolById, findPointerByTypeAndId,
+  findToolById,
+  findPointerByTypeAndId,
 } from "../../../resources/selectors";
 import { point2ddi } from "./resource_list";
 import { MOUNTED_TO } from "./constants";
-import { DropDownPair, StepWithResourceIndex } from "./interfaces";
+import {
+  DropDownPair, PackedStepWithResourceIndex, UnpackedStepWithResourceIndex,
+} from "./interfaces";
 import { t } from "../../../i18next_wrapper";
-import { PLANT_STAGE_DDI_LOOKUP } from "../../../farm_designer/plants/edit_plant_status";
+import {
+  PLANT_STAGE_DDI_LOOKUP,
+} from "../../../farm_designer/plants/edit_plant_status";
 
 export const TOOL_MOUNT = (): DropDownItem => ({
   label: t("Tool Mount"), value: "tool_mount"
@@ -17,14 +22,13 @@ export const DISMOUNTED = (): DropDownPair => ({
   rightSide: NOT_IN_USE()
 });
 const DEFAULT_TOOL_NAME = () => t("Untitled Tool");
-const REMOVED_ACTION = () => ({ label: t("Removed"), value: "removed" });
 
 const mountedTo = (toolName = DEFAULT_TOOL_NAME()): DropDownItem =>
   ({ label: `${MOUNTED_TO()} ${toolName}`, value: "mounted" });
 
 /** The user wants to change the `mounted_tool_id` of their Device. */
-function mountTool(i: StepWithResourceIndex): DropDownPair {
-  const { value } = i.step.args;
+function mountTool(i: UnpackedStepWithResourceIndex): DropDownPair {
+  const { value } = i;
   if (typeof value === "number" && value > 0) {
     try { // Good tool id
       const tool = findToolById(i.resourceIndex, value as number);
@@ -41,33 +45,34 @@ function mountTool(i: StepWithResourceIndex): DropDownPair {
 /** When we can't properly guess the correct way to to render the screen,
  * possibly for legacy reasons or because the user wrote their CeleryScript by
  * hand. */
-function unknownOption(i: StepWithResourceIndex): DropDownPair {
-  const { resource_type, resource_id, label, value } = i.step.args;
-
+function unknownOption(i: UnpackedStepWithResourceIndex): DropDownPair {
+  const { resource } = i;
+  const resource_type =
+    resource.kind == "resource" ? resource.args.resource_type : "variable";
+  const resource_id =
+    resource.kind == "resource" ? resource.args.resource_id : 0;
+  const { field, value } = i;
+  const leftLabel = `${resource_type} ${resource_id} ${field}`;
   return {
-    leftSide: { label: resource_type, value: resource_id },
-    rightSide: { label: `${label} = ${value}`, value: "" + value }
-  };
-}
-
-/** The user wants to mark a the `discarded_at` attribute of a Point. */
-function discardPoint(i: StepWithResourceIndex): DropDownPair {
-  const { resource_id, resource_type } = i.step.args;
-  const pointerBody =
-    findPointerByTypeAndId(i.resourceIndex, resource_type, resource_id).body;
-  return {
-    leftSide: point2ddi(pointerBody),
-    rightSide: REMOVED_ACTION(),
+    leftSide: { label: leftLabel, value: field },
+    rightSide: { label: "" + value, value: "" + value }
   };
 }
 
 /** The user wants to mark a the `plant_stage` attribute of a Plant resource. */
-function plantStage(i: StepWithResourceIndex): DropDownPair {
-  const { resource_id, resource_type, value } = i.step.args;
-  const pointerBody =
-    findPointerByTypeAndId(i.resourceIndex, resource_type, resource_id).body;
+function plantStage(i: UnpackedStepWithResourceIndex): DropDownPair {
+  const { resource } = i;
+  const resource_type =
+    resource.kind == "resource" ? resource.args.resource_type : "";
+  const resource_id =
+    resource.kind == "resource" ? resource.args.resource_id : 0;
+  const { value } = i;
+  const leftSide = resource.kind == "resource"
+    ? point2ddi(findPointerByTypeAndId(
+      i.resourceIndex, resource_type, resource_id).body)
+    : { label: "" + resource.args.label, value: "" + resource.args.label };
   return {
-    leftSide: point2ddi(pointerBody),
+    leftSide,
     rightSide: PLANT_STAGE_DDI_LOOKUP()["" + value]
       || { label: "" + value, value: "" + value },
   };
@@ -76,12 +81,14 @@ function plantStage(i: StepWithResourceIndex): DropDownPair {
 /** We can guess how the "Mark As.." UI will be rendered (left and right side
  * drop downs) based on the shape of the current step. There are several
  * strategies and this function will dispatch the appropriate one. */
-export function unpackStep(i: StepWithResourceIndex): DropDownPair {
-  const { label } = i.step.args;
-  switch (label) {
-    case "mounted_tool_id": return mountTool(i);
-    case "discarded_at": return discardPoint(i);
-    case "plant_stage": return plantStage(i);
-    default: return unknownOption(i);
+export function unpackStep(p: PackedStepWithResourceIndex): DropDownPair {
+  const { resource } = p.step.args;
+  const { label, value } = p.step.body?.[0]?.args || { label: "", value: "" };
+  const field = label;
+  const unpacked = { resourceIndex: p.resourceIndex, resource, field, value };
+  switch (field) {
+    case "mounted_tool_id": return mountTool(unpacked);
+    case "plant_stage": return plantStage(unpacked);
+    default: return unknownOption(unpacked);
   }
 }

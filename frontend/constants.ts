@@ -346,7 +346,7 @@ export namespace ToolTips {
     trim(`The Mark As step allows FarmBot to programmatically edit the
     properties of the UTM, plants, and weeds from within a sequence.
     For example, you can mark a plant as "planted" during a seeding
-    sequence or delete a weed after removing it.`);
+    sequence or mark a weed as "removed" after removing it.`);
 
   export const REBOOT =
     trim(`Power cycle FarmBot's onboard computer.`);
