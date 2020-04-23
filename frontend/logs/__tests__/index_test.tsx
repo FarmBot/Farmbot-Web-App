@@ -117,7 +117,6 @@ describe("<Logs />", () => {
 
   it("shows filtered overall filter status", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<Logs {...p} />);
     const state = fakeLogsState();
     state.assertion = 2;
@@ -129,10 +128,9 @@ describe("<Logs />", () => {
 
   it("shows unfiltered overall filter status", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
     const wrapper = mount(<Logs {...p} />);
     const state = fakeLogsState();
-    state.assertion = 2;
+    state.assertion = 3;
     wrapper.setState(state);
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filter");

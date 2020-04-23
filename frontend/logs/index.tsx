@@ -76,7 +76,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Determine if log type filters are active. */
   get filterActive() {
-    const filterKeys = filterStateKeys(this.state, this.props.shouldDisplay);
+    const filterKeys = filterStateKeys(this.state);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
