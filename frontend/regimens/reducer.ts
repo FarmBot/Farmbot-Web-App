@@ -12,7 +12,7 @@ export interface RegimenState {
   schedulerOpen: boolean;
 }
 
-function newWeek() {
+export function newWeek(): Week {
   return {
     days: {
       day1: false,

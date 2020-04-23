@@ -8,20 +8,12 @@ import {
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { AddButton } from "../add_button";
+import { newWeek } from "../../reducer";
 
 describe("<BulkScheduler />", () => {
-  const weeks = [{
-    days:
-    {
-      day1: true,
-      day2: false,
-      day3: false,
-      day4: false,
-      day5: false,
-      day6: false,
-      day7: false
-    }
-  }];
+  const week = newWeek();
+  week.days.day1 = true;
+  const weeks = [week];
 
   function fakeProps(): BulkEditorProps {
     const sequence = fakeSequence();
