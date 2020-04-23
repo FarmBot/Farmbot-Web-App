@@ -1,25 +1,22 @@
-import { regimensReducer, RegimenState } from "../reducer";
+import { regimensReducer, RegimenState, newWeek } from "../reducer";
 import { Actions } from "../../constants";
-import { popWeek, pushWeek, selectDays, deselectDays } from "../bulk_scheduler/actions";
+import {
+  popWeek, pushWeek, selectDays, deselectDays,
+} from "../bulk_scheduler/actions";
 import { defensiveClone } from "../../util";
+import { Week } from "../bulk_scheduler/interfaces";
+
+const week = newWeek();
+Object.entries(week.days).map(([day, _]: [keyof Week["days"], boolean]) => {
+  week.days[day] = true;
+});
+week.days.day7 = false;
 
 const STATE: RegimenState = {
   dailyOffsetMs: 300000,
   selectedSequenceUUID: "Sequence.71.167",
   currentRegimen: "Regimen.4.56",
-  weeks: [
-    {
-      "days": {
-        "day1": true,
-        "day2": true,
-        "day3": true,
-        "day4": true,
-        "day5": true,
-        "day6": true,
-        "day7": false
-      }
-    },
-  ],
+  weeks: [week],
   schedulerOpen: false,
 };
 

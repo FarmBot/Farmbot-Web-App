@@ -6,17 +6,15 @@ import { t } from "../../i18next_wrapper";
 export function WeekRow({ index, dispatch, week }: WeekRowProps) {
   return <div className="week-row">
     <label className="week-label">{t("Week")} {index + 1}</label>
-    {
-      DAYS.map(function (day, i) {
-        const id = `${index}-${day}`;
-        return <Day day={i + 1}
-          week={index}
-          dispatch={dispatch}
-          id={id}
-          key={id}
-          active={week.days[day]} />;
-      })
-    }
+    {DAYS.map(function (day, i) {
+      const id = `${index}-${day}`;
+      return <Day day={i + 1}
+        week={index}
+        dispatch={dispatch}
+        id={id}
+        key={id}
+        active={week.days[day]} />;
+    })}
   </div>;
 }
 
