@@ -44,7 +44,9 @@ end
 def get_base_branch(pull_data)
   current_branch = BASE_BRANCHES.empty? ||
     BASE_BRANCHES.include?(CURRENT_BRANCH) ? CURRENT_BRANCH : "staging"
-  pull_data.dig("base", "ref") || current_branch
+  provided_base_branch =
+    CURRENT_BRANCH.start_with?("master-hotfix/") ? "master" : nil;
+  pull_data.dig("base", "ref") || provided_base_branch || current_branch
 end
 
 # Gather relevant coverage data.
