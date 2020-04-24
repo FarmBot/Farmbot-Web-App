@@ -141,6 +141,13 @@ export function createShouldDisplayFn(
   };
 }
 
+// Temporary hotfix fallback data. Please remove.
+const fallbackData: MinOsFeatureLookup = {};
+Object.values(Feature).map(feature =>
+  fallbackData[feature] = globalConfig.FBOS_END_OF_LIFE_VERSION);
+fallbackData.criteria_groups = "9.2.2";
+fallbackData.boot_sequence = MinVersionOverride.NEVER;
+
 /**
  * Compare the current FBOS version in the bot's
  * state with the API's fbos_version string and return the greatest version. */
