@@ -120,7 +120,7 @@ export function createShouldDisplayFn(
     const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION ||
       FbosVersionFallback.NULL;
     const target = override || current || fallback;
-    const table = lookupData || {};
+    const table = lookupData || fallbackData;
     const min = table[feature] || MinVersionOverride.NEVER;
     switch (semverCompare(target, min)) {
       case SemverResult.LEFT_IS_GREATER:
@@ -131,6 +131,13 @@ export function createShouldDisplayFn(
     }
   };
 }
+
+// Temporary hotfix fallback data. Please remove.
+const fallbackData: MinOsFeatureLookup = {};
+Object.values(Feature).map(feature =>
+  fallbackData[feature] = globalConfig.FBOS_END_OF_LIFE_VERSION);
+fallbackData.criteria_groups = "9.2.2";
+fallbackData.boot_sequence = MinVersionOverride.NEVER;
 
 /**
  * Compare the current FBOS version in the bot's
