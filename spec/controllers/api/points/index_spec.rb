@@ -9,8 +9,8 @@ describe Api::PointsController do
     end
     let(:auth_token) do
       params = { email: user.email,
-                password: "password123",
-                fbos_version: Gem::Version.new("999.9.9") }
+                 password: "password123",
+                 fbos_version: Gem::Version.new("999.9.9") }
       Auth::CreateToken.run!(params)[:token].encoded
     end
 
@@ -130,6 +130,7 @@ describe Api::PointsController do
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(3)
+      json.map { |json| expect(json[:created_at]).to eq(json[:planted_at]) }
     end
     it "lists all tool slots" do
       Point.destroy_all
