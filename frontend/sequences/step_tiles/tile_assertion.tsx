@@ -7,6 +7,7 @@ import { TypePart } from "./tile_assertion/type_part";
 import { LuaPart } from "./tile_assertion/lua_part";
 import { SequencePart } from "./tile_assertion/sequence_part";
 import { Assertion } from "farmbot/dist/corpus";
+import { ToolTips } from "../../constants";
 
 export interface AssertionStepProps extends StepParams {
   currentStep: Assertion;
@@ -24,7 +25,7 @@ export function TileAssertion(props: StepParams) {
   return <StepWrapper>
     <StepHeader
       className={CLASS_NAME}
-      helpText={""}
+      helpText={ToolTips.ASSERTION}
       currentSequence={p.currentSequence}
       currentStep={p.currentStep}
       dispatch={p.dispatch}
