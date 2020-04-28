@@ -34,6 +34,7 @@ import { TileAssertion } from "./tile_assertion";
 import { TileEmergencyStop } from "./tile_emergency_stop";
 import { TileReboot } from "./tile_reboot";
 import { TileOldMarkAs } from "./tile_old_mark_as";
+import { TileShutdown } from "./tile_shutdown";
 
 interface MoveParams {
   step: Step;
@@ -161,7 +162,8 @@ export function renderCeleryNode(props: StepParams) {
     case "reboot": return <TileReboot {...props} />;
     case "emergency_lock": return <TileEmergencyStop {...props} />;
     case "assertion": return <TileAssertion {...props} />;
-    case "sync": case "power_off": case "read_status":
+    case "power_off": return <TileShutdown {...props} />;
+    case "sync": case "read_status":
     case "emergency_unlock": case "install_first_party_farmware":
       return <TileSystemAction {...props} />;
     case "check_updates": case "factory_reset":
