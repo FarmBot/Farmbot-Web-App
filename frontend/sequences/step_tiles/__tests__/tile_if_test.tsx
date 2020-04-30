@@ -2,11 +2,12 @@ import * as React from "react";
 import { TileIf } from "../tile_if";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { If } from "farmbot/dist";
+import { If, Wait } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { StepParams } from "../../interfaces";
 
-describe("<TileIf/>", () => {
-  function bootstrapTest() {
+describe("<TileIf />", () => {
+  const fakeProps = (): StepParams => {
     const currentStep: If = {
       kind: "_if",
       args: {
@@ -18,35 +19,27 @@ describe("<TileIf/>", () => {
       }
     };
     return {
-      component: mount(<TileIf
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index}
-        confirmStepDeletion={false}
-        showPins={true} />)
+      currentSequence: fakeSequence(),
+      currentStep: currentStep,
+      dispatch: jest.fn(),
+      index: 0,
+      resources: emptyState().index,
+      confirmStepDeletion: false,
+      showPins: true,
     };
-  }
+  };
 
-  it("renders inputs", () => {
-    const block = bootstrapTest().component;
-    const inputs = block.find("input");
-    const labels = block.find("label");
-    const buttons = block.find("button");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(5);
-    expect(buttons.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("If ...");
-    expect(labels.at(0).text()).toEqual("Variable");
-    expect(buttons.at(0).text()).toEqual("Pin 0");
-    expect(labels.at(1).text()).toEqual("Operator");
-    expect(buttons.at(1).text()).toEqual("is");
-    expect(labels.at(2).text()).toEqual("Value");
-    expect(inputs.at(1).props().value).toEqual(0);
-    expect(labels.at(3).text()).toEqual("Then Execute");
-    expect(buttons.at(2).text()).toEqual("None");
-    expect(labels.at(4).text()).toEqual("Else Execute");
-    expect(buttons.at(3).text()).toEqual("None");
+  it("renders if step", () => {
+    const wrapper = mount(<TileIf {...fakeProps()} />);
+    ["Variable", "Operator", "Value", "Then Execute", "Else Execute"]
+      .map(string => expect(wrapper.text()).toContain(string));
+  });
+
+  it("doesn't render if step", () => {
+    const p = fakeProps();
+    const waitStep: Wait = { kind: "wait", args: { milliseconds: 0 } };
+    p.currentStep = waitStep;
+    const wrapper = mount(<TileIf {...p} />);
+    expect(wrapper.text()).toEqual("Expected `_if` node");
   });
 });

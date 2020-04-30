@@ -14,6 +14,6 @@ export function TileIf(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion}
       showPins={props.showPins} />;
   } else {
-    return <p> Expected "_if" node</p>;
+    return <p>{"Expected `_if` node"}</p>;
   }
 }

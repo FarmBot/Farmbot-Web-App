@@ -3,12 +3,16 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import { remove, move, splice, renderCeleryNode } from "../index";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeSequence, fakePlant,
+} from "../../../__test_support__/fake_state/resources";
 import { overwrite } from "../../../api/crud";
 import { SequenceBodyItem, Wait } from "farmbot";
 import { mount } from "enzyme";
 import { StepParams, MessageType } from "../../interfaces";
-import { emptyState } from "../../../resources/reducer";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("remove()", () => {
   const fakeProps = () => ({
@@ -82,12 +86,15 @@ describe("splice()", () => {
 describe("renderCeleryNode()", () => {
   const currentStep: Wait = { kind: "wait", args: { milliseconds: 100 } };
 
+  const plant = fakePlant();
+  plant.body.id = 23;
+
   const fakeProps = (): StepParams => ({
     currentSequence: fakeSequence(),
     currentStep: currentStep,
     dispatch: jest.fn(),
     index: 0,
-    resources: emptyState().index,
+    resources: buildResourceIndex([plant]).index,
     confirmStepDeletion: false,
   });
 
@@ -154,13 +161,13 @@ describe("renderCeleryNode()", () => {
           resource: {
             kind: "resource",
             args: { resource_id: 23, resource_type: "Plant" }
-          },
-          body: [
-            { kind: "pair", args: { label: "plant_stage", value: "planted" } },
-          ]
-        }
+          }
+        },
+        body: [
+          { kind: "pair", args: { label: "plant_stage", value: "planted" } },
+        ]
       },
-      expected: "markplant 23 as"
+      expected: "markstrawberry plant 1 (100, 200, 0)fieldplant stageasplanted"
     },
     {
       node: {

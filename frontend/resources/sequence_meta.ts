@@ -60,7 +60,7 @@ export const determineVector =
   };
 
 /** Try to find a vector in scope declarations for the variable. */
-const maybeFindVariable = (
+export const maybeFindVariable = (
   label: string, resources: ResourceIndex, uuid?: UUID,
 ): SequenceMeta | undefined =>
   uuid ? findVariableByName(resources, uuid, label) : undefined;
