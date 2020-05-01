@@ -187,15 +187,8 @@ export function StepButtonCluster(props: StepButtonProps) {
     {...commonStepProps}
     step={{
       kind: "update_resource",
-      args: {
-        resource: {
-          kind: "resource",
-          args: { resource_id: 0, resource_type: "Device" }
-        }
-      },
-      body: [
-        { kind: "pair", args: { label: "mounted_tool_id", value: 0 } },
-      ],
+      args: { resource: NOTHING_SELECTED },
+      body: [],
     }}
     color="brown">
     {t("Mark As...")}

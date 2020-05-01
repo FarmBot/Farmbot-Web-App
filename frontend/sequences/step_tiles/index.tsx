@@ -18,7 +18,7 @@ import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
-import { MarkAs } from "./mark_as";
+import { TileMarkAs } from "./tile_mark_as";
 import { TileUnknown } from "./tile_unknown";
 import { forceSetStepTag } from "../../resources/sequence_tagging";
 import { compact, assign } from "lodash";
@@ -151,7 +151,7 @@ export function renderCeleryNode(props: StepParams) {
     case "take_photo": return <TileTakePhoto {...props} />;
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
-    case "update_resource": return <MarkAs {...props} />;
+    case "update_resource": return <TileMarkAs {...props} />;
     case "resource_update" as LegalSequenceKind:
       return <TileOldMarkAs {...props} />;
     case "set_servo_angle": return <TileSetServoAngle {...props} />;
