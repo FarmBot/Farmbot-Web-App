@@ -27,10 +27,18 @@ module Points
     end
 
     def execute
-      Point.transaction { point.update!(inputs.except(:point)) && point }
+      Point.transaction { point.update!(update_params) && point }
     end
 
     private
+
+    def merged_meta_fields
+      @merged_meta_fields ||= (point.meta || {}).merge(meta || {})
+    end
+
+    def update_params
+      @update_params ||= inputs.except(:point).merge(meta: merged_meta_fields)
+    end
 
     def new_tool_id?
       raw_inputs.key?("tool_id")
