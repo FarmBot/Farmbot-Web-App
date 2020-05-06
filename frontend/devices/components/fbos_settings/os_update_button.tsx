@@ -4,7 +4,7 @@ import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../actions";
 import { isString } from "lodash";
-import { BotState, Feature } from "../../interfaces";
+import { BotState } from "../../interfaces";
 import { Content } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
 
@@ -154,9 +154,8 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { controller_version } = bot.hardware.informational_settings;
 
   /** FBOS beta release opt-in setting. */
-  const betaOptIn = props.shouldDisplay(Feature.use_update_channel)
-    ? sourceFbosConfig("update_channel" as ConfigurationName).value !== "stable"
-    : !!sourceFbosConfig("beta_opt_in").value;
+  const betaOptIn =
+    sourceFbosConfig("update_channel" as ConfigurationName).value !== "stable";
   /** FBOS update availability. */
   const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn });
 

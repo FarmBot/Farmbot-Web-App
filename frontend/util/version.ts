@@ -104,10 +104,19 @@ export enum FbosVersionFallback {
   NULL = "0.0.0",
 }
 
+const fallbackData: MinOsFeatureLookup = {
+  [Feature.api_farmware_env]: "8.0.0",
+  [Feature.api_farmware_installations]: "8.0.0",
+  [Feature.criteria_groups]: "9.2.2",
+  [Feature.update_resource]: MinVersionOverride.NEVER,
+  [Feature.boot_sequence]: MinVersionOverride.NEVER,
+};
+
 /**
  * Determine whether a feature should be displayed based on
  * the user's current FBOS version. Min FBOS version feature data is pulled
  * from an external source to allow App and FBOS development flexibility.
+ * Device-less accounts can use features compatible with supported versions.
  *
  * @param current installed OS version string to compare against data ("0.0.0")
  * @param lookupData min req versions data, for example {"feature": "1.0.0"}
@@ -120,7 +129,7 @@ export function createShouldDisplayFn(
     const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION ||
       FbosVersionFallback.NULL;
     const target = override || current || fallback;
-    const table = lookupData || {};
+    const table = lookupData || fallbackData;
     const min = table[feature] || MinVersionOverride.NEVER;
     switch (semverCompare(target, min)) {
       case SemverResult.LEFT_IS_GREATER:

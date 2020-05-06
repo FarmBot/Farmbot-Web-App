@@ -11,12 +11,15 @@ import { OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../interfaces";
 import { Content } from "../../../../constants";
+import { ConfigurationName } from "farmbot";
+
+const UPDATE_CHANNEL = "update_channel" as ConfigurationName;
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
     bot.currentOSVersion = "6.1.6";
     bot.hardware.informational_settings.controller_version = "6.1.6";
-    bot.hardware.configuration.beta_opt_in = false;
+    (bot.hardware.configuration[UPDATE_CHANNEL] as string) = "stable";
   });
 
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -33,7 +36,6 @@ describe("<OsUpdateButton/>", () => {
     availableVersion: string | undefined;
     availableBetaVersion: string | undefined;
     availableBetaCommit: string | undefined;
-    betaOptIn: boolean | undefined;
     onBeta: boolean | undefined;
     update_available?: boolean | undefined;
     shouldDisplay: ShouldDisplay;
@@ -46,7 +48,6 @@ describe("<OsUpdateButton/>", () => {
     availableVersion: "6.1.6",
     availableBetaVersion: undefined,
     availableBetaCommit: undefined,
-    betaOptIn: false,
     onBeta: false,
     shouldDisplay: () => false,
     update_channel: "stable",
@@ -104,7 +105,7 @@ describe("<OsUpdateButton/>", () => {
     expected: Results) => {
     const {
       installedVersion, installedCommit, onBeta, update_available,
-      availableVersion, availableBetaVersion, availableBetaCommit, betaOptIn,
+      availableVersion, availableBetaVersion, availableBetaCommit,
       shouldDisplay, update_channel,
     } = testProps;
     bot.hardware.informational_settings.controller_version = installedVersion;
@@ -115,9 +116,7 @@ describe("<OsUpdateButton/>", () => {
     bot.currentOSVersion = availableVersion;
     bot.currentBetaOSVersion = availableBetaVersion;
     bot.currentBetaOSCommit = availableBetaCommit;
-    bot.hardware.configuration.beta_opt_in = betaOptIn;
-    // tslint:disable-next-line:no-any
-    (bot.hardware.configuration as any).update_channel = update_channel;
+    (bot.hardware.configuration[UPDATE_CHANNEL] as string) = update_channel;
 
     const p = fakeProps();
     p.shouldDisplay = shouldDisplay;
@@ -156,7 +155,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
     testProps.availableVersion = undefined;
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = cantConnect("release server");
     testButtonState(testProps, expectedResults);
   });
@@ -166,7 +165,7 @@ describe("<OsUpdateButton/>", () => {
     testProps.installedVersion = "6.1.6";
     testProps.availableVersion = undefined;
     testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = updateNeeded("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
@@ -175,7 +174,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
     testProps.availableBetaVersion = undefined;
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
@@ -205,7 +204,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.5";
     testProps.availableBetaVersion = "7.0.0-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = updateNeeded("7.0.0-beta");
     testButtonState(testProps, expectedResults);
   });
@@ -214,7 +213,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
     testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
@@ -223,7 +222,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
     testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     testProps.onBeta = true;
     const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
@@ -233,7 +232,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
     testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.betaOptIn = false;
+    testProps.update_channel = "stable";
     testProps.onBeta = true;
     const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
@@ -243,7 +242,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.7";
     testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     testProps.onBeta = true;
     const expectedResults = upToDate("6.1.7-beta");
     testButtonState(testProps, expectedResults);
@@ -253,7 +252,7 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.7-beta";
     testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     const expectedResults = upToDate("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
@@ -264,7 +263,7 @@ describe("<OsUpdateButton/>", () => {
     testProps.installedCommit = "old commit";
     testProps.availableBetaVersion = "7.0.0-beta";
     testProps.availableBetaCommit = "new commit";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     testProps.onBeta = true;
     const expectedResults = updateNeeded("7.0.0-beta");
     testButtonState(testProps, expectedResults);
@@ -273,7 +272,7 @@ describe("<OsUpdateButton/>", () => {
   it("handles installed version newer than available (beta enabled)", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.7";
-    testProps.betaOptIn = true;
+    testProps.update_channel = "beta";
     testProps.onBeta = false;
     testProps.availableBetaVersion = "6.1.7-beta";
     const expectedResults = upToDate("6.1.7-beta");
@@ -305,16 +304,6 @@ describe("<OsUpdateButton/>", () => {
     testProps.update_channel = "beta";
     testProps.availableBetaVersion = "6.1.7-beta";
     const expectedResults = updateNeeded("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("doesn't use update_channel value", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.shouldDisplay = () => false;
-    testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "6.1.7-beta";
-    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 

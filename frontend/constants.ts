@@ -348,9 +348,6 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or mark a weed as "removed" after removing it.`);
 
-  export const REBOOT =
-    trim(`Power cycle FarmBot's onboard computer.`);
-
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle. An angle of 90 degrees
     corresponds to the servo midpoint (or, for a continuous rotation
@@ -361,6 +358,9 @@ export namespace ToolTips {
 
   export const MOVE_TO_HOME =
     trim(`Move FarmBot to home for the provided axis.`);
+
+  export const ASSERTION =
+    trim(`Evaluate Lua commands. For power users and software developers.`);
 
   export const FIRMWARE_ACTION =
     trim(`FarmBot OS or micro-controller firmware action.`);
@@ -739,6 +739,15 @@ export namespace Content {
     trim(`This command will not execute correctly because you do not have
     encoders, stall detection, or endstops enabled for the chosen axis.
     Enable endstops, encoders, or stall detection from the Device page for: `);
+
+  export const REBOOT_STEP =
+    trim(`Power cycle FarmBot's onboard computer.`);
+
+  export const SHUTDOWN_STEP =
+    trim(`Power down FarmBot's onboard computer.`);
+
+  export const ESTOP_STEP =
+    trim(`Unlocking a device requires user intervention.`);
 
   export const IN_USE =
     trim(`Used in another resource. Protected from deletion.`);
