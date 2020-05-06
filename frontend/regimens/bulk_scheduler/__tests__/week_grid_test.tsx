@@ -3,20 +3,12 @@ import { mount } from "enzyme";
 import { WeekGrid } from "../week_grid";
 import { WeekGridProps } from "../interfaces";
 import { Actions } from "../../../constants";
+import { newWeek } from "../../reducer";
 
 describe("<WeekGrid />", () => {
-  const weeks = [{
-    days:
-    {
-      day1: true,
-      day2: false,
-      day3: false,
-      day4: false,
-      day5: false,
-      day6: false,
-      day7: false
-    }
-  }];
+  const week = newWeek();
+  week.days.day1 = true;
+  const weeks = [week];
 
   it("renders", () => {
     const props: WeekGridProps = { weeks, dispatch: jest.fn() };

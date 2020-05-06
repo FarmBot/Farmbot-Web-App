@@ -33,7 +33,8 @@ describe("<StepButtonCluster />", () => {
   it("has correct drag data", () => {
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
-    const stepButton = wrapper.find("div").last();
+    const steps = wrapper.find(".step-dragger");
+    const stepButton = steps.at(steps.length - 2);
     expect(stepButton.text().toLowerCase()).toEqual("take photo");
     stepButton.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
     expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({

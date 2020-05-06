@@ -263,7 +263,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
-  const { last_ota, last_ota_checkup } = props.deviceAccount.body;
+  const { last_ota, last_ota_checkup, fbos_version } = props.deviceAccount.body;
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
   const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
@@ -273,6 +273,7 @@ export function FbosDetails(props: FbosDetailsProps) {
       botToMqttLastSeen={props.botToMqttLastSeen}
       timeSettings={props.timeSettings}
       device={props.deviceAccount} />
+    <p><b>{t("Version last seen")}: </b>{fbos_version}</p>
     <p><b>{t("Environment")}: </b>{env}</p>
     <CommitDisplay title={t("Commit")}
       repo={FarmBotRepo.FarmBotOS} commit={commit} />

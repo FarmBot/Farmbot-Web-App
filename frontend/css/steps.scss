@@ -136,6 +136,9 @@
   &.reboot-step {
     background: $brown;
   }
+  &.shutdown-step {
+    background: $brown;
+  }
   &.unknown-step {
     background: $gray;
   }
@@ -252,6 +255,9 @@
   }
   &.emergency-stop-step {
     background: $light_red;
+  }
+  &.shutdown-step {
+    background: $light_brown;
   }
   &.reboot-step {
     background: $light_brown;

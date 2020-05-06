@@ -1,30 +1,23 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { ToolTips, Content } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui";
-import { Col, Row } from "../../ui/index";
+import { Content } from "../../constants";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { t } from "../../i18next_wrapper";
 
-export function TileEmergencyStop(props: StepParams) {
+export function TileShutdown(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "emergency-stop-step";
+  const className = "shutdown-step";
   return <StepWrapper>
     <StepHeader
       className={className}
-      helpText={ToolTips.EMERGENCY_LOCK}
+      helpText={Content.SHUTDOWN_FARMBOT}
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
       index={index}
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
-      <Row>
-        <Col xs={12}>
-          <p>
-            {t(Content.ESTOP_STEP)}
-          </p>
-        </Col>
-      </Row>
+      <p>{t(Content.SHUTDOWN_STEP)}</p>
     </StepContent>
   </StepWrapper>;
 }

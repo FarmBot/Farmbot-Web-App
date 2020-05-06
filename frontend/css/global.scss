@@ -1314,6 +1314,24 @@ ul {
   }
 }
 
+.update-resource-step {
+  .custom-meta-field {
+    position: relative;
+    .fa-undo {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.5rem;
+      color: $medium_light_gray;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
+  }
+  .update-resource-pair {
+    margin-top: 1rem;
+  }
+}
+
 .farmware-name-manual-input {
   margin-top: 1rem;
 }

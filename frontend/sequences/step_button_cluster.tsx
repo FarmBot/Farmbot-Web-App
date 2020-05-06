@@ -96,6 +96,11 @@ export function StepButtonCluster(props: StepButtonProps) {
       {t("REBOOT")}
     </StepButton>,
     <StepButton {...commonStepProps}
+      step={{ kind: "power_off", args: {} }}
+      color="brown">
+      {t("SHUTDOWN")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
       step={{ kind: "emergency_lock", args: {} }}
       color="red">
       {t("E-STOP")}
@@ -163,39 +168,32 @@ export function StepButtonCluster(props: StepButtonProps) {
       step={{ kind: "take_photo", args: {} }}>
       {t("TAKE PHOTO")}
     </StepButton>,
+    <StepButton
+      {...commonStepProps}
+      step={{
+        kind: "assertion",
+        args: {
+          lua: "return 2 + 2 == 4",
+          _then: { kind: "nothing", args: {} },
+          assertion_type: "abort_recover",
+        }
+      }}
+      color="purple">
+      {t("ASSERTION")}
+    </StepButton>,
   ];
-
-  shouldDisplay(Feature.assertion_block) && ALL_THE_BUTTONS.push(<StepButton
-    {...commonStepProps}
-    step={{
-      kind: "assertion",
-      args: {
-        lua: "return 2 + 2 == 4",
-        _then: { kind: "nothing", args: {} },
-        assertion_type: "abort_recover",
-      }
-    }}
-    color="purple">
-    {t("ASSERTION")}
-  </StepButton>);
 
   shouldDisplay(Feature.update_resource) && ALL_THE_BUTTONS.push(<StepButton
     {...commonStepProps}
     step={{
       kind: "update_resource",
-      args: {
-        resource: {
-          kind: "resource",
-          args: { resource_id: 0, resource_type: "Device" }
-        }
-      },
-      body: [
-        { kind: "pair", args: { label: "mounted_tool_id", value: 0 } },
-      ],
+      args: { resource: NOTHING_SELECTED },
+      body: [],
     }}
     color="brown">
     {t("Mark As...")}
   </StepButton>);
+
   return <Row>
     <div className="step-button-cluster">
       {ALL_THE_BUTTONS.map((stepButton, inx) =>
