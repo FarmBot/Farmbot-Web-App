@@ -545,7 +545,10 @@ describe("<RepeatForm />", () => {
   const fakeProps = (): RepeatFormProps => ({
     isRegimen: false,
     fieldGet: jest.fn(key =>
-      "" + ({ endDate: "2017-07-26" } as FarmEventViewModel)[key]),
+      "" + ({
+        endDate: "2017-07-26", endTime: "08:57",
+        startDate: "2017-07-25", startTime: "08:57"
+      } as FarmEventViewModel)[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });

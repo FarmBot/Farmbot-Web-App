@@ -78,12 +78,12 @@ describe("<CreatePoints />", () => {
   it("updates specific fields", () => {
     const p = fakeProps();
     p.drawnPoint = FAKE_POINT;
-    const i = new CreatePoints(p);
-    i.updateValue("color")(inputEvent("cheerful hue"));
-    expect(i.props.drawnPoint).toBeTruthy();
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.instance().updateValue("color")(inputEvent("cheerful hue"));
+    expect(wrapper.instance().props.drawnPoint).toBeTruthy();
     const expected = cloneDeep(FAKE_POINT);
     expected.color = "cheerful hue";
-    expect(i.props.dispatch).toHaveBeenCalledWith({
+    expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
       type: "SET_DRAWN_POINT_DATA",
       payload: expected,
     });

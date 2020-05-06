@@ -43,16 +43,6 @@ describe("<BoardType/>", () => {
     expect(wrapper.text()).toContain("Farmduino");
   });
 
-  it("sets sending status", () => {
-    const wrapper = mount<BoardType>(<BoardType {...fakeProps()} />);
-    expect(wrapper.state().sending).toBeFalsy();
-    const p = fakeProps();
-    p.sourceFbosConfig = () => ({ value: true, consistent: false });
-    wrapper.setProps(p);
-    wrapper.mount();
-    expect(wrapper.state().sending).toBeTruthy();
-  });
-
   it("calls updateConfig", () => {
     const p = fakeProps();
     const wrapper = mount<BoardType>(<BoardType {...p} />);

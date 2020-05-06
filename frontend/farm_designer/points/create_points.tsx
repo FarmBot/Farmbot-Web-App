@@ -122,7 +122,7 @@ export class RawCreatePoints
     });
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.loadDefaultPoint();
   }
 

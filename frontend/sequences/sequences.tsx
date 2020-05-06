@@ -28,7 +28,7 @@ export const SequenceBackButton = (props: SequenceBackButtonProps) => {
 };
 
 export class RawSequences extends React.Component<Props, {}> {
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
   }
 
