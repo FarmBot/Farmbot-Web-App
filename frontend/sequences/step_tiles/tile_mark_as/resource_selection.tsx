@@ -14,6 +14,7 @@ import { formatPoint } from "../../locals_list/location_form_list";
 import {
   maybeFindVariable, SequenceMeta,
 } from "../../../resources/sequence_meta";
+import { UPDATE_RESOURCE_DDIS } from "./field_selection";
 
 export const ResourceSelection = (props: ResourceSelectionProps) =>
   <div className={"update-resource-step-resource"}>
@@ -83,7 +84,7 @@ const getSelectedResource = (
         label: resourceVariableLabel(variable),
         value: resource.args.label,
       };
-    case "nothing": return { label: t("Select one"), value: "" };
+    case "nothing": return UPDATE_RESOURCE_DDIS().SELECT_ONE;
   }
 };
 

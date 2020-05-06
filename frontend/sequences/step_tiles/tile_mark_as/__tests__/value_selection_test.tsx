@@ -15,6 +15,9 @@ import {
 } from "../../../../farm_designer/plants/edit_plant_status";
 import { fakeTool } from "../../../../__test_support__/fake_state/resources";
 import { resource_type, Resource } from "farmbot";
+import { UPDATE_RESOURCE_DDIS } from "../field_selection";
+
+const DDI = UPDATE_RESOURCE_DDIS();
 
 describe("<ValueSelection />", () => {
   const fakeProps = (): ValueSelectionProps => ({
@@ -119,7 +122,7 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Removed", value: "removed" },
+      DDI.REMOVED,
     ]);
     expect(wrapper.text()).toContain("as");
     expect(wrapper.text()).toContain("Removed");
@@ -153,7 +156,7 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Removed", value: "removed" },
+      DDI.REMOVED,
     ]);
     expect(wrapper.text()).toContain("as");
     expect(wrapper.text()).toContain("Removed");

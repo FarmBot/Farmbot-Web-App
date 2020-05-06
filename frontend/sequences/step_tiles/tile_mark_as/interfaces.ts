@@ -55,6 +55,12 @@ export interface CustomFieldSelectionProps extends SelectionPropsBase {
   update: UpdateFieldOrValue;
 }
 
+export interface CustomFieldWarningProps {
+  resource: Resource | Identifier | Nothing;
+  field: string | undefined;
+  update: UpdateFieldOrValue;
+}
+
 export interface ValueSelectionProps extends SelectionPropsBase {
   field: string | undefined;
   value: UpdateResourceValue | undefined;
