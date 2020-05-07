@@ -10,7 +10,9 @@ import { selectAllTools, maybeFindToolById } from "../../../resources/selectors"
 import {
   PLANT_STAGE_LIST, PLANT_STAGE_DDI_LOOKUP,
 } from "../../../farm_designer/plants/edit_plant_status";
-import { isCustomMetaField, KnownField, knownField } from "./field_selection";
+import {
+  isCustomMetaField, KnownField, knownField, UPDATE_RESOURCE_DDIS,
+} from "./field_selection";
 import { DevSettings } from "../../../account/dev/dev_support";
 
 export const ValueSelection = (props: ValueSelectionProps) =>
@@ -43,6 +45,7 @@ const KnownValue = (props: ValueSelectionProps) =>
 const CustomMetaValue = (props: ValueSelectionProps) =>
   <div className="custom-meta-field">
     <BlurableInput type="text" name="value"
+      allowEmpty={true}
       value={isUndefined(props.value) ? "" : "" + props.value}
       onCommit={e => {
         props.update({ value: e.currentTarget.value },
@@ -53,33 +56,33 @@ const CustomMetaValue = (props: ValueSelectionProps) =>
 const valuesList = (
   resource: Resource | Identifier,
   resources: ResourceIndex): DropDownItem[] => {
+  const DDI = UPDATE_RESOURCE_DDIS();
   const stepResourceType =
     resource.kind == "identifier" ? undefined : resource.args.resource_type;
   switch (stepResourceType) {
     case "Device": return [
-      { label: t("None"), value: 0 },
+      DDI.NONE,
       ...selectAllTools(resources).filter(x => !!x.body.id)
         .map(x => ({ toolName: x.body.name, toolId: x.body.id }))
         .map(({ toolName, toolId }:
           { toolName: string | undefined, toolId: number }) =>
           ({ label: toolName || t("Untitled tool"), value: toolId })),
     ];
-    case "GenericPointer": return [{ label: t("Removed"), value: "removed" }];
-    case "Weed": return [{ label: t("Removed"), value: "removed" }];
+    case "GenericPointer": return [DDI.REMOVED];
+    case "Weed": return [DDI.REMOVED];
     case "Plant":
     default: return PLANT_STAGE_LIST();
   }
 };
 
 const getSelectedValue = (props: GetSelectedValueProps): DropDownItem => {
+  const DDI = UPDATE_RESOURCE_DDIS();
   if (isUndefined(props.field) || isUndefined(props.value)
-    || props.resource.kind == "nothing") {
-    return { label: t("Select one"), value: "" };
-  }
+    || props.resource.kind == "nothing") { return DDI.SELECT_ONE; }
   switch (props.field) {
     case KnownField.mounted_tool_id:
       const toolId = parseInt("" + props.value);
-      if (toolId == 0) { return { label: t("None"), value: 0 }; }
+      if (toolId == 0) { return DDI.NONE; }
       const tool = maybeFindToolById(props.resourceIndex, toolId);
       if (!tool) { return { label: t("Unknown tool"), value: toolId }; }
       return {

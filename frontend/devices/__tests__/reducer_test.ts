@@ -1,3 +1,5 @@
+jest.mock("../../redux/store", () => ({ store: jest.fn() }));
+
 import { botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState, BotState } from "../interfaces";

@@ -73,7 +73,7 @@ export class SpreadCircle extends
   React.Component<SpreadCircleProps, SpreadCircleState> {
   state: SpreadCircleState = { spread: undefined };
 
-  UNSAFE_componentWillMount = () => {
+  componentDidMount = () => {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread }));
   }

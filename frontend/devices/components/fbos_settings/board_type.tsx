@@ -13,17 +13,7 @@ import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
 import { DevSettings } from "../../../account/dev/dev_support";
 
-interface BoardTypeState { sending: boolean }
-
-export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
-  state = {
-    sending: this.sending
-  };
-
-  UNSAFE_componentWillReceiveProps() {
-    this.setState({ sending: this.sending });
-  }
-
+export class BoardType extends React.Component<BoardTypeProps, {}> {
   get sending() {
     return !this.props.sourceFbosConfig("firmware_hardware").consistent;
   }
@@ -39,15 +29,14 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     if (selectedItem && isFwHardwareValue(firmware_hardware)) {
       info(t("Sending firmware configuration..."), t("Sending"));
       this.props.dispatch(updateConfig({ firmware_hardware }));
-      this.setState({ sending: true });
       this.forceUpdate();
     }
   }
 
   FirmwareSelection = () =>
     <FBSelect
-      key={this.props.firmwareHardware}
-      extraClass={this.state.sending ? "dim" : ""}
+      key={this.props.firmwareHardware + "" + this.sending}
+      extraClass={this.sending ? "dim" : ""}
       list={getFirmwareChoices()}
       selectedItem={this.selectedBoard}
       onChange={this.sendOffConfig} />

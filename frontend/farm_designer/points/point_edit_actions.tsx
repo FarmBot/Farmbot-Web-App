@@ -73,11 +73,11 @@ export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =
         case "type": return <div key={key}
           className={`meta-${key}-not-displayed`} />;
         case "created_by":
-          return <ListItem name={t("Source")}>
+          return <ListItem name={t("Source")} key={key}>
             {SOURCE_LOOKUP()[value || ""] || t("unknown")}
           </ListItem>;
         case "removal_method":
-          return <ListItem name={t("Removal method")}>
+          return <ListItem name={t("Removal method")} key={key}>
             <div className="weed-removal-method-section">
               {REMOVAL_METHODS.map(method =>
                 <div className={"weed-removal-method"} key={method}>
@@ -93,7 +93,7 @@ export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =
             </div>
           </ListItem>;
         default:
-          return <ListItem name={key}>
+          return <ListItem name={key} key={key}>
             {value || ""}
           </ListItem>;
       }
