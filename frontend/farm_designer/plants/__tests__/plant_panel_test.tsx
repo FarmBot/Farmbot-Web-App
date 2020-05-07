@@ -18,6 +18,7 @@ describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
     x: 12,
     y: 34,
+    z: 0,
     id: undefined,
     name: "tomato",
     uuid: "Plant.0.0",
@@ -91,7 +92,7 @@ describe("<PlantPanel/>", () => {
     expect(history.push).toHaveBeenCalledWith("/app/designer/move_to");
     expect(innerDispatch).toHaveBeenLastCalledWith({
       type: Actions.CHOOSE_LOCATION,
-      payload: { x: 12, y: 34, z: undefined }
+      payload: { x: 12, y: 34, z: 0 }
     });
   });
 });
@@ -119,7 +120,7 @@ describe("<EditDatePlanted />", () => {
 describe("<EditPlantLocation />", () => {
   const fakeProps = (): EditPlantLocationProps => ({
     uuid: "Plant.0.0",
-    xyLocation: { x: 1, y: 2 },
+    plantLocation: { x: 1, y: 2, z: 0 },
     updatePlant: jest.fn(),
   });
 
