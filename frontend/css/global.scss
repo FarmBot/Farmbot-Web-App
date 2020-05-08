@@ -1315,20 +1315,46 @@ ul {
 }
 
 .update-resource-step {
-  .custom-meta-field {
-    position: relative;
-    .fa-undo {
-      position: absolute;
-      top: 0.65rem;
-      right: 0.5rem;
-      color: $medium_light_gray;
-      &:hover {
-        color: $dark_gray;
-      }
-    }
+  .update-resource-step-resource {
+    margin-bottom: 1rem;
   }
   .update-resource-pair {
-    margin-top: 1rem;
+    margin-top: 0;
+    margin-right: -2rem;
+    div[class*=col-] {
+      padding: 0;
+      padding-right: 2rem;
+    }
+    .custom-meta-field {
+      position: relative;
+      input {
+        height: 3rem;
+      }
+      .fa-undo {
+        position: absolute;
+        top: 0.65rem;
+        right: 0.5rem;
+        color: $medium_light_gray;
+        &:hover {
+          color: $dark_gray;
+        }
+      }
+    }
+    .custom-field-warning {
+      display: inline-block;
+      margin-top: 0.5rem;
+      i,
+      p {
+        display: inline;
+        cursor: default !important;
+        margin-right: 0.5rem;
+        color: $darkest_red;
+      }
+      .did-you-mean {
+        cursor: pointer !important;
+        font-weight: bold;
+      }
+    }
   }
 }
 

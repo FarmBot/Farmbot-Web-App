@@ -43,7 +43,7 @@ interface MoveToFormState {
 }
 
 export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState> {
-  state = { z: undefined };
+  state = { z: this.props.chosenLocation.z };
 
   get vector(): { x: number, y: number, z: number } {
     const { chosenLocation } = this.props;

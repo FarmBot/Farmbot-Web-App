@@ -10,6 +10,7 @@ import { FieldSelection } from "./field_selection";
 import { ValueSelection } from "./value_selection";
 import { isUndefined } from "lodash";
 import { NOTHING_SELECTED } from "../../locals_list/handle_select";
+import { CustomFieldWarning } from "./field_warning";
 
 export class MarkAs extends React.Component<MarkAsProps, MarkAsState> {
   state: MarkAsState = {
@@ -89,30 +90,35 @@ export class MarkAs extends React.Component<MarkAsProps, MarkAsState> {
         confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
-          <Col xs={12}>
+          <Col xs={12} lg={6}>
             <ResourceSelection {...commonProps}
               sequenceUuid={this.props.currentSequence.uuid}
               updateResource={this.updateResource} />
           </Col>
-        </Row>
-        {this.state.fieldsAndValues.map((fieldAndValue, index) =>
-          <div className={"update-resource-pair"} key={index}>
-            <Row>
-              <Col xs={6}>
-                <FieldSelection {...commonProps}
+          {this.state.fieldsAndValues.map((fieldAndValue, index) =>
+            <Col xs={12} lg={6} key={index}>
+              <div className={"update-resource-pair"}>
+                <Col xs={6}>
+                  <FieldSelection {...commonProps}
+                    field={fieldAndValue.field}
+                    update={this.updateFieldOrValue(index)} />
+                </Col>
+                <Col xs={6}>
+                  <ValueSelection {...commonProps}
+                    field={fieldAndValue.field}
+                    value={fieldAndValue.value}
+                    update={this.updateFieldOrValue(index)}
+                    add={this.updateFieldOrValue(
+                      this.state.fieldsAndValues.length)}
+                    commitSelection={this.commitSelection} />
+                </Col>
+                <CustomFieldWarning
+                  resource={this.state.resource}
                   field={fieldAndValue.field}
                   update={this.updateFieldOrValue(index)} />
-              </Col>
-              <Col xs={6}>
-                <ValueSelection {...commonProps}
-                  field={fieldAndValue.field}
-                  value={fieldAndValue.value}
-                  update={this.updateFieldOrValue(index)}
-                  add={this.updateFieldOrValue(this.state.fieldsAndValues.length)}
-                  commitSelection={this.commitSelection} />
-              </Col>
-            </Row>
-          </div>)}
+              </div>
+            </Col>)}
+        </Row>
       </StepContent>
     </StepWrapper>;
   }

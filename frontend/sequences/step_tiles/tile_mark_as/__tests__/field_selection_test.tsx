@@ -1,10 +1,14 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { FieldSelection, isCustomMetaField } from "../field_selection";
+import {
+  FieldSelection, isCustomMetaField, UPDATE_RESOURCE_DDIS,
+} from "../field_selection";
 import { FieldSelectionProps } from "../interfaces";
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
+
+const DDI = UPDATE_RESOURCE_DDIS();
 
 describe("<FieldSelection />", () => {
   const fakeProps = (): FieldSelectionProps => ({
@@ -35,8 +39,8 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Plant stage", value: "plant_stage" },
-      { label: "Custom Meta Field", value: "" },
+      DDI.PLANT_STAGE,
+      DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
     expect(wrapper.text()).toContain("Select one");
@@ -80,8 +84,8 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Status", value: "plant_stage" },
-      { label: "Custom Meta Field", value: "" },
+      DDI.STATUS,
+      DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
     expect(wrapper.text()).toContain("Status");
@@ -98,8 +102,8 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Weed status", value: "plant_stage" },
-      { label: "Custom Meta Field", value: "" },
+      DDI.WEED_STATUS,
+      DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
     expect(wrapper.text()).toContain("Weed status");
@@ -116,11 +120,10 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Status", value: "plant_stage" },
-      { label: "Custom Meta Field", value: "" },
+      DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
-    expect(wrapper.text()).toContain("Status");
+    expect(wrapper.text()).toContain("Point status");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
 
@@ -149,8 +152,8 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Mounted Tool", value: "mounted_tool_id" },
-      { label: "Custom Meta Field", value: "" },
+      DDI.MOUNTED_TOOL,
+      DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
     expect(wrapper.text()).toContain("Mounted Tool");

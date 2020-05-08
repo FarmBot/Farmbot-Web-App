@@ -19,7 +19,7 @@ const KnownFieldSelection = (props: FieldSelectionProps) =>
     list={props.resource.kind == "nothing"
       ? []
       : fieldList(props.resource)
-        .concat([{ label: t("Custom Meta Field"), value: "" }])}
+        .concat([UPDATE_RESOURCE_DDIS().CUSTOM_META_FIELD])}
     onChange={ddi => props.update({
       field: "" + ddi.value,
       value: undefined
@@ -58,18 +58,13 @@ export const isCustomMetaField = (field: string | undefined): boolean =>
   !(isUndefined(field) || knownField(field));
 
 const fieldList = (resource: Resource | Identifier) => {
-  if (resource.kind == "identifier") {
-    return [{ label: t("Status"), value: "plant_stage" }];
-  }
+  const DDI = UPDATE_RESOURCE_DDIS();
+  if (resource.kind == "identifier") { return [DDI.STATUS]; }
   switch (resource.args.resource_type) {
-    case "Device":
-      return [{ label: t("Mounted Tool"), value: "mounted_tool_id" }];
-    case "Weed":
-      return [{ label: t("Weed status"), value: "plant_stage" }];
-    case "GenericPointer":
-      return [{ label: t("Status"), value: "plant_stage" }];
-    default:
-      return [{ label: t("Plant stage"), value: "plant_stage" }];
+    case "Device": return [DDI.MOUNTED_TOOL];
+    case "Weed": return [DDI.WEED_STATUS];
+    case "GenericPointer": return [];
+    default: return [DDI.PLANT_STAGE];
   }
 };
 
@@ -77,23 +72,27 @@ const getSelectedField = (
   resource: Resource | Identifier | Nothing,
   field: KnownField | undefined,
 ): DropDownItem => {
-  if (isUndefined(field) || resource.kind == "nothing") {
-    return { label: t("Select one"), value: "" };
-  }
-  if (resource.kind == "identifier") {
-    return { label: t("Status"), value: "plant_stage" };
-  }
+  const DDI = UPDATE_RESOURCE_DDIS();
+  if (isUndefined(field) || resource.kind == "nothing") { return DDI.SELECT_ONE; }
+  if (resource.kind == "identifier") { return DDI.STATUS; }
   const resourceType = resource.args.resource_type;
   switch (field) {
-    case KnownField.mounted_tool_id:
-      return { label: t("Mounted Tool"), value: "tool" };
+    case KnownField.mounted_tool_id: return DDI.MOUNTED_TOOL;
     case KnownField.plant_stage:
-      if (resourceType == "Weed") {
-        return { label: t("Weed status"), value: "plant_stage" };
-      }
-      if (resourceType == "GenericPointer") {
-        return { label: t("Status"), value: "plant_stage" };
-      }
-      return { label: t("Plant stage"), value: "plant_stage" };
+      if (resourceType == "Weed") { return DDI.WEED_STATUS; }
+      if (resourceType == "GenericPointer") { return DDI.POINT_STATUS; }
+      return DDI.PLANT_STAGE;
   }
 };
+
+export const UPDATE_RESOURCE_DDIS = (): Record<string, DropDownItem> => ({
+  SELECT_ONE: { label: t("Select one"), value: "" },
+  CUSTOM_META_FIELD: { label: t("Custom field"), value: "" },
+  STATUS: { label: t("Status"), value: "plant_stage" },
+  MOUNTED_TOOL: { label: t("Mounted Tool"), value: "mounted_tool_id" },
+  WEED_STATUS: { label: t("Weed status"), value: "plant_stage" },
+  POINT_STATUS: { label: t("Point status"), value: "plant_stage" },
+  PLANT_STAGE: { label: t("Plant stage"), value: "plant_stage" },
+  NONE: { label: t("None"), value: 0 },
+  REMOVED: { label: t("Removed"), value: "removed" },
+});
