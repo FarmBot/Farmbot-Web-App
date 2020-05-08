@@ -32,7 +32,6 @@ export function fakeResourceIndex(extra: TaggedResource[] = []): ResourceIndex {
       "meta": {},
       "name": "ToolSlot 1",
       "pointer_type": "ToolSlot",
-      "radius": 100,
       "x": 100,
       "y": 200,
       "z": 300,

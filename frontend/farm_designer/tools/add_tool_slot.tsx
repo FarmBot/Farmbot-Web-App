@@ -21,7 +21,7 @@ export class RawAddToolSlot
 
   componentDidMount() {
     const action = init("Point", {
-      pointer_type: "ToolSlot", name: t("Slot"), radius: 0, meta: {},
+      pointer_type: "ToolSlot", name: t("Slot"), meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
       gantry_mounted: !hasUTM(this.props.firmwareHardware) ? true : false,

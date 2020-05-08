@@ -7,7 +7,6 @@ import { t } from "../../i18next_wrapper";
 import { UUID } from "../../resources/interfaces";
 import { edit, save } from "../../api/crud";
 import { EditPlantStatusProps } from "./plant_panel";
-import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   planned: { label: t("Planned"), value: "planned" },
@@ -77,8 +76,9 @@ export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
         const points = props.allPoints.filter(point =>
           props.selected.includes(point.uuid)
           && point.kind === "Point"
-          && ["Plant", "Weed"].includes(point.body.pointer_type)
-          && (point.body as unknown as PlantPointer).plant_stage != plant_stage);
+          && (point.body.pointer_type == "Plant"
+            || point.body.pointer_type == "Weed")
+          && point.body.plant_stage != plant_stage);
         points.length > 0 && confirm(
           t("Change status to '{{ status }}' for {{ num }} items?",
             { status: plant_stage, num: points.length }))
@@ -98,10 +98,6 @@ export interface EditWeedStatusProps {
 export const EditWeedStatus = (props: EditWeedStatusProps) =>
   <FBSelect
     list={PLANT_STAGE_LIST().filter(ddi => WEED_STATUSES.includes("" + ddi.value))}
-    selectedItem={WEED_STAGE_DDI_LOOKUP()[(
-      props.weed.body as unknown as PlantPointer).plant_stage]}
+    selectedItem={WEED_STAGE_DDI_LOOKUP()[props.weed.body.plant_stage]}
     onChange={ddi =>
-      props.updateWeed({
-        ["plant_stage" as keyof TaggedWeedPointer["body"]]:
-          ddi.value as PlantStage
-      })} />;
+      props.updateWeed({ plant_stage: ddi.value as PlantStage })} />;
