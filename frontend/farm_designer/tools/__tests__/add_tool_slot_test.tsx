@@ -43,7 +43,7 @@ describe("<AddToolSlot />", () => {
       "direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     expect(init).toHaveBeenCalledWith("Point", {
-      pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},
+      pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
       gantry_mounted: false,
@@ -119,7 +119,7 @@ describe("<AddToolSlot />", () => {
     const wrapper = mount(<AddToolSlot {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("tool");
     expect(init).toHaveBeenCalledWith("Point", {
-      pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},
+      pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
       gantry_mounted: true,

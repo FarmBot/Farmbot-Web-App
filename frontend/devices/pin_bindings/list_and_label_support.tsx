@@ -32,7 +32,6 @@ export const specialActionLabelLookup: { [x: string]: string } = {
 
 export const specialActionList: DropDownItem[] =
   Object.values(PinBindingSpecialAction)
-    .filter(action => action != PinBindingSpecialAction.dump_info)
     .map((action: PinBindingSpecialAction) =>
       ({ label: specialActionLabelLookup[action], value: action }));
 

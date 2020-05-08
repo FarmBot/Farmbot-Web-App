@@ -28,7 +28,6 @@ const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
   {
     tool_id: TOOL_ID,
     pointer_type: "ToolSlot",
-    radius: 0,
     x: 0,
     y: 0,
     z: 0,

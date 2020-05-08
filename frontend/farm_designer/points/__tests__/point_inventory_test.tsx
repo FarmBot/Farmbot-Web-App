@@ -69,9 +69,8 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const point = fakePoint();
     const discarded = fakePoint();
-    discarded.body.discarded_at = "2016-05-22T05:00:00.000Z";
     state.resources = buildResourceIndex([point, discarded]);
     const props = mapStateToProps(state);
-    expect(props.genericPoints).toEqual([point]);
+    expect(props.genericPoints).toEqual([point, discarded]);
   });
 });

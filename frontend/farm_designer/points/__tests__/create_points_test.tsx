@@ -133,6 +133,7 @@ describe("<CreatePoints />", () => {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: "Created Point",
       pointer_type: "GenericPointer",
+      plant_stage: "planned",
       radius: 30, x: 10, y: 20, z: 0,
     });
   });
@@ -146,6 +147,7 @@ describe("<CreatePoints />", () => {
       meta: { color: "red", created_by: "farm-designer", type: "weed" },
       name: "Created Weed",
       pointer_type: "Weed",
+      plant_stage: "planned",
       radius: 30, x: 10, y: 20, z: 0,
     });
   });

@@ -18,8 +18,6 @@ import { generateUuid } from "../../resources/util";
 import { DevSettings } from "../../account/dev/dev_support";
 
 describe("mapStateToProps()", () => {
-  const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
-
   it("hovered plantUUID is undefined", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.hoveredPlant = {
@@ -55,11 +53,8 @@ describe("mapStateToProps()", () => {
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = true;
     const point1 = fakePoint();
-    point1.body.discarded_at = undefined;
     const point2 = fakePoint();
-    point2.body.discarded_at = DISCARDED_AT;
     const point3 = fakePoint();
-    point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([
       webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
@@ -71,15 +66,12 @@ describe("mapStateToProps()", () => {
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = false;
     const point1 = fakePoint();
-    point1.body.discarded_at = undefined;
     const point2 = fakePoint();
-    point2.body.discarded_at = DISCARDED_AT;
     const point3 = fakePoint();
-    point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([
       webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
-    expect(mapStateToProps(state).genericPoints.length).toEqual(1);
+    expect(mapStateToProps(state).genericPoints.length).toEqual(3);
   });
 
   it("returns sensor readings", () => {
