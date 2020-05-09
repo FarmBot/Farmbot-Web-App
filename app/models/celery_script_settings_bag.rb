@@ -285,7 +285,7 @@ module CeleryScriptSettingsBag
       defn: [v(:string)],
     },
     resource: {
-      defn: [n(:identifier), n(:resource)],
+      defn: [n(:identifier), n(:resource), n(:point)],
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
