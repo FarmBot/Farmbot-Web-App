@@ -29,7 +29,7 @@ export function mapStateToProps(props: Everything): PointsProps {
   const { hoveredPoint } = props.resources.consumers.farm_designer;
   return {
     genericPoints: selectAllGenericPointers(props.resources.index)
-      .filter(x => !x.body.discarded_at),
+      .filter(x => x),
     dispatch: props.dispatch,
     hoveredPoint,
   };

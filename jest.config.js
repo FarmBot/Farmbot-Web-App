@@ -2,13 +2,6 @@ module.exports = {
   "clearMocks": true,
   "logHeapUsage": true,
   "globals": {
-    "ts-jest": {
-      "diagnostics": {
-        "ignoreCodes": [
-          151001
-        ]
-      }
-    },
     "globalConfig": {
       "NODE_ENV": "development",
       "TOS_URL": "https://farm.bot/tos/",

@@ -57,7 +57,7 @@ export function mapStateToProps(props: Everything): Props {
   const allGenericPoints = selectAllGenericPointers(props.resources.index);
   const genericPoints = getConfigValue(BooleanSetting.show_historic_points)
     ? allGenericPoints
-    : allGenericPoints.filter(x => !x.body.discarded_at);
+    : allGenericPoints.filter(x => x);
   const weeds = selectAllWeedPointers(props.resources.index);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));

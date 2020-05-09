@@ -22,7 +22,6 @@ describe("<ToolSlotLayer/>", () => {
       pointer_type: "ToolSlot",
       tool_id: undefined,
       name: "Name",
-      radius: 50,
       x: 1,
       y: 2,
       z: 3,

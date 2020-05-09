@@ -59,8 +59,8 @@ const TOOL_SLOT_FIELDS: ToolSlotFields = (BASE_FIELDS as ToolSlotFields)
   .concat(["tool_id", "pullout_direction", "gantry_mounted"]);
 const GENERIC_POINTER_FIELDS: GenericPointerFields =
   (BASE_FIELDS as GenericPointerFields).concat(["radius"]);
-const WEED_FIELDS: WeedFields = (BASE_FIELDS as PlantFields)
-  .concat(["plant_stage", "radius"]) as WeedFields;
+const WEED_FIELDS: WeedFields = (BASE_FIELDS as WeedFields)
+  .concat(["plant_stage", "radius"]);
 const POINT_FIELDS: PointFields = (BASE_FIELDS as PointFields)
   .concat(PLANT_FIELDS)
   .concat(TOOL_SLOT_FIELDS)
