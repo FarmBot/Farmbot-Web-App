@@ -39,19 +39,10 @@ module Tools
         })
       end.each_with_object(Set.new) do |i, results|
         kind = i.fetch(:kind)
-        case kind
-        when "pair"
-          if i.fetch(:label) == "mounted_tool_id" && i.fetch(:value) == tool.id
-            results.add(i.fetch(:sequence_id))
-          end
-        when "resource"
-          if i.fetch(:resource_type) == "Tool" && i.fetch(:value) == tool.id
-            results.add(i.fetch(:sequence_id))
-          end
-        when "point"
-          nil
-        else
-          raise "Unexpected kind: #{kind}"
+        if kind == "pair" &&
+           i.fetch(:label) == "mounted_tool_id" &&
+           i.fetch(:value) == tool.id
+          results.add(i.fetch(:sequence_id))
         end
       end
         .to_a
