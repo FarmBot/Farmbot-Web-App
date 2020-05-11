@@ -58,9 +58,12 @@ describe Sequences::Destroy do
         },
       },
     } }
-    sequence(resource_update, variable_declr) do
+    sequence(resource_update, variable_declr) do |s|
       weed_result = Points::Destroy.run(point: weed, device: device)
       expect(weed_result.success?).to be false
+      error = weed_result.errors.message_list.first
+      expect(error).to include("Could not delete weed")
+      expect(error).to include("in use by the following sequence(s): #{s.name}")
     end
   end
 
@@ -86,9 +89,12 @@ describe Sequences::Destroy do
         },
       ],
     }
-    sequence(update_resource) do
+    sequence(update_resource) do |s|
       plant_result = Points::Destroy.run(point: plant, device: device)
       expect(plant_result.success?).to be false
+      error = plant_result.errors.message_list.first
+      expect(error).to include("Could not delete plant")
+      expect(error).to include("in use by the following sequence(s): #{s.name}")
     end
   end
 
@@ -107,9 +113,14 @@ describe Sequences::Destroy do
           args: { label: "mounted_tool_id", value: tool.id },
         },
       ],
-    }) do
+    }) do |s|
       tool_result = Tools::Destroy.run(tool: tool, device: device)
       expect(tool_result.success?).to be false
+      error = tool_result.errors.message_list.first
+      error_message1 = "the following sequences are still using it: #{s.name}"
+      error_message2 = "Can't delete tool or seed container"
+      expect(error).to include(error_message1)
+      expect(error).to include(error_message2)
     end
   end
 end
