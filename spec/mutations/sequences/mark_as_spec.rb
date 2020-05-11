@@ -6,99 +6,110 @@ describe Sequences::Destroy do
   let(:tool) { FactoryBot.create(:tool, device: device) }
   let(:plant) { FactoryBot.create(:plant, device: device) }
 
-  let!(:sequence) do
+  def sequence(body, locals = nil)
     json = Sequences::Create.run!({
       device: device,
-      name: "testcase123",
+      name: "test - #{body.hash}",
       kind: "sequence",
       args: {
         version: 20180209,
         locals: {
           kind: "scope_declaration",
           args: {},
-          body: [
-            { kind: "variable_declaration",
-             args: {
-              label: "parent",
-              data_value: {
-                kind: "point",
+          body: [locals].compact,
+        },
+      },
+      body: [body],
+    })
+    s = Sequence.find(json.fetch(:id))
+    yield(s)
+    Sequences::Destroy.run!(sequence: s, device: device)
+  end
+
+  it "Cant delete resource in use by a MARK AS step: weeds / identifiers" do
+    resource_update = {
+      kind: "update_resource",
+      args: {
+        resource: {
+          kind: "identifier",
+          args: {
+            label: "parent",
+          },
+        },
+      },
+      body: [
+              {
+                kind: "pair",
                 args: {
-                  pointer_id: weed.id,
-                  pointer_type: "Weed",
+                  value: "sprouted",
+                  label: "plant_stage",
                 },
               },
-            } },
-          ],
+            ],
+    }
+    variable_declr = { kind: "variable_declaration",
+                      args: {
+      label: "parent",
+      data_value: {
+        kind: "point",
+        args: {
+          pointer_id: weed.id,
+          pointer_type: "Weed",
+        },
+      },
+    } }
+    sequence(resource_update, variable_declr) do
+      weed_result = Points::Destroy.run(point: weed, device: device)
+      expect(weed_result.success?).to be false
+    end
+  end
+
+  it "Cant delete resource in use by a MARK AS step: plants" do
+    update_resource = {
+      kind: "update_resource",
+      args: {
+        resource: {
+          kind: "resource",
+          args: {
+            resource_id: plant.id,
+            resource_type: "Plant",
+          },
         },
       },
       body: [
         {
-          kind: "update_resource",
+          kind: "pair",
           args: {
-            resource: {
-              kind: "resource",
-              args: { resource_type: "Device", resource_id: device.id },
-            },
+            value: "planted",
+            label: "plant_stage",
           },
-          body: [
-            {
-              kind: "pair",
-              args: { label: "mounted_tool_id", value: tool.id },
-            },
-          ],
-        },
-        {
-          kind: "update_resource",
-          args: {
-            resource: {
-              kind: "resource",
-              args: {
-                resource_id: plant.id,
-                resource_type: "Plant",
-              },
-            },
-          },
-          body: [
-            {
-              kind: "pair",
-              args: {
-                value: "planted",
-                label: "plant_stage",
-              },
-            },
-          ],
-        },
-        {
-          kind: "update_resource",
-          args: {
-            resource: {
-              kind: "identifier",
-              args: {
-                label: "parent",
-              },
-            },
-          },
-          body: [
-                  {
-                    kind: "pair",
-                    args: {
-                      value: "sprouted",
-                      label: "plant_stage",
-                    },
-                  },
-                ],
         },
       ],
-    })
-    Sequence.find(json.fetch(:id))
+    }
+    sequence(update_resource) do
+      plant_result = Points::Destroy.run(point: plant, device: device)
+      expect(plant_result.success?).to be false
+    end
   end
 
-  it "Cant delete resource in use by a MARK AS step" do
-    weed_result = Points::Destroy.run(point: weed, device: device)
-    expect(weed_result.success?).to be false
-    plant_result = Points::Destroy.run(point: plant, device: device)
-    expect(plant_result.success?).to be false
-    tool_result = Tools::Destroy.run(tool: tool, device: device)
-    expect(tool_result.success?).to be false
+  it "Cant delete resource in use by a MARK AS step: tools" do
+    sequence({
+      kind: "update_resource",
+      args: {
+        resource: {
+          kind: "resource",
+          args: { resource_type: "Device", resource_id: device.id },
+        },
+      },
+      body: [
+        {
+          kind: "pair",
+          args: { label: "mounted_tool_id", value: tool.id },
+        },
+      ],
+    }) do
+      tool_result = Tools::Destroy.run(tool: tool, device: device)
+      expect(tool_result.success?).to be false
+    end
   end
 end
