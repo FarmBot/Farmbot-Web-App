@@ -10,13 +10,6 @@ jest.mock("../../zoom", () => ({
   atMinZoom: () => mockAtMin,
 }));
 
-let mockDev = false;
-jest.mock("../../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -54,17 +47,7 @@ describe("<GardenMapLegend />", () => {
     ["plants", "move"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.html()).toContain("filter");
-    expect(wrapper.html()).not.toContain("extras");
-  });
-
-  it("shows submenu", () => {
-    mockDev = true;
-    const p = fakeProps();
-    p.hasSensorReadings = true;
-    const wrapper = mount(<GardenMapLegend {...p} />);
-    expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
-    mockDev = false;
   });
 });
 

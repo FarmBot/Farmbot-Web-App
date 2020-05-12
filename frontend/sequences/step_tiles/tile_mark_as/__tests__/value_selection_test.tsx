@@ -11,7 +11,7 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import {
-  PLANT_STAGE_LIST,
+  PLANT_STAGE_LIST, ALL_STAGE_LIST,
 } from "../../../../farm_designer/plants/edit_plant_status";
 import { fakeTool } from "../../../../__test_support__/fake_state/resources";
 import { resource_type, Resource } from "farmbot";
@@ -122,6 +122,7 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.ACTIVE,
       DDI.REMOVED,
     ]);
     expect(wrapper.text()).toContain("as");
@@ -156,10 +157,25 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.ACTIVE,
       DDI.REMOVED,
     ]);
     expect(wrapper.text()).toContain("as");
     expect(wrapper.text()).toContain("Removed");
+  });
+
+  it("renders known uncontrolled point value", () => {
+    const p = fakeProps();
+    p.resource = {
+      kind: "resource",
+      args: { resource_type: "GenericPointer", resource_id: 1 }
+    };
+    p.field = "x";
+    p.value = "123";
+    const wrapper = mount(<ValueSelection {...p} />);
+    expect(wrapper.find("FBSelect").length).toEqual(0);
+    expect(wrapper.text()).toContain("as");
+    expect(wrapper.find("input").props().value).toEqual("123");
   });
 
   it("renders other value", () => {
@@ -172,7 +188,7 @@ describe("<ValueSelection />", () => {
     p.value = "removed";
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual(PLANT_STAGE_LIST());
+    expect(wrapper.find("FBSelect").props().list).toEqual(ALL_STAGE_LIST());
     expect(wrapper.text()).toContain("as");
     expect(wrapper.text()).toContain("Removed");
   });
@@ -252,7 +268,7 @@ describe("<ValueSelection />", () => {
     p.value = "planted";
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual(PLANT_STAGE_LIST());
+    expect(wrapper.find("FBSelect").props().list).toEqual(ALL_STAGE_LIST());
     expect(wrapper.text()).toContain("as");
     expect(wrapper.text()).toContain("Planted");
   });

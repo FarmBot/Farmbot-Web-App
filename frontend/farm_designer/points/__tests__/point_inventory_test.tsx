@@ -14,6 +14,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { mapStateToProps } from "../point_inventory";
 import { SearchField } from "../../../ui/search_field";
+import { PointSortMenu } from "../../sort_options";
 
 describe("<Points> />", () => {
   const fakeProps = (): PointsProps => ({
@@ -61,6 +62,18 @@ describe("<Points> />", () => {
     const wrapper = mount(<Points {...p} />);
     wrapper.setState({ searchTerm: "0" });
     expect(wrapper.text()).not.toContain("point 1");
+  });
+
+  it("changes sort term", () => {
+    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    const menu = wrapper.find(SearchField).props().customLeftIcon;
+    const menuWrapper = shallow(<div>{menu}</div>);
+    expect(wrapper.state().sortBy).toEqual(undefined);
+    menuWrapper.find(PointSortMenu).simulate("change", {
+      sortBy: "radius", reverse: true
+    });
+    expect(wrapper.state().sortBy).toEqual("radius");
+    expect(wrapper.state().reverse).toEqual(true);
   });
 });
 

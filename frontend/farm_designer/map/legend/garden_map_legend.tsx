@@ -42,7 +42,7 @@ export const PointsSubMenu = ({ toggle, getConfigValue }: {
   <div className="map-points-submenu">
     <LayerToggle
       value={!!getConfigValue(BooleanSetting.show_historic_points)}
-      label={t("Historic Points?")}
+      label={t("Show removed?")}
       onClick={toggle(BooleanSetting.show_historic_points)} />
   </div>;
 
@@ -56,15 +56,14 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     <LayerToggle
       value={props.showPoints}
       label={t("Points?")}
-      onClick={toggle(BooleanSetting.show_points)}
-      submenuTitle={t("extras")}
-      popover={DevSettings.futureFeaturesEnabled()
-        ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
-        : undefined} />
+      onClick={toggle(BooleanSetting.show_points)} />
     <LayerToggle
       value={props.showWeeds}
       label={t("Weeds?")}
-      onClick={toggle(BooleanSetting.show_weeds)} />
+      onClick={toggle(BooleanSetting.show_weeds)}
+      submenuTitle={t("extras")}
+      popover={
+        <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />} />
     <LayerToggle
       value={props.showSpread}
       label={t("Spread?")}
