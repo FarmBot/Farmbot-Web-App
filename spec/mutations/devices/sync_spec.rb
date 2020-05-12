@@ -24,7 +24,10 @@ describe Devices::Sync do
   ])
 
   it "is different this time!" do
+    old_timestamp = 5.years.ago
+    device.last_saw_api = old_timestamp
     results = Devices::Sync.run!(device: device)
     expect(Set.new(results.keys)).to eq(TABLES)
+    expect(device.reload.last_saw_api).to be > old_timestamp
   end
 end
