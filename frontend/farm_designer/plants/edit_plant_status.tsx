@@ -23,10 +23,29 @@ export const PLANT_STAGE_LIST = () => [
   PLANT_STAGE_DDI_LOOKUP().removed,
 ];
 
-export const WEED_STATUSES = ["removed"];
-const WEED_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
+export const ALL_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
+  planned: { label: t("Planned/Active"), value: "planned" },
+  planted: PLANT_STAGE_DDI_LOOKUP().planted,
+  sprouted: PLANT_STAGE_DDI_LOOKUP().sprouted,
+  harvested: PLANT_STAGE_DDI_LOOKUP().harvested,
   removed: PLANT_STAGE_DDI_LOOKUP().removed,
 });
+export const ALL_STAGE_LIST = () => [
+  ALL_STAGE_DDI_LOOKUP().planned,
+  PLANT_STAGE_DDI_LOOKUP().planted,
+  PLANT_STAGE_DDI_LOOKUP().sprouted,
+  PLANT_STAGE_DDI_LOOKUP().harvested,
+  PLANT_STAGE_DDI_LOOKUP().removed,
+];
+
+export const WEED_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
+  planned: { label: t("Active"), value: "planned" },
+  removed: PLANT_STAGE_DDI_LOOKUP().removed,
+});
+export const WEED_STAGE_LIST = () => [
+  WEED_STAGE_DDI_LOOKUP().planned,
+  WEED_STAGE_DDI_LOOKUP().removed,
+];
 
 /** Change `planted_at` value based on `plant_stage` update. */
 const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
@@ -64,8 +83,9 @@ export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
     <p>{t("update status to")}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
-      list={PLANT_STAGE_LIST().filter(ddi =>
-        props.pointerType == "Plant" || WEED_STATUSES.includes("" + ddi.value))}
+      list={props.pointerType == "Plant"
+        ? PLANT_STAGE_LIST()
+        : WEED_STAGE_LIST()}
       selectedItem={undefined}
       customNullLabel={t("Select a status")}
       onChange={ddi => {
@@ -97,7 +117,7 @@ export interface EditWeedStatusProps {
 /** Select a `plant_stage` for a weed. */
 export const EditWeedStatus = (props: EditWeedStatusProps) =>
   <FBSelect
-    list={PLANT_STAGE_LIST().filter(ddi => WEED_STATUSES.includes("" + ddi.value))}
+    list={WEED_STAGE_LIST()}
     selectedItem={WEED_STAGE_DDI_LOOKUP()[props.weed.body.plant_stage]}
     onChange={ddi =>
       props.updateWeed({ plant_stage: ddi.value as PlantStage })} />;

@@ -40,6 +40,10 @@ describe("<FieldSelection />", () => {
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       DDI.PLANT_STAGE,
+      DDI.X,
+      DDI.Y,
+      DDI.Z,
+      DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
@@ -85,6 +89,11 @@ describe("<FieldSelection />", () => {
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       DDI.STATUS,
+      DDI.COLOR,
+      DDI.X,
+      DDI.Y,
+      DDI.Z,
+      DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
@@ -92,21 +101,33 @@ describe("<FieldSelection />", () => {
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
 
-  it("renders known weed field", () => {
+  it.each<[string, string]>([
+    ["plant_stage", "Weed status"],
+    ["meta.color", "Color"],
+    ["x", "X"],
+    ["y", "Y"],
+    ["z", "Z"],
+    ["radius", "Radius"],
+  ])("renders known weed field: %s", (field, expected) => {
     const p = fakeProps();
     p.resource = {
       kind: "resource",
       args: { resource_type: "Weed", resource_id: 1 }
     };
-    p.field = "plant_stage";
+    p.field = field;
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       DDI.WEED_STATUS,
+      DDI.COLOR,
+      DDI.X,
+      DDI.Y,
+      DDI.Z,
+      DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
-    expect(wrapper.text()).toContain("Weed status");
+    expect(wrapper.text()).toContain(expected);
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
 
@@ -120,6 +141,11 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.COLOR,
+      DDI.X,
+      DDI.Y,
+      DDI.Z,
+      DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
     expect(wrapper.text()).toContain("field");
@@ -171,5 +197,10 @@ describe("isCustomMetaField()", () => {
     expect(isCustomMetaField(undefined)).toBeFalsy();
     expect(isCustomMetaField("plant_stage")).toBeFalsy();
     expect(isCustomMetaField("mounted_tool_id")).toBeFalsy();
+    expect(isCustomMetaField("x")).toBeFalsy();
+    expect(isCustomMetaField("y")).toBeFalsy();
+    expect(isCustomMetaField("z")).toBeFalsy();
+    expect(isCustomMetaField("radius")).toBeFalsy();
+    expect(isCustomMetaField("meta.color")).toBeFalsy();
   });
 });

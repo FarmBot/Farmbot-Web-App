@@ -162,6 +162,7 @@ export interface CalendarOccurrence {
   subheading?: string | undefined;
   executableId: number;
   id: number;
+  color?: string;
 }
 
 /** A group of FarmEvents for a particular day on the calendar. */

@@ -55,10 +55,11 @@ export function mapStateToProps(props: Everything): Props {
 
   const getConfigValue = getWebAppConfigValue(() => props);
   const allGenericPoints = selectAllGenericPointers(props.resources.index);
-  const genericPoints = getConfigValue(BooleanSetting.show_historic_points)
-    ? allGenericPoints
-    : allGenericPoints.filter(x => x);
-  const weeds = selectAllWeedPointers(props.resources.index);
+  const genericPoints = allGenericPoints;
+  const allWeeds = selectAllWeedPointers(props.resources.index);
+  const weeds = getConfigValue(BooleanSetting.show_historic_points)
+    ? allWeeds
+    : allWeeds.filter(x => x.body.plant_stage == "planned");
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
