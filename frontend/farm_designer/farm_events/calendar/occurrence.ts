@@ -32,5 +32,6 @@ export function occurrence(
     heading: heading(),
     executableId: fe.executable_id || 0,
     id: fe.id || 0,
+    color: fe.executable.color,
   };
 }
