@@ -40,6 +40,9 @@ export const ALL_STAGE_LIST = () => [
 
 export const WEED_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
   planned: { label: t("Active"), value: "planned" },
+  planted: PLANT_STAGE_DDI_LOOKUP().planted,
+  sprouted: PLANT_STAGE_DDI_LOOKUP().sprouted,
+  harvested: PLANT_STAGE_DDI_LOOKUP().harvested,
   removed: PLANT_STAGE_DDI_LOOKUP().removed,
 });
 export const WEED_STAGE_LIST = () => [
