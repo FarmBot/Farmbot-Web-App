@@ -1282,6 +1282,17 @@
 .groups-panel {
   .panel-content {
     padding: 0;
+    .active-weeds-header,
+    .removed-weeds-header {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      label {
+        margin: 0;
+        margin-left: 1rem;
+        line-height: 2.1rem;
+      }
+    }
   }
 }
 

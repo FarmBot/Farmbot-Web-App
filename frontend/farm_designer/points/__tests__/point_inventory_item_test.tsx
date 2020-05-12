@@ -9,7 +9,7 @@ jest.mock("../../map/actions", () => ({
 }));
 
 import * as React from "react";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
   PointInventoryItem, PointInventoryItemProps,
 } from "../point_inventory_item";
@@ -25,6 +25,20 @@ describe("<PointInventoryItem> />", () => {
     hovered: false,
   });
 
+  it("renders named point", () => {
+    const p = fakeProps();
+    p.tpp.body.name = "named point";
+    const wrapper = mount(<PointInventoryItem {...p} />);
+    expect(wrapper.text()).toContain("named point");
+  });
+
+  it("renders unnamed point", () => {
+    const p = fakeProps();
+    p.tpp.body.name = "";
+    const wrapper = mount(<PointInventoryItem {...p} />);
+    expect(wrapper.text()).toContain("Untitled point");
+  });
+
   it("navigates to point", () => {
     mockPath = "/app/designer/points";
     const p = fakeProps();
@@ -33,6 +47,20 @@ describe("<PointInventoryItem> />", () => {
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith("/app/designer/points/1");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: [p.tpp.uuid],
+    });
+  });
+
+  it("navigates to point without id", () => {
+    mockPath = "/app/designer/points";
+    const p = fakeProps();
+    p.tpp.body.id = undefined;
+    const wrapper = shallow(<PointInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith("/app/designer/points/ERR_NO_POINT_ID");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: [p.tpp.uuid],

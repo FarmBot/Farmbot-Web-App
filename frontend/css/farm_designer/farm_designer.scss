@@ -169,6 +169,26 @@
           color: $medium_dark_red;
         }
       }
+      .bp3-popover-wrapper {
+        position: absolute;
+        .bp3-popover-target {
+          width: 3rem;
+        }
+      }
+      .point-sort-menu {
+        width: 60px;
+        label {
+          margin-top: 0;
+        }
+        i {
+          padding: 0.5rem;
+          color: $medium_light_gray;
+          &.selected {
+            font-weight: bold;
+            color: $dark_gray;
+          }
+        }
+      }
     }
     input {
       background: transparent;
@@ -703,12 +723,12 @@
   align-items: center;
   fieldset {
     display: flex;
-    margin-top: 1rem;
+    margin-top: 0;
     flex-direction: column;
     align-items: center;
   }
   label {
-    margin-top: 0.75rem;
+    margin-top: 0;
   }
   button {
     margin: auto;

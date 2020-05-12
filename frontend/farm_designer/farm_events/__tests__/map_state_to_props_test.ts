@@ -58,6 +58,7 @@ describe("mapStateToProps()", () => {
             executableId: 1,
             heading: "fake",
             id: 1,
+            color: "red",
             mmddyy: "022222",
             sortKey: 7956842400,
             timeStr: "2:00am"
@@ -73,6 +74,7 @@ describe("mapStateToProps()", () => {
             executableId: 1,
             heading: "Foo",
             id: 2,
+            color: "red",
             mmddyy: "022322",
             sortKey: 7956928800,
             subheading: "",
@@ -82,6 +84,7 @@ describe("mapStateToProps()", () => {
             executableId: 1,
             heading: "Foo",
             id: 2,
+            color: "red",
             mmddyy: "022322",
             sortKey: 7956950400,
             subheading: "fake",
@@ -123,6 +126,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
       executableId: 1,
       heading: "fake",
       id: 1,
+      color: "red",
       mmddyy: expect.stringContaining("17"),
       sortKey: expect.any(Number),
       timeStr: expect.stringContaining("02")
@@ -204,6 +208,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         heading: "Foo",
         subheading: "",
         id: 2,
+        color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
         timeStr: expect.stringContaining("02")
@@ -221,6 +226,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         heading: "Foo",
         subheading: "fake",
         id: 2,
+        color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
         timeStr: expect.stringContaining("11")

@@ -1,0 +1,66 @@
+import * as React from "react";
+import { shallow } from "enzyme";
+import { fakePoint } from "../../__test_support__/fake_state/resources";
+import {
+  PointSortMenu, orderedPoints, PointSortMenuProps,
+} from "../sort_options";
+
+describe("orderedPoints()", () => {
+  it("orders points", () => {
+    const point0 = fakePoint();
+    point0.body.name = "point 0";
+    point0.body.radius = 1;
+    const point1 = fakePoint();
+    point1.body.name = "point 1";
+    point1.body.radius = 1000;
+    const point2 = fakePoint();
+    point2.body.name = "point 2";
+    point2.body.radius = 100;
+    const result = orderedPoints([point0, point1, point2],
+      { sortBy: "radius", reverse: true });
+    expect(result).toEqual([point1, point2, point0]);
+  });
+});
+
+describe("<PointSortMenu />", () => {
+  const fakeProps = (): PointSortMenuProps => ({
+    sortOptions: { sortBy: undefined, reverse: false },
+    onChange: jest.fn(),
+  });
+
+  it("changes sort type: default", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    wrapper.find("i.fa-sort").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      sortBy: undefined, reverse: false
+    });
+  });
+
+  it("changes sort type: by size", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    wrapper.find("i.fa-sort-amount-desc").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      sortBy: "radius", reverse: true
+    });
+  });
+
+  it("shows selected sort method: default", () => {
+    const p = fakeProps();
+    p.sortOptions = { sortBy: undefined, reverse: false };
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeTruthy();
+    expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
+      .toBeFalsy();
+  });
+
+  it("shows selected sort method: size", () => {
+    const p = fakeProps();
+    p.sortOptions = { sortBy: "radius", reverse: true };
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
+    expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
+      .toBeTruthy();
+  });
+});

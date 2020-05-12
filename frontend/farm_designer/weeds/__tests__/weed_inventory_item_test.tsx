@@ -9,7 +9,7 @@ jest.mock("../../map/actions", () => ({
 }));
 
 import * as React from "react";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
   WeedInventoryItem, WeedInventoryItemProps,
 } from "../weed_inventory_item";
@@ -25,6 +25,20 @@ describe("<WeedInventoryItem /> />", () => {
     hovered: false,
   });
 
+  it("renders named weed", () => {
+    const p = fakeProps();
+    p.tpp.body.name = "named weed";
+    const wrapper = mount(<WeedInventoryItem {...p} />);
+    expect(wrapper.text()).toContain("named weed");
+  });
+
+  it("renders unnamed weed", () => {
+    const p = fakeProps();
+    p.tpp.body.name = "";
+    const wrapper = mount(<WeedInventoryItem {...p} />);
+    expect(wrapper.text()).toContain("Untitled weed");
+  });
+
   it("navigates to weed", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
@@ -32,6 +46,19 @@ describe("<WeedInventoryItem /> />", () => {
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith("/app/designer/weeds/1");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: [p.tpp.uuid],
+    });
+  });
+
+  it("navigates to weed without id", () => {
+    const p = fakeProps();
+    p.tpp.body.id = undefined;
+    const wrapper = shallow(<WeedInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith("/app/designer/weeds/ERR_NO_POINT_ID");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: [p.tpp.uuid],
