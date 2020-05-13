@@ -90,6 +90,7 @@ module Api
         render json: collection
       end
     end
+
     private
 
     def clean_expired_farm_events
@@ -172,11 +173,33 @@ module Api
       render json: { error: msg }, status: status
     end
 
+    TPL = "
+    This is a debug message.
+    FBOS received a 422 error.
+    ===
+    ERRORS: %{error}
+    ===
+    PARAMS: %{params}
+    ===
+    %{path}
+    "
+
+    def create_error_report(err)
+      puts (message = TPL % {
+        error: err.to_json,
+        params: params.to_json,
+        path: self.class.inspect,
+      })
+      @current_device && @current_device.delay.tell(message, ["email"])
+    end
+
     def mutate(outcome, options = {})
       if outcome.success?
         render options.merge(json: outcome.result)
       else
-        render options.merge(json: outcome.errors.message, status: 422)
+        e = outcome.errors.message
+        when_farmbot_os { create_error_report(e) }
+        render options.merge(json: e, status: 422)
       end
     end
 
