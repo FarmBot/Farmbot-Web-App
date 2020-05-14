@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::WebcamFeedsController do
   let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
 
-  it 'creates a webcam feed' do
+  it "creates a webcam feed" do
     sign_in user
     input = { name: "name1", url: "url1" }
     b4 = WebcamFeed.count
