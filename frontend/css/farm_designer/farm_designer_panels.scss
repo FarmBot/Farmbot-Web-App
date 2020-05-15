@@ -6,6 +6,9 @@
   @media screen and (max-width: 450px) {
     width: 100%;
   }
+  &.new {
+    width: 45rem;
+  }
 }
 
 @keyframes panel-pullout {
@@ -183,9 +186,15 @@
 
 .panel-tabs {
   display: flex;
-  img {
+  img, .fa {
     filter: brightness(0%) invert(100%);
     opacity: 0.8;
+  }
+  i {
+    font-size: 3rem;
+    margin-top: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
   a {
     display: block;
@@ -525,7 +534,7 @@
 
 .panel-nav {
   position: fixed;
-  z-index: 2;
+  z-index: 10;
 }
 
 .panel-header {
@@ -1291,6 +1300,93 @@
         margin: 0;
         margin-left: 1rem;
         line-height: 2.1rem;
+      }
+    }
+  }
+}
+
+.sensors-panel,
+.controls-panel {
+  .panel-content {
+    padding-top: 4rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+    .widget-wrapper {
+      box-shadow: none;
+      .widget-header {
+        background: none;
+        h5 {
+          color: $dark_gray;
+        }
+      }
+      .widget-body {
+        background: none;
+        border: none;
+      }
+      .widget-footer {
+        * {
+          color: $dark_gray;
+        }
+        background: none;
+      }
+    }
+    .index-indicator {
+      background: $dark_gray;
+    }
+  }
+}
+
+.sensors-panel {
+  .panel-content {
+    padding-top: 6rem;
+  }
+}
+
+.farmware-panel,
+.designer-farmware-list-panel,
+.designer-farmware-info-panel,
+.farmware-add-panel {
+  .panel-content {
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+    a {
+      text-decoration: none !important;
+      p {
+        font-size: 1.4rem;
+        font-weight: normal !important;
+        line-height: 2rem;
+      }
+    }
+  }
+}
+
+.designer-farmware-info-panel {
+  .panel-content {
+    padding-top: 2rem;
+  }
+}
+
+.photos-panel {
+  .panel-content {
+    padding-top: 4rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+    button {
+      margin: 0.5rem;
+    }
+    fieldset {
+      label {
+        margin-top: 0.7rem;
+      }
+      button {
+        float: left;
+        height: 2rem;
       }
     }
   }

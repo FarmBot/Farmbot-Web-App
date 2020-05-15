@@ -98,4 +98,19 @@ describe("<Peripherals />", () => {
     expect(btn.text().toLowerCase()).toContain("stock");
     expect(btn.props().hidden).toBeTruthy();
   });
+
+  it("renders empty state", () => {
+    const p = fakeProps();
+    p.peripherals = [];
+    const wrapper = mount(<Peripherals {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("no peripherals yet");
+  });
+
+  it("doesn't render empty state", () => {
+    const p = fakeProps();
+    p.peripherals = [];
+    const wrapper = mount(<Peripherals {...p} />);
+    wrapper.setState({ isEditing: true });
+    expect(wrapper.text().toLowerCase()).not.toContain("no peripherals yet");
+  });
 });

@@ -8,6 +8,7 @@ import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
 } from "../devices/components/firmware_hardware_support";
+import { DevSettings } from "../account/dev/dev_support";
 
 export enum Tours {
   gettingStarted = "gettingStarted",
@@ -150,7 +151,8 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
       history.push("/app/designer/tools");
       break;
     case ".photos":
-      history.push("/app/farmware");
+      history.push(DevSettings.futureFeaturesEnabled()
+        ? "/app/designer/photos" : "/app/farmware");
       break;
     case ".logs-table":
       history.push("/app/logs");

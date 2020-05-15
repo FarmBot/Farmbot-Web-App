@@ -2,12 +2,12 @@ import * as React from "react";
 import { error } from "../../toast/toast";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
-import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
+import { Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper, EmptyStateGraphic } from "../../ui/index";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
-import { ToolTips } from "../../constants";
+import { ToolTips, Content } from "../../constants";
 import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 
@@ -122,7 +122,14 @@ export class Peripherals
         </button>
       </WidgetHeader>
       <WidgetBody>
-        {this.showPins()}
+        <EmptyStateWrapper
+          notEmpty={this.props.peripherals.length > 0 || isEditing}
+          graphic={EmptyStateGraphic.sequences}
+          title={t("No Peripherals yet.")}
+          text={Content.NO_PERIPHERALS}
+          colorScheme={"peripherals"}>
+          {this.showPins()}
+        </EmptyStateWrapper>
       </WidgetBody>
     </Widget>;
   }

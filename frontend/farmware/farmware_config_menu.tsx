@@ -39,17 +39,19 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
         onClick={() => props.dispatch(
           toggleWebAppBool(BooleanSetting.show_first_party_farmware))} />
     </fieldset>
-    {props.shouldDisplay(Feature.api_farmware_env) &&
-      <fieldset>
-        <label>
-          {t("Delete all Farmware data")}
-        </label>
-        <button
-          className={"fb-button red fa fa-trash"}
-          title={t("delete all data")}
-          onClick={() => destroyAll("FarmwareEnv")
-            .then(() => success(t("Farmware data successfully deleted.")))
-            .catch(() => error(t("Error deleting Farmware data")))} />
-      </fieldset>}
+    {props.shouldDisplay(Feature.api_farmware_env) && <ClearFarmwareData />}
   </div>;
 }
+
+export const ClearFarmwareData = () =>
+  <fieldset>
+    <label>
+      {t("Clear config data")}
+    </label>
+    <button
+      className={"fb-button red fa fa-trash"}
+      title={t("delete all data")}
+      onClick={() => destroyAll("FarmwareEnv")
+        .then(() => success(t("Config data successfully deleted.")))
+        .catch(() => error(t("Error deleting config data")))} />
+  </fieldset>;
