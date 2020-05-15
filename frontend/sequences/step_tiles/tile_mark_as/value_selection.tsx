@@ -4,8 +4,8 @@ import { FBSelect, BlurableInput } from "../../../ui";
 import { isUndefined } from "lodash";
 import {
   ValueSelectionProps, GetSelectedValueProps, KnownValueSelectionProps,
+  ResourceArg,
 } from "./interfaces";
-import { Identifier, Resource } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllTools, maybeFindToolById } from "../../../resources/selectors";
@@ -14,7 +14,7 @@ import {
   ALL_STAGE_LIST, ALL_STAGE_DDI_LOOKUP,
 } from "../../../farm_designer/plants/edit_plant_status";
 import {
-  isCustomMetaField, KnownField, UPDATE_RESOURCE_DDIS,
+  isCustomMetaField, KnownField, UPDATE_RESOURCE_DDIS, isIdentifier,
 } from "./field_selection";
 import { DevSettings } from "../../../account/dev/dev_support";
 
@@ -59,11 +59,11 @@ const CustomMetaValue = (props: ValueSelectionProps) =>
   </div>;
 
 const valuesList = (
-  resource: Resource | Identifier,
+  resource: ResourceArg,
   resources: ResourceIndex): DropDownItem[] => {
   const DDI = UPDATE_RESOURCE_DDIS();
   const stepResourceType =
-    resource.kind == "identifier" ? undefined : resource.args.resource_type;
+    isIdentifier(resource) ? undefined : resource.args.resource_type;
   switch (stepResourceType) {
     case "Device": return [
       DDI.NONE,
@@ -95,7 +95,7 @@ const getSelectedValue = (props: GetSelectedValueProps): DropDownItem => {
         value: toolId
       };
     case KnownField.plant_stage:
-      const stepResourceType = props.resource.kind == "identifier"
+      const stepResourceType = isIdentifier(props.resource)
         ? undefined : props.resource.args.resource_type;
       return getStageLookup(stepResourceType)["" + props.value]
         || { label: "" + props.value, value: "" + props.value };

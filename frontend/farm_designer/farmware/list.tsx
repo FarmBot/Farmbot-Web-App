@@ -66,4 +66,5 @@ export class RawDesignerFarmwareList
   }
 }
 
-export const DesignerFarmwareList = connect(mapStateToProps)(RawDesignerFarmwareList);
+export const DesignerFarmwareList =
+  connect(mapStateToProps)(RawDesignerFarmwareList);

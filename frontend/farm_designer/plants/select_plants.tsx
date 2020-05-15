@@ -240,7 +240,8 @@ export class RawSelectPlants
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
-        {(this.selectionPointType == "Plant" || this.selectionPointType == "Weed") &&
+        {(this.selectionPointType == "Plant" ||
+          this.selectionPointType == "Weed") &&
           <PlantStatusBulkUpdate
             pointerType={this.selectionPointType}
             allPoints={this.props.allPoints}

@@ -968,6 +968,7 @@ ul {
   &.peripherals {
     img {
       margin-top: 0;
+      max-width: 20rem;
     }
     p,
     h5,
@@ -978,6 +979,9 @@ ul {
   &.sensors {
     img {
       margin-top: 0;
+      max-width: 20rem;
+      filter: grayscale(1);
+      padding: 1rem;
     }
     p,
     h5,

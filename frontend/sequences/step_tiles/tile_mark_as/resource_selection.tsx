@@ -2,9 +2,9 @@ import * as React from "react";
 import { t } from "../../../i18next_wrapper";
 import { FBSelect } from "../../../ui";
 import {
-  resource_type as RESOURCE_TYPE, Identifier, Resource, Nothing, Point,
+  resource_type as RESOURCE_TYPE, Identifier, Resource,
 } from "farmbot";
-import { ResourceSelectionProps } from "./interfaces";
+import { ResourceSelectionProps, MaybeResourceArg } from "./interfaces";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import { DropDownItem } from "../../../ui/fb_select";
 import {
@@ -65,7 +65,7 @@ const resourceList =
   };
 
 const getSelectedResource = (
-  resource: Resource | Point | Identifier | Nothing,
+  resource: MaybeResourceArg,
   resources: ResourceIndex,
   sequenceUuid: UUID,
 ): DropDownItem => {

@@ -9,6 +9,7 @@ import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
+import { DEFAULT_APP_PAGE } from "../front_page/front_page";
 
 interface Props { }
 interface State {
@@ -39,7 +40,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
       .post<AuthState>(API.current.tokensPath, payload)
       .then(resp => {
         Session.replaceToken(resp.data);
-        window.location.assign("/app/controls");
+        window.location.assign(DEFAULT_APP_PAGE);
       })
       .catch(error => {
         logError(prettyPrintApiErrors(error));

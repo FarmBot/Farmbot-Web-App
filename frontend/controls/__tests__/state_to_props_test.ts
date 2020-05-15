@@ -1,6 +1,8 @@
 import { mapStateToProps } from "../state_to_props";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { fakeUser, fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
+import {
+  fakeUser, fakeFarmwareEnv,
+} from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 
 describe("mapStateToProps()", () => {
