@@ -1,6 +1,7 @@
 import { store } from "../redux/store";
 import { urlFriendly } from "../util";
 import { LinkComputeFn } from "./nav_links";
+import { DevSettings } from "../account/dev/dev_support";
 
 export const computeEditorUrlFromState =
   (resource: "Sequence" | "Regimen"): LinkComputeFn => {
@@ -21,6 +22,7 @@ export const computeEditorUrlFromState =
 
 export const computeFarmwareUrlFromState = () => {
   const current = store.getState().resources.consumers.farmware.currentFarmware;
-  const base = "/app/farmware/";
+  const base = `/app${
+    DevSettings.futureFeaturesEnabled() ? "/designer" : ""}/farmware/`;
   return base + (current ? urlFriendly(current) : "");
 };

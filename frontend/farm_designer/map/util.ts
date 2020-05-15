@@ -7,6 +7,7 @@ import {
 } from "./interfaces";
 import { trim } from "../../util";
 import { history, getPathArray } from "../../history";
+import { DevSettings } from "../../account/dev/dev_support";
 
 /*
  * Farm Designer Map Utilities
@@ -77,7 +78,7 @@ export const mapPanelClassName = () => {
     case MapPanelStatus.closed: return "panel-closed";
     case MapPanelStatus.open:
     default:
-      return "panel-open";
+      return DevSettings.futureFeaturesEnabled() ? "panel-open-new" : "panel-open";
   }
 };
 
@@ -89,7 +90,7 @@ export const getMapPadding =
       case MapPanelStatus.closed: return { left: 20, top: 160 };
       case MapPanelStatus.open:
       default:
-        return { left: 318, top: 110 };
+        return { left: DevSettings.futureFeaturesEnabled() ? 468 : 318, top: 110 };
     }
   };
 

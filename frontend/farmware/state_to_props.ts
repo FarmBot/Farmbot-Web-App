@@ -15,7 +15,7 @@ import {
   betterCompact,
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv, JobProgress } from "farmbot";
+import { TaggedFarmwareEnv, JobProgress, TaggedImage } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { chain } from "lodash";
 import { FarmwareManifestInfo, Farmwares } from "./interfaces";
@@ -65,24 +65,14 @@ export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
   return shouldDisplay;
 };
 
-export function mapStateToProps(props: Everything): FarmwareProps {
-  const images = chain(selectAllImages(props.resources.index))
-    .sortBy(x => x.body.id)
-    .reverse()
-    .value();
-  const firstImage = images[0];
-  const currentImage = images
-    .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
-    || firstImage;
-  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
-  const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
-    props.resources.consumers.farmware;
+export const generateFarmwareDictionary = (
+  bot: BotState,
+  ri: ResourceIndex,
+  shouldDisplay: ShouldDisplay = () => true,
+): Farmwares => {
+  const botStateFarmwares = bot.hardware.process_info.farmwares;
 
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
-
-  const taggedFarmwareInstallations =
-    selectAllFarmwareInstallations(props.resources.index);
+  const taggedFarmwareInstallations = selectAllFarmwareInstallations(ri);
 
   const namePendingInstall =
     (packageName: string | undefined, id: number | undefined): string => {
@@ -106,14 +96,51 @@ export function mapStateToProps(props: Everything): FarmwareProps {
         farmwares[n] = manifestInfoPending(n, x.body.url);
       }
     });
+  return farmwares;
+};
 
-  const jobs = props.bot.hardware.jobs || {};
-  const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
-  const imageJobs: JobProgress[] =
-    chain(betterCompact(imageJobNames.map(x => jobs[x])))
-      .sortBy("time")
-      .reverse()
-      .value();
+export const getImageJobs =
+  (allJobs: BotState["hardware"]["jobs"]): JobProgress[] => {
+    const jobs = allJobs || {};
+    const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
+    const imageJobs: JobProgress[] =
+      chain(betterCompact(imageJobNames.map(x => jobs[x])))
+        .sortBy("time")
+        .reverse()
+        .value();
+    return imageJobs;
+  };
+
+export const getImages = (ri: ResourceIndex): TaggedImage[] =>
+  chain(selectAllImages(ri))
+    .sortBy(x => x.body.id)
+    .reverse()
+    .value();
+
+export const getCurrentImage =
+  (images: TaggedImage[], currentImgUuid: string | undefined): TaggedImage => {
+    const firstImage = images[0];
+    const currentImage =
+      images.filter(i => i.uuid === currentImgUuid)[0] || firstImage;
+    return currentImage;
+  };
+
+export function mapStateToProps(props: Everything): FarmwareProps {
+  const images = getImages(props.resources.index);
+  const currentImageUuid = props.resources.consumers.farmware.currentImage;
+  const currentImage = getCurrentImage(images, currentImageUuid);
+
+  const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
+    props.resources.consumers.farmware;
+
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+
+  const taggedFarmwareInstallations =
+    selectAllFarmwareInstallations(props.resources.index);
+
+  const farmwares =
+    generateFarmwareDictionary(props.bot, props.resources.index, shouldDisplay);
 
   const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
   const syncStatus = props.bot.hardware.informational_settings.sync_status;
@@ -134,7 +161,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
-    imageJobs,
+    imageJobs: getImageJobs(props.bot.hardware.jobs),
     infoOpen,
   };
 }

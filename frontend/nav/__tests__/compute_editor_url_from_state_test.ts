@@ -1,24 +1,24 @@
-const mockSeqUUID = "sequence.1.2";
-const mockSeqName = "Sequence 123";
-const mockRegUUID = "Regimen.1.2";
-const mockRegName = "Regimen 123";
-const mockFarmwareName = "Farmware 1";
-const mockState = {
-  resources: {
-    consumers: {
-      sequences: { current: mockSeqUUID },
-      regimens: { currentRegimen: mockRegUUID },
-      farmware: { currentFarmware: mockFarmwareName }
-    },
-    index: {
-      references: {
-        [mockSeqUUID]: { kind: "Sequence", body: { name: mockSeqName } },
-        [mockRegUUID]: { kind: "Regimen", body: { name: mockRegName } }
-      }
-    }
-  }
-};
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
 
+import { fakeState } from "../../__test_support__/fake_state";
+import {
+  fakeSequence, fakeRegimen, fakeWebAppConfig,
+} from "../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+const mockState = fakeState();
+const mockSequence = fakeSequence();
+mockSequence.body.name = "Sequence 123";
+const mockRegimen = fakeRegimen();
+mockRegimen.body.name = "Regimen 123";
+mockState.resources = buildResourceIndex([
+  fakeWebAppConfig(), mockSequence, mockRegimen]);
+mockState.resources.consumers.sequences.current = mockSequence.uuid;
+mockState.resources.consumers.regimens.currentRegimen = mockRegimen.uuid;
+const mockFarmwareName = "Farmware 1";
+mockState.resources.consumers.farmware.currentFarmware = mockFarmwareName;
 jest.mock("../../redux/store", () => {
   return { store: { getState: jest.fn(() => mockState) } };
 });
@@ -35,7 +35,7 @@ describe("computeEditorUrlFromState", () => {
   });
 
   it("computes another URL when a sequence _is_ selected", () => {
-    mockState.resources.consumers.sequences.current = mockSeqUUID;
+    mockState.resources.consumers.sequences.current = mockSequence.uuid;
     const result = computeEditorUrlFromState("Sequence")("", "");
     expect(result).toBe("/app/sequences/sequence_123");
   });
@@ -47,7 +47,7 @@ describe("computeEditorUrlFromState", () => {
   });
 
   it("computes another URL when a regimen _is_ selected", () => {
-    mockState.resources.consumers.regimens.currentRegimen = mockRegUUID;
+    mockState.resources.consumers.regimens.currentRegimen = mockRegimen.uuid;
     const result = computeEditorUrlFromState("Regimen")("", "");
     expect(result).toBe("/app/regimens/regimen_123");
   });
@@ -64,5 +64,13 @@ describe("computeFarmwareUrlFromState()", () => {
     mockState.resources.consumers.farmware.currentFarmware = "Farmware 1";
     const result = computeFarmwareUrlFromState();
     expect(result).toBe("/app/farmware/farmware_1");
+  });
+
+  it("computes new base + farmware URL", () => {
+    mockDev = true;
+    mockState.resources.consumers.farmware.currentFarmware = "Farmware 1";
+    const result = computeFarmwareUrlFromState();
+    expect(result).toBe("/app/designer/farmware/farmware_1");
+    mockDev = false;
   });
 });

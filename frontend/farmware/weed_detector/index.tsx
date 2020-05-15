@@ -4,7 +4,7 @@ import { Row, Col } from "../../ui/index";
 import { deletePoints, scanImage, detectPlants } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
-import { FarmwareProps, Feature } from "../../devices/interfaces";
+import { WeedDetectorProps, Feature } from "../../devices/interfaces";
 import { ImageWorkspace } from "./image_workspace";
 import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
@@ -25,9 +25,9 @@ export const namespace = (prefix: string) => (key: string): WDENVKey => {
 };
 
 export class WeedDetector
-  extends React.Component<FarmwareProps, Partial<DetectorState>> {
+  extends React.Component<WeedDetectorProps, Partial<DetectorState>> {
 
-  constructor(props: FarmwareProps) {
+  constructor(props: WeedDetectorProps) {
     super(props);
     this.state = { remoteFarmwareSettings: {} };
   }

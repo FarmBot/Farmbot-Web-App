@@ -16,8 +16,6 @@ import { formatEnvKey } from "../weed_detector/remote_env/translators";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
-import { ImageFlipper } from "../images/image_flipper";
-import { PhotoFooter } from "../images/photos";
 import { UUID } from "../../resources/interfaces";
 import { DevSettings } from "../../account/dev/dev_support";
 
@@ -62,17 +60,8 @@ export class CameraCalibration extends
               configKey={this.namespace("easy_calibration")}
               label={t("Simpler")}
               onChange={this.saveEnvVar} />}
-          {!!envGet(this.namespace("easy_calibration"), this.props.wDEnv)
-            ? <div className={"flipper-section"}>
-              <ImageFlipper
-                onFlip={this.onFlip}
-                images={this.props.images}
-                currentImage={this.props.currentImage} />
-              <PhotoFooter
-                image={this.props.currentImage}
-                timeSettings={this.props.timeSettings} />
-            </div>
-            : <ImageWorkspace
+          {!envGet(this.namespace("easy_calibration"), this.props.wDEnv) &&
+            <ImageWorkspace
               botOnline={
                 isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={id => this.props.dispatch(scanImage(id))}

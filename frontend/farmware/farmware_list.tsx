@@ -13,6 +13,7 @@ import { initSave } from "../api/crud";
 import { TaggedFarmwareInstallation } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { getFormattedFarmwareName } from "./index";
+import { DevSettings } from "../account/dev/dev_support";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),
@@ -21,7 +22,7 @@ const DISPLAY_NAMES: Dictionary<string> = {
 };
 
 /** Farmware list links: selected or unselected. */
-const farmwareListItem = (dispatch: Function, current: string | undefined) =>
+export const farmwareListItem = (dispatch: Function, current: string | undefined) =>
   (farmwareName: string) => {
     const click = () => dispatch({
       type: Actions.SELECT_FARMWARE,
@@ -34,7 +35,9 @@ const farmwareListItem = (dispatch: Function, current: string | undefined) =>
       ? DISPLAY_NAMES[farmwareName]
       : farmwareName;
     return <Link
-      to={`/app/farmware/${urlFriendly(farmwareName)}`}
+      to={`/app${
+        DevSettings.futureFeaturesEnabled() ? "/designer" : ""}/farmware/${
+        urlFriendly(farmwareName)}`}
       key={farmwareName}
       onClick={click}>
       <div className={`farmware-list-items ${selected}`}>

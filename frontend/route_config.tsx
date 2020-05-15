@@ -309,6 +309,54 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: "/designer/controls",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/controls"),
+    childKey: "DesignerControls"
+  }),
+  route({
+    children: true,
+    $: "/designer/sensors",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/sensors"),
+    childKey: "DesignerSensors"
+  }),
+  route({
+    children: true,
+    $: "/designer/photos",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/photos"),
+    childKey: "DesignerPhotos"
+  }),
+  route({
+    children: true,
+    $: "/designer/farmware",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farmware/list"),
+    childKey: "DesignerFarmwareList"
+  }),
+  route({
+    children: true,
+    $: "/designer/farmware/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farmware/add"),
+    childKey: "DesignerFarmwareAdd"
+  }),
+  route({
+    children: true,
+    $: "/designer/farmware/:farmware_name",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farmware/info"),
+    childKey: "DesignerFarmwareInfo"
+  }),
+  route({
+    children: true,
     $: "/designer/settings",
     getModule,
     key,
