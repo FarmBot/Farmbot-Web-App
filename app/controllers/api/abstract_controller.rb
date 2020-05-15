@@ -180,8 +180,13 @@ module Api
         render options.merge(json: outcome.result)
       else
         e = outcome.errors.message
-        err_report = TPL % [e.to_json, params.to_json, self.class.inspect]
-        puts err_report if is_fbos?
+        when_farmbot_os do
+          puts TPL % [
+            e.to_json,
+            params.to_json,
+            self.class.inspect,
+          ]
+        end
         render options.merge(json: e, status: 422)
       end
     end
