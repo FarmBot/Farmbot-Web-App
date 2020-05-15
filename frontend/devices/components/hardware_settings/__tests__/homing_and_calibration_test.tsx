@@ -78,6 +78,30 @@ describe("<HomingAndCalibration />", () => {
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
 
+  it("disables calibration", () => {
+    globalConfig.DISABLE_EXPRESS_CALIBRATION = "true";
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(true);
+  });
+
+  it("doesn't disable calibration: different firmware", () => {
+    globalConfig.DISABLE_EXPRESS_CALIBRATION = "true";
+    const p = fakeProps();
+    p.firmwareHardware = "arduino";
+    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(false);
+  });
+
+  it("doesn't disable calibration: not disabled", () => {
+    delete globalConfig.DISABLE_EXPRESS_CALIBRATION;
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(false);
+  });
+
   it("sets zero", () => {
     const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
     wrapper.find(CalibrationRow).last().props().action("all");
