@@ -293,6 +293,7 @@ export interface DrawnPointPayl {
   name?: string;
   cx: number;
   cy: number;
+  z: number;
   r: number;
   color?: string;
 }
@@ -301,6 +302,7 @@ export interface DrawnWeedPayl {
   name?: string;
   cx: number;
   cy: number;
+  z: number;
   r: number;
   color?: string;
 }

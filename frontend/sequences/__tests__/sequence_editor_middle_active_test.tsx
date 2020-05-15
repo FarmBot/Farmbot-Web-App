@@ -90,7 +90,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 1, "Test");
+    clickButton(wrapper, 1, "Run");
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 

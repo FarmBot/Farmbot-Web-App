@@ -22,35 +22,35 @@ describe("<ConnectivityDiagram/>", () => {
         from: "A",
         to: "B",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       },
       {
         connectionName: "BC",
         from: "B",
         to: "C",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       },
       {
         connectionName: "CD",
         from: "C",
         to: "D",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       },
       {
         connectionName: "DE",
         from: "D",
         to: "E",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       },
       {
         connectionName: "EF",
         from: "E",
         to: "F",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       }],
       hover: hover,
       hoveredConnection: undefined
@@ -60,7 +60,17 @@ describe("<ConnectivityDiagram/>", () => {
   it("renders diagram", () => {
     const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
     expect(wrapper.text())
-      .toContain("BrowserWeb AppMessage BrokerFarmBotRaspberry PiF");
+      .toContain("This computerWeb AppMessage BrokerFarmBotRaspberry PiF");
+  });
+
+  it("renders small diagram", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
+    expect(wrapper.text())
+      .toContain("This phoneWeb AppMessage BrokerFarmBotRaspberry PiF");
   });
 
   it("hover", () => {
@@ -120,7 +130,7 @@ describe("<Connector/>", () => {
         from: "A",
         to: "B",
         connectionStatus: false,
-        children: "Not connected."
+        connectionMsg: "Not connected."
       },
       from: "top" as DiagramNodes,
       to: "left" as DiagramNodes,

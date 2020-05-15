@@ -87,7 +87,7 @@ const Test = (props: TestProps) => {
   const normalColor = props.canTest ? "orange" : "pseudo-disabled";
   const buttonText = props.menuOpen
     ? t("Close")
-    : t("Test");
+    : t("Run");
   return <button
     className={`fb-button ${props.menuOpen ? "gray" : normalColor}`}
     title={buttonText}

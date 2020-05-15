@@ -6,6 +6,7 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../../../__test_support__/resource_index_builder";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
+import { Resource } from "farmbot";
 
 describe("<ResourceSelection />", () => {
   const plant = fakePlant();
@@ -34,6 +35,17 @@ describe("<ResourceSelection />", () => {
       kind: "resource",
       args: { resource_type: "Plant", resource_id: 1 }
     };
+    const wrapper = mount(<ResourceSelection {...p} />);
+    expect(wrapper.text()).toContain("Mark");
+    expect(wrapper.text()).toContain("Strawberry plant 1 (100, 200, 0)");
+  });
+
+  it("renders point", () => {
+    const p = fakeProps();
+    p.resource = {
+      kind: "point",
+      args: { pointer_type: "Plant", pointer_id: 1 }
+    } as unknown as Resource;
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.text()).toContain("Mark");
     expect(wrapper.text()).toContain("Strawberry plant 1 (100, 200, 0)");

@@ -1,4 +1,4 @@
-const diff = require('jest-diff');
+const diff = require('jest-diff').default;
 expect.extend({
   toBeSameTimeAs(received, expected) {
     const pass = received.isSame(expected);

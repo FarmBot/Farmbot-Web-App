@@ -59,7 +59,7 @@ export function mapStateToProps(props: Everything): Props {
   const allWeeds = selectAllWeedPointers(props.resources.index);
   const weeds = getConfigValue(BooleanSetting.show_historic_points)
     ? allWeeds
-    : allWeeds.filter(x => x.body.plant_stage == "planned");
+    : allWeeds.filter(x => x.body.plant_stage !== "removed");
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;

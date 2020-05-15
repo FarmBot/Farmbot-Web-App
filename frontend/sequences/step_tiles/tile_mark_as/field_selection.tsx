@@ -122,6 +122,6 @@ export const UPDATE_RESOURCE_DDIS = (): Record<string, DropDownItem> => ({
   RADIUS: { label: t("Radius"), value: "radius" },
   COLOR: { label: t("Color"), value: "meta.color" },
   NONE: { label: t("None"), value: 0 },
-  ACTIVE: { label: t("Active"), value: "planned" },
+  ACTIVE: { label: t("Active"), value: "active" },
   REMOVED: { label: t("Removed"), value: "removed" },
 });

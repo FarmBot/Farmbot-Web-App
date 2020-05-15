@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "../../../i18next_wrapper";
 import { FBSelect } from "../../../ui";
 import {
-  resource_type as RESOURCE_TYPE, Identifier, Resource, Nothing,
+  resource_type as RESOURCE_TYPE, Identifier, Resource, Nothing, Point,
 } from "farmbot";
 import { ResourceSelectionProps } from "./interfaces";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
@@ -65,7 +65,7 @@ const resourceList =
   };
 
 const getSelectedResource = (
-  resource: Resource | Identifier | Nothing,
+  resource: Resource | Point | Identifier | Nothing,
   resources: ResourceIndex,
   sequenceUuid: UUID,
 ): DropDownItem => {
@@ -77,6 +77,10 @@ const getSelectedResource = (
       }
       return formatPoint(
         findPointerByTypeAndId(resources, resource_type, resource_id));
+    case "point":
+      const { pointer_type, pointer_id } = resource.args;
+      return formatPoint(
+        findPointerByTypeAndId(resources, pointer_type, pointer_id));
     case "identifier":
       const variable =
         maybeFindVariable(resource.args.label, resources, sequenceUuid);

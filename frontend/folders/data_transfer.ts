@@ -47,7 +47,9 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     ...x,
     kind: "terminal",
     content: (localMetaAttributes[x.id] || {}).sequences || [],
+    // @ts-ignore // TODO: remove when TS > 3.9.2
     open: false,
+    // @ts-ignore // TODO: remove when TS > 3.9.2
     editing: false,
     // children: [],
     ...(localMetaAttributes[x.id] || {})
@@ -56,7 +58,9 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
   const medial = (x: FolderNode): FolderNodeMedial => ({
     ...x,
     kind: "medial",
+    // @ts-ignore // TODO: remove when TS > 3.9.2
     open: false,
+    // @ts-ignore // TODO: remove when TS > 3.9.2
     editing: false,
     children: childrenOf(x.id).map(terminal),
     content: (localMetaAttributes[x.id] || {}).sequences || [],
@@ -68,7 +72,9 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     return output.folders.push({
       ...root,
       kind: "initial",
+      // @ts-ignore // TODO: remove when TS > 3.9.2
       open: false,
+      // @ts-ignore // TODO: remove when TS > 3.9.2
       editing: false,
       children,
       content: (localMetaAttributes[root.id] || {}).sequences || [],
