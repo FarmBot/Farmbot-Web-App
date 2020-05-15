@@ -1,9 +1,11 @@
 import * as React from "react";
 import { t } from "../../../i18next_wrapper";
 import { FBSelect, DropDownItem, BlurableInput } from "../../../ui";
-import { Resource, Identifier, Nothing } from "farmbot";
+import { Identifier, Point } from "farmbot";
 import { isUndefined } from "lodash";
-import { FieldSelectionProps, CustomFieldSelectionProps } from "./interfaces";
+import {
+  FieldSelectionProps, CustomFieldSelectionProps, MaybeResourceArg, ResourceArg,
+} from "./interfaces";
 
 export const FieldSelection = (props: FieldSelectionProps) =>
   <div className={"update-resource-step-field"}>
@@ -61,10 +63,14 @@ export const knownField =
 export const isCustomMetaField = (field: string | undefined): boolean =>
   !(isUndefined(field) || knownField(field));
 
-const fieldList = (resource: Resource | Identifier) => {
+export const isIdentifier =
+  (resource: MaybeResourceArg): resource is Point | Identifier =>
+    resource.kind == "identifier" || resource.kind == "point";
+
+const fieldList = (resource: ResourceArg) => {
   const DDI = UPDATE_RESOURCE_DDIS();
   const POINT_DDIS = COMMON_POINT_DDIS();
-  if (resource.kind == "identifier") {
+  if (isIdentifier(resource)) {
     return [DDI.STATUS, DDI.COLOR].concat(POINT_DDIS);
   }
   switch (resource.args.resource_type) {
@@ -86,13 +92,13 @@ const COMMON_POINT_DDIS = () => {
 };
 
 const getSelectedField = (
-  resource: Resource | Identifier | Nothing,
+  resource: MaybeResourceArg,
   field: KnownField | undefined,
 ): DropDownItem => {
   const DDI = UPDATE_RESOURCE_DDIS();
   if (isUndefined(field) || resource.kind == "nothing") { return DDI.SELECT_ONE; }
   const resourceType =
-    resource.kind == "identifier" ? "Point" : resource.args.resource_type;
+    isIdentifier(resource) ? "Point" : resource.args.resource_type;
   switch (field) {
     case KnownField.x: return DDI.X;
     case KnownField.y: return DDI.Y;

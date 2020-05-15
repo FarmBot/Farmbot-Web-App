@@ -328,7 +328,7 @@ const tr16: TaggedPoint = {
     },
     name: "untitled",
     pointer_type: "Weed",
-    plant_stage: "planned",
+    plant_stage: "active",
     radius: 10,
     x: 490,
     y: 421,

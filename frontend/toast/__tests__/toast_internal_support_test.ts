@@ -20,13 +20,13 @@ describe("toast internal support files", () => {
     container.className = "toast-container";
     document.body.appendChild(container);
 
-    createToastOnce(msg, "bar", "baz", "id-prefix", fallback);
+    createToastOnce(msg, "bar", "baz", "id-prefix", false, fallback);
 
     expect(FBToast.everyMessage[msg]).toBe(true);
     expect(fallback).not.toHaveBeenCalled();
     expect(mockRun).toHaveBeenCalled();
 
-    createToastOnce(msg, "bar", "baz", "id-prefix", fallback);
+    createToastOnce(msg, "bar", "baz", "id-prefix", false, fallback);
 
     expect(fallback).toHaveBeenCalled();
   });
@@ -39,15 +39,15 @@ describe("toast internal support files", () => {
     document.body.appendChild(container);
     const msg = "foo";
     delete FBToast.everyMessage[msg];
-    createToastOnce(msg, "bar", "baz", "");
+    createToastOnce(msg, "bar", "baz", "", false);
     expect(console.warn).not.toHaveBeenCalled();
     expect(mockRun).toHaveBeenCalled();
-    createToastOnce(msg, "bar", "baz", "");
+    createToastOnce(msg, "bar", "baz", "", false);
     expect(console.warn).toHaveBeenCalled();
   });
 
   it("crashes if you don't attach .toast-container", () => {
     document.body.innerHTML = "";
-    expect(() => createToast("x", "y", "z", "id-prefix")).toThrow();
+    expect(() => createToast("x", "y", "z", "id-prefix", false)).toThrow();
   });
 });

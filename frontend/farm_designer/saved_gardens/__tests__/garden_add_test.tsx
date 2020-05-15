@@ -3,7 +3,9 @@ import { mount } from "enzyme";
 import { RawAddGarden as AddGarden, mapStateToProps } from "../garden_add";
 import { GardenSnapshotProps } from "../garden_snapshot";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 import { fakeSavedGarden } from "../../../__test_support__/fake_state/resources";
 
 describe("<AddGarden />", () => {

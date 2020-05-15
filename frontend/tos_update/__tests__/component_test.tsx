@@ -17,6 +17,7 @@ import { Session } from "../../session";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { TermsCheckbox } from "../../front_page/terms_checkbox";
+import { DEFAULT_APP_PAGE } from "../../front_page/front_page";
 
 describe("<TosUpdate/>", () => {
   it("renders correctly when envs are set", () => {
@@ -54,7 +55,7 @@ describe("<TosUpdate/>", () => {
     expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, { user: fake });
     expect(Session.replaceToken).toHaveBeenCalledWith(mockToken);
-    expect(location.assign).toHaveBeenCalledWith("/app/controls");
+    expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
   });
 
   it("errors while submitting", async () => {

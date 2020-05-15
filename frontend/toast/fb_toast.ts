@@ -27,14 +27,18 @@ export class FBToast {
   public isHovered = false;
   public message = "";
   public isAttached = false;
+  public noTimer = false;
 
   constructor(public parent: Element,
     title: string,
     raw_message: string,
     color: string,
-    idPrefix: string) {
+    idPrefix: string,
+    noTimer: boolean) {
 
     idPrefix && (this.toastEl.id = `${idPrefix}-toast-${uuid()}`);
+
+    this.noTimer = noTimer;
 
     this.message = raw_message.replace(/\s+/g, " ");
     /** Fill contents. */
@@ -113,6 +117,10 @@ export class FBToast {
     /** Append children. */
     this.parent.appendChild(this.toastEl);
     this.isAttached = true;
+    if (this.noTimer) {
+      this.toastEl.classList.add("no-timer");
+      return;
+    }
     // TSC Thinks this is a node project :-\
     // tslint:disable-next-line:no-any
     this.intervalId = setInterval(this.doPolling, 100) as any;

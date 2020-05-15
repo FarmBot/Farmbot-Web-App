@@ -2,7 +2,10 @@ import * as React from "react";
 import { error } from "../../toast/toast";
 import { SensorList } from "./sensor_list";
 import { SensorForm } from "./sensor_form";
-import { Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper, EmptyStateGraphic } from "../../ui/index";
+import {
+  Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
+  EmptyStateGraphic,
+} from "../../ui/index";
 import { SensorsProps } from "../../devices/interfaces";
 import { SensorState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
@@ -95,7 +98,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
       <WidgetBody>
         <EmptyStateWrapper
           notEmpty={this.props.sensors.length > 0 || isEditing}
-          graphic={EmptyStateGraphic.sequences}
+          graphic={EmptyStateGraphic.tools}
           title={t("No Sensors yet.")}
           text={Content.NO_SENSORS}
           colorScheme={"sensors"}>

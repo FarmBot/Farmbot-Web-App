@@ -1,11 +1,11 @@
 import * as React from "react";
 import { t } from "../../../i18next_wrapper";
-import { Resource, Identifier, Nothing } from "farmbot";
 import {
   PlantPointer, ToolSlotPointer, WeedPointer, GenericPointer,
   DeviceAccountSettings, Point,
 } from "farmbot/dist/resources/api_resources";
-import { CustomFieldWarningProps } from "./interfaces";
+import { CustomFieldWarningProps, MaybeResourceArg } from "./interfaces";
+import { isIdentifier } from "./field_selection";
 
 export const CustomFieldWarning = (props: CustomFieldWarningProps) =>
   props.field && !validFields(props.resource).includes(props.field)
@@ -27,8 +27,8 @@ export const CustomFieldWarning = (props: CustomFieldWarningProps) =>
     </div>
     : <div className="custom-field-warning" />;
 
-const validFields = (resource: Resource | Identifier | Nothing): string[] => {
-  if (resource.kind == "identifier" || resource.kind == "nothing") {
+const validFields = (resource: MaybeResourceArg): string[] => {
+  if (isIdentifier(resource) || resource.kind == "nothing") {
     return POINT_FIELDS;
   }
   switch (resource.args.resource_type) {
