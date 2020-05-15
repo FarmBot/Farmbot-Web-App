@@ -173,32 +173,15 @@ module Api
       render json: { error: msg }, status: status
     end
 
-    TPL = "
-    This is a debug message.
-    FBOS received a 422 error.
-    ===
-    ERRORS: %{error}
-    ===
-    PARAMS: %{params}
-    ===
-    %{path}
-    "
-
-    def create_error_report(err)
-      puts (message = TPL % {
-        error: err.to_json,
-        params: params.to_json,
-        path: self.class.inspect,
-      })
-      @current_device && @current_device.delay.tell(message, ["email"])
-    end
+    TPL = "FBOS received a 422 error %s ERRORS: %s PARAMS: %s"
 
     def mutate(outcome, options = {})
       if outcome.success?
         render options.merge(json: outcome.result)
       else
         e = outcome.errors.message
-        when_farmbot_os { create_error_report(e) }
+        err_report = TPL % [e.to_json, params.to_json, self.class.inspect]
+        puts err_report if is_fbos?
         render options.merge(json: e, status: 422)
       end
     end
@@ -238,9 +221,13 @@ module Api
       end
     end
 
+    def is_fbos?
+      FbosDetector.pretty_ua(request).include?(FbosDetector::FARMBOT_UA_STRING)
+    end
+
     # Conditionally execute a block when the request was made by a FarmBot
     def when_farmbot_os
-      yield if FbosDetector.pretty_ua(request).include?(FbosDetector::FARMBOT_UA_STRING)
+      yield if is_fbos?
     end
 
     # Devices have a `last_saw_api` field to assist users with debugging.
