@@ -803,6 +803,15 @@ export namespace Content {
   export const NO_WEEDS =
     trim(`Press "+" to add a weed.`);
 
+  export const NO_FARMWARE =
+    trim(`Press "+" to add a Farmware.`);
+
+  export const NO_PERIPHERALS =
+    trim(`Press "edit" to add a peripheral.`);
+
+  export const NO_SENSORS =
+    trim(`Press "edit" to add a sensor.`);
+
   export const NO_ZONES =
     trim(`Press "+" to add a zone.`);
 

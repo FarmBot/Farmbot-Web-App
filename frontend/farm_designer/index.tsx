@@ -22,6 +22,7 @@ import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
+import { DevSettings } from "../account/dev/dev_support";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
@@ -165,7 +166,8 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         imageAgeInfo={imageAgeInfo} />
 
       <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
-      <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
+      <div className={`farm-designer-panels ${this.mapPanelClassName} ${
+        DevSettings.futureFeaturesEnabled() ? "new" : ""}`}>
         {this.childComponent(this.props)}
       </div>
 

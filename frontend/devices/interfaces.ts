@@ -234,6 +234,19 @@ export interface FarmwareProps {
   infoOpen: boolean;
 }
 
+export interface WeedDetectorProps {
+  dispatch: Function;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
+  images: TaggedImage[];
+  currentImage: TaggedImage | undefined;
+  botToMqttStatus: NetworkState;
+  timeSettings: TimeSettings;
+  syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
+}
+
 export interface HardwareSettingsProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;

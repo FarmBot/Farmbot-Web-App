@@ -13,6 +13,7 @@ import { history } from "../history";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
+import { DevSettings } from "../account/dev/dev_support";
 
 export interface FarmwareInfoProps {
   dispatch: Function;
@@ -132,7 +133,8 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
           : getDevice()
             .removeFarmware(farmwareName)
             .catch(commandErr("Farmware Removal"));
-        history.push("/app/farmware");
+        history.push(`/app${
+          DevSettings.futureFeaturesEnabled() ? "/designer" : ""}/farmware`);
         setActiveFarmwareByName([]);
       }
     }

@@ -27,7 +27,8 @@ interface NavLinkParams {
 
 export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
-  { name: "Controls", icon: "keyboard-o", slug: "controls" },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    { name: "Controls", icon: "keyboard-o", slug: "controls" },
   DevSettings.futureFeaturesEnabled() ? undefined :
     { name: "Device", icon: "cog", slug: "device" },
   {
@@ -38,10 +39,11 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  {
-    name: "Farmware", icon: "crosshairs", slug: "farmware",
-    computeHref: computeFarmwareUrlFromState
-  },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    {
+      name: "Farmware", icon: "crosshairs", slug: "farmware",
+      computeHref: computeFarmwareUrlFromState
+    },
   { name: "Messages", icon: "list", slug: "messages" },
 ]);
 
