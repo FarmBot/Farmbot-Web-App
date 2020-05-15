@@ -4,7 +4,7 @@ import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
 import {
-  clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize,
+  clampInteger, IntegerSize, getMaxInputFromIntSize,
 } from "../../util";
 
 import { isUndefined } from "lodash";
@@ -38,8 +38,11 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
   }
 
   clampInputAndWarn = (input: string, intSize: IntegerSize): number => {
-    const result = clampUnsignedInteger(input, intSize);
-    const max = intSize === "long" ? "2,000,000,000" : "32,000";
+    const result = clampInteger(input, intSize, {
+      min: this.props.min, max: this.props.max
+    });
+    const min = result.min.toLocaleString();
+    const max = result.max.toLocaleString();
     switch (result.outcome) {
       case "ok":
         break;
@@ -47,10 +50,10 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
         warning(t(`Maximum input is ${max}. Rounding down.`));
         break;
       case "low":
-        warning(t("Must be a positive number. Rounding up to 0."));
+        warning(t(`Minimum input is ${min}. Rounding up.`));
         break;
       default:
-        warning(t(`Please enter a number between 0 and ${max}`));
+        warning(t(`Please enter a number between ${min} and ${max}`));
         throw new Error("Bad input in mcu_input_box. Impossible?");
     }
     return result.result;
@@ -76,7 +79,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
       className={this.className}
       value={this.showValue}
       onCommit={this.commit}
-      min={0}
-      max={getMaxInputFromIntSize(this.props.intSize)} />;
+      min={this.props.min || 0}
+      max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />;
   }
 }

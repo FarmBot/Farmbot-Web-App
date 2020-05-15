@@ -64,8 +64,9 @@ export const LocationForm =
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
     }
-    const formTitleWithType =
-      props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
+    const formTitleWithType = props.hideVariableLabel
+      ? t("Location variable")
+      : `${label} (${t("Location variable")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;
     return <div className="location-form">
       {!props.hideHeader &&

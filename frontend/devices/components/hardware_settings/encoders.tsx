@@ -51,6 +51,8 @@ export function Encoders(props: EncodersProps) {
           x={"movement_stall_sensitivity_x"}
           y={"movement_stall_sensitivity_y"}
           z={"movement_stall_sensitivity_z"}
+          min={-63}
+          max={63}
           gray={encodersDisabled}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}

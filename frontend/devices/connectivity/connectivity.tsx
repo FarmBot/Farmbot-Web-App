@@ -53,9 +53,10 @@ export class Connectivity
         <Col md={12} lg={8}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
           {this.props.rowData
-            .map((x, y) => <ConnectivityRow {...x} key={y}
-              hover={this.hover}
-              hoveredConnection={this.state.hoveredConnection} />)}
+            .map((statusRowProps, index) =>
+              <ConnectivityRow {...statusRowProps} key={index}
+                hover={this.hover}
+                hoveredConnection={this.state.hoveredConnection} />)}
           <hr style={{ marginLeft: "3rem" }} />
           <Diagnosis {...this.props.flags} />
         </Col>

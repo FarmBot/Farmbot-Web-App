@@ -11,6 +11,7 @@ describe("<DrawnWeed />", () => {
     data: {
       cx: 10,
       cy: 20,
+      z: 0,
       r: 30,
     }
   });
@@ -27,7 +28,7 @@ describe("<DrawnWeed />", () => {
 
   it("renders point with chosen color", () => {
     const p = fakeProps();
-    p.data = { cx: 0, cy: 0, r: 1, color: "orange" };
+    p.data = { cx: 0, cy: 0, z: 0, r: 1, color: "orange" };
     const wrapper = svgMount(<DrawnWeed {...p} />);
     const stop = wrapper.find("stop").first().props();
     expect(stop.stopColor).toEqual("orange");

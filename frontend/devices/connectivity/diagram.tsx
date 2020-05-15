@@ -138,6 +138,7 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
   const botAPI = rowData[3];
   const botFirmware = rowData[4];
   const board = botFirmware.to;
+  const browser = window.innerWidth <= 450 ? t("This phone") : t("This computer");
   return <div className="connectivity-diagram">
     <svg
       id="connectivity-diagram"
@@ -147,7 +148,7 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
       viewBox="-100 -100 210 220">
       <g className="text"
         dominantBaseline="middle">
-        {nodeLabel(t("Browser"), DiagramNodes.browser)}
+        {nodeLabel(browser, DiagramNodes.browser)}
         {nodeLabel("Web App", DiagramNodes.API)}
         {nodeLabel(t("Message Broker"), DiagramNodes.MQTT)}
         {nodeLabel("FarmBot", DiagramNodes.bot)}

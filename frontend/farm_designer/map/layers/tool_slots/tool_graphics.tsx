@@ -390,6 +390,6 @@ export const ToolSVG = (props: ToolSVGProps) => {
   const viewBox = reduceToolName(props.toolName) === ToolNames.seedTrough
     ? "-25 0 50 1" : "-40 0 80 1";
   return <svg width="3rem" height="3rem" viewBox={viewBox}>
-    <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
-</svg>;
+    <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />
+  </svg>;
 };

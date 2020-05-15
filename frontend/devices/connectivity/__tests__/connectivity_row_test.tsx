@@ -22,8 +22,24 @@ describe("<ConnectivityRow/>", () => {
   });
 
   it("renders saucer color: header", () => {
-    const el = render(<ConnectivityRow from="from" to="to" header={true} />);
-    expect(el.find(".grey").length).toBe(1);
+    const wrapper = render(<ConnectivityRow from="from" to="to" header={true} />);
+    expect(wrapper.find(".grey").length).toBe(1);
+    ["from", "to", "last message seen"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
+  it("renders large row", () => {
+    const wrapper = render(<ConnectivityRow from="browser" to="to" />);
+    expect(wrapper.text().toLowerCase()).toContain("this computer");
+  });
+
+  it("renders small row", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const wrapper = render(<ConnectivityRow from="browser" to="to" />);
+    expect(wrapper.text().toLowerCase()).toContain("this phone");
   });
 
   it("renders saucer connector color: firmware", () => {

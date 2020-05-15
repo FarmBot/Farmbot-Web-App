@@ -189,6 +189,8 @@ export interface McuInputBoxProps {
   scale?: number;
   filter?: number;
   gray?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export interface EStopButtonProps {

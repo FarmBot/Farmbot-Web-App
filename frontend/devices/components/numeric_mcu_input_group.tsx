@@ -15,7 +15,7 @@ export class NumericMCUInputGroup
   Inputs = () => {
     const {
       sourceFwConfig, dispatch, intSize, gray, float,
-      x, y, z, xScale, yScale, zScale,
+      x, y, z, xScale, yScale, zScale, min, max,
     } = this.props;
     return <div className={"mcu-inputs"}>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -26,6 +26,8 @@ export class NumericMCUInputGroup
           intSize={intSize}
           float={float}
           scale={xScale}
+          min={min}
+          max={max}
           gray={gray?.x} />
       </Col>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -36,6 +38,8 @@ export class NumericMCUInputGroup
           intSize={intSize}
           float={float}
           scale={yScale}
+          min={min}
+          max={max}
           gray={gray?.y} />
       </Col>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -46,6 +50,8 @@ export class NumericMCUInputGroup
           intSize={intSize}
           float={float}
           scale={zScale}
+          min={min}
+          max={max}
           gray={gray?.z} />
       </Col>
     </div>;

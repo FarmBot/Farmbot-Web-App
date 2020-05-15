@@ -3,7 +3,7 @@ import { t } from "../../i18next_wrapper";
 import { getDevice } from "../../device";
 import { destroy, edit, save } from "../../api/crud";
 import { ResourceColor } from "../../interfaces";
-import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
+import { TaggedGenericPointer, TaggedWeedPointer, Xyz } from "farmbot";
 import { ListItem } from "../plants/plant_panel";
 import { round, cloneDeep } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
@@ -49,7 +49,11 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     </li>
     <ListItem name={t("Location")}>
       <EditPointLocation
-        xyLocation={{ x: props.point.body.x, y: props.point.body.y }}
+        pointLocation={{
+          x: props.point.body.x,
+          y: props.point.body.y,
+          z: props.point.body.z,
+        }}
         updatePoint={props.updatePoint} />
     </ListItem>
     <ListItem name={t("Size")}>
@@ -151,18 +155,18 @@ export const EditPointName = (props: EditPointNameProps) =>
 
 export interface EditPointLocationProps {
   updatePoint(update: PointUpdate): void;
-  xyLocation: Record<"x" | "y", number>;
+  pointLocation: Record<Xyz, number>;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
   <Row>
-    {["x", "y"].map((axis: "x" | "y") =>
-      <Col xs={6} key={axis}>
+    {["x", "y", "z"].map((axis: Xyz) =>
+      <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
           name={axis}
-          value={props.xyLocation[axis]}
+          value={props.pointLocation[axis]}
           min={0}
           onCommit={e => props.updatePoint({
             [axis]: round(parseIntInput(e.currentTarget.value))
@@ -178,14 +182,14 @@ export interface EditPointRadiusProps {
 export const EditPointRadius = (props: EditPointRadiusProps) =>
   <Row>
     <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
+      <label style={{ marginTop: 0 }}>{t("diameter (mm)")}</label>
       <BlurableInput
         type="number"
         name="radius"
-        value={props.radius}
+        value={props.radius * 2}
         min={0}
         onCommit={e => props.updatePoint({
-          radius: round(parseIntInput(e.currentTarget.value))
+          radius: round(parseIntInput(e.currentTarget.value)) / 2
         })} />
     </Col>
   </Row>;
