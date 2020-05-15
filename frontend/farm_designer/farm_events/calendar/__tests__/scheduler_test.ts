@@ -239,6 +239,19 @@ describe("scheduleForFarmEvent", () => {
       ],
       shortenedBy: 0
     },
+    {
+      description: "handles missing end time",
+      fakeEvent: {
+        start_time: "2017-08-01T17:00:00.000Z",
+        repeat: 1,
+        time_unit: "minutely"
+      },
+      timeNow: moment("2017-08-01T16:30:00.000Z"),
+      expected: range(0, maxDisplayItems)
+        .map((x: number) =>
+          moment(`2017-08-01T17:${padStart("" + x, 2, "0")}:00.000Z`)),
+      shortenedBy: expect.any(Number)
+    },
   ];
 
   scheduleTestData.map(testCaseData => testSchedule(testCaseData));
