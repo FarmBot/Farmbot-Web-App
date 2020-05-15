@@ -2,7 +2,7 @@ jest.mock("../../actions", () => ({ updateMCU: jest.fn() }));
 
 import * as React from "react";
 import { McuInputBox } from "../mcu_input_box";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { McuInputBoxProps } from "../../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../actions";
@@ -29,7 +29,7 @@ describe("McuInputBox", () => {
     const result = mib.clampInputAndWarn("-1", "short");
     expect(result).toEqual(0);
     expect(warning)
-      .toHaveBeenCalledWith("Must be a positive number. Rounding up to 0.");
+      .toHaveBeenCalledWith("Minimum input is 0. Rounding up.");
   });
 
   it("clamps large numbers", () => {
@@ -75,5 +75,15 @@ describe("McuInputBox", () => {
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "5.5" } });
     expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
+  });
+
+  it("restricts values to min and max", () => {
+    const p = fakeProps();
+    p.min = -10;
+    p.max = 10;
+    const wrapper = mount(<McuInputBox {...p} />);
+    const input = wrapper.find("input");
+    expect(input.props().min).toEqual(-10);
+    expect(input.props().max).toEqual(10);
   });
 });
