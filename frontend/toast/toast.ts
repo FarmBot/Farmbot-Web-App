@@ -9,8 +9,9 @@ export const warning = (
   title = t("Warning"),
   color = "orange",
   idPrefix = "",
+  noTimer = false,
 ) => {
-  createToastOnce(message, title, color, idPrefix, console.warn);
+  createToastOnce(message, title, color, idPrefix, noTimer, console.warn);
 };
 
 /**
@@ -21,8 +22,9 @@ export const error = (
   title = t("Error"),
   color = "red",
   idPrefix = "",
+  noTimer = false,
 ) => {
-  createToastOnce(message, title, color, idPrefix, console.error);
+  createToastOnce(message, title, color, idPrefix, noTimer, console.error);
 };
 
 /**
@@ -33,8 +35,9 @@ export const success = (
   title = t("Success"),
   color = "green",
   idPrefix = "",
+  noTimer = false,
 ) =>
-  createToast(message, title, color, idPrefix);
+  createToast(message, title, color, idPrefix, noTimer);
 
 /**
  *  Blue message with "FYI" as the default title.
@@ -44,8 +47,9 @@ export const info = (
   title = t("FYI"),
   color = "blue",
   idPrefix = "",
+  noTimer = false,
 ) =>
-  createToast(message, title, color, idPrefix);
+  createToast(message, title, color, idPrefix, noTimer);
 
 /**
  *  Yellow message with "Busy" as the default title.
@@ -55,8 +59,9 @@ export const busy = (
   title = t("Busy"),
   color = "yellow",
   idPrefix = "",
+  noTimer = false,
 ) =>
-  createToast(message, title, color, idPrefix);
+  createToast(message, title, color, idPrefix, noTimer);
 
 /**
  *  Dark blue message with "Did you know?" as the default title.
@@ -66,8 +71,9 @@ export const fun = (
   title = t("Did you know?"),
   color = "dark-blue",
   idPrefix = "",
+  noTimer = false,
 ) =>
-  createToast(message, title, color, idPrefix);
+  createToast(message, title, color, idPrefix, noTimer);
 
 /**
  *  Adds a hidden container div for holding toast messages.

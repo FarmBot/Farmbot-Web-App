@@ -29,6 +29,13 @@
     color: $white;
     box-shadow: 0px 2px 6px #555;
   }
+  &.no-timer {
+    transition: all 0.25s ease;
+    opacity: 1;
+    .toast-loader {
+      visibility: hidden;
+    }
+  }
   &.active {
     transition: all 0.25s ease;
     opacity: 1;
