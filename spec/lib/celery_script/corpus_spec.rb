@@ -189,8 +189,7 @@ describe CeleryScript::Corpus do
     expect(hmm.args.fetch(:resource_id).value).to eq(fake_id)
     checker = CeleryScript::Checker.new(hmm, corpus, device)
     expect(checker.valid?).to be(false)
-    msg = "Deprecated `mark_as` detected. Delete it and re-add"
-    expect(checker.error.message).to eq(msg)
+    expect(checker.error.message).to eq(CeleryScriptSettingsBag::OLD_MARK_AS)
   end
 
   it "has enums" do
