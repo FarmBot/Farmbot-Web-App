@@ -75,34 +75,34 @@ export namespace ToolTips {
 
   // Hardware Settings: Homing and Calibration
   export const HOMING_ENCODERS =
-    trim(`If encoders or end-stops are enabled, home axis (find zero).`);
+    trim(`If encoders or limit switches are enabled, home axis (find zero).`);
 
   export const HOMING_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, home axis
+    trim(`If stall detection or limit switches are enabled, home axis
     (find zero).`);
 
   export const CALIBRATION_ENCODERS =
-    trim(`If encoders or end-stops are enabled, home axis and determine
+    trim(`If encoders or limit switches are enabled, home axis and determine
     maximum.`);
 
   export const CALIBRATION_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, home axis and
+    trim(`If stall detection or limit switches are enabled, home axis and
     determine maximum.`);
 
   export const SET_ZERO_POSITION =
     trim(`Set the current location as zero.`);
 
   export const FIND_HOME_ON_BOOT_ENCODERS =
-    trim(`If encoders or end-stops are enabled, find the home position
+    trim(`If encoders or limit switches are enabled, find the home position
     when the device powers on. Warning! This will perform homing on all
-    axes when the device powers on. Encoders or endstops must be enabled.
+    axes when the device powers on. Encoders or limit switches must be enabled.
     It is recommended to make sure homing works properly before enabling
     this feature. (default: disabled)`);
 
   export const FIND_HOME_ON_BOOT_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, find the home
+    trim(`If stall detection or limit switches are enabled, find the home
     position when the device powers on. Warning! This will perform homing
-    on all axes when the device powers on. Stall detection or endstops
+    on all axes when the device powers on. Stall detection or limit switches
     must be enabled. It is recommended to make sure homing works properly
     before enabling this feature. (default: disabled)`);
 
@@ -198,14 +198,14 @@ export namespace ToolTips {
 
   // Hardware Settings: Endstops
   export const ENABLE_ENDSTOPS =
-    trim(`Enable use of electronic end-stops for end detection,
+    trim(`Enable use of electronic limit switches for end detection,
     calibration and homing. (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
-    trim(`Swap axis minimum and maximum end-stops. (default: disabled)`);
+    trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
 
   export const INVERT_ENDPOINTS =
-    trim(`Invert axis end-stops. Enable for normally closed (NC),
+    trim(`Invert axis limit switches. Enable for normally closed (NC),
     disable for normally open (NO). (default: disabled)`);
 
   // Hardware Settings: Error Handling
@@ -310,11 +310,11 @@ export namespace ToolTips {
 
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
-    command (using encoders, stall detection, or endstops) to find and set
+    command (using encoders, stall detection, or limit switches) to find and set
     zero for the chosen axis or axes.`);
 
   export const CALIBRATE =
-    trim(`If encoders, stall detection, or end-stops are enabled,
+    trim(`If encoders, stall detection, or limit switches are enabled,
     home axis and determine maximum.`);
 
   export const IF =
@@ -737,8 +737,9 @@ export namespace Content {
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
-    encoders, stall detection, or endstops enabled for the chosen axis.
-    Enable endstops, encoders, or stall detection from the Device page for: `);
+    encoders, stall detection, or limit switches enabled for the chosen axis.
+    Enable limit switches, encoders, or stall detection from the Device page
+    for: `);
 
   export const REBOOT_STEP =
     trim(`Power cycle FarmBot's onboard computer.`);
@@ -972,10 +973,10 @@ export enum DeviceSetting {
   encoderScaling = `Encoder Scaling`,
 
   // Endstops
-  endstops = `Endstops`,
-  enableEndstops = `Enable Endstops`,
-  swapEndstops = `Swap Endstops`,
-  invertEndstops = `Invert Endstops`,
+  endstops = `Limit switches`,
+  enableEndstops = `Enable limit switches`,
+  swapEndstops = `Swap limit switches`,
+  invertEndstops = `Invert limit switches`,
 
   // Error handling
   errorHandling = `Error Handling`,

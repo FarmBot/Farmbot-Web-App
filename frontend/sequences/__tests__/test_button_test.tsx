@@ -156,7 +156,7 @@ describe("<TestButton/>", () => {
     (varData["label"] as SequenceMeta).celeryNode = declaration;
     props.resources.sequenceMetas[props.sequence.uuid] = varData;
     const wrapper = mount<TestButton>(<TestButton {...props} />);
-    clickButton(wrapper, 1, "test");
+    clickButton(wrapper, 1, "run");
     expect(mockDevice.execSequence)
       .toHaveBeenCalledWith(props.sequence.body.id, [{
         kind: "parameter_application",
@@ -180,7 +180,7 @@ describe("<TestButton/>", () => {
     (varData["label"] as SequenceMeta).celeryNode = declaration;
     props.resources.sequenceMetas[props.sequence.uuid] = varData;
     const wrapper = mount<TestButton>(<TestButton {...props} />);
-    clickButton(wrapper, 1, "test");
+    clickButton(wrapper, 1, "run");
     expect(mockDevice.execSequence).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalled();
   });

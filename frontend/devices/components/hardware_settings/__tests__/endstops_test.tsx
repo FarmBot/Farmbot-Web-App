@@ -16,6 +16,6 @@ describe("<EndStops />", () => {
   it("shows endstop labels", () => {
     const p = fakeProps();
     const wrapper = mount(<EndStops {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("endstop");
+    expect(wrapper.text().toLowerCase()).toContain("limit switches");
   });
 });

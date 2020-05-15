@@ -71,6 +71,25 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
   </Row>;
 };
 
+export interface EditPlantRadiusProps extends EditPlantProperty {
+  radius: number;
+}
+
+export const EditPlantRadius = (props: EditPlantRadiusProps) =>
+  <Row>
+    <Col xs={6}>
+      <label style={{ marginTop: 0 }}>{t("diameter (mm)")}</label>
+      <BlurableInput
+        type="number"
+        name="radius"
+        value={props.radius * 2}
+        min={0}
+        onCommit={e => props.updatePlant(props.uuid, {
+          radius: parseIntInput(e.currentTarget.value) / 2
+        })} />
+    </Col>
+  </Row>;
+
 const chooseLocation = (to: Record<Xyz, number | undefined>) =>
   (dispatch: Function): Promise<void> => {
     dispatch({
@@ -145,6 +164,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
   const { x, y, z } = info;
   const destroy = () => onDestroy(uuid);
+  const commonProps = { uuid, updatePlant };
   return <DesignerPanelContent panelName={"plants"}>
     <label>
       {t("Plant Info")}
@@ -161,11 +181,9 @@ export function PlantPanel(props: PlantPanelProps) {
         <Row>
           <Col xs={7}>
             <ListItem name={t("Started")}>
-              <EditDatePlanted
-                uuid={uuid}
+              <EditDatePlanted {...commonProps}
                 datePlanted={plantedAt}
-                timeSettings={timeSettings}
-                updatePlant={updatePlant} />
+                timeSettings={timeSettings} />
             </ListItem>
           </Col>
           <Col xs={5}>
@@ -175,17 +193,15 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
         </Row>}
       <ListItem name={t("Location")}>
-        <EditPlantLocation uuid={uuid}
-          plantLocation={{ x, y, z }}
-          updatePlant={updatePlant} />
+        <EditPlantLocation {...commonProps} plantLocation={{ x, y, z }} />
+      </ListItem>
+      <ListItem name={t("Size")}>
+        <EditPlantRadius  {...commonProps} radius={info.radius} />
       </ListItem>
       <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Status")}>
         {(!inSavedGarden)
-          ? <EditPlantStatus
-            uuid={uuid}
-            plantStatus={plantStatus}
-            updatePlant={updatePlant} />
+          ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
       {Object.entries(info.meta || []).map(([key, value]) => {

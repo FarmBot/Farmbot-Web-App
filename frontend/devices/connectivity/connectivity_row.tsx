@@ -9,7 +9,7 @@ export interface StatusRowProps {
   from: string;
   to: string;
   header?: boolean;
-  children?: React.ReactChild;
+  connectionMsg?: React.ReactChild;
   connectionName?: string;
   hover?: Function;
   hoveredConnection?: string | undefined;
@@ -60,7 +60,9 @@ export function ConnectivityRow(props: StatusRowProps) {
     </Col>
     <Col xs={2}>
       <p>
-        {props.from}
+        {props.from == "browser"
+          ? window.innerWidth <= 450 ? t("This phone") : t("This computer")
+          : props.from}
       </p>
     </Col>
     <Col xs={2}>
@@ -70,7 +72,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     </Col>
     <Col xs={7}>
       <p>
-        {props.children}
+        {props.header ? t("last message seen ") : props.connectionMsg}
       </p>
     </Col>
   </Row>;

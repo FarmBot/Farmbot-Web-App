@@ -11,6 +11,7 @@ describe("<DrawnPoint/>", () => {
     data: {
       cx: 10,
       cy: 20,
+      z: 0,
       r: 30,
     }
   });
@@ -30,7 +31,7 @@ describe("<DrawnPoint/>", () => {
 
   it("renders point with chosen color", () => {
     const p = fakeProps();
-    p.data = { cx: 0, cy: 0, r: 1, color: "red" };
+    p.data = { cx: 0, cy: 0, z: 0, r: 1, color: "red" };
     const wrapper = svgMount(<DrawnPoint {...p} />);
     expect(wrapper.find("g").props().stroke).toEqual("red");
   });
