@@ -20,6 +20,16 @@ describe Api::PointsController do
       expect(json[:y]).to eq(payload[:y])
       expect(json[:z]).to eq(payload[:z])
     end
+    it "creates a weed" do
+      sign_in user
+      p = { x: 23, y: 45, pointer_type: "Weed" }
+      post :create, body: p.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      weed = Weed.last
+      expect(weed.x).to eq(p[:x])
+      expect(weed.y).to eq(p[:y])
+      expect(weed.plant_stage).to eq("active")
+    end
 
     it "creates a plant" do
       sign_in user
@@ -158,11 +168,11 @@ describe Api::PointsController do
     it "disallows bad `tool_id`s" do
       sign_in user
       payload = { pointer_type: "ToolSlot",
-                 name: "foo",
-                 x: 0,
-                 y: 0,
-                 z: 0,
-                 tool_id: (Tool.count + 100) }
+                  name: "foo",
+                  x: 0,
+                  y: 0,
+                  z: 0,
+                  tool_id: (Tool.count + 100) }
       old_tool_count = ToolSlot.count
       post :create, body: payload.to_json, params: { format: :json }
       expect(response.status).to eq(422)

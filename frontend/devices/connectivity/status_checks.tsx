@@ -12,7 +12,7 @@ export const ago = (input: string | number) => moment(input).fromNow();
 
 const lastSeen = (lastSaw: string | number | undefined) =>
   lastSaw
-    ? t("Last message seen ") + `${ago(lastSaw)}.`
+    ? `${ago(lastSaw)}.`
     : t("No messages seen yet.");
 
 const isUp = (stat: ConnectionStatus | undefined): boolean | undefined =>
@@ -42,7 +42,7 @@ export function botToAPI(
     from: "FarmBot",
     to: t("Web App"),
     connectionStatus: isApiUp(lastSawApi, now),
-    children: lastSeen(lastSawApi),
+    connectionMsg: lastSeen(lastSawApi),
   };
 }
 
@@ -50,9 +50,9 @@ export function browserToAPI(status: ConnectionStatus | undefined):
   StatusRowProps {
   return {
     connectionName: "browserAPI",
-    from: t("Browser"),
+    from: "browser",
     to: t("Internet"),
-    children: lastSeen(status ? status.at : undefined),
+    connectionMsg: lastSeen(status ? status.at : undefined),
     connectionStatus: isUp(status),
   };
 }
@@ -64,7 +64,7 @@ export function botToMQTT(status: ConnectionStatus | undefined):
     from: "FarmBot",
     to: t("Message Broker"),
     connectionStatus: isUp(status),
-    children: lastSeenUp(status),
+    connectionMsg: lastSeenUp(status),
   };
 }
 
@@ -72,10 +72,10 @@ export function browserToMQTT(status: ConnectionStatus | undefined):
   StatusRowProps {
   return {
     connectionName: "browserMQTT",
-    from: t("Browser"),
+    from: "browser",
     to: t("Message Broker"),
     connectionStatus: isUp(status),
-    children: lastSeenUp(status),
+    connectionMsg: lastSeenUp(status),
   };
 }
 
@@ -91,6 +91,6 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
     from: "Raspberry Pi",
     to: getBoardCategory(version),
     connectionStatus: connection().status,
-    children: connection().msg,
+    connectionMsg: connection().msg,
   };
 }

@@ -56,6 +56,7 @@ export function fakeResourceIndex(extra: TaggedResource[] = []): ResourceIndex {
       meta: {},
       name: "Weed 1",
       pointer_type: "Weed",
+      plant_stage: "active",
       radius: 15,
       x: 15,
       y: 25,

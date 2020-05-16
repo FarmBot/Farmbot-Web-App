@@ -17,7 +17,9 @@ import {
   SubCriteriaSectionProps,
   CheckboxListItem,
 } from "./interfaces";
-import { PLANT_STAGE_LIST, WEED_STATUSES } from "../../plants/edit_plant_status";
+import {
+  PLANT_STAGE_LIST, WEED_STAGE_LIST,
+} from "../../plants/edit_plant_status";
 import { DIRECTION_CHOICES } from "../../tools/tool_slot_edit_components";
 import { Checkbox } from "../../../ui";
 import { PointType } from "farmbot";
@@ -116,11 +118,9 @@ const PlantStage = (props: PointSubCriteriaProps) =>
       criteriaKey={"plant_stage"}
       group={props.group}
       dispatch={props.dispatch}
-      list={PLANT_STAGE_LIST().filter(ddi =>
-        props.pointerType == "Plant" || WEED_STATUSES.includes("" + ddi.value))
-        .map(ddi => ({ label: ddi.label, value: "" + ddi.value }))
-        .concat(props.pointerType == "Weed"
-          ? [{ label: t("Remaining"), value: "planned" }] : [])} />
+      list={
+        (props.pointerType == "Plant" ? PLANT_STAGE_LIST() : WEED_STAGE_LIST())
+          .map(ddi => ({ label: ddi.label, value: "" + ddi.value }))} />
   </div>;
 
 const PlantType = (props: PlantSubCriteriaProps) =>

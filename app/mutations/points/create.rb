@@ -66,6 +66,7 @@ module Points
     end
 
     def execute
+      inputs[:plant_stage] ||= "active" if pointer_type == "Weed"
       klass_.create!(inputs)
     end
 

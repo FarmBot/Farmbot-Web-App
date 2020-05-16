@@ -5,6 +5,7 @@ import { FBToast } from "./fb_toast";
  */
 export const createToast = (
   message: string, title: string, color: string, idPrefix: string,
+  noTimer: boolean,
 ) => {
 
   /**
@@ -19,7 +20,7 @@ export const createToast = (
   /**
    * Create elements.
    */
-  const t = new FBToast(parent, title, message, color, idPrefix);
+  const t = new FBToast(parent, title, message, color, idPrefix, noTimer);
   t.run();
 };
 
@@ -27,12 +28,13 @@ export const createToastOnce = (message: string,
   title: string,
   color: string,
   idPrefix: string,
+  noTimer: boolean,
   fallbackLogger = console.warn,
 ) => {
   if (FBToast.everyMessage[message]) {
     fallbackLogger(message);
   } else {
-    createToast(message, title, color, idPrefix);
+    createToast(message, title, color, idPrefix, noTimer);
     FBToast.everyMessage[message] = true;
   }
 };

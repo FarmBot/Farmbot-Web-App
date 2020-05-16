@@ -5,7 +5,7 @@ describe("FBToast", () => {
   const newToast = (idPrefix = ""): [FBToast, HTMLDivElement] => {
     const parent = document.createElement("div");
     const child =
-      new FBToast(parent, "title", "message" + (count++), "red", idPrefix);
+      new FBToast(parent, "title", "message" + (count++), "red", idPrefix, false);
     parent.appendChild(child.toastEl);
     return [child, parent];
   };
@@ -143,5 +143,29 @@ describe("FBToast", () => {
     i.detach = jest.fn();
     i.doPolling();
     expect(i.detach).not.toHaveBeenCalled();
+  });
+
+  it("run: does polling", () => {
+    const [i, parent] = newToast();
+    i.parent = parent;
+    i.isAttached = false;
+    i.noTimer = false;
+    i.intervalId = 0;
+    i.run();
+    expect(i.toastEl.className).not.toContain("no-timer");
+    expect(i.isAttached).toEqual(true);
+    expect(i.intervalId).not.toEqual(0);
+  });
+
+  it("run: doesn't do polling", () => {
+    const [i, parent] = newToast();
+    i.parent = parent;
+    i.isAttached = false;
+    i.noTimer = true;
+    i.intervalId = 0;
+    i.run();
+    expect(i.toastEl.className).toContain("no-timer");
+    expect(i.isAttached).toEqual(true);
+    expect(i.intervalId).toEqual(0);
   });
 });

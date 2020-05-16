@@ -94,4 +94,19 @@ describe("<Sensors />", () => {
     expect(btn.text().toLowerCase()).toContain("stock");
     expect(btn.props().hidden).toBeTruthy();
   });
+
+  it("renders empty state", () => {
+    const p = fakeProps();
+    p.sensors = [];
+    const wrapper = mount(<Sensors {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("no sensors yet");
+  });
+
+  it("doesn't render empty state", () => {
+    const p = fakeProps();
+    p.sensors = [];
+    const wrapper = mount(<Sensors {...p} />);
+    wrapper.setState({ isEditing: true });
+    expect(wrapper.text().toLowerCase()).not.toContain("no sensors yet");
+  });
 });

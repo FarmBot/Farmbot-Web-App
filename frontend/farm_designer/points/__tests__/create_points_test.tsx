@@ -28,7 +28,7 @@ import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { cloneDeep } from "lodash";
 
 const FAKE_POINT: DrawnPointPayl =
-  ({ name: "My Point", cx: 13, cy: 22, r: 345, color: "red" });
+  ({ name: "My Point", cx: 13, cy: 22, z: 0, r: 345, color: "red" });
 
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
@@ -64,14 +64,14 @@ describe("<CreatePoints />", () => {
   it("renders for points", () => {
     mockPath = "/app/designer";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add point", "delete", "x", "y", "radius"]
+    ["add point", "delete", "x", "y", "z", "diameter"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     mockPath = "/app/designer/weeds/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add weed", "delete", "x", "y", "radius"]
+    ["add weed", "delete", "x", "y", "z", "diameter"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
@@ -84,7 +84,21 @@ describe("<CreatePoints />", () => {
     const expected = cloneDeep(FAKE_POINT);
     expected.color = "cheerful hue";
     expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
-      type: "SET_DRAWN_POINT_DATA",
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expected,
+    });
+  });
+
+  it("updates radius", () => {
+    const p = fakeProps();
+    p.drawnPoint = FAKE_POINT;
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.instance().updateValue("r")(inputEvent("100"));
+    expect(wrapper.instance().props.drawnPoint).toBeTruthy();
+    const expected = cloneDeep(FAKE_POINT);
+    expected.r = 50;
+    expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
       payload: expected,
     });
   });
@@ -103,15 +117,18 @@ describe("<CreatePoints />", () => {
     const i = new CreatePoints(p);
     i.loadDefaultPoint();
     expect(i.props.dispatch).toHaveBeenCalledWith({
-      type: "SET_DRAWN_POINT_DATA",
-      payload: { name: "Created Point", color: "green", cx: 1, cy: 1, r: 15 },
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point", color: "green",
+        cx: 1, cy: 1, z: 0, r: 15
+      },
     });
   });
 
   it("updates weed name", () => {
     mockPath = "/app/designer/weeds/add";
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, r: 100 };
+    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
     const panel = mount<CreatePoints>(<CreatePoints {...p} />);
     const wrapper = shallow(panel.instance().PointProperties());
     wrapper.find("BlurableInput").first().simulate("commit", {
@@ -119,7 +136,7 @@ describe("<CreatePoints />", () => {
     });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_WEED_DATA, payload: {
-        cx: 0, cy: 0, r: 100, name: "new name", color: "red",
+        cx: 0, cy: 0, z: 0, r: 100, name: "new name", color: "red",
       }
     });
   });
@@ -133,7 +150,7 @@ describe("<CreatePoints />", () => {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: "Created Point",
       pointer_type: "GenericPointer",
-      plant_stage: "planned",
+      plant_stage: "active",
       radius: 30, x: 10, y: 20, z: 0,
     });
   });
@@ -147,7 +164,7 @@ describe("<CreatePoints />", () => {
       meta: { color: "red", created_by: "farm-designer", type: "weed" },
       name: "Created Weed",
       pointer_type: "Weed",
-      plant_stage: "planned",
+      plant_stage: "active",
       radius: 30, x: 10, y: 20, z: 0,
     });
   });
@@ -193,13 +210,13 @@ describe("<CreatePoints />", () => {
 
   it("changes point color", () => {
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, r: 0 };
+    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
     const component = shallow(<PP />);
     component.find("ColorPicker").simulate("change", "red");
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { color: "red", cx: 0, cy: 0, r: 0 },
+      payload: { color: "red", cx: 0, cy: 0, z: 0, r: 0 },
       type: Actions.SET_DRAWN_POINT_DATA
     });
   });
@@ -207,20 +224,20 @@ describe("<CreatePoints />", () => {
   it("changes weed color", () => {
     mockPath = "/app/designer/weeds/add";
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, r: 0 };
+    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
     const component = shallow(<PP />);
     component.find("ColorPicker").simulate("change", "red");
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { color: "red", cx: 0, cy: 0, r: 0 },
+      payload: { color: "red", cx: 0, cy: 0, z: 0, r: 0 },
       type: Actions.SET_DRAWN_WEED_DATA
     });
   });
 
   it("updates value", () => {
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, r: 0 };
+    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
     const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
     const component = shallow(<PP />);
@@ -228,14 +245,14 @@ describe("<CreatePoints />", () => {
       currentTarget: { value: "10" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { cx: 10, cy: 0, r: 0, color: "green" },
+      payload: { cx: 10, cy: 0, z: 0, r: 0, color: "green" },
       type: Actions.SET_DRAWN_POINT_DATA
     });
   });
 
   it("fills the state with point data", () => {
     const p = fakeProps();
-    p.drawnPoint = { cx: 1, cy: 2, r: 3, color: "blue" };
+    p.drawnPoint = { cx: 1, cy: 2, z: 0, r: 3, color: "blue" };
     const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
     const i = wrapper.instance();
     expect(i.state).toEqual({});
@@ -243,6 +260,7 @@ describe("<CreatePoints />", () => {
       name: undefined,
       cx: 1,
       cy: 2,
+      z: 0,
       r: 3,
       color: "blue"
     });

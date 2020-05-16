@@ -69,7 +69,7 @@ describe("<TickerList />", () => {
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
     expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
-    expect(labels.at(4).text()).toEqual("Filter logs");
+    expect(labels.at(4).text()).toEqual("View all logs");
     expectLogOccurrences(wrapper.text(), 2);
   });
 

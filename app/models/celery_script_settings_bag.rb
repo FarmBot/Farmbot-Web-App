@@ -73,7 +73,7 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
   "as input. Please change your selection to a single" \
   " location."
-  PLANT_STAGES = %w(planned planted harvested sprouted removed)
+  PLANT_STAGES = %w(planned planted harvested sprouted active removed)
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
   MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
@@ -81,11 +81,14 @@ module CeleryScriptSettingsBag
     "A single wait node cannot exceed #{MAX_WAIT_MS / 1000 / 60} minutes. " +
     "Consider lowering the wait time or using multiple WAIT blocks."
   Corpus = CeleryScript::Corpus.new
+  OLD_MARK_AS =
+    "This sequence uses an old MARK AS step that is no longer supported." \
+    " Please delete the step and upgrade to FarmBot OS v10."
   THIS_IS_DEPRECATED = {
     args: [:resource_type, :resource_id, :label, :value],
     tags: [:function, :api_writer, :network_user],
     blk: ->(n) do
-      n.invalidate!("Deprecated `mark_as` detected. Delete it and re-add")
+      n.invalidate!(OLD_MARK_AS)
     end,
   }
 

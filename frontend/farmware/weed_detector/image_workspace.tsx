@@ -9,6 +9,7 @@ import { PhotoFooter } from "../images/photos";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { DevSettings } from "../../account/dev/dev_support";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -157,17 +158,20 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             title={t("Scan this image")}
             onClick={this.maybeProcessPhoto}
             disabled={!this.props.botOnline || !this.props.images.length}>
-            {t("Scan image")}
+            {t("Scan current image")}
           </button>
         </Col>
       </Row>
-      <ImageFlipper
-        onFlip={this.props.onFlip}
-        images={this.props.images}
-        currentImage={this.props.currentImage} />
-      <PhotoFooter
-        image={this.props.currentImage}
-        timeSettings={this.props.timeSettings} />
+      {!DevSettings.futureFeaturesEnabled() &&
+        <div className="flipper-section">
+          <ImageFlipper
+            onFlip={this.props.onFlip}
+            images={this.props.images}
+            currentImage={this.props.currentImage} />
+          <PhotoFooter
+            image={this.props.currentImage}
+            timeSettings={this.props.timeSettings} />
+        </div>}
     </div>;
   }
 }

@@ -62,6 +62,8 @@ export interface NumericMCUInputGroupProps {
   float?: boolean;
   intSize?: IntegerSize;
   gray?: Record<Xyz, boolean>;
+  min?: number;
+  max?: number;
 }
 
 export interface PinGuardMCUInputGroupProps {

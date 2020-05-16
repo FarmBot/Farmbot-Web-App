@@ -38,12 +38,13 @@ describe("<PureFarmEvents/>", () => {
       heading: "Every 4 hours",
       executableId: 25,
       subheading: "",
-      id: 79
+      id: 79,
+      color: "gray",
     }];
     p.calendarRows = row;
     const results = render(<PureFarmEvents {...p} />);
-    const txt = results.text();
-    expect(txt).toContain("Every 4 hours");
+    expect(results.text()).toContain("Every 4 hours");
+    expect(results.html()).not.toContain("gray");
   });
 
   it("filters farm events: finds none", () => {

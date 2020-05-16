@@ -89,7 +89,7 @@ export const TickerList = (props: TickerListProps) => {
         <Link to={"/app/logs"}>
           <div className="logs-page-link">
             <label>
-              {t("Filter logs")}
+              {t("View all logs")}
             </label>
           </div>
         </Link>

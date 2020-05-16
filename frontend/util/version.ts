@@ -108,7 +108,7 @@ const fallbackData: MinOsFeatureLookup = {
   [Feature.api_farmware_env]: "8.0.0",
   [Feature.api_farmware_installations]: "8.0.0",
   [Feature.criteria_groups]: "9.2.2",
-  [Feature.update_resource]: MinVersionOverride.NEVER,
+  [Feature.update_resource]: "10.0.0",
   [Feature.boot_sequence]: MinVersionOverride.NEVER,
 };
 

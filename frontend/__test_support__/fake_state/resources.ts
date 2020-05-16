@@ -180,7 +180,7 @@ export function fakeWeed(): TaggedWeedPointer {
     y: 400,
     z: 0,
     radius: 100,
-    plant_stage: "planned",
+    plant_stage: "active",
     meta: { created_by: "plant-detection", color: "red" }
   });
 }

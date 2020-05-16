@@ -51,6 +51,7 @@ const DEFAULTS: DrawnPointPayl = {
   name: undefined,
   cx: 1,
   cy: 1,
+  z: 0,
   r: 15,
   color: undefined,
 };
@@ -87,6 +88,7 @@ export class RawCreatePoints
       name: this.attr("name"),
       cx: this.attr("cx"),
       cy: this.attr("cy"),
+      z: this.attr("z"),
       r: this.attr("r"),
       color: this.attr("color") || this.defaultColor,
     };
@@ -102,6 +104,7 @@ export class RawCreatePoints
     this.setState({
       cx: undefined,
       cy: undefined,
+      z: undefined,
       r: undefined,
       color: undefined
     });
@@ -116,6 +119,7 @@ export class RawCreatePoints
         name: this.defaultName,
         cx: DEFAULTS.cx,
         cy: DEFAULTS.cy,
+        z: DEFAULTS.z,
         r: DEFAULTS.r,
         color: this.defaultColor,
       } as DrawnPointPayl
@@ -141,6 +145,11 @@ export class RawCreatePoints
           case "color":
             this.setState({ [key]: value });
             point[key] = value;
+            break;
+          case "r":
+            const intRadius = parseIntInput(value) / 2;
+            this.setState({ [key]: intRadius });
+            point[key] = intRadius;
             break;
           default:
             const intValue = parseIntInput(value);
@@ -182,8 +191,8 @@ export class RawCreatePoints
       },
       x: this.attr("cx"),
       y: this.attr("cy"),
-      z: 0,
-      plant_stage: "planned",
+      z: this.attr("z"),
+      plant_stage: "active",
       radius: this.attr("r"),
     };
     this.props.dispatch(initSave("Point", body));
@@ -219,7 +228,7 @@ export class RawCreatePoints
       </li>
       <ListItem name={t("Location")}>
         <Row>
-          <Col xs={6}>
+          <Col xs={4}>
             <label>{t("X (mm)")}</label>
             <BlurableInput
               name="cx"
@@ -227,7 +236,7 @@ export class RawCreatePoints
               onCommit={this.updateValue("cx")}
               value={this.attr("cx", this.props.deviceX)} />
           </Col>
-          <Col xs={6}>
+          <Col xs={4}>
             <label>{t("Y (mm)")}</label>
             <BlurableInput
               name="cy"
@@ -235,17 +244,25 @@ export class RawCreatePoints
               onCommit={this.updateValue("cy")}
               value={this.attr("cy", this.props.deviceY)} />
           </Col>
+          <Col xs={4}>
+            <label>{t("Z (mm)")}</label>
+            <BlurableInput
+              name="z"
+              type="number"
+              onCommit={this.updateValue("z")}
+              value={this.attr("z", this.props.deviceY)} />
+          </Col>
         </Row>
       </ListItem>
       <ListItem name={t("Size")}>
         <Row>
           <Col xs={6}>
-            <label>{t("radius")}</label>
+            <label>{t("diameter (mm)")}</label>
             <BlurableInput
               name="r"
               type="number"
               onCommit={this.updateValue("r")}
-              value={this.attr("r")}
+              value={this.attr("r") * 2}
               min={0} />
           </Col>
         </Row>

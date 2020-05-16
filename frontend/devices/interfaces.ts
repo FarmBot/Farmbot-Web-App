@@ -189,6 +189,8 @@ export interface McuInputBoxProps {
   scale?: number;
   filter?: number;
   gray?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export interface EStopButtonProps {
@@ -230,6 +232,19 @@ export interface FarmwareProps {
   taggedFarmwareInstallations: TaggedFarmwareInstallation[];
   imageJobs: JobProgress[];
   infoOpen: boolean;
+}
+
+export interface WeedDetectorProps {
+  dispatch: Function;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
+  images: TaggedImage[];
+  currentImage: TaggedImage | undefined;
+  botToMqttStatus: NetworkState;
+  timeSettings: TimeSettings;
+  syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }
 
 export interface HardwareSettingsProps {

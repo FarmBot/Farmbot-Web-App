@@ -14,6 +14,7 @@ import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";
 import { t } from "../../i18next_wrapper";
 import { SearchField } from "../../ui/search_field";
+import { SortOptions, PointSortMenu, orderedPoints } from "../sort_options";
 
 export interface PointsProps {
   genericPoints: TaggedGenericPointer[];
@@ -21,7 +22,7 @@ export interface PointsProps {
   hoveredPoint: string | undefined;
 }
 
-interface PointsState {
+interface PointsState extends SortOptions {
   searchTerm: string;
 }
 
@@ -47,6 +48,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         title={t("Add point")}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={t("Search your points...")}
+          customLeftIcon={<PointSortMenu
+            sortOptions={this.state} onChange={u => this.setState(u)} />}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
@@ -56,7 +59,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           title={t("No points yet.")}
           text={Content.NO_POINTS}
           colorScheme={"points"}>
-          {this.props.genericPoints
+          {orderedPoints(this.props.genericPoints, this.state)
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PointInventoryItem

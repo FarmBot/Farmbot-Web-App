@@ -1,8 +1,11 @@
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import {
-  UpdateResource, TaggedSequence, Resource, Identifier, Nothing, Pair,
+  UpdateResource, TaggedSequence, Resource, Identifier, Nothing, Pair, Point,
 } from "farmbot";
 import { KnownField } from "./field_selection";
+
+export type ResourceArg = Resource | Identifier | Point;
+export type MaybeResourceArg = ResourceArg | Nothing;
 
 export interface MarkAsProps {
   currentSequence: TaggedSequence;
@@ -21,19 +24,19 @@ export interface FieldAndValue {
 }
 
 export interface MarkAsState {
-  resource: Resource | Identifier | Nothing;
+  resource: MaybeResourceArg;
   fieldsAndValues: FieldAndValue[];
 }
 
 export interface GetSelectedValueProps {
-  resource: Resource | Identifier | Nothing;
-  field: KnownField | undefined;
+  resource: MaybeResourceArg;
+  field: KnownField.plant_stage | KnownField.mounted_tool_id | undefined;
   value: UpdateResourceValue | undefined;
   resourceIndex: ResourceIndex;
 }
 
 interface SelectionPropsBase {
-  resource: Resource | Identifier | Nothing;
+  resource: MaybeResourceArg;
   resources: ResourceIndex;
 }
 
@@ -56,15 +59,22 @@ export interface CustomFieldSelectionProps extends SelectionPropsBase {
 }
 
 export interface CustomFieldWarningProps {
-  resource: Resource | Identifier | Nothing;
+  resource: MaybeResourceArg;
   field: string | undefined;
   update: UpdateFieldOrValue;
 }
 
-export interface ValueSelectionProps extends SelectionPropsBase {
-  field: string | undefined;
+interface ValueSelectionPropsBase extends SelectionPropsBase {
   value: UpdateResourceValue | undefined;
   update: UpdateFieldOrValue;
   add: UpdateFieldOrValue;
   commitSelection(): void;
+}
+
+export interface ValueSelectionProps extends ValueSelectionPropsBase {
+  field: string | undefined;
+}
+
+export interface KnownValueSelectionProps extends ValueSelectionPropsBase {
+  field: KnownField.plant_stage | KnownField.mounted_tool_id | undefined;
 }

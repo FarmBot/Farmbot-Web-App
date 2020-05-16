@@ -40,6 +40,8 @@ describe("<FarmwareConfigMenu />", () => {
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");
+    expect(mockDevice.installFirstPartyFarmware).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 
   it("1st party farmware all installed", () => {

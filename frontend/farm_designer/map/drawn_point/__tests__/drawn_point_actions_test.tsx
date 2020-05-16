@@ -44,7 +44,7 @@ describe("startNewPoint", () => {
 describe("resizePoint", () => {
   const fakeProps = (): ResizePointProps => ({
     gardenCoords: { x: 100, y: 200 },
-    drawnPoint: { cx: 100, cy: 200, r: 0 },
+    drawnPoint: { cx: 100, cy: 200, z: 0, r: 0 },
     dispatch: jest.fn(),
     isDragging: true,
     type: "point",

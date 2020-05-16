@@ -6,6 +6,11 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwareList, FarmwareListProps } from "../farmware_list";
@@ -113,10 +118,26 @@ describe("<FarmwareList />", () => {
   it("navigates to Farmware", () => {
     const p = fakeProps();
     const wrapper = shallow(<FarmwareList {...p} />);
+    expect(wrapper.find("Link").first().props().to)
+      .toEqual("/app/farmware/photos");
     wrapper.find("Link").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_FARMWARE,
       payload: "Photos"
     });
+  });
+
+  it("navigates to new Farmware", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = shallow(<FarmwareList {...p} />);
+    expect(wrapper.find("Link").first().props().to)
+      .toEqual("/app/designer/farmware/photos");
+    wrapper.find("Link").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE,
+      payload: "Photos"
+    });
+    mockDev = false;
   });
 });

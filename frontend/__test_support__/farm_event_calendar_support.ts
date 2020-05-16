@@ -2,6 +2,7 @@ import moment from "moment";
 import {
   FarmEventWithExecutable,
 } from "../farm_designer/farm_events/calendar/interfaces";
+import { CalendarDay } from "../farm_designer/interfaces";
 
 export const TIME = {
   MONDAY: moment("2017-06-19T06:30:00.000-05:00"),
@@ -29,7 +30,7 @@ export const fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
   };
 };
 
-export const calendarRows = [
+export const calendarRows: CalendarDay[] = [
   {
     "sortKey": 1500922800,
     "year": 17,
@@ -43,7 +44,7 @@ export const calendarRows = [
         "heading": "Every 4 hours",
         "executableId": 25,
         "subheading": "25",
-        "id": 79
+        "id": 79,
       },
       {
         "mmddyy": "072417",
@@ -53,7 +54,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072417",
@@ -63,7 +63,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072417",
@@ -73,7 +72,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072417",
@@ -83,7 +81,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
     ]
   },
@@ -110,7 +107,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -120,7 +116,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -130,7 +125,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -140,7 +134,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -150,7 +143,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -160,7 +152,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072517",
@@ -170,7 +161,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
     ]
   },
@@ -197,7 +187,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -207,7 +196,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -217,7 +205,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -227,7 +214,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -237,7 +223,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -247,7 +232,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
       {
         "mmddyy": "072617",
@@ -257,7 +241,6 @@ export const calendarRows = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
-        "childExecutableName": "Goto 0, 0, 0 123"
       },
     ]
   },
