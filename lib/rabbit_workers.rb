@@ -26,7 +26,6 @@ class RabbitWorker
       ThreadsWait.all_waits([
         thread { TelemetryService.new.go!(t.telemetry_channel) },
         thread { LogService.new.go!(t.log_channel) },
-        thread { Resources::Service.new.go!(t.resource_channel) },
       ])
     end
   rescue

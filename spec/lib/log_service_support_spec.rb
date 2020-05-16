@@ -39,14 +39,6 @@ describe LogService do
     expect(calls).to include(call)
   end
 
-  it "has a resource_channel" do
-    calls = Transport.current.resource_channel.calls[:bind]
-    expect(calls).to include([
-      "amq.topic",
-      { routing_key: Transport::RESOURCE_ROUTING_KEY },
-    ])
-  end
-
   it "creates new messages in the DB when called" do
     Log.destroy_all
     b4 = Log.count
