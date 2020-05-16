@@ -192,7 +192,7 @@ export class RawCreatePoints
       x: this.attr("cx"),
       y: this.attr("cy"),
       z: this.attr("z"),
-      plant_stage: "planned",
+      plant_stage: "active",
       radius: this.attr("r"),
     };
     this.props.dispatch(initSave("Point", body));

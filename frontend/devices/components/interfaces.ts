@@ -34,6 +34,7 @@ export interface BooleanMCUInputGroupProps {
   grayscale?: Record<Xyz, boolean>;
   caution?: boolean | undefined;
   displayAlert?: string | undefined;
+  disabled?: boolean;
 }
 
 export interface CalibrationRowProps {
@@ -44,6 +45,7 @@ export interface CalibrationRowProps {
   toolTip: string;
   title: DeviceSetting;
   axisTitle: string;
+  disabled?: boolean;
 }
 
 export interface NumericMCUInputGroupProps {

@@ -23,7 +23,8 @@ export function createReminderFn() {
     !alreadyChecked[version]
       // Is it up to date?
       && semverCompare(version, IDEAL_VERSION) === SemverResult.RIGHT_IS_GREATER
-      && info(t(Content.OLD_FBOS_REC_UPGRADE));
+      && info(t(Content.OLD_FBOS_REC_UPGRADE),
+        t("Please upgrade"), "blue", "", true);
 
     alreadyChecked[version] = true; // Turn off checks for this version now.
   };

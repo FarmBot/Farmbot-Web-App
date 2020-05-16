@@ -63,6 +63,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           : ToolTips.CALIBRATION_ENCODERS}
         action={axis => getDevice().calibrate({ axis })
           .catch(commandErr("Calibration"))}
+        disabled={!hasEncoders(firmwareHardware)
+          && !!globalConfig.DISABLE_EXPRESS_CALIBRATION?.includes("true")}
         hardware={hardware}
         botOnline={botOnline} />
       <CalibrationRow
