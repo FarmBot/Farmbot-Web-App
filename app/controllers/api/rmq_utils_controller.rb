@@ -53,7 +53,6 @@ module Api
       nerves_hub
       ping
       pong
-      resources_v0
       status
       status_v8
       sync
