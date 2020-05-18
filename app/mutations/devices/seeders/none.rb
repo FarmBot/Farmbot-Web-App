@@ -18,6 +18,10 @@ module Devices
       def sequences_tool_error; end
       def sequences_unmount_tool; end
       def sequences_water_plant; end
+      def point_groups_spinach; end
+      def point_groups_broccoli; end
+      def point_groups_beet; end
+      def sequences_water_all_plants; end
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_firmware; end
