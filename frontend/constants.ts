@@ -753,6 +753,9 @@ export namespace Content {
   export const IN_USE =
     trim(`Used in another resource. Protected from deletion.`);
 
+  export const INCLUDES_DEPRECATED_STEPS =
+    trim(`This sequence includes deprecated steps.`);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`Click one in the Regimens panel to edit, or click "+" to create
