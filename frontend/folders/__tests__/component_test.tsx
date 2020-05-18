@@ -58,7 +58,7 @@ import {
   setFolderColor,
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { SpecialStatus, Color } from "farmbot";
+import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
@@ -278,6 +278,18 @@ describe("<FolderListItem />", () => {
     p.inUse = true;
     const wrapper = mount(<FolderListItem {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
+  });
+
+  it("renders: in use and has bad steps", () => {
+    const p = fakeProps();
+    p.inUse = true;
+    p.sequence.body.body = [
+      { kind: "resource_update", args: {} } as unknown as SequenceBodyItem,
+    ];
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".in-use").length).toEqual(1);
+    expect(wrapper.find(".in-use").hasClass("two")).toBeTruthy();
+    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
   });
 
   it("changes color", () => {

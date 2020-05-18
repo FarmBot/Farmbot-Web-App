@@ -413,6 +413,15 @@
       right: 0;
       .fa-hdd-o {
         margin-right: 3rem;
+        &.two {
+          margin-right: 0;
+          width: 1.5rem;
+        }
+      }
+      .fa-exclamation-triangle {
+        margin-right: 3rem;
+        width: 2rem;
+        color: $orange;
       }
     }
     button {
