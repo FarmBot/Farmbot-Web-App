@@ -173,6 +173,22 @@ describe Api::DevicesController do
       device.sequences.find_by(name: "Water plant")
     end
 
+    def point_groups_spinach?(device)
+      device.point_groups.find_by(name: "Spinach plants")
+    end
+
+    def point_groups_broccoli?(device)
+      device.point_groups.find_by(name: "Broccoli plants")
+    end
+
+    def point_groups_beet?(device)
+      device.point_groups.find_by(name: "Beet plants")
+    end
+
+    def sequences_water_all_plants?(device)
+      device.sequences.find_by(name: "Water all plants")
+    end
+
     def settings_default_map_size_x?(device)
       device.web_app_config.map_size_x
     end
@@ -186,11 +202,13 @@ describe Api::DevicesController do
       device = user.device
       old_name = device.name
       expect(device.plants.count).to eq(0)
+      expect(device.sequences.count).to eq(0)
       run_jobs_now do
         post :seed, body: { product_line: "none" }.to_json
       end
       expect(response.status).to eq(200)
       expect(device.plants.count).to eq(0)
+      expect(device.sequences.count).to eq(0)
       expect(device.reload.name).to eq(old_name)
     end
 
@@ -260,6 +278,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -313,6 +335,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -366,6 +392,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -421,6 +451,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -474,6 +508,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -529,6 +567,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -578,6 +620,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
@@ -627,6 +673,10 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
     end
