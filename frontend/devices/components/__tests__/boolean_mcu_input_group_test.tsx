@@ -47,4 +47,14 @@ describe("BooleanMCUInputGroup", () => {
     const yAxisButton = wrapper.find(ToggleButton).at(Buttons.yAxis);
     expect(yAxisButton.props().grayscale).toBeFalsy();
   });
+
+  it("disables toggles", () => {
+    const p = fakeProps();
+    p.disable = { x: false, y: false, z: false };
+    p.disabled = true;
+    const wrapper = mount(<BooleanMCUInputGroup {...p} />);
+    [0, 1, 2].map(button =>
+      expect(wrapper.find(ToggleButton).at(button).props().disabled)
+        .toEqual(true));
+  });
 });

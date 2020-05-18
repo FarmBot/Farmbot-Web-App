@@ -22,7 +22,7 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
           return <Col xs={this.newFormat ? 4 : 2} key={axis}
             className={"centered-button-div"}>
             <LockableButton
-              disabled={hardwareDisabled || !botOnline}
+              disabled={this.props.disabled || hardwareDisabled || !botOnline}
               title={t(axisTitle)}
               onClick={() => action(axis)}>
               {`${t(axisTitle)} ${axis}`}

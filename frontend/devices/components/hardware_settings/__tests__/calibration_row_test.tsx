@@ -38,4 +38,16 @@ describe("<CalibrationRow />", () => {
     expect(p.action).toHaveBeenCalledTimes(3);
     ["x", "y", "z"].map(x => expect(p.action).toHaveBeenCalledWith(x));
   });
+
+  it("is disabled", () => {
+    const p = fakeProps();
+    p.botOnline = true;
+    p.hardware.encoder_enabled_x = 1;
+    p.hardware.encoder_enabled_y = 1;
+    p.hardware.encoder_enabled_z = 1;
+    p.disabled = true;
+    const result = mount(<CalibrationRow {...p} />);
+    [0, 1, 2].map(i =>
+      expect(result.find("LockableButton").at(i).props().disabled).toEqual(true));
+  });
 });
