@@ -42,6 +42,8 @@ export function Encoders(props: EncodersProps) {
         x={"encoder_enabled_x"}
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
+        disabled={!showEncoders
+          && !!globalConfig.DISABLE_EXPRESS_STALL_DETECTION?.includes("true")}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       {!showEncoders &&

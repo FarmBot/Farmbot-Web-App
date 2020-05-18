@@ -11,7 +11,7 @@ module PointGroups
     criteria
 
     optional do
-      string :sort_type
+      string :sort_type, default: "xy_ascending"
     end
 
 
@@ -25,6 +25,7 @@ module PointGroups
         PointGroupItem.transaction do
           pg = PointGroup.new(name: name,
             device: device,
+            sort_type: sort_type,
             criteria: PointGroup::DEFAULT_CRITERIA.merge(criteria || {})
           )
           add_point_group_items(pg)

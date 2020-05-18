@@ -52,6 +52,7 @@ module Devices
         TOOL_ERROR = ALL.fetch(:TOOL_ERROR)
         UNMOUNT_TOOL = ALL.fetch(:UNMOUNT_TOOL)
         WATER_PLANT = ALL.fetch(:WATER_PLANT)
+        WATER_ALL_PLANTS = ALL.fetch(:WATER_ALL_PLANTS)
       end
     end
   end
