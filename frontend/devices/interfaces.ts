@@ -149,7 +149,8 @@ export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
 export type BotPosition = Record<Xyz, (number | undefined)>;
-export type BotLocationData = Record<LocationName, BotPosition>;
+type LocationData = Record<LocationName, BotPosition>;
+export interface BotLocationData extends LocationData { load?: BotPosition }
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 

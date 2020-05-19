@@ -33,6 +33,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     </Row>
     <AxisDisplayGroup
       position={locationData.position}
+      missedSteps={locationData.load}
       label={t("Motor Coordinates (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
       getValue(BooleanSetting.scaled_encoders) &&
