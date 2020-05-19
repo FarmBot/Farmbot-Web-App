@@ -26,7 +26,7 @@ class CreateDestroyer < Mutations::Command
       end
 
       required do
-        model :device,                    class: Device
+        model :device, class: Device
         model x.resource_name, class: x.resource
       end
 
