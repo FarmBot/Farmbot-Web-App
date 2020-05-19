@@ -8,6 +8,7 @@ class RabbitWorker
     Thread.new do
       yield
     rescue => e
+      Rollbar.error(e)
       puts "Connecting to broker in #{WAIT} seconds. (#{e.inspect})"
       sleep WAIT
       retry
