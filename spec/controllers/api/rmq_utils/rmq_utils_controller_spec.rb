@@ -54,7 +54,7 @@ describe Api::RmqUtilsController do
       [:user_action, :vhost_action, :resource_action, :topic_action]
     all.map do |action|
       post action, params: { username: "admin",
-                            password: ENV.fetch("ADMIN_PASSWORD") }
+                             password: ENV.fetch("ADMIN_PASSWORD") }
       expect(response.status).to eq(200)
       expect(response.body).to include("allow")
     end
@@ -109,7 +109,7 @@ describe Api::RmqUtilsController do
 
   it "`allow`s admin users when ADMIN_PASSWORD is provided" do
     admin_params = { username: "admin",
-                    password: ENV.fetch("ADMIN_PASSWORD") }
+                     password: ENV.fetch("ADMIN_PASSWORD") }
     post :user_action, params: admin_params
     expect(response.body).to include("allow")
     expect(response.status).to eq(200)
@@ -200,8 +200,6 @@ describe Api::RmqUtilsController do
      ".logs",
      ".nerves_hub.*",
      ".nerves_hub",
-     ".resources_v0.*",
-     ".resources_v0",
      ".status.*",
      ".status",
      ".sync.*",

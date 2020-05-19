@@ -1,3 +1,5 @@
+jest.mock("../../history", () => ({ push: jest.fn() }));
+
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   save: jest.fn(),
@@ -55,6 +57,7 @@ import { DropAreaProps } from "../../draggable/interfaces";
 import { Actions } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
+import { push } from "../../history";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -73,10 +76,13 @@ describe("<SequenceEditorMiddleActive/>", () => {
     };
   };
 
-  it("saves", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(wrapper, 0, "Save * ");
+  it("saves", async () => {
+    const p = fakeProps();
+    p.dispatch = () => Promise.resolve();
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    await clickButton(wrapper, 0, "Save * ");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
+    expect(push).toHaveBeenCalledWith("/app/sequences/fake");
   });
 
   it("tests", () => {
@@ -84,7 +90,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 1, "Test");
+    clickButton(wrapper, 1, "Run");
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 

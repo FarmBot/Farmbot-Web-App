@@ -1,25 +1,27 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::PointsController do
   include Devise::Test::ControllerHelpers
-  describe '#update' do
+  describe "#update" do
     let(:device) { FactoryBot.create(:device) }
     let(:user) { FactoryBot.create(:user, device: device) }
     let!(:point) { FactoryBot.create(:generic_pointer, device: device) }
-    let(:slot) { ToolSlot.create!(x:            0,
-                                  y:            0,
-                                  z:            0,
-                                  radius:       1,
-                                  pointer_type: "ToolSlot",
-                                  device_id:  user.device.id) }
+    let(:slot) {
+      ToolSlot.create!(x: 0,
+                       y: 0,
+                       z: 0,
+                       radius: 1,
+                       pointer_type: "ToolSlot",
+                       device_id: user.device.id)
+    }
 
-    it 'updates a point' do
+    it "updates a point" do
       sign_in user
-      body  = { x:      99,
-                y:      87,
-                z:      33,
-                radius: 55,
-                meta: { foo: "BAR" } }
+      body = { x: 99,
+               y: 87,
+               z: 33,
+               radius: 55,
+               meta: { foo: "BAR" } }
       put :update, body: body.to_json, params: { format: :json, id: point.id }
       expect(response.status).to eq(200)
       expect(json[:x]).to eq(body[:x])
@@ -30,14 +32,14 @@ describe Api::PointsController do
       expect(Point.last.device).to eq(device)
     end
 
-    it 'updates a plant' do
-      point = Plant.create!(x:             0,
-                            y:             0,
-                            z:             0,
-                            radius:        1,
+    it "updates a plant" do
+      point = Plant.create!(x: 0,
+                            y: 0,
+                            z: 0,
+                            radius: 1,
                             openfarm_slug: "lettuce",
-                            device:        user.device,
-                            pointer_type:  "Plant")
+                            device: user.device,
+                            pointer_type: "Plant")
       sign_in user
       p = { id: point.id,
             x: 23,
@@ -62,7 +64,7 @@ describe Api::PointsController do
       sign_in user
       put :update,
         body: { pullout_direction: bad_dir }.to_json,
-        params: {id: slot.id, format: :json }
+        params: { id: slot.id, format: :json }
       expect(response.status).to eq(422)
       expect(slot.reload.pullout_direction).not_to eq(bad_dir)
     end
@@ -72,9 +74,31 @@ describe Api::PointsController do
       slot
       sign_in user
       put :update, body: { pullout_direction: direction }.to_json,
-        params: {id: slot.id, format: :json }
+                   params: { id: slot.id, format: :json }
       expect(response.status).to eq(200)
       expect(slot.reload.pullout_direction).to eq(direction)
+    end
+
+    it "logs failed updates" do
+      ua = "FarmbotOS/10.0.0 (host) host ()"
+      allow(request).to receive(:user_agent).and_return(ua)
+      sign_in user
+      request.env["HTTP_USER_AGENT"] = ua
+      # request.headers["Authorization"] = "bearer #{auth_token}"
+      p = FactoryBot.create(:generic_pointer, device: device)
+      expectation = [
+        "FBOS received a 422 error ",
+        "{\"x\":\"X is invalid\"} ",
+        "ERRORS: ",
+        "{\"id\":\"#{p.id}\",\"format\":\"json\",",
+        "\"controller\":\"api/points\",\"action",
+        "\":\"update\"} PARAMS: Api::PointsController\n",
+      ].join("")
+      expect do
+        body = { x: "Q" }.to_json
+        put :update, body: body, params: { id: p.id, format: :json }
+      end.to output(expectation).to_stdout
+      expect(response.status).to eq(422)
     end
   end
 end

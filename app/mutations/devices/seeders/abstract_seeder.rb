@@ -9,6 +9,11 @@ module Devices
         # PLANTS =================================
         :plants,
 
+        # GROUPS =================================
+        :point_groups_spinach,
+        :point_groups_broccoli,
+        :point_groups_beet,
+
         # PERIPHERALS ============================
         :peripherals_vacuum,
         :peripherals_water,
@@ -63,6 +68,7 @@ module Devices
         :sequences_take_photo_of_plant,
         :sequences_unmount_tool,
         :sequences_water_plant,
+        :sequences_water_all_plants,
 
         # EVERYTHING ELSE ========================
         :misc,
@@ -142,6 +148,36 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
+      def point_groups_spinach
+        add_point_group("Spinach plants", "spinach")
+      end
+
+      def point_groups_broccoli
+        add_point_group("Broccoli plants", "broccoli")
+      end
+
+      def point_groups_beet
+        add_point_group("Beet plants", "beet")
+      end
+
+      def sequences_water_all_plants
+        s = SequenceSeeds::WATER_ALL_PLANTS.deep_dup
+
+        s.dig(:body, 0, :args)[:sequence_id] = water_plant_id
+        s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:point_group_id] =
+          spinach_group_id
+
+        s.dig(:body, 1, :args)[:sequence_id] = water_plant_id
+        s.dig(:body, 1, :body, 0, :args, :data_value, :args)[:point_group_id] =
+          broccoli_group_id
+
+        s.dig(:body, 2, :args)[:sequence_id] = water_plant_id
+        s.dig(:body, 2, :body, 0, :args, :data_value, :args)[:point_group_id] =
+          beet_group_id
+
+        Sequences::Create.run!(s, device: device)
+      end
+
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_device_name; end
@@ -208,6 +244,23 @@ module Devices
                             device: device)
       end
 
+      def add_point_group(name, openfarm_slug)
+        PointGroups::Create.run!(device: device,
+                                 name: name,
+                                 point_ids: [],
+                                 sort_type: "yx_ascending",
+                                 criteria: {
+                                   string_eq: {
+                                     pointer_type: ["Plant"],
+                                     openfarm_slug: [openfarm_slug],
+                                   },
+                                   number_eq: { },
+                                    number_lt: { },
+                                   number_gt: { },
+                                   day: { op: "<", days_ago: 0 },
+                                 })
+      end
+
       def seeder_id
         @seeder_id ||= device.tools.find_by!(name: ToolNames::SEEDER).id
       end
@@ -218,6 +271,22 @@ module Devices
 
       def tool_error_id
         @tool_error_id ||= device.sequences.find_by!(name: "Tool error").id
+      end
+
+      def water_plant_id
+        @water_plant_id ||= device.sequences.find_by!(name: "Water plant").id
+      end
+
+      def spinach_group_id
+        @spinach_group_id ||= device.point_groups.find_by!(name: "Spinach plants").id
+      end
+
+      def broccoli_group_id
+        @broccoli_group_id ||= device.point_groups.find_by!(name: "Broccoli plants").id
+      end
+
+      def beet_group_id
+        @beet_group_id ||= device.point_groups.find_by!(name: "Beet plants").id
       end
 
       def water_id

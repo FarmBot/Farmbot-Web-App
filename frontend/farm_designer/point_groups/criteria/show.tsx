@@ -153,7 +153,7 @@ export const DaySelection = (props: DaySelectionProps) => {
 
 /** Edit number < and > criteria. */
 export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
-  const { group, dispatch, criteriaKey, pointerType } = props;
+  const { group, dispatch, criteriaKey } = props;
   const gtCriteria = props.group.body.criteria.number_gt;
   const ltCriteria = props.group.body.criteria.number_lt;
   return <Row>
@@ -164,7 +164,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
         defaultValue={gtCriteria[criteriaKey]}
         disabled={props.disabled}
         onBlur={e => dispatch(editGtLtCriteriaField(
-          group, "number_gt", criteriaKey, pointerType)(e))} />
+          group, "number_gt", criteriaKey)(e))} />
     </Col>
     <Col xs={1}>
       <p>{"<"}</p>
@@ -182,7 +182,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
         defaultValue={ltCriteria[criteriaKey]}
         disabled={props.disabled}
         onBlur={e => dispatch(editGtLtCriteriaField(
-          group, "number_lt", criteriaKey, pointerType)(e))} />
+          group, "number_lt", criteriaKey)(e))} />
     </Col>
   </Row>;
 };

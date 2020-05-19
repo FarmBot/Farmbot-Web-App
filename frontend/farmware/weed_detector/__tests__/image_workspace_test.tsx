@@ -91,7 +91,7 @@ describe("<ImageWorkspace />", () => {
     p.botOnline = true;
     p.images = [image];
     const wrapper = mount(<ImageWorkspace {...p} />);
-    clickButton(wrapper, 0, "scan image");
+    clickButton(wrapper, 0, "scan current image");
     expect(p.onProcessPhoto).toHaveBeenCalledWith(image.body.id);
   });
 

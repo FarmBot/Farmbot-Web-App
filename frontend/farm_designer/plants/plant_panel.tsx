@@ -4,7 +4,7 @@ import { round } from "../map/util";
 import { history } from "../../history";
 import { BlurableInput, Row, Col } from "../../ui";
 import { PlantOptions } from "../interfaces";
-import { PlantStage } from "farmbot";
+import { PlantStage, Xyz } from "farmbot";
 import { Moment } from "moment";
 import moment from "moment";
 import { Actions } from "../../constants";
@@ -51,19 +51,19 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
 };
 
 export interface EditPlantLocationProps extends EditPlantProperty {
-  xyLocation: Record<"x" | "y", number>;
+  plantLocation: Record<Xyz, number>;
 }
 
 export const EditPlantLocation = (props: EditPlantLocationProps) => {
-  const { xyLocation, updatePlant, uuid } = props;
+  const { plantLocation, updatePlant, uuid } = props;
   return <Row>
-    {["x", "y"].map((axis: "x" | "y") =>
-      <Col xs={6} key={axis}>
+    {["x", "y", "z"].map((axis: Xyz) =>
+      <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
-          value={xyLocation[axis]}
-          min={0}
+          value={plantLocation[axis]}
+          min={axis == "z" ? undefined : 0}
           onCommit={e => updatePlant(uuid, {
             [axis]: round(parseIntInput(e.currentTarget.value))
           })} />
@@ -71,11 +71,30 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
   </Row>;
 };
 
-const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
+export interface EditPlantRadiusProps extends EditPlantProperty {
+  radius: number;
+}
+
+export const EditPlantRadius = (props: EditPlantRadiusProps) =>
+  <Row>
+    <Col xs={6}>
+      <label style={{ marginTop: 0 }}>{t("diameter (mm)")}</label>
+      <BlurableInput
+        type="number"
+        name="radius"
+        value={props.radius * 2}
+        min={0}
+        onCommit={e => props.updatePlant(props.uuid, {
+          radius: parseIntInput(e.currentTarget.value) / 2
+        })} />
+    </Col>
+  </Row>;
+
+const chooseLocation = (to: Record<Xyz, number | undefined>) =>
   (dispatch: Function): Promise<void> => {
     dispatch({
       type: Actions.CHOOSE_LOCATION,
-      payload: { x: to.x, y: to.y, z: undefined }
+      payload: { x: to.x, y: to.y, z: to.z }
     });
     return Promise.resolve();
   };
@@ -83,6 +102,7 @@ const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
 interface MoveToPlantProps {
   x: number;
   y: number;
+  z: number;
   dispatch: Function;
 }
 
@@ -90,8 +110,9 @@ const MoveToPlant = (props: MoveToPlantProps) =>
   <button className="fb-button gray no-float"
     style={{ marginTop: "1rem" }}
     title={t("Move to this plant")}
-    onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
-      .then(() => history.push("/app/designer/move_to"))}>
+    onClick={() =>
+      props.dispatch(chooseLocation({ x: props.x, y: props.y, z: props.z }))
+        .then(() => history.push("/app/designer/move_to"))}>
     {t("Move FarmBot to this plant")}
   </button>;
 
@@ -141,8 +162,9 @@ export function PlantPanel(props: PlantPanelProps) {
     info, onDestroy, updatePlant, dispatch, inSavedGarden, timeSettings
   } = props;
   const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
-  const { x, y } = info;
+  const { x, y, z } = info;
   const destroy = () => onDestroy(uuid);
+  const commonProps = { uuid, updatePlant };
   return <DesignerPanelContent panelName={"plants"}>
     <label>
       {t("Plant Info")}
@@ -159,11 +181,9 @@ export function PlantPanel(props: PlantPanelProps) {
         <Row>
           <Col xs={7}>
             <ListItem name={t("Started")}>
-              <EditDatePlanted
-                uuid={uuid}
+              <EditDatePlanted {...commonProps}
                 datePlanted={plantedAt}
-                timeSettings={timeSettings}
-                updatePlant={updatePlant} />
+                timeSettings={timeSettings} />
             </ListItem>
           </Col>
           <Col xs={5}>
@@ -173,17 +193,15 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
         </Row>}
       <ListItem name={t("Location")}>
-        <EditPlantLocation uuid={uuid}
-          xyLocation={{ x, y }}
-          updatePlant={updatePlant} />
+        <EditPlantLocation {...commonProps} plantLocation={{ x, y, z }} />
       </ListItem>
-      <MoveToPlant x={x} y={y} dispatch={dispatch} />
+      <ListItem name={t("Size")}>
+        <EditPlantRadius  {...commonProps} radius={info.radius} />
+      </ListItem>
+      <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Status")}>
         {(!inSavedGarden)
-          ? <EditPlantStatus
-            uuid={uuid}
-            plantStatus={plantStatus}
-            updatePlant={updatePlant} />
+          ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
       {Object.entries(info.meta || []).map(([key, value]) => {

@@ -5,7 +5,6 @@ import { Filters } from "../interfaces";
 import { startCase } from "lodash";
 import { MESSAGE_TYPES, MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
-import { Feature, ShouldDisplay } from "../../devices/interfaces";
 
 const MENU_ORDER: string[] = [
   MessageType.success,
@@ -26,11 +25,9 @@ const menuSort = (a: string, b: string) =>
 
 /** Get log filter keys from LogsState. */
 export const filterStateKeys =
-  (state: LogsState, shouldDisplay: ShouldDisplay) =>
+  (state: LogsState) =>
     Object.keys(state)
-      .filter(key => !["autoscroll", "markdown", "searchTerm"].includes(key))
-      .filter(key => shouldDisplay(Feature.assertion_block)
-        || key !== "assertion");
+      .filter(key => !["autoscroll", "markdown", "searchTerm"].includes(key));
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */
@@ -56,7 +53,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         {t("normal")}
       </button>
     </fieldset>
-    {filterStateKeys(props.state, props.shouldDisplay).sort(menuSort)
+    {filterStateKeys(props.state).sort(menuSort)
       .map((logType: keyof Filters) =>
         <fieldset key={logType}>
           <label>

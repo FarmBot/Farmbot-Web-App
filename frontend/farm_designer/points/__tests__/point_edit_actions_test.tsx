@@ -11,9 +11,11 @@ import {
   EditPointColor, EditPointColorProps, updatePoint, EditPointName,
   EditPointNameProps,
   AdditionalWeedProperties,
-  EditPointPropertiesProps,
+  AdditionalWeedPropertiesProps,
 } from "../point_edit_actions";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePoint, fakeWeed,
+} from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";
 
 describe("updatePoint()", () => {
@@ -50,7 +52,7 @@ describe("<EditPointName />", () => {
 describe("<EditPointLocation />", () => {
   const fakeProps = (): EditPointLocationProps => ({
     updatePoint: jest.fn(),
-    xyLocation: { x: 1, y: 2 },
+    pointLocation: { x: 1, y: 2, z: 0 },
   });
 
   it("edits location", () => {
@@ -75,7 +77,7 @@ describe("<EditPointRadius />", () => {
     wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: 300 }
     });
-    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 300 });
+    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 150 });
   });
 });
 
@@ -94,8 +96,8 @@ describe("<EditPointColor />", () => {
 });
 
 describe("<AdditionalWeedProperties />", () => {
-  const fakeProps = (): EditPointPropertiesProps => ({
-    point: fakePoint(),
+  const fakeProps = (): AdditionalWeedPropertiesProps => ({
+    point: fakeWeed(),
     updatePoint: jest.fn(),
   });
 

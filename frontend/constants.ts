@@ -75,34 +75,34 @@ export namespace ToolTips {
 
   // Hardware Settings: Homing and Calibration
   export const HOMING_ENCODERS =
-    trim(`If encoders or end-stops are enabled, home axis (find zero).`);
+    trim(`If encoders or limit switches are enabled, home axis (find zero).`);
 
   export const HOMING_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, home axis
+    trim(`If stall detection or limit switches are enabled, home axis
     (find zero).`);
 
   export const CALIBRATION_ENCODERS =
-    trim(`If encoders or end-stops are enabled, home axis and determine
+    trim(`If encoders or limit switches are enabled, home axis and determine
     maximum.`);
 
   export const CALIBRATION_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, home axis and
+    trim(`If stall detection or limit switches are enabled, home axis and
     determine maximum.`);
 
   export const SET_ZERO_POSITION =
     trim(`Set the current location as zero.`);
 
   export const FIND_HOME_ON_BOOT_ENCODERS =
-    trim(`If encoders or end-stops are enabled, find the home position
+    trim(`If encoders or limit switches are enabled, find the home position
     when the device powers on. Warning! This will perform homing on all
-    axes when the device powers on. Encoders or endstops must be enabled.
+    axes when the device powers on. Encoders or limit switches must be enabled.
     It is recommended to make sure homing works properly before enabling
     this feature. (default: disabled)`);
 
   export const FIND_HOME_ON_BOOT_STALL_DETECTION =
-    trim(`If stall detection or end-stops are enabled, find the home
+    trim(`If stall detection or limit switches are enabled, find the home
     position when the device powers on. Warning! This will perform homing
-    on all axes when the device powers on. Stall detection or endstops
+    on all axes when the device powers on. Stall detection or limit switches
     must be enabled. It is recommended to make sure homing works properly
     before enabling this feature. (default: disabled)`);
 
@@ -198,14 +198,14 @@ export namespace ToolTips {
 
   // Hardware Settings: Endstops
   export const ENABLE_ENDSTOPS =
-    trim(`Enable use of electronic end-stops for end detection,
+    trim(`Enable use of electronic limit switches for end detection,
     calibration and homing. (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
-    trim(`Swap axis minimum and maximum end-stops. (default: disabled)`);
+    trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
 
   export const INVERT_ENDPOINTS =
-    trim(`Invert axis end-stops. Enable for normally closed (NC),
+    trim(`Invert axis limit switches. Enable for normally closed (NC),
     disable for normally open (NO). (default: disabled)`);
 
   // Hardware Settings: Error Handling
@@ -310,11 +310,11 @@ export namespace ToolTips {
 
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
-    command (using encoders, stall detection, or endstops) to find and set
+    command (using encoders, stall detection, or limit switches) to find and set
     zero for the chosen axis or axes.`);
 
   export const CALIBRATE =
-    trim(`If encoders, stall detection, or end-stops are enabled,
+    trim(`If encoders, stall detection, or limit switches are enabled,
     home axis and determine maximum.`);
 
   export const IF =
@@ -346,10 +346,7 @@ export namespace ToolTips {
     trim(`The Mark As step allows FarmBot to programmatically edit the
     properties of the UTM, plants, and weeds from within a sequence.
     For example, you can mark a plant as "planted" during a seeding
-    sequence or delete a weed after removing it.`);
-
-  export const REBOOT =
-    trim(`Power cycle FarmBot's onboard computer.`);
+    sequence or mark a weed as "removed" after removing it.`);
 
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle. An angle of 90 degrees
@@ -361,6 +358,9 @@ export namespace ToolTips {
 
   export const MOVE_TO_HOME =
     trim(`Move FarmBot to home for the provided axis.`);
+
+  export const ASSERTION =
+    trim(`Evaluate Lua commands. For power users and software developers.`);
 
   export const FIRMWARE_ACTION =
     trim(`FarmBot OS or micro-controller firmware action.`);
@@ -737,11 +737,24 @@ export namespace Content {
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
-    encoders, stall detection, or endstops enabled for the chosen axis.
-    Enable endstops, encoders, or stall detection from the Device page for: `);
+    encoders, stall detection, or limit switches enabled for the chosen axis.
+    Enable limit switches, encoders, or stall detection from the Device page
+    for: `);
+
+  export const REBOOT_STEP =
+    trim(`Power cycle FarmBot's onboard computer.`);
+
+  export const SHUTDOWN_STEP =
+    trim(`Power down FarmBot's onboard computer.`);
+
+  export const ESTOP_STEP =
+    trim(`Unlocking a device requires user intervention.`);
 
   export const IN_USE =
     trim(`Used in another resource. Protected from deletion.`);
+
+  export const INCLUDES_DEPRECATED_STEPS =
+    trim(`This sequence includes deprecated steps.`);
 
   // Regimens
   export const NO_REGIMEN_SELECTED =
@@ -792,6 +805,15 @@ export namespace Content {
 
   export const NO_WEEDS =
     trim(`Press "+" to add a weed.`);
+
+  export const NO_FARMWARE =
+    trim(`Press "+" to add a Farmware.`);
+
+  export const NO_PERIPHERALS =
+    trim(`Press "edit" to add a peripheral.`);
+
+  export const NO_SENSORS =
+    trim(`Press "edit" to add a sensor.`);
 
   export const NO_ZONES =
     trim(`Press "+" to add a zone.`);
@@ -923,6 +945,8 @@ export namespace TourContent {
 }
 
 export enum DeviceSetting {
+  axisHeadingLabels = ``,
+
   // Homing and calibration
   homingAndCalibration = `Homing and Calibration`,
   homing = `Homing`,
@@ -961,10 +985,10 @@ export enum DeviceSetting {
   encoderScaling = `Encoder Scaling`,
 
   // Endstops
-  endstops = `Endstops`,
-  enableEndstops = `Enable Endstops`,
-  swapEndstops = `Swap Endstops`,
-  invertEndstops = `Invert Endstops`,
+  endstops = `Limit switches`,
+  enableEndstops = `Enable limit switches`,
+  swapEndstops = `Swap limit switches`,
+  invertEndstops = `Invert limit switches`,
 
   // Error handling
   errorHandling = `Error Handling`,
@@ -974,6 +998,11 @@ export enum DeviceSetting {
 
   // Pin Guard
   pinGuard = `Pin Guard`,
+  pinGuard1 = `Pin Guard 1`,
+  pinGuard2 = `Pin Guard 2`,
+  pinGuard3 = `Pin Guard 3`,
+  pinGuard4 = `Pin Guard 4`,
+  pinGuard5 = `Pin Guard 5`,
 
   // Danger Zone
   dangerZone = `Danger Zone`,
@@ -981,6 +1010,8 @@ export enum DeviceSetting {
 
   // Pin Bindings
   pinBindings = `Pin Bindings`,
+  savedPinBindings = `Saved pin bindings`,
+  addNewPinBinding = `Add new pin binding`,
 
   // FarmBot OS
   farmbot = `FarmBot`,
@@ -1131,6 +1162,7 @@ export enum Actions {
   SET_DRAWN_WEED_DATA = "SET_DRAWN_WEED_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
+  SET_SETTINGS_SEARCH_TERM = "SET_SETTINGS_SEARCH_TERM",
   EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",
 
   // Regimens

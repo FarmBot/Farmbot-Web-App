@@ -81,6 +81,7 @@ export enum Feature {
   ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",
   sensors = "sensors",
+  update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",
 }
@@ -188,6 +189,8 @@ export interface McuInputBoxProps {
   scale?: number;
   filter?: number;
   gray?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export interface EStopButtonProps {
@@ -229,6 +232,19 @@ export interface FarmwareProps {
   taggedFarmwareInstallations: TaggedFarmwareInstallation[];
   imageJobs: JobProgress[];
   infoOpen: boolean;
+}
+
+export interface WeedDetectorProps {
+  dispatch: Function;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
+  images: TaggedImage[];
+  currentImage: TaggedImage | undefined;
+  botToMqttStatus: NetworkState;
+  timeSettings: TimeSettings;
+  syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }
 
 export interface HardwareSettingsProps {

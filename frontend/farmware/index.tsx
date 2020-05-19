@@ -124,7 +124,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
     return isBotOnline(this.props.syncStatus, this.props.botToMqttStatus);
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (window.innerWidth > 450) {
       this.props.dispatch({
         type: Actions.SELECT_FARMWARE,

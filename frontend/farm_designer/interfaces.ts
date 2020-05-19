@@ -125,6 +125,7 @@ export interface DesignerState {
   openedSavedGarden: string | undefined;
   tryGroupSortType: PointGroupSortType | "nn" | undefined;
   editGroupAreaInMap: boolean;
+  settingsSearchTerm: string;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -161,6 +162,7 @@ export interface CalendarOccurrence {
   subheading?: string | undefined;
   executableId: number;
   id: number;
+  color?: string;
 }
 
 /** A group of FarmEvents for a particular day on the calendar. */
@@ -291,6 +293,7 @@ export interface DrawnPointPayl {
   name?: string;
   cx: number;
   cy: number;
+  z: number;
   r: number;
   color?: string;
 }
@@ -299,6 +302,7 @@ export interface DrawnWeedPayl {
   name?: string;
   cx: number;
   cy: number;
+  z: number;
   r: number;
   color?: string;
 }

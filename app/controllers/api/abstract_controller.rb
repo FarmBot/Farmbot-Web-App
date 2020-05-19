@@ -90,6 +90,7 @@ module Api
         render json: collection
       end
     end
+
     private
 
     def clean_expired_farm_events
@@ -172,11 +173,21 @@ module Api
       render json: { error: msg }, status: status
     end
 
+    TPL = "FBOS received a 422 error %s ERRORS: %s PARAMS: %s"
+
     def mutate(outcome, options = {})
       if outcome.success?
         render options.merge(json: outcome.result)
       else
-        render options.merge(json: outcome.errors.message, status: 422)
+        e = outcome.errors.message
+        when_farmbot_os do
+          puts TPL % [
+            e.to_json,
+            params.to_json,
+            self.class.inspect,
+          ]
+        end
+        render options.merge(json: e, status: 422)
       end
     end
 
@@ -215,9 +226,13 @@ module Api
       end
     end
 
+    def is_fbos?
+      FbosDetector.pretty_ua(request).include?(FbosDetector::FARMBOT_UA_STRING)
+    end
+
     # Conditionally execute a block when the request was made by a FarmBot
     def when_farmbot_os
-      yield if FbosDetector.pretty_ua(request).include?(FbosDetector::FARMBOT_UA_STRING)
+      yield if is_fbos?
     end
 
     # Devices have a `last_saw_api` field to assist users with debugging.

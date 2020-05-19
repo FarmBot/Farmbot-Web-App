@@ -1,5 +1,12 @@
 jest.mock("../../actions", () => ({
   toggleControlPanel: jest.fn(),
+  bulkToggleControlPanel: jest.fn(),
+}));
+
+import { fakeState } from "../../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../../redux/store", () => ({
+  store: { getState: () => mockState },
 }));
 
 import * as React from "react";
@@ -9,7 +16,7 @@ import {
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
 import { panelState } from "../../../__test_support__/control_panel_state";
-import { toggleControlPanel } from "../../actions";
+import { toggleControlPanel, bulkToggleControlPanel } from "../../actions";
 
 describe("<Highlight />", () => {
   const fakeProps = (): HighlightProps => ({
@@ -24,6 +31,24 @@ describe("<Highlight />", () => {
     wrapper.setState({ className: "highlight" });
     wrapper.instance().componentDidMount();
     expect(wrapper.state().className).toEqual("unhighlight");
+  });
+
+  it("doesn't hide: no search term", () => {
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
+  it("doesn't hide: matches search term", () => {
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "motor";
+    const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
+  it("hides", () => {
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "encoder";
+    const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(true);
   });
 });
 
@@ -77,5 +102,12 @@ describe("maybeOpenPanel()", () => {
     location.search = "";
     maybeOpenPanel(panelState())(jest.fn());
     expect(toggleControlPanel).not.toHaveBeenCalled();
+  });
+
+  it("closes other panels", () => {
+    location.search = "?highlight=motors";
+    maybeOpenPanel(panelState(), true)(jest.fn());
+    expect(toggleControlPanel).toHaveBeenCalledWith("motors");
+    expect(bulkToggleControlPanel).toHaveBeenCalledWith(false, true);
   });
 });

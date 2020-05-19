@@ -37,6 +37,7 @@ module Devices
       real_stuff = QUERIES.reduce({}) do |acc, (key, value)|
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
+      device.update!(last_saw_api: Time.now)
       real_stuff.merge({ first_party_farmwares: STUB_FARMWARES })
     end
   end

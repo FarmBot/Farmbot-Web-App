@@ -9,7 +9,6 @@ import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
 } from "../../resources/sequence_meta";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
-import { Feature } from "../../devices/interfaces";
 import { DefaultValueForm } from "./default_value_form";
 import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
@@ -49,13 +48,12 @@ export const LocationForm =
     const { celeryNode, dropdown, vector } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
-    const displayVariables = props.shouldDisplay(Feature.variables) &&
-      allowedVariableNodes !== AllowedVariableNodes.variable;
+    const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
     const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const displayGroups = props.shouldDisplay(Feature.groups) && !hideGroups;
+    const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, variableListItems, displayGroups);
     const list = props.customFilterRule ?
       unfiltered.filter(props.customFilterRule) : unfiltered;
@@ -66,8 +64,9 @@ export const LocationForm =
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
     }
-    const formTitleWithType =
-      props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
+    const formTitleWithType = props.hideVariableLabel
+      ? t("Location variable")
+      : `${label} (${t("Location variable")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;
     return <div className="location-form">
       {!props.hideHeader &&

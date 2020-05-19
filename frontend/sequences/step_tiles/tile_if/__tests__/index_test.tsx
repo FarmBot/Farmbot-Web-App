@@ -76,8 +76,23 @@ describe("LHSOptions()", () => {
 describe("<InnerIf />", () => {
   it("renders", () => {
     const wrapper = mount(<InnerIf {...fakeProps()} />);
-    ["Variable", "Operator", "Value", "Then Execute", "Else Execute"].map(string =>
-      expect(wrapper.text()).toContain(string));
+    const inputs = wrapper.find("input");
+    const labels = wrapper.find("label");
+    const buttons = wrapper.find("button");
+    expect(inputs.length).toEqual(2);
+    expect(labels.length).toEqual(5);
+    expect(buttons.length).toEqual(4);
+    expect(inputs.first().props().placeholder).toEqual("If ...");
+    expect(labels.at(0).text()).toEqual("Variable");
+    expect(buttons.at(0).text()).toEqual("Pin 0");
+    expect(labels.at(1).text()).toEqual("Operator");
+    expect(buttons.at(1).text()).toEqual("is");
+    expect(labels.at(2).text()).toEqual("Value");
+    expect(inputs.at(1).props().value).toEqual(0);
+    expect(labels.at(3).text()).toEqual("Then Execute");
+    expect(buttons.at(2).text()).toEqual("None");
+    expect(labels.at(4).text()).toEqual("Else Execute");
+    expect(buttons.at(3).text()).toEqual("None");
   });
 
   it("is recursive", () => {

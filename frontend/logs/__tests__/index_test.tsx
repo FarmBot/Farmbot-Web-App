@@ -3,7 +3,6 @@ const mockStorj: Dictionary<number | boolean> = {};
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { RawLogs as Logs } from "../index";
-import { ToolTips } from "../../constants";
 import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
@@ -33,7 +32,7 @@ describe("<Logs />", () => {
 
   it("renders", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
-    ["Logs", ToolTips.LOGS, "Type", "Message", "Time", "Info",
+    ["Logs", "Type", "Message", "Time", "Info",
       "Fake log message 1", "Success", "Fake log message 2"]
       .map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
@@ -117,7 +116,6 @@ describe("<Logs />", () => {
 
   it("shows filtered overall filter status", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<Logs {...p} />);
     const state = fakeLogsState();
     state.assertion = 2;
@@ -129,10 +127,9 @@ describe("<Logs />", () => {
 
   it("shows unfiltered overall filter status", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
     const wrapper = mount(<Logs {...p} />);
     const state = fakeLogsState();
-    state.assertion = 2;
+    state.assertion = 3;
     wrapper.setState(state);
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filter");

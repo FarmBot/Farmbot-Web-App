@@ -28,7 +28,7 @@ export const RegimenBackButton = (props: RegimenBackButtonProps) => {
 };
 
 export class RawRegimens extends React.Component<Props, {}> {
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (!this.props.current) { setActiveRegimenByName(); }
   }
 

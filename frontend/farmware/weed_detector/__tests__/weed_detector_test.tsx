@@ -52,7 +52,7 @@ describe("<WeedDetector />", () => {
       "SATURATION025550255",
       "VALUE025550255",
       "Processing Parameters",
-      "Scan image",
+      "Scan current image",
     ].map(string =>
       expect(wrapper.text()).toContain(string));
   });

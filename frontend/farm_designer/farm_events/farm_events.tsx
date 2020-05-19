@@ -47,8 +47,8 @@ export class PureFarmEvents
           ? <p style={{ color: "gray" }}> {occur.heading} </p>
           : <p />;
 
-        return <div
-          className="farm-event-data-block"
+        return <div className={`farm-event-data-block ${
+          occur.color == "gray" ? "" : occur.color}`}
           key={`${occur.sortKey}.${index}`}>
           <div className="farm-event-data-time">
             {occur.timeStr}

@@ -33,7 +33,7 @@ describe("<MoveTo />", () => {
   it("moves to location: bot's current z value", () => {
     const wrapper = mount(<MoveTo {...fakeProps()} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 30 });
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("goes back", () => {

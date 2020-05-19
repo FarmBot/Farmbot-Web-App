@@ -7,19 +7,19 @@ import {
   fakePlant,
   fakePlantTemplate,
   fakeSavedGarden,
-  fakePoint,
   fakeWebAppConfig,
   fakeFarmwareEnv,
   fakeSensorReading,
   fakeFirmwareConfig,
+  fakeWeed,
+  fakeTool,
+  fakePeripheral,
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
 import { DevSettings } from "../../account/dev/dev_support";
 
 describe("mapStateToProps()", () => {
-  const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
-
   it("hovered plantUUID is undefined", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.hoveredPlant = {
@@ -30,15 +30,27 @@ describe("mapStateToProps()", () => {
 
   it("peripherals pins have correct states", () => {
     const state = fakeState();
+    const peripheral1 = fakePeripheral();
+    peripheral1.body.pin = 13;
+    peripheral1.body.label = "LED";
+    const peripheral2 = fakePeripheral();
+    peripheral2.body.pin = undefined;
+    peripheral2.body.label = "none";
+    state.resources = buildResourceIndex([
+      fakeDevice(), peripheral1, peripheral2,
+    ]);
     function checkValue(input: number, value: boolean) {
       state.bot.hardware.pins = { 13: { value: input, mode: 0 } };
       const peripheralPin = mapStateToProps(state).peripherals[0];
+      expect(peripheralPin.label).toEqual("LED");
       expect(peripheralPin.value).toEqual(value);
     }
     checkValue(0, false);
     checkValue(-1, false);
     checkValue(1, true);
     checkValue(2, true);
+    expect(mapStateToProps(state).peripherals[1])
+      .toEqual({ label: "none", value: false });
   });
 
   it("returns selected plant", () => {
@@ -50,36 +62,34 @@ describe("mapStateToProps()", () => {
       expect.objectContaining({ uuid: plantUuid }));
   });
 
-  it("returns all genericPoints", () => {
+  it("returns all weeds", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = true;
-    const point1 = fakePoint();
-    point1.body.discarded_at = undefined;
-    const point2 = fakePoint();
-    point2.body.discarded_at = DISCARDED_AT;
-    const point3 = fakePoint();
-    point3.body.discarded_at = DISCARDED_AT;
+    const point1 = fakeWeed();
+    const point2 = fakeWeed();
+    point2.body.plant_stage = "removed";
+    const point3 = fakeWeed();
+    point3.body.plant_stage = "removed";
     state.resources = buildResourceIndex([
       webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
-    expect(mapStateToProps(state).genericPoints.length).toEqual(3);
+    expect(mapStateToProps(state).weeds.length).toEqual(3);
   });
 
-  it("returns active genericPoints", () => {
+  it("returns active weeds", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = false;
-    const point1 = fakePoint();
-    point1.body.discarded_at = undefined;
-    const point2 = fakePoint();
-    point2.body.discarded_at = DISCARDED_AT;
-    const point3 = fakePoint();
-    point3.body.discarded_at = DISCARDED_AT;
+    const point1 = fakeWeed();
+    const point2 = fakeWeed();
+    point2.body.plant_stage = "removed";
+    const point3 = fakeWeed();
+    point3.body.plant_stage = "removed";
     state.resources = buildResourceIndex([
       webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
-    expect(mapStateToProps(state).genericPoints.length).toEqual(1);
+    expect(mapStateToProps(state).weeds.length).toEqual(1);
   });
 
   it("returns sensor readings", () => {
@@ -95,6 +105,17 @@ describe("mapStateToProps()", () => {
       expect.objectContaining({ uuid: uuid2 }),
       expect.objectContaining({ uuid: uuid1 }),
     ]);
+  });
+
+  it("returns mounted tool name", () => {
+    const state = fakeState();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    tool.body.name = "fake tool";
+    const device = fakeDevice();
+    device.body.mounted_tool_id = 1;
+    state.resources = buildResourceIndex([tool, device]);
+    expect(mapStateToProps(state).mountedToolName).toEqual(tool.body.name);
   });
 });
 

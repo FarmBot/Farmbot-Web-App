@@ -8,6 +8,18 @@ jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 jest.mock("../actions", () => ({ retryFetchPackageName: jest.fn() }));
 
+jest.mock("../../history", () => ({
+  history: {
+    push: jest.fn(),
+    getCurrentLocation: jest.fn(() => ({ pathname: "" })),
+  }
+}));
+
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
@@ -19,6 +31,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
+import { history } from "../../history";
 
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => {
@@ -88,6 +101,16 @@ describe("<FarmwareInfo />", () => {
     const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
+    expect(history.push).toHaveBeenCalledWith("/app/farmware");
+  });
+
+  it("removes Farmware and redirects", () => {
+    mockDev = true;
+    const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/farmware");
+    mockDev = false;
   });
 
   it("doesn't remove Farmware", () => {

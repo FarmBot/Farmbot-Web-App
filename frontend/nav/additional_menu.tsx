@@ -30,7 +30,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       </a>
     </div>
     <div className="app-version">
-      <label>{t("VERSION")}</label>:&nbsp;
+      <label>{t("APP VERSION")}</label>:&nbsp;
       <a href={ExternalUrl.webAppRepo} target="_blank">
         {shortRevision().slice(0, 8)}
       </a>

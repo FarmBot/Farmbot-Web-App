@@ -958,6 +958,37 @@ ul {
       color: $panel_yellow;
     }
   }
+  &.farmware {
+    p,
+    h5,
+    a {
+      color: $panel_gray;
+    }
+  }
+  &.peripherals {
+    img {
+      margin-top: 0;
+      max-width: 20rem;
+    }
+    p,
+    h5,
+    a {
+      color: $dark_gray;
+    }
+  }
+  &.sensors {
+    img {
+      margin-top: 0;
+      max-width: 20rem;
+      filter: grayscale(1);
+      padding: 1rem;
+    }
+    p,
+    h5,
+    a {
+      color: $dark_gray;
+    }
+  }
   &.points {
     p,
     h5,
@@ -1311,6 +1342,50 @@ ul {
   }
   button {
     position: absolute;
+  }
+}
+
+.update-resource-step {
+  .update-resource-step-resource {
+    margin-bottom: 1rem;
+  }
+  .update-resource-pair {
+    margin-top: 0;
+    margin-right: -2rem;
+    div[class*=col-] {
+      padding: 0;
+      padding-right: 2rem;
+    }
+    .custom-meta-field {
+      position: relative;
+      input {
+        height: 3rem;
+      }
+      .fa-undo {
+        position: absolute;
+        top: 0.65rem;
+        right: 0.5rem;
+        color: $medium_light_gray;
+        &:hover {
+          color: $dark_gray;
+        }
+      }
+    }
+    .custom-field-warning {
+      display: inline-block;
+      margin-top: 0.5rem;
+      i,
+      p {
+        display: inline;
+        cursor: default !important;
+        margin-right: 0.5rem;
+        color: $darkest_red;
+      }
+      .did-you-mean {
+        cursor: pointer !important;
+        font-weight: bold;
+      }
+    }
   }
 }
 

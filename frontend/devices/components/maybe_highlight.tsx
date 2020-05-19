@@ -1,4 +1,5 @@
 import * as React from "react";
+import { store } from "../../redux/store";
 import { ControlPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
@@ -56,6 +57,11 @@ const ERROR_HANDLING_PANEL = [
 ];
 const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard,
+  DeviceSetting.pinGuard1,
+  DeviceSetting.pinGuard2,
+  DeviceSetting.pinGuard3,
+  DeviceSetting.pinGuard4,
+  DeviceSetting.pinGuard5,
 ];
 const DANGER_ZONE_PANEL = [
   DeviceSetting.dangerZone,
@@ -63,6 +69,8 @@ const DANGER_ZONE_PANEL = [
 ];
 const PIN_BINDINGS_PANEL = [
   DeviceSetting.pinBindings,
+  DeviceSetting.savedPinBindings,
+  DeviceSetting.addNewPinBinding,
 ];
 const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,
@@ -183,6 +191,7 @@ export interface HighlightProps {
   | (React.ReactChild | false)[]
   | (React.ReactChild | React.ReactChild[])[];
   className?: string;
+  searchTerm?: string;
 }
 
 interface HighlightState {
@@ -200,11 +209,19 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     }
   }
 
+  get searchTerm() {
+    const { resources } = store.getState();
+    return resources.consumers.farm_designer.settingsSearchTerm;
+  }
+
   render() {
+    const show = !this.searchTerm ||
+      this.props.settingName.toLowerCase().includes(this.searchTerm);
     return <div className={[
       this.props.className,
       this.state.className,
-    ].join(" ")}>
+    ].join(" ")}
+      hidden={!show}>
       {this.props.children}
     </div>;
   }

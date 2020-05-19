@@ -104,10 +104,19 @@ export enum FbosVersionFallback {
   NULL = "0.0.0",
 }
 
+const fallbackData: MinOsFeatureLookup = {
+  [Feature.api_farmware_env]: "8.0.0",
+  [Feature.api_farmware_installations]: "8.0.0",
+  [Feature.criteria_groups]: "9.2.2",
+  [Feature.update_resource]: "10.0.0",
+  [Feature.boot_sequence]: MinVersionOverride.NEVER,
+};
+
 /**
  * Determine whether a feature should be displayed based on
  * the user's current FBOS version. Min FBOS version feature data is pulled
  * from an external source to allow App and FBOS development flexibility.
+ * Device-less accounts can use features compatible with supported versions.
  *
  * @param current installed OS version string to compare against data ("0.0.0")
  * @param lookupData min req versions data, for example {"feature": "1.0.0"}
@@ -131,13 +140,6 @@ export function createShouldDisplayFn(
     }
   };
 }
-
-// Temporary hotfix fallback data. Please remove.
-const fallbackData: MinOsFeatureLookup = {};
-Object.values(Feature).map(feature =>
-  fallbackData[feature] = globalConfig.FBOS_END_OF_LIFE_VERSION);
-fallbackData.criteria_groups = "9.2.2";
-fallbackData.boot_sequence = MinVersionOverride.NEVER;
 
 /**
  * Compare the current FBOS version in the bot's

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { ToolTips } from "../../constants";
+import { Content } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { t } from "../../i18next_wrapper";
 import { ALLOWED_PACKAGES, SequenceBodyItem, Reboot } from "farmbot";
@@ -44,7 +44,7 @@ export function TileReboot(props: StepParams) {
   return <StepWrapper>
     <StepHeader
       className={className}
-      helpText={ToolTips.REBOOT}
+      helpText={Content.RESTART_FARMBOT}
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
@@ -52,7 +52,7 @@ export function TileReboot(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <p>
-        {t(ToolTips.REBOOT)}
+        {t(Content.REBOOT_STEP)}
       </p>
       {/* <StepRadio
         choices={Object.keys(PACKAGE_CHOICES())}

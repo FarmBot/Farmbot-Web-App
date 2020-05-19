@@ -14,6 +14,7 @@ import { TaggedWeedPointer } from "farmbot";
 import { selectAllWeedPointers } from "../../resources/selectors";
 import { WeedInventoryItem } from "./weed_inventory_item";
 import { SearchField } from "../../ui/search_field";
+import { SortOptions, PointSortMenu, orderedPoints } from "../sort_options";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -21,7 +22,7 @@ export interface WeedsProps {
   hoveredPoint: string | undefined;
 }
 
-interface WeedsState {
+interface WeedsState extends SortOptions {
   searchTerm: string;
 }
 
@@ -32,7 +33,40 @@ export const mapStateToProps = (props: Everything): WeedsProps => ({
 });
 
 export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
-  state: WeedsState = { searchTerm: "" };
+  state: WeedsState = { searchTerm: "", sortBy: "radius", reverse: true };
+
+  get weeds() {
+    return orderedPoints(this.props.weeds, this.state).filter(p =>
+      p.body.name.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
+  }
+
+  ActiveWeeds = () =>
+    <div className={"active-weeds"}>
+      <div className={"active-weeds-header"}>
+        <label>{t("Active")}</label>
+      </div>
+      {this.weeds
+        .filter(p => p.body.plant_stage !== "removed")
+        .map(p => <WeedInventoryItem
+          key={p.uuid}
+          tpp={p}
+          hovered={this.props.hoveredPoint === p.uuid}
+          dispatch={this.props.dispatch} />)}
+    </div>;
+
+  RemovedWeeds = () =>
+    <div className={"removed-weeds"}>
+      <div className={"removed-weeds-header"}>
+        <label>{t("Removed")}</label>
+      </div>
+      {this.weeds
+        .filter(p => p.body.plant_stage === "removed")
+        .map(p => <WeedInventoryItem
+          key={p.uuid}
+          tpp={p}
+          hovered={this.props.hoveredPoint === p.uuid}
+          dispatch={this.props.dispatch} />)}
+    </div>;
 
   render() {
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
@@ -43,6 +77,8 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
         title={t("Add weed")}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={t("Search your weeds...")}
+          customLeftIcon={<PointSortMenu
+            sortOptions={this.state} onChange={u => this.setState(u)} />}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
@@ -52,14 +88,8 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           title={t("No weeds yet.")}
           text={Content.NO_WEEDS}
           colorScheme={"weeds"}>
-          {this.props.weeds
-            .filter(p => p.body.name.toLowerCase()
-              .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => <WeedInventoryItem
-              key={p.uuid}
-              tpp={p}
-              hovered={this.props.hoveredPoint === p.uuid}
-              dispatch={this.props.dispatch} />)}
+          <this.ActiveWeeds />
+          <this.RemovedWeeds />
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

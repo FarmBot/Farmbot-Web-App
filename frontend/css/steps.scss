@@ -106,7 +106,7 @@
   &.take-photo-step {
     background: $brown;
   }
-  &.resource-update-step {
+  &.update-resource-step {
     background: $brown;
   }
   &.set-servo-angle-step {
@@ -134,6 +134,9 @@
     background: $red;
   }
   &.reboot-step {
+    background: $brown;
+  }
+  &.shutdown-step {
     background: $brown;
   }
   &.unknown-step {
@@ -226,7 +229,7 @@
   &.take-photo-step a {
     color: $dark_brown;
   }
-  &.resource-update-step {
+  &.update-resource-step {
     background: $light_brown;
   }
   &.set-servo-angle-step {
@@ -252,6 +255,9 @@
   }
   &.emergency-stop-step {
     background: $light_red;
+  }
+  &.shutdown-step {
+    background: $light_brown;
   }
   &.reboot-step {
     background: $light_brown;

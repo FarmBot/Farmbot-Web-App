@@ -2,9 +2,11 @@ import { FBToast } from "../fb_toast";
 
 describe("FBToast", () => {
   let count = 0;
-  const newToast = (): [FBToast, HTMLDivElement] => {
+  const newToast = (idPrefix = ""): [FBToast, HTMLDivElement] => {
     const parent = document.createElement("div");
-    const child = new FBToast(parent, "title", "message" + (count++), "red");
+    const child =
+      new FBToast(parent, "title", "message" + (count++), "red", idPrefix, false);
+    parent.appendChild(child.toastEl);
     return [child, parent];
   };
 
@@ -90,6 +92,30 @@ describe("FBToast", () => {
     i.detach();
     expect(FBToast.everyMessage[message]).toBeFalsy();
     expect(p.removeChild).toHaveBeenCalledWith(i.toastEl);
+    expect(i.isAttached).toBeFalsy();
+  });
+
+  it("doesn't detach from the DOM", () => {
+    const [i, p] = newToast();
+    p.innerHTML = "";
+    const { message } = i;
+    FBToast.everyMessage[message] = true;
+    p.removeChild = jest.fn();
+    i.isAttached = true;
+    i.detach();
+    expect(FBToast.everyMessage[message]).toBeFalsy();
+    expect(p.removeChild).not.toHaveBeenCalled();
+    expect(i.isAttached).toBeTruthy();
+  });
+
+  it("sets id", () => {
+    const toast = newToast("id-prefix")[0];
+    expect(toast.toastEl.id).toEqual(expect.stringMatching("^id-prefix-toast-"));
+  });
+
+  it("doesn't set id", () => {
+    const toast = newToast()[0];
+    expect(toast.toastEl.id).toEqual("");
   });
 
   it("does polling", () => {
@@ -117,5 +143,29 @@ describe("FBToast", () => {
     i.detach = jest.fn();
     i.doPolling();
     expect(i.detach).not.toHaveBeenCalled();
+  });
+
+  it("run: does polling", () => {
+    const [i, parent] = newToast();
+    i.parent = parent;
+    i.isAttached = false;
+    i.noTimer = false;
+    i.intervalId = 0;
+    i.run();
+    expect(i.toastEl.className).not.toContain("no-timer");
+    expect(i.isAttached).toEqual(true);
+    expect(i.intervalId).not.toEqual(0);
+  });
+
+  it("run: doesn't do polling", () => {
+    const [i, parent] = newToast();
+    i.parent = parent;
+    i.isAttached = false;
+    i.noTimer = true;
+    i.intervalId = 0;
+    i.run();
+    expect(i.toastEl.className).toContain("no-timer");
+    expect(i.isAttached).toEqual(true);
+    expect(i.intervalId).toEqual(0);
   });
 });

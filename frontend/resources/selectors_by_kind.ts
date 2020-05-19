@@ -79,7 +79,7 @@ export const selectAllPoints =
 export const selectAllPointGroups =
   (i: ResourceIndex) => findAll<TaggedPointGroup>(i, "PointGroup");
 export const selectAllActivePoints = (input: ResourceIndex) =>
-  selectAllPoints(input).filter(x => !x.body.discarded_at);
+  selectAllPoints(input).filter(x => x);
 
 export const selectAllFarmwareEnvs =
   (i: ResourceIndex) => findAll<TaggedFarmwareEnv>(i, "FarmwareEnv");

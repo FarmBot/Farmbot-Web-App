@@ -3,13 +3,14 @@ import { t } from "../../i18next_wrapper";
 import { getDevice } from "../../device";
 import { destroy, edit, save } from "../../api/crud";
 import { ResourceColor } from "../../interfaces";
-import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
+import { TaggedGenericPointer, TaggedWeedPointer, Xyz } from "farmbot";
 import { ListItem } from "../plants/plant_panel";
 import { round, cloneDeep } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
 import { parseIntInput } from "../../util";
 import { UUID } from "../../resources/interfaces";
 import { plantAge } from "../plants/map_state_to_props";
+import { EditWeedStatus } from "../plants/edit_plant_status";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -29,6 +30,11 @@ export interface EditPointPropertiesProps {
   updatePoint(update: PointUpdate): void;
 }
 
+export interface AdditionalWeedPropertiesProps {
+  point: TaggedWeedPointer;
+  updatePoint(update: PointUpdate): void;
+}
+
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
   <ul>
     <li>
@@ -43,7 +49,11 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     </li>
     <ListItem name={t("Location")}>
       <EditPointLocation
-        xyLocation={{ x: props.point.body.x, y: props.point.body.y }}
+        pointLocation={{
+          x: props.point.body.x,
+          y: props.point.body.y,
+          z: props.point.body.z,
+        }}
         updatePoint={props.updatePoint} />
     </ListItem>
     <ListItem name={t("Size")}>
@@ -53,10 +63,13 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     </ListItem>
   </ul>;
 
-export const AdditionalWeedProperties = (props: EditPointPropertiesProps) =>
+export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
   <ul className="additional-weed-properties">
     <ListItem name={t("Age")}>
       {`${plantAge(props.point)} ${t("days old")}`}
+    </ListItem>
+    <ListItem name={t("Status")}>
+      <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
     </ListItem>
     {Object.entries(props.point.body.meta).map(([key, value]) => {
       switch (key) {
@@ -64,11 +77,11 @@ export const AdditionalWeedProperties = (props: EditPointPropertiesProps) =>
         case "type": return <div key={key}
           className={`meta-${key}-not-displayed`} />;
         case "created_by":
-          return <ListItem name={t("Source")}>
+          return <ListItem name={t("Source")} key={key}>
             {SOURCE_LOOKUP()[value || ""] || t("unknown")}
           </ListItem>;
         case "removal_method":
-          return <ListItem name={t("Removal method")}>
+          return <ListItem name={t("Removal method")} key={key}>
             <div className="weed-removal-method-section">
               {REMOVAL_METHODS.map(method =>
                 <div className={"weed-removal-method"} key={method}>
@@ -84,7 +97,7 @@ export const AdditionalWeedProperties = (props: EditPointPropertiesProps) =>
             </div>
           </ListItem>;
         default:
-          return <ListItem name={key}>
+          return <ListItem name={key} key={key}>
             {value || ""}
           </ListItem>;
       }
@@ -142,18 +155,18 @@ export const EditPointName = (props: EditPointNameProps) =>
 
 export interface EditPointLocationProps {
   updatePoint(update: PointUpdate): void;
-  xyLocation: Record<"x" | "y", number>;
+  pointLocation: Record<Xyz, number>;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
   <Row>
-    {["x", "y"].map((axis: "x" | "y") =>
-      <Col xs={6} key={axis}>
+    {["x", "y", "z"].map((axis: Xyz) =>
+      <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
           name={axis}
-          value={props.xyLocation[axis]}
+          value={props.pointLocation[axis]}
           min={0}
           onCommit={e => props.updatePoint({
             [axis]: round(parseIntInput(e.currentTarget.value))
@@ -169,14 +182,14 @@ export interface EditPointRadiusProps {
 export const EditPointRadius = (props: EditPointRadiusProps) =>
   <Row>
     <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
+      <label style={{ marginTop: 0 }}>{t("diameter (mm)")}</label>
       <BlurableInput
         type="number"
         name="radius"
-        value={props.radius}
+        value={props.radius * 2}
         min={0}
         onCommit={e => props.updatePoint({
-          radius: round(parseIntInput(e.currentTarget.value))
+          radius: round(parseIntInput(e.currentTarget.value)) / 2
         })} />
     </Col>
   </Row>;

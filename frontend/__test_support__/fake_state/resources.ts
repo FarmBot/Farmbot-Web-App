@@ -134,7 +134,6 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     x: 0,
     y: 0,
     z: 0,
-    radius: 25,
     pointer_type: "ToolSlot",
     meta: {},
     tool_id: undefined,
@@ -181,6 +180,7 @@ export function fakeWeed(): TaggedWeedPointer {
     y: 400,
     z: 0,
     radius: 100,
+    plant_stage: "active",
     meta: { created_by: "plant-detection", color: "red" }
   });
 }

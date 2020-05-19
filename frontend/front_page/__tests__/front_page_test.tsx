@@ -26,9 +26,13 @@ jest.mock("../../api", () => ({
   }
 }));
 
+jest.mock("../laptop_splash", () => ({ LaptopSplash: () => <div /> }));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { FrontPage, setField, PartialFormEvent } from "../front_page";
+import {
+  FrontPage, setField, PartialFormEvent, DEFAULT_APP_PAGE,
+} from "../front_page";
 import axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
@@ -63,7 +67,7 @@ describe("<FrontPage />", () => {
     location.assign = jest.fn();
     const el = mount(<FrontPage />);
     el.mount();
-    expect(location.assign).toHaveBeenCalledWith("/app/controls");
+    expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
   });
 
   it("submits login: success", async () => {
@@ -77,7 +81,7 @@ describe("<FrontPage />", () => {
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
     expect(Session.replaceToken).toHaveBeenCalledWith("new data");
-    expect(location.assign).toHaveBeenCalledWith("/app/controls");
+    expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
   });
 
   it("submits login: not verified", async () => {

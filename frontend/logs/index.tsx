@@ -1,11 +1,10 @@
 import * as React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-import { Col, Row, Page, ToolTip } from "../ui/index";
+import { Col, Row, Page } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
-import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
 import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
@@ -76,7 +75,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Determine if log type filters are active. */
   get filterActive() {
-    const filterKeys = filterStateKeys(this.state, this.props.shouldDisplay);
+    const filterKeys = filterStateKeys(this.state);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
@@ -91,7 +90,6 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
           <h3>
             <i>{t("Logs")}</i>
           </h3>
-          <ToolTip helpText={ToolTips.LOGS} />
         </Col>
         <Col xs={6}>
           <div className={"settings-menu-button"}>

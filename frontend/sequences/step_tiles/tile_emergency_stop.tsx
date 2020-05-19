@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { ToolTips } from "../../constants";
+import { ToolTips, Content } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
@@ -21,7 +21,7 @@ export function TileEmergencyStop(props: StepParams) {
       <Row>
         <Col xs={12}>
           <p>
-            {t("Unlocking a device requires user intervention.")}
+            {t(Content.ESTOP_STEP)}
           </p>
         </Col>
       </Row>

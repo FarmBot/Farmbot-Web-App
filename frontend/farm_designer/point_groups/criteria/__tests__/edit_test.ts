@@ -199,7 +199,7 @@ describe("togglePointTypeCriteria()", () => {
     const group = fakePointGroup();
     group.body.criteria.string_eq = {
       pointer_type: ["Plant", "ToolSlot"],
-      "plant_stage": ["planned"],
+      "openfarm_slug": ["mint"],
     };
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { pointer_type: ["Weed"] };

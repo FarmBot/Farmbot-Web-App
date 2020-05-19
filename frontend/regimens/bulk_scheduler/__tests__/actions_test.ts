@@ -19,6 +19,7 @@ import { arrayUnwrap } from "../../../resources/util";
 import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error, warning } from "../../../toast/toast";
+import { newWeek } from "../../reducer";
 
 const sequence_id = 23;
 const regimen_id = 32;
@@ -53,18 +54,9 @@ describe("commitBulkEditor()", () => {
     state.resources.consumers.regimens.currentRegimen = regimenUuid;
     state.resources.consumers.regimens.selectedSequenceUUID = sequenceUuid;
     state.resources.consumers.regimens.dailyOffsetMs = 2000;
-    state.resources.consumers.regimens.weeks = [{
-      days:
-      {
-        day1: true,
-        day2: false,
-        day3: false,
-        day4: false,
-        day5: false,
-        day6: false,
-        day7: false
-      }
-    }];
+    const week = newWeek();
+    week.days.day1 = true;
+    state.resources.consumers.regimens.weeks = [week];
     return state;
   }
 

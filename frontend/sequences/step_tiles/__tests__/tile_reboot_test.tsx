@@ -5,59 +5,56 @@ import { render } from "enzyme";
 import React from "react";
 import { StepParams } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 import { editStep } from "../../../api/crud";
 import { Reboot } from "farmbot";
+import { Content } from "../../../constants";
 
-const fakeProps = (): StepParams => {
-  const currentSequence = fakeSequence();
-  const resources = buildResourceIndex().index;
-
-  return {
-    currentSequence,
-    currentStep: {
-      kind: "reboot",
-      args: {
-        package: "farmbot_os"
-      }
-    },
-    dispatch: jest.fn(),
-    index: 1,
-    resources,
-    confirmStepDeletion: false,
-  };
-};
+const fakeProps = (): StepParams => ({
+  currentSequence: fakeSequence(),
+  currentStep: {
+    kind: "reboot",
+    args: {
+      package: "farmbot_os"
+    }
+  },
+  dispatch: jest.fn(),
+  index: 1,
+  resources: buildResourceIndex().index,
+  confirmStepDeletion: false,
+});
 
 describe("<TileReboot/>", () => {
   it("renders", () => {
-    const el = render(<TileReboot {...fakeProps()} />);
-    const verbiage = el.text();
-    expect(verbiage).toContain("Power cycle FarmBot's onboard computer.");
+    const block = render(<TileReboot {...fakeProps()} />);
+    expect(block.text()).toContain(Content.REBOOT_STEP);
   });
 
   it("crashes if the step is of the wrong `kind`", () => {
-    const props = fakeProps();
-    props.currentStep = { kind: "sync", args: {} };
-    const boom = () => TileReboot(props);
+    const p = fakeProps();
+    p.currentStep = { kind: "sync", args: {} };
+    const boom = () => TileReboot(p);
     expect(boom).toThrowError();
   });
 
   it("edits the reboot step", () => {
-    const props = fakeProps();
-    const editFn = editTheRebootStep(props);
+    const p = fakeProps();
+    const editFn = editTheRebootStep(p);
     editFn("arduino_firmware");
-    expect(props.dispatch).toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalled();
     expect(editStep).toHaveBeenCalledWith({
-      step: props.currentStep,
-      index: props.index,
-      sequence: props.currentSequence,
+      step: p.currentStep,
+      index: p.index,
+      sequence: p.currentSequence,
       executor: expect.any(Function),
     });
   });
 
   it("executes the executor", () => {
-    const props = fakeProps();
-    const step = props.currentStep as Reboot;
+    const p = fakeProps();
+    const step = p.currentStep as Reboot;
     step.args.package = "X";
     const fn = rebootExecutor("arduino_firmware");
     fn(step);

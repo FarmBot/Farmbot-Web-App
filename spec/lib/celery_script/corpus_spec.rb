@@ -6,68 +6,68 @@ describe CeleryScript::Corpus do
 
   it "handles valid move_absolute blocks" do
     ok1 = CeleryScript::AstNode.new(**{
-      kind: "move_absolute",
-      args: {
-        location: {
-          kind: "coordinate",
-          args: {
-            x: 1,
-            y: 2,
-            z: 3,
-          },
-        },
-        offset: {
-          kind: "coordinate",
-          args: {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-          },
-        },
-        speed: 100,
-      },
-    })
+                                      kind: "move_absolute",
+                                      args: {
+                                        location: {
+                                          kind: "coordinate",
+                                          args: {
+                                            x: 1,
+                                            y: 2,
+                                            z: 3,
+                                          },
+                                        },
+                                        offset: {
+                                          kind: "coordinate",
+                                          args: {
+                                            "x": 0,
+                                            "y": 0,
+                                            "z": 0,
+                                          },
+                                        },
+                                        speed: 100,
+                                      },
+                                    })
     check1 = CeleryScript::Checker.new(ok1, corpus, device)
     expect(check1.valid?).to be_truthy
 
     ok2 = CeleryScript::AstNode.new(**{
-      kind: "move_absolute",
-      args: {
-        location: {
-          kind: "tool",
-          args: { tool_id: FactoryBot.create(:tool).id },
-        },
-        offset: {
-          kind: "coordinate",
-          args: {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-          },
-        },
-        speed: 100,
-      },
-    })
+                                      kind: "move_absolute",
+                                      args: {
+                                        location: {
+                                          kind: "tool",
+                                          args: { tool_id: FactoryBot.create(:tool).id },
+                                        },
+                                        offset: {
+                                          kind: "coordinate",
+                                          args: {
+                                            "x": 0,
+                                            "y": 0,
+                                            "z": 0,
+                                          },
+                                        },
+                                        speed: 100,
+                                      },
+                                    })
     check2 = CeleryScript::Checker.new(ok2, corpus, device)
     expect(check2.valid?).to be_truthy
   end
 
   it "kicks back invalid move_absolute nodes" do
     bad = CeleryScript::AstNode.new(**{
-      kind: "move_absolute",
-      args: {
-        location: 42,
-        speed: 100,
-        offset: {
-          kind: "coordinate",
-          args: {
-            "x": 0,
-            "y": 0,
-            "z": 0,
-          },
-        },
-      },
-    })
+                                      kind: "move_absolute",
+                                      args: {
+                                        location: 42,
+                                        speed: 100,
+                                        offset: {
+                                          kind: "coordinate",
+                                          args: {
+                                            "x": 0,
+                                            "y": 0,
+                                            "z": 0,
+                                          },
+                                        },
+                                      },
+                                    })
     check = CeleryScript::Checker.new(bad, corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got Integer")
@@ -76,19 +76,19 @@ describe CeleryScript::Corpus do
 
   it "finds problems with nested nodes" do
     bad = CeleryScript::AstNode.new(**{
-      kind: "move_absolute",
-      args: {
-        location: {
-          kind: "tool",
-          args: { tool_id: "PROBLEM!" }, # <= Invalid:
-        },
-        offset: {
-          kind: "coordinate",
-          args: { "x": 0, "y": 0, "z": 0 },
-        },
-        speed: 100,
-      },
-    })
+                                      kind: "move_absolute",
+                                      args: {
+                                        location: {
+                                          kind: "tool",
+                                          args: { tool_id: "PROBLEM!" }, # <= Invalid:
+                                        },
+                                        offset: {
+                                          kind: "coordinate",
+                                          args: { "x": 0, "y": 0, "z": 0 },
+                                        },
+                                        speed: 100,
+                                      },
+                                    })
     check = CeleryScript::Checker.new(bad, corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got String")
@@ -110,31 +110,31 @@ describe CeleryScript::Corpus do
     # This test is __ONLY__ relevant for version 1.
     # Change / delete / update as needed.
     tree = CeleryScript::AstNode.new(**{
-      "kind": "send_message",
-      "args": {
-        "message": "Hello, world!",
-        "message_type": "wrong",
-      },
-      "body": [],
-    })
+                                       "kind": "send_message",
+                                       "args": {
+                                         "message": "Hello, world!",
+                                         "message_type": "wrong",
+                                       },
+                                       "body": [],
+                                     })
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect(checker.error.message).to include("not a valid message_type")
   end
 
   it "Handles channel_name validations" do
     tree = CeleryScript::AstNode.new(**{
-      "kind": "send_message",
-      "args": {
-        "message": "Hello, world!",
-        "message_type": "fun",
-      },
-      "body": [
-        {
-          "kind": "channel",
-          "args": { "channel_name": "wrong" },
-        },
-      ],
-    })
+                                       "kind": "send_message",
+                                       "args": {
+                                         "message": "Hello, world!",
+                                         "message_type": "fun",
+                                       },
+                                       "body": [
+                                         {
+                                           "kind": "channel",
+                                           "args": { "channel_name": "wrong" },
+                                         },
+                                       ],
+                                     })
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect(checker.error.message).to include("not a valid channel_name")
   end
@@ -148,44 +148,48 @@ describe CeleryScript::Corpus do
     expect(checker.error.message).to include("Tool #0 does not exist.")
   end
 
-  it "Validates resource_update nodes" do
-    ast = { "kind": "resource_update",
-            "args": { "resource_type" => "Device",
-                      "resource_id" => 23, # Mutated to "0" later..
-                      "label" => "mounted_tool_id",
-                      "value" => 1 } }
+  it "Validates update_resource nodes" do
+    ast = {
+      kind: "update_resource",
+      args: {
+        "resource" => {
+          kind: "resource",
+          args: {
+            "resource_type" => "Device",
+            "resource_id" => 23, # Mutated to "0" later..
+          },
+        },
+      },
+      body: [
+        {
+          kind: "pair",
+          args: {
+            "label" => "mounted_tool_id",
+            "value" => 1,
+          },
+        },
+      ],
+    }
     checker = CeleryScript::Checker
       .new(CeleryScript::AstNode.new(**ast), corpus, device)
     expect(checker.valid?).to be(true)
-    expect(checker.tree.args[:resource_id].value).to eq(device.id)
+    device_id = checker.tree.args[:resource].args[:resource_id].value
+    expect(device_id).to eq(device.id)
   end
 
-  it "rejects bogus resource_updates" do
+  it "deprecates resource_updates" do
     fake_id = FactoryBot.create(:plant).id + 1
     expect(Plant.exists?(fake_id)).to be(false)
     ast = { "kind": "resource_update",
-            "args": { "resource_type" => "Plant",
-                      "resource_id" => fake_id,
-                      "label" => "foo",
-                      "value" => "Should Fail" } }
+           "args": { "resource_type" => "Plant",
+                     "resource_id" => fake_id,
+                     "label" => "foo",
+                     "value" => "Should Fail" } }
     hmm = CeleryScript::AstNode.new(**ast)
     expect(hmm.args.fetch(:resource_id).value).to eq(fake_id)
     checker = CeleryScript::Checker.new(hmm, corpus, device)
     expect(checker.valid?).to be(false)
-    expect(checker.error.message).to eq("Can't find Plant with id of #{fake_id}")
-  end
-
-  it "rejects bogus resource_types" do
-    ast = { "kind": "resource_update",
-            "args": { "resource_type" => "CanOpener",
-                      "resource_id" => 0,
-                      "label" => "foo",
-                      "value" => "Should Fail" } }
-    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(**ast),
-                                        corpus,
-                                        device)
-    expect(checker.valid?).to be(false)
-    expect(checker.error.message).to include('"CanOpener" is not a valid resource_type.')
+    expect(checker.error.message).to eq(CeleryScriptSettingsBag::OLD_MARK_AS)
   end
 
   it "has enums" do
@@ -224,9 +228,9 @@ describe CeleryScript::Corpus do
 
   it "sets a MAX_WAIT_MS limit for `wait` nodes" do
     bad = CeleryScript::AstNode.new(**{
-      kind: "wait",
-      args: { milliseconds: CeleryScriptSettingsBag::MAX_WAIT_MS + 10 },
-    })
+                                      kind: "wait",
+                                      args: { milliseconds: CeleryScriptSettingsBag::MAX_WAIT_MS + 10 },
+                                    })
     check = CeleryScript::Checker.new(bad, corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("cannot exceed 3 minutes")
@@ -238,9 +242,9 @@ describe CeleryScript::Corpus do
                                     name: "cs checks",
                                     point_ids: [])
       bad = CeleryScript::AstNode.new(**{
-        kind: "point_group",
-        args: { point_group_id: pg.id },
-      })
+                                        kind: "point_group",
+                                        args: { point_group_id: pg.id },
+                                      })
       check = CeleryScript::Checker.new(bad, corpus, device)
       expect(check.valid?).to be true
     end
@@ -249,9 +253,9 @@ describe CeleryScript::Corpus do
   it "disallows invalid `point_group` nodes" do
     device.auto_sync_transaction do
       bad = CeleryScript::AstNode.new(**{
-        kind: "point_group",
-        args: { point_group_id: -1 },
-      })
+                                        kind: "point_group",
+                                        args: { point_group_id: -1 },
+                                      })
       check = CeleryScript::Checker.new(bad, corpus, device)
       expect(check.valid?).to be false
       expect(check.error.message).to eq("Can't find PointGroup with id of -1")

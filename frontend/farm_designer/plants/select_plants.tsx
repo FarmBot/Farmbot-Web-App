@@ -21,10 +21,12 @@ import {
   PointType, TaggedPoint, TaggedGenericPointer, TaggedToolSlotPointer,
   TaggedTool,
   TaggedWeedPointer,
+  TaggedPointGroup,
 } from "farmbot";
 import { UUID } from "../../resources/interfaces";
 import {
   selectAllActivePoints, selectAllToolSlotPointers, selectAllTools,
+  selectAllPointGroups,
 } from "../../resources/selectors";
 import { PointInventoryItem } from "../points/point_inventory_item";
 import { ToolSlotInventoryItem } from "../tools";
@@ -37,6 +39,7 @@ import { isActive } from "../tools/edit_tool";
 import { uniq } from "lodash";
 import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { WeedInventoryItem } from "../weeds/weed_inventory_item";
+import { pointsSelectedByGroup } from "../point_groups/criteria";
 
 // tslint:disable-next-line:no-any
 export const isPointType = (x: any): x is PointType => POINTER_TYPES.includes(x);
@@ -82,6 +85,7 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
     dispatch: props.dispatch,
     gardenOpen: props.resources.consumers.farm_designer.openedSavedGarden,
     tools: selectAllTools(props.resources.index),
+    groups: selectAllPointGroups(props.resources.index),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     xySwap,
     quadrant,
@@ -100,9 +104,18 @@ export interface SelectPlantsProps {
   quadrant: BotOriginQuadrant;
   isActive(id: number | undefined): boolean;
   tools: TaggedTool[];
+  groups: TaggedPointGroup[];
 }
 
-export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
+interface SelectPlantsState {
+  group_id: number | undefined;
+  more: boolean;
+}
+
+export class RawSelectPlants
+  extends React.Component<SelectPlantsProps, SelectPlantsState> {
+  state: SelectPlantsState = { group_id: undefined, more: false };
+
   componentDidMount() {
     const { dispatch, selected } = this.props;
     if (selected && selected.length == 1) {
@@ -135,27 +148,83 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     return selectionPointTypes.length > 1 ? "All" : selectionPointTypes[0];
   }
 
+  get groupDDILookup(): Record<number, DropDownItem> {
+    const lookup: Record<number, DropDownItem> = {};
+    this.props.groups.map(group => {
+      const { id } = group.body;
+      const groupName = group.body.name;
+      const count = pointsSelectedByGroup(group, this.props.allPoints).length;
+      const label = `${groupName} (${t("{{count}} items", { count })})`;
+      id && (lookup[id] = { label, value: id });
+    });
+    return lookup;
+  }
+
+  selectGroup = (ddi: DropDownItem) => {
+    const group_id = parseInt("" + ddi.value);
+    this.setState({ group_id });
+    const group = this.props.groups
+      .filter(pg => pg.body.id == group_id)[0];
+    const points = pointsSelectedByGroup(group, this.props.allPoints);
+    const pointUuids = points.map(p => p.uuid);
+    const pointerTypes =
+      group.body.criteria.string_eq.pointer_type as PointType[] | undefined;
+    const uniqPointTypes = uniq(points.map(p => p.body.pointer_type));
+    const pointTypes =
+      uniqPointTypes.length == 1 ? [uniqPointTypes[0]] : undefined;
+    this.props.dispatch(setSelectionPointType(
+      pointerTypes || pointTypes || POINTER_TYPES));
+    this.props.dispatch(selectPoint(pointUuids));
+  }
+
   ActionButtons = () =>
-    <div className="panel-action-buttons">
-      <FBSelect
+    <div className={["panel-action-buttons",
+      this.state.more ? "more" : "",
+      ["Plant", "Weed"].includes(this.selectionPointType) ? "status" : "",
+    ].join(" ")}>
+      <label>{t("selection type")}</label>
+      <FBSelect key={this.selectionPointType}
         list={POINTER_TYPE_LIST()}
         selectedItem={POINTER_TYPE_DDI_LOOKUP()[this.selectionPointType]}
         onChange={ddi => {
           this.props.dispatch(selectPoint(undefined));
+          this.setState({ group_id: undefined });
           this.props.dispatch(setSelectionPointType(
             ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
         }} />
       <div className="button-row">
         <button className="fb-button gray"
           title={t("Select none")}
-          onClick={() => this.props.dispatch(selectPoint(undefined))}>
+          onClick={() => {
+            this.setState({ group_id: undefined });
+            this.props.dispatch(selectPoint(undefined));
+          }}>
           {t("Select none")}
         </button>
         <button className="fb-button gray"
           title={t("Select all")}
-          onClick={() => this.props.dispatch(selectPoint(this.allPointUuids))}>
+          onClick={() => {
+            this.setState({ group_id: undefined });
+            this.props.dispatch(selectPoint(this.allPointUuids));
+          }}>
           {t("Select all")}
         </button>
+        <div className="more"
+          onClick={() => this.setState({ more: !this.state.more })}>
+          <p>{this.state.more ? t("Less") : t("More")}</p>
+          <i className={`fa fa-caret-${this.state.more ? "up" : "down"}`}
+            title={this.state.more ? t("less") : t("more")} />
+        </div>
+        <div className={"select-more"} hidden={!this.state.more}>
+          <label>{t("select all in group")}</label>
+          <FBSelect key={`${this.selectionPointType}-${this.state.group_id}`}
+            list={Object.values(this.groupDDILookup)}
+            selectedItem={this.state.group_id
+              ? this.groupDDILookup[this.state.group_id]
+              : undefined}
+            customNullLabel={t("Select a group")}
+            onChange={this.selectGroup} />
+        </div>
       </div>
       <label>{t("SELECTION ACTIONS")}</label>
       <div className="button-row">
@@ -171,9 +240,11 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
-        {this.selectionPointType == "Plant" &&
+        {(this.selectionPointType == "Plant" ||
+          this.selectionPointType == "Weed") &&
           <PlantStatusBulkUpdate
-            plants={this.props.plants}
+            pointerType={this.selectionPointType}
+            allPoints={this.props.allPoints}
             selected={this.selected}
             dispatch={this.props.dispatch} />}
       </div>
@@ -227,7 +298,11 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
 
-      <DesignerPanelContent panelName={"plant-selection"}>
+      <DesignerPanelContent panelName={"plant-selection"}
+        className={[
+          this.state.more ? "more" : "",
+          ["Plant", "Weed"].includes(this.selectionPointType) ? "status" : "",
+        ].join(" ")}>
         {this.selectedPointData.map(p => {
           if (p.kind == "PlantTemplate" || p.body.pointer_type == "Plant") {
             return <PlantInventoryItem
@@ -320,3 +395,13 @@ const getVisibleLayers = (getConfigValue: GetWebAppConfigValue): PointType[] => 
     ...(showFarmbot ? [PointerType.ToolSlot] : []),
   ];
 };
+
+export const SelectModeLink = () =>
+  <div className="select-mode">
+    <button
+      className="fb-button gray"
+      title={t("open point select panel")}
+      onClick={() => history.push("/app/designer/plants/select")}>
+      {t("select")}
+    </button>
+  </div>;

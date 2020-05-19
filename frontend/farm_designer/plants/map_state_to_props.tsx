@@ -40,6 +40,8 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
 export interface FormattedPlantInfo {
   x: number;
   y: number;
+  z: number;
+  radius: number;
   id: number | undefined;
   name: string;
   uuid: string;
@@ -72,6 +74,8 @@ export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
     daysOld: plantAge(plant),
     x: plant.body.x,
     y: plant.body.y,
+    z: plant.body.z,
+    radius: plant.body.radius,
     uuid: plant.uuid,
     plantedAt: plantDate(plant),
     plantStatus: get(plant, "body.plant_stage", "planned"),
