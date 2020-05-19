@@ -29,6 +29,13 @@ export interface Props {
 export interface AxisDisplayGroupProps {
   position: BotPosition;
   label: string;
+  missedSteps?: BotPosition;
+}
+
+export interface AxisProps {
+  val: number | undefined;
+  axis: Xyz;
+  missedSteps: number | undefined;
 }
 
 export interface AxisInputBoxGroupProps {
