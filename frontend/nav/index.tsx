@@ -117,7 +117,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   render() {
     /** Change document meta title on every route change. */
-    updatePageInfo(getPathArray()[2] || "");
+    updatePageInfo(getPathArray()[2] || "", getPathArray()[3]);
 
     const { toggle } = this;
     const { tickerListOpen } = this.state;
