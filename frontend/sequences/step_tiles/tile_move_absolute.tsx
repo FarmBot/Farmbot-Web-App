@@ -1,12 +1,11 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
-import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
+import { MoveAbsolute, Vector3, ParameterApplication, Xyz } from "farmbot";
 import { Row, Col, BlurableInput } from "../../ui";
 import { isTaggedSequence } from "../../resources/tagged_resources";
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
-import { Xyz } from "../../devices/interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { StepInputBox } from "../inputs/step_input_box";

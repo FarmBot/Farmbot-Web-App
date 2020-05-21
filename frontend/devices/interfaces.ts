@@ -67,7 +67,10 @@ export enum Feature {
   change_ownership = "change_ownership",
   criteria_groups = "criteria_groups",
   endstop_invert = "endstop_invert",
+  express_calibration = "express_calibration",
   express_k10 = "express_k10",
+  express_stall_detection = "express_stall_detection",
+  express_stall_sensitivity = "express_stall_sensitivity",
   farmduino_k14 = "farmduino_k14",
   farmduino_k15 = "farmduino_k15",
   firmware_restart = "firmware_restart",
@@ -148,9 +151,14 @@ export interface MoveRelProps {
 export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
-export type BotPosition = Record<Xyz, (number | undefined)>;
+export type BotPosition = Record<Xyz, number | undefined>;
+export type AxisState =
+  "idle" | "begin" | "accelerate" | "crawl" | "decelerate" | "stop";
 type LocationData = Record<LocationName, BotPosition>;
-export interface BotLocationData extends LocationData { load?: BotPosition }
+export interface BotLocationData extends LocationData {
+  load?: BotPosition;
+  axis_states?: Record<Xyz, AxisState | undefined>;
+}
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 

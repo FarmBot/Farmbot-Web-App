@@ -38,7 +38,7 @@ describe("<TileMarkAs />", () => {
 
   it("renders if step", () => {
     const wrapper = mount(<TileMarkAs {...fakeProps()} />);
-    ["Mark", "Strawberry plant 1 (100, 200, 0)", "field", "as"]
+    ["Mark", "Strawberry plant 1 (100, 200, 0)", "property", "as"]
       .map(string => expect(wrapper.text()).toContain(string));
   });
 

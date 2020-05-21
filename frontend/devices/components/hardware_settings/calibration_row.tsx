@@ -15,14 +15,14 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
   Axes = () => {
     const { type, botOnline, axisTitle, hardware, action } = this.props;
     return <div className="calibration-row-axes">
-      {axisTrackingStatus(hardware)
+      {axisTrackingStatus(hardware, this.props.stallUseDisabled)
         .map(row => {
           const { axis } = row;
           const hardwareDisabled = type == "zero" ? false : row.disabled;
           return <Col xs={this.newFormat ? 4 : 2} key={axis}
             className={"centered-button-div"}>
             <LockableButton
-              disabled={this.props.disabled || hardwareDisabled || !botOnline}
+              disabled={hardwareDisabled || !botOnline}
               title={t(axisTitle)}
               onClick={() => action(axis)}>
               {`${t(axisTitle)} ${axis}`}

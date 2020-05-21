@@ -167,7 +167,7 @@ describe("renderCeleryNode()", () => {
           { kind: "pair", args: { label: "plant_stage", value: "planted" } },
         ]
       },
-      expected: "markstrawberry plant 1 (100, 200, 0)fieldplant stageasplanted"
+      expected: "markstrawberry plant 1 (100, 200, 0)propertyplant stageasplanted"
     },
     {
       node: {

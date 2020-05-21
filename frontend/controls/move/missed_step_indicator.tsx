@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mean, isUndefined } from "lodash";
+import { mean, isUndefined, last } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 
@@ -16,8 +16,8 @@ export class MissedStepIndicator
   state: MissedStepIndicatorState = { history: [] };
 
   componentDidUpdate() {
-    if (!isUndefined(this.props.missedSteps) && this.props.missedSteps !=
-      this.state.history.slice(this.state.history.length - 1)[0]) {
+    if (!isUndefined(this.props.missedSteps) &&
+      this.props.missedSteps != last(this.state.history)) {
       const newHistory = [...this.state.history];
       newHistory.push(this.props.missedSteps);
       this.setState({ history: newHistory.slice(-10) });
@@ -47,7 +47,7 @@ export class MissedStepIndicator
   }
 }
 
-const color = (value: number) => {
+export const indicatorColor = (value: number) => {
   if (value >= 90) { return "red"; }
   if (value >= 75) { return "orange"; }
   if (value >= 50) { return "yellow"; }
@@ -61,9 +61,9 @@ interface IndicatorProps {
 
 const Indicator = (props: IndicatorProps) =>
   <div className={"missed-step-indicator"}>
-    <div className={`instant ${color(props.instant)}`}
+    <div className={`instant ${indicatorColor(props.instant)}`}
       style={{ width: `${props.instant}%` }} />
-    <div className={`peak ${color(props.peak)}`}
+    <div className={`peak ${indicatorColor(props.peak)}`}
       style={{ marginLeft: `${props.peak}%` }} />
   </div>;
 
