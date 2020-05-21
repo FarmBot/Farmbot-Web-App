@@ -151,9 +151,14 @@ export interface MoveRelProps {
 export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
-export type BotPosition = Record<Xyz, (number | undefined)>;
+export type BotPosition = Record<Xyz, number | undefined>;
+export type AxisState =
+  "idle" | "begin" | "accelerate" | "crawl" | "decelerate" | "stop";
 type LocationData = Record<LocationName, BotPosition>;
-export interface BotLocationData extends LocationData { load?: BotPosition }
+export interface BotLocationData extends LocationData {
+  load?: BotPosition;
+  axis_states?: Record<Xyz, AxisState | undefined>;
+}
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 

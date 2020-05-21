@@ -4,9 +4,13 @@ import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
 import { get, isNumber, takeRight, isEqual, round, first } from "lodash";
+import { Xyz } from "farmbot";
+import { indicatorColor } from "../../../../controls/move/missed_step_indicator";
+import { DevSettings } from "../../../../account/dev/dev_support";
 
 type TrailRecord = {
   coord: Record<"x" | "y", number | undefined>,
+  miss: Record<Xyz, number | undefined> | undefined,
   water: number | undefined
 } | undefined;
 
@@ -33,6 +37,7 @@ function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[]
 
 export interface BotTrailProps {
   position: BotPosition;
+  missedSteps: BotPosition | undefined;
   mapTransformProps: MapTransformProps;
   peripherals: { label: string, value: boolean }[];
 }
@@ -46,8 +51,29 @@ export function BotTrail(props: BotTrailProps) {
     .filter(p => p.label.toLowerCase().includes("water"))
     .map(p => p.value));
 
-  const array = getNewTrailArray({ coord: { x, y }, water: 0 }, watering);
+  const array = getNewTrailArray({
+    coord: { x, y },
+    miss: props.missedSteps,
+    water: 0,
+  }, watering);
 
+  const missedStepIcons = (
+    position: { qx: number, qy: number },
+    missed: Record<Xyz, number | undefined> | undefined,
+    opacity: number,
+  ) =>
+    <g id={"missed-steps"}>
+      {missed?.x && missed?.x > 50 &&
+        <text x={position.qx - 5} y={position.qy} textAnchor={"end"}
+          fill={indicatorColor(missed.x)} fillOpacity={opacity}>X</text>}
+      {missed?.y && missed?.y > 50 &&
+        <text x={position.qx} y={position.qy} textAnchor={"middle"}
+          fill={indicatorColor(missed.y)} fillOpacity={opacity}>Y</text>}
+      {missed?.z && missed?.z > 50 &&
+        <text x={position.qx + 5} y={position.qy} textAnchor={"start"}
+          fill={indicatorColor(missed.z)} fillOpacity={opacity}>Z</text>}
+    </g>;
+  const showMissed = DevSettings.futureFeaturesEnabled();
   return <g className="virtual-bot-trail">
     {array.map((cur: TrailRecord, i: number) => {
       const prev = (array[i - 1] || { coord: undefined }).coord; // prev coord
@@ -57,7 +83,7 @@ export function BotTrail(props: BotTrailProps) {
         && isNumber(cur.water)) {
         const p1 = toQ(cur.coord.x, cur.coord.y);
         const p2 = toQ(prev.x, prev.y);
-        return <g key={i}>
+        return <g id={"trail-record"} key={i}>
           <line id={`trail-line-${i}`}
             stroke="red" strokeOpacity={opacity} strokeWidth={1 + opacity * 2}
             x1={p1.qx} y1={p1.qy} x2={p2.qx} y2={p2.qy} />
@@ -65,6 +91,7 @@ export function BotTrail(props: BotTrailProps) {
             <circle id={`trail-water-${i}`}
               fill={Color.blue} opacity={opacity / 2}
               cx={p1.qx} cy={p1.qy} r={cur.water} />}
+          {showMissed && missedStepIcons(p1, cur.miss, opacity)}
         </g>;
       }
     })}

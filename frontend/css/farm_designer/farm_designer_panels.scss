@@ -1332,6 +1332,14 @@
         background: none;
       }
     }
+    .bot-position-rows {
+      label {
+        margin-top: 0;
+      }
+      .axis-titles {
+        margin-bottom: 1rem;
+      }
+    }
     .index-indicator {
       background: $dark_gray;
     }

@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisDisplayGroupProps } from "../interfaces";
@@ -49,5 +54,21 @@ describe("<AxisDisplayGroup />", () => {
     p.missedSteps = undefined;
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
+  });
+
+  it("renders axis state", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.axisStates = { x: "idle", y: "idle", z: "idle" };
+    const wrapper = mount(AxisDisplayGroup(p));
+    expect(wrapper.text()).toContain("idle");
+  });
+
+  it("renders axis state", () => {
+    mockDev = false;
+    const p = fakeProps();
+    p.axisStates = { x: "idle", y: "idle", z: "idle" };
+    const wrapper = mount(AxisDisplayGroup(p));
+    expect(wrapper.text()).not.toContain("idle");
   });
 });

@@ -20,20 +20,23 @@ export interface BotPositionRowsProps {
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getValue, arduinoBusy } = props;
   return <div className={"bot-position-rows"}>
-    <Row>
-      <Col xs={3}>
-        <label>{t("X AXIS")}</label>
-      </Col>
-      <Col xs={3}>
-        <label>{t("Y AXIS")}</label>
-      </Col>
-      <Col xs={3}>
-        <label>{t("Z AXIS")}</label>
-      </Col>
-    </Row>
+    <div className={"axis-titles"}>
+      <Row>
+        <Col xs={3}>
+          <label>{t("X AXIS")}</label>
+        </Col>
+        <Col xs={3}>
+          <label>{t("Y AXIS")}</label>
+        </Col>
+        <Col xs={3}>
+          <label>{t("Z AXIS")}</label>
+        </Col>
+      </Row>
+    </div>
     <AxisDisplayGroup
       position={locationData.position}
       missedSteps={locationData.load}
+      axisStates={locationData.axis_states}
       label={t("Motor Coordinates (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
       getValue(BooleanSetting.scaled_encoders) &&

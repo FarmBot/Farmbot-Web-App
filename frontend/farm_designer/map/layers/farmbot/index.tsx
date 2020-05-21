@@ -38,6 +38,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     {displayTrail &&
       <BotTrail
         position={props.botLocationData.position}
+        missedSteps={props.botLocationData.load}
         mapTransformProps={mapTransformProps}
         peripherals={peripherals} />}
   </g>;
