@@ -98,6 +98,7 @@ export class RawDesignerSettings
               <HomingAndCalibration {...commonProps}
                 bot={this.props.bot}
                 sourceFwConfig={sourceFwConfig}
+                shouldDisplay={this.props.shouldDisplay}
                 firmwareConfig={firmwareConfig}
                 firmwareHardware={firmwareHardware}
                 botOnline={botOnline} />
@@ -106,6 +107,7 @@ export class RawDesignerSettings
                 firmwareHardware={firmwareHardware} />
               <Encoders {...commonProps}
                 sourceFwConfig={sourceFwConfig}
+                shouldDisplay={this.props.shouldDisplay}
                 firmwareHardware={firmwareHardware} />
               <EndStops {...commonProps}
                 sourceFwConfig={sourceFwConfig} />

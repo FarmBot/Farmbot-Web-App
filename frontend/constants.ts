@@ -172,7 +172,8 @@ export namespace ToolTips {
     calibration and homing. (default: enabled)`);
 
   export const STALL_SENSITIVITY =
-    trim(`Motor stall sensitivity. (default: 30)`);
+    trim(`Motor stall sensitivity. Most sensitive: -63.
+    Least sensitive: +63. (default: 30)`);
 
   export const ENCODER_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
