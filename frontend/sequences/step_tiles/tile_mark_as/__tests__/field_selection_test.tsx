@@ -24,7 +24,7 @@ describe("<FieldSelection />", () => {
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain("Select one");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
@@ -46,7 +46,7 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain("Select one");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
@@ -56,7 +56,7 @@ describe("<FieldSelection />", () => {
     p.field = "custom";
     const wrapper = mount(<FieldSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(0);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.find("input").props().value).toEqual("custom");
     expect(wrapper.find(".reset-custom-field").length).toEqual(1);
   });
@@ -96,7 +96,7 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain("Status");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
@@ -126,7 +126,7 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain(expected);
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
@@ -148,7 +148,7 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain("Point status");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
@@ -181,7 +181,7 @@ describe("<FieldSelection />", () => {
       DDI.MOUNTED_TOOL,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("field");
+    expect(wrapper.text()).toContain("property");
     expect(wrapper.text()).toContain("Mounted Tool");
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
