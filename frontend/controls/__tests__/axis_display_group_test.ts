@@ -59,6 +59,7 @@ describe("<AxisDisplayGroup />", () => {
   it("renders axis state", () => {
     mockDev = true;
     const p = fakeProps();
+    p.busy = true;
     p.axisStates = { x: "idle", y: "idle", z: "idle" };
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.text()).toContain("idle");
@@ -67,6 +68,7 @@ describe("<AxisDisplayGroup />", () => {
   it("renders axis state", () => {
     mockDev = false;
     const p = fakeProps();
+    p.busy = true;
     p.axisStates = { x: "idle", y: "idle", z: "idle" };
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.text()).not.toContain("idle");

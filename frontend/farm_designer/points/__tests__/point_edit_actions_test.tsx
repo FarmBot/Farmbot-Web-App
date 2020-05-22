@@ -77,7 +77,7 @@ describe("<EditPointRadius />", () => {
     wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: 300 }
     });
-    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 150 });
+    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 300 });
   });
 });
 

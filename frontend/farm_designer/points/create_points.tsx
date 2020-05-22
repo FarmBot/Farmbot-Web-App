@@ -146,11 +146,6 @@ export class RawCreatePoints
             this.setState({ [key]: value });
             point[key] = value;
             break;
-          case "r":
-            const intRadius = parseIntInput(value) / 2;
-            this.setState({ [key]: intRadius });
-            point[key] = intRadius;
-            break;
           default:
             const intValue = parseIntInput(value);
             this.setState({ [key]: intValue });
@@ -257,12 +252,12 @@ export class RawCreatePoints
       <ListItem name={t("Size")}>
         <Row>
           <Col xs={6}>
-            <label>{t("diameter (mm)")}</label>
+            <label>{t("radius (mm)")}</label>
             <BlurableInput
               name="r"
               type="number"
               onCommit={this.updateValue("r")}
-              value={this.attr("r") * 2}
+              value={this.attr("r")}
               min={0} />
           </Col>
         </Row>

@@ -182,14 +182,14 @@ export interface EditPointRadiusProps {
 export const EditPointRadius = (props: EditPointRadiusProps) =>
   <Row>
     <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("diameter (mm)")}</label>
+      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
       <BlurableInput
         type="number"
         name="radius"
-        value={props.radius * 2}
+        value={props.radius}
         min={0}
         onCommit={e => props.updatePoint({
-          radius: round(parseIntInput(e.currentTarget.value)) / 2
+          radius: round(parseIntInput(e.currentTarget.value))
         })} />
     </Col>
   </Row>;

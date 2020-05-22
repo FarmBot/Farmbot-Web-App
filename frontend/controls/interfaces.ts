@@ -31,6 +31,7 @@ export interface AxisDisplayGroupProps {
   label: string;
   missedSteps?: BotPosition;
   axisStates?: Record<Xyz, AxisState | undefined>;
+  busy?: boolean;
 }
 
 export interface AxisProps {
@@ -38,6 +39,8 @@ export interface AxisProps {
   axis: Xyz;
   missedSteps: number | undefined;
   axisState: AxisState | undefined;
+  busy: boolean | undefined;
+  index: number;
 }
 
 export interface AxisInputBoxGroupProps {

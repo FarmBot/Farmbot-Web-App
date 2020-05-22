@@ -153,7 +153,7 @@ describe("<EditPlantRadius />", () => {
       currentTarget: { value: "100" }
     });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      radius: 50
+      radius: 100
     });
   });
 });
