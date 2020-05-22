@@ -833,8 +833,14 @@ ul {
     right: 1.5rem;
     height: 1rem;
     .missed-step-details {
+      min-width: 9rem;
+      table tr, td {
+        padding: unset;
+      }
       label, p {
         color: $white;
+        text-align: right;
+        font-style: normal;
       }
     }
     .bp3-popover-wrapper {
@@ -862,6 +868,7 @@ ul {
       width: 100%;
       background: $white;
       box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+      cursor: pointer;
       .instant {
         position: absolute;
         height: 100%;
@@ -892,6 +899,30 @@ ul {
     font-size: 1.4rem;
     color: $medium_gray;
     font-weight: 400;
+  }
+}
+
+.bot-position-rows {
+  label {
+    margin-top: 0;
+  }
+  .axis-titles {
+    margin-bottom: 1rem;
+  }
+  p {
+    text-align: center;
+    font-style: italic;
+  }
+  .axis-info {
+    .index-1 {
+      z-index: 1;
+    }
+    .index-2 {
+      z-index: 2;
+    }
+    .index-3 {
+      z-index: 3;
+    }
   }
 }
 

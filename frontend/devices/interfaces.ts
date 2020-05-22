@@ -10,6 +10,7 @@ import {
   JobProgress,
   FirmwareHardware,
   Alert,
+  Xyz,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -148,12 +149,11 @@ export interface MoveRelProps {
   speed?: number | undefined;
 }
 
-export type Xyz = "x" | "y" | "z";
 export type Axis = Xyz | "all";
 
 export type BotPosition = Record<Xyz, number | undefined>;
 export type AxisState =
-  "idle" | "begin" | "accelerate" | "crawl" | "decelerate" | "stop";
+  "idle" | "begin" | "accelerate" | "cruise" | "decelerate" | "stop" | "crawl";
 type LocationData = Record<LocationName, BotPosition>;
 export interface BotLocationData extends LocationData {
   load?: BotPosition;

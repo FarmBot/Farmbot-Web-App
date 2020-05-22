@@ -2,26 +2,46 @@ import * as React from "react";
 import { mean, isUndefined, last } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
+import { Xyz } from "farmbot";
+
+const HISTORY_LENGTH = 25;
+
+enum StorageKey {
+  x = "missed_step_history_x",
+  y = "missed_step_history_y",
+  z = "missed_step_history_z",
+}
 
 export interface MissedStepIndicatorProps {
   missedSteps: number | undefined;
+  axis: Xyz;
 }
 
 interface MissedStepIndicatorState {
   history: number[];
+  open: boolean;
 }
 
 export class MissedStepIndicator
   extends React.Component<MissedStepIndicatorProps, MissedStepIndicatorState> {
-  state: MissedStepIndicatorState = { history: [] };
+  state: MissedStepIndicatorState = {
+    history: JSON.parse(sessionStorage.getItem(this.storageKey) || "[]"),
+    open: false,
+  };
+
+  get storageKey() { return StorageKey[this.props.axis]; }
 
   componentDidUpdate() {
     if (!isUndefined(this.props.missedSteps) &&
       this.props.missedSteps != last(this.state.history)) {
       const newHistory = [...this.state.history];
       newHistory.push(this.props.missedSteps);
-      this.setState({ history: newHistory.slice(-10) });
+      this.setState({ history: newHistory.slice(-HISTORY_LENGTH) });
     }
+  }
+
+  componentWillUnmount() {
+    sessionStorage.setItem(this.storageKey, JSON.stringify(this.state.history));
   }
 
   get max() {
@@ -38,8 +58,9 @@ export class MissedStepIndicator
 
   render() {
     const { missedSteps } = this.props;
-    return <div className={"missed-step-indicator-wrapper"}>
-      <Popover position={Position.TOP} usePortal={false}>
+    return <div className={"missed-step-indicator-wrapper"}
+      onClick={() => this.setState({ open: !this.state.open })}>
+      <Popover position={Position.TOP} usePortal={false} isOpen={this.state.open}>
         <Indicator instant={missedSteps || 0} peak={this.max} />
         <Details instant={missedSteps || 0} peak={this.max} average={this.avg} />
       </Popover>
@@ -76,7 +97,20 @@ interface DetailsProps {
 const Details = (props: DetailsProps) =>
   <div className={"missed-step-details"}>
     <label>{t("Motor Load")}</label>
-    <p>{`${t("Latest")}: ${props.instant}%`}</p>
-    <p>{`${t("Max")}: ${props.peak}%`}</p>
-    <p>{`${t("Average")}: ${props.average}%`}</p>
+    <table>
+      <tbody>
+        <tr>
+          <td><p>{`${t("Latest")}:`}</p></td>
+          <td><p>{`${props.instant}%`}</p></td>
+        </tr>
+        <tr>
+          <td><p>{`${t("Max")}:`}</p></td>
+          <td><p>{`${props.peak}%`}</p></td>
+        </tr>
+        <tr>
+          <td><p>{`${t("Average")}:`}</p></td>
+          <td><p>{`${props.average}%`}</p></td>
+        </tr>
+      </tbody>
+    </table>
   </div>;
