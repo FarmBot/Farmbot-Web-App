@@ -52,7 +52,7 @@ export class PointInventoryItem extends
         {point.name || t("Untitled point")}
       </span>
       <p className="point-search-item-info">
-        <i>{`(${point.x}, ${point.y}) ⌀${point.radius * 2}`}</i>
+        <i>{`(${point.x}, ${point.y}) r${point.radius}`}</i>
       </p>
     </div>;
   }
