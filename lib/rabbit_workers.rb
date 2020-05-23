@@ -2,17 +2,13 @@
 require "thread"
 require "thwait"
 
-require_relative "../app/lib/resources.rb"
-require_relative "../app/lib/resources/job.rb"
-require_relative "../app/lib/resources/preprocessor.rb"
-require_relative "../app/lib/resources/service.rb"
-
 class RabbitWorker
   WAIT = 3
   def self.thread
     Thread.new do
       yield
     rescue => e
+      Rollbar.error(e)
       puts "Connecting to broker in #{WAIT} seconds. (#{e.inspect})"
       sleep WAIT
       retry
@@ -28,7 +24,8 @@ class RabbitWorker
         thread { LogService.new.go!(t.log_channel) },
       ])
     end
-  rescue
+  rescue => e
+    Rollbar.error(e)
     sleep RabbitWorker::WAIT
     retry
   end
