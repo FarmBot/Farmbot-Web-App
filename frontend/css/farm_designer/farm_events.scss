@@ -6,6 +6,7 @@
   }
   .panel-content {
     padding: 0 1rem 6rem 0;
+    padding-bottom: inherit;
   }
 }
 
@@ -15,7 +16,7 @@
   overflow-x: hidden;
   margin-top: 1.8rem;
   margin-right: -10px;
-  padding-bottom: 5rem;
+  padding-bottom: inherit;
 }
 
 .farm-event {

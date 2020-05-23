@@ -4,7 +4,7 @@ import {
 import { filterSensorReadings } from "../filter_readings";
 import { SensorReadingsState } from "../interfaces";
 import moment from "moment";
-import { Xyz } from "../../../devices/interfaces";
+import { Xyz } from "farmbot";
 
 describe("filterSensorReadings()", () => {
   const createDatedReading = (timestamps: string[]) =>

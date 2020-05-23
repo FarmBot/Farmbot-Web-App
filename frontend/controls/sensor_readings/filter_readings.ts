@@ -1,7 +1,6 @@
-import { TaggedSensorReading } from "farmbot";
+import { TaggedSensorReading, Xyz } from "farmbot";
 import { SensorReadingsState } from "./interfaces";
 import { every, isNumber } from "lodash";
-import { Xyz } from "../../devices/interfaces";
 import moment from "moment";
 
 /** One day in seconds. */

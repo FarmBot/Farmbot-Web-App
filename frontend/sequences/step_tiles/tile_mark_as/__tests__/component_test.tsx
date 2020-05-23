@@ -32,7 +32,7 @@ describe("<MarkAs/>", () => {
 
   it("renders the basic parts", () => {
     const wrapper = mount(<MarkAs {...fakeProps()} />);
-    ["Mark", "Tool Mount", "field", "Mounted Tool", "as", "None"].map(string =>
+    ["Mark", "Tool Mount", "property", "Mounted Tool", "as", "None"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 

@@ -1,7 +1,7 @@
 import {
-  BotState, Xyz, BotPosition, ShouldDisplay, UserEnv,
+  BotState, BotPosition, ShouldDisplay, UserEnv, AxisState,
 } from "../devices/interfaces";
-import { Vector3, McuParams, FirmwareHardware } from "farmbot/dist";
+import { Vector3, McuParams, FirmwareHardware, Xyz } from "farmbot";
 import {
   TaggedWebcamFeed,
   TaggedPeripheral,
@@ -29,6 +29,18 @@ export interface Props {
 export interface AxisDisplayGroupProps {
   position: BotPosition;
   label: string;
+  missedSteps?: BotPosition;
+  axisStates?: Record<Xyz, AxisState | undefined>;
+  busy?: boolean;
+}
+
+export interface AxisProps {
+  val: number | undefined;
+  axis: Xyz;
+  missedSteps: number | undefined;
+  axisState: AxisState | undefined;
+  busy: boolean | undefined;
+  index: number;
 }
 
 export interface AxisInputBoxGroupProps {

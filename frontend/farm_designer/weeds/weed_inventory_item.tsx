@@ -62,7 +62,7 @@ export class WeedInventoryItem extends
         {weed.name || t("Untitled weed")}
       </span>
       <p className="weed-search-item-info">
-        <i>{`(${weed.x}, ${weed.y}) ⌀${weed.radius * 2}`}</i>
+        <i>{`(${weed.x}, ${weed.y}) r${weed.radius}`}</i>
       </p>
     </div>;
   }

@@ -131,10 +131,15 @@ describe("toggleAndEditEqCriteria()", () => {
       openfarm_slug: undefined,
       "meta.color": undefined,
     };
+    group.body.criteria.number_lt = { radius: 10 };
+    group.body.criteria.number_gt = { radius: 1 };
     group.body.criteria.number_eq = {
       pullout_direction: undefined,
     };
     const expectedBody = cloneDeep(group.body);
+    expectedBody.criteria.string_eq = {};
+    expectedBody.criteria.number_lt = {};
+    expectedBody.criteria.number_gt = {};
     expectedBody.criteria.number_eq = { pullout_direction: [0] };
     toggleAndEditEqCriteria(group, "pullout_direction", 0, "ToolSlot")(dispatch);
     expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);

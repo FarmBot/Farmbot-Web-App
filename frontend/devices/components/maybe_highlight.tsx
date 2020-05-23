@@ -152,7 +152,7 @@ const compareValues = (settingName: DeviceSetting) =>
     .map(s => urlFriendly(s));
 
 /** Retrieve a highlight search term. */
-const getHighlightName = () => location.search.split("?highlight=").pop();
+export const getHighlightName = () => location.search.split("?highlight=").pop();
 
 /** Only open panel and highlight once per app load. Exported for tests. */
 export const highlight = { opened: false, highlighted: false };
@@ -216,7 +216,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 
   render() {
     const show = !this.searchTerm ||
-      this.props.settingName.toLowerCase().includes(this.searchTerm);
+      this.props.settingName.toLowerCase().includes(this.searchTerm.toLowerCase());
     return <div className={[
       this.props.className,
       this.state.className,

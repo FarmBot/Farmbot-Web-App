@@ -55,6 +55,7 @@ export class HardwareSettings extends
         <HomingAndCalibration {...commonProps}
           bot={bot}
           sourceFwConfig={sourceFwConfig}
+          shouldDisplay={this.props.shouldDisplay}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
           botOnline={botOnline} />
@@ -63,6 +64,7 @@ export class HardwareSettings extends
           firmwareHardware={firmwareHardware} />
         <Encoders {...commonProps}
           sourceFwConfig={sourceFwConfig}
+          shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <EndStops {...commonProps}
           sourceFwConfig={sourceFwConfig} />

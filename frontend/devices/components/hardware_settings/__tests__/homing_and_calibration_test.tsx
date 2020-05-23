@@ -35,6 +35,7 @@ describe("<HomingAndCalibration />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botOnline: true,
     firmwareHardware: undefined,
+    shouldDisplay: () => true,
   });
 
   function testAxisLengthInput(
@@ -79,27 +80,30 @@ describe("<HomingAndCalibration />", () => {
   });
 
   it("disables calibration", () => {
-    globalConfig.DISABLE_EXPRESS_CALIBRATION = "true";
     const p = fakeProps();
+    p.shouldDisplay = () => false;
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(true);
+    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+      .toEqual(true);
   });
 
   it("doesn't disable calibration: different firmware", () => {
-    globalConfig.DISABLE_EXPRESS_CALIBRATION = "true";
     const p = fakeProps();
+    p.shouldDisplay = () => false;
     p.firmwareHardware = "arduino";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(false);
+    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+      .toEqual(false);
   });
 
   it("doesn't disable calibration: not disabled", () => {
-    delete globalConfig.DISABLE_EXPRESS_CALIBRATION;
     const p = fakeProps();
+    p.shouldDisplay = () => true;
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().disabled).toEqual(false);
+    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+      .toEqual(false);
   });
 
   it("sets zero", () => {

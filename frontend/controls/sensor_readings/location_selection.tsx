@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../ui";
 import { AxisInputBoxGroupState } from "../interfaces";
-import { Xyz } from "../../devices/interfaces";
 import { AxisInputBox } from "../axis_input_box";
 import { isNumber } from "lodash";
 import { LocationSelectionProps } from "./interfaces";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
+import { Xyz } from "farmbot";
 
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
