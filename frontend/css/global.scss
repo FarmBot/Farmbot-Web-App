@@ -825,6 +825,71 @@ ul {
   font-size: 1.2rem;
 }
 
+.bot-position-rows {
+  .missed-step-indicator-wrapper {
+    position: absolute;
+    top: -1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 1rem;
+    .missed-step-details {
+      min-width: 9rem;
+      table tr, td {
+        padding: unset;
+      }
+      label, p {
+        color: $white;
+        text-align: right;
+        font-style: normal;
+      }
+    }
+    .bp3-popover-wrapper {
+      .bp3-popover-target {
+        display: block;
+      }
+    }
+    .bp3-popover {
+      .bp3-popover-arrow {
+        svg {
+          transform: rotate(-90deg) translate(1px) !important;
+          .bp3-popover-arrow-fill {
+            fill: $dark_gray;
+          }
+        }
+      }
+      .bp3-popover-content {
+        background: $dark_gray;
+      }
+    }
+    .missed-step-indicator {
+      position: absolute;
+      top: 0.2rem;
+      height: 0.75rem;
+      width: 100%;
+      background: $white;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+      cursor: pointer;
+      .instant {
+        position: absolute;
+        height: 100%;
+        opacity: 0.5;
+        &.yellow {
+          opacity: 0.75;
+        }
+      }
+      .peak {
+        position: absolute;
+        height: 100%;
+        width: 2px;
+        opacity: 0.5;
+        &.yellow {
+          opacity: 0.75;
+        }
+      }
+    }
+  }
+}
+
 .move-settings-menu {
   label {
     margin-top: 7px;
@@ -834,6 +899,30 @@ ul {
     font-size: 1.4rem;
     color: $medium_gray;
     font-weight: 400;
+  }
+}
+
+.bot-position-rows {
+  label {
+    margin-top: 0;
+  }
+  .axis-titles {
+    margin-bottom: 1rem;
+  }
+  p {
+    text-align: center;
+    font-style: italic;
+  }
+  .axis-info {
+    .index-1 {
+      z-index: 1;
+    }
+    .index-2 {
+      z-index: 2;
+    }
+    .index-3 {
+      z-index: 3;
+    }
   }
 }
 

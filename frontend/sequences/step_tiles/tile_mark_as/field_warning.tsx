@@ -13,7 +13,7 @@ export const CustomFieldWarning = (props: CustomFieldWarningProps) =>
     ? <div className="custom-field-warning">
       <i className="fa fa-exclamation-triangle" />
       <p>
-        {t("Invalid field for resource.")}
+        {t("Invalid property for resource.")}
       </p>
       {!(props.resource.kind == "resource" &&
         props.resource.args.resource_type == "Device") &&

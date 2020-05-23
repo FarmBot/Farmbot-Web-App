@@ -2,6 +2,8 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
+jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
@@ -13,6 +15,7 @@ import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
+import { Session } from "../../session";
 
 describe("NavBar", () => {
   const fakeProps = (): NavBarProps => ({
@@ -50,5 +53,18 @@ describe("NavBar", () => {
     const wrapper = mount(<NavBar {...p} />);
     wrapper.mount();
     expect(maybeSetTimezone).toHaveBeenCalledWith(p.dispatch, p.device);
+  });
+
+  it("logs out", () => {
+    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
+    wrapper.instance().logout();
+    expect(Session.clear).toHaveBeenCalled();
+  });
+
+  it("toggles state value", () => {
+    const wrapper = shallow<NavBar>(<NavBar {...fakeProps()} />);
+    expect(wrapper.state().mobileMenuOpen).toEqual(false);
+    wrapper.instance().toggle("mobileMenuOpen")();
+    expect(wrapper.state().mobileMenuOpen).toEqual(true);
   });
 });

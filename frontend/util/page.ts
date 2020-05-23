@@ -8,8 +8,15 @@ import { capitalize } from "lodash";
 import { t } from "../i18next_wrapper";
 
 /** Dynamically change the meta title of the page. */
-export function updatePageInfo(pageName: string) {
-  if (pageName === "designer") { pageName = "Farm Designer"; }
+export function updatePageInfo(pageName: string, panel?: string | undefined) {
+  if (pageName === "designer") {
+    pageName = "Farm Designer";
+    if (panel) {
+      document.title =
+        `${t(capitalize(pageName))}: ${t(capitalize(panel))} - FarmBot`;
+      return;
+    }
+  }
   document.title = `${t(capitalize(pageName))} - FarmBot`;
   // Possibly add meta "content" here dynamically as well
 }

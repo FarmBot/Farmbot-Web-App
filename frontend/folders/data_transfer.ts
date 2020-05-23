@@ -43,42 +43,43 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
   const childrenOf = (i: number) =>
     sortBy(index[i] || [], (x) => x.name.toLowerCase());
 
-  const terminal = (x: FolderNode): FolderNodeTerminal => ({
-    ...x,
-    kind: "terminal",
-    content: (localMetaAttributes[x.id] || {}).sequences || [],
-    // @ts-ignore // TODO: remove when TS > 3.9.2
-    open: false,
-    // @ts-ignore // TODO: remove when TS > 3.9.2
-    editing: false,
-    // children: [],
-    ...(localMetaAttributes[x.id] || {})
-  });
+  const terminal = (x: FolderNode): FolderNodeTerminal => {
+    const folderMeta: Partial<FolderMeta> = localMetaAttributes[x.id] || {};
+    return {
+      ...x,
+      kind: "terminal",
+      content: folderMeta.sequences || [],
+      open: false,
+      editing: false,
+      // children: [],
+      ...folderMeta,
+    };
+  };
 
-  const medial = (x: FolderNode): FolderNodeMedial => ({
-    ...x,
-    kind: "medial",
-    // @ts-ignore // TODO: remove when TS > 3.9.2
-    open: false,
-    // @ts-ignore // TODO: remove when TS > 3.9.2
-    editing: false,
-    children: childrenOf(x.id).map(terminal),
-    content: (localMetaAttributes[x.id] || {}).sequences || [],
-    ...(localMetaAttributes[x.id] || {})
-  });
+  const medial = (x: FolderNode): FolderNodeMedial => {
+    const folderMeta: Partial<FolderMeta> = localMetaAttributes[x.id] || {};
+    return {
+      ...x,
+      kind: "medial",
+      open: false,
+      editing: false,
+      children: childrenOf(x.id).map(terminal),
+      content: folderMeta.sequences || [],
+      ...folderMeta,
+    };
+  };
 
   childrenOf(-1).map((root) => {
     const children = childrenOf(root.id).map(medial);
+    const folderMeta: Partial<FolderMeta> = localMetaAttributes[root.id] || {};
     return output.folders.push({
       ...root,
       kind: "initial",
-      // @ts-ignore // TODO: remove when TS > 3.9.2
       open: false,
-      // @ts-ignore // TODO: remove when TS > 3.9.2
       editing: false,
       children,
-      content: (localMetaAttributes[root.id] || {}).sequences || [],
-      ...(localMetaAttributes[root.id] || {})
+      content: folderMeta.sequences || [],
+      ...folderMeta,
     });
   });
 

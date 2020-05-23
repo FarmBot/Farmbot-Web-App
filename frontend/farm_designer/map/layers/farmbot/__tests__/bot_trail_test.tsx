@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../../../../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
@@ -17,6 +22,7 @@ describe("<BotTrail/>", () => {
       { coord: { x: 4, y: 4 }, water: 20 }]));
     return {
       position: { x: 0, y: 0, z: 0 },
+      missedSteps: undefined,
       mapTransformProps: fakeMapTransformProps(),
       peripherals: []
     };
@@ -50,6 +56,7 @@ describe("<BotTrail/>", () => {
     const wrapper = shallow(<BotTrail {...fakeProps()} />);
     const lines = wrapper.find(".virtual-bot-trail").find("line");
     expect(lines.length).toEqual(5);
+    expect(wrapper.find(".virtual-bot-trail").find("text").length).toEqual(0);
   });
 
   it("doesn't store duplicate last trail point", () => {
@@ -76,6 +83,13 @@ describe("<BotTrail/>", () => {
     expect(water.props().r).toEqual(21);
   });
 
+  it("shows missed step indicators", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.missedSteps = { x: 60, y: 70, z: 80 };
+    const wrapper = shallow(<BotTrail {...p} />);
+    expect(wrapper.find(".virtual-bot-trail").find("text").length).toEqual(3);
+  });
 });
 
 describe("resetVirtualTrail()", () => {

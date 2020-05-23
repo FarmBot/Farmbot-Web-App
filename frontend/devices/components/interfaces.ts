@@ -1,8 +1,8 @@
 import {
-  BotState, Xyz, SourceFwConfig,
-  ControlPanelState, Axis,
+  BotState, SourceFwConfig,
+  ControlPanelState, Axis, ShouldDisplay,
 } from "../interfaces";
-import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
+import { McuParamName, McuParams, FirmwareHardware, Xyz } from "farmbot";
 import { IntegerSize } from "../../util";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -20,6 +20,7 @@ export interface HomingAndCalibrationProps {
   firmwareConfig: FirmwareConfig | undefined;
   botOnline: boolean;
   firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface BooleanMCUInputGroupProps {
@@ -45,7 +46,7 @@ export interface CalibrationRowProps {
   toolTip: string;
   title: DeviceSetting;
   axisTitle: string;
-  disabled?: boolean;
+  stallUseDisabled?: boolean;
 }
 
 export interface NumericMCUInputGroupProps {
@@ -95,6 +96,7 @@ export interface EncodersProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface EndStopsProps {

@@ -13,6 +13,7 @@ describe("<Encoders />", () => {
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
+    shouldDisplay: () => true,
   });
 
   it("shows encoder labels", () => {
@@ -32,18 +33,19 @@ describe("<Encoders />", () => {
   });
 
   it("disables stall detection toggles", () => {
-    globalConfig.DISABLE_EXPRESS_STALL_DETECTION = "true";
     const p = fakeProps();
+    p.shouldDisplay = () => false;
     p.controlPanelState.encoders = true;
     p.firmwareHardware = "express_k10";
     const wrapper = mount(<Encoders {...p} />);
     expect(wrapper.find(BooleanMCUInputGroup).first().props().disabled)
       .toEqual(true);
+    expect(wrapper.text().toLowerCase()).not.toContain("sensitivity");
   });
 
   it("doesn't disable stall detection toggles: different firmware", () => {
-    globalConfig.DISABLE_EXPRESS_STALL_DETECTION = "true";
     const p = fakeProps();
+    p.shouldDisplay = () => false;
     p.controlPanelState.encoders = true;
     p.firmwareHardware = "arduino";
     const wrapper = mount(<Encoders {...p} />);
@@ -52,12 +54,13 @@ describe("<Encoders />", () => {
   });
 
   it("doesn't disable stall detection toggles: not disabled", () => {
-    delete globalConfig.DISABLE_EXPRESS_STALL_DETECTION;
     const p = fakeProps();
+    p.shouldDisplay = () => true;
     p.controlPanelState.encoders = true;
     p.firmwareHardware = "express_k10";
     const wrapper = mount(<Encoders {...p} />);
     expect(wrapper.find(BooleanMCUInputGroup).first().props().disabled)
       .toEqual(false);
+    expect(wrapper.text().toLowerCase()).toContain("sensitivity");
   });
 });

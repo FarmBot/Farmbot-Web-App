@@ -9,7 +9,7 @@ import {
 
 export const FieldSelection = (props: FieldSelectionProps) =>
   <div className={"update-resource-step-field"}>
-    <label>{t("field")}</label>
+    <label>{t("property")}</label>
     {(isCustomMetaField(props.field) && !isUndefined(props.field))
       ? <CustomMetaField {...props} field={props.field} />
       : <KnownFieldSelection {...props} />}

@@ -91,9 +91,9 @@ const pointVar = (
     });
 
 const groupVar = (value: string | number) => ({
-  identifierLabel: label, allowedVariableNodes
+  identifierLabel: label
 }: NewVarProps): VariableWithAValue =>
-  createVariableNode(allowedVariableNodes)(label, {
+  createParameterApplication(label, {
     kind: "point_group",
     args: { point_group_id: parseInt("" + value) }
   });

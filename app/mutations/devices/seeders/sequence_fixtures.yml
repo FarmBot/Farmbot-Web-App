@@ -60,7 +60,7 @@
     :comment: Verify tool is mounted
   - :kind: _if
     :args:
-      :rhs: 1
+      :rhs: 0
       :op: is
       :_else:
         :kind: execute
@@ -501,7 +501,7 @@
   - :kind: _if
     :args:
       :op: is
-      :rhs: 0
+      :rhs: 1
       :lhs:
         :kind: named_pin
         :args:

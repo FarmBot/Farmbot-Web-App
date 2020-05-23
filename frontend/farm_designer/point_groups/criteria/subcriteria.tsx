@@ -99,6 +99,7 @@ export const PlantCriteria = (props: PlantSubCriteriaProps) => {
   return <div className={"plant-criteria-options"}>
     <PlantStage {...commonProps} pointerType={"Plant"} />
     <PlantType {...commonProps} slugs={props.slugs} />
+    <Radius {...commonProps} pointerType={"Plant"} />
   </div>;
 };
 

@@ -1,5 +1,4 @@
-import { McuParams } from "farmbot/dist";
-import { Xyz } from "../interfaces";
+import { McuParams, Xyz } from "farmbot";
 import { transform } from "lodash";
 
 interface AxisStatus {
@@ -20,17 +19,26 @@ interface AxisStatus {
  * Useful for checking if it is safe to proceed with certain actions that
  * could damage the bot.
  */
-export function axisTrackingStatus(h: McuParams): AxisStatus[] {
-  const stats = enabledAxisMap(h);
+export function axisTrackingStatus(
+  mcuParams: McuParams, disableEncoderUse = false,
+): AxisStatus[] {
+  const stats = enabledAxisMap(mcuParams, disableEncoderUse);
   const mapper = (a: keyof typeof stats) => ({ axis: a, disabled: !stats[a] });
   return Object.keys(stats).map(mapper);
 }
 
-export function enabledAxisMap(h: McuParams): Record<Xyz, boolean> {
+export function enabledAxisMap(
+  mcuParams: McuParams, disableEncoderUse = false,
+): Record<Xyz, boolean> {
+  const encoderOrStallUseEnabled = {
+    x: !disableEncoderUse && mcuParams.encoder_enabled_x,
+    y: !disableEncoderUse && mcuParams.encoder_enabled_y,
+    z: !disableEncoderUse && mcuParams.encoder_enabled_z,
+  };
   return {
-    x: !!(h.encoder_enabled_x || h.movement_enable_endpoints_x),
-    y: !!(h.encoder_enabled_y || h.movement_enable_endpoints_y),
-    z: !!(h.encoder_enabled_z || h.movement_enable_endpoints_z)
+    x: !!(encoderOrStallUseEnabled.x || mcuParams.movement_enable_endpoints_x),
+    y: !!(encoderOrStallUseEnabled.y || mcuParams.movement_enable_endpoints_y),
+    z: !!(encoderOrStallUseEnabled.z || mcuParams.movement_enable_endpoints_z)
   };
 }
 

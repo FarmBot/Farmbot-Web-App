@@ -11,6 +11,11 @@ describe("updatePageInfo()", () => {
     updatePageInfo("designer");
     expect(document.title).toEqual("Farm designer - FarmBot");
   });
+
+  it("sets page title: Farm Designer: Plants", () => {
+    updatePageInfo("designer", "plants");
+    expect(document.title).toEqual("Farm designer: Plants - FarmBot");
+  });
 });
 
 describe("attachToRoot()", () => {
