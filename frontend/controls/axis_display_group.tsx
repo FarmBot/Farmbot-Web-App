@@ -8,7 +8,7 @@ import { DevSettings } from "../account/dev/dev_support";
 
 const Axis = ({ axis, val, missedSteps, axisState, busy, index }: AxisProps) =>
   <Col xs={3} className={"index-" + index}>
-    {isNumber(missedSteps) &&
+    {isNumber(missedSteps) && missedSteps > 0 &&
       <MissedStepIndicator missedSteps={missedSteps} axis={axis} />}
     <input disabled name={axis} value={isNumber(val) ? val : "---"} />
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&

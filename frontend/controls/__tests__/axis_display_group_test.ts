@@ -56,6 +56,13 @@ describe("<AxisDisplayGroup />", () => {
     expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
   });
 
+  it("doesn't render missed step indicator", () => {
+    const p = fakeProps();
+    p.missedSteps = { x: -1, y: -1, z: -1 };
+    const wrapper = mount(AxisDisplayGroup(p));
+    expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
+  });
+
   it("renders axis state", () => {
     mockDev = true;
     const p = fakeProps();
