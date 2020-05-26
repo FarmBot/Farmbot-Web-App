@@ -950,7 +950,7 @@ ul {
 .controls-popup {
   color: $off_white;
   @media screen and (max-width: 450px) {
-    &.panel-open {
+    &.panel-open, &.panel-open-new {
       display: none;
     }
   }

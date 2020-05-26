@@ -4,9 +4,9 @@ import {
   FarmwareManifest as FarmwareManifestV2,
 } from "farmbot";
 
-export function fakeFarmware(): FarmwareManifestInfo {
+export function fakeFarmware(fwName = "My Fake Farmware"): FarmwareManifestInfo {
   return {
-    name: "My Fake Farmware",
+    name: fwName,
     installation_pending: false,
     url: "https://",
     config: [{ name: "config_1", label: "Config 1", value: "4" }],

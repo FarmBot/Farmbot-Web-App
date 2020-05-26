@@ -133,6 +133,7 @@ describe("<CameraCalibration/>", () => {
     expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
       CAMERA_CALIBRATION_easy_calibration: "\"FALSE\""
     });
+    expect(wrapper.text()).not.toContain(Content.CAMERA_CALIBRATION);
   });
 
   it("renders simple version", () => {
@@ -140,5 +141,6 @@ describe("<CameraCalibration/>", () => {
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
     const wrapper = mount(<CameraCalibration {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("blur");
+    expect(wrapper.text()).toContain(Content.CAMERA_CALIBRATION);
   });
 });

@@ -18,6 +18,7 @@ import {
 } from "../../devices/components/fbos_settings/camera_selection";
 import { UUID } from "../../resources/interfaces";
 import { DevSettings } from "../../account/dev/dev_support";
+import { Content } from "../../constants";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -55,11 +56,15 @@ export class CameraCalibration extends
       <Row>
         <Col sm={12}>
           {DevSettings.futureFeaturesEnabled() &&
-            <BoolConfig
-              wDEnv={this.props.wDEnv}
-              configKey={this.namespace("easy_calibration")}
-              label={t("Simpler")}
-              onChange={this.saveEnvVar} />}
+            <div className={"simple-camera-calibration-checkbox"}>
+              <BoolConfig
+                wDEnv={this.props.wDEnv}
+                configKey={this.namespace("easy_calibration")}
+                label={t("Simpler")}
+                onChange={this.saveEnvVar} />
+              {!!envGet(this.namespace("easy_calibration"), this.props.wDEnv) &&
+                <p>{t(Content.CAMERA_CALIBRATION)}</p>}
+            </div>}
           {!envGet(this.namespace("easy_calibration"), this.props.wDEnv) &&
             <ImageWorkspace
               botOnline={
