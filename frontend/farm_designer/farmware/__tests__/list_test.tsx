@@ -5,7 +5,9 @@ import {
   DesignerFarmwareListProps,
   mapStateToProps,
 } from "../list";
-import { fakeFarmwares } from "../../../__test_support__/fake_farmwares";
+import {
+  fakeFarmware,
+} from "../../../__test_support__/fake_farmwares";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   fakeFarmwareInstallation,
@@ -20,6 +22,7 @@ describe("<DesignerFarmwareList />", () => {
     dispatch: jest.fn(),
     currentFarmware: undefined,
     farmwares: {},
+    firstPartyFarmwareNames: ["x"],
   });
 
   it("renders empty farmware list panel", () => {
@@ -30,10 +33,10 @@ describe("<DesignerFarmwareList />", () => {
 
   it("renders farmware list panel", () => {
     const p = fakeProps();
-    p.farmwares = fakeFarmwares();
+    p.farmwares = { x: fakeFarmware("x"), y: fakeFarmware("y") };
     const wrapper = mount(<DesignerFarmwareList {...p} />);
-    ["my fake farmware"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.text().toLowerCase()).toContain("y");
+    expect(wrapper.text().toLowerCase()).not.toContain("x");
   });
 
   it("changes search term", () => {

@@ -167,7 +167,7 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
           type="number"
           name={axis}
           value={props.pointLocation[axis]}
-          min={0}
+          min={axis == "z" ? undefined : 0}
           onCommit={e => props.updatePoint({
             [axis]: round(parseIntInput(e.currentTarget.value))
           })} />

@@ -7,7 +7,8 @@
     width: 100%;
   }
   &.new {
-    width: 45rem;
+    max-width: 45rem;
+    width: 100%;
   }
 }
 
@@ -186,6 +187,10 @@
 
 .panel-tabs {
   display: flex;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   img, .fa {
     filter: brightness(0%) invert(100%);
     opacity: 0.8;
@@ -507,6 +512,9 @@
   .bp3-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
   }
 }
 

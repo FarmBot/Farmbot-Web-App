@@ -38,6 +38,7 @@ import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { save, destroy } from "../../../api/crud";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error, success } from "../../../toast/toast";
+import { BlurableInput } from "../../../ui";
 
 const mockSequence = fakeSequence();
 
@@ -145,65 +146,6 @@ describe("<EditFEForm />", () => {
     i.fieldSet("executable_id", "1");
     i.forceUpdate();
     expect(i.state.fe.executable_id).toEqual("1");
-  });
-
-  it("sets regimen repeat to `never` as needed", () => {
-    const result = recombine({
-      id: 1,
-      startDate: "2017-08-01",
-      startTime: "08:35",
-      endDate: "2017-08-01",
-      endTime: "08:33",
-      repeat: "1",
-      timeUnit: "daily",
-      executable_type: "Regimen",
-      executable_id: "1",
-      timeSettings: fakeTimeSettings(),
-      body: undefined,
-    }, { forceRegimensToMidnight: false });
-    expect(result.time_unit).toEqual("never");
-    expect(result.time_unit).not.toEqual("daily");
-  });
-
-  it("sets regimen start_time to `00:00` as needed", () => {
-    const result = recombine({
-      id: 1,
-      startDate: "2017-08-01",
-      startTime: "08:35",
-      endDate: "2017-08-01",
-      endTime: "08:33",
-      repeat: "1",
-      timeUnit: "daily",
-      executable_type: "Regimen",
-      executable_id: "1",
-      timeSettings: fakeTimeSettings(),
-      body: undefined,
-    }, { forceRegimensToMidnight: true });
-    expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
-  });
-
-  it(`Recombines local state back into a TaggedFarmEvent["body"]`, () => {
-    const result = recombine({
-      id: 1,
-      startDate: "2017-08-01",
-      startTime: "08:35",
-      endDate: "2017-08-01",
-      endTime: "08:33",
-      repeat: "1",
-      timeUnit: "never",
-      executable_type: "Regimen",
-      executable_id: "1",
-      timeSettings: fakeTimeSettings(),
-    }, { forceRegimensToMidnight: false });
-    expect(result).toEqual({
-      id: 1,
-      start_time: "2017-08-01T08:35:00.000Z",
-      end_time: "2017-08-01T08:33:00.000Z",
-      repeat: 1,
-      time_unit: "never",
-      executable_type: "Regimen",
-      executable_id: 1
-    });
   });
 
   it("renders the correct save button text when adding", () => {
@@ -501,6 +443,83 @@ describe("<EditFEForm />", () => {
   });
 });
 
+describe("recombine()", () => {
+  it("sets regimen repeat to `never` as needed", () => {
+    const result = recombine({
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "daily",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeSettings: fakeTimeSettings(),
+      body: undefined,
+    }, { forceRegimensToMidnight: false });
+    expect(result.time_unit).toEqual("never");
+    expect(result.time_unit).not.toEqual("daily");
+  });
+
+  it("sets regimen start_time to `00:00` as needed", () => {
+    const result = recombine({
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "daily",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeSettings: fakeTimeSettings(),
+      body: undefined,
+    }, { forceRegimensToMidnight: true });
+    expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
+  });
+
+  it(`Recombines local state back into a TaggedFarmEvent["body"]`, () => {
+    const result = recombine({
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "never",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeSettings: fakeTimeSettings(),
+    }, { forceRegimensToMidnight: false });
+    expect(result).toEqual({
+      id: 1,
+      start_time: "2017-08-01T08:35:00.000Z",
+      end_time: "2017-08-01T08:33:00.000Z",
+      repeat: 1,
+      time_unit: "never",
+      executable_type: "Regimen",
+      executable_id: 1
+    });
+  });
+});
+
+describe("offsetTime()", () => {
+  it("handles matching timezones", () => {
+    const timeSettings = fakeTimeSettings();
+    timeSettings.utcOffset = 0;
+    const result = offsetTime("2017-05-22", "06:00", timeSettings);
+    expect(result).toEqual("2017-05-22T06:00:00.000Z");
+  });
+
+  it("handles timezone difference", () => {
+    const timeSettings = fakeTimeSettings();
+    timeSettings.utcOffset = 1;
+    const result = offsetTime("2017-05-22", "06:00", timeSettings);
+    expect(result).toEqual("2017-05-22T05:00:00.000Z");
+  });
+});
+
 describe("destructureFarmEvent", () => {
   it("Converts UTC to Bot's local time", () => {
     const fe = fakeFarmEvent("Sequence", 12);
@@ -517,7 +536,10 @@ describe("destructureFarmEvent", () => {
 describe("<StartTimeForm />", () => {
   const fakeProps = (): StartTimeFormProps => ({
     isRegimen: false,
-    fieldGet: jest.fn(),
+    fieldGet: jest.fn(key =>
+      "" + ({
+        startDate: "2017-07-25", startTime: "08:57"
+      } as FarmEventViewModel)[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
@@ -538,6 +560,21 @@ describe("<StartTimeForm />", () => {
       currentTarget: { value: "08:57" }
     });
     expect(p.fieldSet).toHaveBeenCalledWith("startTime", "08:57");
+  });
+
+  it("displays error", () => {
+    const p = fakeProps();
+    p.now = moment();
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    expect(wrapper.find(BlurableInput).first().props().error?.toLowerCase())
+      .toContain("must be in the future");
+  });
+
+  it("doesn't display error", () => {
+    const p = fakeProps();
+    p.now = moment("2015-12-28T22:32:00.000Z");
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
   });
 });
 
