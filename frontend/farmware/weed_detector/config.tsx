@@ -65,26 +65,26 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
             onChange={this.setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
             selectedItem={this.find("CAMERA_CALIBRATION_calibration_along_axis")}
             list={CALIBRATION_DROPDOWNS} />
-          <Row>
-            <Col xs={6}>
-              <this.NumberBox
-                conf={"CAMERA_CALIBRATION_camera_offset_x"}
-                label={t(`Camera Offset X`)} />
-            </Col>
-            <Col xs={6}>
-              <this.NumberBox
-                conf={"CAMERA_CALIBRATION_camera_offset_y"}
-                label={t(`Camera Offset Y`)} />
-            </Col>
-          </Row>
-          <label htmlFor="image_bot_origin_location">
-            {t(`Origin Location in Image`)}
-          </label>
-          <FBSelect
-            list={ORIGIN_DROPDOWNS}
-            onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
-            selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")} />
         </div>}
+      <Row>
+        <Col xs={6}>
+          <this.NumberBox
+            conf={"CAMERA_CALIBRATION_camera_offset_x"}
+            label={t(`Camera Offset X`)} />
+        </Col>
+        <Col xs={6}>
+          <this.NumberBox
+            conf={"CAMERA_CALIBRATION_camera_offset_y"}
+            label={t(`Camera Offset Y`)} />
+        </Col>
+      </Row>
+      <label htmlFor="image_bot_origin_location">
+        {t(`Origin Location in Image`)}
+      </label>
+      <FBSelect
+        list={ORIGIN_DROPDOWNS}
+        onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
+        selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")} />
       <Row>
         <Col xs={6}>
           <this.NumberBox

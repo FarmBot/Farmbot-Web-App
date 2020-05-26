@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../../../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { CalibrationRow } from "../calibration_row";
@@ -28,6 +33,7 @@ describe("<CalibrationRow />", () => {
   });
 
   it("is not disabled", () => {
+    mockDev = true;
     const p = fakeProps();
     p.type = "zero";
     const result = mount(<CalibrationRow {...p} />);
@@ -45,9 +51,13 @@ describe("<CalibrationRow />", () => {
     p.hardware.encoder_enabled_x = 1;
     p.hardware.encoder_enabled_y = 1;
     p.hardware.encoder_enabled_z = 1;
-    p.disabled = true;
+    p.hardware.movement_enable_endpoints_x = 1;
+    p.hardware.movement_enable_endpoints_y = 1;
+    p.hardware.movement_enable_endpoints_z = 0;
+    p.stallUseDisabled = true;
     const result = mount(<CalibrationRow {...p} />);
-    [0, 1, 2].map(i =>
-      expect(result.find("LockableButton").at(i).props().disabled).toEqual(true));
+    [0, 1].map(i =>
+      expect(result.find("LockableButton").at(i).props().disabled).toEqual(false));
+    expect(result.find("LockableButton").at(2).props().disabled).toEqual(true);
   });
 });

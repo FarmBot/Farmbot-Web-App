@@ -172,7 +172,8 @@ export namespace ToolTips {
     calibration and homing. (default: enabled)`);
 
   export const STALL_SENSITIVITY =
-    trim(`Motor stall sensitivity. (default: 30)`);
+    trim(`Motor stall sensitivity. Most sensitive: -63.
+    Least sensitive: +63. (default: 30)`);
 
   export const ENCODER_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
@@ -876,6 +877,13 @@ export namespace Content {
 
   export const NO_CAMERA_SELECTED =
     trim(`No camera selected`);
+
+  export const CAMERA_CALIBRATION =
+    trim(`Place the camera calibration card face down on the soil
+    underneath the camera, with the grid of white circles facing up.
+    Can be in any orientation but must be fully visible to the camera.
+    Caution: FarmBot will make two small x-axis and y-axis movements during
+    calibration.`);
 
   // Other
   export const DOWNLOAD_FBOS =

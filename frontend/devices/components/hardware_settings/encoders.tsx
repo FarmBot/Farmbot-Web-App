@@ -8,6 +8,7 @@ import { Collapse } from "@blueprintjs/core";
 import { hasEncoders } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
+import { Feature } from "../../interfaces";
 
 export function Encoders(props: EncodersProps) {
 
@@ -43,10 +44,10 @@ export function Encoders(props: EncodersProps) {
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         disabled={!showEncoders
-          && !!globalConfig.DISABLE_EXPRESS_STALL_DETECTION?.includes("true")}
+          && !props.shouldDisplay(Feature.express_stall_detection)}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      {!showEncoders &&
+      {!showEncoders && props.shouldDisplay(Feature.express_stall_sensitivity) &&
         <NumericMCUInputGroup
           label={DeviceSetting.stallSensitivity}
           tooltip={ToolTips.STALL_SENSITIVITY}

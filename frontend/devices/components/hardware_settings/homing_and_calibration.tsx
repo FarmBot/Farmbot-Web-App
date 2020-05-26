@@ -15,6 +15,7 @@ import { commandErr } from "../../actions";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
+import { Feature } from "../../interfaces";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
@@ -63,8 +64,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           : ToolTips.CALIBRATION_ENCODERS}
         action={axis => getDevice().calibrate({ axis })
           .catch(commandErr("Calibration"))}
-        disabled={!hasEncoders(firmwareHardware)
-          && !!globalConfig.DISABLE_EXPRESS_CALIBRATION?.includes("true")}
+        stallUseDisabled={!hasEncoders(firmwareHardware)
+          && !props.shouldDisplay(Feature.express_calibration)}
         hardware={hardware}
         botOnline={botOnline} />
       <CalibrationRow

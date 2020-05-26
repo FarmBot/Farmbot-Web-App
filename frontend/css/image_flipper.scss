@@ -88,8 +88,8 @@
   }
 }
 
-.photos{
-  .farmware-button{
+.photos {
+  .farmware-button {
     position: relative!important;
     bottom: 3rem;
     height: 0px;
@@ -98,13 +98,20 @@
 }
 
 .camera-calibration,
-.weed-detector{
-  .farmware-button{
+.weed-detector {
+  .farmware-button {
     position: relative;
     top: 0rem;
     z-index: 9;
     height: 0px;
     float: right;
+  }
+  .simple-camera-calibration-checkbox {
+    input {
+      float: left;
+      margin-top: 2rem;
+      margin-right: 1rem;
+    }
   }
 }
 

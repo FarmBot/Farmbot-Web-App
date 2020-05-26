@@ -4,7 +4,7 @@
   overflow-y: hidden;
   .garden-map-legend {
     @media screen and (max-width: 450px) {
-      &.panel-open {
+      &.panel-open, &.panel-open-new {
         display: none;
       }
       &.short-panel {
@@ -79,7 +79,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   margin-right: -10px;
-  padding-bottom: 5rem;
+  padding-bottom: inherit;
   .plant-catalog-tile {
     position: relative;
     cursor: pointer;

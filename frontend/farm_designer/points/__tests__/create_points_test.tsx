@@ -64,14 +64,14 @@ describe("<CreatePoints />", () => {
   it("renders for points", () => {
     mockPath = "/app/designer";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add point", "delete", "x", "y", "z", "diameter"]
+    ["add point", "delete", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     mockPath = "/app/designer/weeds/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add weed", "delete", "x", "y", "z", "diameter"]
+    ["add weed", "delete", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
@@ -96,7 +96,7 @@ describe("<CreatePoints />", () => {
     wrapper.instance().updateValue("r")(inputEvent("100"));
     expect(wrapper.instance().props.drawnPoint).toBeTruthy();
     const expected = cloneDeep(FAKE_POINT);
-    expected.r = 50;
+    expected.r = 100;
     expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: expected,

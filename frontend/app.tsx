@@ -4,8 +4,8 @@ import { init, error } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
-import { BotState, Xyz, UserEnv } from "./devices/interfaces";
-import { ResourceName, TaggedUser, TaggedLog } from "farmbot";
+import { BotState, UserEnv } from "./devices/interfaces";
+import { ResourceName, TaggedUser, TaggedLog, Xyz } from "farmbot";
 import {
   maybeFetchUser,
   maybeGetTimeSettings,

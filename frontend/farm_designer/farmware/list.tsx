@@ -17,6 +17,7 @@ export interface DesignerFarmwareListProps {
   dispatch: Function;
   farmwares: Farmwares;
   currentFarmware: string | undefined;
+  firstPartyFarmwareNames: string[];
 }
 
 interface FarmwareListState {
@@ -24,11 +25,16 @@ interface FarmwareListState {
 }
 
 export const mapStateToProps =
-  (props: Everything): DesignerFarmwareListProps => ({
-    currentFarmware: props.resources.consumers.farmware.currentFarmware,
-    farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
-    dispatch: props.dispatch,
-  });
+  (props: Everything): DesignerFarmwareListProps => {
+    const { currentFarmware, firstPartyFarmwareNames } =
+      props.resources.consumers.farmware;
+    return {
+      currentFarmware,
+      farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
+      dispatch: props.dispatch,
+      firstPartyFarmwareNames,
+    };
+  };
 
 export class RawDesignerFarmwareList
   extends React.Component<DesignerFarmwareListProps, FarmwareListState> {
@@ -37,7 +43,9 @@ export class RawDesignerFarmwareList
   get current() { return this.props.currentFarmware; }
 
   render() {
-    const farmwareNames = Object.values(this.props.farmwares).map(fw => fw.name);
+    const farmwareNames = Object.values(this.props.farmwares)
+      .map(fw => fw.name)
+      .filter(fwName => !this.props.firstPartyFarmwareNames.includes(fwName));
     const panelName = "designer-farmware-list";
     return <DesignerPanel panelName={panelName} panel={Panel.Farmware}>
       <DesignerNavTabs />

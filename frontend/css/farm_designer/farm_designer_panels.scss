@@ -7,7 +7,8 @@
     width: 100%;
   }
   &.new {
-    width: 45rem;
+    max-width: 45rem;
+    width: 100%;
   }
 }
 
@@ -34,7 +35,7 @@
     height: 100%;
     overflow-x: hidden;
     font-size: 1.6rem;
-    padding-bottom: 3rem;
+    padding-bottom: 6rem;
     label {
       font-size: 1.3rem;
       margin-top: 2rem;
@@ -186,6 +187,10 @@
 
 .panel-tabs {
   display: flex;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   img, .fa {
     filter: brightness(0%) invert(100%);
     opacity: 0.8;
@@ -292,7 +297,7 @@
     max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
+    padding-bottom: inherit;
   }
 }
 
@@ -359,7 +364,6 @@
     padding-top: 16rem;
     padding-right: 0;
     padding-left: 0;
-    padding-bottom: 5rem;
     max-height: calc(100vh - 13rem);
     overflow-y: auto;
     overflow-x: hidden;
@@ -382,7 +386,6 @@
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
   }
 }
 
@@ -462,6 +465,7 @@
 .crop-catalog-panel {
   .panel-content {
     padding: 1rem 1rem 6rem;
+    padding-bottom: inherit;
   }
 }
 
@@ -484,6 +488,7 @@
 
 .panel-content {
   padding: 0 1rem;
+  padding-bottom: inherit;
   a {
     color: $black;
     text-decoration: underline !important;
@@ -507,6 +512,9 @@
   .bp3-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
   }
 }
 
@@ -562,7 +570,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 2rem 1rem 6rem;
-    padding-bottom: 10rem;
+    padding-bottom: inherit;
     li {
       margin-bottom: 1rem;
       p {
@@ -820,7 +828,7 @@
 .settings-panel-content {
   padding: 0;
   margin-top: 6rem;
-  padding-bottom: 5rem;
+  padding-bottom: inherit;
   .section {
     margin-bottom: 2rem;
   }
@@ -926,6 +934,7 @@
     overflow-x: hidden;
     margin-top: 1rem;
     padding-left: 1rem;
+    padding-bottom: 12rem;
     .expandable-header {
       margin-top: 1.5rem;
       margin-bottom: 0;
@@ -941,6 +950,7 @@
     margin-right: -10px;
     padding-right: 1rem;
     padding-left: 1rem;
+    padding-bottom: 12rem;
   }
   .designer-setting {
     &.disabled {
@@ -953,6 +963,7 @@
 
 .saved-garden-panel-content {
   padding: 0;
+  padding-bottom: inherit;
   .row {
     margin: 0;
     margin-top: 1rem;
@@ -997,7 +1008,6 @@
     max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
   }
 }
 
@@ -1006,7 +1016,6 @@
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
     .clear-day-criteria,
     .clear-point-ids,
     .clear-criteria {
@@ -1291,6 +1300,7 @@
 .groups-panel {
   .panel-content {
     padding: 0;
+    padding-bottom: inherit;
     .active-weeds-header,
     .removed-weeds-header {
       display: flex;
@@ -1312,7 +1322,6 @@
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
     .widget-wrapper {
       box-shadow: none;
       .widget-header {
@@ -1330,6 +1339,14 @@
           color: $dark_gray;
         }
         background: none;
+      }
+    }
+    .bot-position-rows {
+      label {
+        margin-top: 0;
+      }
+      .axis-titles {
+        margin-bottom: 1rem;
       }
     }
     .index-indicator {
@@ -1352,7 +1369,6 @@
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
     a {
       text-decoration: none !important;
       p {
@@ -1376,7 +1392,6 @@
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 5rem;
     button {
       margin: 0.5rem;
     }

@@ -173,6 +173,8 @@ describe("determineInstalledOsVersion()", () => {
   it("returns correct installed FBOS version string", () => {
     checkVersionResult(undefined, undefined, undefined);
     checkVersionResult("1.1.1", undefined, "1.1.1");
+    checkVersionResult("", undefined, undefined);
+    checkVersionResult(undefined, "", undefined);
     checkVersionResult(undefined, "1.1.1", "1.1.1");
     checkVersionResult("bad", undefined, undefined);
     checkVersionResult(undefined, "bad", undefined);

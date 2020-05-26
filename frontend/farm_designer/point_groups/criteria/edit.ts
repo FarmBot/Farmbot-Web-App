@@ -82,6 +82,10 @@ export const clearSubCriteria = (
   }
   if (pointerTypes.includes("GenericPointer") && pointerTypes.includes("Weed")) {
     ["meta.color"].map(toggleStrEqMapper);
+  }
+  if (pointerTypes.includes("GenericPointer")
+    && pointerTypes.includes("Weed")
+    && pointerTypes.includes("Plant")) {
     delete tempCriteria.number_lt.radius;
     delete tempCriteria.number_gt.radius;
   }

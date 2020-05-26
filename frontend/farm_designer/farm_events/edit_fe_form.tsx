@@ -123,11 +123,12 @@ export function recombine(vm: FarmEventViewModel,
 
 export function offsetTime(
   date: string, time: string, timeSettings: TimeSettings): string {
-  const out = moment(date).utcOffset(timeSettings.utcOffset);
+  const out = moment(date);
   const [hrs, min] = time.split(":").map(x => parseInt(x));
   out.hours(hrs);
   out.minutes(min);
-  return out.toISOString();
+  const utcOffsetDifference = moment().utcOffset() / 60 - timeSettings.utcOffset;
+  return out.add(utcOffsetDifference, "hours").toISOString();
 }
 
 export interface EditFEProps {
@@ -393,10 +394,15 @@ export interface StartTimeFormProps {
   fieldGet(key: FarmEventViewModelKey): string;
   fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
+  now?: moment.Moment;
 }
 
 export const StartTimeForm = (props: StartTimeFormProps) => {
   const forceMidnight = props.isRegimen;
+  const startDatetimeError = !moment(props.now)
+    .isBefore(moment(offsetTime(props.fieldGet("startDate"),
+      props.fieldGet("startTime"), props.timeSettings))) ?
+    t("Start time and date must be in the future.") : undefined;
   return <div className="start-time-form">
     <label>
       {t("Starts")}
@@ -408,6 +414,7 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
           className="add-event-start-date"
           name="start_date"
           value={props.fieldGet("startDate")}
+          error={startDatetimeError}
           onCommit={e => props.fieldSet("startDate", e.currentTarget.value)} />
       </Col>
       <Col xs={6}>
@@ -416,6 +423,7 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
           name="start_time"
           timeSettings={props.timeSettings}
           value={props.fieldGet("startTime")}
+          error={startDatetimeError}
           onCommit={e => props.fieldSet("startTime", e.currentTarget.value)}
           disabled={forceMidnight}
           hidden={forceMidnight} />

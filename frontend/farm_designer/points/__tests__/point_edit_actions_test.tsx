@@ -63,6 +63,13 @@ describe("<EditPointLocation />", () => {
     });
     expect(p.updatePoint).toHaveBeenCalledWith({ x: 3 });
   });
+
+  it("allows negative z values", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EditPointLocation {...p} />);
+    expect(wrapper.find("BlurableInput").first().props().min).toEqual(0);
+    expect(wrapper.find("BlurableInput").last().props().min).toEqual(undefined);
+  });
 });
 
 describe("<EditPointRadius />", () => {
@@ -77,7 +84,7 @@ describe("<EditPointRadius />", () => {
     wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: 300 }
     });
-    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 150 });
+    expect(p.updatePoint).toHaveBeenCalledWith({ radius: 300 });
   });
 });
 
