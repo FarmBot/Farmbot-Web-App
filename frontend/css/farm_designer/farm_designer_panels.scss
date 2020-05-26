@@ -391,6 +391,9 @@
 
 .point-creation-panel {
   .panel-content {
+    max-height: calc(100vh - 17rem);
+    overflow-y: auto;
+    overflow-x: hidden;
     ul {
       margin-bottom: 0;
     }
@@ -497,6 +500,11 @@
 
 .edit-farm-event-panel,
 .add-farm-event-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   input {
     background: $white;
   }
@@ -570,7 +578,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 2rem 1rem 6rem;
-    padding-bottom: inherit;
+    padding-bottom: 12rem;
     li {
       margin-bottom: 1rem;
       p {
@@ -771,6 +779,9 @@
 
 .add-tool-slot-panel-content,
 .edit-tool-slot-panel-content {
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   svg {
     display: block;
     margin: auto;
@@ -818,6 +829,9 @@
       float: left;
       margin-right: 1rem;
     }
+  }
+  .fb-button.green {
+    margin-top: 1rem;
   }
 }
 
