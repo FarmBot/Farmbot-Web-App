@@ -59,7 +59,7 @@ export class RawDesignerFarmwareList
       </DesignerPanelTop>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
-          notEmpty={Object.values(this.props.farmwares).length > 0}
+          notEmpty={farmwareNames.length > 0}
           graphic={EmptyStateGraphic.sequences}
           title={t("No Farmware yet.")}
           text={Content.NO_FARMWARE}
