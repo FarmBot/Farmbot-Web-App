@@ -79,6 +79,10 @@ module Api
 
     STALE_RECORD = "Local data conflicts with remote data. Resolve conflicts and again"
 
+    def resource # OVERRIDE THIS IN CHILD
+      nil
+    end
+
     def maybe_enforce_row_lock
       if raw_json[:updated_at] && resource
         if resource.updated_at.as_json != raw_json[:updated_at]
