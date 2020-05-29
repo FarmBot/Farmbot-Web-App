@@ -17,6 +17,7 @@ module Api
 
     respond_to :json
     before_action :raw_json, only: [:update, :create]
+    before_action :maybe_enforce_row_lock, only: [:update]
     before_action :check_fbos_version
     before_action :set_default_stuff
     before_action :authenticate_user!
@@ -75,6 +76,16 @@ module Api
     "Please reduce the amount of data stored in a single resource"
 
     rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
+
+    STALE_RECORD = "Local data conflicts with remote data. Resolve conflicts and again"
+
+    def maybe_enforce_row_lock
+      if raw_json[:updated_at] && resource
+        if resource.updated_at.as_json != raw_json[:updated_at]
+          render json: { stale_record: STALE_RECORD }, status: 409
+        end
+      end
+    end
 
     def default_serializer_options
       { root: false, user: current_user }
