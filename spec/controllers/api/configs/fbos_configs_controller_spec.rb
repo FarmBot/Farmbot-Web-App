@@ -68,7 +68,6 @@ describe Api::FbosConfigsController do
       expect(device.fbos_config).to be
       body = { updated_at: 2.days.ago, network_not_found_timer: 20 }
       put :update, body: body.to_json, params: { format: :json }
-      binding.pry
       expect(response.status).to eq(409)
     end
 

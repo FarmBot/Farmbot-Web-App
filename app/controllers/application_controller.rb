@@ -1,16 +1,18 @@
 class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :null_session
+  after_action :unset_current_device
+
+  def unset_current_device
+    Device.send(:current=, nil)
+  end
 
   def current_device
-    if @current_device
-      @current_device
-    else
-      @current_device = (current_user.try(:device) || no_device)
-      # Mutable state eww
-      Device.send(:current=, @current_device)
-      @current_device
-    end
+    return @current_device if @current_device
+    current_user || autheticate_user!
+    @current_device = current_user.device || no_device
+    Device.send(:current=, @current_device)
+    @current_device
   end
 
   def current_device_id
