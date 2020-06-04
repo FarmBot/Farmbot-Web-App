@@ -4,7 +4,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { Xyz } from "farmbot";
 
-const HISTORY_LENGTH = 25;
+export const MISSED_STEP_HISTORY_LENGTH = 10;
 
 enum StorageKey {
   x = "missed_step_history_x",
@@ -36,7 +36,7 @@ export class MissedStepIndicator
       this.props.missedSteps != last(this.state.history)) {
       const newHistory = [...this.state.history];
       newHistory.push(this.props.missedSteps);
-      this.setState({ history: newHistory.slice(-HISTORY_LENGTH) });
+      this.setState({ history: newHistory.slice(-MISSED_STEP_HISTORY_LENGTH) });
     }
   }
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  MissedStepIndicator, MissedStepIndicatorProps,
+  MissedStepIndicator, MissedStepIndicatorProps, MISSED_STEP_HISTORY_LENGTH,
 } from "../missed_step_indicator";
 import { range } from "lodash";
 
@@ -60,7 +60,8 @@ describe("<MissedStepIndicator />", () => {
     const wrapper = mount<MissedStepIndicator>(<MissedStepIndicator {...p} />);
     wrapper.setState({ history: range(30) });
     wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().history).toEqual(range(6, 30).concat([10]));
+    const start = 30 - MISSED_STEP_HISTORY_LENGTH + 1;
+    expect(wrapper.state().history).toEqual(range(start, 30).concat([10]));
   });
 
   it.each<[
