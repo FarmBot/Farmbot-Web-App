@@ -399,8 +399,9 @@ export interface StartTimeFormProps {
 
 export const StartTimeForm = (props: StartTimeFormProps) => {
   const forceMidnight = props.isRegimen;
-  const startDatetimeError = !moment(props.now)
-    .isBefore(moment(offsetTime(props.fieldGet("startDate"),
+  const isNew = !parseInt("" + props.fieldGet("id"));
+  const startDatetimeError = isNew && !forceMidnight &&
+    !moment(props.now).isBefore(moment(offsetTime(props.fieldGet("startDate"),
       props.fieldGet("startTime"), props.timeSettings))) ?
     t("Start time and date must be in the future.") : undefined;
   return <div className="start-time-form">
