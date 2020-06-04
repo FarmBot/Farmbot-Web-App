@@ -74,6 +74,7 @@ class Device < ApplicationRecord
   def auto_sync_transaction
     Device.current = self
     yield
+  ensure
     Device.current = nil
   end
 
