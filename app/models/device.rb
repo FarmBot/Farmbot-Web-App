@@ -72,10 +72,10 @@ class Device < ApplicationRecord
   # background jobs. If you are not receiving auto_sync data on your client,
   # you probably need to use this method.
   def auto_sync_transaction
-    prev = Device.current
     Device.current = self
     yield
-    Device.current = prev
+  ensure
+    Device.current = nil
   end
 
   def tz_offset_hrs
