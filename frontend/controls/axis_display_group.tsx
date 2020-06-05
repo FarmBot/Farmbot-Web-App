@@ -6,13 +6,14 @@ import { t } from "../i18next_wrapper";
 import { MissedStepIndicator } from "./move/missed_step_indicator";
 import { DevSettings } from "../account/dev/dev_support";
 
-const Axis = ({ axis, val, missedSteps, axisState, busy, index }: AxisProps) =>
+const Axis = ({ axis, val, missedSteps, axisState, index }: AxisProps) =>
   <Col xs={3} className={"index-" + index}>
-    {isNumber(missedSteps) && missedSteps > 0 &&
-      <MissedStepIndicator missedSteps={missedSteps} axis={axis} />}
+    {isNumber(missedSteps) && missedSteps >= 0 &&
+      <MissedStepIndicator
+        missedSteps={axisState == "idle" ? 0 : missedSteps}
+        axis={axis} />}
     <input disabled name={axis} value={isNumber(val) ? val : "---"} />
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
-      busy &&
       <p>{t(axisState)}</p>}
   </Col>;
 

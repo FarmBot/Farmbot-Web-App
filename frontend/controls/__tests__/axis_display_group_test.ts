@@ -6,6 +6,7 @@ jest.mock("../../account/dev/dev_support", () => ({
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisDisplayGroupProps } from "../interfaces";
+import { MissedStepIndicator } from "../move/missed_step_indicator";
 
 describe("<AxisDisplayGroup />", () => {
   const fakeProps = (): AxisDisplayGroupProps => ({
@@ -44,7 +45,7 @@ describe("<AxisDisplayGroup />", () => {
 
   it("renders missed step indicator", () => {
     const p = fakeProps();
-    p.missedSteps = { x: 1, y: 2, z: 3 };
+    p.missedSteps = { x: 0, y: 2, z: 3 };
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.find(".missed-step-indicator").length).toEqual(3);
   });
@@ -63,6 +64,18 @@ describe("<AxisDisplayGroup />", () => {
     expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
   });
 
+  it("renders missed step indicator when idle", () => {
+    const p = fakeProps();
+    p.missedSteps = { x: 1, y: 2, z: 3 };
+    p.axisStates = { x: "idle", y: undefined, z: "stop" };
+    const wrapper = mount(AxisDisplayGroup(p));
+    const indicators = wrapper.find(MissedStepIndicator);
+    expect(indicators.length).toEqual(3);
+    expect(indicators.first().props().missedSteps).toEqual(0);
+    expect(indicators.at(1).props().missedSteps).toEqual(2);
+    expect(indicators.last().props().missedSteps).toEqual(3);
+  });
+
   it("renders axis state", () => {
     mockDev = true;
     const p = fakeProps();
@@ -72,11 +85,10 @@ describe("<AxisDisplayGroup />", () => {
     expect(wrapper.text()).toContain("idle");
   });
 
-  it("renders axis state", () => {
+  it("doesn't render axis state", () => {
     mockDev = false;
     const p = fakeProps();
-    p.busy = true;
-    p.axisStates = { x: "idle", y: "idle", z: "idle" };
+    p.axisStates = { x: undefined, y: undefined, z: undefined };
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.text()).not.toContain("idle");
   });
