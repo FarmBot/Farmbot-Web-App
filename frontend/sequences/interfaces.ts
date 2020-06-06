@@ -176,6 +176,7 @@ export interface StepTitleBarProps {
   index: number;
   dispatch: Function;
   sequence: TaggedSequence;
+  toggleDraggable(action: "enter" | "leave"): () => void;
 }
 
 export interface SelectSequence {
