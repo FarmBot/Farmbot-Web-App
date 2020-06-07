@@ -36,7 +36,7 @@ describe("QoS helpers", () => {
 
   it("calculates ping loss", () => {
     const report = calculatePingLoss(fakePings());
-    expect(report.total).toEqual(3);
+    expect(report.total).toEqual(2);
     expect(report.complete).toEqual(1);
     expect(report.pending).toEqual(1);
     expect(report.complete).toEqual(1);
