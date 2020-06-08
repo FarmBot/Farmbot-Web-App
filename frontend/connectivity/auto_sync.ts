@@ -49,6 +49,9 @@ export const handleUpdate =
   (d: UpdateMqttData<TaggedResource>, uuid: string) => {
     const tr = asTaggedResource(d);
     tr.uuid = uuid;
+    if (tr.kind == "Device") {
+      console.log("Received Device auto sync message.")
+    }
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
