@@ -100,7 +100,9 @@ class Device < ApplicationRecord
     end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
     if (throttled_until.nil? || (end_t > throttled_until))
-      reload.update!(throttled_until: end_t, throttled_at: Time.now)
+      auto_sync_transaction do
+        reload.update!(throttled_until: end_t, throttled_at: Time.now)
+      end
       cooldown = end_t.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
       cooldown_notice(THROTTLE_ON % info, end_t, "warn")

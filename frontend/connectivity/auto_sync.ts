@@ -45,12 +45,13 @@ export function asTaggedResource(data: UpdateMqttData<TaggedResource>):
 export const handleCreate =
   (data: UpdateMqttData<TaggedResource>) => init(data.kind, data.body, true);
 
+let count = 0;
 export const handleUpdate =
   (d: UpdateMqttData<TaggedResource>, uuid: string) => {
     const tr = asTaggedResource(d);
     tr.uuid = uuid;
     if (tr.kind == "Device") {
-      console.log("Received Device auto sync message.")
+      console.log("Received Device auto sync message. " + (count++));
     }
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
