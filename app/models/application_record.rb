@@ -1,7 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
-  after_create  :maybe_broadcast
-  after_update  :maybe_broadcast
+  after_create :maybe_broadcast
+  after_update :maybe_broadcast
   after_destroy :maybe_broadcast
 
   class << self
@@ -9,7 +9,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   DONT_BROADCAST = ["created_at",
-                    "last_saw_api",
+                    # "last_saw_api",
                     "last_saw_mq",
                     "last_sign_in_at",
                     "last_sign_in_ip",
