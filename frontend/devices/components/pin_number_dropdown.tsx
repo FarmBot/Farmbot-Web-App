@@ -19,6 +19,7 @@ interface PinNumberDropdownProps {
   dispatch: Function;
   pinNumKey: McuParamName;
   resources: ResourceIndex;
+  disabled: boolean;
 }
 
 /**
@@ -30,8 +31,12 @@ export const PinNumberDropdown = (props: PinNumberDropdownProps) => {
   const pinNumberValue = props.sourceFwConfig(pinNumKey).value || 0;
   const peripheralIds = peripheralDictionary(resources);
   const pinNumberNode = pinNumOrNamedPin(pinNumberValue, peripheralIds);
+  const classes = [
+    props.sourceFwConfig(pinNumKey).consistent ? "" : "dim",
+    props.disabled ? "disabled" : "",
+  ];
   return <FBSelect
-    extraClass={props.sourceFwConfig(pinNumKey).consistent ? "" : "dim"}
+    extraClass={classes.join(" ")}
     selectedItem={pinNumberValue
       ? celery2DropDown(pinNumberNode, resources)
       : undefined}

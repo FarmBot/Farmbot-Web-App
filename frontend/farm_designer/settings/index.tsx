@@ -45,6 +45,7 @@ export class RawDesignerSettings
     const { value } = this.props.sourceFbosConfig("firmware_hardware");
     const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
     const botOnline = isBotOnlineFromState(this.props.bot);
+    const { busy } = this.props.bot.hardware.informational_settings;
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"settings"}>
@@ -103,23 +104,29 @@ export class RawDesignerSettings
                 firmwareHardware={firmwareHardware}
                 botOnline={botOnline} />
               <Motors {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig}
                 firmwareHardware={firmwareHardware} />
               <Encoders {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig}
                 shouldDisplay={this.props.shouldDisplay}
                 firmwareHardware={firmwareHardware} />
               <EndStops {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig} />
               <ErrorHandling {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig} />
               <PinBindings  {...commonProps}
                 resources={resources}
                 firmwareHardware={firmwareHardware} />
               <PinGuard {...commonProps}
+                arduinoBusy={busy}
                 resources={resources}
                 sourceFwConfig={sourceFwConfig} />
               <DangerZone {...commonProps}
+                arduinoBusy={busy}
                 onReset={MCUFactoryReset}
                 botOnline={botOnline} />
               <Designer {...commonProps}

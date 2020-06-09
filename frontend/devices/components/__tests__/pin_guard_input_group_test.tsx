@@ -22,6 +22,7 @@ describe("<PinGuardMCUInputGroup/>", () => {
       sourceFwConfig: x =>
         ({ value: bot.hardware.mcu_params[x], consistent: true }),
       resources: buildResourceIndex([]).index,
+      disabled: false,
     };
   };
 

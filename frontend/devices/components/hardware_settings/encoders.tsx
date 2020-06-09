@@ -13,7 +13,7 @@ import { Feature } from "../../interfaces";
 export function Encoders(props: EncodersProps) {
 
   const { encoders } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, firmwareHardware } = props;
+  const { dispatch, sourceFwConfig, firmwareHardware, arduinoBusy } = props;
 
   const encodersDisabled = {
     x: !sourceFwConfig("encoder_enabled_x").value,
@@ -43,7 +43,7 @@ export function Encoders(props: EncodersProps) {
         x={"encoder_enabled_x"}
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
-        disabled={!showEncoders
+        disabled={arduinoBusy || !showEncoders
           && !props.shouldDisplay(Feature.express_stall_detection)}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
@@ -57,6 +57,7 @@ export function Encoders(props: EncodersProps) {
           min={-63}
           max={63}
           gray={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       {showEncoders &&
@@ -67,6 +68,7 @@ export function Encoders(props: EncodersProps) {
           y={"encoder_use_for_pos_y"}
           z={"encoder_use_for_pos_z"}
           grayscale={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       {showEncoders &&
@@ -77,6 +79,7 @@ export function Encoders(props: EncodersProps) {
           y={"encoder_invert_y"}
           z={"encoder_invert_z"}
           grayscale={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
@@ -88,6 +91,7 @@ export function Encoders(props: EncodersProps) {
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
         gray={encodersDisabled}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -97,6 +101,7 @@ export function Encoders(props: EncodersProps) {
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
         gray={encodersDisabled}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       {showEncoders &&
@@ -111,6 +116,7 @@ export function Encoders(props: EncodersProps) {
           zScale={sourceFwConfig("movement_microsteps_z").value}
           intSize={"long"}
           gray={encodersDisabled}
+          disabled={arduinoBusy}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
     </Collapse>

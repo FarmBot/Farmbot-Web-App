@@ -10,7 +10,7 @@ import { DevSettings } from "../../../account/dev/dev_support";
 
 export function DangerZone(props: DangerZoneProps) {
 
-  const { dispatch, onReset, botOnline } = props;
+  const { dispatch, onReset, botOnline, arduinoBusy } = props;
   const { danger_zone } = props.controlPanelState;
   const newFormat = DevSettings.futureFeaturesEnabled();
   return <Highlight className={"section"}
@@ -37,7 +37,7 @@ export function DangerZone(props: DangerZoneProps) {
           <Col xs={newFormat ? 4 : 2} className={"centered-button-div"}>
             <button
               className="fb-button red"
-              disabled={!botOnline}
+              disabled={arduinoBusy || !botOnline}
               title={t("RESET")}
               onClick={onReset}>
               {t("RESET")}

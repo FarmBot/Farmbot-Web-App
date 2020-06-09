@@ -30,7 +30,7 @@ export const calculateScale =
 
 export function Motors(props: MotorsProps) {
   const {
-    dispatch, controlPanelState, sourceFwConfig, firmwareHardware
+    dispatch, controlPanelState, sourceFwConfig, firmwareHardware, arduinoBusy,
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
@@ -54,6 +54,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -65,6 +66,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -76,6 +78,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -87,6 +90,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -98,6 +102,7 @@ export function Motors(props: MotorsProps) {
         xScale={sourceFwConfig("movement_microsteps_x").value}
         yScale={sourceFwConfig("movement_microsteps_y").value}
         zScale={sourceFwConfig("movement_microsteps_z").value}
+        disabled={arduinoBusy}
         float={false}
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
@@ -107,6 +112,7 @@ export function Motors(props: MotorsProps) {
         x={"movement_microsteps_x"}
         y={"movement_microsteps_y"}
         z={"movement_microsteps_z"}
+        disabled={arduinoBusy}
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
       <BooleanMCUInputGroup
@@ -115,6 +121,7 @@ export function Motors(props: MotorsProps) {
         x={"movement_keep_active_x"}
         y={"movement_keep_active_y"}
         z={"movement_keep_active_z"}
+        disabled={arduinoBusy}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
@@ -123,6 +130,7 @@ export function Motors(props: MotorsProps) {
         x={"movement_invert_motor_x"}
         y={"movement_invert_motor_y"}
         z={"movement_invert_motor_z"}
+        disabled={arduinoBusy}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       {isTMCBoard(firmwareHardware) &&
@@ -132,6 +140,7 @@ export function Motors(props: MotorsProps) {
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"
@@ -141,6 +150,7 @@ export function Motors(props: MotorsProps) {
           className={"no-float"}
           toggleValue={enable2ndXMotor.value}
           dim={!enable2ndXMotor.consistent}
+          disabled={arduinoBusy}
           toggleAction={() => dispatch(
             settingToggle("movement_secondary_motor_x", sourceFwConfig))} />
       </SingleSettingRow>
@@ -152,6 +162,7 @@ export function Motors(props: MotorsProps) {
           grayscale={!enable2ndXMotor.value}
           toggleValue={invert2ndXMotor.value}
           dim={!invert2ndXMotor.consistent}
+          disabled={arduinoBusy}
           toggleAction={() => dispatch(
             settingToggle("movement_secondary_motor_invert_x", sourceFwConfig))} />
       </SingleSettingRow>

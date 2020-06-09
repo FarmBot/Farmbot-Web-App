@@ -200,6 +200,7 @@ export interface McuInputBoxProps {
   gray?: boolean;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }
 
 export interface EStopButtonProps {

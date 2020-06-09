@@ -11,6 +11,7 @@ describe("<EndStops />", () => {
     controlPanelState: panelState(),
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    arduinoBusy: false,
   });
 
   it("shows endstop labels", () => {

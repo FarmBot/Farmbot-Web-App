@@ -12,7 +12,7 @@ import { DevSettings } from "../../../account/dev/dev_support";
 export function PinGuard(props: PinGuardProps) {
 
   const { pin_guard } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, resources } = props;
+  const { dispatch, sourceFwConfig, resources, arduinoBusy } = props;
   const newFormat = DevSettings.futureFeaturesEnabled();
   return <Highlight className={"section"}
     settingName={DeviceSetting.pinGuard}>
@@ -50,6 +50,7 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_1_active_state"}
         dispatch={dispatch}
         resources={resources}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         label={DeviceSetting.pinGuard2}
@@ -58,6 +59,7 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_2_active_state"}
         dispatch={dispatch}
         resources={resources}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         label={DeviceSetting.pinGuard3}
@@ -66,6 +68,7 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_3_active_state"}
         dispatch={dispatch}
         resources={resources}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         label={DeviceSetting.pinGuard4}
@@ -74,6 +77,7 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_4_active_state"}
         dispatch={dispatch}
         resources={resources}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
         label={DeviceSetting.pinGuard5}
@@ -82,6 +86,7 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_5_active_state"}
         dispatch={dispatch}
         resources={resources}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </Highlight>;

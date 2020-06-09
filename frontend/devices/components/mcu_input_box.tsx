@@ -79,6 +79,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
       className={this.className}
       value={this.showValue}
       onCommit={this.commit}
+      disabled={this.props.disabled}
       min={this.props.min || 0}
       max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />;
   }
