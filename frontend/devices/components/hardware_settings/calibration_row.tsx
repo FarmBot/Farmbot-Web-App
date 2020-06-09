@@ -13,16 +13,18 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
   get newFormat() { return DevSettings.futureFeaturesEnabled(); }
 
   Axes = () => {
-    const { type, botOnline, axisTitle, hardware, action } = this.props;
+    const {
+      type, botOnline, axisTitle, mcuParams, action, arduinoBusy,
+    } = this.props;
     return <div className="calibration-row-axes">
-      {axisTrackingStatus(hardware, this.props.stallUseDisabled)
+      {axisTrackingStatus(mcuParams, this.props.stallUseDisabled)
         .map(row => {
           const { axis } = row;
           const hardwareDisabled = type == "zero" ? false : row.disabled;
           return <Col xs={this.newFormat ? 4 : 2} key={axis}
             className={"centered-button-div"}>
             <LockableButton
-              disabled={hardwareDisabled || !botOnline}
+              disabled={arduinoBusy || hardwareDisabled || !botOnline}
               title={t(axisTitle)}
               onClick={() => action(axis)}>
               {`${t(axisTitle)} ${axis}`}

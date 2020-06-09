@@ -10,7 +10,7 @@ import { SpacePanelHeader } from "./space_panel_header";
 export function EndStops(props: EndStopsProps) {
 
   const { endstops } = props.controlPanelState;
-  const { dispatch, sourceFwConfig } = props;
+  const { dispatch, sourceFwConfig, arduinoBusy } = props;
 
   return <Highlight className={"section"}
     settingName={DeviceSetting.endstops}>
@@ -27,6 +27,7 @@ export function EndStops(props: EndStopsProps) {
         x={"movement_enable_endpoints_x"}
         y={"movement_enable_endpoints_y"}
         z={"movement_enable_endpoints_z"}
+        disabled={arduinoBusy}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
@@ -35,6 +36,7 @@ export function EndStops(props: EndStopsProps) {
         x={"movement_invert_endpoints_x"}
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
+        disabled={arduinoBusy}
         grayscale={{
           x: !sourceFwConfig("movement_enable_endpoints_x").value,
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
@@ -48,6 +50,7 @@ export function EndStops(props: EndStopsProps) {
         x={"movement_invert_2_endpoints_x"}
         y={"movement_invert_2_endpoints_y"}
         z={"movement_invert_2_endpoints_z"}
+        disabled={arduinoBusy}
         grayscale={{
           x: !sourceFwConfig("movement_enable_endpoints_x").value,
           y: !sourceFwConfig("movement_enable_endpoints_y").value,

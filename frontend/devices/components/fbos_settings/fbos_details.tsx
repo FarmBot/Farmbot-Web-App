@@ -264,6 +264,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
   const { last_ota, last_ota_checkup, fbos_version } = props.deviceAccount.body;
+  const firmware_path =
+    props.sourceFbosConfig("firmware_path" as ConfigurationName).value || "---";
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
   const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
@@ -285,6 +287,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <CommitDisplay title={t("Firmware commit")}
       repo={FarmBotRepo.FarmBotArduinoFirmware} commit={firmwareCommit} />
     <p><b>{t("Firmware code")}: </b>{firmware_version}</p>
+    <p><b>{t("Firmware path")}: </b>{firmware_path}</p>
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
     {isNumber(memory_usage) &&
       <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}

@@ -23,14 +23,15 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
     dispatch, bot, sourceFwConfig, firmwareConfig, botOnline,
     firmwareHardware
   } = props;
-  const hardware = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
+  const mcuParams = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
   const { homing_and_calibration } = props.bot.controlPanelState;
+  const { busy } = bot.hardware.informational_settings;
 
   /**
    * Tells us if X/Y/Z have a means of checking their position.
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
-  const disabled = disabledAxisMap(hardware);
+  const disabled = disabledAxisMap(mcuParams);
 
   const scale = calculateScale(sourceFwConfig);
 
@@ -53,7 +54,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         action={axis => getDevice()
           .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
           .catch(commandErr("'Find Home' request"))}
-        hardware={hardware}
+        mcuParams={mcuParams}
+        arduinoBusy={busy}
         botOnline={botOnline} />
       <CalibrationRow
         type={"calibrate"}
@@ -66,7 +68,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           .catch(commandErr("Calibration"))}
         stallUseDisabled={!hasEncoders(firmwareHardware)
           && !props.shouldDisplay(Feature.express_calibration)}
-        hardware={hardware}
+        mcuParams={mcuParams}
+        arduinoBusy={busy}
         botOnline={botOnline} />
       <CalibrationRow
         type={"zero"}
@@ -75,7 +78,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         toolTip={ToolTips.SET_ZERO_POSITION}
         action={axis => getDevice().setZero(axis)
           .catch(commandErr("Zeroing"))}
-        hardware={hardware}
+        mcuParams={mcuParams}
+        arduinoBusy={busy}
         botOnline={botOnline} />
       <BooleanMCUInputGroup
         label={DeviceSetting.findHomeOnBoot}
@@ -83,6 +87,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
           : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
         disable={disabled}
+        disabled={busy}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
@@ -92,6 +97,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <BooleanMCUInputGroup
         label={DeviceSetting.stopAtHome}
         tooltip={ToolTips.STOP_AT_HOME}
+        disabled={busy}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
         z={"movement_stop_at_home_z"}
@@ -100,6 +106,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <BooleanMCUInputGroup
         label={DeviceSetting.stopAtMax}
         tooltip={ToolTips.STOP_AT_MAX}
+        disabled={busy}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"}
@@ -108,6 +115,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <BooleanMCUInputGroup
         label={DeviceSetting.negativeCoordinatesOnly}
         tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
+        disabled={busy}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
         z={"movement_home_up_z"}
@@ -116,6 +124,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       <NumericMCUInputGroup
         label={DeviceSetting.axisLength}
         tooltip={ToolTips.LENGTH}
+        disabled={busy}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}

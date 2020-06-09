@@ -27,6 +27,15 @@ describe("<EncoderType/>", () => {
     wrapper.find(FBSelect).first().simulate("change", { label: "", value: 1 });
     expect(p.onChange).toHaveBeenCalledWith("encoder_type_x", 1);
   });
+
+  it("handles bad encoder type", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EncoderType {...p} />);
+    const selection = wrapper.find(FBSelect).first();
+    const change = () => selection.simulate("change", { label: "", value: 2 });
+    expect(change).toThrowError("Got bad encoder type in device panel.");
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
 });
 
 describe("findByType", () => {

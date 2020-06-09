@@ -29,6 +29,7 @@ export class HardwareSettings extends
       firmwareHardware, resources
     } = this.props;
     const botOnline = isBotOnlineFromState(bot);
+    const { busy } = bot.hardware.informational_settings;
     const commonProps = { dispatch, controlPanelState };
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
@@ -60,23 +61,29 @@ export class HardwareSettings extends
           firmwareHardware={firmwareHardware}
           botOnline={botOnline} />
         <Motors {...commonProps}
+          arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
           firmwareHardware={firmwareHardware} />
         <Encoders {...commonProps}
+          arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
           shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <EndStops {...commonProps}
+          arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig} />
         <ErrorHandling {...commonProps}
+          arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig} />
         <PinBindings  {...commonProps}
           resources={resources}
           firmwareHardware={firmwareHardware} />
         <PinGuard {...commonProps}
+          arduinoBusy={busy}
           resources={resources}
           sourceFwConfig={sourceFwConfig} />
         <DangerZone {...commonProps}
+          arduinoBusy={busy}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
       </WidgetBody>
