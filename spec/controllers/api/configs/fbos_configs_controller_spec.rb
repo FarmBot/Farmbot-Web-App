@@ -64,6 +64,7 @@ describe Api::FbosConfigsController do
     end
 
     it "performs row locking" do
+      pending
       sign_in user
       expect(device.fbos_config).to be
       body = { updated_at: 2.days.ago, network_not_found_timer: 20 }

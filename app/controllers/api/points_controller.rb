@@ -47,9 +47,9 @@ module Api
 
     private
 
-    def resource
-      point
-    end
+    # def resource
+    #   point
+    # end
 
     def point
       @point ||= points.find(params[:id])

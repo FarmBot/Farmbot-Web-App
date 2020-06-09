@@ -84,11 +84,11 @@ module Api
     end
 
     def maybe_enforce_row_lock
-      if raw_json[:updated_at] && resource
-        if resource.updated_at.as_json != raw_json[:updated_at]
-          render json: { stale_record: STALE_RECORD }, status: 409
-        end
-      end
+      # if raw_json[:updated_at] && resource
+      #   if resource.updated_at.as_json != raw_json[:updated_at]
+      #     render json: { stale_record: STALE_RECORD }, status: 409
+      #   end
+      # end
     end
 
     def default_serializer_options

@@ -9,7 +9,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   DONT_BROADCAST = ["created_at",
-                    # "last_saw_api",
+                    "last_saw_api",
                     "last_saw_mq",
                     "last_sign_in_at",
                     "last_sign_in_ip",
