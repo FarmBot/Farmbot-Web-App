@@ -51,10 +51,14 @@ function translate(input: Step): string {
 
 export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
   render() {
-    return <BlurableInput className="step-label"
-      value={this.props.step.comment || ""}
-      placeholder={translate(this.props.step)}
-      onCommit={updateStepTitle(this.props)}
-      allowEmpty={true} />;
+    return <div className={"step-comment"}
+      onMouseEnter={this.props.toggleDraggable("enter")}
+      onMouseLeave={this.props.toggleDraggable("leave")}>
+      <BlurableInput className="step-label"
+        value={this.props.step.comment || ""}
+        placeholder={translate(this.props.step)}
+        onCommit={updateStepTitle(this.props)}
+        allowEmpty={true} />
+    </div>;
   }
 }

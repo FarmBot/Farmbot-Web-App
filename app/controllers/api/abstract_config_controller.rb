@@ -6,7 +6,8 @@ module Api
   # AbstractConfigController
   class AbstractConfigController < Api::AbstractController
     class YouMustChangeThis; end
-    KLASS         = YouMustChangeThis
+
+    KLASS = YouMustChangeThis
     RELATION_NAME = "you_must_change_this"
 
     def show
@@ -22,10 +23,14 @@ module Api
       render json: ""
     end
 
-  private
+    private
+
+    # def resource
+    #   config_object
+    # end
 
     def config_object
-      current_device.send(self.class::RELATION_NAME)
+      @config_object ||= current_device.send(self.class::RELATION_NAME)
     end
   end
 end

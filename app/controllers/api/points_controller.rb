@@ -6,7 +6,6 @@ module Api
     # without warning when the device hits
     # Points::Create::POINT_SOFT_LIMIT
     HARD_DELETE_AFTER = 2.months
-
     # "?filter=all", "?filter=old", "?filter=kept"
     ARCHIVAL_SCOPES = {
                         "all" => Point.all,
@@ -47,6 +46,10 @@ module Api
     end
 
     private
+
+    # def resource
+    #   point
+    # end
 
     def point
       @point ||= points.find(params[:id])

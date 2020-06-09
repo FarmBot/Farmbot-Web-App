@@ -1,7 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
-  after_create  :maybe_broadcast
-  after_update  :maybe_broadcast
+  after_create :maybe_broadcast
+  after_update :maybe_broadcast
   after_destroy :maybe_broadcast
 
   class << self

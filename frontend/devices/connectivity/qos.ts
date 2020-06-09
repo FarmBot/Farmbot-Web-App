@@ -72,7 +72,7 @@ export const calculatePingLoss = (s: PingDictionary): PingLossReport => {
   };
 
   all.map(p => report[p.kind] += 1);
-  report.total = all.length;
+  report.total = all.filter(p => p.kind != "pending").length;
 
   return report;
 };

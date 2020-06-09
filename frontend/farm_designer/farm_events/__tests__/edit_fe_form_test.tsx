@@ -534,12 +534,14 @@ describe("destructureFarmEvent", () => {
 });
 
 describe("<StartTimeForm />", () => {
+  const mockVM = {
+    startDate: "2017-07-25",
+    startTime: "08:57",
+  } as FarmEventViewModel;
+
   const fakeProps = (): StartTimeFormProps => ({
     isRegimen: false,
-    fieldGet: jest.fn(key =>
-      "" + ({
-        startDate: "2017-07-25", startTime: "08:57"
-      } as FarmEventViewModel)[key]),
+    fieldGet: jest.fn(key => "" + mockVM[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
@@ -570,7 +572,23 @@ describe("<StartTimeForm />", () => {
       .toContain("must be in the future");
   });
 
-  it("doesn't display error", () => {
+  it("doesn't display error: old event", () => {
+    mockVM.id = 1;
+    const p = fakeProps();
+    p.now = moment();
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+  });
+
+  it("doesn't display error: regimen", () => {
+    const p = fakeProps();
+    p.now = moment();
+    p.isRegimen = true;
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+  });
+
+  it("doesn't display error: in future", () => {
     const p = fakeProps();
     p.now = moment("2015-12-28T22:32:00.000Z");
     const wrapper = shallow(<StartTimeForm {...p} />);
