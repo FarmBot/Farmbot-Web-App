@@ -44,21 +44,29 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.uptime = 0;
     p.botInfoSettings.memory_usage = 0;
     p.botInfoSettings.disk_usage = 0;
+    p.deviceAccount.body.id = 12345;
+    p.deviceAccount.body.last_ota_checkup = "2018-01-11T20:20:38.362Z";
+    p.deviceAccount.body.fbos_version = "1.0.0";
+    p.sourceFbosConfig = () => ({ value: "ttyACM0", consistent: true });
 
     const wrapper = mount(<FbosDetails {...p} />);
     ["Environment", "fakeEnv",
       "Commit", "fakeComm",
       "Target", "fakeTarget",
       "Node name", "fakeName",
+      "Version last seen", "1.0.0",
+      "Device ID", "12345",
       "Firmware", "0.0.0 Arduino/RAMPS (Genesis v1.2)",
       "Firmware commit", "fakeFwCo",
       "Firmware code", "0.0.0.R.ramps",
+      "Firmware path", "ttyACM0",
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi strength", "-49dBm",
       "OS release channel",
       "Uptime", "0 seconds",
       "Memory usage", "0MB",
       "Disk usage", "0%",
+      "Last checked for updates", "January",
     ]
       .map(string => expect(wrapper.text()).toContain(string));
   });
