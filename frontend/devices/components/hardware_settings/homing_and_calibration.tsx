@@ -58,26 +58,12 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         arduinoBusy={busy}
         botOnline={botOnline} />
       <CalibrationRow
-        type={"calibrate"}
-        title={DeviceSetting.calibration}
-        axisTitle={t("CALIBRATE")}
-        toolTip={!hasEncoders(firmwareHardware)
-          ? ToolTips.CALIBRATION_STALL_DETECTION
-          : ToolTips.CALIBRATION_ENCODERS}
-        action={axis => getDevice().calibrate({ axis })
-          .catch(commandErr("Calibration"))}
-        stallUseDisabled={!hasEncoders(firmwareHardware)
-          && !props.shouldDisplay(Feature.express_calibration)}
-        mcuParams={mcuParams}
-        arduinoBusy={busy}
-        botOnline={botOnline} />
-      <CalibrationRow
         type={"zero"}
         title={DeviceSetting.setZeroPosition}
-        axisTitle={t("ZERO")}
+        axisTitle={t("SET HOME")}
         toolTip={ToolTips.SET_ZERO_POSITION}
         action={axis => getDevice().setZero(axis)
-          .catch(commandErr("Zeroing"))}
+          .catch(commandErr("Set home"))}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
@@ -121,6 +107,20 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         z={"movement_home_up_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
+      <CalibrationRow
+        type={"calibrate"}
+        title={DeviceSetting.calibration}
+        axisTitle={t("FIND LENGTH")}
+        toolTip={!hasEncoders(firmwareHardware)
+          ? ToolTips.CALIBRATION_STALL_DETECTION
+          : ToolTips.CALIBRATION_ENCODERS}
+        action={axis => getDevice().calibrate({ axis })
+          .catch(commandErr("Find axis length"))}
+        stallUseDisabled={!hasEncoders(firmwareHardware)
+          && !props.shouldDisplay(Feature.express_calibration)}
+        mcuParams={mcuParams}
+        arduinoBusy={busy}
+        botOnline={botOnline} />
       <NumericMCUInputGroup
         label={DeviceSetting.axisLength}
         tooltip={ToolTips.LENGTH}

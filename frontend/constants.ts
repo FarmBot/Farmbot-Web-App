@@ -75,22 +75,23 @@ export namespace ToolTips {
 
   // Hardware Settings: Homing and Calibration
   export const HOMING_ENCODERS =
-    trim(`If encoders or limit switches are enabled, home axis (find zero).`);
+    trim(`If encoders or limit switches are enabled, find home for
+    an axis (set zero position).`);
 
   export const HOMING_STALL_DETECTION =
-    trim(`If stall detection or limit switches are enabled, home axis
-    (find zero).`);
+    trim(`If stall detection or limit switches are enabled, find home for
+    an axis (set zero position).`);
 
   export const CALIBRATION_ENCODERS =
     trim(`If encoders or limit switches are enabled, home axis and determine
-    maximum.`);
+    maximum. Will set axis length value.`);
 
   export const CALIBRATION_STALL_DETECTION =
     trim(`If stall detection or limit switches are enabled, home axis and
-    determine maximum.`);
+    determine maximum. Will set axis length value.`);
 
   export const SET_ZERO_POSITION =
-    trim(`Set the current location as zero.`);
+    trim(`Set the current location as home (zero).`);
 
   export const FIND_HOME_ON_BOOT_ENCODERS =
     trim(`If encoders or limit switches are enabled, find the home position
@@ -107,7 +108,7 @@ export namespace ToolTips {
     before enabling this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
-    trim(`Stop at the home location of the axis. (default: disabled)`);
+    trim(`Stop at the home (zero) location of the axis. (default: disabled)`);
 
   export const STOP_AT_MAX =
     trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.
@@ -128,12 +129,12 @@ export namespace ToolTips {
     (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
 
   export const HOME_SPEED =
-    trim(`Home position adjustment travel speed (homing and calibration)
+    trim(`Home position adjustment travel speed (homing and finding axis length)
     in millimeters per second. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const MIN_SPEED =
     trim(`Minimum movement speed in millimeters per second.
-    Also used for homing and calibration.
+    Also used for homing and finding axis length.
     (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const ACCELERATE_FOR =
@@ -153,7 +154,8 @@ export namespace ToolTips {
     certain situations. (default: enabled)`);
 
   export const INVERT_MOTORS =
-    trim(`Invert direction of motor during calibration. (default: disabled)`);
+    trim(`Invert direction of motor while finding axis length.
+    (default: disabled)`);
 
   export const MOTOR_CURRENT =
     trim(`Motor current in milliamps. (default: 600)`);
@@ -165,11 +167,11 @@ export namespace ToolTips {
   // Hardware Settings: Encoders / Stall Detection
   export const ENABLE_ENCODERS =
     trim(`Enable use of rotary encoders for stall detection,
-    calibration and homing. (default: enabled)`);
+    finding axis length, and homing. (default: enabled)`);
 
   export const ENABLE_STALL_DETECTION =
     trim(`Enable use of motor stall detection for detecting missed steps,
-    calibration and homing. (default: enabled)`);
+    finding axis length, and homing. (default: enabled)`);
 
   export const STALL_SENSITIVITY =
     trim(`Motor stall sensitivity. Most sensitive: -63.
@@ -200,7 +202,7 @@ export namespace ToolTips {
   // Hardware Settings: Endstops
   export const ENABLE_ENDSTOPS =
     trim(`Enable use of electronic limit switches for end detection,
-    calibration and homing. (default: disabled)`);
+    finding axis length, and homing. (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
     trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
@@ -312,11 +314,11 @@ export namespace ToolTips {
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
     command (using encoders, stall detection, or limit switches) to find and set
-    zero for the chosen axis or axes.`);
+    home (zero) for the chosen axis or axes.`);
 
   export const CALIBRATE =
     trim(`If encoders, stall detection, or limit switches are enabled,
-    home axis and determine maximum.`);
+    home axis and determine maximum. Will set axis length value.`);
 
   export const IF =
     trim(`Execute a sequence if a condition is satisfied. If the condition
@@ -956,15 +958,15 @@ export enum DeviceSetting {
   axisHeadingLabels = ``,
 
   // Homing and calibration
-  homingAndCalibration = `Homing and Calibration`,
-  homing = `Homing`,
-  calibration = `Calibration`,
-  setZeroPosition = `Set Zero Position`,
+  homingAndCalibration = `Axes`,
+  homing = `Find Home`,
+  calibration = `Find axis length (mm)`,
+  setZeroPosition = `Set Home`,
   findHomeOnBoot = `Find Home on Boot`,
   stopAtHome = `Stop at Home`,
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
-  axisLength = `Axis Length (mm)`,
+  axisLength = `Set Axis Length (mm)`,
 
   // Motors
   motors = `Motors`,

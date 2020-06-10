@@ -122,7 +122,7 @@ export function StepButtonCluster(props: StepButtonProps) {
         args: { axis: "all" }
       }}
       color="blue">
-      {t("Set Zero")}
+      {t("Set Home")}
     </StepButton>,
     <StepButton{...commonStepProps}
       step={{
@@ -130,7 +130,7 @@ export function StepButtonCluster(props: StepButtonProps) {
         args: { axis: "all" }
       }}
       color="blue">
-      {t("Calibrate")}
+      {t("Find axis length")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{

@@ -24,7 +24,7 @@ export function TileSetZero(props: StepParams) {
         currentStep={currentStep as Zero}
         dispatch={dispatch}
         index={index}
-        label={t("Zero")} />
+        label={t("Set Home")} />
     </StepContent>
   </StepWrapper>;
 }
