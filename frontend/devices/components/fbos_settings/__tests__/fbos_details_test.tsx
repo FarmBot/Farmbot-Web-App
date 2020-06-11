@@ -81,6 +81,7 @@ describe("<FbosDetails/>", () => {
 
   it("handles missing data", () => {
     const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: undefined, consistent: true });
     p.botInfoSettings.firmware_version = undefined;
     p.botInfoSettings.node_name = "";
     p.botInfoSettings.commit = "";

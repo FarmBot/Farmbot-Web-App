@@ -15,7 +15,7 @@ import { Highlight } from "./maybe_highlight";
 export class PinGuardMCUInputGroup
   extends React.Component<PinGuardMCUInputGroupProps> {
 
-  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Number = () =>
     <PinNumberDropdown

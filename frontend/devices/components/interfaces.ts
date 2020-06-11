@@ -36,6 +36,7 @@ export interface BooleanMCUInputGroupProps {
   caution?: boolean | undefined;
   displayAlert?: string | undefined;
   disabled?: boolean;
+  disabledBy?: string;
 }
 
 export interface CalibrationRowProps {
@@ -67,6 +68,7 @@ export interface NumericMCUInputGroupProps {
   min?: number;
   max?: number;
   disabled?: boolean;
+  disabledBy?: string;
 }
 
 export interface PinGuardMCUInputGroupProps {
@@ -130,6 +132,9 @@ export interface DangerZoneProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   onReset(): void;
+  sourceFwConfig: SourceFwConfig;
+  firmwareConfig: FirmwareConfig | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
   arduinoBusy: boolean;
 }

@@ -6,6 +6,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
+import { settingRequiredLabel } from "./encoders";
 
 export function EndStops(props: EndStopsProps) {
 
@@ -42,6 +43,7 @@ export function EndStops(props: EndStopsProps) {
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
+        disabledBy={settingRequiredLabel([DeviceSetting.enableEndstops])}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
@@ -56,6 +58,7 @@ export function EndStops(props: EndStopsProps) {
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
+        disabledBy={settingRequiredLabel([DeviceSetting.enableEndstops])}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
     </Collapse>

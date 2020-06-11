@@ -10,7 +10,7 @@ import { DevSettings } from "../../../account/dev/dev_support";
 
 export class CalibrationRow extends React.Component<CalibrationRowProps> {
 
-  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Axes = () => {
     const {

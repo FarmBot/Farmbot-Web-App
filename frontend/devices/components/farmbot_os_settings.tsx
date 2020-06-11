@@ -32,7 +32,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
   const commonProps = { dispatch };
   return <Highlight className={"section"}
     settingName={DeviceSetting.farmbot}>
-    {DevSettings.futureFeaturesEnabled() &&
+    {DevSettings.futureFeature1Enabled() &&
       <Header {...commonProps}
         title={DeviceSetting.farmbot}
         panel={"farmbot_os"}

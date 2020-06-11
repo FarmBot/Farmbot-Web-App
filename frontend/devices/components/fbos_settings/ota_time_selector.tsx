@@ -149,7 +149,7 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     .sort((_x, _y) => (_x.value > _y.value) ? 1 : -1);
   const selectedItem = (typeof value == "number") ?
     theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight settingName={DeviceSetting.applySoftwareUpdates}>
     <Row>
       <Col xs={newFormat ? 5 : ColWidth.label}>

@@ -6,6 +6,7 @@ jest.mock("../../../config_storage/actions", () => ({
 let mockDev = false;
 jest.mock("../../../account/dev/dev_support", () => ({
   DevSettings: {
+    futureFeature1Enabled: () => mockDev,
     futureFeaturesEnabled: () => mockDev,
     overriddenFbosVersion: jest.fn(),
   }
@@ -87,20 +88,27 @@ describe("<DesignerSettings />", () => {
     const wrapper = mount(<DesignerSettings {...p} />);
     wrapper.unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: false, all: true },
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
-      payload: "farmbot_os",
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: "",
     });
   });
 
   it("changes search term", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<DesignerSettings {...p} />);
+    wrapper.find(SearchField).simulate("change", "setting");
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      payload: { open: true, all: true },
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SETTINGS_SEARCH_TERM,
+      payload: "setting",
+    });
+  });
+
+  it("changes search term and opens sections", () => {
+    mockDev = true;
     const p = fakeProps();
     const wrapper = shallow(<DesignerSettings {...p} />);
     wrapper.find(SearchField).simulate("change", "setting");

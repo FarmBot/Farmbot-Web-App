@@ -39,6 +39,7 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
       if (moment(botToMqttLastSeen).isAfter(last_saw_api)) {
         return botToMqttLastSeen;
       }
+      return botToMqttLastSeen;
     };
     return lastSeenAll();
   }

@@ -1,6 +1,7 @@
 let mockDev = false;
 jest.mock("../../../../account/dev/dev_support", () => ({
   DevSettings: {
+    futureFeature1Enabled: () => mockDev,
     futureFeaturesEnabled: () => mockDev,
   }
 }));
@@ -84,6 +85,14 @@ describe("mapStateToProps", () => {
     const state = fakeState();
     const boom = () => mapStateToProps(state);
     expect(boom).toThrowError("No config found?");
+  });
+
+  it("handles no boot_sequence_id", () => {
+    const state = fakeState();
+    const config = fakeFbosConfig();
+    config.body.boot_sequence_id = undefined;
+    state.resources = buildResourceIndex([config]);
+    expect(mapStateToProps(state).selectedItem).toEqual(undefined);
   });
 });
 
