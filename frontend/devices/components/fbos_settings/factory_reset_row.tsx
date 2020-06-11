@@ -14,7 +14,7 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
   const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
   const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <div className={"factory-reset-options"}>
     <Highlight settingName={DeviceSetting.factoryReset}>
       <Row>

@@ -31,6 +31,7 @@ describe("<Motors/>", () => {
       controlPanelState,
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
+      arduinoBusy: false,
     };
   };
 

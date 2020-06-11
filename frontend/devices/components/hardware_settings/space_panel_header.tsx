@@ -6,7 +6,7 @@ import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
 
 export function SpacePanelHeader() {
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   const width = newFormat ? 4 : 2;
   const offset = newFormat ? 0 : 6;
   return <div className="label-headings">

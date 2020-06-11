@@ -122,7 +122,6 @@ describe("<App />: NavBar", () => {
     const strings = [
       "Farm Designer",
       "Controls",
-      "Device",
       "Sequences",
       "Regimens",
       "Farmware",

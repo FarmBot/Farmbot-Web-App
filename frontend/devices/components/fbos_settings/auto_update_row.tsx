@@ -11,7 +11,7 @@ import { DevSettings } from "../../../account/dev/dev_support";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight settingName={DeviceSetting.farmbotOSAutoUpdate}>
     <Row>
       <Col xs={newFormat ? 9 : ColWidth.label}>

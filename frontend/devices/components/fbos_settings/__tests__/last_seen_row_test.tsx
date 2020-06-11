@@ -34,7 +34,7 @@ describe("<LastSeen />", () => {
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = 0;
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
-    expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
+    expect(wrapper.instance().lastSeen).toEqual(p.device.body.last_saw_api);
   });
 
   it("tells you when the device was last seen, latest: API", () => {
@@ -42,7 +42,7 @@ describe("<LastSeen />", () => {
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = new Date("2016-08-07T19:40:01.487Z").getTime();
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
-    expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
+    expect(wrapper.instance().lastSeen).toEqual(p.device.body.last_saw_api);
   });
 
   it("tells you when the device was last seen, latest: message broker", () => {
@@ -50,8 +50,15 @@ describe("<LastSeen />", () => {
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = new Date("2017-08-07T20:40:01.487Z").getTime();
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
-    const t = new Date("2017-08-07T20:40:01.487Z").getTime();
-    expect(wrapper.instance().lastSeen).toEqual(t);
+    expect(wrapper.instance().lastSeen).toEqual(p.botToMqttLastSeen);
+  });
+
+  it("tells you when the device was last seen, same", () => {
+    const p = fakeProps();
+    p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
+    p.botToMqttLastSeen = new Date("2017-08-07T19:40:01.487Z").getTime();
+    const wrapper = mount<LastSeen>(<LastSeen {...p} />);
+    expect(wrapper.instance().lastSeen).toEqual(p.botToMqttLastSeen);
   });
 
   it("handles a click", () => {

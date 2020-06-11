@@ -53,7 +53,7 @@ describe("<PinBindingsContent/>", () => {
   it("renders", () => {
     const p = fakeProps();
     const wrapper = mount(<PinBindingsContent {...p} />);
-    ["pin number", "none", "bind", "stock bindings"]
+    ["none", "bind", "stock bindings"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     ["26", "action"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));

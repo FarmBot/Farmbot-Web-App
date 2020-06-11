@@ -35,7 +35,7 @@ export const initialState = (): BotState => ({
     pin_guard: false,
     farm_designer: false,
     firmware: false,
-    farmbot_os: true,
+    farmbot_os: false,
   },
   hardware: {
     gpio_registry: {},

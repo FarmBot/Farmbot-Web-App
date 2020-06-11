@@ -29,19 +29,28 @@ describe("<PinNumberDropdown />", () => {
       }),
       resources: buildResourceIndex(
         firmwareConfig ? [firmwareConfig] : []).index,
+      disabled: false,
     });
 
   it("renders undefined", () => {
     const wrapper = mount(<PinNumberDropdown {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Select a pin");
-    expect(wrapper.find(FBSelect).props().extraClass).toEqual("");
+    expect(wrapper.find(FBSelect).props().extraClass).toEqual(" ");
+  });
+
+  it("renders disabled", () => {
+    const p = fakeProps();
+    p.disabled = true;
+    const wrapper = mount(<PinNumberDropdown {...p} />);
+    expect(wrapper.text()).toEqual("Select a pin");
+    expect(wrapper.find(FBSelect).props().extraClass).toEqual(" disabled");
   });
 
   it("renders when inconsistent", () => {
     const p = fakeProps();
     p.sourceFwConfig = () => ({ value: 0, consistent: false });
     const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.find(FBSelect).props().extraClass).toEqual("dim");
+    expect(wrapper.find(FBSelect).props().extraClass).toEqual("dim ");
   });
 
   it("renders pin label", () => {

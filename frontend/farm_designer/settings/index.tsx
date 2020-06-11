@@ -4,7 +4,7 @@ import { DesignerPanel, DesignerPanelContent } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
-  bulkToggleControlPanel, MCUFactoryReset, toggleControlPanel,
+  bulkToggleControlPanel, MCUFactoryReset,
 } from "../../devices/actions";
 import { FarmBotSettings, Firmware, PowerAndReset } from "./fbos_settings";
 import {
@@ -27,8 +27,6 @@ export class RawDesignerSettings
     this.props.dispatch(maybeOpenPanel(this.props.bot.controlPanelState, true));
 
   componentWillUnmount = () => {
-    this.props.dispatch(bulkToggleControlPanel(false, true));
-    this.props.dispatch(toggleControlPanel("farmbot_os"));
     this.props.dispatch({
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: ""
@@ -45,6 +43,7 @@ export class RawDesignerSettings
     const { value } = this.props.sourceFbosConfig("firmware_hardware");
     const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
     const botOnline = isBotOnlineFromState(this.props.bot);
+    const { busy } = this.props.bot.hardware.informational_settings;
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"settings"}>
@@ -52,13 +51,14 @@ export class RawDesignerSettings
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {
-            dispatch(bulkToggleControlPanel(true, true));
+            DevSettings.futureFeature1Enabled() &&
+              dispatch(bulkToggleControlPanel(searchTerm != "", true));
             dispatch({
               type: Actions.SET_SETTINGS_SEARCH_TERM,
               payload: searchTerm
             });
           }} />
-        {DevSettings.futureFeaturesEnabled() ?
+        {DevSettings.futureFeature1Enabled() ?
           <div className="all-settings">
             <div className="bulk-expand-controls">
               <button
@@ -103,23 +103,32 @@ export class RawDesignerSettings
                 firmwareHardware={firmwareHardware}
                 botOnline={botOnline} />
               <Motors {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig}
                 firmwareHardware={firmwareHardware} />
               <Encoders {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig}
                 shouldDisplay={this.props.shouldDisplay}
                 firmwareHardware={firmwareHardware} />
               <EndStops {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig} />
               <ErrorHandling {...commonProps}
+                arduinoBusy={busy}
                 sourceFwConfig={sourceFwConfig} />
               <PinBindings  {...commonProps}
                 resources={resources}
                 firmwareHardware={firmwareHardware} />
               <PinGuard {...commonProps}
+                arduinoBusy={busy}
                 resources={resources}
                 sourceFwConfig={sourceFwConfig} />
               <DangerZone {...commonProps}
+                arduinoBusy={busy}
+                sourceFwConfig={sourceFwConfig}
+                firmwareConfig={firmwareConfig}
+                firmwareHardware={firmwareHardware}
                 onReset={MCUFactoryReset}
                 botOnline={botOnline} />
               <Designer {...commonProps}

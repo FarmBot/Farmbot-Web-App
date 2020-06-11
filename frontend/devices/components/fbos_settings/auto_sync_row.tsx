@@ -11,7 +11,7 @@ import { DevSettings } from "../../../account/dev/dev_support";
 
 export function AutoSyncRow(props: AutoSyncRowProps) {
   const autoSync = props.sourceFbosConfig("auto_sync");
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight settingName={DeviceSetting.autoSync}>
     <Row>
       <Col xs={newFormat ? 9 : ColWidth.label}>

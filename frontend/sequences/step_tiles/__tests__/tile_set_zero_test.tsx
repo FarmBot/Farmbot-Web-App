@@ -29,8 +29,8 @@ describe("<TileSetZero/>", () => {
     const labels = block.find("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Set zero");
-    expect(labels.at(0).text()).toContain("Zero x");
+    expect(inputs.first().props().placeholder).toEqual("Set home");
+    expect(labels.at(0).text()).toContain("Set Home x");
     expect(inputs.at(1).props().value).toEqual("x");
   });
 });

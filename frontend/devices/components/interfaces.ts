@@ -36,11 +36,13 @@ export interface BooleanMCUInputGroupProps {
   caution?: boolean | undefined;
   displayAlert?: string | undefined;
   disabled?: boolean;
+  disabledBy?: string;
 }
 
 export interface CalibrationRowProps {
   type: "find_home" | "calibrate" | "zero";
-  hardware: McuParams;
+  mcuParams: McuParams;
+  arduinoBusy: boolean;
   botOnline: boolean;
   action(axis: Axis): void;
   toolTip: string;
@@ -65,6 +67,8 @@ export interface NumericMCUInputGroupProps {
   gray?: Record<Xyz, boolean>;
   min?: number;
   max?: number;
+  disabled?: boolean;
+  disabledBy?: string;
 }
 
 export interface PinGuardMCUInputGroupProps {
@@ -75,6 +79,7 @@ export interface PinGuardMCUInputGroupProps {
   timeoutKey: McuParamName;
   activeStateKey: McuParamName;
   resources: ResourceIndex;
+  disabled: boolean;
 }
 
 export interface PinGuardProps {
@@ -82,6 +87,7 @@ export interface PinGuardProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   resources: ResourceIndex;
+  arduinoBusy: boolean;
 }
 
 export interface MotorsProps {
@@ -89,6 +95,7 @@ export interface MotorsProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
+  arduinoBusy: boolean;
 }
 
 export interface EncodersProps {
@@ -97,18 +104,21 @@ export interface EncodersProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   shouldDisplay: ShouldDisplay;
+  arduinoBusy: boolean;
 }
 
 export interface EndStopsProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  arduinoBusy: boolean;
 }
 
 export interface ErrorHandlingProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  arduinoBusy: boolean;
 }
 
 export interface PinBindingsProps {
@@ -122,5 +132,9 @@ export interface DangerZoneProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   onReset(): void;
+  sourceFwConfig: SourceFwConfig;
+  firmwareConfig: FirmwareConfig | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
+  arduinoBusy: boolean;
 }

@@ -14,7 +14,7 @@ import { SpacePanelHeader } from "./space_panel_header";
 export function ErrorHandling(props: ErrorHandlingProps) {
 
   const { error_handling } = props.controlPanelState;
-  const { dispatch, sourceFwConfig } = props;
+  const { dispatch, sourceFwConfig, arduinoBusy } = props;
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
 
   return <Highlight className={"section"}
@@ -32,6 +32,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         x={"movement_timeout_x"}
         y={"movement_timeout_y"}
         z={"movement_timeout_z"}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <SingleSettingRow settingType="input"
@@ -40,6 +41,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         <McuInputBox
           setting="param_mov_nr_retry"
           sourceFwConfig={sourceFwConfig}
+          disabled={arduinoBusy}
           dispatch={dispatch} />
       </SingleSettingRow>
       <SingleSettingRow settingType="button"
@@ -48,6 +50,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         <ToggleButton
           toggleValue={eStopOnMoveError.value}
           dim={!eStopOnMoveError.consistent}
+          disabled={arduinoBusy}
           toggleAction={() => dispatch(
             settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
       </SingleSettingRow>

@@ -37,12 +37,12 @@ function translate(input: Step): string {
     "remove_farmware": t("Remove Farmware"),
     "update_farmware": t("Update Farmware"),
     "check_updates": t("Update"),
-    "calibrate": t("Calibrate"),
+    "calibrate": t("Find axis length"),
     "home": t("Move to Home"),
     "factory_reset": t("Factory reset"),
     "reboot": t("Reboot"),
     "toggle_pin": t("Toggle Peripheral"),
-    "zero": t("Set zero"),
+    "zero": t("Set home"),
     "set_user_env": t("Set Farmware Env"),
   };
 

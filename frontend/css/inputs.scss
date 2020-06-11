@@ -30,6 +30,9 @@ input:not([role="combobox"]) {
   }
   &.dim {
     background: darken($white, 2%) !important;
+    &.gray {
+      background: darken($medium_light_gray, 2%) !important;
+    }
   }
   &.error {
     border: 2px solid $red;

@@ -65,7 +65,7 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
       onChange={this.onChange} />
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.bootSequence}>
       <Row>
         <Col xs={newFormat ? 12 : ColWidth.label}>

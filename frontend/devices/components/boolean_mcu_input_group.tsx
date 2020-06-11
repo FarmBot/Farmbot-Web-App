@@ -11,11 +11,11 @@ import { DevSettings } from "../../account/dev/dev_support";
 export class BooleanMCUInputGroup
   extends React.Component<BooleanMCUInputGroupProps> {
 
-  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Toggles = () => {
     const {
-      sourceFwConfig, dispatch, disable, grayscale, displayAlert,
+      sourceFwConfig, dispatch, disable, grayscale, displayAlert, disabledBy,
       x, y, z,
     } = this.props;
     const xParam = sourceFwConfig(x);
@@ -28,6 +28,7 @@ export class BooleanMCUInputGroup
           grayscale={grayscale?.x}
           disabled={this.props.disabled || disable?.x}
           dim={!xParam.consistent}
+          title={grayscale?.x ? disabledBy : undefined}
           toggleValue={xParam.value}
           toggleAction={() =>
             dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
@@ -37,6 +38,7 @@ export class BooleanMCUInputGroup
           grayscale={grayscale?.y}
           disabled={this.props.disabled || disable?.y}
           dim={!yParam.consistent}
+          title={grayscale?.y ? disabledBy : undefined}
           toggleValue={yParam.value}
           toggleAction={() =>
             dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
@@ -46,6 +48,7 @@ export class BooleanMCUInputGroup
           grayscale={grayscale?.z}
           disabled={this.props.disabled || disable?.z}
           dim={!zParam.consistent}
+          title={grayscale?.z ? disabledBy : undefined}
           toggleValue={zParam.value}
           toggleAction={() =>
             dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />

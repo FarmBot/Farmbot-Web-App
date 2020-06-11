@@ -77,6 +77,15 @@ describe("McuInputBox", () => {
     expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
   });
 
+  it("doesn't update when values match", () => {
+    const p = fakeProps();
+    bot.hardware.mcu_params.encoder_enabled_x = 1;
+    const wrapper = shallow(<McuInputBox {...p} />);
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: "1" } });
+    expect(updateMCU).not.toHaveBeenCalled();
+  });
+
   it("restricts values to min and max", () => {
     const p = fakeProps();
     p.min = -10;

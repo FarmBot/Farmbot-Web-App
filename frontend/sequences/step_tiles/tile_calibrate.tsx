@@ -86,7 +86,7 @@ class InnerTileCalibrate extends React.Component<CalibrateParams, {}> {
           currentStep={currentStep}
           dispatch={dispatch}
           index={index}
-          label={t("Calibrate")} />
+          label={t("Find length")} />
       </StepContent>
     </StepWrapper>;
   }
