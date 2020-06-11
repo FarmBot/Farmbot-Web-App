@@ -9,11 +9,12 @@ import { hasEncoders } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../interfaces";
+import { t } from "../../../i18next_wrapper";
 
 export function Encoders(props: EncodersProps) {
 
   const { encoders } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, firmwareHardware } = props;
+  const { dispatch, sourceFwConfig, firmwareHardware, arduinoBusy } = props;
 
   const encodersDisabled = {
     x: !sourceFwConfig("encoder_enabled_x").value,
@@ -34,16 +35,14 @@ export function Encoders(props: EncodersProps) {
     <Collapse isOpen={!!encoders}>
       <SpacePanelHeader />
       <BooleanMCUInputGroup
-        label={!showEncoders
-          ? DeviceSetting.enableStallDetection
-          : DeviceSetting.enableEncoders}
+        label={encoderSettingName(showEncoders)}
         tooltip={!showEncoders
           ? ToolTips.ENABLE_STALL_DETECTION
           : ToolTips.ENABLE_ENCODERS}
         x={"encoder_enabled_x"}
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
-        disabled={!showEncoders
+        disabled={arduinoBusy || !showEncoders
           && !props.shouldDisplay(Feature.express_stall_detection)}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
@@ -56,7 +55,9 @@ export function Encoders(props: EncodersProps) {
           z={"movement_stall_sensitivity_z"}
           min={-63}
           max={63}
+          disabledBy={settingRequiredLabel([DeviceSetting.enableStallDetection])}
           gray={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       {showEncoders &&
@@ -66,7 +67,9 @@ export function Encoders(props: EncodersProps) {
           x={"encoder_use_for_pos_x"}
           y={"encoder_use_for_pos_y"}
           z={"encoder_use_for_pos_z"}
+          disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
           grayscale={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       {showEncoders &&
@@ -76,7 +79,9 @@ export function Encoders(props: EncodersProps) {
           x={"encoder_invert_x"}
           y={"encoder_invert_y"}
           z={"encoder_invert_z"}
+          disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
           grayscale={encodersDisabled}
+          disabled={arduinoBusy}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
@@ -87,7 +92,9 @@ export function Encoders(props: EncodersProps) {
         x={"encoder_missed_steps_max_x"}
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
+        disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
         gray={encodersDisabled}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -96,7 +103,9 @@ export function Encoders(props: EncodersProps) {
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
+        disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
         gray={encodersDisabled}
+        disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       {showEncoders &&
@@ -110,9 +119,34 @@ export function Encoders(props: EncodersProps) {
           yScale={sourceFwConfig("movement_microsteps_y").value}
           zScale={sourceFwConfig("movement_microsteps_z").value}
           intSize={"long"}
+          disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
           gray={encodersDisabled}
+          disabled={arduinoBusy}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
     </Collapse>
   </Highlight>;
 }
+
+/** Generate a setting requirement warning string for a setting based on
+ * the provided prerequisites. */
+export const settingRequiredLabel = (settingNames: DeviceSetting[]) => {
+  const settingList = settingNames
+    .map(settingName => t(settingName).toLocaleUpperCase())
+    .join(settingNames.length > 1 ? ` ${t("or")} ` : "");
+  return `${t("Requires")}: ${settingList}`;
+};
+
+const encoderSettingName = (showEncoders: boolean) => !showEncoders
+  ? DeviceSetting.enableStallDetection
+  : DeviceSetting.enableEncoders;
+
+/** Generate a setting requirement warning string for settings that require
+ * either encoders/stall detection or limit switches. */
+export const encodersOrLimitSwitchesRequired = (showEncoders: boolean) => {
+  const encoders = !showEncoders
+    ? DeviceSetting.enableStallDetection
+    : DeviceSetting.enableEncoders;
+  const limitSwitches = DeviceSetting.enableEndstops;
+  return settingRequiredLabel([encoders, limitSwitches]);
+};

@@ -42,7 +42,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
       onChange={this.sendOffConfig} />
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.firmware}>
       <Row>
         <Col xs={ColWidth.label}>

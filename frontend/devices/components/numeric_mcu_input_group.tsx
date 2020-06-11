@@ -10,12 +10,12 @@ import { DevSettings } from "../../account/dev/dev_support";
 export class NumericMCUInputGroup
   extends React.Component<NumericMCUInputGroupProps> {
 
-  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Inputs = () => {
     const {
       sourceFwConfig, dispatch, intSize, gray, float,
-      x, y, z, xScale, yScale, zScale, min, max,
+      x, y, z, xScale, yScale, zScale, min, max, disabled, disabledBy,
     } = this.props;
     return <div className={"mcu-inputs"}>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -28,6 +28,8 @@ export class NumericMCUInputGroup
           scale={xScale}
           min={min}
           max={max}
+          disabled={disabled}
+          title={gray?.x ? disabledBy : undefined}
           gray={gray?.x} />
       </Col>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -40,6 +42,8 @@ export class NumericMCUInputGroup
           scale={yScale}
           min={min}
           max={max}
+          disabled={disabled}
+          title={gray?.y ? disabledBy : undefined}
           gray={gray?.y} />
       </Col>
       <Col xs={this.newFormat ? 4 : 2}>
@@ -52,6 +56,8 @@ export class NumericMCUInputGroup
           scale={zScale}
           min={min}
           max={max}
+          disabled={disabled}
+          title={gray?.z ? disabledBy : undefined}
           gray={gray?.z} />
       </Col>
     </div>;

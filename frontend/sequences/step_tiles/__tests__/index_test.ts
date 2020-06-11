@@ -195,11 +195,11 @@ describe("renderCeleryNode()", () => {
     },
     {
       node: { kind: "zero", args: { axis: "all" } },
-      expected: "Zero x"
+      expected: "Set Home x"
     },
     {
       node: { kind: "calibrate", args: { axis: "all" } },
-      expected: "Calibrate x"
+      expected: "Find length x"
     },
     {
       node: { kind: "home", args: { axis: "all", speed: 100 } },

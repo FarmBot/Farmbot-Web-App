@@ -5,16 +5,17 @@ import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
 import { trim } from "lodash";
+import { DevSettings } from "../../account/dev/dev_support";
 
 const HOMING_PANEL = [
   DeviceSetting.homingAndCalibration,
   DeviceSetting.homing,
-  DeviceSetting.calibration,
   DeviceSetting.setZeroPosition,
   DeviceSetting.findHomeOnBoot,
   DeviceSetting.stopAtHome,
   DeviceSetting.stopAtMax,
   DeviceSetting.negativeCoordinatesOnly,
+  DeviceSetting.calibration,
   DeviceSetting.axisLength,
 ];
 const MOTORS_PANEL = [
@@ -63,8 +64,10 @@ const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard4,
   DeviceSetting.pinGuard5,
 ];
-const DANGER_ZONE_PANEL = [
+const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.dangerZone,
+  DeviceSetting.paramLoadProgress,
+  DeviceSetting.exportParameters,
   DeviceSetting.resetHardwareParams,
 ];
 const PIN_BINDINGS_PANEL = [
@@ -121,7 +124,7 @@ ENCODERS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "encoders");
 ENDSTOPS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "endstops");
 ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
-DANGER_ZONE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
+PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
@@ -168,7 +171,7 @@ export const maybeOpenPanel = (
     if (!urlFriendlySettingName) { return; }
     const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
     closeOthers && dispatch(bulkToggleControlPanel(false, closeOthers));
-    const panelIsOpen = panelState[panel];
+    const panelIsOpen = !closeOthers && panelState[panel];
     if (panelIsOpen) { return; }
     dispatch(toggleControlPanel(panel));
     highlight.opened = true;
@@ -226,3 +229,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     </div>;
   }
 }
+
+export const linkToFbosSettings = () => `/app/${
+  DevSettings.futureFeature1Enabled() ? "designer/settings" : "device"
+  }?highlight=farmbot_os`;

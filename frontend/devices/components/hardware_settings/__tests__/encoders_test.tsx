@@ -14,6 +14,7 @@ describe("<Encoders />", () => {
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
     shouldDisplay: () => true,
+    arduinoBusy: false,
   });
 
   it("shows encoder labels", () => {

@@ -18,7 +18,7 @@ export class NameRow extends React.Component<NameRowProps> {
       value={this.props.device.body.name} />;
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.name}>
       <Row>
         <Col xs={newFormat ? 12 : ColWidth.label}>

@@ -77,8 +77,10 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     return <BlurableInput
       type="number"
       className={this.className}
+      title={this.props.title}
       value={this.showValue}
       onCommit={this.commit}
+      disabled={this.props.disabled}
       min={this.props.min || 0}
       max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />;
   }

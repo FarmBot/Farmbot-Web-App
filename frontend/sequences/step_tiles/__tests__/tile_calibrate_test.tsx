@@ -34,8 +34,8 @@ describe("<TileCalibrate/>", () => {
     const labels = block.find("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Calibrate");
-    expect(labels.at(0).text()).toContain("Calibrate x");
+    expect(inputs.first().props().placeholder).toEqual("Find axis length");
+    expect(labels.at(0).text()).toContain("Find length x");
     expect(inputs.at(1).props().value).toEqual("x");
   });
 

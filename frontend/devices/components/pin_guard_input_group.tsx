@@ -15,13 +15,14 @@ import { Highlight } from "./maybe_highlight";
 export class PinGuardMCUInputGroup
   extends React.Component<PinGuardMCUInputGroupProps> {
 
-  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Number = () =>
     <PinNumberDropdown
       pinNumKey={this.props.pinNumKey}
       dispatch={this.props.dispatch}
       resources={this.props.resources}
+      disabled={this.props.disabled}
       sourceFwConfig={this.props.sourceFwConfig} />
 
   Timeout = () =>
@@ -29,6 +30,7 @@ export class PinGuardMCUInputGroup
       setting={this.props.timeoutKey}
       sourceFwConfig={this.props.sourceFwConfig}
       dispatch={this.props.dispatch}
+      disabled={this.props.disabled}
       filter={32000} />
 
   State = () => {
@@ -41,6 +43,7 @@ export class PinGuardMCUInputGroup
       customText={{ textFalse: t("off"), textTrue: t("on") }}
       toggleValue={inactiveState}
       dim={!sourceFwConfig(activeStateKey).consistent}
+      disabled={this.props.disabled}
       toggleAction={() =>
         dispatch(settingToggle(activeStateKey, sourceFwConfig))} />;
   }

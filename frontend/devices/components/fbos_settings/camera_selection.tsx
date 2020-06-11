@@ -85,7 +85,7 @@ export class CameraSelection
   }
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
         <Col xs={newFormat ? 5 : ColWidth.label}>
