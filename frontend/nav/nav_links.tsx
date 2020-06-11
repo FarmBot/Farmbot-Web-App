@@ -29,7 +29,7 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   DevSettings.futureFeaturesEnabled() ? undefined :
     { name: "Controls", icon: "keyboard-o", slug: "controls" },
-  DevSettings.futureFeaturesEnabled() ? undefined :
+  DevSettings.futureFeature1Enabled() ? undefined :
     { name: "Device", icon: "cog", slug: "device" },
   {
     name: "Sequences", icon: "server", slug: "sequences",

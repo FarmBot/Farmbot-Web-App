@@ -75,7 +75,7 @@ describe("<HomingAndCalibration />", () => {
 
   it("calibrates", () => {
     const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
-    wrapper.find(CalibrationRow).at(1).props().action("all");
+    wrapper.find(CalibrationRow).last().props().action("all");
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
 
@@ -84,7 +84,7 @@ describe("<HomingAndCalibration />", () => {
     p.shouldDisplay = () => false;
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(true);
   });
 
@@ -93,7 +93,7 @@ describe("<HomingAndCalibration />", () => {
     p.shouldDisplay = () => false;
     p.firmwareHardware = "arduino";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(false);
   });
 
@@ -102,13 +102,13 @@ describe("<HomingAndCalibration />", () => {
     p.shouldDisplay = () => true;
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<HomingAndCalibration {...p} />);
-    expect(wrapper.find(CalibrationRow).at(1).props().stallUseDisabled)
+    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(false);
   });
 
   it("sets zero", () => {
     const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
-    wrapper.find(CalibrationRow).last().props().action("all");
+    wrapper.find(CalibrationRow).at(1).props().action("all");
     expect(mockDevice.setZero).toHaveBeenCalledWith("all");
   });
 

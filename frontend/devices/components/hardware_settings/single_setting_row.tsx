@@ -15,7 +15,7 @@ export interface SingleSettingRowProps {
 
 export const SingleSettingRow =
   ({ label, tooltip, settingType, children }: SingleSettingRowProps) => {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={label}>
       <Row>
         <Col xs={newFormat ? 12 : 6} className={"widget-body-tooltips"}>

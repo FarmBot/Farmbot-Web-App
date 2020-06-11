@@ -13,7 +13,7 @@ export function PinGuard(props: PinGuardProps) {
 
   const { pin_guard } = props.controlPanelState;
   const { dispatch, sourceFwConfig, resources, arduinoBusy } = props;
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight className={"section"}
     settingName={DeviceSetting.pinGuard}>
     <Header

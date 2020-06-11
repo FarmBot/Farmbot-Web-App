@@ -72,7 +72,7 @@ const PinBindingsListHeader = () =>
 export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <div className="pin-bindings">
     <Highlight settingName={DeviceSetting.pinBindings}>
       <Row>

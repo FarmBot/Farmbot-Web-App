@@ -5,6 +5,7 @@ jest.mock("../fbos_settings/boot_sequence_selector", () => ({
 let mockDev = false;
 jest.mock("../../../account/dev/dev_support", () => ({
   DevSettings: {
+    futureFeature1Enabled: () => mockDev,
     futureFeaturesEnabled: () => mockDev,
   }
 }));
@@ -38,6 +39,7 @@ describe("<FarmbotOsSettings />", () => {
   });
 
   it("renders settings", () => {
+    mockDev = false;
     const p = fakeProps();
     p.bot.controlPanelState.farmbot_os = true;
     const osSettings = mount(<FarmbotOsSettings {...p} />);
@@ -45,6 +47,17 @@ describe("<FarmbotOsSettings />", () => {
     expect(osSettings.find("button").length).toBe(6);
     ["name", "time zone", "farmbot os", "camera"]
       .map(string => expect(osSettings.text().toLowerCase()).toContain(string));
+  });
+
+  it("renders expanded format", () => {
+    mockDev = false;
+    const p = fakeProps();
+    Object.keys(p.bot.controlPanelState).map((panel: keyof ControlPanelState) => {
+      p.bot.controlPanelState[panel] = true;
+    });
+    const wrapper = mount(<FarmbotOsSettings {...p} />);
+    ["camera", "name"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders expanded", () => {

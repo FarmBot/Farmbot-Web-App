@@ -16,6 +16,7 @@ import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../interfaces";
+import { settingRequiredLabel, encodersOrLimitSwitchesRequired } from "./encoders";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
@@ -33,6 +34,14 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
    */
   const disabled = disabledAxisMap(mcuParams);
 
+  const axisLengthDisabled = {
+    x: !sourceFwConfig("movement_axis_nr_steps_x").value,
+    y: !sourceFwConfig("movement_axis_nr_steps_y").value,
+    z: !sourceFwConfig("movement_axis_nr_steps_z").value
+  };
+
+  const showEncoders = hasEncoders(firmwareHardware);
+
   const scale = calculateScale(sourceFwConfig);
 
   return <Highlight className={"section"}
@@ -48,7 +57,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         type={"find_home"}
         title={DeviceSetting.homing}
         axisTitle={t("FIND HOME")}
-        toolTip={!hasEncoders(firmwareHardware)
+        toolTip={!showEncoders
           ? ToolTips.HOMING_STALL_DETECTION
           : ToolTips.HOMING_ENCODERS}
         action={axis => getDevice()
@@ -58,35 +67,22 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         arduinoBusy={busy}
         botOnline={botOnline} />
       <CalibrationRow
-        type={"calibrate"}
-        title={DeviceSetting.calibration}
-        axisTitle={t("CALIBRATE")}
-        toolTip={!hasEncoders(firmwareHardware)
-          ? ToolTips.CALIBRATION_STALL_DETECTION
-          : ToolTips.CALIBRATION_ENCODERS}
-        action={axis => getDevice().calibrate({ axis })
-          .catch(commandErr("Calibration"))}
-        stallUseDisabled={!hasEncoders(firmwareHardware)
-          && !props.shouldDisplay(Feature.express_calibration)}
-        mcuParams={mcuParams}
-        arduinoBusy={busy}
-        botOnline={botOnline} />
-      <CalibrationRow
         type={"zero"}
         title={DeviceSetting.setZeroPosition}
-        axisTitle={t("ZERO")}
+        axisTitle={t("SET HOME")}
         toolTip={ToolTips.SET_ZERO_POSITION}
         action={axis => getDevice().setZero(axis)
-          .catch(commandErr("Zeroing"))}
+          .catch(commandErr("Set home"))}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
       <BooleanMCUInputGroup
         label={DeviceSetting.findHomeOnBoot}
-        tooltip={!hasEncoders(firmwareHardware)
+        tooltip={!showEncoders
           ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
           : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
-        disable={disabled}
+        grayscale={disabled}
+        disabledBy={encodersOrLimitSwitchesRequired(showEncoders)}
         disabled={busy}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
@@ -107,6 +103,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         label={DeviceSetting.stopAtMax}
         tooltip={ToolTips.STOP_AT_MAX}
         disabled={busy}
+        grayscale={axisLengthDisabled}
+        disabledBy={settingRequiredLabel([DeviceSetting.axisLength])}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"}
@@ -121,6 +119,20 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         z={"movement_home_up_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
+      <CalibrationRow
+        type={"calibrate"}
+        title={DeviceSetting.calibration}
+        axisTitle={t("FIND LENGTH")}
+        toolTip={!showEncoders
+          ? ToolTips.CALIBRATION_STALL_DETECTION
+          : ToolTips.CALIBRATION_ENCODERS}
+        action={axis => getDevice().calibrate({ axis })
+          .catch(commandErr("Find axis length"))}
+        stallUseDisabled={!showEncoders
+          && !props.shouldDisplay(Feature.express_calibration)}
+        mcuParams={mcuParams}
+        arduinoBusy={busy}
+        botOnline={botOnline} />
       <NumericMCUInputGroup
         label={DeviceSetting.axisLength}
         tooltip={ToolTips.LENGTH}
@@ -136,6 +148,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           y: !sourceFwConfig("movement_stop_at_max_y").value,
           z: !sourceFwConfig("movement_stop_at_max_z").value,
         }}
+        disabledBy={settingRequiredLabel([DeviceSetting.stopAtMax])}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         intSize={"long"} />

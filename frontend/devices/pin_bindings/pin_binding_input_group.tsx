@@ -128,7 +128,7 @@ export class PinBindingInputGroup
         setSequenceIdInput={this.setSequenceIdInput} />
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <div className="pin-binding-input-rows">
       {newFormat && <Row><label>{t(DeviceSetting.addNewPinBinding)}</label></Row>}
       {newFormat && <this.Number />}
@@ -176,7 +176,7 @@ export const PinNumberInputGroup = (props: {
     label: generatePinLabel(pinNumberInput),
     value: "" + pinNumberInput
   } : undefined;
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = !DevSettings.futureFeaturesEnabled();
   return <Row>
     <Col xs={newFormat ? 2 : 3}>
       <Popover position={Position.TOP}>

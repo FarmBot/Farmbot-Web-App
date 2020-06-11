@@ -41,6 +41,16 @@ describe("<BoardType/>", () => {
     p.firmwareHardware = "farmduino";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
+    expect(wrapper.html()).not.toContain("dim");
+  });
+
+  it("renders with valid firmwareHardware", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "farmduino";
+    p.sourceFbosConfig = () => ({ value: true, consistent: false });
+    const wrapper = mount(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("Farmduino");
+    expect(wrapper.html()).toContain("dim");
   });
 
   it("calls updateConfig", () => {

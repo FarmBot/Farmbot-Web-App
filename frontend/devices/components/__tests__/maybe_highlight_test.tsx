@@ -3,6 +3,11 @@ jest.mock("../../actions", () => ({
   bulkToggleControlPanel: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeature1Enabled: () => mockDev }
+}));
+
 import { fakeState } from "../../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../../redux/store", () => ({
@@ -13,6 +18,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import {
   Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight,
+  linkToFbosSettings,
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
 import { panelState } from "../../../__test_support__/control_panel_state";
@@ -109,5 +115,16 @@ describe("maybeOpenPanel()", () => {
     maybeOpenPanel(panelState(), true)(jest.fn());
     expect(toggleControlPanel).toHaveBeenCalledWith("motors");
     expect(bulkToggleControlPanel).toHaveBeenCalledWith(false, true);
+  });
+});
+
+describe("linkToFbosSettings()", () => {
+  it("renders correct path", () => {
+    mockDev = true;
+    expect(linkToFbosSettings())
+      .toEqual("/app/designer/settings?highlight=farmbot_os");
+    mockDev = false;
+    expect(linkToFbosSettings())
+      .toEqual("/app/device?highlight=farmbot_os");
   });
 });
