@@ -38,7 +38,6 @@ module Devices
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
       device.update!(last_saw_api: Time.now)
-      Rails.cache.redis.incr("device_sync_count_#{device.id}")
       real_stuff.merge({ first_party_farmwares: STUB_FARMWARES })
     end
   end

@@ -5,9 +5,9 @@ class Rack::Attack
   end
 
   # ### Stop people from overusing the sync object. ###
-  # throttle("sync_req/ip", limit: 15, period: 1.minutes) do |req|
-  #   req.ip if req.url.include?("api/device/sync")
-  # end
+  throttle("sync_req/ip", limit: 15, period: 1.minutes) do |req|
+    req.ip if req.url.include?("api/device/sync")
+  end
 
   ### Don't allow too many demo account requests ###
   throttle("demo_accounts/ip", limit: 10, period: 10.minutes) do |req|
