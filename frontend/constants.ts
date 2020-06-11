@@ -676,7 +676,7 @@ export namespace Content {
   export const RESTART_FIRMWARE =
     trim(`Restart the Farmduino or Arduino firmware.`);
 
-  // Hardware Settings: Danger Zone
+  // Hardware Settings: Hardware Parameter Management
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
     current settings, resetting them to default values.`);
@@ -1014,9 +1014,11 @@ export enum DeviceSetting {
   pinGuard4 = `Pin Guard 4`,
   pinGuard5 = `Pin Guard 5`,
 
-  // Danger Zone
-  dangerZone = `Danger Zone`,
+  // Hardware Parameter Management
+  dangerZone = `Parameter Management`,
   resetHardwareParams = `Reset hardware parameter defaults`,
+  paramLoadProgress = `Parameter load progress`,
+  exportParameters = `Export parameters`,
 
   // Pin Bindings
   pinBindings = `Pin Bindings`,

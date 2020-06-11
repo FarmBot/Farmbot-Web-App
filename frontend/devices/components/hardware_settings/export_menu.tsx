@@ -60,7 +60,7 @@ export const FwParamExportMenu =
 export const condenseFwConfig =
   (fwConfig: Partial<FirmwareConfig>): CondensedFwConfig => {
     /** Set of parameter keys without suffixes such as `_<x|y|z>`. */
-    const reducedParamKeys = new Set(Object.keys(fwConfig)
+    const reducedParamKeys = new Set(Object.keys(fwConfig).sort()
       .map(key => isAxisKey(key) ? key.slice(0, -2) : key)
       .map(key => isPinGuardKey(key) ? key.slice(0, 11) : key));
 
@@ -73,6 +73,7 @@ export const condenseFwConfig =
     Object.entries(fwConfig).map(([fwConfigKey, value]) => {
       Array.from(reducedParamKeys).map(key => {
         if (fwConfigKey.startsWith(key)) {
+          UNITS[key] && (condensedFwConfig[key]["units"] = UNITS[key]);
           condensedFwConfig[key][getSubKeyName(fwConfigKey)] = value;
         }
       });
@@ -88,8 +89,18 @@ export const uncondenseFwConfig =
     } = {};
     Object.entries(condensed).map(([key, obj]) =>
       Object.entries(obj).map(([subKey, value]) => {
+        if (subKey == "units") { return; }
         const fwConfigKey = subKey != "" ? `${key}_${subKey}` : key;
         uncondensedFwConfig[fwConfigKey] = value;
       }));
     return uncondensedFwConfig;
   };
+
+const UNITS: { [x: string]: string } = {
+  movement_axis_nr_steps: "microsteps",
+  movement_home_spd: "microsteps/s",
+  movement_max_spd: "microsteps/s",
+  movement_min_spd: "microsteps/s",
+  movement_step_per_mm: "microsteps/mm",
+  movement_steps_acc_dec: "microsteps",
+};

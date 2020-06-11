@@ -40,7 +40,7 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
       ? findSequenceById(resources, sequence_id).body.name
       : t(getSpecialActionLabel(special_action)))}`;
 
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <div className={"bindings-list"}>
     {newFormat && <Row><label>{t(DeviceSetting.savedPinBindings)}</label></Row>}
     {pinBindings

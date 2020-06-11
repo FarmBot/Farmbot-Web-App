@@ -16,7 +16,7 @@ export interface FbosButtonRowProps {
 }
 
 export const FbosButtonRow = (props: FbosButtonRowProps) => {
-  const newFormat = DevSettings.futureFeaturesEnabled();
+  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight settingName={props.label}>
     <Row>
       <Col xs={newFormat ? 7 : ColWidth.label}>

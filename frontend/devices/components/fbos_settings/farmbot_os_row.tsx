@@ -78,7 +78,7 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
 
   render() {
     const { sourceFbosConfig, bot, botOnline } = this.props;
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.farmbotOS}>
       <Row>
         <Col xs={newFormat ? 5 : ColWidth.label}>

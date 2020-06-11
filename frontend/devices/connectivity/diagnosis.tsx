@@ -4,6 +4,7 @@ import { Col, Row, docLink } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
+import { linkToFbosSettings } from "../components/maybe_highlight";
 
 export type DiagnosisName =
   | "userAPI"
@@ -43,7 +44,7 @@ export function Diagnosis(props: DiagnosisProps) {
       <Col xs={10} className={"connectivity-diagnosis"}>
         <p className="blinking">
           {t("Always")}&nbsp;
-          <a className="blinking" href="/app/device?highlight=farmbot_os">
+          <a className="blinking" href={linkToFbosSettings()}>
             <u>{t("upgrade FarmBot OS")}</u>
           </a>
             &nbsp;{t("before troubleshooting.")}

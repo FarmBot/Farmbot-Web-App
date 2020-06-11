@@ -43,6 +43,7 @@ export namespace DevSettings {
   /** Unstable FE features enabled? */
   export const futureFeaturesEnabled = () =>
     !!devStorage.getItem(FUTURE_FE_FEATURES);
+  export const futureFeature1Enabled = () => !futureFeaturesEnabled();
   /** Show unstable FE features for development purposes. */
   export const enableFutureFeatures = () =>
     devStorage.setItem(FUTURE_FE_FEATURES, "true");

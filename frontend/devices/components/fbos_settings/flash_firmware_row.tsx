@@ -18,7 +18,7 @@ export class FlashFirmwareRow extends React.Component<FlashFirmwareRowProps> {
     </p>;
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
 
     return <Highlight settingName={DeviceSetting.flashFirmware}>
       <Row>

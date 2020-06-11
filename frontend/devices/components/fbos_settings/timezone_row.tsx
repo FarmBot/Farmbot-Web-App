@@ -27,7 +27,7 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
       }} />;
 
   render() {
-    const newFormat = DevSettings.futureFeaturesEnabled();
+    const newFormat = DevSettings.futureFeature1Enabled();
 
     return <Highlight settingName={DeviceSetting.timezone}>
       <Row>
