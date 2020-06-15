@@ -101,6 +101,7 @@ module FarmBot
           allow-same-origin
           allow-modals
           allow-popups
+          allow-downloads
         ),
         plugin_types: %w(),
         script_src: [
