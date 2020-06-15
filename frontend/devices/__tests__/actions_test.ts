@@ -309,8 +309,8 @@ describe("commandErr()", () => {
 
 describe("toggleControlPanel()", () => {
   it("toggles", () => {
-    const action = actions.toggleControlPanel("homing_and_calibration");
-    expect(action.payload).toEqual("homing_and_calibration");
+    const action = actions.toggleControlPanel("axis_settings");
+    expect(action.payload).toEqual("axis_settings");
   });
 });
 

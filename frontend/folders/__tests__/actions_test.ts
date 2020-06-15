@@ -110,7 +110,7 @@ jest.mock("../../sequences/set_active_sequence_by_name", () => {
 });
 
 jest.mock("../../history", () => {
-  return { push: jest.fn() };
+  return { push: jest.fn(), getPathArray: () => [] };
 });
 
 /**

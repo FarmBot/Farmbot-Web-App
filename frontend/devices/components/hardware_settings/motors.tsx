@@ -14,6 +14,7 @@ import { isTMCBoard } from "../firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
+import { Help } from "../../../ui";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
@@ -43,6 +44,9 @@ export function Motors(props: MotorsProps) {
       title={DeviceSetting.motors}
       panel={"motors"}
       dispatch={dispatch} />
+    {controlPanelState.motors &&
+      <Help customClass={"hw-warn"} text={ToolTips.HW_SETTINGS}
+        customIcon={"exclamation-triangle"} />}
     <Collapse isOpen={!!controlPanelState.motors}>
       <SpacePanelHeader />
       <NumericMCUInputGroup

@@ -8,6 +8,7 @@ import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { t } from "../i18next_wrapper";
 import { isNumber } from "lodash";
+import { sequencesUrlBase } from "../folders/component";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -32,7 +33,7 @@ export const copySequence = (payload: TaggedSequence) =>
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
     dispatch(init(copy.kind, copy.body));
-    push("/app/sequences/" + urlFriendly(copy.body.name));
+    push(sequencesUrlBase() + urlFriendly(copy.body.name));
     setActiveSequenceByName();
   };
 
@@ -44,7 +45,7 @@ export function selectSequence(uuid: string): SelectSequence {
 }
 
 export const unselectSequence = () => {
-  push("/app/sequences");
+  push(sequencesUrlBase());
   return { type: Actions.SELECT_SEQUENCE, payload: undefined };
 };
 

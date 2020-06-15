@@ -12,7 +12,7 @@ export function TileSetZero(props: StepParams) {
   return <StepWrapper>
     <StepHeader
       className={className}
-      helpText={ToolTips.SET_ZERO_POSITION}
+      helpText={ToolTips.SET_HOME_POSITION}
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}

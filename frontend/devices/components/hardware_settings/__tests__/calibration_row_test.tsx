@@ -1,11 +1,3 @@
-let mockDev = false;
-jest.mock("../../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeature1Enabled: () => mockDev,
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { CalibrationRow } from "../calibration_row";
@@ -21,7 +13,7 @@ describe("<CalibrationRow />", () => {
     botOnline: true,
     action: jest.fn(),
     toolTip: "calibrate",
-    title: DeviceSetting.calibration,
+    title: DeviceSetting.findAxisLength,
     axisTitle: "calibrate",
   });
 
@@ -37,7 +29,6 @@ describe("<CalibrationRow />", () => {
   });
 
   it("is not disabled", () => {
-    mockDev = true;
     const p = fakeProps();
     p.type = "zero";
     const result = mount(<CalibrationRow {...p} />);

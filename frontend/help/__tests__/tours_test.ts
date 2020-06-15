@@ -30,7 +30,6 @@ describe("tourPageNavigation()", () => {
     testCase(".farm-event-panel");
     testCase(".move-widget");
     testCase(".peripherals-widget");
-    testCase(".device-widget");
     testCase(".sequence-list-panel");
     testCase(".regimen-list-panel");
     testCase(".tool-list");

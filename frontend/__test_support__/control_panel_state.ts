@@ -2,17 +2,17 @@ import { ControlPanelState } from "../devices/interfaces";
 
 export const panelState = (): ControlPanelState => {
   return {
-    homing_and_calibration: false,
+    farmbot_settings: false,
+    firmware: false,
+    power_and_reset: false,
+    axis_settings: false,
     motors: false,
-    encoders: false,
-    endstops: false,
+    encoders_or_stall_detection: false,
+    limit_switches: false,
     error_handling: false,
     pin_bindings: false,
-    danger_zone: false,
-    power_and_reset: false,
     pin_guard: false,
+    parameter_management: false,
     farm_designer: false,
-    firmware: false,
-    farmbot_os: false,
   };
 };

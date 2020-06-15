@@ -133,9 +133,6 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
     case ".peripherals-widget":
       history.push("/app/controls");
       break;
-    case ".device-widget":
-      history.push("/app/device");
-      break;
     case ".sequence-list-panel":
       history.push("/app/sequences");
       break;

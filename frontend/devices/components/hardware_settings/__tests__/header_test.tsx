@@ -1,17 +1,29 @@
 import * as React from "react";
-import { Header } from "../header";
+import { Header, HeaderProps } from "../header";
 import { mount } from "enzyme";
-import { DeviceSetting } from "../../../../constants";
+import { DeviceSetting, Actions } from "../../../../constants";
 
-describe("<Header/>", () => {
+describe("<Header />", () => {
+  const fakeProps = (): HeaderProps => ({
+    dispatch: jest.fn(),
+    panel: "motors",
+    title: DeviceSetting.motors,
+    expanded: true,
+  });
+
   it("renders", () => {
-    const fn = jest.fn();
-    const el = mount(<Header
-      title={DeviceSetting.motors}
-      expanded={true}
-      panel={"motors"}
-      dispatch={fn} />);
-    expect(el.text().toLowerCase()).toContain("motors");
-    expect(el.find(".fa-minus").length).toBe(1);
+    const wrapper = mount(<Header {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("motors");
+    expect(wrapper.find(".fa-minus").length).toBe(1);
+  });
+
+  it("handles click", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Header {...p} />);
+    wrapper.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
+      payload: "motors",
+    });
   });
 });
