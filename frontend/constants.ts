@@ -106,11 +106,13 @@ export namespace ToolTips {
     before enabling this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
-    trim(`Stop at the home (zero) location of the axis. (default: disabled)`);
+    trim(`Stop at the home (zero) location of the axis. If enabled, moving
+    past zero is disallowed. (default: enabled)`);
 
   export const STOP_AT_MAX =
-    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.
-    (default: disabled)`);
+    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH
+    (for AXIS LENGTH values other than '0').
+    (default: enabled)`);
 
   export const NEGATIVE_COORDINATES_ONLY =
     trim(`Restrict travel to negative coordinate locations.
