@@ -70,6 +70,8 @@ GEM
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     amq-protocol (2.3.1)
+    appsignal (2.10.7)
+      rack
     bcrypt (3.1.13)
     builder (3.2.4)
     bunny (2.15.0)
@@ -321,6 +323,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  appsignal
   bunny
   climate_control
   codecov
