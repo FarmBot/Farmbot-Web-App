@@ -25,6 +25,7 @@ gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "kaminari"
+gem "appsignal"
 
 group :development, :test do
   gem "climate_control"
