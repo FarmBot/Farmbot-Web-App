@@ -1,4 +1,9 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
+let mockPath = "";
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  history: { push: jest.fn() },
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
 
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
@@ -222,6 +227,14 @@ describe("onDrop()", () => {
     onDrop(dispatch, fakeSequence())(0, "");
     expect(dispatch).not.toHaveBeenCalled();
   });
+
+  it("throws error", () => {
+    const dispatch = jest.fn();
+    onDrop(dispatch, fakeSequence())(3, "fakeUuid");
+    const nope = () => dispatch.mock.calls[0][0](() =>
+      ({ value: 4, intent: "nope", draggerId: 5 }));
+    expect(nope).toThrowError("Got unexpected data transfer object.");
+  });
 });
 
 describe("<SequenceNameAndColor />", () => {
@@ -261,6 +274,15 @@ describe("<AddCommandButton />", () => {
       type: Actions.SET_SEQUENCE_STEP_POSITION,
       payload: 1,
     });
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("navigates", () => {
+    mockPath = "/app/designer/sequences/1";
+    const dispatch = jest.fn();
+    const wrapper = shallow(<AddCommandButton dispatch={dispatch} index={1} />);
+    wrapper.find("button").simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/sequences/commands");
   });
 });
 

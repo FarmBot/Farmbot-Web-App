@@ -1,5 +1,6 @@
 jest.mock("../../history", () => ({
   push: jest.fn(),
+  getPathArray: () => [],
   history: { getCurrentLocation: () => "" },
 }));
 
@@ -66,13 +67,25 @@ describe("<SequenceBackButton />", () => {
     className: "",
   });
 
-  it("goes back", () => {
+  it("goes back to sequence", () => {
     const p = fakeProps();
+    p.className = "inserting-step";
+    const wrapper = mount(<SequenceBackButton {...p} />);
+    wrapper.find("i").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SEQUENCE_STEP_POSITION, payload: undefined
+    });
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("goes back to sequence list", () => {
+    const p = fakeProps();
+    p.className = "";
     const wrapper = mount(<SequenceBackButton {...p} />);
     wrapper.find("i").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_SEQUENCE, payload: undefined
     });
-    expect(push).toHaveBeenCalledWith("/app/sequences");
+    expect(push).toHaveBeenCalledWith("/app/sequences/");
   });
 });

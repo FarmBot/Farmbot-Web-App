@@ -1,7 +1,12 @@
+jest.mock("../../../../devices/components/maybe_highlight", () => ({
+  getHighlightName: () => "surprise",
+}));
+
 import * as React from "react";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
+  ExtraSettings,
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
@@ -102,5 +107,23 @@ describe("<BugsControls />", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
     const eggs = shallow(<BugsControls />);
     expect(eggs.find(".more-bugs").length).toEqual(1);
+  });
+});
+
+describe("<ExtraSettings />", () => {
+  it("toggles setting on", () => {
+    localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "");
+    const wrapper = mount(<div>{ExtraSettings("surprise")}</div>);
+    expect(wrapper.text().toLowerCase()).toContain("bug");
+    wrapper.find("button").last().simulate("click");
+    expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("true");
+  });
+
+  it("toggles setting off", () => {
+    localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "true");
+    const wrapper = mount(<div>{ExtraSettings("surprise")}</div>);
+    expect(wrapper.text().toLowerCase()).toContain("bug");
+    wrapper.find("button").last().simulate("click");
+    expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
   });
 });

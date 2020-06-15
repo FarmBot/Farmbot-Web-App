@@ -292,10 +292,10 @@ export function toggleControlPanel(payload: keyof ControlPanelState) {
 }
 
 /** Toggle visibility of all hardware control panel sections. */
-export function bulkToggleControlPanel(open: boolean, all = false) {
+export function bulkToggleControlPanel(open: boolean) {
   return {
     type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-    payload: { open, all },
+    payload: open,
   };
 }
 

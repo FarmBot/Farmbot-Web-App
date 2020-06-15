@@ -18,7 +18,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
 
-describe("<Motors/>", () => {
+describe("<Motors />", () => {
   const fakeConfig = fakeFirmwareConfig();
   const state = fakeState();
   state.resources = buildResourceIndex([fakeConfig]);

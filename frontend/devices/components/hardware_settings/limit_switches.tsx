@@ -1,30 +1,30 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../../constants";
-import { EndStopsProps } from "../interfaces";
+import { LimitSwitchesProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
-import { settingRequiredLabel } from "./encoders";
+import { settingRequiredLabel } from "./encoders_or_stall_detection";
 
-export function EndStops(props: EndStopsProps) {
+export function LimitSwitches(props: LimitSwitchesProps) {
 
-  const { endstops } = props.controlPanelState;
+  const { limit_switches } = props.controlPanelState;
   const { dispatch, sourceFwConfig, arduinoBusy } = props;
 
   return <Highlight className={"section"}
-    settingName={DeviceSetting.endstops}>
+    settingName={DeviceSetting.limitSwitchSettings}>
     <Header
-      expanded={endstops}
-      title={DeviceSetting.endstops}
-      panel={"endstops"}
+      expanded={limit_switches}
+      title={DeviceSetting.limitSwitchSettings}
+      panel={"limit_switches"}
       dispatch={dispatch} />
-    <Collapse isOpen={!!endstops}>
+    <Collapse isOpen={!!limit_switches}>
       <SpacePanelHeader />
       <BooleanMCUInputGroup
-        label={DeviceSetting.enableEndstops}
-        tooltip={ToolTips.ENABLE_ENDSTOPS}
+        label={DeviceSetting.enableLimitSwitches}
+        tooltip={ToolTips.ENABLE_LIMIT_SWITCHES}
         x={"movement_enable_endpoints_x"}
         y={"movement_enable_endpoints_y"}
         z={"movement_enable_endpoints_z"}
@@ -32,8 +32,8 @@ export function EndStops(props: EndStopsProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
-        label={DeviceSetting.swapEndstops}
-        tooltip={ToolTips.SWAP_ENDPOINTS}
+        label={DeviceSetting.swapLimitSwitches}
+        tooltip={ToolTips.SWAP_LIMIT_SWITCHES}
         x={"movement_invert_endpoints_x"}
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
@@ -43,12 +43,12 @@ export function EndStops(props: EndStopsProps) {
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
-        disabledBy={settingRequiredLabel([DeviceSetting.enableEndstops])}
+        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
-        label={DeviceSetting.invertEndstops}
-        tooltip={ToolTips.INVERT_ENDPOINTS}
+        label={DeviceSetting.invertLimitSwitches}
+        tooltip={ToolTips.INVERT_LIMIT_SWITCHES}
         x={"movement_invert_2_endpoints_x"}
         y={"movement_invert_2_endpoints_y"}
         z={"movement_invert_2_endpoints_z"}
@@ -58,7 +58,7 @@ export function EndStops(props: EndStopsProps) {
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
-        disabledBy={settingRequiredLabel([DeviceSetting.enableEndstops])}
+        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
     </Collapse>

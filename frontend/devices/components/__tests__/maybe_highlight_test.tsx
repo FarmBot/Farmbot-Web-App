@@ -3,11 +3,6 @@ jest.mock("../../actions", () => ({
   bulkToggleControlPanel: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeature1Enabled: () => mockDev }
-}));
-
 import { fakeState } from "../../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../../redux/store", () => ({
@@ -21,7 +16,6 @@ import {
   linkToFbosSettings,
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
-import { panelState } from "../../../__test_support__/control_panel_state";
 import { toggleControlPanel, bulkToggleControlPanel } from "../../actions";
 
 describe("<Highlight />", () => {
@@ -89,42 +83,30 @@ describe("maybeOpenPanel()", () => {
 
   it("opens panel only once", () => {
     location.search = "?highlight=motors";
-    maybeOpenPanel(panelState())(jest.fn());
+    maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).toHaveBeenCalledWith("motors");
     jest.resetAllMocks();
-    maybeOpenPanel(panelState())(jest.fn());
-    expect(toggleControlPanel).not.toHaveBeenCalled();
-  });
-
-  it("doesn't open panel: already open", () => {
-    location.search = "?highlight=motors";
-    const panels = panelState();
-    panels.motors = true;
-    maybeOpenPanel(panels)(jest.fn());
+    maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).not.toHaveBeenCalled();
   });
 
   it("doesn't open panel: no search term", () => {
     location.search = "";
-    maybeOpenPanel(panelState())(jest.fn());
+    maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).not.toHaveBeenCalled();
   });
 
   it("closes other panels", () => {
     location.search = "?highlight=motors";
-    maybeOpenPanel(panelState(), true)(jest.fn());
+    maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).toHaveBeenCalledWith("motors");
-    expect(bulkToggleControlPanel).toHaveBeenCalledWith(false, true);
+    expect(bulkToggleControlPanel).toHaveBeenCalledWith(false);
   });
 });
 
 describe("linkToFbosSettings()", () => {
   it("renders correct path", () => {
-    mockDev = true;
     expect(linkToFbosSettings())
       .toEqual("/app/designer/settings?highlight=farmbot_os");
-    mockDev = false;
-    expect(linkToFbosSettings())
-      .toEqual("/app/device?highlight=farmbot_os");
   });
 });

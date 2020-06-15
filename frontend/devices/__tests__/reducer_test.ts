@@ -38,34 +38,19 @@ describe("botReducer", () => {
   });
 
   it("toggles control panel options", () => {
-    const payload: keyof ControlPanelState = "danger_zone";
+    const payload: keyof ControlPanelState = "parameter_management";
     const state = botReducer(initialState(), {
       type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
       payload
     });
-    expect(state.controlPanelState.danger_zone)
-      .toBe(!initialState().controlPanelState.danger_zone);
-  });
-
-  it("bulk toggles firmware control panel options", () => {
-    const state = botReducer(initialState(), {
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: true, all: false }
-    });
-
-    const bulkToggable =
-      Object.entries(state.controlPanelState).filter(([k, _]) => ![
-        "power_and_reset", "farmbot_os", "farm_designer", "firmware",
-      ].includes(k));
-    Object.values(bulkToggable).map(value => {
-      expect(value).toBeTruthy();
-    });
+    expect(state.controlPanelState.parameter_management)
+      .toBe(!initialState().controlPanelState.parameter_management);
   });
 
   it("bulk toggles all control panel options", () => {
     const state = botReducer(initialState(), {
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: true, all: true }
+      payload: true
     });
 
     Object.values(state.controlPanelState).map(value => {

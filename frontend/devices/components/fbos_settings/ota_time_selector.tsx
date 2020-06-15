@@ -7,7 +7,6 @@ import { ColWidth } from "../farmbot_os_settings";
 import { DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorRowProps } from "./interfaces";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 // tslint:disable-next-line:no-null-keyword
 const UNDEFINED = null as unknown as undefined;
@@ -149,12 +148,11 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     .sort((_x, _y) => (_x.value > _y.value) ? 1 : -1);
   const selectedItem = (typeof value == "number") ?
     theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
-  const newFormat = DevSettings.futureFeature1Enabled();
-  return <Highlight settingName={DeviceSetting.applySoftwareUpdates}>
+  return <Highlight settingName={DeviceSetting.osUpdateTime}>
     <Row>
-      <Col xs={newFormat ? 5 : ColWidth.label}>
+      <Col xs={5}>
         <label>
-          {t(DeviceSetting.applySoftwareUpdates)}
+          {t(DeviceSetting.osUpdateTime)}
         </label>
       </Col>
       <Col xs={ColWidth.description}>

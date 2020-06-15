@@ -390,57 +390,23 @@ a {
   padding: 0.25rem;
 }
 
-.hardware-widget,
-.device-widget {
-  .row {
-    margin-bottom: 0.6rem;
-  }
-  label {
-    padding: 0.5rem 0 0 0.5rem;
-  }
-  h4 {
-    margin-bottom: 0;
-  }
-  p {
-    margin-bottom: 1rem !important;
-  }
-  .widget-body-tooltips {
-    .bp3-popover-wrapper {
-      display: inline;
-      float: none;
-      margin-right: 1rem;
-      margin-left: 1rem;
-    }
-  }
-  .fa-download {
-    float: right;
-    color: $dark_gray !important;
-  }
-  .bp3-collapse::-webkit-scrollbar {
-    display:none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-  }
-  .disable_scrollbar::-webkit-scrollbar{
-    width: 0px;
-    background: transparent;
-  }
-  .bp3-collapse-body::-webkit-scrollbar{
-    display: none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-    }
-}
-
 .load-progress-bar-wrapper {
-  position: absolute;
-  top: 3.2rem;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 1px;
+  position: relative;
+  margin: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  width: 90%;
+  height: 1.5rem;
+  border: 1px solid $dark_gray;
   .load-progress-bar {
     height: 100%;
+    background: $dark_gray !important;
+    p {
+      position: absolute;
+      color: $gray;
+      font-weight: bold;
+      font-size: 1rem;
+    }
   }
 }
 

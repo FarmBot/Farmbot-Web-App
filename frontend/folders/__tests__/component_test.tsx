@@ -15,7 +15,8 @@ jest.mock("../actions", () => ({
 
 let mockPath = "";
 jest.mock("../../history", () => ({
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
+  history: { getCurrentLocation: () => ({ pathname: mockPath }) },
+  getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
 jest.mock("@blueprintjs/core", () => ({
@@ -37,7 +38,7 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
-  FolderButtonCluster, FolderListItem, FolderNameInput,
+  FolderButtonCluster, FolderListItem, FolderNameInput, sequencesUrlBase,
 } from "../component";
 import {
   FolderProps, FolderPanelTopProps, SequenceDropAreaProps, FolderNodeProps,
@@ -227,6 +228,15 @@ describe("<Folders />", () => {
     wrapper.instance().endSequenceMove(1);
     expect(moveSequence).toHaveBeenCalledWith("", 1);
     expect(wrapper.state().movedSequenceUuid).toEqual(undefined);
+  });
+});
+
+describe("sequencesUrlBase()", () => {
+  it("returns correct base", () => {
+    mockPath = "/app/sequences/1";
+    expect(sequencesUrlBase()).toEqual("/app/sequences/");
+    mockPath = "/app/designer/sequences/1";
+    expect(sequencesUrlBase()).toEqual("/app/designer/sequences/");
   });
 });
 

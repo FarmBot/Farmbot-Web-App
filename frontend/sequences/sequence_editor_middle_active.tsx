@@ -31,6 +31,7 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { isUndefined } from "lodash";
 import { NO_GROUPS } from "./locals_list/default_value_form";
 import { ErrorBoundary } from "../error_boundary";
+import { sequencesUrlBase, inDesigner } from "../folders/component";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -136,7 +137,7 @@ const SequenceBtnGroup = ({
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
       onClick={() => dispatch(save(sequence.uuid)).then(() =>
-        push(`/app/sequences/${urlFriendly(sequence.body.name)}`))} />
+        push(sequencesUrlBase() + urlFriendly(sequence.body.name)))} />
     <TestButton
       syncStatus={syncStatus}
       sequence={sequence}
@@ -152,7 +153,7 @@ const SequenceBtnGroup = ({
           BooleanSetting.confirm_sequence_deletion);
         const force = !(confirm ?? true);
         dispatch(destroy(sequence.uuid, force))
-          .then(() => push("/app/sequences/"));
+          .then(() => push(sequencesUrlBase()));
       }}>
       {t("Delete")}
     </button>
@@ -299,10 +300,13 @@ export const AddCommandButton = (props: { dispatch: Function, index: number }) =
     <button
       className="add-command fb-button gray"
       title={t("add sequence step")}
-      onClick={() => props.dispatch({
-        type: Actions.SET_SEQUENCE_STEP_POSITION,
-        payload: props.index,
-      })}>
+      onClick={() => {
+        props.dispatch({
+          type: Actions.SET_SEQUENCE_STEP_POSITION,
+          payload: props.index,
+        });
+        inDesigner() && push("/app/designer/sequences/commands");
+      }}>
       {t("Add command")}
     </button>
   </div>;
