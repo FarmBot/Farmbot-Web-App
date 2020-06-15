@@ -10,12 +10,16 @@ import {
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
+import { refresh } from "../../api/crud";
+import { TaggedDevice } from "farmbot";
 
 export interface ConnectivityProps {
   bot: BotState;
   rowData: StatusRowProps[];
   flags: DiagnosisProps;
   pings: PingDictionary;
+  dispatch: Function;
+  device: TaggedDevice;
 }
 
 interface ConnectivityState {
@@ -25,6 +29,8 @@ interface ConnectivityState {
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
+
+  componentDidMount = () => this.props.dispatch(refresh(this.props.device));
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });

@@ -31,6 +31,7 @@ export interface NavBarState {
   mobileMenuOpen: boolean;
   tickerListOpen: boolean;
   accountMenuOpen: boolean;
+  documentTitle: string;
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
