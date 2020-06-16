@@ -101,6 +101,7 @@ export class RawDesignerControls
             locationData={locationData}
             getValue={this.getValue}
             arduinoBusy={this.arduinoBusy}
+            firmwareSettings={this.props.firmwareSettings}
             firmwareHardware={this.props.firmwareHardware} />
         </MustBeOnline>
         {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
