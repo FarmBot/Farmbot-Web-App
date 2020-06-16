@@ -33,7 +33,9 @@ describe("NavBar", () => {
     device: fakeDevice(),
     autoSync: false,
     alertCount: 0,
-    pings: fakePings()
+    pings: fakePings(),
+    alerts: [],
+    apiFirmwareValue: undefined,
   });
 
   it("has correct parent classname", () => {

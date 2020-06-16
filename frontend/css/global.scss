@@ -176,6 +176,9 @@ fieldset {
     .connectivity {
       padding: 1rem;
       max-width: 600px;
+      overflow-x: hidden;
+      max-height: 550px;
+      overflow-y: auto;
       .row {
         margin-bottom: 1rem;
       }
@@ -185,7 +188,7 @@ fieldset {
       .network-info,
       .fbos-info {
         @media (max-width:767px) {
-          display: none;
+          display: block;
         }
       }
     }
@@ -1551,6 +1554,7 @@ ul {
 }
 
 .firmware-hardware-status-details {
+  max-width: 30rem;
   button {
     float: none !important;
   }

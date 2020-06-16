@@ -9,6 +9,7 @@ import { fill } from "lodash";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
 import { refresh } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -34,6 +35,9 @@ describe("<Connectivity />", () => {
     pings: fakePings(),
     dispatch: jest.fn(),
     device: fakeDevice(),
+    alerts: [],
+    apiFirmwareValue: undefined,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("sets hovered connection", () => {
