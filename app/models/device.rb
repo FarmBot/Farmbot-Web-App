@@ -60,6 +60,12 @@ class Device < ApplicationRecord
       .where(device_id: self.id)
   end
 
+  def trim_excess_logs
+    # Calls to `destroy_all` rather than `delete_all` can be
+    # disastrous- this is a big table! RC
+    excess_logs.delete_all
+  end
+
   def self.current
     RequestStore.store[:device]
   end

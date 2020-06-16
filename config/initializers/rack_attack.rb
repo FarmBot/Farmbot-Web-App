@@ -1,6 +1,6 @@
 class Rack::Attack
   ### Throttle Spammy Clients ###
-  throttle("req/ip", limit: 2000, period: 1.minutes) do |req|
+  throttle("req/ip", limit: 300, period: 1.minutes) do |req|
     req.ip
   end
 
