@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col, Help } from "../../ui";
+import { Row, Help } from "../../ui";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
 import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
@@ -16,15 +16,7 @@ import {
   PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
-import { DevSettings } from "../../account/dev/dev_support";
 import { Highlight } from "../components/maybe_highlight";
-
-/** Width of UI columns in Pin Bindings widget. */
-export enum PinBindingColWidth {
-  pin = 4,
-  type = 6,
-  button = 2
-}
 
 /** Use binding type to return a sequence ID or a special action. */
 const getBindingTarget = (bindingBody: PinBinding): {
@@ -54,30 +46,14 @@ const apiPinBindings = (resources: ResourceIndex): PinBindingListItems[] => {
   return userBindings.concat(sysBtnBindingData);
 };
 
-const PinBindingsListHeader = () =>
-  <Row>
-    <Col xs={PinBindingColWidth.pin}>
-      <label>
-        {t("Pin Number")}
-      </label>
-    </Col>
-    <Col xs={PinBindingColWidth.type}>
-      <label>
-        {t("Binding")}
-      </label>
-      <Help text={ToolTips.PIN_BINDINGS} />
-    </Col>
-  </Row>;
-
 export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
-  const newFormat = DevSettings.futureFeature1Enabled();
   return <div className="pin-bindings">
     <Highlight settingName={DeviceSetting.pinBindings}>
       <Row>
-        {newFormat && <Help text={ToolTips.PIN_BINDINGS}
-          position={Position.TOP_RIGHT} />}
+        <Help text={ToolTips.PIN_BINDINGS}
+          position={Position.TOP_RIGHT} />
         <StockPinBindingsButton
           dispatch={dispatch} firmwareHardware={firmwareHardware} />
         <Popover
@@ -93,7 +69,6 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
       </Row>
     </Highlight>
     <div className={"pin-bindings-list-and-input"}>
-      {!newFormat && <PinBindingsListHeader />}
       <Highlight settingName={DeviceSetting.savedPinBindings}>
         <PinBindingsList
           pinBindings={pinBindings}

@@ -115,12 +115,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
-    $: "/device",
-    getModule: () => import("./devices/devices"),
-    key: "Devices",
-  }),
-  route({
-    children: false,
     $: "/farmware(/:name)",
     getModule: () => import("./farmware"),
     key: "FarmwarePage",
@@ -354,6 +348,30 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/farmware/info"),
     childKey: "DesignerFarmwareInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/sequences",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/sequences/list"),
+    childKey: "DesignerSequenceList"
+  }),
+  route({
+    children: true,
+    $: "/designer/sequences/commands",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/sequences/commands"),
+    childKey: "DesignerSequenceCommands"
+  }),
+  route({
+    children: true,
+    $: "/designer/sequences/:sequence_name",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/sequences/editor"),
+    childKey: "DesignerSequenceEditor"
   }),
   route({
     children: true,

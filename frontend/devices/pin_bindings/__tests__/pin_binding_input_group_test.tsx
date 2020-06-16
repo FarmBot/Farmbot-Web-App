@@ -8,6 +8,7 @@ jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
+import { validGpioPins } from "../list_and_label_support";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -122,28 +123,49 @@ describe("<PinBindingInputGroup/>", () => {
     expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
-  it("sets pin", () => {
+  it("attempts to set pin 99", () => {
+    const wrapper = shallow<PinBindingInputGroup>(
+      <PinBindingInputGroup {...fakeProps()} />);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
+    wrapper.instance().setSelectedPin(99);
+    expect(error).toHaveBeenCalledWith(
+      "Invalid Raspberry Pi GPIO pin number.");
+    expect(warning).not.toHaveBeenCalled();
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
+  });
+
+  it("attempts to set pin 1", () => {
+    expect(validGpioPins.length).toBeGreaterThan(0);
+    const wrapper = shallow<PinBindingInputGroup>(
+      <PinBindingInputGroup {...fakeProps()} />);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
+    wrapper.instance().setSelectedPin(1);
+    expect(error).not.toHaveBeenCalled();
+    expect(warning).toHaveBeenCalledWith(
+      "Reserved Raspberry Pi pin may not work as expected.");
+    expect(wrapper.instance().state.pinNumberInput).toEqual(1);
+  });
+
+  it("rejects pin already in use", () => {
     const p = fakeProps();
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     const { pin_number } = p.pinBindings[0];
-    wrapper.instance().setSelectedPin(pin_number); // pin already bound
+    wrapper.instance().setSelectedPin(pin_number);
+    expect(error).toHaveBeenCalledWith(
+      "Raspberry Pi GPIO pin already bound or in use.");
+    expect(warning).not.toHaveBeenCalled();
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.instance().setSelectedPin(99); // invalid pin
-    expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.instance().setSelectedPin(AVAILABLE_PIN); // available pin
-    expect(wrapper.instance().state.pinNumberInput).toEqual(AVAILABLE_PIN);
-    wrapper.instance().setSelectedPin(1); // reserved pin
-    expect(wrapper.instance().state.pinNumberInput).toEqual(1);
-    expect(warning).toHaveBeenCalledWith(
-      "Reserved Raspberry Pi pin may not work as expected.");
   });
 
-  it("changes pin number", () => {
+  it("changes pin number to available pin", () => {
+    expect(validGpioPins.length).toBeGreaterThan(0);
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
       {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     wrapper.instance().setSelectedPin(AVAILABLE_PIN);
+    expect(error).not.toHaveBeenCalled();
+    expect(warning).not.toHaveBeenCalled();
     expect(wrapper.instance().state.pinNumberInput).toEqual(AVAILABLE_PIN);
   });
 

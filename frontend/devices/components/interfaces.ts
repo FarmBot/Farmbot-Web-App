@@ -12,7 +12,7 @@ export interface ZeroRowProps {
   botDisconnected: boolean;
 }
 
-export interface HomingAndCalibrationProps {
+export interface AxisSettingsProps {
   dispatch: Function;
   bot: BotState;
   controlPanelState: ControlPanelState;
@@ -98,7 +98,7 @@ export interface MotorsProps {
   arduinoBusy: boolean;
 }
 
-export interface EncodersProps {
+export interface EncodersOrStallDetectionProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
@@ -107,7 +107,7 @@ export interface EncodersProps {
   arduinoBusy: boolean;
 }
 
-export interface EndStopsProps {
+export interface LimitSwitchesProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
@@ -128,7 +128,7 @@ export interface PinBindingsProps {
   firmwareHardware: FirmwareHardware | undefined;
 }
 
-export interface DangerZoneProps {
+export interface ParameterManagementProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   onReset(): void;

@@ -1,8 +1,6 @@
 import { formatEnvKey, parseEnvKey } from "../translators";
 import { SPECIAL_VALUES, getSpecialValue } from "../constants";
 import { WDENVKey } from "../interfaces";
-import { getDropdownSelection } from "../../selectors";
-import { prepopulateEnv } from "../selectors";
 
 describe("getSpecialValue()", () => {
   it("translates values", () => {
@@ -71,17 +69,5 @@ describe("parseEnvKey()", () => {
     const val = "\"Y\"";
     const r = parseEnvKey("CAMERA_CALIBRATION_calibration_along_axis", val);
     expect(r).toEqual(SPECIAL_VALUES.Y);
-  });
-});
-
-describe("getDropdownSelection()", () => {
-  it("unpacks special string values", () => {
-    const key: WDENVKey = "CAMERA_CALIBRATION_calibration_along_axis";
-    const stubs = { [key]: "\"Y\"" };
-    const fakeEnv = prepopulateEnv(stubs);
-    expect(fakeEnv[key]).toEqual(SPECIAL_VALUES.Y);
-    const finder = getDropdownSelection(fakeEnv);
-    const result = finder(key);
-    expect(result.value).toEqual(SPECIAL_VALUES.Y);
   });
 });

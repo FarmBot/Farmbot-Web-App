@@ -4,7 +4,7 @@ import { ToolTips, DeviceSetting } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { CalibrationRow } from "./calibration_row";
 import { disabledAxisMap } from "../axis_tracking_status";
-import { HomingAndCalibrationProps } from "../interfaces";
+import { AxisSettingsProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
@@ -16,16 +16,18 @@ import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../interfaces";
-import { settingRequiredLabel, encodersOrLimitSwitchesRequired } from "./encoders";
+import {
+  settingRequiredLabel, encodersOrLimitSwitchesRequired,
+} from "./encoders_or_stall_detection";
 
-export function HomingAndCalibration(props: HomingAndCalibrationProps) {
+export function AxisSettings(props: AxisSettingsProps) {
 
   const {
     dispatch, bot, sourceFwConfig, firmwareConfig, botOnline,
     firmwareHardware
   } = props;
   const mcuParams = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
-  const { homing_and_calibration } = props.bot.controlPanelState;
+  const { axis_settings } = props.bot.controlPanelState;
   const { busy } = bot.hardware.informational_settings;
 
   /**
@@ -45,21 +47,21 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
   const scale = calculateScale(sourceFwConfig);
 
   return <Highlight className={"section"}
-    settingName={DeviceSetting.homingAndCalibration}>
+    settingName={DeviceSetting.axisSettings}>
     <Header
-      title={DeviceSetting.homingAndCalibration}
-      panel={"homing_and_calibration"}
+      title={DeviceSetting.axisSettings}
+      panel={"axis_settings"}
       dispatch={dispatch}
-      expanded={homing_and_calibration} />
-    <Collapse isOpen={!!homing_and_calibration}>
+      expanded={axis_settings} />
+    <Collapse isOpen={!!axis_settings}>
       <SpacePanelHeader />
       <CalibrationRow
         type={"find_home"}
-        title={DeviceSetting.homing}
+        title={DeviceSetting.findHome}
         axisTitle={t("FIND HOME")}
         toolTip={!showEncoders
-          ? ToolTips.HOMING_STALL_DETECTION
-          : ToolTips.HOMING_ENCODERS}
+          ? ToolTips.FIND_HOME_STALL_DETECTION
+          : ToolTips.FIND_HOME_ENCODERS}
         action={axis => getDevice()
           .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
           .catch(commandErr("'Find Home' request"))}
@@ -68,9 +70,9 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         botOnline={botOnline} />
       <CalibrationRow
         type={"zero"}
-        title={DeviceSetting.setZeroPosition}
+        title={DeviceSetting.setHome}
         axisTitle={t("SET HOME")}
-        toolTip={ToolTips.SET_ZERO_POSITION}
+        toolTip={ToolTips.SET_HOME_POSITION}
         action={axis => getDevice().setZero(axis)
           .catch(commandErr("Set home"))}
         mcuParams={mcuParams}
@@ -121,11 +123,11 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         sourceFwConfig={sourceFwConfig} />
       <CalibrationRow
         type={"calibrate"}
-        title={DeviceSetting.calibration}
+        title={DeviceSetting.findAxisLength}
         axisTitle={t("FIND LENGTH")}
         toolTip={!showEncoders
-          ? ToolTips.CALIBRATION_STALL_DETECTION
-          : ToolTips.CALIBRATION_ENCODERS}
+          ? ToolTips.FIND_LENGTH_STALL_DETECTION
+          : ToolTips.FIND_LENGTH_ENCODERS}
         action={axis => getDevice().calibrate({ axis })
           .catch(commandErr("Find axis length"))}
         stallUseDisabled={!showEncoders
@@ -135,7 +137,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         botOnline={botOnline} />
       <NumericMCUInputGroup
         label={DeviceSetting.axisLength}
-        tooltip={ToolTips.LENGTH}
+        tooltip={ToolTips.AXIS_LENGTH}
         disabled={busy}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}

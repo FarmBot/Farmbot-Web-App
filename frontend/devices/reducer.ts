@@ -24,18 +24,18 @@ export const initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   controlPanelState: {
-    homing_and_calibration: false,
+    farmbot_settings: false,
+    firmware: false,
+    power_and_reset: false,
+    axis_settings: false,
     motors: false,
-    encoders: false,
-    endstops: false,
+    encoders_or_stall_detection: false,
+    limit_switches: false,
     error_handling: false,
     pin_bindings: false,
-    danger_zone: false,
-    power_and_reset: false,
     pin_guard: false,
+    parameter_management: false,
     farm_designer: false,
-    firmware: false,
-    farmbot_os: false,
   },
   hardware: {
     gpio_registry: {},
@@ -119,22 +119,20 @@ export const botReducer = generateReducer<BotState>(initialState())
     s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
-  .add<{ open: boolean, all: boolean }>(
+  .add<boolean>(
     Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
-      s.controlPanelState.homing_and_calibration = a.payload.open;
-      s.controlPanelState.motors = a.payload.open;
-      s.controlPanelState.encoders = a.payload.open;
-      s.controlPanelState.endstops = a.payload.open;
-      s.controlPanelState.error_handling = a.payload.open;
-      s.controlPanelState.pin_bindings = a.payload.open;
-      s.controlPanelState.pin_guard = a.payload.open;
-      s.controlPanelState.danger_zone = a.payload.open;
-      if (a.payload.all) {
-        s.controlPanelState.power_and_reset = a.payload.open;
-        s.controlPanelState.farm_designer = a.payload.open;
-        s.controlPanelState.firmware = a.payload.open;
-        s.controlPanelState.farmbot_os = a.payload.open;
-      }
+      s.controlPanelState.farmbot_settings = a.payload;
+      s.controlPanelState.firmware = a.payload;
+      s.controlPanelState.power_and_reset = a.payload;
+      s.controlPanelState.axis_settings = a.payload;
+      s.controlPanelState.motors = a.payload;
+      s.controlPanelState.encoders_or_stall_detection = a.payload;
+      s.controlPanelState.limit_switches = a.payload;
+      s.controlPanelState.error_handling = a.payload;
+      s.controlPanelState.pin_bindings = a.payload;
+      s.controlPanelState.pin_guard = a.payload;
+      s.controlPanelState.parameter_management = a.payload;
+      s.controlPanelState.farm_designer = a.payload;
       return s;
     })
   .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {

@@ -12,7 +12,7 @@ jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { HomingAndCalibration } from "../homing_and_calibration";
+import { AxisSettings } from "../axis_settings";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../../actions";
 import {
@@ -21,11 +21,11 @@ import {
 import { error, warning } from "../../../../toast/toast";
 import { inputEvent } from "../../../../__test_support__/fake_html_events";
 import { panelState } from "../../../../__test_support__/control_panel_state";
-import { HomingAndCalibrationProps } from "../../interfaces";
+import { AxisSettingsProps } from "../../interfaces";
 import { CalibrationRow } from "../calibration_row";
 
-describe("<HomingAndCalibration />", () => {
-  const fakeProps = (): HomingAndCalibrationProps => ({
+describe("<AxisSettings />", () => {
+  const fakeProps = (): AxisSettingsProps => ({
     dispatch: jest.fn(),
     bot,
     controlPanelState: panelState(),
@@ -41,8 +41,8 @@ describe("<HomingAndCalibration />", () => {
   function testAxisLengthInput(
     provided: string, expected: string | undefined) {
     const p = fakeProps();
-    p.bot.controlPanelState.homing_and_calibration = true;
-    const result = mount(<HomingAndCalibration {...p} />);
+    p.bot.controlPanelState.axis_settings = true;
+    const result = mount(<AxisSettings {...p} />);
     const e = inputEvent(provided);
     const input = result.find("input").first().props();
     input.onChange && input.onChange(e);
@@ -66,7 +66,7 @@ describe("<HomingAndCalibration />", () => {
   });
 
   it("finds home", () => {
-    const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
+    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
     wrapper.find(CalibrationRow).first().props().action("x");
     expect(mockDevice.findHome).toHaveBeenCalledWith({
       axis: "x", speed: 100
@@ -74,7 +74,7 @@ describe("<HomingAndCalibration />", () => {
   });
 
   it("calibrates", () => {
-    const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
+    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
     wrapper.find(CalibrationRow).last().props().action("all");
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
@@ -83,7 +83,7 @@ describe("<HomingAndCalibration />", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
     p.firmwareHardware = "express_k10";
-    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(true);
   });
@@ -92,7 +92,7 @@ describe("<HomingAndCalibration />", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
     p.firmwareHardware = "arduino";
-    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(false);
   });
@@ -101,13 +101,13 @@ describe("<HomingAndCalibration />", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     p.firmwareHardware = "express_k10";
-    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
       .toEqual(false);
   });
 
   it("sets zero", () => {
-    const wrapper = shallow(<HomingAndCalibration {...fakeProps()} />);
+    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
     wrapper.find(CalibrationRow).at(1).props().action("all");
     expect(mockDevice.setZero).toHaveBeenCalledWith("all");
   });
@@ -115,8 +115,8 @@ describe("<HomingAndCalibration />", () => {
   it("shows express board related labels", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    p.controlPanelState.homing_and_calibration = true;
-    const wrapper = shallow(<HomingAndCalibration {...p} />);
+    p.controlPanelState.axis_settings = true;
+    const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).first().props().toolTip)
       .toContain("stall detection");
   });

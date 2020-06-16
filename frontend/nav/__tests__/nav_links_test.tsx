@@ -5,10 +5,7 @@ jest.mock("../../history", () => ({
 
 let mockDev = false;
 jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeature1Enabled: () => mockDev,
-    futureFeaturesEnabled: () => mockDev,
-  }
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
 import * as React from "react";

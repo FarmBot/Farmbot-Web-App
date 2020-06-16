@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepButton } from "./step_buttons";
-import { scrollToBottom } from "../util";
+import { scrollToBottom, urlFriendly } from "../util";
 import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
@@ -8,6 +8,8 @@ import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { NOTHING_SELECTED } from "./locals_list/handle_select";
+import { push } from "../history";
+import { inDesigner } from "../folders/component";
 
 export interface StepButtonProps {
   dispatch: Function;
@@ -197,7 +199,11 @@ export function StepButtonCluster(props: StepButtonProps) {
   return <Row>
     <div className="step-button-cluster">
       {ALL_THE_BUTTONS.map((stepButton, inx) =>
-        <div key={inx} onClick={() => scrollToBottom("sequenceDiv")}>
+        <div key={inx} onClick={() => {
+          scrollToBottom("sequenceDiv");
+          inDesigner() && push(`/app/designer/sequences/${
+            urlFriendly(props.current?.body.name || "")}`);
+        }}>
           {stepButton}
         </div>)}
     </div>

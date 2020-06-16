@@ -2,14 +2,12 @@ import * as React from "react";
 import { Row, Col, Markdown } from "../../../ui/index";
 import { OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
-import { ColWidth } from "../farmbot_os_settings";
 import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../../i18next_wrapper";
 import { ErrorBoundary } from "../../../error_boundary";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
-import { DevSettings } from "../../../account/dev/dev_support";
 import { getLastSeenNumber } from "./last_seen_row";
 
 export const getOsReleaseNotesForVersion = (
@@ -78,17 +76,14 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
 
   render() {
     const { sourceFbosConfig, bot, botOnline } = this.props;
-    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.farmbotOS}>
       <Row>
-        <Col xs={newFormat ? 5 : ColWidth.label}>
+        <Col xs={5}>
           <label>
             {t(DeviceSetting.farmbotOS)}
           </label>
         </Col>
-        {!newFormat && <Col xs={3}><this.Version /></Col>}
-        {!newFormat && <Col xs={3}><this.ReleaseNotes /></Col>}
-        <Col xs={newFormat ? 7 : 3}>
+        <Col xs={7}>
           <OsUpdateButton
             bot={bot}
             sourceFbosConfig={sourceFbosConfig}
@@ -97,8 +92,8 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
         </Col>
       </Row>
       <Row>
-        {newFormat && <Col xs={7} className="no-pad"><this.Version /></Col>}
-        {newFormat && <Col xs={5} className="no-pad"><this.ReleaseNotes /></Col>}
+        <Col xs={7} className="no-pad"><this.Version /></Col>
+        <Col xs={5} className="no-pad"><this.ReleaseNotes /></Col>
       </Row>
     </Highlight>;
   }

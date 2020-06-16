@@ -3,18 +3,10 @@ jest.mock("../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeature1Enabled: () => mockDev,
-    futureFeaturesEnabled: () => mockDev,
-    overriddenFbosVersion: jest.fn(),
-  }
-}));
-
 jest.mock("../../../devices/components/maybe_highlight", () => ({
   maybeOpenPanel: jest.fn(),
   Highlight: (p: { children: React.ReactChild }) => <div>{p.children}</div>,
+  getHighlightName: jest.fn(),
 }));
 
 import * as React from "react";
@@ -33,6 +25,7 @@ import { Actions } from "../../../constants";
 import { Motors } from "../hardware_settings";
 import { SearchField } from "../../../ui/search_field";
 import { maybeOpenPanel } from "../../../devices/components/maybe_highlight";
+import { ControlPanelState } from "../../../devices/interfaces";
 
 const getSetting =
   (wrapper: ReactWrapper, position: number, containsString: string) => {
@@ -43,9 +36,8 @@ const getSetting =
   };
 
 describe("<DesignerSettings />", () => {
-  beforeEach(() => {
-    mockDev = false;
-  });
+  Object.keys(bot.controlPanelState).map((key: keyof ControlPanelState) =>
+    bot.controlPanelState[key] = true);
 
   const fakeProps = (): DesignerSettingsProps => ({
     dispatch: jest.fn(),
@@ -67,15 +59,9 @@ describe("<DesignerSettings />", () => {
   it("renders settings", () => {
     const wrapper = mount(<DesignerSettings {...fakeProps()} />);
     expect(wrapper.text()).toContain("size");
-    expect(wrapper.text().toLowerCase()).not.toContain("pin");
+    expect(wrapper.text().toLowerCase()).toContain("pin");
     const settings = wrapper.find(".designer-setting");
     expect(settings.length).toEqual(7);
-  });
-
-  it("renders all settings", () => {
-    mockDev = true;
-    const wrapper = mount(<DesignerSettings {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("pin");
   });
 
   it("mounts", () => {
@@ -97,24 +83,9 @@ describe("<DesignerSettings />", () => {
     const p = fakeProps();
     const wrapper = shallow(<DesignerSettings {...p} />);
     wrapper.find(SearchField).simulate("change", "setting");
-    expect(p.dispatch).not.toHaveBeenCalledWith({
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: true, all: true },
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SETTINGS_SEARCH_TERM,
-      payload: "setting",
-    });
-  });
-
-  it("changes search term and opens sections", () => {
-    mockDev = true;
-    const p = fakeProps();
-    const wrapper = shallow(<DesignerSettings {...p} />);
-    wrapper.find(SearchField).simulate("change", "setting");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: true, all: true },
+      payload: true,
     });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SETTINGS_SEARCH_TERM,
@@ -123,7 +94,6 @@ describe("<DesignerSettings />", () => {
   });
 
   it("fetches firmware_hardware", () => {
-    mockDev = true;
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
     const wrapper = mount(<DesignerSettings {...p} />);
@@ -131,24 +101,22 @@ describe("<DesignerSettings />", () => {
   });
 
   it("expands all", () => {
-    mockDev = true;
     const p = fakeProps();
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 0, "expand all");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: true, all: true },
+      payload: true,
     });
   });
 
   it("collapses all", () => {
-    mockDev = true;
     const p = fakeProps();
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 1, "collapse all");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: { open: false, all: true },
+      payload: false,
     });
   });
 

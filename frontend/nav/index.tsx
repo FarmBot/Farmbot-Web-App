@@ -20,17 +20,26 @@ import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
+import { refresh } from "../api/crud";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
     mobileMenuOpen: false,
     tickerListOpen: false,
-    accountMenuOpen: false
+    accountMenuOpen: false,
+    documentTitle: "",
   };
 
   componentDidMount = () => {
     const { device } = this.props;
     device && maybeSetTimezone(this.props.dispatch, device);
+  }
+
+  componentDidUpdate = () => {
+    if (this.state.documentTitle != document.title) {
+      this.props.dispatch(refresh(this.props.device));
+      this.setState({ documentTitle: document.title });
+    }
   }
 
   logout = () => Session.clear();
@@ -93,6 +102,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
             bot={this.props.bot}
             rowData={data.rowData}
             flags={data.flags}
+            dispatch={this.props.dispatch}
+            device={this.props.device}
             pings={this.props.pings} />
         </ErrorBoundary>
       </Popover>

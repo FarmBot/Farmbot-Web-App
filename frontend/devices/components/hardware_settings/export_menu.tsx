@@ -1,6 +1,11 @@
 import * as React from "react";
 import { pickBy } from "lodash";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { GetState } from "../../../redux/interfaces";
+import { edit, save } from "../../../api/crud";
+import { t } from "../../../i18next_wrapper";
+import { error } from "../../../toast/toast";
+import { getFirmwareConfig } from "../../../resources/getters";
 
 /** i.e., { encoder_enabled: { x: 1, y: 1, z: 1 } } */
 type CondensedFwConfig = {
@@ -73,7 +78,8 @@ export const condenseFwConfig =
     Object.entries(fwConfig).map(([fwConfigKey, value]) => {
       Array.from(reducedParamKeys).map(key => {
         if (fwConfigKey.startsWith(key)) {
-          UNITS[key] && (condensedFwConfig[key]["units"] = UNITS[key]);
+          UNITS[key] && (condensedFwConfig[key]["units"] =
+            JSON.stringify(UNITS[key]));
           condensedFwConfig[key][getSubKeyName(fwConfigKey)] = value;
         }
       });
@@ -104,3 +110,33 @@ const UNITS: { [x: string]: string } = {
   movement_step_per_mm: "microsteps/mm",
   movement_steps_acc_dec: "microsteps",
 };
+
+export const importParameters = (input: string) =>
+  (dispatch: Function, getState: GetState) => {
+    let parsedInput = {};
+    try {
+      parsedInput = JSON.parse(input);
+    } catch {
+      error(t("Hardware parameter import error."));
+      return;
+    }
+    const newConfigs = uncondenseFwConfig(parsedInput);
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    if (firmwareConfig) {
+      dispatch(edit(firmwareConfig, { ...newConfigs }));
+      dispatch(save(firmwareConfig.uuid));
+    }
+  };
+
+export const resendParameters = () =>
+  (dispatch: Function, getState: GetState) => {
+    const firmwareConfig = getFirmwareConfig(getState().resources.index);
+    if (firmwareConfig) {
+      const { param_version } = firmwareConfig.body;
+      const paramVersion = param_version > 100 ? 1 : param_version + 1;
+      dispatch(edit(firmwareConfig, {
+        ...firmwareConfig.body, param_version: paramVersion
+      }));
+      dispatch(save(firmwareConfig.uuid));
+    }
+  };

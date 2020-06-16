@@ -14,6 +14,7 @@ import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_nam
 import { stepGet, STEP_DATATRANSFER_IDENTIFER } from "../draggable/actions";
 import { joinKindAndId } from "../resources/reducer_support";
 import { maybeGetSequence } from "../resources/selectors";
+import { sequencesUrlBase } from "./component";
 
 type TreePromise = Promise<Tree>;
 
@@ -61,7 +62,7 @@ export const addNewSequenceToFolder = (folder_id?: number) => {
     body: []
   };
   store.dispatch(init("Sequence", newSequence));
-  push("/app/sequences/" + urlFriendly(newSequence.name));
+  push(sequencesUrlBase() + urlFriendly(newSequence.name));
   setActiveSequenceByName();
 };
 

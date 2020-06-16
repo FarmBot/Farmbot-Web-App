@@ -6,12 +6,9 @@ import { BooleanMCUInputGroupProps } from "./interfaces";
 import { Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "./maybe_highlight";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export class BooleanMCUInputGroup
   extends React.Component<BooleanMCUInputGroupProps> {
-
-  get newFormat() { return DevSettings.futureFeature1Enabled(); }
 
   Toggles = () => {
     const {
@@ -21,7 +18,7 @@ export class BooleanMCUInputGroup
     const xParam = sourceFwConfig(x);
     const yParam = sourceFwConfig(y);
     const zParam = sourceFwConfig(z);
-    const width = this.newFormat ? 4 : 2;
+    const width = 4;
     return <div className={"mcu-inputs"}>
       <Col xs={width} className={"centered-button-div"}>
         <ToggleButton
@@ -60,7 +57,7 @@ export class BooleanMCUInputGroup
     const { tooltip, label, caution } = this.props;
     return <Highlight settingName={label}>
       <Row>
-        <Col xs={this.newFormat ? 12 : 6} className={"widget-body-tooltips"}>
+        <Col xs={12} className={"widget-body-tooltips"}>
           <label>
             {t(label)}
             {caution &&
@@ -68,9 +65,8 @@ export class BooleanMCUInputGroup
           </label>
           <Help text={tooltip} position={Position.TOP_RIGHT} />
         </Col>
-        {!this.newFormat && <this.Toggles />}
       </Row>
-      {this.newFormat && <Row><this.Toggles /></Row>}
+      <Row><this.Toggles /></Row>
     </Highlight>;
   }
 }

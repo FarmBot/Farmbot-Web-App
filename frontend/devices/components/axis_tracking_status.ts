@@ -8,8 +8,8 @@ interface AxisStatus {
 
 /** Farmbot prevents itself from ramming into walls via two mechanisms:
  *
- *  - Encoders (count steps)
- *  - End stops (detect collision with edge)
+ *  - Encoders (count steps) or stall detection (motor feedback)
+ *  - Limit switches (detect collision with end switch)
  *
  * If neither of these are enabled, FarmBot can do some pretty dangerous things,
  * such as smashing tools and ramming into tool bays.

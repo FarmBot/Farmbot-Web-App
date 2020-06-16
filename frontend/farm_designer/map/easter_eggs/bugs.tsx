@@ -1,9 +1,12 @@
 import * as React from "react";
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
-import { random, range, some, clamp, sample } from "lodash";
+import { random, range, some, clamp, sample, every } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
+import { Row, Col } from "../../../ui";
+import { ToggleButton } from "../../../controls/toggle_button";
+import { getHighlightName } from "../../../devices/components/maybe_highlight";
 
 export interface BugsProps {
   mapTransformProps: MapTransformProps;
@@ -135,3 +138,26 @@ export const BugsControls = () =>
         </p>}
     </div>
     : <div className={"no-bugs"} />;
+
+const Setting = (title: string, key: string, value: string) => {
+  const on = localStorage.getItem(key) == value;
+  return <div className={"setting"}>
+    <Row>
+      <Col xs={9}>
+        <label>{title}</label>
+      </Col>
+      <Col xs={3}>
+        <ToggleButton
+          toggleValue={on}
+          toggleAction={() => localStorage.setItem(key, on ? "" : value)} />
+      </Col>
+    </Row>
+  </div>;
+};
+
+export const ExtraSettings = (term: string) => {
+  return every([term, getHighlightName()], x => x == "surprise") &&
+    <div className={"settings"}>
+      {Setting("Bug Attack", EggKeys.BRING_ON_THE_BUGS, "true")}
+    </div>;
+};

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { EndStops } from "../endstops";
-import { EndStopsProps } from "../../interfaces";
+import { LimitSwitches } from "../limit_switches";
+import { LimitSwitchesProps } from "../../interfaces";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 
-describe("<EndStops />", () => {
-  const fakeProps = (): EndStopsProps => ({
+describe("<LimitSwitches />", () => {
+  const fakeProps = (): LimitSwitchesProps => ({
     dispatch: jest.fn(),
     controlPanelState: panelState(),
     sourceFwConfig: x =>
@@ -14,9 +14,9 @@ describe("<EndStops />", () => {
     arduinoBusy: false,
   });
 
-  it("shows endstop labels", () => {
+  it("shows limit switches labels", () => {
     const p = fakeProps();
-    const wrapper = mount(<EndStops {...p} />);
+    const wrapper = mount(<LimitSwitches {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("limit switches");
   });
 });
