@@ -42,6 +42,8 @@ const fakeProps = (): AppProps => ({
   alertCount: 0,
   pings: fakePings(),
   env: {},
+  alerts: [],
+  apiFirmwareValue: undefined,
 });
 
 describe("<App />: Controls Pop-Up", () => {

@@ -21,6 +21,7 @@ describe("<BotPositionRows />", () => {
     getValue: jest.fn(key => mockConfig[key]),
     locationData: bot.hardware.location_data,
     arduinoBusy: false,
+    firmwareSettings: {},
     firmwareHardware: undefined,
   });
 

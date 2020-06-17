@@ -4,8 +4,9 @@ import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
 import { t } from "../../i18next_wrapper";
 import {
-  getBoardCategory, isKnownBoard,
+  isKnownBoard, getKitName,
 } from "../components/firmware_hardware_support";
+import { FirmwareHardware } from "farmbot";
 
 /** "<how long> ago" for a given ISO time string or time in milliseconds. */
 export const ago = (input: string | number) => moment(input).fromNow();
@@ -79,7 +80,10 @@ export function browserToMQTT(status: ConnectionStatus | undefined):
   };
 }
 
-export function botToFirmware(version: string | undefined): StatusRowProps {
+export function botToFirmware(
+  version: string | undefined,
+  apiFirmwareValue: FirmwareHardware | undefined,
+): StatusRowProps {
   const connection = (): { status: boolean | undefined, msg: string } => {
     const status = isKnownBoard(version);
     return isUndefined(version)
@@ -89,7 +93,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   return {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
-    to: getBoardCategory(version),
+    to: getKitName(apiFirmwareValue),
     connectionStatus: connection().status,
     connectionMsg: connection().msg,
   };

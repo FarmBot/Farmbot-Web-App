@@ -29,6 +29,7 @@ export interface Props {
 export interface AxisDisplayGroupProps {
   position: BotPosition;
   label: string;
+  firmwareSettings?: McuParams;
   missedSteps?: BotPosition;
   axisStates?: Record<Xyz, AxisState | undefined>;
   busy?: boolean;
@@ -37,6 +38,7 @@ export interface AxisDisplayGroupProps {
 export interface AxisProps {
   val: number | undefined;
   axis: Xyz;
+  detectionEnabled: boolean;
   missedSteps: number | undefined;
   axisState: AxisState | undefined;
   busy: boolean | undefined;

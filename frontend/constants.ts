@@ -1114,10 +1114,11 @@ export namespace DiagnosticMessages {
     however, it could be a sign of HTTP blockage on FarmBot's local internet
     connection.`);
 
-  export const ARDUINO_DISCONNECTED = trim(`Arduino is possibly unplugged.
-    Check the USB cable between the Raspberry Pi and the Arduino. Reboot
-    FarmBot after a reconnection. If the issue persists, reconfiguration
-    of FarmBot OS may be necessary.`);
+  export const ARDUINO_DISCONNECTED = trim(`Farmduino firmware is missing or
+    is possibly unplugged. Verify FIRMWARE selection matches FarmBot kit
+    version or check the USB cable between the Raspberry Pi and the
+    Farmduino. Reboot FarmBot after a reconnection. If the issue persists,
+    reconfiguration of FarmBot OS may be necessary.`);
 }
 
 export enum Actions {

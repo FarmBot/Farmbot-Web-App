@@ -56,6 +56,7 @@ export class Move extends React.Component<MoveProps, {}> {
             locationData={locationData}
             getValue={this.getValue}
             arduinoBusy={this.props.arduinoBusy}
+            firmwareSettings={this.props.firmwareSettings}
             firmwareHardware={this.props.firmwareHardware} />
         </MustBeOnline>
         {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
