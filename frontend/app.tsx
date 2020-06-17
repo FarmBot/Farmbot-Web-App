@@ -5,7 +5,9 @@ import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, UserEnv } from "./devices/interfaces";
-import { ResourceName, TaggedUser, TaggedLog, Xyz } from "farmbot";
+import {
+  ResourceName, TaggedUser, TaggedLog, Xyz, Alert, FirmwareHardware,
+} from "farmbot";
 import {
   maybeFetchUser,
   maybeGetTimeSettings,
@@ -31,6 +33,9 @@ import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
 import { getEnv, getShouldDisplayFn } from "./farmware/state_to_props";
 import { filterAlerts } from "./messages/alerts";
+import {
+  isFwHardwareValue,
+} from "./devices/components/firmware_hardware_support";
 
 /** For the logger module */
 init();
@@ -52,6 +57,8 @@ export interface AppProps {
   resources: ResourceIndex;
   autoSync: boolean;
   alertCount: number;
+  alerts: Alert[];
+  apiFirmwareValue: FirmwareHardware | undefined;
   pings: PingDictionary;
   env: UserEnv;
 }
@@ -59,6 +66,7 @@ export interface AppProps {
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const fwHardware = fbosConfig?.firmware_hardware;
   const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
   const env = getEnv(props.resources.index, shouldDisplay, props.bot);
   return {
@@ -82,6 +90,8 @@ export function mapStateToProps(props: Everything): AppProps {
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
+    alerts: getAllAlerts(props.resources),
+    apiFirmwareValue: isFwHardwareValue(fwHardware) ? fwHardware : undefined,
     pings: props.bot.connectivity.pings,
     env,
   };
@@ -139,6 +149,8 @@ export class RawApp extends React.Component<AppProps, {}> {
         autoSync={this.props.autoSync}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
+        alerts={this.props.alerts}
+        apiFirmwareValue={this.props.apiFirmwareValue}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

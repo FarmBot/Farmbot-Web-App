@@ -176,6 +176,9 @@ fieldset {
     .connectivity {
       padding: 1rem;
       max-width: 600px;
+      overflow-x: hidden;
+      max-height: 550px;
+      overflow-y: auto;
       .row {
         margin-bottom: 1rem;
       }
@@ -185,7 +188,7 @@ fieldset {
       .network-info,
       .fbos-info {
         @media (max-width:767px) {
-          display: none;
+          display: block;
         }
       }
     }
@@ -265,6 +268,15 @@ fieldset {
   padding: 1rem;
   box-shadow: 0px 0px 10px $light_gray;
   width: 18rem;
+}
+
+.qos-display {
+  .saucer {
+    float: right;
+    width: 1rem;
+    height: 1rem;
+    cursor: unset;
+  }
 }
 
 .last-seen-row {
@@ -1551,6 +1563,7 @@ ul {
 }
 
 .firmware-hardware-status-details {
+  max-width: 30rem;
   button {
     float: none !important;
   }

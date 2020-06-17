@@ -90,7 +90,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   ConnectionStatus = () => {
     const data = connectivityData({
       bot: this.props.bot,
-      device: this.props.device
+      device: this.props.device,
+      apiFirmwareValue: this.props.apiFirmwareValue,
     });
     return <div className="connection-status-popover">
       <Popover position={Position.BOTTOM_RIGHT}
@@ -104,7 +105,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
             flags={data.flags}
             dispatch={this.props.dispatch}
             device={this.props.device}
-            pings={this.props.pings} />
+            pings={this.props.pings}
+            alerts={this.props.alerts}
+            apiFirmwareValue={this.props.apiFirmwareValue}
+            timeSettings={this.props.timeSettings} />
         </ErrorBoundary>
       </Popover>
     </div>;
