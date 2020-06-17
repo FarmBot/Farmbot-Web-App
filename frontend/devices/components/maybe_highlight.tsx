@@ -5,6 +5,7 @@ import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
 import { trim } from "lodash";
+import { push } from "../../history";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -84,6 +85,7 @@ const ERROR_HANDLING_PANEL = [
 ];
 const PIN_BINDINGS_PANEL = [
   DeviceSetting.pinBindings,
+  DeviceSetting.stockPinBindings,
   DeviceSetting.savedPinBindings,
   DeviceSetting.addNewPinBinding,
 ];
@@ -192,11 +194,15 @@ export interface HighlightProps {
 
 interface HighlightState {
   className: string;
+  hovered: boolean;
 }
 
 /** Wrap highlight-able settings. */
 export class Highlight extends React.Component<HighlightProps, HighlightState> {
-  state: HighlightState = { className: maybeHighlight(this.props.settingName) };
+  state: HighlightState = {
+    className: maybeHighlight(this.props.settingName),
+    hovered: false,
+  };
 
   componentDidMount = () => {
     if (this.state.className == "highlight") {
@@ -210,18 +216,29 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     return resources.consumers.farm_designer.settingsSearchTerm;
   }
 
+  toggleHover = (hovered: boolean) => () => this.setState({ hovered });
+
   render() {
     const show = !this.searchTerm ||
       this.props.settingName.toLowerCase().includes(this.searchTerm.toLowerCase());
     return <div className={[
+      "setting",
       this.props.className,
       this.state.className,
     ].join(" ")}
+      onMouseEnter={this.toggleHover(true)}
+      onMouseLeave={this.toggleHover(false)}
       hidden={!show}>
       {this.props.children}
+      {this.props.settingName &&
+        <i className={`fa fa-anchor ${this.props.className} ${
+          this.state.hovered ? "hovered" : ""}`}
+          onClick={() => push(linkToSetting(this.props.settingName))} />}
     </div>;
   }
 }
 
-export const linkToFbosSettings = () =>
-  `/app/designer/settings?highlight=farmbot_os`;
+const linkToSetting = (settingName: DeviceSetting) =>
+  `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
+
+export const linkToFbosSettings = () => linkToSetting(DeviceSetting.farmbotOS);
