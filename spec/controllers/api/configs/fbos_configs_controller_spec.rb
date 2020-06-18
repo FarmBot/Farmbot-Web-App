@@ -64,9 +64,9 @@ describe Api::FbosConfigsController do
     end
 
     it "performs row locking" do
-      pending
       sign_in user
       expect(device.fbos_config).to be
+      simulate_fbos_request("1.1.1")
       body = { updated_at: 2.days.ago, network_not_found_timer: 20 }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(409)

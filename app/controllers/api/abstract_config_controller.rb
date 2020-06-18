@@ -25,9 +25,9 @@ module Api
 
     private
 
-    # def resource
-    #   config_object
-    # end
+    def resource
+      config_object
+    end
 
     def config_object
       @config_object ||= current_device.send(self.class::RELATION_NAME)
