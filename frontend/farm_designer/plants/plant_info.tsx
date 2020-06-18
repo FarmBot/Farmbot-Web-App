@@ -37,13 +37,14 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   }
 
   fallback = () => {
-    history.push("/app/designer/plants");
+    const plantsPath = "/app/designer/plants";
+    getPathArray().join("/").startsWith(plantsPath) && history.push(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}
         panel={Panel.Plants}
         title={`${t("Edit")}`}
-        backTo={"/app/designer/plants"}
+        backTo={plantsPath}
         onBack={unselectPlant(this.props.dispatch)} />
       <DesignerPanelContent panelName={"plants"}>
         <span>{t("Redirecting")}...</span>

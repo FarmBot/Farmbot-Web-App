@@ -39,11 +39,21 @@ describe("<PlantInfo />", () => {
   });
 
   it("renders: no plant", () => {
+    mockPath = "/app/designer/plants/nope";
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const p = fakeProps();
+    p.findPlant = () => undefined;
+    const wrapper = mount(<PlantInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("redirecting...");
+    expect(history.push).not.toHaveBeenCalled();
   });
 
   it("has link to plants", () => {
