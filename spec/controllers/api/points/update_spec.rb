@@ -16,8 +16,8 @@ describe Api::PointsController do
     }
 
     it "performs row locking" do
-      pending
       sign_in user
+      simulate_fbos_request
       body = { updated_at: 2.days.ago, x: 20 }
       put :update, body: body.to_json, params: { format: :json, id: point.id }
       expect(response.status).to eq(409)

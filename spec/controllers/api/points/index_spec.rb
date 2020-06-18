@@ -149,9 +149,7 @@ describe Api::PointsController do
 
     it "handles outdated FBOS" do
       old_last_saw_api = user.device.last_saw_api
-      ua = "FARMBOTOS/1.1.1 (RPI3) RPI3 (1.1.1)"
-      allow(request).to receive(:user_agent).and_return(ua)
-      request.env["HTTP_USER_AGENT"] = ua
+      simulate_fbos_request("1.1.1")
       sign_in user
       FactoryBot.create_list(:generic_pointer, 1, device: device)
       get :index
@@ -161,9 +159,7 @@ describe Api::PointsController do
 
     it "marks device as seen when they download points" do
       old_last_saw_api = user.device.last_saw_api
-      ua = "FarmbotOS/7.0.0 (host) host ()"
-      allow(request).to receive(:user_agent).and_return(ua)
-      request.env["HTTP_USER_AGENT"] = ua
+      simulate_fbos_request
       request.headers["Authorization"] = "bearer #{auth_token}"
       FactoryBot.create_list(:generic_pointer, 1, device: device)
       get :index
