@@ -2,18 +2,14 @@ import * as React from "react";
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
 import { PinGuardProps } from "../interfaces";
 import { Header } from "./header";
-import { Collapse, Position } from "@blueprintjs/core";
-import { Row, Col, Help } from "../../../ui/index";
-import { ToolTips, DeviceSetting } from "../../../constants";
-import { t } from "../../../i18next_wrapper";
+import { Collapse } from "@blueprintjs/core";
+import { DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 export function PinGuard(props: PinGuardProps) {
 
   const { pin_guard } = props.controlPanelState;
   const { dispatch, sourceFwConfig, resources, arduinoBusy } = props;
-  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight className={"section"}
     settingName={DeviceSetting.pinGuard}>
     <Header
@@ -22,27 +18,6 @@ export function PinGuard(props: PinGuardProps) {
       panel={"pin_guard"}
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_guard}>
-      {!newFormat &&
-        <Row>
-          <Col xs={3} xsOffset={3}
-            className={"widget-body-tooltips"}>
-            <label>
-              {t("Pin Number")}
-            </label>
-            <Help text={ToolTips.PIN_GUARD_PIN_NUMBER}
-              position={Position.TOP_RIGHT} />
-          </Col>
-          <Col xs={4}>
-            <label>
-              {t("Timeout (sec)")}
-            </label>
-          </Col>
-          <Col xs={2} className={"centered-button-div"}>
-            <label>
-              {t("To State")}
-            </label>
-          </Col>
-        </Row>}
       <PinGuardMCUInputGroup
         label={DeviceSetting.pinGuard1}
         pinNumKey={"pin_guard_1_pin_nr"}

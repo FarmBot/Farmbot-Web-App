@@ -11,7 +11,6 @@ import {
 } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 export class BoardType extends React.Component<BoardTypeProps, {}> {
   get sending() {
@@ -42,7 +41,6 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
       onChange={this.sendOffConfig} />
 
   render() {
-    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.firmware}>
       <Row>
         <Col xs={ColWidth.label}>
@@ -50,10 +48,6 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             {t("FIRMWARE")}
           </label>
         </Col>
-        {!newFormat &&
-          <Col xs={ColWidth.description}>
-            <this.FirmwareSelection />
-          </Col>}
         <Col xs={ColWidth.button}>
           <FirmwareHardwareStatus
             botOnline={this.props.botOnline}
@@ -64,12 +58,11 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             timeSettings={this.props.timeSettings} />
         </Col>
       </Row>
-      {newFormat &&
-        <Row>
-          <Col xs={12} className="no-pad">
-            <this.FirmwareSelection />
-          </Col>
-        </Row>}
+      <Row>
+        <Col xs={12} className="no-pad">
+          <this.FirmwareSelection />
+        </Col>
+      </Row>
     </Highlight>;
   }
 }

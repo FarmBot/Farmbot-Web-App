@@ -1,10 +1,8 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui";
-import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 export interface FbosButtonRowProps {
   botOnline: boolean;
@@ -16,21 +14,14 @@ export interface FbosButtonRowProps {
 }
 
 export const FbosButtonRow = (props: FbosButtonRowProps) => {
-  const newFormat = DevSettings.futureFeature1Enabled();
   return <Highlight settingName={props.label}>
     <Row>
-      <Col xs={newFormat ? 7 : ColWidth.label}>
+      <Col xs={7}>
         <label>
           {t(props.label)}
         </label>
       </Col>
-      {!newFormat &&
-        <Col xs={ColWidth.description}>
-          <p>
-            {t(props.description)}
-          </p>
-        </Col>}
-      <Col xs={newFormat ? 5 : ColWidth.button}>
+      <Col xs={5}>
         <button
           className={`fb-button ${props.color}`}
           type="button"
@@ -41,6 +32,6 @@ export const FbosButtonRow = (props: FbosButtonRowProps) => {
         </button>
       </Col>
     </Row>
-    {newFormat && <Row><p>{t(props.description)}</p></Row>}
+    <Row><p>{t(props.description)}</p></Row>
   </Highlight>;
 };

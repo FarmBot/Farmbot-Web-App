@@ -1,3 +1,5 @@
+jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { Connectivity, ConnectivityProps } from "../connectivity";
@@ -5,6 +7,9 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
 import { fill } from "lodash";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
+import { refresh } from "../../../api/crud";
+import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -27,12 +32,23 @@ describe("<Connectivity />", () => {
     bot,
     rowData,
     flags,
-    pings: fakePings()
+    pings: fakePings(),
+    dispatch: jest.fn(),
+    device: fakeDevice(),
+    alerts: [],
+    apiFirmwareValue: undefined,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("sets hovered connection", () => {
     const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
     wrapper.find(".saucer").at(6).simulate("mouseEnter");
     expect(wrapper.instance().state.hoveredConnection).toEqual("AB");
+  });
+
+  it("refreshes device", () => {
+    const p = fakeProps();
+    mount(<Connectivity {...p} />);
+    expect(refresh).toHaveBeenCalledWith(p.device);
   });
 });

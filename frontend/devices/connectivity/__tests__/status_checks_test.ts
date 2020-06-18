@@ -69,28 +69,35 @@ describe("browserToMQTT()", () => {
 
 describe("botToFirmware()", () => {
   it("handles connectivity", () => {
-    const output = botToFirmware("0.0.0.R");
+    const output = botToFirmware("0.0.0.R", "arduino");
     expect(output.connectionStatus).toBe(true);
-    expect(output.to).toContain("Arduino");
+    expect(output.to).toContain("Genesis v1.2");
     expect(output.connectionMsg).toContain("Connected");
   });
 
   it("returns board name", () => {
-    expect(botToFirmware("0.0.0.F").to).toContain("Farmduino");
-    expect(botToFirmware("0.0.0.G").to).toContain("Farmduino");
-    expect(botToFirmware("0.0.0.E").to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.F", "farmduino").to).toContain("Genesis v1.3");
+    expect(botToFirmware("0.0.0.G", "farmduino_k14").to).toContain("Genesis v1.4");
+    expect(botToFirmware("0.0.0.E", "express_k10").to).toContain("Express v1.0");
   });
 
   it("board undefined", () => {
-    const output = botToFirmware(undefined);
+    const output = botToFirmware(undefined, undefined);
     expect(output.to).toContain("Farmduino");
   });
 
+  it("shows 'None' firmware selected", () => {
+    const output = botToFirmware(undefined, "none");
+    expect(output.to).toContain("None");
+  });
+
   it("handles lack of connectivity", () => {
-    const output = botToFirmware("Arduino Disconnected!");
+    const output = botToFirmware("Arduino Disconnected!", undefined);
     expect(output.connectionStatus).toBe(false);
+    expect(output.to).toContain("Farmduino");
     expect(output.connectionMsg).toContain("Disconnected");
-    expect(botToFirmware("STUBFW").connectionMsg).toContain("Disconnected");
+    expect(botToFirmware("STUBFW", undefined).connectionMsg)
+      .toContain("Disconnected");
   });
 });
 

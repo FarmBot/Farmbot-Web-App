@@ -5,17 +5,44 @@ import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
 import { trim } from "lodash";
-import { DevSettings } from "../../account/dev/dev_support";
+import { push } from "../../history";
 
-const HOMING_PANEL = [
-  DeviceSetting.homingAndCalibration,
-  DeviceSetting.homing,
-  DeviceSetting.setZeroPosition,
+const FARMBOT_PANEL = [
+  DeviceSetting.farmbotSettings,
+  DeviceSetting.name,
+  DeviceSetting.timezone,
+  DeviceSetting.camera,
+  DeviceSetting.osUpdateTime,
+  DeviceSetting.osAutoUpdate,
+  DeviceSetting.farmbotOS,
+  DeviceSetting.autoSync,
+  DeviceSetting.bootSequence,
+];
+const FIRMWARE_PANEL = [
+  DeviceSetting.firmwareSection,
+  DeviceSetting.firmware,
+  DeviceSetting.flashFirmware,
+  DeviceSetting.restartFirmware,
+];
+const POWER_AND_RESET_PANEL = [
+  DeviceSetting.powerAndReset,
+  DeviceSetting.restartFarmbot,
+  DeviceSetting.shutdownFarmbot,
+  DeviceSetting.restartFirmware,
+  DeviceSetting.factoryReset,
+  DeviceSetting.autoFactoryReset,
+  DeviceSetting.connectionAttemptPeriod,
+  DeviceSetting.changeOwnership,
+];
+const AXES_PANEL = [
+  DeviceSetting.axisSettings,
+  DeviceSetting.findHome,
+  DeviceSetting.setHome,
   DeviceSetting.findHomeOnBoot,
   DeviceSetting.stopAtHome,
   DeviceSetting.stopAtMax,
   DeviceSetting.negativeCoordinatesOnly,
-  DeviceSetting.calibration,
+  DeviceSetting.findAxisLength,
   DeviceSetting.axisLength,
 ];
 const MOTORS_PANEL = [
@@ -44,17 +71,23 @@ const ENCODERS_PANEL = [
   DeviceSetting.missedStepDecay,
   DeviceSetting.encoderScaling,
 ];
-const ENDSTOPS_PANEL = [
-  DeviceSetting.endstops,
-  DeviceSetting.enableEndstops,
-  DeviceSetting.swapEndstops,
-  DeviceSetting.invertEndstops,
+const LIMIT_SWITCHES_PANEL = [
+  DeviceSetting.limitSwitchSettings,
+  DeviceSetting.enableLimitSwitches,
+  DeviceSetting.swapLimitSwitches,
+  DeviceSetting.invertLimitSwitches,
 ];
 const ERROR_HANDLING_PANEL = [
   DeviceSetting.errorHandling,
   DeviceSetting.timeoutAfter,
   DeviceSetting.maxRetries,
   DeviceSetting.estopOnMovementError,
+];
+const PIN_BINDINGS_PANEL = [
+  DeviceSetting.pinBindings,
+  DeviceSetting.stockPinBindings,
+  DeviceSetting.savedPinBindings,
+  DeviceSetting.addNewPinBinding,
 ];
 const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard,
@@ -65,27 +98,13 @@ const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard5,
 ];
 const PARAMETER_MANAGEMENT_PANEL = [
-  DeviceSetting.dangerZone,
+  DeviceSetting.parameterManagement,
   DeviceSetting.paramLoadProgress,
+  DeviceSetting.resetHardwareParams,
   DeviceSetting.exportParameters,
+  DeviceSetting.importParameters,
   DeviceSetting.resetHardwareParams,
 ];
-const PIN_BINDINGS_PANEL = [
-  DeviceSetting.pinBindings,
-  DeviceSetting.savedPinBindings,
-  DeviceSetting.addNewPinBinding,
-];
-const POWER_AND_RESET_PANEL = [
-  DeviceSetting.powerAndReset,
-  DeviceSetting.restartFarmbot,
-  DeviceSetting.shutdownFarmbot,
-  DeviceSetting.restartFirmware,
-  DeviceSetting.factoryReset,
-  DeviceSetting.autoFactoryReset,
-  DeviceSetting.connectionAttemptPeriod,
-  DeviceSetting.changeOwnership,
-];
-
 const FARM_DESIGNER_PANEL = [
   DeviceSetting.farmDesigner,
   DeviceSetting.animations,
@@ -97,39 +116,20 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.confirmPlantDeletion,
 ];
 
-const FIRMWARE_PANEL = [
-  DeviceSetting.firmwareSection,
-  DeviceSetting.firmware,
-  DeviceSetting.flashFirmware,
-  DeviceSetting.restartFirmware,
-];
-
-const FARMBOT_PANEL = [
-  DeviceSetting.farmbot,
-  DeviceSetting.name,
-  DeviceSetting.timezone,
-  DeviceSetting.camera,
-  DeviceSetting.applySoftwareUpdates,
-  DeviceSetting.farmbotOSAutoUpdate,
-  DeviceSetting.farmbotOS,
-  DeviceSetting.autoSync,
-  DeviceSetting.bootSequence,
-];
-
 /** Look up parent panels for settings. */
 const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof ControlPanelState>;
-HOMING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "homing_and_calibration");
-MOTORS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "motors");
-ENCODERS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "encoders");
-ENDSTOPS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "endstops");
-ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
-PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
-PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
-PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
-POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
-FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_settings");
 FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
-FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_os");
+POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
+AXES_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "axis_settings");
+MOTORS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "motors");
+ENCODERS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "encoders_or_stall_detection");
+LIMIT_SWITCHES_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "limit_switches");
+ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
+PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
+PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
+PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
+FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
@@ -161,18 +161,13 @@ export const getHighlightName = () => location.search.split("?highlight=").pop()
 export const highlight = { opened: false, highlighted: false };
 
 /** Open a panel if a setting in that panel is highlighted. */
-export const maybeOpenPanel = (
-  panelState: ControlPanelState,
-  closeOthers = false,
-) =>
+export const maybeOpenPanel = () =>
   (dispatch: Function) => {
     if (highlight.opened) { return; }
     const urlFriendlySettingName = urlFriendly(getHighlightName() || "");
     if (!urlFriendlySettingName) { return; }
     const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
-    closeOthers && dispatch(bulkToggleControlPanel(false, closeOthers));
-    const panelIsOpen = !closeOthers && panelState[panel];
-    if (panelIsOpen) { return; }
+    dispatch(bulkToggleControlPanel(false));
     dispatch(toggleControlPanel(panel));
     highlight.opened = true;
   };
@@ -199,11 +194,15 @@ export interface HighlightProps {
 
 interface HighlightState {
   className: string;
+  hovered: boolean;
 }
 
 /** Wrap highlight-able settings. */
 export class Highlight extends React.Component<HighlightProps, HighlightState> {
-  state: HighlightState = { className: maybeHighlight(this.props.settingName) };
+  state: HighlightState = {
+    className: maybeHighlight(this.props.settingName),
+    hovered: false,
+  };
 
   componentDidMount = () => {
     if (this.state.className == "highlight") {
@@ -217,19 +216,29 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     return resources.consumers.farm_designer.settingsSearchTerm;
   }
 
+  toggleHover = (hovered: boolean) => () => this.setState({ hovered });
+
   render() {
     const show = !this.searchTerm ||
       this.props.settingName.toLowerCase().includes(this.searchTerm.toLowerCase());
     return <div className={[
+      "setting",
       this.props.className,
       this.state.className,
     ].join(" ")}
+      onMouseEnter={this.toggleHover(true)}
+      onMouseLeave={this.toggleHover(false)}
       hidden={!show}>
       {this.props.children}
+      {this.props.settingName &&
+        <i className={`fa fa-anchor ${this.props.className} ${
+          this.state.hovered ? "hovered" : ""}`}
+          onClick={() => push(linkToSetting(this.props.settingName))} />}
     </div>;
   }
 }
 
-export const linkToFbosSettings = () => `/app/${
-  DevSettings.futureFeature1Enabled() ? "designer/settings" : "device"
-  }?highlight=farmbot_os`;
+const linkToSetting = (settingName: DeviceSetting) =>
+  `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
+
+export const linkToFbosSettings = () => linkToSetting(DeviceSetting.farmbotOS);

@@ -20,7 +20,7 @@ describe Api::WebAppConfigsController do
         dynamic_map: false,
         encoder_figure: false,
         hide_webcam_widget: false,
-        legend_menu_open: false,
+        legend_menu_open: true,
         raw_encoders: false,
         scaled_encoders: false,
         show_spread: true,

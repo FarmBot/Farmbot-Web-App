@@ -66,31 +66,29 @@ export namespace ToolTips {
 
   // Hardware Settings
   export const HW_SETTINGS =
-    trim(`Change settings of your FarmBot hardware with the fields below.
-    Caution: Changing these settings to extreme values can cause hardware
-    malfunction. Make sure to test any new settings before letting your
-    FarmBot use them unsupervised.
-    Tip: Recalibrate FarmBot after changing settings and test a
-    few sequences to verify that everything works as expected.`);
+    trim(`Caution: Changing these settings to extreme values can cause
+    hardware malfunction. Make sure to test any new settings to verify
+    that everything works as expected before letting your FarmBot use
+    them unsupervised.`);
 
-  // Hardware Settings: Homing and Calibration
-  export const HOMING_ENCODERS =
+  // Hardware Settings: Axes
+  export const FIND_HOME_ENCODERS =
     trim(`If encoders or limit switches are enabled, find home for
     an axis (set zero position).`);
 
-  export const HOMING_STALL_DETECTION =
+  export const FIND_HOME_STALL_DETECTION =
     trim(`If stall detection or limit switches are enabled, find home for
     an axis (set zero position).`);
 
-  export const CALIBRATION_ENCODERS =
+  export const FIND_LENGTH_ENCODERS =
     trim(`If encoders or limit switches are enabled, home axis and determine
     maximum. Will set axis length value.`);
 
-  export const CALIBRATION_STALL_DETECTION =
+  export const FIND_LENGTH_STALL_DETECTION =
     trim(`If stall detection or limit switches are enabled, home axis and
     determine maximum. Will set axis length value.`);
 
-  export const SET_ZERO_POSITION =
+  export const SET_HOME_POSITION =
     trim(`Set the current location as home (zero).`);
 
   export const FIND_HOME_ON_BOOT_ENCODERS =
@@ -108,18 +106,20 @@ export namespace ToolTips {
     before enabling this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
-    trim(`Stop at the home (zero) location of the axis. (default: disabled)`);
+    trim(`Stop at the home (zero) location of the axis. If enabled, moving
+    past zero is disallowed. (default: enabled)`);
 
   export const STOP_AT_MAX =
-    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.
-    (default: disabled)`);
+    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH
+    (for AXIS LENGTH values other than '0').
+    (default: enabled)`);
 
   export const NEGATIVE_COORDINATES_ONLY =
     trim(`Restrict travel to negative coordinate locations.
     Overridden by disabling STOP AT HOME.
     (default: x: disabled, y: disabled, z: enabled)`);
 
-  export const LENGTH =
+  export const AXIS_LENGTH =
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
 
@@ -177,7 +177,7 @@ export namespace ToolTips {
     trim(`Motor stall sensitivity. Most sensitive: -63.
     Least sensitive: +63. (default: 30)`);
 
-  export const ENCODER_POSITIONING =
+  export const USE_ENCODERS_FOR_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
 
   export const INVERT_ENCODERS =
@@ -199,15 +199,15 @@ export namespace ToolTips {
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution). (default: 5556 (10000*200/360))`);
 
-  // Hardware Settings: Endstops
-  export const ENABLE_ENDSTOPS =
+  // Hardware Settings: Limit Switches
+  export const ENABLE_LIMIT_SWITCHES =
     trim(`Enable use of electronic limit switches for end detection,
     finding axis length, and homing. (default: disabled)`);
 
-  export const SWAP_ENDPOINTS =
+  export const SWAP_LIMIT_SWITCHES =
     trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
 
-  export const INVERT_ENDPOINTS =
+  export const INVERT_LIMIT_SWITCHES =
     trim(`Invert axis limit switches. Enable for normally closed (NC),
     disable for normally open (NO). (default: disabled)`);
 
@@ -223,11 +223,6 @@ export namespace ToolTips {
     trim(`Emergency stop if movement is not complete after the maximum
     number of retries. (default: disabled)`);
 
-  // Hardware Settings: Pin Guard
-  export const PIN_GUARD_PIN_NUMBER =
-    trim(`The number of the pin to guard. This pin will be set to the specified
-    state after the duration specified by TIMEOUT.`);
-
   // Hardware Settings: Pin Bindings
   export const PIN_BINDINGS =
     trim(`Assign an action or sequence to execute when a Raspberry Pi
@@ -236,6 +231,20 @@ export namespace ToolTips {
   export const PIN_BINDING_WARNING =
     trim(`Warning: Binding to a pin without a physical button and
     pull-down resistor connected may put FarmBot into an unstable state.`);
+
+  // Hardware Settings: Pin Guard
+  export const PIN_GUARD_PIN_NUMBER =
+    trim(`The number of the pin to guard. This pin will be set to the specified
+    state after the duration specified by TIMEOUT.`);
+
+  // Hardware Parameter Management
+  export const PARAMETER_LOAD_PROGRESS =
+    trim(`FarmBot adoption of hardware parameter changes. Tip: If progress
+    does not reach 100% within a few minutes, press RESEND.`);
+
+  export const PARAMETER_IMPORT =
+    trim(`Paste the output from EXPORT PARAMETERS into the text field and
+    press IMPORT to import new hardware parameters to your FarmBot.`);
 
   // Farmware
   export const PHOTOS =
@@ -574,37 +583,6 @@ export namespace Content {
     trim(`Warning! When enabled, any unsaved changes to sequences
     will be discarded when refreshing or closing the page. Are you sure?`);
 
-  // Farm Designer Settings
-  export const PLANT_ANIMATIONS =
-    trim(`Enable plant animations in the garden map.`);
-
-  export const VIRTUAL_TRAIL =
-    trim(`Display a virtual trail for FarmBot in the garden map to show
-    movement and watering history while the map is open. Toggling this setting
-    will clear data for the current trail.`);
-
-  export const DYNAMIC_MAP_SIZE =
-    trim(`Change the garden map size based on axis length.
-    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
-    the HARDWARE widget. Overrides MAP SIZE values.`);
-
-  export const MAP_SIZE =
-    trim(`Specify custom map dimensions (in millimeters).
-    These values set the size of the garden map unless
-    DYNAMIC MAP SIZE is enabled.`);
-
-  export const MAP_SWAP_XY =
-    trim(`Swap map X and Y axes, making the Y axis horizontal and X axis
-    vertical. This setting will also swap the X and Y jog control buttons
-    in the Move widget.`);
-
-  export const MAP_ORIGIN =
-    trim(`Select a map origin by clicking on one of the four quadrants to
-    adjust the garden map to your viewing angle.`);
-
-  export const CONFIRM_PLANT_DELETION =
-    trim(`Show a confirmation dialog when deleting a plant.`);
-
   // FarmBot OS Settings
   export const DIFFERENT_TZ_WARNING =
     trim(`Note: The selected timezone for your FarmBot is different than
@@ -631,6 +609,10 @@ export namespace Content {
     "SYNC" after making changes in the web app. Changes to running
     sequences and regimens while auto sync is enabled will result in
     instantaneous change.`);
+
+  // FarmBot OS Settings: Firmware
+  export const RESTART_FIRMWARE =
+    trim(`Restart the Farmduino or Arduino firmware.`);
 
   // FarmBot OS Settings: Power and Reset
   export const RESTART_FARMBOT =
@@ -672,11 +654,7 @@ export namespace Content {
     trim(`Please contact the system(s) administrator(s) and ask them to enable
     HTTPS://`);
 
-  // FarmBot OS Settings: Firmware
-  export const RESTART_FIRMWARE =
-    trim(`Restart the Farmduino or Arduino firmware.`);
-
-  // Hardware Settings: Hardware Parameter Management
+  // Hardware Settings: Parameter Management
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
     current settings, resetting them to default values.`);
@@ -684,6 +662,41 @@ export namespace Content {
   export const MCU_RESET_ALERT =
     trim(`Warning: This will reset all hardware settings to the default values.
     Are you sure you wish to continue?`);
+
+  export const PARAMETER_IMPORT_CONFIRM =
+    trim(`Warning: This will overwrite all existing hardware settings,
+    replacing them with the provided values. Are you sure you wish to continue?`);
+
+  // Farm Designer Settings
+  export const PLANT_ANIMATIONS =
+    trim(`Enable plant animations in the garden map.`);
+
+  export const VIRTUAL_TRAIL =
+    trim(`Display a virtual trail for FarmBot in the garden map to show
+    movement and watering history while the map is open. Toggling this setting
+    will clear data for the current trail.`);
+
+  export const DYNAMIC_MAP_SIZE =
+    trim(`Change the garden map size based on axis length.
+    A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
+    the HARDWARE widget. Overrides MAP SIZE values.`);
+
+  export const MAP_SIZE =
+    trim(`Specify custom map dimensions (in millimeters).
+    These values set the size of the garden map unless
+    DYNAMIC MAP SIZE is enabled.`);
+
+  export const MAP_SWAP_XY =
+    trim(`Swap map X and Y axes, making the Y axis horizontal and X axis
+    vertical. This setting will also swap the X and Y jog control buttons
+    in the Move widget.`);
+
+  export const MAP_ORIGIN =
+    trim(`Select a map origin by clicking on one of the four quadrants to
+    adjust the garden map to your viewing angle.`);
+
+  export const CONFIRM_PLANT_DELETION =
+    trim(`Show a confirmation dialog when deleting a plant.`);
 
   // App
   export const APP_LOAD_TIMEOUT_MESSAGE =
@@ -957,15 +970,41 @@ export namespace TourContent {
 export enum DeviceSetting {
   axisHeadingLabels = ``,
 
-  // Homing and calibration
-  homingAndCalibration = `Axes`,
-  homing = `Find Home`,
-  calibration = `Find axis length (mm)`,
-  setZeroPosition = `Set Home`,
+  // FarmBot
+  farmbotSettings = `FarmBot`,
+  name = `name`,
+  timezone = `timezone`,
+  camera = `camera`,
+  firmware = `Firmware`,
+  osUpdateTime = `update time`,
+  osAutoUpdate = `auto update`,
+  farmbotOS = `Farmbot OS`,
+  autoSync = `Auto Sync`,
+  bootSequence = `Boot Sequence`,
+
+  // Firmware
+  firmwareSection = `Firmware`,
+  restartFirmware = `Restart Firmware`,
+  flashFirmware = `Flash firmware`,
+
+  // Power and Reset
+  powerAndReset = `Power and Reset`,
+  restartFarmbot = `Restart Farmbot`,
+  shutdownFarmbot = `Shutdown Farmbot`,
+  factoryReset = `Factory Reset`,
+  autoFactoryReset = `Automatic Factory Reset`,
+  connectionAttemptPeriod = `Connection Attempt Period`,
+  changeOwnership = `Change Ownership`,
+
+  // Axes
+  axisSettings = `Axes`,
+  findHome = `Find Home`,
+  setHome = `Set Home`,
   findHomeOnBoot = `Find Home on Boot`,
   stopAtHome = `Stop at Home`,
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
+  findAxisLength = `Find axis length (mm)`,
   axisLength = `Set Axis Length (mm)`,
 
   // Motors
@@ -994,17 +1033,23 @@ export enum DeviceSetting {
   missedStepDecay = `Missed Step Decay`,
   encoderScaling = `Encoder Scaling`,
 
-  // Endstops
-  endstops = `Limit switches`,
-  enableEndstops = `Enable limit switches`,
-  swapEndstops = `Swap limit switches`,
-  invertEndstops = `Invert limit switches`,
+  // Limit Switches
+  limitSwitchSettings = `Limit Switches`,
+  enableLimitSwitches = `Enable limit switches`,
+  swapLimitSwitches = `Swap limit switches`,
+  invertLimitSwitches = `Invert limit switches`,
 
-  // Error handling
+  // Error Handling
   errorHandling = `Error Handling`,
   timeoutAfter = `Timeout after (seconds)`,
   maxRetries = `Max Retries`,
   estopOnMovementError = `E-Stop on Movement Error`,
+
+  // Pin Bindings
+  pinBindings = `Pin Bindings`,
+  stockPinBindings = `Stock pin bindings`,
+  savedPinBindings = `Saved pin bindings`,
+  addNewPinBinding = `Add new pin binding`,
 
   // Pin Guard
   pinGuard = `Pin Guard`,
@@ -1014,37 +1059,13 @@ export enum DeviceSetting {
   pinGuard4 = `Pin Guard 4`,
   pinGuard5 = `Pin Guard 5`,
 
-  // Hardware Parameter Management
-  dangerZone = `Parameter Management`,
-  resetHardwareParams = `Reset hardware parameter defaults`,
+  // Parameter Management
+  parameterManagement = `Parameter Management`,
   paramLoadProgress = `Parameter load progress`,
+  paramResend = `Resend parameters`,
   exportParameters = `Export parameters`,
-
-  // Pin Bindings
-  pinBindings = `Pin Bindings`,
-  savedPinBindings = `Saved pin bindings`,
-  addNewPinBinding = `Add new pin binding`,
-
-  // FarmBot OS
-  farmbot = `FarmBot`,
-  name = `name`,
-  timezone = `timezone`,
-  camera = `camera`,
-  firmware = `Firmware`,
-  applySoftwareUpdates = `update time`,
-  farmbotOSAutoUpdate = `auto update`,
-  farmbotOS = `Farmbot OS`,
-  autoSync = `Auto Sync`,
-  bootSequence = `Boot Sequence`,
-
-  // Power and Reset
-  powerAndReset = `Power and Reset`,
-  restartFarmbot = `Restart Farmbot`,
-  shutdownFarmbot = `Shutdown Farmbot`,
-  factoryReset = `Factory Reset`,
-  autoFactoryReset = `Automatic Factory Reset`,
-  connectionAttemptPeriod = `Connection Attempt Period`,
-  changeOwnership = `Change Ownership`,
+  importParameters = `Import parameters`,
+  resetHardwareParams = `Reset hardware parameters`,
 
   // Farm Designer
   farmDesigner = `Farm Designer`,
@@ -1055,11 +1076,6 @@ export enum DeviceSetting {
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
   confirmPlantDeletion = `Confirm plant deletion`,
-
-  // Firmware
-  firmwareSection = `Firmware`,
-  restartFirmware = `Restart Firmware`,
-  flashFirmware = `Flash firmware`,
 }
 
 export namespace DiagnosticMessages {
@@ -1099,10 +1115,11 @@ export namespace DiagnosticMessages {
     however, it could be a sign of HTTP blockage on FarmBot's local internet
     connection.`);
 
-  export const ARDUINO_DISCONNECTED = trim(`Arduino is possibly unplugged.
-    Check the USB cable between the Raspberry Pi and the Arduino. Reboot
-    FarmBot after a reconnection. If the issue persists, reconfiguration
-    of FarmBot OS may be necessary.`);
+  export const ARDUINO_DISCONNECTED = trim(`Farmduino firmware is missing or
+    is possibly unplugged. Verify FIRMWARE selection matches FarmBot kit
+    version or check the USB cable between the Raspberry Pi and the
+    Farmduino. Reboot FarmBot after a reconnection. If the issue persists,
+    reconfiguration of FarmBot OS may be necessary.`);
 }
 
 export enum Actions {

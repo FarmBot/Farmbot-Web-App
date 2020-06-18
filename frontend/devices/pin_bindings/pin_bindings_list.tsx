@@ -7,11 +7,9 @@ import { destroy } from "../../api/crud";
 import { error } from "../../toast/toast";
 import { Row, Col } from "../../ui";
 import { findSequenceById } from "../../resources/selectors";
-import { PinBindingColWidth } from "./pin_bindings";
 import { PinBindingsListProps } from "./interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
 import { t } from "../../i18next_wrapper";
-import { DevSettings } from "../../account/dev/dev_support";
 import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
@@ -40,24 +38,19 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
       ? findSequenceById(resources, sequence_id).body.name
       : t(getSpecialActionLabel(special_action)))}`;
 
-  const newFormat = DevSettings.futureFeature1Enabled();
   return <div className={"bindings-list"}>
-    {newFormat && <Row><label>{t(DeviceSetting.savedPinBindings)}</label></Row>}
+    <Row><label>{t(DeviceSetting.savedPinBindings)}</label></Row>
     {pinBindings
       .sort((a, b) => sortByNameAndPin(a.pin_number, b.pin_number))
       .map(x => {
         const { pin_number, sequence_id, binding_type, special_action } = x;
         const binding = bindingText(sequence_id, binding_type, special_action);
         return <Row key={`pin_${pin_number}_binding`}>
-          <Col xs={newFormat ? 11 : PinBindingColWidth.pin}>
+          <Col xs={11}>
             <p>{generatePinLabel(pin_number)}</p>
-            <p className="binding-action">{newFormat && binding}</p>
+            <p className="binding-action">{binding}</p>
           </Col>
-          {!newFormat &&
-            <Col xs={PinBindingColWidth.type}>
-              {binding}
-            </Col>}
-          <Col xs={newFormat ? 1 : PinBindingColWidth.button}>
+          <Col xs={1}>
             <button
               className={`fb-button ${delBtnColor(pin_number)} del-button`}
               title={t("Delete")}

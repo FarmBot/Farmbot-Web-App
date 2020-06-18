@@ -11,6 +11,11 @@ import { MissedStepIndicator } from "../move/missed_step_indicator";
 describe("<AxisDisplayGroup />", () => {
   const fakeProps = (): AxisDisplayGroupProps => ({
     position: { x: undefined, y: undefined, z: undefined },
+    firmwareSettings: {
+      encoder_enabled_x: 1,
+      encoder_enabled_y: 1,
+      encoder_enabled_z: 1,
+    },
     label: "Heyoo",
   });
 
@@ -50,16 +55,24 @@ describe("<AxisDisplayGroup />", () => {
     expect(wrapper.find(".missed-step-indicator").length).toEqual(3);
   });
 
-  it("doesn't render missed step indicator", () => {
+  it("doesn't render missed step indicator when undefined", () => {
     const p = fakeProps();
     p.missedSteps = undefined;
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
   });
 
-  it("doesn't render missed step indicator", () => {
+  it("doesn't render missed step indicator when invalid", () => {
     const p = fakeProps();
     p.missedSteps = { x: -1, y: -1, z: -1 };
+    const wrapper = mount(AxisDisplayGroup(p));
+    expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
+  });
+
+  it("doesn't render missed step indicator when detection not enabled", () => {
+    const p = fakeProps();
+    p.firmwareSettings = undefined;
+    p.missedSteps = { x: 1, y: 2, z: 3 };
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.find(".missed-step-indicator").length).toEqual(0);
   });

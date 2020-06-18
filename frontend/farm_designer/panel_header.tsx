@@ -65,10 +65,10 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Zones]: iconFile("zones"),
   [Panel.Points]: iconFile("point"),
   [Panel.Weeds]: iconFile("weeds"),
-  [Panel.Controls]: iconFile("settings"),
-  [Panel.Sensors]: iconFile("settings"),
-  [Panel.Photos]: iconFile("settings"),
-  [Panel.Farmware]: iconFile("settings"),
+  [Panel.Controls]: iconFile("controls"),
+  [Panel.Sensors]: iconFile("sensors"),
+  [Panel.Photos]: iconFile("photos"),
+  [Panel.Farmware]: iconFile("farmware"),
   [Panel.Tools]: iconFile("tool"),
   [Panel.Settings]: iconFile("settings"),
 };
@@ -112,7 +112,6 @@ interface NavTabProps {
   panel: Panel;
   linkTo: string;
   title: string;
-  icon?: string;
   desktopHide?: boolean;
 }
 
@@ -122,9 +121,7 @@ const NavTab = (props: NavTabProps) =>
       getCurrentTab() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
-    {props.icon
-      ? <i className={props.icon} title={props.title} />
-      : <img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
+    {<img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
   </Link>;
 
 export function DesignerNavTabs(props: { hidden?: boolean }) {
@@ -169,25 +166,21 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         <NavTab
           panel={Panel.Controls}
           linkTo={"/app/designer/controls"}
-          icon={"fa fa-crosshairs"}
           title={t("Controls")} />}
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
           panel={Panel.Sensors}
           linkTo={"/app/designer/sensors"}
-          icon={"fa fa-thermometer"}
           title={t("Sensors")} />}
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
           panel={Panel.Photos}
           linkTo={"/app/designer/photos"}
-          icon={"fa fa-camera"}
           title={t("Photos")} />}
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
           panel={Panel.Farmware}
           linkTo={"/app/designer/farmware"}
-          icon={"fa fa-book"}
           title={t("Farmware")} />}
       <NavTab
         panel={Panel.Tools}

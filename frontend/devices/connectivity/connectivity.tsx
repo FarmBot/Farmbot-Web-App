@@ -10,12 +10,21 @@ import {
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
+import { refresh } from "../../api/crud";
+import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
+import { FirmwareAlerts } from "../../messages/alerts";
+import { TimeSettings } from "../../interfaces";
 
 export interface ConnectivityProps {
   bot: BotState;
   rowData: StatusRowProps[];
   flags: DiagnosisProps;
   pings: PingDictionary;
+  dispatch: Function;
+  device: TaggedDevice;
+  alerts: Alert[];
+  apiFirmwareValue: FirmwareHardware | undefined;
+  timeSettings: TimeSettings;
 }
 
 interface ConnectivityState {
@@ -25,6 +34,8 @@ interface ConnectivityState {
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
+
+  componentDidMount = () => this.props.dispatch(refresh(this.props.device));
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
@@ -60,6 +71,13 @@ export class Connectivity
           <hr style={{ marginLeft: "3rem" }} />
           <Diagnosis {...this.props.flags} />
         </Col>
+      </Row>
+      <Row>
+        <FirmwareAlerts
+          alerts={this.props.alerts}
+          dispatch={this.props.dispatch}
+          apiFirmwareValue={this.props.apiFirmwareValue}
+          timeSettings={this.props.timeSettings} />
       </Row>
     </div>;
   }

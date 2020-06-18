@@ -1,5 +1,7 @@
 import { BotState } from "../devices/interfaces";
-import { TaggedUser, TaggedLog, TaggedDevice } from "farmbot";
+import {
+  TaggedUser, TaggedLog, TaggedDevice, Alert, FirmwareHardware,
+} from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
@@ -25,12 +27,15 @@ export interface NavBarProps {
   autoSync: boolean;
   alertCount: number;
   pings: PingDictionary;
+  alerts: Alert[];
+  apiFirmwareValue: FirmwareHardware | undefined;
 }
 
 export interface NavBarState {
   mobileMenuOpen: boolean;
   tickerListOpen: boolean;
   accountMenuOpen: boolean;
+  documentTitle: string;
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;

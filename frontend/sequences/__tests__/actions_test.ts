@@ -1,4 +1,4 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
+jest.mock("../../history", () => ({ push: jest.fn(), getPathArray: () => [] }));
 
 jest.mock("../../api/crud", () => ({
   init: jest.fn(),
@@ -98,5 +98,13 @@ describe("pushStep()", () => {
         NEW_STEP,
       ]
     }));
+  });
+
+  it("handles missing body", () => {
+    const sequence = fakeSequence();
+    sequence.body.body = undefined;
+    pushStep(NEW_STEP, jest.fn(), sequence);
+    expect(overwrite).toHaveBeenCalledWith(sequence,
+      expect.objectContaining({ body: [NEW_STEP] }));
   });
 });

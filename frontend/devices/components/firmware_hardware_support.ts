@@ -53,6 +53,11 @@ export const getBoardCategory =
     return boardIdentifier === "R" ? "Arduino" : "Farmduino";
   };
 
+export const getKitName =
+  (firmwareHardware: FirmwareHardware | undefined): KitLabels => {
+    return KIT_LOOKUP[firmwareHardware || "unknown"];
+  };
+
 export const boardType =
   (firmwareVersion: string | undefined): FirmwareHardware | "unknown" => {
     if (firmwareVersion === "none") { return "none"; }
@@ -73,18 +78,41 @@ export const boardType =
     }
   };
 
-const ARDUINO = { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" };
-const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
-const FARMDUINO_K14 = {
-  label: "Farmduino (Genesis v1.4)", value: "farmduino_k14"
+enum BoardLabels {
+  arduino = "Arduino/RAMPS (Genesis v1.2)",
+  farmduino = "Farmduino (Genesis v1.3)",
+  farmduino_k14 = "Farmduino (Genesis v1.4)",
+  farmduino_k15 = "Farmduino (Genesis v1.5)",
+  express_k10 = "Farmduino (Express v1.0)",
+  none = "None",
+}
+
+enum KitLabels {
+  arduino = "Genesis v1.2",
+  farmduino = "Genesis v1.3",
+  farmduino_k14 = "Genesis v1.4",
+  farmduino_k15 = "Genesis v1.5",
+  express_k10 = "Express v1.0",
+  none = "None",
+  unknown = "Farmduino",
+}
+
+const KIT_LOOKUP = {
+  arduino: KitLabels.arduino,
+  farmduino: KitLabels.farmduino,
+  farmduino_k14: KitLabels.farmduino_k14,
+  farmduino_k15: KitLabels.farmduino_k15,
+  express_k10: KitLabels.express_k10,
+  none: KitLabels.none,
+  unknown: KitLabels.unknown,
 };
-const FARMDUINO_K15 = {
-  label: "Farmduino (Genesis v1.5)", value: "farmduino_k15"
-};
-const EXPRESS_K10 = {
-  label: "Farmduino (Express v1.0)", value: "express_k10"
-};
-const NONE = { label: "None", value: "none" };
+
+const ARDUINO = { label: BoardLabels.arduino, value: "arduino" };
+const FARMDUINO = { label: BoardLabels.farmduino, value: "farmduino" };
+const FARMDUINO_K14 = { label: BoardLabels.farmduino_k14, value: "farmduino_k14" };
+const FARMDUINO_K15 = { label: BoardLabels.farmduino_k15, value: "farmduino_k15" };
+const EXPRESS_K10 = { label: BoardLabels.express_k10, value: "express_k10" };
+const NONE = { label: BoardLabels.none, value: "none" };
 
 export const FIRMWARE_CHOICES_DDI = {
   [ARDUINO.value]: ARDUINO,

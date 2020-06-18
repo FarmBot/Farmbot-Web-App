@@ -5,13 +5,13 @@ import { getFbosConfig } from "../../../resources/getters";
 import { FBSelect, DropDownItem, Row, Col } from "../../../ui";
 import { edit, save } from "../../../api/crud";
 import { TaggedFbosConfig, TaggedSequence } from "farmbot";
-import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
+import {
+  selectAllSequences, findSequenceById,
+} from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
-import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 interface Props {
   list: DropDownItem[];
@@ -65,25 +65,19 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
       onChange={this.onChange} />
 
   render() {
-    const newFormat = DevSettings.futureFeature1Enabled();
     return <Highlight settingName={DeviceSetting.bootSequence}>
       <Row>
-        <Col xs={newFormat ? 12 : ColWidth.label}>
+        <Col xs={12}>
           <label>
             {t("BOOT SEQUENCE")}
           </label>
         </Col>
-        {!newFormat &&
-          <Col xs={ColWidth.description}>
-            <this.SelectionInput />
-          </Col>}
       </Row>
-      {newFormat &&
-        <Row>
-          <Col xs={12} className="no-pad">
-            <this.SelectionInput />
-          </Col>
-        </Row>}
+      <Row>
+        <Col xs={12} className="no-pad">
+          <this.SelectionInput />
+        </Col>
+      </Row>
     </Highlight>;
   }
 }

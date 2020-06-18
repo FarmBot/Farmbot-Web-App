@@ -8,12 +8,13 @@ import { GetWebAppBool } from "./interfaces";
 import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
 import { hasEncoders } from "../../devices/components/firmware_hardware_support";
-import { FirmwareHardware } from "farmbot";
+import { FirmwareHardware, McuParams } from "farmbot";
 
 export interface BotPositionRowsProps {
   locationData: BotLocationData;
   getValue: GetWebAppBool;
   arduinoBusy: boolean;
+  firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
 }
 
@@ -35,6 +36,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     </div>
     <AxisDisplayGroup
       position={locationData.position}
+      firmwareSettings={props.firmwareSettings}
       missedSteps={locationData.load}
       axisStates={locationData.axis_states}
       busy={arduinoBusy}

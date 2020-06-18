@@ -2,7 +2,7 @@ import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
-import { EncodersProps } from "../interfaces";
+import { EncodersOrStallDetectionProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { hasEncoders } from "../firmware_hardware_support";
@@ -11,9 +11,9 @@ import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
 
-export function Encoders(props: EncodersProps) {
+export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
 
-  const { encoders } = props.controlPanelState;
+  const { encoders_or_stall_detection } = props.controlPanelState;
   const { dispatch, sourceFwConfig, firmwareHardware, arduinoBusy } = props;
 
   const encodersDisabled = {
@@ -26,13 +26,13 @@ export function Encoders(props: EncodersProps) {
   return <Highlight className={"section"}
     settingName={DeviceSetting.encoders}>
     <Header
-      expanded={encoders}
+      expanded={encoders_or_stall_detection}
       title={!showEncoders
         ? DeviceSetting.stallDetection
         : DeviceSetting.encoders}
-      panel={"encoders"}
+      panel={"encoders_or_stall_detection"}
       dispatch={dispatch} />
-    <Collapse isOpen={!!encoders}>
+    <Collapse isOpen={!!encoders_or_stall_detection}>
       <SpacePanelHeader />
       <BooleanMCUInputGroup
         label={encoderSettingName(showEncoders)}
@@ -63,7 +63,7 @@ export function Encoders(props: EncodersProps) {
       {showEncoders &&
         <BooleanMCUInputGroup
           label={DeviceSetting.useEncodersForPositioning}
-          tooltip={ToolTips.ENCODER_POSITIONING}
+          tooltip={ToolTips.USE_ENCODERS_FOR_POSITIONING}
           x={"encoder_use_for_pos_x"}
           y={"encoder_use_for_pos_y"}
           z={"encoder_use_for_pos_z"}
@@ -147,6 +147,6 @@ export const encodersOrLimitSwitchesRequired = (showEncoders: boolean) => {
   const encoders = !showEncoders
     ? DeviceSetting.enableStallDetection
     : DeviceSetting.enableEncoders;
-  const limitSwitches = DeviceSetting.enableEndstops;
+  const limitSwitches = DeviceSetting.enableLimitSwitches;
   return settingRequiredLabel([encoders, limitSwitches]);
 };

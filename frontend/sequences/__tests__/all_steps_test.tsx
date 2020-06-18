@@ -16,7 +16,9 @@ describe("<AllSteps/>", () => {
   });
 
   it("renders empty sequence", () => {
-    const wrapper = shallow(<AllSteps {...fakeProps()} />);
+    const p = fakeProps();
+    p.sequence.body.body = undefined;
+    const wrapper = shallow(<AllSteps {...p} />);
     expect(wrapper.html()).toEqual("<div class=\"all-steps\"></div>");
   });
 

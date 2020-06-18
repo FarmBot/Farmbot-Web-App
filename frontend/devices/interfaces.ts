@@ -164,18 +164,6 @@ export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 
 export type UserEnv = Record<string, string | undefined>;
 
-export interface FarmbotOsProps {
-  bot: BotState;
-  alerts: Alert[];
-  deviceAccount: TaggedDevice;
-  dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
-  env: UserEnv;
-  saveFarmwareEnv: SaveFarmwareEnv;
-  timeSettings: TimeSettings;
-}
-
 export interface FarmbotSettingsProps {
   bot: BotState;
   alerts: Alert[];
@@ -258,28 +246,17 @@ export interface WeedDetectorProps {
   saveFarmwareEnv: SaveFarmwareEnv;
 }
 
-export interface HardwareSettingsProps {
-  controlPanelState: ControlPanelState;
-  dispatch: Function;
-  bot: BotState;
-  shouldDisplay: ShouldDisplay;
-  sourceFwConfig: SourceFwConfig;
-  firmwareConfig: FirmwareConfig | undefined;
-  firmwareHardware: FirmwareHardware | undefined;
-  resources: ResourceIndex;
-}
-
 export interface ControlPanelState {
-  homing_and_calibration: boolean;
-  motors: boolean;
-  encoders: boolean;
-  endstops: boolean;
-  error_handling: boolean;
-  pin_guard: boolean;
-  danger_zone: boolean;
-  pin_bindings: boolean;
-  power_and_reset: boolean;
-  farm_designer: boolean;
+  farmbot_settings: boolean;
   firmware: boolean;
-  farmbot_os: boolean;
+  power_and_reset: boolean;
+  axis_settings: boolean;
+  motors: boolean;
+  encoders_or_stall_detection: boolean;
+  limit_switches: boolean;
+  error_handling: boolean;
+  pin_bindings: boolean;
+  pin_guard: boolean;
+  parameter_management: boolean;
+  farm_designer: boolean;
 }

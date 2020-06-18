@@ -56,6 +56,7 @@ export interface AlertCardTemplateProps {
   findApiAlertById?(id: number): UUID;
   dispatch?: Function;
   iconName?: string;
+  noDismiss?: boolean;
 }
 
 export interface DismissAlertProps {

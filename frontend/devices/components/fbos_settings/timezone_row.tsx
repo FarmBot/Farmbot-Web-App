@@ -1,14 +1,12 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
 import { DeviceSetting, Content } from "../../../constants";
-import { ColWidth } from "../farmbot_os_settings";
 import { TimezoneRowProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { edit, save } from "../../../api/crud";
 import { timezoneMismatch } from "../../timezones/guess_timezone";
 import { TimezoneSelector } from "../../timezones/timezone_selector";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 export class TimezoneRow extends React.Component<TimezoneRowProps> {
 
@@ -27,25 +25,18 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
       }} />;
 
   render() {
-    const newFormat = DevSettings.futureFeature1Enabled();
-
     return <Highlight settingName={DeviceSetting.timezone}>
       <Row>
-        <Col xs={newFormat ? 12 : ColWidth.label}>
+        <Col xs={12}>
           <label>
             {t("TIME ZONE")}
           </label>
         </Col>
-        {!newFormat &&
-          <Col xs={ColWidth.description}>
-            <this.Note />
-            <this.Selector />
-          </Col>}
       </Row>
-      {newFormat && <Row>
+      <Row>
         <Col xs={12}><this.Note /></Col>
         <Col xs={12} className="no-pad"><this.Selector /></Col>
-      </Row>}
+      </Row>
     </Highlight>;
   }
 }

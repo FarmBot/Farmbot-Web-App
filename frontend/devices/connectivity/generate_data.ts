@@ -1,4 +1,4 @@
-import { TaggedDevice } from "farmbot";
+import { TaggedDevice, FirmwareHardware } from "farmbot";
 import { BotState } from "../interfaces";
 import { DiagnosisName, DiagnosisProps } from "./diagnosis";
 import { StatusRowProps } from "./connectivity_row";
@@ -9,6 +9,7 @@ import {
 interface ConnectivityDataProps {
   bot: BotState;
   device: TaggedDevice;
+  apiFirmwareValue: FirmwareHardware | undefined;
 }
 
 export const connectivityData = (props: ConnectivityDataProps) => {
@@ -21,7 +22,7 @@ export const connectivityData = (props: ConnectivityDataProps) => {
     userAPI: browserToAPI(props.bot.connectivity.uptime["user.api"]),
     botMQTT: botToMQTT(props.bot.connectivity.uptime["bot.mqtt"]),
     botAPI: botToAPI(props.device.body.last_saw_api),
-    botFirmware: botToFirmware(fwVersion),
+    botFirmware: botToFirmware(fwVersion, props.apiFirmwareValue),
   };
 
   const flags: DiagnosisProps = {

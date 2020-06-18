@@ -4,6 +4,8 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
 
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
+jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
@@ -16,6 +18,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
 import { Session } from "../../session";
+import { refresh } from "../../api/crud";
 
 describe("NavBar", () => {
   const fakeProps = (): NavBarProps => ({
@@ -30,7 +33,9 @@ describe("NavBar", () => {
     device: fakeDevice(),
     autoSync: false,
     alertCount: 0,
-    pings: fakePings()
+    pings: fakePings(),
+    alerts: [],
+    apiFirmwareValue: undefined,
   });
 
   it("has correct parent classname", () => {
@@ -66,5 +71,18 @@ describe("NavBar", () => {
     expect(wrapper.state().mobileMenuOpen).toEqual(false);
     wrapper.instance().toggle("mobileMenuOpen")();
     expect(wrapper.state().mobileMenuOpen).toEqual(true);
+  });
+
+  it("refreshes device", () => {
+    const p = fakeProps();
+    const wrapper = mount<NavBar>(<NavBar {...p} />);
+    expect(wrapper.state().documentTitle).toEqual("");
+    document.title = "new page";
+    wrapper.instance().componentDidUpdate();
+    expect(wrapper.state().documentTitle).not.toEqual("");
+    expect(refresh).toHaveBeenCalledWith(p.device);
+    jest.resetAllMocks();
+    wrapper.instance().componentDidUpdate();
+    expect(refresh).not.toHaveBeenCalled();
   });
 });

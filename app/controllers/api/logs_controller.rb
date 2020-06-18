@@ -45,10 +45,8 @@ module Api
     private
 
     def trim_logs
-      # WARNING: Calls to `destroy_all` rather than
-      #   `delete_all` can be disastrous- this is
-      #   a big table! RC
-      current_device.excess_logs.delete_all
+      # WARNING: This is a slow method. Perform in background.
+      current_device.delay.trim_excess_logs
     end
 
     def search_params
