@@ -1047,6 +1047,7 @@ export enum DeviceSetting {
 
   // Pin Bindings
   pinBindings = `Pin Bindings`,
+  stockPinBindings = `Stock pin bindings`,
   savedPinBindings = `Saved pin bindings`,
   addNewPinBinding = `Add new pin binding`,
 

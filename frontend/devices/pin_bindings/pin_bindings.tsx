@@ -50,7 +50,7 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
   return <div className="pin-bindings">
-    <Highlight settingName={DeviceSetting.pinBindings}>
+    <Highlight settingName={DeviceSetting.stockPinBindings}>
       <Row>
         <Help text={ToolTips.PIN_BINDINGS}
           position={Position.TOP_RIGHT} />
