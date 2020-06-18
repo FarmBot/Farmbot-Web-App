@@ -176,6 +176,9 @@ fieldset {
     .connectivity {
       padding: 1rem;
       max-width: 600px;
+      overflow-x: hidden;
+      max-height: 550px;
+      overflow-y: auto;
       .row {
         margin-bottom: 1rem;
       }
@@ -185,7 +188,7 @@ fieldset {
       .network-info,
       .fbos-info {
         @media (max-width:767px) {
-          display: none;
+          display: block;
         }
       }
     }
@@ -265,6 +268,15 @@ fieldset {
   padding: 1rem;
   box-shadow: 0px 0px 10px $light_gray;
   width: 18rem;
+}
+
+.qos-display {
+  .saucer {
+    float: right;
+    width: 1rem;
+    height: 1rem;
+    cursor: unset;
+  }
 }
 
 .last-seen-row {
@@ -1551,6 +1563,7 @@ ul {
 }
 
 .firmware-hardware-status-details {
+  max-width: 30rem;
   button {
     float: none !important;
   }
@@ -1798,22 +1811,38 @@ textarea:focus {
   }
 }
 
-.section {
-  display: block !important;
-  .bp3-collapse {
-    padding-top: 1rem;
+.setting {
+  position: relative;
+  .section {
+    display: block !important;
+    .bp3-collapse {
+      padding-top: 1rem;
+    }
   }
-}
-
-.highlight {
-  background-color: $light_yellow;
-  box-shadow: 0px 0px 7px 4px $light_yellow;
-}
-
-.unhighlight {
-  transition: background-color 10s linear, box-shadow 10s linear;
-  background-color: transparent;
-  box-shadow: none;
+  .highlight {
+    background-color: $light_yellow;
+    box-shadow: 0px 0px 7px 4px $light_yellow;
+  }
+  .unhighlight {
+    transition: background-color 10s linear, box-shadow 10s linear;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  .fa-anchor {
+    position: absolute;
+    top: 1.1rem;
+    left: -0.8rem;
+    color: $gray;
+    font-size: 0.8rem;
+    visibility: hidden;
+    &.hovered {
+      visibility: visible;
+    }
+    &.section {
+      position: absolute !important;
+      top: 0.1rem;
+    }
+  }
 }
 
 .read-only-icon {

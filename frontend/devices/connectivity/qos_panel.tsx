@@ -5,6 +5,7 @@ import {
 } from "./qos";
 import React from "react";
 import { t } from "../../i18next_wrapper";
+import { Saucer } from "../../ui";
 
 export interface QosPanelProps {
   pings: PingDictionary;
@@ -53,10 +54,12 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
     const r = { ...this.latencyReport, ...this.qualityReport };
     const errorRateDecimal = ((r.complete) / r.total);
     const errorRate = Math.round(100 * errorRateDecimal).toFixed(0);
+    const color = colorFromPercentOK(errorRateDecimal);
 
     return <div className="network-info">
       <label>{t("Network Quality")}</label>
       <div className="qos-display">
+        <Saucer color={color} />
         <QosRow k={t("Percent OK")} v={pct(errorRate, PCT)} />
         <QosRow k={t("Pings sent")} v={pct(r.total, NONE)} />
         <QosRow k={t("Pings received")} v={pct(r.complete, NONE)} />
@@ -68,3 +71,14 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
 
   }
 }
+
+/** Return an indicator color for the given ping percent OK value. */
+export const colorFromPercentOK = (percent: number): string => {
+  if (percent < 0.8) {
+    return "red";
+  } else if (percent < 0.9) {
+    return "yellow";
+  } else {
+    return "green";
+  }
+};
