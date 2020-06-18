@@ -1,7 +1,7 @@
 class Rack::Attack
   ### Throttle Spammy Clients ###
   throttle("req/ip", limit: 300, period: 1.minutes) do |req|
-    req.ip
+    req.ip unless req.path.first(9) == "/api/rmq/"
   end
 
   # ### Stop people from overusing the sync object. ###
