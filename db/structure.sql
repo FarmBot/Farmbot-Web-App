@@ -556,12 +556,12 @@ CREATE TABLE public.firmware_configs (
     movement_steps_acc_dec_x integer DEFAULT 300,
     movement_steps_acc_dec_y integer DEFAULT 300,
     movement_steps_acc_dec_z integer DEFAULT 300,
-    movement_stop_at_home_x integer DEFAULT 0,
-    movement_stop_at_home_y integer DEFAULT 0,
-    movement_stop_at_home_z integer DEFAULT 0,
-    movement_stop_at_max_x integer DEFAULT 0,
-    movement_stop_at_max_y integer DEFAULT 0,
-    movement_stop_at_max_z integer DEFAULT 0,
+    movement_stop_at_home_x integer DEFAULT 1,
+    movement_stop_at_home_y integer DEFAULT 1,
+    movement_stop_at_home_z integer DEFAULT 1,
+    movement_stop_at_max_x integer DEFAULT 1,
+    movement_stop_at_max_y integer DEFAULT 1,
+    movement_stop_at_max_z integer DEFAULT 1,
     movement_timeout_x integer DEFAULT 120,
     movement_timeout_y integer DEFAULT 120,
     movement_timeout_z integer DEFAULT 120,
@@ -1364,7 +1364,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1684,7 +1684,7 @@ CREATE TABLE public.web_app_configs (
     dynamic_map boolean DEFAULT false,
     encoder_figure boolean DEFAULT false,
     hide_webcam_widget boolean DEFAULT false,
-    legend_menu_open boolean DEFAULT false,
+    legend_menu_open boolean DEFAULT true,
     raw_encoders boolean DEFAULT false,
     scaled_encoders boolean DEFAULT false,
     show_spread boolean DEFAULT true,
@@ -3380,6 +3380,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200204192005'),
 ('20200204230135'),
 ('20200323235926'),
-('20200412152208');
+('20200412152208'),
+('20200616172612');
 
 
