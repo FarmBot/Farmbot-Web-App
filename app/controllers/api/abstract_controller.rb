@@ -83,16 +83,23 @@ module Api
       nil
     end
 
-    # If FarmBot OS goes offline for a very long time,
-    # you don't want to corrupt user data with stale records.
-    # The row lock is only enforced for FBOS devices (not the FE)
-    def maybe_enforce_row_lock
-      when_farmbot_os do
-        if raw_json[:updated_at] && resource
-          if resource.updated_at.as_json != raw_json[:updated_at]
-            render json: { stale_record: STALE_RECORD }, status: 409
+    def stale_data?
+      if resource
+        updated_at = raw_json[:updated_at]
+        if updated_at
+          if resource.updated_at.as_json != updated_at
+            return true
           end
         end
+      end
+      return false
+    end
+
+    # If FarmBot OS goes offline for a very long time,
+    # you don't want to corrupt user data with stale records.
+    def maybe_enforce_row_lock
+      if stale_data?
+        render json: { stale_record: STALE_RECORD }, status: 409
       end
     end
 
