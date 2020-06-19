@@ -172,8 +172,8 @@ describe("<DragHelpers/>", () => {
     p.activeDragXY = { x: 100, y: 100, z: 0 };
     const wrapper = shallow(<DragHelpers {...p} />);
     const indicator = wrapper.find("#alignment-indicator");
-    const masterSegment = indicator.find("#alignment-indicator-segment-6");
-    const segmentProps = masterSegment.find("rect").props();
+    const segmentWrapper = indicator.find("#alignment-indicator-segment-6");
+    const segmentProps = segmentWrapper.find("rect").props();
     expect(segmentProps.x).toEqual(2865);
     expect(segmentProps.y).toEqual(1399);
     const segments = indicator.find("use");

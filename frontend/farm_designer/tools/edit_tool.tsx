@@ -5,7 +5,7 @@ import {
 } from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
-import { getPathArray } from "../../history";
+import { getPathArray, push } from "../../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
@@ -13,7 +13,6 @@ import {
 } from "../../resources/selectors";
 import { SaveBtn } from "../../ui";
 import { edit, destroy } from "../../api/crud";
-import { history } from "../../history";
 import { Panel } from "../panel_header";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";
 import { error } from "../../toast/toast";
@@ -43,7 +42,8 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   get tool() { return this.props.findTool(this.stringyID); }
 
   fallback = () => {
-    history.push("/app/designer/tools");
+    const toolsPath = "/app/designer/tools";
+    getPathArray().join("/").startsWith(toolsPath) && push(toolsPath);
     return <this.PanelWrapper>
       <span>{t("Redirecting")}...</span>
     </this.PanelWrapper>;
@@ -69,7 +69,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         <SaveBtn
           onClick={() => {
             this.props.dispatch(edit(tool, { name: toolName }));
-            history.push("/app/designer/tools");
+            push("/app/designer/tools");
           }}
           disabled={!this.state.toolName || nameTaken}
           status={SpecialStatus.DIRTY} />

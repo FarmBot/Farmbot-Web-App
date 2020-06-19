@@ -7,6 +7,12 @@ jest.mock("../../../api/crud", () => ({
 const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
+let mockPath = "/app/designer/tool-slots/1";
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
@@ -21,6 +27,7 @@ import { destroy, edit, save } from "../../../api/crud";
 import { mapStateToPropsEdit } from "../state_to_props";
 import { SlotEditRows } from "../tool_slot_edit_components";
 import { EditToolSlotProps } from "../interfaces";
+import { push } from "../../../history";
 
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
@@ -36,8 +43,17 @@ describe("<EditToolSlot />", () => {
   });
 
   it("redirects", () => {
+    mockPath = "/app/designer/tool-slots/nope";
     const wrapper = mount(<EditToolSlot {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    expect(push).toHaveBeenCalledWith("/app/designer/tools");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<EditToolSlot {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("renders", () => {

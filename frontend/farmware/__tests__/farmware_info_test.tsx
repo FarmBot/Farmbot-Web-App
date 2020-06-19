@@ -15,11 +15,6 @@ jest.mock("../../history", () => ({
   }
 }));
 
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
@@ -42,6 +37,7 @@ describe("<FarmwareInfo />", () => {
       dispatch: jest.fn(),
       installations: [],
       shouldDisplay: () => false,
+      botOnline: true,
     };
   };
 
@@ -87,7 +83,16 @@ describe("<FarmwareInfo />", () => {
     expect(mockDevice.updateFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
 
-  it("doesn't update Farmware", () => {
+  it("doesn't update Farmware: offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    p.farmware = fakeFarmware();
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 0, "Update");
+    expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
+  });
+
+  it("doesn't update Farmware: missing name", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
     // tslint:disable-next-line:no-any
@@ -101,16 +106,7 @@ describe("<FarmwareInfo />", () => {
     const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
-    expect(history.push).toHaveBeenCalledWith("/app/farmware");
-  });
-
-  it("removes Farmware and redirects", () => {
-    mockDev = true;
-    const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
-    clickButton(wrapper, 1, "Remove");
-    expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
     expect(history.push).toHaveBeenCalledWith("/app/designer/farmware");
-    mockDev = false;
   });
 
   it("doesn't remove Farmware", () => {

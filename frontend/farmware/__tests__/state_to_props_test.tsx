@@ -10,12 +10,13 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakeFarmwareEnv, fakeFarmwareInstallation,
+  fakeFarmwareEnv, fakeFarmwareInstallation, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import { JobProgress } from "farmbot";
 import { DevSettings } from "../../account/dev/dev_support";
+import { BooleanSetting } from "../../session_keys";
 
 describe("mapStateToProps()", () => {
 
@@ -143,6 +144,16 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.syncStatus).toEqual("sync_now");
     expect(props.botToMqttStatus).toEqual("up");
+  });
+
+  it("returns web app config value", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.show_farmbot = true;
+    state.resources = buildResourceIndex([config]);
+    const props = mapStateToProps(state);
+    const value = props.getConfigValue(BooleanSetting.show_farmbot);
+    expect(value).toEqual(true);
   });
 });
 

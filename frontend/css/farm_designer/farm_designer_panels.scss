@@ -2,12 +2,8 @@
 .farm-designer-panels {
   position: fixed;
   top: 8.9rem;
-  width: 30rem;
+  width: 45rem;
   @media screen and (max-width: 450px) {
-    width: 100%;
-  }
-  &.new {
-    max-width: 45rem;
     width: 100%;
   }
 }
@@ -255,7 +251,7 @@
     float: left;
     font-size: 1.8rem;
     white-space: nowrap;
-    width: 50%;
+    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 50px;
@@ -1386,7 +1382,21 @@
         background: none;
       }
     }
+    .bp3-popover-wrapper {
+      padding-top: 2rem;
+      float: right;
+      .fa-gear {
+        color: $dark_gray;
+      }
+    }
+    .jog-controls-group {
+      label {
+        margin-top: 0;
+      }
+    }
     .bot-position-rows {
+      padding-left: 1rem;
+      padding-right: 1rem;
       label {
         margin-top: 0;
       }
@@ -1448,6 +1458,49 @@
         float: left;
         height: 2rem;
       }
+    }
+    .expandable-header {
+      margin-top: 2rem;
+    }
+  }
+  .title-help {
+    font-size: 1.3rem;
+    .fa-question-circle {
+      position: absolute;
+      top: -3rem;
+      right: 0;
+      font-size: 1.4rem;
+    }
+    a {
+      text-decoration: none !important;
+    }
+    .fa-external-link {
+      margin-left: 1rem;
+    }
+    .update {
+      display: inline;
+      p {
+        display: inline;
+        margin-left: 1rem;
+      }
+      .fa-refresh {
+        display: inline;
+        margin-left: 1rem;
+        color: $dark_gray;
+      }
+    }
+    .title-help-text.open {
+      margin-bottom: 0;
+    }
+  }
+  .title-help.photos {
+    .title-help-text.open {
+      margin-bottom: 4rem;
+    }
+    .fa-question-circle {
+      position: relative;
+      top: unset;
+      right: unset;
     }
   }
 }

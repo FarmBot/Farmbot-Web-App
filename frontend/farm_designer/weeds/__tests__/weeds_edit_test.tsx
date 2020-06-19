@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/weeds/1";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 import * as React from "react";
@@ -16,6 +16,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { DesignerPanelHeader } from "../../designer_panel";
+import { push } from "../../../history";
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -24,9 +25,17 @@ describe("<EditWeed />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/weeds";
+    mockPath = "/app/designer/weeds/nope";
     const wrapper = mount(<EditWeed {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).toHaveBeenCalledWith("/app/designer/weeds");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<EditWeed {...fakeProps()} />);
+    expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("renders", () => {

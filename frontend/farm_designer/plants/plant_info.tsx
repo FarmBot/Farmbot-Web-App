@@ -10,7 +10,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { isString } from "lodash";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 import { Panel } from "../panel_header";
@@ -38,7 +38,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 
   fallback = () => {
     const plantsPath = "/app/designer/plants";
-    getPathArray().join("/").startsWith(plantsPath) && history.push(plantsPath);
+    const currentPath = getPathArray().join("/");
+    const templatePath = "/app/designer/gardens/templates";
+    (currentPath.startsWith(plantsPath) || currentPath.startsWith(templatePath))
+      && push(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}

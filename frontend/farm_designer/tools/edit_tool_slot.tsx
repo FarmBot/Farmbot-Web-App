@@ -7,7 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { getPathArray } from "../../history";
 import { TaggedToolSlotPointer } from "farmbot";
 import { edit, save, destroy } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import { Panel } from "../panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../../devices/actions";
@@ -31,13 +31,16 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
 
   render() {
     const { toolSlot } = this;
-    !toolSlot && history.push("/app/designer/tools");
+    const toolsPath = "/app/designer/tools";
+    const toolSlotsPath = "/app/designer/tool-slots";
+    !toolSlot && getPathArray().join("/").startsWith(toolSlotsPath)
+      && push(toolsPath);
     const panelName = "edit-tool-slot";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
         title={t("Edit slot")}
-        backTo={"/app/designer/tools"}
+        backTo={toolsPath}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         {toolSlot

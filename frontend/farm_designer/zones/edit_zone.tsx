@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
 import { Panel } from "../panel_header";
 import { selectAllPointGroups } from "../../resources/selectors";
@@ -37,13 +37,14 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
 
   render() {
     const { zone } = this;
-    !zone && history.push("/app/designer/zones");
+    const zonesPath = "/app/designer/zones";
+    !zone && getPathArray().join("/").startsWith(zonesPath) && push(zonesPath);
     return <DesignerPanel panelName={"zone-info"} panel={Panel.Zones}>
       <DesignerPanelHeader
         panelName={"zone-info"}
         panel={Panel.Zones}
         title={`${t("Edit")} zone`}
-        backTo={"/app/designer/zones"} />
+        backTo={zonesPath} />
       <DesignerPanelContent panelName={"zone-info"}>
         {zone
           ? <div className={"zone-info-panel-content-wrapper"}>

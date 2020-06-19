@@ -10,6 +10,7 @@ import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 import { t } from "../../i18next_wrapper";
+import { Link } from "../../link";
 
 export function TileExecuteScript(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence, farmwareData } = props;
@@ -23,11 +24,7 @@ export function TileExecuteScript(props: StepParams) {
     };
 
     const selectedFarmwareDDI = (n: string): DropDownItem => {
-      if (isInstalled(n)) {
-        return n === "plant-detection"
-          ? { value: n, label: t("Weed Detector") }
-          : { value: n, label: n };
-      }
+      if (isInstalled(n)) { return { value: n, label: n }; }
       return { label: t("Manual Input"), value: "" };
     };
 
@@ -63,7 +60,9 @@ export function TileExecuteScript(props: StepParams) {
     return <StepWrapper>
       <StepHeader
         className={className}
-        helpText={ToolTips.EXECUTE_SCRIPT}
+        helpText={farmwareName == "plant-detection"
+          ? ToolTips.DETECT_WEEDS
+          : ToolTips.EXECUTE_SCRIPT}
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
@@ -77,31 +76,40 @@ export function TileExecuteScript(props: StepParams) {
       </StepHeader>
       <StepContent className={className}>
         <Row>
-          <Col xs={12}>
-            <label>{t("Package Name")}</label>
-            <FBSelect
-              key={JSON.stringify(props.currentSequence)}
-              list={farmwareList(farmwareData)}
-              selectedItem={selectedFarmwareDDI(farmwareName)}
-              onChange={updateStepFarmwareSelection}
-              allowEmpty={true}
-              customNullLabel={t("Manual Input")} />
-            {!isInstalled(farmwareName) &&
-              <div className="farmware-name-manual-input">
-                <label>{t("Manual input")}</label>
-                <StepInputBox dispatch={dispatch}
-                  index={index}
-                  step={currentStep}
-                  sequence={currentSequence}
-                  field="label" />
-              </div>}
-            <FarmwareInputs
-              farmwareName={farmwareName}
-              farmwareInstalled={isInstalled(farmwareName)}
-              defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
-              currentStep={currentStep}
-              updateStep={updateStep} />
-          </Col>
+          {farmwareName == "plant-detection"
+            ? <Col xs={12}>
+              <p>
+                {t("Results are viewable from the")}
+                <Link to={"/app/designer/photos"}>
+                  {` photos ${t("panel")}`}
+                </Link>.
+              </p>
+            </Col>
+            : <Col xs={12}>
+              <label>{t("Package Name")}</label>
+              <FBSelect
+                key={JSON.stringify(props.currentSequence)}
+                list={farmwareList(farmwareData)}
+                selectedItem={selectedFarmwareDDI(farmwareName)}
+                onChange={updateStepFarmwareSelection}
+                allowEmpty={true}
+                customNullLabel={t("Manual Input")} />
+              {!isInstalled(farmwareName) &&
+                <div className="farmware-name-manual-input">
+                  <label>{t("Manual input")}</label>
+                  <StepInputBox dispatch={dispatch}
+                    index={index}
+                    step={currentStep}
+                    sequence={currentSequence}
+                    field="label" />
+                </div>}
+              <FarmwareInputs
+                farmwareName={farmwareName}
+                farmwareInstalled={isInstalled(farmwareName)}
+                defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
+                currentStep={currentStep}
+                updateStep={updateStep} />
+            </Col>}
         </Row>
       </StepContent>
     </StepWrapper>;

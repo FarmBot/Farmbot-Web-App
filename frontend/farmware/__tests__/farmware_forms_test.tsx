@@ -2,10 +2,7 @@ const mockDevice = {
   execScript: jest.fn(() => Promise.resolve({})),
   setUserEnv: jest.fn(() => Promise.resolve({}))
 };
-
-jest.mock("../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -15,6 +12,7 @@ import {
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
+import { FarmwareConfig } from "farmbot";
 
 describe("getConfigEnvName()", () => {
   it("generates correct name", () => {
@@ -34,6 +32,8 @@ describe("needsFarmwareForm()", () => {
   it("doesn't need form", () => {
     const farmware = fakeFarmware();
     farmware.config = [];
+    expect(needsFarmwareForm(farmware)).toEqual(false);
+    farmware.config = undefined as unknown as FarmwareConfig[];
     expect(needsFarmwareForm(farmware)).toEqual(false);
   });
 });
@@ -68,6 +68,17 @@ describe("<ConfigFields />", () => {
   });
 
   it("changes field", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ConfigFields {...p} />);
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: 1 } });
+    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
+      "my_fake_farmware_config_1": 1
+    });
+  });
+
+  it("handles change field error", () => {
+    mockDevice.setUserEnv = jest.fn(() => Promise.reject());
     const p = fakeProps();
     const wrapper = shallow(<ConfigFields {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
@@ -117,6 +128,17 @@ describe("<FarmwareForm />", () => {
   });
 
   it("runs farmware", () => {
+    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
+    clickButton(wrapper, 0, "run");
+    expect(mockDevice.execScript).toHaveBeenCalledWith(
+      "My Fake Farmware", [{
+        kind: "pair",
+        args: { label: "my_fake_farmware_config_1", value: "4" }
+      }]);
+  });
+
+  it("handles error while running farmware", () => {
+    mockDevice.execScript = jest.fn(() => Promise.reject());
     const wrapper = mount(<FarmwareForm {...fakeProps()} />);
     clickButton(wrapper, 0, "run");
     expect(mockDevice.execScript).toHaveBeenCalledWith(

@@ -1,13 +1,22 @@
+let mockDestroyAllPromise: Promise<void | never> =
+  Promise.reject("error").catch(() => { });
+jest.mock("../../api/crud", () => ({
+  destroyAll: jest.fn(() => mockDestroyAllPromise)
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawDesignerPhotos as DesignerPhotos,
   DesignerPhotosProps,
   mapStateToProps,
+  ClearFarmwareData,
 } from "../photos";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakeState } from "../../__test_support__/fake_state";
 import { ExpandableHeader } from "../../ui";
+import { destroyAll } from "../../api/crud";
+import { success, error } from "../../toast/toast";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -22,6 +31,7 @@ describe("<DesignerPhotos />", () => {
     syncStatus: undefined,
     saveFarmwareEnv: jest.fn(),
     imageJobs: [],
+    versions: {},
   });
 
   it("renders photos panel", () => {
@@ -50,5 +60,23 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const props = mapStateToProps(state);
     expect(props.images.length).toEqual(2);
+  });
+});
+
+describe("<ClearFarmwareData />", () => {
+  it("destroys all FarmwareEnvs", async () => {
+    mockDestroyAllPromise = Promise.resolve();
+    const wrapper = mount(<ClearFarmwareData />);
+    wrapper.find("button").last().simulate("click");
+    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv");
+    expect(success).toHaveBeenCalledWith(expect.stringContaining("deleted"));
+  });
+
+  it("fails to destroy all FarmwareEnvs", async () => {
+    mockDestroyAllPromise = Promise.reject("error");
+    const wrapper = mount(<ClearFarmwareData />);
+    await wrapper.find("button").last().simulate("click");
+    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv");
+    expect(error).toHaveBeenCalled();
   });
 });

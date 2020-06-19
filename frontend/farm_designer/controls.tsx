@@ -13,7 +13,7 @@ import {
   TaggedWebcamFeed, TaggedPeripheral, McuParams, FirmwareHardware,
 } from "farmbot";
 import {
-  GetWebAppConfigValue, getWebAppConfigValue,
+  GetWebAppConfigValue, getWebAppConfigValue, toggleWebAppBool,
 } from "../config_storage/actions";
 import { Everything } from "../interfaces";
 import { validFwConfig, validFbosConfig, validBotLocationData } from "../util";
@@ -28,6 +28,8 @@ import { uniq } from "lodash";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { Peripherals } from "../controls/peripherals";
 import { WebcamPanel } from "../controls/webcam";
+import { Popover, Position } from "@blueprintjs/core";
+import { MoveWidgetSettingsMenu } from "../controls/move/settings_menu";
 
 export interface DesignerControlsProps {
   dispatch: Function;
@@ -78,6 +80,9 @@ export class RawDesignerControls
   getValue = (key: BooleanConfigKey): boolean =>
     !!this.props.getWebAppConfigVal(BooleanSetting[key]);
 
+  toggle = (key: BooleanConfigKey) => (): void =>
+    this.props.dispatch(toggleWebAppBool(key));
+
   render() {
     const { bot } = this.props;
     const { location_data, informational_settings } = bot.hardware;
@@ -89,6 +94,13 @@ export class RawDesignerControls
           lockOpen={process.env.NODE_ENV !== "production"}
           networkState={getStatus(bot.connectivity.uptime["bot.mqtt"])}
           syncStatus={informational_settings.sync_status}>
+          <Popover position={Position.BOTTOM_RIGHT}>
+            <i className="fa fa-gear" />
+            <MoveWidgetSettingsMenu
+              toggle={this.toggle}
+              getValue={this.getValue}
+              firmwareHardware={this.props.firmwareHardware} />
+          </Popover>
           <JogControlsGroup
             dispatch={this.props.dispatch}
             stepSize={bot.stepSize}

@@ -59,13 +59,14 @@ function mapStateToProps(props: Everything): GroupDetailProps {
 export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
   render() {
     const { group } = this.props;
-    !group && push("/app/designer/groups");
+    const groupsPath = "/app/designer/groups";
+    !group && getPathArray().join("/").startsWith(groupsPath) && push(groupsPath);
     return <DesignerPanel panelName={"group-detail"} panel={Panel.Groups}>
       <DesignerPanelHeader
         panelName={Panel.Groups}
         panel={Panel.Groups}
         title={t("Edit group")}
-        backTo={"/app/designer/groups"} />
+        backTo={groupsPath} />
       <DesignerPanelContent panelName={"groups"}>
         {group
           ? <GroupDetailActive {...this.props} group={group} />

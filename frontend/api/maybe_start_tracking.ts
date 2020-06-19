@@ -2,7 +2,7 @@ import { ResourceName } from "farmbot";
 import { startTracking } from "../connectivity/data_consistency";
 import { unpackUUID } from "../util";
 
-const BLACKLIST: ResourceName[] = [
+const IGNORE_LIST: ResourceName[] = [
   "FbosConfig",
   "FirmwareConfig",
   "Image",
@@ -18,6 +18,6 @@ const BLACKLIST: ResourceName[] = [
 ];
 
 export function maybeStartTracking(uuid: string) {
-  const ignore = BLACKLIST.includes(unpackUUID(uuid).kind);
+  const ignore = IGNORE_LIST.includes(unpackUUID(uuid).kind);
   ignore || startTracking(uuid);
 }

@@ -928,7 +928,7 @@ ul {
 .controls-popup {
   color: $off_white;
   @media screen and (max-width: 450px) {
-    &.panel-open, &.panel-open-new {
+    &.panel-open {
       display: none;
     }
   }
@@ -1129,8 +1129,7 @@ ul {
   label {
     cursor: pointer;
   }
-  &:hover,
-  &.selected {
+  &:hover  {
     background: $medium_light_gray;
     p {
       font-weight: bold;

@@ -11,11 +11,6 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../plants/plant_inventory", () => ({ Plants: () => <div /> }));
 
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { RawFarmDesigner as FarmDesigner } from "../index";
 import { mount } from "enzyme";
@@ -112,21 +107,6 @@ describe("<FarmDesigner/>", () => {
       .toBeTruthy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open"))
       .toBeTruthy();
-  });
-
-  it("renders panel", () => {
-    mockDev = true;
-    mockPath = "/app/designer/plants";
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
-      .toBeTruthy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open-new"))
-      .toBeTruthy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("new"))
-      .toBeTruthy();
-    expect(wrapper.find(".farm-designer-map").hasClass("panel-open-new"))
-      .toBeTruthy();
-    mockDev = false;
   });
 
   it("hides panel", () => {
