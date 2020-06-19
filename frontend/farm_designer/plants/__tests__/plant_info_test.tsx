@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/plants/1";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -15,7 +15,7 @@ import { RawPlantInfo as PlantInfo } from "../plant_info";
 import { mount } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../interfaces";
-import { history } from "../../../history";
+import { push } from "../../../history";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit, save, destroy } from "../../../api/crud";
 
@@ -44,7 +44,16 @@ describe("<PlantInfo />", () => {
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+  });
+
+  it("renders: no plant template", () => {
+    mockPath = "/app/designer/gardens/templates/nope";
+    const p = fakeProps();
+    p.findPlant = () => undefined;
+    const wrapper = mount(<PlantInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("redirecting...");
+    expect(push).toHaveBeenCalledWith("/app/designer/plants");
   });
 
   it("doesn't redirect", () => {
@@ -53,7 +62,7 @@ describe("<PlantInfo />", () => {
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("has link to plants", () => {

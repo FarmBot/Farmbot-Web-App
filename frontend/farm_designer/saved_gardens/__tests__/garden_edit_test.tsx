@@ -10,9 +10,9 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockPath = "";
+let mockPath = "/app/designer/gardens/1";
 jest.mock("../../../history", () => ({
-  history: { push: jest.fn() },
+  push: jest.fn(),
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
@@ -29,6 +29,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { push } from "../../../history";
 
 describe("<EditGarden />", () => {
   const fakeProps = (): EditGardenProps => ({
@@ -76,8 +77,17 @@ describe("<EditGarden />", () => {
   });
 
   it("shows garden not found", () => {
+    mockPath = "/app/designer/gardens/nope";
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
+    expect(push).toHaveBeenCalledWith("/app/designer/gardens");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<EditGarden {...fakeProps()} />);
+    expect(wrapper.text()).toContain("not found");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("show when garden is open", () => {

@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/points/1";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 const mockMoveAbs = jest.fn();
@@ -30,6 +30,7 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
 import { DesignerPanelHeader } from "../../designer_panel";
 import { Actions } from "../../../constants";
+import { push } from "../../../history";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -37,10 +38,18 @@ describe("<EditPoint />", () => {
     dispatch: jest.fn(),
   });
 
-  it("renders redirect", () => {
-    mockPath = "/app/designer/points";
+  it("redirects", () => {
+    mockPath = "/app/designer/points/";
     const wrapper = mount(<EditPoint {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).toHaveBeenCalledWith("/app/designer/points");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<EditPoint {...fakeProps()} />);
+    expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("renders with points", () => {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { AddEditFarmEventProps } from "../interfaces";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
-import { history } from "../../history";
+import { push, getPathArray } from "../../history";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
@@ -13,7 +13,8 @@ import {
 export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   render() {
     const fe = this.props.getFarmEvent();
-    !fe && history.push("/app/designer/events");
+    const eventsPath = "/app/designer/events";
+    !fe && getPathArray().join("/").startsWith(eventsPath) && push(eventsPath);
     const panelName = "edit-farm-event";
     return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
       <DesignerPanelHeader

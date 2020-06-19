@@ -20,6 +20,24 @@ describe("<Weeds> />", () => {
     expect(wrapper.text()).toContain("No weeds yet.");
   });
 
+  it("renders no active weeds", () => {
+    const p = fakeProps();
+    const weed = fakeWeed();
+    weed.body.plant_stage = "removed";
+    p.weeds = [weed];
+    const wrapper = mount(<Weeds {...p} />);
+    expect(wrapper.text()).toContain("No active weeds.");
+  });
+
+  it("renders no removed weeds", () => {
+    const p = fakeProps();
+    const weed = fakeWeed();
+    weed.body.plant_stage = "active";
+    p.weeds = [weed];
+    const wrapper = mount(<Weeds {...p} />);
+    expect(wrapper.text()).toContain("No removed weeds.");
+  });
+
   it("changes search term", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
     wrapper.find(SearchField).simulate("change", "0");
