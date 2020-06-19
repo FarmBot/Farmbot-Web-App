@@ -1,15 +1,12 @@
 import * as React from "react";
 import { FarmbotColorPicker } from "./farmbot_picker";
 import { BlurableInput, Row, Col } from "../../ui/index";
-import { ImageFlipper } from "../images/image_flipper";
 import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
-import { PhotoFooter } from "../images/photos";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
-import { DevSettings } from "../../account/dev/dev_support";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -162,16 +159,6 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
           </button>
         </Col>
       </Row>
-      {!DevSettings.futureFeaturesEnabled() &&
-        <div className="flipper-section">
-          <ImageFlipper
-            onFlip={this.props.onFlip}
-            images={this.props.images}
-            currentImage={this.props.currentImage} />
-          <PhotoFooter
-            image={this.props.currentImage}
-            timeSettings={this.props.timeSettings} />
-        </div>}
     </div>;
   }
 }

@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
 import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../../resources/selectors";
@@ -32,16 +32,17 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
     }
   }
   get panelName() { return "weed-info"; }
-  get backTo() { return "/app/designer/weeds"; }
 
   render() {
-    !this.point && history.push(this.backTo);
+    const weedsPath = "/app/designer/weeds";
+    !this.point && getPathArray().join("/").startsWith(weedsPath)
+      && push(weedsPath);
     return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Weeds}
         title={t("Edit weed")}
-        backTo={this.backTo}
+        backTo={weedsPath}
         onBack={() => this.props.dispatch({
           type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
         })} />

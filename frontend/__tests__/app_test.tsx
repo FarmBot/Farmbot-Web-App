@@ -126,7 +126,6 @@ describe("<App />: NavBar", () => {
       "Controls",
       "Sequences",
       "Regimens",
-      "Farmware",
     ];
     strings.map(string => expect(t).toContain(string));
     wrapper.unmount();

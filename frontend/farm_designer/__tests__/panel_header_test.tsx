@@ -97,7 +97,7 @@ describe("<DesignerNavTabs />", () => {
 
   it("renders for photos", () => {
     mockPath = "/app/designer/photos";
-    mockDev = true;
+    mockDev = false;
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.hasClass("gray-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
@@ -105,7 +105,7 @@ describe("<DesignerNavTabs />", () => {
 
   it("renders for farmware", () => {
     mockPath = "/app/designer/farmware";
-    mockDev = true;
+    mockDev = false;
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.hasClass("gray-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");

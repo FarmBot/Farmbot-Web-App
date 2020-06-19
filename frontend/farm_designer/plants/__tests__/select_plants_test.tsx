@@ -7,11 +7,6 @@ jest.mock("../../../history", () => ({
 let mockDestroy = jest.fn(() => Promise.resolve());
 jest.mock("../../../api/crud", () => ({ destroy: mockDestroy }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
 import * as React from "react";
@@ -345,7 +340,6 @@ describe("<SelectPlants />", () => {
   });
 
   it("shows other buttons", () => {
-    mockDev = true;
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
     expect(wrapper.text()).toContain("Create");
   });

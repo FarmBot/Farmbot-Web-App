@@ -5,7 +5,6 @@ import { StepWrapper, StepHeader, StepContent, StepWarning } from "../step_ui";
 import { Col, Row } from "../../ui/index";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export function TileTakePhoto(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -29,9 +28,8 @@ export function TileTakePhoto(props: StepParams) {
         <Col xs={12}>
           <p>
             {t("Photos are viewable from the")}
-            <Link to={`/app${
-              DevSettings.futureFeaturesEnabled() ? "/designer" : ""}/farmware`}>
-              {` farmware ${t("page")}`}
+            <Link to={"/app/designer/photos"}>
+              {` photos ${t("panel")}`}
             </Link>.
           </p>
         </Col>

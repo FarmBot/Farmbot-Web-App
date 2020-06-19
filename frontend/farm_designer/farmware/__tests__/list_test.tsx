@@ -4,6 +4,8 @@ import {
   RawDesignerFarmwareList as DesignerFarmwareList,
   DesignerFarmwareListProps,
   mapStateToProps,
+  FarmwareListItem,
+  FarmwareListItemProps,
 } from "../list";
 import {
   fakeFarmware,
@@ -16,6 +18,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { SearchField } from "../../../ui/search_field";
+import { Actions } from "../../../constants";
 
 describe("<DesignerFarmwareList />", () => {
   const fakeProps = (): DesignerFarmwareListProps => ({
@@ -58,6 +61,28 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.farmwares).toEqual({
       "fake farmware (pending install...)": expect.any(Object)
+    });
+  });
+});
+
+describe("<FarmwareListItem />", () => {
+  const fakeProps = (): FarmwareListItemProps => ({
+    dispatch: jest.fn(),
+    farmwareName: "My Farmware",
+  });
+
+  it("renders list item", () => {
+    const wrapper = mount(<FarmwareListItem {...fakeProps()} />);
+    expect(wrapper.text()).toContain("My Farmware");
+  });
+
+  it("navigates", () => {
+    const p = fakeProps();
+    const wrapper = mount(<FarmwareListItem {...p} />);
+    wrapper.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE,
+      payload: "My Farmware"
     });
   });
 });

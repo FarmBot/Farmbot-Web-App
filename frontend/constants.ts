@@ -338,7 +338,11 @@ export namespace ToolTips {
 
   export const EXECUTE_SCRIPT =
     trim(`The Run Farmware step runs a Farmware package.
-   Visit the Farmware page to install and manage Farmware.`);
+    Visit the Farmware panel to install and manage Farmware.`);
+
+  export const DETECT_WEEDS =
+    trim(`The Detect Weeds step takes a photo and detects any weeds in the area.
+    Visit the Photos panel to view results or change parameters.`);
 
   export const FARMWARE_CONFIGS =
     trim(`The Farmware will use the parameter values set via the Farmware

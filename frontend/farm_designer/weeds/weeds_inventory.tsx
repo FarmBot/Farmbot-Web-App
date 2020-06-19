@@ -40,33 +40,35 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       p.body.name.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
   }
 
-  ActiveWeeds = () =>
-    <div className={"active-weeds"}>
+  ActiveWeeds = () => {
+    const active = this.weeds.filter(p => p.body.plant_stage !== "removed");
+    return <div className={"active-weeds"}>
       <div className={"active-weeds-header"}>
         <label>{t("Active")}</label>
       </div>
-      {this.weeds
-        .filter(p => p.body.plant_stage !== "removed")
-        .map(p => <WeedInventoryItem
-          key={p.uuid}
-          tpp={p}
-          hovered={this.props.hoveredPoint === p.uuid}
-          dispatch={this.props.dispatch} />)}
+      {active.length == 0 && <p>{t("No active weeds.")}</p>}
+      {active.map(p => <WeedInventoryItem
+        key={p.uuid}
+        tpp={p}
+        hovered={this.props.hoveredPoint === p.uuid}
+        dispatch={this.props.dispatch} />)}
     </div>;
+  };
 
-  RemovedWeeds = () =>
-    <div className={"removed-weeds"}>
+  RemovedWeeds = () => {
+    const removed = this.weeds.filter(p => p.body.plant_stage === "removed");
+    return <div className={"removed-weeds"}>
       <div className={"removed-weeds-header"}>
         <label>{t("Removed")}</label>
       </div>
-      {this.weeds
-        .filter(p => p.body.plant_stage === "removed")
-        .map(p => <WeedInventoryItem
-          key={p.uuid}
-          tpp={p}
-          hovered={this.props.hoveredPoint === p.uuid}
-          dispatch={this.props.dispatch} />)}
+      {removed.length == 0 && <p>{t("No removed weeds.")}</p>}
+      {removed.map(p => <WeedInventoryItem
+        key={p.uuid}
+        tpp={p}
+        hovered={this.props.hoveredPoint === p.uuid}
+        dispatch={this.props.dispatch} />)}
     </div>;
+  };
 
   render() {
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>

@@ -6,11 +6,6 @@ jest.mock("../../redux/store", () => ({
   store: { getState: () => mockState },
 }));
 
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import { tourPageNavigation, TOUR_STEPS, Tours } from "../tours";
 import { history } from "../../history";
 import { fakeTool, fakeFbosConfig } from "../../__test_support__/fake_state/resources";
@@ -65,11 +60,5 @@ describe("tourPageNavigation()", () => {
     mockState.resources = buildResourceIndex([fbosConfig, fakeTool()]);
     expect(getTitles()).not.toContain("Add seed containers and slots");
     expect(getTitles()).toContain("Add seed containers");
-  });
-
-  it("has correct content", () => {
-    mockDev = true;
-    testCase(".photos", "/app/designer/photos");
-    mockDev = false;
   });
 });

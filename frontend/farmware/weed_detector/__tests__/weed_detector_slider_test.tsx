@@ -1,34 +1,39 @@
 import * as React from "react";
-import { WeedDetectorSlider } from "../slider";
+import { WeedDetectorSlider, SliderProps } from "../slider";
 import { shallow } from "enzyme";
 
 jest.useFakeTimers();
-describe("Weed detector slider", () => {
-  it("sets props", () => {
-    const results = new WeedDetectorSlider({
-      onRelease: jest.fn(),
-      highest: 99,
-      lowest: 1,
-      lowValue: 3,
-      highValue: 5,
-    });
+describe("<WeedDetectorSlider />", () => {
+  const fakeProps = (): SliderProps => ({
+    onRelease: jest.fn(),
+    highest: 99,
+    lowest: 1,
+    lowValue: 3,
+    highValue: 5,
+  });
 
-    expect(results.props.highest).toEqual(99);
+  it("changes the slider", () => {
+    const wrapper = shallow<WeedDetectorSlider>(
+      <WeedDetectorSlider {...fakeProps()} />);
+    wrapper.simulate("change", [1, 100]);
+    expect(wrapper.state().lowValue).toEqual(1);
+    expect(wrapper.state().highValue).toEqual(100);
+  });
+
+  it("handles incorrect value type", () => {
+    const p = fakeProps();
+    p.lowValue = "nope" as unknown as number;
+    expect(() => shallow(<WeedDetectorSlider {...p} />))
+      .toThrowError("Something other than number");
   });
 
   it("releases the slider", () => {
-    const onRelease = jest.fn();
-    const el = shallow<WeedDetectorSlider>(<WeedDetectorSlider
-      onRelease={onRelease}
-      highest={99}
-      lowest={1}
-      lowValue={3}
-      highValue={5} />);
-    el.simulate("release", [5, 6]);
+    const p = fakeProps();
+    const wrapper = shallow<WeedDetectorSlider>(<WeedDetectorSlider {...p} />);
+    wrapper.simulate("release", [5, 6]);
     jest.runAllTimers();
-    expect(onRelease).toHaveBeenCalledWith([5, 6]);
-    const { highValue, lowValue } = el.instance().state;
-    expect(highValue).toBeUndefined();
-    expect(lowValue).toBeUndefined();
+    expect(p.onRelease).toHaveBeenCalledWith([5, 6]);
+    expect(wrapper.state().highValue).toBeUndefined();
+    expect(wrapper.state().lowValue).toBeUndefined();
   });
 });

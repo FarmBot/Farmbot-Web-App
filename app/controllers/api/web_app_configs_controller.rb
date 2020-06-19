@@ -1,7 +1,12 @@
 module Api
   # See docs for AbstractConfigController
   class WebAppConfigsController < AbstractConfigController
-    KLASS         = WebAppConfig
+    KLASS = WebAppConfig
     RELATION_NAME = "web_app_config"
+
+    # WebAppConfig is excluded from row locking
+    def resource
+      nil
+    end
   end
 end

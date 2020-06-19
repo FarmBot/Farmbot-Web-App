@@ -6,7 +6,7 @@ jest.mock("../../../api/crud", () => ({
 
 let mockPath = "/app/designer/tools/1";
 jest.mock("../../../history", () => ({
-  history: { push: jest.fn() },
+  push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
 }));
 
@@ -23,7 +23,7 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { SaveBtn } from "../../../ui";
-import { history } from "../../../history";
+import { push } from "../../../history";
 import { edit, destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 import { EditToolProps } from "../interfaces";
@@ -62,7 +62,16 @@ describe("<EditTool />", () => {
     const wrapper = mount<EditTool>(<EditTool {...p} />);
     expect(wrapper.instance().stringyID).toEqual("");
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith("/app/designer/tools");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const p = fakeProps();
+    p.findTool = jest.fn(() => undefined);
+    const wrapper = mount(<EditTool {...p} />);
+    expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("edits tool name", () => {
@@ -93,7 +102,7 @@ describe("<EditTool />", () => {
     const wrapper = shallow(<EditTool {...fakeProps()} />);
     wrapper.find(SaveBtn).simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "Foo" });
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith("/app/designer/tools");
   });
 
   it("removes tool", () => {

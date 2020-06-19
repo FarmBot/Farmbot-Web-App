@@ -1,9 +1,7 @@
 import * as React from "react";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
-import {
-  computeEditorUrlFromState, computeFarmwareUrlFromState,
-} from "./compute_editor_url_from_state";
+import { computeEditorUrlFromState } from "./compute_editor_url_from_state";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { betterCompact } from "../util";
@@ -37,11 +35,6 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  DevSettings.futureFeaturesEnabled() ? undefined :
-    {
-      name: "Farmware", icon: "crosshairs", slug: "farmware",
-      computeHref: computeFarmwareUrlFromState
-    },
   { name: "Messages", icon: "list", slug: "messages" },
 ]);
 

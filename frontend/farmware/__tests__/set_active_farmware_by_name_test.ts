@@ -6,12 +6,6 @@ jest.mock("../../util/urls", () => ({
 
 jest.mock("../../redux/store", () => ({ store: { dispatch: jest.fn() } }));
 
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => false,
-  }
-}));
-
 import { setActiveFarmwareByName } from "../set_active_farmware_by_name";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";

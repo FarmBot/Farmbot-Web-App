@@ -127,8 +127,7 @@ const NavTab = (props: NavTabProps) =>
 export function DesignerNavTabs(props: { hidden?: boolean }) {
   const tab = getCurrentTab();
   const hidden = props.hidden ? "hidden" : "";
-  return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${
-    DevSettings.futureFeaturesEnabled() ? "new" : ""} ${hidden}`}>
+  return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${hidden}`}>
     <div className="panel-tabs">
       <NavTab panel={Panel.Map}
         linkTo={"/app/designer"}
@@ -172,16 +171,14 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
           panel={Panel.Sensors}
           linkTo={"/app/designer/sensors"}
           title={t("Sensors")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Photos}
-          linkTo={"/app/designer/photos"}
-          title={t("Photos")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Farmware}
-          linkTo={"/app/designer/farmware"}
-          title={t("Farmware")} />}
+      <NavTab
+        panel={Panel.Photos}
+        linkTo={"/app/designer/photos"}
+        title={t("Photos")} />
+      <NavTab
+        panel={Panel.Farmware}
+        linkTo={"/app/designer/farmware"}
+        title={t("Farmware")} />
       <NavTab
         panel={Panel.Tools}
         linkTo={"/app/designer/tools"}
