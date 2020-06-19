@@ -31,7 +31,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEEDER,
                       x: 50,
                       y: 100,
-                      z: 200,
+                      z: -200,
                       tool: tools_seeder)
       end
 
