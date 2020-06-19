@@ -7,11 +7,12 @@ import { DesignerNavTabs, Panel } from "../panel_header";
 import { Everything } from "../../interfaces";
 import { Farmwares } from "../../farmware/interfaces";
 import { t } from "../../i18next_wrapper";
-import { farmwareListItem } from "../../farmware/farmware_list";
 import { SearchField } from "../../ui/search_field";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
-import { Content } from "../../constants";
+import { Content, Actions } from "../../constants";
 import { generateFarmwareDictionary } from "../../farmware/state_to_props";
+import { Link } from "../../link";
+import { farmwareUrlFriendly } from "../../farmware/set_active_farmware_by_name";
 
 export interface DesignerFarmwareListProps {
   dispatch: Function;
@@ -40,8 +41,6 @@ export class RawDesignerFarmwareList
   extends React.Component<DesignerFarmwareListProps, FarmwareListState> {
   state: FarmwareListState = { searchTerm: "" };
 
-  get current() { return this.props.currentFarmware; }
-
   render() {
     const farmwareNames = Object.values(this.props.farmwares)
       .map(fw => fw.name)
@@ -67,7 +66,11 @@ export class RawDesignerFarmwareList
           {farmwareNames
             .filter(f =>
               f.toLowerCase().includes(this.state.searchTerm.toLowerCase()))
-            .map(farmwareListItem(this.props.dispatch, this.current))}
+            .map(f =>
+              <FarmwareListItem
+                key={f}
+                dispatch={this.props.dispatch}
+                farmwareName={f} />)}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;
@@ -76,3 +79,25 @@ export class RawDesignerFarmwareList
 
 export const DesignerFarmwareList =
   connect(mapStateToProps)(RawDesignerFarmwareList);
+
+export interface FarmwareListItemProps {
+  dispatch: Function;
+  farmwareName: string;
+}
+
+/** Farmware list links: selected or unselected. */
+export const FarmwareListItem = (props: FarmwareListItemProps) => {
+  const { dispatch, farmwareName } = props;
+  const click = () => dispatch({
+    type: Actions.SELECT_FARMWARE,
+    payload: farmwareName
+  });
+  return <Link
+    to={`/app/designer/farmware/${farmwareUrlFriendly(farmwareName)}`}
+    key={farmwareName}
+    onClick={click}>
+    <div className={"farmware-list-items"}>
+      <p>{farmwareName}</p>
+    </div>
+  </Link>;
+};

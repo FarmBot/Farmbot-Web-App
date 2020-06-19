@@ -1,8 +1,3 @@
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { TileTakePhoto } from "../tile_take_photo";
 import { mount } from "enzyme";
@@ -34,7 +29,7 @@ describe("<TileTakePhoto/>", () => {
   it("renders step", () => {
     const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
     expect(wrapper.text().toLowerCase())
-      .toEqual("photos are viewable from the farmware page.");
+      .toEqual("photos are viewable from the photos panel.");
   });
 
   it("renders inputs", () => {
@@ -42,15 +37,8 @@ describe("<TileTakePhoto/>", () => {
     const inputs = wrapper.find("input");
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Take a Photo");
-    expect(wrapper.html()).toContain("/app/farmware");
-    expect(wrapper.text()).toContain("farmware page");
-  });
-
-  it("renders correct link", () => {
-    mockDev = true;
-    const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
-    expect(wrapper.html()).toContain("/app/designer/farmware");
-    mockDev = false;
+    expect(wrapper.html()).toContain("/app/designer/photos");
+    expect(wrapper.text()).toContain("photos panel");
   });
 
   it("displays warning when camera is disabled", () => {

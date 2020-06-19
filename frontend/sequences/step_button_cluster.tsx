@@ -159,10 +159,19 @@ export function StepButtonCluster(props: StepButtonProps) {
     <StepButton {...commonStepProps}
       step={{
         kind: "execute_script",
-        args: { label: "plant-detection" }
+        args: { label: "" }
       }}
       color="pink">
       {t("Run Farmware")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{
+        kind: "execute_script",
+        args: { label: "plant-detection" },
+        comment: t("DETECT WEEDS")
+      }}
+      color="pink">
+      {t("Detect Weeds")}
     </StepButton>,
     <StepButton
       {...commonStepProps}

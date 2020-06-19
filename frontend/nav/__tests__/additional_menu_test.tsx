@@ -1,8 +1,3 @@
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { AdditionalMenu } from "../additional_menu";
@@ -37,7 +32,6 @@ describe("AdditionalMenu", () => {
   });
 
   it("navigates to help page", () => {
-    mockDev = true;
     const wrapper = shallow(<AdditionalMenu
       logout={jest.fn()}
       close={jest.fn()} />);

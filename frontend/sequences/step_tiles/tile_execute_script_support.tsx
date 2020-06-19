@@ -115,14 +115,10 @@ const farmwareInputs =
 export const farmwareList =
   (farmwareData: FarmwareData | undefined): DropDownItem[] => {
     if (farmwareData) {
-      const {
-        farmwareNames, showFirstPartyFarmware, firstPartyFarmwareNames
-      } = farmwareData;
+      const { farmwareNames, firstPartyFarmwareNames } = farmwareData;
       return farmwareNames
-        .filter(x => (firstPartyFarmwareNames && !showFirstPartyFarmware)
-          ? !firstPartyFarmwareNames.includes(x) : x)
-        .map(farmwareName => ({ value: farmwareName, label: farmwareName }))
-        .concat({ label: t("Weed Detector"), value: "plant-detection" });
+        .filter(x => !firstPartyFarmwareNames.includes(x))
+        .map(farmwareName => ({ value: farmwareName, label: farmwareName }));
     }
     return [];
   };
