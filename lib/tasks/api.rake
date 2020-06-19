@@ -158,7 +158,7 @@ namespace :api do
   # step (and subsequent changes to FBOS data handler code).
   # This method repairs corrupt data as it is found.
   # This code should be removed as soon as it is safe to do so.
-  def temporarily_hotfix!
+  def temp_hotfix!
     HOTFIXES.each do |(k, v)|
       problems = FbosConfig.where(firmware_hardware: k, firmware_path: nil)
       problems.map do |fbc| fbc.update!(firmware_path: v) end
@@ -167,7 +167,7 @@ namespace :api do
 
   desc "Deprecate old FBOS version, delete inactive accounts, etc.."
   task tidy: :environment do
-    temporarily_hotfix!
+    temp_hotfix!
     deprecate!
     InactiveAccountJob.perform_later
   end
