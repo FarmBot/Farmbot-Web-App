@@ -6,7 +6,7 @@ import { FarmBotLayerProps } from "../../interfaces";
 export function FarmBotLayer(props: FarmBotLayerProps) {
   const {
     visible, stopAtHome, botSize, plantAreaOffset, mapTransformProps,
-    peripherals, eStopStatus, botLocationData, getConfigValue, mountedToolName,
+    peripherals, eStopStatus, botLocationData, getConfigValue,
   } = props;
   return visible ? <g id="farmbot-layer" style={{ pointerEvents: "none" }}>
     <VirtualFarmBot
@@ -15,7 +15,7 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
       plantAreaOffset={plantAreaOffset}
       peripherals={peripherals}
       eStopStatus={eStopStatus}
-      mountedToolName={mountedToolName}
+      mountedToolInfo={props.mountedToolInfo}
       getConfigValue={getConfigValue} />
     <BotExtents
       mapTransformProps={mapTransformProps}

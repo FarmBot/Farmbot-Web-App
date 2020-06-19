@@ -1,53 +1,88 @@
 import { vectorGrid, initPlantGrid } from "../generate_grid";
-export const testGrid = { // Prime numbers yeah
+import { PlantGridData, PlantGridKey } from "../interfaces";
+
+export const testGridInputs = (): PlantGridData => ({ // primes...
   startX: 11,
   startY: 31,
   spacingH: 5,
   spacingV: 7,
   numPlantsH: 2,
   numPlantsV: 3
-};
+});
 
-const expectedResultsOfTestGrid = [
+const gridCol1 = [
   [11, 31],
   [11, 38],
   [11, 45],
+];
+
+const rectGridCol2 = [
   [16, 31],
   [16, 38],
   [16, 45],
 ];
 
+const offsetGridCol2 = [
+  [16, 34.5],
+  [16, 41.5],
+  [16, 48.5],
+];
+
+const offsetGridCol3 = [
+  [21, 31],
+  [21, 38],
+  [21, 45],
+];
+
+const expectedGrid = gridCol1.concat(rectGridCol2);
+const expectedOffsetGrid = gridCol1.concat(offsetGridCol2);
+const expectedLargerOffsetGrid =
+  gridCol1
+    .concat(offsetGridCol3)
+    .concat(offsetGridCol2);
+
 describe("initPlantGrid", () => {
   it("saves the grid", () => {
     const result = initPlantGrid({
-      grid: testGrid,
+      grid: testGridInputs(),
       openfarm_slug: "slug",
       cropName: "beets",
-      gridId: "123"
+      gridId: "123",
+      offsetPacking: false,
     });
-    expect(result.length).toEqual(expectedResultsOfTestGrid.length);
+    expect(result.length).toEqual(expectedGrid.length);
     const vectors = result.map(x => [x.x, x.y]);
-    expect(vectors).toEqual(expectedResultsOfTestGrid);
+    expect(vectors).toEqual(expectedGrid);
   });
 });
 
 describe("vectorGrid", () => {
   it("handles zeros (edge case)", () => {
-    const results = vectorGrid({
-      startX: 0,
-      startY: 0,
-      spacingH: 0,
-      spacingV: 0,
-      numPlantsH: 0,
-      numPlantsV: 0,
-    });
+    const gridInputs = testGridInputs();
+    Object.keys(gridInputs).map((input: PlantGridKey) => gridInputs[input] = 0);
+    const results = vectorGrid(gridInputs, false);
     expect(results).toEqual([]);
   });
 
   it("generates a grid", () => {
-    const results = vectorGrid(testGrid);
-    expect(results.length).toEqual(testGrid.numPlantsH * testGrid.numPlantsV);
-    const expected = JSON.stringify(expectedResultsOfTestGrid);
-    expect(JSON.stringify(results)).toEqual(expected);
+    const gridInputs = testGridInputs();
+    const results = vectorGrid(gridInputs, false);
+    expect(results.length).toEqual(gridInputs.numPlantsH * gridInputs.numPlantsV);
+    expect(results).toEqual(expectedGrid);
+  });
+
+  it("generates a packed grid", () => {
+    const gridInputs = testGridInputs();
+    const results = vectorGrid(gridInputs, true);
+    expect(results.length).toEqual(gridInputs.numPlantsH * gridInputs.numPlantsV);
+    expect(results).toEqual(expectedOffsetGrid);
+  });
+
+  it("generates a larger packed grid", () => {
+    const gridInputs = testGridInputs();
+    gridInputs.numPlantsH = 3;
+    const results = vectorGrid(gridInputs, true);
+    expect(results.length).toEqual(gridInputs.numPlantsH * gridInputs.numPlantsV);
+    expect(results).toEqual(expectedLargerOffsetGrid);
   });
 });

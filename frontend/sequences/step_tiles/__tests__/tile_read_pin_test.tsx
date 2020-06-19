@@ -1,14 +1,10 @@
-jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
-
 import * as React from "react";
-import { TileReadPin, PinMode } from "../tile_read_pin";
-import { mount, shallow } from "enzyme";
+import { TileReadPin } from "../tile_read_pin";
+import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ReadPin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
-import { FBSelect } from "../../../ui";
 import { StepParams } from "../../interfaces";
-import { editStep } from "../../../api/crud";
 
 describe("<TileReadPin/>", () => {
   const fakeProps = (): StepParams => {
@@ -44,14 +40,5 @@ describe("<TileReadPin/>", () => {
     expect(labels.at(2).text()).toEqual("Data Label");
     expect(inputs.at(1).props().value).toEqual("pinlabel");
     expect(buttons.at(0).text()).toEqual("Pin 3");
-  });
-
-  describe("<PinMode />", () => {
-    it("sets pin mode", () => {
-      const p = fakeProps();
-      const wrapper = shallow(<PinMode {...p} />);
-      wrapper.find(FBSelect).simulate("change", { label: "", value: 0 });
-      expect(editStep).toHaveBeenCalled();
-    });
   });
 });

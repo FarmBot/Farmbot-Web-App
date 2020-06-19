@@ -46,7 +46,8 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       <div className={"active-weeds-header"}>
         <label>{t("Active")}</label>
       </div>
-      {active.length == 0 && <p>{t("No active weeds.")}</p>}
+      {active.length == 0 &&
+        <p className={"no-weeds"}>{t("No active weeds.")}</p>}
       {active.map(p => <WeedInventoryItem
         key={p.uuid}
         tpp={p}
@@ -61,7 +62,8 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       <div className={"removed-weeds-header"}>
         <label>{t("Removed")}</label>
       </div>
-      {removed.length == 0 && <p>{t("No removed weeds.")}</p>}
+      {removed.length == 0 &&
+        <p className={"no-weeds"}>{t("No removed weeds.")}</p>}
       {removed.map(p => <WeedInventoryItem
         key={p.uuid}
         tpp={p}

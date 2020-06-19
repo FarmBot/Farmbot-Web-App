@@ -42,8 +42,8 @@ class LogService < AbstractServiceRunner
     dev.maybe_unthrottle
     Log.deliver(Logs::Create.run!(log, device: dev).id)
     print LOG_TPL % [data.device_id,
-      dev.fbos_version || "?",
-      data.payload["message"] || "??"]
+                     dev.fbos_version || "?",
+                     data.payload["message"] || "??"]
   rescue => x
     Rollbar.error(x)
   end

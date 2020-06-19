@@ -8,13 +8,17 @@ import { UUID } from "../../../../resources/interfaces";
 import { TaggedToolSlotPointer } from "farmbot";
 import { reduceToolName } from "./tool_slot_point";
 import { noop } from "lodash";
+import { ToolTransformProps } from "../../../tools/interfaces";
+import { isToolFlipped } from "../../../tools/tool_slot_edit_components";
 
 export interface ToolGraphicProps {
   x: number;
   y: number;
   hovered: boolean;
   dispatch: Function;
-  xySwap: boolean;
+  pulloutDirection: ToolPulloutDirection;
+  flipped: boolean;
+  toolTransformProps: ToolTransformProps;
   uuid: UUID | undefined;
 }
 
@@ -76,7 +80,7 @@ export const ToolbaySlot = (props: ToolSlotGraphicProps) => {
   const { id, x, y, pulloutDirection, quadrant, xySwap } = props;
   const angle = toolbaySlotAngle(pulloutDirection, quadrant, xySwap);
   return <g id={"toolbay-slot"}>
-    <defs>
+    <defs id="unrotated-tool-slot-source">
       <g id={"toolbay-slot-" + id}
         fillOpacity={0.25}
         fill={Color.mediumGray}>
@@ -98,7 +102,28 @@ export const ToolbaySlot = (props: ToolSlotGraphicProps) => {
   </g>;
 };
 
-export const Tool = (props: ToolProps) => {
+export const RotatedTool = (props: ToolProps) => {
+  const { uuid, x, y, pulloutDirection, dispatch, flipped } = props.toolProps;
+  const { quadrant, xySwap } = props.toolProps.toolTransformProps;
+  const pullDirection = pulloutDirection || ToolPulloutDirection.POSITIVE_X;
+  const angle = toolbaySlotAngle(pullDirection, quadrant, xySwap)
+    + (flipped ? 180 : 0);
+  return <g id={`rotated-tool-${uuid}`}>
+    <defs id="unrotated-tool-source">
+      <g id={`unrotated-tool-${uuid}`}>
+        <Tool tool={props.tool}
+          toolProps={props.toolProps} />
+      </g>
+    </defs>
+
+    <use xlinkHref={`#unrotated-tool-${uuid}`}
+      onMouseOver={() => dispatch(setToolHover(uuid))}
+      onMouseLeave={() => dispatch(setToolHover(undefined))}
+      transform={`rotate(${angle - 90}, ${x}, ${y})`} />
+  </g>;
+};
+
+const Tool = (props: ToolProps) => {
   switch (props.tool) {
     case ToolNames.weeder: return <Weeder {...props.toolProps} />;
     case ToolNames.wateringNozzle: return <WateringNozzle {...props.toolProps} />;
@@ -116,10 +141,8 @@ export const setToolHover = (payload: string | undefined) =>
   ({ type: Actions.HOVER_TOOL_SLOT, payload });
 
 const StandardTool = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  return <g id={"tool"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered } = props;
+  return <g id={"tool"}>
     <circle
       cx={x}
       cy={y}
@@ -130,10 +153,8 @@ const StandardTool = (props: ToolGraphicProps) => {
 };
 
 const EmptySlot = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  return <g id={"empty-tool-slot"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered } = props;
+  return <g id={"empty-tool-slot"}>
     <circle
       cx={x}
       cy={y}
@@ -152,129 +173,198 @@ const EmptySlot = (props: ToolGraphicProps) => {
   </g>;
 };
 
+enum ToolColor {
+  weeder = "rgba(238, 102, 102)",
+  wateringNozzle = "rgba(40, 120, 220)",
+  seeder = "rgba(240, 200, 0)",
+  soilSensor = "rgba(128, 128, 128)",
+  soilSensorPCB = "rgba(255, 215, 0)",
+  seedBin = "rgba(128, 128, 128)",
+  seedTray = "rgba(128, 128, 128)",
+}
+
 const Weeder = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  const size = 10;
-  return <g id={"weeder"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
-    <circle
-      cx={x}
-      cy={y}
-      r={35}
-      fillOpacity={0.5}
-      fill={hovered ? Color.darkGray : Color.mediumGray} />
-    <line
-      x1={x - size} y1={y - size} x2={x + size} y2={y + size}
-      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
-    <line
-      x1={x - size} y1={y + size} x2={x + size} y2={y - size}
-      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
+  const { x, y, hovered } = props;
+  const width = 16;
+  const height = 8;
+  return <g id={"weeder"}>
+    <defs id="weeder-gradients">
+      <radialGradient id="WeederGradient">
+        <stop offset="5%" stopColor={Color.black} stopOpacity={0.4} />
+        <stop offset="95%" stopColor={Color.black} stopOpacity={0.2} />
+      </radialGradient>
+      <linearGradient id="WeederImplementGradient"
+        x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={Color.black} stopOpacity={0.5} />
+        <stop offset="50%" stopColor={Color.black} stopOpacity={0.1} />
+        <stop offset="100%" stopColor={Color.black} stopOpacity={0.5} />
+      </linearGradient>
+    </defs>
+
+    <circle cx={x} cy={y} r={35}
+      fill={ToolColor.weeder} fillOpacity={0.8} />
+    <circle cx={x} cy={y} r={30}
+      fill="url(#WeederGradient)" />
+
+    <rect x={x - width / 2} y={y - height / 2} width={width} height={height}
+      fill="url(#WeederImplementGradient)" />
+
+    {hovered &&
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
   </g>;
 };
 
 const WateringNozzle = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  return <g id={"watering-nozzle"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered, uuid } = props;
+  const r = 2;
+  const ySpacing = 10;
+  const xSpacing = 14;
+  return <g id={"watering-nozzle"}>
 
-    <defs>
-      <pattern id="WateringNozzlePattern"
-        x={0} y={0} width={0.2} height={0.2}>
-        <circle cx={5} cy={5} r={2} fill={Color.darkGray} fillOpacity={0.8} />
+    <defs id="watering-nozzle-patterns">
+      <pattern id={`WateringNozzlePattern1-${uuid}`} patternUnits="userSpaceOnUse"
+        x={x - r} y={y - r} width={xSpacing} height={ySpacing}>
+        <circle cx={r} cy={r} r={r} fill={Color.black} fillOpacity={0.4} />
+      </pattern>
+      <pattern id={`WateringNozzlePattern2-${uuid}`} patternUnits="userSpaceOnUse"
+        x={x - (xSpacing / 2 + r)} y={y - (ySpacing / 2 + r)}
+        width={xSpacing} height={ySpacing}>
+        <circle cx={r} cy={r} r={r} fill={Color.black} fillOpacity={0.4} />
+      </pattern>
+      <pattern id={`WateringNozzlePattern3-${uuid}`} patternUnits="userSpaceOnUse"
+        x={x} y={y} width={3 * xSpacing} height={ySpacing}>
+        <circle cx={1.5 * xSpacing} cy={ySpacing / 2} r={r}
+          fill={Color.black} fillOpacity={0.4} />
       </pattern>
     </defs>
 
-    <circle
-      cx={x}
-      cy={y}
-      r={35}
-      fillOpacity={0.5}
-      fill={hovered ? Color.darkGray : Color.mediumGray} />
-    <circle
-      cx={x} cy={y} r={25}
-      fill="url(#WateringNozzlePattern)" />
+    <circle cx={x} cy={y} r={35} fill={ToolColor.wateringNozzle}
+      fillOpacity={0.8} />
+    <circle cx={x} cy={y} r={30} fill={Color.black}
+      fillOpacity={0.2} />
+
+    <rect
+      x={x - (xSpacing + r)} y={y - (2 * ySpacing + r)}
+      width={2 * (xSpacing + r)} height={2 * (2 * ySpacing + r)}
+      fill={`url(#WateringNozzlePattern1-${uuid})`} />
+    <rect
+      x={x - (xSpacing / 2 + r)} y={y - (1.5 * ySpacing + r)}
+      width={2 * (xSpacing / 2 + r)} height={2 * (1.5 * ySpacing + r)}
+      fill={`url(#WateringNozzlePattern2-${uuid})`} />
+    <rect
+      x={x - (1.5 * xSpacing + r)} y={y - (ySpacing / 2 + r)}
+      width={2 * (1.5 * xSpacing + r)} height={2 * (ySpacing / 2 + r)}
+      fill={`url(#WateringNozzlePattern3-${uuid})`} />
+
+    {hovered &&
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
+
   </g>;
 };
 
 const Seeder = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  const size = 10;
-  return <g id={"seeder"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
-    <circle
-      cx={x}
-      cy={y}
-      r={35}
-      fillOpacity={0.5}
-      fill={hovered ? Color.darkGray : Color.mediumGray} />
-    <circle
-      cx={x} cy={y} r={size}
-      fillOpacity={0.8}
-      fill={Color.darkGray} />
+  const { x, y, hovered } = props;
+  const offset = 12.5;
+  return <g id={"seeder"}>
+    <defs id="seeder-gradient">
+      <radialGradient id="SeederGradient">
+        <stop offset="5%" stopColor={Color.black} stopOpacity={0.25} />
+        <stop offset="95%" stopColor={Color.black} stopOpacity={0.15} />
+      </radialGradient>
+    </defs>
+
+    <circle cx={x} cy={y} r={35} fill={ToolColor.seeder}
+      fillOpacity={0.7} />
+    <circle cx={x} cy={y} r={30} fill="url(#SeederGradient)" />
+    <circle cx={x} cy={y + offset} r={7} fill={Color.black} fillOpacity={0.25} />
+    <circle cx={x} cy={y + offset} r={2} fill={Color.black} fillOpacity={0.3} />
+
+    {hovered &&
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
   </g>;
 };
 
 const SoilSensor = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  const size = 20;
-  return <g id={"soil-sensor"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
-    <circle
-      cx={x}
-      cy={y}
-      r={35}
-      fillOpacity={0.5}
-      fill={hovered ? Color.darkGray : Color.mediumGray} />
-    <line
-      x1={x - size} y1={y} x2={x - size / 2} y2={y}
-      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
-    <line
-      x1={x + size} y1={y} x2={x + size / 2} y2={y}
-      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
+  const { x, y, hovered } = props;
+  const width = 24;
+  const pcbWidth = width / 3;
+  const height = 4;
+  const pcbHeight = height / 4;
+  const offset = 2;
+  return <g id={"soil-sensor"}>
+    <defs id="soil-sensor-gradient-and-pattern">
+      <radialGradient id="SoilSensorGradient">
+        <stop offset="5%" stopColor={Color.black} stopOpacity={0.4} />
+        <stop offset="95%" stopColor={Color.black} stopOpacity={0.2} />
+      </radialGradient>
+      <pattern id="SoilSensorPattern"
+        x={0} y={offset} width={1 / 1.5} height={1}>
+        <rect x={0} y={0}
+          width={pcbWidth} height={pcbHeight}
+          fill={ToolColor.soilSensorPCB} fillOpacity={0.9} />
+        <rect x={0} y={pcbHeight}
+          width={pcbWidth} height={2 * pcbHeight}
+          fill={Color.black} fillOpacity={0.8} />
+        <rect x={0} y={3 * pcbHeight}
+          width={pcbWidth} height={pcbHeight}
+          fill={ToolColor.soilSensorPCB} fillOpacity={0.9} />
+      </pattern>
+    </defs>
+
+    <circle cx={x} cy={y} r={35}
+      fill={ToolColor.soilSensor} fillOpacity={0.8} />
+    <circle cx={x} cy={y} r={30}
+      fill={"url(#SoilSensorGradient)"} />
+
+    <rect x={x - width / 2} y={y - height / 2 + offset}
+      width={width} height={height}
+      fill={Color.black} fillOpacity={0.4} />
+
+    <rect x={x - width / 2} y={y - height / 2 + offset}
+      width={width} height={height}
+      fill="url(#SoilSensorPattern)" />
+
+    {hovered &&
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
   </g>;
 };
 
 const seedBinGradient =
   <radialGradient id="SeedBinGradient">
-    <stop offset="5%" stopColor="rgb(0, 0, 0)" stopOpacity={0.3} />
-    <stop offset="95%" stopColor="rgb(0, 0, 0)" stopOpacity={0.1} />
+    <stop offset="5%" stopColor={Color.black} stopOpacity={0.3} />
+    <stop offset="95%" stopColor={Color.black} stopOpacity={0.1} />
   </radialGradient>;
 
 const SeedBin = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  return <g id={"seed-bin"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered } = props;
+  return <g id={"seed-bin"}>
 
-    <defs>
+    <defs id="seed-bin-gradient">
       {seedBinGradient}
     </defs>
 
     <circle
       cx={x} cy={y} r={35}
-      fill="rgba(128, 128, 128, 0.8)" />
+      fill={ToolColor.seedBin} fillOpacity={0.8} />
     <circle
       cx={x} cy={y} r={30}
       fill="url(#SeedBinGradient)" />
     {hovered &&
-      <circle
-        cx={x} cy={y} r={35}
-        fill="rgba(0, 0, 0, 0.1)" />}
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
 
   </g>;
 };
 
 const SeedTray = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid } = props;
-  return <g id={"seed-tray"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered } = props;
+  return <g id={"seed-tray"}>
 
-    <defs>
+    <defs id="seed-tray-gradient-and-pattern">
       {seedBinGradient}
       <pattern id="SeedTrayPattern"
         x={0} y={0} width={0.25} height={0.25}>
@@ -284,15 +374,14 @@ const SeedTray = (props: ToolGraphicProps) => {
 
     <circle
       cx={x} cy={y} r={35}
-      fill="rgba(128, 128, 128, 0.8)" />
+      fill={ToolColor.seedTray} fillOpacity={0.8} />
     <rect
       x={x - 25} y={y - 25}
       width={50} height={50}
       fill="url(#SeedTrayPattern)" />
     {hovered &&
-      <circle
-        cx={x} cy={y} r={35}
-        fill="rgba(0, 0, 0, 0.1)" />}
+      <circle cx={x} cy={y} r={35}
+        fill={Color.black} fillOpacity={0.1} />}
 
   </g>;
 };
@@ -324,12 +413,10 @@ export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
 };
 
 const SeedTrough = (props: ToolGraphicProps) => {
-  const { x, y, hovered, dispatch, uuid, xySwap } = props;
-  const slotLengthX = xySwap ? Trough.width : Trough.length;
-  const slotLengthY = xySwap ? Trough.length : Trough.width;
-  return <g id={"seed-trough"}
-    onMouseOver={() => dispatch(setToolHover(uuid))}
-    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+  const { x, y, hovered, toolTransformProps } = props;
+  const slotLengthX = toolTransformProps.xySwap ? Trough.length : Trough.width;
+  const slotLengthY = toolTransformProps.xySwap ? Trough.width : Trough.length;
+  return <g id={"seed-trough"}>
     <rect
       x={x - slotLengthX / 2} y={y - slotLengthY / 2}
       width={slotLengthX} height={slotLengthY}
@@ -338,44 +425,91 @@ const SeedTrough = (props: ToolGraphicProps) => {
   </g>;
 };
 
+export interface ThreeInOneToolHeadProps {
+  x: number;
+  y: number;
+  color: string;
+  toolTransformProps: ToolTransformProps;
+  pulloutDirection: ToolPulloutDirection;
+}
+
+export const ThreeInOneToolHead = (props: ThreeInOneToolHeadProps) => {
+  const { pulloutDirection } = props;
+  const { quadrant, xySwap } = props.toolTransformProps;
+  const angle = toolbaySlotAngle(pulloutDirection, quadrant, xySwap);
+  return <g id="three-in-one-tool-head">
+    <defs id="tool-head-defs">
+      <g id="unrotated-tool-head">
+        <circle
+          cx={props.x}
+          cy={props.y}
+          r={25}
+          fillOpacity={0.5}
+          fill={props.color} />
+        <circle
+          cx={props.x}
+          cy={props.y + 10}
+          r={8}
+          fill={props.color}
+          fillOpacity={0.25} />
+        <circle
+          cx={props.x}
+          cy={props.y - 10}
+          r={5}
+          fill={props.color}
+          fillOpacity={0.25} />
+        <circle
+          cx={props.x}
+          cy={props.y - 10}
+          r={2}
+          fill={props.color}
+          fillOpacity={0.3} />
+      </g>
+    </defs>
+
+    <use xlinkHref={"#unrotated-tool-head"}
+      transform={`rotate(${angle - 90}, ${props.x}, ${props.y})`} />
+  </g>;
+};
+
 export interface ToolSlotSVGProps {
   toolSlot: TaggedToolSlotPointer;
   toolName: string | undefined;
-  xySwap?: boolean;
-  quadrant?: BotOriginQuadrant;
+  toolTransformProps: ToolTransformProps;
 }
 
 export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
-  const xySwap = !!props.xySwap;
-  const toolProps = {
+  const toolProps: ToolGraphicProps = {
     x: 0, y: 0,
     hovered: false,
     dispatch: noop,
-    uuid: props.toolSlot.uuid,
-    xySwap,
+    uuid: "panel-" + props.toolSlot.uuid,
+    pulloutDirection: props.toolSlot.body.pullout_direction,
+    flipped: isToolFlipped(props.toolSlot.body.meta),
+    toolTransformProps: {
+      quadrant: props.toolTransformProps.quadrant,
+      xySwap: props.toolTransformProps.xySwap,
+    },
   };
-  const pulloutDirection = props.toolSlot.body.pullout_direction
-    || ToolPulloutDirection.POSITIVE_X;
-  const quadrant = props.quadrant || 2;
+  const pulloutDirection = props.toolSlot.body.pullout_direction;
   return props.toolSlot.body.gantry_mounted
     ? <svg width="3rem" height="3rem" viewBox={"-25 0 50 1"}>
-      <GantryToolSlot x={0} y={0} xySwap={xySwap} />
+      <GantryToolSlot x={0} y={0} xySwap={props.toolTransformProps.xySwap} />
       {props.toolSlot.body.tool_id &&
-        <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
+        <RotatedTool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
     </svg>
     : <svg width="3rem" height="3rem" viewBox={`-50 0 100 1`}>
-      {props.toolSlot.body.pullout_direction &&
+      {pulloutDirection &&
         <ToolbaySlot
           id={-(props.toolSlot.body.id || 1)}
           x={0}
           y={0}
           pulloutDirection={pulloutDirection}
-          quadrant={quadrant}
+          quadrant={props.toolTransformProps.quadrant}
           occupied={false}
-          xySwap={xySwap} />}
-      {(props.toolSlot.body.tool_id ||
-        !props.toolSlot.body.pullout_direction) &&
-        <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
+          xySwap={props.toolTransformProps.xySwap} />}
+      {(props.toolSlot.body.tool_id || !pulloutDirection) &&
+        <RotatedTool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
     </svg>;
 };
 
@@ -385,7 +519,8 @@ export interface ToolSVGProps {
 
 export const ToolSVG = (props: ToolSVGProps) => {
   const toolProps = {
-    x: 0, y: 0, hovered: false, dispatch: noop, uuid: "", xySwap: false,
+    x: 0, y: 0, hovered: false, dispatch: noop, uuid: "", flipped: false,
+    pulloutDirection: 0, toolTransformProps: { xySwap: false, quadrant: 2 },
   };
   const viewBox = reduceToolName(props.toolName) === ToolNames.seedTrough
     ? "-25 0 50 1" : "-40 0 80 1";

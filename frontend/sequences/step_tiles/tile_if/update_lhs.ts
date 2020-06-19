@@ -4,7 +4,7 @@ import { defensiveClone, bail } from "../../../util";
 import { DropDownItem } from "../../../ui";
 import { overwrite } from "../../../api/crud";
 import { isString } from "lodash";
-import { PinGroupName } from "../pin_and_peripheral_support";
+import { PinGroupName } from "../pin_support";
 
 interface LhsUpdateProps {
   currentSequence: TaggedSequence;

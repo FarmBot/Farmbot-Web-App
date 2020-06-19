@@ -1,10 +1,7 @@
 import * as React from "react";
 import { edit } from "../api/crud";
 import { FBSelect } from "../ui";
-import {
-  pinDropdowns,
-} from "../sequences/step_tiles/pin_and_peripheral_support";
-import { PIN_MODES } from "../sequences/step_tiles/tile_pin_support";
+import { pinDropdowns, getPinModes } from "../sequences/step_tiles/pin_support";
 import { t } from "../i18next_wrapper";
 import { TaggedPeripheral, TaggedSensor } from "farmbot";
 import { isNumber } from "lodash";
@@ -57,4 +54,4 @@ export const ModeDropdown = (props: ModeDropdownProps) =>
       mode: parseInt(d.value.toString(), 10)
     }))}
     selectedItem={{ label: MODES()[props.value], value: props.value }}
-    list={PIN_MODES()} />;
+    list={getPinModes()} />;

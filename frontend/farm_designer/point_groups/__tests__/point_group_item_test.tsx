@@ -8,12 +8,12 @@ jest.mock("../actions", () => ({ overwriteGroup: jest.fn() }));
 
 import React from "react";
 import {
-  PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON,
+  PointGroupItem, PointGroupItemProps, genericPointIcon,
   genericWeedIcon,
 } from "../point_group_item";
 import { shallow, mount } from "enzyme";
 import {
-  fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed,
+  fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed, fakeTool,
 } from "../../../__test_support__/fake_state/resources";
 import {
   maybeGetCachedPlantIcon, setImgSrc,
@@ -26,13 +26,16 @@ import { svgToUrl, DEFAULT_ICON } from "../../../open_farm/icons";
 import { DEFAULT_WEED_ICON } from "../../map/layers/weeds/garden_weed";
 import { overwriteGroup } from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
 
 describe("<PointGroupItem/>", () => {
   const fakeProps = (): PointGroupItemProps => ({
     dispatch: mockDispatch(),
     point: fakePlant(),
     group: fakePointGroup(),
-    hovered: true
+    hovered: true,
+    tools: [],
+    toolTransformProps: fakeToolTransformProps(),
   });
 
   it("renders", () => {
@@ -97,14 +100,31 @@ describe("<PointGroupItem/>", () => {
     expect(wrapper.find("img").first().props().src).toEqual(DEFAULT_WEED_ICON);
     expect(wrapper.find("img").last().props().src).toEqual(
       svgToUrl(genericWeedIcon(undefined)));
+    expect(wrapper.find(".slot-icon").length).toEqual(0);
   });
 
-  it("displays other icon", () => {
+  it("displays tool slot icon", () => {
     const p = fakeProps();
     p.point = fakeToolSlot();
     const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
     expect(wrapper.find("img").props().src).toEqual(
-      svgToUrl(OTHER_POINT_ICON));
+      svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>"));
+    expect(wrapper.find(".slot-icon").length).toEqual(1);
+  });
+
+  it("displays named tool slot icon", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    tool.body.name = "fake tool";
+    p.tools = [tool];
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = 1;
+    p.point = toolSlot;
+    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
+    expect(wrapper.find("img").props().src).toEqual(
+      svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>"));
+    expect(wrapper.find(".slot-icon").length).toEqual(1);
   });
 
   it("handles mouse enter", () => {

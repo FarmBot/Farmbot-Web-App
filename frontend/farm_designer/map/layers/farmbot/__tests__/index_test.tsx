@@ -6,6 +6,9 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { BotFigure } from "../bot_figure";
+import {
+  fakeMountedToolInfo,
+} from "../../../../../__test_support__/fake_tool_info";
 
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
@@ -20,7 +23,7 @@ describe("<VirtualFarmBot/>", () => {
       peripherals: [],
       eStopStatus: false,
       getConfigValue: () => true,
-      mountedToolName: undefined,
+      mountedToolInfo: fakeMountedToolInfo(),
     };
   }
 

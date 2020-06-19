@@ -15,6 +15,7 @@ import {
   getDeviceAccountSettings,
   maybeFindToolById,
   selectAllWeedPointers,
+  selectAllToolSlotPointers,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -24,10 +25,14 @@ import { RestResources } from "../resources/interfaces";
 import { isString, uniq, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
-import { getFirmwareConfig } from "../resources/getters";
+import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { calcMicrostepsPerMm } from "../controls/move/direction_axes_props";
 import { getBotSize } from "./map/util";
 import { getDefaultAxisLength } from ".";
+import {
+  getFwHardwareValue, hasUTM,
+} from "../devices/components/firmware_hardware_support";
+import { isToolFlipped } from "./tools/tool_slot_edit_components";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -69,6 +74,17 @@ export function mapStateToProps(props: Everything): Props {
     getDeviceAccountSettings(props.resources.index).body.mounted_tool_id;
   const mountedToolName =
     maybeFindToolById(props.resources.index, mountedToolId)?.body.name;
+  const mountedToolSlotInfo =
+    selectAllToolSlotPointers(props.resources.index).filter(slot =>
+      slot.body.tool_id == mountedToolId)[0]?.body;
+  const firmwareHardware =
+    getFwHardwareValue(getFbosConfig(props.resources.index));
+  const mountedToolInfo = {
+    name: mountedToolName,
+    pulloutDirection: mountedToolSlotInfo?.pullout_direction,
+    noUTM: !hasUTM(firmwareHardware),
+    flipped: isToolFlipped(mountedToolSlotInfo?.meta),
+  };
 
   const peripherals = uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
@@ -130,7 +146,7 @@ export function mapStateToProps(props: Everything): Props {
     sensors: selectAllSensors(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
     shouldDisplay,
-    mountedToolName,
+    mountedToolInfo,
   };
 }
 

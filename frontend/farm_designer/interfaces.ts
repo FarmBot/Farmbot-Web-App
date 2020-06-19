@@ -24,7 +24,7 @@ import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
-  ExecutableType, PlantPointer, PointGroupSortType,
+  ExecutableType, PlantPointer, PointGroupSortType, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { TimeSettings } from "../interfaces";
@@ -60,6 +60,13 @@ export interface State extends TypeCheckerHint {
   zoom_level: number;
 }
 
+export interface MountedToolInfo {
+  name: string | undefined;
+  pulloutDirection: ToolPulloutDirection | undefined;
+  noUTM: boolean;
+  flipped: boolean;
+}
+
 export interface Props {
   dispatch: Function;
   selectedPlant: TaggedPlant | undefined;
@@ -84,7 +91,7 @@ export interface Props {
   sensors: TaggedSensor[];
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
-  mountedToolName: string | undefined;
+  mountedToolInfo: MountedToolInfo;
 }
 
 export interface MovePlantProps {
@@ -222,7 +229,7 @@ export interface GardenMapProps {
   timeSettings: TimeSettings;
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
-  mountedToolName: string | undefined;
+  mountedToolInfo: MountedToolInfo;
 }
 
 export interface GardenMapState {

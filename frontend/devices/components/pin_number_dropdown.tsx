@@ -5,7 +5,7 @@ import { isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import {
   pinDropdowns, celery2DropDown, PinGroupName, PERIPHERAL_HEADING,
-} from "../../sequences/step_tiles/pin_and_peripheral_support";
+} from "../../sequences/step_tiles/pin_support";
 import {
   selectAllPeripherals, selectAllSavedPeripherals,
 } from "../../resources/selectors";

@@ -13,6 +13,7 @@ import {
   fakeFirmwareConfig,
   fakeWeed,
   fakeTool,
+  fakeToolSlot,
   fakePeripheral,
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
@@ -107,15 +108,20 @@ describe("mapStateToProps()", () => {
     ]);
   });
 
-  it("returns mounted tool name", () => {
+  it("returns mounted tool info", () => {
     const state = fakeState();
+    const slot = fakeToolSlot();
     const tool = fakeTool();
-    tool.body.id = 1;
-    tool.body.name = "fake tool";
     const device = fakeDevice();
-    device.body.mounted_tool_id = 1;
-    state.resources = buildResourceIndex([tool, device]);
-    expect(mapStateToProps(state).mountedToolName).toEqual(tool.body.name);
+    tool.body.id = 1;
+    tool.body.name = "tool";
+    slot.body.tool_id = tool.body.id;
+    slot.body.pullout_direction = 1;
+    device.body.mounted_tool_id = tool.body.id;
+    state.resources = buildResourceIndex([tool, slot, device]);
+    const props = mapStateToProps(state);
+    expect(props.mountedToolInfo.name).toEqual("tool");
+    expect(props.mountedToolInfo.pulloutDirection).toEqual(1);
   });
 });
 

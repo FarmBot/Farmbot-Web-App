@@ -1,8 +1,9 @@
-import { TaggedPointGroup, PointType, TaggedPoint } from "farmbot";
+import { TaggedPointGroup, PointType, TaggedPoint, TaggedTool } from "farmbot";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { BotSize } from "../../map/interfaces";
 import { ShouldDisplay } from "../../../devices/interfaces";
 import { UUID } from "../../../resources/interfaces";
+import { ToolTransformProps } from "../../tools/interfaces";
 
 export type PointGroupCriteria = PointGroup["criteria"];
 export type StringEqCriteria = PointGroupCriteria["string_eq"];
@@ -53,6 +54,8 @@ export interface GroupPointCountBreakdownProps {
   pointsSelectedByGroup: TaggedPoint[];
   iconDisplay: boolean;
   hovered: UUID | undefined;
+  tools: TaggedTool[];
+  toolTransformProps: ToolTransformProps;
 }
 
 export interface PointTypeSelectionProps {
