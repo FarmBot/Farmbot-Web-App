@@ -36,6 +36,7 @@ export class ToolTip extends React.Component<ToolTipProps, Partial<State>> {
             {" " + t("Documentation")}
             <i className="fa fa-external-link" />
           </a>}
+        {this.props.children}
       </div>
     </div>;
   }

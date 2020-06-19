@@ -3,7 +3,7 @@ import { get, isNumber } from "lodash";
 import { bail } from "../../util";
 import { RangeSlider } from "@blueprintjs/core";
 
-interface SliderProps {
+export interface SliderProps {
   onRelease(value: [number, number]): void;
   highest: number;
   lowest: number;

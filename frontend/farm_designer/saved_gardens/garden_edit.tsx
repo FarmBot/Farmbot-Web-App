@@ -13,7 +13,7 @@ import { Everything } from "../../interfaces";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../../resources/interfaces";
 import { t } from "../../i18next_wrapper";
@@ -78,14 +78,16 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
 export class RawEditGarden extends React.Component<EditGardenProps, {}> {
   render() {
     const { savedGarden } = this.props;
-    !savedGarden && history.push("/app/designer/gardens");
+    const gardensPath = "/app/designer/gardens";
+    !savedGarden && getPathArray().join("/").startsWith(gardensPath)
+      && push(gardensPath);
     return <DesignerPanel panelName={"saved-garden-edit"}
       panel={Panel.SavedGardens}>
       <DesignerPanelHeader
         panelName={"saved-garden"}
         panel={Panel.SavedGardens}
         title={t("Edit garden")}
-        backTo={"/app/designer/gardens"} />
+        backTo={gardensPath} />
       <DesignerPanelContent panelName={"saved-garden-edit"}>
         {savedGarden
           ? <div className={"saved-garden-content"}>

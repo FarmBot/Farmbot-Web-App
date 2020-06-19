@@ -10,10 +10,8 @@ import { isPendingInstallation } from "./state_to_props";
 import { Popover } from "@blueprintjs/core";
 import { retryFetchPackageName } from "./actions";
 import { history } from "../history";
-import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../account/dev/dev_support";
 
 export interface FarmwareInfoProps {
   dispatch: Function;
@@ -22,6 +20,7 @@ export interface FarmwareInfoProps {
   firstPartyFarmwareNames: string[];
   installations: TaggedFarmwareInstallation[];
   shouldDisplay: ShouldDisplay;
+  botOnline: boolean;
 }
 
 const findUUIDByUrl = (installations: TaggedFarmwareInstallation[],
@@ -76,11 +75,14 @@ const PendingInstallNameError =
 type RemoveFarmwareFunction =
   (farmwareName: string | undefined, url: string | undefined) => () => void;
 
+interface FarmwareManagementSectionProps {
+  farmware: FarmwareManifestInfo;
+  remove: RemoveFarmwareFunction;
+  botOnline: boolean;
+}
+
 const FarmwareManagementSection =
-  ({ farmware, remove }: {
-    farmware: FarmwareManifestInfo,
-    remove: RemoveFarmwareFunction,
-  }) =>
+  ({ farmware, remove, botOnline }: FarmwareManagementSectionProps) =>
     <div className={"farmware-management-section"}>
       <Popover usePortal={false}>
         <label>{t("Manage")}</label>
@@ -91,7 +93,7 @@ const FarmwareManagementSection =
           className="fb-button yellow no-float"
           disabled={isPendingInstallation(farmware)}
           title={t("update Farmware")}
-          onClick={update(farmware.name)}>
+          onClick={updateFarmware(farmware.name, botOnline)}>
           {t("Update")}
         </button>
         <button
@@ -104,14 +106,15 @@ const FarmwareManagementSection =
     </div>;
 
 /** Update a Farmware to the latest version. */
-const update = (farmwareName: string | undefined) => () => {
-  if (farmwareName) {
-    getDevice()
-      .updateFarmware(farmwareName)
-      .then(() => { })
-      .catch(commandErr("Update"));
-  }
-};
+export const updateFarmware =
+  (farmwareName: string | undefined, botOnline: boolean) => () => {
+    if (farmwareName && botOnline) {
+      getDevice()
+        .updateFarmware(farmwareName)
+        .then(() => { })
+        .catch(commandErr("Update"));
+    }
+  };
 
 interface RemoveFarmwareProps {
   dispatch: Function;
@@ -133,9 +136,7 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
           : getDevice()
             .removeFarmware(farmwareName)
             .catch(commandErr("Farmware Removal"));
-        history.push(`/app${
-          DevSettings.futureFeaturesEnabled() ? "/designer" : ""}/farmware`);
-        setActiveFarmwareByName([]);
+        history.push("/app/designer/farmware");
       }
     }
   };
@@ -158,6 +159,7 @@ export function FarmwareInfo(props: FarmwareInfoProps) {
         ? "FarmBot, Inc."
         : farmware.meta.author}</p>
       <FarmwareManagementSection
+        botOnline={props.botOnline}
         farmware={farmware}
         remove={uninstallFarmware(props)} />
       <PendingInstallNameError

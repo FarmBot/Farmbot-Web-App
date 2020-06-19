@@ -57,19 +57,16 @@ describe("<TileExecuteScript/>", () => {
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
       { label: "three", value: "three" },
-      { label: "Weed Detector", value: "plant-detection" },
     ]);
   });
 
-  it("shows 1st party in list", () => {
+  it("doesn't show 1st party in list", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.showFirstPartyFarmware = true);
     const wrapper = shallow(<TileExecuteScript {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "one", value: "one" },
       { label: "two", value: "two" },
       { label: "three", value: "three" },
-      { label: "Weed Detector", value: "plant-detection" },
     ]);
   });
 
@@ -85,8 +82,10 @@ describe("<TileExecuteScript/>", () => {
     (p.currentStep as ExecuteScript).args.label = "plant-detection";
     p.farmwareData?.farmwareNames.push("plant-detection");
     const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("label").length).toEqual(1);
-    expect(wrapper.text()).toContain("Weed Detector");
+    expect(wrapper.find("label").length).toEqual(0);
+    expect(wrapper.text().toLowerCase())
+      .toContain("results are viewable from the photos panel.");
+    expect(wrapper.text().toLowerCase()).not.toContain("package");
   });
 
   it("renders manual input", () => {

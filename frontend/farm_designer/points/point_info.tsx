@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { Panel } from "../panel_header";
 import { Everything } from "../../interfaces";
 import { TaggedGenericPointer } from "farmbot";
@@ -33,16 +33,17 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
     }
   }
   get panelName() { return "point-info"; }
-  get backTo() { return "/app/designer/points"; }
 
   render() {
-    !this.point && history.push(this.backTo);
+    const pointsPath = "/app/designer/points";
+    !this.point && getPathArray().join("/").startsWith(pointsPath)
+      && push(pointsPath);
     return <DesignerPanel panelName={this.panelName} panel={Panel.Points}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Points}
         title={t("Edit point")}
-        backTo={this.backTo}
+        backTo={pointsPath}
         onBack={() => this.props.dispatch({
           type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
         })} />

@@ -15,7 +15,7 @@ const mockId = GOOD_ID;
 let mockPath = `/app/designer/groups/${mockId}`;
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn()
+  push: jest.fn(),
 }));
 
 import React from "react";
@@ -49,6 +49,13 @@ describe("<GroupDetail />", () => {
     const result = el.find(GroupDetailActive);
     expect(result.length).toEqual(0);
     expect(push).toHaveBeenCalledWith("/app/designer/groups");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const store = fakeStore();
+    mount(<Provider store={store}><GroupDetail /></Provider>);
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("loads <GroupDetailActive/>", () => {

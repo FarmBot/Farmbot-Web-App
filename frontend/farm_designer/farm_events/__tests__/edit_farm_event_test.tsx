@@ -1,5 +1,9 @@
+jest.mock("../../../history", () => ({ push: jest.fn() }));
+
+let mockPath = "/app/designer/events/1";
 jest.mock("../../../history", () => ({
-  history: { push: jest.fn() }
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn(),
 }));
 
 import * as React from "react";
@@ -13,6 +17,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { push } from "../../../history";
 
 describe("<EditFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -49,9 +54,20 @@ describe("<EditFarmEvent />", () => {
   });
 
   it("redirects", () => {
+    mockPath = "/app/designer/events/nope";
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
+    expect(push).toHaveBeenCalledWith("/app/designer/events");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const p = fakeProps();
+    p.getFarmEvent = jest.fn();
+    const wrapper = mount(<EditFarmEvent {...p} />);
+    expect(wrapper.text()).toContain("Redirecting");
+    expect(push).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/zones/1";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -20,6 +20,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { save, edit } from "../../../api/crud";
+import { push } from "../../../history";
 
 describe("<EditZone />", () => {
   const fakeProps = (): EditZoneProps => ({
@@ -32,9 +33,17 @@ describe("<EditZone />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/zones";
+    mockPath = "/app/designer/zones/nope";
     const wrapper = mount(<EditZone {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).toHaveBeenCalledWith("/app/designer/zones");
+  });
+
+  it("doesn't redirect", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<EditZone {...fakeProps()} />);
+    expect(wrapper.text()).toContain("Redirecting...");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("renders", () => {

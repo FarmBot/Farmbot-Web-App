@@ -1,7 +1,9 @@
 import { store } from "../redux/store";
-import { lastUrlChunk } from "../util";
+import { lastUrlChunk, urlFriendly } from "../util";
 import { Actions } from "../constants";
-import { farmwareUrlFriendly } from "./index";
+
+export const farmwareUrlFriendly = (farmwareName: string) =>
+  urlFriendly(farmwareName).replace(/-/g, "_");
 
 export function setActiveFarmwareByName(farmwareNames: (string | undefined)[]) {
   const chunk = farmwareUrlFriendly(lastUrlChunk());

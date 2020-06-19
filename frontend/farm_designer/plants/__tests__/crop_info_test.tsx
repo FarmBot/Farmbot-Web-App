@@ -12,7 +12,9 @@ jest.mock("../../map/actions", () => ({
 }));
 
 import * as React from "react";
-import { RawCropInfo as CropInfo, searchForCurrentCrop } from "../crop_info";
+import {
+  RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
+} from "../crop_info";
 import { mount } from "enzyme";
 import { CropInfoProps } from "../../interfaces";
 import { initSave } from "../../../api/crud";
@@ -22,6 +24,7 @@ import {
 } from "../../../__test_support__/fake_crop_search_result";
 import { unselectPlant } from "../../map/actions";
 import { svgToUrl } from "../../../open_farm/icons";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -113,5 +116,13 @@ describe("searchForCurrentCrop()", () => {
     searchForCurrentCrop(fakeOFSearch)(dispatch);
     expect(fakeOFSearch).toHaveBeenCalledWith("mint");
     expect(unselectPlant).toHaveBeenCalled();
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    const state = fakeState();
+    state.resources.consumers.farm_designer.cropSearchInProgress = true;
+    expect(mapStateToProps(state).cropSearchInProgress).toEqual(true);
   });
 });

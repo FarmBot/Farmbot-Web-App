@@ -115,12 +115,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
-    $: "/farmware(/:name)",
-    getModule: () => import("./farmware"),
-    key: "FarmwarePage",
-  }),
-  route({
-    children: false,
     $: "/logs",
     getModule: () => import("./logs"),
     key: "Logs",

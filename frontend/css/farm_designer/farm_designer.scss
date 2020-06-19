@@ -4,7 +4,7 @@
   overflow-y: hidden;
   .garden-map-legend {
     @media screen and (max-width: 450px) {
-      &.panel-open, &.panel-open-new {
+      &.panel-open {
         display: none;
       }
       &.short-panel {
@@ -24,9 +24,6 @@
   height: 100%;
   overflow: auto;
   &.panel-open {
-    padding: 11rem 2rem 2rem 31.8rem; // at zoom = 1.0: 110px 20px 20px 318px
-  }
-  &.panel-open-new {
     padding: 11rem 2rem 2rem 46.8rem; // at zoom = 1.0: 110px 20px 20px 468px
   }
   &.short-panel {

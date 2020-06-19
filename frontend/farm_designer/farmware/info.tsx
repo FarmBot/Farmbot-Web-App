@@ -21,7 +21,7 @@ import {
 import { NetworkState } from "../../connectivity/interfaces";
 import { FarmwareInfo } from "../../farmware/farmware_info";
 import { needsFarmwareForm, FarmwareForm } from "../../farmware/farmware_forms";
-import { BasicFarmwarePage } from "../../farmware";
+import { BasicFarmwarePage } from "../../farmware/basic_farmware_page";
 
 export interface DesignerFarmwareInfoProps {
   dispatch: Function;
@@ -90,6 +90,7 @@ export class RawDesignerFarmwareInfo
             botOnline={this.botOnline} />}
         <FarmwareInfo
           dispatch={this.props.dispatch}
+          botOnline={this.botOnline}
           farmware={farmware}
           installations={this.props.taggedFarmwareInstallations}
           shouldDisplay={this.props.shouldDisplay}
