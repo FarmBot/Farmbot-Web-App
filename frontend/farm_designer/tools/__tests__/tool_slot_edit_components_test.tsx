@@ -9,6 +9,8 @@ import {
   SlotEditRows,
   FlipToolDirection,
   isToolFlipped,
+  UseCurrentLocationProps,
+  UseCurrentLocation,
 } from "../tool_slot_edit_components";
 import {
   fakeTool, fakeToolSlot,
@@ -249,10 +251,17 @@ describe("<SlotLocationInputRow />", () => {
     expect(p.onChange).toHaveBeenCalledWith({ y: 2 });
     expect(p.onChange).toHaveBeenCalledWith({ z: 3 });
   });
+});
+
+describe("<UseCurrentLocation />", () => {
+  const fakeProps = (): UseCurrentLocationProps => ({
+    onChange: jest.fn(),
+    botPosition: { x: undefined, y: undefined, z: undefined },
+  });
 
   it("doesn't use current coordinates", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    const wrapper = shallow(<UseCurrentLocation {...p} />);
     wrapper.find("button").simulate("click");
     expect(p.onChange).not.toHaveBeenCalled();
   });
@@ -260,7 +269,7 @@ describe("<SlotLocationInputRow />", () => {
   it("uses current coordinates", () => {
     const p = fakeProps();
     p.botPosition = { x: 0, y: 1, z: 2 };
-    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    const wrapper = shallow(<UseCurrentLocation {...p} />);
     wrapper.find("button").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith(p.botPosition);
   });

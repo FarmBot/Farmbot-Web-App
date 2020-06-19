@@ -608,6 +608,47 @@
 .add-plant-panel {
   .panel-header {
     height: 100%;
+    .grid-and-row-planting {
+      hr {
+        opacity: 0.7;
+        border-top: 1.5px solid $white;
+      }
+      .row {
+        div[class*=col-] {
+          padding-left: 1.5rem;
+          padding-right: 0;
+        }
+      }
+      label {
+        color: $white;
+      }
+      .use-current-location {
+        padding: 0;
+        margin-top: 2rem;
+        button {
+          position: absolute;
+          left: 1rem;
+          margin-top: 0.5rem;
+          height: 2.75rem;
+          .fa {
+            font-size: 1.5rem;
+          }
+        }
+      }
+      .grid-input {
+        i[class*=fa-arrow] {
+          margin-right: 0.35rem;
+          cursor: default !important;
+        }
+      }
+      .packing-method {
+        margin-bottom: 2rem;
+      }
+      .fb-toggle-button {
+        float: none;
+        margin-left: 1rem;
+      }
+    }
   }
 }
 

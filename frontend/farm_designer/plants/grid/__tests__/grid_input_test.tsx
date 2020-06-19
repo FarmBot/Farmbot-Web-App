@@ -1,44 +1,57 @@
 import * as React from "react";
-import { testGrid } from "./generate_grid_test";
-import { GridInput, InputCell, InputCellProps, createCB } from "../grid_input";
+import { testGridInputs } from "./generate_grid_test";
+import { GridInput, InputCell } from "../grid_input";
 import { mount, shallow } from "enzyme";
-import { BlurableInput } from "../../../../ui/blurable_input";
-import { changeEvent } from "../../../../__test_support__/fake_html_events";
+import { GridInputProps, InputCellProps } from "../interfaces";
 
 describe("<GridInput/>", () => {
+  const fakeProps = (): GridInputProps => ({
+    disabled: false,
+    grid: testGridInputs(),
+    xy_swap: true,
+    onChange: jest.fn(() => jest.fn()),
+    preview: jest.fn(),
+    botPosition: { x: undefined, y: undefined, z: undefined },
+  });
+
   it("renders", () => {
-    const cb = jest.fn();
-    const props = ({
-      disabled: false,
-      grid: testGrid,
-      xy_swap: true,
-      onChange: jest.fn(() => cb)
-    });
-    const text = mount(<GridInput {...props} />).text();
-    ["Starting X", "starting Y", "# of plants", "Spacing (MM)"].map(txt => {
-      expect(text).toContain(txt);
-    });
+    const wrapper = mount(<GridInput {...fakeProps()} />);
+    ["Starting X", "starting Y", "# of plants", "Spacing (MM)"]
+      .map(string => expect(wrapper.text()).toContain(string));
+  });
+
+  it("uses current location", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    const wrapper = mount(<GridInput {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith("startX", 1);
+    expect(p.onChange).toHaveBeenCalledWith("startY", 2);
+  });
+
+  it("doesn't use current location", () => {
+    const p = fakeProps();
+    const wrapper = mount(<GridInput {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(p.onChange).not.toHaveBeenCalled();
   });
 });
 
 describe("<InputCell/>", () => {
-  it("triggers callacks", () => {
-    const p: InputCellProps = {
-      gridKey: "numPlantsH",
-      xy_swap: false,
-      onChange: jest.fn(),
-      grid: testGrid
-    };
-    const el = shallow(<InputCell {...p} />);
-    el.find(BlurableInput).first().simulate("commit", { currentTarget: { value: "6" } });
-    expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 6);
+  const fakeProps = (): InputCellProps => ({
+    gridKey: "numPlantsH",
+    xy_swap: false,
+    onChange: jest.fn(),
+    preview: jest.fn(),
+    grid: testGridInputs(),
   });
-});
 
-describe("createCB", () => {
-  it("creates a callback", () => {
-    const dispatch = jest.fn();
-    createCB("numPlantsH", dispatch)(changeEvent("7"));
-    expect(dispatch).toHaveBeenCalledWith("numPlantsH", 7);
+  it("calls onChange", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<InputCell {...p} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { value: "6" }
+    });
+    expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 6);
   });
 });

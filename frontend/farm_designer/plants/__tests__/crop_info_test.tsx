@@ -123,6 +123,9 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.cropSearchInProgress = true;
-    expect(mapStateToProps(state).cropSearchInProgress).toEqual(true);
+    state.bot.hardware.location_data.position = { x: 1, y: 2, z: 3 };
+    const props = mapStateToProps(state);
+    expect(props.cropSearchInProgress).toEqual(true);
+    expect(props.botPosition).toEqual({ x: 1, y: 2, z: 3 });
   });
 });

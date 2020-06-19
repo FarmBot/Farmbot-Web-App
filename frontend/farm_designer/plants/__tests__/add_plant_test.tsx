@@ -14,8 +14,12 @@ import {
 } from "../../../__test_support__/fake_crop_search_result";
 import { svgToUrl } from "../../../open_farm/icons";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
+import {
+  fakeWebAppConfig,
+} from "../../../__test_support__/fake_state/resources";
 
 describe("<AddPlant />", () => {
   const fakeProps = (): AddPlantProps => {
@@ -26,6 +30,7 @@ describe("<AddPlant />", () => {
       dispatch: jest.fn(),
       xy_swap: false,
       openfarmSearch: jest.fn(() => jest.fn()),
+      botPosition: { x: undefined, y: undefined, z: undefined },
     };
   };
 

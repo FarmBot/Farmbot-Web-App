@@ -1,10 +1,9 @@
 import React from "react";
 import {
-  EMPTY_PLANT_GRID,
   PlantGridKey,
   PlantGridProps,
   PlantGridState,
-} from "./constants";
+} from "./interfaces";
 import { initPlantGrid } from "./generate_grid";
 import { init } from "../../../api/crud";
 import { uuid } from "farmbot";
@@ -12,9 +11,28 @@ import { saveGrid, stashGrid } from "./thunks";
 import { error, success } from "../../../toast/toast";
 import { t } from "../../../i18next_wrapper";
 import { GridInput } from "./grid_input";
+import { DEFAULT_PLANT_RADIUS } from "../../plant";
+import { ToggleButton } from "../../../controls/toggle_button";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
-  state: PlantGridState = { ...EMPTY_PLANT_GRID, gridId: uuid() };
+  state: PlantGridState = {
+    grid: this.initGridState,
+    gridId: uuid(),
+    status: "clean",
+    offsetPacking: false,
+  };
+
+  get initGridState() {
+    const spread = (this.props.spread || DEFAULT_PLANT_RADIUS) * 10;
+    return {
+      startX: 100,
+      startY: 100,
+      spacingH: spread,
+      spacingV: spread,
+      numPlantsH: 2,
+      numPlantsV: 3,
+    };
+  }
 
   get plantCount() {
     const { numPlantsH, numPlantsV } = this.state.grid;
@@ -38,6 +56,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   }
 
   performPreview = () => {
+    this.revertPreview({ setStatus: false })();
     if (this.plantCount > 100) {
       error(t("Please make a grid with less than 100 plants"));
       return;
@@ -47,32 +66,27 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,
       cropName: this.props.cropName,
-      gridId: this.state.gridId
+      gridId: this.state.gridId,
+      offsetPacking: this.state.offsetPacking,
     });
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
   }
 
-  revertPreview = () => {
-    const p: Promise<{}> = this.props.dispatch(stashGrid(this.state.gridId));
-    return p.then(() => this.setState({ status: "clean" }));
-  }
+  revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>
+    this.props.dispatch(stashGrid(this.state.gridId))
+      .then(() => setStatus && this.setState({ status: "clean" }));
 
-  saveGrid = () => {
-    const p: Promise<{}> = this.props.dispatch(saveGrid(this.state.gridId));
-    return p.then(() => {
-      success(t("{{ count }} plants added.", { count: this.plantCount }));
-      this.setState({ ...EMPTY_PLANT_GRID, gridId: uuid() });
-    });
-  }
-
-  inputs = () => {
-    return <GridInput
-      xy_swap={this.props.xy_swap}
-      disabled={this.state.status === "dirty"}
-      grid={this.state.grid}
-      onChange={this.onchange} />;
-  }
+  saveGrid = () =>
+    this.props.dispatch(saveGrid(this.state.gridId))
+      .then(() => {
+        success(t("{{ count }} plants added.", { count: this.plantCount }));
+        this.setState({
+          grid: this.initGridState,
+          gridId: uuid(),
+          status: "clean",
+        });
+      });
 
   buttons = () => {
     switch (this.state.status) {
@@ -88,7 +102,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         return <div className={"save-or-cancel-grid-button"}>
           <a className={"cancel-button"}
             title={t("Cancel")}
-            onClick={this.revertPreview}>
+            onClick={this.revertPreview({ setStatus: true })}>
             {t("Cancel")}
           </a>
           <a className={"save-button"}
@@ -102,12 +116,26 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   render() {
     return <div className={"grid-and-row-planting"}>
-      <hr style={{ borderTop: "1.5px solid rgba(255, 255, 255 ,0.7)" }} />
+      <hr />
       <h3>
         {t("Grid and Row Planting")}
       </h3>
-      {this.inputs()}
-      <br />
+      <GridInput
+        xy_swap={this.props.xy_swap}
+        disabled={this.state.status === "dirty"}
+        grid={this.state.grid}
+        botPosition={this.props.botPosition}
+        onChange={this.onchange}
+        preview={this.performPreview} />
+      <label className="packing-method">{t("hexagonal packing")}</label>
+      <ToggleButton
+        toggleValue={this.state.offsetPacking}
+        toggleAction={() => {
+          this.setState({ offsetPacking: !this.state.offsetPacking },
+            this.performPreview);
+        }}
+        title={t("toggle packing method")}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
       {this.buttons()}
     </div>;
   }

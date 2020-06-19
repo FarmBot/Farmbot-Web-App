@@ -120,24 +120,35 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
                 })} />}
           </Col>)}
       </Col>
-      <Col xs={1} className="use-current-location">
-        <Popover>
-          <i className="fa fa-question-circle help-icon" />
-          <div className="current-location-info">
-            <label>{t("Use current location")}</label>
-            <p>{positionButtonTitle(props.botPosition)}</p>
-          </div>
-        </Popover>
-        <button
-          className="blue fb-button"
-          title={positionButtonTitle(props.botPosition)}
-          onClick={() => positionIsDefined(props.botPosition) &&
-            props.onChange(props.botPosition)}>
-          <i className="fa fa-crosshairs" />
-        </button>
-      </Col>
+      <UseCurrentLocation botPosition={props.botPosition}
+        onChange={props.onChange} />
     </Row>
   </div>;
+
+export interface UseCurrentLocationProps {
+  botPosition: BotPosition;
+  onChange(update: Record<Xyz, number>): void;
+}
+
+export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
+  <Col xs={1} className="use-current-location">
+    <Popover>
+      <i className="fa fa-question-circle help-icon" />
+      <div className="current-location-info">
+        <label>{t("Use current location")}</label>
+        <p>{positionButtonTitle(props.botPosition)}</p>
+      </div>
+    </Popover>
+    <button
+      className="blue fb-button"
+      title={positionButtonTitle(props.botPosition)}
+      onClick={() => {
+        const position = definedPosition(props.botPosition);
+        position && props.onChange(position);
+      }}>
+      <i className="fa fa-crosshairs" />
+    </button>
+  </Col>;
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">
@@ -179,17 +190,24 @@ const directionIconClass = (slotDirection: ToolPulloutDirection) => {
   }
 };
 
-export const positionButtonTitle = (position: BotPosition): string =>
-  positionIsDefined(position)
+export const positionButtonTitle = (botPosition: BotPosition): string => {
+  const position = definedPosition(botPosition);
+  return position
     ? `(${position.x}, ${position.y}, ${position.z})`
     : t("(unknown)");
+};
 
 export const newSlotDirection =
   (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
     isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
 
-export const positionIsDefined = (position: BotPosition): boolean =>
-  isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
+export const definedPosition =
+  (position: BotPosition): Record<Xyz, number> | undefined => {
+    const { x, y, z } = position;
+    return (isNumber(x) && isNumber(y) && isNumber(z))
+      ? { x, y, z }
+      : undefined;
+  };
 
 export const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
   [ToolPulloutDirection.NONE]:
