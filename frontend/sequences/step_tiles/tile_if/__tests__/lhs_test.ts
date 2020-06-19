@@ -14,7 +14,7 @@ import {
   selectAllPeripherals,
 } from "../../../../resources/selectors";
 import { updateLhs } from "../update_lhs";
-import { PinGroupName } from "../../pin_and_peripheral_support";
+import { PinGroupName } from "../../pin_support";
 import { Actions } from "../../../../constants";
 import { get } from "lodash";
 import { displayLhs } from "../display_lhs";

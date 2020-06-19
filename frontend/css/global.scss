@@ -1459,6 +1459,19 @@ ul {
   margin-top: 1rem;
 }
 
+.write-pin-step {
+  .filter-search {
+    margin-bottom: 1rem;
+  }
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp3-slider {
+      min-width: 100%;
+    }
+  }
+}
+
 .checkbox-row {
   margin-top: 1rem;
   label {

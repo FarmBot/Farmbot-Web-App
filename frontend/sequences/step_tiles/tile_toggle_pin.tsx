@@ -3,7 +3,7 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row } from "../../ui/index";
-import { PinSelect } from "./tile_write_pin";
+import { PinSelect } from "./pin_support";
 
 export function TileTogglePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -19,7 +19,7 @@ export function TileTogglePin(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
-        <PinSelect {...props} width={6} />
+        <PinSelect {...props} />
       </Row>
     </StepContent>
   </StepWrapper>;
