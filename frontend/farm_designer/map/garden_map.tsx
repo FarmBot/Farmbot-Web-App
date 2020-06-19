@@ -510,6 +510,7 @@ export class GardenMap extends
   GroupOrder = () => <GroupOrder
     group={this.group}
     groupPoints={this.pointsSelectedByGroup}
+    zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />

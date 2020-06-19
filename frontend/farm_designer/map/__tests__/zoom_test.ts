@@ -51,4 +51,10 @@ describe("zoom utilities", () => {
       ZoomUtils.calcZoomLevel(ZoomUtils.getZoomLevelIndex(() => undefined));
     expect(defaultZoom).toEqual(1);
   });
+
+  it("zoomCompensation()", () => {
+    expect(ZoomUtils.zoomCompensation(0.1)).toEqual(2);
+    expect(ZoomUtils.zoomCompensation(1, 2)).toEqual(2);
+    expect(ZoomUtils.zoomCompensation(1.8)).toEqual(0.7);
+  });
 });
