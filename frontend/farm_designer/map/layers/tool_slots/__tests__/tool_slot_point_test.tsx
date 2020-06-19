@@ -25,7 +25,6 @@ describe("<ToolSlotPoint/>", () => {
 
   it.each<[0 | 1, 0 | 1]>([
     [0, 0],
-    [0, 1],
     [1, 0],
     [1, 1],
   ])("renders %s tool and %s slot", (tool, slot) => {
@@ -35,7 +34,7 @@ describe("<ToolSlotPoint/>", () => {
     p.slot.toolSlot.body.pullout_direction = slot;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("circle").length).toEqual(tool);
-    expect(wrapper.find("use").length).toEqual(slot);
+    expect(wrapper.find("use").length).toEqual(slot + 1);
   });
 
   it("opens tool info", () => {
@@ -118,7 +117,7 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#seed-trough").find("rect").props().width)
-      .toEqual(45);
+      .toEqual(20);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
       .toEqual(49);
   });
@@ -130,7 +129,7 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#seed-trough").find("rect").props().width)
-      .toEqual(20);
+      .toEqual(45);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
       .toEqual(24);
   });

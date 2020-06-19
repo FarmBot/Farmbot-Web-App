@@ -4,7 +4,7 @@ import {
   TaggedPlantTemplate,
   TaggedWeedPointer,
 } from "farmbot";
-import { State, BotOriginQuadrant } from "../interfaces";
+import { State, BotOriginQuadrant, MountedToolInfo } from "../interfaces";
 import {
   BotPosition, BotLocationData, ShouldDisplay,
 } from "../../devices/interfaces";
@@ -144,7 +144,7 @@ export interface VirtualFarmBotProps {
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
   getConfigValue: GetWebAppConfigValue;
-  mountedToolName: string | undefined;
+  mountedToolInfo: MountedToolInfo;
 }
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {

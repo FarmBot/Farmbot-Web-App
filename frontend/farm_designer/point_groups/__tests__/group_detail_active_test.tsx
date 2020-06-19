@@ -24,6 +24,7 @@ import { edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { setSelectionPointType } from "../../plants/select_plants";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
 
 describe("<GroupDetailActive/>", () => {
   const fakeProps = (): GroupDetailActiveProps => {
@@ -47,6 +48,8 @@ describe("<GroupDetailActive/>", () => {
         y: { value: 1500, isDefault: true },
       },
       selectionPointType: undefined,
+      tools: [],
+      toolTransformProps: fakeToolTransformProps(),
     };
   };
 

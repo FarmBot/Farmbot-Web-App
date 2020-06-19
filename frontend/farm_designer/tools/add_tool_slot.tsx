@@ -73,8 +73,7 @@ export class RawAddToolSlot
             tools={this.props.tools}
             tool={this.tool}
             botPosition={this.props.botPosition}
-            xySwap={this.props.xySwap}
-            quadrant={this.props.quadrant}
+            toolTransformProps={this.props.toolTransformProps}
             isActive={this.props.isActive}
             updateToolSlot={this.updateSlot(this.toolSlot)} />
           : "initializing"}

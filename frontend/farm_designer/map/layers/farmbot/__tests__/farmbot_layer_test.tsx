@@ -5,6 +5,9 @@ import { FarmBotLayerProps } from "../../../interfaces";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import {
+  fakeMountedToolInfo,
+} from "../../../../../__test_support__/fake_tool_info";
 
 describe("<FarmBotLayer/>", () => {
   function fakeProps(): FarmBotLayerProps {
@@ -25,7 +28,7 @@ describe("<FarmBotLayer/>", () => {
       peripherals: [],
       eStopStatus: false,
       getConfigValue: jest.fn(),
-      mountedToolName: undefined,
+      mountedToolInfo: fakeMountedToolInfo(),
     };
   }
 

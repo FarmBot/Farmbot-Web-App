@@ -29,6 +29,7 @@ import { edit } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 import { GardenMapLegend } from "../map/legend/garden_map_legend";
 import { GardenMap } from "../map/garden_map";
+import { fakeMountedToolInfo } from "../../__test_support__/fake_tool_info";
 
 describe("<FarmDesigner/>", () => {
   const fakeProps = (): Props => ({
@@ -67,7 +68,7 @@ describe("<FarmDesigner/>", () => {
     sensors: [],
     groups: [],
     shouldDisplay: () => false,
-    mountedToolName: undefined,
+    mountedToolInfo: fakeMountedToolInfo(),
   });
 
   it("loads default map settings", () => {

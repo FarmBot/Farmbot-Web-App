@@ -33,6 +33,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { history } from "../../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -54,8 +55,7 @@ describe("<SelectPlants />", () => {
       dispatch: jest.fn(x => x),
       gardenOpen: undefined,
       allPoints: [],
-      xySwap: false,
-      quadrant: 2,
+      toolTransformProps: fakeToolTransformProps(),
       isActive: () => false,
       tools: [],
       groups: [],
@@ -375,7 +375,7 @@ describe("mapStateToProps", () => {
     const webAppConfig = fakeWebAppConfig();
     webAppConfig.body.bot_origin_quadrant = 2;
     state.resources = buildResourceIndex([webAppConfig]);
-    expect(mapStateToProps(state).quadrant).toEqual(2);
+    expect(mapStateToProps(state).toolTransformProps.quadrant).toEqual(2);
   });
 });
 

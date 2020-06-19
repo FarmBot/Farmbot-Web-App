@@ -822,6 +822,7 @@
       }
     }
   }
+  .tool-direction-input,
   .gantry-mounted-input {
     label {
       margin-top: 0;
@@ -833,6 +834,9 @@
   }
   .fb-button.green {
     margin-top: 1rem;
+  }
+  .tool-direction-input {
+    margin-top: 0;
   }
 }
 
@@ -1351,6 +1355,9 @@
         margin: 0;
         margin-left: 1rem;
         line-height: 2.1rem;
+      }
+      .no-weeds {
+        margin-left: 2rem;
       }
     }
   }

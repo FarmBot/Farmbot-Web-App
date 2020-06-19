@@ -22,6 +22,7 @@ import { history } from "../../../history";
 import { SpecialStatus } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 
 describe("<AddToolSlot />", () => {
@@ -32,8 +33,7 @@ describe("<AddToolSlot />", () => {
     dispatch: jest.fn(),
     findToolSlot: fakeToolSlot,
     firmwareHardware: undefined,
-    xySwap: false,
-    quadrant: 2,
+    toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
   });
 
@@ -137,7 +137,7 @@ describe("mapStateToPropsAdd()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([tool, toolSlot, webAppConfig]);
     const props = mapStateToPropsAdd(state);
-    expect(props.quadrant).toEqual(1);
+    expect(props.toolTransformProps.quadrant).toEqual(1);
     expect(props.findTool(1)).toEqual(tool);
     expect(props.findToolSlot(toolSlot.uuid)).toEqual(toolSlot);
   });

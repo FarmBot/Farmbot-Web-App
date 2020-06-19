@@ -13,6 +13,11 @@ jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
+jest.mock("../../map/layers/tool_slots/tool_graphics", () => ({
+  setToolHover: jest.fn(),
+  ToolSlotSVG: () => <div />,
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
@@ -26,8 +31,10 @@ import {
 import { destroy, edit, save } from "../../../api/crud";
 import { mapStateToPropsEdit } from "../state_to_props";
 import { SlotEditRows } from "../tool_slot_edit_components";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
 import { EditToolSlotProps } from "../interfaces";
 import { push } from "../../../history";
+import { setToolHover } from "../../map/layers/tool_slots/tool_graphics";
 
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
@@ -37,8 +44,7 @@ describe("<EditToolSlot />", () => {
     botPosition: { x: undefined, y: undefined, z: undefined },
     dispatch: jest.fn(),
     firmwareHardware: undefined,
-    xySwap: false,
-    quadrant: 2,
+    toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
   });
 
@@ -65,6 +71,12 @@ describe("<EditToolSlot />", () => {
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "direction", "gantry-mounted", "meta value",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
+  it("unhovers tool slot on unmount", () => {
+    const wrapper = mount(<EditToolSlot {...fakeProps()} />);
+    wrapper.unmount();
+    expect(setToolHover).toHaveBeenCalledWith(undefined);
   });
 
   it("updates tool slot", () => {

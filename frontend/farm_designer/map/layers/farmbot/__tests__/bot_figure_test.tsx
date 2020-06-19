@@ -6,6 +6,10 @@ import { Color } from "../../../../../ui/index";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import {
+  fakeMountedToolInfo,
+} from "../../../../../__test_support__/fake_tool_info";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<BotFigure/>", () => {
@@ -94,7 +98,7 @@ describe("<BotFigure/>", () => {
       x: 100, y: 0, dx: 40, dy: 0,
       textAnchor: "start", visibility: "visible",
     }));
-    expect(wrapper.text()).toEqual("(100, 0, 0)");
+    expect(wrapper.find("text").text()).toEqual("(100, 0, 0)");
     utm.simulate("mouseLeave");
     expect(wrapper.instance().state.hovered).toBeFalsy();
     expect(wrapper.find("text").props()).toEqual(
@@ -113,14 +117,67 @@ describe("<BotFigure/>", () => {
       x: 0, y: 100, dx: 0, dy: 55,
       textAnchor: "middle", visibility: "visible",
     }));
-    expect(wrapper.text()).toEqual("(100, 0, 0)");
+    expect(wrapper.find("text").text()).toEqual("(100, 0, 0)");
   });
 
   it("shows mounted tool", () => {
     const p = fakeProps();
-    p.mountedToolName = "Seeder";
+    p.mountedToolInfo = fakeMountedToolInfo();
+    p.mountedToolInfo.name = "Seeder";
     const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
       .toEqual(1);
+  });
+
+  it("gets tool props: mounted tool", () => {
+    const p = fakeProps();
+    p.mountedToolInfo = fakeMountedToolInfo();
+    p.mountedToolInfo.pulloutDirection = ToolPulloutDirection.NEGATIVE_X;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    expect(wrapper.find<BotFigure>(BotFigure).instance()
+      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+        dispatch: expect.any(Function),
+        hovered: false,
+        pulloutDirection: ToolPulloutDirection.NEGATIVE_X,
+        flipped: false,
+        toolTransformProps: {
+          xySwap: false,
+          quadrant: 2,
+        },
+        uuid: "utm",
+        x: 0,
+        y: 0,
+      });
+  });
+
+  it("gets tool props: no mounted tool info", () => {
+    const p = fakeProps();
+    p.mountedToolInfo = undefined;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    expect(wrapper.find<BotFigure>(BotFigure).instance()
+      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+        dispatch: expect.any(Function),
+        hovered: false,
+        pulloutDirection: ToolPulloutDirection.POSITIVE_X,
+        flipped: false,
+        toolTransformProps: {
+          xySwap: false,
+          quadrant: 2,
+        },
+        uuid: "utm",
+        x: 0,
+        y: 0,
+      });
+  });
+
+  it("shows tool head", () => {
+    const p = fakeProps();
+    p.mountedToolInfo = fakeMountedToolInfo();
+    p.mountedToolInfo.noUTM = true;
+    p.mountedToolInfo.name = undefined;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const UTM = wrapper.find("#UTM-wrapper");
+    expect(UTM.find("#mounted-tool").length).toEqual(0);
+    expect(UTM.find("#three-in-one-tool-head").length).toEqual(1);
   });
 });

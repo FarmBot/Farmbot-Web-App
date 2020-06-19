@@ -14,7 +14,7 @@ describe("mapStateToProps()", () => {
     webAppConfig.body.bot_origin_quadrant = 1;
     state.resources = buildResourceIndex([fakeDevice(), webAppConfig]);
     const props = mapStateToProps(state);
-    expect(props.quadrant).toEqual(1);
+    expect(props.toolTransformProps.quadrant).toEqual(1);
   });
 
   it("returns props: incorrect quadrant", () => {
@@ -26,6 +26,6 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([tool, fakeDevice(), webAppConfig]);
     const props = mapStateToProps(state);
     expect(props.findTool(tool.body.id)).toEqual(tool);
-    expect(props.quadrant).toEqual(2);
+    expect(props.toolTransformProps.quadrant).toEqual(2);
   });
 });

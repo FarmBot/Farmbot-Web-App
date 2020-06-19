@@ -1,9 +1,10 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
-import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
 import {
   selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups,
+  selectAllTools,
 } from "../../resources/selectors";
 import { push, getPathArray } from "../../history";
 import { GroupDetailActive } from "./group_detail_active";
@@ -18,6 +19,10 @@ import { Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import { BotSize } from "../map/interfaces";
 import { botSize } from "../state_to_props";
+import { ToolTransformProps } from "../tools/interfaces";
+import { getWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting, NumericSetting } from "../../session_keys";
+import { isBotOriginQuadrant } from "../interfaces";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -29,6 +34,8 @@ interface GroupDetailProps {
   editGroupAreaInMap: boolean;
   botSize: BotSize;
   selectionPointType: PointType[] | undefined;
+  tools: TaggedTool[];
+  toolTransformProps: ToolTransformProps;
 }
 
 /** Find a group from a URL-provided ID. */
@@ -39,9 +46,13 @@ export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
   return groups.filter(group => group.body.id === groupId)[0];
 };
 
-function mapStateToProps(props: Everything): GroupDetailProps {
+export function mapStateToProps(props: Everything): GroupDetailProps {
   const { hoveredPlantListItem, editGroupAreaInMap, selectionPointType } =
     props.resources.consumers.farm_designer;
+  const getWebAppConfig = getWebAppConfigValue(() => props);
+  const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
+  const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
+  const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
   return {
     allPoints: selectAllActivePoints(props.resources.index),
     group: findGroupFromUrl(selectAllPointGroups(props.resources.index)),
@@ -53,6 +64,8 @@ function mapStateToProps(props: Everything): GroupDetailProps {
     editGroupAreaInMap,
     botSize: botSize(props),
     selectionPointType,
+    tools: selectAllTools(props.resources.index),
+    toolTransformProps: { quadrant, xySwap },
   };
 }
 
