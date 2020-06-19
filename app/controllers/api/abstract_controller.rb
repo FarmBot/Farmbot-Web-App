@@ -84,14 +84,14 @@ module Api
     end
 
     def stale_data?
-      # if resource
-      #   updated_at = raw_json[:updated_at]
-      #   if updated_at
-      #     if resource.updated_at.as_json != updated_at
-      #       return true
-      #     end
-      #   end
-      # end
+      if resource
+        updated_at = raw_json[:updated_at]
+        if updated_at
+          if resource.updated_at.as_json != updated_at
+            return true
+          end
+        end
+      end
       return false
     end
 

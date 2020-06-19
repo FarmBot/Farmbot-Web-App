@@ -4,7 +4,7 @@ module Api
     KLASS = WebAppConfig
     RELATION_NAME = "web_app_config"
 
-    # WebAppConfig is excluded from row
+    # WebAppConfig is excluded from row locking
     def resource
       nil
     end
