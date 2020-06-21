@@ -277,7 +277,8 @@ CREATE TABLE public.devices (
     last_ota timestamp without time zone,
     last_ota_checkup timestamp without time zone,
     ota_hour integer DEFAULT 3,
-    needs_reset boolean DEFAULT false
+    needs_reset boolean DEFAULT false,
+    first_saw_api timestamp without time zone
 );
 
 
@@ -3381,6 +3382,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200204230135'),
 ('20200323235926'),
 ('20200412152208'),
-('20200616172612');
+('20200616172612'),
+('20200621012312');
 
 
