@@ -11,7 +11,7 @@ import {
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";
-import { isNumber } from "lodash";
+import { isNumber, isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 
 export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
@@ -96,6 +96,12 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
             conf={"CAMERA_CALIBRATION_total_rotation_angle"}
             label={t(`Camera rotation`)} />
         </Col>
+      </Row>
+      <Row>
+        <p>{!isUndefined(this.props.calibrationZ)
+          ? `${t("Camera calibrated at z-axis height")}: ${
+          this.props.calibrationZ}`
+          : t("Camera not yet calibrated.")}</p>
       </Row>
     </div>;
   }

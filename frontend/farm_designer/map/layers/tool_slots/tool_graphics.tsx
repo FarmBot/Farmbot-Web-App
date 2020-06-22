@@ -413,13 +413,11 @@ export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
 };
 
 const SeedTrough = (props: ToolGraphicProps) => {
-  const { x, y, hovered, toolTransformProps } = props;
-  const slotLengthX = toolTransformProps.xySwap ? Trough.length : Trough.width;
-  const slotLengthY = toolTransformProps.xySwap ? Trough.width : Trough.length;
+  const { x, y, hovered } = props;
   return <g id={"seed-trough"}>
     <rect
-      x={x - slotLengthX / 2} y={y - slotLengthY / 2}
-      width={slotLengthX} height={slotLengthY}
+      x={x - Trough.width / 2} y={y - Trough.length / 2}
+      width={Trough.width} height={Trough.length}
       fillOpacity={0.5}
       fill={hovered ? Color.darkGray : Color.mediumGray} />
   </g>;

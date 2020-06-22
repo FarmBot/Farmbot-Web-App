@@ -17,6 +17,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { ExpandableHeader } from "../../ui";
 import { destroyAll } from "../../api/crud";
 import { success, error } from "../../toast/toast";
+import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -40,6 +41,13 @@ describe("<DesignerPhotos />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
+  it("shows version", () => {
+    const p = fakeProps();
+    p.versions = { "take-photo": "1.0.0" };
+    const wrapper = mount(<DesignerPhotos {...p} />);
+    expect(wrapper.text()).toContain("1.0.0");
+  });
+
   it("expands sections", () => {
     const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...fakeProps()} />);
     expect(wrapper.state()).toEqual({
@@ -58,8 +66,12 @@ describe("<DesignerPhotos />", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
+    state.bot.hardware.process_info.farmwares = {
+      "My Fake Farmware": fakeFarmwareManifestV1(),
+    };
     const props = mapStateToProps(state);
     expect(props.images.length).toEqual(2);
+    expect(props.versions).toEqual({ "My Fake Farmware": "0.0.0" });
   });
 });
 
