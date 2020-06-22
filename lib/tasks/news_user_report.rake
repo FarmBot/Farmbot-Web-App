@@ -1,7 +1,7 @@
 require_relative "../../app/lib/key_gen"
 
 class NewUserReport
-  EMAILS = (ENV["CUSTOMER_SUPPORT_SUBSCRIBERS"] || "").split(",").map(&:strip).map(&:trim)
+  EMAILS = (ENV["CUSTOMER_SUPPORT_SUBSCRIBERS"] || "").split(",").map(&:strip)
   TPL = <<~HEREDOC
     Below is a list of new installations that need a support check-in:
 
