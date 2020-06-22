@@ -81,10 +81,7 @@ export function GridInput(props: GridInputProps) {
           grid={props.grid} />
         {left == "startX" &&
           <UseCurrentLocation botPosition={props.botPosition}
-            onChange={position => {
-              props.onChange(left, position.x);
-              props.onChange(right, position.y);
-            }} />}
+            onChange={props.onUseCurrentPosition} />}
       </Row>)}
   </div>;
 }

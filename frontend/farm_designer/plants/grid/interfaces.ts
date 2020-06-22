@@ -43,6 +43,7 @@ interface GridInputPropsBase {
 export interface GridInputProps extends GridInputPropsBase {
   disabled: boolean;
   botPosition: BotPosition;
+  onUseCurrentPosition(position: Record<"x" | "y", number>): void;
 }
 
 export interface InputCellProps extends GridInputPropsBase {

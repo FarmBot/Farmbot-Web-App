@@ -11,6 +11,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   resetMCU: jest.fn(() => Promise.resolve()),
   togglePin: jest.fn(() => Promise.resolve()),
   readPin: jest.fn(() => Promise.resolve()),
+  writePin: jest.fn(() => Promise.resolve()),
   home: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve())
@@ -270,6 +271,16 @@ describe("readPin()", function () {
     await actions.readPin(1, "label", 0);
     expect(mockDevice.current.readPin).toHaveBeenCalledWith({
       pin_number: 1, label: "label", pin_mode: 0,
+    });
+    expect(success).not.toHaveBeenCalled();
+  });
+});
+
+describe("writePin()", function () {
+  it("calls writePin", async () => {
+    await actions.writePin(1, 1, 0);
+    expect(mockDevice.current.writePin).toHaveBeenCalledWith({
+      pin_number: 1, pin_value: 1, pin_mode: 0,
     });
     expect(success).not.toHaveBeenCalled();
   });

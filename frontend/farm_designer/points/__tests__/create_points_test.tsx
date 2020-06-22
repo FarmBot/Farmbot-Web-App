@@ -1,6 +1,6 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
-jest.mock("../../../farmware/weed_detector/actions", () => ({
+jest.mock("../../../api/delete_points", () => ({
   deletePoints: jest.fn()
 }));
 
@@ -19,7 +19,7 @@ import {
   mapStateToProps,
 } from "../create_points";
 import { initSave } from "../../../api/crud";
-import { deletePoints } from "../../../farmware/weed_detector/actions";
+import { deletePoints } from "../../../api/delete_points";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeState } from "../../../__test_support__/fake_state";

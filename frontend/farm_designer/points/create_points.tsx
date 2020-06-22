@@ -13,7 +13,7 @@ import {
 } from "../../ui/index";
 import { DrawnPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
-import { deletePoints } from "../../farmware/weed_detector/actions";
+import { deletePoints } from "../../api/delete_points";
 import { GenericPointer, WeedPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,

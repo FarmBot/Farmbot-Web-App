@@ -1,7 +1,8 @@
 import * as React from "react";
 import { DetectorState } from "./interfaces";
 import { Row, Col } from "../../ui/index";
-import { deletePoints, scanImage, detectPlants } from "./actions";
+import { scanImage, detectPlants } from "./actions";
+import { deletePoints } from "../../api/delete_points";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
 import { WeedDetectorProps, Feature } from "../../devices/interfaces";
@@ -67,7 +68,8 @@ export class WeedDetector
           <button
             className={`fb-button green ${camDisabled.class}`}
             title={camDisabled.title}
-            onClick={camDisabled.click || this.props.dispatch(detectPlants)}>
+            onClick={camDisabled.click ||
+              detectPlants(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}>
             {t("detect weeds")}
           </button>
         </MustBeOnline>
@@ -83,7 +85,7 @@ export class WeedDetector
           <ImageWorkspace
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-            onProcessPhoto={id => this.props.dispatch(scanImage(id))}
+            onProcessPhoto={scanImage}
             onFlip={uuid => this.props.dispatch(selectImage(uuid))}
             currentImage={this.props.currentImage}
             images={this.props.images}
