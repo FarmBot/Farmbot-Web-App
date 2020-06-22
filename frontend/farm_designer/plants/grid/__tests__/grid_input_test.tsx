@@ -12,6 +12,7 @@ describe("<GridInput/>", () => {
     onChange: jest.fn(() => jest.fn()),
     preview: jest.fn(),
     botPosition: { x: undefined, y: undefined, z: undefined },
+    onUseCurrentPosition: jest.fn(),
   });
 
   it("renders", () => {
@@ -25,8 +26,7 @@ describe("<GridInput/>", () => {
     p.botPosition = { x: 1, y: 2, z: 3 };
     const wrapper = mount(<GridInput {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(p.onChange).toHaveBeenCalledWith("startX", 1);
-    expect(p.onChange).toHaveBeenCalledWith("startY", 2);
+    expect(p.onUseCurrentPosition).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("doesn't use current location", () => {

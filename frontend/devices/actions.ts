@@ -357,6 +357,15 @@ export function readPin(
     .then(noop, commandErr(noun));
 }
 
+export function writePin(
+  pin_number: number, pin_value: number, pin_mode: ALLOWED_PIN_MODES,
+) {
+  const noun = t("Write pin");
+  return getDevice()
+    .writePin({ pin_number, pin_mode, pin_value })
+    .then(noop, commandErr(noun));
+}
+
 export function homeAll(speed: number) {
   const noun = t("'Home All' command");
   getDevice()

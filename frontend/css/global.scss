@@ -1397,6 +1397,16 @@ ul {
   }
 }
 
+.peripheral-list {
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp3-slider {
+      min-width: 100%;
+    }
+  }
+}
+
 .farmware-step-input-fields {
   label {
     padding-top: 1rem;

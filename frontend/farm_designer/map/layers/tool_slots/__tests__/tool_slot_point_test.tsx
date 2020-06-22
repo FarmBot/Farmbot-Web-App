@@ -129,7 +129,7 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#seed-trough").find("rect").props().width)
-      .toEqual(45);
+      .toEqual(20);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
       .toEqual(24);
   });

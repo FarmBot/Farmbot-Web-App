@@ -48,7 +48,7 @@ export class CameraCalibration extends
           <button
             className={`fb-button green ${camDisabled.class}`}
             title={camDisabled.title}
-            onClick={camDisabled.click || this.props.dispatch(calibrate)}>
+            onClick={camDisabled.click || calibrate}>
             {t("Calibrate")}
           </button>
         </MustBeOnline>
@@ -69,7 +69,7 @@ export class CameraCalibration extends
             <ImageWorkspace
               botOnline={
                 isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-              onProcessPhoto={id => this.props.dispatch(scanImage(id))}
+              onProcessPhoto={scanImage}
               onFlip={this.onFlip}
               images={this.props.images}
               currentImage={this.props.currentImage}
@@ -88,6 +88,7 @@ export class CameraCalibration extends
                 this.props.wDEnv)} />}
           <WeedDetectorConfig
             values={this.props.wDEnv}
+            calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
             onChange={this.saveEnvVar} />
         </Col>
       </Row>
