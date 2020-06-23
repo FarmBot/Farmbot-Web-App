@@ -129,8 +129,19 @@ nav {
   overflow: hidden;
   .connection-status-popover {
     display: inline;
+    .connectivity-button {
+      display: inline;
+      border: 1px solid $white;
+      border-radius: 5px;
+      padding: 0.8rem;
+      font-weight: bold;
+      color: $white;
+      &:hover {
+        background: $medium_gray;
+      }
+    }
     .bp3-popover-wrapper {
-      margin: 1.85rem;
+      margin: 1.3rem;
     }
   }
   a {

@@ -247,12 +247,17 @@ const reformatDatetime = (datetime: string, timeSettings: TimeSettings) =>
     .utcOffset(timeSettings.utcOffset)
     .format(`MMMM D, ${timeFormatString(timeSettings)}`);
 
-const reformatFwVersion = (firmwareVersion: string | undefined): string => {
-  const version = firmwareVersion ?
-    firmwareVersion.split(".").slice(0, 3).join(".") : "none";
-  const board = FIRMWARE_CHOICES_DDI[boardType(firmwareVersion)]?.label || "";
-  return version == "none" ? "---" : `${version} ${board}`;
-};
+export const reformatFwVersion =
+  (firmwareVersion: string | undefined): string => {
+    const version = firmwareVersion ?
+      firmwareVersion.split(".").slice(0, 3).join(".") : "none";
+    const displayVersion = version.includes("---") ? version : `v${version}`;
+    const board = FIRMWARE_CHOICES_DDI[boardType(firmwareVersion)]?.label || "";
+    return version == "none" ? "---" : `${displayVersion} ${board}`;
+  };
+
+export const reformatFbosVersion = (fbosVersion: string | undefined): string =>
+  fbosVersion ? "v" + fbosVersion : t("unknown");
 
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {

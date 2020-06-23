@@ -18,7 +18,7 @@ export interface StatusRowProps {
 const colorLookup: CowardlyDictionary<string> = {
   true: "green",
   false: "red",
-  undefined: "yellow"
+  undefined: "gray"
 };
 
 const iconLookup: CowardlyDictionary<string> = {
@@ -31,7 +31,7 @@ export function ConnectivityRow(props: StatusRowProps) {
   const { connectionStatus, connectionName, hoveredConnection } = props;
   const colorClass = colorLookup["" + connectionStatus];
   const connectorColorClass = connectionName === "botFirmware" &&
-    colorClass === "yellow" ? "red" : colorClass;
+    colorClass === "gray" ? "red" : colorClass;
   const hoverClass = hoveredConnection === connectionName ? "hover" : "";
   const hoverOver = props.hover ? props.hover : () => { };
   const className = props.header

@@ -112,7 +112,7 @@ describe("getLineProps()", () => {
 
 describe("getConnectionColor()", () => {
   it("unknown", () => {
-    expect(getConnectionColor(undefined)).toEqual(Color.yellow);
+    expect(getConnectionColor(undefined)).toEqual(Color.gray);
   });
   it("error", () => {
     expect(getConnectionColor(false)).toEqual(Color.red);

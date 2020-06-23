@@ -151,6 +151,11 @@ fieldset {
 }
 
 .diagnosis-indicator {
+  &.nav {
+    display: inline-block;
+    top: 0.5rem;
+    margin-left: 1rem;
+  }
   text-align: center !important;
   i {
     display: block;
@@ -215,7 +220,7 @@ fieldset {
   .saucer {
     position: absolute;
     top: 2px;
-    right: 1rem;
+    right: 0.5rem;
     height: 1rem;
     width: 1rem;
     cursor: default;
