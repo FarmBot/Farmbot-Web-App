@@ -680,6 +680,10 @@ export namespace Content {
     movement and watering history while the map is open. Toggling this setting
     will clear data for the current trail.`);
 
+  export const MAP_MISSED_STEPS =
+    trim(`Display missed step indicators in map. Requires stall detection
+    to be enabled.`);
+
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
@@ -1075,6 +1079,7 @@ export enum DeviceSetting {
   farmDesigner = `Farm Designer`,
   animations = `Plant animations`,
   trail = `Virtual FarmBot trail`,
+  mapMissedSteps = `FarmBot motor load`,
   dynamicMap = `Dynamic map size`,
   mapSize = `Map size`,
   rotateMap = `Rotate map`,

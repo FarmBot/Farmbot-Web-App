@@ -15,7 +15,8 @@ describe("<PeripheralForm/>", () => {
       body: {
         id: 2,
         pin: 13,
-        label: "GPIO 13 - LED"
+        label: "GPIO 13 - LED",
+        mode: 0,
       }
     },
     {
@@ -25,7 +26,8 @@ describe("<PeripheralForm/>", () => {
       body: {
         id: 1,
         pin: 2,
-        label: "GPIO 2"
+        label: "GPIO 2",
+        mode: 0,
       }
     },
   ];

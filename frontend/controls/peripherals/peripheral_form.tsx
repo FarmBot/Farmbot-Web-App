@@ -4,7 +4,6 @@ import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
 import { DeleteButton } from "../../ui/delete_button";
 import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
-import { Sensor } from "farmbot/dist/resources/api_resources";
 
 export const PeripheralForm = (props: PeripheralFormProps) =>
   <div className="peripheral-form">
@@ -25,7 +24,7 @@ export const PeripheralForm = (props: PeripheralFormProps) =>
         <Col xs={3}>
           <ModeDropdown
             dispatch={props.dispatch}
-            value={(peripheral.body as Sensor).mode}
+            value={peripheral.body.mode}
             resource={peripheral} />
         </Col>
         <Col xs={2}>

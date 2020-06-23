@@ -14,7 +14,6 @@ import {
   SpecialStatus,
 } from "farmbot";
 import { Pins } from "farmbot/dist";
-import { Sensor } from "farmbot/dist/resources/api_resources";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
 
@@ -28,7 +27,8 @@ describe("<PeripheralList/>", function () {
         body: {
           id: 2,
           pin: 13,
-          label: "GPIO 13 - LED"
+          label: "GPIO 13 - LED",
+          mode: 0,
         }
       },
       {
@@ -38,7 +38,8 @@ describe("<PeripheralList/>", function () {
         body: {
           id: 1,
           pin: 2,
-          label: "GPIO 2"
+          label: "GPIO 2",
+          mode: 0,
         }
       },
     ];
@@ -80,7 +81,7 @@ describe("<PeripheralList/>", function () {
 
   it("renders analog peripherals", () => {
     const p = fakeProps();
-    (p.peripherals[0].body as Sensor).mode = 1;
+    p.peripherals[0].body.mode = 1;
     const wrapper = shallow(<PeripheralList {...p} />);
     wrapper.find(Slider).simulate("change", 128);
     expect(mockDevice.writePin).toHaveBeenCalledWith({

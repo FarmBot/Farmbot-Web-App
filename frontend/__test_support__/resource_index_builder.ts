@@ -160,7 +160,8 @@ const tr6: TaggedResource = {
   "body": {
     "id": 11,
     "pin": 13,
-    "label": "LED"
+    "label": "LED",
+    "mode": 0,
   },
   "uuid": "Peripheral.11.5"
 };
@@ -299,7 +300,6 @@ const tr14: TaggedResource = {
   "body": {
     "id": 14,
     "name": "Trench Digging Tool",
-    "status": "active"
   },
   "uuid": "Tool.14.49"
 };
@@ -310,7 +310,6 @@ const tr15: TaggedResource = {
   "body": {
     "id": 15,
     "name": "Berry Picking Tool",
-    "status": "inactive"
   },
   "uuid": "Tool.15.50"
 };

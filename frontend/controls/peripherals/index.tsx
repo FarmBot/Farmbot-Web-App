@@ -13,6 +13,7 @@ import { saveAll, init } from "../../api/crud";
 import { ToolTips, Content } from "../../constants";
 import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { DIGITAL } from "farmbot";
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {
@@ -55,8 +56,9 @@ export class Peripherals
   newPeripheral = (
     pin: number | undefined = undefined,
     label = t("New Peripheral"),
+    mode = DIGITAL,
   ) => {
-    this.props.dispatch(init("Peripheral", { pin, label }));
+    this.props.dispatch(init("Peripheral", { pin, label, mode }));
   };
 
   get stockPeripherals() {

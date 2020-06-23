@@ -5,7 +5,6 @@ import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
 import { ToggleButton } from "../toggle_button";
 import { t } from "../../i18next_wrapper";
-import { Sensor } from "farmbot/dist/resources/api_resources";
 import { Slider } from "@blueprintjs/core";
 
 export const PeripheralList = (props: PeripheralListProps) =>
@@ -21,7 +20,7 @@ export const PeripheralList = (props: PeripheralListProps) =>
           <p>{"" + peripheral.body.pin}</p>
         </Col>
         <Col xs={4}>
-          {(peripheral.body as Sensor).mode == 1
+          {peripheral.body.mode == 1
             ? <div className={"slider-container"}>
               <Slider
                 disabled={!!props.disabled}
