@@ -7,6 +7,7 @@ describe("<WeedDetectorConfig />", () => {
   const fakeProps = (): SettingsMenuProps => ({
     values: {},
     onChange: jest.fn(),
+    calibrationZ: undefined,
   });
 
   it("renders", () => {
@@ -16,8 +17,19 @@ describe("<WeedDetectorConfig />", () => {
       "Calibration Object Separation along axis",
       "Camera Offset X", "Camera Offset Y",
       "Origin Location in Image", "Bottom Left",
-      "Pixel coordinate scale", "Camera rotation"]
+      "Pixel coordinate scale", "Camera rotation",
+      "Camera not yet calibrated"]
       .map(string => expect(wrapper.text()).toContain(string));
+  });
+
+  it("renders z-height", () => {
+    const p = fakeProps();
+    p.calibrationZ = "1.1";
+    const wrapper = mount(<WeedDetectorConfig {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .not.toContain("camera not yet calibrated");
+    expect(wrapper.text().toLowerCase())
+      .toContain("camera calibrated at z-axis height: 1.1");
   });
 
   it("changes axis value", () => {

@@ -285,6 +285,10 @@ fieldset {
   }
 }
 
+.farmbot-os-details {
+  max-width: 350px;
+}
+
 .os-release-channel {
   width: 100%;
   margin-bottom: 0.5rem;
@@ -1394,6 +1398,16 @@ ul {
 .toolbay-widget {
   .del-button {
     margin-top: 0.5rem;
+  }
+}
+
+.peripheral-list {
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp3-slider {
+      min-width: 100%;
+    }
   }
 }
 

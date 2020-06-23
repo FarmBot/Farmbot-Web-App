@@ -39,9 +39,14 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     return numPlantsH * numPlantsV;
   }
 
-  onchange = (key: PlantGridKey, val: number) => {
+  onChange = (key: PlantGridKey, val: number) => {
     const grid = { ...this.state.grid, [key]: val };
     this.setState({ grid });
+  };
+
+  onUseCurrentPosition = (position: Record<"x" | "y", number>) => {
+    const grid = { ...this.state.grid, startX: position.x, startY: position.y };
+    this.setState({ grid }, this.performPreview);
   };
 
   confirmUnsaved = () => {
@@ -125,7 +130,8 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         disabled={this.state.status === "dirty"}
         grid={this.state.grid}
         botPosition={this.props.botPosition}
-        onChange={this.onchange}
+        onChange={this.onChange}
+        onUseCurrentPosition={this.onUseCurrentPosition}
         preview={this.performPreview} />
       <label className="packing-method">{t("hexagonal packing")}</label>
       <ToggleButton

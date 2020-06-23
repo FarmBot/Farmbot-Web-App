@@ -97,8 +97,18 @@ describe("PlantGrid", () => {
   it("handles data changes", () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
-    wrapper.instance().onchange("numPlantsH", 6);
+    wrapper.instance().onChange("numPlantsH", 6);
     expect(wrapper.state().grid.numPlantsH).toEqual(6);
+  });
+
+  it("uses current position", () => {
+    const props = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    expect(wrapper.state().grid.startX).toEqual(100);
+    expect(wrapper.state().grid.startY).toEqual(100);
+    wrapper.instance().onUseCurrentPosition({ x: 1, y: 2 });
+    expect(wrapper.state().grid.startX).toEqual(1);
+    expect(wrapper.state().grid.startY).toEqual(2);
   });
 
   it("toggles packing method", () => {
