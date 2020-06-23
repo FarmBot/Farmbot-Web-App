@@ -72,7 +72,7 @@ export function nodeLabel(
 export function getConnectionColor(status: boolean | undefined) {
   const colorOk = Color.green;
   const colorError = Color.red;
-  const colorUnknown = Color.yellow;
+  const colorUnknown = Color.gray;
   switch (status) {
     case undefined: return colorUnknown;
     case true: return colorOk;

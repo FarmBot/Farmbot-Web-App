@@ -6,6 +6,7 @@ import { Row, Col } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
+  reformatFwVersion, reformatFbosVersion,
 } from "../components/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
@@ -14,6 +15,7 @@ import { refresh } from "../../api/crud";
 import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
+import { getKitName } from "../components/firmware_hardware_support";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -43,8 +45,10 @@ export class Connectivity
   render() {
     const { informational_settings } = this.props.bot.hardware;
     const {
-      soc_temp, wifi_level, throttled, wifi_level_percent
+      soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
+      firmware_version,
     } = informational_settings;
+    const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
       <Row>
         <Col md={12} lg={4}>
@@ -53,7 +57,15 @@ export class Connectivity
             hover={this.hover}
             hoveredConnection={this.state.hoveredConnection} />
           <div className="fbos-info">
-            <label>{t("Raspberry Pi Info")}</label>
+            <label>{t("FarmBot Info")}</label>
+            <p><b>{t("Device ID")}: </b>{id}</p>
+            {controller_version
+              ? <p><b>{t("Version")}: </b>{
+                reformatFbosVersion(controller_version)}</p>
+              : <p><b>{t("Version last seen")}: </b>{
+                reformatFbosVersion(fbos_version)}</p>}
+            <p><b>{t("Model")}: </b>{getKitName(this.props.apiFirmwareValue)}</p>
+            <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
             <ChipTemperatureDisplay temperature={soc_temp} />
             <WiFiStrengthDisplay wifiStrength={wifi_level}
               wifiStrengthPercent={wifi_level_percent} />

@@ -53,6 +53,13 @@ export const getBoardCategory =
     return boardIdentifier === "R" ? "Arduino" : "Farmduino";
   };
 
+export const getBoardCategoryFromFwHw =
+  (firmwareHardware: FirmwareHardware | undefined):
+    "Farmduino" | "Arduino" | "None" => {
+    if (firmwareHardware === "none") { return "None"; }
+    return firmwareHardware === "arduino" ? "Arduino" : "Farmduino";
+  };
+
 export const getKitName =
   (firmwareHardware: FirmwareHardware | undefined): KitLabels => {
     return KIT_LOOKUP[firmwareHardware || "unknown"];

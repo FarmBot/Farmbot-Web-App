@@ -8,13 +8,14 @@ jest.mock("../../../device", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { PeripheralList } from "../peripheral_list";
+import {
+  PeripheralList, AnalogSlider, AnalogSliderProps,
+} from "../peripheral_list";
 import {
   TaggedPeripheral,
   SpecialStatus,
 } from "farmbot";
 import { Pins } from "farmbot/dist";
-import { Sensor } from "farmbot/dist/resources/api_resources";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
 
@@ -28,7 +29,8 @@ describe("<PeripheralList/>", function () {
         body: {
           id: 2,
           pin: 13,
-          label: "GPIO 13 - LED"
+          label: "GPIO 13 - LED",
+          mode: 0,
         }
       },
       {
@@ -38,7 +40,8 @@ describe("<PeripheralList/>", function () {
         body: {
           id: 1,
           pin: 2,
-          label: "GPIO 2"
+          label: "GPIO 2",
+          mode: 0,
         }
       },
     ];
@@ -80,12 +83,9 @@ describe("<PeripheralList/>", function () {
 
   it("renders analog peripherals", () => {
     const p = fakeProps();
-    (p.peripherals[0].body as Sensor).mode = 1;
+    p.peripherals[0].body.mode = 1;
     const wrapper = shallow(<PeripheralList {...p} />);
-    wrapper.find(Slider).simulate("change", 128);
-    expect(mockDevice.writePin).toHaveBeenCalledWith({
-      pin_number: 13, pin_value: 128, pin_mode: 1
-    });
+    expect(wrapper.find("AnalogSlider").length).toEqual(1);
   });
 
   it("toggles pins", () => {
@@ -106,5 +106,36 @@ describe("<PeripheralList/>", function () {
     toggle.first().simulate("click");
     toggle.last().simulate("click");
     expect(mockDevice.togglePin).not.toHaveBeenCalled();
+  });
+});
+
+describe("<AnalogSlider />", () => {
+  const fakeProps = (): AnalogSliderProps => ({
+    disabled: undefined,
+    pin: undefined,
+    initialValue: undefined,
+  });
+
+  it("changes value", () => {
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    expect(wrapper.state().value).toEqual(0);
+    wrapper.find(Slider).simulate("change", 128);
+    expect(wrapper.state().value).toEqual(128);
+  });
+
+  it("sends value", () => {
+    const p = fakeProps();
+    p.pin = 13;
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...p} />);
+    wrapper.find(Slider).simulate("release", 128);
+    expect(mockDevice.writePin).toHaveBeenCalledWith({
+      pin_number: 13, pin_value: 128, pin_mode: 1
+    });
+  });
+
+  it("doesn't send value", () => {
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    wrapper.find(Slider).simulate("release", 128);
+    expect(mockDevice.writePin).not.toHaveBeenCalled();
   });
 });

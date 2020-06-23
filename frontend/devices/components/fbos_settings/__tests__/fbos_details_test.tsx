@@ -3,7 +3,7 @@ jest.mock("../../../actions", () => ({ updateConfig: jest.fn() }));
 import * as React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
-  BetaReleaseOptInButtonProps, BetaReleaseOptIn,
+  BetaReleaseOptInButtonProps, BetaReleaseOptIn, reformatFwVersion, reformatFbosVersion,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
@@ -279,5 +279,29 @@ describe("colorFromThrottle()", () => {
   });
   it("hasn't been throttled", () => {
     expect(colorFromThrottle("0x0", ThrottleType.Throttled)).toEqual("green");
+  });
+});
+
+describe("reformatFwVersion()", () => {
+  it("returns version string", () => {
+    expect(reformatFwVersion("1.0.0.R"))
+      .toEqual("v1.0.0 Arduino/RAMPS (Genesis v1.2)");
+    expect(reformatFwVersion("1.0.0.F.x"))
+      .toEqual("v1.0.0 Farmduino (Genesis v1.3)");
+  });
+
+  it("returns null version string", () => {
+    expect(reformatFwVersion(undefined)).toEqual("---");
+    expect(reformatFwVersion("---")).toEqual("--- ");
+  });
+});
+
+describe("reformatFbosVersion()", () => {
+  it("returns version string", () => {
+    expect(reformatFbosVersion("1.0.0-rc1")).toEqual("v1.0.0-rc1");
+  });
+
+  it("returns null version string", () => {
+    expect(reformatFbosVersion(undefined)).toEqual("unknown");
   });
 });

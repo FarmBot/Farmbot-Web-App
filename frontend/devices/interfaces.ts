@@ -1,7 +1,7 @@
 import { AuthState } from "../auth/interfaces";
 import {
   BotStateTree, ConfigurationName,
-  McuParamName, SyncStatus, LocationName,
+  McuParamName, SyncStatus,
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
@@ -11,6 +11,7 @@ import {
   FirmwareHardware,
   Alert,
   Xyz,
+  LocationData,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -152,13 +153,7 @@ export interface MoveRelProps {
 export type Axis = Xyz | "all";
 
 export type BotPosition = Record<Xyz, number | undefined>;
-export type AxisState =
-  "idle" | "begin" | "accelerate" | "cruise" | "decelerate" | "stop" | "crawl";
-type LocationData = Record<LocationName, BotPosition>;
-export interface BotLocationData extends LocationData {
-  load?: BotPosition;
-  axis_states?: Record<Xyz, AxisState | undefined>;
-}
+export type BotLocationData = LocationData;
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 

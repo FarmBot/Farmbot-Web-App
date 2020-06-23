@@ -71,14 +71,14 @@ describe("botToFirmware()", () => {
   it("handles connectivity", () => {
     const output = botToFirmware("0.0.0.R", "arduino");
     expect(output.connectionStatus).toBe(true);
-    expect(output.to).toContain("Genesis v1.2");
+    expect(output.to).toContain("Arduino");
     expect(output.connectionMsg).toContain("Connected");
   });
 
   it("returns board name", () => {
-    expect(botToFirmware("0.0.0.F", "farmduino").to).toContain("Genesis v1.3");
-    expect(botToFirmware("0.0.0.G", "farmduino_k14").to).toContain("Genesis v1.4");
-    expect(botToFirmware("0.0.0.E", "express_k10").to).toContain("Express v1.0");
+    expect(botToFirmware("0.0.0.F", "farmduino").to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.G", "farmduino_k14").to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.E", "express_k10").to).toContain("Farmduino");
   });
 
   it("board undefined", () => {

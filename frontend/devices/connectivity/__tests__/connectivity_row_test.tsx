@@ -14,7 +14,7 @@ describe("<ConnectivityRow/>", () => {
   });
 
   it("renders saucer color: unknown", () => {
-    expectCSS("yellow", undefined);
+    expectCSS("gray", undefined);
   });
 
   it("renders saucer color: ok", () => {
@@ -47,7 +47,7 @@ describe("<ConnectivityRow/>", () => {
       from="A" to="B"
       connectionStatus={undefined}
       connectionName="botFirmware" />);
-    expect(el.find(".yellow").length).toBe(1);
+    expect(el.find(".gray").length).toBe(1);
     expect(el.find(".red").length).toBe(1);
   });
 });

@@ -52,7 +52,7 @@ const peripheral: TaggedPeripheral = {
   kind: "Peripheral",
   uuid: "---",
   specialStatus: SpecialStatus.SAVED,
-  body: { id: 99, pin: 13, label: "My peripheral" }
+  body: { id: 99, pin: 13, label: "My peripheral", mode: 0 }
 };
 
 const resources = buildResourceIndex([seedSequence, peripheral]);

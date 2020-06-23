@@ -85,4 +85,24 @@ describe("NavBar", () => {
     wrapper.instance().componentDidUpdate();
     expect(refresh).not.toHaveBeenCalled();
   });
+
+  it("displays connectivity saucer", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const wrapper = mount(<NavBar {...fakeProps()} />);
+    expect(wrapper.find(".saucer").length).toEqual(2);
+    expect(wrapper.text().toLowerCase()).not.toContain("connectivity");
+  });
+
+  it("displays connectivity saucer and button", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    const wrapper = mount(<NavBar {...fakeProps()} />);
+    expect(wrapper.find(".saucer").length).toEqual(2);
+    expect(wrapper.text().toLowerCase()).toContain("connectivity");
+  });
 });

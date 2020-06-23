@@ -5,14 +5,12 @@ import { last, isNumber, isString } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig } from "../../interfaces";
-import { ConfigurationName } from "farmbot";
 import { t } from "../../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
 import { Popover } from "@blueprintjs/core";
 import moment from "moment";
 import { timeFormatString } from "../../../util";
 import { TimeSettings } from "../../../interfaces";
-import { StringConfigKey } from "farmbot/dist/resources/configs/fbos";
 import { boardType, FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../../external_urls";
 
@@ -224,7 +222,7 @@ export interface BetaReleaseOptInButtonProps {
 export const BetaReleaseOptIn = (
   { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps,
 ): JSX.Element => {
-  const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName).value;
+  const betaOptIn = sourceFbosConfig("update_channel").value;
   return <fieldset className={"os-release-channel"}>
     <label>
       {t("OS release channel")}
@@ -233,7 +231,7 @@ export const BetaReleaseOptIn = (
       selectedItem={{ label: t("" + betaOptIn), value: "" + betaOptIn }}
       onChange={ddi =>
         (ddi.value == "stable" || confirm(Content.OS_BETA_RELEASES)) &&
-        dispatch(updateConfig({ ["update_channel" as StringConfigKey]: ddi.value }))}
+        dispatch(updateConfig({ update_channel: "" + ddi.value }))}
       list={[
         { label: t("stable"), value: "stable" },
         { label: t("beta"), value: "beta" },
@@ -249,12 +247,17 @@ const reformatDatetime = (datetime: string, timeSettings: TimeSettings) =>
     .utcOffset(timeSettings.utcOffset)
     .format(`MMMM D, ${timeFormatString(timeSettings)}`);
 
-const reformatFwVersion = (firmwareVersion: string | undefined): string => {
-  const version = firmwareVersion ?
-    firmwareVersion.split(".").slice(0, 3).join(".") : "none";
-  const board = FIRMWARE_CHOICES_DDI[boardType(firmwareVersion)]?.label || "";
-  return version == "none" ? "---" : `${version} ${board}`;
-};
+export const reformatFwVersion =
+  (firmwareVersion: string | undefined): string => {
+    const version = firmwareVersion ?
+      firmwareVersion.split(".").slice(0, 3).join(".") : "none";
+    const displayVersion = version.includes("---") ? version : `v${version}`;
+    const board = FIRMWARE_CHOICES_DDI[boardType(firmwareVersion)]?.label || "";
+    return version == "none" ? "---" : `${displayVersion} ${board}`;
+  };
+
+export const reformatFbosVersion = (fbosVersion: string | undefined): string =>
+  fbosVersion ? "v" + fbosVersion : t("unknown");
 
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {
@@ -265,7 +268,7 @@ export function FbosDetails(props: FbosDetailsProps) {
   } = props.botInfoSettings;
   const { last_ota, last_ota_checkup, fbos_version } = props.deviceAccount.body;
   const firmware_path =
-    props.sourceFbosConfig("firmware_path" as ConfigurationName).value || "---";
+    props.sourceFbosConfig("firmware_path").value || "---";
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
   const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
