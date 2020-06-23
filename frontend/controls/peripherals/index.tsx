@@ -56,9 +56,8 @@ export class Peripherals
   newPeripheral = (
     pin: number | undefined = undefined,
     label = t("New Peripheral"),
-    mode = DIGITAL,
   ) => {
-    this.props.dispatch(init("Peripheral", { pin, label, mode }));
+    this.props.dispatch(init("Peripheral", { pin, label, mode: DIGITAL }));
   };
 
   get stockPeripherals() {

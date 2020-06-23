@@ -6,6 +6,7 @@ import { Row, Col } from "../../ui";
 import { ToggleButton } from "../toggle_button";
 import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
+import { ANALOG } from "farmbot";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list">
@@ -21,16 +22,10 @@ export const PeripheralList = (props: PeripheralListProps) =>
         </Col>
         <Col xs={4}>
           {peripheral.body.mode == 1
-            ? <div className={"slider-container"}>
-              <Slider
-                disabled={!!props.disabled}
-                min={0}
-                max={255}
-                labelStepSize={255}
-                value={toggleValue}
-                onChange={value =>
-                  peripheral.body.pin && writePin(peripheral.body.pin, value, 1)} />
-            </div>
+            ? <AnalogSlider
+              initialValue={toggleValue}
+              pin={peripheral.body.pin}
+              disabled={props.disabled} />
             : <ToggleButton
               toggleValue={toggleValue}
               toggleAction={() =>
@@ -42,3 +37,31 @@ export const PeripheralList = (props: PeripheralListProps) =>
       </Row>;
     })}
   </div>;
+
+export interface AnalogSliderProps {
+  disabled: boolean | undefined;
+  pin: number | undefined;
+  initialValue: number | undefined;
+}
+
+interface AnalogSliderState {
+  value: number;
+}
+
+export class AnalogSlider
+  extends React.Component<AnalogSliderProps, AnalogSliderState> {
+  state: AnalogSliderState = { value: 0 };
+  render() {
+    const { pin } = this.props;
+    return <div className={"slider-container"}>
+      <Slider
+        disabled={!!this.props.disabled}
+        min={0}
+        max={255}
+        labelStepSize={255}
+        value={this.state.value}
+        onChange={value => this.setState({ value })}
+        onRelease={value => pin && writePin(pin, value, ANALOG)} />
+    </div>;
+  }
+}

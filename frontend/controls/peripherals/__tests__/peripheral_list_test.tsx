@@ -8,7 +8,9 @@ jest.mock("../../../device", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { PeripheralList } from "../peripheral_list";
+import {
+  PeripheralList, AnalogSlider, AnalogSliderProps,
+} from "../peripheral_list";
 import {
   TaggedPeripheral,
   SpecialStatus,
@@ -83,10 +85,7 @@ describe("<PeripheralList/>", function () {
     const p = fakeProps();
     p.peripherals[0].body.mode = 1;
     const wrapper = shallow(<PeripheralList {...p} />);
-    wrapper.find(Slider).simulate("change", 128);
-    expect(mockDevice.writePin).toHaveBeenCalledWith({
-      pin_number: 13, pin_value: 128, pin_mode: 1
-    });
+    expect(wrapper.find("AnalogSlider").length).toEqual(1);
   });
 
   it("toggles pins", () => {
@@ -107,5 +106,36 @@ describe("<PeripheralList/>", function () {
     toggle.first().simulate("click");
     toggle.last().simulate("click");
     expect(mockDevice.togglePin).not.toHaveBeenCalled();
+  });
+});
+
+describe("<AnalogSlider />", () => {
+  const fakeProps = (): AnalogSliderProps => ({
+    disabled: undefined,
+    pin: undefined,
+    initialValue: undefined,
+  });
+
+  it("changes value", () => {
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    expect(wrapper.state().value).toEqual(0);
+    wrapper.find(Slider).simulate("change", 128);
+    expect(wrapper.state().value).toEqual(128);
+  });
+
+  it("sends value", () => {
+    const p = fakeProps();
+    p.pin = 13;
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...p} />);
+    wrapper.find(Slider).simulate("release", 128);
+    expect(mockDevice.writePin).toHaveBeenCalledWith({
+      pin_number: 13, pin_value: 128, pin_mode: 1
+    });
+  });
+
+  it("doesn't send value", () => {
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    wrapper.find(Slider).simulate("release", 128);
+    expect(mockDevice.writePin).not.toHaveBeenCalled();
   });
 });
