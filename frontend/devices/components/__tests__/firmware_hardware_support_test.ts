@@ -1,4 +1,6 @@
-import { boardType, getFwHardwareValue, getBoardCategory } from "../firmware_hardware_support";
+import {
+  boardType, getFwHardwareValue, getBoardCategory, hasSensors,
+} from "../firmware_hardware_support";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("boardType()", () => {
@@ -54,5 +56,17 @@ describe("getBoardCategory()", () => {
     expect(getBoardCategory("1.0.0.R")).toEqual("Arduino");
     expect(getBoardCategory("1.0.0.X")).toEqual("Farmduino");
     expect(getBoardCategory(undefined)).toEqual("Farmduino");
+  });
+});
+
+describe("hasSensors()", () => {
+  it("has sensors", () => {
+    expect(hasSensors(undefined)).toEqual(true);
+    expect(hasSensors("arduino")).toEqual(true);
+    expect(hasSensors("farmduino")).toEqual(true);
+  });
+
+  it("doesn't have sensors", () => {
+    expect(hasSensors("express_k10")).toEqual(false);
   });
 });

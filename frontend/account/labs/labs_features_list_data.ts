@@ -46,7 +46,7 @@ export const fetchLabFeatures =
       value: false
     },
     {
-      name: t("Hide Sensors widget"),
+      name: t("Hide Sensors panel"),
       description: t(Content.HIDE_SENSORS_WIDGET),
       storageKey: BooleanSetting.hide_sensors,
       value: false

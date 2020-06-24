@@ -13,7 +13,9 @@ import {
   handleCreateOrUpdate,
 } from "../auto_sync";
 import { destroyOK } from "../../resources/actions";
-import { SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData } from "../interfaces";
+import {
+  SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData,
+} from "../interfaces";
 import { unpackUUID } from "../../util";
 import { TaggedSequence } from "farmbot";
 

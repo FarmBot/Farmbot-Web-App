@@ -48,7 +48,21 @@ describe("<Highlight />", () => {
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
-  it("hides", () => {
+  it("doesn't hide: content matches search term", () => {
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "speed";
+    const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
+  it("hides: not section header", () => {
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "speed";
+    const p = fakeProps();
+    p.className = undefined;
+    const wrapper = mount(<Highlight {...p} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(true);
+  });
+
+  it("hides: doesn't match search term", () => {
     mockState.resources.consumers.farm_designer.settingsSearchTerm = "encoder";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(true);

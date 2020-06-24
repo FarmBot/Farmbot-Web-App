@@ -534,11 +534,11 @@ export namespace Content {
 
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
-    widget from the Controls page.`);
+    widget from the Controls panel.`);
 
   export const HIDE_SENSORS_WIDGET =
     trim(`If not using sensors, use this setting to remove the
-    widget from the Controls page.`);
+    panel from the Farm Designer.`);
 
   export const BROWSER_SPEAK_LOGS =
     trim(`Have the browser also read aloud log messages on the
@@ -681,8 +681,8 @@ export namespace Content {
     will clear data for the current trail.`);
 
   export const MAP_MISSED_STEPS =
-    trim(`Display missed step indicators in map. Requires stall detection
-    to be enabled.`);
+    trim(`Display high motor load warning indicators in map.
+    Requires VIRTUAL FARMBOT TRAIL and stall detection to be enabled.`);
 
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
@@ -983,7 +983,6 @@ export enum DeviceSetting {
   name = `name`,
   timezone = `timezone`,
   camera = `camera`,
-  firmware = `Firmware`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
@@ -992,6 +991,7 @@ export enum DeviceSetting {
 
   // Firmware
   firmwareSection = `Firmware`,
+  firmware = `Firmware`,
   restartFirmware = `Restart Firmware`,
   flashFirmware = `Flash firmware`,
 

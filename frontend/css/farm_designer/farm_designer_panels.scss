@@ -549,6 +549,15 @@
   z-index: 10;
 }
 
+.scroll-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2rem;
+  height: 100%;
+  background: linear-gradient(-90deg, $translucent, transparent)
+}
+
 .panel-header {
   .panel-header-description,
   .crop-info-description {
@@ -885,15 +894,53 @@
   padding: 0;
 }
 
+.settings-panel {
+  .panel-top {
+    .fa-chevron-right,
+    .fa-chevron-down {
+      font-size: 1.25rem !important;
+      padding: 0.1rem;
+    }
+  }
+}
+
 .settings-panel-content {
-  padding: 0;
-  margin-top: 6rem;
+  max-height: calc(100vh - 22rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: inherit;
+  .expandable-header {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+  }
+  .section {
+    position: relative;
+    margin-bottom: 0;
+    .hw-warn {
+      position: absolute;
+      top: -0.35rem;
+      right: 2rem;
+      i {
+        font-size: 1.4rem;
+      }
+    }
+  }
+  .bp3-collapse::-webkit-scrollbar {
+    display:none !important;
+    width: 0px !important;
+    background-color: transparent !important;
+  }
+  .disable_scrollbar::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  .bp3-collapse-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
+  }
   .section {
     margin-bottom: 2rem;
-  }
-  .bulk-expand-controls {
-    margin-left: 1rem;
   }
   .row:first-child {
     margin-right: 0;
@@ -990,53 +1037,6 @@
   }
   .help-icon {
     margin-left: 1rem;
-  }
-  .all-settings-content {
-    max-height: calc(100vh - 22rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-bottom: 12rem;
-    .expandable-header {
-      margin-top: 1.5rem;
-      margin-bottom: 0;
-    }
-    .section {
-      position: relative;
-      margin-bottom: 0;
-      .hw-warn {
-        position: absolute;
-        top: -0.35rem;
-        right: 2rem;
-        i {
-          font-size: 1.4rem;
-        }
-      }
-    }
-    .bp3-collapse::-webkit-scrollbar {
-      display:none !important;
-      width: 0px !important;
-      background-color: transparent !important;
-    }
-    .disable_scrollbar::-webkit-scrollbar {
-      width: 0px;
-      background: transparent;
-    }
-    .bp3-collapse-body::-webkit-scrollbar {
-      display: none !important;
-      width: 0px !important;
-      background-color: transparent !important;
-    }
-  }
-  .designer-settings {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-right: -10px;
-    padding-right: 1rem;
-    padding-left: 1rem;
-    padding-bottom: 12rem;
   }
   .designer-setting {
     &.disabled {
@@ -1430,37 +1430,50 @@
         background: none;
       }
     }
-    .bp3-popover-wrapper {
-      padding-top: 2rem;
-      float: right;
-      .fa-gear {
-        color: $dark_gray;
-      }
+    .title-help-icon:hover {
+      color: $dark_gray !important;
     }
-    .jog-controls-group {
-      label {
-        margin-top: 0;
-      }
+    .title-help-text.open {
+      color: $dark_gray !important;
+      font-size: 1.2rem;
     }
-    .bot-position-rows {
-      padding-left: 1rem;
-      padding-right: 1rem;
-      label {
-        margin-top: 0;
-      }
-      .axis-titles {
-        margin-bottom: 1rem;
-      }
+  }
+}
+
+.controls-panel {
+  .move-settings.bp3-popover-wrapper {
+    padding-top: 2rem;
+    float: right;
+    .fa-gear {
+      color: $dark_gray;
     }
-    .index-indicator {
-      background: $dark_gray;
+  }
+  .jog-controls-group {
+    label {
+      margin-top: 0;
     }
+  }
+  .bot-position-rows {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    label {
+      margin-top: 0;
+    }
+    .axis-titles {
+      margin-bottom: 1rem;
+    }
+  }
+  .index-indicator {
+    background: $dark_gray;
   }
 }
 
 .sensors-panel {
   .panel-content {
     padding-top: 6rem;
+    label {
+      margin-top: 0;
+    }
   }
 }
 

@@ -126,4 +126,31 @@ describe("<DesignerNavTabs />", () => {
     expect(wrapper.hasClass("gray-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
+
+  it("renders scroll indicator", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{}, { scrollWidth: 100, scrollLeft: 0, clientWidth: 75 }],
+      configurable: true
+    });
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.html()).toContain("scroll-indicator");
+  });
+
+  it("doesn't render scroll indicator when wide", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{}, { scrollWidth: 500, scrollLeft: 0, clientWidth: 75 }],
+      configurable: true
+    });
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.html()).not.toContain("scroll-indicator");
+  });
+
+  it("doesn't render scroll indicator when at end", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{}, { scrollWidth: 100, scrollLeft: 25, clientWidth: 75 }],
+      configurable: true
+    });
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.html()).not.toContain("scroll-indicator");
+  });
 });
