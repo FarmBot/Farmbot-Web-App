@@ -2,13 +2,11 @@ const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import * as React from "react";
-import { TileWritePin, WritePinStep, PinSelect } from "../tile_write_pin";
-import { mount, shallow } from "enzyme";
+import { TileWritePin } from "../tile_write_pin";
+import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
-import { FBSelect } from "../../../ui";
-import { StepParams } from "../../interfaces";
 
 function fakeProps() {
   const currentStep: WritePin = {
@@ -37,15 +35,17 @@ describe("<TileWritePin/>", () => {
     const inputs = wrapper.find("input");
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
-    expect(inputs.length).toEqual(2);
+    expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(3);
     expect(buttons.length).toEqual(2);
     expect(inputs.first().props().placeholder).toEqual("Control Peripheral");
     expect(labels.at(0).text()).toEqual("Peripheral");
-    expect(inputs.at(1).props().value).toEqual(2);
     expect(labels.at(1).text()).toEqual("Mode");
     expect(buttons.at(0).text()).toEqual("Pin 3");
     expect(labels.at(2).text()).toEqual("set to");
+    const sliderLabels = wrapper.find(".bp3-slider-label");
+    [0, 255, 2].map((value, index) =>
+      expect(sliderLabels.at(index).text()).toEqual("" + value));
   });
 
   it("renders inputs: Digital", () => {
@@ -68,21 +68,6 @@ describe("<TileWritePin/>", () => {
     expect(buttons.at(2).text()).toEqual("ON");
   });
 
-  it("changes pin value", () => {
-    const p = fakeProps();
-    p.currentStep.args.pin_mode = 0;
-    p.currentStep.args.pin_value = 1;
-    const wrapper = mount<WritePinStep>(<WritePinStep {...p} />);
-    const pinValueSelect = shallow(
-      <div>{wrapper.instance().PinValueField()}</div>);
-    pinValueSelect.find(FBSelect).last().simulate("change", {
-      label: "123", value: 123
-    });
-    const step = p.currentStep;
-    mockEditStep.mock.calls[0][0].executor(step);
-    expect(step.args.pin_value).toEqual(123);
-  });
-
   it("throws when not a WritePin step", () => {
     console.error = jest.fn();
     const p = fakeProps();
@@ -90,14 +75,5 @@ describe("<TileWritePin/>", () => {
     p.currentStep.kind = "wrong_step" as any;
     expect(() => mount(<TileWritePin {...p} />))
       .toThrow("Not a write_pin block.");
-  });
-});
-
-describe("<PinSelect/>", () => {
-  it("crashes on bad step `kind`s", () => {
-    const props = fakeProps() as StepParams;
-    props.currentStep = { kind: "execute", args: { sequence_id: 23 } };
-    const boom = () => PinSelect(props);
-    expect(boom).toThrowError("PinSelect can't render execute");
   });
 });

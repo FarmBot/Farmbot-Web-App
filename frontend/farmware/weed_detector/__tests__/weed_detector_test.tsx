@@ -4,10 +4,13 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
 const mockDeletePoints = jest.fn();
-jest.mock("../actions", () => ({
+jest.mock("../../../api/delete_points", () => ({
   deletePoints: mockDeletePoints,
+}));
+
+jest.mock("../actions", () => ({
   scanImage: jest.fn(),
-  detectPlants: jest.fn(),
+  detectPlants: jest.fn(() => jest.fn()),
 }));
 
 import * as React from "react";
@@ -18,7 +21,8 @@ import { API } from "../../../api";
 import { selectImage } from "../../images/actions";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { deletePoints, detectPlants, scanImage } from "../actions";
+import { detectPlants, scanImage } from "../actions";
+import { deletePoints } from "../../../api/delete_points";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 
@@ -64,7 +68,7 @@ describe("<WeedDetector />", () => {
     const btn = wrapper.find("button").first();
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     clickButton(wrapper, 0, "detect weeds");
-    expect(detectPlants).toHaveBeenCalled();
+    expect(detectPlants).toHaveBeenCalledWith(0);
     expect(error).not.toHaveBeenCalled();
   });
 

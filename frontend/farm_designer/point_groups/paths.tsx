@@ -136,5 +136,6 @@ export const NNPath = (props: NNPathProps) =>
       strokeWidth={2}
       dash={1}
       orderedPoints={nn(props.pathPoints).map(xy)}
+      zoomLvl={1}
       mapTransformProps={props.mapTransformProps} />
     : <g />;

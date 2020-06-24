@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { Xyz, TaggedTool, TaggedToolSlotPointer } from "farmbot";
+import { Xyz } from "farmbot";
 import {
   Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui";
@@ -9,12 +9,12 @@ import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { Popover } from "@blueprintjs/core";
 import { ToolSlotSVG } from "../map/layers/tool_slots/tool_graphics";
 import { isNumber } from "lodash";
-import { BotOriginQuadrant } from "../interfaces";
-
-export interface GantryMountedInputProps {
-  gantryMounted: boolean;
-  onChange(update: { gantry_mounted: boolean }): void;
-}
+import {
+  GantryMountedInputProps, SlotDirectionInputRowProps, ToolSelectionProps,
+  ToolInputRowProps, SlotLocationInputRowProps, SlotEditRowsProps,
+  EditToolSlotMetaProps,
+} from "./interfaces";
+import { betterMerge } from "../../util";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
@@ -24,15 +24,29 @@ export const GantryMountedInput = (props: GantryMountedInputProps) =>
       checked={props.gantryMounted} />
   </fieldset>;
 
-export interface SlotDirectionInputRowProps {
-  toolPulloutDirection: ToolPulloutDirection;
-  onChange(update: { pullout_direction: ToolPulloutDirection }): void;
-}
+export const isToolFlipped =
+  (toolSlotMeta: Record<string, string | undefined> | undefined) =>
+    !!toolSlotMeta?.tool_direction?.toLowerCase().includes("flipped");
+
+export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
+  const { toolSlotMeta } = props;
+  const value = isToolFlipped(toolSlotMeta);
+  return <fieldset className="tool-direction-input">
+    <label>{t("rotated 180 degrees")}</label>
+    <input type="checkbox" name="tool_direction"
+      onChange={() => {
+        const tool_direction = value ? "standard" : "flipped";
+        const meta = betterMerge(toolSlotMeta, { tool_direction });
+        props.onChange({ meta });
+      }}
+      checked={value} />
+  </fieldset>;
+};
 
 export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
   <fieldset className="tool-slot-direction-input">
     <label>
-      {t("Direction")}
+      {t("slot direction")}
     </label>
     <i className={"direction-icon "
       + directionIconClass(props.toolPulloutDirection)}
@@ -47,15 +61,6 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
         pullout_direction: parseInt("" + ddi.value)
       })} />
   </fieldset>;
-
-export interface ToolSelectionProps {
-  tools: TaggedTool[];
-  selectedTool: TaggedTool | undefined;
-  onChange(update: { tool_id: number }): void;
-  filterSelectedTool: boolean;
-  isActive(id: number | undefined): boolean;
-  filterActiveTools: boolean;
-}
 
 export const ToolSelection = (props: ToolSelectionProps) =>
   <FBSelect
@@ -77,14 +82,6 @@ export const ToolSelection = (props: ToolSelectionProps) =>
     onChange={ddi =>
       props.onChange({ tool_id: parseInt("" + ddi.value) })} />;
 
-export interface ToolInputRowProps {
-  tools: TaggedTool[];
-  selectedTool: TaggedTool | undefined;
-  onChange(update: { tool_id: number }): void;
-  noUTM: boolean;
-  isActive(id: number | undefined): boolean;
-}
-
 export const ToolInputRow = (props: ToolInputRowProps) =>
   <div className="tool-slot-tool-input">
     <Row>
@@ -105,13 +102,6 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
     </Row>
   </div>;
 
-export interface SlotLocationInputRowProps {
-  slotLocation: Record<Xyz, number>;
-  gantryMounted: boolean;
-  onChange(update: Partial<Record<Xyz, number>>): void;
-  botPosition: BotPosition;
-}
-
 export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
   <div className="tool-slot-location-input">
     <Row>
@@ -130,42 +120,41 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
                 })} />}
           </Col>)}
       </Col>
-      <Col xs={1} className="use-current-location">
-        <Popover>
-          <i className="fa fa-question-circle help-icon" />
-          <div className="current-location-info">
-            <label>{t("Use current location")}</label>
-            <p>{positionButtonTitle(props.botPosition)}</p>
-          </div>
-        </Popover>
-        <button
-          className="blue fb-button"
-          title={positionButtonTitle(props.botPosition)}
-          onClick={() => positionIsDefined(props.botPosition) &&
-            props.onChange(props.botPosition)}>
-          <i className="fa fa-crosshairs" />
-        </button>
-      </Col>
+      <UseCurrentLocation botPosition={props.botPosition}
+        onChange={props.onChange} />
     </Row>
   </div>;
 
-export interface SlotEditRowsProps {
-  toolSlot: TaggedToolSlotPointer;
-  tools: TaggedTool[];
-  tool: TaggedTool | undefined;
+export interface UseCurrentLocationProps {
   botPosition: BotPosition;
-  updateToolSlot(update: Partial<TaggedToolSlotPointer["body"]>): void;
-  noUTM: boolean;
-  xySwap: boolean;
-  quadrant: BotOriginQuadrant;
-  isActive(id: number | undefined): boolean;
+  onChange(update: Record<Xyz, number>): void;
 }
+
+export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
+  <Col xs={1} className="use-current-location">
+    <Popover>
+      <i className="fa fa-question-circle help-icon" />
+      <div className="current-location-info">
+        <label>{t("Use current location")}</label>
+        <p>{positionButtonTitle(props.botPosition)}</p>
+      </div>
+    </Popover>
+    <button
+      className="blue fb-button"
+      title={positionButtonTitle(props.botPosition)}
+      onClick={() => {
+        const position = definedPosition(props.botPosition);
+        position && props.onChange(position);
+      }}>
+      <i className="fa fa-crosshairs" />
+    </button>
+  </Col>;
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">
     <ToolSlotSVG toolSlot={props.toolSlot}
       toolName={props.tool ? props.tool.body.name : "Empty"}
-      xySwap={props.xySwap} quadrant={props.quadrant} />
+      toolTransformProps={props.toolTransformProps} />
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
       gantryMounted={props.toolSlot.body.gantry_mounted}
@@ -185,6 +174,10 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       <GantryMountedInput
         gantryMounted={props.toolSlot.body.gantry_mounted}
         onChange={props.updateToolSlot} />}
+    {!props.noUTM && !props.toolSlot.body.gantry_mounted &&
+      <FlipToolDirection
+        toolSlotMeta={props.toolSlot.body.meta}
+        onChange={props.updateToolSlot} />}
   </div>;
 
 const directionIconClass = (slotDirection: ToolPulloutDirection) => {
@@ -197,17 +190,24 @@ const directionIconClass = (slotDirection: ToolPulloutDirection) => {
   }
 };
 
-export const positionButtonTitle = (position: BotPosition): string =>
-  positionIsDefined(position)
+export const positionButtonTitle = (botPosition: BotPosition): string => {
+  const position = definedPosition(botPosition);
+  return position
     ? `(${position.x}, ${position.y}, ${position.z})`
     : t("(unknown)");
+};
 
 export const newSlotDirection =
   (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
     isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
 
-export const positionIsDefined = (position: BotPosition): boolean =>
-  isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
+export const definedPosition =
+  (position: BotPosition): Record<Xyz, number> | undefined => {
+    const { x, y, z } = position;
+    return (isNumber(x) && isNumber(y) && isNumber(z))
+      ? { x, y, z }
+      : undefined;
+  };
 
 export const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
   [ToolPulloutDirection.NONE]:

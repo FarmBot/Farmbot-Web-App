@@ -1,7 +1,7 @@
 import {
-  BotState, BotPosition, ShouldDisplay, UserEnv, AxisState,
+  BotState, BotPosition, ShouldDisplay, UserEnv,
 } from "../devices/interfaces";
-import { Vector3, McuParams, FirmwareHardware, Xyz } from "farmbot";
+import { Vector3, McuParams, FirmwareHardware, Xyz, AxisState } from "farmbot";
 import {
   TaggedWebcamFeed,
   TaggedPeripheral,

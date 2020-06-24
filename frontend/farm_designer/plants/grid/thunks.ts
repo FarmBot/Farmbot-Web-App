@@ -3,12 +3,13 @@ import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllPlantPointers } from "../../../resources/selectors";
 import { TaggedPlantPointer } from "farmbot";
 import { destroy, saveAll } from "../../../api/crud";
-const filter = (gridId: string) =>
+
+const filterByGridId = (gridId: string) =>
   (p: TaggedPlantPointer) => p.body.meta["gridId"] === gridId;
 
 function findPlantByGridId(index: ResourceIndex, gridId: string) {
   const allPlants = selectAllPlantPointers(index);
-  const myPlants = allPlants.filter(filter(gridId));
+  const myPlants = allPlants.filter(filterByGridId(gridId));
   return myPlants;
 }
 

@@ -150,6 +150,8 @@ export const GroupPointCountBreakdown =
         hovered={point.uuid === props.hovered}
         group={props.group}
         point={point}
+        tools={props.tools}
+        toolTransformProps={props.toolTransformProps}
         dispatch={props.dispatch} />;
     return <div className={"group-member-count-breakdown"}>
       <div className={"manual-group-member-count"}>

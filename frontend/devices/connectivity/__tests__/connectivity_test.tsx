@@ -51,4 +51,19 @@ describe("<Connectivity />", () => {
     mount(<Connectivity {...p} />);
     expect(refresh).toHaveBeenCalledWith(p.device);
   });
+
+  it("displays fbos_version", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.controller_version = undefined;
+    p.device.body.fbos_version = "1.0.0";
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("version last seen: v1.0.0");
+  });
+
+  it("displays controller version", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("version: v1.0.0");
+  });
 });

@@ -1,4 +1,9 @@
-import { HardwareFlags, FarmwareData } from "../sequences/interfaces";
+import {
+  HardwareFlags, FarmwareData, StepParams,
+} from "../sequences/interfaces";
+import { WritePin } from "farmbot";
+import { fakeSequence } from "./fake_state/resources";
+import { emptyState } from "../resources/reducer";
 
 export const fakeHardwareFlags = (): HardwareFlags => ({
   findHomeEnabled: { x: false, y: false, z: false },
@@ -15,3 +20,18 @@ export const fakeFarmwareData = (): FarmwareData => ({
   farmwareConfigs: {},
   cameraDisabled: false,
 });
+
+export const fakeStepParams = (): StepParams => {
+  const step: WritePin = {
+    kind: "write_pin",
+    args: { pin_number: 3, pin_value: 2, pin_mode: 1 }
+  };
+  return {
+    currentSequence: fakeSequence(),
+    currentStep: step,
+    dispatch: jest.fn(),
+    index: 0,
+    resources: emptyState().index,
+    confirmStepDeletion: false,
+  };
+};

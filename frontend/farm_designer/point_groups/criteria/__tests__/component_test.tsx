@@ -20,6 +20,7 @@ import { Checkbox } from "../../../../ui";
 import { Actions } from "../../../../constants";
 import { overwriteGroup } from "../../actions";
 import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
+import { fakeToolTransformProps } from "../../../../__test_support__/fake_tool_info";
 
 describe("<GroupCriteria />", () => {
   const fakeProps = (): GroupCriteriaProps => ({
@@ -82,6 +83,8 @@ describe("<GroupPointCountBreakdown />", () => {
     pointsSelectedByGroup: [],
     iconDisplay: true,
     hovered: undefined,
+    tools: [],
+    toolTransformProps: fakeToolTransformProps(),
   });
 
   it("renders point counts", () => {

@@ -77,6 +77,7 @@ import {
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";
 import { TaggedPointGroup } from "farmbot";
+import { fakeMountedToolInfo } from "../../../__test_support__/fake_tool_info";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -128,7 +129,7 @@ const fakeProps = (): GardenMapProps => ({
   timeSettings: fakeTimeSettings(),
   groups: [],
   shouldDisplay: () => false,
-  mountedToolName: undefined,
+  mountedToolInfo: fakeMountedToolInfo(),
 });
 
 describe("<GardenMap/>", () => {

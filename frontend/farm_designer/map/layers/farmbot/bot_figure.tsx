@@ -4,9 +4,13 @@ import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui/index";
 import { botPositionLabel } from "./bot_position_label";
-import { Tool } from "../tool_slots/tool_graphics";
+import {
+  RotatedTool, ToolGraphicProps, ThreeInOneToolHead,
+} from "../tool_slots/tool_graphics";
 import { reduceToolName } from "../tool_slots/tool_slot_point";
 import { noop } from "lodash";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { MountedToolInfo } from "../../../interfaces";
 
 export interface BotFigureProps {
   figureName: string;
@@ -14,7 +18,7 @@ export interface BotFigureProps {
   mapTransformProps: MapTransformProps;
   plantAreaOffset: AxisNumberProperty;
   eStopStatus?: boolean;
-  mountedToolName?: string | undefined;
+  mountedToolInfo?: MountedToolInfo;
 }
 
 interface BotFigureState {
@@ -27,62 +31,92 @@ export class BotFigure extends
 
   setHover = (state: boolean) => { this.setState({ hovered: state }); };
 
-  render() {
-    const {
-      figureName, position, plantAreaOffset, eStopStatus, mapTransformProps,
-    } = this.props;
-    const { xySwap } = mapTransformProps;
-    const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
-    const positionQ = transformXY(
-      (position.x || 0), (position.y || 0), mapTransformProps);
-    const color = eStopStatus ? Color.virtualRed : Color.darkGray;
-    const opacity = figureName.includes("encoder") ? 0.25 : 0.5;
-    const toolProps = {
+  getToolProps(positionQ: { qx: number, qy: number }): ToolGraphicProps {
+    return {
       x: positionQ.qx,
       y: positionQ.qy,
       hovered: this.state.hovered,
       dispatch: noop,
       uuid: "utm",
-      xySwap,
+      toolTransformProps: {
+        xySwap: this.props.mapTransformProps.xySwap,
+        quadrant: this.props.mapTransformProps.quadrant,
+      },
+      pulloutDirection: this.props.mountedToolInfo?.pulloutDirection
+        || ToolPulloutDirection.POSITIVE_X,
+      flipped: !!this.props.mountedToolInfo?.flipped,
     };
+  }
+
+  get color() {
+    return this.props.eStopStatus ? Color.virtualRed : Color.darkGray;
+  }
+
+  get opacity() { return this.props.figureName.includes("encoder") ? 0.25 : 0.5; }
+
+  get positionQ() {
+    return transformXY(
+      (this.props.position.x || 0),
+      (this.props.position.y || 0),
+      this.props.mapTransformProps);
+  }
+
+  MountedTool = ({ toolName }: { toolName: string | undefined }) =>
+    <g id="mounted-tool">
+      <RotatedTool
+        tool={reduceToolName(toolName)}
+        toolProps={this.getToolProps(this.positionQ)} />
+      <circle
+        cx={this.positionQ.qx}
+        cy={this.positionQ.qy}
+        r={32}
+        stroke={this.color}
+        strokeWidth={6}
+        opacity={0.8}
+        fill={"none"} />
+    </g>
+
+  UTM = () =>
+    !this.props.mountedToolInfo?.noUTM
+      ? <circle id="UTM"
+        cx={this.positionQ.qx}
+        cy={this.positionQ.qy}
+        r={35}
+        fillOpacity={this.opacity}
+        fill={this.color} />
+      : <ThreeInOneToolHead
+        x={this.positionQ.qx}
+        y={this.positionQ.qy}
+        toolTransformProps={this.props.mapTransformProps}
+        pulloutDirection={ToolPulloutDirection.POSITIVE_X}
+        color={this.color} />
+
+  render() {
+    const { figureName, position, plantAreaOffset, mapTransformProps,
+    } = this.props;
+    const { xySwap } = mapTransformProps;
+    const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
     return <g id={figureName}>
       <rect id="gantry"
-        x={xySwap ? -plantAreaOffset.x : positionQ.qx - 10}
-        y={xySwap ? positionQ.qy - 10 : -plantAreaOffset.y}
+        x={xySwap ? -plantAreaOffset.x : this.positionQ.qx - 10}
+        y={xySwap ? this.positionQ.qy - 10 : -plantAreaOffset.y}
         width={xySwap ? mapSize.w : 20}
         height={xySwap ? 20 : mapSize.h}
-        fillOpacity={opacity}
-        fill={color} />
+        fillOpacity={this.opacity}
+        fill={this.color} />
       <g id="UTM-wrapper" style={{ pointerEvents: "all" }}
         onMouseOver={() => this.setHover(true)}
         onMouseLeave={() => this.setHover(false)}
-        fillOpacity={opacity}
-        fill={color}>
-        {this.props.mountedToolName
-          ? <g id="mounted-tool">
-            <circle
-              cx={positionQ.qx}
-              cy={positionQ.qy}
-              r={32}
-              stroke={Color.darkGray}
-              strokeWidth={6}
-              opacity={0.25}
-              fill={"none"} />
-            <Tool
-              tool={reduceToolName(this.props.mountedToolName)}
-              toolProps={toolProps} />
-          </g>
-          : <circle id="UTM"
-            cx={positionQ.qx}
-            cy={positionQ.qy}
-            r={35}
-            fillOpacity={opacity}
-            fill={color} />}
+        fillOpacity={this.opacity}
+        fill={this.color}>
+        {this.props.mountedToolInfo?.name
+          ? <this.MountedTool toolName={this.props.mountedToolInfo.name} />
+          : <this.UTM />}
       </g>
       <text
         visibility={this.state.hovered ? "visible" : "hidden"}
-        x={positionQ.qx}
-        y={positionQ.qy}
+        x={this.positionQ.qx}
+        y={this.positionQ.qy}
         dx={xySwap ? 0 : 40}
         dy={xySwap ? 55 : 0}
         dominantBaseline="central"

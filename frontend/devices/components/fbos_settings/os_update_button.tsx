@@ -1,5 +1,5 @@
 import * as React from "react";
-import { JobProgress, ConfigurationName } from "farmbot/dist";
+import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../actions";
@@ -154,8 +154,7 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { controller_version } = bot.hardware.informational_settings;
 
   /** FBOS beta release opt-in setting. */
-  const betaOptIn =
-    sourceFbosConfig("update_channel" as ConfigurationName).value !== "stable";
+  const betaOptIn = sourceFbosConfig("update_channel").value !== "stable";
   /** FBOS update availability. */
   const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn });
 

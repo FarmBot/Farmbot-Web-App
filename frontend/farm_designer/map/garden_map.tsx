@@ -475,7 +475,7 @@ export class GardenMap extends
     plantAreaOffset={this.props.gridOffset}
     peripherals={this.props.peripherals}
     eStopStatus={this.props.eStopStatus}
-    mountedToolName={this.props.mountedToolName}
+    mountedToolInfo={this.props.mountedToolInfo}
     getConfigValue={this.props.getConfigValue} />
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}
@@ -510,6 +510,7 @@ export class GardenMap extends
   GroupOrder = () => <GroupOrder
     group={this.group}
     groupPoints={this.pointsSelectedByGroup}
+    zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />

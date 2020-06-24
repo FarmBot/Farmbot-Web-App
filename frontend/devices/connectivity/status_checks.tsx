@@ -4,7 +4,7 @@ import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
 import { t } from "../../i18next_wrapper";
 import {
-  isKnownBoard, getKitName,
+  isKnownBoard, getBoardCategoryFromFwHw,
 } from "../components/firmware_hardware_support";
 import { FirmwareHardware } from "farmbot";
 
@@ -93,7 +93,7 @@ export function botToFirmware(
   return {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
-    to: getKitName(apiFirmwareValue),
+    to: getBoardCategoryFromFwHw(apiFirmwareValue),
     connectionStatus: connection().status,
     connectionMsg: connection().msg,
   };

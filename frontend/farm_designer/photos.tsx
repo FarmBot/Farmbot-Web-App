@@ -135,7 +135,7 @@ export class RawDesignerPhotos
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"photos"}>
         <label>{t("Photos")}</label>
-        <ToolTip helpText={ToolTips.PHOTOS} className={"photos"}>
+        <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"}>
           <Update version={this.props.versions["take-photo"]}
             farmwareName={"take-photo"} botOnline={botOnline} />
         </ToolTip>

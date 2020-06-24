@@ -30,4 +30,15 @@ describe Devices::Sync do
     expect(Set.new(results.keys)).to eq(TABLES)
     expect(device.reload.last_saw_api).to be > old_timestamp
   end
+
+  it "sets first_saw_api time" do
+    expect(device.first_saw_api).to be(nil)
+    Devices::Sync.run!(device: device)
+    new_time = device.reload.first_saw_api
+    expect(new_time).to be
+    expect(new_time).to be_kind_of(ActiveSupport::TimeWithZone)
+    Devices::Sync.run!(device: device)
+    new_time2 = device.reload.first_saw_api
+    expect(new_time).to eq(new_time2)
+  end
 end

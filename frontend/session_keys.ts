@@ -25,6 +25,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   show_zones: "show_zones",
   show_sensor_readings: "show_sensor_readings",
   disable_animations: "disable_animations",
+  display_map_missed_steps: "display_map_missed_steps",
   display_trail: "display_trail",
   encoder_figure: "encoder_figure",
   dynamic_map: "dynamic_map",

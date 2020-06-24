@@ -252,7 +252,8 @@ export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
     id: ++idCounter,
     label: "Fake Pin",
-    pin: 1
+    pin: 1,
+    mode: 0,
   });
 }
 
@@ -290,6 +291,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     confirm_sequence_deletion: true,
     disable_animations: false,
     disable_i18n: false,
+    display_map_missed_steps: false,
     display_trail: false,
     dynamic_map: false,
     encoder_figure: false,

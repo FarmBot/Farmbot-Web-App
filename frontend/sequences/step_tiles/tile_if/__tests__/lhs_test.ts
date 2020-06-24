@@ -14,7 +14,7 @@ import {
   selectAllPeripherals,
 } from "../../../../resources/selectors";
 import { updateLhs } from "../update_lhs";
-import { PinGroupName } from "../../pin_and_peripheral_support";
+import { PinGroupName } from "../../pin_support";
 import { Actions } from "../../../../constants";
 import { get } from "lodash";
 import { displayLhs } from "../display_lhs";
@@ -52,7 +52,7 @@ const peripheral: TaggedPeripheral = {
   kind: "Peripheral",
   uuid: "---",
   specialStatus: SpecialStatus.SAVED,
-  body: { id: 99, pin: 13, label: "My peripheral" }
+  body: { id: 99, pin: 13, label: "My peripheral", mode: 0 }
 };
 
 const resources = buildResourceIndex([seedSequence, peripheral]);

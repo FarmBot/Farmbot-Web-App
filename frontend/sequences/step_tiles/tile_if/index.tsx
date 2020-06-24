@@ -15,7 +15,7 @@ import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName,
-} from "../pin_and_peripheral_support";
+} from "../pin_support";
 import { ShouldDisplay } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
 import {

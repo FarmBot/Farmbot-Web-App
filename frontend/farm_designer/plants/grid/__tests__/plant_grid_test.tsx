@@ -3,19 +3,27 @@ jest.mock("../thunks", () => ({
   stashGrid: jest.fn(() => "STASH_GRID_MOCK")
 }));
 
+jest.mock("../../../../api/crud", () => ({
+  init: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
 import { error, success } from "../../../../toast/toast";
+import { PlantGridProps } from "../interfaces";
+import { init } from "../../../../api/crud";
 
 describe("PlantGrid", () => {
-  function fakeProps() {
+  function fakeProps(): PlantGridProps {
     return {
       xy_swap: true,
       openfarm_slug: "beets",
       cropName: "Beets",
       dispatch: jest.fn(() => Promise.resolve({})),
+      botPosition: { x: undefined, y: undefined, z: undefined },
+      spread: undefined,
     };
   }
 
@@ -26,6 +34,7 @@ describe("PlantGrid", () => {
     const previewButton = el.find("a.preview-button");
     expect(previewButton.text()).toContain("Preview");
     previewButton.simulate("click");
+    expect(init).toHaveBeenCalledTimes(6);
 
     // After clicking PREVIEW, there should be two buttons.
     const cancel = el.find("a.cancel-button");
@@ -37,58 +46,77 @@ describe("PlantGrid", () => {
 
   it("saves a grid", async () => {
     const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    const oldId = pg.state.gridId;
-    await pg.saveGrid();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    const oldId = wrapper.state.gridId;
+    await wrapper.saveGrid();
     expect(saveGrid).toHaveBeenCalledWith(oldId);
-    expect(success).toHaveBeenCalledWith("16 plants added.");
-    expect(pg.state.gridId).not.toEqual(oldId);
+    expect(success).toHaveBeenCalledWith("6 plants added.");
+    expect(wrapper.state.gridId).not.toEqual(oldId);
   });
 
   it("stashes a grid", async () => {
     const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    await pg.revertPreview();
-    expect(stashGrid).toHaveBeenCalledWith(pg.state.gridId);
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    await wrapper.instance().revertPreview({ setStatus: true })();
+    expect(stashGrid).toHaveBeenCalledWith(wrapper.state().gridId);
   });
 
   it("prevents creation of grids with > 100 plants", () => {
     const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    pg.setState({
-      ...pg.state,
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    wrapper.setState({
       grid: {
-        ...pg.state.grid,
+        ...wrapper.state().grid,
         numPlantsH: 10,
         numPlantsV: 11
       }
     });
-    pg.performPreview();
-    expect(error).toHaveBeenCalledWith("Please make a grid with less than 100 plants");
+    wrapper.instance().performPreview();
+    expect(error).toHaveBeenCalledWith(
+      "Please make a grid with less than 100 plants");
   });
 
   it("discards unsaved changes", async () => {
     window.confirm = jest.fn(() => false);
-    const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    pg.setState({ ...pg.state, status: "dirty" });
-    pg.componentWillUnmount();
-    expect(pg.props.dispatch).toHaveBeenCalledWith("STASH_GRID_MOCK");
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ status: "dirty" });
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith("STASH_GRID_MOCK");
   });
 
   it("keeps unsaved changes", () => {
     window.confirm = jest.fn(() => true);
-    const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    pg.setState({ ...pg.state, status: "dirty" });
-    pg.componentWillUnmount();
-    expect(pg.props.dispatch).toHaveBeenCalledWith("SAVE_GRID_MOCK");
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ status: "dirty" });
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith("SAVE_GRID_MOCK");
   });
 
   it("handles data changes", () => {
     const props = fakeProps();
-    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
-    pg.onchange("numPlantsH", 6);
-    expect(pg.state.grid.numPlantsH).toEqual(6);
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    wrapper.instance().onChange("numPlantsH", 6);
+    expect(wrapper.state().grid.numPlantsH).toEqual(6);
+  });
+
+  it("uses current position", () => {
+    const props = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    expect(wrapper.state().grid.startX).toEqual(100);
+    expect(wrapper.state().grid.startY).toEqual(100);
+    wrapper.instance().onUseCurrentPosition({ x: 1, y: 2 });
+    expect(wrapper.state().grid.startX).toEqual(1);
+    expect(wrapper.state().grid.startY).toEqual(2);
+  });
+
+  it("toggles packing method", () => {
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    expect(wrapper.state().offsetPacking).toBeFalsy();
+    wrapper.find("button").last().simulate("click");
+    expect(wrapper.state().offsetPacking).toBeTruthy();
+    expect(init).toHaveBeenCalledTimes(6);
   });
 });

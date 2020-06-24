@@ -34,12 +34,13 @@ import {
   getWebAppConfigValue, GetWebAppConfigValue,
 } from "../../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
-import { isBotOriginQuadrant, BotOriginQuadrant } from "../interfaces";
+import { isBotOriginQuadrant } from "../interfaces";
 import { isActive } from "../tools/edit_tool";
 import { uniq } from "lodash";
 import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { WeedInventoryItem } from "../weeds/weed_inventory_item";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
+import { ToolTransformProps } from "../tools/interfaces";
 
 // tslint:disable-next-line:no-any
 export const isPointType = (x: any): x is PointType => POINTER_TYPES.includes(x);
@@ -87,8 +88,7 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
     tools: selectAllTools(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
-    xySwap,
-    quadrant,
+    toolTransformProps: { xySwap, quadrant },
   };
 };
 
@@ -100,8 +100,7 @@ export interface SelectPlantsProps {
   selectionPointType: PointType[] | undefined;
   getConfigValue: GetWebAppConfigValue;
   gardenOpen: string | undefined;
-  xySwap: boolean;
-  quadrant: BotOriginQuadrant;
+  toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   tools: TaggedTool[];
   groups: TaggedPointGroup[];
@@ -332,8 +331,7 @@ export class RawSelectPlants
                   toolSlot={p as TaggedToolSlotPointer}
                   isActive={this.props.isActive}
                   tools={this.props.tools}
-                  xySwap={this.props.xySwap}
-                  quadrant={this.props.quadrant}
+                  toolTransformProps={this.props.toolTransformProps}
                   hideDropdown={true} />;
             }
           }

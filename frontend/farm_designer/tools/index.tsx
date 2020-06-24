@@ -8,7 +8,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { t } from "../../i18next_wrapper";
-import { TaggedTool, TaggedToolSlotPointer, TaggedSensor } from "farmbot";
+import { TaggedSensor } from "farmbot";
 import { Content } from "../../constants";
 import { history } from "../../history";
 import { Row, Col, Help } from "../../ui";
@@ -23,9 +23,10 @@ import {
 import { ToolSelection } from "./tool_slot_edit_components";
 import { error } from "../../toast/toast";
 import { hasUTM } from "../../devices/components/firmware_hardware_support";
-import { ToolsProps, ToolsState } from "./interfaces";
+import {
+  ToolsProps, ToolsState, ToolSlotInventoryItemProps, ToolInventoryItemProps,
+} from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { BotOriginQuadrant } from "../interfaces";
 import { mapPointClickAction } from "../map/actions";
 import { getMode } from "../map/util";
 import { Mode } from "../map/interfaces";
@@ -125,8 +126,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             toolSlot={toolSlot}
             isActive={this.props.isActive}
             tools={this.props.tools}
-            xySwap={this.props.xySwap}
-            quadrant={this.props.quadrant} />)}
+            toolTransformProps={this.props.toolTransformProps} />)}
     </div>
 
   Tools = () =>
@@ -200,17 +200,6 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   }
 }
 
-export interface ToolSlotInventoryItemProps {
-  toolSlot: TaggedToolSlotPointer;
-  tools: TaggedTool[];
-  hovered: boolean;
-  dispatch: Function;
-  isActive(id: number | undefined): boolean;
-  xySwap: boolean;
-  quadrant: BotOriginQuadrant;
-  hideDropdown?: boolean;
-}
-
 export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
   const { x, y, z, id, tool_id, gantry_mounted } = props.toolSlot.body;
   const toolName = props.tools
@@ -232,7 +221,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
-          xySwap={props.xySwap} quadrant={props.quadrant} />
+          toolTransformProps={props.toolTransformProps} />
       </Col>
       <Col xs={6}>
         {props.hideDropdown
@@ -262,13 +251,6 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     </Row>
   </div>;
 };
-
-interface ToolInventoryItemProps {
-  toolName: string;
-  toolId: number | undefined;
-  mounted: boolean;
-  active: boolean;
-}
 
 const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");

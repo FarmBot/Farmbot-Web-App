@@ -11,6 +11,8 @@ import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 import { PlantGrid } from "./grid/plant_grid";
 import { getWebAppConfig } from "../../resources/getters";
+import { BotPosition } from "../../devices/interfaces";
+import { validBotLocationData } from "../../util";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
@@ -22,6 +24,7 @@ export const mapStateToProps = (props: Everything): AddPlantProps =>
     xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
     dispatch: props.dispatch,
     openfarmSearch: OFSearch,
+    botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   });
 
 interface APDProps {
@@ -48,6 +51,7 @@ export interface AddPlantProps {
   dispatch: Function;
   openfarmSearch: OpenfarmSearch;
   xy_swap: boolean;
+  botPosition: BotPosition;
 }
 
 export class RawAddPlant extends React.Component<AddPlantProps, {}> {
@@ -66,6 +70,8 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         xy_swap={this.props.xy_swap}
         dispatch={this.props.dispatch}
         openfarm_slug={result.crop.slug}
+        spread={result.crop.spread}
+        botPosition={this.props.botPosition}
         cropName={result.crop.name} />
     </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>

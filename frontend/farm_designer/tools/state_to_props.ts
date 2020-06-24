@@ -35,8 +35,7 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
     hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
-    xySwap,
-    quadrant,
+    toolTransformProps: { xySwap, quadrant },
   };
 };
 
@@ -52,8 +51,7 @@ export const mapStateToPropsAddEditBase = (props: Everything):
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
     findTool: (id: number) => maybeFindToolById(props.resources.index, id),
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
-    xySwap,
-    quadrant,
+    toolTransformProps: { xySwap, quadrant },
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
   };
 };

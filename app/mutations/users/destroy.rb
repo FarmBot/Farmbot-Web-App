@@ -12,6 +12,7 @@ module Users
     end
 
     def execute
+      user.device.update!(mounted_tool_id: nil)
       user.delay.destroy!
     end
   end

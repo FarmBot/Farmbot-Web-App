@@ -151,6 +151,11 @@ fieldset {
 }
 
 .diagnosis-indicator {
+  &.nav {
+    display: inline-block;
+    top: 0.5rem;
+    margin-left: 1rem;
+  }
   text-align: center !important;
   i {
     display: block;
@@ -215,7 +220,7 @@ fieldset {
   .saucer {
     position: absolute;
     top: 2px;
-    right: 1rem;
+    right: 0.5rem;
     height: 1rem;
     width: 1rem;
     cursor: default;
@@ -283,6 +288,10 @@ fieldset {
   i {
     margin-right: 0.5rem;
   }
+}
+
+.farmbot-os-details {
+  max-width: 350px;
 }
 
 .os-release-channel {
@@ -1397,6 +1406,16 @@ ul {
   }
 }
 
+.peripheral-list {
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp3-slider {
+      min-width: 100%;
+    }
+  }
+}
+
 .farmware-step-input-fields {
   label {
     padding-top: 1rem;
@@ -1457,6 +1476,19 @@ ul {
 
 .farmware-name-manual-input {
   margin-top: 1rem;
+}
+
+.write-pin-step {
+  .filter-search {
+    margin-bottom: 1rem;
+  }
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp3-slider {
+      min-width: 100%;
+    }
+  }
 }
 
 .checkbox-row {

@@ -133,4 +133,17 @@ describe("<PlantLayer/>", () => {
     expect(wrapper.find("a").length).toBe(0);
     expect(wrapper.find("g").length).toBeGreaterThan(0);
   });
+
+  it("is dragging", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 0;
+    p.plants = [plant];
+    p.currentPlant = plant;
+    p.dragging = true;
+    p.editing = true;
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect((wrapper.find("GardenPlant").props() as PlantLayerProps).dragging)
+      .toBeTruthy();
+  });
 });

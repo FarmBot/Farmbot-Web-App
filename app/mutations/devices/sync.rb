@@ -32,13 +32,23 @@ module Devices
 
     required { model :device, class: Device }
 
+    def validate
+      device.update!(last_saw_api: Time.now)
+      maybe_mark_first_contact
+    end
+
     def execute
       conn = ActiveRecord::Base.connection
       real_stuff = QUERIES.reduce({}) do |acc, (key, value)|
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
-      device.update!(last_saw_api: Time.now)
       real_stuff.merge({ first_party_farmwares: STUB_FARMWARES })
+    end
+
+    def maybe_mark_first_contact
+      if !device.first_saw_api
+        device.update!(first_saw_api: Time.now)
+      end
     end
   end
 end

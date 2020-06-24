@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "../../i18next_wrapper";
-import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
 import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";
 import { Paths } from "./paths";
@@ -14,6 +14,7 @@ import { UUID } from "../../resources/interfaces";
 import { Help } from "../../ui";
 import { BotSize } from "../map/interfaces";
 import { setSelectionPointType } from "../plants/select_plants";
+import { ToolTransformProps } from "../tools/interfaces";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -25,6 +26,8 @@ export interface GroupDetailActiveProps {
   editGroupAreaInMap: boolean;
   botSize: BotSize;
   selectionPointType: PointType[] | undefined;
+  tools: TaggedTool[];
+  toolTransformProps: ToolTransformProps;
 }
 
 interface GroupDetailActiveState {
@@ -65,6 +68,8 @@ export class GroupDetailActive
         hovered={this.props.hovered}
         iconDisplay={this.state.iconDisplay}
         toggleIconShow={this.toggleIconShow}
+        tools={this.props.tools}
+        toolTransformProps={this.props.toolTransformProps}
         shouldDisplay={this.props.shouldDisplay} />
       {this.props.shouldDisplay(Feature.criteria_groups) &&
         <GroupCriteria dispatch={dispatch}
@@ -114,6 +119,8 @@ interface GroupMemberDisplayProps {
   iconDisplay: boolean;
   toggleIconShow(): void;
   hovered: UUID | undefined;
+  tools: TaggedTool[];
+  toolTransformProps: ToolTransformProps;
 }
 
 /** View group point counts and icon list. */
@@ -139,6 +146,8 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
       shouldDisplay={props.shouldDisplay}
       iconDisplay={props.iconDisplay}
       hovered={props.hovered}
+      tools={props.tools}
+      toolTransformProps={props.toolTransformProps}
       pointsSelectedByGroup={props.pointsSelectedByGroup} />
   </div>;
 };

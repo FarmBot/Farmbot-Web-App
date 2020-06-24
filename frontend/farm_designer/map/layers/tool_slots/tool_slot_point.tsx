@@ -2,11 +2,14 @@ import * as React from "react";
 import { SlotWithTool, UUID } from "../../../../resources/interfaces";
 import { transformXY } from "../../util";
 import { MapTransformProps } from "../../interfaces";
-import { ToolbaySlot, ToolNames, Tool, GantryToolSlot } from "./tool_graphics";
+import {
+  ToolbaySlot, ToolNames, RotatedTool, GantryToolSlot,
+} from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
 import { includes } from "lodash";
 import { t } from "../../../../i18next_wrapper";
 import { mapPointClickAction } from "../../actions";
+import { isToolFlipped } from "../../../tools/tool_slot_edit_components";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -46,7 +49,9 @@ export const ToolSlotPoint = (props: TSPProps) => {
     hovered,
     dispatch: props.dispatch,
     uuid: toolSlot.uuid,
-    xySwap,
+    pulloutDirection: pullout_direction,
+    flipped: isToolFlipped(toolSlot.body.meta),
+    toolTransformProps: { quadrant, xySwap },
   };
   return <g id={"toolslot-" + id}
     onClick={mapPointClickAction(props.dispatch, toolSlot.uuid,
@@ -64,7 +69,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
     {gantry_mounted && <GantryToolSlot x={qx} y={qy} xySwap={xySwap} />}
 
     {(props.slot.tool || (!pullout_direction && !gantry_mounted)) &&
-      <Tool
+      <RotatedTool
         tool={reduceToolName(toolName)}
         toolProps={toolProps} />}
 

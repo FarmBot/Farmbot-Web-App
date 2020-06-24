@@ -2,18 +2,24 @@ import * as React from "react";
 import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import { setHoveredPlant } from "../map/actions";
-import { TaggedPointGroup, uuid, TaggedPoint } from "farmbot";
+import {
+  TaggedPointGroup, uuid, TaggedPoint, TaggedToolSlotPointer, TaggedTool,
+} from "farmbot";
 import { error } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
 import { DEFAULT_WEED_ICON } from "../map/layers/weeds/garden_weed";
 import { uniq } from "lodash";
 import { overwriteGroup } from "./actions";
+import { ToolSlotSVG } from "../map/layers/tool_slots/tool_graphics";
+import { ToolTransformProps } from "../tools/interfaces";
 
 export interface PointGroupItemProps {
   point: TaggedPoint;
   group: TaggedPointGroup;
   dispatch: Function;
   hovered: boolean;
+  tools: TaggedTool[];
+  toolTransformProps: ToolTransformProps;
 }
 
 interface PointGroupItemState { icon: string; }
@@ -99,10 +105,25 @@ export class PointGroupItem
       case "Weed":
         const weedColor = this.props.point.body.meta.color;
         return svgToUrl(genericWeedIcon(weedColor));
-      default:
-        return svgToUrl(OTHER_POINT_ICON);
+      case "ToolSlot":
+        return svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>");
     }
   }
+
+  ToolSlotGraphic = () => {
+    if (this.props.point.body.pointer_type !== "ToolSlot") {
+      return <div className={"no-slot-icon"} />;
+    }
+    const { tool_id } = this.props.point.body;
+    const toolName = this.props.tools
+      .filter(tool => tool.body.id == tool_id)[0]?.body.name;
+    return <div className={"slot-icon"} style={{ position: "absolute" }}>
+      <ToolSlotSVG
+        toolSlot={this.props.point as TaggedToolSlotPointer}
+        toolName={tool_id ? toolName : "Empty"}
+        toolTransformProps={this.props.toolTransformProps} />
+    </div>;
+  };
 
   render() {
     return <span
@@ -116,6 +137,7 @@ export class PointGroupItem
           src={DEFAULT_WEED_ICON}
           width={32}
           height={32} />}
+      <this.ToolSlotGraphic />
       <img
         style={{ background: this.props.hovered ? "lightgray" : "none" }}
         src={this.initIcon}

@@ -14,6 +14,7 @@ import { moveAbs } from "../../devices/actions";
 import { hasUTM } from "../../devices/components/firmware_hardware_support";
 import { mapStateToPropsEdit } from "./state_to_props";
 import { EditToolSlotProps } from "./interfaces";
+import { setToolHover } from "../map/layers/tool_slots/tool_graphics";
 
 export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
 
@@ -22,6 +23,8 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
   get tool() {
     return this.toolSlot && this.props.findTool(this.toolSlot.body.tool_id || 0);
   }
+
+  componentWillUnmount = () => this.props.dispatch(setToolHover(undefined));
 
   updateSlot = (toolSlot: TaggedToolSlotPointer) =>
     (update: Partial<TaggedToolSlotPointer["body"]>) => {
@@ -51,8 +54,7 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
               tools={this.props.tools}
               tool={this.tool}
               botPosition={this.props.botPosition}
-              xySwap={this.props.xySwap}
-              quadrant={this.props.quadrant}
+              toolTransformProps={this.props.toolTransformProps}
               isActive={this.props.isActive}
               updateToolSlot={this.updateSlot(toolSlot)} />
             <ul className="meta">

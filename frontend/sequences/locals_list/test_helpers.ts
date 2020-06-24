@@ -63,9 +63,8 @@ export function fakeResourceIndex(extra: TaggedResource[] = []): ResourceIndex {
       z: 35,
     }),
     ...newTaggedResource("Tool", {
-      "id": 1,
-      "name": "Generic Tool",
-      "status": "active"
+      id: 1,
+      name: "Generic Tool",
     }),
     ...extra,
   ];

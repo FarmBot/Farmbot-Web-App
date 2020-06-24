@@ -30,6 +30,7 @@ describe("<GroupOrder />", () => {
     group.body.point_ids = [1, 2, 3];
     return {
       mapTransformProps: fakeMapTransformProps(),
+      zoomLvl: 1,
       groupPoints: [plant1, plant2, plant3],
       group,
     };
@@ -42,6 +43,7 @@ describe("<GroupOrder />", () => {
 
   it("renders optimized group order", () => {
     const p = fakeProps();
+    p.zoomLvl = 1.5;
     mockState.resources.consumers.farm_designer.tryGroupSortType = "nn";
     const wrapper = svgMount(<GroupOrder {...p} />);
     expect(wrapper.find("line").length).toEqual(3);

@@ -11,15 +11,12 @@ import { OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../interfaces";
 import { Content } from "../../../../constants";
-import { ConfigurationName } from "farmbot";
-
-const UPDATE_CHANNEL = "update_channel" as ConfigurationName;
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
     bot.currentOSVersion = "6.1.6";
     bot.hardware.informational_settings.controller_version = "6.1.6";
-    (bot.hardware.configuration[UPDATE_CHANNEL] as string) = "stable";
+    bot.hardware.configuration.update_channel = "stable";
   });
 
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -116,7 +113,7 @@ describe("<OsUpdateButton/>", () => {
     bot.currentOSVersion = availableVersion;
     bot.currentBetaOSVersion = availableBetaVersion;
     bot.currentBetaOSCommit = availableBetaCommit;
-    (bot.hardware.configuration[UPDATE_CHANNEL] as string) = update_channel;
+    bot.hardware.configuration.update_channel = update_channel;
 
     const p = fakeProps();
     p.shouldDisplay = shouldDisplay;

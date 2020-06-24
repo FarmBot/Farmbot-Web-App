@@ -608,6 +608,47 @@
 .add-plant-panel {
   .panel-header {
     height: 100%;
+    .grid-and-row-planting {
+      hr {
+        opacity: 0.7;
+        border-top: 1.5px solid $white;
+      }
+      .row {
+        div[class*=col-] {
+          padding-left: 1.5rem;
+          padding-right: 0;
+        }
+      }
+      label {
+        color: $white;
+      }
+      .use-current-location {
+        padding: 0;
+        margin-top: 2rem;
+        button {
+          position: absolute;
+          left: 1rem;
+          margin-top: 0.5rem;
+          height: 2.75rem;
+          .fa {
+            font-size: 1.5rem;
+          }
+        }
+      }
+      .grid-input {
+        i[class*=fa-arrow] {
+          margin-right: 0.35rem;
+          cursor: default !important;
+        }
+      }
+      .packing-method {
+        margin-bottom: 2rem;
+      }
+      .fb-toggle-button {
+        float: none;
+        margin-left: 1rem;
+      }
+    }
   }
 }
 
@@ -822,6 +863,7 @@
       }
     }
   }
+  .tool-direction-input,
   .gantry-mounted-input {
     label {
       margin-top: 0;
@@ -833,6 +875,9 @@
   }
   .fb-button.green {
     margin-top: 1rem;
+  }
+  .tool-direction-input {
+    margin-top: 0;
   }
 }
 
@@ -1353,6 +1398,9 @@
         line-height: 2.1rem;
       }
     }
+    .no-weeds {
+      margin-left: 2rem;
+    }
   }
 }
 
@@ -1493,7 +1541,7 @@
       margin-bottom: 0;
     }
   }
-  .title-help.photos {
+  .title-help.photos-tooltip {
     .title-help-text.open {
       margin-bottom: 4rem;
     }

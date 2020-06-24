@@ -7,6 +7,7 @@ import { Actions } from "../../../../../constants";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import { SpecialStatus } from "farmbot";
 
 describe("<GardenPlant/>", () => {
   function fakeProps(): GardenPlantProps {
@@ -35,6 +36,7 @@ describe("<GardenPlant/>", () => {
     expect(wrapper.find("image").props().opacity).toEqual(1);
     expect(wrapper.find("image").props().visibility).toEqual("visible");
     expect(wrapper.find("image").props().opacity).toEqual(1.0);
+    expect(wrapper.find("image").props().filter).toEqual("");
     expect(wrapper.find("text").length).toEqual(0);
     expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
     expect(wrapper.find("use").length).toEqual(0);
@@ -108,5 +110,15 @@ describe("<GardenPlant/>", () => {
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").props().visibility).toEqual("hidden");
     expect(wrapper.find("image").props().opacity).toEqual(0.4);
+  });
+
+  it("renders grayscale", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.specialStatus = SpecialStatus.DIRTY;
+    plant.body.meta = { gridId: "fake grid uuid" };
+    p.plant = plant;
+    const wrapper = shallow(<GardenPlant {...p} />);
+    expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
   });
 });

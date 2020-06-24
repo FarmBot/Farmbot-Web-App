@@ -1,5 +1,5 @@
 import {
-  fakePointGroup, fakePlant,
+  fakePointGroup, fakePlant, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 const GOOD_ID = 9;
 
@@ -22,7 +22,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import { mount } from "enzyme";
 import { GroupDetailActive } from "../group_detail_active";
-import { GroupDetail, findGroupFromUrl } from "../group_detail";
+import { GroupDetail, findGroupFromUrl, mapStateToProps } from "../group_detail";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { createStore } from "redux";
 import {
@@ -98,5 +98,15 @@ describe("findGroupFromUrl()", () => {
     group.body.id = mockId;
     const result = findGroupFromUrl([group]);
     expect(result).toEqual(undefined);
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns quadrant", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.bot_origin_quadrant = 2;
+    state.resources = buildResourceIndex([webAppConfig]);
+    expect(mapStateToProps(state).toolTransformProps.quadrant).toEqual(2);
   });
 });

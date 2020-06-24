@@ -14,16 +14,21 @@ export type DiagnosisName =
   | "botFirmware";
 
 export type DiagnosisProps = Record<DiagnosisName, boolean>;
+export interface DiagnosisSaucerProps extends DiagnosisProps {
+  className?: string;
+}
 
 export const diagnosisStatus = (props: DiagnosisProps): boolean =>
   props.userMQTT && props.botAPI && props.botMQTT && props.botFirmware;
 
-export const DiagnosisSaucer = (props: DiagnosisProps) => {
+export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
   const title = diagnosisBoolean ? t("Ok") : t("Error");
-  return <div
-    className={"diagnosis-indicator saucer active " + diagnosisColor}
+  const classes = [
+    "diagnosis-indicator", "saucer", "active", diagnosisColor, props.className,
+  ];
+  return <div className={classes.join(" ")}
     title={title}>
     <i className={`fa fa-${diagnosisBoolean ? "check" : "times"}`} />
   </div>;

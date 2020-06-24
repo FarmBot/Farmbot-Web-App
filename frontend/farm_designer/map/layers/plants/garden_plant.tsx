@@ -8,6 +8,7 @@ import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { clickMapPlant } from "../../actions";
 import { Circle } from "./circle";
+import { SpecialStatus } from "farmbot";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -46,15 +47,23 @@ export class GardenPlant extends
     const { current, selected, dragging, plant, mapTransformProps,
       activeDragXY, zoomLvl, animate, editing, hovered } = this.props;
     const { id, radius, x, y } = plant.body;
+    const unsaved = plant.specialStatus !== SpecialStatus.SAVED;
+    const gridPlant = plant.kind == "Point" && plant.body.meta.gridId;
+    const maybeGrayscale = (gridPlant && unsaved) ? "url(#grayscale)" : "";
     const { icon } = this.state;
 
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
     const className = [
-      "plant-image", `is-chosen-${current || selected}`, animate ? "animate" : "",
+      "plant-image",
+      `is-chosen-${current || selected}`,
+      animate ? "animate" : "",
     ].join(" ");
 
     return <g id={"plant-" + id}>
+      <filter id="grayscale">
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
 
       {animate &&
         <circle
@@ -82,6 +91,7 @@ export class GardenPlant extends
           visibility={dragging ? "hidden" : "visible"}
           className={className}
           opacity={alpha}
+          filter={maybeGrayscale}
           xlinkHref={icon}
           onClick={this.click}
           height={this.radius * 2}

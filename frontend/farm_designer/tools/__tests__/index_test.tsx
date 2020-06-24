@@ -20,7 +20,7 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawTools as Tools,
-  ToolSlotInventoryItem, ToolSlotInventoryItemProps,
+  ToolSlotInventoryItem,
 } from "../index";
 import {
   fakeTool, fakeToolSlot, fakeSensor,
@@ -32,7 +32,8 @@ import { error } from "../../../toast/toast";
 import { Content, Actions } from "../../../constants";
 import { edit, save } from "../../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
-import { ToolsProps } from "../interfaces";
+import { fakeToolTransformProps } from "../../../__test_support__/fake_tool_info";
+import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
 import { mapPointClickAction } from "../../map/actions";
 import { SearchField } from "../../../ui/search_field";
 
@@ -48,8 +49,7 @@ describe("<Tools />", () => {
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
     isActive: jest.fn(),
-    xySwap: false,
-    quadrant: 2,
+    toolTransformProps: fakeToolTransformProps(),
   });
 
   it("renders with no tools", () => {
@@ -61,7 +61,6 @@ describe("<Tools />", () => {
     const p = fakeProps();
     p.tools = [fakeTool(), fakeTool(), fakeTool()];
     p.tools[0].body.id = 1;
-    p.tools[0].body.status = "inactive";
     p.tools[0].body.name = undefined;
     p.tools[1].body.id = 2;
     p.tools[1].body.name = "my tool";
@@ -83,7 +82,6 @@ describe("<Tools />", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
     p.tools[0].body.id = 1;
-    p.tools[0].body.status = "inactive";
     p.toolSlots = [fakeToolSlot()];
     p.toolSlots[0].body.id = 2;
     p.toolSlots[0].body.tool_id = 3;
@@ -233,8 +231,7 @@ describe("<ToolSlotInventoryItem />", () => {
     hovered: false,
     dispatch: jest.fn(),
     isActive: jest.fn(),
-    xySwap: false,
-    quadrant: 2,
+    toolTransformProps: fakeToolTransformProps(),
   });
 
   it("changes tool", () => {

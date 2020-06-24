@@ -1,19 +1,19 @@
+import * as React from "react";
 import {
-  selectAllSavedPeripherals,
-  selectAllSavedSensors,
-} from "../../resources/selectors";
-import { ResourceIndex } from "../../resources/interfaces";
-import { DropDownItem } from "../../ui";
+  selectAllSavedPeripherals, selectAllSavedSensors,
+} from "../../../resources/selectors";
+import { ResourceIndex } from "../../../resources/interfaces";
+import { DropDownItem, Col, FBSelect } from "../../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
-  TaggedPeripheral, TaggedSensor, ResourceName, Nothing,
+  TaggedPeripheral, TaggedSensor, ResourceName, Nothing, SequenceBodyItem,
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
-import { bail } from "../../util/errors";
-import { StepParams } from "../interfaces";
-import { editStep } from "../../api/crud";
-import { joinKindAndId } from "../../resources/reducer_support";
-import { t } from "../../i18next_wrapper";
+import { bail } from "../../../util/errors";
+import { StepParams } from "../../interfaces";
+import { editStep } from "../../../api/crud";
+import { joinKindAndId } from "../../../resources/reducer_support";
+import { t } from "../../../i18next_wrapper";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
@@ -45,7 +45,7 @@ export const SENSOR_HEADING = (): DropDownItem => ({
   label: t("Sensors"), value: 0,
 });
 
-export const BOX_LED_HEADING = (): DropDownItem => ({
+const BOX_LED_HEADING = (): DropDownItem => ({
   heading: true, headingId: PinGroupName.BoxLed,
   label: t("Box LEDs"), value: 0,
 });
@@ -56,7 +56,7 @@ export const PIN_HEADING = (): DropDownItem => ({
 });
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
-export const pinNumber2DropDown =
+const pinNumber2DropDown =
   (valueFormat: (n: number) => (string | number)) =>
     (n: number): DropDownItem => {
       const analog = n > 53 ? ` (A${n - 54})` : "";
@@ -95,7 +95,7 @@ export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   return list.length ? [SENSOR_HEADING(), ...list] : [];
 }
 
-export function boxLedsAsDropDowns(): DropDownItem[] {
+function boxLedsAsDropDowns(): DropDownItem[] {
   const list = Object.values(BoxLed).map(boxLed2DropDown);
   return [BOX_LED_HEADING(), ...list];
 }
@@ -108,21 +108,32 @@ export function pinDropdowns(
   return [PIN_HEADING(), ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
 }
 
-export const pinsAsDropDownsWritePin = (
-  input: ResourceIndex, showPins: boolean,
+const pinsAsDropDownsWritePin = (
+  resources: ResourceIndex, showPins: boolean,
 ): DropDownItem[] => [
-    ...peripheralsAsDropDowns(input),
+    ...peripheralsAsDropDowns(resources),
     ...boxLedsAsDropDowns(),
     ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
-export const pinsAsDropDownsReadPin = (
-  input: ResourceIndex, showPins: boolean,
+const pinsAsDropDownsReadPin = (
+  resources: ResourceIndex, showPins: boolean,
 ): DropDownItem[] => [
-    ...sensorsAsDropDowns(input),
-    ...peripheralsAsDropDowns(input),
+    ...sensorsAsDropDowns(resources),
+    ...peripheralsAsDropDowns(resources),
     ...(showPins ? pinDropdowns(n => n) : []),
   ];
+
+export const pinsAsDropdowns =
+  (kind: "read_pin" | "write_pin" | "toggle_pin") => {
+    switch (kind) {
+      case "read_pin": return pinsAsDropDownsReadPin;
+      case "write_pin":
+      case "toggle_pin":
+        return pinsAsDropDownsWritePin;
+    }
+
+  };
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName | BoxLed> = {
   "Peripheral": PinGroupName.Peripheral,
@@ -207,15 +218,24 @@ export const setArgsDotPinNumber =
       sequence: currentSequence,
       index: index,
       executor(c) {
+        const celeryArg = dropDown2CeleryArg(resources, d);
         switch (c.kind) {
           case "read_pin":
-          case "write_pin":
           case "toggle_pin":
-            c.args.pin_number = dropDown2CeleryArg(resources, d);
+            c.args.pin_number = celeryArg;
+            break;
+          case "write_pin":
+            c.args.pin_number = celeryArg;
+            if (isBoxLed(c)) { c.args.pin_mode = 0; }
         }
       }
     }));
   };
+
+export const isBoxLed = (step: SequenceBodyItem) =>
+  step.kind == "write_pin" && !isNumber(step.args.pin_number) && (
+    step.args.pin_number.args.pin_type == BoxLed.BoxLed3 ||
+    step.args.pin_number.args.pin_type == BoxLed.BoxLed4);
 
 type PinNumber = ReadPin["args"]["pin_number"];
 
@@ -225,3 +245,31 @@ export function celery2DropDown(input: PinNumber, ri: ResourceIndex):
     ? pinNumber2DropDown(n => n)(input)
     : namedPin2DropDown(ri, input);
 }
+
+interface PinSelectProps extends StepParams {
+  label?: string;
+  placeholder?: string;
+  width?: number;
+}
+
+export const PinSelect = (props: PinSelectProps): JSX.Element => {
+  const step = props.currentStep;
+  if (step.kind !== "write_pin"
+    && step.kind !== "toggle_pin"
+    && step.kind !== "read_pin") {
+    throw new Error("PinSelect can't render " + step.kind);
+  }
+  const { currentSequence, resources, showPins } = props;
+  const { pin_number } = step.args;
+  const width = props.width || 6;
+
+  return <Col xs={width} md={width}>
+    <label>{props.label || t("Peripheral")}</label>
+    <FBSelect
+      key={JSON.stringify(currentSequence)}
+      selectedItem={celery2DropDown(pin_number, resources)}
+      customNullLabel={props.placeholder || t("Select a peripheral")}
+      onChange={setArgsDotPinNumber(props)}
+      list={pinsAsDropdowns(step.kind)(resources, !!showPins)} />
+  </Col>;
+};
