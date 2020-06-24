@@ -15,6 +15,14 @@ describe Api::TokensController do
       expect(user.reload.inactivity_warning_sent_at).to eq(nil)
     end
 
+    it "reminds users to verify accounts" do
+      user.update!(confirmed_at: nil)
+      payload = { user: { email: user.email, password: "password" } }
+      post :create, params: payload, body: {}.to_json
+      expect(json).to eq({ :error => "You can't perform that action. Verify account first" })
+      expect(response.status).to eq(403)
+    end
+
     it "creates a new token" do
       payload = { user: { email: user.email, password: "password" } }
       post :create, body: payload.to_json

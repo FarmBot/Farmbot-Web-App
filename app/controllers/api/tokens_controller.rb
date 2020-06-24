@@ -2,25 +2,36 @@ module Api
   class TokensController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :create
     skip_before_action :check_fbos_version, only: [:create, :show]
-    before_action      :clean_out_old_tokens
+    before_action :clean_out_old_tokens
 
-    CREDS        = Auth::CreateTokenFromCredentials
-    NO_CREDS     = Auth::CreateToken
+    CREDS = Auth::CreateTokenFromCredentials
+    NO_CREDS = Auth::CreateToken
     NO_USER_ATTR = "API requests need a `user` attribute that is a JSON object."
 
     # Give you the same token, but reloads all claims except `exp`
     def show
       mutate Auth::ReloadToken
-        .run(jwt: request.headers["Authorization"], fbos_version: fbos_version)
+               .run(jwt: request.headers["Authorization"], fbos_version: fbos_version)
     end
 
     def create
+      # Around June of 2020, we started getting Rails double
+      # render errors on this endpoint when users would try
+      # to log in with an unverified account (500 error).
+      # Still not sure what changed or why, but this is a
+      # temporary hotfix. Can be removed later if users
+      # are able to attempt logins on unverfied accounts.
+      email = params.dig("user", "email")
+      if email && User.find_by(email: email, confirmed_at: nil)
+        raise Errors::Forbidden, SessionToken::MUST_VERIFY
+      end
+
       if_properly_formatted do |auth_params|
         klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
         mutate klass
-          .run(auth_params)
-          .tap { |result| maybe_halt_login(result) }
-          .tap { |result| mark_as_seen(result.result[:user].device) if result.result }
+                 .run(auth_params)
+                 .tap { |result| maybe_halt_login(result) }
+                 .tap { |result| mark_as_seen(result.result[:user].device) if result.result }
       end
     end
 
@@ -51,16 +62,16 @@ module Api
       user = raw_json.fetch(:user, {})
       # If data handling for this method gets any more complicated,
       # extract into a mutation.
-      if(user.is_a?(Hash))
-        yield({ email:          (user[:email] || "").downcase,
-                password:       user[:password],
-                credentials:    user[:credentials],
+      if (user.is_a?(Hash))
+        yield({ email: (user[:email] || "").downcase,
+                password: user[:password],
+                credentials: user[:credentials],
                 agree_to_terms: !!user[:agree_to_terms],
-                host:           $API_URL,
-                aud:            guess_aud_claim,
-                fbos_version:   fbos_version })
+                host: $API_URL,
+                aud: guess_aud_claim,
+                fbos_version: fbos_version })
       else
-        render json: {error: NO_USER_ATTR}, status: 422
+        render json: { error: NO_USER_ATTR }, status: 422
       end
     end
   end
