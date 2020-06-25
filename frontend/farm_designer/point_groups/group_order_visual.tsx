@@ -71,7 +71,7 @@ export const PointsPathLabels = (props: PointsPathLabelsProps) =>
         <text x={position.qx + offset} y={position.qy - offset}
           fontSize={zoomCompensation(props.zoomLvl, 1.45) + "rem"}
           fill={Color.darkGray} fillOpacity={0.75} fontWeight={"bold"}
-          textAnchor={"middle"} alignmentBaseline={"middle"} >
+          textAnchor={"middle"} alignmentBaseline={"middle"}>
           {i + 1}
         </text>
       </g>;

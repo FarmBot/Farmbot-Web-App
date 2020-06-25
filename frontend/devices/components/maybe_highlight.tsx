@@ -4,7 +4,7 @@ import { ControlPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
-import { trim } from "lodash";
+import { trim, some } from "lodash";
 import { push } from "../../history";
 
 const FARMBOT_PANEL = [
@@ -28,7 +28,6 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,
   DeviceSetting.restartFarmbot,
   DeviceSetting.shutdownFarmbot,
-  DeviceSetting.restartFirmware,
   DeviceSetting.factoryReset,
   DeviceSetting.autoFactoryReset,
   DeviceSetting.connectionAttemptPeriod,
@@ -109,6 +108,7 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.farmDesigner,
   DeviceSetting.animations,
   DeviceSetting.trail,
+  DeviceSetting.mapMissedSteps,
   DeviceSetting.dynamicMap,
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
@@ -130,6 +130,21 @@ PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+
+const CONTENT_LOOKUP = {} as Record<DeviceSetting, DeviceSetting[]>;
+CONTENT_LOOKUP[DeviceSetting.farmbotSettings] = FARMBOT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.firmwareSection] = FIRMWARE_PANEL;
+CONTENT_LOOKUP[DeviceSetting.powerAndReset] = POWER_AND_RESET_PANEL;
+CONTENT_LOOKUP[DeviceSetting.axisSettings] = AXES_PANEL;
+CONTENT_LOOKUP[DeviceSetting.motors] = MOTORS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.encoders] = ENCODERS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.stallDetection] = ENCODERS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.limitSwitchSettings] = LIMIT_SWITCHES_PANEL;
+CONTENT_LOOKUP[DeviceSetting.errorHandling] = ERROR_HANDLING_PANEL;
+CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
+CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
@@ -218,9 +233,18 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 
   toggleHover = (hovered: boolean) => () => this.setState({ hovered });
 
+  get show() {
+    return !this.searchTerm
+      // if searching, look for setting name match
+      || this.props.settingName.toLowerCase()
+        .includes(this.searchTerm.toLowerCase())
+      // if match not found, look for section content match
+      || this.props.className?.includes("section") &&
+      some((CONTENT_LOOKUP[this.props.settingName] || [])
+        .map(s => s.toLowerCase().includes(this.searchTerm.toLowerCase())));
+  }
+
   render() {
-    const show = !this.searchTerm ||
-      this.props.settingName.toLowerCase().includes(this.searchTerm.toLowerCase());
     return <div className={[
       "setting",
       this.props.className,
@@ -228,7 +252,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     ].join(" ")}
       onMouseEnter={this.toggleHover(true)}
       onMouseLeave={this.toggleHover(false)}
-      hidden={!show}>
+      hidden={!this.show}>
       {this.props.children}
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${

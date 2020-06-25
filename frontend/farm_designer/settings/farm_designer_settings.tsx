@@ -15,7 +15,6 @@ import {
   DesignerSettingsSectionProps, SettingProps,
   DesignerSettingsPropsBase, SettingDescriptionProps,
 } from "./interfaces";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export const Designer = (props: DesignerSettingsSectionProps) => {
   const { getConfigValue, dispatch, controlPanelState } = props;
@@ -82,11 +81,11 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.display_trail,
       callback: resetVirtualTrail,
     },
-    ...(DevSettings.futureFeaturesEnabled() ? [{
+    {
       title: DeviceSetting.mapMissedSteps,
       description: t(Content.MAP_MISSED_STEPS),
       setting: BooleanSetting.display_map_missed_steps,
-    }] : []),
+    },
     {
       title: DeviceSetting.dynamicMap,
       description: t(Content.DYNAMIC_MAP_SIZE),

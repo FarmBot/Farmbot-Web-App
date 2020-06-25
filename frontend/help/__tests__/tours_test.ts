@@ -8,8 +8,12 @@ jest.mock("../../redux/store", () => ({
 
 import { tourPageNavigation, TOUR_STEPS, Tours } from "../tours";
 import { history } from "../../history";
-import { fakeTool, fakeFbosConfig } from "../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  fakeTool, fakeFbosConfig,
+} from "../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex,
+} from "../../__test_support__/resource_index_builder";
 
 describe("tourPageNavigation()", () => {
   const testCase = (el: string, expected?: string) => {
@@ -23,7 +27,7 @@ describe("tourPageNavigation()", () => {
     testCase(".farm-designer");
     testCase(".plant-inventory-panel");
     testCase(".farm-event-panel");
-    testCase(".move-widget");
+    testCase(".move");
     testCase(".peripherals-widget");
     testCase(".sequence-list-panel");
     testCase(".regimen-list-panel");

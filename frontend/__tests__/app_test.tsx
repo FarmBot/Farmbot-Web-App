@@ -1,7 +1,7 @@
-let mockPath = "";
-jest.mock("../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
+let mockShowPopUp = false;
+jest.mock("../controls_popup", () => ({
+  ControlsPopup: () => <div className="controls-popup" />,
+  showControlsPopup: () => mockShowPopUp,
 }));
 
 import * as React from "react";
@@ -47,28 +47,16 @@ const fakeProps = (): AppProps => ({
 });
 
 describe("<App />: Controls Pop-Up", () => {
-  it.each<["renders" | "doesn't render", string]>([
-    ["renders", "designer"],
-    ["renders", "designer/plants"],
-    ["doesn't render", "controls"],
-    ["renders", "device"],
-    ["renders", "sequences"],
-    ["renders", "sequences/for_regimens"],
-    ["doesn't render", "regimens"],
-    ["renders", "tools"],
-    ["renders", "farmware"],
-    ["renders", "messages"],
-    ["renders", "logs"],
-    ["renders", "help"],
-    ["doesn't render", "account"],
-  ])("%s controls pop-up on %s page", (expected, page) => {
-    mockPath = "/app/" + page;
+  it("renders controls pop-up", () => {
+    mockShowPopUp = true;
     const wrapper = mount(<App {...fakeProps()} />);
-    if (expected == "renders") {
-      expect(wrapper.html()).toContain("controls-popup");
-    } else {
-      expect(wrapper.html()).not.toContain("controls-popup");
-    }
+    expect(wrapper.html()).toContain("controls-popup");
+  });
+
+  it("doesn't render controls pop-up", () => {
+    mockShowPopUp = false;
+    const wrapper = mount(<App {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("controls-popup");
   });
 });
 
@@ -123,7 +111,6 @@ describe("<App />: NavBar", () => {
     const t = wrapper.text();
     const strings = [
       "Farm Designer",
-      "Controls",
       "Sequences",
       "Regimens",
     ];

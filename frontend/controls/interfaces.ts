@@ -1,30 +1,5 @@
-import {
-  BotState, BotPosition, ShouldDisplay, UserEnv,
-} from "../devices/interfaces";
-import { Vector3, McuParams, FirmwareHardware, Xyz, AxisState } from "farmbot";
-import {
-  TaggedWebcamFeed,
-  TaggedPeripheral,
-  TaggedSensor,
-  TaggedSensorReading,
-} from "farmbot";
-import { GetWebAppConfigValue } from "../config_storage/actions";
-import { TimeSettings } from "../interfaces";
-
-export interface Props {
-  dispatch: Function;
-  bot: BotState;
-  feeds: TaggedWebcamFeed[];
-  peripherals: TaggedPeripheral[];
-  sensors: TaggedSensor[];
-  firmwareSettings: McuParams;
-  shouldDisplay: ShouldDisplay;
-  getWebAppConfigVal: GetWebAppConfigValue;
-  sensorReadings: TaggedSensorReading[];
-  timeSettings: TimeSettings;
-  env: UserEnv;
-  firmwareHardware: FirmwareHardware | undefined;
-}
+import { BotPosition } from "../devices/interfaces";
+import { Vector3, McuParams, Xyz, AxisState } from "farmbot";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;

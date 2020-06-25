@@ -81,10 +81,11 @@ interface DesignerPanelTopProps {
   onClick?(): void;
   title?: string;
   children?: React.ReactNode;
+  withButton?: boolean;
 }
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
-  const withBtn = !!props.linkTo || !!props.onClick;
+  const withBtn = !!props.withButton || !!props.linkTo || !!props.onClick;
   return <div className={`panel-top ${withBtn ? "with-button" : ""}`}>
     {props.children}
     {props.onClick &&

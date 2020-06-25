@@ -2,11 +2,6 @@ jest.mock("../../map/layers/farmbot/bot_trail", () => ({
   resetVirtualTrail: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { PlainDesignerSettings } from "../farm_designer_settings";
@@ -36,11 +31,5 @@ describe("<PlainDesignerSettings />", () => {
     expect(wrapper.find("label").at(1).text()).toContain("trail");
     wrapper.find("button").at(1).simulate("click");
     expect(resetVirtualTrail).toHaveBeenCalled();
-  });
-
-  it("displays setting", () => {
-    mockDev = true;
-    const wrapper = mount(<div>{PlainDesignerSettings(fakeProps())}</div>);
-    expect(wrapper.find("label").at(2).text()).toContain("load");
   });
 });

@@ -1,11 +1,15 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawDesignerSequenceCommands as DesignerSequenceCommands,
+  RawDesignerSequenceCommands as DesignerSequenceCommands, mapStateToProps,
 } from "../commands";
 import { StepButtonProps } from "../../../sequences/step_button_cluster";
 import { DesignerPanelHeader } from "../../designer_panel";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { fakeState } from "../../../__test_support__/fake_state";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<DesignerSequenceCommands />", () => {
   const fakeProps = (): StepButtonProps => ({
@@ -28,5 +32,21 @@ describe("<DesignerSequenceCommands />", () => {
     const wrapper = shallow(<DesignerSequenceCommands {...p} />);
     expect(wrapper.find(DesignerPanelHeader).props().backTo)
       .toEqual("/app/designer/sequences/");
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("doesn't return active sequence", () => {
+    const state = fakeState();
+    state.resources.consumers.sequences.current = undefined;
+    expect(mapStateToProps(state).current).toEqual(undefined);
+  });
+
+  it("returns active sequence", () => {
+    const state = fakeState();
+    const sequence = fakeSequence();
+    state.resources = buildResourceIndex([sequence]);
+    state.resources.consumers.sequences.current = sequence.uuid;
+    expect(mapStateToProps(state).current).toEqual(sequence);
   });
 });

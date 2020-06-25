@@ -1,3 +1,8 @@
+jest.mock("../../config_storage/actions", () => ({
+  getWebAppConfigValue: jest.fn(() => () => 1),
+  toggleWebAppBool: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import {
@@ -13,6 +18,8 @@ import {
 import {
   fakeWebAppConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
+import { toggleWebAppBool } from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<DesignerControls />", () => {
   const fakeProps = (): DesignerControlsProps => ({
@@ -37,6 +44,20 @@ describe("<DesignerControls />", () => {
     p.getWebAppConfigVal = () => true;
     const wrapper = mount(<DesignerControls {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("seconds ago");
+  });
+
+  it("hides webcam feeds", () => {
+    const p = fakeProps();
+    p.getWebAppConfigVal = () => true;
+    const wrapper = mount(<DesignerControls {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("webcam");
+  });
+
+  it("toggles value", () => {
+    const wrapper = mount<DesignerControls>(
+      <DesignerControls {...fakeProps()} />);
+    wrapper.instance().toggle(BooleanSetting.show_pins)();
+    expect(toggleWebAppBool).toHaveBeenCalledWith(BooleanSetting.show_pins);
   });
 });
 
