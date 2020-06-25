@@ -1,3 +1,9 @@
+let mockPath = "";
+jest.mock("../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
+}));
+
 const mockDevice = {
   moveRelative: jest.fn(() => Promise.resolve()),
   takePhoto: jest.fn(() => Promise.resolve()),
@@ -5,7 +11,7 @@ const mockDevice = {
 jest.mock("../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
-import { ControlsPopup } from "../controls_popup";
+import { ControlsPopup, showControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { ControlsPopupProps } from "../controls/move/interfaces";
@@ -99,5 +105,27 @@ describe("<ControlsPopup />", () => {
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
     expect(mockDevice.takePhoto).not.toHaveBeenCalled();
+  });
+});
+
+describe("showControlsPopup()", () => {
+  it.each<["shows" | "doesn't show", string]>([
+    ["shows", "designer"],
+    ["shows", "designer/plants"],
+    ["doesn't show", "designer/controls"],
+    ["shows", "device"],
+    ["shows", "sequences"],
+    ["shows", "sequences/for_regimens"],
+    ["doesn't show", "regimens"],
+    ["shows", "tools"],
+    ["shows", "farmware"],
+    ["shows", "messages"],
+    ["shows", "logs"],
+    ["shows", "help"],
+    ["shows", ""],
+    ["doesn't show", "account"],
+  ])("%s controls pop-up on %s page", (expected, page) => {
+    mockPath = "/app/" + page;
+    expect(showControlsPopup()).toEqual(expected == "shows");
   });
 });

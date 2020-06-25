@@ -9,6 +9,7 @@ import {
   cameraBtnProps,
 } from "./devices/components/fbos_settings/camera_selection";
 import { t } from "./i18next_wrapper";
+import { getPathArray } from "./history";
 
 interface State {
   isOpen: boolean;
@@ -64,3 +65,13 @@ export class ControlsPopup
     </div>;
   }
 }
+
+export const showControlsPopup = () => {
+  const currentPage = getPathArray()[2] || "";
+  const currentPanel = getPathArray()[3] || "";
+  const pagesNotShown = ["account", "regimens"];
+  const panelsNotShown = ["controls"];
+  const hide = pagesNotShown.includes(currentPage)
+    || (currentPage == "designer" && panelsNotShown.includes(currentPanel));
+  return !hide;
+};

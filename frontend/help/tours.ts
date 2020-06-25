@@ -88,7 +88,7 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
   ],
   [Tours.monitoring]: [
     {
-      target: ".move-widget",
+      target: ".move",
       content: t(TourContent.LOCATION_GRID),
       title: t("View current location"),
     },
@@ -128,9 +128,9 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
     case ".farm-event-panel":
       history.push("/app/designer/events");
       break;
-    case ".move-widget":
+    case ".move":
     case ".peripherals-widget":
-      history.push("/app/controls");
+      history.push("/app/designer/controls");
       break;
     case ".sequence-list-panel":
       history.push("/app/sequences");

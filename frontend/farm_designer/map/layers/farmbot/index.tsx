@@ -11,6 +11,8 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     mapTransformProps, plantAreaOffset, peripherals, eStopStatus, getConfigValue
   } = props;
   const displayTrail = !!getConfigValue(BooleanSetting.display_trail);
+  const displayMissedSteps =
+    !!getConfigValue(BooleanSetting.display_map_missed_steps);
   const encoderFigure = !!getConfigValue(BooleanSetting.encoder_figure);
 
   return <g id="virtual-farmbot">
@@ -39,6 +41,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       <BotTrail
         position={props.botLocationData.position}
         missedSteps={props.botLocationData.load}
+        displayMissedSteps={displayMissedSteps}
         mapTransformProps={mapTransformProps}
         peripherals={peripherals} />}
   </g>;
