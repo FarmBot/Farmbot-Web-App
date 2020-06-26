@@ -14,11 +14,10 @@ import {
   getDeviceAccountSettings,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
-import { ControlsPopup } from "./controls_popup";
+import { ControlsPopup, showControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
 import { validBotLocationData, validFwConfig, validFbosConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
-import { getPathArray } from "./history";
 import {
   getWebAppConfigValue, GetWebAppConfigValue,
 } from "./config_storage/actions";
@@ -132,7 +131,6 @@ export class RawApp extends React.Component<AppProps, {}> {
 
   render() {
     const syncLoaded = this.isLoaded;
-    const currentPage = getPathArray()[2];
     const { location_data, mcu_params } = this.props.bot.hardware;
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
@@ -153,7 +151,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         apiFirmwareValue={this.props.apiFirmwareValue}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
-      {!(["controls", "account", "regimens"].includes(currentPage)) &&
+      {showControlsPopup() &&
         <ControlsPopup
           dispatch={this.props.dispatch}
           axisInversion={this.props.axisInversion}

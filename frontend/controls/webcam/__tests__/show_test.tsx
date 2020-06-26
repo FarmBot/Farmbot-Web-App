@@ -2,24 +2,49 @@ import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show, IndexIndicator } from "../show";
-import { props } from "../test_helpers";
 import { PLACEHOLDER_FARMBOT } from "../../../farmware/images/image_flipper";
+import { WebcamPanelProps } from "../interfaces";
+import { SpecialStatus } from "farmbot";
 
-describe("<Show/>", () => {
-  const feed1 = fakeWebcamFeed();
-  const feed2 = fakeWebcamFeed();
-  const p = props([feed1, feed2]);
+describe("<Show />", () => {
+  const fakeProps = (): WebcamPanelProps => {
+    const feed1 = fakeWebcamFeed();
+    const feed2 = fakeWebcamFeed();
+    feed1.specialStatus = SpecialStatus.DIRTY;
+    return {
+      onToggle: jest.fn(),
+      feeds: [feed1, feed2],
+      init: jest.fn(),
+      edit: jest.fn(),
+      save: jest.fn(),
+      destroy: jest.fn(),
+    };
+  };
 
-  it("Renders feed title", () => {
-    const el = mount(<Show {...p} />);
-    expect(el.text()).toContain(feed1.body.name);
-    el.find(".image-flipper-right").first().simulate("click");
-    el.render();
-    expect(el.text()).toContain(feed2.body.name);
+  it("renders feed title", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Show {...p} />);
+    expect(wrapper.text()).toContain(p.feeds[0].body.name);
+    expect(p.feeds[0].body.name).not.toEqual(p.feeds[1].body.name);
+  });
+
+  it.each<[string, string, number, number]>([
+    [".image-flipper-right", "Next", 0, 1],
+    [".image-flipper-left", "Prev", 1, 0],
+  ])("navigates %s: %s", (className, btnText, from, to) => {
+    const p = fakeProps();
+    const wrapper = mount<Show>(<Show {...p} />);
+    wrapper.setState({ current: from });
+    expect(wrapper.text()).toContain(p.feeds[from].body.name);
+    const prev = wrapper.find(className);
+    expect(prev.text()).toEqual(btnText);
+    prev.simulate("click");
+    expect(wrapper.state().current).toEqual(to);
+    expect(wrapper.text()).toContain(p.feeds[to].body.name);
   });
 
   it("returns a PLACEHOLDER_FEED", () => {
-    const comp = new Show(p);
+    const comp = new Show(fakeProps());
     const result = comp.getMessage("http://geocities.com/" + PLACEHOLDER_FARMBOT);
     expect(result).toEqual("Click the edit button to add or edit a feed URL.");
   });

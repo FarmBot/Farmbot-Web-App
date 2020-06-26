@@ -1,11 +1,14 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { FallbackWidget } from "../fallback_widget";
+import { FallbackWidget, FallbackWidgetProps } from "../fallback_widget";
 
-describe("<FallbackWidget/>", function () {
+describe("<FallbackWidget />", () => {
+  const fakeProps = (): FallbackWidgetProps => ({
+    title: "FakeWidget",
+  });
 
-  it("renders widget fallback", function () {
-    const wrapper = mount(<FallbackWidget title="FakeWidget" />);
+  it("renders widget fallback", () => {
+    const wrapper = mount(<FallbackWidget {...fakeProps()} />);
     const widget = wrapper.find(".widget-wrapper");
     const header = widget.find(".widget-header");
     expect(header.text()).toContain("FakeWidget");
@@ -13,13 +16,11 @@ describe("<FallbackWidget/>", function () {
     expect(body.text()).toContain("Widget load failed.");
   });
 
-  it("renders widget fallback with help text", function () {
-    const helpText = "This is a fake widget.";
-    const wrapper = shallow(<FallbackWidget
-      title="FakeWidget" helpText={helpText} />);
-    expect(wrapper.html()).toContain(
-      "<i class=\"fa fa-question-circle title-help-icon\">" +
-      "</i><div class=\"title-help-text \"><i>This is a fake widget.</i></div>");
+  it("renders widget fallback with help text", () => {
+    const p = fakeProps();
+    p.helpText = "This is a fake widget.";
+    const wrapper = shallow(<FallbackWidget {...p} />);
+    expect(wrapper.html())
+      .toContain("<i class=\"fa fa-question-circle help-icon\">");
   });
-
 });

@@ -9,13 +9,6 @@
   left: -1rem;
 }
 
-// As of right now, all the menus appear from floated icons in the widgets.
-.widget-header {
-  .bp3-popover-wrapper {
-    float: right;
-  }
-}
-
 .bp3-overlay-content.bp3-tether-abutted.bp3-tether-abutted-top.bp3-tether-element.bp3-tether-element-attached-left.bp3-tether-element-attached-top.bp3-tether-enabled.bp3-tether-target-attached-bottom.bp3-tether-target-attached-left.bp3-transition-container {
   top: 2rem !important;
 }

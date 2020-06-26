@@ -4,7 +4,7 @@ import { ControlPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
-import { trim } from "lodash";
+import { trim, some } from "lodash";
 import { push } from "../../history";
 
 const FARMBOT_PANEL = [
@@ -28,7 +28,6 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,
   DeviceSetting.restartFarmbot,
   DeviceSetting.shutdownFarmbot,
-  DeviceSetting.restartFirmware,
   DeviceSetting.factoryReset,
   DeviceSetting.autoFactoryReset,
   DeviceSetting.connectionAttemptPeriod,
@@ -109,11 +108,66 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.farmDesigner,
   DeviceSetting.animations,
   DeviceSetting.trail,
+  DeviceSetting.mapMissedSteps,
   DeviceSetting.dynamicMap,
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
   DeviceSetting.mapOrigin,
   DeviceSetting.confirmPlantDeletion,
+];
+const MAP_SETTINGS = [
+  DeviceSetting.showPlantsMapLayer,
+  DeviceSetting.showPointsMapLayer,
+  DeviceSetting.showWeedsMapLayer,
+  DeviceSetting.showRemovedWeedsMapLayer,
+  DeviceSetting.showSpreadMapLayer,
+  DeviceSetting.showFarmbotMapLayer,
+  DeviceSetting.showPhotosMapLayer,
+  DeviceSetting.showAreasMapLayer,
+  DeviceSetting.showReadingsMapLayer,
+];
+const CONTROLS_SETTINGS = [
+  DeviceSetting.invertXAxisJogButton,
+  DeviceSetting.invertYAxisJogButton,
+  DeviceSetting.invertZAxisJogButton,
+  DeviceSetting.displayScaledEncoderPosition,
+  DeviceSetting.displayRawEncoderPosition,
+  DeviceSetting.swapXAndYAxisJogButtons,
+  DeviceSetting.homeButtonBehavior,
+  DeviceSetting.showMotorPositionPlotDisplay,
+];
+const SEQUENCE_SETTINGS = [
+  DeviceSetting.confirmStepDeletion,
+  DeviceSetting.confirmSequenceDeletion,
+  DeviceSetting.showPins,
+  DeviceSetting.openOptionsByDefault,
+  DeviceSetting.discardUnsavedSequenceChanges,
+];
+const LOG_SETTINGS = [
+  DeviceSetting.logFilterLevelSuccess,
+  DeviceSetting.logFilterLevelBusy,
+  DeviceSetting.logFilterLevelWarn,
+  DeviceSetting.logFilterLevelError,
+  DeviceSetting.logFilterLevelInfo,
+  DeviceSetting.logFilterLevelFun,
+  DeviceSetting.logFilterLevelDebug,
+  DeviceSetting.logFilterLevelAssertion,
+  DeviceSetting.enableSequenceBeginLogs,
+  DeviceSetting.enableSequenceStepLogs,
+  DeviceSetting.enableSequenceCompleteLogs,
+  DeviceSetting.enableFirmwareSentLogs,
+  DeviceSetting.enableFirmwareReceivedLogs,
+  DeviceSetting.enableFirmwareDebugLogs,
+];
+const APP_SETTINGS = [
+  DeviceSetting.internationalizeWebApp,
+  DeviceSetting.use24hourTimeFormat,
+  DeviceSetting.hideWebcamWidget,
+  DeviceSetting.hideSensorsPanel,
+  DeviceSetting.readSpeakLogsInBrowser,
+  DeviceSetting.discardUnsavedChanges,
+  DeviceSetting.confirmEmergencyUnlock,
+  DeviceSetting.userInterfaceReadOnlyMode,
 ];
 
 /** Look up parent panels for settings. */
@@ -130,6 +184,28 @@ PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+MAP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+SEQUENCE_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+APP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+
+const CONTENT_LOOKUP = {} as Record<DeviceSetting, DeviceSetting[]>;
+CONTENT_LOOKUP[DeviceSetting.farmbotSettings] = FARMBOT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.firmwareSection] = FIRMWARE_PANEL;
+CONTENT_LOOKUP[DeviceSetting.powerAndReset] = POWER_AND_RESET_PANEL;
+CONTENT_LOOKUP[DeviceSetting.axisSettings] = AXES_PANEL;
+CONTENT_LOOKUP[DeviceSetting.motors] = MOTORS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.encoders] = ENCODERS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.stallDetection] = ENCODERS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.limitSwitchSettings] = LIMIT_SWITCHES_PANEL;
+CONTENT_LOOKUP[DeviceSetting.errorHandling] = ERROR_HANDLING_PANEL;
+CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
+CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
+CONTENT_LOOKUP[DeviceSetting.otherSettings] = CONTROLS_SETTINGS
+  .concat(MAP_SETTINGS, SEQUENCE_SETTINGS, LOG_SETTINGS, APP_SETTINGS);
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
@@ -147,6 +223,10 @@ const ALTERNATE_NAMES =
     {} as Record<DeviceSetting, DeviceSetting[]>);
 ALTERNATE_NAMES[DeviceSetting.encoders].push(DeviceSetting.stallDetection);
 ALTERNATE_NAMES[DeviceSetting.stallDetection].push(DeviceSetting.encoders);
+ALTERNATE_NAMES[DeviceSetting.enableEncoders]
+  .push(DeviceSetting.enableStallDetection);
+ALTERNATE_NAMES[DeviceSetting.enableStallDetection]
+  .push(DeviceSetting.enableEncoders);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
@@ -190,6 +270,7 @@ export interface HighlightProps {
   | (React.ReactChild | React.ReactChild[])[];
   className?: string;
   searchTerm?: string;
+  hidden?: boolean;
 }
 
 interface HighlightState {
@@ -218,9 +299,37 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 
   toggleHover = (hovered: boolean) => () => this.setState({ hovered });
 
+  get isSectionHeader() { return this.props.className?.includes("section"); }
+
+  inContent = (term: string, urlCompare = false) => {
+    const content = CONTENT_LOOKUP[this.props.settingName] || [];
+    return some(content.map(s => {
+      const compareTerm = urlCompare ? compareValues(s)[0] : s;
+      return compareTerm.toLowerCase().includes(term.toLowerCase());
+    }));
+  }
+
+  get searchMatch() {
+    return this.searchTerm &&
+      // if searching, look for setting name match
+      (some(ALTERNATE_NAMES[this.props.settingName].map(s => s.toLowerCase()
+        .includes(this.searchTerm.toLowerCase())))
+        // if match not found, look for section content match
+        || (this.isSectionHeader && this.inContent(this.searchTerm)));
+  }
+
+  get hidden() {
+    const highlightName = getHighlightName();
+    if (!highlightName) { return !!this.props.hidden; }
+    const highlightInSection = this.isSectionHeader
+      && this.inContent(highlightName, true);
+    const notHighlighted =
+      SETTING_PANEL_LOOKUP[this.props.settingName] == "other_settings" &&
+      !compareValues(this.props.settingName).includes(highlightName);
+    return this.props.hidden ? !highlightInSection : notHighlighted;
+  }
+
   render() {
-    const show = !this.searchTerm ||
-      this.props.settingName.toLowerCase().includes(this.searchTerm.toLowerCase());
     return <div className={[
       "setting",
       this.props.className,
@@ -228,7 +337,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     ].join(" ")}
       onMouseEnter={this.toggleHover(true)}
       onMouseLeave={this.toggleHover(false)}
-      hidden={!show}>
+      hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
       {this.props.children}
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${

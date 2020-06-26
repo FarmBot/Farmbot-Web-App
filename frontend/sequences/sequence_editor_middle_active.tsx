@@ -18,7 +18,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
-import { Actions } from "../constants";
+import { Actions, DeviceSetting } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
 import { ToggleButton } from "../controls/toggle_button";
 import { Content } from "../constants";
@@ -60,7 +60,7 @@ export interface SequenceSettingsMenuProps {
 }
 
 export interface SequenceSettingProps {
-  label: string;
+  label: DeviceSetting;
   description: string;
   dispatch: Function;
   setting: BooleanConfigKey;
@@ -92,25 +92,25 @@ export const SequenceSettingsMenu =
     return <div className="sequence-settings-menu">
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.confirm_step_deletion}
-        label={t("Confirm step deletion")}
+        label={DeviceSetting.confirmStepDeletion}
         description={Content.CONFIRM_STEP_DELETION} />
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.confirm_sequence_deletion}
         defaultOn={true}
-        label={t("Confirm sequence deletion")}
+        label={DeviceSetting.confirmSequenceDeletion}
         description={Content.CONFIRM_SEQUENCE_DELETION} />
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.show_pins}
-        label={t("Show pins")}
+        label={DeviceSetting.showPins}
         description={Content.SHOW_PINS} />
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.expand_step_options}
-        label={t("Open options by default")}
+        label={DeviceSetting.openOptionsByDefault}
         description={Content.EXPAND_STEP_OPTIONS} />
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.discard_unsaved_sequences}
         confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
-        label={t("Discard unsaved sequence changes")}
+        label={DeviceSetting.discardUnsavedSequenceChanges}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
     </div>;
   };

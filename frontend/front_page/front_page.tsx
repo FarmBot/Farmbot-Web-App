@@ -17,7 +17,7 @@ import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
 import { t } from "../i18next_wrapper";
 
-export const DEFAULT_APP_PAGE = "/app/controls";
+export const DEFAULT_APP_PAGE = "/app/designer/controls";
 
 export const attachFrontPage =
   () => attachToRoot(FrontPage, {});

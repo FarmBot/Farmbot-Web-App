@@ -417,14 +417,17 @@ export namespace ToolTips {
     trim(`Send a log message upon the end of sequence execution.`);
 
   export const FIRMWARE_LOG_SENT =
-    trim(`Log all commands sent to firmware (clears after refresh).`);
+    trim(`Log all commands sent to firmware. Messages will disappear upon
+    refresh. Automatically disabled after 5 minutes.`);
 
   export const FIRMWARE_LOG_RECEIVED =
-    trim(`Log all responses received from firmware (clears after refresh).
-    Warning: extremely verbose.`);
+    trim(`Log all responses received from firmware. Warning: extremely
+    verbose. Messages will disappear upon refresh. Automatically disabled
+    after 5 minutes.`);
 
   export const FIRMWARE_DEBUG_MESSAGES =
-    trim(`Log all debug received from firmware (clears after refresh).`);
+    trim(`Log all debug messages received from firmware. Messages will
+    disappear upon refresh.`);
 }
 
 export namespace Content {
@@ -528,17 +531,20 @@ export namespace Content {
     real account at`);
 
   // App Settings
+  export const INTERNATIONALIZE_WEB_APP =
+    trim(`Turn off to set Web App to English.`);
+
   export const TIME_FORMAT_24_HOUR =
     trim(`Display time using the 24-hour notation,
     i.e., 23:00 instead of 11:00pm`);
 
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
-    widget from the Controls page.`);
+    widget from the Controls panel.`);
 
   export const HIDE_SENSORS_WIDGET =
     trim(`If not using sensors, use this setting to remove the
-    widget from the Controls page.`);
+    panel from the Farm Designer.`);
 
   export const BROWSER_SPEAK_LOGS =
     trim(`Have the browser also read aloud log messages on the
@@ -681,8 +687,8 @@ export namespace Content {
     will clear data for the current trail.`);
 
   export const MAP_MISSED_STEPS =
-    trim(`Display missed step indicators in map. Requires stall detection
-    to be enabled.`);
+    trim(`Display high motor load warning indicators in map.
+    Requires VIRTUAL FARMBOT TRAIL and stall detection to be enabled.`);
 
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
@@ -983,7 +989,6 @@ export enum DeviceSetting {
   name = `name`,
   timezone = `timezone`,
   camera = `camera`,
-  firmware = `Firmware`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
@@ -992,6 +997,7 @@ export enum DeviceSetting {
 
   // Firmware
   firmwareSection = `Firmware`,
+  firmware = `Firmware`,
   restartFirmware = `Restart Firmware`,
   flashFirmware = `Flash firmware`,
 
@@ -1085,6 +1091,84 @@ export enum DeviceSetting {
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
   confirmPlantDeletion = `Confirm plant deletion`,
+
+  otherSettings = `Other`,
+
+  // Map
+  showPlants = `Plants?`,
+  showPlantsMapLayer = `Show Plants Map Layer`,
+  showPoints = `Points?`,
+  showPointsMapLayer = `Show Points Map Layer`,
+  showWeeds = `Weeds?`,
+  showWeedsMapLayer = `Show Weeds Map Layer`,
+  showRemovedWeeds = `Show removed?`,
+  showRemovedWeedsMapLayer = `Show Removed Weeds Map Layer`,
+  showSpread = `Spread?`,
+  showSpreadMapLayer = `Show Spread Map Layer`,
+  showFarmbot = `FarmBot?`,
+  showFarmbotMapLayer = `Show FarmBot Map Layer`,
+  showPhotos = `Photos?`,
+  showPhotosMapLayer = `Show Photos Map Layer`,
+  showAreas = `Areas?`,
+  showAreasMapLayer = `Show Areas Map Layer`,
+  showReadings = `Readings?`,
+  showReadingsMapLayer = `Show Readings Map Layer`,
+
+  // Controls
+  invertJogButtonXAxis = `X Axis`,
+  invertXAxisJogButton = `Invert X Axis Jog Button`,
+  invertJogButtonYAxis = `Y Axis`,
+  invertYAxisJogButton = `Invert Y Axis Jog Button`,
+  invertJogButtonZAxis = `Z Axis`,
+  invertZAxisJogButton = `Invert Z Axis Jog Button`,
+  displayScaledEncoderPosition = `Scaled encoder position`,
+  displayRawEncoderPosition = `Raw encoder position`,
+  swapJogButtonsXAndYAxis = `x and y axis`,
+  swapXAndYAxisJogButtons = `swap x and y axis jog buttons`,
+  homeButtonBehaviorPerformHoming = `perform homing (find home)`,
+  homeButtonBehavior = `home button behavior (find home)`,
+  showMotorPositionPlot = `show`,
+  showMotorPositionPlotDisplay = `show motor position plot display`,
+
+  // Sequences
+  confirmStepDeletion = `Confirm step deletion`,
+  confirmSequenceDeletion = `Confirm sequence deletion`,
+  showPins = `Show pins`,
+  openOptionsByDefault = `Open options by default`,
+  discardUnsavedSequenceChanges = `Discard unsaved sequence changes`,
+
+  // Logs
+  logFilterLevelSuccess = `show success log messages`,
+  logFilterLevelBusy = `show busy log messages`,
+  logFilterLevelWarn = `show warn log messages`,
+  logFilterLevelError = `show error log messages`,
+  logFilterLevelInfo = `show info log messages`,
+  logFilterLevelFun = `show fun log messages`,
+  logFilterLevelDebug = `show debug log messages`,
+  logFilterLevelAssertion = `show assertion log messages`,
+  sequenceBeginLogs = `Begin`,
+  enableSequenceBeginLogs = `Enable sequence begin logs`,
+  sequenceStepLogs = `Steps`,
+  enableSequenceStepLogs = `Enable sequence step logs`,
+  sequenceCompleteLogs = `Complete`,
+  enableSequenceCompleteLogs = `Enable sequence complete logs`,
+  firmwareSentLogs = `Sent`,
+  enableFirmwareSentLogs = `Enable firmware sent logs`,
+  firmwareReceivedLogs = `Received`,
+  enableFirmwareReceivedLogs = `Enable firmware received logs`,
+  firmwareDebugLogs = `Debug`,
+  enableFirmwareDebugLogs = `Enable firmware debug logs`,
+
+  // App
+  internationalizeWebApp = `Internationalize Web App`,
+  use24hourTimeFormat = `Use 24-hour time format`,
+  hideWebcamWidget = `Hide Webcam widget`,
+  hideSensorsPanel = `Hide Sensors panel`,
+  readSpeakLogsInBrowser = `Read speak logs in browser`,
+  discardUnsavedChanges = `Discard Unsaved Changes`,
+  confirmEmergencyUnlock = `Confirm emergency unlock`,
+  userInterfaceReadOnlyMode = `User Interface Read Only Mode`,
+
 }
 
 export namespace DiagnosticMessages {

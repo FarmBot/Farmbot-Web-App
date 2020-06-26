@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
+import { DeviceSetting } from "../../../constants";
 
 export interface LayerToggleProps {
-  label: string;
+  label: DeviceSetting;
   value: boolean | undefined;
   onClick(): void;
   popover?: JSX.Element | undefined;
@@ -18,7 +19,7 @@ export function LayerToggle(props: LayerToggleProps) {
   return <fieldset>
     <label>
       <span>
-        {label}
+        {t(label)}
         {popover &&
           <Popover
             targetClassName={"caret-menu-button"}

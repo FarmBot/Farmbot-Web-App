@@ -15,7 +15,6 @@ import {
   DesignerSettingsSectionProps, SettingProps,
   DesignerSettingsPropsBase, SettingDescriptionProps,
 } from "./interfaces";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export const Designer = (props: DesignerSettingsSectionProps) => {
   const { getConfigValue, dispatch, controlPanelState } = props;
@@ -38,7 +37,7 @@ export const PlainDesignerSettings =
     DESIGNER_SETTINGS(settingsProps).map(setting =>
       <Setting key={setting.title} {...setting} {...settingsProps} />);
 
-const Setting = (props: SettingProps) => {
+export const Setting = (props: SettingProps) => {
   const { title, setting, callback, defaultOn } = props;
   const raw_value = setting ? props.getConfigValue(setting) : undefined;
   const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
@@ -53,8 +52,10 @@ const Setting = (props: SettingProps) => {
           {setting && <ToggleButton
             toggleValue={props.invert ? !value : value}
             toggleAction={() => {
-              props.dispatch(setWebAppConfigValue(setting, !value));
-              callback?.();
+              if (value || !props.confirm || confirm(t(props.confirm))) {
+                props.dispatch(setWebAppConfigValue(setting, !value));
+                callback?.();
+              }
             }}
             title={`${t("toggle")} ${title}`}
             customText={{ textFalse: t("off"), textTrue: t("on") }} />}
@@ -82,11 +83,12 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.display_trail,
       callback: resetVirtualTrail,
     },
-    ...(DevSettings.futureFeaturesEnabled() ? [{
+    {
       title: DeviceSetting.mapMissedSteps,
       description: t(Content.MAP_MISSED_STEPS),
       setting: BooleanSetting.display_map_missed_steps,
-    }] : []),
+      disabled: !!settingsProps.getConfigValue(BooleanSetting.display_trail),
+    },
     {
       title: DeviceSetting.dynamicMap,
       description: t(Content.DYNAMIC_MAP_SIZE),

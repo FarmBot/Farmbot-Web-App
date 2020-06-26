@@ -73,7 +73,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
     return <div className="menu-popover">
       <Popover
-        portalClassName={"nav-right"}
         popoverClassName={"menu-popover"}
         position={Position.BOTTOM_RIGHT}
         isOpen={this.state.accountMenuOpen}

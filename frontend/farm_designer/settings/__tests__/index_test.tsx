@@ -26,6 +26,7 @@ import { Motors } from "../hardware_settings";
 import { SearchField } from "../../../ui/search_field";
 import { maybeOpenPanel } from "../../../devices/components/maybe_highlight";
 import { ControlPanelState } from "../../../devices/interfaces";
+import { panelState } from "../../../__test_support__/control_panel_state";
 
 const getSetting =
   (wrapper: ReactWrapper, position: number, containsString: string) => {
@@ -61,7 +62,7 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text()).toContain("size");
     expect(wrapper.text().toLowerCase()).toContain("pin");
     const settings = wrapper.find(".designer-setting");
-    expect(settings.length).toEqual(7);
+    expect(settings.length).toBeGreaterThanOrEqual(8);
   });
 
   it("mounts", () => {
@@ -102,8 +103,9 @@ describe("<DesignerSettings />", () => {
 
   it("expands all", () => {
     const p = fakeProps();
+    p.bot.controlPanelState = panelState();
     const wrapper = mount(<DesignerSettings {...p} />);
-    clickButton(wrapper, 0, "expand all");
+    clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
       payload: true,
@@ -112,8 +114,10 @@ describe("<DesignerSettings />", () => {
 
   it("collapses all", () => {
     const p = fakeProps();
+    p.bot.controlPanelState = panelState();
+    p.bot.controlPanelState.motors = true;
     const wrapper = mount(<DesignerSettings {...p} />);
-    clickButton(wrapper, 1, "collapse all");
+    clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
       payload: false,
@@ -122,14 +126,17 @@ describe("<DesignerSettings />", () => {
 
   it("renders defaultOn setting", () => {
     const p = fakeProps();
+    p.bot.controlPanelState.farm_designer = true;
     p.getConfigValue = () => undefined;
     const wrapper = mount(<DesignerSettings {...p} />);
-    const confirmDeletion = getSetting(wrapper, 6, "confirm plant");
+    const confirmDeletion = getSetting(wrapper, 7, "confirm plant");
     expect(confirmDeletion.find("button").text()).toEqual("on");
   });
 
   it("toggles setting", () => {
-    const wrapper = mount(<DesignerSettings {...fakeProps()} />);
+    const p = fakeProps();
+    p.bot.controlPanelState.farm_designer = true;
+    const wrapper = mount(<DesignerSettings {...p} />);
     const trailSetting = getSetting(wrapper, 1, "trail");
     trailSetting.find("button").simulate("click");
     expect(setWebAppConfigValue)
@@ -138,9 +145,10 @@ describe("<DesignerSettings />", () => {
 
   it("changes origin", () => {
     const p = fakeProps();
+    p.bot.controlPanelState.farm_designer = true;
     p.getConfigValue = () => 2;
     const wrapper = mount(<DesignerSettings {...p} />);
-    const originSetting = getSetting(wrapper, 5, "origin");
+    const originSetting = getSetting(wrapper, 6, "origin");
     originSetting.find("div").last().simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);

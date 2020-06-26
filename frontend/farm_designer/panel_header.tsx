@@ -3,6 +3,13 @@ import { getPathArray } from "../history";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { DevSettings } from "../account/dev/dev_support";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { store } from "../redux/store";
+import { BooleanSetting } from "../session_keys";
+import {
+  getFwHardwareValue, hasSensors,
+} from "../devices/components/firmware_hardware_support";
+import { getFbosConfig } from "../resources/getters";
 
 export enum Panel {
   Map = "Map",
@@ -124,10 +131,26 @@ const NavTab = (props: NavTabProps) =>
     {<img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
   </Link>;
 
+const displayScrollIndicator = () => {
+  const element = document.getElementsByClassName("panel-tabs")[1];
+  const mobile = element?.scrollWidth < 430;
+  const end = element?.scrollWidth - element?.scrollLeft == element?.clientWidth;
+  return mobile && !end;
+};
+
+const showSensors = () => {
+  const getWebAppConfigVal = getWebAppConfigValue(store.getState);
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(
+    store.getState().resources.index));
+  return !getWebAppConfigVal(BooleanSetting.hide_sensors)
+    && hasSensors(firmwareHardware);
+};
+
 export function DesignerNavTabs(props: { hidden?: boolean }) {
   const tab = getCurrentTab();
   const hidden = props.hidden ? "hidden" : "";
   return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${hidden}`}>
+    {displayScrollIndicator() && <div className={"scroll-indicator"} />}
     <div className="panel-tabs">
       <NavTab panel={Panel.Map}
         linkTo={"/app/designer"}
@@ -161,12 +184,11 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds"}
         title={t("Weeds")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Controls}
-          linkTo={"/app/designer/controls"}
-          title={t("Controls")} />}
-      {DevSettings.futureFeaturesEnabled() &&
+      <NavTab
+        panel={Panel.Controls}
+        linkTo={"/app/designer/controls"}
+        title={t("Controls")} />
+      {showSensors() &&
         <NavTab
           panel={Panel.Sensors}
           linkTo={"/app/designer/sensors"}

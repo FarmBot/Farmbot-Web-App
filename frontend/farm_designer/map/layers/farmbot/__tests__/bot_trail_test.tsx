@@ -1,8 +1,3 @@
-let mockDev = false;
-jest.mock("../../../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
@@ -23,8 +18,9 @@ describe("<BotTrail/>", () => {
     return {
       position: { x: 0, y: 0, z: 0 },
       missedSteps: undefined,
+      displayMissedSteps: false,
       mapTransformProps: fakeMapTransformProps(),
-      peripherals: []
+      peripherals: [],
     };
   }
 
@@ -84,9 +80,9 @@ describe("<BotTrail/>", () => {
   });
 
   it("shows missed step indicators", () => {
-    mockDev = true;
     const p = fakeProps();
     p.missedSteps = { x: 60, y: 70, z: 80 };
+    p.displayMissedSteps = true;
     const wrapper = shallow(<BotTrail {...p} />);
     expect(wrapper.find(".virtual-bot-trail").find("text").length).toEqual(3);
   });

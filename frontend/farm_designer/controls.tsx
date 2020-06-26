@@ -90,34 +90,36 @@ export class RawDesignerControls
     return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"controls"}>
-        <MustBeOnline
-          lockOpen={process.env.NODE_ENV !== "production"}
-          networkState={getStatus(bot.connectivity.uptime["bot.mqtt"])}
-          syncStatus={informational_settings.sync_status}>
-          <Popover position={Position.BOTTOM_RIGHT}>
+        <div className={"move"}>
+          <Popover position={Position.LEFT_TOP} className={"move-settings"}>
             <i className="fa fa-gear" />
             <MoveWidgetSettingsMenu
               toggle={this.toggle}
               getValue={this.getValue}
               firmwareHardware={this.props.firmwareHardware} />
           </Popover>
-          <JogControlsGroup
-            dispatch={this.props.dispatch}
-            stepSize={bot.stepSize}
-            botPosition={locationData.position}
-            getValue={this.getValue}
-            arduinoBusy={this.arduinoBusy}
-            env={this.props.env}
-            firmwareSettings={this.props.firmwareSettings} />
-          <BotPositionRows
-            locationData={locationData}
-            getValue={this.getValue}
-            arduinoBusy={this.arduinoBusy}
-            firmwareSettings={this.props.firmwareSettings}
-            firmwareHardware={this.props.firmwareHardware} />
-        </MustBeOnline>
-        {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
-          <MotorPositionPlot locationData={locationData} />}
+          <MustBeOnline
+            lockOpen={process.env.NODE_ENV !== "production"}
+            networkState={getStatus(bot.connectivity.uptime["bot.mqtt"])}
+            syncStatus={informational_settings.sync_status}>
+            <JogControlsGroup
+              dispatch={this.props.dispatch}
+              stepSize={bot.stepSize}
+              botPosition={locationData.position}
+              getValue={this.getValue}
+              arduinoBusy={this.arduinoBusy}
+              env={this.props.env}
+              firmwareSettings={this.props.firmwareSettings} />
+            <BotPositionRows
+              locationData={locationData}
+              getValue={this.getValue}
+              arduinoBusy={this.arduinoBusy}
+              firmwareSettings={this.props.firmwareSettings}
+              firmwareHardware={this.props.firmwareHardware} />
+          </MustBeOnline>
+          {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
+            <MotorPositionPlot locationData={locationData} />}
+        </div>
         <hr />
         <Peripherals
           firmwareHardware={this.props.firmwareHardware}
@@ -126,9 +128,10 @@ export class RawDesignerControls
           dispatch={this.props.dispatch}
           disabled={this.arduinoBusy || !this.botOnline} />
         <hr />
-        <WebcamPanel
-          feeds={this.props.feeds}
-          dispatch={this.props.dispatch} />
+        {!this.props.getWebAppConfigVal(BooleanSetting.hide_webcam_widget) &&
+          <WebcamPanel
+            feeds={this.props.feeds}
+            dispatch={this.props.dispatch} />}
       </DesignerPanelContent>
     </DesignerPanel>;
   }

@@ -3,7 +3,8 @@ jest.mock("../../../actions", () => ({ updateConfig: jest.fn() }));
 import * as React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
-  BetaReleaseOptInButtonProps, BetaReleaseOptIn, reformatFwVersion, reformatFbosVersion,
+  BetaReleaseOptInButtonProps, BetaReleaseOptIn, reformatFwVersion,
+  reformatFbosVersion,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";

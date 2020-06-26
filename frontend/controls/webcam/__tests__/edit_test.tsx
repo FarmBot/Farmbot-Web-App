@@ -1,7 +1,6 @@
 import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount, shallow } from "enzyme";
-import { props } from "../test_helpers";
 import { Edit } from "../edit";
 import { SpecialStatus } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -13,7 +12,14 @@ describe("<Edit/>", () => {
     const feed1 = fakeWebcamFeed();
     const feed2 = fakeWebcamFeed();
     feed1.specialStatus = SpecialStatus.DIRTY;
-    return props([feed1, feed2]);
+    return {
+      onToggle: jest.fn(),
+      feeds: [feed1, feed2],
+      init: jest.fn(),
+      edit: jest.fn(),
+      save: jest.fn(),
+      destroy: jest.fn(),
+    };
   };
 
   it("renders the list of feeds", () => {
