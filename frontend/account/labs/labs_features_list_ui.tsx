@@ -5,7 +5,7 @@ import { Row, Col } from "../../ui";
 import { ToggleButton } from "../../controls/toggle_button";
 import { t } from "../../i18next_wrapper";
 
-interface LabsFeaturesListProps {
+export interface LabsFeaturesListProps {
   onToggle(feature: LabsFeature): Promise<void>;
   getConfigValue: GetWebAppConfigValue;
 }
@@ -16,10 +16,10 @@ export function LabsFeaturesList(props: LabsFeaturesListProps) {
       const displayValue = feature.displayInvert ? !feature.value : feature.value;
       return <Row key={i}>
         <Col xs={4}>
-          <label>{feature.name}</label>
+          <label>{t(feature.name)}</label>
         </Col>
         <Col xs={6}>
-          <p>{feature.description}</p>
+          <p>{t(feature.description)}</p>
         </Col>
         <Col xs={2}>
           <ToggleButton

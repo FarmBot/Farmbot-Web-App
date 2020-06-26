@@ -6,10 +6,11 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
 import { hasEncoders } from "../../devices/components/firmware_hardware_support";
+import { DeviceSetting } from "../../constants";
 
 export const moveWidgetSetting =
   (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
-    ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
+    ({ label, setting }: { label: DeviceSetting, setting: BooleanConfigKey }) =>
       <fieldset>
         <label>
           {t(label)}
@@ -31,33 +32,37 @@ export const MoveWidgetSettingsMenu = (
   const Setting = moveWidgetSetting(toggle, getValue);
   return <div className="move-settings-menu">
     <p>{t("Invert Jog Buttons")}</p>
-    <Setting label={t("X Axis")} setting={BooleanSetting.x_axis_inverted} />
-    <Setting label={t("Y Axis")} setting={BooleanSetting.y_axis_inverted} />
-    <Setting label={t("Z Axis")} setting={BooleanSetting.z_axis_inverted} />
+    <Setting label={DeviceSetting.invertJogButtonXAxis}
+      setting={BooleanSetting.x_axis_inverted} />
+    <Setting label={DeviceSetting.invertJogButtonYAxis}
+      setting={BooleanSetting.y_axis_inverted} />
+    <Setting label={DeviceSetting.invertJogButtonZAxis}
+      setting={BooleanSetting.z_axis_inverted} />
 
     {hasEncoders(firmwareHardware) &&
       <div className="display-encoder-data">
         <p>{t("Display Encoder Data")}</p>
         <Setting
-          label={t("Scaled encoder position")}
+          label={DeviceSetting.displayScaledEncoderPosition}
           setting={BooleanSetting.scaled_encoders} />
         <Setting
-          label={t("Raw encoder position")}
+          label={DeviceSetting.displayRawEncoderPosition}
           setting={BooleanSetting.raw_encoders} />
       </div>}
 
     <p>{t("Swap jog buttons (and rotate map)")}</p>
-    <Setting label={t("x and y axis")} setting={BooleanSetting.xy_swap} />
+    <Setting label={DeviceSetting.swapJogButtonsXAndYAxis}
+      setting={BooleanSetting.xy_swap} />
 
     <p>{t("Home button behavior")}</p>
     <Setting
-      label={t("perform homing (find home)")}
+      label={DeviceSetting.homeButtonBehaviorPerformHoming}
       setting={BooleanSetting.home_button_homing} />
 
     <div className={"motor-position-plot-setting-row"}>
       <p>{t("Motor position plot")}</p>
       <Setting
-        label={t("show")}
+        label={DeviceSetting.showMotorPositionPlot}
         setting={BooleanSetting.show_motor_plot} />
     </div>
   </div>;

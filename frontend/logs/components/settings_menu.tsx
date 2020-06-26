@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Help } from "../../ui/index";
-import { ToolTips } from "../../constants";
+import { ToolTips, DeviceSetting } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
@@ -18,17 +18,17 @@ interface LogSettingRecord {
 
 const SEQUENCE_LOG_SETTINGS = (): LogSettingRecord[] => [
   {
-    label: t("Begin"),
+    label: DeviceSetting.sequenceBeginLogs,
     setting: "sequence_init_log",
     tooltip: ToolTips.SEQUENCE_LOG_BEGIN
   },
   {
-    label: t("Steps"),
+    label: DeviceSetting.sequenceStepLogs,
     setting: "sequence_body_log",
     tooltip: ToolTips.SEQUENCE_LOG_STEP
   },
   {
-    label: t("Complete"),
+    label: DeviceSetting.sequenceCompleteLogs,
     setting: "sequence_complete_log",
     tooltip: ToolTips.SEQUENCE_LOG_END
   },
@@ -36,17 +36,17 @@ const SEQUENCE_LOG_SETTINGS = (): LogSettingRecord[] => [
 
 const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [
   {
-    label: t("Sent"),
+    label: DeviceSetting.firmwareSentLogs,
     setting: "firmware_output_log",
     tooltip: ToolTips.FIRMWARE_LOG_SENT
   },
   {
-    label: t("Received"),
+    label: DeviceSetting.firmwareReceivedLogs,
     setting: "firmware_input_log",
     tooltip: ToolTips.FIRMWARE_LOG_RECEIVED
   },
   {
-    label: t("Debug"),
+    label: DeviceSetting.firmwareDebugLogs,
     setting: "arduino_debug_messages",
     tooltip: ToolTips.FIRMWARE_DEBUG_MESSAGES
   },

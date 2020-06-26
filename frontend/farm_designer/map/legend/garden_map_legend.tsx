@@ -11,6 +11,7 @@ import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { Feature } from "../../../devices/interfaces";
 import { SelectModeLink } from "../../plants/select_plants";
+import { DeviceSetting } from "../../../constants";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -41,7 +42,7 @@ export const PointsSubMenu = ({ toggle, getConfigValue }: {
   <div className="map-points-submenu">
     <LayerToggle
       value={!!getConfigValue(BooleanSetting.show_historic_points)}
-      label={t("Show removed?")}
+      label={DeviceSetting.showRemovedWeeds}
       onClick={toggle(BooleanSetting.show_historic_points)} />
   </div>;
 
@@ -50,30 +51,30 @@ const LayerToggles = (props: GardenMapLegendProps) => {
   return <div className="toggle-buttons">
     <LayerToggle
       value={props.showPlants}
-      label={t("Plants?")}
+      label={DeviceSetting.showPlants}
       onClick={toggle(BooleanSetting.show_plants)} />
     <LayerToggle
       value={props.showPoints}
-      label={t("Points?")}
+      label={DeviceSetting.showPoints}
       onClick={toggle(BooleanSetting.show_points)} />
     <LayerToggle
       value={props.showWeeds}
-      label={t("Weeds?")}
+      label={DeviceSetting.showWeeds}
       onClick={toggle(BooleanSetting.show_weeds)}
       submenuTitle={t("extras")}
       popover={
         <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />} />
     <LayerToggle
       value={props.showSpread}
-      label={t("Spread?")}
+      label={DeviceSetting.showSpread}
       onClick={toggle(BooleanSetting.show_spread)} />
     <LayerToggle
       value={props.showFarmbot}
-      label={t("FarmBot?")}
+      label={DeviceSetting.showFarmbot}
       onClick={toggle(BooleanSetting.show_farmbot)} />
     <LayerToggle
       value={props.showImages}
-      label={t("Photos?")}
+      label={DeviceSetting.showPhotos}
       onClick={toggle(BooleanSetting.show_images)}
       submenuTitle={t("filter")}
       popover={<ImageFilterMenu
@@ -84,12 +85,12 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     {props.shouldDisplay(Feature.criteria_groups) &&
       <LayerToggle
         value={props.showZones}
-        label={t("areas?")}
+        label={DeviceSetting.showAreas}
         onClick={toggle(BooleanSetting.show_zones)} />}
     {props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}
-        label={t("Readings?")}
+        label={DeviceSetting.showReadings}
         onClick={toggle(BooleanSetting.show_sensor_readings)} />}
   </div>;
 };

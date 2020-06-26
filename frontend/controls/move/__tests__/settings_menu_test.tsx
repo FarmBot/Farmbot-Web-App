@@ -4,14 +4,15 @@ import { BooleanSetting } from "../../../session_keys";
 import {
   moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
 } from "../settings_menu";
+import { DeviceSetting } from "../../../constants";
 
 describe("moveWidgetSetting()", () => {
   it("renders setting", () => {
     const Setting = moveWidgetSetting(jest.fn(), jest.fn(() => true));
     const wrapper = mount(<Setting
-      label="label"
+      label={DeviceSetting.invertJogButtonXAxis}
       setting={BooleanSetting.xy_swap} />);
-    ["label", "yes"].map(string =>
+    ["x axis", "yes"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 });

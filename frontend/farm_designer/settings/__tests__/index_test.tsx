@@ -62,7 +62,7 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text()).toContain("size");
     expect(wrapper.text().toLowerCase()).toContain("pin");
     const settings = wrapper.find(".designer-setting");
-    expect(settings.length).toEqual(8);
+    expect(settings.length).toBeGreaterThanOrEqual(8);
   });
 
   it("mounts", () => {

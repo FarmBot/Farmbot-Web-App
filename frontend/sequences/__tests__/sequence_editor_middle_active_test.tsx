@@ -59,7 +59,7 @@ import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { DropAreaProps } from "../../draggable/interfaces";
-import { Actions } from "../../constants";
+import { Actions, DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
@@ -302,7 +302,7 @@ describe("<SequenceSettingsMenu />", () => {
 
 describe("<SequenceSetting />", () => {
   const fakeProps = (): SequenceSettingProps => ({
-    label: "setting label",
+    label: DeviceSetting.showPins,
     description: "setting description",
     dispatch: jest.fn(),
     setting: BooleanSetting.discard_unsaved_sequences,

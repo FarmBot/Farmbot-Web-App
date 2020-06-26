@@ -22,6 +22,7 @@ import { mapStateToProps } from "./state_to_props";
 import { Actions } from "../../constants";
 import { ExtraSettings } from "../map/easter_eggs/bugs";
 import { ControlPanelState } from "../../devices/interfaces";
+import { OtherSettings } from "./other_settings";
 
 interface ToggleSettingsOpenProps {
   dispatch: Function;
@@ -144,6 +145,10 @@ export class RawDesignerSettings
           botOnline={botOnline} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
+        <OtherSettings {...commonProps}
+          searchTerm={this.props.searchTerm}
+          getConfigValue={getConfigValue}
+          sourceFbosConfig={sourceFbosConfig} />
         {ExtraSettings(this.props.searchTerm)}
       </DesignerPanelContent>
     </DesignerPanel>;
