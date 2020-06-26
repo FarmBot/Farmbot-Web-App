@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DropDownItem, Col, FBSelect } from "../../../ui";
-import { SequenceBodyItem, ALLOWED_PIN_MODES, WritePin } from "farmbot";
+import { SequenceBodyItem, ALLOWED_PIN_MODES, WritePin, ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { t } from "../../../i18next_wrapper";
@@ -23,9 +23,10 @@ export function setPinMode(ddi: DropDownItem, stepParams: StepParams) {
     sequence: currentSequence,
     step: currentStep,
     index: index,
-    executor: (step: WritePin) => {
+    executor: (step: WritePin | ReadPin) => {
       if (isPinMode(ddi.value)) {
         step.args.pin_mode = ddi.value;
+        if (step.kind == "read_pin") { return; }
         switch (ddi.value) {
           case PinMode.digital:
             step.args.pin_value = Math.min(step.args.pin_value, 1);
