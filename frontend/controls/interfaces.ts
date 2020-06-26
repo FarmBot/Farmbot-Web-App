@@ -8,6 +8,7 @@ export interface AxisDisplayGroupProps {
   missedSteps?: BotPosition;
   axisStates?: Record<Xyz, AxisState | undefined>;
   busy?: boolean;
+  style?: React.CSSProperties;
 }
 
 export interface AxisProps {

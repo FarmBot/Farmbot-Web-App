@@ -49,6 +49,13 @@ describe("<GardenMapLegend />", () => {
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
   });
+
+  it("renders", () => {
+    const p = fakeProps();
+    p.hasSensorReadings = true;
+    const wrapper = mount(<GardenMapLegend {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("readings");
+  });
 });
 
 describe("<ZoomControls />", () => {

@@ -3,7 +3,6 @@ import { BooleanSetting } from "../../session_keys";
 import { ToggleButton } from "../toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { DevSettings } from "../../account/dev/dev_support";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
 import { hasEncoders } from "../../devices/components/firmware_hardware_support";
@@ -55,12 +54,11 @@ export const MoveWidgetSettingsMenu = (
       label={t("perform homing (find home)")}
       setting={BooleanSetting.home_button_homing} />
 
-    {DevSettings.futureFeaturesEnabled() &&
-      <div className={"motor-position-plot-setting-row"}>
-        <p>{t("Motor position plot")}</p>
-        <Setting
-          label={t("show")}
-          setting={BooleanSetting.show_motor_plot} />
-      </div>}
+    <div className={"motor-position-plot-setting-row"}>
+      <p>{t("Motor position plot")}</p>
+      <Setting
+        label={t("show")}
+        setting={BooleanSetting.show_motor_plot} />
+    </div>
   </div>;
 };

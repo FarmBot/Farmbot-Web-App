@@ -1,10 +1,3 @@
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { BooleanSetting } from "../../../session_keys";
@@ -31,12 +24,8 @@ describe("<MoveWidgetSettingsMenu />", () => {
   });
 
   it("displays motor plot toggle", () => {
-    const noToggle = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
-    expect(noToggle.text()).not.toContain("Motor position plot");
-    mockDev = true;
     const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
     expect(wrapper.text()).toContain("Motor position plot");
-    mockDev = false;
   });
 
   it("displays encoder toggles", () => {

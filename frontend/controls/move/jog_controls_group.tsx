@@ -8,7 +8,7 @@ import { JogButtons } from "./jog_buttons";
 import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
 
-interface JogControlsGroupProps {
+export interface JogControlsGroupProps {
   dispatch: Function;
   stepSize: number;
   botPosition: BotPosition;

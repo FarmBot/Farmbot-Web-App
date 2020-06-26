@@ -39,8 +39,8 @@ export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
       detectionEnabled={detectionEnabled.z}
       missedSteps={props.missedSteps?.z}
       axisState={props.axisStates?.z} />
-    <Col xs={3}>
-      <label>
+    <Col xs={3} className={"no-pad"}>
+      <label style={props.style}>
         {t(props.label)}
       </label>
     </Col>

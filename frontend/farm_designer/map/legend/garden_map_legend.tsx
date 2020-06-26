@@ -8,7 +8,6 @@ import { State } from "../../interfaces";
 import { MoveModeLink } from "../../move_to";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
-import { DevSettings } from "../../../account/dev/dev_support";
 import { t } from "../../../i18next_wrapper";
 import { Feature } from "../../../devices/interfaces";
 import { SelectModeLink } from "../../plants/select_plants";
@@ -87,7 +86,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         value={props.showZones}
         label={t("areas?")}
         onClick={toggle(BooleanSetting.show_zones)} />}
-    {DevSettings.futureFeaturesEnabled() && props.hasSensorReadings &&
+    {props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}

@@ -65,6 +65,7 @@ export class RawDesignerSensors
           sensors={this.props.sensors}
           dispatch={this.props.dispatch}
           disabled={this.arduinoBusy || !this.botOnline} />
+        <hr />
         <SensorReadings
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
