@@ -1,5 +1,5 @@
 import { BooleanSetting } from "../../session_keys";
-import { Content } from "../../constants";
+import { Content, DeviceSetting } from "../../constants";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../../config_storage/actions";
@@ -26,55 +26,55 @@ export interface LabsFeature {
 export const fetchLabFeatures =
   (getConfigValue: GetWebAppConfigValue): LabsFeature[] => ([
     {
-      name: t("Internationalize Web App"),
-      description: t("Turn off to set Web App to English."),
+      name: DeviceSetting.internationalizeWebApp,
+      description: Content.INTERNATIONALIZE_WEB_APP,
       storageKey: BooleanSetting.disable_i18n,
       value: false,
       displayInvert: true,
       callback: () => window.location.reload()
     },
     {
-      name: t("Use 24-hour time format"),
-      description: t(Content.TIME_FORMAT_24_HOUR),
+      name: DeviceSetting.use24hourTimeFormat,
+      description: Content.TIME_FORMAT_24_HOUR,
       storageKey: BooleanSetting.time_format_24_hour,
       value: false,
     },
     {
-      name: t("Hide Webcam widget"),
-      description: t(Content.HIDE_WEBCAM_WIDGET),
+      name: DeviceSetting.hideWebcamWidget,
+      description: Content.HIDE_WEBCAM_WIDGET,
       storageKey: BooleanSetting.hide_webcam_widget,
       value: false
     },
     {
-      name: t("Hide Sensors panel"),
-      description: t(Content.HIDE_SENSORS_WIDGET),
+      name: DeviceSetting.hideSensorsPanel,
+      description: Content.HIDE_SENSORS_WIDGET,
       storageKey: BooleanSetting.hide_sensors,
       value: false
     },
     {
-      name: t("Read speak logs in browser"),
-      description: t(Content.BROWSER_SPEAK_LOGS),
+      name: DeviceSetting.readSpeakLogsInBrowser,
+      description: Content.BROWSER_SPEAK_LOGS,
       storageKey: BooleanSetting.enable_browser_speak,
       value: false
     },
     {
-      name: t("Discard Unsaved Changes"),
-      description: t(Content.DISCARD_UNSAVED_CHANGES),
+      name: DeviceSetting.discardUnsavedChanges,
+      description: Content.DISCARD_UNSAVED_CHANGES,
       storageKey: BooleanSetting.discard_unsaved,
       value: false,
-      confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
+      confirmationMessage: Content.DISCARD_UNSAVED_CHANGES_CONFIRM
     },
     {
-      name: t("Confirm emergency unlock"),
-      description: t(Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG),
-      confirmationMessage: t(Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE),
+      name: DeviceSetting.confirmEmergencyUnlock,
+      description: Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG,
+      confirmationMessage: Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE,
       storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
       value: false,
       displayInvert: true,
     },
     {
-      name: t("User Interface Read Only Mode"),
-      description: t(Content.USER_INTERFACE_READ_ONLY_MODE),
+      name: DeviceSetting.userInterfaceReadOnlyMode,
+      description: Content.USER_INTERFACE_READ_ONLY_MODE,
       storageKey: BooleanSetting.user_interface_read_only_mode,
       value: false,
       displayInvert: false,
@@ -88,7 +88,7 @@ export const maybeToggleFeature =
     (x: LabsFeature): LabsFeature | undefined =>
       (x.value
         || !x.confirmationMessage
-        || window.confirm(x.confirmationMessage)) ?
+        || window.confirm(t(x.confirmationMessage))) ?
         toggleFeatureValue(getConfigValue, dispatch)(x) : undefined;
 
 /** Takes a `LabFeature` (probably one with an uninitialized fallback / default

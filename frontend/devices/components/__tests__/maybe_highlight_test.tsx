@@ -42,6 +42,13 @@ describe("<Highlight />", () => {
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
+  it("doesn't hide: no search term, highlight doesn't match", () => {
+    location.search = "?highlight=encoders";
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
   it("doesn't hide: matches search term", () => {
     mockState.resources.consumers.farm_designer.settingsSearchTerm = "motor";
     const wrapper = mount(<Highlight {...fakeProps()} />);
@@ -51,6 +58,26 @@ describe("<Highlight />", () => {
   it("doesn't hide: content matches search term", () => {
     mockState.resources.consumers.farm_designer.settingsSearchTerm = "speed";
     const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
+  it("doesn't hide: content matches highlight", () => {
+    location.search = "?highlight=show_pins";
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    const p = fakeProps();
+    p.hidden = true;
+    p.settingName = DeviceSetting.otherSettings;
+    const wrapper = mount(<Highlight {...p} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+  });
+
+  it("doesn't hide: matches highlight", () => {
+    location.search = "?highlight=show_pins";
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    const p = fakeProps();
+    p.className = undefined;
+    p.settingName = DeviceSetting.showPins;
+    const wrapper = mount(<Highlight {...p} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
@@ -65,6 +92,15 @@ describe("<Highlight />", () => {
   it("hides: doesn't match search term", () => {
     mockState.resources.consumers.farm_designer.settingsSearchTerm = "encoder";
     const wrapper = mount(<Highlight {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(true);
+  });
+
+  it("hides: no match", () => {
+    location.search = "?highlight=motors";
+    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    const p = fakeProps();
+    p.settingName = DeviceSetting.showPins;
+    const wrapper = mount(<Highlight {...p} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(true);
   });
 

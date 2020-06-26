@@ -36,6 +36,7 @@ export const initialState = (): BotState => ({
     pin_guard: false,
     parameter_management: false,
     farm_designer: false,
+    other_settings: false,
   },
   hardware: {
     gpio_registry: {},
@@ -133,6 +134,7 @@ export const botReducer = generateReducer<BotState>(initialState())
       s.controlPanelState.pin_guard = a.payload;
       s.controlPanelState.parameter_management = a.payload;
       s.controlPanelState.farm_designer = a.payload;
+      s.controlPanelState.other_settings = a.payload;
       return s;
     })
   .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {

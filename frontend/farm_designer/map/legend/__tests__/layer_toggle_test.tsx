@@ -1,12 +1,13 @@
 import * as React from "react";
 import { LayerToggle, LayerToggleProps } from "../layer_toggle";
 import { shallow } from "enzyme";
+import { DeviceSetting } from "../../../../constants";
 
 describe("<LayerToggle/>", () => {
   const toggle = jest.fn();
   function fakeProps(): LayerToggleProps {
     return {
-      label: "toggle label",
+      label: DeviceSetting.showFarmbot,
       value: true,
       onClick: toggle
     };
@@ -14,7 +15,7 @@ describe("<LayerToggle/>", () => {
 
   it("renders", () => {
     const wrapper = shallow(<LayerToggle {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("toggle label");
+    expect(wrapper.text()).toEqual("FarmBot?");
     expect(wrapper.html()).toContain("green");
   });
 

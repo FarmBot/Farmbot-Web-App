@@ -47,7 +47,16 @@ export interface SettingDescriptionProps {
   children?: React.ReactChild;
   defaultOn?: boolean;
   disabled?: boolean;
+  confirm?: string;
 }
 
 export interface SettingProps
   extends DesignerSettingsPropsBase, SettingDescriptionProps { }
+
+export interface OtherSettingsProps {
+  dispatch: Function;
+  controlPanelState: ControlPanelState;
+  getConfigValue: GetWebAppConfigValue;
+  sourceFbosConfig: SourceFbosConfig;
+  searchTerm: string;
+}

@@ -91,17 +91,17 @@ export class RawDesignerControls
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"controls"}>
         <div className={"move"}>
+          <Popover position={Position.LEFT_TOP} className={"move-settings"}>
+            <i className="fa fa-gear" />
+            <MoveWidgetSettingsMenu
+              toggle={this.toggle}
+              getValue={this.getValue}
+              firmwareHardware={this.props.firmwareHardware} />
+          </Popover>
           <MustBeOnline
             lockOpen={process.env.NODE_ENV !== "production"}
             networkState={getStatus(bot.connectivity.uptime["bot.mqtt"])}
             syncStatus={informational_settings.sync_status}>
-            <Popover position={Position.BOTTOM_RIGHT} className={"move-settings"}>
-              <i className="fa fa-gear" />
-              <MoveWidgetSettingsMenu
-                toggle={this.toggle}
-                getValue={this.getValue}
-                firmwareHardware={this.props.firmwareHardware} />
-            </Popover>
             <JogControlsGroup
               dispatch={this.props.dispatch}
               stepSize={bot.stepSize}

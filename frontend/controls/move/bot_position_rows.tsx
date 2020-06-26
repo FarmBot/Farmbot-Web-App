@@ -40,6 +40,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       missedSteps={locationData.load}
       axisStates={locationData.axis_states}
       busy={arduinoBusy}
+      style={{ overflowWrap: "break-word" }}
       label={t("Motor Coordinates (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
       getValue(BooleanSetting.scaled_encoders) &&

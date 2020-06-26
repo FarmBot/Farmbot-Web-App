@@ -41,4 +41,11 @@ describe("<TileReadPin/>", () => {
     expect(inputs.at(1).props().value).toEqual("pinlabel");
     expect(buttons.at(0).text()).toEqual("Pin 3");
   });
+
+  it("throws", () => {
+    console.error = jest.fn();
+    const p = fakeProps();
+    p.currentStep.kind = "write_pin";
+    expect(() => mount(<TileReadPin {...p} />)).toThrowError();
+  });
 });

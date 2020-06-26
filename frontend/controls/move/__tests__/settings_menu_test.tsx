@@ -1,24 +1,18 @@
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { BooleanSetting } from "../../../session_keys";
 import {
   moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
 } from "../settings_menu";
+import { DeviceSetting } from "../../../constants";
 
 describe("moveWidgetSetting()", () => {
   it("renders setting", () => {
     const Setting = moveWidgetSetting(jest.fn(), jest.fn(() => true));
     const wrapper = mount(<Setting
-      label="label"
+      label={DeviceSetting.invertJogButtonXAxis}
       setting={BooleanSetting.xy_swap} />);
-    ["label", "yes"].map(string =>
+    ["x axis", "yes"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 });
@@ -31,12 +25,8 @@ describe("<MoveWidgetSettingsMenu />", () => {
   });
 
   it("displays motor plot toggle", () => {
-    const noToggle = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
-    expect(noToggle.text()).not.toContain("Motor position plot");
-    mockDev = true;
     const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
     expect(wrapper.text()).toContain("Motor position plot");
-    mockDev = false;
   });
 
   it("displays encoder toggles", () => {

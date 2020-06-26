@@ -5,7 +5,7 @@ jest.mock("../../../../api/crud", () => ({
 
 import * as React from "react";
 import { shallow } from "enzyme";
-import { NamedPin, WritePin, ALLOWED_PIN_MODES } from "farmbot";
+import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
 import {
   setPinMode, getPinModes, currentModeSelection, PinModeDropdown,
 } from "../mode";
@@ -66,6 +66,19 @@ describe("setPinMode()", () => {
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(1);
     expect(step.args.pin_value).toEqual(255);
+  });
+
+  it("doesn't adjust value for mode: analog", () => {
+    const p = fakeStepParams();
+    const step: ReadPin = {
+      kind: "read_pin",
+      args: { pin_number: 3, label: "", pin_mode: 0 }
+    };
+    p.currentStep = step;
+    setPinMode(getPinModes()[0], p);
+    mockEditStep.mock.calls[0][0].executor(step);
+    expect(step.args.pin_mode).toEqual(1);
+    expect(step.args["pin_value" as keyof ReadPin["args"]]).toEqual(undefined);
   });
 
   it("rejects typos", () => {

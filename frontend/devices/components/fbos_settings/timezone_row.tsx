@@ -29,7 +29,7 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
       <Row>
         <Col xs={12}>
           <label>
-            {t("TIME ZONE")}
+            {t(DeviceSetting.timezone)}
           </label>
         </Col>
       </Row>
