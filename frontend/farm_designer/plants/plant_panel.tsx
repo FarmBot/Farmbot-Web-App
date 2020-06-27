@@ -204,7 +204,7 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
-      {Object.entries(info.meta || []).map(([key, value]) => {
+      {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":
             return <div key={key} className={`meta-${key}-not-displayed`} />;

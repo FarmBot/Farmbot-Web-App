@@ -1,9 +1,7 @@
 import * as React from "react";
 import {
-  BlurableInput,
-  Row, Col,
-  FBSelect, NULL_CHOICE, DropDownItem,
-} from "../../ui/index";
+  BlurableInput, Row, Col, FBSelect, NULL_CHOICE, DropDownItem, Help,
+} from "../../ui";
 import { SettingsMenuProps } from "./interfaces";
 import {
   SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS,
@@ -13,19 +11,22 @@ import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { ToolTips } from "../../constants";
 
 export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
   getValue(conf: keyof WD_ENV) { return envGet(conf, this.props.values); }
   get simple() { return !!this.getValue("CAMERA_CALIBRATION_easy_calibration"); }
 
-  NumberBox = ({ conf, label }: {
+  NumberBox = ({ conf, label, helpText }: {
     conf: keyof WD_ENV;
     label: string;
+    helpText: string;
   }) => {
     return <div className={"camera-config-number-box"}>
       <label htmlFor={conf}>
         {label}
       </label>
+      <Help text={helpText} />
       <BlurableInput type="number"
         id={conf}
         value={"" + this.getValue(conf)}
@@ -51,16 +52,19 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
       {!this.simple &&
         <div className={"camera-calibration-configs"}>
           <BoolConfig
+            helpText={ToolTips.INVERT_HUE_SELECTION}
             wDEnv={this.props.values}
             configKey={"CAMERA_CALIBRATION_invert_hue_selection"}
             label={t("Invert Hue Range Selection")}
             onChange={this.props.onChange} />
           <this.NumberBox
             conf={"CAMERA_CALIBRATION_calibration_object_separation"}
-            label={t(`Calibration Object Separation`)} />
+            label={t(`Calibration Object Separation`)}
+            helpText={ToolTips.OBJECT_SEPARATION} />
           <label>
             {t(`Calibration Object Separation along axis`)}
           </label>
+          <Help text={ToolTips.CALIBRATION_OBJECT_AXIS} />
           <FBSelect
             onChange={this.setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
             selectedItem={this.find("CAMERA_CALIBRATION_calibration_along_axis")}
@@ -70,17 +74,20 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
         <Col xs={6}>
           <this.NumberBox
             conf={"CAMERA_CALIBRATION_camera_offset_x"}
-            label={t(`Camera Offset X`)} />
+            label={t(`Camera Offset X`)}
+            helpText={ToolTips.CAMERA_OFFSET} />
         </Col>
         <Col xs={6}>
           <this.NumberBox
             conf={"CAMERA_CALIBRATION_camera_offset_y"}
-            label={t(`Camera Offset Y`)} />
+            label={t(`Camera Offset Y`)}
+            helpText={ToolTips.CAMERA_OFFSET} />
         </Col>
       </Row>
       <label htmlFor="image_bot_origin_location">
         {t(`Origin Location in Image`)}
       </label>
+      <Help text={ToolTips.IMAGE_BOT_ORIGIN_LOCATION} />
       <FBSelect
         list={ORIGIN_DROPDOWNS}
         onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
@@ -89,12 +96,14 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
         <Col xs={6}>
           <this.NumberBox
             conf={"CAMERA_CALIBRATION_coord_scale"}
-            label={t(`Pixel coordinate scale`)} />
+            label={t(`Pixel coordinate scale`)}
+            helpText={ToolTips.COORDINATE_SCALE} />
         </Col>
         <Col xs={6}>
           <this.NumberBox
             conf={"CAMERA_CALIBRATION_total_rotation_angle"}
-            label={t(`Camera rotation`)} />
+            label={t(`Camera rotation`)}
+            helpText={ToolTips.IMAGE_ROTATION_ANGLE} />
         </Col>
       </Row>
       <Row>
@@ -112,6 +121,7 @@ export interface BoolConfigProps {
   label: string;
   wDEnv: Partial<WD_ENV>;
   onChange(key: keyof WD_ENV, value: number): void;
+  helpText?: string;
 }
 
 export const BoolConfig = (props: BoolConfigProps) =>
@@ -119,6 +129,7 @@ export const BoolConfig = (props: BoolConfigProps) =>
     <label htmlFor={props.configKey}>
       {t(props.label)}
     </label>
+    {props.helpText && <Help text={props.helpText} />}
     <input
       type="checkbox"
       name={props.configKey}

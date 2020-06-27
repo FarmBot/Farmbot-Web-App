@@ -87,7 +87,7 @@ const DESIGNER_SETTINGS =
       title: DeviceSetting.mapMissedSteps,
       description: t(Content.MAP_MISSED_STEPS),
       setting: BooleanSetting.display_map_missed_steps,
-      disabled: !!settingsProps.getConfigValue(BooleanSetting.display_trail),
+      disabled: !settingsProps.getConfigValue(BooleanSetting.display_trail),
     },
     {
       title: DeviceSetting.dynamicMap,

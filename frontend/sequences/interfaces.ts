@@ -201,6 +201,7 @@ export interface FarmwareData {
   showFirstPartyFarmware: boolean;
   farmwareConfigs: FarmwareConfigs;
   cameraDisabled: boolean;
+  cameraCalibrated: boolean;
 }
 
 export interface StepParams {

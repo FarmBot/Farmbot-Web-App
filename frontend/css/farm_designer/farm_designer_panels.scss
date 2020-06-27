@@ -1043,6 +1043,9 @@
       input {
         background: $gray;
       }
+      button {
+        background: $medium_light_gray !important;
+      }
     }
   }
 }
