@@ -17,6 +17,7 @@ jest.mock("../util", () => ({
   cursorAtPlant: () => mockAtPlant,
   allowInteraction: () => mockInteractionAllow,
   allowGroupAreaInteraction: jest.fn(),
+  scaleIcon: jest.fn(),
 }));
 
 jest.mock("../layers/plants/plant_actions", () => ({

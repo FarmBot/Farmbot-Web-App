@@ -92,6 +92,25 @@ describe("<DragHelpers/>", () => {
     expect(crosshair.find("use").length).toEqual(4);
   });
 
+  it("doesn't render alignment indicators", () => {
+    const p = fakeProps();
+    p.dragging = false;
+    p.plant.body.id = 5;
+    p.plant.body.x = 100;
+    p.plant.body.y = 100;
+    p.activeDragXY = { x: 0, y: 0, z: 0 };
+    const wrapper = shallow(<DragHelpers {...p} />);
+    const indicators = wrapper.find("#alignment-indicator");
+    expect(indicators.length).toEqual(1);
+    const segment = indicators.find("#alignment-indicator-segment-5");
+    expect(segment.length).toEqual(1);
+    expect(segment.find("rect").props())
+      .toEqual({ "height": 2, "width": 8, "x": 65, "y": 99 });
+    const segments = indicators.find("use");
+    expect(segments.length).toEqual(0);
+    expect(indicators.props().fill).toEqual(Color.red);
+  });
+
   it("renders vertical alignment indicators", () => {
     const p = fakeProps();
     p.dragging = false;

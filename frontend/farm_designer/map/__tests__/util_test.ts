@@ -19,6 +19,8 @@ import {
   allowInteraction,
   allowGroupAreaInteraction,
   savedGardenOpen,
+  scaleIcon,
+  defaultSpread,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -485,5 +487,32 @@ describe("cursorAtPlant()", () => {
     isAwayFromPlant({ x: 100, y: 240 });
     isAwayFromPlant({ x: 100, y: 160 });
     isAwayFromPlant(undefined);
+  });
+});
+
+describe("scaleIcon()", () => {
+  it.each<[number, number]>([
+    [0, 10],
+    [10, 10],
+    [13, 10],
+    [14, 10],
+    [37, 30],
+    [38, 30],
+    [150, 30],
+    [151, 30],
+    [250, 50],
+  ])("returns correct value for radius: %s", (radius, expected) => {
+    expect(scaleIcon(radius)).toEqual(expected);
+  });
+});
+
+describe("defaultSpread()", () => {
+  it.each<[number, number]>([
+    [0, 25],
+    [100, 25],
+    [150, 30],
+    [200, 40],
+  ])("returns correct value for radius: %s", (radius, expected) => {
+    expect(defaultSpread(radius)).toEqual(expected);
   });
 });

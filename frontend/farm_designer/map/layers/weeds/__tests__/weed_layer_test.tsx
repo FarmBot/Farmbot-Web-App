@@ -15,7 +15,7 @@ import { svgMount } from "../../../../../__test_support__/svg_mount";
 describe("<WeedLayer/>", () => {
   const fakeProps = (): WeedLayerProps => ({
     visible: true,
-    spreadVisible: true,
+    radiusVisible: true,
     weeds: [fakeWeed()],
     mapTransformProps: fakeMapTransformProps(),
     hoveredPoint: undefined,

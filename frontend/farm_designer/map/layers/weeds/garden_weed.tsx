@@ -1,6 +1,6 @@
 import * as React from "react";
 import { GardenWeedProps } from "../../interfaces";
-import { transformXY } from "../../util";
+import { transformXY, scaleIcon } from "../../util";
 import { Actions } from "../../../../constants";
 import { Color } from "../../../../ui";
 import { mapPointClickAction } from "../../actions";
@@ -25,7 +25,8 @@ export const GardenWeed = (props: GardenWeedProps) => {
   const className = [
     "weed-image", `is-chosen-${current || selected}`, animate ? "animate" : "",
   ].join(" ");
-  const iconRadius = hovered ? radius * 0.88 : radius * 0.8;
+  const plantIconSize = scaleIcon(radius);
+  const iconRadius = hovered ? plantIconSize * 1.1 : plantIconSize;
   return <g id={`weed-${id}`} className={`map-weed ${color}`}
     onMouseEnter={iconHover("start")}
     onMouseLeave={iconHover("end")}
@@ -47,7 +48,7 @@ export const GardenWeed = (props: GardenWeedProps) => {
         fill={Color.soilCloud}
         fillOpacity={0} />}
 
-    {props.spreadVisible &&
+    {props.radiusVisible &&
       <circle
         id={"weed-radius"}
         cx={qx}

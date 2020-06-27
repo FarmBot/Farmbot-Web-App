@@ -6,7 +6,7 @@ import { UUID } from "../../../../resources/interfaces";
 
 export interface WeedLayerProps {
   visible: boolean;
-  spreadVisible: boolean;
+  radiusVisible: boolean;
   weeds: TaggedWeedPointer[];
   mapTransformProps: MapTransformProps;
   hoveredPoint: UUID | undefined;
@@ -35,7 +35,7 @@ export function WeedLayer(props: WeedLayerProps) {
           current={current}
           selected={selectedByBox || selectedByGroup}
           animate={props.animate}
-          spreadVisible={props.spreadVisible}
+          radiusVisible={props.radiusVisible}
           dispatch={props.dispatch}
           mapTransformProps={mapTransformProps} />;
       })}
