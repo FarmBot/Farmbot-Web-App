@@ -18,6 +18,7 @@ export enum Color {
   soilCloud = "#90612f",
   black = "#000000",
   orange = "#ffa500",
+  darkOrange = "#ff7700",
   blue = "#3377dd",
   magenta = "#a64d79",
 }

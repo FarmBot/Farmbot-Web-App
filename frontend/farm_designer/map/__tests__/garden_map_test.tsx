@@ -131,6 +131,7 @@ const fakeProps = (): GardenMapProps => ({
   groups: [],
   shouldDisplay: () => false,
   mountedToolInfo: fakeMountedToolInfo(),
+  visualizedSequenceBody: [],
 });
 
 describe("<GardenMap/>", () => {

@@ -160,15 +160,15 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       <StepContent className={className}>
         <Row>
           <div className={"dynamic-column"}>
-            <Col className="input-line">
+            <div className="input-line">
               <this.LocationForm />
-            </Col>
-            <Col>
+            </div>
+            <div className="more-options">
               <ExpandableHeader
                 expanded={this.state.more}
                 title={isMobile ? "" : t("Options")}
                 onClick={() => this.setState({ more: !this.state.more })} />
-            </Col>
+            </div>
           </div>
         </Row>
         <Collapse isOpen={this.state.more}>

@@ -1728,16 +1728,21 @@ ul {
   }
 }
 
-.dynamic-column{
+.dynamic-column {
   display: flex;
-  .location-form, .expandable-header{
+  .location-form,
+  .expandable-header {
     padding-left: 15px;
   }
-  .expandable-header{
+  .expandable-header {
     padding-right: 15px;
   }
-  .input-line{
+  .input-line {
     flex: auto;
+  }
+  .more-options {
+    min-width: 110px;
+    margin-top: 0.5rem;
   }
 }
 

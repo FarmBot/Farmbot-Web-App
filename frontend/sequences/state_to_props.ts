@@ -85,6 +85,8 @@ export function mapStateToProps(props: Everything): Props {
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
-    folderData: mapStateToFolderProps(props)
+    folderData: mapStateToFolderProps(props),
+    visualized: !!props.resources.consumers.farm_designer.visualizedSequence,
+    hoveredStep: props.resources.consumers.farm_designer.hoveredSequenceStep,
   };
 }

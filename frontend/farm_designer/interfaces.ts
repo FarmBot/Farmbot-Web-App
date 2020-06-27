@@ -13,6 +13,7 @@ import {
   TaggedPointGroup,
   TaggedWeedPointer,
   PointType,
+  SequenceBodyItem,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -92,6 +93,7 @@ export interface Props {
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
+  visualizedSequenceBody: SequenceBodyItem[];
 }
 
 export interface MovePlantProps {
@@ -132,6 +134,8 @@ export interface DesignerState {
   openedSavedGarden: string | undefined;
   tryGroupSortType: PointGroupSortType | "nn" | undefined;
   editGroupAreaInMap: boolean;
+  visualizedSequence: UUID | undefined;
+  hoveredSequenceStep: string | undefined;
   settingsSearchTerm: string;
 }
 
@@ -230,6 +234,7 @@ export interface GardenMapProps {
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
+  visualizedSequenceBody: SequenceBodyItem[];
 }
 
 export interface GardenMapState {

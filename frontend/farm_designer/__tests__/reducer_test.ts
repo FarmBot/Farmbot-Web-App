@@ -11,6 +11,7 @@ import {
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PointType } from "farmbot";
+import { UUID } from "../../resources/interfaces";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
@@ -209,5 +210,25 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.editGroupAreaInMap).toEqual(true);
+  });
+
+  it("enables sequence visualization", () => {
+    const state = oldState();
+    state.visualizedSequence = undefined;
+    const action: ReduxAction<UUID> = {
+      type: Actions.VISUALIZE_SEQUENCE, payload: "uuid"
+    };
+    const newState = designer(state, action);
+    expect(newState.visualizedSequence).toEqual("uuid");
+  });
+
+  it("sets hovered sequence step", () => {
+    const state = oldState();
+    state.hoveredSequenceStep = undefined;
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_SEQUENCE_STEP, payload: "uuid"
+    };
+    const newState = designer(state, action);
+    expect(newState.hoveredSequenceStep).toEqual("uuid");
   });
 });

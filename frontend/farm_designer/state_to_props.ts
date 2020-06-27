@@ -16,6 +16,7 @@ import {
   maybeFindToolById,
   selectAllWeedPointers,
   selectAllToolSlotPointers,
+  maybeGetSequence,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -57,6 +58,12 @@ export function mapStateToProps(props: Everything): Props {
 
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = findPlant(plantUUID);
+
+  const visualizedSequenceUUID =
+    props.resources.consumers.farm_designer.visualizedSequence;
+  const visualizedSequenceBody =
+    maybeGetSequence(props.resources.index, visualizedSequenceUUID)?.body.body
+    || [];
 
   const getConfigValue = getWebAppConfigValue(() => props);
   const allGenericPoints = selectAllGenericPointers(props.resources.index);
@@ -147,6 +154,7 @@ export function mapStateToProps(props: Everything): Props {
     groups: selectAllPointGroups(props.resources.index),
     shouldDisplay,
     mountedToolInfo,
+    visualizedSequenceBody,
   };
 }
 

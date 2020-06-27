@@ -158,6 +158,11 @@
 .sequence-steps {
   margin-right: 25px;
   margin-left: 10px;
+  .sequence-step {
+    &.hovered {
+      box-shadow: 0px 0px 15px #ff7700;
+    }
+  }
 }
 
 .regimen-list {
