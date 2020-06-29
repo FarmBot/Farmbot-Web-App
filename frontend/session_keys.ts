@@ -1,9 +1,13 @@
 import {
-  BooleanConfigKey,
-  NumberConfigKey,
+  BooleanConfigKey as WebAppBooleanConfigKey,
+  NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey | "time_format_seconds";
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
+
+export const BooleanSetting:
+  Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey> = {
   /** Move settings */
   x_axis_inverted: "x_axis_inverted",
   y_axis_inverted: "y_axis_inverted",
@@ -46,6 +50,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   enable_browser_speak: "enable_browser_speak",
   discard_unsaved: "discard_unsaved",
   time_format_24_hour: "time_format_24_hour",
+  time_format_seconds: "time_format_seconds" as WebAppBooleanConfigKey,
   disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
   user_interface_read_only_mode: "user_interface_read_only_mode",
 
@@ -56,7 +61,8 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   stub_config: "stub_config",
 };
 
-export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
+export const NumericSetting:
+  Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey> = {
   /** Logs settings */
   assertion_log: "assertion_log",
   success_log: "success_log",

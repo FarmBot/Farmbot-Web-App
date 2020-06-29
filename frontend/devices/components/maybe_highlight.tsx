@@ -162,6 +162,7 @@ const LOG_SETTINGS = [
 const APP_SETTINGS = [
   DeviceSetting.internationalizeWebApp,
   DeviceSetting.use24hourTimeFormat,
+  DeviceSetting.showSecondsInTime,
   DeviceSetting.hideWebcamWidget,
   DeviceSetting.hideSensorsPanel,
   DeviceSetting.readSpeakLogsInBrowser,
