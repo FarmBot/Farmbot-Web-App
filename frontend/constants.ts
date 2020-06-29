@@ -617,6 +617,9 @@ export namespace Content {
     trim(`Display time using the 24-hour notation,
     i.e., 23:00 instead of 11:00pm`);
 
+  export const TIME_FORMAT_SECONDS =
+    trim(`Display seconds in time, i.e., 10:00:00am instead of 10:00am`);
+
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
     widget from the Controls panel.`);
@@ -1251,6 +1254,7 @@ export enum DeviceSetting {
   // App
   internationalizeWebApp = `Internationalize Web App`,
   use24hourTimeFormat = `Use 24-hour time format`,
+  showSecondsInTime = `Show seconds in time`,
   hideWebcamWidget = `Hide Webcam widget`,
   hideSensorsPanel = `Hide Sensors panel`,
   readSpeakLogsInBrowser = `Read speak logs in browser`,

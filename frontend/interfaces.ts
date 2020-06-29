@@ -28,4 +28,5 @@ export type UnsafeError = any;
 export interface TimeSettings {
   utcOffset: number;
   hour24: boolean;
+  seconds: boolean;
 }
