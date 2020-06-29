@@ -118,6 +118,18 @@
     font-size: 1.2rem;
     font-style: italic;
   }
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .filter-search {
+    margin-left: -5px;
+    margin-right: 5px;
+    .bp3-popover-wrapper {
+      display: inline;
+      margin-left: 0;
+    }
+  }
 }
 
 .farmware-button {

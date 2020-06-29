@@ -34,10 +34,36 @@ describe("<AutoSyncRow/>", () => {
       .map(string => expect(wrapper.text()).toContain(string));
   });
 
-  it("toggles", () => {
-    const wrapper = mount(<AutoSyncRow {...fakeProps()} />);
+  it("toggles on", () => {
+    window.confirm = jest.fn();
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: false, consistent: true });
+    const wrapper = mount(<AutoSyncRow {...p} />);
     wrapper.find("button").simulate("click");
+    expect(window.confirm).not.toHaveBeenCalled();
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { auto_sync: true });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+  });
+
+  it("toggles off", () => {
+    window.confirm = jest.fn(() => true);
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: true, consistent: true });
+    const wrapper = mount(<AutoSyncRow {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith(Content.DISABLE_AUTO_SYNC);
     expect(edit).toHaveBeenCalledWith(fakeConfig, { auto_sync: false });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+  });
+
+  it("cancels toggles off", () => {
+    window.confirm = jest.fn(() => false);
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: true, consistent: true });
+    const wrapper = mount(<AutoSyncRow {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith(Content.DISABLE_AUTO_SYNC);
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 });

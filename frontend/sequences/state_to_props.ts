@@ -13,7 +13,7 @@ import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { mapStateToFolderProps } from "../folders/map_state_to_props";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import {
-  cameraDisabled,
+  cameraDisabled, cameraCalibrated,
 } from "../devices/components/fbos_settings/camera_selection";
 
 export function mapStateToProps(props: Everything): Props {
@@ -80,11 +80,14 @@ export function mapStateToProps(props: Everything): Props {
       showFirstPartyFarmware,
       farmwareConfigs,
       cameraDisabled: cameraDisabled(env),
+      cameraCalibrated: cameraCalibrated(env),
     },
     shouldDisplay,
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
-    folderData: mapStateToFolderProps(props)
+    folderData: mapStateToFolderProps(props),
+    visualized: !!props.resources.consumers.farm_designer.visualizedSequence,
+    hoveredStep: props.resources.consumers.farm_designer.hoveredSequenceStep,
   };
 }

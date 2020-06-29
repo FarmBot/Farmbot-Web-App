@@ -31,11 +31,24 @@ describe("<HoveredPlant/>", () => {
     const icon = wrapper.find("image").props();
     expect(icon.visibility).toBeTruthy();
     expect(icon.opacity).toEqual(1);
-    expect(icon.x).toEqual(70);
-    expect(icon.width).toEqual(60);
+    expect(icon.x).toEqual(76);
+    expect(icon.width).toEqual(48);
+    expect(icon.style?.pointerEvents).toEqual("none");
     expect(wrapper.find("#plant-indicator").length).toEqual(1);
     expect(wrapper.find("Circle").length).toEqual(1);
     expect(wrapper.find("Circle").props().selected).toBeTruthy();
+  });
+
+  it("shows hovered plant icon while dragging", () => {
+    const p = fakeProps();
+    p.isEditing = true;
+    p.dragging = true;
+    p.designer.hoveredPlant.icon = "fake icon";
+    const wrapper = shallow(<HoveredPlant {...p} />);
+    const icon = wrapper.find("image").props();
+    expect(icon.visibility).toBeTruthy();
+    expect(icon.style?.pointerEvents).toEqual(undefined);
+    expect(icon.opacity).toEqual(0.4);
   });
 
   it("shows animated hovered plant indicator", () => {

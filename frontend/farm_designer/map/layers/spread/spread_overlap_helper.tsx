@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
-import { round, transformXY } from "../../util";
+import { round, transformXY, defaultSpread } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { isUndefined } from "lodash";
@@ -74,8 +74,6 @@ export function getRadius(option: SpreadOption, data: SpreadRadii): number {
       return Math.min(data.active, data.inactive);
     case SpreadOption.LesserCase:
       return Math.max(data.active, data.inactive);
-    default:
-      return data.inactive;
   }
 }
 
@@ -152,7 +150,7 @@ export class SpreadOverlapHelper extends
     const spreadRadii = {
       active: (activeDragSpread || 0) / 2,
       // `radius * 10` is the default value for spread diameter (in mm).
-      inactive: (this.state.inactiveSpread || (radius * 10)) / 2
+      inactive: (this.state.inactiveSpread || defaultSpread(radius)) / 2 * 10
     };
 
     const overlapValue = getOverlap(activeDragXY, gardenCoord, spreadRadii);
@@ -164,7 +162,6 @@ export class SpreadOverlapHelper extends
     // the area of a plant with large spread will illustrate this point.
     const color = getContinuousColor(
       overlapValue, getRadius(SpreadOption.InactivePlant, spreadRadii));
-    const debug = false; // change to true to show % overlap values
 
     return <g id="overlap-indicator">
       {!dragging && // Non-active plants
@@ -172,9 +169,9 @@ export class SpreadOverlapHelper extends
           className="overlap-circle"
           cx={qx}
           cy={qy}
-          r={spreadRadii.inactive * 0.95}
+          r={spreadRadii.inactive}
           fill={color} />}
-      {debug && !dragging &&
+      {this.props.showOverlapValues && !dragging &&
         overlapText(qx, qy, overlapValue, spreadRadii)}
     </g>;
   }

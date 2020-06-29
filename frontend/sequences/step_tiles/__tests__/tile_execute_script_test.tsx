@@ -140,4 +140,12 @@ describe("<TileExecuteScript/>", () => {
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
   });
+
+  it("displays warning when camera is uncalibrated", () => {
+    const p = fakeProps();
+    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.farmwareData && (p.farmwareData.cameraCalibrated = false);
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.text()).toContain(Content.CAMERA_NOT_CALIBRATED);
+  });
 });

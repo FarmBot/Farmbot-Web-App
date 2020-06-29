@@ -84,6 +84,7 @@ export class CameraCalibration extends
               H_HI={this.props.H_HI}
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
+              environment={"camera_calibration"}
               invertHue={!!envGet(this.namespace("invert_hue_selection"),
                 this.props.wDEnv)} />}
           <WeedDetectorConfig

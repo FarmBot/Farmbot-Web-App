@@ -15,6 +15,10 @@ import { Highlight } from "../maybe_highlight";
 export const cameraDisabled = (env: UserEnv): boolean =>
   parseCameraSelection(env) === Camera.NONE;
 
+/** Check if the camera has been calibrated. */
+export const cameraCalibrated = (env: UserEnv): boolean =>
+  parseFloat("" + env.CAMERA_CALIBRATION_coord_scale) > 0;
+
 /** `disabled` and `title` props for buttons with actions that use the camera. */
 export const cameraBtnProps = (env: UserEnv) => {
   const disabled = cameraDisabled(env);

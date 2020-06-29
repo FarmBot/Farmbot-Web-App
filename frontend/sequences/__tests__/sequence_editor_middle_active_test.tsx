@@ -196,6 +196,29 @@ describe("<SequenceEditorMiddleActive/>", () => {
     props.toggleVarShow();
     expect(wrapper.state()).toEqual({ variablesCollapsed: true });
   });
+
+  it("visualizes", () => {
+    mockPath = "/app/designer/sequences/1";
+    const p = fakeProps();
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fb-button.orange").simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.VISUALIZE_SEQUENCE,
+      payload: p.sequence.uuid,
+    });
+  });
+
+  it("un-visualizes", () => {
+    mockPath = "/app/designer/sequences/1";
+    const p = fakeProps();
+    p.visualized = true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fb-button.gray").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.VISUALIZE_SEQUENCE,
+      payload: undefined,
+    });
+  });
 });
 
 describe("onDrop()", () => {
@@ -267,6 +290,7 @@ describe("<SequenceNameAndColor />", () => {
 
 describe("<AddCommandButton />", () => {
   it("dispatches new step position", () => {
+    mockPath = "";
     const dispatch = jest.fn();
     const wrapper = shallow(<AddCommandButton dispatch={dispatch} index={1} />);
     wrapper.find("button").simulate("click");

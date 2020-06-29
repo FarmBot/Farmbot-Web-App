@@ -19,6 +19,7 @@ export const fakeFarmwareData = (): FarmwareData => ({
   showFirstPartyFarmware: false,
   farmwareConfigs: {},
   cameraDisabled: false,
+  cameraCalibrated: true,
 });
 
 export const fakeStepParams = (): StepParams => {

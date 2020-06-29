@@ -14,7 +14,7 @@ const fakeCallback = (
   child: ConnectedComponent | undefined,
   info: Info,
 ) => {
-  if (info.$ == "*") {
+  if (info?.$ == "*") {
     expect(component.name).toEqual("FourOhFour");
   } else {
     expect(component.displayName).toContain("Connect");
@@ -36,18 +36,19 @@ const fakeRouteEnterEvent: RouteEnterEvent = {
 
 describe("UNBOUND_ROUTES", () => {
   it("generates correct routes", () => {
+    console.error = jest.fn();
     UNBOUND_ROUTES
       .map(r => r(fakeCallback))
       .map(r => r.enter && r.enter(fakeRouteEnterEvent));
   });
 
   it("generates crash route", async () => {
+    console.error = jest.fn();
     const fakeError = new Error("fake callback error");
     const cb = jest.fn()
       .mockImplementationOnce(() => { throw fakeError; })
       .mockImplementationOnce(x => { expect(x.name).toEqual("Apology"); });
     const r = UNBOUND_ROUTES[0](cb);
-    console.error = jest.fn();
     r.enter && await r.enter(fakeRouteEnterEvent);
     expect(console.error).toHaveBeenCalledWith(fakeError);
   });

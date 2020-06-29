@@ -1,10 +1,10 @@
 import * as React from "react";
 import { DesignerState } from "../../interfaces";
-import { transformXY, round } from "../util";
+import { transformXY, round, scaleIcon } from "../util";
 import { MapTransformProps, TaggedPlant } from "../interfaces";
-import { SpreadCircle } from "../layers/spread/spread_layer";
 import { Circle } from "../layers/plants/circle";
 import { noop } from "lodash";
+import { SpreadCircle } from "../layers";
 
 /**
  * For showing the map plant hovered in the plant panel.
@@ -46,7 +46,8 @@ export class HoveredPlant extends
     const hovered = !!icon;
     const { id, x, y, radius } = this.plantInfo;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-    const scaledRadius = currentPlant ? radius : radius * 1.2;
+    const iconRadius = scaleIcon(radius);
+    const scaledRadius = currentPlant ? iconRadius : iconRadius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;
 
     return <g id="hovered-plant">

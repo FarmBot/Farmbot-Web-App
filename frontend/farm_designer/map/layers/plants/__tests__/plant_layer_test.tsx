@@ -43,7 +43,7 @@ describe("<PlantLayer/>", () => {
       "plant-icon",
       "image visibility=\"visible\"",
       "/app-resources/img/generic-plant.svg",
-      "height=\"50\" width=\"50\" x=\"75\" y=\"175\"",
+      "height=\"40\" width=\"40\" x=\"80\" y=\"180\"",
       "drag-helpers",
       "plant-icon",
     ].map(string =>

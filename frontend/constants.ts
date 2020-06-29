@@ -257,6 +257,82 @@ export namespace ToolTips {
   export const CAMERA_CALIBRATION =
     trim(`Calibrate FarmBot's camera for use in the weed detection software.`);
 
+  export const INVERT_HUE_SELECTION =
+    trim(`Invert the range of hues selected. Typically used to select the
+    full range of reds. (default: true)`);
+
+  export const OBJECT_SEPARATION =
+    trim(`Distance between calibration objects in millimeters. The distance
+    between the objects on the camera calibration card is 100mm.
+    (default: 100)`);
+
+  export const CALIBRATION_OBJECT_AXIS =
+    trim(`The FarmBot axis along which the calibration objects are aligned.
+    (default: X)`);
+
+  export const CAMERA_OFFSET =
+    trim(`Camera offset from the UTM position in millimeters.
+    Once calibrated, use these values to align photos to the Farm Designer
+    grid by matching the grid and locations in photos to the grid and
+    locations in the Farm Designer. (default: (x: 50, y: 100))`);
+
+  export const IMAGE_BOT_ORIGIN_LOCATION =
+    trim(`FarmBot origin (home) location in images. If the origin does not
+    correspond to an image corner, rotate the camera until one does.
+    (default: Bottom Left)`);
+
+  export const COORDINATE_SCALE =
+    trim(`Image pixel to FarmBot coordinate scale. Typically between
+    0.1 and 2, this value matches image scale with the FarmBot coordinate
+    system. (default: 0 (uncalibrated))`);
+
+  export const IMAGE_ROTATION_ANGLE =
+    trim(`Camera rotation in degrees. This value should be minimized
+    (to near zero) by rotating the camera in its mount until it is aligned
+    with FarmBot's axes. (default: 0)`);
+
+  export const CALIBRATION_BLUR =
+    trim(`Image blur kernel size. Must be an odd number greater than 1.
+    (default: 5)`);
+
+  export const DETECTION_BLUR =
+    trim(`Image blur kernel size. Must be an odd number greater than 1.
+    (default: 15)`);
+
+  export const CALIBRATION_MORPH =
+    trim(`Size of the structuring element used for morphological
+    transformations. (default: 5)`);
+
+  export const DETECTION_MORPH =
+    trim(`Size of the structuring element used for morphological
+    transformations. (default: 6)`);
+
+  export const CALIBRATION_ITERATIONS =
+    trim(`Number of erosion and dilation morphological transformation
+    cycles. (default: 1)`);
+
+  export const DETECTION_ITERATIONS =
+    trim(`Number of erosion and dilation morphological transformation
+    cycles. (default: 4)`);
+
+  export const CALIBRATION_HUE =
+    trim(`Color range. (default: 160 - 20 (red))`);
+
+  export const DETECTION_HUE =
+    trim(`Color range. (default: 30 - 90 (green))`);
+
+  export const CALIBRATION_SATURATION =
+    trim(`Color saturation, 0 (white) to 255 (color). (default: 100 - 255)`);
+
+  export const DETECTION_SATURATION =
+    trim(`Color saturation, 0 (white) to 255 (color). (default: 50 - 255)`);
+
+  export const CALIBRATION_COLOR_VALUE =
+    trim(`Color value, 0 (black) to 255 (color) (default: 100 - 255)`);
+
+  export const DETECTION_COLOR_VALUE =
+    trim(`Color value, 0 (black) to 255 (color) (default: 50 - 255)`);
+
   // Sequences
   export const SEQUENCE_COMMANDS =
     trim(`These are the most basic commands FarmBot can execute. Drag and drop
@@ -346,17 +422,20 @@ export namespace ToolTips {
 
   export const FARMWARE_CONFIGS =
     trim(`The Farmware will use the parameter values set via the Farmware
-    page for any parameters that are not set in this sequence step.`);
+    panel for any parameters that are not set in this sequence step.`);
 
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type
-    on the Device page.`);
+    in the Settings panel.`);
 
   export const EMERGENCY_LOCK =
     trim(`Stops a device from moving until it is unlocked by a user.`);
 
   export const SELECT_A_CAMERA =
-    trim(`Select a camera on the Device page to take photos.`);
+    trim(`Select a camera on the Settings panel to take photos.`);
+
+  export const CALIBRATION_REQUIRED =
+    trim(`Calibrate your camera in the Photos panel before detecting weeds.`);
 
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
@@ -620,6 +699,13 @@ export namespace Content {
     sequences and regimens while auto sync is enabled will result in
     instantaneous change.`);
 
+  export const DISABLE_AUTO_SYNC =
+    trim(`Warning: Disabling auto-sync is not recommended, and will not be
+    available as an option in the future. You may experience bugs and
+    decreased system stability, and you must manually sync any changes to
+    your device before they will be executed. Are you sure you wish to
+    continue?`);
+
   // FarmBot OS Settings: Firmware
   export const RESTART_FIRMWARE =
     trim(`Restart the Farmduino or Arduino firmware.`);
@@ -768,7 +854,7 @@ export namespace Content {
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
     encoders, stall detection, or limit switches enabled for the chosen axis.
-    Enable limit switches, encoders, or stall detection from the Device page
+    Enable limit switches, encoders, or stall detection from the Settings panel
     for: `);
 
   export const REBOOT_STEP =
@@ -881,7 +967,7 @@ export namespace Content {
   export const FARM_EVENT_TZ_WARNING =
     trim(`Note: Times displayed according to FarmBot's local time, which
     is currently different from your browser's time. Timezone data is
-    configurable on the Device page).`);
+    configurable in the Settings panel).`);
 
   export const FIRST_PARTY_WARNING =
     trim(`Are you sure you want to delete this first party farmware?
@@ -906,6 +992,9 @@ export namespace Content {
 
   export const NO_CAMERA_SELECTED =
     trim(`No camera selected`);
+
+  export const CAMERA_NOT_CALIBRATED =
+    trim(`Camera calibration required`);
 
   export const CAMERA_CALIBRATION =
     trim(`Place the camera calibration card face down on the soil
@@ -1286,6 +1375,8 @@ export enum Actions {
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
   SET_SETTINGS_SEARCH_TERM = "SET_SETTINGS_SEARCH_TERM",
   EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",
+  VISUALIZE_SEQUENCE = "VISUALIZE_SEQUENCE",
+  HOVER_SEQUENCE_STEP = "HOVER_SEQUENCE_STEP",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

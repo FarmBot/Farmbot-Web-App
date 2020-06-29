@@ -1,20 +1,21 @@
 import * as React from "react";
 import { FarmbotColorPicker } from "./farmbot_picker";
-import { BlurableInput, Row, Col } from "../../ui/index";
+import { BlurableInput, Row, Col, Help } from "../../ui";
 import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { ToolTips } from "../../constants";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
   S: { LOWEST: 0, HIGHEST: 255 },
   V: { LOWEST: 0, HIGHEST: 255 },
-  BLUR: { LOWEST: 0, HIGHEST: 100 },
-  MORPH: { LOWEST: 0, HIGHEST: 100 },
-  ITERATION: { LOWEST: 0, HIGHEST: 100 },
+  BLUR: { LOWEST: 3, HIGHEST: 100 },
+  MORPH: { LOWEST: 1, HIGHEST: 100 },
+  ITERATION: { LOWEST: 1, HIGHEST: 100 },
 };
 
 /** Number values that the <ImageWorkspace/> panel deals with. */
@@ -41,6 +42,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   invertHue?: boolean;
   botOnline: boolean;
   timeSettings: TimeSettings;
+  environment: "camera_calibration" | "weed_detection";
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -86,6 +88,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             <i>{t("Color Range")}</i>
           </h4>
           <label htmlFor="hue">{t("HUE")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_HUE
+            : ToolTips.DETECTION_HUE} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("H")}
             lowest={RANGES.H.LOWEST}
@@ -93,6 +98,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             lowValue={Math.min(H_LO, H_HI)}
             highValue={Math.max(H_LO, H_HI)} />
           <label htmlFor="saturation">{t("SATURATION")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_SATURATION
+            : ToolTips.DETECTION_SATURATION} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("S")}
             lowest={RANGES.S.LOWEST}
@@ -100,6 +108,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             lowValue={S_LO}
             highValue={S_HI} />
           <label htmlFor="value">{t("VALUE")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_COLOR_VALUE
+            : ToolTips.DETECTION_COLOR_VALUE} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("V")}
             lowest={RANGES.V.LOWEST}
@@ -121,18 +132,22 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             <i>{t("Processing Parameters")}</i>
           </h4>
         </Col>
-
         <Col xs={4}>
           <label>{t("BLUR")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_BLUR
+            : ToolTips.DETECTION_BLUR} />
           <BlurableInput type="number"
             min={RANGES.BLUR.LOWEST}
             max={RANGES.BLUR.HIGHEST}
             onCommit={this.numericChange("blur")}
             value={"" + this.props.blur} />
         </Col>
-
         <Col xs={4}>
           <label>{t("MORPH")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_MORPH
+            : ToolTips.DETECTION_MORPH} />
           <BlurableInput type="number"
             min={RANGES.MORPH.LOWEST}
             max={RANGES.MORPH.HIGHEST}
@@ -140,7 +155,10 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             value={"" + this.props.morph} />
         </Col>
         <Col xs={4}>
-          <label>{t("ITERATION")}</label>
+          <label>{t("ITERATIONS")}</label>
+          <Help text={this.props.environment == "camera_calibration"
+            ? ToolTips.CALIBRATION_ITERATIONS
+            : ToolTips.DETECTION_ITERATIONS} />
           <BlurableInput type="number"
             min={RANGES.ITERATION.LOWEST}
             max={RANGES.ITERATION.HIGHEST}

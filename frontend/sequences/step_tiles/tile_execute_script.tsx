@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StepParams } from "../interfaces";
+import { StepParams, FarmwareData } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
@@ -68,23 +68,13 @@ export function TileExecuteScript(props: StepParams) {
         dispatch={dispatch}
         index={index}
         confirmStepDeletion={props.confirmStepDeletion}>
-        {props.farmwareData && props.farmwareData.cameraDisabled &&
-          (farmwareName === "plant-detection") &&
-          <StepWarning
-            titleBase={t(Content.NO_CAMERA_SELECTED)}
-            warning={t(ToolTips.SELECT_A_CAMERA)} />}
+        <DetectWeedsStepWarnings farmwareName={farmwareName}
+          farmwareData={farmwareData} />
       </StepHeader>
       <StepContent className={className}>
         <Row>
           {farmwareName == "plant-detection"
-            ? <Col xs={12}>
-              <p>
-                {t("Results are viewable from the")}
-                <Link to={"/app/designer/photos"}>
-                  {` photos ${t("panel")}`}
-                </Link>.
-              </p>
-            </Col>
+            ? <DetectWeedsStep />
             : <Col xs={12}>
               <label>{t("Package Name")}</label>
               <FBSelect
@@ -117,3 +107,34 @@ export function TileExecuteScript(props: StepParams) {
     return <p> ERROR </p>;
   }
 }
+
+const DetectWeedsStep = () =>
+  <Col xs={12}>
+    <p>
+      {t("Results are viewable from the")}
+      <Link to={"/app/designer/photos"}>
+        {` photos ${t("panel")}`}
+      </Link>.
+    </p>
+  </Col>;
+
+interface DetectWeedsStepWarningsProps {
+  farmwareName: string;
+  farmwareData: FarmwareData | undefined;
+}
+
+const DetectWeedsStepWarnings = (props: DetectWeedsStepWarningsProps) => {
+  if (props.farmwareData && props.farmwareName === "plant-detection") {
+    if (props.farmwareData.cameraDisabled) {
+      return <StepWarning
+        titleBase={t(Content.NO_CAMERA_SELECTED)}
+        warning={t(ToolTips.SELECT_A_CAMERA)} />;
+    }
+    if (!props.farmwareData.cameraCalibrated) {
+      return <StepWarning
+        titleBase={t(Content.CAMERA_NOT_CALIBRATED)}
+        warning={t(ToolTips.CALIBRATION_REQUIRED)} />;
+    }
+  }
+  return <div className={"no-warnings"} />;
+};

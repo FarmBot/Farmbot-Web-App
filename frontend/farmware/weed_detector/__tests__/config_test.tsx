@@ -47,7 +47,7 @@ describe("<WeedDetectorConfig />", () => {
     const p = fakeProps();
     const wrapper = shallow<WeedDetectorConfig>(<WeedDetectorConfig {...p} />);
     const numBox = wrapper.instance().NumberBox({
-      conf: "CAMERA_CALIBRATION_blur", label: "label"
+      conf: "CAMERA_CALIBRATION_blur", label: "label", helpText: "help",
     });
     const NumBox = shallow(numBox);
     NumBox.find("BlurableInput").first().simulate("commit", {

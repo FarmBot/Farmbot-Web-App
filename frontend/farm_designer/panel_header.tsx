@@ -61,23 +61,40 @@ export const TAB_COLOR: { [key in Panel]: PanelColor } = {
   [Panel.Settings]: PanelColor.gray,
 };
 
-const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;
+export enum Icon {
+  map = "map",
+  plant = "plant",
+  groups = "groups",
+  gardens = "gardens",
+  calendar = "calendar",
+  zones = "zones",
+  point = "point",
+  weeds = "weeds",
+  controls = "controls",
+  sensors = "sensors",
+  photos = "photos",
+  farmware = "farmware",
+  tool = "tool",
+  settings = "settings",
+}
+
+export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;
 
 export const TAB_ICON: { [key in Panel]: string } = {
-  [Panel.Map]: iconFile("map"),
-  [Panel.Plants]: iconFile("plant"),
-  [Panel.Groups]: iconFile("groups"),
-  [Panel.SavedGardens]: iconFile("gardens"),
-  [Panel.FarmEvents]: iconFile("calendar"),
-  [Panel.Zones]: iconFile("zones"),
-  [Panel.Points]: iconFile("point"),
-  [Panel.Weeds]: iconFile("weeds"),
-  [Panel.Controls]: iconFile("controls"),
-  [Panel.Sensors]: iconFile("sensors"),
-  [Panel.Photos]: iconFile("photos"),
-  [Panel.Farmware]: iconFile("farmware"),
-  [Panel.Tools]: iconFile("tool"),
-  [Panel.Settings]: iconFile("settings"),
+  [Panel.Map]: iconFile(Icon.map),
+  [Panel.Plants]: iconFile(Icon.plant),
+  [Panel.Groups]: iconFile(Icon.groups),
+  [Panel.SavedGardens]: iconFile(Icon.gardens),
+  [Panel.FarmEvents]: iconFile(Icon.calendar),
+  [Panel.Zones]: iconFile(Icon.zones),
+  [Panel.Points]: iconFile(Icon.point),
+  [Panel.Weeds]: iconFile(Icon.weeds),
+  [Panel.Controls]: iconFile(Icon.controls),
+  [Panel.Sensors]: iconFile(Icon.sensors),
+  [Panel.Photos]: iconFile(Icon.photos),
+  [Panel.Farmware]: iconFile(Icon.farmware),
+  [Panel.Tools]: iconFile(Icon.tool),
+  [Panel.Settings]: iconFile(Icon.settings),
 };
 
 const getCurrentTab = (): Tabs => {

@@ -61,6 +61,6 @@ describe("<SpreadCircle />", () => {
     wrapper.setState({ spread: 20 });
     expect(wrapper.find("circle").props().r).toEqual(100);
     expect(wrapper.find("circle").hasClass("animate")).toBeTruthy();
-    expect(wrapper.find("circle").props().fill).toEqual("url(#SpreadGradient)");
+    expect(wrapper.find("circle").props().fill).toEqual("none");
   });
 });
