@@ -218,7 +218,7 @@ describe("setActiveSpread", () => {
     const p = fakeProps();
     p.slug = "potato";
     await setActiveSpread(p);
-    expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 250 });
+    expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 25 });
   });
 
   it("sets crop spread value", async () => {
@@ -226,7 +226,7 @@ describe("setActiveSpread", () => {
     // tslint:disable-next-line:no-any
     p.selectedPlant = undefined as any;
     await setActiveSpread(p);
-    expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 1000 });
+    expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 100 });
   });
 });
 
