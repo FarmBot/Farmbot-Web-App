@@ -27,7 +27,7 @@ describe("<SpreadLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<SpreadLayer {...p} />);
     const layer = wrapper.find("#spread-layer");
-    expect(layer.find("SpreadCircle").html()).toContain("r=\"125\"");
+    expect(layer.find("SpreadCircle").html()).toContain("r=\"0\"");
   });
 
   it("toggles visibility off", () => {
@@ -58,7 +58,7 @@ describe("<SpreadCircle />", () => {
 
   it("uses spread value", () => {
     const wrapper = shallow(<SpreadCircle {...fakeProps()} />);
-    wrapper.setState({ spread: 20 });
+    wrapper.setState({ spread: 20, loaded: true });
     expect(wrapper.find("circle").props().r).toEqual(100);
     expect(wrapper.find("circle").hasClass("animate")).toBeTruthy();
     expect(wrapper.find("circle").props().fill).toEqual("none");

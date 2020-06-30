@@ -70,7 +70,7 @@ describe("<HoveredPlant/>", () => {
     expect(wrapper.find("Circle").props().selected).toBeTruthy();
     expect(wrapper.find("SpreadCircle").length).toEqual(1);
     expect(wrapper.find("SpreadCircle").html())
-      .toContain("cx=\"100\" cy=\"200\" r=\"125\"");
+      .toContain("cx=\"100\" cy=\"200\" r=\"0\"");
   });
 
   it("doesn't show hovered plant icon", () => {

@@ -20,7 +20,7 @@ import {
   allowGroupAreaInteraction,
   savedGardenOpen,
   scaleIcon,
-  defaultSpread,
+  defaultSpreadCmDia,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -513,6 +513,6 @@ describe("defaultSpread()", () => {
     [150, 30],
     [200, 40],
   ])("returns correct value for radius: %s", (radius, expected) => {
-    expect(defaultSpread(radius)).toEqual(expected);
+    expect(defaultSpreadCmDia(radius)).toEqual(expected);
   });
 });

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
-import { round, transformXY, defaultSpread } from "../../util";
+import { round, transformXY, defaultSpreadCmDia } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { isUndefined } from "lodash";
@@ -135,8 +135,7 @@ export class SpreadOverlapHelper extends
 
   componentDidMount() {
     cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) =>
-        this.setState({ inactiveSpread: (spread || 0) * 10 }));
+      .then(({ spread }) => this.setState({ inactiveSpread: spread }));
   }
 
   render() {
@@ -145,12 +144,11 @@ export class SpreadOverlapHelper extends
     const { radius, x, y } = plant.body;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
-
-    // Convert spread diameter to radius (in mm).
+    const { inactiveSpread } = this.state;
+    // Convert spread diameter in cm to radius in mm.
     const spreadRadii = {
-      active: (activeDragSpread || 0) / 2,
-      // `radius * 10` is the default value for spread diameter (in mm).
-      inactive: (this.state.inactiveSpread || defaultSpread(radius)) / 2 * 10
+      active: (activeDragSpread || 0) / 2 * 10,
+      inactive: (inactiveSpread || defaultSpreadCmDia(radius)) / 2 * 10,
     };
 
     const overlapValue = getOverlap(activeDragXY, gardenCoord, spreadRadii);
