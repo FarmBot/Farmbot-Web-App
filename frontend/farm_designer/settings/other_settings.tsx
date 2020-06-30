@@ -219,6 +219,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.time_format_24_hour,
   },
   {
+    title: DeviceSetting.showSecondsInTime,
+    description: Content.TIME_FORMAT_SECONDS,
+    setting: BooleanSetting.time_format_seconds,
+  },
+  {
     title: DeviceSetting.hideWebcamWidget,
     description: Content.HIDE_WEBCAM_WIDGET,
     setting: BooleanSetting.hide_webcam_widget,

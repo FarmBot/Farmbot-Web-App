@@ -190,11 +190,15 @@ describe("timeFormatString()", () => {
     const timeSettings = fakeTimeSettings();
     timeSettings.hour24 = false;
     expect(Util.timeFormatString(timeSettings)).toEqual("h:mma");
+    timeSettings.seconds = true;
+    expect(Util.timeFormatString(timeSettings)).toEqual("h:mm:ssa");
   });
 
   it("returns 24hr time format", () => {
     const timeSettings = fakeTimeSettings();
     timeSettings.hour24 = true;
     expect(Util.timeFormatString(timeSettings)).toEqual("H:mm");
+    timeSettings.seconds = true;
+    expect(Util.timeFormatString(timeSettings)).toEqual("H:mm:ss");
   });
 });

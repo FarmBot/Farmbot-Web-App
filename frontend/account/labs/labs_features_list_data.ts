@@ -40,6 +40,12 @@ export const fetchLabFeatures =
       value: false,
     },
     {
+      name: DeviceSetting.showSecondsInTime,
+      description: Content.TIME_FORMAT_SECONDS,
+      storageKey: BooleanSetting.time_format_seconds,
+      value: false,
+    },
+    {
       name: DeviceSetting.hideWebcamWidget,
       description: Content.HIDE_WEBCAM_WIDGET,
       storageKey: BooleanSetting.hide_webcam_widget,

@@ -220,5 +220,7 @@ export const parseIntInput = (input: string): number => {
 };
 
 export const timeFormatString =
-  (timeSettings: TimeSettings | undefined): string =>
-    (timeSettings?.hour24) ? "H:mm" : "h:mma";
+  (timeSettings: TimeSettings | undefined): string => {
+    const subHour = timeSettings?.seconds ? "mm:ss" : "mm";
+    return timeSettings?.hour24 ? `H:${subHour}` : `h:${subHour}a`;
+  };
