@@ -27,7 +27,7 @@ describe("<SpreadOverlapHelper/>", () => {
       dragging: false,
       zoomLvl: 1,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      activeDragSpread: 250
+      activeDragSpread: 25
     };
   }
 

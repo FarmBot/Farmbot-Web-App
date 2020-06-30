@@ -11,7 +11,7 @@ import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import {
-  transformXY, round, getZoomLevelFromMap, defaultSpread,
+  transformXY, round, getZoomLevelFromMap, defaultSpreadCmDia,
 } from "../../util";
 import { movePlant } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
@@ -147,15 +147,11 @@ export const setActiveSpread = (props: {
   slug: string,
   setMapState: (x: Partial<GardenMapState>) => void,
 }): void => {
-  const defaultSpreadCm = props.selectedPlant
-    ? defaultSpread(props.selectedPlant.body.radius) : 0;
+  const defaultSpread = props.selectedPlant
+    ? defaultSpreadCmDia(props.selectedPlant.body.radius) : 0;
   cachedCrop(props.slug)
     .then(({ spread }) =>
-      // Convert spread diameter from cm to mm.
-      // `radius * 10` is the default value for spread diameter (in mm).
-      props.setMapState({
-        activeDragSpread: (spread || defaultSpreadCm) * 10
-      }));
+      props.setMapState({ activeDragSpread: spread || defaultSpread }));
 };
 
 /** Prepare for plant move. */

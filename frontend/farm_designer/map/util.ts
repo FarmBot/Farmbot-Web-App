@@ -406,6 +406,6 @@ export const scaleIcon = (radius: number): number => {
   return MID;
 };
 
-/** Calculate default plant spread value. */
-export const defaultSpread = (radius: number) =>
+/** Calculate default plant spread value (diameter in centimeters). */
+export const defaultSpreadCmDia = (radius: number) =>
   Math.max(25, round(0.2 * radius));
