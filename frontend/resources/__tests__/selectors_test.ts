@@ -11,7 +11,8 @@ import { hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
   fakeSequence,
-  fakePlant,
+  fakeToolSlot,
+  fakeUser,
 } from "../../__test_support__/fake_state/resources";
 import { resourceReducer } from "../reducer";
 import { emptyState } from "../reducer";
@@ -122,24 +123,14 @@ describe("findPointerByTypeAndId()", () => {
   });
 });
 
-describe("findPlant()", () => {
-  it("throws error", () => {
-    console.warn = jest.fn();
-    const find = () => Selector.findPlant(fakeIndex, "bad");
-    expect(find).toThrowError();
-    expect(console.warn).toBeCalled();
-  });
-
-  it("finds a plant", () => {
-    const plant = fakePlant();
-    plant.body.id = 333;
-    const result = Selector
-      .findPlant(buildResourceIndex([plant]).index, plant.uuid);
-    expect(result.uuid).toBe(plant.uuid);
-  });
-});
-
 describe("selectCurrentToolSlot()", () => {
+  it("returns tool slot", () => {
+    const toolSlot = fakeToolSlot();
+    const resourceIndex = buildResourceIndex([toolSlot]).index;
+    const result = Selector.selectCurrentToolSlot(resourceIndex, toolSlot.uuid);
+    expect(result.uuid).toBe(toolSlot.uuid);
+  });
+
   it("throws error", () => {
     const find = () => Selector.selectCurrentToolSlot(fakeIndex, "bad");
     expect(find).toThrowError();
@@ -260,18 +251,39 @@ describe("getDeviceAccountSettings", () => {
   it("crashes if < 1", () => {
     const { index } = buildResourceIndex([]);
     const kaboom = () => Selector.getDeviceAccountSettings(index);
-    expect(kaboom).toThrowError();
+    expect(kaboom).toThrowError(/before it was loaded/);
   });
 
   it("crashes if > 1", () => {
     const { index } = buildResourceIndex([DEV1, DEV2]);
     const kaboom = () => Selector.getDeviceAccountSettings(index);
-    expect(kaboom).toThrowError();
+    expect(kaboom).toThrowError(/more than 1/);
   });
 
   it("returns exactly one device", () => {
     const { index } = buildResourceIndex([DEV1]);
     const result = Selector.getDeviceAccountSettings(index);
     expect(result.kind).toBe("Device");
+  });
+});
+
+describe("getUserAccountSettings()", () => {
+  it("fetches user", () => {
+    const user = fakeUser();
+    const { index } = buildResourceIndex([user]);
+    const result = Selector.getUserAccountSettings(index);
+    expect(result?.uuid).toEqual(user.uuid);
+  });
+
+  it("errors while fetching user: no user", () => {
+    const { index } = buildResourceIndex([]);
+    expect(() => Selector.getUserAccountSettings(index)).toThrowError(
+      /before it was available/);
+  });
+
+  it("errors while fetching user: more than one user", () => {
+    const { index } = buildResourceIndex([fakeUser(), fakeUser()]);
+    expect(() => Selector.getUserAccountSettings(index)).toThrowError(
+      /Expected 1 user. Got: 2/);
   });
 });

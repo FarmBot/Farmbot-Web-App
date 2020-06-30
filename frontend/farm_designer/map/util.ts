@@ -376,3 +376,36 @@ export const cursorAtPlant =
     && (cursor.y > plant.body.y - plant.body.radius * 1.2)
     && (cursor.x < plant.body.x + plant.body.radius * 1.2)
     && (cursor.y < plant.body.y + plant.body.radius * 1.2);
+
+/** Scale icon within radius circle.
+ *
+ *     |                  _/
+ *     |               _/ UPPER_FACTOR * radius (20% shown)
+ * MID |       ______/
+ *     |      /
+ *     |     / LOWER_FACTOR * radius (80% shown)
+ *     |    /
+ * MIN |---'
+ *     |____________________
+ *     0   ^   ^     ^
+ *         |   |     LARGE
+ *         |   |
+ *         |   MID / LOWER_FACTOR
+ *         |
+ *         MIN / LOWER_FACTOR
+ */
+export const scaleIcon = (radius: number): number => {
+  const MIN = 10;
+  const MID = 30;
+  const LARGE = 150;
+  const LOWER_FACTOR = 0.8;
+  const UPPER_FACTOR = 0.2;
+  if (radius > LARGE) { return round(UPPER_FACTOR * radius); }
+  if (radius < MIN / LOWER_FACTOR) { return MIN; }
+  if (radius < MID / LOWER_FACTOR) { return round(LOWER_FACTOR * radius); }
+  return MID;
+};
+
+/** Calculate default plant spread value (diameter in centimeters). */
+export const defaultSpreadCmDia = (radius: number) =>
+  Math.max(25, round(0.2 * radius));

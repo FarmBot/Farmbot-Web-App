@@ -1,7 +1,7 @@
 import * as React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
 import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
-import { round, transformXY } from "../../util";
+import { round, transformXY, scaleIcon } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
@@ -36,22 +36,21 @@ export class GardenPlant extends
     this.setState({ hover: hovered ? true : false });
   };
 
-  get radius() {
+  get grayscale() {
     const { plant } = this.props;
-    const { hover } = this.state;
-    const { radius } = plant.body;
-    return hover ? radius * 1.1 : radius;
+    const unsaved = plant.specialStatus !== SpecialStatus.SAVED;
+    const gridPlant = plant.kind == "Point" && plant.body.meta.gridId;
+    const maybeGrayscale = (gridPlant && unsaved) ? "url(#grayscale)" : "";
+    return maybeGrayscale;
   }
 
   render() {
     const { current, selected, dragging, plant, mapTransformProps,
       activeDragXY, zoomLvl, animate, editing, hovered } = this.props;
     const { id, radius, x, y } = plant.body;
-    const unsaved = plant.specialStatus !== SpecialStatus.SAVED;
-    const gridPlant = plant.kind == "Point" && plant.body.meta.gridId;
-    const maybeGrayscale = (gridPlant && unsaved) ? "url(#grayscale)" : "";
-    const { icon } = this.state;
-
+    const { icon, hover } = this.state;
+    const plantIconSize = scaleIcon(radius);
+    const iconRadius = hover ? plantIconSize * 1.1 : plantIconSize;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
     const className = [
@@ -70,7 +69,7 @@ export class GardenPlant extends
           className="soil-cloud"
           cx={qx}
           cy={qy}
-          r={radius}
+          r={plantIconSize}
           fill={Color.soilCloud}
           fillOpacity={0} />}
 
@@ -80,7 +79,7 @@ export class GardenPlant extends
             className={`plant-indicator ${animate ? "animate" : ""}`}
             x={qx}
             y={qy}
-            r={radius}
+            r={plantIconSize}
             selected={true} />
         </g>}
 
@@ -91,13 +90,13 @@ export class GardenPlant extends
           visibility={dragging ? "hidden" : "visible"}
           className={className}
           opacity={alpha}
-          filter={maybeGrayscale}
+          filter={this.grayscale}
           xlinkHref={icon}
           onClick={this.click}
-          height={this.radius * 2}
-          width={this.radius * 2}
-          x={qx - this.radius}
-          y={qy - this.radius} />
+          height={iconRadius * 2}
+          width={iconRadius * 2}
+          x={qx - iconRadius}
+          y={qy - iconRadius} />
       </g>
 
       <DragHelpers // for inactive plants

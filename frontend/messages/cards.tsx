@@ -65,9 +65,9 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
         <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>}
-      {alert.id && !props.noDismiss && <i className="fa fa-times"
-        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
+    {alert.id && !props.noDismiss && <i className="fa fa-times"
+      onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
       <Markdown>{t(props.message)}</Markdown>
       {props.children}

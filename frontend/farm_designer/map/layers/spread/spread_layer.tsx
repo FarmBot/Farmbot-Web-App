@@ -1,9 +1,10 @@
 import * as React from "react";
-import { round, transformXY } from "../../util";
+import { round, transformXY, defaultSpreadCmDia } from "../../util";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
 import { SpreadOverlapHelper } from "./spread_overlap_helper";
 import { BotPosition } from "../../../../devices/interfaces";
+import { Color } from "../../../../ui";
 
 export interface SpreadLayerProps {
   visible: boolean;
@@ -24,17 +25,6 @@ export function SpreadLayer(props: SpreadLayerProps) {
     dragging, zoomLvl, activeDragXY, activeDragSpread, editing, animate
   } = props;
   return <g id="spread-layer">
-    <defs>
-      <radialGradient id="SpreadGradient">
-        <stop offset="90%" stopColor="rgb(85, 50, 10)" stopOpacity={0.1} />
-        <stop offset="100%" stopColor="rgb(85, 50, 10)" stopOpacity={0} />
-      </radialGradient>
-      <radialGradient id="DefaultSpreadGradient">
-        <stop offset="90%" stopColor="rgb(255, 255, 255)" stopOpacity={0.1} />
-        <stop offset="100%" stopColor="rgb(255, 255, 255)" stopOpacity={0} />
-      </radialGradient>
-    </defs>
-
     {plants.map(p => {
       const selected = p.uuid === currentPlant?.uuid;
       return <g id={"spread-components-" + p.body.id} key={p.uuid}>
@@ -67,22 +57,25 @@ export interface SpreadCircleProps {
 
 interface SpreadCircleState {
   spread: number | undefined;
+  loaded: boolean;
 }
 
 export class SpreadCircle extends
   React.Component<SpreadCircleProps, SpreadCircleState> {
-  state: SpreadCircleState = { spread: undefined };
+  state: SpreadCircleState = { spread: undefined, loaded: false };
 
   componentDidMount = () => {
     cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) => this.setState({ spread }));
+      .then(({ spread }) => this.setState({ spread, loaded: true }));
   }
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
     const { visible, mapTransformProps, animate } = this.props;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-
+    const spreadDiaCm = this.state.loaded
+      ? this.state.spread || defaultSpreadCmDia(radius)
+      : 0;
     return <g id={"spread-" + id}>
       {visible &&
         <circle
@@ -91,11 +84,11 @@ export class SpreadCircle extends
           cx={qx}
           cy={qy}
           // Convert `spread` from diameter in cm to radius in mm.
-          // `radius * 10` is the default value for spread diameter (in mm).
-          r={(this.state.spread || radius) / 2 * 10}
-          fill={!this.state.spread
-            ? "url(#DefaultSpreadGradient)"
-            : "url(#SpreadGradient)"} />}
+          r={spreadDiaCm / 2 * 10}
+          strokeWidth={2}
+          stroke={this.state.spread ? Color.darkGreen : Color.offWhite}
+          opacity={0.5}
+          fill={"none"} />}
     </g>;
   }
 }

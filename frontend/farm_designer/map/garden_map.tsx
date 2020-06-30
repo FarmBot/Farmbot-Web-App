@@ -16,6 +16,7 @@ import {
 import {
   PlantLayer,
   SpreadLayer,
+  PlantRadiusLayer,
   PointLayer,
   WeedLayer,
   ToolSlotLayer,
@@ -41,6 +42,7 @@ import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
 import { throttle } from "lodash";
+import { SequenceVisualization } from "../sequences/visualization";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -424,6 +426,11 @@ export class GardenMap extends
     activeDragSpread={this.state.activeDragSpread}
     editing={this.isEditing}
     animate={this.animate} />
+  PlantRadiusLayer = () => <PlantRadiusLayer
+    visible={true}
+    mapTransformProps={this.mapTransformProps}
+    plants={this.props.plants}
+    animate={this.animate} />
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -436,7 +443,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredPoint={this.props.designer.hoveredPoint}
     visible={!!this.props.showWeeds}
-    spreadVisible={!!this.props.showSpread}
+    radiusVisible={true}
     currentPoint={this.currentPoint}
     boxSelected={this.props.designer.selectedPoints}
     groupSelected={this.groupSelected}
@@ -512,6 +519,14 @@ export class GardenMap extends
     groupPoints={this.pointsSelectedByGroup}
     zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />
+  SequenceVisualization = () => <SequenceVisualization
+    botPosition={this.props.botLocationData.position}
+    zoomLvl={this.props.zoomLvl}
+    visualizedSequenceUUID={this.props.designer.visualizedSequence}
+    visualizedSequenceBody={this.props.visualizedSequenceBody}
+    hoveredSequenceStep={this.props.designer.hoveredSequenceStep}
+    dispatch={this.props.dispatch}
+    mapTransformProps={this.mapTransformProps} />
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />
   Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
@@ -529,6 +544,7 @@ export class GardenMap extends
             <this.ZonesLayer />
             <this.SensorReadingsLayer />
             <this.SpreadLayer />
+            <this.PlantRadiusLayer />
             <this.PointLayer />
             <this.WeedLayer />
             <this.PlantLayer />
@@ -541,6 +557,7 @@ export class GardenMap extends
             <this.DrawnPoint />
             <this.DrawnWeed />
             <this.GroupOrder />
+            <this.SequenceVisualization />
             <this.NNPath />
             <this.Bugs />
           </svg>

@@ -27,7 +27,7 @@ describe("<SpreadOverlapHelper/>", () => {
       dragging: false,
       zoomLvl: 1,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      activeDragSpread: 250
+      activeDragSpread: 25
     };
   }
 
@@ -108,10 +108,27 @@ describe("<SpreadOverlapHelper/>", () => {
     expect(indicator.fill).toEqual("rgba(255, 0, 0, 0.3)"); // "red"
   });
 
+  it("doesn't show overlap", () => {
+    const p = fakeProps();
+    p.activeDragXY = { x: 300, y: 100, z: 0 };
+    p.activeDragSpread = undefined;
+    const wrapper = shallow(<SpreadOverlapHelper {...p} />);
+    const indicator = wrapper.find(".overlap-circle").props();
+    expect(indicator.fill).toEqual("none");
+  });
+
+  it("shows overlap values", () => {
+    const p = fakeProps();
+    p.activeDragXY = { x: 100, y: 100, z: 0 };
+    p.dragging = false;
+    p.showOverlapValues = true;
+    const wrapper = shallow(<SpreadOverlapHelper {...p} />);
+    ["Active: 100%", "Inactive: 100%", "red"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
 });
 
 describe("SpreadOverlapHelper functions", () => {
-
   it("getDiscreteColor()", () => {
     expect(getDiscreteColor(0, 100)).toEqual("none");
     expect(getDiscreteColor(10, 100)).toEqual("green");
@@ -141,6 +158,13 @@ describe("SpreadOverlapHelper functions", () => {
     expect(getOverlap(activePlant, inactivePlant, spreadData)).toEqual(50);
   });
 
+  it("getOverlap(): not active", () => {
+    const activePlant = undefined;
+    const inactivePlant = { x: 50, y: 300, z: 0 };
+    const spreadData = { active: 100, inactive: 200 };
+    expect(getOverlap(activePlant, inactivePlant, spreadData)).toEqual(0);
+  });
+
   it("overlapText()", () => {
     const spreadData = { active: 100, inactive: 200 };
     const svgText = shallow(overlapText(100, 100, 150, spreadData));
@@ -148,4 +172,9 @@ describe("SpreadOverlapHelper functions", () => {
       expect(svgText.text()).toContain(string));
   });
 
+  it("overlapText(): no overlap", () => {
+    const spreadData = { active: 100, inactive: 200 };
+    const svgText = shallow(overlapText(100, 100, 0, spreadData));
+    expect(svgText.text()).toEqual("");
+  });
 });

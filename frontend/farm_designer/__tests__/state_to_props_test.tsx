@@ -15,6 +15,7 @@ import {
   fakeTool,
   fakeToolSlot,
   fakePeripheral,
+  fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
@@ -122,6 +123,28 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.mountedToolInfo.name).toEqual("tool");
     expect(props.mountedToolInfo.pulloutDirection).toEqual(1);
+  });
+
+  it("returns visualized sequence body", () => {
+    const state = fakeState();
+    const sequence = fakeSequence();
+    sequence.body.body = [{ kind: "power_off", args: {} }];
+    state.resources = buildResourceIndex([sequence, fakeDevice()]);
+    state.resources.consumers.farm_designer.visualizedSequence = sequence.uuid;
+    const props = mapStateToProps(state);
+    expect(props.visualizedSequenceBody).toEqual([
+      expect.objectContaining({ kind: "power_off", args: {} }),
+    ]);
+  });
+
+  it("returns empty visualized sequence body", () => {
+    const state = fakeState();
+    const sequence = fakeSequence();
+    sequence.body.body = undefined;
+    state.resources.consumers.farm_designer.visualizedSequence = sequence.uuid;
+    state.resources = buildResourceIndex([sequence, fakeDevice()]);
+    const props = mapStateToProps(state);
+    expect(props.visualizedSequenceBody).toEqual([]);
   });
 });
 

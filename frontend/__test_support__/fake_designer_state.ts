@@ -19,5 +19,7 @@ export const fakeDesignerState = (): DesignerState => ({
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
+  visualizedSequence: undefined,
+  hoveredSequenceStep: undefined,
   settingsSearchTerm: "",
 });

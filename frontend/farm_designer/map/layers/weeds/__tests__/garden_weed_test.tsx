@@ -23,7 +23,7 @@ describe("<GardenWeed />", () => {
     current: false,
     selected: false,
     animate: false,
-    spreadVisible: true,
+    radiusVisible: true,
   });
 
   it("renders weed", () => {

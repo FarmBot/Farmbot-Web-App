@@ -3,7 +3,7 @@ import { AllSteps, AllStepsProps } from "../all_steps";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeResourceIndex } from "../locals_list/test_helpers";
-import { maybeTagStep } from "../../resources/sequence_tagging";
+import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
 import { DropArea } from "../../draggable/drop_area";
 
 describe("<AllSteps/>", () => {
@@ -42,5 +42,25 @@ describe("<AllSteps/>", () => {
     const wrapper = shallow(<AllSteps {...p} />);
     wrapper.find<DropArea>(DropArea).props().callback?.("fake key");
     expect(p.onDrop).toHaveBeenCalledWith(0, "fake key");
+  });
+
+  it("displays hover highlight", () => {
+    const p = fakeProps();
+    p.visualized = true;
+    p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
+    p.sequence.body.body.map(step => maybeTagStep(step));
+    p.hoveredStep = getStepTag(p.sequence.body.body[0]);
+    const wrapper = shallow(<AllSteps {...p} />);
+    expect(wrapper.html()).toContain("hovered");
+  });
+
+  it("doesn't display hover highlight", () => {
+    const p = fakeProps();
+    p.visualized = false;
+    p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
+    p.sequence.body.body.map(step => maybeTagStep(step));
+    p.hoveredStep = getStepTag(p.sequence.body.body[0]);
+    const wrapper = shallow(<AllSteps {...p} />);
+    expect(wrapper.html()).not.toContain("hovered");
   });
 });

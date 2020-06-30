@@ -1613,32 +1613,39 @@ ul {
 }
 
 .problem-alert {
+  position: relative;
   margin: 1rem;
   margin-bottom: 3rem;
   padding: 2rem;
   border-radius: 4px;
   box-shadow: 0px 2px 5px $medium_gray;
   background: $off_white;
+  .fa-exclamation-triangle,
+  .fa-check-square,
+  .fa-info-circle {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 1.6rem;
+    padding-right: 0.5rem;
+  }
+  .fa-exclamation-triangle {
+    color: $orange;
+  }
+  .fa-check-square {
+    color: $green;
+  }
+  .fa-info-circle {
+    color: $blue;
+  }
   .problem-alert-title {
-    position: relative;
+    margin-top: 0.15rem;
     margin-bottom: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
     line-height: 1rem;
-    .fa-exclamation-triangle,
-    .fa-check-square,
-    .fa-info-circle {
-      font-size: 1.6rem;
-      padding-right: 0.5rem;
-    }
-    .fa-exclamation-triangle {
-      color: $orange;
-    }
-    .fa-check-square {
-      color: $green;
-    }
-    .fa-info-circle {
-      color: $blue;
-    }
     h3 {
+      display: inline;
       color: $dark_gray;
       font-size: 1.5rem;
       font-weight: bold;
@@ -1647,17 +1654,17 @@ ul {
       display: inline;
       color: $medium_gray;
       font-size: 1.2rem;
-      margin-left: 2rem;
+      margin-left: 1rem;
       white-space: pre;
     }
-    .fa-times {
-      position: absolute;
-      top: 0;
-      right: 0;
-      color: $medium_light_gray;
-      &:hover {
-        color: $dark_gray;
-      }
+  }
+  .fa-times {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    color: $medium_light_gray;
+    &:hover {
+      color: $dark_gray;
     }
   }
   .problem-alert-content {
@@ -1728,16 +1735,21 @@ ul {
   }
 }
 
-.dynamic-column{
+.dynamic-column {
   display: flex;
-  .location-form, .expandable-header{
+  .location-form,
+  .expandable-header {
     padding-left: 15px;
   }
-  .expandable-header{
+  .expandable-header {
     padding-right: 15px;
   }
-  .input-line{
+  .input-line {
     flex: auto;
+  }
+  .more-options {
+    min-width: 110px;
+    margin-top: 0.5rem;
   }
 }
 

@@ -93,7 +93,7 @@ export interface GardenWeedProps {
   current: boolean;
   selected: boolean;
   animate: boolean;
-  spreadVisible: boolean;
+  radiusVisible: boolean;
   dispatch: Function;
 }
 
@@ -158,6 +158,7 @@ export interface SpreadOverlapHelperProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
+  showOverlapValues?: boolean;
 }
 
 /** Garden map interaction modes. */

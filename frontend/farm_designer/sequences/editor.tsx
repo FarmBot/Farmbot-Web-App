@@ -44,6 +44,8 @@ export class RawDesignerSequenceEditor extends React.Component<Props> {
             farmwareData={this.props.farmwareData}
             shouldDisplay={this.props.shouldDisplay}
             getWebAppConfigValue={this.props.getWebAppConfigValue}
+            visualized={this.props.visualized}
+            hoveredStep={this.props.hoveredStep}
             menuOpen={this.props.menuOpen} />}
         </EmptyStateWrapper>
       </DesignerPanelContent>

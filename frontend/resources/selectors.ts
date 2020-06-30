@@ -23,9 +23,7 @@ import {
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
-import {
-  findPoints, selectAllPoints, selectAllActivePoints,
-} from "./selectors_by_kind";
+import { selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
 import { chain } from "lodash";
@@ -115,15 +113,6 @@ export function selectAllToolSlotPointers(index: ResourceIndex):
   return betterCompact(toolSlotPointers);
 }
 
-export function findPlant(i: ResourceIndex, uuid: string):
-  TaggedPlantPointer {
-  const point = findPoints(i, uuid);
-  if (point && sanityCheck(point) && point.body.pointer_type === "Plant") {
-    return point as TaggedPlantPointer;
-  } else {
-    throw new Error("That is not a true plant pointer");
-  }
-}
 export function selectCurrentToolSlot(index: ResourceIndex, uuid: string) {
   const x = index.references[uuid];
   if (x && isTaggedToolSlotPointer(x)) {
@@ -188,10 +177,17 @@ export function maybeGet24HourTimeSetting(index: ResourceIndex): boolean {
   return conf ? conf.body[BooleanSetting.time_format_24_hour] : false;
 }
 
+/** Return seconds time format preference if possible. */
+export function maybeGetSecondsTimeSetting(index: ResourceIndex): boolean {
+  const conf = getWebAppConfig(index);
+  return conf ? conf.body[BooleanSetting.time_format_seconds] : false;
+}
+
 export function maybeGetTimeSettings(index: ResourceIndex): TimeSettings {
   return {
     utcOffset: maybeGetTimeOffset(index),
     hour24: maybeGet24HourTimeSetting(index),
+    seconds: maybeGetSecondsTimeSetting(index),
   };
 }
 

@@ -11,6 +11,7 @@ import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
 import { ErrorBoundary } from "../error_boundary";
 import { TileUnknown } from "./step_tiles/tile_unknown";
+import { hoverSequenceStep } from "../farm_designer/sequences/visualization";
 
 export interface AllStepsProps {
   sequence: TaggedSequence;
@@ -23,6 +24,8 @@ export interface AllStepsProps {
   confirmStepDeletion: boolean;
   showPins?: boolean;
   expandStepOptions?: boolean;
+  visualized?: boolean;
+  hoveredStep?: string | undefined;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
@@ -36,6 +39,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
          * is guaranteed to be unique no matter where the step gets moved and
          * allows React to diff the list correctly. */
         const readThatCommentAbove = getStepTag(currentStep);
+        const tag = readThatCommentAbove;
         const stepProps = {
           currentStep,
           index,
@@ -58,7 +62,11 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
             step={currentStep}
             intent="step_move"
             draggerId={index}>
-            <div className="sequence-step">
+            <div className={`sequence-step ${
+              this.props.visualized && this.props.hoveredStep === tag
+                ? "hovered" : ""}`}
+              onMouseEnter={dispatch(hoverSequenceStep(tag))}
+              onMouseLeave={dispatch(hoverSequenceStep(undefined))}>
               <ErrorBoundary fallback={<TileUnknown {...stepProps} />}>
                 {renderCeleryNode(stepProps)}
               </ErrorBoundary>

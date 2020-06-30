@@ -32,6 +32,7 @@ import { isUndefined } from "lodash";
 import { NO_GROUPS } from "./locals_list/default_value_form";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
+import { visualizeInMap } from "../farm_designer/sequences/visualization";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -123,6 +124,7 @@ interface SequenceBtnGroupProps {
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
+  visualized?: boolean;
 }
 
 const SequenceBtnGroup = ({
@@ -132,7 +134,8 @@ const SequenceBtnGroup = ({
   resources,
   shouldDisplay,
   menuOpen,
-  getWebAppConfigValue
+  getWebAppConfigValue,
+  visualized,
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
@@ -163,6 +166,14 @@ const SequenceBtnGroup = ({
       onClick={() => dispatch(copySequence(sequence))}>
       {t("Copy")}
     </button>
+    {inDesigner() &&
+      <button
+        className={`fb-button ${visualized ? "gray" : "orange"}`}
+        title={t("toggle map visualization")}
+        onClick={() =>
+          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))}>
+        {visualized ? t("unvisualize") : t("visualize")}
+      </button>}
     <div className={"settings-menu-button"}>
       <Popover position={Position.BOTTOM_RIGHT}>
         <i className="fa fa-gear" />
@@ -204,6 +215,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
       getWebAppConfigValue={props.getWebAppConfigValue}
+      visualized={props.visualized}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <ErrorBoundary>
@@ -258,6 +270,8 @@ export class SequenceEditorMiddleActive extends
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
+      visualized: this.props.visualized,
+      hoveredStep: this.props.hoveredStep,
     };
   }
 
@@ -274,6 +288,7 @@ export class SequenceEditorMiddleActive extends
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
+        visualized={this.props.visualized}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"

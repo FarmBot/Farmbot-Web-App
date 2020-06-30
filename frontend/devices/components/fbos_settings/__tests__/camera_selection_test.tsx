@@ -3,7 +3,9 @@ jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { CameraSelection, cameraDisabled } from "../camera_selection";
+import {
+  CameraSelection, cameraDisabled, cameraCalibrated,
+} from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
 import { info, error } from "../../../../toast/toast";
 
@@ -70,5 +72,19 @@ describe("cameraDisabled()", () => {
   it("returns disabled", () => {
     expect(cameraDisabled({ camera: "none" })).toEqual(true);
     expect(cameraDisabled({ camera: "\"NONE\"" })).toEqual(true);
+  });
+});
+
+describe("cameraCalibrated()", () => {
+  const ENV_NAME = "CAMERA_CALIBRATION_coord_scale";
+  it("returns calibrated", () => {
+    expect(cameraCalibrated({ [ENV_NAME]: "1" })).toEqual(true);
+    expect(cameraCalibrated({ [ENV_NAME]: "0.01" })).toEqual(true);
+  });
+
+  it("returns uncalibrated", () => {
+    expect(cameraCalibrated({ [ENV_NAME]: "0" })).toEqual(false);
+    expect(cameraCalibrated({ [ENV_NAME]: "0.0" })).toEqual(false);
+    expect(cameraCalibrated({ [ENV_NAME]: "\"0\"" })).toEqual(false);
   });
 });

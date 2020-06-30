@@ -27,6 +27,8 @@ export const initialState: DesignerState = {
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
+  visualizedSequence: undefined,
+  hoveredSequenceStep: undefined,
   settingsSearchTerm: "",
 };
 
@@ -114,5 +116,13 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.EDIT_GROUP_AREA_IN_MAP, (s, { payload }) => {
     s.editGroupAreaInMap = payload;
+    return s;
+  })
+  .add<UUID | undefined>(Actions.VISUALIZE_SEQUENCE, (s, { payload }) => {
+    s.visualizedSequence = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.HOVER_SEQUENCE_STEP, (s, { payload }) => {
+    s.hoveredSequenceStep = payload;
     return s;
   });

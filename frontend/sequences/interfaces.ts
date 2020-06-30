@@ -50,6 +50,8 @@ export interface Props {
   menuOpen: boolean;
   stepIndex: number | undefined;
   folderData: Folders["props"];
+  visualized?: boolean;
+  hoveredStep?: string | undefined;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -62,6 +64,8 @@ export interface SequenceEditorMiddleProps {
   shouldDisplay: ShouldDisplay;
   getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
+  visualized?: boolean;
+  hoveredStep?: string | undefined;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -78,6 +82,7 @@ export interface SequenceHeaderProps {
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
   getWebAppConfigValue: GetWebAppConfigValue;
+  visualized?: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -196,6 +201,7 @@ export interface FarmwareData {
   showFirstPartyFarmware: boolean;
   farmwareConfigs: FarmwareConfigs;
   cameraDisabled: boolean;
+  cameraCalibrated: boolean;
 }
 
 export interface StepParams {

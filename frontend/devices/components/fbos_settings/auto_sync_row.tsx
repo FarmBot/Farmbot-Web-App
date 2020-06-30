@@ -20,9 +20,9 @@ export function AutoSyncRow(props: AutoSyncRowProps) {
         <ToggleButton
           toggleValue={autoSync.value}
           dim={!autoSync.consistent}
-          toggleAction={() => {
-            props.dispatch(updateConfig({ auto_sync: !autoSync.value }));
-          }} />
+          toggleAction={() =>
+            (!autoSync.value || confirm(t(Content.DISABLE_AUTO_SYNC))) &&
+            props.dispatch(updateConfig({ auto_sync: !autoSync.value }))} />
       </Col>
     </Row>
     <Row><p>{t(Content.AUTO_SYNC)}</p></Row>

@@ -25,6 +25,7 @@ describe("<ImageWorkspace />", () => {
     V_HI: 12,
     botOnline: true,
     timeSettings: fakeTimeSettings(),
+    environment: "weed_detection",
   });
 
   it("triggers onChange() event", () => {
