@@ -25,10 +25,11 @@ import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
-  ExecutableType, PlantPointer, PointGroupSortType, ToolPulloutDirection,
+  ExecutableType, PlantPointer, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { TimeSettings } from "../interfaces";
+import { ExtendedPointGroupSortType } from "./point_groups/paths";
 
 /* BotOriginQuadrant diagram
 
@@ -132,7 +133,7 @@ export interface DesignerState {
   drawnPoint: DrawnPointPayl | undefined;
   drawnWeed: DrawnWeedPayl | undefined;
   openedSavedGarden: string | undefined;
-  tryGroupSortType: PointGroupSortType | "nn" | undefined;
+  tryGroupSortType: ExtendedPointGroupSortType | undefined;
   editGroupAreaInMap: boolean;
   visualizedSequence: UUID | undefined;
   hoveredSequenceStep: string | undefined;
