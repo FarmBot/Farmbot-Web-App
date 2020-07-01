@@ -24,8 +24,8 @@ class Image < ApplicationRecord
   }
   MAX_IMAGE_SIZE = 7.megabytes
   CONFIG = { default_url: DEFAULT_URL,
-            styles: RMAGICK_STYLES,
-            size: { in: 0..MAX_IMAGE_SIZE } }
+             styles: RMAGICK_STYLES,
+             size: { in: 0..MAX_IMAGE_SIZE } }
   BUCKET = ENV["GCS_BUCKET"]
 
   ROOT_PATH = BUCKET ?
@@ -92,7 +92,7 @@ class Image < ApplicationRecord
     return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
   end
 
-  def attachment_url(size = "x640")
+  def attachment_url(size = "x1280")
     # Detect legacy attachments by way of
     # superceded PaperClip-related field.
     # If it has an `attachment_file_size`,
