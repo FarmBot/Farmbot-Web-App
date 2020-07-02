@@ -10,13 +10,9 @@ class ApplicationController < ActionController::Base
   def current_device
     return @current_device if @current_device
     authenticate_user! unless current_user
-    if current_user
-      @current_device = current_user.device || no_device
-      Device.send(:current=, @current_device)
-      @current_device
-    else
-      raise JWT::VerificationError
-    end
+    @current_device = (current_user && current_user.device) || no_device
+    Device.send(:current=, @current_device)
+    @current_device
   end
 
   def current_device_id
