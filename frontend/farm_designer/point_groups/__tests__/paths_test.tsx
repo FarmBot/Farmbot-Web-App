@@ -14,6 +14,7 @@ import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
   PathInfoBar, nn, NNPath, PathInfoBarProps, Paths, PathsProps,
+  ExtendedPointGroupSortType,
 } from "../paths";
 import {
   fakePointGroup, fakePoint,
@@ -54,6 +55,8 @@ const pathTestCases = () => {
       xy_descending: [p4, p2, p3, p1],
       yx_ascending: [p1, p2, p3, p4],
       yx_descending: [p4, p3, p2, p1],
+      xy_alternating: [p1, p3, p2, p4],
+      yx_alternating: [p1, p3, p2, p4],
       random: expect.arrayContaining([p1, p2, p3, p4]),
       nn: [p1, p2, p4, p3],
     },
@@ -62,6 +65,8 @@ const pathTestCases = () => {
       xy_descending: 10,
       yx_ascending: 9,
       yx_descending: 9,
+      xy_alternating: 10,
+      yx_alternating: 8,
       random: expect.any(Number),
       nn: 8,
     }
@@ -101,9 +106,13 @@ describe("<PathInfoBar />", () => {
     expect(edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
   });
 
-  it("selects new path", () => {
+  it.each<[ExtendedPointGroupSortType]>([
+    ["nn"],
+    ["xy_alternating"],
+    ["yx_alternating"],
+  ])("selects new path: %s", (sortType) => {
     const p = fakeProps();
-    p.sortTypeKey = "nn";
+    p.sortTypeKey = sortType;
     const wrapper = shallow(<PathInfoBar {...p} />);
     wrapper.simulate("click");
     expect(edit).not.toHaveBeenCalled();

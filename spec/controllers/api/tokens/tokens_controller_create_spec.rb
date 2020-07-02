@@ -16,11 +16,13 @@ describe Api::TokensController do
     end
 
     it "reminds users to verify accounts" do
-      user.update!(confirmed_at: nil)
-      payload = { user: { email: user.email, password: "password" } }
-      post :create, params: payload, body: {}.to_json
-      expect(json).to eq({ :error => "You can't perform that action. Verify account first" })
-      expect(response.status).to eq(403)
+      const_reassign(User, :SKIP_EMAIL_VALIDATION, false) do
+        user.update!(confirmed_at: nil)
+        payload = { user: { email: user.email, password: "password" } }
+        post :create, params: payload, body: {}.to_json
+        expect(json).to eq({ :error => "You can't perform that action. Verify account first" })
+        expect(response.status).to eq(403)
+      end
     end
 
     it "creates a new token" do
