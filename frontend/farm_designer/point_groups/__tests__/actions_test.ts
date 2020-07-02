@@ -6,8 +6,9 @@ jest.mock("../../../api/crud", () => ({
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
+let mockPointGroup = { body: { id: 323232332 } };
 jest.mock("../../../resources/selectors", () => ({
-  findPointGroup: jest.fn(() => ({ body: { id: 323232332 } })),
+  findPointGroup: jest.fn(() => mockPointGroup),
   selectAllRegimens: jest.fn()
 }));
 
@@ -24,9 +25,10 @@ import { DeepPartial } from "redux";
 import { Everything } from "../../../interfaces";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { cloneDeep } from "lodash";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("group action creators and thunks", () => {
-  it("creates groups", async () => {
+  it("creates group", async () => {
     const fakePoints = [fakePoint(), fakePlant(), fakeToolSlot()];
     const resources = buildResourceIndex(fakePoints);
     const pointUuids = fakePoints.map(x => x.uuid);
@@ -44,6 +46,26 @@ describe("group action creators and thunks", () => {
     expect(save).toHaveBeenCalledWith("???");
     expect(history.push)
       .toHaveBeenCalledWith("/app/designer/groups/323232332");
+  });
+
+  it("creates group with default name", async () => {
+    mockPointGroup = { body: { id: 0 } };
+    const state = fakeState();
+    const point = fakePoint();
+    point.body.id = 0;
+    const fakePoints = [point, fakePlant(), fakeToolSlot()];
+    state.resources = buildResourceIndex(fakePoints);
+    const pointUuids = fakePoints.map(x => x.uuid);
+    const thunk = createGroup({ pointUuids });
+    await thunk(jest.fn(() => Promise.resolve()), () => state);
+    expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
+      name: "Untitled Group",
+      point_ids: [4],
+      sort_type: "xy_ascending",
+      criteria: DEFAULT_CRITERIA,
+    }));
+    expect(save).toHaveBeenCalledWith("???");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/");
   });
 });
 

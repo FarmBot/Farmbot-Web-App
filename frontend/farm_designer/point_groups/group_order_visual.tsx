@@ -5,7 +5,7 @@ import { isUndefined } from "lodash";
 import { sortGroupBy } from "./point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "../map/util";
-import { nn } from "./paths";
+import { nn, alternating } from "./paths";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import { zoomCompensation } from "../map/zoom";
 
@@ -23,10 +23,15 @@ const sortedPointCoordinates = (
   const { resources } = store.getState();
   const groupSortType = resources.consumers.farm_designer.tryGroupSortType
     || group.body.sort_type;
-  const sorted = groupSortType == "nn"
-    ? nn(groupPoints)
-    : sortGroupBy(groupSortType, groupPoints);
-  return sorted.map(p => ({ x: p.body.x, y: p.body.y }));
+  const sorted = () => {
+    switch (groupSortType) {
+      case "xy_alternating": return alternating(groupPoints, "xy");
+      case "yx_alternating": return alternating(groupPoints, "yx");
+      case "nn": return nn(groupPoints);
+      default: return sortGroupBy(groupSortType, groupPoints);
+    }
+  };
+  return sorted().map(p => ({ x: p.body.x, y: p.body.y }));
 };
 
 export interface PointsPathLineProps {

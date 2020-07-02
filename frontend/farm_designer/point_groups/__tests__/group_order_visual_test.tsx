@@ -13,6 +13,7 @@ import {
   fakePlant, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { svgMount } from "../../../__test_support__/svg_mount";
+import { ExtendedPointGroupSortType } from "../paths";
 
 describe("<GroupOrder />", () => {
   const fakeProps = (): GroupOrderProps => {
@@ -41,10 +42,14 @@ describe("<GroupOrder />", () => {
     expect(wrapper.find("line").length).toEqual(3);
   });
 
-  it("renders optimized group order", () => {
+  it.each<[ExtendedPointGroupSortType]>([
+    ["nn"],
+    ["xy_alternating"],
+    ["yx_alternating"],
+  ])("renders group order: %s", (sortType) => {
     const p = fakeProps();
     p.zoomLvl = 1.5;
-    mockState.resources.consumers.farm_designer.tryGroupSortType = "nn";
+    mockState.resources.consumers.farm_designer.tryGroupSortType = sortType;
     const wrapper = svgMount(<GroupOrder {...p} />);
     expect(wrapper.find("line").length).toEqual(3);
   });

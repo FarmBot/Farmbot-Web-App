@@ -1,7 +1,7 @@
 import * as React from "react";
 import { MapTransformProps } from "../map/interfaces";
 import { sortGroupBy, sortOptionsTable } from "./point_group_sort";
-import { sortBy, isNumber } from "lodash";
+import { sortBy, isNumber, uniq } from "lodash";
 import { PointsPathLine } from "./group_order_visual";
 import { Color } from "../../ui";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -50,11 +50,28 @@ export const nn = (pathPoints: TaggedPoint[]) => {
   return ordered;
 };
 
-const SORT_TYPES: (PointGroupSortType | "nn")[] = [
+export const alternating = (pathPoints: TaggedPoint[], axis: "xy" | "yx") => {
+  const axis0: "x" | "y" = axis[0] as "x" | "y";
+  const axis1: "x" | "y" = axis[1] as "x" | "y";
+  const ordered: TaggedPoint[] = [];
+  const rowCoordinates = sortBy(uniq(pathPoints.map(p => p.body[axis0])));
+  const rows = rowCoordinates.map((rowCoordinate, index) => {
+    const row = sortBy(pathPoints.filter(p =>
+      p.body[axis0] == rowCoordinate), "body." + axis1);
+    return index % 2 == 0 ? row : row.reverse();
+  });
+  rows.map(row => row.map(p => ordered.push(p)));
+  return ordered;
+};
+
+export type ExtendedPointGroupSortType = PointGroupSortType
+  | "nn" | "xy_alternating" | "yx_alternating";
+
+const SORT_TYPES: ExtendedPointGroupSortType[] = [
   "random", "xy_ascending", "xy_descending", "yx_ascending", "yx_descending"];
 
 export interface PathInfoBarProps {
-  sortTypeKey: PointGroupSortType | "nn";
+  sortTypeKey: ExtendedPointGroupSortType;
   dispatch: Function;
   group: TaggedPointGroup;
   pathData: { [key: string]: number };
@@ -65,8 +82,14 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
   const pathLength = props.pathData[sortTypeKey];
   const maxLength = Math.max(...Object.values(props.pathData));
   const normalizedLength = pathLength / maxLength * 100;
-  const sortLabel =
-    sortTypeKey == "nn" ? "Optimized" : sortOptionsTable()[sortTypeKey];
+  const sortLabel = () => {
+    switch (sortTypeKey) {
+      case "nn": return "Optimized";
+      case "xy_alternating": return "X/Y Alternating";
+      case "yx_alternating": return "Y/X Alternating";
+      default: return sortOptionsTable()[sortTypeKey];
+    }
+  };
   const selected = group.body.sort_type == sortTypeKey;
   return <div className={`sort-option-bar ${selected ? "selected" : ""}`}
     onMouseEnter={() =>
@@ -74,7 +97,8 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
     onMouseLeave={() =>
       dispatch({ type: Actions.TRY_SORT_TYPE, payload: undefined })}
     onClick={() => {
-      if (sortTypeKey == "nn") {
+      if (sortTypeKey == "nn" || sortTypeKey == "xy_alternating"
+        || sortTypeKey == "yx_alternating") {
         error(t("Not supported yet."));
       } else {
         dispatch(edit(group, { sort_type: sortTypeKey }));
@@ -83,7 +107,7 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
     }}>
     <div className={"sort-path-info-bar"}
       style={{ width: `${normalizedLength}%` }}>
-      {`${sortLabel}: ${Math.round(pathLength / 10) / 100}m`}
+      {`${sortLabel()}: ${Math.round(pathLength / 10) / 100}m`}
     </div>
   </div>;
 };
@@ -105,6 +129,10 @@ export class Paths extends React.Component<PathsProps, PathsState> {
     SORT_TYPES.map((sortType: PointGroupSortType) =>
       this.state.pathData[sortType] =
       pathDistance(sortGroupBy(sortType, pathPoints)));
+    this.state.pathData.xy_alternating =
+      pathDistance(alternating(pathPoints, "xy"));
+    this.state.pathData.yx_alternating =
+      pathDistance(alternating(pathPoints, "yx"));
     this.state.pathData.nn = pathDistance(nn(pathPoints));
   };
 
@@ -113,7 +141,9 @@ export class Paths extends React.Component<PathsProps, PathsState> {
       this.generatePathData(this.props.pathPoints);
     }
     return <div className={"group-sort-types"}>
-      {SORT_TYPES.concat(DevSettings.futureFeaturesEnabled() ? "nn" : [])
+      {SORT_TYPES
+        .concat(DevSettings.futureFeaturesEnabled()
+          ? ["xy_alternating", "yx_alternating", "nn"] : [])
         .map(sortType =>
           <PathInfoBar key={sortType}
             sortTypeKey={sortType}
