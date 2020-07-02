@@ -22,7 +22,7 @@ module Api
       # temporary hotfix. Can be removed later if users
       # are able to attempt logins on unverfied accounts.
       email = params.dig("user", "email")
-      if email && User.find_by(email: email, confirmed_at: nil)
+      if needs_validation?(email)
         raise Errors::Forbidden, SessionToken::MUST_VERIFY
       end
 
@@ -36,6 +36,12 @@ module Api
     end
 
     private
+
+    def needs_validation?(email)
+      !User::SKIP_EMAIL_VALIDATION &&
+      email &&
+      User.find_by(email: email, confirmed_at: nil)
+    end
 
     # Don't proceed with login if they need to sign the EULA
     def maybe_halt_login(result)
