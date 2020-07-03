@@ -7,19 +7,15 @@ export async function maybeLoadAppSignal() {
   }
 
   if (token) {
-    console.log("Load appsignal");
     const AppSignal = (await import("@appsignal/javascript")).default;
-    console.log("Load window events plugin");
     const { plugin } = await import("@appsignal/plugin-window-events");
-    console.log("instantiate appsignal");
     const as = new AppSignal({
-      key: "YOUR FRONTEND API KEY"
+      key: token,
+      revision: globalConfig["LONG_REVISION"]
     });
-    console.log("Use plugins");
     as.use(plugin);
-    console.log("Make it global");
     window.appSignal = as;
-    console.log("done");
+    console.log("AppSignal loaded.");
   } else {
     console.log("No appsignal token detected.");
   }
