@@ -202,7 +202,9 @@ export namespace ToolTips {
   // Hardware Settings: Limit Switches
   export const ENABLE_LIMIT_SWITCHES =
     trim(`Enable use of electronic limit switches for end detection,
-    finding axis length, and homing. (default: disabled)`);
+    finding axis length, and homing. Limit switches are contact switches or
+    momentary push buttons that can be added to the end of each axis to
+    be engaged when an axis reaches the end. (default: disabled)`);
 
   export const SWAP_LIMIT_SWITCHES =
     trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
@@ -753,6 +755,12 @@ export namespace Content {
     trim(`Please contact the system(s) administrator(s) and ask them to enable
     HTTPS://`);
 
+  // Hardware Settings: Limit Switches
+  export const LIMIT_SWITCH_WARNING =
+    trim(`Warning: Limit switches are NOT included with standard FarmBot
+    Genesis or Express kits. Do NOT enable limit switches unless you have
+    built your own FarmBot with them or added them to a stock kit.`);
+
   // Hardware Settings: Parameter Management
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -1141,6 +1149,7 @@ export enum DeviceSetting {
 
   // Limit Switches
   limitSwitchSettings = `Limit Switches`,
+  limitSwitchesWarning = `Limit switches warning`,
   enableLimitSwitches = `Enable limit switches`,
   swapLimitSwitches = `Swap limit switches`,
   invertLimitSwitches = `Invert limit switches`,

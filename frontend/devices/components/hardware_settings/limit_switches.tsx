@@ -1,12 +1,13 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips, DeviceSetting } from "../../../constants";
+import { ToolTips, DeviceSetting, Content } from "../../../constants";
 import { LimitSwitchesProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { settingRequiredLabel } from "./encoders_or_stall_detection";
+import { t } from "../../../i18next_wrapper";
 
 export function LimitSwitches(props: LimitSwitchesProps) {
 
@@ -21,6 +22,11 @@ export function LimitSwitches(props: LimitSwitchesProps) {
       panel={"limit_switches"}
       dispatch={dispatch} />
     <Collapse isOpen={!!limit_switches}>
+      <Highlight settingName={DeviceSetting.limitSwitchesWarning}>
+        <div className="limit-switch-warning">
+          <p>{t(Content.LIMIT_SWITCH_WARNING)}</p>
+        </div>
+      </Highlight>
       <SpacePanelHeader />
       <BooleanMCUInputGroup
         label={DeviceSetting.enableLimitSwitches}
