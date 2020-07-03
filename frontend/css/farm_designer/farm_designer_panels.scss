@@ -962,6 +962,16 @@
   .network-not-found-timer {
     margin-top: 1rem;
   }
+  .limit-switch-warning {
+    margin: 1rem -15px -1rem -15px;
+    padding: 1rem 1.5rem 1rem 2rem;
+    background: transparentize($orange, 0.6);
+    p {
+      line-height: 1.75rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+  }
   .pin-guard-input-row {
     .row {
       margin-left: -15px;
