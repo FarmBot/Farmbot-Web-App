@@ -1,9 +1,9 @@
 export async function maybeLoadAppSignal() {
-  const token = globalConfig["APPSIGNAL_TOKEN"];
-
   if (window.appSignal) {
     return;
   }
+
+  const token = globalConfig["APPSIGNAL_TOKEN"];
 
   if (token) {
     const AppSignal = (await import("@appsignal/javascript")).default;
@@ -14,6 +14,5 @@ export async function maybeLoadAppSignal() {
     });
     as.use(plugin({}));
     window.appSignal = as;
-    console.log("AppSignal loaded.");
   }
 }

@@ -14,7 +14,7 @@ interface Rollbar {
 }
 
 interface AppSig {
-  use(plug: Function): void;
+  use: Function;
 }
 
 interface Window {

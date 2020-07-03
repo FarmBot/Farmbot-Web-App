@@ -92,7 +92,7 @@ class Image < ApplicationRecord
     return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
   end
 
-  def attachment_url(size = "x1280")
+  def attachment_url(size = "x640")
     # Detect legacy attachments by way of
     # superceded PaperClip-related field.
     # If it has an `attachment_file_size`,
