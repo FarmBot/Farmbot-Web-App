@@ -1,5 +1,5 @@
 export async function maybeLoadAppSignal() {
-  const token = globalConfig["APP_SIGNAL_TOKEN"];
+  const token = globalConfig["APPSIGNAL_TOKEN"];
 
   if (window.appSignal) {
     return;
