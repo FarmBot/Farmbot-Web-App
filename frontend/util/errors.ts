@@ -3,12 +3,13 @@ import { Content } from "../constants";
 import { capitalize, map } from "lodash";
 import { t } from "../i18next_wrapper";
 
+interface AxiosErrorResponsePart {
+  data: { [reason: string]: string } | string;
+  statusText?: string;
+}
+
 export interface AxiosErrorResponse {
-  response?: {
-    data: {
-      [reason: string]: string
-    };
-  };
+  response?: AxiosErrorResponsePart;
 }
 
 const mapper = (v: string, k: string) => {
@@ -26,10 +27,18 @@ export function prettyPrintApiErrors(err: AxiosErrorResponse) {
   return map(errors, mapper).join(" ");
 }
 
+function cleanErrorMsg(msg: string, response: AxiosErrorResponsePart): string {
+  return msg.includes("<!DOCTYPE html>")
+    ? response.statusText || "bad response"
+    : msg;
+}
+
 function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   // In case the interpreter gives us an oddball error message.
   if (err.response?.data) {
-    return err.response.data;
+    return typeof err.response.data == "string"
+      ? { error: cleanErrorMsg(err.response.data, err.response) }
+      : err.response.data;
   } else {
     return {
       error: t(Content.WEB_APP_DISCONNECTED)
