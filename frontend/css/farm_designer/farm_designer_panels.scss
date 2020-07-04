@@ -962,6 +962,7 @@
   .network-not-found-timer {
     margin-top: 1rem;
   }
+  .stall-detection-note,
   .limit-switch-warning {
     margin: 1rem -15px -1rem -15px;
     padding: 1rem 1.5rem 1rem 2rem;
@@ -1400,6 +1401,7 @@
   .panel-content {
     padding: 0;
     padding-bottom: inherit;
+    .pending-weeds-header,
     .active-weeds-header,
     .removed-weeds-header {
       display: flex;

@@ -175,7 +175,7 @@ export namespace ToolTips {
 
   export const STALL_SENSITIVITY =
     trim(`Motor stall sensitivity. Most sensitive: -63.
-    Least sensitive: +63. (default: 30)`);
+    Least sensitive: +63. (default: 63)`);
 
   export const USE_ENCODERS_FOR_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
@@ -189,11 +189,15 @@ export namespace ToolTips {
     considered to have stalled. (default: 5)`);
 
   export const MAX_MISSED_STEPS_STALL_DETECTION =
-    trim(`Number of steps missed (determined by motor stall detection) before
-    motor is considered to have stalled. (default: 5)`);
+    trim(`Maximum motor load (determined by stepper driver) before
+    motor is considered to have stalled. (default: 60)`);
 
-  export const MISSED_STEP_DECAY =
+  export const MISSED_STEP_DECAY_ENCODERS =
     trim(`Reduction to missed step total for every good step. (default: 5)`);
+
+  export const MISSED_STEP_DECAY_STALL_DETECTION =
+    trim(`Number of steps for stall detection to ignore during acceleration.
+    (default: 100)`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
@@ -755,6 +759,12 @@ export namespace Content {
     trim(`Please contact the system(s) administrator(s) and ask them to enable
     HTTPS://`);
 
+  // Hardware Settings: Stall Detection
+  export const STALL_DETECTION_NOTE =
+    trim(`Stall detection for FarmBot Express bots is not yet available.
+    Once it is ready, you will receive a message in the Message Center.
+    We thank you for your patience.`);
+
   // Hardware Settings: Limit Switches
   export const LIMIT_SWITCH_WARNING =
     trim(`Warning: Limit switches are NOT included with standard FarmBot
@@ -1138,13 +1148,16 @@ export enum DeviceSetting {
   // Encoders / Stall Detection
   encoders = `Encoders`,
   stallDetection = `Stall Detection`,
+  stallDetectionNote = `Stall Detection note`,
   enableEncoders = `Enable Encoders`,
   enableStallDetection = `Enable Stall Detection`,
   stallSensitivity = `Stall Sensitivity`,
   useEncodersForPositioning = `Use Encoders for Positioning`,
   invertEncoders = `Invert Encoders`,
   maxMissedSteps = `Max Missed Steps`,
+  motorLoad = `Motor Load`,
   missedStepDecay = `Missed Step Decay`,
+  gracePeriod = `Grace Period`,
   encoderScaling = `Encoder Scaling`,
 
   // Limit Switches

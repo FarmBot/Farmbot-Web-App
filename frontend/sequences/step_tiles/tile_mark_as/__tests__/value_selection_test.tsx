@@ -122,6 +122,7 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.PENDING,
       DDI.ACTIVE,
       DDI.REMOVED,
     ]);
@@ -157,6 +158,7 @@ describe("<ValueSelection />", () => {
     const wrapper = mount(<ValueSelection {...p} />);
     expect(wrapper.find("FBSelect").length).toEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.PENDING,
       DDI.ACTIVE,
       DDI.REMOVED,
     ]);

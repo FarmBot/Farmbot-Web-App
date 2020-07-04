@@ -1,6 +1,6 @@
 jest.mock("@appsignal/javascript", () => {
   return class X {
-    use = jest.fn()
+    use = jest.fn();
   };
 });
 

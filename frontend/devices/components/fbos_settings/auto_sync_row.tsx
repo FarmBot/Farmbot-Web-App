@@ -9,7 +9,8 @@ import { Highlight } from "../maybe_highlight";
 
 export function AutoSyncRow(props: AutoSyncRowProps) {
   const autoSync = props.sourceFbosConfig("auto_sync");
-  return <Highlight settingName={DeviceSetting.autoSync}>
+  return <Highlight settingName={DeviceSetting.autoSync}
+    hidden={!!autoSync.value}>
     <Row>
       <Col xs={9}>
         <label>
