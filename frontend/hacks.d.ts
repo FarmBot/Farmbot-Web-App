@@ -13,8 +13,13 @@ interface Rollbar {
   configure(object: object): object;
 }
 
+interface AppSig {
+  use: Function;
+}
+
 interface Window {
   Rollbar: Rollbar | undefined;
+  appSignal: (AppSig | undefined);
   logStore: LogStore
 }
 
