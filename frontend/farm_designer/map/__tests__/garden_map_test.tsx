@@ -79,6 +79,9 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";
 import { TaggedPointGroup } from "farmbot";
 import { fakeMountedToolInfo } from "../../../__test_support__/fake_tool_info";
+import {
+  fakeCameraCalibrationData,
+} from "../../../__test_support__/fake_camera_data";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -118,12 +121,7 @@ const fakeProps = (): GardenMapProps => ({
   peripherals: [],
   eStopStatus: false,
   latestImages: [],
-  cameraCalibrationData: {
-    scale: undefined, rotation: undefined,
-    offset: { x: undefined, y: undefined },
-    origin: undefined,
-    calibrationZ: undefined
-  },
+  cameraCalibrationData: fakeCameraCalibrationData(),
   getConfigValue: jest.fn(),
   sensorReadings: [],
   sensors: [],

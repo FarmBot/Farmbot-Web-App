@@ -8,13 +8,20 @@ import { scanImage, detectPlants } from "../actions";
 import { error } from "../../../toast/toast";
 
 describe("scanImage()", () => {
-  it("calls out to the device", () => {
-    scanImage(5);
+  it("executes with selected image id", () => {
+    scanImage(1)(5);
     expect(mockDevice.execScript)
       .toHaveBeenCalledWith("historical-plant-detection", [{
         args: { label: "PLANT_DETECTION_selected_image", value: "5" },
         kind: "pair"
       }]);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("errors without calibration", () => {
+    scanImage(0)(5);
+    expect(mockDevice.execScript).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Calibrate camera first");
   });
 });
 

@@ -265,79 +265,62 @@ export namespace ToolTips {
 
   export const INVERT_HUE_SELECTION =
     trim(`Invert the range of hues selected. Typically used to select the
-    full range of reds. (default: true)`);
+    full range of reds. (default: {{ defaultValue }})`);
 
   export const OBJECT_SEPARATION =
     trim(`Distance between calibration objects in millimeters. The distance
     between the objects on the camera calibration card is 100mm.
-    (default: 100)`);
+    (default: {{ defaultValue }})`);
 
   export const CALIBRATION_OBJECT_AXIS =
     trim(`The FarmBot axis along which the calibration objects are aligned.
-    (default: X)`);
+    (default: {{ defaultValue }})`);
 
   export const CAMERA_OFFSET =
     trim(`Camera offset from the UTM position in millimeters.
     Once calibrated, use these values to align photos to the Farm Designer
     grid by matching the grid and locations in photos to the grid and
-    locations in the Farm Designer. (default: (x: 50, y: 100))`);
+    locations in the Farm Designer.
+    (default: (x: {{ defaultX }}, y: {{ defaultY }}))`);
 
   export const IMAGE_BOT_ORIGIN_LOCATION =
     trim(`FarmBot origin (home) location in images. If the origin does not
     correspond to an image corner, rotate the camera until one does.
-    (default: Bottom Left)`);
+    (default: {{ defaultValue }})`);
 
   export const COORDINATE_SCALE =
     trim(`Image pixel to FarmBot coordinate scale. Typically between
     0.1 and 2, this value matches image scale with the FarmBot coordinate
-    system. (default: 0 (uncalibrated))`);
+    system. (default: {{ defaultValue }} (uncalibrated))`);
 
   export const IMAGE_ROTATION_ANGLE =
     trim(`Camera rotation in degrees. This value should be minimized
     (to near zero) by rotating the camera in its mount until it is aligned
-    with FarmBot's axes. (default: 0)`);
+    with FarmBot's axes. (default: {{ defaultValue }})`);
 
-  export const CALIBRATION_BLUR =
+  export const BLUR =
     trim(`Image blur kernel size. Must be an odd number greater than 1.
-    (default: 5)`);
+    (default: {{ defaultValue }})`);
 
-  export const DETECTION_BLUR =
-    trim(`Image blur kernel size. Must be an odd number greater than 1.
-    (default: 15)`);
-
-  export const CALIBRATION_MORPH =
+  export const MORPH =
     trim(`Size of the structuring element used for morphological
-    transformations. (default: 5)`);
+    transformations. (default: {{ defaultValue }})`);
 
-  export const DETECTION_MORPH =
-    trim(`Size of the structuring element used for morphological
-    transformations. (default: 6)`);
-
-  export const CALIBRATION_ITERATIONS =
+  export const ITERATIONS =
     trim(`Number of erosion and dilation morphological transformation
-    cycles. (default: 1)`);
+    cycles. (default: {{ defaultValue }})`);
 
-  export const DETECTION_ITERATIONS =
-    trim(`Number of erosion and dilation morphological transformation
-    cycles. (default: 4)`);
+  export const COLOR_HUE_RANGE =
+    trim(`Color range.
+    (default: {{ defaultLow }} - {{ defaultHigh }} ({{ defaultColor }}))`);
 
-  export const CALIBRATION_HUE =
-    trim(`Color range. (default: 160 - 20 (red))`);
+  export const COLOR_SATURATION_RANGE =
+    trim(`Color saturation, 0 (white) to 255 (color).
+    (default: {{ defaultLow }} - {{ defaultHigh }})`);
 
-  export const DETECTION_HUE =
-    trim(`Color range. (default: 30 - 90 (green))`);
-
-  export const CALIBRATION_SATURATION =
-    trim(`Color saturation, 0 (white) to 255 (color). (default: 100 - 255)`);
-
-  export const DETECTION_SATURATION =
-    trim(`Color saturation, 0 (white) to 255 (color). (default: 50 - 255)`);
-
-  export const CALIBRATION_COLOR_VALUE =
-    trim(`Color value, 0 (black) to 255 (color) (default: 100 - 255)`);
-
-  export const DETECTION_COLOR_VALUE =
-    trim(`Color value, 0 (black) to 255 (color) (default: 50 - 255)`);
+  export const COLOR_VALUE_RANGE =
+    trim(`Color value, 0 (black) to 255 (color)
+    (default: {{ defaultLow }} - {{ defaultHigh }})`);
 
   // Sequences
   export const SEQUENCE_COMMANDS =
@@ -816,6 +799,13 @@ export namespace Content {
     trim(`Select a map origin by clicking on one of the four quadrants to
     adjust the garden map to your viewing angle.`);
 
+  export const CROP_MAP_IMAGES =
+    trim(`Crop images displayed in the garden map to remove black borders
+    from image rotation. Crop amount determined by CAMERA ROTATION value.`);
+
+  export const SHOW_CAMERA_VIEW_AREA =
+    trim(`Show the camera's field of view in the garden map.`);
+
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
@@ -1204,6 +1194,8 @@ export enum DeviceSetting {
   mapSize = `Map size`,
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
+  cropMapImages = `Crop map images`,
+  showCameraViewAreaInMap = `Show camera view area in map`,
   confirmPlantDeletion = `Confirm plant deletion`,
 
   otherSettings = `Other`,

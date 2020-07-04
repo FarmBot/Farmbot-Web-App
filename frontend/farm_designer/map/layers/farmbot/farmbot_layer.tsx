@@ -16,6 +16,7 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
       peripherals={peripherals}
       eStopStatus={eStopStatus}
       mountedToolInfo={props.mountedToolInfo}
+      cameraCalibrationData={props.cameraCalibrationData}
       getConfigValue={getConfigValue} />
     <BotExtents
       mapTransformProps={mapTransformProps}

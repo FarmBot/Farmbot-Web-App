@@ -9,6 +9,9 @@ import { BotFigure } from "../bot_figure";
 import {
   fakeMountedToolInfo,
 } from "../../../../../__test_support__/fake_tool_info";
+import {
+  fakeCameraCalibrationData,
+} from "../../../../../__test_support__/fake_camera_data";
 
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
@@ -24,6 +27,7 @@ describe("<VirtualFarmBot/>", () => {
       eStopStatus: false,
       getConfigValue: () => true,
       mountedToolInfo: fakeMountedToolInfo(),
+      cameraCalibrationData: fakeCameraCalibrationData(),
     };
   }
 

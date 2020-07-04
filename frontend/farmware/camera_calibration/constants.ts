@@ -1,9 +1,17 @@
 import { DropDownItem } from "../../ui/index";
-import { SPECIAL_VALUES } from "./remote_env/constants";
+import { SPECIAL_VALUES } from "../weed_detector/remote_env/constants";
 import { t } from "../../i18next_wrapper";
 
 /** Mapping of SPECIAL_VALUE numeric codes into corresponding drop down items. */
 export const SPECIAL_VALUE_DDI: { [index: number]: DropDownItem } = {
+  [SPECIAL_VALUES.TRUE]: {
+    label: t("true"),
+    value: SPECIAL_VALUES.TRUE
+  },
+  [SPECIAL_VALUES.FALSE]: {
+    label: t("false"),
+    value: SPECIAL_VALUES.FALSE
+  },
   [SPECIAL_VALUES.X]: {
     label: "X",
     value: SPECIAL_VALUES.X

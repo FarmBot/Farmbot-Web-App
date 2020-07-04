@@ -86,21 +86,21 @@ describe("<CameraCalibration/>", () => {
     expect(selectImage).toHaveBeenCalledWith("image0001");
   });
 
-  it("saves WeedDetectorConfig changes: API", () => {
+  it("saves CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("WeedDetectorConfig")
+    wrapper.find("CameraCalibrationConfig")
       .simulate("change", "CAMERA_CALIBRATION_camera_offset_x", 10);
     expect(p.saveFarmwareEnv)
       .toHaveBeenCalledWith("CAMERA_CALIBRATION_camera_offset_x", "10");
   });
 
-  it("saves string WeedDetectorConfig changes: API", () => {
+  it("saves string CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("WeedDetectorConfig")
+    wrapper.find("CameraCalibrationConfig")
       .simulate("change", "CAMERA_CALIBRATION_image_bot_origin_location", 4);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_image_bot_origin_location", "\"BOTTOM_LEFT\"");

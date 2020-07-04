@@ -1,4 +1,3 @@
-jest.mock("i18next", () => ({ init: jest.fn((_, ok) => ok()) }));
 jest.mock("react-dom", () => ({ render: jest.fn() }));
 jest.mock("../../i18n",
   () => ({ detectLanguage: jest.fn(() => Promise.resolve()) }));

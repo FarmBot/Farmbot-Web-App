@@ -8,15 +8,15 @@ jest.mock("../../../api/delete_points", () => ({
   deletePoints: mockDeletePoints,
 }));
 
+const mockScanImage = jest.fn();
 jest.mock("../actions", () => ({
-  scanImage: jest.fn(),
+  scanImage: jest.fn(() => mockScanImage),
   detectPlants: jest.fn(() => jest.fn()),
 }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { WeedDetector, namespace } from "../index";
-import { FarmwareProps } from "../../../devices/interfaces";
+import { WeedDetector } from "../index";
 import { API } from "../../../api";
 import { selectImage } from "../../images/actions";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -25,13 +25,13 @@ import { detectPlants, scanImage } from "../actions";
 import { deletePoints } from "../../../api/delete_points";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
+import { WeedDetectorProps } from "../interfaces";
 
 describe("<WeedDetector />", () => {
   API.setBaseUrl("http://localhost:3000");
 
-  const fakeProps = (): FarmwareProps => ({
+  const fakeProps = (): WeedDetectorProps => ({
     timeSettings: fakeTimeSettings(),
-    farmwares: {},
     botToMqttStatus: "up",
     wDEnv: {},
     env: {},
@@ -39,14 +39,8 @@ describe("<WeedDetector />", () => {
     currentImage: undefined,
     images: [],
     syncStatus: "synced",
-    getConfigValue: jest.fn(),
-    firstPartyFarmwareNames: [],
-    currentFarmware: undefined,
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
-    taggedFarmwareInstallations: [],
-    imageJobs: [],
-    infoOpen: false,
   });
 
   it("renders", () => {
@@ -120,24 +114,22 @@ describe("<WeedDetector />", () => {
   it("calls scanImage", () => {
     const wrapper = shallow(<WeedDetector {...fakeProps()} />);
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
-    expect(scanImage).toHaveBeenCalledWith(1);
+    expect(scanImage).toHaveBeenCalledWith(0);
+    expect(mockScanImage).toHaveBeenCalledWith(1);
+  });
+
+  it("calls scanImage with calibration", () => {
+    const p = fakeProps();
+    p.wDEnv.CAMERA_CALIBRATION_coord_scale = 0.5;
+    const wrapper = shallow(<WeedDetector {...p} />);
+    wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
+    expect(scanImage).toHaveBeenCalledWith(0.5);
+    expect(mockScanImage).toHaveBeenCalledWith(1);
   });
 
   it("calls selectImage", () => {
     const wrapper = shallow(<WeedDetector {...fakeProps()} />);
     wrapper.find("ImageWorkspace").simulate("flip", "image0001");
     expect(selectImage).toHaveBeenCalledWith("image0001");
-  });
-});
-
-describe("namespace()", () => {
-  it("returns namespaced key", () => {
-    expect(namespace("CAMERA_CALIBRATION_")("H_LO"))
-      .toEqual("CAMERA_CALIBRATION_H_LO");
-  });
-
-  it("throws error", () => {
-    expect(() => namespace("TEST_")("key"))
-      .toThrowError("TEST_key is not a WDENVKey");
   });
 });

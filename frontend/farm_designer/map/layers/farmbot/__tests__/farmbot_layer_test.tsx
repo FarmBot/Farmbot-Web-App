@@ -8,6 +8,9 @@ import {
 import {
   fakeMountedToolInfo,
 } from "../../../../../__test_support__/fake_tool_info";
+import {
+  fakeCameraCalibrationData,
+} from "../../../../../__test_support__/fake_camera_data";
 
 describe("<FarmBotLayer/>", () => {
   function fakeProps(): FarmBotLayerProps {
@@ -29,6 +32,7 @@ describe("<FarmBotLayer/>", () => {
       eStopStatus: false,
       getConfigValue: jest.fn(),
       mountedToolInfo: fakeMountedToolInfo(),
+      cameraCalibrationData: fakeCameraCalibrationData(),
     };
   }
 

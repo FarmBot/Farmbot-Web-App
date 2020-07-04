@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { DesignerPanel, DesignerPanelContent } from "./designer_panel";
 import { DesignerNavTabs, Panel } from "./panel_header";
-import { UserEnv, ShouldDisplay, SaveFarmwareEnv } from "../devices/interfaces";
+import { UserEnv, ShouldDisplay } from "../devices/interfaces";
 import { maybeGetTimeSettings } from "../resources/selectors";
 import { Everything, TimeSettings } from "../interfaces";
 import {
@@ -31,6 +31,10 @@ import { updateFarmware } from "../farmware/farmware_info";
 import { destroyAll } from "../api/crud";
 import { success, error } from "../toast/toast";
 import { isBotOnline } from "../devices/must_be_online";
+import {
+  CameraSelection,
+} from "../devices/components/fbos_settings/camera_selection";
+import { SaveFarmwareEnv } from "../farmware/interfaces";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -138,6 +142,13 @@ export class RawDesignerPhotos
         <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"}>
           <Update version={this.props.versions["take-photo"]}
             farmwareName={"take-photo"} botOnline={botOnline} />
+          <CameraSelection
+            dispatch={this.props.dispatch}
+            noLabel={true}
+            env={this.props.env}
+            botOnline={botOnline}
+            saveFarmwareEnv={this.props.saveFarmwareEnv}
+            shouldDisplay={this.props.shouldDisplay} />
         </ToolTip>
         <Photos {...common}
           imageJobs={this.props.imageJobs} />
@@ -148,8 +159,8 @@ export class RawDesignerPhotos
         <Collapse isOpen={!!this.state.calibration}>
           <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
             docPage={"camera-calibration"}>
-            <Update version={this.props.versions["camera-calibration"]}
-              farmwareName={"camera-calibration"} botOnline={botOnline} />
+            <Update version={this.props.versions["plant-detection"]}
+              farmwareName={"plant-detection"} botOnline={botOnline} />
           </ToolTip>
           <CameraCalibration {...common}
             wDEnv={this.props.wDEnv}

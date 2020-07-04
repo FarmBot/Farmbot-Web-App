@@ -298,6 +298,10 @@ export interface CameraCalibrationData {
     x: string | undefined;
     y: string | undefined;
   },
+  center: {
+    x: string | undefined;
+    y: string | undefined;
+  },
   origin: string | undefined;
   calibrationZ: string | undefined;
 }
