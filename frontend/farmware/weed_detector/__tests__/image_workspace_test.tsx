@@ -25,7 +25,7 @@ describe("<ImageWorkspace />", () => {
     V_HI: 12,
     botOnline: true,
     timeSettings: fakeTimeSettings(),
-    environment: "weed_detection",
+    namespace: jest.fn(() => "CAMERA_CALIBRATION_H_HI"),
   });
 
   it("triggers onChange() event", () => {
@@ -55,6 +55,13 @@ describe("<ImageWorkspace />", () => {
     const iw = new ImageWorkspace(props);
     iw.numericChange("blur")(inputEvent("23"));
     expect(props.onChange).toHaveBeenCalledWith("blur", 23);
+  });
+
+  it("handles null", () => {
+    const props = fakeProps();
+    const iw = new ImageWorkspace(props);
+    iw.numericChange("blur")(inputEvent(""));
+    expect(props.onChange).toHaveBeenCalledWith("blur", 0);
   });
 
   it("doesn't process photo", () => {

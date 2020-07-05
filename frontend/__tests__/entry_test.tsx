@@ -8,7 +8,6 @@ jest.mock("../i18n", () => ({
 }));
 
 jest.mock("../util/stop_ie", () => ({ stopIE: jest.fn() }));
-jest.mock("i18next", () => ({ init: jest.fn() }));
 jest.mock("../routes", () => ({ attachAppToDom: { mock: "Yeah" } }));
 
 import { stopIE } from "../util/stop_ie";

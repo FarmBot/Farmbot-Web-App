@@ -393,6 +393,7 @@ export class GardenMap extends
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
+    cropImages={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     imageFilterBegin={
       (this.props.getConfigValue("photo_filter_begin") || "").toString()}
     imageFilterEnd={
@@ -483,6 +484,7 @@ export class GardenMap extends
     peripherals={this.props.peripherals}
     eStopStatus={this.props.eStopStatus}
     mountedToolInfo={this.props.mountedToolInfo}
+    cameraCalibrationData={this.props.cameraCalibrationData}
     getConfigValue={this.props.getConfigValue} />
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}

@@ -3,7 +3,10 @@ import {
   NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey | "time_format_seconds";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
+  | "time_format_seconds"
+  | "crop_images"
+  | "show_camera_view_area";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 
 export const BooleanSetting:
@@ -28,6 +31,7 @@ export const BooleanSetting:
   show_images: "show_images",
   show_zones: "show_zones",
   show_sensor_readings: "show_sensor_readings",
+  show_camera_view_area: "show_camera_view_area" as WebAppBooleanConfigKey,
   disable_animations: "disable_animations",
   display_map_missed_steps: "display_map_missed_steps",
   display_trail: "display_trail",
@@ -35,6 +39,7 @@ export const BooleanSetting:
   dynamic_map: "dynamic_map",
   xy_swap: "xy_swap",
   confirm_plant_deletion: "confirm_plant_deletion",
+  crop_images: "crop_images" as WebAppBooleanConfigKey,
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",

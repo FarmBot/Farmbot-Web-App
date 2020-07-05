@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";
-import { BotFigure, BotFigureProps } from "../bot_figure";
+import { BotFigure, BotFigureProps, rotated90degrees } from "../bot_figure";
 import { Color } from "../../../../../ui/index";
 import {
   fakeMapTransformProps,
@@ -11,6 +11,9 @@ import {
 } from "../../../../../__test_support__/fake_tool_info";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import {
+  fakeCameraCalibrationDataFull,
+} from "../../../../../__test_support__/fake_camera_data";
 
 describe("<BotFigure/>", () => {
   const fakeProps = (): BotFigureProps => ({
@@ -179,5 +182,63 @@ describe("<BotFigure/>", () => {
     const UTM = wrapper.find("#UTM-wrapper");
     expect(UTM.find("#mounted-tool").length).toEqual(0);
     expect(UTM.find("#three-in-one-tool-head").length).toEqual(1);
+  });
+
+  it("shows camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraViewArea = true;
+    p.cropPhotos = false;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    expect(view.find("#camera-view-area").length).toEqual(1);
+    expect(view.find("#cropped-camera-view-area").length).toEqual(0);
+  });
+
+  it("doesn't show camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.center.x = "";
+    p.cameraViewArea = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(0);
+  });
+
+  it("shows small cropped camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.rotation = "10";
+    p.cameraViewArea = true;
+    p.cropPhotos = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    expect(view.find("#camera-view-area").length).toEqual(1);
+    expect(view.find("#cropped-camera-view-area").length).toEqual(1);
+  });
+
+  it("shows large cropped camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.rotation = "47";
+    p.cameraViewArea = true;
+    p.cropPhotos = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    expect(view.find("#camera-view-area").length).toEqual(1);
+    expect(view.find("#cropped-camera-view-area").length).toEqual(1);
+  });
+});
+
+describe("rotated90degrees()", () => {
+  it("returns correct rotation", () => {
+    expect(rotated90degrees(0)).toEqual(false);
+    expect(rotated90degrees(44)).toEqual(false);
+    expect(rotated90degrees(46)).toEqual(true);
+    expect(rotated90degrees(89)).toEqual(true);
+    expect(rotated90degrees(91)).toEqual(true);
+    expect(rotated90degrees(134)).toEqual(true);
+    expect(rotated90degrees(136)).toEqual(false);
+    expect(rotated90degrees(-44)).toEqual(false);
+    expect(rotated90degrees(-46)).toEqual(true);
   });
 });

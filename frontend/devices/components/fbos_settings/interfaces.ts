@@ -1,7 +1,6 @@
 import {
   BotState,
   ControlPanelState,
-  SaveFarmwareEnv,
   ShouldDisplay,
   SourceFbosConfig,
   UserEnv,
@@ -13,6 +12,7 @@ import {
   FirmwareHardware,
 } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
+import { SaveFarmwareEnv } from "../../../farmware/interfaces";
 
 export interface NameRowProps {
   dispatch: Function;
@@ -48,6 +48,7 @@ export interface CameraSelectionProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   shouldDisplay: ShouldDisplay;
   dispatch: Function;
+  noLabel?: boolean;
 }
 
 export interface CameraSelectionState {

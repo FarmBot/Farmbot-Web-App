@@ -90,11 +90,11 @@ export class CameraSelection
   render() {
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
-        <Col xs={5}>
+        {!this.props.noLabel && <Col xs={5}>
           <label>
             {t("CAMERA")}
           </label>
-        </Col>
+        </Col>}
         <Col xs={ColWidth.description}>
           <FBSelect
             allowEmpty={false}

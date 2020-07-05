@@ -1,9 +1,6 @@
 /** Name of every env var that the weed detector farmware needs. */
 import { Primitive } from "../../../util";
-import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
-
-export const isWDENVKey =
-  (key: unknown): key is WDENVKey => (EVERY_WD_KEY as string[]).includes("" + key);
+import { WD_KEY_DEFAULTS } from "./constants";
 
 /** Weed detector ENV key. */
 export type WDENVKey = keyof typeof WD_KEY_DEFAULTS;

@@ -130,4 +130,5 @@ export const UPDATE_RESOURCE_DDIS = (): Record<string, DropDownItem> => ({
   NONE: { label: t("None"), value: 0 },
   ACTIVE: { label: t("Active"), value: "active" },
   REMOVED: { label: t("Removed"), value: "removed" },
+  PENDING: { label: t("Pending"), value: "pending" },
 });

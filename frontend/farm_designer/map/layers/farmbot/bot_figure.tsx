@@ -10,7 +10,8 @@ import {
 import { reduceToolName } from "../tool_slots/tool_slot_point";
 import { noop } from "lodash";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { MountedToolInfo } from "../../../interfaces";
+import { MountedToolInfo, CameraCalibrationData } from "../../../interfaces";
+import { mapImagePositionData, cropAmount, largeCrop } from "../images/map_image";
 
 export interface BotFigureProps {
   figureName: string;
@@ -19,6 +20,9 @@ export interface BotFigureProps {
   plantAreaOffset: AxisNumberProperty;
   eStopStatus?: boolean;
   mountedToolInfo?: MountedToolInfo;
+  cameraCalibrationData?: CameraCalibrationData;
+  cameraViewArea?: boolean;
+  cropPhotos?: boolean;
 }
 
 interface BotFigureState {
@@ -113,6 +117,12 @@ export class BotFigure extends
           ? <this.MountedTool toolName={this.props.mountedToolInfo.name} />
           : <this.UTM />}
       </g>
+      {this.props.cameraViewArea && this.props.cameraCalibrationData &&
+        <CameraViewArea
+          position={this.props.position}
+          cropPhotos={this.props.cropPhotos}
+          cameraCalibrationData={this.props.cameraCalibrationData}
+          mapTransformProps={mapTransformProps} />}
       <text
         visibility={this.state.hovered ? "visible" : "hidden"}
         x={this.positionQ.qx}
@@ -128,3 +138,69 @@ export class BotFigure extends
     </g>;
   }
 }
+
+const parseEnv = (value: string | undefined): number => parseFloat(value || "0");
+
+interface CameraViewAreaProps {
+  position: BotPosition;
+  cameraCalibrationData: CameraCalibrationData;
+  mapTransformProps: MapTransformProps;
+  cropPhotos: boolean | undefined;
+}
+
+export const rotated90degrees = (angle: number) =>
+  (Math.abs(angle) + 45) % 180 > 90;
+
+const CameraViewArea = (props: CameraViewAreaProps) => {
+  const { cameraCalibrationData, mapTransformProps, cropPhotos } = props;
+  const { x, y } = props.position;
+  const { center, scale, rotation } = props.cameraCalibrationData;
+  const parsedScale = parseEnv(scale);
+  const rotationAngle = Math.abs(parseEnv(rotation));
+  const rotated = rotated90degrees(rotationAngle);
+  const width = parseEnv(center[rotated ? "y" : "x"]) * 2;
+  const height = parseEnv(center[rotated ? "x" : "y"]) * 2;
+  const scaledCenter = {
+    x: width / 2 * parsedScale,
+    y: height / 2 * parsedScale,
+  };
+  const scaledShortEdge = Math.min(width, height) * parsedScale;
+  const crop = cropAmount(rotationAngle, { width, height });
+  const cameraViewPosition = mapImagePositionData({
+    x, y, width, height, cameraCalibrationData, mapTransformProps,
+  });
+  const cropPosition = mapImagePositionData({
+    x, y,
+    width: width - crop, height: height - crop,
+    cameraCalibrationData, mapTransformProps,
+  });
+  if (cameraViewPosition) {
+    return <g id="camera-view-area-wrapper" fill={"none"}
+      stroke={Color.darkGray} strokeWidth={2} strokeOpacity={0.75}>
+      <circle id="camera-photo-center"
+        cx={scaledCenter.x}
+        cy={scaledCenter.y}
+        r={5} transform={cameraViewPosition.transform} />
+      <rect id="camera-view-area"
+        strokeDasharray={cropPhotos ? "4 5" : "none"}
+        x={0}
+        y={0}
+        width={cameraViewPosition.width}
+        height={cameraViewPosition.height}
+        transform={cameraViewPosition.transform} />
+      {cropPhotos && (largeCrop(rotationAngle)
+        ? <circle id="cropped-camera-view-area"
+          cx={scaledCenter.x}
+          cy={scaledCenter.y}
+          r={scaledShortEdge / 2}
+          transform={cameraViewPosition.transform} />
+        : <rect id="cropped-camera-view-area"
+          x={0}
+          y={0}
+          width={cropPosition?.width}
+          height={cropPosition?.height}
+          transform={cropPosition?.transform} />)}
+    </g>;
+  }
+  return <g />;
+};

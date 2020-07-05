@@ -1,10 +1,9 @@
 import { WD_ENV } from "./remote_env/interfaces";
-
-export interface SettingsMenuProps {
-  values: Partial<WD_ENV>;
-  onChange(key: keyof WD_ENV, value: number): void;
-  calibrationZ: string | undefined;
-}
+import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
+import { TaggedImage, SyncStatus } from "farmbot";
+import { NetworkState } from "../../connectivity/interfaces";
+import { TimeSettings } from "../../interfaces";
+import { SaveFarmwareEnv } from "../interfaces";
 
 /** Hue, Saturation, Value */
 export type HSV = "H" | "S" | "V";
@@ -38,4 +37,17 @@ export interface EnvSliderProps {
 
 export interface EnvSliderState extends Partial<HiLo> {
   sliding: boolean;
+}
+
+export interface WeedDetectorProps {
+  dispatch: Function;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
+  images: TaggedImage[];
+  currentImage: TaggedImage | undefined;
+  botToMqttStatus: NetworkState;
+  timeSettings: TimeSettings;
+  syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }

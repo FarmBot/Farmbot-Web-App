@@ -1,4 +1,4 @@
-import { DEFAULT_FORMATTER } from "../constants";
+import { DEFAULT_FORMATTER, namespace } from "../constants";
 
 describe("DEFAULT_FORMATTER", () => {
   it("crashes on bad inputs", () => {
@@ -26,5 +26,17 @@ describe("DEFAULT_FORMATTER", () => {
   it("formats outputs", () => {
     const result = DEFAULT_FORMATTER.format("CAMERA_CALIBRATION_coord_scale", 12);
     expect(result).toEqual(12);
+  });
+});
+
+describe("namespace()", () => {
+  it("returns namespaced key", () => {
+    expect(namespace("CAMERA_CALIBRATION_")("H_LO"))
+      .toEqual("CAMERA_CALIBRATION_H_LO");
+  });
+
+  it("throws error", () => {
+    expect(() => namespace("CAMERA_CALIBRATION_")("key"))
+      .toThrowError("CAMERA_CALIBRATION_key is not a valid key.");
   });
 });

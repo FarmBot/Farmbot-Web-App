@@ -634,6 +634,16 @@
   }
 }
 
+.farmbot-layer-submenu {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .fb-toggle-button {
+    margin-left: 1rem;
+  }
+}
+
 .farmbot-origin {
   margin: auto;
   width: 120px;
@@ -733,6 +743,9 @@
   button {
     margin: auto;
   }
+  .fb-toggle-button {
+    margin-left: 1rem;
+  }
 }
 
 .image-filter-menu {
@@ -751,5 +764,20 @@
   }
   input {
     background: $white;
+  }
+}
+
+.image-options {
+  .non-layer-config-toggle {
+    width: 80%;
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .fb-toggle-button {
+    margin-left: 1rem;
   }
 }

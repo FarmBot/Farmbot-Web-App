@@ -10,16 +10,21 @@ jest.mock("../../zoom", () => ({
   atMinZoom: () => mockAtMin,
 }));
 
+jest.mock("../../../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(),
+}));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  GardenMapLegend, ZoomControls, PointsSubMenu,
+  GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
 import {
   fakeTimeSettings,
 } from "../../../../__test_support__/fake_time_settings";
+import { setWebAppConfigValue } from "../../../../config_storage/actions";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -50,7 +55,7 @@ describe("<GardenMapLegend />", () => {
     expect(wrapper.html()).toContain("extras");
   });
 
-  it("renders", () => {
+  it("renders with readings", () => {
     const p = fakeProps();
     p.hasSensorReadings = true;
     const wrapper = mount(<GardenMapLegend {...p} />);
@@ -87,13 +92,26 @@ describe("<ZoomControls />", () => {
 
 describe("<PointsSubMenu />", () => {
   it("shows historic points", () => {
-    const toggle = jest.fn();
-    const wrapper = shallow(<PointsSubMenu
-      toggle={toggle}
+    const wrapper = mount(<PointsSubMenu
+      dispatch={jest.fn()}
       getConfigValue={() => true} />);
-    const toggleBtn = wrapper.find("LayerToggle");
-    expect(toggleBtn.props().value).toEqual(true);
+    const toggleBtn = wrapper.find("button");
+    expect(toggleBtn.text()).toEqual("yes");
     toggleBtn.simulate("click");
-    expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_historic_points);
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.show_historic_points, false);
+  });
+});
+
+describe("<FarmbotSubMenu />", () => {
+  it("shows farmbot settings", () => {
+    const wrapper = mount(<FarmbotSubMenu
+      dispatch={jest.fn()}
+      getConfigValue={() => true} />);
+    const toggleBtn = wrapper.find("button");
+    expect(toggleBtn.text()).toEqual("yes");
+    toggleBtn.simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.show_camera_view_area, false);
   });
 });

@@ -40,8 +40,25 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       p.body.name.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
   }
 
+  PendingWeeds = () => {
+    const removed = this.weeds.filter(p => p.body.plant_stage === "pending");
+    return <div className={"pending-weeds"}>
+      <div className={"pending-weeds-header"}>
+        <label>{t("Pending")}</label>
+      </div>
+      {removed.length == 0 &&
+        <p className={"no-weeds"}>{t("No pending weeds.")}</p>}
+      {removed.map(p => <WeedInventoryItem
+        key={p.uuid}
+        tpp={p}
+        hovered={this.props.hoveredPoint === p.uuid}
+        dispatch={this.props.dispatch} />)}
+    </div>;
+  };
+
   ActiveWeeds = () => {
-    const active = this.weeds.filter(p => p.body.plant_stage !== "removed");
+    const active = this.weeds.filter(p =>
+      !["removed", "pending"].includes(p.body.plant_stage));
     return <div className={"active-weeds"}>
       <div className={"active-weeds-header"}>
         <label>{t("Active")}</label>
@@ -92,6 +109,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           title={t("No weeds yet.")}
           text={Content.NO_WEEDS}
           colorScheme={"weeds"}>
+          <this.PendingWeeds />
           <this.ActiveWeeds />
           <this.RemovedWeeds />
         </EmptyStateWrapper>

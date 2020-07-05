@@ -3,9 +3,8 @@ import {
   selectAllImages, maybeGetDevice, maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
-  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState,
+  Feature, UserEnv, ShouldDisplay, BotState,
 } from "../devices/interfaces";
-import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../resources/selectors_by_kind";
@@ -18,7 +17,9 @@ import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, JobProgress, TaggedImage } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { chain } from "lodash";
-import { FarmwareManifestInfo, Farmwares } from "./interfaces";
+import {
+  FarmwareManifestInfo, Farmwares, SaveFarmwareEnv, FarmwareProps,
+} from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
 import { getStatus } from "../connectivity/reducer_support";
@@ -150,7 +151,6 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentFarmware,
     farmwares,
     botToMqttStatus,
-    wDEnv: prepopulateEnv(env),
     env,
     dispatch: props.dispatch,
     currentImage,

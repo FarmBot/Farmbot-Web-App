@@ -1,16 +1,20 @@
 import * as React from "react";
 import { Row, Col } from "../../ui/index";
 import { CameraCalibrationProps } from "./interfaces";
-import { ImageWorkspace } from "../weed_detector/image_workspace";
+import {
+  ImageWorkspace, NumericKeyName,
+} from "../weed_detector/image_workspace";
 import { envSave } from "../weed_detector/remote_env/actions";
 import { WDENVKey } from "../weed_detector/remote_env/interfaces";
 import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
 import { envGet } from "../weed_detector/remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
-import { WeedDetectorConfig, BoolConfig } from "../weed_detector/config";
+import { CameraCalibrationConfig, BoolConfig } from "./config";
 import { Feature } from "../../devices/interfaces";
-import { namespace } from "../weed_detector";
+import {
+  namespace, CAMERA_CALIBRATION_KEY_PART,
+} from "../weed_detector/remote_env/constants";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../weed_detector/remote_env/translators";
 import {
@@ -22,11 +26,12 @@ import { Content } from "../../constants";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
-  change = (key: string, value: number) => {
+
+  change = (key: NumericKeyName, value: number) => {
     this.saveEnvVar(this.namespace(key), value);
   }
 
-  namespace = namespace("CAMERA_CALIBRATION_");
+  namespace = namespace<CAMERA_CALIBRATION_KEY_PART>("CAMERA_CALIBRATION_");
 
   saveEnvVar = (key: WDENVKey, value: number) =>
     this.props.shouldDisplay(Feature.api_farmware_env)
@@ -36,8 +41,12 @@ export class CameraCalibration extends
 
   onFlip = (uuid: UUID) => this.props.dispatch(selectImage(uuid));
 
+  wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
+
   render() {
+    const { wdEnvGet } = this;
     const camDisabled = cameraBtnProps(this.props.env);
+    const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
     return <div className="camera-calibration">
       <div className="farmware-button">
         <MustBeOnline
@@ -55,17 +64,17 @@ export class CameraCalibration extends
       </div>
       <Row>
         <Col sm={12}>
-          {DevSettings.futureFeaturesEnabled() &&
+          {(DevSettings.futureFeaturesEnabled() || easyCalibration) &&
             <div className={"simple-camera-calibration-checkbox"}>
               <BoolConfig
-                wDEnv={this.props.wDEnv}
+                wdEnvGet={wdEnvGet}
                 configKey={this.namespace("easy_calibration")}
                 label={t("Simpler")}
                 onChange={this.saveEnvVar} />
-              {!!envGet(this.namespace("easy_calibration"), this.props.wDEnv) &&
+              {easyCalibration &&
                 <p>{t(Content.CAMERA_CALIBRATION)}</p>}
             </div>}
-          {!envGet(this.namespace("easy_calibration"), this.props.wDEnv) &&
+          {!easyCalibration &&
             <ImageWorkspace
               botOnline={
                 isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
@@ -84,10 +93,9 @@ export class CameraCalibration extends
               H_HI={this.props.H_HI}
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
-              environment={"camera_calibration"}
-              invertHue={!!envGet(this.namespace("invert_hue_selection"),
-                this.props.wDEnv)} />}
-          <WeedDetectorConfig
+              namespace={this.namespace}
+              invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
+          <CameraCalibrationConfig
             values={this.props.wDEnv}
             calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
             onChange={this.saveEnvVar} />
