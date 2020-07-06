@@ -1,7 +1,24 @@
 class Rack::Attack
+  THROTTLE_WARNING = <<~HEREDOC
+    IP Temporarily Throttled
+
+    Your IP address has been throttled due to a high number
+    of server requests from your web app account or device.
+
+    In most cases, your IP address will be unthrottled after
+    a few minutes. If the problem continues, you may request
+    support on the FarmBot forum. Please ensure you are on
+    the latest version of FBOS before requesting support.
+
+    Common causes: Syncing a device too often, performing too
+    many password resets, writing scripts that download data
+    too often.
+  HEREDOC
+
   ### Throttle Spammy Clients ###
-  throttle("req/ip", limit: 300, period: 1.minutes) do |req|
-    req.ip unless req.path.first(9) == "/api/rmq/"
+  throttle("req/ip", limit: 1000, period: 1.minutes) do |req|
+    p = req.path.first(9)
+    req.ip unless p == "/api/rmq/"
   end
 
   # ### Stop people from overusing the sync object. ###
@@ -31,4 +48,8 @@ ActiveSupport::Notifications.subscribe("rack.attack") do |_n, _s, _f, _r, req|
   if %i[throttle blocklist].include?(req.env["rack.attack.match_type"])
     puts("BLOCKED BY RACK ATTACK: #{req.ip} => #{req.url}")
   end
+end
+
+Rack::Attack.throttled_response = lambda do |_req|
+  [429, {}, [Rack::Attack::THROTTLE_WARNING]]
 end
