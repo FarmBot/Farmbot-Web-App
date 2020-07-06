@@ -14,6 +14,7 @@ export interface ImageLayerProps {
   cameraCalibrationData: CameraCalibrationData;
   imageFilterBegin: string;
   imageFilterEnd: string;
+  cropImages: boolean;
 }
 
 export class ImageLayer extends React.Component<ImageLayerProps> {
@@ -38,6 +39,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
             <MapImage
               image={img}
               key={"image_" + img.body.id}
+              cropImage={this.props.cropImages}
               cameraCalibrationData={cameraCalibrationData}
               mapTransformProps={mapTransformProps} />)}
     </g>;

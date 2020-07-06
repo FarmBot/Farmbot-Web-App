@@ -4,13 +4,13 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
 import { Panel } from "../panel_header";
-import { ShouldDisplay, SaveFarmwareEnv, UserEnv } from "../../devices/interfaces";
+import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
 import { selectAllFarmwareInstallations } from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
   getShouldDisplayFn, saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
 } from "../../farmware/state_to_props";
-import { Farmwares } from "../../farmware/interfaces";
+import { Farmwares, SaveFarmwareEnv } from "../../farmware/interfaces";
 import { SyncStatus, TaggedFarmwareInstallation } from "farmbot";
 import { getStatus } from "../../connectivity/reducer_support";
 import { t } from "../../i18next_wrapper";

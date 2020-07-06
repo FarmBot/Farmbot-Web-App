@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips, DeviceSetting } from "../../../constants";
+import { ToolTips, DeviceSetting, Content } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { EncodersOrStallDetectionProps } from "../interfaces";
 import { Header } from "./header";
@@ -11,6 +11,7 @@ import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
 
+// tslint:disable-next-line:cyclomatic-complexity
 export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
 
   const { encoders_or_stall_detection } = props.controlPanelState;
@@ -33,6 +34,12 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
       panel={"encoders_or_stall_detection"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders_or_stall_detection}>
+      {!showEncoders && !props.shouldDisplay(Feature.express_stall_detection) &&
+        <Highlight settingName={DeviceSetting.stallDetectionNote}>
+          <div className="stall-detection-note">
+            <p>{t(Content.STALL_DETECTION_NOTE)}</p>
+          </div>
+        </Highlight>}
       <SpacePanelHeader />
       <BooleanMCUInputGroup
         label={encoderSettingName(showEncoders)}
@@ -85,7 +92,9 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
-        label={DeviceSetting.maxMissedSteps}
+        label={!showEncoders
+          ? DeviceSetting.motorLoad
+          : DeviceSetting.maxMissedSteps}
         tooltip={!showEncoders
           ? ToolTips.MAX_MISSED_STEPS_STALL_DETECTION
           : ToolTips.MAX_MISSED_STEPS_ENCODERS}
@@ -98,8 +107,12 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        label={DeviceSetting.missedStepDecay}
-        tooltip={ToolTips.MISSED_STEP_DECAY}
+        label={!showEncoders
+          ? DeviceSetting.gracePeriod
+          : DeviceSetting.missedStepDecay}
+        tooltip={!showEncoders
+          ? ToolTips.MISSED_STEP_DECAY_STALL_DETECTION
+          : ToolTips.MISSED_STEP_DECAY_ENCODERS}
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}

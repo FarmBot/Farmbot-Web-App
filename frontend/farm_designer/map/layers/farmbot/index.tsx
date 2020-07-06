@@ -14,6 +14,8 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const displayMissedSteps =
     !!getConfigValue(BooleanSetting.display_map_missed_steps);
   const encoderFigure = !!getConfigValue(BooleanSetting.encoder_figure);
+  const cameraViewArea = !!getConfigValue(BooleanSetting.show_camera_view_area);
+  const cropPhotos = !!getConfigValue(BooleanSetting.crop_images);
 
   return <g id="virtual-farmbot">
     <NegativePositionLabel
@@ -31,6 +33,9 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
       mountedToolInfo={props.mountedToolInfo}
+      cameraCalibrationData={props.cameraCalibrationData}
+      cameraViewArea={cameraViewArea}
+      cropPhotos={cropPhotos}
       eStopStatus={eStopStatus} />
     {encoderFigure &&
       <BotFigure figureName={"encoder-position"}

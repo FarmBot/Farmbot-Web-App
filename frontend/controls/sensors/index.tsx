@@ -6,8 +6,7 @@ import {
   Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
   EmptyStateGraphic,
 } from "../../ui/index";
-import { SensorsProps } from "../../devices/interfaces";
-import { SensorState } from "./interfaces";
+import { SensorsProps, SensorState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips, Content } from "../../constants";

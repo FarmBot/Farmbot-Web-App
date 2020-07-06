@@ -7,14 +7,15 @@ import {
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import {
+  fakeCameraCalibrationData,
+} from "../../../../../__test_support__/fake_camera_data";
 
 const mockConfig = fakeWebAppConfig();
-jest.mock("../../../../../resources/selectors", () => {
-  return {
-    getWebAppConfig: () => mockConfig,
-    assertUuid: jest.fn()
-  };
-});
+jest.mock("../../../../../resources/selectors", () => ({
+  getWebAppConfig: () => mockConfig,
+  assertUuid: jest.fn()
+}));
 
 describe("<ImageLayer/>", () => {
   function fakeProps(): ImageLayerProps {
@@ -25,15 +26,10 @@ describe("<ImageLayer/>", () => {
       visible: true,
       images: [image],
       mapTransformProps: fakeMapTransformProps(),
-      cameraCalibrationData: {
-        offset: { x: undefined, y: undefined },
-        origin: undefined,
-        rotation: undefined,
-        scale: undefined,
-        calibrationZ: undefined,
-      },
+      cameraCalibrationData: fakeCameraCalibrationData(),
       imageFilterBegin: "",
       imageFilterEnd: "",
+      cropImages: false,
     };
   }
 

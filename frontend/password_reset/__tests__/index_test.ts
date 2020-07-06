@@ -1,12 +1,7 @@
 const mockFn = jest.fn();
-
-jest.mock("../../i18n", () => {
-  return { detectLanguage: jest.fn(() => Promise.resolve(mockFn)) };
-});
-
-jest.mock("i18next", () => {
-  return { init: jest.fn() };
-});
+jest.mock("../../i18n", () => ({
+  detectLanguage: jest.fn(() => Promise.resolve(mockFn)),
+}));
 
 import { detectLanguage } from "../../i18n";
 import I from "i18next";

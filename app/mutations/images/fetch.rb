@@ -1,6 +1,5 @@
 module Images
-  class Fetch  < Mutations::Command
-
+  class Fetch < Mutations::Command
     required do
       model :device, class: Device
     end

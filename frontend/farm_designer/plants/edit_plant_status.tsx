@@ -15,6 +15,7 @@ export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   harvested: { label: t("Harvested"), value: "harvested" },
   active: { label: t("Active"), value: "active" },
   removed: { label: t("Removed"), value: "removed" },
+  pending: { label: t("Pending"), value: "pending" },
 });
 export const PLANT_STAGE_LIST = () => [
   PLANT_STAGE_DDI_LOOKUP().planned,
@@ -22,6 +23,7 @@ export const PLANT_STAGE_LIST = () => [
   PLANT_STAGE_DDI_LOOKUP().sprouted,
   PLANT_STAGE_DDI_LOOKUP().harvested,
   PLANT_STAGE_DDI_LOOKUP().removed,
+  PLANT_STAGE_DDI_LOOKUP().pending,
 ];
 
 export const ALL_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
@@ -31,6 +33,7 @@ export const ALL_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
   harvested: PLANT_STAGE_DDI_LOOKUP().harvested,
   active: PLANT_STAGE_DDI_LOOKUP().active,
   removed: PLANT_STAGE_DDI_LOOKUP().removed,
+  pending: PLANT_STAGE_DDI_LOOKUP().pending,
 });
 export const ALL_STAGE_LIST = () => [
   PLANT_STAGE_DDI_LOOKUP().planned,
@@ -39,6 +42,7 @@ export const ALL_STAGE_LIST = () => [
   PLANT_STAGE_DDI_LOOKUP().harvested,
   PLANT_STAGE_DDI_LOOKUP().active,
   PLANT_STAGE_DDI_LOOKUP().removed,
+  PLANT_STAGE_DDI_LOOKUP().pending,
 ];
 
 export const WEED_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
@@ -48,8 +52,10 @@ export const WEED_STAGE_DDI_LOOKUP = (): Record<string, DropDownItem> => ({
   harvested: PLANT_STAGE_DDI_LOOKUP().harvested,
   active: PLANT_STAGE_DDI_LOOKUP().active,
   removed: PLANT_STAGE_DDI_LOOKUP().removed,
+  pending: PLANT_STAGE_DDI_LOOKUP().pending,
 });
 export const WEED_STAGE_LIST = () => [
+  WEED_STAGE_DDI_LOOKUP().pending,
   WEED_STAGE_DDI_LOOKUP().active,
   WEED_STAGE_DDI_LOOKUP().removed,
 ];

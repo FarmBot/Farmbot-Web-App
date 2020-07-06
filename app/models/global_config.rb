@@ -13,6 +13,7 @@ class GlobalConfig < ApplicationRecord
     "MINIMUM_FBOS_VERSION" => "6.3.0",
     "TOS_URL" => ENV.fetch("TOS_URL", ""),
     "PRIV_URL" => ENV.fetch("PRIV_URL", ""),
+    "APPSIGNAL_TOKEN" => ENV.fetch("APPSIGNAL_TOKEN", ""),
   }.map do |(key, value)|
     x = self.find_by(key: key)
     self.create!(key: key, value: value) unless x

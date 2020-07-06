@@ -73,7 +73,7 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
   "as input. Please change your selection to a single" \
   " location."
-  PLANT_STAGES = %w(planned planted harvested sprouted active removed)
+  PLANT_STAGES = %w(planned planted harvested sprouted active removed pending)
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
   MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes

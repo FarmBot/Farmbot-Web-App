@@ -2,11 +2,9 @@ import * as React from "react";
 import { Col, BlurableInput } from "../ui/index";
 import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
-import {
-  ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv,
-} from "../devices/interfaces";
+import { ShouldDisplay, Feature, UserEnv } from "../devices/interfaces";
 import { kebabCase, toString, snakeCase } from "lodash";
-import { FarmwareManifestInfo } from "./interfaces";
+import { FarmwareManifestInfo, SaveFarmwareEnv } from "./interfaces";
 import { t } from "../i18next_wrapper";
 
 export interface FarmwareFormProps {

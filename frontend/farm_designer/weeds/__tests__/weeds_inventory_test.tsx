@@ -20,6 +20,15 @@ describe("<Weeds> />", () => {
     expect(wrapper.text()).toContain("No weeds yet.");
   });
 
+  it("renders pending weeds", () => {
+    const p = fakeProps();
+    const weed = fakeWeed();
+    weed.body.plant_stage = "pending";
+    p.weeds = [weed];
+    const wrapper = mount(<Weeds {...p} />);
+    expect(wrapper.text()).not.toContain("No pending weeds.");
+  });
+
   it("renders no active weeds", () => {
     const p = fakeProps();
     const weed = fakeWeed();

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { DeviceSetting } from "../../../constants";
+import { Help } from "../../../ui";
 
 export interface LayerToggleProps {
   label: DeviceSetting;
@@ -9,6 +10,7 @@ export interface LayerToggleProps {
   onClick(): void;
   popover?: JSX.Element | undefined;
   submenuTitle?: string;
+  helpText?: string;
 }
 
 /** A flipper type switch for showing/hiding the layers of the garden map. */
@@ -30,6 +32,7 @@ export function LayerToggle(props: LayerToggleProps) {
           </Popover>}
       </span>
     </label>
+    {props.helpText && <Help text={props.helpText} />}
     <button className={classNames} onClick={onClick}
       title={`${value ? t("hide") : t("show")} ${t(label.replace("?", ""))}`} />
   </fieldset>;

@@ -1,5 +1,6 @@
-import { TaggedSensor } from "farmbot";
+import { TaggedSensor, FirmwareHardware } from "farmbot";
 import { Pins } from "farmbot/dist";
+import { BotState } from "../../devices/interfaces";
 
 export interface SensorState {
   isEditing: boolean;
@@ -15,4 +16,12 @@ export interface SensorListProps {
   sensors: TaggedSensor[];
   pins: Pins;
   disabled: boolean | undefined;
+}
+
+export interface SensorsProps {
+  bot: BotState;
+  sensors: TaggedSensor[];
+  dispatch: Function;
+  disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }

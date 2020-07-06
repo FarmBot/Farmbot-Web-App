@@ -113,6 +113,14 @@
       margin-right: 1rem;
     }
   }
+  .image-workspace {
+    .fb-button.green {
+      margin-top: 1rem;
+    }
+    .bp3-slider {
+      width: 95%;
+    }
+  }
   p {
     margin: 1.5rem;
     font-size: 1.2rem;
@@ -121,6 +129,9 @@
   .bp3-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
   }
   .filter-search {
     margin-left: -5px;
@@ -128,6 +139,35 @@
     .bp3-popover-wrapper {
       display: inline;
       margin-left: 0;
+    }
+  }
+  .camera-calibration-config {
+    label {
+      display: inline;
+    }
+    .input {
+      margin-top: 0.5rem;
+    }
+    .boolean-camera-calibration-config {
+      input[type=checkbox] {
+        display: block;
+      }
+    }
+    .camera-config-number-box {
+      margin-top: 1rem;
+    }
+    .dropdown-camera-calibration-config {
+      margin-top: 2rem;
+      margin-left: 1.5rem;
+      margin-right: 1.5rem;
+    }
+    .config-results {
+      min-height: 8rem;
+      .camera-config-number-box {
+        position: absolute;
+        bottom: 0;
+        width: 85%;
+      }
     }
   }
 }

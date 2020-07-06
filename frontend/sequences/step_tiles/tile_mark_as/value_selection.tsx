@@ -73,8 +73,8 @@ const valuesList = (
           { toolName: string | undefined, toolId: number }) =>
           ({ label: toolName || t("Untitled tool"), value: toolId })),
     ];
-    case "GenericPointer": return [DDI.ACTIVE, DDI.REMOVED];
-    case "Weed": return [DDI.ACTIVE, DDI.REMOVED];
+    case "GenericPointer": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];
+    case "Weed": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];
     case "Plant": return PLANT_STAGE_LIST();
     default: return ALL_STAGE_LIST();
   }

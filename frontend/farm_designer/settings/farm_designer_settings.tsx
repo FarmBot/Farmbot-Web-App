@@ -73,46 +73,56 @@ const DESIGNER_SETTINGS =
   (settingsProps: DesignerSettingsPropsBase): SettingDescriptionProps[] => ([
     {
       title: DeviceSetting.animations,
-      description: t(Content.PLANT_ANIMATIONS),
+      description: Content.PLANT_ANIMATIONS,
       setting: BooleanSetting.disable_animations,
       invert: true
     },
     {
       title: DeviceSetting.trail,
-      description: t(Content.VIRTUAL_TRAIL),
+      description: Content.VIRTUAL_TRAIL,
       setting: BooleanSetting.display_trail,
       callback: resetVirtualTrail,
     },
     {
       title: DeviceSetting.mapMissedSteps,
-      description: t(Content.MAP_MISSED_STEPS),
+      description: Content.MAP_MISSED_STEPS,
       setting: BooleanSetting.display_map_missed_steps,
       disabled: !settingsProps.getConfigValue(BooleanSetting.display_trail),
     },
     {
       title: DeviceSetting.dynamicMap,
-      description: t(Content.DYNAMIC_MAP_SIZE),
+      description: Content.DYNAMIC_MAP_SIZE,
       setting: BooleanSetting.dynamic_map,
     },
     {
       title: DeviceSetting.mapSize,
-      description: t(Content.MAP_SIZE),
+      description: Content.MAP_SIZE,
       children: <MapSizeInputs {...settingsProps} />,
       disabled: !!settingsProps.getConfigValue(BooleanSetting.dynamic_map),
     },
     {
       title: DeviceSetting.rotateMap,
-      description: t(Content.MAP_SWAP_XY),
+      description: Content.MAP_SWAP_XY,
       setting: BooleanSetting.xy_swap,
     },
     {
       title: DeviceSetting.mapOrigin,
-      description: t(Content.MAP_ORIGIN),
+      description: Content.MAP_ORIGIN,
       children: <OriginSelector {...settingsProps} />
     },
     {
+      title: DeviceSetting.cropMapImages,
+      description: Content.CROP_MAP_IMAGES,
+      setting: BooleanSetting.crop_images,
+    },
+    {
+      title: DeviceSetting.showCameraViewAreaInMap,
+      description: Content.SHOW_CAMERA_VIEW_AREA,
+      setting: BooleanSetting.show_camera_view_area,
+    },
+    {
       title: DeviceSetting.confirmPlantDeletion,
-      description: t(Content.CONFIRM_PLANT_DELETION),
+      description: Content.CONFIRM_PLANT_DELETION,
       setting: BooleanSetting.confirm_plant_deletion,
       defaultOn: true,
     },

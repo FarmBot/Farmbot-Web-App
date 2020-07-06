@@ -1,13 +1,14 @@
 import * as React from "react";
-import { DetectorState } from "./interfaces";
+import { DetectorState, WeedDetectorProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
-import { WeedDetectorProps, Feature } from "../../devices/interfaces";
-import { ImageWorkspace } from "./image_workspace";
-import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
+import { Feature } from "../../devices/interfaces";
+import { ImageWorkspace, NumericKeyName } from "./image_workspace";
+import { WDENVKey } from "./remote_env/interfaces";
+import { namespace, WEED_DETECTOR_KEY_PART } from "./remote_env/constants";
 import { envGet } from "./remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { envSave } from "./remote_env/actions";
@@ -15,15 +16,6 @@ import { t } from "../../i18next_wrapper";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
-
-export const namespace = (prefix: string) => (key: string): WDENVKey => {
-  const namespacedKey = prefix + key;
-  if (isWDENVKey(namespacedKey)) {
-    return namespacedKey;
-  } else {
-    throw new Error(`${namespacedKey} is not a WDENVKey`);
-  }
-};
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<DetectorState>> {
@@ -44,9 +36,9 @@ export class WeedDetector
     this.setState({ deletionProgress: t("Deleting...") });
   }
 
-  namespace = namespace("WEED_DETECTOR_");
+  namespace = namespace<WEED_DETECTOR_KEY_PART>("WEED_DETECTOR_");
 
-  change = (key: string, value: number) => {
+  change = (key: NumericKeyName, value: number) => {
     this.saveEnvVar(this.namespace(key), value);
   }
 
@@ -85,13 +77,13 @@ export class WeedDetector
           <ImageWorkspace
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-            onProcessPhoto={scanImage}
+            onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
             onFlip={uuid => this.props.dispatch(selectImage(uuid))}
             currentImage={this.props.currentImage}
             images={this.props.images}
             onChange={this.change}
             timeSettings={this.props.timeSettings}
-            environment={"weed_detection"}
+            namespace={this.namespace}
             iteration={wDEnvGet(this.namespace("iteration"))}
             morph={wDEnvGet(this.namespace("morph"))}
             blur={wDEnvGet(this.namespace("blur"))}

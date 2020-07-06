@@ -2,7 +2,7 @@ import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import {
   SourceFwConfig, SourceFbosConfig, UserEnv, ShouldDisplay,
-  SaveFarmwareEnv, BotState, ControlPanelState,
+  BotState, ControlPanelState,
 } from "../../devices/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import { TaggedDevice, Alert } from "farmbot";
@@ -11,6 +11,7 @@ import { DeviceSetting } from "../../constants";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
+import { SaveFarmwareEnv } from "../../farmware/interfaces";
 
 export interface DesignerSettingsPropsBase {
   dispatch: Function;

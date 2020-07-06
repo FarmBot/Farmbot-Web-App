@@ -1,5 +1,6 @@
-import { TaggedPeripheral } from "farmbot";
+import { TaggedPeripheral, FirmwareHardware } from "farmbot";
 import { Pins } from "farmbot/dist";
+import { BotState } from "../../devices/interfaces";
 
 export interface PeripheralState {
   isEditing: boolean;
@@ -15,4 +16,12 @@ export interface PeripheralListProps {
   peripherals: TaggedPeripheral[];
   pins: Pins;
   disabled: boolean | undefined;
+}
+
+export interface PeripheralsProps {
+  bot: BotState;
+  peripherals: TaggedPeripheral[];
+  dispatch: Function;
+  disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }

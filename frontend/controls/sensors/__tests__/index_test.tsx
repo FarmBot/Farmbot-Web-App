@@ -2,7 +2,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { Sensors } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { SensorsProps } from "../../../devices/interfaces";
+import { SensorsProps } from "../interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "farmbot";

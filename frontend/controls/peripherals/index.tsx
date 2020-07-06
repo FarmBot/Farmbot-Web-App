@@ -6,8 +6,7 @@ import {
   Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
   EmptyStateGraphic,
 } from "../../ui/index";
-import { PeripheralsProps } from "../../devices/interfaces";
-import { PeripheralState } from "./interfaces";
+import { PeripheralsProps, PeripheralState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips, Content } from "../../constants";

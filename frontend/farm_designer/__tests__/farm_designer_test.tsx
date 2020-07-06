@@ -30,6 +30,9 @@ import { BooleanSetting } from "../../session_keys";
 import { GardenMapLegend } from "../map/legend/garden_map_legend";
 import { GardenMap } from "../map/garden_map";
 import { fakeMountedToolInfo } from "../../__test_support__/fake_tool_info";
+import {
+  fakeCameraCalibrationData,
+} from "../../__test_support__/fake_camera_data";
 
 describe("<FarmDesigner/>", () => {
   const fakeProps = (): Props => ({
@@ -56,12 +59,7 @@ describe("<FarmDesigner/>", () => {
     peripherals: [],
     eStopStatus: false,
     latestImages: [],
-    cameraCalibrationData: {
-      scale: undefined, rotation: undefined,
-      offset: { x: undefined, y: undefined },
-      origin: undefined,
-      calibrationZ: undefined
-    },
+    cameraCalibrationData: fakeCameraCalibrationData(),
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     sensorReadings: [],

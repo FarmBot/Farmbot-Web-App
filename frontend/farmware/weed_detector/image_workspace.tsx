@@ -8,6 +8,10 @@ import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { ToolTips } from "../../constants";
+import { WDENVKey } from "./remote_env/interfaces";
+import {
+  CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS,
+} from "./remote_env/constants";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -31,7 +35,7 @@ export interface NumericValues {
   V_HI: number;
 }
 
-type NumericKeyName = keyof NumericValues;
+export type NumericKeyName = keyof NumericValues;
 
 export interface ImageWorkspaceProps extends NumericValues {
   onFlip(uuid: string | undefined): void;
@@ -42,7 +46,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   invertHue?: boolean;
   botOnline: boolean;
   timeSettings: TimeSettings;
-  environment: "camera_calibration" | "weed_detection";
+  namespace(key: CAMERA_CALIBRATION_KEY_PART): WDENVKey;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -78,19 +82,24 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
       });
     };
 
+  getDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
+    WD_KEY_DEFAULTS[this.props.namespace(key)];
+
   render() {
     const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
-
-    return <div className="widget-content">
+    const cameraCalibrationEnv = this.props.namespace("H_LO").includes("CAMERA");
+    return <div className="image-workspace">
       <Row>
         <Col xs={12} md={6}>
           <h4>
             <i>{t("Color Range")}</i>
           </h4>
           <label htmlFor="hue">{t("HUE")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_HUE
-            : ToolTips.DETECTION_HUE} />
+          <Help text={t(ToolTips.COLOR_HUE_RANGE, {
+            defaultLow: this.getDefault(cameraCalibrationEnv ? "H_HI" : "H_LO"),
+            defaultHigh: this.getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI"),
+            defaultColor: cameraCalibrationEnv ? t("red") : t("green"),
+          })} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("H")}
             lowest={RANGES.H.LOWEST}
@@ -98,9 +107,10 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             lowValue={Math.min(H_LO, H_HI)}
             highValue={Math.max(H_LO, H_HI)} />
           <label htmlFor="saturation">{t("SATURATION")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_SATURATION
-            : ToolTips.DETECTION_SATURATION} />
+          <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
+            defaultLow: this.getDefault("S_LO"),
+            defaultHigh: this.getDefault("S_HI"),
+          })} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("S")}
             lowest={RANGES.S.LOWEST}
@@ -108,9 +118,10 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             lowValue={S_LO}
             highValue={S_HI} />
           <label htmlFor="value">{t("VALUE")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_COLOR_VALUE
-            : ToolTips.DETECTION_COLOR_VALUE} />
+          <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
+            defaultLow: this.getDefault("V_LO"),
+            defaultHigh: this.getDefault("V_HI"),
+          })} />
           <WeedDetectorSlider
             onRelease={this.onHslChange("V")}
             lowest={RANGES.V.LOWEST}
@@ -134,9 +145,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         </Col>
         <Col xs={4}>
           <label>{t("BLUR")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_BLUR
-            : ToolTips.DETECTION_BLUR} />
+          <Help text={t(ToolTips.BLUR, {
+            defaultValue: this.getDefault("blur")
+          })} />
           <BlurableInput type="number"
             min={RANGES.BLUR.LOWEST}
             max={RANGES.BLUR.HIGHEST}
@@ -145,9 +156,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         </Col>
         <Col xs={4}>
           <label>{t("MORPH")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_MORPH
-            : ToolTips.DETECTION_MORPH} />
+          <Help text={t(ToolTips.MORPH, {
+            defaultValue: this.getDefault("morph")
+          })} />
           <BlurableInput type="number"
             min={RANGES.MORPH.LOWEST}
             max={RANGES.MORPH.HIGHEST}
@@ -156,9 +167,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         </Col>
         <Col xs={4}>
           <label>{t("ITERATIONS")}</label>
-          <Help text={this.props.environment == "camera_calibration"
-            ? ToolTips.CALIBRATION_ITERATIONS
-            : ToolTips.DETECTION_ITERATIONS} />
+          <Help text={t(ToolTips.ITERATIONS, {
+            defaultValue: this.getDefault("iteration")
+          })} />
           <BlurableInput type="number"
             min={RANGES.ITERATION.LOWEST}
             max={RANGES.ITERATION.HIGHEST}

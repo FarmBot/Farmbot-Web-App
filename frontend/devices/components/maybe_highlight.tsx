@@ -61,13 +61,16 @@ const MOTORS_PANEL = [
 const ENCODERS_PANEL = [
   DeviceSetting.encoders,
   DeviceSetting.stallDetection,
+  DeviceSetting.stallDetectionNote,
   DeviceSetting.enableEncoders,
   DeviceSetting.enableStallDetection,
   DeviceSetting.stallSensitivity,
   DeviceSetting.useEncodersForPositioning,
   DeviceSetting.invertEncoders,
   DeviceSetting.maxMissedSteps,
+  DeviceSetting.motorLoad,
   DeviceSetting.missedStepDecay,
+  DeviceSetting.gracePeriod,
   DeviceSetting.encoderScaling,
 ];
 const LIMIT_SWITCHES_PANEL = [
@@ -228,6 +231,10 @@ ALTERNATE_NAMES[DeviceSetting.enableEncoders]
   .push(DeviceSetting.enableStallDetection);
 ALTERNATE_NAMES[DeviceSetting.enableStallDetection]
   .push(DeviceSetting.enableEncoders);
+ALTERNATE_NAMES[DeviceSetting.missedStepDecay].push(DeviceSetting.gracePeriod);
+ALTERNATE_NAMES[DeviceSetting.gracePeriod].push(DeviceSetting.missedStepDecay);
+ALTERNATE_NAMES[DeviceSetting.motorLoad].push(DeviceSetting.maxMissedSteps);
+ALTERNATE_NAMES[DeviceSetting.maxMissedSteps].push(DeviceSetting.motorLoad);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>

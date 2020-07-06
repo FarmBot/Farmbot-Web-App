@@ -1,47 +1,15 @@
-import { AuthState } from "../auth/interfaces";
 import {
   BotStateTree, ConfigurationName,
   McuParamName, SyncStatus,
-  TaggedImage,
-  TaggedPeripheral,
   TaggedDevice,
-  TaggedSensor,
-  TaggedFarmwareInstallation,
-  JobProgress,
-  FirmwareHardware,
   Alert,
   Xyz,
   LocationData,
 } from "farmbot";
-import { ResourceIndex } from "../resources/interfaces";
-import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
-import { ConnectionState, NetworkState } from "../connectivity/interfaces";
+import { ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
-import { Farmwares } from "../farmware/interfaces";
-import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
-import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
-
-export interface Props {
-  auth: AuthState | undefined;
-  bot: BotState;
-  deviceAccount: TaggedDevice;
-  images: TaggedImage[];
-  dispatch: Function;
-  resources: ResourceIndex;
-  sourceFbosConfig: SourceFbosConfig;
-  sourceFwConfig: SourceFwConfig;
-  shouldDisplay: ShouldDisplay;
-  firmwareConfig: FirmwareConfig | undefined;
-  env: UserEnv;
-  saveFarmwareEnv: SaveFarmwareEnv;
-  timeSettings: TimeSettings;
-  alerts: Alert[];
-}
-
-/** Function to save a Farmware env variable to the API. */
-export type SaveFarmwareEnv =
-  (key: string, value: string) => (dispatch: Function) => void;
+import { SaveFarmwareEnv } from "../farmware/interfaces";
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
 export type SourceFbosConfig = (config: ConfigurationName) =>
@@ -190,55 +158,6 @@ export interface McuInputBoxProps {
 export interface EStopButtonProps {
   bot: BotState;
   forceUnlock: boolean;
-}
-
-export interface PeripheralsProps {
-  bot: BotState;
-  peripherals: TaggedPeripheral[];
-  dispatch: Function;
-  disabled: boolean | undefined;
-  firmwareHardware: FirmwareHardware | undefined;
-}
-
-export interface SensorsProps {
-  bot: BotState;
-  sensors: TaggedSensor[];
-  dispatch: Function;
-  disabled: boolean | undefined;
-  firmwareHardware: FirmwareHardware | undefined;
-}
-
-export interface FarmwareProps {
-  dispatch: Function;
-  wDEnv: Partial<WD_ENV>;
-  env: UserEnv;
-  images: TaggedImage[];
-  currentImage: TaggedImage | undefined;
-  botToMqttStatus: NetworkState;
-  farmwares: Farmwares;
-  timeSettings: TimeSettings;
-  syncStatus: SyncStatus | undefined;
-  getConfigValue: GetWebAppConfigValue;
-  firstPartyFarmwareNames: string[];
-  currentFarmware: string | undefined;
-  shouldDisplay: ShouldDisplay;
-  saveFarmwareEnv: SaveFarmwareEnv;
-  taggedFarmwareInstallations: TaggedFarmwareInstallation[];
-  imageJobs: JobProgress[];
-  infoOpen: boolean;
-}
-
-export interface WeedDetectorProps {
-  dispatch: Function;
-  wDEnv: Partial<WD_ENV>;
-  env: UserEnv;
-  images: TaggedImage[];
-  currentImage: TaggedImage | undefined;
-  botToMqttStatus: NetworkState;
-  timeSettings: TimeSettings;
-  syncStatus: SyncStatus | undefined;
-  shouldDisplay: ShouldDisplay;
-  saveFarmwareEnv: SaveFarmwareEnv;
 }
 
 export interface ControlPanelState {

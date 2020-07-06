@@ -1,4 +1,3 @@
-jest.mock("i18next", () => ({ t: (i: string) => i }));
 jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import {

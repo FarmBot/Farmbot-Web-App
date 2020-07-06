@@ -10,10 +10,6 @@ jest.mock("../../i18n", () => ({
   detectLanguage: jest.fn(() => Promise.resolve({}))
 }));
 
-jest.mock("i18next", () => ({
-  init: jest.fn((_: {}, fn: Function) => fn())
-}));
-
 import { stopIE } from "../../util/stop_ie";
 import { attachToRoot } from "../../util";
 import { detectLanguage } from "../../i18n";

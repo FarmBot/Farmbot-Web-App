@@ -1,10 +1,9 @@
 import { TaggedImage, SyncStatus } from "farmbot";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
-import {
-  ShouldDisplay, SaveFarmwareEnv, UserEnv,
-} from "../../devices/interfaces";
+import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
 import { TimeSettings } from "../../interfaces";
+import { SaveFarmwareEnv } from "../interfaces";
 
 export interface CameraCalibrationProps {
   dispatch: Function;
@@ -26,4 +25,10 @@ export interface CameraCalibrationProps {
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
+}
+
+export interface CameraCalibrationConfigProps {
+  values: Partial<WD_ENV>;
+  onChange(key: keyof WD_ENV, value: number): void;
+  calibrationZ: string | undefined;
 }

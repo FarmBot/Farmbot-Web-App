@@ -1,6 +1,7 @@
 import { box } from "boxed_value";
 import { WDENVKey, Translation, FormatTranslationMap } from "./interfaces";
 import { snakeCase, get, isUndefined } from "lodash";
+import { NumericKeyName } from "../image_workspace";
 
 /** I would rather not deal with all the weird edge cases that come with
  * supporting strings and numbers right now. It adds too many edge cases for the
@@ -51,10 +52,39 @@ export const WD_KEY_DEFAULTS = {
   WEED_DETECTOR_V_LO: 50,
 };
 
+export type WEED_DETECTOR_KEY_PART =
+  | "blur" | "morph" | "iteration" | NumericKeyName;
+
+export type CAMERA_CALIBRATION_KEY_PART =
+  | WEED_DETECTOR_KEY_PART
+  | "calibration_along_axis"
+  | "image_bot_origin_location"
+  | "invert_hue_selection"
+  | "easy_calibration"
+  | "calibration_object_separation"
+  | "camera_offset_x"
+  | "camera_offset_y"
+  | "coord_scale"
+  | "total_rotation_angle";
+
 /** The runtime equivalent for WeedDetectorENVKey.
  *  Good for iterating and whatnot. */
 export const EVERY_WD_KEY: WDENVKey[] =
   Object.keys(WD_KEY_DEFAULTS).map((x: WDENVKey) => x);
+
+export const isWDENVKey = (key: unknown): key is WDENVKey =>
+  (EVERY_WD_KEY as string[]).includes("" + key);
+
+export const namespace = <T>(
+  prefix: "WEED_DETECTOR_" | "CAMERA_CALIBRATION_") =>
+  (key: T): WDENVKey => {
+    const namespacedKey = prefix + key;
+    if (isWDENVKey(namespacedKey)) {
+      return namespacedKey;
+    } else {
+      throw new Error(`${namespacedKey} is not a valid key.`);
+    }
+  };
 
 export const DEFAULT_FORMATTER: Translation = {
   format: (key, val): number | string => {
