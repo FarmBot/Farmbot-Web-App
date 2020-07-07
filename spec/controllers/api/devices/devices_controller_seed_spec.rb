@@ -65,12 +65,12 @@ describe Api::DevicesController do
       device.web_app_config.hide_sensors
     end
 
-    def settings_enable_encoders?(device)
+    def settings_change_firmware_config_defaults?(device)
       c = device.firmware_config
 
       return c.encoder_enabled_x != 0 &&
-               c.encoder_enabled_y != 0 &&
-               c.encoder_enabled_z != 0
+             c.encoder_enabled_y != 0 &&
+             c.encoder_enabled_z != 0
     end
 
     def settings_firmware?(device)
@@ -243,7 +243,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device)).to be_kind_of(Sensor)
       expect(sensors_tool_verification?(device)).to be_kind_of(Sensor)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -300,7 +300,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -357,7 +357,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -414,7 +414,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -473,7 +473,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -530,7 +530,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
-      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
@@ -589,7 +589,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express")
-      expect(settings_enable_encoders?(device)).to be(false)
+      expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
@@ -642,7 +642,7 @@ describe Api::DevicesController do
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express XL")
-      expect(settings_enable_encoders?(device)).to be(false)
+      expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")

@@ -11,6 +11,7 @@ describe("<CameraCalibrationConfig />", () => {
     values: {},
     onChange: jest.fn(),
     calibrationZ: undefined,
+    calibrationImageCenter: { x: undefined, y: undefined },
   });
 
   it("renders", () => {

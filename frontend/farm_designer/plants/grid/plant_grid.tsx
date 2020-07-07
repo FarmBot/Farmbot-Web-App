@@ -13,6 +13,7 @@ import { t } from "../../../i18next_wrapper";
 import { GridInput } from "./grid_input";
 import { DEFAULT_PLANT_RADIUS } from "../../plant";
 import { ToggleButton } from "../../../controls/toggle_button";
+import { Actions } from "../../../constants";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
@@ -20,6 +21,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     gridId: uuid(),
     status: "clean",
     offsetPacking: false,
+    cameraView: false,
   };
 
   get initGridState() {
@@ -58,6 +60,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   componentWillUnmount() {
     (this.state.status === "dirty") && this.confirmUnsaved();
+    this.props.dispatch(showCameraViewPoints(undefined));
   }
 
   performPreview = () => {
@@ -70,9 +73,11 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     const plants = initPlantGrid({
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,
-      cropName: this.props.cropName,
+      itemName: this.props.itemName,
       gridId: this.state.gridId,
       offsetPacking: this.state.offsetPacking,
+      color: this.props.color,
+      radius: this.props.radius,
     });
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
@@ -85,15 +90,19 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   saveGrid = () =>
     this.props.dispatch(saveGrid(this.state.gridId))
       .then(() => {
-        success(t("{{ count }} plants added.", { count: this.plantCount }));
+        success(t("{{ count }} {{ pointType }} added.", {
+          count: this.plantCount,
+          pointType: this.props.openfarm_slug ? t("plants") : t("points")
+        }));
         this.setState({
           grid: this.initGridState,
           gridId: uuid(),
           status: "clean",
         });
+        this.props.close?.();
       });
 
-  buttons = () => {
+  Buttons = () => {
     switch (this.state.status) {
       case "clean":
         return <div className={"preview-grid-button"}>
@@ -123,7 +132,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     return <div className={"grid-and-row-planting"}>
       <hr />
       <h3>
-        {t("Grid and Row Planting")}
+        {this.props.openfarm_slug ? t("Grid and Row Planting") : t("Grid")}
       </h3>
       <GridInput
         xy_swap={this.props.xy_swap}
@@ -133,16 +142,49 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         onChange={this.onChange}
         onUseCurrentPosition={this.onUseCurrentPosition}
         preview={this.performPreview} />
-      <label className="packing-method">{t("hexagonal packing")}</label>
-      <ToggleButton
-        toggleValue={this.state.offsetPacking}
-        toggleAction={() => {
-          this.setState({ offsetPacking: !this.state.offsetPacking },
-            this.performPreview);
-        }}
-        title={t("toggle packing method")}
-        customText={{ textFalse: t("off"), textTrue: t("on") }} />
-      {this.buttons()}
+      <HexPackingToggle value={this.state.offsetPacking}
+        toggle={() => this.setState({
+          offsetPacking: !this.state.offsetPacking
+        }, this.performPreview)} />
+      {!this.props.openfarm_slug &&
+        <ToggleCameraViewArea value={this.state.cameraView}
+          toggle={() => {
+            this.props.dispatch(showCameraViewPoints(
+              this.state.cameraView ? undefined : this.state.gridId));
+            this.setState({ cameraView: !this.state.cameraView },
+              this.performPreview);
+          }} />}
+      <this.Buttons />
     </div>;
   }
 }
+
+const showCameraViewPoints = (gridId: string | undefined) => ({
+  type: Actions.SHOW_CAMERA_VIEW_POINTS,
+  payload: gridId,
+});
+
+interface ToggleProps {
+  value: boolean;
+  toggle(): void;
+}
+
+const HexPackingToggle = (props: ToggleProps) =>
+  <div className={"grid-planting-toggle"}>
+    <label className="packing-method">{t("hexagonal packing")}</label>
+    <ToggleButton
+      toggleValue={props.value}
+      toggleAction={props.toggle}
+      title={t("toggle packing method")}
+      customText={{ textFalse: t("off"), textTrue: t("on") }} />
+  </div>;
+
+const ToggleCameraViewArea = (props: ToggleProps) =>
+  <div className={"grid-planting-toggle"}>
+    <label>{t("camera view area")}</label>
+    <ToggleButton
+      toggleValue={props.value}
+      toggleAction={props.toggle}
+      title={t("show camera view area")}
+      customText={{ textFalse: t("off"), textTrue: t("on") }} />
+  </div>;

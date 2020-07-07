@@ -11,10 +11,16 @@ module Devices
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
 
-      def settings_enable_encoders
+      def settings_change_firmware_config_defaults
         device.firmware_config.update!(encoder_enabled_x: 0,
-                                                  encoder_enabled_y: 0,
-                                                  encoder_enabled_z: 0)
+                                       encoder_enabled_y: 0,
+                                       encoder_enabled_z: 0,
+                                       encoder_missed_steps_max_x: 60,
+                                       encoder_missed_steps_max_y: 60,
+                                       encoder_missed_steps_max_z: 60,
+                                       encoder_missed_steps_decay_x: 100,
+                                       encoder_missed_steps_decay_y: 100,
+                                       encoder_missed_steps_decay_z: 100)
       end
 
       def settings_firmware

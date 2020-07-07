@@ -33,7 +33,7 @@ module Devices
         :settings_default_map_size_x,
         :settings_default_map_size_y,
         :settings_device_name,
-        :settings_enable_encoders,
+        :settings_change_firmware_config_defaults,
         :settings_firmware,
         :settings_hide_sensors,
 
@@ -181,7 +181,7 @@ module Devices
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_device_name; end
-      def settings_enable_encoders; end
+      def settings_change_firmware_config_defaults; end
       def settings_firmware; end
       def tool_slots_slot_1; end
       def tool_slots_slot_2; end

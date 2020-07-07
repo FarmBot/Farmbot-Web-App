@@ -22,4 +22,7 @@ export const fakeDesignerState = (): DesignerState => ({
   visualizedSequence: undefined,
   hoveredSequenceStep: undefined,
   settingsSearchTerm: "",
+  hiddenImages: [],
+  hoveredMapImage: undefined,
+  cameraViewGridId: undefined,
 });

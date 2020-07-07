@@ -35,6 +35,7 @@ import {
   CameraSelection,
 } from "../devices/components/fbos_settings/camera_selection";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -49,6 +50,9 @@ export interface DesignerPhotosProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   imageJobs: JobProgress[];
   versions: Record<string, string>;
+  imageFilterBegin: string | undefined;
+  imageFilterEnd: string | undefined;
+  hiddenImages: number[];
 }
 
 interface DesignerPhotosState {
@@ -73,6 +77,10 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     .map(([farmwareName, manifest]) =>
       versions[farmwareName] = manifest.meta.version);
 
+  const getConfigValue = getWebAppConfigValue(() => props);
+  const imageFilterBegin = getConfigValue("photo_filter_begin");
+  const imageFilterEnd = getConfigValue("photo_filter_end");
+
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     botToMqttStatus,
@@ -86,6 +94,9 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     imageJobs: getImageJobs(props.bot.hardware.jobs),
     versions,
+    imageFilterBegin: imageFilterBegin ? "" + imageFilterBegin : undefined,
+    imageFilterEnd: imageFilterEnd ? "" + imageFilterEnd : undefined,
+    hiddenImages: props.resources.consumers.farm_designer.hiddenImages,
   };
 };
 
@@ -151,6 +162,9 @@ export class RawDesignerPhotos
             shouldDisplay={this.props.shouldDisplay} />
         </ToolTip>
         <Photos {...common}
+          imageFilterBegin={this.props.imageFilterBegin}
+          imageFilterEnd={this.props.imageFilterEnd}
+          hiddenImages={this.props.hiddenImages}
           imageJobs={this.props.imageJobs} />
         <ExpandableHeader
           expanded={!!this.state.calibration}

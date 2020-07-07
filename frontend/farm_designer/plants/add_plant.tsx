@@ -72,7 +72,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         openfarm_slug={result.crop.slug}
         spread={result.crop.spread}
         botPosition={this.props.botPosition}
-        cropName={result.crop.name} />
+        itemName={result.crop.name} />
     </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader

@@ -125,4 +125,13 @@ describe("<ImageFlipper/>", () => {
     image.find("img").simulate("load");
     expect(wrapper.state().isLoaded).toEqual(true);
   });
+
+  it("calls back on image load", () => {
+    const p = fakeProps();
+    p.imageLoadCallback = jest.fn();
+    const wrapper = mount<ImageFlipper>(<ImageFlipper {...p} />);
+    const image = shallow(wrapper.instance().imageJSX());
+    image.find("img").simulate("load", { currentTarget: { fake: true } });
+    expect(p.imageLoadCallback).toHaveBeenCalledWith({ fake: true });
+  });
 });

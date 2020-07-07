@@ -30,6 +30,9 @@ export const initialState: DesignerState = {
   visualizedSequence: undefined,
   hoveredSequenceStep: undefined,
   settingsSearchTerm: "",
+  hiddenImages: [],
+  hoveredMapImage: undefined,
+  cameraViewGridId: undefined,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -124,5 +127,25 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.HOVER_SEQUENCE_STEP, (s, { payload }) => {
     s.hoveredSequenceStep = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.HIDE_MAP_IMAGE, (s, { payload }) => {
+    if (payload) {
+      s.hiddenImages.push(payload);
+    } else {
+      s.hiddenImages = [];
+    }
+    return s;
+  })
+  .add<number>(Actions.SHOW_MAP_IMAGE, (s, { payload }) => {
+    s.hiddenImages = s.hiddenImages.filter(id => id != payload);
+    return s;
+  })
+  .add<number | undefined>(Actions.HIGHLIGHT_MAP_IMAGE, (s, { payload }) => {
+    s.hoveredMapImage = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SHOW_CAMERA_VIEW_POINTS, (s, { payload }) => {
+    s.cameraViewGridId = payload;
     return s;
   });

@@ -146,7 +146,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         <Col xs={4}>
           <label>{t("BLUR")}</label>
           <Help text={t(ToolTips.BLUR, {
-            defaultValue: this.getDefault("blur")
+            defaultBlur: this.getDefault("blur")
           })} />
           <BlurableInput type="number"
             min={RANGES.BLUR.LOWEST}
@@ -157,7 +157,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         <Col xs={4}>
           <label>{t("MORPH")}</label>
           <Help text={t(ToolTips.MORPH, {
-            defaultValue: this.getDefault("morph")
+            defaultMorph: this.getDefault("morph")
           })} />
           <BlurableInput type="number"
             min={RANGES.MORPH.LOWEST}
@@ -168,7 +168,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         <Col xs={4}>
           <label>{t("ITERATIONS")}</label>
           <Help text={t(ToolTips.ITERATIONS, {
-            defaultValue: this.getDefault("iteration")
+            defaultIteration: this.getDefault("iteration")
           })} />
           <BlurableInput type="number"
             min={RANGES.ITERATION.LOWEST}

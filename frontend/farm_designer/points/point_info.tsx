@@ -59,6 +59,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
                   case "created_by":
                   case "removal_method":
                   case "type":
+                  case "gridId":
                     return <div key={key}
                       className={`meta-${key}-not-displayed`} />;
                   default:

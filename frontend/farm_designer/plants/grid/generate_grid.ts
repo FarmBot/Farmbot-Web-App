@@ -1,4 +1,6 @@
-import { PlantPointer } from "farmbot/dist/resources/api_resources";
+import {
+  PlantPointer, GenericPointer,
+} from "farmbot/dist/resources/api_resources";
 import { range } from "lodash";
 import { PlantGridData, PlantGridInitOption } from "./interfaces";
 
@@ -31,11 +33,11 @@ export function vectorGrid(params: PlantGridData, offsetPacking: boolean):
 }
 
 const createPlantGridMapper =
-  (openfarm_slug: string, name: string, gridId: string) =>
+  (openfarm_slug: string, cropName: string, gridId: string) =>
     (vec: [number, number]): PlantPointer => {
       const [x, y] = vec;
       return {
-        name,
+        name: cropName,
         radius: 25,
         z: 0,
         x,
@@ -47,7 +49,30 @@ const createPlantGridMapper =
       };
     };
 
-export const initPlantGrid = (p: PlantGridInitOption): PlantPointer[] => {
-  const mapper = createPlantGridMapper(p.openfarm_slug, p.cropName, p.gridId);
-  return vectorGrid(p.grid, p.offsetPacking).map(mapper);
-};
+const createPointGridMapper = (
+  color: string | undefined,
+  radius: number | undefined,
+  pointName: string,
+  gridId: string,
+) =>
+  (vec: [number, number]): GenericPointer => {
+    const [x, y] = vec;
+    return {
+      name: pointName,
+      radius: radius || 25,
+      z: 0,
+      x,
+      y,
+      pointer_type: "GenericPointer",
+      meta: { gridId, color }
+    };
+  };
+
+export const initPlantGrid =
+  (p: PlantGridInitOption): (GenericPointer | PlantPointer)[] => {
+    const mapper: (vec: [number, number]) => GenericPointer | PlantPointer =
+      !p.openfarm_slug
+        ? createPointGridMapper(p.color, p.radius, p.itemName, p.gridId)
+        : createPlantGridMapper(p.openfarm_slug, p.itemName, p.gridId);
+    return vectorGrid(p.grid, p.offsetPacking).map(mapper);
+  };

@@ -67,11 +67,12 @@ describe("<EditPoint />", () => {
     mockPath = "/app/designer/points/1";
     const p = fakeProps();
     const point = fakePoint();
-    point.body.meta = { color: "red", meta_key: undefined };
+    point.body.meta = { color: "red", meta_key: undefined, gridId: "123" };
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
     expect(wrapper.text()).toContain("Edit point");
     expect(wrapper.text()).not.toContain("red");
+    expect(wrapper.text()).not.toContain("grid");
   });
 
   it("moves the device to a particular point", () => {

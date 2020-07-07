@@ -2,6 +2,7 @@ import * as React from "react";
 import { TaggedGenericPointer } from "farmbot";
 import { GardenPoint } from "./garden_point";
 import { MapTransformProps } from "../../interfaces";
+import { CameraCalibrationData } from "../../../interfaces";
 
 export interface PointLayerProps {
   visible: boolean;
@@ -10,6 +11,9 @@ export interface PointLayerProps {
   hoveredPoint: string | undefined;
   dispatch: Function;
   interactions: boolean;
+  cameraViewGridId: string | undefined;
+  cameraCalibrationData: CameraCalibrationData;
+  cropPhotos: boolean;
 }
 
 export function PointLayer(props: PointLayerProps) {
@@ -23,6 +27,9 @@ export function PointLayer(props: PointLayerProps) {
           point={p}
           key={p.uuid}
           hovered={hoveredPoint == p.uuid}
+          cameraViewGridId={props.cameraViewGridId}
+          cameraCalibrationData={props.cameraCalibrationData}
+          cropPhotos={props.cropPhotos}
           dispatch={props.dispatch}
           mapTransformProps={mapTransformProps} />)}
   </g>;

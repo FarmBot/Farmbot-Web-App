@@ -171,7 +171,7 @@ export namespace ToolTips {
 
   export const ENABLE_STALL_DETECTION =
     trim(`Enable use of motor stall detection for detecting missed steps,
-    finding axis length, and homing. (default: enabled)`);
+    finding axis length, and homing. (default: disabled)`);
 
   export const STALL_SENSITIVITY =
     trim(`Motor stall sensitivity. Most sensitive: -63.
@@ -220,7 +220,7 @@ export namespace ToolTips {
   // Hardware Settings: Error Handling
   export const TIMEOUT_AFTER =
     trim(`Amount of time to wait for a command to execute before stopping.
-    (default: 120s)`);
+    (default: 120 seconds)`);
 
   export const MAX_MOVEMENT_RETRIES =
     trim(`Number of times to retry a movement before stopping. (default: 3)`);
@@ -265,16 +265,16 @@ export namespace ToolTips {
 
   export const INVERT_HUE_SELECTION =
     trim(`Invert the range of hues selected. Typically used to select the
-    full range of reds. (default: {{ defaultValue }})`);
+    full range of reds. (default: {{ defaultInvertState }})`);
 
   export const OBJECT_SEPARATION =
     trim(`Distance between calibration objects in millimeters. The distance
     between the objects on the camera calibration card is 100mm.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultSeparation }})`);
 
   export const CALIBRATION_OBJECT_AXIS =
     trim(`The FarmBot axis along which the calibration objects are aligned.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultAxis }})`);
 
   export const CAMERA_OFFSET =
     trim(`Camera offset from the UTM position in millimeters.
@@ -286,29 +286,29 @@ export namespace ToolTips {
   export const IMAGE_BOT_ORIGIN_LOCATION =
     trim(`FarmBot origin (home) location in images. If the origin does not
     correspond to an image corner, rotate the camera until one does.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultOrigin }})`);
 
   export const COORDINATE_SCALE =
     trim(`Image pixel to FarmBot coordinate scale. Typically between
     0.1 and 2, this value matches image scale with the FarmBot coordinate
-    system. (default: {{ defaultValue }} (uncalibrated))`);
+    system. (default: {{ defaultScale }} (uncalibrated))`);
 
   export const IMAGE_ROTATION_ANGLE =
     trim(`Camera rotation in degrees. This value should be minimized
     (to near zero) by rotating the camera in its mount until it is aligned
-    with FarmBot's axes. (default: {{ defaultValue }})`);
+    with FarmBot's axes. (default: {{ defaultAngle }})`);
 
   export const BLUR =
     trim(`Image blur kernel size. Must be an odd number greater than 1.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultBlur }})`);
 
   export const MORPH =
     trim(`Size of the structuring element used for morphological
-    transformations. (default: {{ defaultValue }})`);
+    transformations. (default: {{ defaultMorph }})`);
 
   export const ITERATIONS =
     trim(`Number of erosion and dilation morphological transformation
-    cycles. (default: {{ defaultValue }})`);
+    cycles. (default: {{ defaultIteration }})`);
 
   export const COLOR_HUE_RANGE =
     trim(`Color range.
@@ -1145,7 +1145,7 @@ export enum DeviceSetting {
   useEncodersForPositioning = `Use Encoders for Positioning`,
   invertEncoders = `Invert Encoders`,
   maxMissedSteps = `Max Missed Steps`,
-  motorLoad = `Motor Load`,
+  maxMotorLoad = `Max Motor Load`,
   missedStepDecay = `Missed Step Decay`,
   gracePeriod = `Grace Period`,
   encoderScaling = `Encoder Scaling`,
@@ -1395,6 +1395,10 @@ export enum Actions {
   EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",
   VISUALIZE_SEQUENCE = "VISUALIZE_SEQUENCE",
   HOVER_SEQUENCE_STEP = "HOVER_SEQUENCE_STEP",
+  HIDE_MAP_IMAGE = "HIDE_MAP_IMAGE",
+  SHOW_MAP_IMAGE = "SHOW_MAP_IMAGE",
+  HIGHLIGHT_MAP_IMAGE = "HIGHLIGHT_MAP_IMAGE",
+  SHOW_CAMERA_VIEW_POINTS = "SHOW_CAMERA_VIEW_POINTS",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

@@ -11,6 +11,9 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 import { GardenPoint } from "../garden_point";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import {
+  fakeCameraCalibrationData,
+} from "../../../../../__test_support__/fake_camera_data";
 
 describe("<PointLayer/>", () => {
   const fakeProps = (): PointLayerProps => ({
@@ -20,6 +23,9 @@ describe("<PointLayer/>", () => {
     hoveredPoint: undefined,
     dispatch: jest.fn(),
     interactions: true,
+    cameraViewGridId: undefined,
+    cameraCalibrationData: fakeCameraCalibrationData(),
+    cropPhotos: false,
   });
 
   it("shows points", () => {

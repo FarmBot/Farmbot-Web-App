@@ -13,6 +13,11 @@ import {
 import { Actions } from "../../../../../constants";
 import { history } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import {
+  fakeCameraCalibrationData, fakeCameraCalibrationDataFull,
+} from "../../../../../__test_support__/fake_camera_data";
+import { shallow } from "enzyme";
+import { CameraViewArea } from "../../farmbot/bot_figure";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -20,6 +25,9 @@ describe("<GardenPoint/>", () => {
     point: fakePoint(),
     hovered: false,
     dispatch: jest.fn(),
+    cameraViewGridId: undefined,
+    cameraCalibrationData: fakeCameraCalibrationData(),
+    cropPhotos: false,
   });
 
   it("renders point", () => {
@@ -62,5 +70,25 @@ describe("<GardenPoint/>", () => {
     wrapper.find("g").simulate("click");
     expect(history.push).toHaveBeenCalledWith(
       `/app/designer/points/${p.point.body.id}`);
+  });
+
+  it("shows camera view area", () => {
+    const p = fakeProps();
+    p.point.body.meta.gridId = "gridId";
+    p.cameraViewGridId = "gridId";
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cropPhotos = true;
+    const wrapper = shallow(<GardenPoint {...p} />);
+    expect(wrapper.find(CameraViewArea).length).toEqual(1);
+  });
+
+  it("doesn't show camera view area", () => {
+    const p = fakeProps();
+    p.point.body.meta.gridId = undefined;
+    p.cameraViewGridId = undefined;
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cropPhotos = true;
+    const wrapper = shallow(<GardenPoint {...p} />);
+    expect(wrapper.find(CameraViewArea).length).toEqual(0);
   });
 });
