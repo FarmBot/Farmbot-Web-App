@@ -171,7 +171,7 @@ export namespace ToolTips {
 
   export const ENABLE_STALL_DETECTION =
     trim(`Enable use of motor stall detection for detecting missed steps,
-    finding axis length, and homing. (default: enabled)`);
+    finding axis length, and homing. (default: disabled)`);
 
   export const STALL_SENSITIVITY =
     trim(`Motor stall sensitivity. Most sensitive: -63.
@@ -220,7 +220,7 @@ export namespace ToolTips {
   // Hardware Settings: Error Handling
   export const TIMEOUT_AFTER =
     trim(`Amount of time to wait for a command to execute before stopping.
-    (default: 120s)`);
+    (default: 120 seconds)`);
 
   export const MAX_MOVEMENT_RETRIES =
     trim(`Number of times to retry a movement before stopping. (default: 3)`);
@@ -1145,7 +1145,7 @@ export enum DeviceSetting {
   useEncodersForPositioning = `Use Encoders for Positioning`,
   invertEncoders = `Invert Encoders`,
   maxMissedSteps = `Max Missed Steps`,
-  motorLoad = `Motor Load`,
+  maxMotorLoad = `Max Motor Load`,
   missedStepDecay = `Missed Step Decay`,
   gracePeriod = `Grace Period`,
   encoderScaling = `Encoder Scaling`,

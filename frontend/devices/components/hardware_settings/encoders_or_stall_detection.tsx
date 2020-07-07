@@ -93,7 +93,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
         label={!showEncoders
-          ? DeviceSetting.motorLoad
+          ? DeviceSetting.maxMotorLoad
           : DeviceSetting.maxMissedSteps}
         tooltip={!showEncoders
           ? ToolTips.MAX_MISSED_STEPS_STALL_DETECTION
