@@ -271,4 +271,14 @@ describe("designer reducer", () => {
     const newState = designer(state, action);
     expect(newState.hoveredMapImage).toEqual(1);
   });
+
+  it("shows camera view points", () => {
+    const state = oldState();
+    state.cameraViewGridId = undefined;
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SHOW_CAMERA_VIEW_POINTS, payload: "gridId"
+    };
+    const newState = designer(state, action);
+    expect(newState.cameraViewGridId).toEqual("gridId");
+  });
 });

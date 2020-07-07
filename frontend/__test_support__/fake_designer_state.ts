@@ -24,4 +24,5 @@ export const fakeDesignerState = (): DesignerState => ({
   settingsSearchTerm: "",
   hiddenImages: [],
   hoveredMapImage: undefined,
+  cameraViewGridId: undefined,
 });

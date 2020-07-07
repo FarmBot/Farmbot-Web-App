@@ -3,6 +3,7 @@ import { GardenPointProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { Actions } from "../../../../constants";
 import { mapPointClickAction } from "../../actions";
+import { CameraViewArea } from "../farmbot/bot_figure";
 
 export const GardenPoint = (props: GardenPointProps) => {
 
@@ -26,5 +27,11 @@ export const GardenPoint = (props: GardenPointProps) => {
     <circle id="point-radius" cx={qx} cy={qy} r={point.body.radius}
       fill={hovered ? color : "transparent"} />
     <circle id="point-center" cx={qx} cy={qy} r={2} />
+    {meta.gridId && meta.gridId == props.cameraViewGridId &&
+      <CameraViewArea
+        position={{ x, y, z: 0 }}
+        cropPhotos={props.cropPhotos}
+        cameraCalibrationData={props.cameraCalibrationData}
+        mapTransformProps={mapTransformProps} />}
   </g>;
 };

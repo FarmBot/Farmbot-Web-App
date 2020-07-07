@@ -140,6 +140,7 @@ export interface DesignerState {
   settingsSearchTerm: string;
   hiddenImages: number[];
   hoveredMapImage: number | undefined;
+  cameraViewGridId: string | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

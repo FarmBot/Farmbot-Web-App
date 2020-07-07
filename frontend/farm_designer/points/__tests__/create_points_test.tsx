@@ -6,7 +6,6 @@ jest.mock("../../../api/delete_points", () => ({
 
 let mockPath = "/app/designer/points/add";
 jest.mock("../../../history", () => ({
-  history: { push: jest.fn() },
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
 }));
@@ -58,7 +57,8 @@ describe("<CreatePoints />", () => {
     dispatch: jest.fn(),
     drawnPoint: undefined,
     deviceY: 1.23,
-    deviceX: 3.21
+    deviceX: 3.21,
+    xySwap: false,
   });
 
   it("renders for points", () => {

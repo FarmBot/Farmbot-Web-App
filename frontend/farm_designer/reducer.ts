@@ -32,6 +32,7 @@ export const initialState: DesignerState = {
   settingsSearchTerm: "",
   hiddenImages: [],
   hoveredMapImage: undefined,
+  cameraViewGridId: undefined,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -142,5 +143,9 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<number | undefined>(Actions.HIGHLIGHT_MAP_IMAGE, (s, { payload }) => {
     s.hoveredMapImage = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SHOW_CAMERA_VIEW_POINTS, (s, { payload }) => {
+    s.cameraViewGridId = payload;
     return s;
   });

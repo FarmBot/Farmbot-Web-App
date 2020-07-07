@@ -151,7 +151,7 @@ interface CameraViewAreaProps {
   cropPhotos: boolean | undefined;
 }
 
-const CameraViewArea = (props: CameraViewAreaProps) => {
+export const CameraViewArea = (props: CameraViewAreaProps) => {
   const { cameraCalibrationData, mapTransformProps, cropPhotos } = props;
   const { xySwap } = mapTransformProps;
   const { x, y } = props.position;
