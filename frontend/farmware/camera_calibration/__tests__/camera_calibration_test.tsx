@@ -3,13 +3,6 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 jest.mock("../actions", () => ({ scanImage: jest.fn() }));
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraCalibration } from "../camera_calibration";
@@ -42,6 +35,7 @@ describe("<CameraCalibration/>", () => {
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
+    versions: {},
   });
 
   it("renders", () => {
@@ -126,8 +120,8 @@ describe("<CameraCalibration/>", () => {
   });
 
   it("toggles simple version", () => {
-    mockDev = true;
     const p = fakeProps();
+    p.versions = { "plant-detection": "1.0.0" };
     const wrapper = mount(<CameraCalibration {...p} />);
     wrapper.find("input").first().simulate("change");
     expect(mockDevice.setUserEnv).toHaveBeenCalledWith({

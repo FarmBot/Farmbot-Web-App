@@ -25,6 +25,7 @@ export interface CameraCalibrationProps {
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
+  versions: Record<string, string>;
 }
 
 export interface CameraCalibrationConfigProps {

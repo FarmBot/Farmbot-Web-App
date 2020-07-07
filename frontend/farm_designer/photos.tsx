@@ -14,7 +14,7 @@ import { getStatus } from "../connectivity/reducer_support";
 import {
   prepopulateEnv, envGet,
 } from "../farmware/weed_detector/remote_env/selectors";
-import { Photos } from "../farmware/images/photos";
+import { Photos, PhotosSettings } from "../farmware/images/photos";
 import {
   CameraCalibration,
 } from "../farmware/camera_calibration/camera_calibration";
@@ -31,9 +31,6 @@ import { updateFarmware } from "../farmware/farmware_info";
 import { destroyAll } from "../api/crud";
 import { success, error } from "../toast/toast";
 import { isBotOnline } from "../devices/must_be_online";
-import {
-  CameraSelection,
-} from "../devices/components/fbos_settings/camera_selection";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 import { getWebAppConfigValue } from "../config_storage/actions";
 
@@ -153,11 +150,11 @@ export class RawDesignerPhotos
         <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"}>
           <Update version={this.props.versions["take-photo"]}
             farmwareName={"take-photo"} botOnline={botOnline} />
-          <CameraSelection
+          <PhotosSettings
             dispatch={this.props.dispatch}
-            noLabel={true}
             env={this.props.env}
             botOnline={botOnline}
+            version={this.props.versions["take-photo"] || ""}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             shouldDisplay={this.props.shouldDisplay} />
         </ToolTip>
@@ -188,6 +185,7 @@ export class RawDesignerPhotos
             H_HI={wDEnvGet("CAMERA_CALIBRATION_H_HI")}
             S_HI={wDEnvGet("CAMERA_CALIBRATION_S_HI")}
             V_HI={wDEnvGet("CAMERA_CALIBRATION_V_HI")}
+            versions={this.props.versions}
             shouldDisplay={this.props.shouldDisplay} />
         </Collapse>
         <ExpandableHeader
