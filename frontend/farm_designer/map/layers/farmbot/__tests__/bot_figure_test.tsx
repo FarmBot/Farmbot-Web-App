@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";
-import { BotFigure, BotFigureProps, rotated90degrees } from "../bot_figure";
+import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../../ui/index";
 import {
   fakeMapTransformProps,
@@ -186,12 +186,18 @@ describe("<BotFigure/>", () => {
 
   it("shows camera view area", () => {
     const p = fakeProps();
+    p.mapTransformProps.xySwap = true;
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     p.cameraViewArea = true;
     p.cropPhotos = false;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#camera-view-area").length).toEqual(1);
+    expect(view.find("#angled-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(view.find("#angled-camera-view-area").last().props().width)
+      .not.toEqual(0);
+    expect(view.find("#snapped-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
     expect(view.find("#cropped-camera-view-area").length).toEqual(0);
   });
 
@@ -201,7 +207,8 @@ describe("<BotFigure/>", () => {
     p.cameraCalibrationData.center.x = "";
     p.cameraViewArea = true;
     const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(0);
+    expect(wrapper.find("#angled-camera-view-area").first().props().width)
+      .toBeFalsy();
   });
 
   it("shows small cropped camera view area", () => {
@@ -212,8 +219,10 @@ describe("<BotFigure/>", () => {
     p.cropPhotos = true;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#camera-view-area").length).toEqual(1);
-    expect(view.find("#cropped-camera-view-area").length).toEqual(1);
+    expect(view.find("#angled-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(view.find("#cropped-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
   });
 
   it("shows large cropped camera view area", () => {
@@ -224,21 +233,9 @@ describe("<BotFigure/>", () => {
     p.cropPhotos = true;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#camera-view-area").length).toEqual(1);
-    expect(view.find("#cropped-camera-view-area").length).toEqual(1);
-  });
-});
-
-describe("rotated90degrees()", () => {
-  it("returns correct rotation", () => {
-    expect(rotated90degrees(0)).toEqual(false);
-    expect(rotated90degrees(44)).toEqual(false);
-    expect(rotated90degrees(46)).toEqual(true);
-    expect(rotated90degrees(89)).toEqual(true);
-    expect(rotated90degrees(91)).toEqual(true);
-    expect(rotated90degrees(134)).toEqual(true);
-    expect(rotated90degrees(136)).toEqual(false);
-    expect(rotated90degrees(-44)).toEqual(false);
-    expect(rotated90degrees(-46)).toEqual(true);
+    expect(view.find("#angled-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(view.find("#cropped-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
   });
 });
