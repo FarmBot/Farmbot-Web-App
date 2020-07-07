@@ -138,6 +138,8 @@ export interface DesignerState {
   visualizedSequence: UUID | undefined;
   hoveredSequenceStep: string | undefined;
   settingsSearchTerm: string;
+  hiddenImages: number[];
+  hoveredMapImage: number | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

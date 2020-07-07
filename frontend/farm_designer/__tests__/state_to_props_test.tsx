@@ -17,7 +17,6 @@ import {
   fakePeripheral,
   fakeSequence,
 } from "../../__test_support__/fake_state/resources";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
 import { DevSettings } from "../../account/dev/dev_support";
 
@@ -67,7 +66,7 @@ describe("mapStateToProps()", () => {
   it("returns all weeds", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
-    (webAppConfig.body as WebAppConfig).show_historic_points = true;
+    webAppConfig.body.show_historic_points = true;
     const point1 = fakeWeed();
     const point2 = fakeWeed();
     point2.body.plant_stage = "removed";
@@ -82,7 +81,7 @@ describe("mapStateToProps()", () => {
   it("returns active weeds", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
-    (webAppConfig.body as WebAppConfig).show_historic_points = false;
+    webAppConfig.body.show_historic_points = false;
     const point1 = fakeWeed();
     const point2 = fakeWeed();
     point2.body.plant_stage = "removed";

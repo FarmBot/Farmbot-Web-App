@@ -23,6 +23,7 @@ import {
 import { UUID } from "../../resources/interfaces";
 import { DevSettings } from "../../account/dev/dev_support";
 import { Content } from "../../constants";
+import { getCalibratedImageCenter } from "../images/photos";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -98,6 +99,7 @@ export class CameraCalibration extends
           <CameraCalibrationConfig
             values={this.props.wDEnv}
             calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
+            calibrationImageCenter={getCalibratedImageCenter(this.props.env)}
             onChange={this.saveEnvVar} />
         </Col>
       </Row>

@@ -4,7 +4,7 @@ import { success, error } from "../../toast/toast";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps, PhotoButtonsProps } from "./interfaces";
 import { getDevice } from "../../device";
-import { Content } from "../../constants";
+import { Content, Actions } from "../../constants";
 import { selectImage } from "./actions";
 import { safeStringFetch, timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
@@ -12,13 +12,24 @@ import {
   downloadProgress,
 } from "../../devices/components/fbos_settings/os_update_button";
 import { TaggedImage } from "farmbot";
-import { startCase } from "lodash";
+import { startCase, every } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
+import { Popover } from "@blueprintjs/core";
+import {
+  imageInRange, isHidden,
+} from "../../farm_designer/map/layers/images/image_layer";
+import {
+  setWebAppConfigValues,
+} from "../../farm_designer/map/layers/images/image_filter_menu";
+import {
+  cameraZCheck, cameraOrientationCheck, isRotated,
+} from "../../farm_designer/map/layers/images/map_image";
+import { UserEnv } from "../../devices/interfaces";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -85,18 +96,53 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
 interface PhotoFooterProps {
   image: TaggedImage | undefined;
   timeSettings: TimeSettings;
+  dispatch: Function;
+  imageFilterBegin: string | undefined;
+  imageFilterEnd: string | undefined;
+  hiddenImages: number[];
+  env: UserEnv;
+  imageSize: Record<"width" | "height", number>;
 }
 
-export const PhotoFooter = ({ image, timeSettings }: PhotoFooterProps) => {
+type FlagKey = "inRange" | "notHidden" | "zMatch" | "sizeMatch";
+type ImageShowFlags = Record<FlagKey, boolean>;
+
+export const getCalibratedImageCenter = (env: UserEnv) => ({
+  x: env["CAMERA_CALIBRATION_center_pixel_location_x"],
+  y: env["CAMERA_CALIBRATION_center_pixel_location_y"],
+});
+
+export const PhotoFooter = (props: PhotoFooterProps) => {
+  const {
+    image, timeSettings, dispatch, imageFilterBegin, imageFilterEnd,
+  } = props;
   const created_at = image
     ? moment(image.body.created_at)
       .utcOffset(timeSettings.utcOffset)
       .format(`MMMM Do, YYYY ${timeFormatString(timeSettings)}`)
     : "";
+  const flags: ImageShowFlags = {
+    inRange: !!imageInRange(imageFilterBegin, imageFilterEnd)(image),
+    notHidden: !isHidden(props.hiddenImages, image?.body.id),
+    zMatch: cameraZCheck(image?.body.meta.z,
+      props.env["CAMERA_CALIBRATION_camera_z"]),
+    sizeMatch: cameraOrientationCheck(props.imageSize,
+      getCalibratedImageCenter(props.env),
+      !!isRotated(image?.body.meta.name,
+        !props.env["CAMERA_CALIBRATION_coord_scale"]))
+  };
+  const shownInMap = every(Object.values(flags));
   return <div className="photos-footer">
     {/** Separated from <MetaInfo /> for stylistic purposes. */}
     {image ?
       <div className="image-created-at">
+        <Popover popoverClassName={"image-filter-menu-popover"}>
+          <i className={shownInMap
+            ? "fa fa-check-circle green"
+            : "fa fa-times-circle gray"}
+            title={shownInMap ? t("in map") : t("not in map")} />
+          <ImageMetaFilterMenu dispatch={dispatch} flags={flags} image={image} />
+        </Popover>
         <label>{t("Created At:")}</label>
         <span>
           {created_at}
@@ -107,7 +153,154 @@ export const PhotoFooter = ({ image, timeSettings }: PhotoFooterProps) => {
   </div>;
 };
 
-export class Photos extends React.Component<PhotosProps, {}> {
+interface FlagDisplayRowProps {
+  flag: boolean;
+  labelOk: string;
+  labelNo: string;
+}
+
+const FlagDisplayRow = (props: FlagDisplayRowProps) =>
+  <div className={"image-flag-display"}>
+    {props.flag
+      ? <i className={"fa fa-check-circle green"} />
+      : <i className={"fa fa-times-circle gray"} />}
+    <p>{props.flag ? t(props.labelOk) : t(props.labelNo)}</p>
+  </div>;
+
+const highlightMapImage = (imageId: number | undefined) => ({
+  type: Actions.HIGHLIGHT_MAP_IMAGE,
+  payload: imageId,
+});
+
+export interface ImageFilterProps {
+  image: TaggedImage;
+  dispatch: Function;
+  flags: ImageShowFlags;
+}
+
+const filterTime = (direction: "before" | "after") => (image: TaggedImage) =>
+  moment(image.body.created_at)
+    .add(direction == "before" ? -1 : 1, "second")
+    .toISOString();
+
+export const ImageMetaFilterMenu = (props: ImageFilterProps) =>
+  <div className={"image-meta-filter-menu"}>
+    <ShownInMapDetails {...props} />
+    <FilterThisImage {...props} />
+    <hr />
+    <FilterOlderOrNewer {...props} />
+    <hr />
+    <HideImage {...props} />
+  </div>;
+
+const ShownInMapDetails = ({ dispatch, image, flags }: ImageFilterProps) => {
+  const shownInMap = every(Object.values(flags));
+  return <div className={`shown-in-map-details ${shownInMap ? "shown" : ""}`}
+    onMouseEnter={() => shownInMap && dispatch(highlightMapImage(image.body.id))}
+    onMouseLeave={() => shownInMap && dispatch(highlightMapImage(undefined))}>
+    <label>
+      {shownInMap
+        ? t("shown in map")
+        : t("not shown in map")}
+    </label>
+    <FlagDisplayRow flag={flags.inRange}
+      labelOk={t("Within filter range")}
+      labelNo={t("Outside of filter range")} />
+    <FlagDisplayRow flag={flags.zMatch}
+      labelOk={t("Z height matches calibration")}
+      labelNo={t("Z doesn't match calibration")} />
+    <FlagDisplayRow flag={flags.sizeMatch}
+      labelOk={t("Size matches camera calibration")}
+      labelNo={t("Size doesn't match calibration")} />
+    <FlagDisplayRow flag={flags.notHidden}
+      labelOk={t("Not hidden")}
+      labelNo={t("Temporarily hidden")} />
+  </div>;
+};
+
+const FilterThisImage = ({ dispatch, image, flags }: ImageFilterProps) =>
+  <div className={"this-image-section"}>
+    <div className={"content"}>
+      <p>{t("show only")}</p>
+      <button
+        className={"fb-button yellow"}
+        disabled={!(flags.zMatch && flags.notHidden)}
+        title={t("this image")}
+        onClick={() => dispatch(setWebAppConfigValues({
+          photo_filter_begin: filterTime("before")(image),
+          photo_filter_end: filterTime("after")(image),
+        }))}>
+        {t("this image")}
+      </button>
+      <p>{t("in map")}</p>
+    </div>
+  </div>;
+
+const FilterOlderOrNewer = ({ dispatch, image, flags }: ImageFilterProps) =>
+  <div className={"newer-older-images-section"}>
+    <p>{t("show only this image and")}</p>
+    <div className={"buttons"}>
+      <button
+        className={"fb-button yellow"}
+        disabled={!(flags.zMatch && flags.notHidden)}
+        title={t("older")}
+        onClick={() => dispatch(setWebAppConfigValues({
+          photo_filter_begin: "", photo_filter_end: filterTime("after")(image),
+        }))}>
+        <i className="fa fa-arrow-left" />
+        {t("older")}
+      </button>
+      <button
+        className={"fb-button yellow"}
+        disabled={!(flags.zMatch && flags.notHidden)}
+        title={t("newer")}
+        onClick={() => dispatch(setWebAppConfigValues({
+          photo_filter_begin: filterTime("before")(image), photo_filter_end: "",
+        }))}>
+        {t("newer")}
+        <i className="fa fa-arrow-right" />
+      </button>
+    </div>
+    <p>{t("images in map")}</p>
+  </div>;
+
+const HideImage =
+  ({ flags, image, dispatch }: ImageFilterProps) =>
+    <div className={"hide-single-image-section"}>
+      <div className={"content"}>
+        <p className={"header-label"}>{t("temporarily")}</p>
+        <button
+          className={"fb-button yellow"}
+          disabled={!(flags.zMatch && flags.inRange)}
+          title={flags.notHidden ? t("hide") : t("show")}
+          onClick={() => image.body.id && dispatch({
+            type: flags.notHidden
+              ? Actions.HIDE_MAP_IMAGE
+              : Actions.SHOW_MAP_IMAGE,
+            payload: image.body.id,
+          })}>
+          {flags.notHidden ? t("hide") : t("show")}
+        </button>
+        <p>
+          {flags.notHidden
+            ? t("this image from map")
+            : t("this image in map")}
+        </p>
+      </div>
+    </div>;
+
+interface PhotosState {
+  imageWidth: number;
+  imageHeight: number;
+}
+
+export class Photos extends React.Component<PhotosProps, PhotosState> {
+  state: PhotosState = { imageWidth: 0, imageHeight: 0 };
+
+  imageLoadCallback = (img: HTMLImageElement) => {
+    const { naturalWidth, naturalHeight } = img;
+    this.setState({ imageWidth: naturalWidth, imageHeight: naturalHeight });
+  };
 
   takePhoto = () => {
     const ok = () => success(t(Content.PROCESSING_PHOTO));
@@ -136,9 +329,19 @@ export class Photos extends React.Component<PhotosProps, {}> {
       <ImageFlipper
         onFlip={id => this.props.dispatch(selectImage(id))}
         currentImage={this.props.currentImage}
+        imageLoadCallback={this.imageLoadCallback}
         images={this.props.images} />
       <PhotoFooter
         image={this.props.currentImage}
+        imageSize={{
+          width: this.state.imageWidth,
+          height: this.state.imageHeight,
+        }}
+        imageFilterBegin={this.props.imageFilterBegin}
+        imageFilterEnd={this.props.imageFilterEnd}
+        hiddenImages={this.props.hiddenImages}
+        env={this.props.env}
+        dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings} />
     </div>;
   }

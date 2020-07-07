@@ -5,6 +5,7 @@ import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isNumber, round, last } from "lodash";
 import { equals } from "../../../../util";
+import { Color } from "../../../../ui";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
 /** Show all images roughly on map when no calibration values are present. */
@@ -194,6 +195,7 @@ const parseCalibrationData =
 
 export interface MapImageProps {
   image: TaggedImage | undefined;
+  hoveredMapImage: number | undefined;
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
   mapTransformProps: MapTransformProps;
@@ -249,6 +251,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
         });
         if (imagePosition) {
           const { width, height, transform, transformOrigin } = imagePosition;
+          const hovered = this.props.hoveredMapImage == image.body.id;
           const clipName = cropPathName(cropImage, imageRotation, image.body.id);
           return <g id={`image-${image.body.id}`}>
             {clipName != "none" &&
@@ -256,6 +259,13 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
                 width={width} height={height}
                 transformOrigin={transformOrigin}
                 rotation={imageRotation} alreadyRotated={alreadyRotated} />}
+            {hovered &&
+              <rect id={"highlight-border"}
+                x={0} y={0} height={height} width={width}
+                stroke={Color.orange} strokeWidth={10}
+                fill={Color.black} fillOpacity={0.75}
+                transform={transform}
+                style={{ transformOrigin }} />}
             <image
               data-comment={`${imageUploadName}: ${imagePosition.comment}`}
               xlinkHref={imageUrl}
@@ -263,6 +273,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
               height={height} width={width}
               transform={transform}
               style={{ transformOrigin }}
+              opacity={!this.props.hoveredMapImage || hovered ? 1 : 0.3}
               clipPath={clipName} />
           </g>;
         }

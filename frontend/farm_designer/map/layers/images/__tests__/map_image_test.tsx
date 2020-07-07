@@ -37,6 +37,7 @@ describe("<MapImage />", () => {
       cameraCalibrationData: fakeCameraCalibrationData(),
       mapTransformProps: fakeMapTransformProps(),
       cropImage: false,
+      hoveredMapImage: undefined,
     };
   };
 
@@ -103,6 +104,7 @@ describe("<MapImage />", () => {
           height: expectedData.size.height,
           clipPath: expectedData.cropPath || "none",
           "data-comment": expect.any(String),
+          opacity: 1,
           style: {
             transformOrigin:
               `${expectedData.tOriginX}px ${expectedData.tOriginY}px`
@@ -310,6 +312,26 @@ describe("<MapImage />", () => {
     p.image && (p.image.body.meta.name = "na");
     const wrapper = svgMount(<MapImage {...p} />);
     expect(wrapper.html()).toEqual(NOT_DISPLAYED);
+  });
+
+  it("highlights image", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.hoveredMapImage = 1;
+    p.image && (p.image.body.id = 1);
+    const wrapper = svgMount(<MapImage {...p} />);
+    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    expect(wrapper.find("image").props().opacity).toEqual(1);
+    expect(wrapper.find("#highlight-border").length).toEqual(1);
+  });
+
+  it("doesn't highlight image", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.hoveredMapImage = 100;
+    p.image && (p.image.body.id = 1);
+    const wrapper = svgMount(<MapImage {...p} />);
+    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    expect(wrapper.find("image").props().opacity).toEqual(0.3);
+    expect(wrapper.find("#highlight-border").length).toEqual(0);
   });
 });
 

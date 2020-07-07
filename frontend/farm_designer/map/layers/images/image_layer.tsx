@@ -15,6 +15,8 @@ export interface ImageLayerProps {
   imageFilterBegin: string;
   imageFilterEnd: string;
   cropImages: boolean;
+  hiddenImages: number[];
+  hoveredMapImage: number | undefined;
 }
 
 export class ImageLayer extends React.Component<ImageLayerProps> {
@@ -31,17 +33,29 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
     return <g id="image-layer">
       {visible &&
         reverse(cloneDeep(images))
-          .filter(x => !imageFilterEnd ||
-            moment(x.body.created_at).isBefore(imageFilterEnd))
-          .filter(x => !imageFilterBegin ||
-            moment(x.body.created_at).isAfter(imageFilterBegin))
+          .filter(imageInRange(imageFilterBegin, imageFilterEnd))
+          .filter(img => !isHidden(this.props.hiddenImages, img.body.id))
           .map(img =>
             <MapImage
               image={img}
               key={"image_" + img.body.id}
+              hoveredMapImage={this.props.hoveredMapImage}
               cropImage={this.props.cropImages}
               cameraCalibrationData={cameraCalibrationData}
               mapTransformProps={mapTransformProps} />)}
     </g>;
   }
 }
+
+export const imageInRange =
+  (imageFilterBegin: string | undefined, imageFilterEnd: string | undefined) =>
+    (image: TaggedImage | undefined) => {
+      if (!image) { return; }
+      const createdAt = moment(image.body.created_at);
+      const afterBegin = !imageFilterBegin || createdAt.isAfter(imageFilterBegin);
+      const beforeEnd = !imageFilterEnd || createdAt.isBefore(imageFilterEnd);
+      return afterBegin && beforeEnd;
+    };
+
+export const isHidden = (hiddenImages: number[], imageId: number | undefined) =>
+  imageId && hiddenImages.includes(imageId);

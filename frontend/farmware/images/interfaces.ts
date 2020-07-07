@@ -7,6 +7,7 @@ export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
+  imageLoadCallback?: (img: HTMLImageElement) => void;
 }
 
 export interface ImageFlipperState {
@@ -24,6 +25,9 @@ export interface PhotosProps {
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
   env: UserEnv;
+  imageFilterBegin: string | undefined;
+  imageFilterEnd: string | undefined;
+  hiddenImages: number[];
 }
 
 export interface PhotoButtonsProps {

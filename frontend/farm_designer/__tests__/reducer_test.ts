@@ -231,4 +231,44 @@ describe("designer reducer", () => {
     const newState = designer(state, action);
     expect(newState.hoveredSequenceStep).toEqual("uuid");
   });
+
+  it("adds hidden map image", () => {
+    const state = oldState();
+    state.hiddenImages = [];
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.HIDE_MAP_IMAGE, payload: 1
+    };
+    const newState = designer(state, action);
+    expect(newState.hiddenImages).toEqual([1]);
+  });
+
+  it("removes hidden map image", () => {
+    const state = oldState();
+    state.hiddenImages = [1, 2];
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SHOW_MAP_IMAGE, payload: 2
+    };
+    const newState = designer(state, action);
+    expect(newState.hiddenImages).toEqual([1]);
+  });
+
+  it("clears hidden map images", () => {
+    const state = oldState();
+    state.hiddenImages = [1];
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.HIDE_MAP_IMAGE, payload: undefined
+    };
+    const newState = designer(state, action);
+    expect(newState.hiddenImages).toEqual([]);
+  });
+
+  it("sets hovered map image", () => {
+    const state = oldState();
+    state.hoveredMapImage = undefined;
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1
+    };
+    const newState = designer(state, action);
+    expect(newState.hoveredMapImage).toEqual(1);
+  });
 });

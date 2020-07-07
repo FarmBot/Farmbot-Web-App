@@ -107,10 +107,12 @@ export class CameraCalibrationConfig
         </Col>
       </Row>
       <Row>
-        <p>{!isUndefined(this.props.calibrationZ)
-          ? `${t("Camera calibrated at z-axis height")}: ${
-          this.props.calibrationZ}`
-          : t("Camera not yet calibrated.")}</p>
+        <p title={JSON.stringify(this.props.calibrationImageCenter)}>
+          {!isUndefined(this.props.calibrationZ)
+            ? `${t("Camera calibrated at z-axis height")}: ${
+            this.props.calibrationZ}`
+            : t("Camera not yet calibrated.")}
+        </p>
       </Row>
     </div>;
   }
