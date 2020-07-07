@@ -265,16 +265,16 @@ export namespace ToolTips {
 
   export const INVERT_HUE_SELECTION =
     trim(`Invert the range of hues selected. Typically used to select the
-    full range of reds. (default: {{ defaultValue }})`);
+    full range of reds. (default: {{ defaultInvertState }})`);
 
   export const OBJECT_SEPARATION =
     trim(`Distance between calibration objects in millimeters. The distance
     between the objects on the camera calibration card is 100mm.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultSeparation }})`);
 
   export const CALIBRATION_OBJECT_AXIS =
     trim(`The FarmBot axis along which the calibration objects are aligned.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultAxis }})`);
 
   export const CAMERA_OFFSET =
     trim(`Camera offset from the UTM position in millimeters.
@@ -286,29 +286,29 @@ export namespace ToolTips {
   export const IMAGE_BOT_ORIGIN_LOCATION =
     trim(`FarmBot origin (home) location in images. If the origin does not
     correspond to an image corner, rotate the camera until one does.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultOrigin }})`);
 
   export const COORDINATE_SCALE =
     trim(`Image pixel to FarmBot coordinate scale. Typically between
     0.1 and 2, this value matches image scale with the FarmBot coordinate
-    system. (default: {{ defaultValue }} (uncalibrated))`);
+    system. (default: {{ defaultScale }} (uncalibrated))`);
 
   export const IMAGE_ROTATION_ANGLE =
     trim(`Camera rotation in degrees. This value should be minimized
     (to near zero) by rotating the camera in its mount until it is aligned
-    with FarmBot's axes. (default: {{ defaultValue }})`);
+    with FarmBot's axes. (default: {{ defaultAngle }})`);
 
   export const BLUR =
     trim(`Image blur kernel size. Must be an odd number greater than 1.
-    (default: {{ defaultValue }})`);
+    (default: {{ defaultBlur }})`);
 
   export const MORPH =
     trim(`Size of the structuring element used for morphological
-    transformations. (default: {{ defaultValue }})`);
+    transformations. (default: {{ defaultMorph }})`);
 
   export const ITERATIONS =
     trim(`Number of erosion and dilation morphological transformation
-    cycles. (default: {{ defaultValue }})`);
+    cycles. (default: {{ defaultIteration }})`);
 
   export const COLOR_HUE_RANGE =
     trim(`Color range.

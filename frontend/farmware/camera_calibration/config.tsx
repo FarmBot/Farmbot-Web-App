@@ -39,7 +39,7 @@ export class CameraCalibrationConfig
         <div className={"camera-calibration-configs"}>
           <BoolConfig {...commonProps}
             helpText={t(ToolTips.INVERT_HUE_SELECTION, {
-              defaultValue: this.getLabeledDefault("invert_hue_selection")
+              defaultInvertState: this.getLabeledDefault("invert_hue_selection")
             })}
             configKey={this.namespace("invert_hue_selection")}
             label={t("Invert Hue Range Selection")} />
@@ -47,7 +47,7 @@ export class CameraCalibrationConfig
             configKey={this.namespace("calibration_object_separation")}
             label={t(`Calibration Object Separation`)}
             helpText={t(ToolTips.OBJECT_SEPARATION, {
-              defaultValue: this.getDefault("calibration_object_separation")
+              defaultSeparation: this.getDefault("calibration_object_separation")
             })} />
           <Row>
             <DropdownConfig {...commonProps}
@@ -55,7 +55,7 @@ export class CameraCalibrationConfig
               configKey={this.namespace("calibration_along_axis")}
               label={t(`Calibration Object Separation along axis`)}
               helpText={t(ToolTips.CALIBRATION_OBJECT_AXIS, {
-                defaultValue: this.getLabeledDefault("calibration_along_axis")
+                defaultAxis: this.getLabeledDefault("calibration_along_axis")
               })} />
           </Row>
         </div>}
@@ -85,7 +85,7 @@ export class CameraCalibrationConfig
           configKey={this.namespace("image_bot_origin_location")}
           label={t(`Origin Location in Image`)}
           helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
-            defaultValue: this.getLabeledDefault("image_bot_origin_location")
+            defaultOrigin: this.getLabeledDefault("image_bot_origin_location")
           })} />
       </Row>
       <Row>
@@ -94,7 +94,7 @@ export class CameraCalibrationConfig
             configKey={this.namespace("coord_scale")}
             label={t(`Pixel coordinate scale`)}
             helpText={t(ToolTips.COORDINATE_SCALE, {
-              defaultValue: this.getDefault("coord_scale")
+              defaultScale: this.getDefault("coord_scale")
             })} />
         </Col>
         <Col xs={6} className={"config-results"}>
@@ -102,7 +102,7 @@ export class CameraCalibrationConfig
             configKey={this.namespace("total_rotation_angle")}
             label={t(`Camera rotation`)}
             helpText={t(ToolTips.IMAGE_ROTATION_ANGLE, {
-              defaultValue: this.getDefault("total_rotation_angle")
+              defaultAngle: this.getDefault("total_rotation_angle")
             })} />
         </Col>
       </Row>
