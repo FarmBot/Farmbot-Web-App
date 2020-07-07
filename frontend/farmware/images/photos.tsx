@@ -4,9 +4,9 @@ import { success, error } from "../../toast/toast";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps, PhotoButtonsProps } from "./interfaces";
 import { getDevice } from "../../device";
-import { Content, Actions } from "../../constants";
+import { Content, Actions, ToolTips } from "../../constants";
 import { selectImage } from "./actions";
-import { safeStringFetch, timeFormatString } from "../../util";
+import { safeStringFetch, timeFormatString, semverCompare, SemverResult } from "../../util";
 import { destroy } from "../../api/crud";
 import {
   downloadProgress,
@@ -17,7 +17,7 @@ import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import {
-  cameraBtnProps,
+  cameraBtnProps, CameraSelection,
 } from "../../devices/components/fbos_settings/camera_selection";
 import { Popover } from "@blueprintjs/core";
 import {
@@ -29,7 +29,10 @@ import {
 import {
   cameraZCheck, cameraOrientationCheck, isRotated,
 } from "../../farm_designer/map/layers/images/map_image";
-import { UserEnv } from "../../devices/interfaces";
+import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
+import { ToggleButton } from "../../controls/toggle_button";
+import { SaveFarmwareEnv } from "../interfaces";
+import { Help } from "../../ui";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -93,7 +96,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
   </div>;
 };
 
-interface PhotoFooterProps {
+export interface PhotoFooterProps {
   image: TaggedImage | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;
@@ -140,6 +143,10 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
           <i className={shownInMap
             ? "fa fa-check-circle green"
             : "fa fa-times-circle gray"}
+            onMouseEnter={() =>
+              shownInMap && dispatch(highlightMapImage(image.body.id))}
+            onMouseLeave={() =>
+              shownInMap && dispatch(highlightMapImage(undefined))}
             title={shownInMap ? t("in map") : t("not in map")} />
           <ImageMetaFilterMenu dispatch={dispatch} flags={flags} image={image} />
         </Popover>
@@ -346,3 +353,38 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
     </div>;
   }
 }
+
+export interface PhotosSettingsProps {
+  env: UserEnv;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  shouldDisplay: ShouldDisplay;
+  botOnline: boolean;
+  dispatch: Function;
+  version: string;
+}
+
+export const DISABLE_ROTATE_AT_CAPTURE_KEY =
+  "take_photo_disable_rotation_adjustment";
+
+export const PhotosSettings = (props: PhotosSettingsProps) => {
+  const disableRotation =
+    props.env[DISABLE_ROTATE_AT_CAPTURE_KEY]?.includes("1");
+  return <div className="photos-settings">
+    <CameraSelection
+      dispatch={props.dispatch}
+      noLabel={true}
+      env={props.env}
+      botOnline={props.botOnline}
+      saveFarmwareEnv={props.saveFarmwareEnv}
+      shouldDisplay={props.shouldDisplay} />
+    {semverCompare(props.version, "1.0.13") == SemverResult.LEFT_IS_GREATER &&
+      <div className={"capture-rotate-setting"}>
+        <label>{t("Adjust rotation during capture")}</label>
+        <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />
+        <ToggleButton toggleValue={!disableRotation}
+          toggleAction={() => props.dispatch(props.saveFarmwareEnv(
+            DISABLE_ROTATE_AT_CAPTURE_KEY,
+            disableRotation ? "0" : "1"))} />
+      </div>}
+  </div>;
+};

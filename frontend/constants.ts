@@ -423,6 +423,12 @@ export namespace ToolTips {
   export const SELECT_A_CAMERA =
     trim(`Select a camera on the Settings panel to take photos.`);
 
+  export const ROTATE_IMAGE_AT_CAPTURE =
+    trim(`Perform camera rotation compensation when image is captured
+    instead of in garden map. If enabled, image files will include
+    adjustment for camera rotation (black angled borders may show in
+    viewer). Disabling this setting will speed up photo capture.`);
+
   export const CALIBRATION_REQUIRED =
     trim(`Calibrate your camera in the Photos panel before detecting weeds.`);
 

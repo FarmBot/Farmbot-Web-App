@@ -1620,6 +1620,20 @@
       top: unset;
       right: unset;
     }
+    .photos-settings {
+      label {
+        margin-left: 0.5rem;
+        font-style: normal;
+      }
+      .bp3-popover-wrapper {
+        display: inline;
+        margin-left: 0.5rem;
+      }
+      .fb-toggle-button {
+        padding-top: unset;
+        margin-top: 2rem;
+      }
+    }
   }
 }
 
