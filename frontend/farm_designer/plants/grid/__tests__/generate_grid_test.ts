@@ -46,13 +46,41 @@ describe("initPlantGrid", () => {
     const result = initPlantGrid({
       grid: testGridInputs(),
       openfarm_slug: "slug",
-      cropName: "beets",
+      itemName: "beets",
       gridId: "123",
       offsetPacking: false,
     });
     expect(result.length).toEqual(expectedGrid.length);
+    expect(result[0].pointer_type).toEqual("Plant");
     const vectors = result.map(x => [x.x, x.y]);
     expect(vectors).toEqual(expectedGrid);
+  });
+
+  it("saves a point grid", () => {
+    const result = initPlantGrid({
+      grid: testGridInputs(),
+      itemName: "grid point",
+      gridId: "123",
+      offsetPacking: false,
+      radius: 100,
+      color: "green",
+    });
+    expect(result.length).toEqual(expectedGrid.length);
+    expect(result[0].pointer_type).toEqual("GenericPointer");
+    expect(result[0].radius).toEqual(100);
+    expect(result[0].meta.color).toEqual("green");
+  });
+
+  it("saves a point grid using defaults", () => {
+    const result = initPlantGrid({
+      grid: testGridInputs(),
+      itemName: "grid point",
+      gridId: "123",
+      offsetPacking: false,
+    });
+    expect(result.length).toEqual(expectedGrid.length);
+    expect(result[0].pointer_type).toEqual("GenericPointer");
+    expect(result[0].radius).toEqual(25);
   });
 });
 

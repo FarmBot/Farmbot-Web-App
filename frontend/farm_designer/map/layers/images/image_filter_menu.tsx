@@ -220,7 +220,7 @@ export class ImageFilterMenu
 
 type StringValueUpdate = Partial<Record<StringConfigKey, string | undefined>>;
 
-const setWebAppConfigValues = (update: StringValueUpdate) =>
+export const setWebAppConfigValues = (update: StringValueUpdate) =>
   (dispatch: Function, getState: GetState) => {
     const webAppConfig = getWebAppConfig(getState().resources.index);
     if (webAppConfig) {

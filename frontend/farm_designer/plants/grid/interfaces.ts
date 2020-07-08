@@ -14,23 +14,29 @@ export interface PlantGridState {
   grid: PlantGridData;
   gridId: string;
   offsetPacking: boolean;
+  cameraView: boolean;
 }
 
 export interface PlantGridProps {
   xy_swap: boolean;
-  openfarm_slug: string;
-  cropName: string;
+  openfarm_slug?: string;
+  itemName: string;
   dispatch: Function;
   botPosition: BotPosition;
-  spread: number | undefined;
+  spread?: number | undefined;
+  color?: string;
+  radius?: number;
+  close?: () => void;
 }
 
 export interface PlantGridInitOption {
   grid: PlantGridData;
   gridId: string;
   offsetPacking: boolean;
-  openfarm_slug: string;
-  cropName: string;
+  openfarm_slug?: string;
+  itemName: string;
+  color?: string;
+  radius?: number;
 }
 
 interface GridInputPropsBase {

@@ -34,7 +34,10 @@ export class ImageFlipper extends
           <PlaceholderImg
             textOverlay={t("Image loading (try refreshing)")} />}
         <img
-          onLoad={() => this.setState({ isLoaded: true })}
+          onLoad={e => {
+            this.setState({ isLoaded: true });
+            this.props.imageLoadCallback?.(e.currentTarget);
+          }}
           className={`image-flipper-image is-loaded-${this.state.isLoaded}`}
           src={url} />
       </div>;

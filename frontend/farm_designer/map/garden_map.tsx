@@ -390,6 +390,8 @@ export class GardenMap extends
   });
   ImageLayer = () => <ImageLayer
     images={this.props.latestImages}
+    hiddenImages={this.props.designer.hiddenImages}
+    hoveredMapImage={this.props.designer.hoveredMapImage}
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
@@ -428,7 +430,7 @@ export class GardenMap extends
     editing={this.isEditing}
     animate={this.animate} />
   PlantRadiusLayer = () => <PlantRadiusLayer
-    visible={true}
+    visible={!!this.props.showPlants}
     mapTransformProps={this.mapTransformProps}
     plants={this.props.plants}
     animate={this.animate} />
@@ -437,6 +439,9 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredPoint={this.props.designer.hoveredPoint}
     visible={!!this.props.showPoints}
+    cameraViewGridId={this.props.designer.cameraViewGridId}
+    cameraCalibrationData={this.props.cameraCalibrationData}
+    cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     interactions={this.interactions("GenericPointer")}
     genericPoints={this.props.genericPoints} />
   WeedLayer = () => <WeedLayer

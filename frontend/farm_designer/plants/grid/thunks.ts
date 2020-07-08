@@ -1,14 +1,14 @@
 import { GetState } from "../../../redux/interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { selectAllPlantPointers } from "../../../resources/selectors";
-import { TaggedPlantPointer } from "farmbot";
+import { selectAllActivePoints } from "../../../resources/selectors";
+import { TaggedPoint } from "farmbot";
 import { destroy, saveAll } from "../../../api/crud";
 
 const filterByGridId = (gridId: string) =>
-  (p: TaggedPlantPointer) => p.body.meta["gridId"] === gridId;
+  (p: TaggedPoint) => p.body.meta["gridId"] === gridId;
 
 function findPlantByGridId(index: ResourceIndex, gridId: string) {
-  const allPlants = selectAllPlantPointers(index);
+  const allPlants = selectAllActivePoints(index);
   const myPlants = allPlants.filter(filterByGridId(gridId));
   return myPlants;
 }

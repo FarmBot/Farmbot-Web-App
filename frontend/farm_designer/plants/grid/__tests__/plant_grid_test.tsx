@@ -14,13 +14,14 @@ import { saveGrid, stashGrid } from "../thunks";
 import { error, success } from "../../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
 import { init } from "../../../../api/crud";
+import { Actions } from "../../../../constants";
 
 describe("PlantGrid", () => {
   function fakeProps(): PlantGridProps {
     return {
       xy_swap: true,
       openfarm_slug: "beets",
-      cropName: "Beets",
+      itemName: "Beets",
       dispatch: jest.fn(() => Promise.resolve({})),
       botPosition: { x: undefined, y: undefined, z: undefined },
       spread: undefined,
@@ -45,13 +46,23 @@ describe("PlantGrid", () => {
   });
 
   it("saves a grid", async () => {
-    const props = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    const p = fakeProps();
+    p.close = jest.fn();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />).instance();
     const oldId = wrapper.state.gridId;
     await wrapper.saveGrid();
     expect(saveGrid).toHaveBeenCalledWith(oldId);
     expect(success).toHaveBeenCalledWith("6 plants added.");
     expect(wrapper.state.gridId).not.toEqual(oldId);
+    expect(p.close).toHaveBeenCalled();
+  });
+
+  it("saves a point grid", async () => {
+    const p = fakeProps();
+    p.openfarm_slug = undefined;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    await wrapper.instance().saveGrid();
+    expect(success).toHaveBeenCalledWith("6 points added.");
   });
 
   it("stashes a grid", async () => {
@@ -115,8 +126,39 @@ describe("PlantGrid", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     expect(wrapper.state().offsetPacking).toBeFalsy();
-    wrapper.find("button").last().simulate("click");
+    wrapper.find(".grid-planting-toggle").first().find("button")
+      .simulate("click");
     expect(wrapper.state().offsetPacking).toBeTruthy();
+    expect(init).toHaveBeenCalledTimes(6);
+  });
+
+  it("toggles camera view on", () => {
+    const p = fakeProps();
+    p.openfarm_slug = undefined;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    expect(wrapper.state().cameraView).toBeFalsy();
+    wrapper.find(".grid-planting-toggle").last().find("button")
+      .simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SHOW_CAMERA_VIEW_POINTS,
+      payload: wrapper.state().gridId,
+    });
+    expect(wrapper.state().cameraView).toBeTruthy();
+    expect(init).toHaveBeenCalledTimes(6);
+  });
+
+  it("toggles camera view off", () => {
+    const p = fakeProps();
+    p.openfarm_slug = undefined;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ cameraView: true });
+    wrapper.find(".grid-planting-toggle").last().find("button")
+      .simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SHOW_CAMERA_VIEW_POINTS,
+      payload: undefined,
+    });
+    expect(wrapper.state().cameraView).toBeFalsy();
     expect(init).toHaveBeenCalledTimes(6);
   });
 });

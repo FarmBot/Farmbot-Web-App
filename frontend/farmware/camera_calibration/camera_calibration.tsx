@@ -21,8 +21,9 @@ import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 import { UUID } from "../../resources/interfaces";
-import { DevSettings } from "../../account/dev/dev_support";
 import { Content } from "../../constants";
+import { getCalibratedImageCenter } from "../images/photos";
+import { semverCompare, SemverResult } from "../../util";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -47,6 +48,7 @@ export class CameraCalibration extends
     const { wdEnvGet } = this;
     const camDisabled = cameraBtnProps(this.props.env);
     const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
+    const version = this.props.versions["plant-detection"] || "";
     return <div className="camera-calibration">
       <div className="farmware-button">
         <MustBeOnline
@@ -64,7 +66,8 @@ export class CameraCalibration extends
       </div>
       <Row>
         <Col sm={12}>
-          {(DevSettings.futureFeaturesEnabled() || easyCalibration) &&
+          {(semverCompare(version, "0.0.12") == SemverResult.LEFT_IS_GREATER
+            || easyCalibration) &&
             <div className={"simple-camera-calibration-checkbox"}>
               <BoolConfig
                 wdEnvGet={wdEnvGet}
@@ -98,6 +101,7 @@ export class CameraCalibration extends
           <CameraCalibrationConfig
             values={this.props.wDEnv}
             calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
+            calibrationImageCenter={getCalibratedImageCenter(this.props.env)}
             onChange={this.saveEnvVar} />
         </Col>
       </Row>

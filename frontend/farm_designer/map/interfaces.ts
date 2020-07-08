@@ -84,6 +84,9 @@ export interface GardenPlantState {
 export interface GardenPointProps {
   mapTransformProps: MapTransformProps;
   point: TaggedGenericPointer;
+  cameraViewGridId: string | undefined;
+  cameraCalibrationData: CameraCalibrationData;
+  cropPhotos: boolean;
   hovered: boolean;
   dispatch: Function;
 }

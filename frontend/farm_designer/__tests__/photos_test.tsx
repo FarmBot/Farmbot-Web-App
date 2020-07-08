@@ -18,6 +18,8 @@ import { ExpandableHeader } from "../../ui";
 import { destroyAll } from "../../api/crud";
 import { success, error } from "../../toast/toast";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
+import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -33,6 +35,9 @@ describe("<DesignerPhotos />", () => {
     saveFarmwareEnv: jest.fn(),
     imageJobs: [],
     versions: {},
+    imageFilterBegin: undefined,
+    imageFilterEnd: undefined,
+    hiddenImages: [],
   });
 
   it("renders photos panel", () => {
@@ -72,6 +77,28 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.images.length).toEqual(2);
     expect(props.versions).toEqual({ "My Fake Farmware": "0.0.0" });
+  });
+
+  it("returns set image filter settings", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.photo_filter_begin = "2017-09-03T20:01:40.336Z";
+    webAppConfig.body.photo_filter_end = "2017-09-27T14:00:47.326Z";
+    state.resources = buildResourceIndex([webAppConfig]);
+    expect(mapStateToProps(state).imageFilterBegin)
+      .toEqual("2017-09-03T20:01:40.336Z");
+    expect(mapStateToProps(state).imageFilterEnd)
+      .toEqual("2017-09-27T14:00:47.326Z");
+  });
+
+  it("returns unset image filter settings", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.photo_filter_begin = "";
+    webAppConfig.body.photo_filter_end = "";
+    state.resources = buildResourceIndex([webAppConfig]);
+    expect(mapStateToProps(state).imageFilterBegin).toEqual(undefined);
+    expect(mapStateToProps(state).imageFilterEnd).toEqual(undefined);
   });
 });
 

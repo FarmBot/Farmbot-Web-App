@@ -420,6 +420,30 @@
     .delete-row {
       margin: 1.5rem;
     }
+    hr {
+      border-color: $medium_gray;
+    }
+    .grid-and-row-planting {
+      hr {
+        border-color: $medium_gray;
+      }
+      label {
+        color: $dark_gray;
+      }
+      .preview-button,
+      .cancel-button,
+      .save-button {
+        text-decoration: none !important;
+        color: $dark_gray;
+        &:hover {
+          color: $black;
+          background: $off_white;
+        }
+      }
+      .use-current-location {
+        margin-top: 0;
+      }
+    }
   }
 }
 
@@ -617,47 +641,64 @@
 .add-plant-panel {
   .panel-header {
     height: 100%;
-    .grid-and-row-planting {
-      hr {
-        opacity: 0.7;
-        border-top: 1.5px solid $white;
-      }
-      .row {
-        div[class*=col-] {
-          padding-left: 1.5rem;
-          padding-right: 0;
-        }
-      }
-      label {
-        color: $white;
-      }
-      .use-current-location {
-        padding: 0;
-        margin-top: 2rem;
-        button {
-          position: absolute;
-          left: 1rem;
-          margin-top: 0.5rem;
-          height: 2.75rem;
-          .fa {
-            font-size: 1.5rem;
-          }
-        }
-      }
-      .grid-input {
-        i[class*=fa-arrow] {
-          margin-right: 0.35rem;
-          cursor: default !important;
-        }
-      }
-      .packing-method {
-        margin-bottom: 2rem;
-      }
-      .fb-toggle-button {
-        float: none;
-        margin-left: 1rem;
+  }
+}
+
+.grid-and-row-planting {
+  hr {
+    opacity: 0.7;
+    border-top: 1.5px solid $white;
+  }
+  .row {
+    div[class*=col-] {
+      padding-left: 1.5rem;
+      padding-right: 0;
+    }
+  }
+  label {
+    color: $white;
+  }
+  .use-current-location {
+    padding: 0;
+    margin-top: 2rem;
+    button {
+      position: absolute;
+      left: 1rem;
+      margin-top: 0.5rem;
+      height: 2.75rem;
+      .fa {
+        font-size: 1.5rem;
       }
     }
+  }
+  .grid-input {
+    i[class*=fa-arrow] {
+      margin-right: 0.35rem;
+      cursor: default !important;
+    }
+  }
+  .grid-planting-toggle {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .fb-toggle-button {
+    float: none;
+    margin-left: 1rem;
+  }
+  .preview-button,
+  .cancel-button,
+  .save-button {
+    text-transform: uppercase;
+    font-size: 1rem;
+    border: 1px solid;
+    padding: 0.4rem 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    color: $off_white;
+    margin-top: 1.25rem;
+    margin-right: 1.5rem;
+    &:hover { color: $white; }
   }
 }
 
@@ -1579,6 +1620,20 @@
       top: unset;
       right: unset;
     }
+    .photos-settings {
+      label {
+        margin-left: 0.5rem;
+        font-style: normal;
+      }
+      .bp3-popover-wrapper {
+        display: inline;
+        margin-left: 0.5rem;
+      }
+      .fb-toggle-button {
+        padding-top: unset;
+        margin-top: 2rem;
+      }
+    }
   }
 }
 
@@ -1660,21 +1715,6 @@
   .row {
     margin: 0;
   }
-}
-.preview-button,
-.cancel-button,
-.save-button {
-  text-transform: uppercase;
-  font-size: 1rem;
-  border: 1px solid;
-  padding: 0.4rem 1.2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  border-radius: 4px;
-  color: $off_white;
-  margin-top: 1.25rem;
-  margin-right: 1.5rem;
-  &:hover { color: $white; }
 }
 
 .desktop-hide {

@@ -2,7 +2,6 @@ import { GetState } from "../redux/interfaces";
 import { edit, save } from "../api/crud";
 import {
   BooleanConfigKey,
-  WebAppConfig,
   NumberConfigKey,
   StringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
@@ -13,8 +12,7 @@ export function toggleWebAppBool(key: BooleanConfigKey) {
   return (dispatch: Function, getState: GetState) => {
     const conf = getWebAppConfig(getState().resources.index);
     if (conf) {
-      const val = !(conf.body as WebAppConfig)[key];
-      dispatch(edit(conf, { [key]: val }));
+      dispatch(edit(conf, { [key]: !conf.body[key] }));
       dispatch(save(conf.uuid));
     } else {
       throw new Error("Toggled settings before app was loaded.");
@@ -34,7 +32,7 @@ export type GetWebAppConfigValue = (k: WebAppConfigKey) => WebAppConfigValue;
 export function getWebAppConfigValue(getState: GetState) {
   return (key: WebAppConfigKey): WebAppConfigValue => {
     const conf = getWebAppConfig(getState().resources.index);
-    return conf && (conf.body as WebAppConfig)[key];
+    return conf && conf.body[key];
   };
 }
 

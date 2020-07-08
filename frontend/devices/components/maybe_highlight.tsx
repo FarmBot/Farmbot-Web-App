@@ -68,7 +68,7 @@ const ENCODERS_PANEL = [
   DeviceSetting.useEncodersForPositioning,
   DeviceSetting.invertEncoders,
   DeviceSetting.maxMissedSteps,
-  DeviceSetting.motorLoad,
+  DeviceSetting.maxMotorLoad,
   DeviceSetting.missedStepDecay,
   DeviceSetting.gracePeriod,
   DeviceSetting.encoderScaling,
@@ -233,8 +233,8 @@ ALTERNATE_NAMES[DeviceSetting.enableStallDetection]
   .push(DeviceSetting.enableEncoders);
 ALTERNATE_NAMES[DeviceSetting.missedStepDecay].push(DeviceSetting.gracePeriod);
 ALTERNATE_NAMES[DeviceSetting.gracePeriod].push(DeviceSetting.missedStepDecay);
-ALTERNATE_NAMES[DeviceSetting.motorLoad].push(DeviceSetting.maxMissedSteps);
-ALTERNATE_NAMES[DeviceSetting.maxMissedSteps].push(DeviceSetting.motorLoad);
+ALTERNATE_NAMES[DeviceSetting.maxMotorLoad].push(DeviceSetting.maxMissedSteps);
+ALTERNATE_NAMES[DeviceSetting.maxMissedSteps].push(DeviceSetting.maxMotorLoad);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>

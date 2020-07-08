@@ -9,6 +9,7 @@ import { genericWeedIcon } from "../point_groups/point_group_item";
 import { getMode } from "../map/util";
 import { Mode } from "../map/interfaces";
 import { mapPointClickAction } from "../map/actions";
+import { round } from "lodash";
 
 export interface WeedInventoryItemProps {
   tpp: TaggedWeedPointer;
@@ -62,7 +63,7 @@ export class WeedInventoryItem extends
         {weed.name || t("Untitled weed")}
       </span>
       <p className="weed-search-item-info">
-        <i>{`(${weed.x}, ${weed.y}) r${weed.radius}`}</i>
+        <i>{`(${round(weed.x)}, ${round(weed.y)}) r${round(weed.radius)}`}</i>
       </p>
     </div>;
   }

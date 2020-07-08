@@ -14,7 +14,9 @@ import {
 import { DrawnPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
 import { deletePoints } from "../../api/delete_points";
-import { GenericPointer, WeedPointer } from "farmbot/dist/resources/api_resources";
+import {
+  GenericPointer, WeedPointer,
+} from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
@@ -23,9 +25,12 @@ import {
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
-import { history, getPathArray } from "../../history";
+import { push, getPathArray } from "../../history";
 import { ListItem } from "../plants/plant_panel";
 import { success } from "../../toast/toast";
+import { PlantGrid } from "../plants/grid/plant_grid";
+import { getWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -35,6 +40,7 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
     drawnPoint: drawnPoint || drawnWeed,
     deviceX: position.x || 0,
     deviceY: position.y || 0,
+    xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
   };
 }
 
@@ -43,6 +49,7 @@ export interface CreatePointsProps {
   drawnPoint: DrawnPointPayl | undefined;
   deviceX: number;
   deviceY: number;
+  xySwap: boolean;
 }
 
 type CreatePointsState = Partial<DrawnPointPayl>;
@@ -195,8 +202,10 @@ export class RawCreatePoints
       ? t("Weed created.")
       : t("Point created."));
     this.cancel();
-    history.push(`/app/designer/${this.panel}`);
+    this.closePanel();
   }
+
+  closePanel = () => push(`/app/designer/${this.panel}`);
 
   PointProperties = () =>
     <ul>
@@ -306,6 +315,7 @@ export class RawCreatePoints
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
     const panelDescription = this.panel == "weeds" ?
       Content.CREATE_WEEDS_DESCRIPTION : Content.CREATE_POINTS_DESCRIPTION;
+    const point = this.getPointData();
     return <DesignerPanel panelName={"point-creation"} panel={panelType}>
       <DesignerPanelHeader
         panelName={"point-creation"}
@@ -316,6 +326,16 @@ export class RawCreatePoints
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
         <this.PointActions />
+        {panelType == Panel.Points &&
+          <PlantGrid
+            xy_swap={this.props.xySwap}
+            itemName={point.name || t("Grid point")}
+            color={point.color}
+            radius={point.r}
+            dispatch={this.props.dispatch}
+            botPosition={{ x: this.props.deviceX, y: this.props.deviceY, z: 0 }}
+            close={this.closePanel} />}
+        <hr />
         {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
       </DesignerPanelContent>
     </DesignerPanel>;

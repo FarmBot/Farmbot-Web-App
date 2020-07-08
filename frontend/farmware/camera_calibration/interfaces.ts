@@ -25,10 +25,12 @@ export interface CameraCalibrationProps {
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
+  versions: Record<string, string>;
 }
 
 export interface CameraCalibrationConfigProps {
   values: Partial<WD_ENV>;
   onChange(key: keyof WD_ENV, value: number): void;
   calibrationZ: string | undefined;
+  calibrationImageCenter: Record<"x" | "y", string | undefined>;
 }

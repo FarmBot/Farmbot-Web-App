@@ -43,7 +43,7 @@ module Devices
       def tools_watering_nozzle; end
       def tools_weeder; end
       def settings_device_name; end
-      def settings_enable_encoders; end
+      def settings_change_firmware_config_defaults; end
     end
   end
 end
