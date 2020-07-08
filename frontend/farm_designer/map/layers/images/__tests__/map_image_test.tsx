@@ -15,7 +15,7 @@ import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
 
-const NOT_DISPLAYED = "<svg><image></image></svg>";
+const NOT_DISPLAYED = "image-not-shown";
 
 describe("<MapImage />", () => {
   const fakeProps = (): MapImageProps => {
@@ -43,12 +43,12 @@ describe("<MapImage />", () => {
 
   it("doesn't render image", () => {
     const wrapper = svgMount(<MapImage {...fakeProps()} />);
-    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
+    expect(wrapper.html()).toContain(NOT_DISPLAYED);
   });
 
   it("renders pre-calibration preview", () => {
     const p = fakeProps();
-    p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
+    p.image.body.meta = { x: 0, y: 0, z: 0 };
     const wrapper = svgMount(<MapImage {...p} />);
     wrapper.find(MapImage).setState({ imageWidth: 100, imageHeight: 100 });
     expect(wrapper.html()).toContain("image_url");
@@ -56,7 +56,7 @@ describe("<MapImage />", () => {
 
   it("gets image size", () => {
     const p = fakeProps();
-    p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
+    p.image.body.meta = { x: 0, y: 0, z: 0 };
     const wrapper = svgMount(<MapImage {...p} />);
     expect(wrapper.find(MapImage).state())
       .toEqual({ imageWidth: 0, imageHeight: 0 });
@@ -118,10 +118,10 @@ describe("<MapImage />", () => {
     };
 
   const INPUT_SET_1 = fakeProps();
-  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.x = 0);
-  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.y = 0);
-  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.z = 0);
-  INPUT_SET_1.image && (INPUT_SET_1.image.body.meta.name = "rotated_image");
+  INPUT_SET_1.image.body.meta.x = 0;
+  INPUT_SET_1.image.body.meta.y = 0;
+  INPUT_SET_1.image.body.meta.z = 0;
+  INPUT_SET_1.image.body.meta.name = "rotated_image";
   INPUT_SET_1.cameraCalibrationData = {
     offset: { x: "50", y: "75" },
     center: { x: "240", y: "320" },
@@ -135,15 +135,15 @@ describe("<MapImage />", () => {
     INPUT_SET_1.mapTransformProps.quadrant = 3;
 
   const INPUT_SET_2 = cloneDeep(INPUT_SET_1);
-  INPUT_SET_2.image && (INPUT_SET_2.image.body.meta = {
+  INPUT_SET_2.image.body.meta = {
     x: 221, y: 308, z: 1, name: "marked_image"
-  });
+  };
   INPUT_SET_2.cameraCalibrationData.origin = "TOP_RIGHT";
   INPUT_SET_2.mapTransformProps.quadrant = 1;
 
   const INPUT_SET_3 = cloneDeep(INPUT_SET_2);
   INPUT_SET_3.mapTransformProps.quadrant = 2;
-  INPUT_SET_3.image && (INPUT_SET_3.image.body.meta.name = "calibration_result");
+  INPUT_SET_3.image.body.meta.name = "calibration_result";
 
   const INPUT_SET_4 = cloneDeep(INPUT_SET_3);
   INPUT_SET_4.mapTransformProps.quadrant = 3;
@@ -183,7 +183,7 @@ describe("<MapImage />", () => {
   INPUT_SET_15.cameraCalibrationData.origin = "TOP_RIGHT";
 
   const INPUT_SET_16 = cloneDeep(INPUT_SET_11);
-  INPUT_SET_16.image && (INPUT_SET_16.image.body.meta.name = "1234");
+  INPUT_SET_16.image.body.meta.name = "1234";
   INPUT_SET_16.cropImage = false;
   INPUT_SET_16.cameraCalibrationData.origin = "TOP_LEFT";
 
@@ -194,13 +194,18 @@ describe("<MapImage />", () => {
   INPUT_SET_18.cameraCalibrationData.origin = "BOTTOM_RIGHT";
 
   const INPUT_SET_19 = cloneDeep(INPUT_SET_18);
-  INPUT_SET_19.image && (INPUT_SET_19.image.body.meta.name = "1234");
+  INPUT_SET_19.image.body.meta.name = "1234";
 
   const INPUT_SET_20 = cloneDeep(INPUT_SET_19);
   INPUT_SET_20.cropImage = true;
-  INPUT_SET_20.image && (INPUT_SET_20.image.body.meta.name = "1234");
+  INPUT_SET_20.image.body.meta.name = "1234";
   INPUT_SET_20.cameraCalibrationData.rotation = undefined;
-  INPUT_SET_10.cropImage = true;
+
+  const INPUT_SET_21 = cloneDeep(INPUT_SET_20);
+  INPUT_SET_21.cameraCalibrationData.rotation = "50";
+
+  const INPUT_SET_22 = cloneDeep(INPUT_SET_18);
+  INPUT_SET_22.cameraCalibrationData.origin = "TOP_RIGHT";
 
   const DATA = [
     INPUT_SET_1,
@@ -208,6 +213,7 @@ describe("<MapImage />", () => {
     INPUT_SET_6, INPUT_SET_7, INPUT_SET_8, INPUT_SET_9, INPUT_SET_10,
     INPUT_SET_11, INPUT_SET_12, INPUT_SET_13, INPUT_SET_14, INPUT_SET_15,
     INPUT_SET_16, INPUT_SET_17, INPUT_SET_18, INPUT_SET_19, INPUT_SET_20,
+    INPUT_SET_21, INPUT_SET_22,
   ];
 
   const expectedSize = { width: 385.968, height: 514.624 };
@@ -292,32 +298,40 @@ describe("<MapImage />", () => {
     size: expectedSize, sx: -1, sy: 1, tx: 142.984, ty: 2567.688,
     tOriginX: 193, tOriginY: 257, rotate: 0,
   });
+  renderedTest(21, DATA, {
+    size: expectedSize, sx: 1, sy: -1, tx: -142.984, ty: -2567.688,
+    tOriginX: 193, tOriginY: 257, rotate: -50, cropPath: "url(#rectangle-1)",
+  });
+  renderedTest(22, DATA, {
+    size: expectedSize, sx: 1, sy: 1, tx: -142.984, ty: 2567.688,
+    tOriginX: 193, tOriginY: 257, rotate: -47,
+  });
 
   it("doesn't render placeholder image", () => {
     const p = cloneDeep(INPUT_SET_1);
-    p.image && (p.image.body.attachment_url = "/placehold.");
+    p.image.body.attachment_url = "/placehold.";
     const wrapper = svgMount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
+    expect(wrapper.html()).toContain(NOT_DISPLAYED);
   });
 
   it("doesn't render image taken at different height than calibration", () => {
     const p = cloneDeep(INPUT_SET_1);
-    p.image && (p.image.body.meta.z = 100);
+    p.image.body.meta.z = 100;
     const wrapper = svgMount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
+    expect(wrapper.html()).toContain(NOT_DISPLAYED);
   });
 
   it("doesn't render images that are not adjusted for camera rotation", () => {
     const p = cloneDeep(INPUT_SET_1);
-    p.image && (p.image.body.meta.name = "na");
+    p.image.body.meta.name = "na";
     const wrapper = svgMount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
+    expect(wrapper.html()).toContain(NOT_DISPLAYED);
   });
 
   it("highlights image", () => {
     const p = cloneDeep(INPUT_SET_1);
     p.hoveredMapImage = 1;
-    p.image && (p.image.body.id = 1);
+    p.image.body.id = 1;
     const wrapper = svgMount(<MapImage {...p} />);
     wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
     expect(wrapper.find("image").props().opacity).toEqual(1);
@@ -327,7 +341,7 @@ describe("<MapImage />", () => {
   it("doesn't highlight image", () => {
     const p = cloneDeep(INPUT_SET_1);
     p.hoveredMapImage = 100;
-    p.image && (p.image.body.id = 1);
+    p.image.body.id = 1;
     const wrapper = svgMount(<MapImage {...p} />);
     wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
     expect(wrapper.find("image").props().opacity).toEqual(0.3);

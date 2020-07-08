@@ -194,7 +194,7 @@ const parseCalibrationData =
   };
 
 export interface MapImageProps {
-  image: TaggedImage | undefined;
+  image: TaggedImage;
   hoveredMapImage: number | undefined;
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
@@ -226,21 +226,20 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
   };
 
   render() {
+    const { imageWidth, imageHeight } = this.state;
     const { image, cameraCalibrationData, mapTransformProps, cropImage,
     } = this.props;
     const { noCalib, imageScale, imageRotation } =
       parseCalibrationData(cameraCalibrationData);
     const { calibrationZ, center } = cameraCalibrationData;
+    const imageMetaName = image.body.meta.name || "";
+    const alreadyRotated = !!isRotated(imageMetaName, noCalib);
+    const imageUploadName = last(imageMetaName.split("/"));
+    const { x, y, z } = image.body.meta;
 
-    /* Check if the image exists. */
-    if (image && !image.body.attachment_url.includes("placehold")) {
+    if (!image.body.attachment_url.includes("placehold")) {
       const imageUrl = image.body.attachment_url;
-      const { x, y, z } = image.body.meta;
-      const imageMetaName = image.body.meta.name || "";
-      const imageUploadName = last(imageMetaName.split("/"));
       getImageSize(imageUrl, this.imageCallback);
-      const { imageWidth, imageHeight } = this.state;
-      const alreadyRotated = !!isRotated(imageMetaName, noCalib);
 
       /* Check for necessary camera calibration and image data. */
       if (imageScale && cameraZCheck(z, calibrationZ) && cameraOrientationCheck(
@@ -254,7 +253,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
           const hovered = this.props.hoveredMapImage == image.body.id;
           const clipName = cropPathName(cropImage, imageRotation, image.body.id);
           return <g id={`image-${image.body.id}`}>
-            {clipName != "none" &&
+            {clipName != "none" && imageRotation &&
               <CropClipPaths imageId={image.body.id}
                 width={width} height={height}
                 transformOrigin={transformOrigin}
@@ -279,7 +278,10 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
         }
       }
     }
-    return <image />;
+    return <image id={"image-not-shown"}
+      data-comment={`${imageUploadName}: ${JSON.stringify({
+        image: { x, y, z, imageWidth, imageHeight }, cameraCalibrationData,
+      }).replace(/"/g, "")}`} />;
   }
 }
 
@@ -387,7 +389,7 @@ export const mapImagePositionData = (props: MapImagePositionDataProps):
         y: { y, offset: imageOffsetY, o: o.y, qy: qCoords.qy },
         quadrant, imageOrigin: imgOrigin, xySwap,
         rotated90: { camera: rotated90, image: height > width },
-      }),
+      }).replace(/"/g, ""),
     };
   }
 };
@@ -419,7 +421,7 @@ interface CropClipPathsProps {
   imageId: number | undefined;
   width: number;
   height: number;
-  rotation: number | undefined;
+  rotation: number;
   transformOrigin: string;
   alreadyRotated: boolean;
 }
@@ -431,7 +433,8 @@ const CropClipPaths = (props: CropClipPathsProps) => {
   const center = { x: round(width / 2), y: round(height / 2) };
   const narrow = Math.min(center.x, center.y);
   const crop = cropAmount(rotation, { width, height });
-  const rotate = alreadyRotated ? 0 : rotation || 0;
+  const rotate = alreadyRotated ? 0 : rotation;
+  const rotated90 = !alreadyRotated && rotated90degrees(rotation);
   return <g id={"crop-clip-paths"}>
     <clipPath id={`circle-${imageId}`}>
       <circle r={narrow} cx={center.x} cy={center.y} />
@@ -440,7 +443,7 @@ const CropClipPaths = (props: CropClipPathsProps) => {
       <rect x={crop / 2} y={crop / 2}
         width={round(width - crop)} height={round(height - crop)}
         style={{ transformOrigin }}
-        transform={`rotate(${rotate})`} />
+        transform={`rotate(${rotate - (rotated90 ? 90 : 0)})`} />
     </clipPath>
   </g>;
 };

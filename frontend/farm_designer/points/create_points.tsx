@@ -326,14 +326,15 @@ export class RawCreatePoints
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
         <this.PointActions />
-        <PlantGrid
-          xy_swap={this.props.xySwap}
-          itemName={point.name || t("Grid point")}
-          color={point.color}
-          radius={point.r}
-          dispatch={this.props.dispatch}
-          botPosition={{ x: this.props.deviceX, y: this.props.deviceY, z: 0 }}
-          close={this.closePanel} />
+        {panelType == Panel.Points &&
+          <PlantGrid
+            xy_swap={this.props.xySwap}
+            itemName={point.name || t("Grid point")}
+            color={point.color}
+            radius={point.r}
+            dispatch={this.props.dispatch}
+            botPosition={{ x: this.props.deviceX, y: this.props.deviceY, z: 0 }}
+            close={this.closePanel} />}
         <hr />
         {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
       </DesignerPanelContent>
