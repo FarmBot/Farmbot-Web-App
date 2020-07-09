@@ -1445,17 +1445,39 @@
     .pending-weeds-header,
     .active-weeds-header,
     .removed-weeds-header {
-      display: flex;
       margin-top: 1rem;
       margin-bottom: 1rem;
       label {
         margin: 0;
+        width: 44%;
         margin-left: 1rem;
         line-height: 2.1rem;
+      }
+      .fb-toggle-button {
+        margin-right: 2rem;
+        float: right;
       }
     }
     .no-weeds {
       margin-left: 2rem;
+    }
+    .fa-caret-down,
+    .fa-caret-up {
+      float: right;
+      font-size: 2rem;
+      margin-right: 2rem;
+      margin-top: 0.25rem;
+      color: $dark_gray;
+    }
+    i {
+      margin: 0.25rem;
+    }
+    button {
+      margin: 0.5rem;
+      float: none;
+    }
+    .approval-buttons {
+      display: inline;
     }
   }
 }
