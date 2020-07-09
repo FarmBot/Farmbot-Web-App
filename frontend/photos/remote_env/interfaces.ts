@@ -1,5 +1,5 @@
 /** Name of every env var that the weed detector farmware needs. */
-import { Primitive } from "../../../util";
+import { Primitive } from "../../util";
 import { WD_KEY_DEFAULTS } from "./constants";
 
 /** Weed detector ENV key. */

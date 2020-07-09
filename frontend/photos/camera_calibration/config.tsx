@@ -6,11 +6,11 @@ import { CameraCalibrationConfigProps } from "./interfaces";
 import {
   SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS,
 } from "./constants";
-import { WD_ENV } from "../weed_detector/remote_env/interfaces";
-import { envGet } from "../weed_detector/remote_env/selectors";
+import { WD_ENV } from "../remote_env/interfaces";
+import { envGet } from "../remote_env/selectors";
 import {
   SPECIAL_VALUES, CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS, namespace,
-} from "../weed_detector/remote_env/constants";
+} from "../remote_env/constants";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { ToolTips } from "../../constants";

@@ -1,6 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
-import { ImageWorkspace, ImageWorkspaceProps } from "../image_workspace";
+import { ImageWorkspace, ImageWorkspaceProps } from "../index";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";

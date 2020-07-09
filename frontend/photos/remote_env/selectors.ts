@@ -1,9 +1,9 @@
 import { WDENVKey, WD_ENV } from "./interfaces";
 import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
-import { defensiveClone, betterParseNum } from "../../../util";
+import { defensiveClone, betterParseNum } from "../../util";
 import { parseEnvKey } from "./translators";
 import { isNumber, isString } from "lodash";
-import { UserEnv } from "../../../devices/interfaces";
+import { UserEnv } from "../../devices/interfaces";
 
 /** Given a half formed set of weed detector environment variables, creates a
  * fully formed set of environment variables. When a variable is missing, it is

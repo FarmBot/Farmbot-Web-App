@@ -7,7 +7,7 @@ import {
 } from "../../devices/components/fbos_settings/camera_selection";
 import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
 import { ToggleButton } from "../../controls/toggle_button";
-import { SaveFarmwareEnv } from "../interfaces";
+import { SaveFarmwareEnv } from "../../farmware/interfaces";
 import { Help } from "../../ui";
 import { isUndefined } from "lodash";
 

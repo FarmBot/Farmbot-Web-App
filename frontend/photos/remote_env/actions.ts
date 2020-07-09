@@ -1,4 +1,4 @@
-import { getDevice } from "../../../device";
+import { getDevice } from "../../device";
 import { WDENVKey } from "./interfaces";
 import { formatEnvKey } from "./translators";
 

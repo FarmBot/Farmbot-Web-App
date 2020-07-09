@@ -1,21 +1,19 @@
 import * as React from "react";
 import { Row, Col } from "../../ui/index";
 import { CameraCalibrationProps } from "./interfaces";
-import {
-  ImageWorkspace, NumericKeyName,
-} from "../weed_detector/image_workspace";
-import { envSave } from "../weed_detector/remote_env/actions";
-import { WDENVKey } from "../weed_detector/remote_env/interfaces";
+import { ImageWorkspace, NumericKeyName } from "../image_workspace";
+import { envSave } from "../remote_env/actions";
+import { WDENVKey } from "../remote_env/interfaces";
 import { calibrate, scanImage } from "./actions";
-import { envGet } from "../weed_detector/remote_env/selectors";
+import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { CameraCalibrationConfig, BoolConfig } from "./config";
 import { Feature } from "../../devices/interfaces";
 import {
   namespace, CAMERA_CALIBRATION_KEY_PART,
-} from "../weed_detector/remote_env/constants";
+} from "../remote_env/constants";
 import { t } from "../../i18next_wrapper";
-import { formatEnvKey } from "../weed_detector/remote_env/translators";
+import { formatEnvKey } from "../remote_env/translators";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";

@@ -1,23 +1,23 @@
 import * as React from "react";
-import { DetectorState, WeedDetectorProps } from "./interfaces";
+import { WeedDetectorState, WeedDetectorProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";
 import { Feature } from "../../devices/interfaces";
-import { ImageWorkspace, NumericKeyName } from "./image_workspace";
-import { WDENVKey } from "./remote_env/interfaces";
-import { namespace, WEED_DETECTOR_KEY_PART } from "./remote_env/constants";
-import { envGet } from "./remote_env/selectors";
+import { ImageWorkspace, NumericKeyName } from "../image_workspace";
+import { WDENVKey } from "../remote_env/interfaces";
+import { namespace, WEED_DETECTOR_KEY_PART } from "../remote_env/constants";
+import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
-import { envSave } from "./remote_env/actions";
+import { envSave } from "../remote_env/actions";
 import { t } from "../../i18next_wrapper";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 
 export class WeedDetector
-  extends React.Component<WeedDetectorProps, Partial<DetectorState>> {
+  extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {
 
   constructor(props: WeedDetectorProps) {
     super(props);

@@ -1,9 +1,9 @@
 import { TaggedImage, SyncStatus } from "farmbot";
-import { WD_ENV } from "../weed_detector/remote_env/interfaces";
+import { WD_ENV } from "../remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
 import { TimeSettings } from "../../interfaces";
-import { SaveFarmwareEnv } from "../interfaces";
+import { SaveFarmwareEnv } from "../../farmware/interfaces";
 
 export interface CameraCalibrationProps {
   dispatch: Function;

@@ -10,7 +10,7 @@ import { scanImage } from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
-import { SPECIAL_VALUES } from "../../weed_detector/remote_env/constants";
+import { SPECIAL_VALUES } from "../../remote_env/constants";
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({

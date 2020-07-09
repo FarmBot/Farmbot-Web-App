@@ -2,7 +2,7 @@ import * as React from "react";
 import { LayerToggle } from "../legend/layer_toggle";
 import { GardenMapLegendProps } from "../interfaces";
 import { atMaxZoom, atMinZoom } from "../zoom";
-import { ImageFilterMenu } from "../../../farmware/images/image_filter_menu";
+import { ImageFilterMenu } from "../../../photos/images/image_filter_menu";
 import { BugsControls } from "../easter_eggs/bugs";
 import { MoveModeLink } from "../../move_to";
 import {

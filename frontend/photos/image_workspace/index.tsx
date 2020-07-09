@@ -8,10 +8,10 @@ import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { ToolTips } from "../../constants";
-import { WDENVKey } from "./remote_env/interfaces";
+import { WDENVKey } from "../remote_env/interfaces";
 import {
   CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS,
-} from "./remote_env/constants";
+} from "../remote_env/constants";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
