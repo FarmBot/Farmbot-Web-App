@@ -38,7 +38,6 @@ export interface NumericValues {
 export type NumericKeyName = keyof NumericValues;
 
 export interface ImageWorkspaceProps extends NumericValues {
-  onFlip(uuid: string | undefined): void;
   onProcessPhoto(image_id: number): void;
   currentImage: TaggedImage | undefined;
   images: TaggedImage[];

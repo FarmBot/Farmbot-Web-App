@@ -6,7 +6,6 @@ import {
 } from "../weed_detector/image_workspace";
 import { envSave } from "../weed_detector/remote_env/actions";
 import { WDENVKey } from "../weed_detector/remote_env/interfaces";
-import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
 import { envGet } from "../weed_detector/remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
@@ -20,10 +19,9 @@ import { formatEnvKey } from "../weed_detector/remote_env/translators";
 import {
   cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
-import { UUID } from "../../resources/interfaces";
 import { Content } from "../../constants";
-import { getCalibratedImageCenter } from "../images/photos";
 import { semverCompare, SemverResult } from "../../util";
+import { getCalibratedImageCenter } from "../images/shown_in_map";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -39,8 +37,6 @@ export class CameraCalibration extends
       ? this.props.dispatch(this.props.saveFarmwareEnv(
         key, JSON.stringify(formatEnvKey(key, value))))
       : envSave(key, value)
-
-  onFlip = (uuid: UUID) => this.props.dispatch(selectImage(uuid));
 
   wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
 
@@ -82,7 +78,6 @@ export class CameraCalibration extends
               botOnline={
                 isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={scanImage}
-              onFlip={this.onFlip}
               images={this.props.images}
               currentImage={this.props.currentImage}
               onChange={this.change}

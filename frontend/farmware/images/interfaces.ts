@@ -2,6 +2,7 @@ import { TaggedImage, JobProgress, SyncStatus } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { UserEnv } from "../../devices/interfaces";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
@@ -25,9 +26,11 @@ export interface PhotosProps {
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
   env: UserEnv;
-  imageFilterBegin: string | undefined;
-  imageFilterEnd: string | undefined;
   hiddenImages: number[];
+  shownImages: number[];
+  hideUnShownImages: boolean;
+  alwaysHighlightImage: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface PhotoButtonsProps {

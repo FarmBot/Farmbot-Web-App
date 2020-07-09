@@ -141,7 +141,7 @@ const PlantType = (props: PlantSubCriteriaProps) =>
       list={uniq(props.slugs
         .concat(props.group.body.criteria.string_eq.openfarm_slug || []))
         .map(slug =>
-          ({ label: capitalize(slug).replace("-", " "), value: slug }))} />
+          ({ label: capitalize(slug).replace(/-/g, " "), value: slug }))} />
   </div>;
 
 /** Criteria specific to weeds. */

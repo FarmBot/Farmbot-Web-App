@@ -196,6 +196,7 @@ const parseCalibrationData =
 export interface MapImageProps {
   image: TaggedImage;
   hoveredMapImage: number | undefined;
+  highlighted?: boolean;
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
   mapTransformProps: MapTransformProps;
@@ -258,7 +259,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
                 width={width} height={height}
                 transformOrigin={transformOrigin}
                 rotation={imageRotation} alreadyRotated={alreadyRotated} />}
-            {hovered &&
+            {(hovered || this.props.highlighted) &&
               <rect id={"highlight-border"}
                 x={0} y={0} height={height} width={width}
                 stroke={Color.orange} strokeWidth={10}

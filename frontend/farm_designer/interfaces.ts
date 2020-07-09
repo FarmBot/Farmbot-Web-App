@@ -139,6 +139,9 @@ export interface DesignerState {
   hoveredSequenceStep: string | undefined;
   settingsSearchTerm: string;
   hiddenImages: number[];
+  shownImages: number[];
+  hideUnShownImages: boolean;
+  alwaysHighlightImage: boolean;
   hoveredMapImage: number | undefined;
   cameraViewGridId: string | undefined;
 }

@@ -14,7 +14,8 @@ import { getStatus } from "../connectivity/reducer_support";
 import {
   prepopulateEnv, envGet,
 } from "../farmware/weed_detector/remote_env/selectors";
-import { Photos, PhotosSettings } from "../farmware/images/photos";
+import { Photos } from "../farmware/images/photos";
+import { CaptureSettings } from "../farmware/images/capture_settings";
 import {
   CameraCalibration,
 } from "../farmware/camera_calibration/camera_calibration";
@@ -32,7 +33,9 @@ import { destroyAll } from "../api/crud";
 import { success, error } from "../toast/toast";
 import { isBotOnline } from "../devices/must_be_online";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
-import { getWebAppConfigValue } from "../config_storage/actions";
+import {
+  getWebAppConfigValue, GetWebAppConfigValue,
+} from "../config_storage/actions";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -47,9 +50,11 @@ export interface DesignerPhotosProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   imageJobs: JobProgress[];
   versions: Record<string, string>;
-  imageFilterBegin: string | undefined;
-  imageFilterEnd: string | undefined;
   hiddenImages: number[];
+  shownImages: number[];
+  hideUnShownImages: boolean;
+  alwaysHighlightImage: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 interface DesignerPhotosState {
@@ -74,9 +79,9 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     .map(([farmwareName, manifest]) =>
       versions[farmwareName] = manifest.meta.version);
 
-  const getConfigValue = getWebAppConfigValue(() => props);
-  const imageFilterBegin = getConfigValue("photo_filter_begin");
-  const imageFilterEnd = getConfigValue("photo_filter_end");
+  const {
+    hiddenImages, shownImages, hideUnShownImages, alwaysHighlightImage,
+  } = props.resources.consumers.farm_designer;
 
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -91,9 +96,11 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     imageJobs: getImageJobs(props.bot.hardware.jobs),
     versions,
-    imageFilterBegin: imageFilterBegin ? "" + imageFilterBegin : undefined,
-    imageFilterEnd: imageFilterEnd ? "" + imageFilterEnd : undefined,
-    hiddenImages: props.resources.consumers.farm_designer.hiddenImages,
+    hiddenImages,
+    shownImages,
+    hideUnShownImages,
+    alwaysHighlightImage,
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 };
 
@@ -150,7 +157,7 @@ export class RawDesignerPhotos
         <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"}>
           <Update version={this.props.versions["take-photo"]}
             farmwareName={"take-photo"} botOnline={botOnline} />
-          <PhotosSettings
+          <CaptureSettings
             dispatch={this.props.dispatch}
             env={this.props.env}
             botOnline={botOnline}
@@ -159,9 +166,11 @@ export class RawDesignerPhotos
             shouldDisplay={this.props.shouldDisplay} />
         </ToolTip>
         <Photos {...common}
-          imageFilterBegin={this.props.imageFilterBegin}
-          imageFilterEnd={this.props.imageFilterEnd}
           hiddenImages={this.props.hiddenImages}
+          shownImages={this.props.shownImages}
+          hideUnShownImages={this.props.hideUnShownImages}
+          alwaysHighlightImage={this.props.alwaysHighlightImage}
+          getConfigValue={this.props.getConfigValue}
           imageJobs={this.props.imageJobs} />
         <ExpandableHeader
           expanded={!!this.state.calibration}

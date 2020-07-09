@@ -1,13 +1,13 @@
-jest.mock("../../../../../api/crud", () => ({
+jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
 }));
 
 import {
   fakeWebAppConfig,
-} from "../../../../../__test_support__/fake_state/resources";
+} from "../../../__test_support__/fake_state/resources";
 const mockConfig = fakeWebAppConfig();
-jest.mock("../../../../../resources/selectors", () => ({
+jest.mock("../../../resources/selectors", () => ({
   getWebAppConfig: () => mockConfig,
   assertUuid: jest.fn(),
 }));
@@ -18,12 +18,12 @@ import { shallow, mount } from "enzyme";
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import {
   fakeTimeSettings,
-} from "../../../../../__test_support__/fake_time_settings";
-import { edit, save } from "../../../../../api/crud";
-import { fakeState } from "../../../../../__test_support__/fake_state";
+} from "../../../__test_support__/fake_time_settings";
+import { edit, save } from "../../../api/crud";
+import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
-} from "../../../../../__test_support__/resource_index_builder";
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";

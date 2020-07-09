@@ -38,6 +38,7 @@ describe("<MapImage />", () => {
       mapTransformProps: fakeMapTransformProps(),
       cropImage: false,
       hoveredMapImage: undefined,
+      highlighted: false,
     };
   };
 

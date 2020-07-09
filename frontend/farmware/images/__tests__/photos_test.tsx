@@ -3,34 +3,21 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
-jest.mock("../actions", () => ({ selectImage: jest.fn() }));
-
-jest.mock("../../../farm_designer/map/layers/images/image_filter_menu", () => ({
-  setWebAppConfigValues: jest.fn(),
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import {
-  Photos, ImageMetaFilterMenu, ImageFilterProps, PhotosSettings,
-  PhotosSettingsProps,
-  DISABLE_ROTATE_AT_CAPTURE_KEY,
-  PhotoFooter,
-  PhotoFooterProps,
-} from "../photos";
+import { Photos, PhotoFooter, PhotoFooterProps } from "../photos";
 import { JobProgress } from "farmbot";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 import { PhotosProps } from "../interfaces";
-import { selectImage } from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
 import { Content, ToolTips, Actions } from "../../../constants";
-import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import {
-  setWebAppConfigValues,
-} from "../../../farm_designer/map/layers/images/image_filter_menu";
+  fakeImage, fakeWebAppConfig,
+} from "../../../__test_support__/fake_state/resources";
+import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 
 describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({
@@ -42,19 +29,26 @@ describe("<Photos/>", () => {
     botToMqttStatus: "up",
     syncStatus: "synced",
     env: {},
-    imageFilterBegin: undefined,
-    imageFilterEnd: undefined,
     hiddenImages: [],
+    shownImages: [],
+    hideUnShownImages: false,
+    alwaysHighlightImage: false,
+    getConfigValue: jest.fn(),
   });
 
   it("shows photo", () => {
     const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.show_images = true;
+    config.body.photo_filter_begin = "";
+    config.body.photo_filter_end = "";
+    p.getConfigValue = jest.fn(key => config.body[key]);
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("Created At:June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:164");
-    expect(wrapper.find(".fa-check-circle.green").length).toEqual(1);
+    expect(wrapper.find(".fa-eye.green").length).toEqual(1);
   });
 
   it("shows photo not in map", () => {
@@ -66,7 +60,7 @@ describe("<Photos/>", () => {
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("Created At:June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:100");
-    expect(wrapper.find(".fa-times-circle.gray").length).toEqual(1);
+    expect(wrapper.find(".fa-eye-slash.gray").length).toEqual(1);
   });
 
   it("no photos", () => {
@@ -180,8 +174,10 @@ describe("<Photos/>", () => {
     const p = fakeProps();
     p.images = fakeImages;
     const wrapper = shallow(<Photos {...p} />);
-    wrapper.find("ImageFlipper").simulate("flip", 1);
-    expect(selectImage).toHaveBeenCalledWith(1);
+    wrapper.find("ImageFlipper").simulate("flip", "uuid");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_IMAGE, payload: "uuid",
+    });
   });
 
   it("updates photo size", () => {
@@ -199,96 +195,13 @@ describe("<Photos/>", () => {
     wrapper.instance().imageLoadCallback(img);
     expect(wrapper.state()).toEqual({ imageWidth: 10, imageHeight: 20 });
   });
-});
 
-describe("<ImageMetaFilterMenu />", () => {
-  const fakeProps = (): ImageFilterProps => ({
-    image: fakeImage(),
-    dispatch: jest.fn(),
-    flags: { inRange: true, notHidden: true, zMatch: true, sizeMatch: true },
-  });
-
-  it("renders as shown in map", () => {
-    const wrapper = mount(<ImageMetaFilterMenu {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("not shown in map");
-  });
-
-  it("renders as not shown in map", () => {
+  it("unselects photos upon exit", () => {
     const p = fakeProps();
-    p.flags.inRange = false;
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("not shown in map");
-  });
-
-  it("sets map image highlight", () => {
-    const p = fakeProps();
-    p.image.body.id = 1;
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    wrapper.find(".shown-in-map-details").simulate("mouseEnter");
+    const wrapper = mount(<Photos {...p} />);
+    wrapper.unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1,
-    });
-    wrapper.find(".shown-in-map-details").simulate("mouseLeave");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
-    });
-  });
-
-  it("sets filter settings for single image viewing", () => {
-    const p = fakeProps();
-    p.image.body.created_at = "2001-01-03T05:00:01.000Z";
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    wrapper.find(".this-image-section").find("button").simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
-      photo_filter_begin: "2001-01-03T05:00:00.000Z",
-      photo_filter_end: "2001-01-03T05:00:02.000Z",
-    });
-  });
-
-  it("sets filter settings to current image and earlier", () => {
-    const p = fakeProps();
-    p.image.body.created_at = "2001-01-03T05:00:01.000Z";
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    wrapper.find(".newer-older-images-section").find("button").first()
-      .simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
-      photo_filter_begin: "",
-      photo_filter_end: "2001-01-03T05:00:02.000Z",
-    });
-  });
-
-  it("sets filter settings to current image and later", () => {
-    const p = fakeProps();
-    p.image.body.created_at = "2001-01-03T05:00:01.000Z";
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    wrapper.find(".newer-older-images-section").find("button").last()
-      .simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
-      photo_filter_begin: "2001-01-03T05:00:00.000Z",
-      photo_filter_end: "",
-    });
-  });
-
-  it("hides map image", () => {
-    const p = fakeProps();
-    p.image.body.id = 1;
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hide");
-    wrapper.find(".hide-single-image-section").find("button").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HIDE_MAP_IMAGE, payload: 1,
-    });
-  });
-
-  it("shows map image", () => {
-    const p = fakeProps();
-    p.image.body.id = 1;
-    p.flags.notHidden = false;
-    const wrapper = mount(<ImageMetaFilterMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("show");
-    wrapper.find(".hide-single-image-section").find("button").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SHOW_MAP_IMAGE, payload: 1,
+      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
   });
 });
@@ -296,13 +209,9 @@ describe("<ImageMetaFilterMenu />", () => {
 describe("<PhotoFooter />", () => {
   const fakeProps = (): PhotoFooterProps => ({
     image: undefined,
-    env: {},
-    imageSize: { width: 100, height: 200 },
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
-    imageFilterBegin: undefined,
-    imageFilterEnd: undefined,
-    hiddenImages: [],
+    flags: fakeImageShowFlags(),
   });
 
   it("highlights map image", () => {
@@ -318,40 +227,5 @@ describe("<PhotoFooter />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
-  });
-});
-
-describe("<PhotosSettings />", () => {
-  const fakeProps = (): PhotosSettingsProps => ({
-    env: {},
-    saveFarmwareEnv: jest.fn(),
-    shouldDisplay: jest.fn(),
-    botOnline: true,
-    dispatch: jest.fn(),
-    version: "1.0.14",
-  });
-
-  it("toggles setting on", () => {
-    const p = fakeProps();
-    const wrapper = mount(<PhotosSettings {...p} />);
-    wrapper.find("button").last().simulate("click");
-    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
-      DISABLE_ROTATE_AT_CAPTURE_KEY, "1");
-  });
-
-  it("toggles setting off", () => {
-    const p = fakeProps();
-    p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: "1" };
-    const wrapper = mount(<PhotosSettings {...p} />);
-    wrapper.find("button").last().simulate("click");
-    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
-      DISABLE_ROTATE_AT_CAPTURE_KEY, "0");
-  });
-
-  it("doesn't show toggle", () => {
-    const p = fakeProps();
-    p.version = "";
-    const wrapper = mount(<PhotosSettings {...p} />);
-    expect(wrapper.find(".capture-rotate-setting").length).toEqual(0);
   });
 });

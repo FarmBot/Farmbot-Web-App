@@ -11,13 +11,11 @@ import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
 
-const mockConfig = fakeWebAppConfig();
-jest.mock("../../../../../resources/selectors", () => ({
-  getWebAppConfig: () => mockConfig,
-  assertUuid: jest.fn()
-}));
-
 describe("<ImageLayer/>", () => {
+  const mockConfig = fakeWebAppConfig();
+  mockConfig.body.photo_filter_begin = "";
+  mockConfig.body.photo_filter_end = "";
+
   function fakeProps(): ImageLayerProps {
     const image = fakeImage();
     image.body.meta.z = 0;
@@ -27,10 +25,11 @@ describe("<ImageLayer/>", () => {
       images: [image],
       mapTransformProps: fakeMapTransformProps(),
       cameraCalibrationData: fakeCameraCalibrationData(),
-      imageFilterBegin: "",
-      imageFilterEnd: "",
-      cropImages: false,
+      getConfigValue: key => mockConfig.body[key],
       hiddenImages: [],
+      shownImages: [],
+      hideUnShownImages: false,
+      alwaysHighlightImage: false,
       hoveredMapImage: undefined,
     };
   }
@@ -39,7 +38,28 @@ describe("<ImageLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
-    expect(layer.find("MapImage").html()).toContain("image");
+    expect(layer.find("MapImage").length).toEqual(1);
+  });
+
+  it("handles missing id", () => {
+    const p = fakeProps();
+    p.images[0].body.id = undefined;
+    p.hoveredMapImage = 1;
+    p.alwaysHighlightImage = true;
+    p.shownImages = [1];
+    const wrapper = shallow(<ImageLayer {...p} />);
+    const layer = wrapper.find("#image-layer");
+    expect(layer.find("MapImage").length).toEqual(1);
+  });
+
+  it("shows hovered image", () => {
+    const p = fakeProps();
+    p.images[0].body.id = 1;
+    p.alwaysHighlightImage = true;
+    p.shownImages = [1];
+    const wrapper = shallow(<ImageLayer {...p} />);
+    const layer = wrapper.find("#image-layer");
+    expect(layer.find("MapImage").length).toEqual(2);
   });
 
   it("toggles visibility off", () => {
@@ -53,7 +73,7 @@ describe("<ImageLayer/>", () => {
   it("filters old images: newer than", () => {
     const p = fakeProps();
     p.images[0].body.created_at = "2018-01-22T05:00:00.000Z";
-    p.imageFilterBegin = "2018-01-23T05:00:00.000Z";
+    mockConfig.body.photo_filter_begin = "2018-01-23T05:00:00.000Z";
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(0);
@@ -62,7 +82,7 @@ describe("<ImageLayer/>", () => {
   it("filters old images: older than", () => {
     const p = fakeProps();
     p.images[0].body.created_at = "2018-01-24T05:00:00.000Z";
-    p.imageFilterEnd = "2018-01-23T05:00:00.000Z";
+    mockConfig.body.photo_filter_end = "2018-01-23T05:00:00.000Z";
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(0);

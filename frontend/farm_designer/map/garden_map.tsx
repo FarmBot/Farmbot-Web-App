@@ -391,15 +391,14 @@ export class GardenMap extends
   ImageLayer = () => <ImageLayer
     images={this.props.latestImages}
     hiddenImages={this.props.designer.hiddenImages}
+    shownImages={this.props.designer.shownImages}
+    hideUnShownImages={this.props.designer.hideUnShownImages}
+    alwaysHighlightImage={this.props.designer.alwaysHighlightImage}
     hoveredMapImage={this.props.designer.hoveredMapImage}
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
-    cropImages={!!this.props.getConfigValue(BooleanSetting.crop_images)}
-    imageFilterBegin={
-      (this.props.getConfigValue("photo_filter_begin") || "").toString()}
-    imageFilterEnd={
-      (this.props.getConfigValue("photo_filter_end") || "").toString()} />
+    getConfigValue={this.props.getConfigValue} />
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}

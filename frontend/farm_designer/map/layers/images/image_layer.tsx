@@ -3,59 +3,74 @@ import { MapTransformProps } from "../../interfaces";
 import { CameraCalibrationData } from "../../../interfaces";
 import { TaggedImage } from "farmbot";
 import { MapImage } from "./map_image";
-import { reverse, cloneDeep } from "lodash";
-import moment from "moment";
+import { reverse, cloneDeep, some } from "lodash";
 import { equals } from "../../../../util";
+import { BooleanSetting } from "../../../../session_keys";
+import { GetWebAppConfigValue } from "../../../../config_storage/actions";
+import {
+  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS,
+} from "../../../../farmware/images/photo_filter_settings";
+import {
+  imageInRange, imageIsHidden,
+} from "../../../../farmware/images/shown_in_map";
 
 export interface ImageLayerProps {
   visible: boolean;
   images: TaggedImage[];
   mapTransformProps: MapTransformProps;
   cameraCalibrationData: CameraCalibrationData;
-  imageFilterBegin: string;
-  imageFilterEnd: string;
-  cropImages: boolean;
+  getConfigValue: GetWebAppConfigValue;
   hiddenImages: number[];
+  shownImages: number[];
+  hideUnShownImages: boolean;
+  alwaysHighlightImage: boolean;
   hoveredMapImage: number | undefined;
 }
 
 export class ImageLayer extends React.Component<ImageLayerProps> {
 
   shouldComponentUpdate(nextProps: ImageLayerProps) {
-    return !equals(this.props, nextProps);
+    const configsChanged = some(IMAGE_LAYER_CONFIG_KEYS.map(key =>
+      this.props.getConfigValue(key) != nextProps.getConfigValue(key)));
+    return !equals(this.props, nextProps) || configsChanged;
   }
 
   render() {
     const {
       visible, images, mapTransformProps, cameraCalibrationData,
-      imageFilterBegin, imageFilterEnd,
+      hiddenImages, shownImages, getConfigValue,
+      hideUnShownImages, alwaysHighlightImage, hoveredMapImage,
     } = this.props;
+    const cropImages = !!getConfigValue(BooleanSetting.crop_images);
+    const getFilterValue = parseFilterSetting(getConfigValue);
+    const imageFilterBegin = getFilterValue("photo_filter_begin");
+    const imageFilterEnd = getFilterValue("photo_filter_end");
+    const hoveredImage: TaggedImage | undefined =
+      images.filter(img => img.body.id == hoveredMapImage
+        || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];
     return <g id="image-layer">
       {visible &&
         reverse(cloneDeep(images))
-          .filter(imageInRange(imageFilterBegin, imageFilterEnd))
-          .filter(img => !isHidden(this.props.hiddenImages, img.body.id))
+          .filter(img => shownImages.includes(img.body.id || 0)
+            || imageInRange(img, imageFilterBegin, imageFilterEnd))
+          .filter(img => !imageIsHidden(
+            hiddenImages, shownImages, hideUnShownImages, img.body.id))
           .map(img =>
             <MapImage
               image={img}
               key={"image_" + img.body.id}
-              hoveredMapImage={this.props.hoveredMapImage}
-              cropImage={this.props.cropImages}
+              hoveredMapImage={hoveredMapImage}
+              cropImage={cropImages}
               cameraCalibrationData={cameraCalibrationData}
               mapTransformProps={mapTransformProps} />)}
+      {visible && hoveredImage &&
+        <MapImage
+          image={hoveredImage}
+          hoveredMapImage={hoveredMapImage}
+          highlighted={true}
+          cropImage={cropImages}
+          cameraCalibrationData={cameraCalibrationData}
+          mapTransformProps={mapTransformProps} />}
     </g>;
   }
 }
-
-export const imageInRange =
-  (imageFilterBegin: string | undefined, imageFilterEnd: string | undefined) =>
-    (image: TaggedImage | undefined) => {
-      if (!image) { return; }
-      const createdAt = moment(image.body.created_at);
-      const afterBegin = !imageFilterBegin || createdAt.isAfter(imageFilterBegin);
-      const beforeEnd = !imageFilterEnd || createdAt.isBefore(imageFilterEnd);
-      return afterBegin && beforeEnd;
-    };
-
-export const isHidden = (hiddenImages: number[], imageId: number | undefined) =>
-  imageId && hiddenImages.includes(imageId);

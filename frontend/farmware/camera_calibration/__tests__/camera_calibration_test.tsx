@@ -1,14 +1,12 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 jest.mock("../actions", () => ({ scanImage: jest.fn() }));
-jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraCalibration } from "../camera_calibration";
 import { CameraCalibrationProps } from "../interfaces";
 import { scanImage } from "../actions";
-import { selectImage } from "../../images/actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
@@ -72,12 +70,6 @@ describe("<CameraCalibration/>", () => {
     const wrapper = shallow(<CameraCalibration {...fakeProps()} />);
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
     expect(scanImage).toHaveBeenCalledWith(1);
-  });
-
-  it("calls selectImage", () => {
-    const wrapper = shallow(<CameraCalibration {...fakeProps()} />);
-    wrapper.find("ImageWorkspace").simulate("flip", "image0001");
-    expect(selectImage).toHaveBeenCalledWith("image0001");
   });
 
   it("saves CameraCalibrationConfig changes: API", () => {

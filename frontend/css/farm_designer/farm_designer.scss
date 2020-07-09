@@ -749,14 +749,16 @@
 }
 
 .image-filter-menu {
-  width: 32rem;
+  label {
+    margin-top: 0 !important;
+  }
   th {
     text-align: center;
   }
   .bp3-slider {
     margin-left: 3rem;
     margin-top: 1rem;
-    width: 25rem;
+    width: 80%;
   }
   .bp3-slider-label {
     white-space: nowrap;

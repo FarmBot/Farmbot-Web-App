@@ -3,7 +3,6 @@ import { DetectorState, WeedDetectorProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
-import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
 import { Feature } from "../../devices/interfaces";
 import { ImageWorkspace, NumericKeyName } from "./image_workspace";
@@ -78,7 +77,6 @@ export class WeedDetector
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
             onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
-            onFlip={uuid => this.props.dispatch(selectImage(uuid))}
             currentImage={this.props.currentImage}
             images={this.props.images}
             onChange={this.change}

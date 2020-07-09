@@ -9,7 +9,6 @@ import { inputEvent } from "../../../__test_support__/fake_html_events";
 
 describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
-    onFlip: jest.fn(),
     onProcessPhoto: jest.fn(),
     onChange: jest.fn(),
     currentImage: undefined as TaggedImage | undefined,

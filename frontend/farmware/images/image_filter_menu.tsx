@@ -1,19 +1,20 @@
 import * as React from "react";
-import { BlurableInput } from "../../../../ui/index";
-import { offsetTime } from "../../../farm_events/edit_fe_form";
-import { GetWebAppConfigValue } from "../../../../config_storage/actions";
+import { BlurableInput } from "../../ui/index";
+import { offsetTime } from "../../farm_designer/farm_events/edit_fe_form";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 import moment from "moment";
 import {
   formatDate, formatTime,
-} from "../../../farm_events/map_state_to_props_add_edit";
+} from "../../farm_designer/farm_events/map_state_to_props_add_edit";
 import { Slider } from "@blueprintjs/core";
-import { t } from "../../../../i18next_wrapper";
-import { TimeSettings } from "../../../../interfaces";
+import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { GetState } from "../../../../redux/interfaces";
-import { getWebAppConfig } from "../../../../resources/getters";
-import { edit, save } from "../../../../api/crud";
-import { isString, isUndefined } from "lodash";
+import { GetState } from "../../redux/interfaces";
+import { getWebAppConfig } from "../../resources/getters";
+import { edit, save } from "../../api/crud";
+import { isString, isUndefined, last } from "lodash";
+import { TaggedImage } from "farmbot";
 
 interface FullImageFilterMenuState {
   beginDate: string | undefined;
@@ -228,3 +229,14 @@ export const setWebAppConfigValues = (update: StringValueUpdate) =>
       dispatch(save(webAppConfig.uuid));
     }
   };
+
+export const calculateImageAgeInfo = (latestImages: TaggedImage[]) => {
+  const newestImage = latestImages[0];
+  const oldestImage = last(latestImages);
+  const newestDate = newestImage ? newestImage.body.created_at : "";
+  const toOldest = oldestImage && newestDate
+    ? Math.abs(moment(oldestImage.body.created_at)
+      .diff(moment(newestDate).clone(), "days"))
+    : 1;
+  return { newestDate, toOldest };
+};

@@ -1,8 +1,6 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
-
 const mockDeletePoints = jest.fn();
 jest.mock("../../../api/delete_points", () => ({
   deletePoints: mockDeletePoints,
@@ -18,7 +16,6 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { WeedDetector } from "../index";
 import { API } from "../../../api";
-import { selectImage } from "../../images/actions";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { detectPlants, scanImage } from "../actions";
@@ -125,11 +122,5 @@ describe("<WeedDetector />", () => {
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
     expect(scanImage).toHaveBeenCalledWith(0.5);
     expect(mockScanImage).toHaveBeenCalledWith(1);
-  });
-
-  it("calls selectImage", () => {
-    const wrapper = shallow(<WeedDetector {...fakeProps()} />);
-    wrapper.find("ImageWorkspace").simulate("flip", "image0001");
-    expect(selectImage).toHaveBeenCalledWith("image0001");
   });
 });

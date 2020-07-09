@@ -1,4 +1,5 @@
 import { CameraCalibrationData } from "../farm_designer/interfaces";
+import { ImageShowFlags } from "../farmware/images/shown_in_map";
 
 export const fakeCameraCalibrationData = (): CameraCalibrationData => ({
   offset: { x: undefined, y: undefined },
@@ -16,4 +17,12 @@ export const fakeCameraCalibrationDataFull = (): CameraCalibrationData => ({
   rotation: "-57.45",
   scale: "0.8041",
   calibrationZ: "0",
+});
+
+export const fakeImageShowFlags = (): ImageShowFlags => ({
+  layerOn: true,
+  inRange: true,
+  notHidden: true,
+  zMatch: true,
+  sizeMatch: true,
 });
