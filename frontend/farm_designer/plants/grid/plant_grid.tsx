@@ -66,7 +66,8 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   performPreview = () => {
     this.revertPreview({ setStatus: false })();
     if (this.plantCount > 100) {
-      error(t("Please make a grid with less than 100 plants"));
+      error(t("Please make a grid with less than 100 {{ itemType }}",
+        { itemType: this.props.openfarm_slug ? t("plants") : t("points") }));
       return;
     }
 
@@ -135,6 +136,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         {this.props.openfarm_slug ? t("Grid and Row Planting") : t("Grid")}
       </h3>
       <GridInput
+        itemType={this.props.openfarm_slug ? "plants" : "points"}
         xy_swap={this.props.xy_swap}
         disabled={this.state.status === "dirty"}
         grid={this.state.grid}

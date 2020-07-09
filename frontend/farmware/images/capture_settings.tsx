@@ -9,6 +9,7 @@ import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
 import { ToggleButton } from "../../controls/toggle_button";
 import { SaveFarmwareEnv } from "../interfaces";
 import { Help } from "../../ui";
+import { isUndefined } from "lodash";
 
 export const DISABLE_ROTATE_AT_CAPTURE_KEY =
   "take_photo_disable_rotation_adjustment";
@@ -23,8 +24,12 @@ export interface CaptureSettingsProps {
 }
 
 export const CaptureSettings = (props: CaptureSettingsProps) => {
-  const disableRotation =
-    props.env[DISABLE_ROTATE_AT_CAPTURE_KEY]?.includes("1");
+  const versionGreaterThan = (version: string) =>
+    semverCompare(props.version, version) == SemverResult.LEFT_IS_GREATER;
+  const disableRotationEnv = props.env[DISABLE_ROTATE_AT_CAPTURE_KEY];
+  const disableRotation = versionGreaterThan("1.0.14")
+    ? !disableRotationEnv?.includes("0")
+    : disableRotationEnv?.includes("1");
   return <div className="photos-settings">
     <CameraSelection
       dispatch={props.dispatch}
@@ -33,7 +38,7 @@ export const CaptureSettings = (props: CaptureSettingsProps) => {
       botOnline={props.botOnline}
       saveFarmwareEnv={props.saveFarmwareEnv}
       shouldDisplay={props.shouldDisplay} />
-    {semverCompare(props.version, "1.0.13") == SemverResult.LEFT_IS_GREATER &&
+    {(!isUndefined(disableRotationEnv) || versionGreaterThan("1.0.13")) &&
       <div className={"capture-rotate-setting"}>
         <label>{t("Adjust rotation during capture")}</label>
         <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />

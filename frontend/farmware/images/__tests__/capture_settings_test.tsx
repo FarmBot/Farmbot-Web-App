@@ -31,10 +31,25 @@ describe("<CaptureSettings />", () => {
       DISABLE_ROTATE_AT_CAPTURE_KEY, "0");
   });
 
-  it("doesn't show toggle", () => {
-    const p = fakeProps();
-    p.version = "";
-    const wrapper = mount(<CaptureSettings {...p} />);
-    expect(wrapper.find(".capture-rotate-setting").length).toEqual(0);
-  });
+  it.each<["yes" | "no" | undefined, string | undefined, string]>([
+    [undefined, undefined, ""],
+    [undefined, undefined, "1.0.13"],
+    ["yes", undefined, "1.0.14"],
+    ["no", undefined, "1.0.15"],
+    ["no", "1", "1.0.13"],
+    ["no", "1", "1.0.14"],
+    ["no", "1", "1.0.15"],
+    ["yes", "0", "1.0.13"],
+    ["yes", "0", "1.0.14"],
+    ["yes", "0", "1.0.15"],
+  ])("renders correct state: %s for env: %s and version: %s",
+    (label, envValue, version) => {
+      const p = fakeProps();
+      p.version = version;
+      p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: envValue };
+      const wrapper = mount(<CaptureSettings {...p} />);
+      label
+        ? expect(wrapper.find("button").last().text()).toEqual(label)
+        : expect(wrapper.find(".capture-rotate-setting").length).toEqual(0);
+    });
 });
