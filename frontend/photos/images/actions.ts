@@ -15,8 +15,8 @@ export const highlightMapImage = (imageId: number | undefined) => ({
 export const toggleAlwaysHighlightImage =
   (value: boolean, image: TaggedImage | undefined) => (dispatch: Function) => {
     dispatch({
-      type: Actions.HIGHLIGHT_MAP_IMAGE,
-      payload: value ? undefined : image?.body.id,
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: (value || !image) ? [] : [image.body.id],
     });
     dispatch({
       type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, payload: undefined,

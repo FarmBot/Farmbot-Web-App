@@ -44,8 +44,8 @@ describe("toggleAlwaysHighlightImage()", () => {
       payload: undefined,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.HIGHLIGHT_MAP_IMAGE,
-      payload: 1,
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: [1],
     });
   });
 
@@ -58,8 +58,8 @@ describe("toggleAlwaysHighlightImage()", () => {
       payload: undefined,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.HIGHLIGHT_MAP_IMAGE,
-      payload: undefined,
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: [],
     });
   });
 
@@ -74,8 +74,8 @@ describe("toggleAlwaysHighlightImage()", () => {
       payload: undefined,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.HIGHLIGHT_MAP_IMAGE,
-      payload: undefined,
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: [],
     });
   });
 });

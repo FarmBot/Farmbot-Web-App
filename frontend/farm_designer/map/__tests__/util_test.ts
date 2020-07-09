@@ -315,6 +315,13 @@ describe("transformXY", () => {
     mapTransformProps.quadrant = 4;
     transformCheck(original, transformed, mapTransformProps);
   });
+
+  it("calculates transformed coordinate: quadrant 0 (invalid)", () => {
+    const original = { qx: 100, qy: 200 };
+    const transformed = { qx: 100, qy: 200 };
+    mapTransformProps.quadrant = 0;
+    transformCheck(original, transformed, mapTransformProps);
+  });
 });
 
 describe("transformForQuadrant()", () => {
