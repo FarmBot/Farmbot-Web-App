@@ -2,7 +2,7 @@ import * as React from "react";
 import { Widget, WidgetHeader, FallbackImg, WidgetBody } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
-import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
+import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { Flipper } from "./flipper";
 import { sortedFeeds } from "./edit";
 import { t } from "../../i18next_wrapper";

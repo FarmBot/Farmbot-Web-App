@@ -2,26 +2,26 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { DesignerPanel, DesignerPanelContent } from "./designer_panel";
 import { DesignerNavTabs, Panel } from "./panel_header";
-import { UserEnv, ShouldDisplay } from "../devices/interfaces";
-import { maybeGetTimeSettings } from "../resources/selectors";
+import { UserEnv, ShouldDisplay, BotState } from "../devices/interfaces";
+import { maybeGetTimeSettings, selectAllImages } from "../resources/selectors";
 import { Everything, TimeSettings } from "../interfaces";
 import {
-  getShouldDisplayFn, getEnv, saveOrEditFarmwareEnv, getImageJobs,
-  getImages, getCurrentImage, generateFarmwareDictionary,
+  getShouldDisplayFn, getEnv, saveOrEditFarmwareEnv, generateFarmwareDictionary,
 } from "../farmware/state_to_props";
 import { JobProgress, TaggedImage, SyncStatus } from "farmbot";
 import { getStatus } from "../connectivity/reducer_support";
 import {
   prepopulateEnv, envGet,
-} from "../farmware/weed_detector/remote_env/selectors";
-import { Photos, PhotosSettings } from "../farmware/images/photos";
+} from "../photos/remote_env/selectors";
+import { Photos } from "../photos/images/photos";
+import { CaptureSettings } from "../photos/images/capture_settings";
 import {
   CameraCalibration,
-} from "../farmware/camera_calibration/camera_calibration";
-import { WeedDetector } from "../farmware/weed_detector";
+} from "../photos/camera_calibration/camera_calibration";
+import { WeedDetector } from "../photos/weed_detector";
 import {
   WDENVKey, WD_ENV,
-} from "../farmware/weed_detector/remote_env/interfaces";
+} from "../photos/remote_env/interfaces";
 import { NetworkState } from "../connectivity/interfaces";
 import { t } from "../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
@@ -32,7 +32,12 @@ import { destroyAll } from "../api/crud";
 import { success, error } from "../toast/toast";
 import { isBotOnline } from "../devices/must_be_online";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
-import { getWebAppConfigValue } from "../config_storage/actions";
+import {
+  getWebAppConfigValue, GetWebAppConfigValue,
+} from "../config_storage/actions";
+import { chain } from "lodash";
+import { betterCompact } from "../util";
+import { ResourceIndex } from "../resources/interfaces";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -47,9 +52,11 @@ export interface DesignerPhotosProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   imageJobs: JobProgress[];
   versions: Record<string, string>;
-  imageFilterBegin: string | undefined;
-  imageFilterEnd: string | undefined;
   hiddenImages: number[];
+  shownImages: number[];
+  hideUnShownImages: boolean;
+  alwaysHighlightImage: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 interface DesignerPhotosState {
@@ -58,42 +65,65 @@ interface DesignerPhotosState {
   manage: boolean;
 }
 
+export const getImageJobs =
+  (allJobs: BotState["hardware"]["jobs"]): JobProgress[] => {
+    const jobs = allJobs || {};
+    const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
+    const imageJobs: JobProgress[] =
+      chain(betterCompact(imageJobNames.map(x => jobs[x])))
+        .sortBy("time")
+        .reverse()
+        .value();
+    return imageJobs;
+  };
+
+const getImages = (ri: ResourceIndex): TaggedImage[] =>
+  chain(selectAllImages(ri))
+    .sortBy(x => x.body.id)
+    .reverse()
+    .value();
+
+export const getCurrentImage =
+  (images: TaggedImage[], currentImgUuid: string | undefined): TaggedImage => {
+    const firstImage = images[0];
+    const currentImage =
+      images.filter(i => i.uuid === currentImgUuid)[0] || firstImage;
+    return currentImage;
+  };
+
 export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
   const images = getImages(props.resources.index);
-  const currentImageUuid = props.resources.consumers.farmware.currentImage;
-  const currentImage = getCurrentImage(images, currentImageUuid);
-
   const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
   const env = getEnv(props.resources.index, shouldDisplay, props.bot);
-
-  const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
-  const syncStatus = props.bot.hardware.informational_settings.sync_status;
 
   const versions: Record<string, string> = {};
   Object.entries(generateFarmwareDictionary(props.bot, props.resources.index))
     .map(([farmwareName, manifest]) =>
       versions[farmwareName] = manifest.meta.version);
 
-  const getConfigValue = getWebAppConfigValue(() => props);
-  const imageFilterBegin = getConfigValue("photo_filter_begin");
-  const imageFilterEnd = getConfigValue("photo_filter_end");
+  const currentImageUuid = props.resources.consumers.farmware.currentImage;
+  const {
+    hiddenImages, shownImages, hideUnShownImages, alwaysHighlightImage,
+  } = props.resources.consumers.farm_designer;
 
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
-    botToMqttStatus,
+    botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
     wDEnv: prepopulateEnv(env),
     env,
     dispatch: props.dispatch,
-    currentImage,
+    currentImage: getCurrentImage(images, currentImageUuid),
     images,
-    syncStatus,
+    syncStatus: props.bot.hardware.informational_settings.sync_status,
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     imageJobs: getImageJobs(props.bot.hardware.jobs),
     versions,
-    imageFilterBegin: imageFilterBegin ? "" + imageFilterBegin : undefined,
-    imageFilterEnd: imageFilterEnd ? "" + imageFilterEnd : undefined,
-    hiddenImages: props.resources.consumers.farm_designer.hiddenImages,
+    hiddenImages,
+    shownImages,
+    hideUnShownImages,
+    alwaysHighlightImage,
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 };
 
@@ -150,7 +180,7 @@ export class RawDesignerPhotos
         <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"}>
           <Update version={this.props.versions["take-photo"]}
             farmwareName={"take-photo"} botOnline={botOnline} />
-          <PhotosSettings
+          <CaptureSettings
             dispatch={this.props.dispatch}
             env={this.props.env}
             botOnline={botOnline}
@@ -159,9 +189,11 @@ export class RawDesignerPhotos
             shouldDisplay={this.props.shouldDisplay} />
         </ToolTip>
         <Photos {...common}
-          imageFilterBegin={this.props.imageFilterBegin}
-          imageFilterEnd={this.props.imageFilterEnd}
           hiddenImages={this.props.hiddenImages}
+          shownImages={this.props.shownImages}
+          hideUnShownImages={this.props.hideUnShownImages}
+          alwaysHighlightImage={this.props.alwaysHighlightImage}
+          getConfigValue={this.props.getConfigValue}
           imageJobs={this.props.imageJobs} />
         <ExpandableHeader
           expanded={!!this.state.calibration}

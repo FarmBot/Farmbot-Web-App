@@ -34,10 +34,12 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
       panel={"encoders_or_stall_detection"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders_or_stall_detection}>
-      {!showEncoders && !props.shouldDisplay(Feature.express_stall_detection) &&
+      {!showEncoders &&
         <Highlight settingName={DeviceSetting.stallDetectionNote}>
           <div className="stall-detection-note">
-            <p>{t(Content.STALL_DETECTION_NOTE)}</p>
+            <p>{!props.shouldDisplay(Feature.express_stall_detection)
+              ? t(Content.STALL_DETECTION_NOT_AVAILABLE)
+              : t(Content.STALL_DETECTION_IN_BETA)}</p>
           </div>
         </Highlight>}
       <SpacePanelHeader />

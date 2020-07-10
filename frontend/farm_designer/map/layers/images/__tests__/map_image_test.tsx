@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   MapImage, MapImageProps, closestRotation, largeCrop, cropAmount,
   rotated90degrees,
-  cameraOrientationCheck,
+  imageSizeCheck,
 } from "../map_image";
 import { SpecialStatus } from "farmbot";
 import { cloneDeep } from "lodash";
@@ -38,6 +38,7 @@ describe("<MapImage />", () => {
       mapTransformProps: fakeMapTransformProps(),
       cropImage: false,
       hoveredMapImage: undefined,
+      highlighted: false,
     };
   };
 
@@ -395,37 +396,37 @@ describe("cropAmount()", () => {
   });
 });
 
-describe("cameraOrientationCheck()", () => {
+describe("imageSizeCheck()", () => {
   it("passes", () => {
-    expect(cameraOrientationCheck(
+    expect(imageSizeCheck(
       { width: 1000, height: 500 },
       { x: undefined, y: undefined },
       true,
     )).toEqual(true);
-    expect(cameraOrientationCheck(
+    expect(imageSizeCheck(
       { width: 1000, height: 500 },
       { x: "500", y: "1000" },
       false,
     )).toEqual(true);
-    expect(cameraOrientationCheck(
+    expect(imageSizeCheck(
       { width: 640, height: 480 },
       { x: "320", y: "240" },
       true,
     )).toEqual(true);
-    expect(cameraOrientationCheck(
+    expect(imageSizeCheck(
       { width: 603, height: 404 },
       { x: "300", y: "200" },
+      true,
+    )).toEqual(true);
+    expect(imageSizeCheck(
+      { width: 480, height: 640 },
+      { x: "320", y: "240" },
       true,
     )).toEqual(true);
   });
 
   it("fails", () => {
-    expect(cameraOrientationCheck(
-      { width: 480, height: 640 },
-      { x: "320", y: "240" },
-      true,
-    )).toEqual(false);
-    expect(cameraOrientationCheck(
+    expect(imageSizeCheck(
       { width: 640, height: 640 },
       { x: "300", y: "200" },
       true,

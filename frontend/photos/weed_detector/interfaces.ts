@@ -1,0 +1,26 @@
+import { WD_ENV } from "../remote_env/interfaces";
+import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
+import { TaggedImage, SyncStatus } from "farmbot";
+import { NetworkState } from "../../connectivity/interfaces";
+import { TimeSettings } from "../../interfaces";
+import { SaveFarmwareEnv } from "../../farmware/interfaces";
+
+export interface WeedDetectorState {
+  isEditing: boolean;
+  deletionProgress: string;
+  settingsMenuOpen: boolean;
+  remoteFarmwareSettings: Partial<WD_ENV>;
+}
+
+export interface WeedDetectorProps {
+  dispatch: Function;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
+  images: TaggedImage[];
+  currentImage: TaggedImage | undefined;
+  botToMqttStatus: NetworkState;
+  timeSettings: TimeSettings;
+  syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
+}

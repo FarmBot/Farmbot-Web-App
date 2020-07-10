@@ -217,7 +217,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
     <Row>
-      <Col xs={2}>
+      <Col xs={2} className={"tool-slot-search-item-icon"}>
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
@@ -257,13 +257,13 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   return <div className={"tool-search-item"}
     onClick={() => history.push(`/app/designer/tools/${props.toolId}`)}>
     <Row>
-      <Col xs={2}>
+      <Col xs={2} className={"tool-search-item-icon"}>
         <ToolSVG toolName={props.toolName} />
       </Col>
-      <Col xs={7}>
+      <Col xs={7} className={"tool-search-item-name"}>
         <p>{t(props.toolName)}</p>
       </Col>
-      <Col xs={3}>
+      <Col xs={3} className={"tool-status"}>
         <p className="tool-status">
           <i>{props.mounted ? t("mounted") : activeText}</i>
         </p>

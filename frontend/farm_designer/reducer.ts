@@ -31,6 +31,9 @@ export const initialState: DesignerState = {
   hoveredSequenceStep: undefined,
   settingsSearchTerm: "",
   hiddenImages: [],
+  shownImages: [],
+  hideUnShownImages: false,
+  alwaysHighlightImage: false,
   hoveredMapImage: undefined,
   cameraViewGridId: undefined,
 };
@@ -137,8 +140,20 @@ export const designer = generateReducer<DesignerState>(initialState)
     }
     return s;
   })
-  .add<number>(Actions.SHOW_MAP_IMAGE, (s, { payload }) => {
+  .add<number>(Actions.UN_HIDE_MAP_IMAGE, (s, { payload }) => {
     s.hiddenImages = s.hiddenImages.filter(id => id != payload);
+    return s;
+  })
+  .add<number[]>(Actions.SET_SHOWN_MAP_IMAGES, (s, { payload }) => {
+    s.shownImages = payload;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SHOWN_IMAGES_ONLY, (s) => {
+    s.hideUnShownImages = !s.hideUnShownImages;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, (s) => {
+    s.alwaysHighlightImage = !s.alwaysHighlightImage;
     return s;
   })
   .add<number | undefined>(Actions.HIGHLIGHT_MAP_IMAGE, (s, { payload }) => {

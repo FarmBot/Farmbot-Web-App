@@ -246,7 +246,7 @@ describe("designer reducer", () => {
     const state = oldState();
     state.hiddenImages = [1, 2];
     const action: ReduxAction<number | undefined> = {
-      type: Actions.SHOW_MAP_IMAGE, payload: 2
+      type: Actions.UN_HIDE_MAP_IMAGE, payload: 2
     };
     const newState = designer(state, action);
     expect(newState.hiddenImages).toEqual([1]);
@@ -260,6 +260,36 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.hiddenImages).toEqual([]);
+  });
+
+  it("sets shown map images", () => {
+    const state = oldState();
+    state.shownImages = [];
+    const action: ReduxAction<number[]> = {
+      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [1]
+    };
+    const newState = designer(state, action);
+    expect(newState.shownImages).toEqual([1]);
+  });
+
+  it("sets hide un-shown map image toggle", () => {
+    const state = oldState();
+    state.hideUnShownImages = false;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SHOWN_IMAGES_ONLY, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.hideUnShownImages).toEqual(true);
+  });
+
+  it("sets always highlight map image toggle", () => {
+    const state = oldState();
+    state.alwaysHighlightImage = false;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.alwaysHighlightImage).toEqual(true);
   });
 
   it("sets hovered map image", () => {

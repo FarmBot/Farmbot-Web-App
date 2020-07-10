@@ -8,7 +8,7 @@ import { mapStateToProps } from "./state_to_props";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
-import { isUndefined, last, isFinite } from "lodash";
+import { isUndefined, isFinite, isEqual, filter } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import {
   round, getPanelStatus, MapPanelStatus, mapPanelClassName, getMapPadding,
@@ -16,12 +16,12 @@ import {
 import {
   calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex,
 } from "./map/zoom";
-import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
+import { calculateImageAgeInfo } from "../photos/images/image_filter_menu";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
@@ -93,6 +93,15 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     this.setState({ [key]: newValue });
   }
 
+  componentDidUpdate() {
+    const filterZoom = (_val: unknown, key: keyof State) => key != "zoom_level";
+    if (!isEqual(
+      filter(this.state, filterZoom),
+      filter(this.getState(), filterZoom))) {
+      this.setState(this.getState());
+    }
+  }
+
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
     this.setState({ bot_origin_quadrant: payload });
     this.props.dispatch(setWebAppConfigValue(
@@ -130,15 +139,6 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       y: !!this.props.botMcuParams.movement_stop_at_home_y
     };
 
-    const newestImage = this.props.latestImages[0];
-    const oldestImage = last(this.props.latestImages);
-    const newestDate = newestImage ? newestImage.body.created_at : "";
-    const toOldest = oldestImage && newestDate
-      ? Math.abs(moment(oldestImage.body.created_at)
-        .diff(moment(newestDate).clone(), "days"))
-      : 1;
-    const imageAgeInfo = { newestDate, toOldest };
-
     const mapPadding = getMapPadding(getPanelStatus());
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
@@ -162,7 +162,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
         shouldDisplay={this.props.shouldDisplay}
-        imageAgeInfo={imageAgeInfo} />
+        imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
       <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>

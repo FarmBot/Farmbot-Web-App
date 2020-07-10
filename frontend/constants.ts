@@ -427,7 +427,7 @@ export namespace ToolTips {
     trim(`Perform camera rotation compensation when image is captured
     instead of in garden map. If enabled, image files will include
     adjustment for camera rotation (black angled borders may show in
-    viewer). Disabling this setting will speed up photo capture.`);
+    viewer). Enabling this setting will slow down photo capture.`);
 
   export const CALIBRATION_REQUIRED =
     trim(`Calibrate your camera in the Photos panel before detecting weeds.`);
@@ -749,10 +749,19 @@ export namespace Content {
     HTTPS://`);
 
   // Hardware Settings: Stall Detection
-  export const STALL_DETECTION_NOTE =
+  export const STALL_DETECTION_NOT_AVAILABLE =
     trim(`Stall detection for FarmBot Express bots is not yet available.
     Once it is ready, you will receive a message in the Message Center.
     We thank you for your patience.`);
+
+  export const STALL_DETECTION_IN_BETA =
+    trim(`Warning: Stall detection for FarmBot Express bots is now
+    available as a public beta. While you may enable stall detection for
+    all three axes, you may not achieve desirable or consistent results
+    for some or any of the axes. If you experience any issues, we advise
+    you to wait until there are further updates. We are working hard to
+    improve this system and thank you for your patience. Feedback is
+    appreciated and may be provided on the community forum.`);
 
   // Hardware Settings: Limit Switches
   export const LIMIT_SWITCH_WARNING =
@@ -1402,7 +1411,10 @@ export enum Actions {
   VISUALIZE_SEQUENCE = "VISUALIZE_SEQUENCE",
   HOVER_SEQUENCE_STEP = "HOVER_SEQUENCE_STEP",
   HIDE_MAP_IMAGE = "HIDE_MAP_IMAGE",
-  SHOW_MAP_IMAGE = "SHOW_MAP_IMAGE",
+  UN_HIDE_MAP_IMAGE = "UN_HIDE_MAP_IMAGE",
+  SET_SHOWN_MAP_IMAGES = "SET_SHOWN_MAP_IMAGES",
+  TOGGLE_SHOWN_IMAGES_ONLY = "TOGGLE_SHOWN_IMAGES_ONLY",
+  TOGGLE_ALWAYS_HIGHLIGHT_IMAGE = "TOGGLE_ALWAYS_HIGHLIGHT_IMAGE",
   HIGHLIGHT_MAP_IMAGE = "HIGHLIGHT_MAP_IMAGE",
   SHOW_CAMERA_VIEW_POINTS = "SHOW_CAMERA_VIEW_POINTS",
 

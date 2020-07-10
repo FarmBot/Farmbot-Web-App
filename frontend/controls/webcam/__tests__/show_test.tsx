@@ -2,7 +2,7 @@ import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show, IndexIndicator } from "../show";
-import { PLACEHOLDER_FARMBOT } from "../../../farmware/images/image_flipper";
+import { PLACEHOLDER_FARMBOT } from "../../../photos/images/image_flipper";
 import { WebcamPanelProps } from "../interfaces";
 import { SpecialStatus } from "farmbot";
 

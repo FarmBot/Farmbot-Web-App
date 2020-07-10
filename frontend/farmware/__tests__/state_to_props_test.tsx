@@ -4,47 +4,30 @@ jest.mock("../../api/crud", () => ({
   initSave: jest.fn(),
 }));
 
-import { mapStateToProps, saveOrEditFarmwareEnv } from "../state_to_props";
-import { fakeState } from "../../__test_support__/fake_state";
+import {
+  saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
+  isPendingInstallation,
+} from "../state_to_props";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakeFarmwareEnv, fakeFarmwareInstallation, fakeWebAppConfig,
+  fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
-import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
-import { JobProgress } from "farmbot";
+import {
+  fakeFarmwareManifestV1, fakeFarmware,
+} from "../../__test_support__/fake_farmwares";
 import { DevSettings } from "../../account/dev/dev_support";
-import { BooleanSetting } from "../../session_keys";
+import { fakeState } from "../../__test_support__/fake_state";
 
-describe("mapStateToProps()", () => {
-
-  it("sync status unknown", () => {
-    const props = mapStateToProps(fakeState());
-    expect(props.botToMqttStatus).toEqual("down");
-  });
-
-  it("currentImage undefined", () => {
-    const props = mapStateToProps(fakeState());
-    expect(props.currentImage).toEqual(props.images[0]);
-  });
-
-  it("currentImage defined", () => {
-    const state = fakeState();
-    const secondImageUUID = Object.keys(state.resources.index.byKind.Image)[1];
-    state.resources.consumers.farmware.currentImage = secondImageUUID;
-    const props = mapStateToProps(state);
-    const currentImageUUID = props.currentImage ? props.currentImage.uuid : "";
-    expect(currentImageUUID).toEqual(secondImageUUID);
-  });
-
+describe("getEnv()", () => {
   it("returns bot state env", () => {
     const env = { foo: "bar" };
     const state = fakeState();
     state.bot.hardware.user_env = env;
-    const props = mapStateToProps(state);
-    expect(props.env).toEqual(env);
+    const gotEnv = getEnv(state.resources.index, () => false, state.bot);
+    expect(gotEnv).toEqual(env);
   });
 
   it("returns API farmware env", () => {
@@ -53,12 +36,14 @@ describe("mapStateToProps()", () => {
     state.bot.hardware.informational_settings.controller_version =
       DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     state.resources = buildResourceIndex([fakeFarmwareEnv()]);
-    const props = mapStateToProps(state);
-    expect(props.env).toEqual({
+    const gotEnv = getEnv(state.resources.index, () => true, state.bot);
+    expect(gotEnv).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"
     });
   });
+});
 
+describe("generateFarmwareDictionary()", () => {
   it("includes API FarmwareInstallations", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version =
@@ -72,8 +57,8 @@ describe("mapStateToProps()", () => {
     botFarmware.url = farmware2.body.url;
     const botFarmwareName = "farmware_0";
     state.bot.hardware.process_info.farmwares = { [botFarmwareName]: botFarmware };
-    const props = mapStateToProps(state);
-    expect(props.farmwares).toEqual({
+    const farmwares = generateFarmwareDictionary(state.bot, state.resources.index);
+    expect(farmwares).toEqual({
       "Unknown Farmware 2 (pending install...)":
         expect.objectContaining({
           meta: expect.objectContaining({ description: "installation pending" }),
@@ -87,73 +72,14 @@ describe("mapStateToProps()", () => {
       }),
     });
   });
+});
 
-  it("returns image upload job list", () => {
-    const state = fakeState();
-    state.bot.hardware.jobs = {
-      "img1.png": {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z",
-      } as JobProgress,
-      "FBOS_OTA": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 17:13:21.167440Z",
-      } as JobProgress,
-      "img2.png": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z",
-      } as JobProgress,
-    };
-    const props = mapStateToProps(state);
-    expect(props.imageJobs).toEqual([
-      {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z"
-      },
-      {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z"
-      }]);
-  });
-
-  it("handles undefined jobs", () => {
-    const state = fakeState();
-    // tslint:disable-next-line:no-any
-    state.bot.hardware.jobs = undefined as any;
-    const props = mapStateToProps(state);
-    expect(props.imageJobs).toEqual([]);
-  });
-
-  it("returns bot status", () => {
-    const state = fakeState();
-    state.bot.hardware.informational_settings.sync_status = "sync_now";
-    state.bot.connectivity.uptime["bot.mqtt"] = {
-      state: "up",
-      at: (new Date()).getTime()
-    };
-    const props = mapStateToProps(state);
-    expect(props.syncStatus).toEqual("sync_now");
-    expect(props.botToMqttStatus).toEqual("up");
-  });
-
-  it("returns web app config value", () => {
-    const state = fakeState();
-    const config = fakeWebAppConfig();
-    config.body.show_farmbot = true;
-    state.resources = buildResourceIndex([config]);
-    const props = mapStateToProps(state);
-    const value = props.getConfigValue(BooleanSetting.show_farmbot);
-    expect(value).toEqual(true);
+describe("isPendingInstallation()", () => {
+  it("is pending", () => {
+    expect(isPendingInstallation(undefined)).toEqual(true);
+    const farmware = fakeFarmware();
+    farmware.installation_pending = true;
+    expect(isPendingInstallation(farmware)).toEqual(true);
   });
 });
 

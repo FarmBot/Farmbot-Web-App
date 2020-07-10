@@ -8,6 +8,12 @@ jest.mock("../../map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
 }));
 
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+  edit: jest.fn(),
+  save: jest.fn(),
+}));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -17,6 +23,7 @@ import { fakeWeed } from "../../../__test_support__/fake_state/resources";
 import { push } from "../../../history";
 import { Actions } from "../../../constants";
 import { mapPointClickAction } from "../../map/actions";
+import { edit, save, destroy } from "../../../api/crud";
 
 describe("<WeedInventoryItem /> />", () => {
   const fakeProps = (): WeedInventoryItemProps => ({
@@ -104,5 +111,22 @@ describe("<WeedInventoryItem /> />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
+  });
+
+  it("approves weed", () => {
+    const p = fakeProps();
+    p.pending = true;
+    const wrapper = mount(<WeedInventoryItem {...p} />);
+    wrapper.find(".fb-button.green").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(p.tpp, { plant_stage: "active" });
+    expect(save).toHaveBeenCalledWith(p.tpp.uuid);
+  });
+
+  it("rejects weed", () => {
+    const p = fakeProps();
+    p.pending = true;
+    const wrapper = mount(<WeedInventoryItem {...p} />);
+    wrapper.find(".fb-button.red").first().simulate("click");
+    expect(destroy).toHaveBeenCalledWith(p.tpp.uuid, true);
   });
 });

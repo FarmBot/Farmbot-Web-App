@@ -87,6 +87,22 @@ describe("PlantGrid", () => {
       "Please make a grid with less than 100 plants");
   });
 
+  it("prevents creation of grids with > 100 points", () => {
+    const p = fakeProps();
+    p.openfarm_slug = undefined;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({
+      grid: {
+        ...wrapper.state().grid,
+        numPlantsH: 10,
+        numPlantsV: 11
+      }
+    });
+    wrapper.instance().performPreview();
+    expect(error).toHaveBeenCalledWith(
+      "Please make a grid with less than 100 points");
+  });
+
   it("discards unsaved changes", async () => {
     window.confirm = jest.fn(() => false);
     const p = fakeProps();
