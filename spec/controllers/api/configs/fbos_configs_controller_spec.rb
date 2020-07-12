@@ -63,11 +63,22 @@ describe Api::FbosConfigsController do
       end
     end
 
-    it "performs row locking" do
+    it "does not enforce row locking if there is only one column change" do
       sign_in user
       expect(device.fbos_config).to be
-      simulate_fbos_request("1.1.1")
       body = { updated_at: 2.days.ago, network_not_found_timer: 20 }
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+    end
+
+    it "enforces row locking if there is only one column change" do
+      sign_in user
+      expect(device.fbos_config).to be
+      body = {
+        updated_at: 2.days.ago,
+        network_not_found_timer: 20,
+        firmware_hardware: "whatever",
+      }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(409)
     end
