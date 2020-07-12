@@ -83,12 +83,29 @@ module Api
       nil
     end
 
+    IRRELEVANT_ROW_LOCK_FIELDS = [:updated_at, :created_at]
+
     def stale_data?
       if resource
         updated_at = raw_json[:updated_at]
         if updated_at
           if resource.updated_at.as_json != updated_at
-            return true
+            # Allow row lock violations,
+            # but only if the violation
+            # changes 1 fields or less.
+            # Changing more than one column
+            # with an invalid `updated_at`
+            # field is not allowed.
+            diff_count = 0
+            raw_json
+              .except(*IRRELEVANT_ROW_LOCK_FIELDS)
+              .to_a
+              .each do |(key, value)|
+              if resource[key] != raw_json[key]
+                diff_count += 1
+              end
+            end
+            return true if diff_count > 1
           end
         end
       end
