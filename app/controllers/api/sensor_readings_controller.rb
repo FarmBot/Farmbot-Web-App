@@ -1,6 +1,6 @@
 module Api
   class SensorReadingsController < Api::AbstractController
-    LIMIT = 5000
+    LIMIT = 2500
     before_action :clean_old
 
     def create
