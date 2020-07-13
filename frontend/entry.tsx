@@ -6,9 +6,6 @@ import { detectLanguage } from "./i18n";
 import { stopIE } from "./util/stop_ie";
 import { attachAppToDom } from "./routes";
 import I from "i18next";
-import { maybeLoadAppSignal } from "./maybe_load_app_signal";
-
-maybeLoadAppSignal();
 
 stopIE();
 
