@@ -6,7 +6,9 @@ import { Col, Row } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { UseCurrentLocation } from "../../tools/tool_slot_edit_components";
 
-export const LABELS = (): Record<PlantGridKey, PlantGridLabelData> => ({
+export const LABELS = (
+  itemType: "points" | "plants",
+): Record<PlantGridKey, PlantGridLabelData> => ({
   startX: {
     label: t("Starting X"),
     regular_icon: "fa-arrow-right",
@@ -28,12 +30,12 @@ export const LABELS = (): Record<PlantGridKey, PlantGridLabelData> => ({
     swapped_icon: "fa-arrows-h",
   },
   numPlantsH: {
-    label: t("# of plants"),
+    label: itemType == "points" ? t("# of points") : t("# of plants"),
     regular_icon: "fa-arrows-h",
     swapped_icon: "fa-arrows-v",
   },
   numPlantsV: {
-    label: t("# of plants"),
+    label: itemType == "points" ? t("# of points") : t("# of plants"),
     regular_icon: "fa-arrows-v",
     swapped_icon: "fa-arrows-h",
   },
@@ -41,7 +43,7 @@ export const LABELS = (): Record<PlantGridKey, PlantGridLabelData> => ({
 
 export function InputCell(props: InputCellProps) {
   const { gridKey, onChange, grid, xy_swap, preview } = props;
-  const { label, regular_icon, swapped_icon } = LABELS()[gridKey];
+  const { label, regular_icon, swapped_icon } = LABELS(props.itemType)[gridKey];
   return <Col xs={5}>
     <label>
       <i className={`fa ${xy_swap ? swapped_icon : regular_icon}`} />
@@ -68,12 +70,14 @@ export function GridInput(props: GridInputProps) {
     {pairs.map(([left, right]) =>
       <Row key={left + right}>
         <InputCell
+          itemType={props.itemType}
           xy_swap={props.xy_swap}
           gridKey={left}
           onChange={props.onChange}
           preview={props.preview}
           grid={props.grid} />
         <InputCell
+          itemType={props.itemType}
           xy_swap={props.xy_swap}
           gridKey={right}
           onChange={props.onChange}

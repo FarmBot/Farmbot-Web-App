@@ -6,6 +6,7 @@ import { GridInputProps, InputCellProps } from "../interfaces";
 
 describe("<GridInput/>", () => {
   const fakeProps = (): GridInputProps => ({
+    itemType: "plants",
     disabled: false,
     grid: testGridInputs(),
     xy_swap: true,
@@ -19,6 +20,13 @@ describe("<GridInput/>", () => {
     const wrapper = mount(<GridInput {...fakeProps()} />);
     ["Starting X", "starting Y", "# of plants", "Spacing (MM)"]
       .map(string => expect(wrapper.text()).toContain(string));
+  });
+
+  it("renders for points", () => {
+    const p = fakeProps();
+    p.itemType = "points";
+    const wrapper = mount(<GridInput {...p} />);
+    expect(wrapper.text()).toContain("# of points");
   });
 
   it("uses current location", () => {
@@ -39,6 +47,7 @@ describe("<GridInput/>", () => {
 
 describe("<InputCell/>", () => {
   const fakeProps = (): InputCellProps => ({
+    itemType: "plants",
     gridKey: "numPlantsH",
     xy_swap: false,
     onChange: jest.fn(),

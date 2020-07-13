@@ -1,4 +1,4 @@
-import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
+import { BotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import {
@@ -163,26 +163,20 @@ interface QuadTransformParams {
 function quadTransform(params: QuadTransformParams): XYCoordinate {
   const { coordinate, mapTransformProps } = params;
   const { gridSize, quadrant } = mapTransformProps;
-  if (isBotOriginQuadrant(quadrant)) {
-    return ["x", "y"].reduce<XYCoordinate>(
-      (result: XYCoordinate, axis: "x" | "y") => {
-        switch (quadrant) {
-          case MIRRORED_QUADRANTS[axis][0]:
-          case MIRRORED_QUADRANTS[axis][1]:
-            result[axis] = gridSize[axis] - coordinate[axis];
-            return result;
-          case NORMAL_QUADRANTS[axis][0]:
-          case NORMAL_QUADRANTS[axis][1]:
-            result[axis] = coordinate[axis];
-            return result;
-          default:
-            throw new Error(
-              `Something went wrong calculating the ${axis} origin.`);
-        }
-      }, { x: 0, y: 0 });
-  } else {
-    throw new Error("Invalid bot origin quadrant.");
-  }
+  return ["x", "y"].reduce<XYCoordinate>(
+    (result: XYCoordinate, axis: "x" | "y") => {
+      switch (quadrant) {
+        case MIRRORED_QUADRANTS[axis][0]:
+        case MIRRORED_QUADRANTS[axis][1]:
+          result[axis] = gridSize[axis] - coordinate[axis];
+          return result;
+        default:
+        case NORMAL_QUADRANTS[axis][0]:
+        case NORMAL_QUADRANTS[axis][1]:
+          result[axis] = coordinate[axis];
+          return result;
+      }
+    }, { x: 0, y: 0 });
 }
 
 /**
@@ -269,11 +263,10 @@ export const transformForQuadrant =
   (mapTransformProps: MapTransformProps): string => {
     const quadrantFlips = () => {
       switch (mapTransformProps.quadrant) {
-        case 1: return { x: -1, y: 1 };
-        case 2: return { x: 1, y: 1 };
-        case 3: return { x: 1, y: -1 };
-        case 4: return { x: -1, y: -1 };
-        default: return { x: 1, y: 1 };
+        case BotOriginQuadrant.ONE: return { x: -1, y: 1 };
+        case BotOriginQuadrant.TWO: return { x: 1, y: 1 };
+        case BotOriginQuadrant.THREE: return { x: 1, y: -1 };
+        case BotOriginQuadrant.FOUR: return { x: -1, y: -1 };
       }
     };
     const origin = transformXY(0, 0, mapTransformProps);

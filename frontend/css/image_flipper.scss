@@ -82,8 +82,7 @@
 }
 
 .image-meta-filter-menu {
-  .this-image-section,
-  .newer-older-images-section,
+  max-width: 25rem;
   .hide-single-image-section {
     padding: 1rem;
     line-height: 2.5rem;
@@ -105,28 +104,9 @@
       font-weight: bold;
     }
   }
-  .this-image-section {
-    .content {
-      margin: auto;
-      width: fit-content;
-    }
-    p {
-      margin: 0;
-    }
-    button {
-      vertical-align: middle;
-    }
-  }
-  .newer-older-images-section {
-    p {
-      display: block;
-      margin: auto;
-      width: fit-content;
-    }
-    .buttons {
-      margin: auto;
-      width: fit-content;
-    }
+  .fb-toggle-button {
+    vertical-align: top;
+    margin-top: 1.5rem;
   }
   .hide-single-image-section {
     .content {
@@ -139,13 +119,14 @@
     float: none;
     line-height: 1.5rem;
   }
-  hr {
-    margin: 0.5rem;
-  }
   .header-label {
     display: block;
-    margin: auto;
+    margin: auto !important;
     width: fit-content;
+  }
+  .toggle-label {
+    margin: 1rem;
+    width: 50%;
   }
 }
 
@@ -160,6 +141,45 @@
     &.gray {
       color: $medium_gray;
     }
+  }
+}
+
+.this-image-section {
+  margin: 2rem;
+  .content {
+    display: inline;
+    input {
+      margin: 0.5rem;
+      height: 2rem;
+      width: 3rem;
+    }
+  }
+  p {
+    display: inline;
+    margin: 0;
+  }
+  button {
+    margin: 0.5rem;
+    vertical-align: middle;
+    float: none;
+  }
+}
+
+.newer-older-images-section {
+  margin: 2rem;
+  i {
+    margin: 0.25rem;
+  }
+  p {
+    display: inline;
+  }
+  .buttons {
+    display: inline;
+  }
+  button {
+    margin: 0.5rem;
+    vertical-align: middle;
+    float: none;
   }
 }
 
@@ -186,6 +206,52 @@
     bottom: 3rem;
     height: 0px;
     float: right!important;
+  }
+  .toggle-label {
+    margin-top: 0 !important;
+    margin-bottom: 2rem;
+  }
+  .fb-toggle-button {
+    margin: 0 !important;
+  }
+  .photo-filter-settings {
+    position: relative;
+    .bp3-popover-wrapper {
+      position: absolute;
+      top: -0.5rem;
+      right: 1rem;
+    }
+    .fa-exclamation-triangle {
+      font-size: 1.3rem;
+      color: $orange;
+    }
+    .filter-controls {
+      .banner {
+        display: none;
+      }
+      &.single-image-mode,
+      &.image-layer-disabled {
+        opacity: 0.40;
+        * {
+          pointer-events: none;
+        }
+        .banner {
+          display: inline-block;
+          position: absolute;
+          top: 25%;
+          left: -2.5%;
+          z-index: 10;
+          width: 105%;
+          padding: 0.5rem;
+          background-color: $dark_gray;
+          opacity: 0.90;
+          color: $off_white;
+          font-size: 1.8rem;
+          vertical-align: middle;
+          text-align: center;
+        }
+      }
+    }
   }
 }
 

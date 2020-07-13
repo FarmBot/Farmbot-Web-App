@@ -36,7 +36,7 @@ export const cameraZCheck =
   };
 
 /* Check if the calibration image center matches the provided image. */
-export const cameraOrientationCheck =
+export const imageSizeCheck =
   (size: Record<"width" | "height", number>,
     calibCenter: Record<"x" | "y", string | undefined>,
     alreadyRotated: boolean,
@@ -48,8 +48,10 @@ export const cameraOrientationCheck =
       y: parse(calibCenter.y),
     };
     return isNumber(calibrationCenter.x) && isNumber(calibrationCenter.y)
-      && Math.abs(size.width / 2 - calibrationCenter.x) < 5
-      && Math.abs(size.height / 2 - calibrationCenter.y) < 5;
+      && ((Math.abs(size.width / 2 - calibrationCenter.x) < 5
+        && Math.abs(size.height / 2 - calibrationCenter.y) < 5)
+        || (Math.abs(size.height / 2 - calibrationCenter.x) < 5
+          && Math.abs(size.width / 2 - calibrationCenter.y) < 5));
   };
 
 /* Get the size of the image at the URL. */
@@ -196,6 +198,7 @@ const parseCalibrationData =
 export interface MapImageProps {
   image: TaggedImage;
   hoveredMapImage: number | undefined;
+  highlighted?: boolean;
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
   mapTransformProps: MapTransformProps;
@@ -242,7 +245,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
       getImageSize(imageUrl, this.imageCallback);
 
       /* Check for necessary camera calibration and image data. */
-      if (imageScale && cameraZCheck(z, calibrationZ) && cameraOrientationCheck(
+      if (imageScale && cameraZCheck(z, calibrationZ) && imageSizeCheck(
         { width: imageWidth, height: imageHeight }, center, alreadyRotated)) {
         const imagePosition = mapImagePositionData({
           x, y, width: imageWidth, height: imageHeight,
@@ -258,7 +261,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
                 width={width} height={height}
                 transformOrigin={transformOrigin}
                 rotation={imageRotation} alreadyRotated={alreadyRotated} />}
-            {hovered &&
+            {(hovered || this.props.highlighted) &&
               <rect id={"highlight-border"}
                 x={0} y={0} height={height} width={width}
                 stroke={Color.orange} strokeWidth={10}

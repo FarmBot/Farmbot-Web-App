@@ -10,11 +10,13 @@ import { getMode } from "../map/util";
 import { Mode } from "../map/interfaces";
 import { mapPointClickAction } from "../map/actions";
 import { round } from "lodash";
+import { edit, save, destroy } from "../../api/crud";
 
 export interface WeedInventoryItemProps {
   tpp: TaggedWeedPointer;
   dispatch: Function;
   hovered: boolean;
+  pending?: boolean;
 }
 
 export class WeedInventoryItem extends
@@ -62,6 +64,21 @@ export class WeedInventoryItem extends
       <span className="weed-search-item-name">
         {weed.name || t("Untitled weed")}
       </span>
+      {this.props.pending &&
+        <button className={"fb-button green"} onClick={e => {
+          e.stopPropagation();
+          this.props.dispatch(edit(tpp, { plant_stage: "active" }));
+          this.props.dispatch(save(tpp.uuid));
+        }}>
+          <i className={"fa fa-check"} />
+        </button>}
+      {this.props.pending &&
+        <button className={"fb-button red"} onClick={e => {
+          e.stopPropagation();
+          this.props.dispatch(destroy(tpp.uuid, true));
+        }}>
+          <i className={"fa fa-times"} />
+        </button>}
       <p className="weed-search-item-info">
         <i>{`(${round(weed.x)}, ${round(weed.y)}) r${round(weed.radius)}`}</i>
       </p>

@@ -50,10 +50,12 @@ export interface GridInputProps extends GridInputPropsBase {
   disabled: boolean;
   botPosition: BotPosition;
   onUseCurrentPosition(position: Record<"x" | "y", number>): void;
+  itemType: "points" | "plants";
 }
 
 export interface InputCellProps extends GridInputPropsBase {
   gridKey: PlantGridKey;
+  itemType: "points" | "plants";
 }
 
 export interface PlantGridLabelData {
