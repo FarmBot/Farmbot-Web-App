@@ -17,7 +17,7 @@ module Devices
       pin_bindings: basic_query("pin_bindings"),
       points: basic_query("points"),
       regimens: basic_query("regimens"),
-      sensor_readings: basic_query("sensor_readings"),
+      # sensor_readings: basic_query("sensor_readings"),
       sensors: basic_query("sensors"),
       sequences: basic_query("sequences"),
       tools: basic_query("tools"),
@@ -42,7 +42,10 @@ module Devices
       real_stuff = QUERIES.reduce({}) do |acc, (key, value)|
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
-      real_stuff.merge({ first_party_farmwares: STUB_FARMWARES })
+      real_stuff.merge({
+        first_party_farmwares: STUB_FARMWARES,
+        sensor_readings: [],
+      })
     end
 
     def maybe_mark_first_contact
