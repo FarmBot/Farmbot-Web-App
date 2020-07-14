@@ -76,7 +76,6 @@ module FarmBot
         "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:#{API_PORT}",
         "#{ENV.fetch("API_HOST")}:3808",
-        "appsignal-endpoint.net",
       ]
       config.csp = {
         default_src: %w(https: 'self'),

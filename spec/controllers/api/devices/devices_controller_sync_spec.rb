@@ -10,7 +10,8 @@ describe Api::DevicesController do
     EDGE_CASES = [:devices, # Singular resources
                   :fbos_configs,
                   :firmware_configs,
-                  :first_party_farmwares]
+                  :first_party_farmwares,
+                  :sensor_readings]
     FORMAT = "%Y-%m-%d %H:%M:%S.%5N"
     it "provides timestamps of updates, plus current time" do
       sign_in user
@@ -63,6 +64,7 @@ describe Api::DevicesController do
           end
         end
       end
+      expect(json[:sensor_readings]).to eq([])
     end
   end
 end

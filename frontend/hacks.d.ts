@@ -19,7 +19,6 @@ interface AppSig {
 
 interface Window {
   Rollbar: Rollbar | undefined;
-  appSignal: (AppSig | undefined);
   logStore: LogStore
 }
 
