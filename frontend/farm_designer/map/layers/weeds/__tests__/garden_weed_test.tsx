@@ -88,6 +88,10 @@ describe("<GardenWeed />", () => {
     wrapper.find("g").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith(
       `/app/designer/weeds/${p.weed.body.id}`);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: [p.weed.uuid],
+    });
   });
 
   it("doesn't show selection indicator", () => {
@@ -104,5 +108,15 @@ describe("<GardenWeed />", () => {
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
     expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy;
+  });
+
+  it("doesn't render selection indicator when icon is hovered", () => {
+    const p = fakeProps();
+    p.hovered = true;
+    p.selected = false;
+    p.current = false;
+    const wrapper = svgMount(<GardenWeed {...p} />);
+    wrapper.find(GardenWeed).setState({ iconHovered: true });
+    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeFalsy;
   });
 });
