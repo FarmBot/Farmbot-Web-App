@@ -356,6 +356,7 @@
   }
 }
 
+.weed-indicator.is-chosen-true,
 .plant-indicator.is-chosen-true {
   &.animate {
     animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;

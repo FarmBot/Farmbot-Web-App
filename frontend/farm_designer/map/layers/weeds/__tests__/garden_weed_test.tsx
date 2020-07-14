@@ -47,9 +47,12 @@ describe("<GardenWeed />", () => {
   it("animates", () => {
     const p = fakeProps();
     p.animate = true;
+    p.selected = true;
     const wrapper = svgMount(<GardenWeed {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find("image").hasClass("animate")).toBeTruthy();
+    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy;
+    expect(wrapper.find("circle").last().hasClass("animate")).toBeTruthy;
   });
 
   it("hovers weed", () => {
@@ -85,5 +88,21 @@ describe("<GardenWeed />", () => {
     wrapper.find("g").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith(
       `/app/designer/weeds/${p.weed.body.id}`);
+  });
+
+  it("doesn't show selection indicator", () => {
+    const p = fakeProps();
+    p.selected = false;
+    p.current = false;
+    const wrapper = svgMount(<GardenWeed {...p} />);
+    expect(wrapper.find("circle").last().hasClass("weed-radius")).toBeTruthy;
+  });
+
+  it("shows selection indicator", () => {
+    const p = fakeProps();
+    p.selected = true;
+    p.current = false;
+    const wrapper = svgMount(<GardenWeed {...p} />);
+    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy;
   });
 });
