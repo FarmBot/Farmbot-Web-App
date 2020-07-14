@@ -6,6 +6,7 @@ jest.mock("../../../history", () => ({
 
 jest.mock("../../map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
+  selectPoint: jest.fn(),
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -30,6 +31,7 @@ describe("<WeedInventoryItem /> />", () => {
     tpp: fakeWeed(),
     dispatch: jest.fn(),
     hovered: false,
+    maxSize: 0,
   });
 
   it("renders named weed", () => {
@@ -128,5 +130,20 @@ describe("<WeedInventoryItem /> />", () => {
     const wrapper = mount(<WeedInventoryItem {...p} />);
     wrapper.find(".fb-button.red").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.tpp.uuid, true);
+  });
+
+  it.each<[number, number, number]>([
+    [100, 0, 1],
+    [100, 100, 1],
+    [75, 100, 0.75],
+    [25, 100, 0.5],
+  ])("has correct scale", (radius, max, scale) => {
+    const p = fakeProps();
+    p.pending = true;
+    p.tpp.body.radius = radius;
+    p.maxSize = max;
+    const wrapper = mount(<WeedInventoryItem {...p} />);
+    expect(wrapper.find(".weed-item-icon").props().style?.transform)
+      .toEqual(`scale(${scale})`);
   });
 });

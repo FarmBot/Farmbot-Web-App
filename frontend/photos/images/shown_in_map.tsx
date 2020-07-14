@@ -3,7 +3,7 @@ import { TaggedImage } from "farmbot";
 import { every } from "lodash";
 import { t } from "../../i18next_wrapper";
 import {
-  cameraZCheck, imageSizeCheck, isRotated,
+  cameraZCheck, imageSizeCheck,
 } from "../../farm_designer/map/layers/images/map_image";
 import { UserEnv } from "../../devices/interfaces";
 import { BooleanSetting } from "../../session_keys";
@@ -36,9 +36,7 @@ export const getImageShownStatusFlags =
       zMatch: cameraZCheck(image?.body.meta.z,
         env["CAMERA_CALIBRATION_camera_z"]),
       sizeMatch: imageSizeCheck(size,
-        getCalibratedImageCenter(env),
-        !!isRotated(image?.body.meta.name,
-          !env["CAMERA_CALIBRATION_coord_scale"]))
+        getCalibratedImageCenter(env))
     };
   };
 

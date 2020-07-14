@@ -13,6 +13,7 @@ import {
   EditPointProperties, PointActions, updatePoint, AdditionalWeedProperties,
 } from "../points/point_edit_actions";
 import { Actions } from "../../constants";
+import { selectPoint } from "../map/actions";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -43,9 +44,12 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
         panel={Panel.Weeds}
         title={t("Edit weed")}
         backTo={weedsPath}
-        onBack={() => this.props.dispatch({
-          type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
-        })} />
+        onBack={() => {
+          this.props.dispatch({
+            type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
+          });
+          this.props.dispatch(selectPoint(undefined));
+        }} />
       <DesignerPanelContent panelName={this.panelName}>
         {this.point
           ? <div className={"weed-panel-content-wrapper"}>

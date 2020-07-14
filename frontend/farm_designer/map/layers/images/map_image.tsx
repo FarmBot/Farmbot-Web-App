@@ -39,9 +39,7 @@ export const cameraZCheck =
 export const imageSizeCheck =
   (size: Record<"width" | "height", number>,
     calibCenter: Record<"x" | "y", string | undefined>,
-    alreadyRotated: boolean,
   ) => {
-    if (!alreadyRotated) { return true; }
     if (PRE_CALIBRATION_PREVIEW && !calibCenter.x) { return true; }
     const calibrationCenter = {
       x: parse(calibCenter.x),
@@ -246,7 +244,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
 
       /* Check for necessary camera calibration and image data. */
       if (imageScale && cameraZCheck(z, calibrationZ) && imageSizeCheck(
-        { width: imageWidth, height: imageHeight }, center, alreadyRotated)) {
+        { width: imageWidth, height: imageHeight }, center)) {
         const imagePosition = mapImagePositionData({
           x, y, width: imageWidth, height: imageHeight,
           cameraCalibrationData, mapTransformProps, alreadyRotated,
