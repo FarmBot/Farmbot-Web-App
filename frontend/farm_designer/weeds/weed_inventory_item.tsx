@@ -8,7 +8,7 @@ import { svgToUrl } from "../../open_farm/icons";
 import { genericWeedIcon } from "../point_groups/point_group_item";
 import { getMode } from "../map/util";
 import { Mode } from "../map/interfaces";
-import { mapPointClickAction } from "../map/actions";
+import { mapPointClickAction, selectPoint } from "../map/actions";
 import { round } from "lodash";
 import { edit, save, destroy } from "../../api/crud";
 
@@ -17,6 +17,7 @@ export interface WeedInventoryItemProps {
   dispatch: Function;
   hovered: boolean;
   pending?: boolean;
+  maxSize?: number;
 }
 
 export class WeedInventoryItem extends
@@ -26,6 +27,9 @@ export class WeedInventoryItem extends
     const weed = this.props.tpp.body;
     const { tpp, dispatch } = this.props;
     const weedId = (weed.id || "ERR_NO_POINT_ID").toString();
+    const scale = this.props.maxSize
+      ? round(Math.max(0.5, weed.radius / this.props.maxSize), 2)
+      : 1;
 
     const toggle = (action: "enter" | "leave") => {
       const isEnter = action === "enter";
@@ -42,6 +46,7 @@ export class WeedInventoryItem extends
       } else {
         push(`/app/designer/weeds/${weedId}`);
         dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: [tpp.uuid] });
+        dispatch(selectPoint([tpp.uuid]));
       }
     };
 
@@ -51,7 +56,8 @@ export class WeedInventoryItem extends
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
       onClick={click}>
-      <span className={"weed-item-icon"}>
+      <span className={"weed-item-icon"}
+        style={{ transform: `scale(${scale})` }}>
         <img className={"weed-icon"}
           src={DEFAULT_WEED_ICON}
           width={32}

@@ -4,6 +4,7 @@ import { transformXY, scaleIcon } from "../../util";
 import { Actions } from "../../../../constants";
 import { Color } from "../../../../ui";
 import { mapPointClickAction } from "../../actions";
+import { Circle } from "../plants/circle";
 
 export const DEFAULT_WEED_ICON = "/app-resources/img/generic-weed.svg";
 
@@ -56,6 +57,16 @@ export const GardenWeed = (props: GardenWeedProps) => {
         r={radius}
         fill={`url(#Weed${id}Gradient)`}
         opacity={hovered ? 1 : 0.5} />}
+
+    {(current || selected || hovered) &&
+      <g id="selected-weed-indicator">
+        <Circle
+          className={`weed-indicator ${animate ? "animate" : ""}`}
+          x={qx}
+          y={qy}
+          r={plantIconSize}
+          selected={true} />
+      </g>}
 
     <g id="weed-icon">
       <image
