@@ -78,7 +78,29 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
       className="fb-button red"
       title={t("Delete Photo")}
       onClick={props.deletePhoto}>
-      {t("Delete Photo")}
+      <i className={"fa fa-trash"} />
+    </button>
+    <a
+      className="fb-button blue"
+      title={t("Download Photo")}
+      href={props.imageUrl}
+      target={"_blank"}
+      download={true}>
+      <i className={"fa fa-download"} />
+    </a>
+    <button
+      className="fb-button yellow"
+      title={t("Toggle crop")}
+      disabled={!props.canCrop}
+      onClick={props.toggleCrop}>
+      <i className={"fa fa-scissors"} />
+    </button>
+    <button
+      className="fb-button yellow"
+      title={t("Toggle rotation")}
+      disabled={!props.canTransform}
+      onClick={props.toggleRotation}>
+      <i className={"fa fa-repeat"} />
     </button>
     <p>
       {imageUploadJobProgress &&
@@ -131,10 +153,14 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
 interface PhotosState {
   imageWidth: number;
   imageHeight: number;
+  crop: boolean;
+  rotate: boolean;
 }
 
 export class Photos extends React.Component<PhotosProps, PhotosState> {
-  state: PhotosState = { imageWidth: 0, imageHeight: 0 };
+  state: PhotosState = {
+    imageWidth: 0, imageHeight: 0, crop: true, rotate: true,
+  };
 
   componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
 
@@ -158,6 +184,9 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
     }
   }
 
+  toggleCrop = () => this.setState({ crop: !this.state.crop });
+  toggleRotation = () => this.setState({ rotate: !this.state.rotate });
+
   get flags(): ImageShowFlags {
     return getImageShownStatusFlags({
       getConfigValue: this.props.getConfigValue,
@@ -177,18 +206,29 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
   }
 
   render() {
+    const canTransform = this.flags.sizeMatch && this.flags.zMatch;
+    const canCrop = canTransform && this.state.rotate;
     return <div className="photos">
       <PhotoButtons
         syncStatus={this.props.syncStatus}
         botToMqttStatus={this.props.botToMqttStatus}
         takePhoto={this.takePhoto}
         deletePhoto={this.deletePhoto}
+        toggleCrop={this.toggleCrop}
+        toggleRotation={this.toggleRotation}
+        imageUrl={this.props.currentImage?.body.attachment_url}
+        canTransform={canTransform}
+        canCrop={canCrop}
         env={this.props.env}
         imageJobs={this.props.imageJobs} />
       <ImageFlipper
         onFlip={this.onFlip}
         currentImage={this.props.currentImage}
         imageLoadCallback={this.imageLoadCallback}
+        transformImage={canCrop}
+        getConfigValue={this.props.getConfigValue}
+        env={this.props.env}
+        crop={this.state.crop}
         images={this.props.images} />
       <PhotoFooter
         image={this.props.currentImage}

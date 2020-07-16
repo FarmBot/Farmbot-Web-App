@@ -79,22 +79,13 @@ describe("<AxisSettings />", () => {
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
 
-  it("disables calibration", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    p.firmwareHardware = "express_k10";
-    const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
-      .toEqual(true);
-  });
-
   it("doesn't disable calibration: different firmware", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
     p.firmwareHardware = "arduino";
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
-      .toEqual(false);
+      .toBeFalsy();
   });
 
   it("doesn't disable calibration: not disabled", () => {
@@ -103,7 +94,7 @@ describe("<AxisSettings />", () => {
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
-      .toEqual(false);
+      .toBeFalsy();
   });
 
   it("sets zero", () => {

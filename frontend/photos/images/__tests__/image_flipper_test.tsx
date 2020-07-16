@@ -21,6 +21,11 @@ describe("<ImageFlipper/>", () => {
     images: prepareImages(fakeImages),
     currentImage: undefined,
     onFlip: jest.fn(),
+    imageLoadCallback: jest.fn(),
+    crop: false,
+    env: {},
+    getConfigValue: jest.fn(),
+    transformImage: false,
   });
 
   it("defaults to index 0 and flips up", () => {
@@ -102,12 +107,13 @@ describe("<ImageFlipper/>", () => {
     expect(prevButton.text().toLowerCase()).toBe("prev");
     expect(prevButton.props().disabled).toBeFalsy();
     prevButton.simulate("click");
-    wrapper.update();
-    // FAILED
     expect(p.onFlip).toHaveBeenCalledWith(p.images[2].uuid);
-    expect(wrapper.find("button").first().render().prop("disabled")).toBeTruthy();
-    prevButton.simulate("click");
-    expect(p.onFlip).toHaveBeenCalledTimes(1);
+    jest.resetAllMocks();
+    wrapper.update();
+    const updatedPrevButton = wrapper.find("button").first();
+    expect(updatedPrevButton.props().disabled).toBeTruthy();
+    updatedPrevButton.simulate("click");
+    expect(p.onFlip).not.toHaveBeenCalled();
   });
 
   it("renders placeholder", () => {
@@ -122,16 +128,42 @@ describe("<ImageFlipper/>", () => {
     const wrapper = mount<ImageFlipper>(<ImageFlipper {...fakeProps()} />);
     const image = shallow(wrapper.instance().imageJSX());
     expect(wrapper.state().isLoaded).toEqual(false);
-    image.find("img").simulate("load");
+    image.find("img").simulate("load", {
+      currentTarget: { width: 0, height: 0 }
+    });
     expect(wrapper.state().isLoaded).toEqual(true);
   });
 
   it("calls back on image load", () => {
     const p = fakeProps();
-    p.imageLoadCallback = jest.fn();
     const wrapper = mount<ImageFlipper>(<ImageFlipper {...p} />);
     const image = shallow(wrapper.instance().imageJSX());
-    image.find("img").simulate("load", { currentTarget: { fake: true } });
-    expect(p.imageLoadCallback).toHaveBeenCalledWith({ fake: true });
+    const fakeImg = { fake: true };
+    image.find("img").simulate("load", { currentTarget: fakeImg });
+    expect(p.imageLoadCallback).toHaveBeenCalledWith(fakeImg);
+  });
+
+  it("transforms image", () => {
+    const p = fakeProps();
+    p.images[0].body.id = undefined;
+    p.transformImage = true;
+    p.crop = true;
+    p.getConfigValue = () => 2;
+    const wrapper = mount(<ImageFlipper {...p} />);
+    expect(wrapper.find("svg").length).toEqual(1);
+  });
+
+  it("calls back on transformed image load", () => {
+    const p = fakeProps();
+    const wrapper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    expect(wrapper.state().width).toEqual(0);
+    expect(wrapper.state().height).toEqual(0);
+    const fakeImg = new Image();
+    fakeImg.width = 1;
+    fakeImg.height = 1;
+    wrapper.instance().onImageLoad(fakeImg);
+    expect(wrapper.state().width).toEqual(1);
+    expect(wrapper.state().height).toEqual(1);
+    expect(p.imageLoadCallback).toHaveBeenCalledWith(fakeImg);
   });
 });

@@ -105,7 +105,9 @@ describe("<Photos/>", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    await clickButton(wrapper, 1, "delete photo");
+    const button = wrapper.find("button").at(1);
+    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    await button.simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(success).toHaveBeenCalled();
   });
@@ -116,7 +118,9 @@ describe("<Photos/>", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    await clickButton(wrapper, 1, "delete photo");
+    const button = wrapper.find("button").at(1);
+    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    await button.simulate("click");
     await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(error).toHaveBeenCalled();
   });
@@ -126,14 +130,18 @@ describe("<Photos/>", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     p.images = fakeImages;
     const wrapper = mount(<Photos {...p} />);
-    await clickButton(wrapper, 1, "delete photo");
+    const button = wrapper.find("button").at(1);
+    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    await button.simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.images[0].uuid);
     await expect(success).toHaveBeenCalled();
   });
 
   it("no photos to delete", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
-    clickButton(wrapper, 1, "delete photo");
+    const button = wrapper.find("button").at(1);
+    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    button.simulate("click");
     expect(destroy).not.toHaveBeenCalledWith();
   });
 
@@ -184,7 +192,8 @@ describe("<Photos/>", () => {
     const p = fakeProps();
     p.images = fakeImages;
     const wrapper = shallow<Photos>(<Photos {...p} />);
-    expect(wrapper.state()).toEqual({ imageWidth: 0, imageHeight: 0 });
+    expect(wrapper.state().imageWidth).toEqual(0);
+    expect(wrapper.state().imageHeight).toEqual(0);
     const img = new Image();
     Object.defineProperty(img, "naturalWidth", {
       value: 10, configurable: true,
@@ -193,7 +202,18 @@ describe("<Photos/>", () => {
       value: 20, configurable: true,
     });
     wrapper.instance().imageLoadCallback(img);
-    expect(wrapper.state()).toEqual({ imageWidth: 10, imageHeight: 20 });
+    expect(wrapper.state().imageWidth).toEqual(10);
+    expect(wrapper.state().imageHeight).toEqual(20);
+  });
+
+  it("toggles state", () => {
+    const wrapper = shallow<Photos>(<Photos {...fakeProps()} />);
+    expect(wrapper.state().crop).toEqual(true);
+    expect(wrapper.state().rotate).toEqual(true);
+    wrapper.instance().toggleCrop();
+    wrapper.instance().toggleRotation();
+    expect(wrapper.state().crop).toEqual(false);
+    expect(wrapper.state().rotate).toEqual(false);
   });
 
   it("unselects photos upon exit", () => {
