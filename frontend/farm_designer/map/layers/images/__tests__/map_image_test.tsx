@@ -348,6 +348,24 @@ describe("<MapImage />", () => {
     expect(wrapper.find("image").props().opacity).toEqual(0.3);
     expect(wrapper.find("#highlight-border").length).toEqual(0);
   });
+
+  it("calls callback", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.callback = jest.fn();
+    const wrapper = svgMount(<MapImage {...p} />);
+    const img = new Image();
+    wrapper.find<MapImage>(MapImage).instance().imageCallback(img)();
+    expect(p.callback).toHaveBeenCalledWith(img);
+  });
+
+  it("disables translation", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.disableTranslation = true;
+    const wrapper = svgMount(<MapImage {...p} />);
+    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    expect(wrapper.find("image").props().transform)
+      .toEqual("scale(-1, -1)  rotate(0)");
+  });
 });
 
 describe("rotated90degrees()", () => {

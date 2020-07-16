@@ -34,6 +34,7 @@ import {
   getFwHardwareValue, hasUTM,
 } from "../devices/components/firmware_hardware_support";
 import { isToolFlipped } from "./tools/tool_slot_edit_components";
+import { UserEnv } from "../devices/interfaces";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -111,21 +112,6 @@ export function mapStateToProps(props: Everything): Props {
   const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
   const env = getEnv(props.resources.index, shouldDisplay, props.bot);
 
-  const cameraCalibrationData: CameraCalibrationData = {
-    scale: env["CAMERA_CALIBRATION_coord_scale"],
-    rotation: env["CAMERA_CALIBRATION_total_rotation_angle"],
-    offset: {
-      x: env["CAMERA_CALIBRATION_camera_offset_x"],
-      y: env["CAMERA_CALIBRATION_camera_offset_y"],
-    },
-    center: {
-      x: env["CAMERA_CALIBRATION_center_pixel_location_x"],
-      y: env["CAMERA_CALIBRATION_center_pixel_location_y"],
-    },
-    origin: env["CAMERA_CALIBRATION_image_bot_origin_location"],
-    calibrationZ: env["CAMERA_CALIBRATION_camera_z"],
-  };
-
   const sensorReadings = chain(selectAllSensorReadings(props.resources.index))
     .sortBy(x => x.body.created_at)
     .reverse()
@@ -150,7 +136,7 @@ export function mapStateToProps(props: Everything): Props {
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,
-    cameraCalibrationData,
+    cameraCalibrationData: getCameraCalibrationData(env),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue,
     sensorReadings,
@@ -161,6 +147,22 @@ export function mapStateToProps(props: Everything): Props {
     visualizedSequenceBody,
   };
 }
+
+export const getCameraCalibrationData =
+  (env: UserEnv): CameraCalibrationData => ({
+    scale: env["CAMERA_CALIBRATION_coord_scale"],
+    rotation: env["CAMERA_CALIBRATION_total_rotation_angle"],
+    offset: {
+      x: env["CAMERA_CALIBRATION_camera_offset_x"],
+      y: env["CAMERA_CALIBRATION_camera_offset_y"],
+    },
+    center: {
+      x: env["CAMERA_CALIBRATION_center_pixel_location_x"],
+      y: env["CAMERA_CALIBRATION_center_pixel_location_y"],
+    },
+    origin: env["CAMERA_CALIBRATION_image_bot_origin_location"],
+    calibrationZ: env["CAMERA_CALIBRATION_camera_z"],
+  });
 
 export const botSize = (props: Everything): BotSize => {
   const getConfigValue = getWebAppConfigValue(() => props);

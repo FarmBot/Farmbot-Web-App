@@ -8,11 +8,17 @@ export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
-  imageLoadCallback?: (img: HTMLImageElement) => void;
+  imageLoadCallback: (img: HTMLImageElement) => void;
+  getConfigValue: GetWebAppConfigValue;
+  env: UserEnv;
+  crop: boolean;
+  transformImage: boolean;
 }
 
 export interface ImageFlipperState {
   isLoaded: boolean;
+  width: number;
+  height: number;
   disablePrev: boolean;
   disableNext: boolean;
 }
@@ -34,9 +40,14 @@ export interface PhotosProps {
 }
 
 export interface PhotoButtonsProps {
-  takePhoto: () => void,
-  deletePhoto: () => void,
-  imageJobs: JobProgress[],
+  takePhoto(): void;
+  deletePhoto(): void;
+  toggleCrop(): void;
+  toggleRotation(): void;
+  canCrop: boolean;
+  canTransform: boolean;
+  imageUrl: string | undefined;
+  imageJobs: JobProgress[];
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
   env: UserEnv;
