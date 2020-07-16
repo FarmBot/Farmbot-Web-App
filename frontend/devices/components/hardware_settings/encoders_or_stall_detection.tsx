@@ -55,7 +55,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           && !props.shouldDisplay(Feature.express_stall_detection)}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      {!showEncoders && props.shouldDisplay(Feature.express_stall_sensitivity) &&
+      {!showEncoders &&
         <NumericMCUInputGroup
           label={DeviceSetting.stallSensitivity}
           tooltip={ToolTips.STALL_SENSITIVITY}

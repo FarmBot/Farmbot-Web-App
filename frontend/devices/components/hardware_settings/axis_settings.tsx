@@ -15,7 +15,6 @@ import { commandErr } from "../../actions";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
-import { Feature } from "../../interfaces";
 import {
   settingRequiredLabel, encodersOrLimitSwitchesRequired,
 } from "./encoders_or_stall_detection";
@@ -130,8 +129,6 @@ export function AxisSettings(props: AxisSettingsProps) {
           : ToolTips.FIND_LENGTH_ENCODERS}
         action={axis => getDevice().calibrate({ axis })
           .catch(commandErr("Find axis length"))}
-        stallUseDisabled={!showEncoders
-          && !props.shouldDisplay(Feature.express_calibration)}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />

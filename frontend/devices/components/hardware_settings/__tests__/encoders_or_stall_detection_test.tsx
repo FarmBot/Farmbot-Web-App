@@ -41,7 +41,6 @@ describe("<EncodersOrStallDetection />", () => {
     const wrapper = mount(<EncodersOrStallDetection {...p} />);
     expect(wrapper.find(BooleanMCUInputGroup).first().props().disabled)
       .toEqual(true);
-    expect(wrapper.text().toLowerCase()).not.toContain("sensitivity");
   });
 
   it("doesn't disable stall detection toggles: different firmware", () => {
