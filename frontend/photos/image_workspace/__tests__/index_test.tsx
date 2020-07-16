@@ -1,11 +1,12 @@
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { ImageWorkspace, ImageWorkspaceProps } from "../index";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { clickButton } from "../../../__test_support__/helpers";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
+import { ExpandableHeader } from "../../../ui";
 
 describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
@@ -107,5 +108,12 @@ describe("<ImageWorkspace />", () => {
     p.botOnline = false;
     const wrapper = mount(<ImageWorkspace {...p} />);
     expect(wrapper.find("button").first().props().disabled).toBeTruthy();
+  });
+
+  it("opens", () => {
+    const wrapper = shallow<ImageWorkspace>(<ImageWorkspace {...fakeProps()} />);
+    expect(wrapper.state().open).toEqual(false);
+    wrapper.find(ExpandableHeader).simulate("click");
+    expect(wrapper.state().open).toEqual(true);
   });
 });

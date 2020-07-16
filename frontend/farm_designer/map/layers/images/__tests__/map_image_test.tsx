@@ -348,6 +348,24 @@ describe("<MapImage />", () => {
     expect(wrapper.find("image").props().opacity).toEqual(0.3);
     expect(wrapper.find("#highlight-border").length).toEqual(0);
   });
+
+  it("calls callback", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.callback = jest.fn();
+    const wrapper = svgMount(<MapImage {...p} />);
+    const img = new Image();
+    wrapper.find<MapImage>(MapImage).instance().imageCallback(img)();
+    expect(p.callback).toHaveBeenCalledWith(img);
+  });
+
+  it("disables translation", () => {
+    const p = cloneDeep(INPUT_SET_1);
+    p.disableTranslation = true;
+    const wrapper = svgMount(<MapImage {...p} />);
+    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    expect(wrapper.find("image").props().transform)
+      .toEqual("scale(-1, -1)  rotate(0)");
+  });
 });
 
 describe("rotated90degrees()", () => {
@@ -401,27 +419,22 @@ describe("imageSizeCheck()", () => {
     expect(imageSizeCheck(
       { width: 1000, height: 500 },
       { x: undefined, y: undefined },
-      true,
     )).toEqual(true);
     expect(imageSizeCheck(
       { width: 1000, height: 500 },
-      { x: "500", y: "1000" },
-      false,
+      { x: "250", y: "500" },
     )).toEqual(true);
     expect(imageSizeCheck(
       { width: 640, height: 480 },
       { x: "320", y: "240" },
-      true,
     )).toEqual(true);
     expect(imageSizeCheck(
       { width: 603, height: 404 },
       { x: "300", y: "200" },
-      true,
     )).toEqual(true);
     expect(imageSizeCheck(
       { width: 480, height: 640 },
       { x: "320", y: "240" },
-      true,
     )).toEqual(true);
   });
 
@@ -429,7 +442,10 @@ describe("imageSizeCheck()", () => {
     expect(imageSizeCheck(
       { width: 640, height: 640 },
       { x: "300", y: "200" },
-      true,
+    )).toEqual(false);
+    expect(imageSizeCheck(
+      { width: 1000, height: 500 },
+      { x: "500", y: "1000" },
     )).toEqual(false);
   });
 });

@@ -89,6 +89,16 @@ describe("<CropInfo />", () => {
       }));
   });
 
+  it("doesn't add a plant at the current bot position", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 100, y: undefined, z: undefined };
+    const wrapper = mount(<CropInfo {...p} />);
+    const button = wrapper.find("button").last();
+    expect(button.text()).toContain("location (unknown)");
+    button.simulate("click");
+    expect(initSave).not.toHaveBeenCalled();
+  });
+
   it("renders cm in mm", () => {
     const p = fakeProps();
     p.cropSearchResults[0].crop.spread = 1234;

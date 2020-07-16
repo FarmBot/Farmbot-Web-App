@@ -48,10 +48,12 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
     const hoveredImage: TaggedImage | undefined =
       images.filter(img => img.body.id == hoveredMapImage
         || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];
+    const rangeOverride = alwaysHighlightImage || hideUnShownImages;
     return <g id="image-layer">
       {visible &&
         reverse(cloneDeep(images))
-          .filter(img => shownImages.includes(img.body.id || 0)
+          .filter(img =>
+            (rangeOverride && shownImages.includes(img.body.id || 0))
             || imageInRange(img, imageFilterBegin, imageFilterEnd))
           .filter(img => !imageIsHidden(
             hiddenImages, shownImages, hideUnShownImages, img.body.id))

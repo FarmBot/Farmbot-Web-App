@@ -62,6 +62,8 @@ export interface WeedsSectionProps {
 
 export const WeedsSection = (props: WeedsSectionProps) => {
   const { layerSetting } = props;
+  const rawMaxSize = Math.max(...props.items.map(item => item.body.radius));
+  const maxSize = isFinite(rawMaxSize) ? rawMaxSize : 0;
   return <div className={`${props.category}-weeds`}>
     <div className={`${props.category}-weeds-header`}>
       <label>{`${t(props.sectionTitle)} (${props.items.length})`}</label>
@@ -93,6 +95,7 @@ export const WeedsSection = (props: WeedsSectionProps) => {
       {props.items.map(p => <WeedInventoryItem
         key={p.uuid}
         tpp={p}
+        maxSize={maxSize}
         pending={props.category == "pending"}
         hovered={props.hoveredPoint === p.uuid}
         dispatch={props.dispatch} />)}

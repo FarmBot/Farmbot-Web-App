@@ -20,10 +20,10 @@ const parse = (str: string | undefined) => {
 /* Check if the image has been rotated according to the calibration value. */
 export const isRotated = (annotation: string | undefined, noCalib: boolean) => {
   if (PRE_CALIBRATION_PREVIEW && noCalib) { return true; }
-  return annotation &&
+  return !!(annotation &&
     (annotation.includes("rotated")
       || annotation.includes("marked")
-      || annotation.includes("calibration_result"));
+      || annotation.includes("calibration_result")));
 };
 
 /* Check if the calibration data is valid for the image provided using z. */
@@ -39,9 +39,7 @@ export const cameraZCheck =
 export const imageSizeCheck =
   (size: Record<"width" | "height", number>,
     calibCenter: Record<"x" | "y", string | undefined>,
-    alreadyRotated: boolean,
   ) => {
-    if (!alreadyRotated) { return true; }
     if (PRE_CALIBRATION_PREVIEW && !calibCenter.x) { return true; }
     const calibrationCenter = {
       x: parse(calibCenter.x),
@@ -202,6 +200,8 @@ export interface MapImageProps {
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
   mapTransformProps: MapTransformProps;
+  callback?: (img: HTMLImageElement) => void;
+  disableTranslation?: boolean;
 }
 
 interface MapImageState {
@@ -226,6 +226,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
   imageCallback = (img: HTMLImageElement) => () => {
     const { width, height } = img;
     this.setState({ imageWidth: width, imageHeight: height });
+    this.props.callback?.(img);
   };
 
   render() {
@@ -236,7 +237,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
       parseCalibrationData(cameraCalibrationData);
     const { calibrationZ, center } = cameraCalibrationData;
     const imageMetaName = image.body.meta.name || "";
-    const alreadyRotated = !!isRotated(imageMetaName, noCalib);
+    const alreadyRotated = isRotated(imageMetaName, noCalib);
     const imageUploadName = last(imageMetaName.split("/"));
     const { x, y, z } = image.body.meta;
 
@@ -246,13 +247,16 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
 
       /* Check for necessary camera calibration and image data. */
       if (imageScale && cameraZCheck(z, calibrationZ) && imageSizeCheck(
-        { width: imageWidth, height: imageHeight }, center, alreadyRotated)) {
+        { width: imageWidth, height: imageHeight }, center)) {
         const imagePosition = mapImagePositionData({
           x, y, width: imageWidth, height: imageHeight,
           cameraCalibrationData, mapTransformProps, alreadyRotated,
         });
         if (imagePosition) {
-          const { width, height, transform, transformOrigin } = imagePosition;
+          const { width, height, transformOrigin } = imagePosition;
+          const transform = this.props.disableTranslation ?
+            imagePosition.transform.replace(/translate\(.*?\)/g, "")
+            : imagePosition.transform;
           const hovered = this.props.hoveredMapImage == image.body.id;
           const clipName = cropPathName(cropImage, imageRotation, image.body.id);
           return <g id={`image-${image.body.id}`}>

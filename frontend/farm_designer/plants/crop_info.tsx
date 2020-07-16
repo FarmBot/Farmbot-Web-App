@@ -144,12 +144,12 @@ const AddPlantHereButton = (props: {
   const { x, y } = botPosition;
   const botXY = isNumber(x) && isNumber(y) ?
     { x: round(x), y: round(y) } : undefined;
-  const botXYLabel = botXY ? `(${botXY.x}, ${botXY.y})` : "(unknown)";
-  const click = () => botXY
-    ? createPlant({
+  const botXYLabel = botXY ? `(${botXY.x}, ${botXY.y})` : `(${t("unknown")})`;
+  const click = () => botXY &&
+    createPlant({
       cropName, slug, gardenCoords: botXY, gridSize: undefined,
       dispatch, openedSavedGarden
-    }) : () => { };
+    });
   return <button className="fb-button gray no-float"
     title={t("Add plant at current location")}
     disabled={!botXY} onClick={click}>
