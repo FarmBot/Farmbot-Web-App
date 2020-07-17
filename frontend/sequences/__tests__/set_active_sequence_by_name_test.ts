@@ -22,7 +22,7 @@ jest.mock("../../redux/store", () => ({
   }
 }));
 
-jest.mock("../../account/dev/dev_support", () => ({}));
+jest.mock("../../settings/dev/dev_support", () => ({}));
 
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { selectSequence } from "../actions";

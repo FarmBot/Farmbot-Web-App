@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
-import { EStopButton } from "../devices/components/e_stop_btn";
+import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
 import { Row, Col } from "../ui/index";
 import { getPathArray } from "../history";

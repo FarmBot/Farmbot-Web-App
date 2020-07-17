@@ -4,8 +4,9 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
 import {
-  fakeFbosConfig, fakeLog,
+  fakeFbosConfig, fakeLog, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
+import { NumericSetting } from "../../session_keys";
 
 describe("mapStateToProps()", () => {
   function fakeLogs(count: number): TaggedLog[] {
@@ -29,5 +30,14 @@ describe("mapStateToProps()", () => {
     expect(props.sourceFbosConfig("sequence_init_log")).toEqual({
       value: true, consistent: false
     });
+  });
+
+  it("returns value", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.success_log = 2;
+    state.resources = buildResourceIndex([config]);
+    const props = mapStateToProps(state);
+    expect(props.getConfigValue(NumericSetting.success_log)).toEqual(2);
   });
 });

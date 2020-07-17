@@ -5,7 +5,7 @@ import {
   Props, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { Plants } from "./plants/plant_inventory";
+import { Plants } from "../plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, isFinite, isEqual, filter } from "lodash";
@@ -20,7 +20,7 @@ import { DesignerNavTabs } from "./panel_header";
 import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
-import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
+import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
 import { calculateImageAgeInfo } from "../photos/images/image_filter_menu";
 
 export const getDefaultAxisLength =

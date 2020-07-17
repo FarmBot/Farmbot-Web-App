@@ -34,7 +34,7 @@ import { getEnv, getShouldDisplayFn } from "./farmware/state_to_props";
 import { filterAlerts } from "./messages/alerts";
 import {
   isFwHardwareValue,
-} from "./devices/components/firmware_hardware_support";
+} from "./settings/firmware/firmware_hardware_support";
 
 /** For the logger module */
 init();

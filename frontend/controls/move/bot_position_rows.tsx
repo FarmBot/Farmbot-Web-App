@@ -7,7 +7,7 @@ import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { GetWebAppBool } from "./interfaces";
 import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
-import { hasEncoders } from "../../devices/components/firmware_hardware_support";
+import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
 import { FirmwareHardware, McuParams } from "farmbot";
 
 export interface BotPositionRowsProps {

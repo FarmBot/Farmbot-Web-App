@@ -2,13 +2,13 @@ import * as React from "react";
 import { getPathArray } from "../history";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../account/dev/dev_support";
+import { DevSettings } from "../settings/dev/dev_support";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { store } from "../redux/store";
 import { BooleanSetting } from "../session_keys";
 import {
   getFwHardwareValue, hasSensors,
-} from "../devices/components/firmware_hardware_support";
+} from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
 
 export enum Panel {

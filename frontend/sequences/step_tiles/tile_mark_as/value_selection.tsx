@@ -12,11 +12,11 @@ import { selectAllTools, maybeFindToolById } from "../../../resources/selectors"
 import {
   PLANT_STAGE_LIST, PLANT_STAGE_DDI_LOOKUP, WEED_STAGE_DDI_LOOKUP,
   ALL_STAGE_LIST, ALL_STAGE_DDI_LOOKUP,
-} from "../../../farm_designer/plants/edit_plant_status";
+} from "../../../plants/edit_plant_status";
 import {
   isCustomMetaField, KnownField, UPDATE_RESOURCE_DDIS, isIdentifier,
 } from "./field_selection";
-import { DevSettings } from "../../../account/dev/dev_support";
+import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ValueSelection = (props: ValueSelectionProps) =>
   <div className={"update-resource-step-value"}>

@@ -7,12 +7,12 @@ import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../../redux/interfaces";
-import { findGroupFromUrl } from "../point_groups/group_detail";
+import { findGroupFromUrl } from "../../point_groups/group_detail";
 import { TaggedPoint } from "farmbot";
 import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
-import { overwriteGroup } from "../point_groups/actions";
+import { overwriteGroup } from "../../point_groups/actions";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;

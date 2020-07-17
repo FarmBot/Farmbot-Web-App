@@ -4,7 +4,7 @@ import { AxisDisplayGroupProps, AxisProps } from "./interfaces";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../i18next_wrapper";
 import { MissedStepIndicator } from "./move/missed_step_indicator";
-import { DevSettings } from "../account/dev/dev_support";
+import { DevSettings } from "../settings/dev/dev_support";
 
 const Axis = (props: AxisProps) => {
   const { axis, val, missedSteps, axisState, index, detectionEnabled } = props;

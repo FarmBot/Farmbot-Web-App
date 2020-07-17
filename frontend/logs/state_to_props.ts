@@ -3,7 +3,7 @@ import { selectAllLogs, maybeGetTimeSettings } from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue,
-} from "../devices/components/source_config_value";
+} from "../settings/source_config_value";
 import { validFbosConfig } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedLog } from "farmbot";

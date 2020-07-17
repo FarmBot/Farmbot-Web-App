@@ -1,7 +1,7 @@
 import moment from "moment";
 import {
   FarmEventWithExecutable,
-} from "../farm_designer/farm_events/calendar/interfaces";
+} from "../farm_events/calendar/interfaces";
 import { CalendarDay } from "../farm_designer/interfaces";
 
 export const TIME = {

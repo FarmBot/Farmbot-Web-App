@@ -1,4 +1,4 @@
-jest.mock("../../../../devices/components/maybe_highlight", () => ({
+jest.mock("../../../../settings/maybe_highlight", () => ({
   getHighlightName: () => "surprise",
 }));
 

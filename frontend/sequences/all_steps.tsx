@@ -11,7 +11,7 @@ import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
 import { ErrorBoundary } from "../error_boundary";
 import { TileUnknown } from "./step_tiles/tile_unknown";
-import { hoverSequenceStep } from "../farm_designer/sequences/visualization";
+import { hoverSequenceStep } from "../farm_designer/map/sequence_visualization";
 
 export interface AllStepsProps {
   sequence: TaggedSequence;

@@ -18,7 +18,7 @@ import { edit, initSave, save } from "../../api/crud";
 import {
   fakeFarmwareManifestV1, fakeFarmware,
 } from "../../__test_support__/fake_farmwares";
-import { DevSettings } from "../../account/dev/dev_support";
+import { DevSettings } from "../../settings/dev/dev_support";
 import { fakeState } from "../../__test_support__/fake_state";
 
 describe("getEnv()", () => {

@@ -4,7 +4,7 @@ jest.mock("../../history", () => ({
 }));
 
 let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
+jest.mock("../../settings/dev/dev_support", () => ({
   DevSettings: {
     futureFeaturesEnabled: () => mockDev,
   }

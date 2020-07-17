@@ -5,7 +5,7 @@ import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
-import { hasEncoders } from "../../devices/components/firmware_hardware_support";
+import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
 import { DeviceSetting } from "../../constants";
 
 export const moveWidgetSetting =
