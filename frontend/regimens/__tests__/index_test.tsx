@@ -1,6 +1,7 @@
 jest.mock("../../history", () => ({
   push: () => jest.fn(),
-  history: { getCurrentLocation: () => ({ pathname: "" }) }
+  getPathArray: () => [],
+  history: { getCurrentLocation: () => ({ pathname: "" }) },
 }));
 
 import * as React from "react";

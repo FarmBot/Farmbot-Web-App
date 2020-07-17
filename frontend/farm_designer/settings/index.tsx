@@ -23,6 +23,8 @@ import { Actions } from "../../constants";
 import { ExtraSettings } from "../map/easter_eggs/bugs";
 import { ControlPanelState } from "../../devices/interfaces";
 import { OtherSettings } from "./other_settings";
+import { AccountSettings } from "./account_settings";
+import { DevSettingsRows } from "../../account/dev/dev_widget";
 
 interface ToggleSettingsOpenProps {
   dispatch: Function;
@@ -145,10 +147,15 @@ export class RawDesignerSettings
           botOnline={botOnline} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
+        <AccountSettings {...commonProps}
+          user={this.props.user}
+          getConfigValue={getConfigValue} />
         <OtherSettings {...commonProps}
           searchTerm={this.props.searchTerm}
           getConfigValue={getConfigValue}
           sourceFbosConfig={sourceFbosConfig} />
+        {this.props.searchTerm == "developer" &&
+          <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}
       </DesignerPanelContent>
     </DesignerPanel>;

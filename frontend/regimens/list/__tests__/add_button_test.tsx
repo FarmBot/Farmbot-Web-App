@@ -1,9 +1,8 @@
 jest.unmock("../../actions");
 jest.mock("../../../history", () => ({
   push: jest.fn(),
-  history: {
-    getCurrentLocation: () => "fake/path"
-  }
+  getPathArray: () => "fake/path".split("/"),
+  history: { getCurrentLocation: () => "fake/path" },
 }));
 jest.mock("../../set_active_regimen_by_name", () => ({
   setActiveRegimenByName: jest.fn()

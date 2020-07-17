@@ -207,55 +207,6 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.discard_unsaved_sequences,
     confirm: Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM,
   },
-  {
-    title: DeviceSetting.internationalizeWebApp,
-    description: Content.INTERNATIONALIZE_WEB_APP,
-    setting: BooleanSetting.disable_i18n,
-    invert: true,
-  },
-  {
-    title: DeviceSetting.use24hourTimeFormat,
-    description: Content.TIME_FORMAT_24_HOUR,
-    setting: BooleanSetting.time_format_24_hour,
-  },
-  {
-    title: DeviceSetting.showSecondsInTime,
-    description: Content.TIME_FORMAT_SECONDS,
-    setting: BooleanSetting.time_format_seconds,
-  },
-  {
-    title: DeviceSetting.hideWebcamWidget,
-    description: Content.HIDE_WEBCAM_WIDGET,
-    setting: BooleanSetting.hide_webcam_widget,
-  },
-  {
-    title: DeviceSetting.hideSensorsPanel,
-    description: Content.HIDE_SENSORS_WIDGET,
-    setting: BooleanSetting.hide_sensors,
-  },
-  {
-    title: DeviceSetting.readSpeakLogsInBrowser,
-    description: Content.BROWSER_SPEAK_LOGS,
-    setting: BooleanSetting.enable_browser_speak,
-  },
-  {
-    title: DeviceSetting.discardUnsavedChanges,
-    description: Content.DISCARD_UNSAVED_CHANGES,
-    setting: BooleanSetting.discard_unsaved,
-    confirm: Content.DISCARD_UNSAVED_CHANGES_CONFIRM,
-  },
-  {
-    title: DeviceSetting.confirmEmergencyUnlock,
-    description: Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG,
-    setting: BooleanSetting.disable_emergency_unlock_confirmation,
-    invert: true,
-    confirm: Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE,
-  },
-  {
-    title: DeviceSetting.userInterfaceReadOnlyMode,
-    description: Content.USER_INTERFACE_READ_ONLY_MODE,
-    setting: BooleanSetting.user_interface_read_only_mode,
-  },
 ]);
 
 export interface LogLevelSettingDescriptionProps {

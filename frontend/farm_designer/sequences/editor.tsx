@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
+import { Panel } from "../panel_header";
 import { mapStateToProps } from "../../sequences/state_to_props";
 import { Props } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
@@ -24,9 +25,10 @@ export class RawDesignerSequenceEditor extends React.Component<Props> {
 
   render() {
     const panelName = "designer-sequence-editor";
-    return <DesignerPanel panelName={panelName}>
+    return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
       <DesignerPanelHeader
         panelName={panelName}
+        panel={Panel.Sequences}
         title={this.props.sequence?.body.name || t("No Sequence selected")}
         backTo={"/app/designer/sequences"} />
       <DesignerPanelContent panelName={panelName}>

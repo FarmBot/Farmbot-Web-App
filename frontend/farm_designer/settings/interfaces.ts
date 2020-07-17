@@ -5,7 +5,7 @@ import {
   BotState, ControlPanelState,
 } from "../../devices/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
-import { TaggedDevice, Alert } from "farmbot";
+import { TaggedDevice, Alert, TaggedUser } from "farmbot";
 import { TimeSettings } from "../../interfaces";
 import { DeviceSetting } from "../../constants";
 import {
@@ -31,6 +31,7 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   timeSettings: TimeSettings;
   bot: BotState;
   searchTerm: string;
+  user: TaggedUser;
 }
 
 export interface DesignerSettingsSectionProps {
@@ -49,6 +50,7 @@ export interface SettingDescriptionProps {
   defaultOn?: boolean;
   disabled?: boolean;
   confirm?: string;
+  useToolTip?: boolean;
 }
 
 export interface SettingProps

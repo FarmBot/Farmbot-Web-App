@@ -97,18 +97,6 @@ const key = "FarmDesigner";
 export const UNBOUND_ROUTES = [
   route({
     children: false,
-    $: "/account",
-    getModule: () => import("./account"),
-    key: "Account",
-  }),
-  route({
-    children: false,
-    $: "/help",
-    getModule: () => import("./help/help"),
-    key: "Help",
-  }),
-  route({
-    children: false,
     $: "/controls",
     getModule: () => import("./controls/controls"),
     key: "Controls",
@@ -118,12 +106,6 @@ export const UNBOUND_ROUTES = [
     $: "/logs",
     getModule: () => import("./logs"),
     key: "Logs",
-  }),
-  route({
-    children: false,
-    $: "/messages",
-    getModule: () => import("./messages"),
-    key: "Messages",
   }),
   route({
     children: false,
@@ -366,6 +348,46 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/sequences/editor"),
     childKey: "DesignerSequenceEditor"
+  }),
+  route({
+    children: true,
+    $: "/designer/regimens",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/regimens/list"),
+    childKey: "DesignerRegimenList"
+  }),
+  route({
+    children: true,
+    $: "/designer/regimens/scheduler",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/regimens/scheduler"),
+    childKey: "DesignerRegimenScheduler"
+  }),
+  route({
+    children: true,
+    $: "/designer/regimens/:regimen_name",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/regimens/editor"),
+    childKey: "DesignerRegimenEditor"
+  }),
+  route({
+    children: true,
+    $: "/designer/messages",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/messages"),
+    childKey: "MessagesPanel"
+  }),
+  route({
+    children: true,
+    $: "/designer/help",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/help"),
+    childKey: "HelpPanel"
   }),
   route({
     children: true,

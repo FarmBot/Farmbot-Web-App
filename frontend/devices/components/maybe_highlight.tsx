@@ -118,6 +118,15 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.mapOrigin,
   DeviceSetting.confirmPlantDeletion,
 ];
+const ACCOUNT_PANEL = [
+  DeviceSetting.accountSettings,
+  DeviceSetting.accountName,
+  DeviceSetting.accountEmail,
+  DeviceSetting.changePassword,
+  DeviceSetting.resetAccount,
+  DeviceSetting.deleteAccount,
+  DeviceSetting.exportAccountData,
+];
 const MAP_SETTINGS = [
   DeviceSetting.showPlantsMapLayer,
   DeviceSetting.showPointsMapLayer,
@@ -188,11 +197,12 @@ PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");
+APP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "account");
 CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 MAP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 SEQUENCE_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
-APP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 
 const CONTENT_LOOKUP = {} as Record<DeviceSetting, DeviceSetting[]>;
 CONTENT_LOOKUP[DeviceSetting.farmbotSettings] = FARMBOT_PANEL;
@@ -208,8 +218,10 @@ CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
 CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT_PANEL;
 CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
+CONTENT_LOOKUP[DeviceSetting.accountSettings] = ACCOUNT_PANEL
+  .concat(APP_SETTINGS);
 CONTENT_LOOKUP[DeviceSetting.otherSettings] = CONTROLS_SETTINGS
-  .concat(MAP_SETTINGS, SEQUENCE_SETTINGS, LOG_SETTINGS, APP_SETTINGS);
+  .concat(MAP_SETTINGS, SEQUENCE_SETTINGS, LOG_SETTINGS);
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);

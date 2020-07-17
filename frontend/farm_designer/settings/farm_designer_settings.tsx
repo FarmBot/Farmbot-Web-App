@@ -2,7 +2,7 @@ import * as React from "react";
 import { Content, DeviceSetting } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { setWebAppConfigValue } from "../../config_storage/actions";
-import { Row, Col } from "../../ui";
+import { Row, Col, Help } from "../../ui";
 import { ToggleButton } from "../../controls/toggle_button";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { resetVirtualTrail } from "../map/layers/farmbot/bot_trail";
@@ -47,6 +47,7 @@ export const Setting = (props: SettingProps) => {
       <Row>
         <Col xs={9}>
           <label>{t(title)}</label>
+          {props.useToolTip && <Help text={props.description} />}
         </Col>
         <Col xs={3}>
           {setting && <ToggleButton
@@ -61,9 +62,9 @@ export const Setting = (props: SettingProps) => {
             customText={{ textFalse: t("off"), textTrue: t("on") }} />}
         </Col>
       </Row>
-      <Row>
+      {!props.useToolTip && <Row>
         <p>{t(props.description)}</p>
-      </Row>
+      </Row>}
       {props.children}
     </div>
   </Highlight>;

@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
+import { RawMessagesPanel as MessagesPanel } from "../messages";
 import { mount } from "enzyme";
-import { RawMessages as Messages } from "../index";
-import { MessagesProps } from "../interfaces";
+import { MessagesProps } from "../../messages/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
-describe("<Messages />", () => {
+describe("<MessagesPanel />", () => {
   const fakeProps = (): MessagesProps => ({
     alerts: [],
     apiFirmwareValue: undefined,
@@ -14,8 +14,7 @@ describe("<Messages />", () => {
   });
 
   it("renders page", () => {
-    const wrapper = mount(<Messages {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Message Center");
+    const wrapper = mount(<MessagesPanel {...fakeProps()} />);
     expect(wrapper.text()).toContain("No messages");
   });
 
@@ -27,8 +26,7 @@ describe("<Messages />", () => {
       priority: 100,
       slug: "slug",
     }];
-    const wrapper = mount(<Messages {...p} />);
-    expect(wrapper.text()).toContain("Message Center");
+    const wrapper = mount(<MessagesPanel {...p} />);
     expect(wrapper.text()).toContain("No more messages");
   });
 });

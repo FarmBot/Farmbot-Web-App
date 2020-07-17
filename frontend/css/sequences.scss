@@ -505,6 +505,12 @@
   }
 }
 
+.designer-regimen-list-panel {
+  label {
+    margin-top: 0 !important;
+  }
+}
+
 .farmware-list-panel {
   .farmware-list-panel-contents {
     height: calc(100vh - 15rem);

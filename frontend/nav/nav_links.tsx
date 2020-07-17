@@ -19,28 +19,35 @@ interface NavLinkParams {
   icon: string;
   /** A unique name used for the path in the URL bar. */
   slug: string;
-  computeHref?: LinkComputeFn
+  computeHref?: LinkComputeFn;
+  designer?: boolean;
 }
 
 export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   {
     name: "Sequences", icon: "server", slug: "sequences",
-    computeHref: computeEditorUrlFromState("Sequence")
+    computeHref: computeEditorUrlFromState("Sequence", false)
   },
   {
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
-    computeHref: computeEditorUrlFromState("Regimen")
+    computeHref: computeEditorUrlFromState("Regimen", true), designer: true,
   },
-  { name: "Messages", icon: "list", slug: "messages" },
+  {
+    name: "Messages", icon: "list", slug: "messages", designer: true,
+    computeHref: () => "/app/designer/messages",
+  },
 ]);
 
 export const NavLinks = (props: NavLinksProps) => {
-  const currPageSlug = getPathArray()[2];
+  const currPath = getPathArray();
   return <div className="links">
     <div className="nav-links">
       {getLinks().map(link => {
-        const isActive = (currPageSlug === link.slug) ? "active" : "";
+        const currPageSlug = currPath[link.designer ? 3 : 2];
+        const isActive = !(link.slug === "designer"
+          && ["regimens", "messages"].includes(currPath[3])) &&
+          (currPageSlug === link.slug) ? "active" : "";
         const childPath = link.slug === "designer" ? "/plants" : "";
         const fn = link.computeHref || DEFAULT;
         return <Link

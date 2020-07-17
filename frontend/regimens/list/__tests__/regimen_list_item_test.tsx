@@ -1,14 +1,15 @@
 let mockPath = "/app/regimens";
 jest.mock("../../../history", () => ({
+  getPathArray: () => mockPath.split("/"),
   history: { getCurrentLocation: () => ({ pathname: mockPath }) },
 }));
 
 import * as React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
-import { render, shallow } from "enzyme";
+import { render, shallow, mount } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, Color } from "farmbot";
 import { Actions } from "../../../constants";
 import { urlFriendly } from "../../../util";
 
@@ -73,5 +74,24 @@ describe("<RegimenListItem/>", () => {
     mockPath = "/app/regimens/" + urlFriendly(p.regimen.body.name);
     const wrapper = render(<RegimenListItem {...p} />);
     expect(wrapper.find(".active").length).toEqual(1);
+  });
+
+  it("handles missing data", () => {
+    const p = fakeProps();
+    p.regimen.body.name = "";
+    p.regimen.body.color = "" as Color;
+    p.regimen.specialStatus = SpecialStatus.DIRTY;
+    mockPath = "/app/designer/regimens";
+    const wrapper = mount(<RegimenListItem {...p} />);
+    expect(wrapper.text()).toEqual(" *");
+    expect(wrapper.find("button").hasClass("gray")).toBeTruthy();
+  });
+
+  it("has the correct link path", () => {
+    const p = fakeProps();
+    p.regimen.body.name = "foo";
+    mockPath = "/app/designer/regimens";
+    const wrapper = shallow(<RegimenListItem {...p} />);
+    expect(wrapper.find("Link").props().to).toEqual("/app/designer/regimens/foo");
   });
 });

@@ -16,6 +16,8 @@ export enum Panel {
   Plants = "Plants",
   Groups = "Groups",
   SavedGardens = "SavedGardens",
+  Sequences = "Sequences",
+  Regimens = "Regimens",
   FarmEvents = "FarmEvents",
   Zones = "Zones",
   Points = "Points",
@@ -25,6 +27,9 @@ export enum Panel {
   Photos = "Photos",
   Farmware = "Farmware",
   Tools = "Tools",
+  Messages = "Messages",
+  Logs = "Logs",
+  Help = "Help",
   Settings = "Settings",
 }
 
@@ -48,6 +53,8 @@ export const TAB_COLOR: { [key in Panel]: PanelColor } = {
   [Panel.Map]: PanelColor.gray,
   [Panel.Plants]: PanelColor.green,
   [Panel.Groups]: PanelColor.blue,
+  [Panel.Sequences]: PanelColor.gray,
+  [Panel.Regimens]: PanelColor.gray,
   [Panel.SavedGardens]: PanelColor.navy,
   [Panel.FarmEvents]: PanelColor.yellow,
   [Panel.Zones]: PanelColor.brown,
@@ -58,6 +65,9 @@ export const TAB_COLOR: { [key in Panel]: PanelColor } = {
   [Panel.Photos]: PanelColor.gray,
   [Panel.Farmware]: PanelColor.gray,
   [Panel.Tools]: PanelColor.gray,
+  [Panel.Messages]: PanelColor.gray,
+  [Panel.Logs]: PanelColor.gray,
+  [Panel.Help]: PanelColor.gray,
   [Panel.Settings]: PanelColor.gray,
 };
 
@@ -65,6 +75,8 @@ export enum Icon {
   map = "map",
   plant = "plant",
   groups = "groups",
+  sequence = "sequence",
+  regimens = "regimen",
   gardens = "gardens",
   calendar = "calendar",
   zones = "zones",
@@ -75,6 +87,9 @@ export enum Icon {
   photos = "photos",
   farmware = "farmware",
   tool = "tool",
+  messages = "messages",
+  logs = "logs",
+  help = "help",
   settings = "settings",
 }
 
@@ -84,6 +99,8 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Map]: iconFile(Icon.map),
   [Panel.Plants]: iconFile(Icon.plant),
   [Panel.Groups]: iconFile(Icon.groups),
+  [Panel.Sequences]: iconFile(Icon.sequence),
+  [Panel.Regimens]: iconFile(Icon.regimens),
   [Panel.SavedGardens]: iconFile(Icon.gardens),
   [Panel.FarmEvents]: iconFile(Icon.calendar),
   [Panel.Zones]: iconFile(Icon.zones),
@@ -94,15 +111,23 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Photos]: iconFile(Icon.photos),
   [Panel.Farmware]: iconFile(Icon.farmware),
   [Panel.Tools]: iconFile(Icon.tool),
+  [Panel.Messages]: iconFile(Icon.messages),
+  [Panel.Logs]: iconFile(Icon.logs),
+  [Panel.Help]: iconFile(Icon.help),
   [Panel.Settings]: iconFile(Icon.settings),
 };
 
+// tslint:disable-next-line:cyclomatic-complexity
 const getCurrentTab = (): Tabs => {
   const pathArray = getPathArray();
   if (pathArray.join("/") === "/app/designer") {
     return Panel.Map;
   } else if (pathArray.includes("groups")) {
     return Panel.Groups;
+  } else if (pathArray.includes("sequences")) {
+    return Panel.Sequences;
+  } else if (pathArray.includes("regimens")) {
+    return Panel.Regimens;
   } else if (pathArray.includes("gardens")) {
     return Panel.SavedGardens;
   } else if (pathArray.includes("events")) {
@@ -123,6 +148,10 @@ const getCurrentTab = (): Tabs => {
     return Panel.Farmware;
   } else if (pathArray.includes("tools")) {
     return Panel.Tools;
+  } else if (pathArray.includes("messages")) {
+    return Panel.Messages;
+  } else if (pathArray.includes("help")) {
+    return Panel.Help;
   } else if (pathArray.includes("settings")) {
     return Panel.Settings;
   } else {
@@ -132,20 +161,23 @@ const getCurrentTab = (): Tabs => {
 
 const common = { width: 30, height: 30 };
 
-interface NavTabProps {
+export interface NavTabProps {
   panel: Panel;
   linkTo: string;
   title: string;
+  icon?: string;
   desktopHide?: boolean;
 }
 
-const NavTab = (props: NavTabProps) =>
+export const NavTab = (props: NavTabProps) =>
   <Link to={props.linkTo} style={{ flex: 0.3 }}
     className={[
       getCurrentTab() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
-    {<img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
+    {props.icon
+      ? <i className={props.icon} {...common} title={props.title} />
+      : <img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
   </Link>;
 
 const displayScrollIndicator = () => {
@@ -184,6 +216,16 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.SavedGardens}
         linkTo={"/app/designer/gardens"}
         title={t("Gardens")} />
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Sequences}
+          linkTo={"/app/designer/sequences"}
+          title={t("Sequences")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Regimens}
+          linkTo={"/app/designer/regimens"}
+          title={t("Regimens")} />}
       <NavTab
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events"}
@@ -222,6 +264,16 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Tools}
         linkTo={"/app/designer/tools"}
         title={t("Tools")} />
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Messages}
+          linkTo={"/app/designer/messages"}
+          title={t("Messages")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Help}
+          linkTo={"/app/designer/help"}
+          title={t("Help")} />}
       <NavTab
         panel={Panel.Settings}
         linkTo={"/app/designer/settings"}

@@ -1,15 +1,10 @@
 import * as React from "react";
-import {
-  Widget,
-  WidgetHeader,
-  WidgetBody,
-  SaveBtn,
-} from "../../ui/index";
+import { SaveBtn, Row } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import Axios from "axios";
 import { API } from "../../api/index";
 import { prettyPrintApiErrors, equals, trim } from "../../util";
-import { Content } from "../../constants";
+import { Content, DeviceSetting } from "../../constants";
 import { uniq } from "lodash";
 import { BlurablePassword } from "../../ui/blurable_password";
 import { t } from "../../i18next_wrapper";
@@ -86,32 +81,37 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
   }
 
   render() {
-    return <Widget>
-      <WidgetHeader title={t("Change Password")}>
-        <SaveBtn onClick={this.save} status={this.state.status} />
-      </WidgetHeader>
-      <WidgetBody>
-        <form>
+    return <Row className={"change-password zero-side-margins"}>
+      <label>
+        {t(DeviceSetting.changePassword)}
+      </label>
+      <SaveBtn onClick={this.save} status={this.state.status} />
+      <form>
+        <div className={"old-password"}>
           <label>
             {t("Old Password")}
           </label>
           <BlurablePassword
             onCommit={this.set("password")}
             name="password" />
+        </div>
+        <div className={"new-password"}>
           <label>
             {t("New Password")}
           </label>
           <BlurablePassword
             onCommit={this.set("new_password")}
             name="new_password" />
+        </div>
+        <div className={"new-password"}>
           <label>
             {t("Confirm New Password")}
           </label>
           <BlurablePassword
             onCommit={this.set("new_password_confirmation")}
             name={"new_password_confirmation"} />
-        </form>
-      </WidgetBody>
-    </Widget>;
+        </div>
+      </form>
+    </Row>;
   }
 }

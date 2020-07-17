@@ -1,88 +1,56 @@
 jest.mock("../../toast_errors", () => ({ toastErrors: jest.fn() }));
 
 import { API } from "../../api/api";
-import * as moxios from "moxios";
+import moxios from "moxios";
 import { deleteUser, resetAccount } from "../actions";
 import { toastErrors } from "../../toast_errors";
 
 describe("deleteUser()", () => {
-  beforeEach(function () {
-    // import and pass your custom axios instance to this method
-    moxios.install();
+  beforeEach(() => moxios.install());
+  afterEach(() => moxios.uninstall());
+
+  interface TestArgs {
+    fn: Function;
+    method: "post" | "delete";
+    url: string;
+    code: number;
+  }
+
+  /** Set test title string for test case. */
+  const ts = (testCase: TestArgs) => Object.assign(testCase, {
+    toString: () => [testCase.method, testCase.url, testCase.code].join(" "),
   });
 
-  afterEach(function () {
-    // import and pass your custom axios instance to this method
-    moxios.uninstall();
-  });
-
-  it("cancels the account", (done) => {
-    expect.assertions(3);
+  it.each<TestArgs | jest.DoneCallback>([
+    ts({ fn: deleteUser, method: "delete", url: "api/users", code: 200 }),
+    ts({ fn: deleteUser, method: "delete", url: "api/users", code: 422 }),
+    ts({ fn: resetAccount, method: "post", url: "api/device/reset", code: 200 }),
+    ts({ fn: resetAccount, method: "post", url: "api/device/reset", code: 422 }),
+  ])("%s", (testArgs: TestArgs, done: jest.DoneCallback) => {
+    expect.assertions(4);
     API.setBaseUrl("http://example.com:80");
-    const thunk = deleteUser({ password: "Foo!" });
+    const thunk = testArgs.fn({ password: "Foo!" });
     const dispatch = jest.fn();
     const getState = jest.fn();
     getState.mockImplementation(() => ({ auth: {} }));
     window.alert = jest.fn();
     thunk(dispatch, getState);
 
-    moxios.wait(function () {
+    moxios.wait(() => {
       const request = moxios.requests.mostRecent();
       request.respondWith({
-        status: 200,
-        response: {}
-      }).then(function (resp) {
-        expect(window.alert).toHaveBeenCalled();
-        expect(resp.config.url).toContain("api/users");
-        expect(resp.config.method).toBe("delete");
-        done();
-      });
-    });
-  });
-
-  it("resets the account", (done) => {
-    expect.assertions(3);
-    API.setBaseUrl("http://example.com:80");
-    const thunk = resetAccount({ password: "Foo!" });
-    const dispatch = jest.fn();
-    const getState = jest.fn();
-    getState.mockImplementation(() => ({ auth: {} }));
-    window.alert = jest.fn();
-    thunk(dispatch, getState);
-
-    moxios.wait(function () {
-      const request = moxios.requests.mostRecent();
-      request.respondWith({
-        status: 200,
-        response: {}
-      }).then(function (resp) {
-        expect(window.alert).toHaveBeenCalled();
-        expect(resp.config.url).toContain("api/device/reset");
-        expect(resp.config.method).toBe("post");
-        done();
-      });
-    });
-  });
-
-  it("errors while resetting an account", (done) => {
-    expect.assertions(3);
-    API.setBaseUrl("http://example.com:80");
-    const thunk = resetAccount({ password: "not Foo!" });
-    const dispatch = jest.fn();
-    const getState = jest.fn();
-    getState.mockImplementation(() => ({ auth: {} }));
-    window.alert = jest.fn();
-    thunk(dispatch, getState);
-
-    moxios.wait(function () {
-      const request = moxios.requests.mostRecent();
-      request.respondWith({
-        status: 422,
-        response: {}
+        status: testArgs.code,
+        response: {},
       }).then(resp => {
-        expect(window.alert).not.toHaveBeenCalled();
-        expect(toastErrors).toHaveBeenCalled();
-        expect(resp.config.url).toContain("api/device/reset");
+        expect(resp.config.url).toContain(testArgs.url);
+        expect(resp.config.method).toBe(testArgs.method);
+        if (testArgs.code == 200) {
+          expect(window.alert).toHaveBeenCalled();
+          expect(toastErrors).not.toHaveBeenCalled();
+        } else {
+          expect(window.alert).not.toHaveBeenCalled();
+          expect(toastErrors).toHaveBeenCalled();
+        }
         done();
       }, console.log);
     });

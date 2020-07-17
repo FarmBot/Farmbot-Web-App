@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
+import { Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
   StepButtonCluster, StepButtonProps,
@@ -27,9 +28,10 @@ export class RawDesignerSequenceCommands
   extends React.Component<StepButtonProps> {
   render() {
     const panelName = "designer-sequence-commands";
-    return <DesignerPanel panelName={panelName}>
+    return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
       <DesignerPanelHeader
         panelName={panelName}
+        panel={Panel.Sequences}
         title={t("Add Command")}
         backTo={`/app/designer/sequences/${
           urlFriendly(this.props.current?.body.name || "")}`} />

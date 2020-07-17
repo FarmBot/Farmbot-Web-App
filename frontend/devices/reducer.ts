@@ -36,6 +36,7 @@ export const initialState = (): BotState => ({
     pin_guard: false,
     parameter_management: false,
     farm_designer: false,
+    account: false,
     other_settings: false,
   },
   hardware: {
@@ -134,6 +135,7 @@ export const botReducer = generateReducer<BotState>(initialState())
       s.controlPanelState.pin_guard = a.payload;
       s.controlPanelState.parameter_management = a.payload;
       s.controlPanelState.farm_designer = a.payload;
+      s.controlPanelState.account = a.payload;
       s.controlPanelState.other_settings = a.payload;
       return s;
     })

@@ -1,6 +1,7 @@
 jest.mock("../../../history", () => ({
   push: jest.fn(),
-  history: { getCurrentLocation: () => ({ pathname: "" }) }
+  getPathArray: () => [],
+  history: { getCurrentLocation: () => ({ pathname: "" }) },
 }));
 
 jest.mock("../../../api/crud", () => ({ init: jest.fn() }));

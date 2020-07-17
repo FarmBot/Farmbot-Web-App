@@ -82,3 +82,10 @@ export const DevWidget = ({ dispatch }: { dispatch: Function }) =>
       <DevWidgetFBOSRow />
     </WidgetBody>
   </Widget>;
+
+export const DevSettingsRows = () =>
+  <div className={"dev-settings-rows"}>
+    <DevWidgetFERow />
+    <DevWidgetDelModeRow />
+    <DevWidgetFBOSRow />
+  </div>;

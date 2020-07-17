@@ -30,7 +30,7 @@ describe("tourPageNavigation()", () => {
     testCase(".move");
     testCase(".peripherals-widget");
     testCase(".sequence-list-panel");
-    testCase(".regimen-list-panel");
+    testCase(".designer-regimen-list-panel-content");
     testCase(".tool-list");
     testCase(".toolbay-list");
     testCase(".tools");
@@ -38,7 +38,7 @@ describe("tourPageNavigation()", () => {
     testCase(".tools-panel");
     testCase(".photos");
     testCase(".logs-table");
-    testCase(".app-settings-widget");
+    testCase(".settings-panel-content");
   });
 
   it("includes steps based on tool count", () => {

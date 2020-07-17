@@ -81,7 +81,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           onClick={this.toggle("accountMenuOpen")}>
           {firstName}
         </div>
-        {AdditionalMenu({ logout: this.logout, close: this.close })}
+        <AdditionalMenu logout={this.logout} close={this.close} />
       </Popover>
     </div>;
   }

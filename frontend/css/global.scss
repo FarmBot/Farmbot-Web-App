@@ -775,11 +775,11 @@ ul {
 }
 
 .add {
-  margin-top: -3rem;
+  margin-top: -5rem;
 }
 
 .button-group {
-  margin: -2rem 0 2rem;
+  margin: -3rem 0 3rem;
   float: right;
   button:not(:first-of-type) {
     margin-right: 1rem;
@@ -1279,12 +1279,13 @@ ul {
   max-width: 785px;
   padding-left: 2rem !important;
   padding-right: 2rem !important;
-  .link-to-logs {
-    margin-top: 2rem;
-    margin-bottom: 4rem;
-    text-align: center;
-    font-style: italic;
-  }
+}
+
+.link-to-logs {
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  text-align: center;
+  font-style: italic;
 }
 
 .account-page {
@@ -1694,13 +1695,33 @@ ul {
       }
     }
     .link-button {
-      color: $off_white;
-      font-weight: bold;
+      color: $off_white !important;
+      font-weight: bold !important;
       float: none;
       margin-bottom: 2rem;
     }
     .fb-button {
       margin-top: 0.5rem;
+    }
+    a {
+      text-decoration: none !important;
+      outline: none !important;
+      cursor: pointer !important;
+      color: $dark_gray;
+      &:link {
+        font-weight: 500;
+        color: $dark_gray;
+      }
+      &:visited {
+        color: $dark_gray;
+      }
+      &:hover {
+        font-weight: bold;
+        color: $dark_gray;
+      }
+      &:active {
+        color: $dark_gray;
+      }
     }
   }
 }
@@ -1857,17 +1878,16 @@ textarea:focus {
 
 .setting {
   position: relative;
-  .section {
-    display: block !important;
+  &.section {
     .bp3-collapse {
       padding-top: 1rem;
     }
   }
-  .highlight {
+  &.highlight {
     background-color: $light_yellow;
     box-shadow: 0px 0px 7px 4px $light_yellow;
   }
-  .unhighlight {
+  &.unhighlight {
     transition: background-color 10s linear, box-shadow 10s linear;
     background-color: transparent;
     box-shadow: none;

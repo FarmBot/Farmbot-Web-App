@@ -66,7 +66,7 @@ export class RawRegimens extends React.Component<Props, {}> {
             shouldDisplay={this.props.shouldDisplay} />
         </CenterPanel>
         <RightPanel
-          className={`bulk-scheduler ${activeClasses}`}
+          className={`bulk-scheduler page ${activeClasses}`}
           backButton={<RegimenBackButton
             className={activeClasses}
             dispatch={this.props.dispatch} />}

@@ -5,6 +5,10 @@ import { selectRegimen } from "../actions";
 import { Content } from "../../constants";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
+import { inDesigner } from "../../folders/component";
+
+export const regimensUrlBase = () =>
+  `/app${inDesigner() ? "/designer" : ""}/regimens/`;
 
 export function RegimenListItem({ regimen, dispatch, inUse }: RegimenListItemProps) {
   const label = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
@@ -12,7 +16,7 @@ export function RegimenListItem({ regimen, dispatch, inUse }: RegimenListItemPro
   const classNames = [`block`, `full-width`, `fb-button`, `${color}`];
   lastUrlChunk() === urlFriendly(regimen.body.name) && classNames.push("active");
   return <Link
-    to={`/app/regimens/${urlFriendly(regimen.body.name)}`}
+    to={`${regimensUrlBase()}${urlFriendly(regimen.body.name)}`}
     key={regimen.uuid}>
     <button
       className={classNames.join(" ")}

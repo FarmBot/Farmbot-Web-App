@@ -27,6 +27,7 @@ import { SearchField } from "../../../ui/search_field";
 import { maybeOpenPanel } from "../../../devices/components/maybe_highlight";
 import { ControlPanelState } from "../../../devices/interfaces";
 import { panelState } from "../../../__test_support__/control_panel_state";
+import { fakeUser } from "../../../__test_support__/fake_state/resources";
 
 const getSetting =
   (wrapper: ReactWrapper, position: number, containsString: string) => {
@@ -55,6 +56,7 @@ describe("<DesignerSettings />", () => {
     timeSettings: fakeTimeSettings(),
     bot: bot,
     searchTerm: "",
+    user: fakeUser(),
   });
 
   it("renders settings", () => {
