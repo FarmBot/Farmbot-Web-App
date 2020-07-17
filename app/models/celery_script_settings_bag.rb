@@ -15,12 +15,15 @@ module CeleryScriptSettingsBag
     end
   end
 
-  PIN_TYPE_MAP = { "Peripheral" => Peripheral,
-                   "Sensor" => Sensor,
-                   "BoxLed3" => BoxLed,
-                   "BoxLed4" => BoxLed }
-  ALLOWED_AXIS = %w(x y z all)
+  PIN_TYPE_MAP = {
+    "Peripheral" => Peripheral,
+    "Sensor" => Sensor,
+    "BoxLed3" => BoxLed,
+    "BoxLed4" => BoxLed,
+  }
+
   ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover continue)
+  ALLOWED_AXIS = %w(x y z all)
   ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
@@ -32,35 +35,35 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed GenericPointer)
-  ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
-                         check_updates emergency_lock
-                         emergency_unlock execute execute_script
+  ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership check_updates
+                         emergency_lock emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
                          install_farmware install_first_party_farmware _if
                          move_absolute move_relative power_off read_pin
                          read_status reboot remove_farmware update_resource
                          send_message set_servo_angle set_user_env sync
-                         take_photo toggle_pin update_farmware wait
-                         write_pin zero)
-  ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off
-                           read_status reboot sync take_photo)
+                         take_photo toggle_pin update_farmware wait write_pin
+                         zero)
+  ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off read_status
+                           reboot sync take_photo)
   ANY_VARIABLE = %i(tool coordinate point identifier)
-  BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
-  BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. Try these instead: %s'
+  BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. ' \
+                          "Allowed values: %s"
+  BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. ' \
+                       "Try these instead: %s"
   BAD_AXIS = '"%s" is not a valid axis. Allowed values: %s'
   BAD_CHANNEL_NAME = '"%s" is not a valid channel_name. Allowed values: %s'
-  BAD_LHS = 'Can not put "%s" into a left hand side (LHS)' \
-  " argument. Allowed values: %s"
+  BAD_LHS = 'Can not put "%s" into a left hand side (LHS) argument. ' \
+            "Allowed values: %s"
   BAD_MESSAGE = "Messages must be between 1 and 300 characters"
   BAD_MESSAGE_TYPE = '"%s" is not a valid message_type. Allowed values: %s'
-  BAD_OP = 'Can not put "%s" into an operand (OP) argument. ' \
-  "Allowed values: %s"
+  BAD_OP = 'Can not put "%s" into an operand (OP) argument. Allowed values: %s'
   BAD_PACKAGE = '"%s" is not a valid package. Allowed values: %s'
   BAD_PERIPH_ID = "Peripheral #%s does not exist."
   BAD_PIN_TYPE = '"%s" is not a type of pin. Allowed values: %s'
+  BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
   BAD_POINTER_ID = "Bad point ID: %s"
   BAD_POINTER_TYPE = '"%s" is not a type of point. Allowed values: %s'
-  BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
   BAD_REGIMEN = "Regimen #%s does not exist."
   BAD_RESOURCE_ID = "Can't find %s with id of %s"
   BAD_RESOURCE_TYPE = '"%s" is not a valid resource_type. Allowed values: %s'
@@ -68,18 +71,18 @@ module CeleryScriptSettingsBag
   BAD_SUB_SEQ = "Sequence #%s does not exist."
   BAD_TOOL_ID = "Tool #%s does not exist."
   CANT_ANALOG = "Analog modes are not supported for Box LEDs"
+  MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
+  MAX_WAIT_MS_EXCEEDED = "A single wait node cannot exceed " \
+                         "#{MAX_WAIT_MS / 1000 / 60} minutes. Consider " \
+                         "lowering the wait time or using multiple WAIT blocks."
+  MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
   NO_PIN_ID = "%s requires a valid pin number"
   NO_SUB_SEQ = "You must select a Sequence in the Execute step."
-  ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
-  "as input. Please change your selection to a single" \
-  " location."
+  ONLY_ONE_COORD = "Move Absolute does not accept a group of locations as " \
+                   "input. Please change your selection to a single location."
   PLANT_STAGES = %w(planned planted harvested sprouted active removed pending)
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
-  MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
-  MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
-  MAX_WAIT_MS_EXCEEDED =
-    "A single wait node cannot exceed #{MAX_WAIT_MS / 1000 / 60} minutes. " +
-    "Consider lowering the wait time or using multiple WAIT blocks."
+
   Corpus = CeleryScript::Corpus.new
   OLD_MARK_AS =
     "This sequence uses an old MARK AS step that is no longer supported." \
@@ -567,7 +570,9 @@ module CeleryScriptSettingsBag
       # For convenience, we try to set it here, defaulting to 0
       node.args[:resource_id].instance_variable_set("@value", owner.id)
     when "PointGroup"
-      no_resource(node, PointGroup, resource_id) unless PointGroup.exists?(resource_id)
+      unless PointGroup.exists?(resource_id)
+        no_resource(node, PointGroup, resource_id)
+      end
     when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)
