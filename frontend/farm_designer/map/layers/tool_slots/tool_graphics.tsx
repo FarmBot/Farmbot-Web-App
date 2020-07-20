@@ -8,8 +8,8 @@ import { UUID } from "../../../../resources/interfaces";
 import { TaggedToolSlotPointer } from "farmbot";
 import { reduceToolName } from "./tool_slot_point";
 import { noop } from "lodash";
-import { ToolTransformProps } from "../../../tools/interfaces";
-import { isToolFlipped } from "../../../tools/tool_slot_edit_components";
+import { ToolTransformProps } from "../../../../tools/interfaces";
+import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 
 export interface ToolGraphicProps {
   x: number;

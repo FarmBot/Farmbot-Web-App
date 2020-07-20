@@ -1,4 +1,4 @@
-import { OpenFarm } from "./openfarm";
+import { OpenFarm } from "../open_farm/openfarm";
 import { DropDownItem } from "../ui/index";
 import { CowardlyDictionary } from "../util";
 import {
@@ -29,7 +29,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { TimeSettings } from "../interfaces";
-import { ExtendedPointGroupSortType } from "./point_groups/paths";
+import { ExtendedPointGroupSortType } from "../point_groups/paths";
 
 /* BotOriginQuadrant diagram
 

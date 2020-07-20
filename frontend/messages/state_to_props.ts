@@ -2,13 +2,13 @@ import { Everything } from "../interfaces";
 import { MessagesProps, AlertReducerState } from "./interfaces";
 import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
-import { sourceFbosConfigValue } from "../devices/components/source_config_value";
+import { sourceFbosConfigValue } from "../settings/source_config_value";
 import {
   selectAllAlerts, maybeGetTimeSettings, findResourceById,
 } from "../resources/selectors";
 import {
   isFwHardwareValue,
-} from "../devices/components/firmware_hardware_support";
+} from "../settings/firmware/firmware_hardware_support";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { Alert } from "farmbot";
 

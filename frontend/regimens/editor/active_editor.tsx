@@ -21,6 +21,8 @@ import { reduceVariables } from "../../sequences/locals_list/variable_support";
 import { determineDropdown, withPrefix } from "../../resources/sequence_meta";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ErrorBoundary } from "../../error_boundary";
+import { regimensUrlBase } from "../list/regimen_list_item";
+import { inDesigner } from "../../folders/component";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -75,13 +77,18 @@ export class ActiveEditor
 }
 
 export const OpenSchedulerButton = (props: { dispatch: Function }) =>
-  <button className="open-bulk-scheduler-btn fb-button gray"
-    title={t("open scheduler panel")}
-    onClick={() => props.dispatch({
-      type: Actions.SET_SCHEDULER_STATE, payload: true
-    })}>
-    {t("Schedule item")}
-  </button>;
+  <div className={"open-bulk-scheduler-btn-wrapper"}>
+    <button className={`${
+      inDesigner() ? "" : "open-bulk-scheduler-btn"} fb-button gray`}
+      title={t("open scheduler panel")}
+      onClick={() => inDesigner()
+        ? push("/app/designer/regimens/scheduler")
+        : props.dispatch({
+          type: Actions.SET_SCHEDULER_STATE, payload: true
+        })}>
+      {t("Schedule item")}
+    </button>
+  </div>;
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
@@ -100,7 +107,7 @@ const RegimenButtonGroup = (props: RegimenProps) =>
     <button className="fb-button red"
       title={t("delete regimen")}
       onClick={() => props.dispatch(destroy(props.regimen.uuid))
-        .then(() => push("/app/regimens/"))}>
+        .then(() => push(regimensUrlBase()))}>
       {t("Delete")}
     </button>
   </div>;

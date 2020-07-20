@@ -994,6 +994,24 @@
     padding-left: 1.5rem;
     padding-right: 3rem;
   }
+  .row.zero-side-margins {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .export-data,
+  .change-password {
+    .old-password,
+    .new-password {
+      margin-bottom: 1rem;
+      input {
+        width: 50%;
+        float: right;
+      }
+    }
+    form {
+      margin-left: 2rem;
+    }
+  }
   .label-headings {
     margin-right: 2rem;
     label {
@@ -1724,6 +1742,50 @@
     .step-button-cluster {
       margin-top: 1rem;
       margin-right: 5px;
+    }
+  }
+}
+
+.designer-regimen-scheduler-panel {
+  .panel-content {
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.messages-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    label {
+      margin-top: 0;
+    }
+  }
+}
+
+.logs-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.help-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    label {
+      margin-top: 0 !important;
+    }
+    a {
+      text-decoration: none !important;
     }
   }
 }

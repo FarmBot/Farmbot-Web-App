@@ -4,14 +4,14 @@ jest.mock("../../history", () => ({
 }));
 
 let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
+jest.mock("../../settings/dev/dev_support", () => ({
   DevSettings: {
     futureFeaturesEnabled: () => mockDev,
   }
 }));
 
 import * as React from "react";
-import { DesignerNavTabs } from "../panel_header";
+import { DesignerNavTabs, Panel, NavTab, NavTabProps } from "../panel_header";
 import { shallow } from "enzyme";
 
 describe("<DesignerNavTabs />", () => {
@@ -44,6 +44,22 @@ describe("<DesignerNavTabs />", () => {
     mockDev = false;
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.hasClass("navy-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for sequences", () => {
+    mockPath = "/app/designer/sequences";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for regimens", () => {
+    mockPath = "/app/designer/regimens";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
 
@@ -119,6 +135,22 @@ describe("<DesignerNavTabs />", () => {
     expect(wrapper.html()).toContain("active");
   });
 
+  it("renders for messages", () => {
+    mockPath = "/app/designer/messages";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for help", () => {
+    mockPath = "/app/designer/help";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
   it("renders for settings", () => {
     mockPath = "/app/designer/settings";
     mockDev = false;
@@ -152,5 +184,20 @@ describe("<DesignerNavTabs />", () => {
     });
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.html()).not.toContain("scroll-indicator");
+  });
+});
+
+describe("<NavTab />", () => {
+  const fakeProps = (): NavTabProps => ({
+    panel: Panel.Map,
+    linkTo: "link",
+    title: "title",
+    icon: "fa-star",
+    desktopHide: false,
+  });
+
+  it("renders icon", () => {
+    const wrapper = shallow(<NavTab {...fakeProps()} />);
+    expect(wrapper.html()).toContain("fa-star");
   });
 });

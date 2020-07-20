@@ -1,8 +1,16 @@
 jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
+let mockPath = "/app/regimens/1";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
-import { ActiveEditor, editRegimenVariables } from "../active_editor";
+import {
+  ActiveEditor, editRegimenVariables, OpenSchedulerButton,
+} from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { ActiveEditorProps } from "../interfaces";
 import {
@@ -12,6 +20,7 @@ import { overwrite } from "../../../api/crud";
 import { VariableDeclaration } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
+import { push } from "../../../history";
 
 const testVariable: VariableDeclaration = {
   kind: "variable_declaration",
@@ -139,5 +148,27 @@ describe("editRegimenVariables()", () => {
     editRegimenVariables({ dispatch: jest.fn(), regimen })([])(testVariable);
     expect(overwrite).toHaveBeenCalledWith(regimen,
       expect.objectContaining({ body: [testVariable] }));
+  });
+});
+
+describe("<OpenSchedulerButton />", () => {
+  it("opens scheduler", () => {
+    mockPath = "/app/regimens/1";
+    const dispatch = jest.fn();
+    const wrapper = mount(<OpenSchedulerButton dispatch={dispatch} />);
+    clickButton(wrapper, 0, "schedule item");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SCHEDULER_STATE, payload: true,
+    });
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("opens designer scheduler", () => {
+    mockPath = "/app/designer/regimens/1";
+    const dispatch = jest.fn();
+    const wrapper = mount(<OpenSchedulerButton dispatch={dispatch} />);
+    clickButton(wrapper, 0, "schedule item");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith("/app/designer/regimens/scheduler");
   });
 });

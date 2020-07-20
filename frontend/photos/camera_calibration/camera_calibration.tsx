@@ -16,7 +16,7 @@ import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../remote_env/translators";
 import {
   cameraBtnProps,
-} from "../../devices/components/fbos_settings/camera_selection";
+} from "../../settings/fbos_settings/camera_selection";
 import { Content } from "../../constants";
 import { semverCompare, SemverResult } from "../../util";
 import { getCalibratedImageCenter } from "../images/shown_in_map";

@@ -11,7 +11,7 @@ import {
 import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { Feature } from "../../../devices/interfaces";
-import { SelectModeLink } from "../../plants/select_plants";
+import { SelectModeLink } from "../../../plants/select_plants";
 import { DeviceSetting, Content } from "../../../constants";
 import { Help } from "../../../ui";
 import {

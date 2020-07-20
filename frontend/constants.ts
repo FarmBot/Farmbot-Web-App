@@ -507,6 +507,9 @@ export namespace ToolTips {
 export namespace Content {
 
   // Account
+  export const CHECK_EMAIL_TO_CONFIRM =
+    trim(`Please check your email to confirm email address changes.`);
+
   export const ACCOUNT_PASSWORD_CHANGE =
     trim(`Upon successful password change, your FarmBot will factory reset
     allowing you to configure it with the updated credentials.
@@ -545,7 +548,7 @@ export namespace Content {
 
   export const EXPORT_DATA_DESC =
     trim(`Export all data related to this device. Exports are delivered via
-    email as JSON.`);
+    email as JSON file attachments.`);
 
   export const EXPORT_SENT =
     trim(`Export request received. Please allow up to 10 minutes for
@@ -1212,6 +1215,15 @@ export enum DeviceSetting {
   cropMapImages = `Crop map images`,
   showCameraViewAreaInMap = `Show camera view area in map`,
   confirmPlantDeletion = `Confirm plant deletion`,
+
+  // Account
+  accountSettings = `Account`,
+  accountName = `Your Name`,
+  accountEmail = `Email`,
+  changePassword = `Change password`,
+  resetAccount = `Reset account`,
+  deleteAccount = `Delete account`,
+  exportAccountData = `Export data`,
 
   otherSettings = `Other`,
 

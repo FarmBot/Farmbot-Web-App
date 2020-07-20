@@ -87,7 +87,8 @@ export function commitBulkEditor(): Thunk {
         if (groupedItems && groupedItems.length > 0) {
           const regimen = findRegimen(resources.index, currentRegimen);
           const clonedRegimen = defensiveClone(regimen).body;
-          clonedRegimen.regimen_items = clonedRegimen.regimen_items.concat(groupedItems);
+          clonedRegimen.regimen_items = clonedRegimen.regimen_items
+            .concat(groupedItems);
           const varData = resources.index.sequenceMetas[selectedSequenceUUID];
           clonedRegimen.body = mergeDeclarations(varData, regimen.body.body);
           console.log(JSON.stringify(clonedRegimen.body, undefined, 2));

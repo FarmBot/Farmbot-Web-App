@@ -6,7 +6,7 @@ import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
 import { Row, Col } from "../../../ui";
 import { ToggleButton } from "../../../controls/toggle_button";
-import { getHighlightName } from "../../../devices/components/maybe_highlight";
+import { getHighlightName } from "../../../settings/maybe_highlight";
 
 export interface BugsProps {
   mapTransformProps: MapTransformProps;

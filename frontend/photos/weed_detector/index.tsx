@@ -14,7 +14,7 @@ import { envSave } from "../remote_env/actions";
 import { t } from "../../i18next_wrapper";
 import {
   cameraBtnProps,
-} from "../../devices/components/fbos_settings/camera_selection";
+} from "../../settings/fbos_settings/camera_selection";
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {

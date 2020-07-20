@@ -4,7 +4,7 @@ import { semverCompare, SemverResult } from "../../util";
 import { t } from "../../i18next_wrapper";
 import {
   CameraSelection,
-} from "../../devices/components/fbos_settings/camera_selection";
+} from "../../settings/fbos_settings/camera_selection";
 import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
 import { ToggleButton } from "../../controls/toggle_button";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";

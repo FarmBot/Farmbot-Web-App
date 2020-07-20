@@ -6,6 +6,7 @@ import { init } from "../../api/crud";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { urlFriendly } from "../../util";
 import { t } from "../../i18next_wrapper";
+import { regimensUrlBase } from "./regimen_list_item";
 
 const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
   name: (t("New regimen ") + (length++)),
@@ -24,7 +25,7 @@ export function AddRegimen(props: AddRegimenProps) {
     onClick={() => {
       const newRegimen = emptyRegimenBody(length);
       dispatch(init("Regimen", newRegimen));
-      push("/app/regimens/" + urlFriendly(newRegimen.name));
+      push(regimensUrlBase() + urlFriendly(newRegimen.name));
       setActiveRegimenByName();
     }}>
     {props.children || <i className="fa fa-plus" />}

@@ -6,11 +6,13 @@ jest.mock("../../../history", () => ({
 
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
-jest.mock("../../point_groups/actions", () => ({ overwriteGroup: jest.fn() }));
+jest.mock("../../../point_groups/actions", () => ({
+  overwriteGroup: jest.fn(),
+}));
 
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 const mockGroup = fakePointGroup();
-jest.mock("../../point_groups/group_detail", () => ({
+jest.mock("../../../point_groups/group_detail", () => ({
   findGroupFromUrl: jest.fn(() => mockGroup)
 }));
 
@@ -30,7 +32,7 @@ import { GetState } from "../../../redux/interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwriteGroup } from "../../point_groups/actions";
+import { overwriteGroup } from "../../../point_groups/actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("movePlant", () => {

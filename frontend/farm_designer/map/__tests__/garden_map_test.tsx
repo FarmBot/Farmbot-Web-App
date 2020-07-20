@@ -50,7 +50,7 @@ jest.mock("../../../history", () => ({
 }));
 
 let mockGroup: TaggedPointGroup | undefined = undefined;
-jest.mock("../../point_groups/group_detail", () => ({
+jest.mock("../../../point_groups/group_detail", () => ({
   findGroupFromUrl: () => mockGroup,
 }));
 
