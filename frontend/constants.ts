@@ -252,7 +252,7 @@ export namespace ToolTips {
     trim(`Paste the output from EXPORT PARAMETERS into the text field and
     press IMPORT to import new hardware parameters to your FarmBot.`);
 
-  // Farmware
+  // Photos
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
 
@@ -262,6 +262,15 @@ export namespace ToolTips {
 
   export const CAMERA_CALIBRATION =
     trim(`Calibrate FarmBot's camera for use in the weed detection software.`);
+
+  export const RED_DOT_CAMERA_CALIBRATION =
+    trim(`Genesis v1.2 through v1.4 bots did not include the camera
+    calibration card. Instead, these kits included red calibration objects
+    and must be calibrated using an alternative method`);
+
+  export const CAMERA_CALIBRATION_CARD_SHOP_LINK =
+    trim(`Camera calibration cards are available in the shop and can be
+    used with any FarmBot version.`);
 
   export const INVERT_HUE_SELECTION =
     trim(`Invert the range of hues selected. Typically used to select the
@@ -1025,12 +1034,16 @@ export namespace Content {
   export const CAMERA_NOT_CALIBRATED =
     trim(`Camera calibration required`);
 
-  export const CAMERA_CALIBRATION =
+  export const CAMERA_CALIBRATION_RED_OBJECTS =
+    trim(`Place the two red calibration objects 100mm apart and aligned
+    with FarmBot's axes on the soil underneath the camera.`);
+
+  export const CAMERA_CALIBRATION_GRID_PATTERN =
     trim(`Place the camera calibration card face down on the soil
     underneath the camera, with the grid of white circles facing up.
     Can be in any orientation but must be fully visible to the camera.
-    Caution: FarmBot will make two small x-axis and y-axis movements during
-    calibration.`);
+    Caution: FarmBot will make three small x-axis and y-axis movements
+    during calibration.`);
 
   // Other
   export const DOWNLOAD_FBOS =
