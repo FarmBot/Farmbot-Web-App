@@ -1,29 +1,25 @@
 import * as React from "react";
 import { RegimenListItemProps } from "../interfaces";
-import { lastUrlChunk, urlFriendly } from "../../util";
+import { urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
 import { Content } from "../../constants";
-import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
-import { inDesigner } from "../../folders/component";
+import { push } from "../../history";
+import { RegimenColorPicker } from "../editor/regimen_edit_components";
 
-export const regimensUrlBase = () =>
-  `/app${inDesigner() ? "/designer" : ""}/regimens/`;
-
-export function RegimenListItem({ regimen, dispatch, inUse }: RegimenListItemProps) {
+export function RegimenListItem(props: RegimenListItemProps) {
+  const { regimen, dispatch, inUse } = props;
   const label = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
-  const color = regimen.body.color || "gray";
-  const classNames = [`block`, `full-width`, `fb-button`, `${color}`];
-  lastUrlChunk() === urlFriendly(regimen.body.name) && classNames.push("active");
-  return <Link
-    to={`${regimensUrlBase()}${urlFriendly(regimen.body.name)}`}
-    key={regimen.uuid}>
-    <button
-      className={classNames.join(" ")}
-      title={t("open regimen")}
-      onClick={() => dispatch(selectRegimen(regimen.uuid))}>
-      <label>{label}</label>
-      {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
-    </button>
-  </Link>;
+  return <div className={"regimen-search-item"}
+    onClick={() => {
+      dispatch(selectRegimen(regimen.uuid));
+      push(`/app/designer/regimens/${urlFriendly(regimen.body.name)}`);
+    }}
+    title={t("open regimen")}>
+    <div className={"regimen-color"} onClick={e => e.stopPropagation()}>
+      <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
+    </div>
+    <span className={"regimen-search-item-name"}>{label}</span>
+    {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+  </div>;
 }

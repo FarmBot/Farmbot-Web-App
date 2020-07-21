@@ -109,12 +109,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
-    $: "/regimens(/:regimen)",
-    getModule: () => import("./regimens"),
-    key: "Regimens",
-  }),
-  route({
-    children: false,
     $: "/sequences(/:sequence)",
     getModule: () => import("./sequences/sequences"),
     key: "Sequences",
@@ -354,7 +348,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/regimens",
     getModule,
     key,
-    getChild: () => import("./regimens/panel/list"),
+    getChild: () => import("./regimens/list/list"),
     childKey: "DesignerRegimenList"
   }),
   route({
@@ -362,7 +356,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/regimens/scheduler",
     getModule,
     key,
-    getChild: () => import("./regimens/panel/scheduler"),
+    getChild: () => import("./regimens/bulk_scheduler/scheduler"),
     childKey: "DesignerRegimenScheduler"
   }),
   route({
@@ -370,7 +364,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/regimens/:regimen_name",
     getModule,
     key,
-    getChild: () => import("./regimens/panel/editor"),
+    getChild: () => import("./regimens/editor/editor"),
     childKey: "DesignerRegimenEditor"
   }),
   route({

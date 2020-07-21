@@ -67,7 +67,7 @@
 .farmware-input-panel-contents,
 .sequence-editor-content,
 .regimen-editor-content {
-  margin-right: -15px;
+  margin-right: -10px;
   @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 0;
@@ -508,6 +508,16 @@
 .designer-regimen-list-panel {
   label {
     margin-top: 0 !important;
+  }
+  .add-regimen {
+    height: 2rem;
+  }
+  .panel-content {
+    height: calc(100vh - 15rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-left: -15px;
+    padding: 0;
   }
 }
 

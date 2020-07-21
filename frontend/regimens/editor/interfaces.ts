@@ -50,3 +50,16 @@ export interface SelectRegimen {
   type: Actions.SELECT_REGIMEN;
   payload: string;
 }
+
+export interface RegimenRowsProps {
+  regimen: TaggedRegimen;
+  calendar: CalendarRow[];
+  dispatch: Function;
+  varsCollapsed: boolean;
+  resources: ResourceIndex;
+}
+
+export interface DisplayVarValueProps {
+  row: RegimenItemCalendarRow;
+  resources: ResourceIndex;
+}
