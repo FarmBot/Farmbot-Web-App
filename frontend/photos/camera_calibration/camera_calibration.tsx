@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, docLink, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { envSave } from "../remote_env/actions";
@@ -17,8 +17,7 @@ import { formatEnvKey } from "../remote_env/translators";
 import {
   cameraBtnProps,
 } from "../../settings/fbos_settings/camera_selection";
-import { Content } from "../../constants";
-import { semverCompare, SemverResult } from "../../util";
+import { Content, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../images/shown_in_map";
 
 export class CameraCalibration extends
@@ -42,7 +41,6 @@ export class CameraCalibration extends
     const { wdEnvGet } = this;
     const camDisabled = cameraBtnProps(this.props.env);
     const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
-    const version = this.props.versions["plant-detection"] || "";
     return <div className="camera-calibration">
       <div className="farmware-button">
         <MustBeOnline
@@ -53,29 +51,41 @@ export class CameraCalibration extends
           <button
             className={`fb-button green ${camDisabled.class}`}
             title={camDisabled.title}
-            onClick={camDisabled.click || calibrate}>
+            onClick={camDisabled.click || calibrate(easyCalibration)}>
             {t("Calibrate")}
           </button>
         </MustBeOnline>
       </div>
       <Row>
         <Col sm={12}>
-          {(semverCompare(version, "0.0.12") == SemverResult.LEFT_IS_GREATER
-            || easyCalibration) &&
-            <div className={"simple-camera-calibration-checkbox"}>
-              <BoolConfig
-                wdEnvGet={wdEnvGet}
-                configKey={this.namespace("easy_calibration")}
-                label={t("Simpler")}
-                onChange={this.saveEnvVar} />
-              {easyCalibration &&
-                <p>{t(Content.CAMERA_CALIBRATION)}</p>}
-            </div>}
+          <div className={"simple-camera-calibration-checkbox"}>
+            <CalibrationCardSVG grid={easyCalibration} />
+            <p>{easyCalibration
+              ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
+              : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
+            <BoolConfig
+              wdEnvGet={wdEnvGet}
+              configKey={this.namespace("easy_calibration")}
+              invert={true}
+              label={t("use alternative method")}
+              helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
+              links={[
+                <a href={docLink("camera-calibration")} target={"_blank"}>
+                  {t("as described in the software documentation.")}
+                  <i className={"fa fa-external-link"} />
+                </a>,
+                <a href={"https://farm.bot/products/camera-calibration-card"}
+                  target={"_blank"}>
+                  {t(ToolTips.CAMERA_CALIBRATION_CARD_SHOP_LINK)}
+                  <i className={"fa fa-external-link"} />
+                </a>]}
+              onChange={this.saveEnvVar} />
+          </div>
           {!easyCalibration &&
             <ImageWorkspace
               botOnline={
                 isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-              onProcessPhoto={scanImage}
+              onProcessPhoto={scanImage(easyCalibration)}
               images={this.props.images}
               currentImage={this.props.currentImage}
               onChange={this.change}
@@ -101,3 +111,57 @@ export class CameraCalibration extends
     </div>;
   }
 }
+
+const WIDTH = 177;
+const HEIGHT = 127;
+const SCALE = 3;
+
+const CalibrationCardSVG = (props: { grid: boolean }) =>
+  <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+    width={`${WIDTH / SCALE}px`}
+    height={`${HEIGHT / SCALE}px`}>
+    {props.grid ? <CardBack /> : <CardFront />}
+  </svg>;
+
+const RED_R = 5;
+const CX = 66;
+const CY = 64;
+
+const CardFront = () =>
+  <g id={"front"} fill={Color.red} stroke={Color.white} strokeWidth={1}>
+    <circle cx={17} cy={CY} r={RED_R} stroke={"none"} />
+    <circle cx={117} cy={CY} r={RED_R} stroke={"none"} />
+    <circle cx={CX} cy={CY} r={4} fill={Color.offWhite} stroke={"none"} />
+    <circle cx={117} cy={14} r={4} fill={Color.offWhite} stroke={"none"} />
+    <circle cx={CX} cy={CY} r={9}
+      fill={"none"} stroke={"cyan"} strokeWidth={2} />
+    <line x1={CX} y1={23} x2={CX} y2={49} />
+    <line x1={CX} y1={79} x2={CX} y2={105} />
+    <line x1={26} y1={CY} x2={52} y2={CY} />
+    <line x1={81} y1={CY} x2={108} y2={CY} />
+    <line x1={163} y1={8} x2={163} y2={118} strokeWidth={6}
+      stroke={Color.lightGray} />
+    <line x1={136} y1={8} x2={136} y2={118} strokeWidth={3}
+      stroke={Color.lightGray} />
+    <line x1={146} y1={17} x2={146} y2={111} strokeWidth={3}
+      stroke={Color.lightGray} />
+  </g>;
+
+const R = 6;
+const SPACING = 30;
+
+const CardBack = () =>
+  <g id={"back"} fill={Color.white}>
+    <pattern id={"5-dot-row"} patternUnits="userSpaceOnUse"
+      x={SPACING / 2} y={12} width={SPACING} height={SPACING}>
+      <circle cx={R} cy={R} r={R} />
+    </pattern>
+    <pattern id={"4-dot-row"} patternUnits="userSpaceOnUse"
+      x={SPACING} y={27} width={SPACING} height={SPACING}>
+      <circle cx={R} cy={R} r={R} />
+    </pattern>
+    <rect x={SPACING / 2} y={12} width={149} height={105}
+      fill={"url(#5-dot-row)"} />
+    <rect x={SPACING} y={26} width={135} height={89}
+      fill={"url(#4-dot-row)"} />
+  </g>;

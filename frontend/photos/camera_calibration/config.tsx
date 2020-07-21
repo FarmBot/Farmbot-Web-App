@@ -124,24 +124,30 @@ export interface BoolConfigProps {
   wdEnvGet(key: keyof WD_ENV): number;
   onChange(key: keyof WD_ENV, value: number): void;
   helpText?: string;
+  links?: React.ReactElement[];
+  invert?: boolean;
 }
 
-export const BoolConfig = (props: BoolConfigProps) =>
-  <div className="boolean-camera-calibration-config">
+export const BoolConfig = (props: BoolConfigProps) => {
+  const value = !!props.wdEnvGet(props.configKey);
+  return <div className="boolean-camera-calibration-config">
     <label htmlFor={props.configKey}>
       {t(props.label)}
     </label>
-    {props.helpText && <Help text={props.helpText} />}
+    {props.helpText && <Help text={props.helpText} links={props.links} />}
     <input
       type="checkbox"
       name={props.configKey}
       id={props.configKey}
-      checked={!!props.wdEnvGet(props.configKey)}
-      onChange={e =>
+      checked={props.invert ? !value : value}
+      onChange={e => {
+        const { checked } = e.currentTarget;
+        const newValue = props.invert ? !checked : checked;
         props.onChange(props.configKey,
-          e.currentTarget.checked ?
-            SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
+          newValue ? SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE);
+      }} />
   </div>;
+};
 
 export interface NumberBoxConfigProps {
   configKey: keyof WD_ENV;

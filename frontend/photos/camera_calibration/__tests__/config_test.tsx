@@ -5,6 +5,7 @@ import {
   NumberBoxConfigProps, DropdownConfig, DropdownConfigProps,
 } from "../config";
 import { CameraCalibrationConfigProps } from "../interfaces";
+import { SPECIAL_VALUES } from "../../remote_env/constants";
 
 describe("<CameraCalibrationConfig />", () => {
   const fakeProps = (): CameraCalibrationConfigProps => ({
@@ -15,7 +16,9 @@ describe("<CameraCalibrationConfig />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<CameraCalibrationConfig {...fakeProps()} />);
+    const p = fakeProps();
+    p.values = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
+    const wrapper = mount(<CameraCalibrationConfig {...p} />);
     ["Invert Hue Range Selection",
       "Calibration Object Separation",
       "Calibration Object Separation along axis",

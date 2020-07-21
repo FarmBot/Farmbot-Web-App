@@ -23,6 +23,19 @@
   }
 }
 
+.help-text-content {
+  a {
+    color: $off_white;
+    &:hover {
+      color: $white;
+      font-weight: normal !important;
+    }
+    .fa-external-link {
+      margin-left: 0.5rem;
+    }
+  }
+}
+
 .title-help {
   display: inline;
   .title-help-text {
