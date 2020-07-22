@@ -7,10 +7,12 @@ import { Panel } from "../../farm_designer/panel_header";
 import { t } from "../../i18next_wrapper";
 import { urlFriendly } from "../../util";
 import { mapStateToProps } from "../state_to_props";
-import { BulkScheduler } from "../bulk_scheduler";
+import { BulkScheduler } from "../bulk_scheduler/bulk_scheduler";
 import { BulkEditorProps } from "../bulk_scheduler/interfaces";
 import { TaggedRegimen } from "farmbot";
 import { Props } from "../interfaces";
+import { AddButton } from "../bulk_scheduler/add_button";
+import { commitBulkEditor } from "../bulk_scheduler/actions";
 
 export interface DesignerRegimenSchedulerProps extends BulkEditorProps {
   regimen: TaggedRegimen | undefined;
@@ -25,7 +27,11 @@ export class RawDesignerRegimenScheduler extends React.Component<Props> {
         panel={Panel.Regimens}
         title={t("Scheduler")}
         backTo={`/app/designer/regimens/${
-          urlFriendly(this.props.current?.body.name || "")}`} />
+          urlFriendly(this.props.current?.body.name || "")}`}>
+        <AddButton
+          active={!!(this.props.sequences?.length)}
+          onClick={() => this.props.dispatch(commitBulkEditor())} />
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <div className={"bulk-scheduler"}>
           <BulkScheduler

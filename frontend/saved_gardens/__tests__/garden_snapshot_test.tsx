@@ -1,6 +1,6 @@
-jest.mock("axios", () => {
-  return { default: { post: jest.fn(() => Promise.resolve()) } };
-});
+jest.mock("axios", () => ({
+  post: jest.fn(() => Promise.resolve()),
+}));
 
 jest.mock("../actions", () => ({
   snapshotGarden: jest.fn(),

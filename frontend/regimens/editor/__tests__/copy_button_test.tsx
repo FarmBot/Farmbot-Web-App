@@ -37,7 +37,7 @@ describe("<CopyButton />", () => {
     expect(init).toHaveBeenCalledWith("Regimen", {
       color: "red", name: "Foo copy 1", regimen_items, body: []
     });
-    expect(push).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
+    expect(push).toHaveBeenCalledWith("/app/designer/regimens/foo_copy_1");
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

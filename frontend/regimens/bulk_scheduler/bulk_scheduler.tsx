@@ -1,8 +1,7 @@
 import * as React from "react";
 import { BulkEditorProps } from "./interfaces";
-import { AddButton } from "./add_button";
 import { WeekGrid } from "./week_grid";
-import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
+import { setTimeOffset, setSequence } from "./actions";
 import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE,
 } from "../../ui/index";
@@ -65,12 +64,8 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
     </Col>
 
   render() {
-    const { dispatch, weeks, sequences } = this.props;
-    const active = !!(sequences?.length);
+    const { dispatch, weeks } = this.props;
     return <div className="bulk-scheduler-content">
-      <AddButton
-        active={active}
-        onClick={() => dispatch(commitBulkEditor())} />
       <Row>
         <this.SequenceSelectBox />
         <this.TimeSelection />

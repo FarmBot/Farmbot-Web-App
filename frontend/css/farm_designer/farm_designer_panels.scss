@@ -573,7 +573,7 @@
 
 .panel-nav {
   position: fixed;
-  z-index: 10;
+  z-index: 11;
 }
 
 .scroll-indicator {
@@ -1748,9 +1748,17 @@
 
 .designer-regimen-scheduler-panel {
   .panel-content {
+    display: inline-block;
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
+    width: 100%;
+  }
+}
+
+.designer-regimen-editor-panel {
+  .title {
+    width: 45%;
   }
 }
 

@@ -58,11 +58,9 @@ export interface Regimen {
 }
 
 export interface RegimenListItemProps {
-  length: number;
   regimen: TaggedRegimen;
   dispatch: Function;
   inUse: boolean;
-  index: number;
 }
 
 /** Individual step that a regimen will execute at a point in time. */

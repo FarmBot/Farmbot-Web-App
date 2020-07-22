@@ -5,8 +5,8 @@ import { calibrate, scanImage } from "../actions";
 
 describe("scanImage()", () => {
   it.each<[boolean, string]>([
-    [true, "TRUE"],
-    [false, "FALSE"],
+    [true, "\"TRUE\""],
+    [false, "\"FALSE\""],
   ])("calls out to the device, use grid: %s", (grid, value) => {
     scanImage(grid)(4);
     expect(mockDevice.execScript)
@@ -25,8 +25,8 @@ describe("scanImage()", () => {
 
 describe("calibrate()", () => {
   it.each<[boolean, string]>([
-    [true, "TRUE"],
-    [false, "FALSE"],
+    [true, "\"TRUE\""],
+    [false, "\"FALSE\""],
   ])("calls out to the device, use grid: %s", (grid, value) => {
     calibrate(grid)();
     expect(mockDevice.execScript).toHaveBeenCalledWith("camera-calibration", [{

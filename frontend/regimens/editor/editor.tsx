@@ -10,7 +10,10 @@ import { t } from "../../i18next_wrapper";
 import {
   setActiveRegimenByName,
 } from "../set_active_regimen_by_name";
-import { RegimenEditor } from "../editor";
+import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
+import { isTaggedRegimen } from "../../resources/tagged_resources";
+import { Content } from "../../constants";
+import { ActiveEditor } from "./active_editor";
 
 export class RawDesignerRegimenEditor extends React.Component<Props> {
 
@@ -20,6 +23,7 @@ export class RawDesignerRegimenEditor extends React.Component<Props> {
 
   render() {
     const panelName = "designer-regimen-editor";
+    const regimen = this.props.current;
     return <DesignerPanel panelName={panelName} panel={Panel.Regimens}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -27,13 +31,19 @@ export class RawDesignerRegimenEditor extends React.Component<Props> {
         title={this.props.current?.body.name || t("No Regimen selected")}
         backTo={"/app/designer/regimens"} />
       <DesignerPanelContent panelName={panelName}>
-        <RegimenEditor
-          dispatch={this.props.dispatch}
-          calendar={this.props.calendar}
-          current={this.props.current}
-          resources={this.props.resources}
-          variableData={this.props.variableData}
-          shouldDisplay={this.props.shouldDisplay} />
+        <EmptyStateWrapper
+          notEmpty={regimen && isTaggedRegimen(regimen) && this.props.calendar}
+          graphic={EmptyStateGraphic.regimens}
+          title={t("No Regimen selected.")}
+          text={Content.NO_REGIMEN_SELECTED}>
+          {regimen && <ActiveEditor
+            dispatch={this.props.dispatch}
+            regimen={regimen}
+            calendar={this.props.calendar}
+            resources={this.props.resources}
+            variableData={this.props.variableData}
+            shouldDisplay={this.props.shouldDisplay} />}
+        </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

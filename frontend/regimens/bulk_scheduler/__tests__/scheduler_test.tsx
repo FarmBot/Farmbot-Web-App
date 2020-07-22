@@ -13,6 +13,7 @@ import {
 import { Props } from "../../interfaces";
 import { auth } from "../../../__test_support__/fake_state/token";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { AddButton } from "../../bulk_scheduler/add_button";
 
 describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): Props => ({
@@ -46,5 +47,13 @@ describe("<DesignerRegimenScheduler />", () => {
     const wrapper = shallow(<DesignerRegimenScheduler {...p} />);
     expect(wrapper.find(DesignerPanelHeader).props().backTo)
       .toEqual("/app/designer/regimens/");
+  });
+
+  it("commits bulk editor", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    const panel = shallow(<DesignerRegimenScheduler {...p} />);
+    panel.find(AddButton).first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

@@ -1,13 +1,12 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { BulkScheduler } from "../index";
+import { BulkScheduler } from "../bulk_scheduler";
 import { BulkEditorProps } from "../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { AddButton } from "../add_button";
 import { newWeek } from "../../reducer";
 
 describe("<BulkScheduler />", () => {
@@ -31,7 +30,7 @@ describe("<BulkScheduler />", () => {
   it("renders with sequence selected", () => {
     const wrapper = mount(<BulkScheduler {...fakeProps()} />);
     const buttons = wrapper.find("button");
-    expect(buttons.length).toEqual(6);
+    expect(buttons.length).toEqual(5);
     ["Sequence", "Fake Sequence", "Time",
       "Days", "Week 1", "1234567"].map(string =>
         expect(wrapper.text()).toContain(string));
@@ -94,13 +93,5 @@ describe("<BulkScheduler />", () => {
     const change = () => sequenceInput.simulate("change", { value: 4 });
     expect(change).toThrowError("WARNING: Not a sequence UUID.");
     expect(p.dispatch).not.toHaveBeenCalled();
-  });
-
-  it("commits bulk editor", () => {
-    const p = fakeProps();
-    p.dispatch = jest.fn();
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    panel.find(AddButton).first().simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

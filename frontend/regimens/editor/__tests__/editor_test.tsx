@@ -6,7 +6,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerRegimenEditor as DesignerRegimenEditor,
-} from "../editor";
+} from "../../editor/editor";
 import { Props } from "../../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import {
@@ -19,23 +19,26 @@ import { auth } from "../../../__test_support__/fake_state/token";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<DesignerRegimenEditor />", () => {
-  const fakeProps = (): Props => ({
-    dispatch: jest.fn(),
-    sequences: [],
-    resources: buildResourceIndex([]).index,
-    auth: auth,
-    current: fakeRegimen(),
-    regimens: [],
-    selectedSequence: undefined,
-    dailyOffsetMs: 1000,
-    weeks: [],
-    bot: bot,
-    calendar: [],
-    regimenUsageStats: {},
-    shouldDisplay: () => false,
-    variableData: {},
-    schedulerOpen: false,
-  });
+  const fakeProps = (): Props => {
+    const regimen = fakeRegimen();
+    return {
+      dispatch: jest.fn(),
+      sequences: [],
+      resources: buildResourceIndex([]).index,
+      auth: auth,
+      current: regimen,
+      regimens: [],
+      selectedSequence: undefined,
+      dailyOffsetMs: 1000,
+      weeks: [],
+      bot: bot,
+      calendar: [],
+      regimenUsageStats: {},
+      shouldDisplay: () => false,
+      variableData: {},
+      schedulerOpen: false,
+    };
+  };
 
   it("renders", () => {
     const wrapper = mount(<DesignerRegimenEditor {...fakeProps()} />);
@@ -48,5 +51,19 @@ describe("<DesignerRegimenEditor />", () => {
     const wrapper = mount(<DesignerRegimenEditor {...p} />);
     expect(setActiveRegimenByName).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no regimen selected");
+  });
+
+  it("active editor", () => {
+    const wrapper = mount(<DesignerRegimenEditor {...fakeProps()} />);
+    ["Foo", "Saved", "Schedule item"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
+  it("empty editor", () => {
+    const props = fakeProps();
+    props.current = undefined;
+    const wrapper = mount(<DesignerRegimenEditor {...props} />);
+    ["No Regimen selected."].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 });
