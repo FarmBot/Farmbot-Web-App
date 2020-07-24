@@ -39,13 +39,14 @@ module CeleryScriptSettingsBag
                          emergency_lock emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
                          install_farmware install_first_party_farmware _if
-                         move_absolute move_relative power_off read_pin
+                         move_absolute move_relative move power_off read_pin
                          read_status reboot remove_farmware update_resource
                          send_message set_servo_angle set_user_env sync
                          take_photo toggle_pin update_farmware wait write_pin
                          zero)
   ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off read_status
                            reboot sync take_photo)
+  ALLOWED_SPECIAL_VALUE = %w(current_location safe_height soil_height)
   ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. ' \
                           "Allowed values: %s"
@@ -67,10 +68,12 @@ module CeleryScriptSettingsBag
   BAD_REGIMEN = "Regimen #%s does not exist."
   BAD_RESOURCE_ID = "Can't find %s with id of %s"
   BAD_RESOURCE_TYPE = '"%s" is not a valid resource_type. Allowed values: %s'
+  BAD_SPECIAL_VALUE = '"%s" is not a valid special_value. Allowed values: %s'
   BAD_SPEED = "Speed must be a percentage between 1-100"
   BAD_SUB_SEQ = "Sequence #%s does not exist."
   BAD_TOOL_ID = "Tool #%s does not exist."
   CANT_ANALOG = "Analog modes are not supported for Box LEDs"
+  LOCATION_LIKE = [:coordinate, :point, :tool, :identifier, :lua]
   MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
   MAX_WAIT_MS_EXCEEDED = "A single wait node cannot exceed " \
                          "#{MAX_WAIT_MS / 1000 / 60} minutes. Consider " \
@@ -78,6 +81,7 @@ module CeleryScriptSettingsBag
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
   NO_PIN_ID = "%s requires a valid pin number"
   NO_SUB_SEQ = "You must select a Sequence in the Execute step."
+  NUMBER_LIKE = [:numeric, :lua, :random]
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations as " \
                    "input. Please change your selection to a single location."
   PLANT_STAGES = %w(planned planted harvested sprouted active removed pending)
@@ -104,6 +108,7 @@ module CeleryScriptSettingsBag
 
   CORPUS_ENUM = {
     ALLOWED_AXIS: [ALLOWED_AXIS, BAD_AXIS],
+    ALLOWED_SPECIAL_VALUE: [ALLOWED_SPECIAL_VALUE, BAD_SPECIAL_VALUE],
     ALLOWED_CHANNEL_NAMES: [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
     ALLOWED_MESSAGE_TYPES: [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
     ALLOWED_OPS: [ALLOWED_OPS, BAD_OP],
@@ -268,6 +273,27 @@ module CeleryScriptSettingsBag
     },
     axis: {
       defn: [e(:ALLOWED_AXIS)],
+    },
+    axis_operand: {
+      defn: [
+        n(:coordinate),
+        n(:identifier),
+        n(:lua),
+        n(:numeric),
+        n(:point),
+        n(:random),
+        n(:special_value),
+        n(:tool),
+      ],
+    },
+    number: {
+      defn: [v(:integer)],
+    },
+    variance: {
+      defn: [v(:integer)],
+    },
+    speed_setting: {
+      defn: [n(:lua), n(:numeric)],
     },
     message: {
       defn: [v(:string)],
@@ -547,6 +573,48 @@ module CeleryScriptSettingsBag
         resource_id = n.args.fetch(:point_group_id).value
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
+    },
+    numeric: {
+      args: [:number],
+      tags: [:data],
+    },
+    lua: {
+      args: [:lua],
+      tags: [:*],
+    },
+    special_value: {
+      args: [:label],
+      tags: [:data],
+    },
+    axis_overwrite: {
+      args: [:axis, :axis_operand],
+      tags: [:data],
+    },
+    axis_addition: {
+      args: [:axis, :axis_operand],
+      tags: [:data],
+    },
+    speed_overwrite: {
+      args: [:speed_setting],
+      tags: [:data],
+    },
+    safe_z: {
+      args: [],
+      tags: [:data],
+    },
+    random: {
+      args: [:variance],
+      tags: [:data],
+    },
+    move: {
+      body: [
+        :special_value,
+        :axis_overwrite,
+        :axis_addition,
+        :speed_overwrite,
+        :safe_z,
+      ],
+      tags: [:function, :firmware_user],
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
 
