@@ -8,7 +8,7 @@ describe("<AddButton />", () => {
     const props: AddButtonProps = { active: true, onClick: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
     const button = wrapper.find("button");
-    ["green", "add"].map(klass => {
+    ["green", "bulk-scheduler-add"].map(klass => {
       expect(button.hasClass(klass)).toBeTruthy();
     });
     expect(wrapper.find("i").hasClass("fa-plus")).toBeTruthy();

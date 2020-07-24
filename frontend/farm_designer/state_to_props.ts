@@ -32,8 +32,8 @@ import { getBotSize } from "./map/util";
 import { getDefaultAxisLength } from ".";
 import {
   getFwHardwareValue, hasUTM,
-} from "../devices/components/firmware_hardware_support";
-import { isToolFlipped } from "./tools/tool_slot_edit_components";
+} from "../settings/firmware/firmware_hardware_support";
+import { isToolFlipped } from "../tools/tool_slot_edit_components";
 import { UserEnv } from "../devices/interfaces";
 
 const plantFinder = (plants: TaggedPlant[]) =>

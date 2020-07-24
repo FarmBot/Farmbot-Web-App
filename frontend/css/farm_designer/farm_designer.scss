@@ -292,6 +292,7 @@
     line-height: 3rem;
     float: right;
   }
+  .regimen-search-item-name,
   .weed-search-item-name,
   .point-search-item-name {
     display: inline-block;
@@ -336,6 +337,28 @@
       &.tool-status,
       &.tool-slot-position {
         float: right;
+      }
+    }
+  }
+  .regimen-search-item {
+    position: relative;
+    cursor: pointer;
+    height: 3.5rem;
+    .regimen-search-item-name {
+      font-size: 1.2rem;
+      color: $dark_gray;
+      line-height: 3.5rem;
+      width: 80%;
+    }
+    .regimen-color {
+      display: inline;
+      .color-picker {
+        display: inline;
+        .saucer {
+          margin-left: 3rem;
+          width: 1.2rem;
+          height: 1.2rem;
+        }
       }
     }
   }

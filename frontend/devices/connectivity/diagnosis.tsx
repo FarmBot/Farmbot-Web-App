@@ -4,7 +4,7 @@ import { Col, Row, docLink } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
-import { linkToFbosSettings } from "../components/maybe_highlight";
+import { linkToFbosSettings } from "../../settings/maybe_highlight";
 
 export type DiagnosisName =
   | "userAPI"

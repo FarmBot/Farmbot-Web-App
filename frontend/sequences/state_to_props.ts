@@ -2,7 +2,7 @@ import { Everything } from "../interfaces";
 import { Props, HardwareFlags, FarmwareConfigs } from "./interfaces";
 import { selectAllSequences, findSequence } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
-import { enabledAxisMap } from "../devices/components/axis_tracking_status";
+import { enabledAxisMap } from "../settings/hardware_settings/axis_tracking_status";
 import { validFwConfig } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -14,7 +14,7 @@ import { mapStateToFolderProps } from "../folders/map_state_to_props";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import {
   cameraDisabled, cameraCalibrated,
-} from "../devices/components/fbos_settings/camera_selection";
+} from "../settings/fbos_settings/camera_selection";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

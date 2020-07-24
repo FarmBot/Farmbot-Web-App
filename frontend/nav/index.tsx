@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
-import { EStopButton } from "../devices/components/e_stop_btn";
+import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
 import { Row, Col } from "../ui/index";
 import { getPathArray } from "../history";
@@ -81,7 +81,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           onClick={this.toggle("accountMenuOpen")}>
           {firstName}
         </div>
-        {AdditionalMenu({ logout: this.logout, close: this.close })}
+        <AdditionalMenu logout={this.logout} close={this.close} />
       </Popover>
     </div>;
   }

@@ -1,6 +1,11 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-jest.mock("../actions", () => ({ scanImage: jest.fn() }));
+
+const mockScanImage = jest.fn();
+jest.mock("../actions", () => ({
+  calibrate: jest.fn(),
+  scanImage: jest.fn(() => mockScanImage),
+}));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -37,7 +42,9 @@ describe("<CameraCalibration/>", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<CameraCalibration {...fakeProps()} />);
+    const p = fakeProps();
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
+    const wrapper = mount(<CameraCalibration {...p} />);
     ["Color Range",
       "HUE017947",
       "SATURATION025558",
@@ -51,6 +58,7 @@ describe("<CameraCalibration/>", () => {
   it("saves changes", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
     expect(mockDevice.setUserEnv)
@@ -60,6 +68,7 @@ describe("<CameraCalibration/>", () => {
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
     expect(p.saveFarmwareEnv)
@@ -67,9 +76,12 @@ describe("<CameraCalibration/>", () => {
   });
 
   it("calls scanImage", () => {
-    const wrapper = shallow(<CameraCalibration {...fakeProps()} />);
+    const p = fakeProps();
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
+    const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
-    expect(scanImage).toHaveBeenCalledWith(1);
+    expect(scanImage).toHaveBeenCalledWith(false);
+    expect(mockScanImage).toHaveBeenCalledWith(1);
   });
 
   it("saves CameraCalibrationConfig changes: API", () => {
@@ -111,15 +123,26 @@ describe("<CameraCalibration/>", () => {
       ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
   });
 
-  it("toggles simple version", () => {
+  it("toggles simple version on", () => {
     const p = fakeProps();
-    p.versions = { "plant-detection": "1.0.0" };
+    p.shouldDisplay = () => true;
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = mount(<CameraCalibration {...p} />);
     wrapper.find("input").first().simulate("change");
-    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
-      CAMERA_CALIBRATION_easy_calibration: "\"FALSE\""
-    });
-    expect(wrapper.text()).not.toContain(Content.CAMERA_CALIBRATION);
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
+      "CAMERA_CALIBRATION_easy_calibration", "\"FALSE\"",
+    );
+  });
+
+  it("toggles simple version off", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
+    const wrapper = mount(<CameraCalibration {...p} />);
+    wrapper.find("input").first().simulate("change");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
+      "CAMERA_CALIBRATION_easy_calibration", "\"TRUE\"",
+    );
   });
 
   it("renders simple version", () => {
@@ -127,6 +150,7 @@ describe("<CameraCalibration/>", () => {
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
     const wrapper = mount(<CameraCalibration {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("blur");
-    expect(wrapper.text()).toContain(Content.CAMERA_CALIBRATION);
+    expect(wrapper.text()).toContain(Content.CAMERA_CALIBRATION_GRID_PATTERN);
+    expect(wrapper.text()).not.toContain(Content.CAMERA_CALIBRATION_RED_OBJECTS);
   });
 });

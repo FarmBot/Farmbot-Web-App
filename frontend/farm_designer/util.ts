@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { OpenFarm, CropSearchResult } from "./openfarm";
+import { OpenFarm, CropSearchResult } from "../open_farm/openfarm";
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { Actions } from "../constants";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";

@@ -171,5 +171,6 @@ export interface ControlPanelState {
   pin_guard: boolean;
   parameter_management: boolean;
   farm_designer: boolean;
+  account: boolean;
   other_settings: boolean;
 }

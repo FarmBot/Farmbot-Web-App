@@ -9,7 +9,7 @@ import { ToolLabel } from "./tool_label";
 import { includes } from "lodash";
 import { t } from "../../../../i18next_wrapper";
 import { mapPointClickAction } from "../../actions";
-import { isToolFlipped } from "../../../tools/tool_slot_edit_components";
+import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 
 export interface TSPProps {
   slot: SlotWithTool;

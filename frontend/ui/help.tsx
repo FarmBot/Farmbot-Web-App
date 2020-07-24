@@ -10,6 +10,7 @@ interface HelpProps {
   position?: PopoverPosition;
   customIcon?: string;
   customClass?: string;
+  links?: React.ReactElement[];
 }
 
 export function Help(props: HelpProps) {
@@ -21,6 +22,9 @@ export function Help(props: HelpProps) {
     className={props.customClass}
     popoverClassName={"help"}>
     <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`} />
-    <div className={"help-text-content"}>{t(props.text)}</div>
+    <div className={"help-text-content"}>
+      {t(props.text)}
+      {props.links?.map((link, index) => <div key={index}>{link}</div>)}
+    </div>
   </Popover>;
 }

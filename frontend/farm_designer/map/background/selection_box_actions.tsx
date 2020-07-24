@@ -5,14 +5,14 @@ import { GardenMapState } from "../../interfaces";
 import { history } from "../../../history";
 import { selectPoint } from "../actions";
 import { getMode } from "../util";
-import { editGtLtCriteria } from "../../point_groups/criteria";
+import { editGtLtCriteria } from "../../../point_groups/criteria";
 import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { unpackUUID } from "../../../util";
 import { UUID } from "../../../resources/interfaces";
-import { getFilteredPoints } from "../../plants/select_plants";
+import { getFilteredPoints } from "../../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
-import { overwriteGroup } from "../../point_groups/actions";
+import { overwriteGroup } from "../../../point_groups/actions";
 
 /** Return all plants within the selection box. */
 export const getSelected = (

@@ -7,7 +7,7 @@ import { ConnectivityDiagram } from "./diagram";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
   reformatFwVersion, reformatFbosVersion,
-} from "../components/fbos_settings/fbos_details";
+} from "../../settings/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
@@ -15,7 +15,7 @@ import { refresh } from "../../api/crud";
 import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
-import { getKitName } from "../components/firmware_hardware_support";
+import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 
 export interface ConnectivityProps {
   bot: BotState;

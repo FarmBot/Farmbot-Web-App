@@ -1,13 +1,21 @@
 // Bulk Scheduler
 .bulk-scheduler {
-  @media screen and (max-width: 768px) {
-    display: none;
-    margin-bottom: 3rem;
-    &.open {
-      &.inserting-item {
-        display: block;
+  &.page {
+    @media screen and (max-width: 768px) {
+      display: none;
+      margin-bottom: 3rem;
+      &.open {
+        &.inserting-item {
+          display: block;
+        }
       }
     }
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  .week-grid {
+    margin-top: 2rem;
   }
   .week-grid-meta-buttons {
     margin-top: 1rem;
@@ -29,6 +37,10 @@
   input {
     background-color: $white !important;
   }
+}
+
+.bulk-scheduler-add {
+  margin: 1.5rem;
 }
 
 .bulk-scheduler-content {
@@ -78,12 +90,16 @@
   margin-top: 2rem;
 }
 
-.open-bulk-scheduler-btn {
-  display: none;
-  @media screen and (max-width: 768px) {
-    display: block;
-    margin: auto;
-    float: none !important;
+.open-bulk-scheduler-btn-wrapper {
+  margin: auto;
+  width: fit-content;
+  .open-bulk-scheduler-btn {
+    display: none;
+    @media screen and (max-width: 768px) {
+      display: block;
+      margin: auto;
+      float: none !important;
+    }
   }
 }
 

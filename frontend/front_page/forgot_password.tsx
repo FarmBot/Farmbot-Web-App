@@ -1,5 +1,7 @@
 import * as React from "react";
-import { Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row } from "../ui/index";
+import {
+  Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row,
+} from "../ui";
 import { t } from "../i18next_wrapper";
 
 export interface ForgotPasswordProps {

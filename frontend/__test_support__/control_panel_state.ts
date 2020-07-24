@@ -14,6 +14,7 @@ export const panelState = (): ControlPanelState => {
     pin_guard: false,
     parameter_management: false,
     farm_designer: false,
+    account: false,
     other_settings: false,
   };
 };

@@ -10,7 +10,7 @@ import { save, edit, initSave } from "../api/crud";
 import { FarmwareManifestInfo, Farmwares, SaveFarmwareEnv } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../account/dev/dev_support";
+import { DevSettings } from "../settings/dev/dev_support";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>

@@ -7,7 +7,7 @@ import { store } from "../redux/store";
 import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
-} from "../devices/components/firmware_hardware_support";
+} from "../settings/firmware/firmware_hardware_support";
 
 export enum Tours {
   gettingStarted = "gettingStarted",
@@ -76,7 +76,7 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
       title: t("Create sequences"),
     },
     {
-      target: ".regimen-list-panel",
+      target: ".designer-regimen-list-panel-content",
       content: t(TourContent.ADD_REGIMENS),
       title: t("Create regimens"),
     },
@@ -110,7 +110,7 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
   ],
   [Tours.funStuff]: [
     {
-      target: ".app-settings-widget",
+      target: ".settings-panel-content",
       content: t(TourContent.APP_SETTINGS),
       title: t("Customize your web app experience"),
     },
@@ -135,12 +135,8 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
     case ".sequence-list-panel":
       history.push("/app/sequences");
       break;
-    case ".regimen-list-panel":
-      history.push("/app/regimens");
-      break;
-    case ".tool-list":
-    case ".toolbay-list":
-      history.push("/app/tools");
+    case ".designer-regimen-list-panel-content":
+      history.push("/app/designer/regimens");
       break;
     case ".tools":
     case ".tool-slots":
@@ -152,8 +148,8 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
     case ".logs-table":
       history.push("/app/logs");
       break;
-    case ".app-settings-widget":
-      history.push("/app/account");
+    case ".settings-panel-content":
+      history.push("/app/designer/settings");
       break;
   }
 };
