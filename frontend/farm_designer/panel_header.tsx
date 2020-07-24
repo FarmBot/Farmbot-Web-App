@@ -159,8 +159,6 @@ const getCurrentTab = (): Tabs => {
   }
 };
 
-const common = { width: 30, height: 30 };
-
 export interface NavTabProps {
   panel: Panel;
   linkTo: string;
@@ -169,8 +167,11 @@ export interface NavTabProps {
   desktopHide?: boolean;
 }
 
-export const NavTab = (props: NavTabProps) =>
-  <Link to={props.linkTo} style={{ flex: 0.3 }}
+export const NavTab = (props: NavTabProps) => {
+  const common = DevSettings.futureFeaturesEnabled()
+    ? { width: 25, height: 25 }
+    : { width: 30, height: 30 };
+  return <Link to={props.linkTo} style={{ flex: 0.3 }}
     className={[
       getCurrentTab() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
@@ -179,6 +180,7 @@ export const NavTab = (props: NavTabProps) =>
       ? <i className={props.icon} {...common} title={props.title} />
       : <img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
   </Link>;
+};
 
 const displayScrollIndicator = () => {
   const element = document.getElementsByClassName("panel-tabs")[1];

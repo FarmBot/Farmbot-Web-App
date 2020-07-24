@@ -8,8 +8,9 @@ import {
 import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
 import { ToggleButton } from "../../controls/toggle_button";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
-import { Help } from "../../ui";
+import { Help, BlurableInput, Row, Col } from "../../ui";
 import { isUndefined } from "lodash";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 export const DISABLE_ROTATE_AT_CAPTURE_KEY =
   "take_photo_disable_rotation_adjustment";
@@ -46,6 +47,29 @@ export const CaptureSettings = (props: CaptureSettingsProps) => {
           toggleAction={() => props.dispatch(props.saveFarmwareEnv(
             DISABLE_ROTATE_AT_CAPTURE_KEY,
             disableRotation ? "0" : "1"))} />
+      </div>}
+    {DevSettings.futureFeaturesEnabled() &&
+      <div className={"image-size-inputs"}>
+        <Row className={"resolution"}>
+          <label>{t("resolution")}</label>
+          <Help text={ToolTips.IMAGE_RESOLUTION} />
+        </Row>
+        <Row className={"size-inputs"}>
+          <Col xs={6}>
+            <label>{t("width")}</label>
+            <BlurableInput type="number"
+              value={props.env["take_photo_width"] || 640}
+              onCommit={e => props.dispatch(props.saveFarmwareEnv(
+                "take_photo_width", e.currentTarget.value))} />
+          </Col>
+          <Col xs={6}>
+            <label>{t("height")}</label>
+            <BlurableInput type="number"
+              value={props.env["take_photo_height"] || 480}
+              onCommit={e => props.dispatch(props.saveFarmwareEnv(
+                "take_photo_height", e.currentTarget.value))} />
+          </Col>
+        </Row>
       </div>}
   </div>;
 };
