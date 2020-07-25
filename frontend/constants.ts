@@ -438,6 +438,11 @@ export namespace ToolTips {
     adjustment for camera rotation (black angled borders may show in
     viewer). Enabling this setting will slow down photo capture.`);
 
+  export const IMAGE_RESOLUTION =
+    trim(`The camera will capture images at the closest available resolution
+    to the selected size. Changing image resolution requires recalibration
+    of the camera. Higher quality images will take longer to process.`);
+
   export const CALIBRATION_REQUIRED =
     trim(`Calibrate your camera in the Photos panel before detecting weeds.`);
 
