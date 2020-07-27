@@ -638,9 +638,7 @@ module CeleryScriptSettingsBag
       # For convenience, we try to set it here, defaulting to 0
       node.args[:resource_id].instance_variable_set("@value", owner.id)
     when "PointGroup"
-      unless PointGroup.exists?(resource_id)
-        no_resource(node, PointGroup, resource_id)
-      end
+      no_resource(node, PointGroup, resource_id) unless PointGroup.exists?(resource_id)
     when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)
