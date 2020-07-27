@@ -250,6 +250,22 @@ describe CeleryScript::Corpus do
     end
   end
 
+  it "validates bogus `point_group` nodes" do
+    device.auto_sync_transaction do
+      pg = PointGroups::Create.run!(device: device,
+                                    name: "cs checks",
+                                    point_ids: [])
+      bad = CeleryScript::AstNode.new(**{
+                                        kind: "point_group",
+                                        args: {
+                                          point_group_id: 999,
+                                        },
+                                      })
+      check = CeleryScript::Checker.new(bad, corpus, device)
+      expect(check.valid?).to be false
+    end
+  end
+
   it "disallows invalid `point_group` nodes" do
     device.auto_sync_transaction do
       bad = CeleryScript::AstNode.new(**{
