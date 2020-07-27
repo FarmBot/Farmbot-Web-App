@@ -9,7 +9,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-jest.mock("../plants/plant_inventory", () => ({ Plants: () => <div /> }));
+jest.mock("../../plants/plant_inventory", () => ({ Plants: () => <div /> }));
 
 import * as React from "react";
 import { RawFarmDesigner as FarmDesigner } from "../index";

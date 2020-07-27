@@ -11,7 +11,7 @@ import {
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { DEFAULT_CRITERIA } from "../../../../point_groups/criteria/interfaces";
+import { DEFAULT_CRITERIA } from "../../../../../point_groups/criteria/interfaces";
 import { history } from "../../../../../history";
 
 const fakeProps = (): ZonesProps => ({

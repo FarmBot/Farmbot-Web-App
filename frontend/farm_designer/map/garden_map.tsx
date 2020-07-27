@@ -31,18 +31,17 @@ import {
   dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
-import { GroupOrder } from "../point_groups/group_order_visual";
-import { NNPath } from "../point_groups/paths";
+import { GroupOrder, NNPath } from "./group_order_visual";
 import { history } from "../../history";
 import { ZonesLayer } from "./layers/zones/zones_layer";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
-import { findGroupFromUrl } from "../point_groups/group_detail";
-import { pointsSelectedByGroup } from "../point_groups/criteria";
+import { findGroupFromUrl } from "../../point_groups/group_detail";
+import { pointsSelectedByGroup } from "../../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
 import { throttle } from "lodash";
-import { SequenceVisualization } from "../sequences/visualization";
+import { SequenceVisualization } from "./sequence_visualization";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {

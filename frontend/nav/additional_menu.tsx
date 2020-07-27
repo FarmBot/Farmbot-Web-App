@@ -8,7 +8,8 @@ import { ExternalUrl } from "../external_urls";
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
     <div className={"account-link"}>
-      <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
+      <Link to="/app/designer/settings?highlight=account"
+        onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-cog" />
         {t("Account Settings")}
       </Link>
@@ -19,7 +20,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Logs")}
       </Link>
     </div>
-    <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
+    <Link to="/app/designer/help" onClick={props.close("accountMenuOpen")}>
       <i className="fa fa-question-circle" />
       {t("Help")}
     </Link>

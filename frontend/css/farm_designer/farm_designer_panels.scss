@@ -573,7 +573,7 @@
 
 .panel-nav {
   position: fixed;
-  z-index: 10;
+  z-index: 11;
 }
 
 .scroll-indicator {
@@ -993,6 +993,24 @@
   .row:nth-child(2) {
     padding-left: 1.5rem;
     padding-right: 3rem;
+  }
+  .row.zero-side-margins {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .export-data,
+  .change-password {
+    .old-password,
+    .new-password {
+      margin-bottom: 1rem;
+      input {
+        width: 50%;
+        float: right;
+      }
+    }
+    form {
+      margin-left: 2rem;
+    }
   }
   .label-headings {
     margin-right: 2rem;
@@ -1639,7 +1657,10 @@
   }
   .title-help.photos-tooltip {
     .title-help-text.open {
-      margin-bottom: 4rem;
+      display: inline;
+    }
+    .title-help-text-text {
+      display: block;
     }
     .fa-question-circle {
       position: relative;
@@ -1647,6 +1668,7 @@
       right: unset;
     }
     .photos-settings {
+      margin-bottom: 4rem;
       label {
         margin-left: 0.5rem;
         font-style: normal;
@@ -1658,6 +1680,15 @@
       .fb-toggle-button {
         padding-top: unset;
         margin-top: 2rem;
+      }
+      .image-size-inputs {
+        margin-top: 1rem;
+        label {
+          margin-top: 0;
+        }
+        .resolution {
+          margin-left: 0;
+        }
       }
     }
   }
@@ -1724,6 +1755,58 @@
     .step-button-cluster {
       margin-top: 1rem;
       margin-right: 5px;
+    }
+  }
+}
+
+.designer-regimen-scheduler-panel {
+  .panel-content {
+    display: inline-block;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+  }
+}
+
+.designer-regimen-editor-panel {
+  .title {
+    width: 45%;
+  }
+}
+
+.messages-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    label {
+      margin-top: 0;
+    }
+  }
+}
+
+.logs-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.help-panel {
+  .panel-content {
+    margin-top: 6rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    label {
+      margin-top: 0 !important;
+    }
+    a {
+      text-decoration: none !important;
     }
   }
 }

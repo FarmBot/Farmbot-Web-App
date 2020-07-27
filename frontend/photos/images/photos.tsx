@@ -9,7 +9,7 @@ import { safeStringFetch, timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import {
   downloadProgress,
-} from "../../devices/components/fbos_settings/os_update_button";
+} from "../../settings/fbos_settings/os_update_button";
 import { TaggedImage } from "farmbot";
 import { startCase, every } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
@@ -17,7 +17,7 @@ import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import {
   cameraBtnProps,
-} from "../../devices/components/fbos_settings/camera_selection";
+} from "../../settings/fbos_settings/camera_selection";
 import { Popover } from "@blueprintjs/core";
 import { PhotoFilterSettings } from "./photo_filter_settings";
 import {

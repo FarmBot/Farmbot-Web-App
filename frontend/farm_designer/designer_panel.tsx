@@ -51,7 +51,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   const textColor = props.blackText ? "black" : "white";
   return <div className={`panel-header ${color || PanelColor.gray}-panel`}
     style={props.style || {}}>
-    <p className="panel-title">
+    <div className="panel-title">
       <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
@@ -63,7 +63,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
           {t(props.title)}
         </span>}
       {props.children}
-    </p>
+    </div>
 
     {(props.description || props.descriptionElement) &&
       <div

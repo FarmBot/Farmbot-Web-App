@@ -252,7 +252,7 @@ export namespace ToolTips {
     trim(`Paste the output from EXPORT PARAMETERS into the text field and
     press IMPORT to import new hardware parameters to your FarmBot.`);
 
-  // Farmware
+  // Photos
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
 
@@ -262,6 +262,15 @@ export namespace ToolTips {
 
   export const CAMERA_CALIBRATION =
     trim(`Calibrate FarmBot's camera for use in the weed detection software.`);
+
+  export const RED_DOT_CAMERA_CALIBRATION =
+    trim(`Genesis v1.2 through v1.4 bots did not include the camera
+    calibration card. Instead, these kits included red calibration objects
+    and must be calibrated using an alternative method`);
+
+  export const CAMERA_CALIBRATION_CARD_SHOP_LINK =
+    trim(`Camera calibration cards are available in the shop and can be
+    used with any FarmBot version.`);
 
   export const INVERT_HUE_SELECTION =
     trim(`Invert the range of hues selected. Typically used to select the
@@ -429,6 +438,11 @@ export namespace ToolTips {
     adjustment for camera rotation (black angled borders may show in
     viewer). Enabling this setting will slow down photo capture.`);
 
+  export const IMAGE_RESOLUTION =
+    trim(`The camera will capture images at the closest available resolution
+    to the selected size. Changing image resolution requires recalibration
+    of the camera. Higher quality images will take longer to process.`);
+
   export const CALIBRATION_REQUIRED =
     trim(`Calibrate your camera in the Photos panel before detecting weeds.`);
 
@@ -507,6 +521,9 @@ export namespace ToolTips {
 export namespace Content {
 
   // Account
+  export const CHECK_EMAIL_TO_CONFIRM =
+    trim(`Please check your email to confirm email address changes.`);
+
   export const ACCOUNT_PASSWORD_CHANGE =
     trim(`Upon successful password change, your FarmBot will factory reset
     allowing you to configure it with the updated credentials.
@@ -545,7 +562,7 @@ export namespace Content {
 
   export const EXPORT_DATA_DESC =
     trim(`Export all data related to this device. Exports are delivered via
-    email as JSON.`);
+    email as JSON file attachments.`);
 
   export const EXPORT_SENT =
     trim(`Export request received. Please allow up to 10 minutes for
@@ -1022,12 +1039,16 @@ export namespace Content {
   export const CAMERA_NOT_CALIBRATED =
     trim(`Camera calibration required`);
 
-  export const CAMERA_CALIBRATION =
+  export const CAMERA_CALIBRATION_RED_OBJECTS =
+    trim(`Place the two red calibration objects 100mm apart and aligned
+    with FarmBot's axes on the soil underneath the camera.`);
+
+  export const CAMERA_CALIBRATION_GRID_PATTERN =
     trim(`Place the camera calibration card face down on the soil
     underneath the camera, with the grid of white circles facing up.
     Can be in any orientation but must be fully visible to the camera.
-    Caution: FarmBot will make two small x-axis and y-axis movements during
-    calibration.`);
+    Caution: FarmBot will make three small x-axis and y-axis movements
+    during calibration.`);
 
   // Other
   export const DOWNLOAD_FBOS =
@@ -1212,6 +1233,15 @@ export enum DeviceSetting {
   cropMapImages = `Crop map images`,
   showCameraViewAreaInMap = `Show camera view area in map`,
   confirmPlantDeletion = `Confirm plant deletion`,
+
+  // Account
+  accountSettings = `Account`,
+  accountName = `Your Name`,
+  accountEmail = `Email`,
+  changePassword = `Change password`,
+  resetAccount = `Reset account`,
+  deleteAccount = `Delete account`,
+  exportAccountData = `Export data`,
 
   otherSettings = `Other`,
 

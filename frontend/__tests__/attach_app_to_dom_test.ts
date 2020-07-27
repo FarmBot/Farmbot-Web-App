@@ -9,7 +9,7 @@ jest.mock("../redux/store", () => {
   return { store: { dispatch: jest.fn() } };
 });
 
-jest.mock("../account/dev/dev_support", () => ({
+jest.mock("../settings/dev/dev_support", () => ({
   DevSettings: { futureFeaturesEnabled: () => false }
 }));
 

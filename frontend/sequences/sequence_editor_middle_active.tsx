@@ -32,7 +32,7 @@ import { isUndefined } from "lodash";
 import { NO_GROUPS } from "./locals_list/default_value_form";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
-import { visualizeInMap } from "../farm_designer/sequences/visualization";
+import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>

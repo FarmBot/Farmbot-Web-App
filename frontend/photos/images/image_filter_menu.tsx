@@ -1,11 +1,11 @@
 import * as React from "react";
 import { BlurableInput } from "../../ui/index";
-import { offsetTime } from "../../farm_designer/farm_events/edit_fe_form";
+import { offsetTime } from "../../farm_events/edit_fe_form";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import moment from "moment";
 import {
   formatDate, formatTime,
-} from "../../farm_designer/farm_events/map_state_to_props_add_edit";
+} from "../../farm_events/map_state_to_props_add_edit";
 import { Slider } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";

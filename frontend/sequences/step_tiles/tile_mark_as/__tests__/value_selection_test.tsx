@@ -1,5 +1,5 @@
 let mockDev = false;
-jest.mock("../../../../account/dev/dev_support", () => ({
+jest.mock("../../../../settings/dev/dev_support", () => ({
   DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
@@ -12,7 +12,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import {
   PLANT_STAGE_LIST, ALL_STAGE_LIST,
-} from "../../../../farm_designer/plants/edit_plant_status";
+} from "../../../../plants/edit_plant_status";
 import { fakeTool } from "../../../../__test_support__/fake_state/resources";
 import { resource_type, Resource } from "farmbot";
 import { UPDATE_RESOURCE_DDIS } from "../field_selection";

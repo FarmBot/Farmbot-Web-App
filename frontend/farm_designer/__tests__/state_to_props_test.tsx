@@ -18,7 +18,7 @@ import {
   fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 import { generateUuid } from "../../resources/util";
-import { DevSettings } from "../../account/dev/dev_support";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("mapStateToProps()", () => {
   it("hovered plantUUID is undefined", () => {

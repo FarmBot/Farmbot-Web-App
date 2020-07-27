@@ -4,11 +4,11 @@ jest.mock("../../util", () => ({ getMode: () => mockMode }));
 
 jest.mock("../../../../history", () => ({ history: { push: jest.fn() } }));
 
-jest.mock("../../../point_groups/criteria", () => ({
+jest.mock("../../../../point_groups/criteria", () => ({
   editGtLtCriteria: jest.fn(),
 }));
 
-jest.mock("../../../point_groups/actions", () => ({
+jest.mock("../../../../point_groups/actions", () => ({
   overwriteGroup: jest.fn(),
 }));
 
@@ -23,9 +23,9 @@ import {
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
 import { history } from "../../../../history";
-import { editGtLtCriteria } from "../../../point_groups/criteria";
+import { editGtLtCriteria } from "../../../../point_groups/criteria";
 import { cloneDeep } from "lodash";
-import { overwriteGroup } from "../../../point_groups/actions";
+import { overwriteGroup } from "../../../../point_groups/actions";
 
 describe("getSelected", () => {
   it("returns some", () => {

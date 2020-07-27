@@ -5,7 +5,7 @@ import { ConnectionStatus } from "../../connectivity/interfaces";
 import { t } from "../../i18next_wrapper";
 import {
   isKnownBoard, getBoardCategoryFromFwHw,
-} from "../components/firmware_hardware_support";
+} from "../../settings/firmware/firmware_hardware_support";
 import { FirmwareHardware } from "farmbot";
 
 /** "<how long> ago" for a given ISO time string or time in milliseconds. */

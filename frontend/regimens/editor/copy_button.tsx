@@ -12,7 +12,7 @@ export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
     className="fb-button yellow"
     title={t("copy")}
     onClick={() => dispatch(copyRegimen(regimen))}>
-    {t("Copy")}
+    <i className={"fa fa-clone"} />
   </button>;
 
 let count = 1;
@@ -23,6 +23,6 @@ export const copyRegimen = (payload: TaggedRegimen) =>
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
     dispatch(init(copy.kind, copy.body));
-    push("/app/regimens/" + urlFriendly(copy.body.name));
+    push("/app/designer/regimens/" + urlFriendly(copy.body.name));
     setActiveRegimenByName();
   };

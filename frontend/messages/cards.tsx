@@ -11,7 +11,7 @@ import {
 import { formatLogTime } from "../logs";
 import {
   FlashFirmwareBtn,
-} from "../devices/components/fbos_settings/firmware_hardware_status";
+} from "../settings/firmware/firmware_hardware_status";
 import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
 import { TourList } from "../help/tour_list";
@@ -19,7 +19,7 @@ import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
 import {
   isFwHardwareValue, FIRMWARE_CHOICES_DDI, getFirmwareChoices,
-} from "../devices/components/firmware_hardware_support";
+} from "../settings/firmware/firmware_hardware_support";
 import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
