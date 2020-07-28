@@ -71,7 +71,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
         {...setting} {...props} useToolTip={true} />)}
       <Highlight settingName={DeviceSetting.resetAccount}>
         <DangerousDeleteWidget
-          title={t("Reset Account")}
+          title={DeviceSetting.resetAccount}
           warning={t(Content.ACCOUNT_RESET_WARNING)}
           confirmation={t(Content.TYPE_PASSWORD_TO_RESET)}
           dispatch={props.dispatch}
@@ -79,7 +79,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
       </Highlight>
       <Highlight settingName={DeviceSetting.deleteAccount}>
         <DangerousDeleteWidget
-          title={t("Delete Account")}
+          title={DeviceSetting.deleteAccount}
           warning={t(Content.ACCOUNT_DELETE_WARNING)}
           confirmation={t(Content.TYPE_PASSWORD_TO_DELETE)}
           dispatch={props.dispatch}
