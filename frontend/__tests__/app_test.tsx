@@ -120,6 +120,8 @@ describe("<App />: NavBar", () => {
 
   it("displays ticker", () => {
     const p = fakeProps();
+    p.bot.hardware.informational_settings.sync_status = "synced";
+    p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
     p.loaded = FULLY_LOADED;
     const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).toContain("No logs yet.");

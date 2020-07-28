@@ -52,6 +52,7 @@ export interface TickerListProps {
   tickerListOpen: boolean;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
+  botOnline: boolean;
 }
 
 export interface NavLinksProps {
