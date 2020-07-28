@@ -38,27 +38,36 @@ const generateFallbackLog = (uuid: string, message: string): TaggedLog => {
 };
 
 /** Choose the log to display in the first line of the ticker. */
-const getfirstTickerLog = (getConfigValue: GetWebAppConfigValue) =>
-  (logs: TaggedLog[]): TaggedLog => {
-    if (logs.length == 0) {
-      return generateFallbackLog("no_logs_yet", t("No logs yet."));
-    } else {
-      const filteredLogs =
-        filterByVerbosity(getFilterLevel(getConfigValue), logs);
-      if (filteredLogs.length > 0) {
-        return filteredLogs[0];
-      } else {
-        return generateFallbackLog("no_logs_to_display",
-          t("No logs to display. Visit Logs page to view filters."));
-      }
-    }
-  };
+const getFirstTickerLog = (
+  getConfigValue: GetWebAppConfigValue,
+  logs: TaggedLog[],
+  botOnline: boolean,
+): TaggedLog => {
+  if (!botOnline) {
+    return generateFallbackLog("bot_offline", t("FarmBot is offline"));
+  }
+  if (logs.length == 0) {
+    return generateFallbackLog("no_logs_yet", t("No logs yet."));
+  }
+  const filteredLogs =
+    filterByVerbosity(getFilterLevel(getConfigValue), logs);
+  if (filteredLogs.length > 0) {
+    return filteredLogs[0];
+  }
+  return generateFallbackLog("no_logs_to_display",
+    t("No logs to display. Visit Logs page to view filters."));
+};
+
+interface TickerLogProps {
+  log: TaggedLog;
+  timeSettings: TimeSettings;
+}
 
 /** Format a single log for display in the ticker. */
-const Ticker = (log: TaggedLog, timeSettings: TimeSettings) => {
-  const { message, type, created_at } = log.body;
-  const time = created_at ? formatLogTime(created_at, timeSettings) : "";
-  return <div key={log.uuid} className="status-ticker-wrapper">
+const TickerLog = (props: TickerLogProps) => {
+  const { message, type, created_at } = props.log.body;
+  const time = created_at ? formatLogTime(created_at, props.timeSettings) : "";
+  return <div className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">
       <Markdown>
@@ -73,19 +82,21 @@ const Ticker = (log: TaggedLog, timeSettings: TimeSettings) => {
 
 /** The logs ticker, with closed/open views, and a link to the Logs page. */
 export const TickerList = (props: TickerListProps) => {
+  const { tickerListOpen, logs, getConfigValue, timeSettings, botOnline } = props;
+  const firstTickerLog = getFirstTickerLog(getConfigValue, logs, botOnline);
   return <ErrorBoundary>
     <div className="ticker-list" onClick={props.toggle("tickerListOpen")}>
       <div className="first-ticker">
-        {Ticker(getfirstTickerLog(props.getConfigValue)(props.logs),
-          props.timeSettings)}
+        <TickerLog log={firstTickerLog} timeSettings={timeSettings} />
       </div>
-      <Collapse isOpen={props.tickerListOpen}>
-        {filterByVerbosity(getFilterLevel(props.getConfigValue), props.logs)
-          // Don't use first log again since it's already displayed in first row
-          .filter((_, index) => index !== 0)
-          .map((log: TaggedLog) => Ticker(log, props.timeSettings))}
+      <Collapse isOpen={tickerListOpen}>
+        {filterByVerbosity(getFilterLevel(getConfigValue), logs)
+          // Don't use first log again when it's already displayed in first row
+          .filter((_, index) => !botOnline || index !== 0)
+          .map((log: TaggedLog) =>
+            <TickerLog key={log.uuid} log={log} timeSettings={timeSettings} />)}
       </Collapse>
-      <Collapse isOpen={props.tickerListOpen}>
+      <Collapse isOpen={tickerListOpen}>
         <Link to={"/app/logs"}>
           <div className="logs-page-link">
             <label>

@@ -24,6 +24,7 @@ describe("<TickerList />", () => {
       tickerListOpen: false,
       toggle: jest.fn(),
       getConfigValue: x => mockStorj[x],
+      botOnline: true,
     };
   };
 
@@ -39,6 +40,15 @@ describe("<TickerList />", () => {
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
     expectLogOccurrences(wrapper.text(), 1);
+  });
+
+  it("shows bot offline log message", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const wrapper = mount(<TickerList {...p} />);
+    const labels = wrapper.find("label");
+    expect(labels.length).toEqual(2);
+    expect(labels.at(0).text()).toContain("FarmBot is offline");
   });
 
   it("shows empty log message", () => {
@@ -70,6 +80,14 @@ describe("<TickerList />", () => {
     expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("Aug 2, 7:50pm");
     expect(labels.at(4).text()).toEqual("View all logs");
+    expectLogOccurrences(wrapper.text(), 2);
+  });
+
+  it("opens ticker when offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    p.tickerListOpen = true;
+    const wrapper = mount(<TickerList {...p} />);
     expectLogOccurrences(wrapper.text(), 2);
   });
 

@@ -4,13 +4,20 @@ import { mount, shallow } from "enzyme";
 import { DangerousDeleteProps } from "../interfaces";
 import { BlurablePassword } from "../../../ui/blurable_password";
 
-describe("<DangerousDeleteWidget/>", () => {
+describe("<DangerousDeleteWidget />", () => {
   const fakeProps = (): DangerousDeleteProps => ({
     title: "Delete something important",
     warning: "This will remove data.",
-    confirmation: "Are you sure?",
+    confirmation: "Type to confirm.",
     dispatch: jest.fn(),
     onClick: jest.fn(),
+  });
+
+  it("renders", () => {
+    const p = fakeProps();
+    const wrapper = mount(<DangerousDeleteWidget {...p} />);
+    [p.title, p.warning, p.confirmation].map(string =>
+      expect(wrapper.text()).toContain(string));
   });
 
   it("executes deletion", () => {
@@ -32,7 +39,7 @@ describe("<DangerousDeleteWidget/>", () => {
     expect(wrapper.state().password).toEqual("password");
   });
 
-  it("enters password", () => {
+  it("clears password", () => {
     const wrapper = mount<DangerousDeleteWidget>(
       <DangerousDeleteWidget {...fakeProps()} />);
     wrapper.setState({ password: "password" });
