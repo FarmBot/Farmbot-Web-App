@@ -103,6 +103,12 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
+    $: "/messages",
+    getModule: () => import("./messages/messages_page"),
+    key: "Messages",
+  }),
+  route({
+    children: false,
     $: "/logs",
     getModule: () => import("./logs"),
     key: "Logs",
