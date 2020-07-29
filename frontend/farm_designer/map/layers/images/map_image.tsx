@@ -8,8 +8,6 @@ import { equals } from "../../../../util";
 import { Color } from "../../../../ui";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
-/** Show all images roughly on map when no calibration values are present. */
-const PRE_CALIBRATION_PREVIEW = true;
 
 /* Parse floats in camera calibration environment variables. */
 const parse = (str: string | undefined) => {
@@ -18,18 +16,17 @@ const parse = (str: string | undefined) => {
 };
 
 /* Check if the image has been rotated according to the calibration value. */
-export const isRotated = (annotation: string | undefined, noCalib: boolean) => {
-  if (PRE_CALIBRATION_PREVIEW && noCalib) { return true; }
+const isRotated = (annotation: string | undefined) => {
   return !!(annotation &&
     (annotation.includes("rotated")
       || annotation.includes("marked")
       || annotation.includes("calibration_result")));
 };
 
-/* Check if the calibration data is valid for the image provided using z. */
+/* Verify calibration camera z height matches the image provided. */
 export const cameraZCheck =
   (imageZ: number | undefined, calibZ: string | undefined) => {
-    if (PRE_CALIBRATION_PREVIEW && !calibZ) { return true; }
+    if (!calibZ) { return true; }
     const calibrationZ = parse(calibZ);
     return isNumber(imageZ) && isNumber(calibrationZ) &&
       Math.abs(imageZ - calibrationZ) < 5;
@@ -40,7 +37,7 @@ export const imageSizeCheck =
   (size: Record<"width" | "height", number>,
     calibCenter: Record<"x" | "y", string | undefined>,
   ) => {
-    if (PRE_CALIBRATION_PREVIEW && !calibCenter.x) { return true; }
+    if (!calibCenter.x) { return true; }
     const calibrationCenter = {
       x: parse(calibCenter.x),
       y: parse(calibCenter.y),
@@ -167,7 +164,6 @@ const generateTransform = (props: TransformProps): string => {
 };
 
 interface ParsedCalibrationData {
-  noCalib: boolean;
   imageScale: number | undefined;
   imageOffsetX: number | undefined;
   imageOffsetY: number | undefined;
@@ -180,15 +176,14 @@ interface ParsedCalibrationData {
 const parseCalibrationData =
   (props: CameraCalibrationData): ParsedCalibrationData => {
     const { scale, offset, origin, rotation } = props;
-    const noCalib = PRE_CALIBRATION_PREVIEW && !parse(scale);
-    const imageScale = noCalib ? 0.6 : parse(scale);
-    const imageOffsetX = noCalib ? 0 : parse(offset.x);
-    const imageOffsetY = noCalib ? 0 : parse(offset.y);
+    const imageScale = parse(scale) ?? 0.6;
+    const imageOffsetX = parse(offset.x) ?? 0;
+    const imageOffsetY = parse(offset.y) ?? 0;
     const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
-    const imageOrigin = noCalib ? "TOP_LEFT" : cleanOrigin;
-    const imageRotation = noCalib ? 0 : parse(rotation);
+    const imageOrigin = cleanOrigin ?? "TOP_LEFT";
+    const imageRotation = parse(rotation) ?? 0;
     return {
-      noCalib, imageScale, imageOffsetX, imageOffsetY, imageOrigin,
+      imageScale, imageOffsetX, imageOffsetY, imageOrigin,
       imageRotation,
     };
   };
@@ -209,10 +204,12 @@ interface MapImageState {
   imageHeight: number;
 }
 
-/*
+/**
  * Place the camera image in the Farm Designer map.
- * Assume the image that is provided from the Farmware is rotated correctly.
- * Require camera calibration data to display the image.
+ * Assume pre-rotated images are rotated correctly.
+ * Verify camera calibration data matches image data if calibration data exists.
+ * Camera calibration data is required to properly position images, but
+ * fallback values are used to preview images before calibration is performed.
  */
 export class MapImage extends React.Component<MapImageProps, MapImageState> {
   state: MapImageState = { imageWidth: 0, imageHeight: 0 };
@@ -233,11 +230,10 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
     const { imageWidth, imageHeight } = this.state;
     const { image, cameraCalibrationData, mapTransformProps, cropImage,
     } = this.props;
-    const { noCalib, imageScale, imageRotation } =
-      parseCalibrationData(cameraCalibrationData);
+    const imageRotation = parse(cameraCalibrationData.rotation) ?? 0;
     const { calibrationZ, center } = cameraCalibrationData;
     const imageMetaName = image.body.meta.name || "";
-    const alreadyRotated = isRotated(imageMetaName, noCalib);
+    const alreadyRotated = isRotated(imageMetaName);
     const imageUploadName = last(imageMetaName.split("/"));
     const { x, y, z } = image.body.meta;
 
@@ -245,13 +241,14 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
       const imageUrl = image.body.attachment_url;
       getImageSize(imageUrl, this.imageCallback);
 
-      /* Check for necessary camera calibration and image data. */
-      if (imageScale && cameraZCheck(z, calibrationZ) && imageSizeCheck(
-        { width: imageWidth, height: imageHeight }, center)) {
+      /* Verify camera calibration data is valid for the image. */
+      if (cameraZCheck(z, calibrationZ)
+        && imageSizeCheck({ width: imageWidth, height: imageHeight }, center)) {
         const imagePosition = mapImagePositionData({
           x, y, width: imageWidth, height: imageHeight,
           cameraCalibrationData, mapTransformProps, alreadyRotated,
         });
+        /** Position image if all required data is present. */
         if (imagePosition) {
           const { width, height, transformOrigin } = imagePosition;
           const transform = this.props.disableTranslation ?
