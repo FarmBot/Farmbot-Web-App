@@ -1,5 +1,10 @@
+let mockDev = false;
+jest.mock("../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
   CaptureSettingsProps, CaptureSettings, DISABLE_ROTATE_AT_CAPTURE_KEY,
 } from "../capture_settings";
@@ -52,4 +57,32 @@ describe("<CaptureSettings />", () => {
         ? expect(wrapper.find("button").last().text()).toEqual(label)
         : expect(wrapper.find(".capture-rotate-setting").length).toEqual(0);
     });
+
+  it("doesn't display size", () => {
+    mockDev = false;
+    const wrapper = mount(<CaptureSettings {...fakeProps()} />);
+    expect(wrapper.text()).not.toContain("resolution");
+  });
+
+  it("displays default size", () => {
+    mockDev = true;
+    const wrapper = mount(<CaptureSettings {...fakeProps()} />);
+    expect(wrapper.text()).toContain("resolution");
+    expect(wrapper.find("input").last().props().value).toEqual(480);
+  });
+
+  it("changes capture size", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.env = { take_photo_width: "200", take_photo_height: "100" };
+    const wrapper = shallow(<CaptureSettings {...p} />);
+    wrapper.find("BlurableInput").at(0).simulate("commit", {
+      currentTarget: { value: "400" }
+    });
+    wrapper.find("BlurableInput").at(1).simulate("commit", {
+      currentTarget: { value: "300" }
+    });
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "400");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "300");
+  });
 });

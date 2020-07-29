@@ -3,7 +3,6 @@ import { Col, Row } from "../../ui";
 import { DangerousDeleteProps, DangerousDeleteState } from "./interfaces";
 import { BlurablePassword } from "../../ui/blurable_password";
 import { t } from "../../i18next_wrapper";
-import { DeviceSetting } from "../../constants";
 
 /** Widget for permanently deleting large amounts of user data. */
 export class DangerousDeleteWidget extends
@@ -20,7 +19,7 @@ export class DangerousDeleteWidget extends
   render() {
     return <Row className={"zero-side-margins"}>
       <label>
-        {t(DeviceSetting.resetAccount)}
+        {t(this.props.title)}
       </label>
       <p>
         {t(this.props.warning)}

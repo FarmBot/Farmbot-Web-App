@@ -21,6 +21,7 @@ import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -134,23 +135,26 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     </div>;
   }
 
+  TickerList = () =>
+    <TickerList
+      logs={this.props.logs}
+      tickerListOpen={this.state.tickerListOpen}
+      toggle={this.toggle}
+      timeSettings={this.props.timeSettings}
+      getConfigValue={this.props.getConfigValue}
+      botOnline={isBotOnlineFromState(this.props.bot)} />
+
   render() {
     /** Change document meta title on every route change. */
     updatePageInfo(getPathArray()[2] || "", getPathArray()[3]);
 
-    const { toggle } = this;
-    const { tickerListOpen } = this.state;
-    const { logs, timeSettings, getConfigValue } = this.props;
-    const tickerListProps = {
-      logs, tickerListOpen, toggle, timeSettings, getConfigValue
-    };
     return <ErrorBoundary>
       <div className="nav-wrapper">
         <nav role="navigation">
           <Row>
             <Col xs={12}>
-              <div className={"nav-bar"}>
-                <TickerList {...tickerListProps} />
+              <div className="nav-bar">
+                <this.TickerList />
                 <div className="nav-group">
                   <div className="nav-left">
                     <this.AppNavLinks />
