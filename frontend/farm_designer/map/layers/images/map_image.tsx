@@ -176,7 +176,7 @@ interface ParsedCalibrationData {
 const parseCalibrationData =
   (props: CameraCalibrationData): ParsedCalibrationData => {
     const { scale, offset, origin, rotation } = props;
-    const imageScale = parse(scale) ?? 0.6;
+    const imageScale = parse(scale) || 0.6;
     const imageOffsetX = parse(offset.x) ?? 0;
     const imageOffsetY = parse(offset.y) ?? 0;
     const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
