@@ -143,6 +143,19 @@ describe("<FbosDetails/>", () => {
     expect(wrapper.text()).not.toContain("dBm");
   });
 
+  it.each<[number, string]>([
+    [10, "gray"],
+    [50, "red"],
+    [70, "yellow"],
+    [90, "green"],
+  ])("displays correct wifi signal strength indicator color: %s %s",
+    (percent, color) => {
+      const p = fakeProps();
+      p.botInfoSettings.wifi_level_percent = percent;
+      const wrapper = mount(<FbosDetails {...p} />);
+      expect(wrapper.find(".percent-bar-fill").hasClass(color)).toBeTruthy();
+    });
+
   it("displays unknown when cpu temp value is undefined", () => {
     const p = fakeProps();
     p.botInfoSettings.soc_temp = undefined;

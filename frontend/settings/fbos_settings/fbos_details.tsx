@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Saucer, FBSelect } from "../../ui";
 import { updateConfig } from "../../devices/actions";
-import { last, isNumber, isString } from "lodash";
+import { last, isNumber, isString, isUndefined } from "lodash";
 import { Content } from "../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig } from "../../devices/interfaces";
@@ -11,7 +11,9 @@ import { Popover } from "@blueprintjs/core";
 import moment from "moment";
 import { timeFormatString } from "../../util";
 import { TimeSettings } from "../../interfaces";
-import { boardType, FIRMWARE_CHOICES_DDI } from "../firmware/firmware_hardware_support";
+import {
+  boardType, FIRMWARE_CHOICES_DDI,
+} from "../firmware/firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 
 /** Return an indicator color for the given temperature (C). */
@@ -50,6 +52,26 @@ export function ChipTemperatureDisplay(
   </div>;
 }
 
+/** Return an indicator color for the given WiFi signal strength (%). */
+export const colorFromSignalStrength = (percent: number) => {
+  if (percent < 20) {
+    return "gray";
+  } else if (percent < 68) {
+    return "red";
+  } else if (percent < 84) {
+    return "yellow";
+  } else {
+    return "green";
+  }
+};
+
+const WIFI_COLOR_KEY = () => ({
+  gray: t("too weak"),
+  red: t("weak"),
+  yellow: t("ok"),
+  green: t("good"),
+});
+
 interface WiFiStrengthDisplayProps {
   wifiStrength: number | undefined;
   wifiStrengthPercent?: number | undefined;
@@ -60,24 +82,27 @@ interface WiFiStrengthDisplayProps {
 export function WiFiStrengthDisplay(
   { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps,
 ): JSX.Element {
-  const percent = wifiStrength
+  const calculatedPercent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
+  const valueAvailable = !isUndefined(wifiStrength)
+    || !isUndefined(wifiStrengthPercent);
+  const percent = wifiStrengthPercent || calculatedPercent;
   const dbString = `${wifiStrength || 0}dBm`;
-  const percentString = `${wifiStrengthPercent || percent}%`;
+  const percentString = `${percent}%`;
   const numberDisplay =
     extraInfo ? `${percentString} (${dbString})` : percentString;
+  const color = colorFromSignalStrength(percent);
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi strength")}: </b>
-      {wifiStrength ? numberDisplay : "N/A"}
+      {valueAvailable ? numberDisplay : "N/A"}
     </p>
-    {wifiStrength &&
-      <div className="percent-bar">
-        <div
-          className="percent-bar-fill"
-          style={{ width: percentString }}
-          title={dbString} />
+    {valueAvailable &&
+      <div className="percent-bar"
+        title={`${dbString} (${WIFI_COLOR_KEY()[color]})`}>
+        <div className={`percent-bar-fill ${color}`}
+          style={{ width: percentString }} />
       </div>}
   </div>;
 }
