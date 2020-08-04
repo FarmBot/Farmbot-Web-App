@@ -16,7 +16,7 @@ describe Api::FbosConfigsController do
         device_id: device.id,
         auto_sync: true,
         beta_opt_in: false,
-        disable_factory_reset: false,
+        disable_factory_reset: true,
         firmware_input_log: false,
         firmware_output_log: false,
         sequence_body_log: false,
@@ -52,7 +52,7 @@ describe Api::FbosConfigsController do
 
     it "handles update requests" do
       sign_in user
-      body = { beta_opt_in: true, disable_factory_reset: true }
+      body = { beta_opt_in: true, disable_factory_reset: false }
       body.to_a.map { |key, val| expect(device.fbos_config.send(key)).not_to eq(val) }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
