@@ -452,7 +452,7 @@ CREATE TABLE public.fbos_configs (
     updated_at timestamp without time zone NOT NULL,
     auto_sync boolean DEFAULT true,
     beta_opt_in boolean DEFAULT false,
-    disable_factory_reset boolean DEFAULT false,
+    disable_factory_reset boolean DEFAULT true,
     firmware_input_log boolean DEFAULT false,
     firmware_output_log boolean DEFAULT false,
     sequence_body_log boolean DEFAULT false,
@@ -3392,6 +3392,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200629181002'),
 ('20200630190226'),
 ('20200704150931'),
-('20200801150609');
+('20200801150609'),
+('20200804150609');
 
 
