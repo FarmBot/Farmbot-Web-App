@@ -11,6 +11,7 @@ export interface StepIconBarProps {
   sequence: TaggedSequence;
   helpText: string;
   confirmStepDeletion: boolean;
+  toggleViewRaw?: () => void;
 }
 
 export function StepUpDownButtonPopover(
@@ -41,6 +42,8 @@ export function StepIconGroup(props: StepIconBarProps) {
     <StepUpDownButtonPopover onMove={onMove} />
     <i className="fa fa-clone step-control" onClick={onClone} />
     <i className="fa fa-trash step-control" onClick={onTrash} />
-    <Help text={helpText} position={Position.TOP} />
+    <Help text={helpText} position={Position.TOP} customClass={"step-control"} />
+    {props.toggleViewRaw &&
+      <i className="fa fa-font step-control" onClick={props.toggleViewRaw} />}
   </span>;
 }

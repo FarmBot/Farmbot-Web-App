@@ -1,5 +1,8 @@
 import * as React from "react";
-import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
+import {
+  ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
+  SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
+} from "./interfaces";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles";
 import { push } from "../history";
@@ -7,32 +10,27 @@ import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
-import { TaggedSequence, SyncStatus } from "farmbot";
+import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
 import { LocalsList, localListCallback } from "./locals_list/locals_list";
 import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
-import { ResourceIndex } from "../resources/interfaces";
-import { ShouldDisplay } from "../devices/interfaces";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
 import { Actions, DeviceSetting } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
 import { ToggleButton } from "../controls/toggle_button";
 import { Content } from "../constants";
-import {
-  setWebAppConfigValue,
-  GetWebAppConfigValue,
-} from "../config_storage/actions";
+import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { isUndefined } from "lodash";
 import { NO_GROUPS } from "./locals_list/default_value_form";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
+import { Feature } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -55,21 +53,6 @@ export const onDrop =
       }
     };
 
-export interface SequenceSettingsMenuProps {
-  dispatch: Function;
-  getWebAppConfigValue: GetWebAppConfigValue;
-}
-
-export interface SequenceSettingProps {
-  label: DeviceSetting;
-  description: string;
-  dispatch: Function;
-  setting: BooleanConfigKey;
-  getWebAppConfigValue: GetWebAppConfigValue;
-  confirmation?: string;
-  defaultOn?: boolean;
-}
-
 export const SequenceSetting = (props: SequenceSettingProps) => {
   const raw_value = props.getWebAppConfigValue(props.setting);
   const value = (props.defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
@@ -88,7 +71,8 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
 };
 
 export const SequenceSettingsMenu =
-  ({ dispatch, getWebAppConfigValue }: SequenceSettingsMenuProps) => {
+  (props: SequenceSettingsMenuProps) => {
+    const { dispatch, getWebAppConfigValue } = props;
     const commonProps = { dispatch, getWebAppConfigValue };
     return <div className="sequence-settings-menu">
       <SequenceSetting {...commonProps}
@@ -113,19 +97,16 @@ export const SequenceSettingsMenu =
         confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
         label={DeviceSetting.discardUnsavedSequenceChanges}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
+      {props.shouldDisplay(Feature.computed_move) &&
+        <fieldset>
+          <label>{t("View CeleryScript")}</label>
+          <Help text={t("View raw data representation of sequence steps.")} />
+          <ToggleButton
+            toggleValue={props.viewCeleryScript}
+            toggleAction={props.toggleViewCeleryScript} />
+        </fieldset>}
     </div>;
   };
-
-interface SequenceBtnGroupProps {
-  dispatch: Function;
-  sequence: TaggedSequence;
-  syncStatus: SyncStatus;
-  resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
-  menuOpen: boolean;
-  getWebAppConfigValue: GetWebAppConfigValue;
-  visualized?: boolean;
-}
 
 const SequenceBtnGroup = ({
   dispatch,
@@ -135,6 +116,8 @@ const SequenceBtnGroup = ({
   shouldDisplay,
   menuOpen,
   getWebAppConfigValue,
+  toggleViewCeleryScript,
+  viewCeleryScript,
   visualized,
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
@@ -179,6 +162,9 @@ const SequenceBtnGroup = ({
         <i className="fa fa-gear" />
         <SequenceSettingsMenu
           dispatch={dispatch}
+          toggleViewCeleryScript={toggleViewCeleryScript}
+          viewCeleryScript={viewCeleryScript}
+          shouldDisplay={shouldDisplay}
           getWebAppConfigValue={getWebAppConfigValue} />
       </Popover>
     </div>
@@ -202,7 +188,7 @@ export const SequenceNameAndColor = ({ dispatch, sequence }: {
     </Col>
   </Row>;
 
-const SequenceHeader = (props: SequenceHeaderProps) => {
+export const SequenceHeader = (props: SequenceHeaderProps) => {
   const { sequence, dispatch } = props;
   const sequenceAndDispatch = { sequence, dispatch };
   const variableData = props.resources.sequenceMetas[sequence.uuid] || {};
@@ -215,6 +201,8 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
       getWebAppConfigValue={props.getWebAppConfigValue}
+      toggleViewCeleryScript={props.toggleViewCeleryScript}
+      viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
@@ -236,13 +224,12 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   </div>;
 };
 
-interface ActiveMiddleState {
-  variablesCollapsed: boolean;
-}
-
 export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, ActiveMiddleState> {
-  state: ActiveMiddleState = { variablesCollapsed: false };
+  state: ActiveMiddleState = {
+    variablesCollapsed: false,
+    viewCeleryScript: false,
+  };
 
   /** Make room for the sequence header variable form when necessary. */
   get stepSectionHeight() {
@@ -272,6 +259,7 @@ export class SequenceEditorMiddleActive extends
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
       hoveredStep: this.props.hoveredStep,
+      viewCeleryScript: this.state.viewCeleryScript,
     };
   }
 
@@ -287,6 +275,9 @@ export class SequenceEditorMiddleActive extends
         variablesCollapsed={this.state.variablesCollapsed}
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
+        toggleViewCeleryScript={() =>
+          this.setState({ viewCeleryScript: !this.state.viewCeleryScript })}
+        viewCeleryScript={this.state.viewCeleryScript}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         visualized={this.props.visualized}
         menuOpen={this.props.menuOpen} />

@@ -1495,6 +1495,81 @@ ul {
   }
 }
 
+.computed-move-step {
+  &.step-content {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+    input {
+      height: 3rem;
+      &:disabled {
+        background: $light_gray !important;
+      }
+    }
+    .help-icon {
+      display: inline;
+      margin-left: 0.5rem;
+    }
+  }
+  div[class*=col-] {
+    padding: 0;
+  }
+  label {
+    padding-top: 1rem;
+    &.safe-z {
+      padding-top: 0.65rem;
+    }
+  }
+  .row {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  .expandable-header {
+    padding-left: 0.5rem;
+  }
+  span {
+    color: $dark_gray;
+  }
+  .input {
+    position: relative;
+    border: 3px solid $transparent;
+    &.lua {
+      border-color: $yellow;
+      &:after {
+        content: "lua";
+        position: absolute;
+        top: -0.25rem;
+        right: -0.3rem;
+        color: $dark_gray;
+        background: $yellow;
+        padding: 0.2rem;
+        font-size: 0.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+    }
+  }
+  .filter-search,
+  .fb-checkbox {
+    border: 3px solid $transparent;
+  }
+  .bp3-checkbox {
+    padding-top: 0.75rem;
+    margin-left: 0.25rem;
+  }
+  pre {
+    font-size: 1rem;
+  }
+}
+
+.input {
+  .fa-repeat {
+    position: absolute;
+    top: 1rem;
+    right: 0.25rem;
+    font-size: 1rem;
+  }
+}
+
 .checkbox-row {
   margin-top: 1rem;
   label {
