@@ -2,7 +2,9 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
-import { remove, move, splice, renderCeleryNode } from "../index";
+import {
+  remove, move, splice, renderCeleryNode, stringifyStep,
+} from "../index";
 import {
   fakeSequence, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
@@ -124,6 +126,13 @@ describe("renderCeleryNode()", () => {
     {
       node: { kind: "execute", args: { sequence_id: 0 } },
       expected: "Select a sequence"
+    },
+    {
+      node: {
+        kind: "move",
+        args: {}
+      },
+      expected: "location"
     },
     {
       node: {
@@ -256,5 +265,22 @@ describe("renderCeleryNode()", () => {
       const verbiage = mount(step).text().toLowerCase();
       expect(verbiage).toContain(test.expected.toLowerCase());
     });
+  });
+});
+
+describe("stringifyStep()", () => {
+  it("returns step contents", () => {
+    expect(stringifyStep({
+      kind: "wait",
+      args: { milliseconds: 100 },
+      body: [],
+      ["uuid" as keyof SequenceBodyItem]: "uuid",
+    }))
+      .toEqual(`{
+  "kind": "wait",
+  "args": {
+    "milliseconds": 100
+  }
+}`);
   });
 });

@@ -34,3 +34,17 @@ export const dragEvent = (key: string): DragEvent => {
   const event: DeepPartial<DragEvent> = { dataTransfer: { getData: () => key } };
   return event as DragEvent;
 };
+
+type FocusEvent = React.FocusEvent<HTMLInputElement>;
+export const focusEvent = (value: string): FocusEvent => {
+  const event: DeepPartial<FocusEvent> = {
+    target: { setSelectionRange: jest.fn(), value },
+  };
+  return event as FocusEvent;
+};
+
+type KeyboardEvent = React.KeyboardEvent<HTMLInputElement>;
+export const keyboardEvent = (key: string): KeyboardEvent => {
+  const event: DeepPartial<KeyboardEvent> = { key };
+  return event as KeyboardEvent;
+};
