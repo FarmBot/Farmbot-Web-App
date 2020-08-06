@@ -349,6 +349,14 @@ export namespace ToolTips {
     If the sequence is ever run without the variable explicitly set to
     another value, the default value will be used.`);
 
+  export const COMPUTED_MOVE =
+    trim(`The Move step instructs FarmBot to move to the specified
+    coordinate or distance from its current location.`);
+
+  export const SAFE_Z =
+    trim(`If enabled, FarmBot will move the z-axis to the safe z height
+    before moving to the specified location.`);
+
   export const MOVE_ABSOLUTE =
     trim(`The Move To step instructs FarmBot to move to the specified
     coordinate regardless of the current position. For example, if FarmBot is

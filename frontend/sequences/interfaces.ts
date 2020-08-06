@@ -16,6 +16,8 @@ import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Folders } from "../folders/component";
+import { DeviceSetting } from "../constants";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -32,8 +34,7 @@ export interface CheckConflictCaseProps {
 }
 
 export interface MoveAbsoluteWarningProps {
-  vector: Vector3 | undefined;
-  offset: Vector3;
+  coordinate: Vector3;
   hardwareFlags: HardwareFlags | undefined;
 }
 
@@ -72,6 +73,11 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
 }
 
+export interface ActiveMiddleState {
+  variablesCollapsed: boolean;
+  viewCeleryScript: boolean;
+}
+
 export interface SequenceHeaderProps {
   dispatch: Function;
   sequence: TaggedSequence;
@@ -81,8 +87,41 @@ export interface SequenceHeaderProps {
   menuOpen: boolean;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
+  toggleViewCeleryScript: () => void;
+  viewCeleryScript: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
   visualized?: boolean;
+}
+
+export interface SequenceBtnGroupProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+  syncStatus: SyncStatus;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+  menuOpen: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  toggleViewCeleryScript(): void;
+  viewCeleryScript: boolean;
+  visualized?: boolean;
+}
+
+export interface SequenceSettingsMenuProps {
+  dispatch: Function;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  toggleViewCeleryScript(): void;
+  viewCeleryScript: boolean;
+  shouldDisplay: ShouldDisplay;
+}
+
+export interface SequenceSettingProps {
+  label: DeviceSetting;
+  description: string;
+  dispatch: Function;
+  setting: BooleanConfigKey;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  confirmation?: string;
+  defaultOn?: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -216,4 +255,5 @@ export interface StepParams {
   confirmStepDeletion: boolean;
   showPins?: boolean;
   expandStepOptions?: boolean;
+  viewCeleryScript?: boolean;
 }

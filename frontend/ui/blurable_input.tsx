@@ -24,12 +24,15 @@ export interface BIProps {
   allowEmpty?: boolean;
   disabled?: boolean;
   className?: string;
+  wrapperClassName?: string;
   placeholder?: string;
   hidden?: boolean;
   error?: string;
   title?: string;
   autoFocus?: boolean;
   autoSelect?: boolean;
+  keyCallback?: (key: string, buffer: string) => void;
+  clearBtn?: boolean;
 }
 
 interface BIState {
@@ -95,6 +98,15 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     this.setState({ buffer: e.currentTarget.value }, this.withinLimits);
   }
 
+  keyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    this.props.keyCallback?.(e.key, this.state.buffer);
+  }
+
+  clear = () => {
+    this.setState({ buffer: "" }, this.withinLimits);
+    this.props.keyCallback?.("", "");
+  }
+
   usualProps = () => {
     const value = this.state.isEditing ?
       this.state.buffer : this.props.value;
@@ -103,6 +115,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       hidden: !!this.props.hidden,
       onFocus: this.focus,
       onChange: this.updateBuffer,
+      onKeyUp: this.keyUp,
       onSubmit: this.maybeCommit,
       onBlur: this.maybeCommit,
       name: this.props.name,
@@ -123,8 +136,10 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   render() {
-    return <div className="input">
+    return <div className={["input", this.props.wrapperClassName].join(" ")}>
       <InputError error={this.error} />
+      {this.props.clearBtn &&
+        <i className={"fa fa-repeat"} onClick={this.clear} />}
       <input {...this.usualProps()} />
     </div>;
   }

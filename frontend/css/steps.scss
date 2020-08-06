@@ -73,6 +73,9 @@
     font-size: 1rem;
     font-style: italic;
   }
+  &.computed-move-step {
+    background: $blue;
+  }
   &.move-absolute-step {
     background: $blue;
   }
@@ -178,6 +181,9 @@
   padding: 1.25rem 1.25rem;
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
+  &.computed-move-step {
+    background: $light_blue;
+  }
   &.move-absolute-step {
     background: $light_blue;
   }

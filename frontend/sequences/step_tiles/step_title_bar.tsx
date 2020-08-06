@@ -16,6 +16,7 @@ function translate(input: Step): string {
     "execute_script": t("Run Farmware"),
     "execute": t("Execute Sequence"),
     "find_home": t("Find Home"),
+    "move": t("Move"),
     "move_absolute": t("Move To"),
     "move_relative": t("Move Relative"),
     "read_pin": t("Read Sensor"),

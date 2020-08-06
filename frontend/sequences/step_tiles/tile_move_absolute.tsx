@@ -17,7 +17,9 @@ import {
   VariableNode, AllowedVariableNodes,
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
-import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
+import {
+  MoveAbsoluteWarning, getPositionSum,
+} from "./tile_move_absolute_conflict_check";
 import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
@@ -153,8 +155,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         index={index}
         confirmStepDeletion={this.props.confirmStepDeletion}>
         <MoveAbsoluteWarning
-          vector={this.vector}
-          offset={this.args.offset.args}
+          coordinate={getPositionSum(this.vector, this.args.offset.args)}
           hardwareFlags={this.props.hardwareFlags} />
       </StepHeader>
       <StepContent className={className}>

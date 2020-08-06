@@ -8,8 +8,7 @@ import { MoveAbsoluteWarning } from "../tile_move_absolute_conflict_check";
 
 describe("<MoveAbsoluteWarning/>", () => {
   const fakeProps = (): MoveAbsoluteWarningProps => ({
-    vector: undefined,
-    offset: { x: 4.4, y: 5, z: 6 },
+    coordinate: { x: 4.4, y: 5, z: 6 },
     hardwareFlags: fakeHardwareFlags(),
   });
 
@@ -23,7 +22,7 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("doesn't show warning: axis length 0", () => {
     const p = fakeProps();
-    p.offset.x = 10000;
+    p.coordinate.x = 10000;
     if (p.hardwareFlags) {
       p.hardwareFlags.stopAtMax.x = true;
       p.hardwareFlags.axisLength.x = 0;
@@ -34,7 +33,7 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("shows warning: too high", () => {
     const p = fakeProps();
-    p.offset.x = 10000;
+    p.coordinate.x = 10000;
     if (p.hardwareFlags) {
       p.hardwareFlags.stopAtMax.x = true;
       p.hardwareFlags.axisLength.x = 100;
@@ -45,7 +44,7 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("shows warning: too high (negativeOnly)", () => {
     const p = fakeProps();
-    p.offset.x = -10000;
+    p.coordinate.x = -10000;
     if (p.hardwareFlags) {
       p.hardwareFlags.stopAtMax.x = true;
       p.hardwareFlags.negativeOnly.x = true;
@@ -57,7 +56,7 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("shows warning: too low (negativeOnly)", () => {
     const p = fakeProps();
-    p.offset.x = 10000;
+    p.coordinate.x = 10000;
     if (p.hardwareFlags) {
       p.hardwareFlags.stopAtHome.x = true;
       p.hardwareFlags.negativeOnly.x = true;
@@ -68,7 +67,7 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("shows warning: too low", () => {
     const p = fakeProps();
-    p.offset.x = -10000;
+    p.coordinate.x = -10000;
     if (p.hardwareFlags) {
       p.hardwareFlags.stopAtHome.x = true;
       p.hardwareFlags.stopAtMax.x = true;
