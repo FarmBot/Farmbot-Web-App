@@ -595,7 +595,7 @@ module CeleryScriptSettingsBag
       tags: [:data],
     },
     speed_overwrite: {
-      args: [:speed_setting],
+      args: [:speed_setting, :axis],
       tags: [:data],
     },
     safe_z: {
