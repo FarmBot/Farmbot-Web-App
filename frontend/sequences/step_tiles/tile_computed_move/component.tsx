@@ -55,7 +55,8 @@ import { stringifyStep } from "../index";
  * an axis is disabled, the body will not include an `axis_overwrite` for
  * that axis.
  *
- * _operands supported by this component: `Point | Identifier | Numeric | Lua`_
+ * _operands supported by this component:
+ * `Point | Identifier | SpecialValue | Numeric | Lua`_
  *
  * **AxisAddition:**
  *
@@ -313,7 +314,13 @@ export class ComputedMove
         onChange={this.toggleSafeZ} />
       : <div className={"safe-z-checkbox-hidden"} />;
 
-  get viewRaw() { return this.state.viewRaw ?? true; }
+  get viewRawState() { return this.state.viewRaw ?? true; }
+  get viewRaw() { return this.props.viewCeleryScript && this.viewRawState; }
+  get toggleViewRaw() {
+    return this.props.viewCeleryScript
+      ? () => this.setState({ viewRaw: !this.viewRawState })
+      : undefined;
+  }
 
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
@@ -327,9 +334,7 @@ export class ComputedMove
         dispatch={dispatch}
         index={index}
         confirmStepDeletion={this.props.confirmStepDeletion}
-        toggleViewRaw={this.props.viewCeleryScript
-          ? () => this.setState({ viewRaw: !this.viewRaw })
-          : undefined}>
+        toggleViewRaw={this.toggleViewRaw}>
         <MoveAbsoluteWarning
           coordinate={computeCoordinate({
             step: this.step,
@@ -339,18 +344,16 @@ export class ComputedMove
           })}
           hardwareFlags={this.props.hardwareFlags} />
       </StepHeader>
-      <StepContent className={className}>
-        {this.props.viewCeleryScript && this.viewRaw
-          ? <pre>{stringifyStep(this.step)}</pre>
-          : <div className={"computed-move-step-components"}>
-            <this.LocationInputRow />
-            <this.OverwriteInputRow />
-            <this.OffsetInputRow />
-            <this.VarianceInputRow />
-            <this.SpeedInputRow />
-            <this.SafeZCheckbox />
-          </div>}
-      </StepContent>
+      {this.viewRaw
+        ? <pre>{stringifyStep(this.step)}</pre>
+        : <StepContent className={className}>
+          <this.LocationInputRow />
+          <this.OverwriteInputRow />
+          <this.OffsetInputRow />
+          <this.VarianceInputRow />
+          <this.SpeedInputRow />
+          <this.SafeZCheckbox />
+        </StepContent>}
     </StepWrapper>;
   }
 }

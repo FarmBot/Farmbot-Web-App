@@ -42,6 +42,13 @@ describe("<MoveStepInput />", () => {
     expect(p.setValue).toHaveBeenCalledWith("");
   });
 
+  it("shows default lua value", () => {
+    const p = fakeProps();
+    p.value = "";
+    const wrapper = mount(<MoveStepInput {...p} />);
+    expect(wrapper.find("input").props().value).toEqual("");
+  });
+
   it("calls back", () => {
     const p = fakeProps();
     p.onClear = jest.fn();

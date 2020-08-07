@@ -783,6 +783,11 @@ ul {
   .settings-menu-button {
     margin-right: 1rem;
   }
+  .fa-code {
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    font-weight: bold;
+  }
 }
 
 .fb-button-popover-wrapper {
@@ -1524,7 +1529,7 @@ ul {
     margin-bottom: 0.25rem;
   }
   .expandable-header {
-    padding-left: 0.5rem;
+    text-align: center;
   }
   span {
     color: $dark_gray;
@@ -1541,8 +1546,8 @@ ul {
         right: -0.3rem;
         color: $dark_gray;
         background: $yellow;
-        padding: 0.2rem;
-        font-size: 0.5rem;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.65rem;
         font-weight: bold;
         text-transform: uppercase;
       }
@@ -1562,7 +1567,11 @@ ul {
 }
 
 .input {
-  .fa-repeat {
+  border: 3px solid $transparent;
+  &.modified {
+    border-color: $yellow;
+  }
+  .fa-undo {
     position: absolute;
     top: 1rem;
     right: 0.25rem;

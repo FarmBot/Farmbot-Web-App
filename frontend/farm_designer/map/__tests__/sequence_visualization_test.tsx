@@ -58,6 +58,7 @@ describe("<SequenceVisualization />", () => {
     p.visualizedSequenceUUID = "uuid";
     p.visualizedSequenceBody = [
       { kind: "move_relative", args: { x: 10, y: 10, z: 0, speed: 100 } },
+      { kind: "move", args: {} },
       moveAbsolute({ kind: "coordinate", args: { x: 10, y: 10, z: 0 } }),
       moveAbsolute({
         kind: "point",
@@ -76,9 +77,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(10);
-    expect(wrapper.find("line").length).toEqual(10);
-    expect(wrapper.find("image").length).toEqual(9);
+    expect(wrapper.find("circle").length).toEqual(11);
+    expect(wrapper.find("line").length).toEqual(11);
+    expect(wrapper.find("image").length).toEqual(11);
   });
 
   it("doesn't find tool slot", () => {
@@ -97,6 +98,7 @@ describe("<SequenceVisualization />", () => {
   it("doesn't find variable", () => {
     mockVariable = undefined;
     const p = fakeProps();
+    p.visualizedSequenceUUID = "uuid";
     p.visualizedSequenceBody = [
       moveAbsolute({ kind: "identifier", args: { label: "" } }),
     ];

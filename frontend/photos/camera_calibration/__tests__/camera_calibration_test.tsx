@@ -39,6 +39,7 @@ describe("<CameraCalibration/>", () => {
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
     versions: {},
+    highlightModified: false,
   });
 
   it("renders", () => {

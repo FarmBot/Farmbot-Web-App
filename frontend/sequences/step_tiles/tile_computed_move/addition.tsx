@@ -10,7 +10,7 @@ export const axisAddition = (
   axis: Xyz,
   node: AxisAddition["args"]["axis_operand"] | undefined,
 ): AxisAddition[] =>
-  isUndefined(node) // || (node.kind == "numeric" && node.args.number == 0)
+  isUndefined(node) || (node.kind == "random" && node.args.variance == 0)
     ? []
     : [{ kind: "axis_addition", args: { axis: axis, axis_operand: node } }];
 

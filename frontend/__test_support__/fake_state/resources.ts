@@ -297,6 +297,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     dynamic_map: false,
     encoder_figure: false,
     hide_webcam_widget: false,
+    // highlight_modified_settings: false,
     legend_menu_open: false,
     raw_encoders: true,
     scaled_encoders: true,
@@ -340,7 +341,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,
-    user_interface_read_only_mode: false
+    user_interface_read_only_mode: false,
+    // view_celery_script: false,
   });
 }
 

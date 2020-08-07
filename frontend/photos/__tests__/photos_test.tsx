@@ -4,6 +4,14 @@ jest.mock("../../api/crud", () => ({
   destroyAll: jest.fn(() => mockDestroyAllPromise)
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+    overriddenFbosVersion: jest.fn(),
+  }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -27,6 +35,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { JobProgress } from "farmbot";
+import { ToggleButton } from "../../controls/toggle_button";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -64,9 +73,9 @@ describe("<DesignerPhotos />", () => {
 
   it("expands sections", () => {
     const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...fakeProps()} />);
-    expect(wrapper.state()).toEqual({
-      calibration: false, detection: false, manage: false
-    });
+    expect(wrapper.state().calibration).toEqual(false);
+    expect(wrapper.state().detection).toEqual(false);
+    expect(wrapper.state().manage).toEqual(false);
     const headers = wrapper.find(ExpandableHeader);
     headers.at(0).simulate("click");
     expect(wrapper.state().calibration).toEqual(true);
@@ -74,6 +83,15 @@ describe("<DesignerPhotos />", () => {
     expect(wrapper.state().detection).toEqual(true);
     headers.at(2).simulate("click");
     expect(wrapper.state().manage).toEqual(true);
+  });
+
+  it("toggles highlight modified setting mode", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount<DesignerPhotos>(<DesignerPhotos {...p} />);
+    wrapper.setState({ manage: true });
+    wrapper.find(ToggleButton).last().simulate("click");
+    expect(p.dispatch).toHaveBeenCalled();
   });
 });
 

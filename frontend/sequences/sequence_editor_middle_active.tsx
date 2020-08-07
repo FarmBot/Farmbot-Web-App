@@ -98,13 +98,10 @@ export const SequenceSettingsMenu =
         label={DeviceSetting.discardUnsavedSequenceChanges}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
       {props.shouldDisplay(Feature.computed_move) &&
-        <fieldset>
-          <label>{t("View CeleryScript")}</label>
-          <Help text={t("View raw data representation of sequence steps.")} />
-          <ToggleButton
-            toggleValue={props.viewCeleryScript}
-            toggleAction={props.toggleViewCeleryScript} />
-        </fieldset>}
+        <SequenceSetting {...commonProps}
+          setting={BooleanSetting.view_celery_script}
+          label={DeviceSetting.viewCeleryScript}
+          description={Content.VIEW_CELERY_SCRIPT} />}
     </div>;
   };
 
@@ -116,8 +113,7 @@ const SequenceBtnGroup = ({
   shouldDisplay,
   menuOpen,
   getWebAppConfigValue,
-  toggleViewCeleryScript,
-  viewCeleryScript,
+  toggleViewSequenceCeleryScript,
   visualized,
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
@@ -162,12 +158,13 @@ const SequenceBtnGroup = ({
         <i className="fa fa-gear" />
         <SequenceSettingsMenu
           dispatch={dispatch}
-          toggleViewCeleryScript={toggleViewCeleryScript}
-          viewCeleryScript={viewCeleryScript}
           shouldDisplay={shouldDisplay}
           getWebAppConfigValue={getWebAppConfigValue} />
       </Popover>
     </div>
+    {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
+      <i className="fa fa-code step-control"
+        onClick={toggleViewSequenceCeleryScript} />}
   </div>;
 
 export const SequenceNameAndColor = ({ dispatch, sequence }: {
@@ -201,8 +198,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
       getWebAppConfigValue={props.getWebAppConfigValue}
-      toggleViewCeleryScript={props.toggleViewCeleryScript}
-      viewCeleryScript={props.viewCeleryScript}
+      toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       visualized={props.visualized}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
@@ -228,7 +224,7 @@ export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, ActiveMiddleState> {
   state: ActiveMiddleState = {
     variablesCollapsed: false,
-    viewCeleryScript: false,
+    viewSequenceCeleryScript: false,
   };
 
   /** Make room for the sequence header variable form when necessary. */
@@ -259,7 +255,7 @@ export class SequenceEditorMiddleActive extends
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
       hoveredStep: this.props.hoveredStep,
-      viewCeleryScript: this.state.viewCeleryScript,
+      viewCeleryScript: !!getConfig(BooleanSetting.view_celery_script),
     };
   }
 
@@ -275,27 +271,32 @@ export class SequenceEditorMiddleActive extends
         variablesCollapsed={this.state.variablesCollapsed}
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
-        toggleViewCeleryScript={() =>
-          this.setState({ viewCeleryScript: !this.state.viewCeleryScript })}
-        viewCeleryScript={this.state.viewCeleryScript}
+        toggleViewSequenceCeleryScript={() => this.setState({
+          viewSequenceCeleryScript: !this.state.viewSequenceCeleryScript
+        })}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         visualized={this.props.visualized}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"
         style={{ height: this.stepSectionHeight }}>
-        <ErrorBoundary>
-          <AllSteps {...this.stepProps} />
-        </ErrorBoundary>
-        <Row>
-          <Col xs={12}>
-            <DropArea isLocked={true}
-              callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
-              {t("DRAG COMMAND HERE")}
-            </DropArea>
-            <AddCommandButton dispatch={dispatch} index={99999999} />
-          </Col>
-        </Row>
+        {this.state.viewSequenceCeleryScript
+          ? <pre>{JSON.stringify(this.props.sequence.body,
+            (key, value) => key == "uuid" ? undefined : value, 2)}</pre>
+          : <div className={"sequence-step-components"}>
+            <ErrorBoundary>
+              <AllSteps {...this.stepProps} />
+            </ErrorBoundary>
+            <Row>
+              <Col xs={12}>
+                <DropArea isLocked={true}
+                  callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
+                  {t("DRAG COMMAND HERE")}
+                </DropArea>
+                <AddCommandButton dispatch={dispatch} index={99999999} />
+              </Col>
+            </Row>
+          </div>}
       </div>
     </div>;
   }

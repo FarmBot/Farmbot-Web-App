@@ -76,6 +76,7 @@ export class WeedDetector
           <ImageWorkspace
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
+            highlightModified={this.props.highlightModified}
             onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
             currentImage={this.props.currentImage}
             images={this.props.images}
