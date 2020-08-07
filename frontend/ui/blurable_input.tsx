@@ -139,7 +139,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     return <div className={["input", this.props.wrapperClassName].join(" ")}>
       <InputError error={this.error} />
       {this.props.clearBtn &&
-        <i className={"fa fa-repeat"} onClick={this.clear} />}
+        <i className={"fa fa-undo"} onClick={this.clear} />}
       <input {...this.usualProps()} />
     </div>;
   }

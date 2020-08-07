@@ -107,15 +107,24 @@ export const fakeNumericMoveStepCeleryScript: Move = {
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "numeric", args: { number: 10 } } },
+      args: {
+        axis: "x",
+        speed_setting: { kind: "numeric", args: { number: 10 } },
+      },
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "numeric", args: { number: 10 } } },
+      args: {
+        axis: "y",
+        speed_setting: { kind: "numeric", args: { number: 10 } },
+      },
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "numeric", args: { number: 10 } } },
+      args: {
+        axis: "z",
+        speed_setting: { kind: "numeric", args: { number: 10 } },
+      },
     },
     { kind: "safe_z", args: {} },
   ],
@@ -227,15 +236,24 @@ export const fakeLuaMoveStepCeleryScript: Move = {
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "lua", args: { lua: "10" } } },
+      args: {
+        axis: "x",
+        speed_setting: { kind: "lua", args: { lua: "10" } },
+      },
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "lua", args: { lua: "10" } } },
+      args: {
+        axis: "y",
+        speed_setting: { kind: "lua", args: { lua: "10" } },
+      },
     },
     {
       kind: "speed_overwrite",
-      args: { speed_setting: { kind: "lua", args: { lua: "10" } } },
+      args: {
+        axis: "z",
+        speed_setting: { kind: "lua", args: { lua: "10" } },
+      },
     },
     { kind: "safe_z", args: {} },
   ],

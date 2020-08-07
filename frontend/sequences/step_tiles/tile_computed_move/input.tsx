@@ -12,7 +12,7 @@ export const MoveStepInput = (props: MoveStepInputProps) => {
     wrapperClassName={isLua ? "lua" : ""}
     type={isLua ? "text" : "number"}
     name={field}
-    value={value || props.defaultValue || 0}
+    value={value || props.defaultValue || (isLua ? "" : 0)}
     min={min}
     max={max}
     disabled={disabled}

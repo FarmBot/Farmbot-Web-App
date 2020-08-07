@@ -354,8 +354,8 @@ export namespace ToolTips {
     coordinate or distance from its current location.`);
 
   export const SAFE_Z =
-    trim(`If enabled, FarmBot will move the z-axis to the safe z height
-    before moving to the specified location.`);
+    trim(`If enabled, FarmBot will: (1) Move Z to the Safe Z height,
+    (2) Move X and Y to the new location, and (3) Move Z to the new location`);
 
   export const MOVE_ABSOLUTE =
     trim(`The Move To step instructs FarmBot to move to the specified
@@ -694,6 +694,9 @@ export namespace Content {
   export const DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM =
     trim(`Warning! When enabled, any unsaved changes to sequences
     will be discarded when refreshing or closing the page. Are you sure?`);
+
+  export const VIEW_CELERY_SCRIPT =
+    trim(`View raw data representation of sequence steps.`);
 
   // FarmBot OS Settings
   export const DIFFERENT_TZ_WARNING =
@@ -1295,6 +1298,7 @@ export enum DeviceSetting {
   showPins = `Show pins`,
   openOptionsByDefault = `Open options by default`,
   discardUnsavedSequenceChanges = `Discard unsaved sequence changes`,
+  viewCeleryScript = `View CeleryScript`,
 
   // Logs
   logFilterLevelSuccess = `show success log messages`,

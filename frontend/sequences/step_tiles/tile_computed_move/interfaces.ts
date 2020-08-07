@@ -120,7 +120,7 @@ export interface ComputeCoordinateProps {
   step: Move;
   botPosition: BotPosition;
   resourceIndex: ResourceIndex;
-  sequenceUuid: UUID;
+  sequenceUuid: UUID | undefined;
 }
 
 export interface ComputeOverwriteProps {
@@ -128,7 +128,7 @@ export interface ComputeOverwriteProps {
   operand: AxisOverwrite["args"]["axis_operand"];
   botPosition: BotPosition;
   resourceIndex: ResourceIndex;
-  sequenceUuid: UUID;
+  sequenceUuid: UUID | undefined;
 }
 
 export interface FetchSpecialValueProps {

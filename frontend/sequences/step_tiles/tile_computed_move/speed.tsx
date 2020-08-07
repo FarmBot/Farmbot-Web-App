@@ -7,16 +7,16 @@ import { MoveStepInput } from "./input";
 import { isUndefined } from "lodash";
 
 export const speedOverwrite = (
-  _axis: Xyz,
+  axis: Xyz,
   node: SpeedOverwrite["args"]["speed_setting"] | undefined,
 ): SpeedOverwrite[] =>
   isUndefined(node) || (node.kind == "numeric" && node.args.number == 100)
     ? []
-    : [{ kind: "speed_overwrite", args: { speed_setting: node } }];
+    : [{ kind: "speed_overwrite", args: { axis, speed_setting: node } }];
 
-export const getSpeedState = (step: Move, _axis: Xyz) => {
+export const getSpeedState = (step: Move, axis: Xyz) => {
   const speedOverwriteItem = step.body?.find(x =>
-    x.kind == "speed_overwrite");
+    x.kind == "speed_overwrite" && x.args.axis == axis);
   if (speedOverwriteItem?.kind == "speed_overwrite") {
     switch (speedOverwriteItem.args.speed_setting.kind) {
       case "numeric":

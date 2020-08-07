@@ -6,9 +6,8 @@ export function clickButton(
   wrapper: ReactWrapper | ShallowWrapper,
   position: number,
   text: string,
-  options?: { partial_match?: boolean, button_tag?: string }) {
-  const btnTag = options?.button_tag ? options.button_tag : "button";
-  const button = wrapper.find(btnTag).at(position);
+  options?: { partial_match?: boolean }) {
+  const button = wrapper.find("button").at(position);
   const expectedText = text.toLowerCase();
   const actualText = button.text().toLowerCase();
   options?.partial_match

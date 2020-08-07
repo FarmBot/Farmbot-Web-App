@@ -75,7 +75,7 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
 
 export interface ActiveMiddleState {
   variablesCollapsed: boolean;
-  viewCeleryScript: boolean;
+  viewSequenceCeleryScript: boolean;
 }
 
 export interface SequenceHeaderProps {
@@ -87,8 +87,7 @@ export interface SequenceHeaderProps {
   menuOpen: boolean;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
-  toggleViewCeleryScript: () => void;
-  viewCeleryScript: boolean;
+  toggleViewSequenceCeleryScript: () => void;
   getWebAppConfigValue: GetWebAppConfigValue;
   visualized?: boolean;
 }
@@ -101,16 +100,13 @@ export interface SequenceBtnGroupProps {
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
-  toggleViewCeleryScript(): void;
-  viewCeleryScript: boolean;
+  toggleViewSequenceCeleryScript(): void;
   visualized?: boolean;
 }
 
 export interface SequenceSettingsMenuProps {
   dispatch: Function;
   getWebAppConfigValue: GetWebAppConfigValue;
-  toggleViewCeleryScript(): void;
-  viewCeleryScript: boolean;
   shouldDisplay: ShouldDisplay;
 }
 

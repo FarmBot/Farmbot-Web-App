@@ -98,7 +98,7 @@ describe("<BlurableInput />", () => {
     p.keyCallback = undefined;
     const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
     wrapper.setState({ buffer: "1" });
-    wrapper.find(".fa-repeat").simulate("click");
+    wrapper.find(".fa-undo").simulate("click");
     expect(wrapper.state().buffer).toEqual("");
   });
 
@@ -108,7 +108,7 @@ describe("<BlurableInput />", () => {
     p.keyCallback = jest.fn();
     const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
     wrapper.setState({ buffer: "1" });
-    wrapper.find(".fa-repeat").simulate("click");
+    wrapper.find(".fa-undo").simulate("click");
     expect(wrapper.state().buffer).toEqual("");
     expect(p.keyCallback).toHaveBeenCalled();
   });
