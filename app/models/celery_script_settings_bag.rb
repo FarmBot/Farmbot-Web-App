@@ -276,14 +276,12 @@ module CeleryScriptSettingsBag
     },
     axis_operand: {
       defn: [
-        n(:coordinate),
         n(:identifier),
         n(:lua),
         n(:numeric),
         n(:point),
         n(:random),
         n(:special_value),
-        n(:tool),
       ],
     },
     number: {
@@ -595,7 +593,7 @@ module CeleryScriptSettingsBag
       tags: [:data],
     },
     speed_overwrite: {
-      args: [:speed_setting],
+      args: [:speed_setting, :axis],
       tags: [:data],
     },
     safe_z: {
@@ -608,7 +606,6 @@ module CeleryScriptSettingsBag
     },
     move: {
       body: [
-        :special_value,
         :axis_overwrite,
         :axis_addition,
         :speed_overwrite,

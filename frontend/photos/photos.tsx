@@ -33,11 +33,14 @@ import { success, error } from "../toast/toast";
 import { isBotOnline } from "../devices/must_be_online";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 import {
-  getWebAppConfigValue, GetWebAppConfigValue,
+  getWebAppConfigValue, GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { chain } from "lodash";
 import { betterCompact } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
+import { ToggleButton } from "../controls/toggle_button";
+import { DevSettings } from "../settings/dev/dev_support";
+import { BooleanSetting } from "../session_keys";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -158,8 +161,12 @@ export const ClearFarmwareData = () =>
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps, DesignerPhotosState> {
   state: DesignerPhotosState = {
-    calibration: false, detection: false, manage: false
+    calibration: false, detection: false, manage: false,
   };
+
+  toggle = (key: keyof DesignerPhotosState) => () =>
+    this.setState({ ...this.state, [key]: !this.state[key] });
+
   render() {
     const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
     const { syncStatus, botToMqttStatus } = this.props;
@@ -172,6 +179,8 @@ export class RawDesignerPhotos
       images: this.props.images,
       env: this.props.env,
       currentImage: this.props.currentImage,
+      highlightModified: !!this.props.getConfigValue(
+        BooleanSetting.highlight_modified_settings),
     };
     return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
       <DesignerNavTabs />
@@ -198,7 +207,7 @@ export class RawDesignerPhotos
         <ExpandableHeader
           expanded={!!this.state.calibration}
           title={t("Camera calibration")}
-          onClick={() => this.setState({ calibration: !this.state.calibration })} />
+          onClick={this.toggle("calibration")} />
         <Collapse isOpen={!!this.state.calibration}>
           <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
             docPage={"camera-calibration"}>
@@ -223,7 +232,7 @@ export class RawDesignerPhotos
         <ExpandableHeader
           expanded={!!this.state.detection}
           title={t("Weed detection")}
-          onClick={() => this.setState({ detection: !this.state.detection })} />
+          onClick={this.toggle("detection")} />
         <Collapse isOpen={!!this.state.detection}>
           <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"}>
             <Update version={this.props.versions["plant-detection"]}
@@ -237,8 +246,19 @@ export class RawDesignerPhotos
         <ExpandableHeader
           expanded={!!this.state.manage}
           title={t("Manage data")}
-          onClick={() => this.setState({ manage: !this.state.manage })} />
+          onClick={this.toggle("manage")} />
         <Collapse isOpen={!!this.state.manage}>
+          {DevSettings.futureFeaturesEnabled() &&
+            <div className={"highlight-modified-toggle"}>
+              <label>{t("Highlight settings modified from default")}</label>
+              <ToggleButton
+                toggleValue={!!this.props.getConfigValue(
+                  BooleanSetting.highlight_modified_settings)}
+                toggleAction={() => this.props.dispatch(setWebAppConfigValue(
+                  BooleanSetting.highlight_modified_settings,
+                  !this.props.getConfigValue(
+                    BooleanSetting.highlight_modified_settings)))} />
+            </div>}
           <ClearFarmwareData />
         </Collapse>
       </DesignerPanelContent>

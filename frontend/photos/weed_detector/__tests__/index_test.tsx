@@ -38,6 +38,7 @@ describe("<WeedDetector />", () => {
     syncStatus: "synced",
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
+    highlightModified: false,
   });
 
   it("renders", () => {

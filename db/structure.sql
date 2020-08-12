@@ -452,7 +452,7 @@ CREATE TABLE public.fbos_configs (
     updated_at timestamp without time zone NOT NULL,
     auto_sync boolean DEFAULT true,
     beta_opt_in boolean DEFAULT false,
-    disable_factory_reset boolean DEFAULT false,
+    disable_factory_reset boolean DEFAULT true,
     firmware_input_log boolean DEFAULT false,
     firmware_output_log boolean DEFAULT false,
     sequence_body_log boolean DEFAULT false,
@@ -597,9 +597,9 @@ CREATE TABLE public.firmware_configs (
     movement_motor_current_x integer DEFAULT 600,
     movement_motor_current_y integer DEFAULT 600,
     movement_motor_current_z integer DEFAULT 600,
-    movement_stall_sensitivity_x integer DEFAULT 30,
-    movement_stall_sensitivity_y integer DEFAULT 30,
-    movement_stall_sensitivity_z integer DEFAULT 30
+    movement_stall_sensitivity_x integer DEFAULT 63,
+    movement_stall_sensitivity_y integer DEFAULT 63,
+    movement_stall_sensitivity_z integer DEFAULT 63
 );
 
 
@@ -1731,7 +1731,11 @@ CREATE TABLE public.web_app_configs (
     user_interface_read_only_mode boolean DEFAULT false,
     assertion_log integer DEFAULT 1,
     show_zones boolean DEFAULT false,
-    show_weeds boolean DEFAULT false
+    show_weeds boolean DEFAULT false,
+    display_map_missed_steps boolean DEFAULT false,
+    time_format_seconds boolean DEFAULT false,
+    crop_images boolean DEFAULT false,
+    show_camera_view_area boolean DEFAULT false
 );
 
 
@@ -3383,6 +3387,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200323235926'),
 ('20200412152208'),
 ('20200616172612'),
-('20200621012312');
+('20200621012312'),
+('20200623161209'),
+('20200629181002'),
+('20200630190226'),
+('20200704150931'),
+('20200801150609'),
+('20200804150609');
 
 

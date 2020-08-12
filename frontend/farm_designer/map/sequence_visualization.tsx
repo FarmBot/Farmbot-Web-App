@@ -18,6 +18,7 @@ import { store } from "../../redux/store";
 import { findVariableByName } from "../../resources/sequence_meta";
 import { inDesigner } from "../../folders/component";
 import { getStepTag } from "../../resources/sequence_tagging";
+import { computeCoordinate } from "../../sequences/step_tiles/tile_computed_move/compute";
 
 const ICON_LOOKUP: Partial<Record<LegalSequenceKind, Icon>> = {
   // _if: Icon.settings,
@@ -35,6 +36,7 @@ const ICON_LOOKUP: Partial<Record<LegalSequenceKind, Icon>> = {
   // home: Icon.settings,
   install_farmware: Icon.farmware,
   install_first_party_farmware: Icon.farmware,
+  move: Icon.controls,
   move_absolute: Icon.controls,
   // move_relative: Icon.settings,
   power_off: Icon.settings,
@@ -97,6 +99,7 @@ export interface SequenceVisualizationProps {
  * |     x     |       |       | home
  * |           |   x   |       | install_farmware
  * |           |   x   |       | install_first_party_farmware
+ * |     x     |   x   |       | move
  * |     x     |   x   |       | move_absolute
  * |     x     |       |       | move_relative
  * |           |   x   |       | power_off
@@ -221,6 +224,15 @@ const preparePositions = (
   sequenceBody.map(step => {
     const previous = positions[positions.length - 1];
     switch (step.kind) {
+      case "move":
+        const moveCoordinate = computeCoordinate({
+          step,
+          botPosition: { x: previous.x, y: previous.y, z: undefined },
+          resourceIndex: store.getState().resources.index,
+          sequenceUuid,
+        });
+        positions.push(moveCoordinate);
+        break;
       case "move_absolute":
         const moveAbsoluteCoordinate = reduceMoveAbsolute(step, sequenceUuid);
         if (moveAbsoluteCoordinate) { positions.push(moveAbsoluteCoordinate); }

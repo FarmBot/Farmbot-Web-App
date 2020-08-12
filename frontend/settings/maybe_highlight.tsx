@@ -154,6 +154,7 @@ const SEQUENCE_SETTINGS = [
   DeviceSetting.showPins,
   DeviceSetting.openOptionsByDefault,
   DeviceSetting.discardUnsavedSequenceChanges,
+  DeviceSetting.viewCeleryScript,
 ];
 const LOG_SETTINGS = [
   DeviceSetting.logFilterLevelSuccess,

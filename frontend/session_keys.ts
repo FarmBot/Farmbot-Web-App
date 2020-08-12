@@ -6,7 +6,9 @@ import {
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
   | "time_format_seconds"
   | "crop_images"
-  | "show_camera_view_area";
+  | "show_camera_view_area"
+  | "view_celery_script"
+  | "highlight_modified_settings";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 
 export const BooleanSetting:
@@ -40,6 +42,7 @@ export const BooleanSetting:
   xy_swap: "xy_swap",
   confirm_plant_deletion: "confirm_plant_deletion",
   crop_images: "crop_images" as WebAppBooleanConfigKey,
+  highlight_modified_settings: "highlight_modified_settings" as WebAppBooleanConfigKey,
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",
@@ -47,6 +50,7 @@ export const BooleanSetting:
   show_pins: "show_pins",
   expand_step_options: "expand_step_options",
   discard_unsaved_sequences: "discard_unsaved_sequences",
+  view_celery_script: "view_celery_script" as WebAppBooleanConfigKey,
 
   /** App settings */
   disable_i18n: "disable_i18n",

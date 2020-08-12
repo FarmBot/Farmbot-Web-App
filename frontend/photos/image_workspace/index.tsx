@@ -47,6 +47,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   botOnline: boolean;
   timeSettings: TimeSettings;
   namespace(key: CAMERA_CALIBRATION_KEY_PART): WDENVKey;
+  highlightModified: boolean;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -91,6 +92,12 @@ export class ImageWorkspace
 
   getDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
     WD_KEY_DEFAULTS[this.props.namespace(key)];
+
+  getModifiedClass =
+    (key: CAMERA_CALIBRATION_KEY_PART & keyof ImageWorkspaceProps) =>
+      (this.props.highlightModified && (this.getDefault(key) != this.props[key]))
+        ? "modified"
+        : "";
 
   render() {
     const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
@@ -160,6 +167,7 @@ export class ImageWorkspace
               defaultBlur: this.getDefault("blur")
             })} />
             <BlurableInput type="number"
+              wrapperClassName={this.getModifiedClass("blur")}
               min={RANGES.BLUR.LOWEST}
               max={RANGES.BLUR.HIGHEST}
               onCommit={this.numericChange("blur")}
@@ -171,6 +179,7 @@ export class ImageWorkspace
               defaultMorph: this.getDefault("morph")
             })} />
             <BlurableInput type="number"
+              wrapperClassName={this.getModifiedClass("morph")}
               min={RANGES.MORPH.LOWEST}
               max={RANGES.MORPH.HIGHEST}
               onCommit={this.numericChange("morph")}
@@ -182,6 +191,7 @@ export class ImageWorkspace
               defaultIteration: this.getDefault("iteration")
             })} />
             <BlurableInput type="number"
+              wrapperClassName={this.getModifiedClass("iteration")}
               min={RANGES.ITERATION.LOWEST}
               max={RANGES.ITERATION.HIGHEST}
               onCommit={this.numericChange("iteration")}

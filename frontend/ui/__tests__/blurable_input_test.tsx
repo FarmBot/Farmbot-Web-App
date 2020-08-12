@@ -2,6 +2,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BlurableInput, BIProps } from "../blurable_input";
 import { error } from "../../toast/toast";
+import { focusEvent, keyboardEvent } from "../../__test_support__/fake_html_events";
 
 describe("<BlurableInput />", () => {
   const fakeProps = (): BIProps => {
@@ -79,5 +80,45 @@ describe("<BlurableInput />", () => {
     wrapper.setState({ buffer: e.currentTarget.value });
     wrapper.find("input").simulate("change", e);
     expect(wrapper.instance().state.buffer).toEqual(e.currentTarget.value);
+  });
+
+  it("triggers keyUp", () => {
+    const p = fakeProps();
+    p.clearBtn = true;
+    p.keyCallback = undefined;
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    wrapper.setState({ buffer: "1" });
+    wrapper.instance().keyUp(keyboardEvent(""));
+    expect(wrapper.state().buffer).toEqual("1");
+  });
+
+  it("clears input", () => {
+    const p = fakeProps();
+    p.clearBtn = true;
+    p.keyCallback = undefined;
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    wrapper.setState({ buffer: "1" });
+    wrapper.find(".fa-undo").simulate("click");
+    expect(wrapper.state().buffer).toEqual("");
+  });
+
+  it("clears input with callback", () => {
+    const p = fakeProps();
+    p.clearBtn = true;
+    p.keyCallback = jest.fn();
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    wrapper.setState({ buffer: "1" });
+    wrapper.find(".fa-undo").simulate("click");
+    expect(wrapper.state().buffer).toEqual("");
+    expect(p.keyCallback).toHaveBeenCalled();
+  });
+
+  it("auto-selects", () => {
+    const p = fakeProps();
+    p.autoSelect = true;
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    const e = focusEvent("text");
+    wrapper.instance().focus(e);
+    expect(e.target.setSelectionRange).toHaveBeenCalledWith(0, 4);
   });
 });

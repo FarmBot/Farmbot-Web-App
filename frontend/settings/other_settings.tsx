@@ -207,6 +207,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.discard_unsaved_sequences,
     confirm: Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM,
   },
+  {
+    title: DeviceSetting.viewCeleryScript,
+    description: Content.VIEW_CELERY_SCRIPT,
+    setting: BooleanSetting.view_celery_script,
+  },
 ]);
 
 export interface LogLevelSettingDescriptionProps {

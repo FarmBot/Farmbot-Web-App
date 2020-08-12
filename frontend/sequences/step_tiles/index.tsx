@@ -35,6 +35,7 @@ import { TileEmergencyStop } from "./tile_emergency_stop";
 import { TileReboot } from "./tile_reboot";
 import { TileOldMarkAs } from "./tile_old_mark_as";
 import { TileShutdown } from "./tile_shutdown";
+import { TileComputedMove } from "./tile_computed_move";
 
 interface MoveParams {
   step: Step;
@@ -144,6 +145,7 @@ export function renderCeleryNode(props: StepParams) {
     case "execute_script": return <TileExecuteScript {...props} />;
     case "execute": return <ExecuteBlock {...props} />;
     case "find_home": return <TileFindHome {...props} />;
+    case "move": return <TileComputedMove {...props} />;
     case "move_absolute": return <TileMoveAbsolute {...props} />;
     case "move_relative": return <TileMoveRelative {...props} />;
     case "read_pin": return <TileReadPin {...props} />;
@@ -183,3 +185,11 @@ export function isRecursive(step: If, sequence: TaggedSequence) {
   return checkBranch(step.args._else, step, sequence)
     || checkBranch(step.args._then, step, sequence);
 }
+
+export const stringifyStep = (step: Step) =>
+  JSON.stringify(
+    step,
+    (key, value) => key == "uuid" || (key == "body" && value.length == 0)
+      ? undefined
+      : value,
+    2);

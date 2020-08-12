@@ -18,7 +18,8 @@ jest.mock("../actions", () => ({
 
 jest.mock("../step_tiles/index", () => ({
   splice: jest.fn(),
-  move: jest.fn()
+  move: jest.fn(),
+  renderCeleryNode: () => <div />,
 }));
 
 jest.mock("../../devices/actions", () => ({
@@ -40,19 +41,21 @@ import {
   SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
   SequenceSettingsMenu,
   SequenceSetting,
-  SequenceSettingProps,
+  SequenceHeader,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
-import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
+import {
+  ActiveMiddleProps, SequenceSettingProps, SequenceSettingsMenuProps,
+} from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy, save, edit } from "../../api/crud";
 import {
-  fakeHardwareFlags, fakeFarmwareData as fakeFarmwareData,
+  fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, ParameterDeclaration } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
@@ -63,6 +66,7 @@ import { Actions, DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
+import { maybeTagStep } from "../../resources/sequence_tagging";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -80,6 +84,35 @@ describe("<SequenceEditorMiddleActive/>", () => {
       menuOpen: false,
     };
   };
+
+  it("renders", () => {
+    const p = fakeProps();
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.html()).not.toContain("fa-code");
+    expect(wrapper.text()).not.toContain("locals");
+  });
+
+  it("renders celery script view control", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.html()).toContain("fa-code");
+    expect(wrapper.text()).not.toContain("locals");
+  });
+
+  it("toggles celery script view", () => {
+    const p = fakeProps();
+    p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 100 } }];
+    p.sequence.body.body.map(step => maybeTagStep(step));
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.state().viewSequenceCeleryScript).toEqual(false);
+    expect(wrapper.text()).not.toContain("locals");
+    wrapper.find(SequenceHeader).props().toggleViewSequenceCeleryScript();
+    expect(wrapper.state().viewSequenceCeleryScript).toEqual(true);
+    expect(wrapper.text()).toContain("locals");
+    expect(wrapper.text()).not.toContain("uuid");
+  });
 
   it("saves", async () => {
     const p = fakeProps();
@@ -166,7 +199,16 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   it("has correct height with variable form", () => {
     const p = fakeProps();
-    p.resources.sequenceMetas = { [p.sequence.uuid]: fakeVariableNameSet() };
+    const vector = { x: 0, y: 0, z: 0 };
+    const node: ParameterDeclaration = {
+      kind: "parameter_declaration",
+      args: {
+        label: "variable",
+        default_value: { kind: "coordinate", args: vector }
+      }
+    };
+    const variables = fakeVariableNameSet("variable", vector, node);
+    p.resources.sequenceMetas = { [p.sequence.uuid]: variables };
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style)
@@ -191,10 +233,10 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("toggles variable form state", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    const props = wrapper.find("SequenceHeader").props() as SequenceHeaderProps;
-    props.toggleVarShow();
-    expect(wrapper.state()).toEqual({ variablesCollapsed: true });
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...fakeProps()} />);
+    wrapper.find(SequenceHeader).props().toggleVarShow();
+    expect(wrapper.state().variablesCollapsed).toEqual(true);
   });
 
   it("visualizes", () => {
@@ -311,16 +353,28 @@ describe("<AddCommandButton />", () => {
 });
 
 describe("<SequenceSettingsMenu />", () => {
+  const fakeProps = (): SequenceSettingsMenuProps => ({
+    dispatch: jest.fn(),
+    getWebAppConfigValue: jest.fn(),
+    shouldDisplay: () => false,
+  });
+
   it("renders settings", () => {
-    const wrapper = mount(<SequenceSettingsMenu
-      dispatch={jest.fn()}
-      getWebAppConfigValue={jest.fn()} />);
+    const wrapper = mount(<SequenceSettingsMenu {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("celery");
     wrapper.find("button").at(0).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
     wrapper.find("button").at(2).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
+  });
+
+  it("renders all settings", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<SequenceSettingsMenu {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("celery");
   });
 });
 

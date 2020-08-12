@@ -24,6 +24,7 @@ export interface AllStepsProps {
   confirmStepDeletion: boolean;
   showPins?: boolean;
   expandStepOptions?: boolean;
+  viewCeleryScript?: boolean;
   visualized?: boolean;
   hoveredStep?: string | undefined;
 }
@@ -52,6 +53,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           confirmStepDeletion: this.props.confirmStepDeletion,
           showPins: this.props.showPins,
           expandStepOptions: this.props.expandStepOptions,
+          viewCeleryScript: this.props.viewCeleryScript,
         };
         return <div className="sequence-steps"
           key={readThatCommentAbove}>

@@ -783,6 +783,11 @@ ul {
   .settings-menu-button {
     margin-right: 1rem;
   }
+  .fa-code {
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    font-weight: bold;
+  }
 }
 
 .fb-button-popover-wrapper {
@@ -1492,6 +1497,85 @@ ul {
     .bp3-slider {
       min-width: 100%;
     }
+  }
+}
+
+.computed-move-step {
+  &.step-content {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+    input {
+      height: 3rem;
+      &:disabled {
+        background: $light_gray !important;
+      }
+    }
+    .help-icon {
+      display: inline;
+      margin-left: 0.5rem;
+    }
+  }
+  div[class*=col-] {
+    padding: 0;
+  }
+  label {
+    padding-top: 1rem;
+    &.safe-z {
+      padding-top: 0.65rem;
+    }
+  }
+  .row {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  .expandable-header {
+    text-align: center;
+  }
+  span {
+    color: $dark_gray;
+  }
+  .input {
+    position: relative;
+    border: 3px solid $transparent;
+    &.lua {
+      border-color: $yellow;
+      &:after {
+        content: "lua";
+        position: absolute;
+        top: -0.25rem;
+        right: -0.3rem;
+        color: $dark_gray;
+        background: $yellow;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.65rem;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+    }
+  }
+  .filter-search,
+  .fb-checkbox {
+    border: 3px solid $transparent;
+  }
+  .bp3-checkbox {
+    padding-top: 0.75rem;
+    margin-left: 0.25rem;
+  }
+  pre {
+    font-size: 1rem;
+  }
+}
+
+.input {
+  border: 3px solid $transparent;
+  &.modified {
+    border-color: $yellow;
+  }
+  .fa-undo {
+    position: absolute;
+    top: 1rem;
+    right: 0.25rem;
+    font-size: 1rem;
   }
 }
 

@@ -23,4 +23,5 @@ export interface WeedDetectorProps {
   syncStatus: SyncStatus | undefined;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
+  highlightModified: boolean;
 }

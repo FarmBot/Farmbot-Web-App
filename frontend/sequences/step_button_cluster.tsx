@@ -22,26 +22,36 @@ export function StepButtonCluster(props: StepButtonProps) {
   const { dispatch, current, shouldDisplay, stepIndex } = props;
   const commonStepProps = { dispatch, current, index: stepIndex };
   const ALL_THE_BUTTONS = [
-    <StepButton {...commonStepProps}
-      step={{
-        kind: "move_absolute",
-        args: {
-          location: NOTHING_SELECTED,
-          offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
-          speed: CONFIG_DEFAULTS.speed
-        }
-      }}
-      color="blue">
-      {t("MOVE TO")}
-    </StepButton>,
-    <StepButton {...commonStepProps}
-      step={{
-        kind: "move_relative",
-        args: { x: 0, y: 0, z: 0, speed: CONFIG_DEFAULTS.speed }
-      }}
-      color="green">
-      {t("MOVE RELATIVE")}
-    </StepButton>,
+    ...(shouldDisplay(Feature.computed_move)
+      ? [<StepButton {...commonStepProps}
+        step={{ kind: "move", args: {} }}
+        color="blue">
+        {t("MOVE")}
+      </StepButton>] : []),
+    ...(shouldDisplay(Feature.computed_move)
+      ? []
+      : [<StepButton {...commonStepProps}
+        step={{
+          kind: "move_absolute",
+          args: {
+            location: NOTHING_SELECTED,
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+            speed: CONFIG_DEFAULTS.speed
+          }
+        }}
+        color="blue">
+        {t("MOVE TO")}
+      </StepButton>]),
+    ...(shouldDisplay(Feature.computed_move)
+      ? []
+      : [<StepButton {...commonStepProps}
+        step={{
+          kind: "move_relative",
+          args: { x: 0, y: 0, z: 0, speed: CONFIG_DEFAULTS.speed }
+        }}
+        color="green">
+        {t("MOVE RELATIVE")}
+      </StepButton>]),
     <StepButton {...commonStepProps}
       step={{
         kind: "write_pin",
@@ -192,18 +202,18 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="purple">
       {t("ASSERTION")}
     </StepButton>,
+    ...(shouldDisplay(Feature.update_resource)
+      ? [<StepButton
+        {...commonStepProps}
+        step={{
+          kind: "update_resource",
+          args: { resource: NOTHING_SELECTED },
+          body: [],
+        }}
+        color="brown">
+        {t("Mark As...")}
+      </StepButton>] : []),
   ];
-
-  shouldDisplay(Feature.update_resource) && ALL_THE_BUTTONS.push(<StepButton
-    {...commonStepProps}
-    step={{
-      kind: "update_resource",
-      args: { resource: NOTHING_SELECTED },
-      body: [],
-    }}
-    color="brown">
-    {t("Mark As...")}
-  </StepButton>);
 
   return <Row>
     <div className="step-button-cluster">

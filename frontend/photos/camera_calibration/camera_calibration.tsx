@@ -100,6 +100,7 @@ export class CameraCalibration extends
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
               namespace={this.namespace}
+              highlightModified={this.props.highlightModified}
               invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
           <CameraCalibrationConfig
             values={this.props.wDEnv}

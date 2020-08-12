@@ -14,6 +14,7 @@ export interface StepHeaderProps {
   dispatch: Function;
   index: number;
   confirmStepDeletion: boolean;
+  toggleViewRaw?: () => void;
 }
 
 interface StepHeaderState {
@@ -51,6 +52,7 @@ export class StepHeader
             step={currentStep}
             sequence={currentSequence}
             helpText={t(helpText)}
+            toggleViewRaw={this.props.toggleViewRaw}
             confirmStepDeletion={confirmStepDeletion} />
           {this.props.children}
         </div>
