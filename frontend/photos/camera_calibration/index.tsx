@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, docLink, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
@@ -18,7 +18,7 @@ import {
   cameraBtnProps,
 } from "../../settings/fbos_settings/camera_selection";
 import { Content, ToolTips } from "../../constants";
-import { getCalibratedImageCenter } from "../images/shown_in_map";
+import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {

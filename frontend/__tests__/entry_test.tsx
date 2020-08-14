@@ -8,7 +8,7 @@ jest.mock("../i18n", () => ({
 }));
 
 jest.mock("../util/stop_ie", () => ({ stopIE: jest.fn() }));
-jest.mock("../routes", () => ({ attachAppToDom: { mock: "Yeah" } }));
+jest.mock("../routes", () => ({ attachAppToDom: jest.fn() }));
 
 import { stopIE } from "../util/stop_ie";
 import { detectLanguage } from "../i18n";

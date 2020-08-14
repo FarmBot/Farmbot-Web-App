@@ -1,10 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import { ImageFlipper, PLACEHOLDER_FARMBOT } from "../image_flipper";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
 import { ImageFlipperProps } from "../interfaces";
+import { Actions } from "../../../constants";
 
 describe("<ImageFlipper/>", () => {
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
@@ -18,10 +19,11 @@ describe("<ImageFlipper/>", () => {
   }
 
   const fakeProps = (): ImageFlipperProps => ({
+    dispatch: jest.fn(),
     images: prepareImages(fakeImages),
     currentImage: undefined,
+    currentImageSize: { width: undefined, height: undefined },
     onFlip: jest.fn(),
-    imageLoadCallback: jest.fn(),
     crop: false,
     env: {},
     getConfigValue: jest.fn(),
@@ -118,52 +120,25 @@ describe("<ImageFlipper/>", () => {
 
   it("renders placeholder", () => {
     const p = fakeProps();
-    p.images[0].body.attachment_processed_at = undefined;
-    p.currentImage = p.images[0];
+    p.images = [];
     const wrapper = mount(<ImageFlipper {...p} />);
     expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
-  });
-
-  it("knows when image is loaded", () => {
-    const wrapper = mount<ImageFlipper>(<ImageFlipper {...fakeProps()} />);
-    const image = shallow(wrapper.instance().imageJSX());
-    expect(wrapper.state().isLoaded).toEqual(false);
-    image.find("img").simulate("load", {
-      currentTarget: { width: 0, height: 0 }
-    });
-    expect(wrapper.state().isLoaded).toEqual(true);
-  });
-
-  it("calls back on image load", () => {
-    const p = fakeProps();
-    const wrapper = mount<ImageFlipper>(<ImageFlipper {...p} />);
-    const image = shallow(wrapper.instance().imageJSX());
-    const fakeImg = { fake: true };
-    image.find("img").simulate("load", { currentTarget: fakeImg });
-    expect(p.imageLoadCallback).toHaveBeenCalledWith(fakeImg);
-  });
-
-  it("transforms image", () => {
-    const p = fakeProps();
-    p.images[0].body.id = undefined;
-    p.transformImage = true;
-    p.crop = true;
-    p.getConfigValue = () => 2;
-    const wrapper = mount(<ImageFlipper {...p} />);
-    expect(wrapper.find("svg").length).toEqual(1);
   });
 
   it("calls back on transformed image load", () => {
     const p = fakeProps();
     const wrapper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    expect(wrapper.state().width).toEqual(0);
-    expect(wrapper.state().height).toEqual(0);
     const fakeImg = new Image();
-    fakeImg.width = 1;
-    fakeImg.height = 1;
+    Object.defineProperty(fakeImg, "naturalWidth", {
+      value: 10, configurable: true,
+    });
+    Object.defineProperty(fakeImg, "naturalHeight", {
+      value: 20, configurable: true,
+    });
     wrapper.instance().onImageLoad(fakeImg);
-    expect(wrapper.state().width).toEqual(1);
-    expect(wrapper.state().height).toEqual(1);
-    expect(p.imageLoadCallback).toHaveBeenCalledWith(fakeImg);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_IMAGE_SIZE,
+      payload: { width: 10, height: 20 },
+    });
   });
 });

@@ -15,6 +15,7 @@ import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
 import { AlertReducerState } from "../messages/interfaces";
 import { RootFolderNode, FolderMeta } from "../folders/interfaces";
+import { PhotosState } from "../photos/reducer";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;
@@ -91,6 +92,7 @@ export interface RestResources {
     sequences: SequenceReducerState;
     regimens: RegimenState;
     farm_designer: DesignerState;
+    photos: PhotosState;
     farmware: FarmwareState;
     help: HelpState;
     alerts: AlertReducerState;

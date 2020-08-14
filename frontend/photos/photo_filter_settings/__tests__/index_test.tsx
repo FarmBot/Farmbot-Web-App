@@ -1,54 +1,33 @@
-jest.mock("../image_filter_menu", () => ({
-  setWebAppConfigValues: jest.fn(),
-  calculateImageAgeInfo: jest.fn(),
-  ImageFilterMenu: () => <div />,
-}));
-
 jest.mock("../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
 jest.mock("../actions", () => ({
+  setWebAppConfigValues: jest.fn(),
   toggleAlwaysHighlightImage: jest.fn(),
   toggleSingleImageMode: jest.fn(),
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
-import {
-  parseFilterSetting, PhotoFilterSettingsProps, PhotoFilterSettings,
-  FilterAroundThisImage,
-} from "../photo_filter_settings";
+import { mount } from "enzyme";
+import { PhotoFilterSettings, FiltersEnabledWarning } from "../index";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
-import { setWebAppConfigValues } from "../image_filter_menu";
-import { fakeImage } from "../../../__test_support__/fake_state/resources";
+import { fakeImage, fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { toggleAlwaysHighlightImage, toggleSingleImageMode } from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { ExpandableHeader } from "../../../ui";
-import { ImageFilterProps } from "../shown_in_map";
-
-describe("parseFilterSetting()", () => {
-  it("returns set image filter setting", () => {
-    const setting = "2017-09-03T20:01:40.336Z";
-    expect(parseFilterSetting(() => setting)("photo_filter_begin"))
-      .toEqual(setting);
-  });
-
-  it("returns unset image filter setting", () => {
-    const setting = "";
-    expect(parseFilterSetting(() => setting)("photo_filter_begin"))
-      .toEqual(undefined);
-  });
-});
+import {
+  PhotoFilterSettingsProps, FiltersEnabledWarningProps,
+} from "../interfaces";
+import { setWebAppConfigValues } from "../actions";
 
 describe("<PhotoFilterSettings />", () => {
   const fakeProps = (): PhotoFilterSettingsProps => ({
     dispatch: mockDispatch(),
     images: [],
-    image: fakeImage(),
+    currentImage: fakeImage(),
     timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
     hideUnShownImages: false,
@@ -56,18 +35,8 @@ describe("<PhotoFilterSettings />", () => {
     getConfigValue: jest.fn(),
   });
 
-  it("opens section", () => {
-    const wrapper = mount<PhotoFilterSettings>(
-      <PhotoFilterSettings {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("filter map photos");
-    expect(wrapper.state().open).toEqual(false);
-    wrapper.find(ExpandableHeader).simulate("click");
-    expect(wrapper.state().open).toEqual(true);
-  });
-
   it("sets resets filter settings", () => {
     const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
-    wrapper.setState({ open: true });
     wrapper.find(".fb-button.red").first().simulate("click");
     expect(setWebAppConfigValues).toHaveBeenCalledWith({
       photo_filter_begin: "",
@@ -77,7 +46,6 @@ describe("<PhotoFilterSettings />", () => {
 
   it("toggles photos", () => {
     const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
-    wrapper.setState({ open: true });
     wrapper.find("ToggleButton").at(0).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_images, false);
@@ -86,17 +54,15 @@ describe("<PhotoFilterSettings />", () => {
   it("toggles always highlight mode", () => {
     const p = fakeProps();
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     wrapper.find("ToggleButton").at(1).simulate("click");
     expect(toggleAlwaysHighlightImage).toHaveBeenCalledWith(
-      false, p.image);
+      false, p.currentImage);
   });
 
   it("displays single image mode", () => {
     const p = fakeProps();
     p.hideUnShownImages = true;
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     expect(wrapper.find(".filter-controls").hasClass("single-image-mode"))
       .toBeTruthy();
   });
@@ -104,25 +70,23 @@ describe("<PhotoFilterSettings />", () => {
   it("toggles single image mode", () => {
     const p = fakeProps();
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     wrapper.find("ToggleButton").at(2).simulate("click");
-    expect(toggleSingleImageMode).toHaveBeenCalledWith(p.image);
+    expect(toggleSingleImageMode).toHaveBeenCalledWith(p.currentImage);
   });
 
   it("displays image layer off mode", () => {
     const p = fakeProps();
     p.flags.layerOn = false;
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     expect(wrapper.find(".filter-controls").hasClass("image-layer-disabled"))
       .toBeTruthy();
   });
 
   it("sets filter settings to current image and earlier", () => {
     const p = fakeProps();
-    p.image && (p.image.body.created_at = "2001-01-03T05:00:01.000Z");
+    p.currentImage
+      && (p.currentImage.body.created_at = "2001-01-03T05:00:01.000Z");
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     wrapper.find(".newer-older-images-section").find("button").first()
       .simulate("click");
     expect(setWebAppConfigValues).toHaveBeenCalledWith({
@@ -133,9 +97,9 @@ describe("<PhotoFilterSettings />", () => {
 
   it("sets filter settings to current image and later", () => {
     const p = fakeProps();
-    p.image && (p.image.body.created_at = "2001-01-03T05:00:01.000Z");
+    p.currentImage
+      && (p.currentImage.body.created_at = "2001-01-03T05:00:01.000Z");
     const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.setState({ open: true });
     wrapper.find(".newer-older-images-section").find("button").last()
       .simulate("click");
     expect(setWebAppConfigValues).toHaveBeenCalledWith({
@@ -145,32 +109,29 @@ describe("<PhotoFilterSettings />", () => {
   });
 });
 
-describe("<FilterAroundThisImage />", () => {
-  const fakeProps = (): ImageFilterProps => ({
-    image: fakeImage(),
-    dispatch: jest.fn(),
-    flags: fakeImageShowFlags(),
+describe("<FiltersEnabledWarning />", () => {
+  const config = fakeWebAppConfig();
+  config.body.photo_filter_begin = "";
+  config.body.photo_filter_end = "";
+  config.body.show_images = true;
+
+  const fakeProps = (): FiltersEnabledWarningProps => ({
+    hideUnShownImages: false,
+    getConfigValue: jest.fn(x => config.body[x]),
   });
 
-  it("changes value", () => {
-    const p = fakeProps();
-    const wrapper = shallow<FilterAroundThisImage>(
-      <FilterAroundThisImage {...p} />);
-    expect(wrapper.state().seconds).toEqual(60);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "2" } });
-    expect(wrapper.state().seconds).toEqual(120);
+  it("renders when no filters are enabled", () => {
+    const wrapper = mount(<FiltersEnabledWarning {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
   });
 
-  it("sets filter settings for around image", () => {
+  it("renders when filters are enabled", () => {
     const p = fakeProps();
-    p.image && (p.image.body.created_at = "2001-01-03T05:00:01.000Z");
-    const wrapper = mount<FilterAroundThisImage>(
-      <FilterAroundThisImage {...p} />);
-    wrapper.setState({ seconds: 120 });
-    wrapper.find(".this-image-section").find("button").simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
-      photo_filter_begin: "2001-01-03T04:58:01.000Z",
-      photo_filter_end: "2001-01-03T05:02:01.000Z",
-    });
+    p.hideUnShownImages = true;
+    const wrapper = mount(<FiltersEnabledWarning {...p} />);
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const e = { stopPropagation: jest.fn() };
+    wrapper.find(".fa-exclamation-triangle").simulate("click", e);
+    expect(e.stopPropagation).toHaveBeenCalled();
   });
 });

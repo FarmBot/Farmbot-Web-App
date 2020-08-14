@@ -93,6 +93,16 @@ describe("saveOrEditFarmwareEnv()", () => {
     expect(save).toHaveBeenCalledWith(uuid);
   });
 
+  it("doesn't edit env var", () => {
+    const farmwareEnv = fakeFarmwareEnv();
+    farmwareEnv.body.key = "already_exists";
+    farmwareEnv.body.value = "same_value";
+    const ri = buildResourceIndex([farmwareEnv]).index;
+    saveOrEditFarmwareEnv(ri)("already_exists", "same_value")(jest.fn());
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
   it("saves new env var", () => {
     const ri = buildResourceIndex([]).index;
     saveOrEditFarmwareEnv(ri)("new_key", "new_value")(jest.fn());

@@ -8,11 +8,8 @@ import { equals } from "../../../../util";
 import { BooleanSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import {
-  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS,
-} from "../../../../photos/images/photo_filter_settings";
-import {
-  imageInRange, imageIsHidden,
-} from "../../../../photos/images/shown_in_map";
+  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, imageIsHidden,
+} from "../../../../photos/photo_filter_settings/util";
 
 export interface ImageLayerProps {
   visible: boolean;
