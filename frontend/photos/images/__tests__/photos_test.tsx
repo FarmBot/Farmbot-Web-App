@@ -3,14 +3,14 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
-import { Photos, PhotoFooter, PhotoFooterProps } from "../photos";
+import { Photos, PhotoFooter } from "../photos";
 import { JobProgress } from "farmbot";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
-import { PhotosProps } from "../interfaces";
+import { PhotosProps, PhotoFooterProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
 import { Content, ToolTips, Actions } from "../../../constants";
@@ -23,6 +23,8 @@ describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({
     images: [],
     currentImage: undefined,
+    currentImageSize: { width: undefined, height: undefined },
+    flags: fakeImageShowFlags(),
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     imageJobs: [],
@@ -46,7 +48,7 @@ describe("<Photos/>", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("Created At:June 1st, 2017");
+    expect(wrapper.text()).toContain("June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:164");
     expect(wrapper.find(".fa-eye.green").length).toEqual(1);
   });
@@ -57,8 +59,9 @@ describe("<Photos/>", () => {
     p.currentImage = images[1];
     p.currentImage.body.meta.z = 100;
     p.env["CAMERA_CALIBRATION_camera_z"] = "0";
+    p.flags.zMatch = false;
     const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("Created At:June 1st, 2017");
+    expect(wrapper.text()).toContain("June 1st, 2017");
     expect(wrapper.text()).toContain("X:632Y:347Z:100");
     expect(wrapper.find(".fa-eye-slash.gray").length).toEqual(1);
   });
@@ -175,7 +178,7 @@ describe("<Photos/>", () => {
     p.images[0].body.meta.x = undefined;
     p.currentImage = p.images[0];
     const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("X:unknown");
+    expect(wrapper.text()).toContain("X:---");
   });
 
   it("flips photo", () => {
@@ -186,24 +189,6 @@ describe("<Photos/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_IMAGE, payload: "uuid",
     });
-  });
-
-  it("updates photo size", () => {
-    const p = fakeProps();
-    p.images = fakeImages;
-    const wrapper = shallow<Photos>(<Photos {...p} />);
-    expect(wrapper.state().imageWidth).toEqual(0);
-    expect(wrapper.state().imageHeight).toEqual(0);
-    const img = new Image();
-    Object.defineProperty(img, "naturalWidth", {
-      value: 10, configurable: true,
-    });
-    Object.defineProperty(img, "naturalHeight", {
-      value: 20, configurable: true,
-    });
-    wrapper.instance().imageLoadCallback(img);
-    expect(wrapper.state().imageWidth).toEqual(10);
-    expect(wrapper.state().imageHeight).toEqual(20);
   });
 
   it("toggles state", () => {
@@ -232,6 +217,7 @@ describe("<PhotoFooter />", () => {
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
+    size: { width: 0, height: 0 },
   });
 
   it("highlights map image", () => {

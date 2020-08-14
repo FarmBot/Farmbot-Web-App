@@ -1,5 +1,5 @@
 import { CameraCalibrationData } from "../farm_designer/interfaces";
-import { ImageShowFlags } from "../photos/images/shown_in_map";
+import { ImageShowFlags } from "../photos/images/interfaces";
 
 export const fakeCameraCalibrationData = (): CameraCalibrationData => ({
   offset: { x: undefined, y: undefined },

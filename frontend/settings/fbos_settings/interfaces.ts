@@ -43,7 +43,6 @@ export interface CameraSelectionProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   shouldDisplay: ShouldDisplay;
   dispatch: Function;
-  noLabel?: boolean;
 }
 
 export interface CameraSelectionState {

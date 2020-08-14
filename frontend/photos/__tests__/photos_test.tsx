@@ -1,9 +1,3 @@
-let mockDestroyAllPromise: Promise<void | never> =
-  Promise.reject("error").catch(() => { });
-jest.mock("../../api/crud", () => ({
-  destroyAll: jest.fn(() => mockDestroyAllPromise)
-}));
-
 let mockDev = false;
 jest.mock("../../settings/dev/dev_support", () => ({
   DevSettings: {
@@ -12,30 +6,22 @@ jest.mock("../../settings/dev/dev_support", () => ({
   }
 }));
 
-import * as React from "react";
+jest.mock("../../farmware/farmware_info", () => ({
+  updateFarmware: jest.fn(),
+}));
+
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawDesignerPhotos as DesignerPhotos,
-  DesignerPhotosProps,
-  mapStateToProps,
-  ClearFarmwareData,
-  getImageJobs,
-  getCurrentImage,
+  UpdateImagingPackage,
+  UpdateImagingPackageProps,
 } from "../../photos/photos";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { fakeState } from "../../__test_support__/fake_state";
 import { ExpandableHeader } from "../../ui";
-import { destroyAll } from "../../api/crud";
-import { success, error } from "../../toast/toast";
-import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
-import {
-  fakeWebAppConfig, fakeImage,
-} from "../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../__test_support__/resource_index_builder";
-import { JobProgress } from "farmbot";
 import { ToggleButton } from "../../controls/toggle_button";
+import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
+import { updateFarmware } from "../../farmware/farmware_info";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -46,6 +32,7 @@ describe("<DesignerPhotos />", () => {
     wDEnv: {},
     images: [],
     currentImage: undefined,
+    currentImageSize: { width: undefined, height: undefined },
     botToMqttStatus: "up",
     syncStatus: undefined,
     saveFarmwareEnv: jest.fn(),
@@ -68,21 +55,19 @@ describe("<DesignerPhotos />", () => {
     const p = fakeProps();
     p.versions = { "take-photo": "1.0.0" };
     const wrapper = mount(<DesignerPhotos {...p} />);
+    wrapper.setState({ camera: true });
     expect(wrapper.text()).toContain("1.0.0");
   });
 
   it("expands sections", () => {
     const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...fakeProps()} />);
-    expect(wrapper.state().calibration).toEqual(false);
-    expect(wrapper.state().detection).toEqual(false);
-    expect(wrapper.state().manage).toEqual(false);
     const headers = wrapper.find(ExpandableHeader);
-    headers.at(0).simulate("click");
-    expect(wrapper.state().calibration).toEqual(true);
-    headers.at(1).simulate("click");
-    expect(wrapper.state().detection).toEqual(true);
-    headers.at(2).simulate("click");
-    expect(wrapper.state().manage).toEqual(true);
+    Object.keys(wrapper.state())
+      .map((section: keyof DesignerPhotosState, index) => {
+        expect(wrapper.state()[section]).toEqual(false);
+        headers.at(index).simulate("click");
+        expect(wrapper.state()[section]).toEqual(true);
+      });
   });
 
   it("toggles highlight modified setting mode", () => {
@@ -95,101 +80,25 @@ describe("<DesignerPhotos />", () => {
   });
 });
 
-describe("getImageJobs()", () => {
-  it("returns image upload job list", () => {
-    const allJobs = {
-      "img1.png": {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z",
-      } as JobProgress,
-      "FBOS_OTA": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 17:13:21.167440Z",
-      } as JobProgress,
-      "img2.png": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z",
-      } as JobProgress,
-    };
-    const imageJobs = getImageJobs(allJobs);
-    expect(imageJobs).toEqual([
-      {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z"
-      },
-      {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z"
-      }]);
+describe("<UpdateImagingPackage />", () => {
+  const fakeProps = (): UpdateImagingPackageProps => ({
+    farmwareName: "take-photo",
+    version: undefined,
+    botOnline: true,
   });
 
-  it("handles undefined jobs", () => {
-    // tslint:disable-next-line:no-any
-    const jobs = undefined as any;
-    const imageJobs = getImageJobs(jobs);
-    expect(imageJobs).toEqual([]);
-  });
-});
-
-describe("getCurrentImage()", () => {
-  it("currentImage undefined", () => {
-    const images = [fakeImage()];
-    const currentImage = getCurrentImage(images, undefined);
-    expect(currentImage).toEqual(images[0]);
+  it("updates", () => {
+    const p = fakeProps();
+    p.version = "1.0.0";
+    const wrapper = mount(<UpdateImagingPackage {...p} />);
+    wrapper.find("i").simulate("click");
+    expect(updateFarmware).toHaveBeenCalledWith("take-photo", true);
   });
 
-  it("currentImage defined", () => {
-    const images = [fakeImage(), fakeImage()];
-    const currentImage = getCurrentImage(images, images[1].uuid);
-    expect(currentImage).toEqual(images[1]);
-  });
-});
-
-describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    state.bot.hardware.process_info.farmwares = {
-      "My Fake Farmware": fakeFarmwareManifestV1(),
-    };
-    const props = mapStateToProps(state);
-    expect(props.images.length).toEqual(2);
-    expect(props.versions).toEqual({ "My Fake Farmware": "0.0.0" });
-  });
-
-  it("returns image filter setting", () => {
-    const state = fakeState();
-    const webAppConfig = fakeWebAppConfig();
-    webAppConfig.body.photo_filter_begin = "2017-09-03T20:01:40.336Z";
-    state.resources = buildResourceIndex([webAppConfig]);
-    expect(mapStateToProps(state).getConfigValue("photo_filter_begin"))
-      .toEqual("2017-09-03T20:01:40.336Z");
-  });
-});
-
-describe("<ClearFarmwareData />", () => {
-  it("destroys all FarmwareEnvs", async () => {
-    mockDestroyAllPromise = Promise.resolve();
-    const wrapper = mount(<ClearFarmwareData />);
-    wrapper.find("button").last().simulate("click");
-    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv");
-    expect(success).toHaveBeenCalledWith(expect.stringContaining("deleted"));
-  });
-
-  it("fails to destroy all FarmwareEnvs", async () => {
-    mockDestroyAllPromise = Promise.reject("error");
-    const wrapper = mount(<ClearFarmwareData />);
-    await wrapper.find("button").last().simulate("click");
-    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv");
-    expect(error).toHaveBeenCalled();
+  it("doesn't render update button", () => {
+    const p = fakeProps();
+    p.version = undefined;
+    const wrapper = mount(<UpdateImagingPackage {...p} />);
+    expect(wrapper.find("i").length).toEqual(0);
   });
 });

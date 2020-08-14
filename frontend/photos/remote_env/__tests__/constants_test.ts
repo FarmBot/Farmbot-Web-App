@@ -23,9 +23,21 @@ describe("DEFAULT_FORMATTER", () => {
     expect(result).toEqual(1);
   });
 
-  it("formats outputs", () => {
+  it("formats number output", () => {
     const result = DEFAULT_FORMATTER.format("CAMERA_CALIBRATION_coord_scale", 12);
     expect(result).toEqual(12);
+  });
+
+  it("formats invalid special value output", () => {
+    const result = DEFAULT_FORMATTER.format(
+      "CAMERA_CALIBRATION_invert_hue_selection", 12);
+    expect(result).toEqual("12");
+  });
+
+  it("formats valid special value output", () => {
+    const result = DEFAULT_FORMATTER.format(
+      "CAMERA_CALIBRATION_invert_hue_selection", 1);
+    expect(result).toEqual("TRUE");
   });
 });
 

@@ -21,7 +21,7 @@ import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
-import { calculateImageAgeInfo } from "../photos/images/image_filter_menu";
+import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {

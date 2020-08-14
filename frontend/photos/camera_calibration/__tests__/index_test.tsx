@@ -7,9 +7,9 @@ jest.mock("../actions", () => ({
   scanImage: jest.fn(() => mockScanImage),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
-import { CameraCalibration } from "../camera_calibration";
+import { CameraCalibration } from "..";
 import { CameraCalibrationProps } from "../interfaces";
 import { scanImage } from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";

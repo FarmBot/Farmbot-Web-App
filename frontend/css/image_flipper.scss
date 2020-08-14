@@ -65,7 +65,6 @@
 .photos-footer {
   display: flex;
   position: relative;
-  bottom: 1rem;
   justify-content: space-between;
   label {
     font-weight: normal;
@@ -79,13 +78,18 @@
   }
 }
 
-.image-filter-menu-popover {
+.image-show-menu-target {
+  position: absolute;
+  margin-top: 0.2rem;
+}
+
+.image-show-menu-popover {
   .bp3-popover-content {
     padding: 0;
   }
 }
 
-.image-meta-filter-menu {
+.image-show-menu {
   max-width: 25rem;
   .hide-single-image-section {
     padding: 1rem;
@@ -135,7 +139,7 @@
 }
 
 .photos-footer,
-.image-meta-filter-menu {
+.image-show-menu {
   i {
     margin: 0.25rem;
     background: none !important;
@@ -190,16 +194,19 @@
 .image-metadata {
   display: flex;
   label {
+    margin-top: 0 !important;
     margin-left: 1rem;
     margin-right: 0.5rem;
   }
 }
 
 .image-created-at {
+  margin-left: 2rem;
   span {
     white-space: nowrap;
   }
   label {
+    margin-top: 0 !important;
     margin-right: 0.5rem;
   }
 }
@@ -210,52 +217,6 @@
     bottom: 3rem;
     height: 0px;
     float: right!important;
-  }
-  .toggle-label {
-    margin-top: 0 !important;
-    margin-bottom: 2rem;
-  }
-  .fb-toggle-button {
-    margin: 0 !important;
-  }
-  .photo-filter-settings {
-    position: relative;
-    .bp3-popover-wrapper {
-      position: absolute;
-      top: -0.5rem;
-      right: 1rem;
-    }
-    .fa-exclamation-triangle {
-      font-size: 1.3rem;
-      color: $orange;
-    }
-    .filter-controls {
-      .banner {
-        display: none;
-      }
-      &.single-image-mode,
-      &.image-layer-disabled {
-        opacity: 0.40;
-        * {
-          pointer-events: none;
-        }
-        .banner {
-          display: inline-block;
-          position: absolute;
-          top: 25%;
-          left: -2.5%;
-          z-index: 10;
-          width: 105%;
-          padding: 0.5rem;
-          background-color: $dark_gray;
-          opacity: 0.90;
-          color: $off_white;
-          font-size: 1.8rem;
-          vertical-align: middle;
-          text-align: center;
-        }
-      }
-    }
   }
 }
 
@@ -269,6 +230,7 @@
     float: right;
   }
   .simple-camera-calibration-checkbox {
+    display: inline-block;
     p {
       display: inline-block;
       margin: 0;
@@ -281,7 +243,6 @@
     }
     input {
       float: left;
-      margin-top: 2rem;
       margin-right: 1rem;
     }
   }
@@ -291,6 +252,7 @@
     }
     .bp3-slider {
       width: 95%;
+      margin-left: 1rem;
     }
   }
   p {
@@ -306,8 +268,6 @@
     }
   }
   .filter-search {
-    margin-left: -5px;
-    margin-right: 5px;
     .bp3-popover-wrapper {
       display: inline;
       margin-left: 0;
@@ -319,10 +279,13 @@
     }
     .input {
       margin-top: 0.5rem;
+      margin-right: 0.25rem;
     }
     .boolean-camera-calibration-config {
       input[type=checkbox] {
         display: block;
+        float: left;
+        margin-right: 1rem;
       }
     }
     .camera-config-number-box {
@@ -332,6 +295,10 @@
       margin-top: 2rem;
       margin-left: 1.5rem;
       margin-right: 1.5rem;
+      .filter-search {
+        margin-top: 0.5rem;
+        margin-right: 0.75rem;
+      }
     }
     .config-results {
       min-height: 8rem;

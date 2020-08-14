@@ -2,6 +2,7 @@ import { ResourceName, SpecialStatus } from "farmbot";
 import { combineReducers } from "redux";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
+import { photosReducer as photos } from "../photos/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
@@ -241,6 +242,7 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
   sequences,
   farm_designer,
+  photos,
   farmware,
   help,
   alerts
@@ -255,6 +257,7 @@ export const afterEach = (state: RestResources, a: ReduxAction<unknown>) => {
     sequences: state.consumers.sequences,
     regimens: state.consumers.regimens,
     farm_designer: state.consumers.farm_designer,
+    photos: state.consumers.photos,
     farmware: state.consumers.farmware,
     help: state.consumers.help,
     alerts: state.consumers.alerts

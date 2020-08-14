@@ -32,13 +32,13 @@ export const cameraBtnProps = (env: UserEnv) => {
     : { class: "", click: undefined, title: "" };
 };
 
-enum Camera {
+export enum Camera {
   USB = "USB",
   RPI = "RPI",
   NONE = "NONE",
 }
 
-const parseCameraSelection = (env: UserEnv): Camera => {
+export const parseCameraSelection = (env: UserEnv): Camera => {
   const camera = env["camera"]?.toUpperCase();
   if (camera?.includes(Camera.NONE)) {
     return Camera.NONE;
@@ -88,20 +88,22 @@ export class CameraSelection
   }
 
   render() {
+    const disable = !this.props.shouldDisplay(Feature.api_farmware_env)
+      && !this.props.botOnline;
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
-        {!this.props.noLabel && <Col xs={5}>
+        <Col xs={5}>
           <label>
             {t("CAMERA")}
           </label>
-        </Col>}
+        </Col>
         <Col xs={ColWidth.description}>
           <FBSelect
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
             onChange={this.sendOffConfig}
-            extraClass={this.props.botOnline ? "" : "disabled"} />
+            extraClass={disable ? "disabled" : ""} />
         </Col>
       </Row>
     </Highlight>;
