@@ -14,11 +14,13 @@ export const getOsReleaseNotesForVersion = (
   osReleaseNotes: string | undefined,
   version: string | undefined,
 ) => {
-  const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION || "9";
+  const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION || "10";
   const majorVersion = (version || fallback).split(".")[0];
   const allReleaseNotes = osReleaseNotes || "";
-  const thisReleaseNotes = allReleaseNotes.split("# v")
-    .filter(x => x.startsWith(majorVersion))[0] || "";
+  const notesByVersion = allReleaseNotes.split("# v");
+  const fallbackNotes = notesByVersion.filter(x => x.startsWith("10"))[0];
+  const thisReleaseNotes = notesByVersion
+    .filter(x => x.startsWith(majorVersion))[0] || fallbackNotes || "";
   const notes = thisReleaseNotes.split("\n\n").slice(1).join("\n")
     || t("Could not get release notes.");
   const heading = "FarmBot OS v" + majorVersion;

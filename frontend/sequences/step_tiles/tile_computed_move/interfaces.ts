@@ -3,7 +3,7 @@ import {
 } from "farmbot";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import { HardwareFlags } from "../../interfaces";
-import { BotPosition } from "../../../devices/interfaces";
+import { BotPosition, ShouldDisplay } from "../../../devices/interfaces";
 
 export type LocationNode = Coordinate | Identifier | Point | Tool;
 
@@ -17,6 +17,7 @@ export interface ComputedMoveProps {
   hardwareFlags: HardwareFlags | undefined;
   expandStepOptions: boolean;
   viewCeleryScript: boolean;
+  shouldDisplay: ShouldDisplay | undefined;
 }
 
 export interface ComputedMoveState {
@@ -114,6 +115,7 @@ export interface OverwriteInputRowProps extends InputRowBase {
   locationSelection: LocSelection | undefined;
   setAxisState: SetAxisState;
   setAxisOverwriteState(axis: Xyz, value: AxisSelection): void;
+  shouldDisplay: ShouldDisplay | undefined;
 }
 
 export interface ComputeCoordinateProps {

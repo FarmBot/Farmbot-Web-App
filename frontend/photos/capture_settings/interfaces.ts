@@ -35,3 +35,15 @@ export interface UpdateRowProps {
   version: string;
   botOnline: boolean;
 }
+
+export interface CameraSelectionProps {
+  env: UserEnv;
+  botOnline: boolean;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  shouldDisplay: ShouldDisplay;
+  dispatch: Function;
+}
+
+export interface CameraSelectionState {
+  cameraStatus: "" | "sending" | "done" | "error";
+}

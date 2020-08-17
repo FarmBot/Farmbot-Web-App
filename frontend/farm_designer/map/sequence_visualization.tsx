@@ -18,7 +18,9 @@ import { store } from "../../redux/store";
 import { findVariableByName } from "../../resources/sequence_meta";
 import { inDesigner } from "../../folders/component";
 import { getStepTag } from "../../resources/sequence_tagging";
-import { computeCoordinate } from "../../sequences/step_tiles/tile_computed_move/compute";
+import {
+  computeCoordinate,
+} from "../../sequences/step_tiles/tile_computed_move/compute";
 
 const ICON_LOOKUP: Partial<Record<LegalSequenceKind, Icon>> = {
   // _if: Icon.settings,

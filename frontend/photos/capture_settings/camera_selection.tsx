@@ -5,11 +5,10 @@ import {
 } from "./interfaces";
 import { info, success, error } from "../../toast/toast";
 import { getDevice } from "../../device";
-import { ColWidth } from "./farmbot_os_settings";
 import { Feature, UserEnv } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../constants";
-import { Highlight } from "../maybe_highlight";
+import { Highlight } from "../../settings/maybe_highlight";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -97,7 +96,7 @@ export class CameraSelection
             {t("CAMERA")}
           </label>
         </Col>
-        <Col xs={ColWidth.description}>
+        <Col xs={7}>
           <FBSelect
             allowEmpty={false}
             list={CAMERA_CHOICES()}

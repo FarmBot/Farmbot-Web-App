@@ -12,7 +12,6 @@ import {
 } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
-import { Feature } from "../../../devices/interfaces";
 import { SelectModeLink } from "../../../plants/select_plants";
 import { DeviceSetting, Content } from "../../../constants";
 import { Help } from "../../../ui";
@@ -132,11 +131,10 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           label={DeviceSetting.cropMapImages}
           helpText={Content.CROP_MAP_IMAGES} />
       </div>} />
-    {props.shouldDisplay(Feature.criteria_groups) &&
-      <LayerToggle
-        value={props.showZones}
-        label={DeviceSetting.showAreas}
-        onClick={toggle(BooleanSetting.show_zones)} />}
+    <LayerToggle
+      value={props.showZones}
+      label={DeviceSetting.showAreas}
+      onClick={toggle(BooleanSetting.show_zones)} />
     {props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}

@@ -13,6 +13,7 @@ export function TileComputedMove(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion}
       hardwareFlags={props.hardwareFlags}
       expandStepOptions={!!props.expandStepOptions}
+      shouldDisplay={props.shouldDisplay}
       viewCeleryScript={!!props.viewCeleryScript} />;
   } else {
     return <p>{"Expected `move` node"}</p>;

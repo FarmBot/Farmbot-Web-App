@@ -3,9 +3,7 @@ import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { Help, BlurableInput, Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { CaptureSizeSelectionProps, CaptureSizeSelectionState } from "./interfaces";
-import {
-  Camera, parseCameraSelection,
-} from "../../settings/fbos_settings/camera_selection";
+import { Camera, parseCameraSelection } from "./camera_selection";
 
 export class CaptureSizeSelection
   extends React.Component<CaptureSizeSelectionProps, CaptureSizeSelectionState> {

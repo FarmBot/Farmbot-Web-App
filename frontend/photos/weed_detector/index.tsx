@@ -12,9 +12,7 @@ import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { envSave } from "../remote_env/actions";
 import { t } from "../../i18next_wrapper";
-import {
-  cameraBtnProps,
-} from "../../settings/fbos_settings/camera_selection";
+import { cameraBtnProps } from "../capture_settings/camera_selection";
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {

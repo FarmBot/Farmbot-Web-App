@@ -5,9 +5,7 @@ import { buildDirectionProps } from "./controls/move/direction_axes_props";
 import { ControlsPopupProps } from "./controls/move/interfaces";
 import { commandErr } from "./devices/actions";
 import { mapPanelClassName } from "./farm_designer/map/util";
-import {
-  cameraBtnProps,
-} from "./settings/fbos_settings/camera_selection";
+import { cameraBtnProps } from "./photos/capture_settings/camera_selection";
 import { t } from "./i18next_wrapper";
 import { getPathArray } from "./history";
 
