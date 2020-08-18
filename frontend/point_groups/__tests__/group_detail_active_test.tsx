@@ -41,7 +41,6 @@ describe("<GroupDetailActive/>", () => {
       dispatch: jest.fn(),
       group,
       allPoints: [],
-      shouldDisplay: () => true,
       slugs: [],
       hovered: undefined,
       editGroupAreaInMap: false,

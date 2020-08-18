@@ -13,7 +13,7 @@ import { downloadProgress } from "../../settings/fbos_settings/os_update_button"
 import { startCase } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
-import { cameraBtnProps } from "../../settings/fbos_settings/camera_selection";
+import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Popover } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages, selectImage } from "./actions";

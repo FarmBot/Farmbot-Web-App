@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
-import { mount, ReactWrapper } from "enzyme";
+import { mount, ReactWrapper, shallow } from "enzyme";
 import {
   fakeSequence, fakePoint, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
@@ -17,7 +17,9 @@ import {
 import { emptyState } from "../../../resources/reducer";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { StepParams } from "../../interfaces";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = (): StepParams => {
@@ -225,6 +227,23 @@ describe("<TileMoveAbsolute/>", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
       block.updateLocation({
+        kind: "parameter_application",
+        args: {
+          label: "parent", data_value: {
+            kind: "identifier", args: { label: "parent" }
+          }
+        }
+      });
+      expect(p.dispatch).toHaveBeenCalled();
+      const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
+      expect(p.dispatch).toHaveBeenCalledWith(action);
+    });
+
+    it("changes variable", () => {
+      const p = fakeProps();
+      const block = ordinaryMoveAbs(p);
+      const wrapper = shallow(<block.LocationForm />);
+      wrapper.props().onChange({
         kind: "parameter_application",
         args: {
           label: "parent", data_value: {

@@ -170,7 +170,6 @@ describe("maybeUpdateGroup()", () => {
     selectionBox: { x0: 0, y0: 0, x1: undefined, y1: undefined },
     dispatch: jest.fn(),
     group: fakePointGroup(),
-    shouldDisplay: () => true,
     editGroupAreaInMap: false,
     boxSelected: undefined,
   });
@@ -196,13 +195,6 @@ describe("maybeUpdateGroup()", () => {
     p.editGroupAreaInMap = true;
     maybeUpdateGroup(p);
     expect(editGtLtCriteria).toHaveBeenCalledWith(p.group, p.selectionBox);
-  });
-
-  it("doesn't update criteria", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    maybeUpdateGroup(p);
-    expect(editGtLtCriteria).not.toHaveBeenCalled();
   });
 
   it("handles missing group or box", () => {

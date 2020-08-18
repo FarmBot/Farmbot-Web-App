@@ -11,9 +11,9 @@ describe("<FarmbotOsRow/>", () => {
   const fakeProps = (): FarmbotOsRowProps => ({
     bot,
     dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-    sourceFbosConfig: (x) => {
-      return { value: bot.hardware.configuration[x], consistent: true };
-    },
+    sourceFbosConfig: x => ({
+      value: bot.hardware.configuration[x], consistent: true,
+    }),
     shouldDisplay: () => false,
     botOnline: false,
     deviceAccount: fakeDevice(),
@@ -37,9 +37,30 @@ describe("<FarmbotOsRow/>", () => {
 
 describe("getOsReleaseNotesForVersion()", () => {
   it("fetches OS release notes", () => {
-    const mockData = "intro\n\n# v6\n\n* note";
-    const result = getOsReleaseNotesForVersion(mockData, "6.0.0");
-    expect(result.heading).toEqual("FarmBot OS v6");
+    const mockData = "intro\n\n# v10\n\n* note";
+    const result = getOsReleaseNotesForVersion(mockData, "10.0.0");
+    expect(result.heading).toEqual("FarmBot OS v10");
     expect(result.notes).toEqual("* note");
+  });
+
+  it("falls back to recent OS version", () => {
+    const mockData = "intro\n\n# v10\n\n* note";
+    const result = getOsReleaseNotesForVersion(mockData, undefined);
+    expect(result.heading).toEqual("FarmBot OS v10");
+    expect(result.notes).toEqual("* note");
+  });
+
+  it("falls back to known OS release note", () => {
+    const mockData = "intro\n\n# v10\n\n* note";
+    const result = getOsReleaseNotesForVersion(mockData, "11.0.0");
+    expect(result.heading).toEqual("FarmBot OS v11");
+    expect(result.notes).toEqual("* note");
+  });
+
+  it("fails to fetch OS release notes", () => {
+    const mockData = undefined;
+    const result = getOsReleaseNotesForVersion(mockData, "10.0.0");
+    expect(result.heading).toEqual("FarmBot OS v10");
+    expect(result.notes).toEqual("Could not get release notes.");
   });
 });

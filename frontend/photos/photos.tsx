@@ -71,7 +71,6 @@ export class RawDesignerPhotos
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"photos"}>
         <label>{t("Photos")}</label>
-        <ToolTip helpText={ToolTips.PHOTOS} className={"photos-tooltip"} />
         <Photos {...common} {...imageCommon}
           hiddenImages={this.props.hiddenImages}
           shownImages={this.props.shownImages}

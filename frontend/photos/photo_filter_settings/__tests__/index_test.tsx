@@ -13,7 +13,9 @@ import { mount } from "enzyme";
 import { PhotoFilterSettings, FiltersEnabledWarning } from "../index";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
-import { fakeImage, fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeImage, fakeWebAppConfig,
+} from "../../../__test_support__/fake_state/resources";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { toggleAlwaysHighlightImage, toggleSingleImageMode } from "../actions";

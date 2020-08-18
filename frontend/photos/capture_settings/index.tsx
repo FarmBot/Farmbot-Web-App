@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  CameraSelection,
-} from "../../settings/fbos_settings/camera_selection";
+import { CameraSelection } from "./camera_selection";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { CaptureSizeSelection } from "./capture_size_selection";
 import { RotationSetting } from "./rotation_setting";

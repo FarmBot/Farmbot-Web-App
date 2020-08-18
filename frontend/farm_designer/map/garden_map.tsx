@@ -101,7 +101,6 @@ export class GardenMap extends
       selectionBox: this.state.selectionBox,
       group: this.group,
       dispatch: this.props.dispatch,
-      shouldDisplay: this.props.shouldDisplay,
       editGroupAreaInMap: this.props.designer.editGroupAreaInMap,
       boxSelected: this.props.designer.selectedPoints,
     });
