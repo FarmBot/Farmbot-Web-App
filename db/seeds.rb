@@ -1,4 +1,3 @@
-
 if Rails.env == "development"
   POINT_COUNT = 8
   PLANT_COUNT = 8
@@ -13,6 +12,7 @@ if Rails.env == "development"
                tomato turnip zucchini)
 
   [
+    FarmwareEnv,
     Alert,
     Sensor,
     Peripheral,
@@ -60,8 +60,8 @@ if Rails.env == "development"
     Images::Create.run!(attachment_url: url,
                         device: u.device,
                         meta: { x: rand(40...970),
-                               y: rand(40...470),
-                               z: rand(1...300) })
+                                y: rand(40...470),
+                                z: rand(1...300) })
   end
 
   all_of_em = []
@@ -100,7 +100,7 @@ if Rails.env == "development"
   s = Sequences::Create.run!(device: u.device,
                              name: "Goto 0, 0, 0",
                              body: [{ kind: "move_absolute", args: { location: { kind: "coordinate", args: { x: 0,
-                                                                                                             y: 0, z: 0 } }, offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }, speed: 100 } }])
+                                                                                                           y: 0, z: 0 } }, offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }, speed: 100 } }])
   t = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
   body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
                  .gsub("__SEQUENCE_ID__", s[:id].to_s)
