@@ -1,3 +1,5 @@
+import { trim } from "./util";
+
 function flunk() {
   // DO NOT USE i18next here.
   // IE Cannot handle it.
@@ -48,11 +50,11 @@ export function stopIE() {
 
 // TODO: Delete this function on 18 SEP 2020.
 export function temporarilyStopFrames(top_: {}, self_: {}) {
-  const message = `FarmBot will be removing the ability to embed the Web App
+  const message = trim(`FarmBot will be removing the ability to embed the Web App
   in frames/iframes in an upcoming release. You appear to be using a site or
   application that embeds the Web App in a frame. Please contact the owner
   of this application (not FarmBot) and request that they update their
-  application or self-host their own server.`
+  application or self-host their own server.`)
   if (top_ != self_ && !location.host.includes("farm.bot")) {
     if ((Math.random() * 100) > 50) {
       alert(message);
