@@ -7,7 +7,6 @@ import { selectPoint } from "../actions";
 import { getMode } from "../util";
 import { editGtLtCriteria } from "../../../point_groups/criteria";
 import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
-import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { unpackUUID } from "../../../util";
 import { UUID } from "../../../resources/interfaces";
 import { getFilteredPoints } from "../../../plants/select_plants";
@@ -102,7 +101,6 @@ export interface MaybeUpdateGroupProps {
   selectionBox: SelectionBoxData | undefined;
   dispatch: Function;
   group: TaggedPointGroup | undefined;
-  shouldDisplay: ShouldDisplay;
   editGroupAreaInMap: boolean;
   boxSelected: UUID[] | undefined;
 }
@@ -111,8 +109,7 @@ export const maybeUpdateGroup =
   (props: MaybeUpdateGroupProps) => {
     const { group } = props;
     if (props.selectionBox && group) {
-      if (props.editGroupAreaInMap
-        && props.shouldDisplay(Feature.criteria_groups)) {
+      if (props.editGroupAreaInMap) {
         props.dispatch(editGtLtCriteria(group, props.selectionBox));
       } else {
         const nextGroupBody = cloneDeep(group.body);

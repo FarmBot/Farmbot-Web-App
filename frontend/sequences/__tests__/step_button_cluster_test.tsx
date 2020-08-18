@@ -9,6 +9,7 @@ import { mount } from "enzyme";
 import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
 
 describe("<StepButtonCluster />", () => {
   const commands = ["move to", "move relative",
@@ -54,7 +55,17 @@ describe("<StepButtonCluster />", () => {
     }));
   });
 
-  it("navigates", () => {
+  it("navigates to sequence", () => {
+    mockPath = "/app/designer/sequences/commands";
+    const p = fakeProps();
+    p.current = fakeSequence();
+    p.current.body.name = "sequence 1";
+    const wrapper = mount(<StepButtonCluster {...p} />);
+    wrapper.find("div").last().simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/sequences/sequence_1");
+  });
+
+  it("navigates back", () => {
     mockPath = "/app/designer/sequences/commands";
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);

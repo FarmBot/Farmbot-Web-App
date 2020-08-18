@@ -14,7 +14,7 @@ import { mapStateToFolderProps } from "../folders/map_state_to_props";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import {
   cameraDisabled, cameraCalibrated,
-} from "../settings/fbos_settings/camera_selection";
+} from "../photos/capture_settings/camera_selection";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

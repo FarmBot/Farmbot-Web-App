@@ -22,7 +22,6 @@ import { ToolTips } from "../../constants";
 import { overwriteGroup } from "../actions";
 import { sortGroupBy } from "../point_group_sort";
 import { PointGroupItem } from "../point_group_item";
-import { Feature } from "../../devices/interfaces";
 import { TaggedPoint } from "farmbot";
 
 export const CRITERIA_POINT_TYPE_LOOKUP =
@@ -162,17 +161,16 @@ export const GroupPointCountBreakdown =
         <div className="groups-list-wrapper">
           {manualPoints.map(generatePointIcons)}
         </div>}
-      {props.shouldDisplay(Feature.criteria_groups) &&
-        <div className={"group-member-section"}>
-          <div className={"criteria-group-member-count"}>
-            <p>{`${criteriaPoints.length} ${t("selected by filters")}`}</p>
-            <ClearCriteria dispatch={props.dispatch} group={props.group} />
-          </div>
-          {props.iconDisplay && criteriaPoints.length > 0 &&
-            <div className="groups-list-wrapper">
-              {criteriaPoints.map(generatePointIcons)}
-            </div>}
-        </div>}
+      <div className={"group-member-section"}>
+        <div className={"criteria-group-member-count"}>
+          <p>{`${criteriaPoints.length} ${t("selected by filters")}`}</p>
+          <ClearCriteria dispatch={props.dispatch} group={props.group} />
+        </div>
+        {props.iconDisplay && criteriaPoints.length > 0 &&
+          <div className="groups-list-wrapper">
+            {criteriaPoints.map(generatePointIcons)}
+          </div>}
+      </div>
     </div>;
   };
 

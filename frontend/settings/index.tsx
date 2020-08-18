@@ -93,9 +93,7 @@ export class RawDesignerSettings
       <DesignerPanelContent panelName={"settings"}>
         <FarmBotSettings
           bot={this.props.bot}
-          env={this.props.env}
           alerts={this.props.alerts}
-          saveFarmwareEnv={this.props.saveFarmwareEnv}
           dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}
           shouldDisplay={this.props.shouldDisplay}

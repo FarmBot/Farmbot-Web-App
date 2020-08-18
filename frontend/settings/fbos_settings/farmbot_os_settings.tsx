@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Feature, FarmbotSettingsProps } from "../../devices/interfaces";
-import { CameraSelection } from "./camera_selection";
 import { FarmbotOsRow } from "./farmbot_os_row";
 import { AutoUpdateRow } from "./auto_update_row";
 import { AutoSyncRow } from "./auto_sync_row";
@@ -35,11 +34,6 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
     <Collapse isOpen={!!props.bot.controlPanelState.farmbot_settings}>
       <NameRow {...commonProps} device={device} />
       <TimezoneRow {...commonProps} device={device} />
-      <CameraSelection {...commonProps}
-        env={props.env}
-        botOnline={botOnline}
-        saveFarmwareEnv={props.saveFarmwareEnv}
-        shouldDisplay={shouldDisplay} />
       <OtaTimeSelectorRow {...commonProps}
         timeSettings={timeSettings}
         device={device}

@@ -253,9 +253,6 @@ export namespace ToolTips {
     press IMPORT to import new hardware parameters to your FarmBot.`);
 
   // Photos
-  export const PHOTOS =
-    trim(`Take and view photos with your FarmBot's camera.`);
-
   export const WEED_DETECTOR =
     trim(`Detect weeds using FarmBot's camera and display them on the
     Farm Designer map.`);

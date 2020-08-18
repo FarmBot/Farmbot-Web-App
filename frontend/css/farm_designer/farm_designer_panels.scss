@@ -1715,6 +1715,7 @@
       }
       .version-string {
         display: inline;
+        margin-left: 1rem;
       }
       .capture-rotate-setting {
         margin-top: 1rem;
@@ -1763,18 +1764,19 @@
       margin-bottom: 0;
     }
   }
-  .title-help.photos-tooltip {
-    .title-help-text.open {
-      display: inline;
-    }
-    .title-help-text-text {
-      display: block;
-    }
-    .fa-question-circle {
-      position: relative;
-      top: unset;
-      right: unset;
-    }
+  .bp3-collapse::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
+  }
+  .disable_scrollbar::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  .bp3-collapse-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
   }
 }
 
