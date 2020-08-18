@@ -48,18 +48,17 @@ export function stopIE() {
 }
 
 
-// TODO: Delete this function on 18 SEP 2020.
+// TODO: Delete this function on 18 SEP 2020 and add the appropriate CSP header.
 export function temporarilyStopFrames(top_: { location: { host: string } }, self_: {}) {
   const message = trim(`FarmBot will be removing the ability to embed the Web App
   in frames/iframes in an upcoming release. You appear to be using a site or
   application that embeds the Web App in a frame. Please contact the owner
   of this application (not FarmBot) and request that they update their
   application or self-host their own server.`)
-  if ((top_ != self_) && !top.location.host.includes("farm.bot")) {
-    if ((Math.random() * 100) > 50) {
-      alert(message);
-    } else {
-      console.log("Temporarily allowing use of frames")
-    }
-  }
+  const isInFrame = top_ != self_;
+  const topFrameHost = top.location.host;
+  const isUnauthorized = !topFrameHost.includes("farm.bot");
+  const coinFlip = Math.random() * 100
+  const coinFlipLoss = coinFlip > 50
+  isInFrame && isUnauthorized && coinFlipLoss && alert(message);
 }
