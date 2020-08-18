@@ -50,7 +50,7 @@ describe("stopIE()", () => {
   });
 
   it("temporarily warns users about using frames", () => {
-    const top_ = "A"
+    const top_ = { location: { host: "A" } }
     const self_ = "B"
     times(10, () => temporarilyStopFrames(top_, self_));
     expect(window.alert).toHaveBeenCalled();
