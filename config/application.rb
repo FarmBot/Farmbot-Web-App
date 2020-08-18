@@ -91,6 +91,7 @@ module FarmBot
         ),
         form_action: %w('self'),
         frame_src: %w(*),       # We need "*" to support webcam users.
+        frame_ancestors: "",
         img_src: %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
         media_src: %w(),
