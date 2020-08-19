@@ -55,9 +55,7 @@ export function temporarilyStopFrames(top_: { location: { host: string } }, self
   of this application (not FarmBot) and request that they update their
   application or self-host their own server.`);
   const isInFrame = top_ != self_;
-  const topFrameHost = top.location.host;
-  const isUnauthorized = !topFrameHost.includes("farm.bot");
   const coinFlip = Math.random() * 100;
   const coinFlipLoss = coinFlip > 50;
-  isInFrame && isUnauthorized && coinFlipLoss && alert(message);
+  isInFrame && coinFlipLoss && alert(message);
 }
