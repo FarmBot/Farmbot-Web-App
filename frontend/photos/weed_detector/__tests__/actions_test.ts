@@ -18,6 +18,13 @@ describe("scanImage()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
+  it("handles error", async () => {
+    mockDevice.execScript = jest.fn(() => Promise.reject());
+    await scanImage(1)(5);
+    expect(mockDevice.execScript).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
   it("errors without calibration", () => {
     scanImage(0)(5);
     expect(mockDevice.execScript).not.toHaveBeenCalled();
@@ -28,6 +35,13 @@ describe("scanImage()", () => {
 describe("detectPlants()", () => {
   it("executes", () => {
     detectPlants(1)();
+    expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("handles error", async () => {
+    mockDevice.execScript = jest.fn(() => Promise.reject());
+    await detectPlants(1)();
     expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
     expect(error).not.toHaveBeenCalled();
   });

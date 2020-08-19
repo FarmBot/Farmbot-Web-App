@@ -5,9 +5,7 @@ import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
 import { t } from "../../i18next_wrapper";
-import {
-  cameraBtnProps,
-} from "../../settings/fbos_settings/camera_selection";
+import { cameraBtnProps } from "../../photos/capture_settings/camera_selection";
 const DEFAULT_STEP_SIZE = 100;
 
 /*

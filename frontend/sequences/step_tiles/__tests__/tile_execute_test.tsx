@@ -57,6 +57,12 @@ describe("<ExecuteBlock/>", () => {
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
     expect(block.text()).toContain("Select a sequence");
   });
+
+  it("throws error", () => {
+    const p = fakeProps();
+    p.currentStep = { kind: "take_photo", args: {} } as unknown as Execute;
+    expect(() => ExecuteBlock(p)).toThrowError(/not/);
+  });
 });
 
 describe("<RefactoredExecuteBlock />", () => {

@@ -12,8 +12,8 @@ jest.mock("../../../resources/selectors", () => ({
   assertUuid: jest.fn(),
 }));
 
-import * as React from "react";
-import { ImageFilterMenu, ImageFilterMenuProps } from "../image_filter_menu";
+import React from "react";
+import { ImageFilterMenu } from "../image_filter_menu";
 import { shallow, mount } from "enzyme";
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import {
@@ -24,6 +24,8 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { ImageFilterMenuProps } from "../interfaces";
+import { Slider } from "@blueprintjs/core";
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";
@@ -138,11 +140,11 @@ describe("<ImageFilterMenu />", () => {
     const wrapper = shallow(<ImageFilterMenu {...fakeProps()} />);
     expect(wrapper.state()).toEqual({
       beginDate: "2001-01-03", beginTime: "05:00",
-      endDate: "2001-01-03", endTime: "06:00", slider: NaN
+      endDate: "2001-01-03", endTime: "06:00",
     });
   });
 
-  it("changes slider", () => {
+  it("commits slider change", () => {
     const p = fakeProps();
     const state = fakeState();
     const config = fakeWebAppConfig();
@@ -152,10 +154,10 @@ describe("<ImageFilterMenu />", () => {
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().sliderChange(1);
-    expect(wrapper.instance().state.slider).toEqual(1);
+    expect(wrapper.instance().state.slider).toEqual(undefined);
     expect(edit).toHaveBeenCalledWith(config, {
-      photo_filter_begin: "2001-01-02T00:00:00.000Z",
-      photo_filter_end: "2001-01-03T00:00:00.000Z",
+      photo_filter_begin: "2001-01-03T00:00:00.000Z",
+      photo_filter_end: "2001-01-04T00:00:00.000Z",
     });
     expect(save).toHaveBeenCalledWith(config.uuid);
   });
@@ -169,12 +171,94 @@ describe("<ImageFilterMenu />", () => {
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().sliderChange(1);
-    expect(wrapper.instance().state.slider).toEqual(1);
+    expect(wrapper.instance().state.slider).toEqual(undefined);
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });
 
+  it("expands date range into past", () => {
+    mockConfig.body.photo_filter_begin = "2001-01-01T05:00:00.000Z";
+    mockConfig.body.photo_filter_end = "";
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    expect(wrapper.instance().imageAgeInfo).toEqual({
+      newestDate: "2001-01-10T00:00:00.000Z", toOldest: 9,
+    });
+  });
+
+  it("expands date range into future", () => {
+    mockConfig.body.photo_filter_begin = "2001-01-20T05:00:00.000Z";
+    mockConfig.body.photo_filter_end = "";
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    expect(wrapper.instance().imageAgeInfo).toEqual({
+      newestDate: "2001-01-21T00:00:00.000Z", toOldest: 13,
+    });
+  });
+
+  it("steps date", () => {
+    mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";
+    const p = fakeProps();
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    state.resources = buildResourceIndex([config]);
+    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    wrapper.instance().dateStep(1)();
+    expect(edit).toHaveBeenCalledWith(config, {
+      photo_filter_begin: "2001-01-04T00:00:00.000Z",
+      photo_filter_end: "2001-01-05T00:00:00.000Z",
+    });
+    expect(save).toHaveBeenCalledWith(config.uuid);
+  });
+
+  it("choses newest date", () => {
+    mockConfig.body.photo_filter_begin = "";
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    state.resources = buildResourceIndex([config]);
+    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    wrapper.instance().newest();
+    expect(edit).toHaveBeenCalledWith(config, {
+      photo_filter_begin: "2001-01-10T00:00:00.000Z",
+      photo_filter_end: "2001-01-11T00:00:00.000Z",
+    });
+    expect(save).toHaveBeenCalledWith(config.uuid);
+  });
+
+  it("choses oldest date", () => {
+    mockConfig.body.photo_filter_begin = "";
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 3 };
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    state.resources = buildResourceIndex([config]);
+    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    wrapper.instance().oldest();
+    expect(edit).toHaveBeenCalledWith(config, {
+      photo_filter_begin: "2001-01-06T00:00:00.000Z",
+      photo_filter_end: "2001-01-07T00:00:00.000Z",
+    });
+    expect(save).toHaveBeenCalledWith(config.uuid);
+  });
+
+  it("changes slider", () => {
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    expect(wrapper.state().slider).toEqual(undefined);
+    wrapper.find(Slider).simulate("change", 1);
+    expect(wrapper.state().slider).toEqual(1);
+  });
+
   it("displays slider labels", () => {
+    mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T00:00:00.000Z";
     const wrapper = mount(<ImageFilterMenu {...p} />);

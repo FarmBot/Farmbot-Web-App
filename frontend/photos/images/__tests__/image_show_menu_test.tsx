@@ -1,17 +1,17 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Actions } from "../../../constants";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
-import {
-  ImageFilterProps, ImageShowMenu, imageInRange, imageIsHidden,
-} from "../shown_in_map";
+import { ImageShowMenu, ImageShowMenuTarget } from "../image_show_menu";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
+import { ImageShowProps } from "../interfaces";
 
 describe("<ImageShowMenu />", () => {
-  const fakeProps = (): ImageFilterProps => ({
+  const fakeProps = (): ImageShowProps => ({
     image: fakeImage(),
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
+    size: { width: 0, height: 0 },
   });
 
   it("renders as shown in map", () => {
@@ -90,48 +90,21 @@ describe("<ImageShowMenu />", () => {
   });
 });
 
-describe("imageInRange()", () => {
-  it("is before", () => {
-    const image = fakeImage();
-    image.body.created_at = "2018-01-22T05:00:00.000Z";
-    const begin = "2018-01-23T05:00:00.000Z";
-    const end = "";
-    expect(imageInRange(image, begin, end)).toEqual(false);
+describe("<ImageShowMenuTarget />", () => {
+  const fakeProps = (): ImageShowProps => ({
+    image: undefined,
+    dispatch: jest.fn(),
+    flags: fakeImageShowFlags(),
+    size: { width: 0, height: 0 },
   });
 
-  it("is after", () => {
-    const image = fakeImage();
-    image.body.created_at = "2018-01-24T05:00:00.000Z";
-    const begin = "";
-    const end = "2018-01-23T05:00:00.000Z";
-    expect(imageInRange(image, begin, end)).toEqual(false);
-  });
-
-  it("is within", () => {
-    const image = fakeImage();
-    image.body.created_at = "2018-01-24T05:00:00.000Z";
-    const begin = "2018-01-23T05:00:00.000Z";
-    const end = "2018-01-25T05:00:00.000Z";
-    expect(imageInRange(image, begin, end)).toEqual(true);
-  });
-});
-
-describe("imageIsHidden()", () => {
-  it.each<[
-    number, number[], number[], boolean, number | undefined, boolean | undefined,
-  ]>([
-    [1, [], [], false, undefined, undefined],
-    [2, [], [], false, 1, false],
-    [3, [], [1], false, 1, false],
-    [4, [], [1], true, 1, false],
-    [5, [], [], true, 1, true],
-    [6, [1], [], true, 1, true],
-    [7, [1], [1], true, 1, true],
-    [8, [1], [1], false, 1, true],
-  ])("is hidden: case %s",
-    (_, hiddenImages, shownImages, hideUnShownImages, imageId, expected) => {
-      expect(imageIsHidden(
-        hiddenImages, shownImages, hideUnShownImages, imageId))
-        .toEqual(expected);
+  it("handles missing image", () => {
+    const p = fakeProps();
+    const wrapper = mount(<ImageShowMenuTarget {...p} />);
+    expect(wrapper.html()).toContain("fa-eye");
+    wrapper.simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
+  });
 });

@@ -26,6 +26,7 @@ import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
 import { ingest } from "../folders/data_transfer";
 import { searchFolderTree } from "../folders/search_folder_tree";
+import { photosState } from "../photos/reducer";
 
 export const emptyState = (): RestResources => {
   return {
@@ -33,6 +34,7 @@ export const emptyState = (): RestResources => {
       sequences: sequenceState,
       regimens: regimenState,
       farm_designer: designerState,
+      photos: photosState,
       farmware: farmwareState,
       help: helpState,
       alerts: alertState

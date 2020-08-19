@@ -9,7 +9,6 @@ import {
 import { ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { TimeSettings } from "../interfaces";
-import { SaveFarmwareEnv } from "../farmware/interfaces";
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
 export type SourceFbosConfig = (config: ConfigurationName) =>
@@ -53,6 +52,7 @@ export enum Feature {
   ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",
   sensors = "sensors",
+  soil_height = "soil_height",
   update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",
@@ -133,8 +133,6 @@ export interface FarmbotSettingsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
-  env: UserEnv;
-  saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   botOnline: boolean;
 }

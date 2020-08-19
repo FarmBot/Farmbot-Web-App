@@ -81,7 +81,6 @@ describe("<GroupPointCountBreakdown />", () => {
   const fakeProps = (): GroupPointCountBreakdownProps => ({
     group: fakePointGroup(),
     dispatch: jest.fn(),
-    shouldDisplay: () => true,
     pointsSelectedByGroup: [],
     iconDisplay: true,
     hovered: undefined,

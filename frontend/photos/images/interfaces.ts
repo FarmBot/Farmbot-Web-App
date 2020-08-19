@@ -8,7 +8,8 @@ export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
-  imageLoadCallback: (img: HTMLImageElement) => void;
+  currentImageSize: Record<"height" | "width", number | undefined>;
+  dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   env: UserEnv;
   crop: boolean;
@@ -16,17 +17,32 @@ export interface ImageFlipperProps {
 }
 
 export interface ImageFlipperState {
-  isLoaded: boolean;
-  width: number;
-  height: number;
   disablePrev: boolean;
   disableNext: boolean;
+}
+
+export interface FlipperImageProps {
+  image: TaggedImage;
+  crop: boolean;
+  transformImage: boolean;
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+  env: UserEnv;
+  onImageLoad(img: HTMLImageElement): void;
+}
+
+export interface FlipperImageState {
+  isLoaded: boolean;
+  width: number | undefined;
+  height: number | undefined;
 }
 
 export interface PhotosProps {
   dispatch: Function;
   images: TaggedImage[];
+  flags: ImageShowFlags;
   currentImage: TaggedImage | undefined;
+  currentImageSize: Record<"height" | "width", number | undefined>;
   timeSettings: TimeSettings;
   imageJobs: JobProgress[];
   botToMqttStatus: NetworkState;
@@ -51,4 +67,45 @@ export interface PhotoButtonsProps {
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
   env: UserEnv;
+}
+
+export interface ImageFilterProps {
+  image: TaggedImage | undefined;
+  dispatch: Function;
+  flags: ImageShowFlags;
+}
+
+export interface ImageShowProps extends ImageFilterProps {
+  size: Record<"height" | "width", number | undefined>;
+}
+
+export interface FlagDisplayRowProps {
+  flag: boolean;
+  labelOk: string;
+  labelNo: string;
+  title?: string;
+}
+
+type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch";
+export type ImageShowFlags = Record<FlagKey, boolean>;
+
+export interface GetImageShownStatusFlagsProps {
+  image: TaggedImage | undefined;
+  hiddenImages: number[];
+  getConfigValue: GetWebAppConfigValue;
+  env: UserEnv;
+  size: Record<"width" | "height", number | undefined>;
+}
+
+export interface PhotoFooterProps {
+  image: TaggedImage | undefined;
+  size: Record<"width" | "height", number | undefined>;
+  timeSettings: TimeSettings;
+  dispatch: Function;
+  flags: ImageShowFlags;
+}
+
+export interface PhotosState {
+  crop: boolean;
+  rotate: boolean;
 }

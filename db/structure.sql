@@ -1735,7 +1735,9 @@ CREATE TABLE public.web_app_configs (
     display_map_missed_steps boolean DEFAULT false,
     time_format_seconds boolean DEFAULT false,
     crop_images boolean DEFAULT false,
-    show_camera_view_area boolean DEFAULT false
+    show_camera_view_area boolean DEFAULT false,
+    view_celery_script boolean DEFAULT false,
+    highlight_modified_settings boolean DEFAULT false
 );
 
 
@@ -3393,6 +3395,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200630190226'),
 ('20200704150931'),
 ('20200801150609'),
-('20200804150609');
+('20200804150609'),
+('20200807182602');
 
 

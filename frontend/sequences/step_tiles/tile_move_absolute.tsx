@@ -3,7 +3,6 @@ import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication, Xyz } from "farmbot";
 import { Row, Col, BlurableInput } from "../../ui";
-import { isTaggedSequence } from "../../resources/tagged_resources";
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { ToolTips } from "../../constants";
@@ -140,9 +139,6 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
 
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
-    if (currentSequence && !isTaggedSequence(currentSequence)) {
-      throw new Error("WHOOPS!");
-    }
     const isMobile = window.innerWidth < 660;
     const className = "move-absolute-step";
     return <StepWrapper>

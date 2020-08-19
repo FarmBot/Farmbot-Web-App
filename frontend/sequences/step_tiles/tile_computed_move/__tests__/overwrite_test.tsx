@@ -6,9 +6,11 @@ import {
 import {
   OverwriteInputRow, overwriteAxis, getOverwriteState, getOverwriteNode,
   setOverwrite,
+  OVERWRITE_OPTION_LOOKUP,
 } from "../overwrite";
 import { Move } from "farmbot";
 import { MoveStepInput } from "../input";
+import { FBSelect } from "../../../../ui";
 
 describe("overwriteAxis()", () => {
   it("doesn't return node", () => {
@@ -58,6 +60,7 @@ describe("<OverwriteInputRow />", () => {
     onCommit: jest.fn(),
     setAxisState: jest.fn(),
     setAxisOverwriteState: jest.fn(),
+    shouldDisplay: jest.fn(),
   });
 
   it("changes overwrite selection", () => {
@@ -88,6 +91,28 @@ describe("<OverwriteInputRow />", () => {
     p.locationSelection = LocSelection.custom;
     const wrapper = mount(<OverwriteInputRow {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("x, y, z (mm)");
+  });
+
+  it("renders options", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => false;
+    const wrapper = mount(<OverwriteInputRow {...p} />);
+    const items = wrapper.find(FBSelect).last().props().list;
+    expect(items)
+      .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);
+    expect(items)
+      .not.toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.soil_height]);
+  });
+
+  it("renders soil height option", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<OverwriteInputRow {...p} />);
+    const items = wrapper.find(FBSelect).last().props().list;
+    expect(items)
+      .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);
+    expect(items)
+      .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.soil_height]);
   });
 });
 

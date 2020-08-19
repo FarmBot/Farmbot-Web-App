@@ -32,6 +32,7 @@ describe("<ComputedMove />", () => {
       confirmStepDeletion: false,
       expandStepOptions: false,
       viewCeleryScript: false,
+      shouldDisplay: jest.fn(),
     };
   };
 

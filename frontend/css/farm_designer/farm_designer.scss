@@ -788,6 +788,10 @@
   }
   th {
     text-align: center;
+    label {
+      margin: 0;
+      line-height: unset !important;
+    }
   }
   .bp3-slider {
     margin-left: 3rem;
@@ -800,6 +804,30 @@
   }
   input {
     background: $white;
+  }
+  .fa-step-backward,
+  .fa-caret-left,
+  .fa-caret-right,
+  .fa-step-forward {
+    line-height: 1.3rem;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  .fa-caret-left,
+  .fa-caret-right {
+    font-size: 1.4rem;
+  }
+  .fa-step-backward,
+  .fa-step-forward {
+    font-size: 1rem;
+  }
+  .fa-step-backward,
+  .fa-caret-left {
+    margin-right: 1rem;
+  }
+  .fa-caret-right,
+  .fa-step-forward {
+    margin-left: 1rem;
   }
 }
 

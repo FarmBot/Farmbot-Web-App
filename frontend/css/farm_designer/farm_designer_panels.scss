@@ -1604,13 +1604,22 @@
 
 .photos-panel {
   .panel-content {
-    padding-top: 4rem;
+    position: relative;
+    padding-top: 6rem;
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
+    label {
+      margin-top: 0 !important;
+    }
     a,
     button {
       margin: 0.5rem;
+    }
+    .filter-search {
+      button {
+        margin: 0;
+      }
     }
     fieldset {
       label {
@@ -1623,6 +1632,106 @@
     }
     .expandable-header {
       margin-top: 2rem;
+    }
+    .filters-enabled-warning {
+      float: right;
+    }
+    .fa-exclamation-triangle {
+      font-size: 1.3rem;
+      color: $orange;
+    }
+    .toggle-label {
+      margin-top: 0 !important;
+      margin-bottom: 1rem;
+    }
+    .fb-toggle-button {
+      margin-top: 0.5rem !important;
+    }
+    .photo-filter-settings {
+      label {
+        line-height: 3rem;
+      }
+      .filter-controls {
+        .banner {
+          display: none;
+        }
+        &.single-image-mode,
+        &.image-layer-disabled {
+          opacity: 0.40;
+          * {
+            pointer-events: none;
+          }
+          .banner {
+            display: inline-block;
+            position: absolute;
+            top: 25%;
+            left: -2.5%;
+            z-index: 10;
+            width: 105%;
+            padding: 0.5rem;
+            background-color: $dark_gray;
+            opacity: 0.90;
+            color: $off_white;
+            font-size: 1.8rem;
+            vertical-align: middle;
+            text-align: center;
+          }
+        }
+      }
+    }
+    .capture-settings {
+      .help-icon {
+        margin-left: 1rem;
+        font-size: 1.2rem;
+      }
+      .row {
+        margin-right: 0;
+        margin-top: 0.5rem;
+      }
+      label {
+        margin: 0;
+        line-height: 3rem;
+        font-style: normal;
+      }
+      .bp3-popover-wrapper {
+        display: inline;
+        margin-left: 0.5rem;
+      }
+      .fb-toggle-button {
+        margin-top: 2rem;
+      }
+      .image-size-inputs {
+        margin-top: 1rem;
+        .size-inputs {
+          margin-top: 1rem;
+        }
+        .input {
+          margin-left: 0.25rem;
+          margin-right: -0.75rem;
+          input {
+            height: 3rem;
+          }
+        }
+      }
+      .version-string {
+        display: inline;
+        margin-left: 1rem;
+      }
+      .capture-rotate-setting {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+    .imaging-data-management {
+      label {
+        line-height: 3rem;
+      }
+      .highlight-modified-toggle {
+        label {
+          margin-top: 0.5rem;
+          margin-left: 0.5rem;
+        }
+      }
     }
   }
   .title-help {
@@ -1655,48 +1764,19 @@
       margin-bottom: 0;
     }
   }
-  .title-help.photos-tooltip {
-    .title-help-text.open {
-      display: inline;
-    }
-    .title-help-text-text {
-      display: block;
-    }
-    .fa-question-circle {
-      position: relative;
-      top: unset;
-      right: unset;
-    }
-    .photos-settings {
-      margin-bottom: 4rem;
-      label {
-        margin-left: 0.5rem;
-        font-style: normal;
-      }
-      .bp3-popover-wrapper {
-        display: inline;
-        margin-left: 0.5rem;
-      }
-      .fb-toggle-button {
-        padding-top: unset;
-        margin-top: 2rem;
-      }
-      .image-size-inputs {
-        margin-top: 1rem;
-        label {
-          margin-top: 0;
-        }
-        .resolution {
-          margin-left: 0;
-        }
-      }
-    }
+  .bp3-collapse::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
   }
-  .highlight-modified-toggle {
-    label {
-      margin-top: 0.5rem;
-      margin-left: 0.5rem;
-    }
+  .disable_scrollbar::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  .bp3-collapse-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
   }
 }
 

@@ -3,11 +3,9 @@ import {
   ControlPanelState,
   ShouldDisplay,
   SourceFbosConfig,
-  UserEnv,
 } from "../../devices/interfaces";
 import { InformationalSettings, TaggedDevice } from "farmbot";
 import { TimeSettings } from "../../interfaces";
-import { SaveFarmwareEnv } from "../../farmware/interfaces";
 
 export interface NameRowProps {
   dispatch: Function;
@@ -35,19 +33,6 @@ export interface OtaTimeSelectorRowProps {
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
   timeSettings: TimeSettings;
-}
-
-export interface CameraSelectionProps {
-  env: UserEnv;
-  botOnline: boolean;
-  saveFarmwareEnv: SaveFarmwareEnv;
-  shouldDisplay: ShouldDisplay;
-  dispatch: Function;
-  noLabel?: boolean;
-}
-
-export interface CameraSelectionState {
-  cameraStatus: "" | "sending" | "done" | "error";
 }
 
 export interface PowerAndResetProps {

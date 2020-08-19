@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, docLink, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
@@ -9,16 +9,12 @@ import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { CameraCalibrationConfig, BoolConfig } from "./config";
 import { Feature } from "../../devices/interfaces";
-import {
-  namespace, CAMERA_CALIBRATION_KEY_PART,
-} from "../remote_env/constants";
+import { namespace, CAMERA_CALIBRATION_KEY_PART } from "../remote_env/constants";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../remote_env/translators";
-import {
-  cameraBtnProps,
-} from "../../settings/fbos_settings/camera_selection";
+import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Content, ToolTips } from "../../constants";
-import { getCalibratedImageCenter } from "../images/shown_in_map";
+import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {

@@ -5,11 +5,10 @@ import {
 } from "./interfaces";
 import { info, success, error } from "../../toast/toast";
 import { getDevice } from "../../device";
-import { ColWidth } from "./farmbot_os_settings";
 import { Feature, UserEnv } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../constants";
-import { Highlight } from "../maybe_highlight";
+import { Highlight } from "../../settings/maybe_highlight";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -32,13 +31,13 @@ export const cameraBtnProps = (env: UserEnv) => {
     : { class: "", click: undefined, title: "" };
 };
 
-enum Camera {
+export enum Camera {
   USB = "USB",
   RPI = "RPI",
   NONE = "NONE",
 }
 
-const parseCameraSelection = (env: UserEnv): Camera => {
+export const parseCameraSelection = (env: UserEnv): Camera => {
   const camera = env["camera"]?.toUpperCase();
   if (camera?.includes(Camera.NONE)) {
     return Camera.NONE;
@@ -88,20 +87,22 @@ export class CameraSelection
   }
 
   render() {
+    const disable = !this.props.shouldDisplay(Feature.api_farmware_env)
+      && !this.props.botOnline;
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
-        {!this.props.noLabel && <Col xs={5}>
+        <Col xs={5}>
           <label>
             {t("CAMERA")}
           </label>
-        </Col>}
-        <Col xs={ColWidth.description}>
+        </Col>
+        <Col xs={7}>
           <FBSelect
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
             onChange={this.sendOffConfig}
-            extraClass={this.props.botOnline ? "" : "disabled"} />
+            extraClass={disable ? "disabled" : ""} />
         </Col>
       </Row>
     </Highlight>;

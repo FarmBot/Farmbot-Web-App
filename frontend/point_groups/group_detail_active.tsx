@@ -4,7 +4,6 @@ import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
 import { DeleteButton } from "../ui/delete_button";
 import { save, edit } from "../api/crud";
 import { Paths } from "./paths";
-import { Feature, ShouldDisplay } from "../devices/interfaces";
 import { ErrorBoundary } from "../error_boundary";
 import {
   GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup,
@@ -20,7 +19,6 @@ export interface GroupDetailActiveProps {
   dispatch: Function;
   group: TaggedPointGroup;
   allPoints: TaggedPoint[];
-  shouldDisplay: ShouldDisplay;
   slugs: string[];
   hovered: UUID | undefined;
   editGroupAreaInMap: boolean;
@@ -69,13 +67,11 @@ export class GroupDetailActive
         iconDisplay={this.state.iconDisplay}
         toggleIconShow={this.toggleIconShow}
         tools={this.props.tools}
-        toolTransformProps={this.props.toolTransformProps}
-        shouldDisplay={this.props.shouldDisplay} />
-      {this.props.shouldDisplay(Feature.criteria_groups) &&
-        <GroupCriteria dispatch={dispatch}
-          group={group} slugs={this.props.slugs} botSize={this.props.botSize}
-          editGroupAreaInMap={this.props.editGroupAreaInMap}
-          selectionPointType={this.props.selectionPointType} />}
+        toolTransformProps={this.props.toolTransformProps} />
+      <GroupCriteria dispatch={dispatch}
+        group={group} slugs={this.props.slugs} botSize={this.props.botSize}
+        editGroupAreaInMap={this.props.editGroupAreaInMap}
+        selectionPointType={this.props.selectionPointType} />
       <DeleteButton
         className="group-delete-btn"
         dispatch={dispatch}
@@ -115,7 +111,6 @@ interface GroupMemberDisplayProps {
   group: TaggedPointGroup;
   dispatch: Function;
   pointsSelectedByGroup: TaggedPoint[];
-  shouldDisplay: ShouldDisplay;
   iconDisplay: boolean;
   toggleIconShow(): void;
   hovered: UUID | undefined;
@@ -132,7 +127,6 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
       })}
     </label>
     <Help text={`${t("Click plants in map to add or remove.")} ${(
-      props.shouldDisplay(Feature.criteria_groups) &&
       props.pointsSelectedByGroup.length != props.group.body.point_ids.length)
       ? t(ToolTips.CRITERIA_SELECTION_COUNT) : ""}`} />
     <i onClick={props.toggleIconShow}
@@ -143,7 +137,6 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
     <GroupPointCountBreakdown
       group={props.group}
       dispatch={props.dispatch}
-      shouldDisplay={props.shouldDisplay}
       iconDisplay={props.iconDisplay}
       hovered={props.hovered}
       tools={props.tools}

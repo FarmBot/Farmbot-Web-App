@@ -5,6 +5,7 @@ interface Props {
   onClick(): void;
   title: string;
   expanded: boolean;
+  children?: React.ReactChild;
 }
 
 export const ExpandableHeader = (props: Props) => {
@@ -19,5 +20,6 @@ export const ExpandableHeader = (props: Props) => {
     <span className="icon-toggle">
       [<i className={`fa fa-${icon_string}`} />]
     </span>
+    {props.children}
   </h4>;
 };

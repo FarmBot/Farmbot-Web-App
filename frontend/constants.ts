@@ -253,9 +253,6 @@ export namespace ToolTips {
     press IMPORT to import new hardware parameters to your FarmBot.`);
 
   // Photos
-  export const PHOTOS =
-    trim(`Take and view photos with your FarmBot's camera.`);
-
   export const WEED_DETECTOR =
     trim(`Detect weeds using FarmBot's camera and display them on the
     Farm Designer map.`);
@@ -1476,9 +1473,12 @@ export enum Actions {
   SET_SEQUENCE_POPUP_STATE = "SET_SEQUENCE_POPUP_STATE",
   SET_SEQUENCE_STEP_POSITION = "SET_SEQUENCE_STEP_POSITION",
 
+  // Photos
+  SELECT_IMAGE = "SELECT_IMAGE",
+  SET_IMAGE_SIZE = "SET_IMAGE_SIZE",
+
   // Farmware
   SELECT_FARMWARE = "SELECT_FARMWARE",
-  SELECT_IMAGE = "SELECT_IMAGE",
   FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
   SET_FARMWARE_INFO_STATE = "SET_FARMWARE_INFO_STATE",
 

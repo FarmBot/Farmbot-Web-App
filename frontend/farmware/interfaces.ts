@@ -2,7 +2,6 @@ import { Dictionary, FarmwareConfig } from "farmbot";
 
 export interface FarmwareState {
   currentFarmware: string | undefined;
-  currentImage: string | undefined;
   firstPartyFarmwareNames: string[];
   infoOpen: boolean;
 }

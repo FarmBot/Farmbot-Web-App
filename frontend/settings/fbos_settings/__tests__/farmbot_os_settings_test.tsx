@@ -20,8 +20,6 @@ describe("<FarmBotSettings />", () => {
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
     shouldDisplay: jest.fn(() => true),
-    env: {},
-    saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
 

@@ -34,7 +34,7 @@ export const cameraZCheck =
 
 /* Check if the calibration image center matches the provided image. */
 export const imageSizeCheck =
-  (size: Record<"width" | "height", number>,
+  (size: Record<"width" | "height", number | undefined>,
     calibCenter: Record<"x" | "y", string | undefined>,
   ) => {
     if (!calibCenter.x) { return true; }
@@ -43,6 +43,7 @@ export const imageSizeCheck =
       y: parse(calibCenter.y),
     };
     return isNumber(calibrationCenter.x) && isNumber(calibrationCenter.y)
+      && isNumber(size.width) && isNumber(size.height)
       && ((Math.abs(size.width / 2 - calibrationCenter.x) < 5
         && Math.abs(size.height / 2 - calibrationCenter.y) < 5)
         || (Math.abs(size.height / 2 - calibrationCenter.x) < 5

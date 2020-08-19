@@ -20,8 +20,10 @@ export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
       .map(x => { fwEnvLookup[x.body.key] = x; });
     if (Object.keys(fwEnvLookup).includes(key)) {
       const fwEnv = fwEnvLookup[key];
-      dispatch(edit(fwEnv, { value }));
-      dispatch(save(fwEnv.uuid));
+      if (value != fwEnv.body.value) {
+        dispatch(edit(fwEnv, { value }));
+        dispatch(save(fwEnv.uuid));
+      }
     } else {
       dispatch(initSave("FarmwareEnv", { key, value }));
     }

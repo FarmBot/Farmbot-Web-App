@@ -18,6 +18,10 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
+jest.mock("../group_detail_active", () => ({
+  GroupDetailActive: () => <div />,
+}));
+
 import React from "react";
 import { Provider } from "react-redux";
 import { mount } from "enzyme";
@@ -58,7 +62,7 @@ describe("<GroupDetail />", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it("loads <GroupDetailActive/>", () => {
+  it("loads <GroupDetailActive />", () => {
     mockPath = `/app/designer/groups/${mockId}`;
     const store = fakeStore();
     const el = mount(<Provider store={store}>
