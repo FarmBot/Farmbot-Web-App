@@ -50,9 +50,24 @@ describe("stopIE()", () => {
   });
 
   it("temporarily warns users about using frames", () => {
-    const top_ = { location: { host: "A" } }
-    const self_ = "B"
+    const top_ = { location: { host: "A" } };
+    const self_ = "B";
     times(10, () => temporarilyStopFrames(top_, self_));
     expect(window.alert).toHaveBeenCalled();
+  });
+
+  it("doesn't temporarily warn users about using frames: not in frame", () => {
+    const top_ = { location: { host: "A" } };
+    const self_ = top_;
+    times(10, () => temporarilyStopFrames(top_, self_));
+    expect(window.alert).not.toHaveBeenCalled();
+  });
+
+  it("doesn't temporarily warn users about using frames: authorized", () => {
+    const top_ = { location: { host: "A" } };
+    const self_ = "B";
+    top.location.host = "my.farm.bot";
+    times(10, () => temporarilyStopFrames(top_, self_));
+    expect(window.alert).not.toHaveBeenCalled();
   });
 });
