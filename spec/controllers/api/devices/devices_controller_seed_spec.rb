@@ -246,12 +246,12 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device)).to_not be
       expect(tool_slots_slot_8?(device)).to_not be
 
@@ -303,12 +303,12 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device)).to_not be
       expect(tool_slots_slot_8?(device)).to_not be
 
@@ -360,12 +360,12 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device)).to_not be
       expect(tool_slots_slot_8?(device)).to_not be
 
@@ -417,14 +417,14 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
-      expect(tool_slots_slot_7?(device).name).to eq("Seed Trough 1")
-      expect(tool_slots_slot_8?(device).name).to eq("Seed Trough 2")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
+      expect(tool_slots_slot_7?(device).name).to eq("Slot")
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
 
       check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
       check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
@@ -476,12 +476,12 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device)).to_not be
       expect(tool_slots_slot_8?(device)).to_not be
 
@@ -533,14 +533,14 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
-      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
-      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
-      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
-      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
-      expect(tool_slots_slot_7?(device).name).to eq("Seed Trough 1")
-      expect(tool_slots_slot_8?(device).name).to eq("Seed Trough 2")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
+      expect(tool_slots_slot_7?(device).name).to eq("Slot")
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
 
       check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
       check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
@@ -592,8 +592,8 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
-      expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
@@ -645,8 +645,8 @@ describe Api::DevicesController do
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
-      expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
-      expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
