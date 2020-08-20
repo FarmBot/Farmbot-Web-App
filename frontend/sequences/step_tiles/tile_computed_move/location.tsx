@@ -6,12 +6,14 @@ import {
 } from "./interfaces";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import {
-  selectAllPoints, findPointerByTypeAndId,
+  findPointerByTypeAndId, findSlotByToolId, findToolById,
 } from "../../../resources/selectors";
 import {
   maybeFindVariable, SequenceMeta,
 } from "../../../resources/sequence_meta";
-import { formatPoint } from "../../locals_list/location_form_list";
+import {
+  formatPoint, locationFormList, formatTool, COORDINATE_DDI,
+} from "../../locals_list/location_form_list";
 import { Move, Xyz } from "farmbot";
 
 export const LocationSelection = (props: LocationSelectionProps) =>
@@ -32,7 +34,7 @@ const prepareLocation = (ddi: DropDownItem): {
   locationSelection: LocSelection | undefined,
 } => {
   switch (ddi.headingId) {
-    case "Custom":
+    case "Coordinate":
       return {
         locationNode: undefined,
         locationSelection: LocSelection.custom,
@@ -61,6 +63,14 @@ const prepareLocation = (ddi: DropDownItem): {
         },
         locationSelection: LocSelection.point,
       };
+    case "Tool":
+      return {
+        locationNode: {
+          kind: "tool",
+          args: { tool_id: parseInt("" + ddi.value) }
+        },
+        locationSelection: LocSelection.tool,
+      };
   }
   return {
     locationNode: undefined,
@@ -70,27 +80,12 @@ const prepareLocation = (ddi: DropDownItem): {
 
 const locationList =
   (resources: ResourceIndex, sequenceUuid: UUID): DropDownItem[] => {
-    const points = selectAllPoints(resources).filter(p => !!p.body.id);
-    const mapPoints = points.filter(p => p.body.pointer_type == "GenericPointer");
-    const weeds = points.filter(p => p.body.pointer_type == "Weed");
-    const plants = points.filter(p => p.body.pointer_type == "Plant");
-    const slots = points.filter(p => p.body.pointer_type == "ToolSlot");
-    const headingCommon = { heading: true, value: 0 };
     const varLabel = resourceVariableLabel(maybeFindVariable(
       "parent", resources, sequenceUuid));
-    return [
-      { headingId: "Custom", label: t("Custom coordinates"), value: "" },
+    return locationFormList(resources, [
       { headingId: "Offset", label: t("Offset from current location"), value: "" },
       { headingId: "Identifier", label: varLabel, value: "parent" },
-      { headingId: "Plant", label: t("Plants"), ...headingCommon },
-      ...plants.map(formatPoint),
-      { headingId: "ToolSlot", label: t("Slots"), ...headingCommon },
-      ...slots.map(formatPoint),
-      { headingId: "GenericPointer", label: t("Points"), ...headingCommon },
-      ...mapPoints.map(formatPoint),
-      { headingId: "Weed", label: t("Weeds"), ...headingCommon },
-      ...weeds.map(formatPoint),
-    ];
+    ]);
   };
 
 const getSelectedLocation = (
@@ -101,7 +96,7 @@ const getSelectedLocation = (
 ): DropDownItem | undefined => {
   switch (locationSelection) {
     case LocSelection.custom:
-      return { label: t("Custom coordinates"), value: "" };
+      return COORDINATE_DDI();
     case LocSelection.offset:
       return { label: t("Offset from current location"), value: "" };
   }
@@ -111,6 +106,10 @@ const getSelectedLocation = (
       const { pointer_type, pointer_id } = locationNode.args;
       return formatPoint(
         findPointerByTypeAndId(resources, pointer_type, pointer_id));
+    case "tool":
+      const { tool_id } = locationNode.args;
+      const toolSlot = findSlotByToolId(resources, tool_id);
+      return formatTool(findToolById(resources, tool_id), toolSlot);
     case "identifier":
       const variable =
         maybeFindVariable(locationNode.args.label, resources, sequenceUuid);
@@ -124,20 +123,27 @@ const getSelectedLocation = (
 const resourceVariableLabel = (variable: SequenceMeta | undefined) =>
   `${t("Variable")} - ${variable?.dropdown.label || t("Add new")}`;
 
+export const LOCATION_NODES = ["point", "tool", "identifier"];
+
 export const getLocationState = (step: Move): {
   location: LocationNode | undefined,
   locationSelection: LocSelection | undefined,
 } => {
-  /** Last axis_overwrite where axis_operand is a point or identifier. */
+  /** Last axis_overwrite where axis_operand is a point, tool, or identifier. */
   const overwrite = step.body?.reverse().find(x =>
     x.kind == "axis_overwrite"
-    && ["point", "identifier"].includes(x.args.axis_operand.kind));
+    && LOCATION_NODES.includes(x.args.axis_operand.kind));
   if (overwrite?.kind == "axis_overwrite") {
     switch (overwrite.args.axis_operand.kind) {
       case "point":
         return {
           location: overwrite.args.axis_operand,
           locationSelection: LocSelection.point,
+        };
+      case "tool":
+        return {
+          location: overwrite.args.axis_operand,
+          locationSelection: LocSelection.tool,
         };
       case "identifier":
         return {
@@ -148,7 +154,7 @@ export const getLocationState = (step: Move): {
   }
   const otherOverwrites = step.body?.filter(x =>
     x.kind == "axis_overwrite"
-    && !["point", "identifier"].includes(x.args.axis_operand.kind)) || [];
+    && !LOCATION_NODES.includes(x.args.axis_operand.kind)) || [];
   if (otherOverwrites.length > 0) {
     return { location: undefined, locationSelection: LocSelection.custom };
   }
@@ -189,6 +195,8 @@ export const setOverwriteFromLocation = (
       case LocSelection.offset:
         return undefined;
       case LocSelection.point:
+      case LocSelection.tool:
+      case LocSelection.identifier:
         return overwrite[axis] == 0 ? undefined : overwrite[axis];
     }
     return overwrite[axis];
@@ -210,6 +218,10 @@ export const setOffsetFromLocation = (
         return undefined;
       case LocSelection.offset:
         return offset[axis] ?? 0;
+      case LocSelection.point:
+      case LocSelection.tool:
+      case LocSelection.identifier:
+        return offset[axis] == 0 ? undefined : offset[axis];
     }
     return offset[axis];
   };

@@ -95,7 +95,7 @@ describe("<OverwriteInputRow />", () => {
 
   it("renders options", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
+    p.shouldDisplay = undefined;
     const wrapper = mount(<OverwriteInputRow {...p} />);
     const items = wrapper.find(FBSelect).last().props().list;
     expect(items)
