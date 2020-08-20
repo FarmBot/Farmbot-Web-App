@@ -282,6 +282,7 @@ module CeleryScriptSettingsBag
         n(:point),
         n(:random),
         n(:special_value),
+        n(:tool),
       ],
     },
     number: {
