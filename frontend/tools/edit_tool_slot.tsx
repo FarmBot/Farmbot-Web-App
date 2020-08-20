@@ -5,7 +5,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { getPathArray } from "../history";
-import { TaggedToolSlotPointer } from "farmbot";
+import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
 import { push } from "../history";
 import { Panel } from "../farm_designer/panel_header";
@@ -13,10 +13,13 @@ import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../devices/actions";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsEdit } from "./state_to_props";
-import { EditToolSlotProps } from "./interfaces";
+import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
 import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphics";
+import { Popover } from "@blueprintjs/core";
 
-export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
+export class RawEditToolSlot
+  extends React.Component<EditToolSlotProps, EditToolSlotState> {
+  state: EditToolSlotState = { saveError: true };
 
   get stringyID() { return getPathArray()[4] || ""; }
   get toolSlot() { return this.props.findToolSlot(this.stringyID); }
@@ -29,7 +32,9 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
   updateSlot = (toolSlot: TaggedToolSlotPointer) =>
     (update: Partial<TaggedToolSlotPointer["body"]>) => {
       this.props.dispatch(edit(toolSlot, update));
-      this.props.dispatch(save(toolSlot.uuid));
+      this.props.dispatch(save(toolSlot.uuid))
+        .then(() => this.setState({ saveError: false }))
+        .catch(() => this.setState({ saveError: true }));
     }
 
   render() {
@@ -44,7 +49,15 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
         panelName={panelName}
         title={t("Edit slot")}
         backTo={toolsPath}
-        panel={Panel.Tools} />
+        panel={Panel.Tools}>
+        {toolSlot?.specialStatus == SpecialStatus.DIRTY &&
+          this.state.saveError &&
+          <Popover className={"save-error"}>
+            <i className={"fa fa-exclamation-triangle"}
+              title={t("Unable to save changes.")} />
+            <p>{t("Unable to save changes.")}</p>
+          </Popover>}
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         {toolSlot
           ? <div className={"edit-tool-slot-content-wrapper"}>

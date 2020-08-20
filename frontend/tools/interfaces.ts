@@ -93,6 +93,10 @@ export interface EditToolSlotProps extends AddEditToolSlotPropsBase {
   findToolSlot(id: string): TaggedToolSlotPointer | undefined;
 }
 
+export interface EditToolSlotState {
+  saveError?: boolean;
+}
+
 export interface GantryMountedInputProps {
   gantryMounted: boolean;
   onChange(update: { gantry_mounted: boolean }): void;
