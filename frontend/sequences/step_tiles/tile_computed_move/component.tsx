@@ -56,7 +56,7 @@ import { stringifyStep } from "../index";
  * that axis.
  *
  * _operands supported by this component:
- * `Point | Identifier | SpecialValue | Numeric | Lua`_
+ * `Point | Tool | Identifier | SpecialValue | Numeric | Lua`_
  *
  * **AxisAddition:**
  *

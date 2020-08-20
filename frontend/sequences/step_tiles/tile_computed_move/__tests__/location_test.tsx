@@ -13,10 +13,13 @@ import {
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
-import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeSequence, fakeToolSlot, fakeTool,
+} from "../../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../../ui";
 import { Move } from "farmbot";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
+import { COORDINATE_DDI } from "../../../locals_list/location_form_list";
 
 describe("<LocationSelection />", () => {
   const fakeProps = (): LocationSelectionProps => ({
@@ -35,7 +38,7 @@ describe("<LocationSelection />", () => {
   ]>([
     [{ label: "", value: "" }, undefined, undefined],
     [
-      { label: "", value: "", headingId: "Custom" },
+      { label: "", value: "", headingId: "Coordinate" },
       undefined,
       LocSelection.custom,
     ],
@@ -53,6 +56,11 @@ describe("<LocationSelection />", () => {
       { label: "", value: "1", headingId: "Plant" },
       { kind: "point", args: { pointer_type: "Plant", pointer_id: 1 } },
       LocSelection.point,
+    ],
+    [
+      { label: "", value: "1", headingId: "Tool" },
+      { kind: "tool", args: { tool_id: 1 } },
+      LocSelection.tool,
     ],
   ])("changes location: %s", (ddi, locationNode, locationSelection) => {
     const p = fakeProps();
@@ -72,7 +80,7 @@ describe("<LocationSelection />", () => {
     [
       LocSelection.custom,
       undefined,
-      { label: "Custom coordinates", value: "" },
+      COORDINATE_DDI(),
     ],
     [
       LocSelection.offset,
@@ -84,8 +92,18 @@ describe("<LocationSelection />", () => {
       { kind: "identifier", args: { label: "variable" } },
       { label: "Variable - Add new", value: "variable" },
     ],
+    [
+      LocSelection.tool,
+      { kind: "tool", args: { tool_id: 1 } },
+      { label: "Foo (0, 0, 0)", value: "1", headingId: "Tool" },
+    ],
   ])("shows selection: %s", (locationSelection, locationNode, ddi) => {
     const p = fakeProps();
+    const slot = fakeToolSlot();
+    slot.body.tool_id = 1;
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.resources = buildResourceIndex([tool, slot]).index;
     p.locationNode = locationNode;
     p.locationSelection = locationSelection;
     const wrapper = shallow(<LocationSelection {...p} />);
@@ -136,6 +154,21 @@ describe("getLocationState()", () => {
       locationSelection: LocSelection.offset,
     });
   });
+
+  it("returns tool", () => {
+    const step: Move = {
+      kind: "move", args: {}, body: [{
+        kind: "axis_overwrite", args: {
+          axis: "x",
+          axis_operand: { kind: "tool", args: { tool_id: 1 } }
+        }
+      }]
+    };
+    expect(getLocationState(step)).toEqual({
+      location: { kind: "tool", args: { tool_id: 1 } },
+      locationSelection: LocSelection.tool,
+    });
+  });
 });
 
 describe("setSelectionFromLocation()", () => {
@@ -170,6 +203,12 @@ describe("setOverwriteFromLocation()", () => {
     expect(setOverwriteFromLocation(LocSelection.point,
       { x: undefined, y: 0, z: 3 }))
       .toEqual({ x: undefined, y: undefined, z: 3 });
+    const vector = { x: undefined, y: 0, z: 0 };
+    const undefinedVector = { x: undefined, y: undefined, z: undefined };
+    expect(setOverwriteFromLocation(LocSelection.tool, vector))
+      .toEqual(undefinedVector);
+    expect(setOverwriteFromLocation(LocSelection.identifier, vector))
+      .toEqual(undefinedVector);
     const overwrite = { x: 1, y: 2, z: 3 };
     expect(setOverwriteFromLocation(undefined, overwrite)).toEqual(overwrite);
   });
@@ -183,6 +222,14 @@ describe("setOffsetFromLocation()", () => {
     expect(setOffsetFromLocation(LocSelection.offset,
       { x: undefined, y: undefined, z: 0 }))
       .toEqual({ x: 0, y: 0, z: 0 });
+    const vector = { x: undefined, y: 0, z: 0 };
+    const undefinedVector = { x: undefined, y: undefined, z: undefined };
+    expect(setOffsetFromLocation(LocSelection.point, vector))
+      .toEqual(undefinedVector);
+    expect(setOffsetFromLocation(LocSelection.tool, vector))
+      .toEqual(undefinedVector);
+    expect(setOffsetFromLocation(LocSelection.identifier, vector))
+      .toEqual(undefinedVector);
     const offset = { x: 1, y: 2, z: 3 };
     expect(setOffsetFromLocation(undefined, offset)).toEqual(offset);
   });

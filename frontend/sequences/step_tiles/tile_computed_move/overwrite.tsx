@@ -6,6 +6,7 @@ import { Axis, Feature, ShouldDisplay } from "../../../devices/interfaces";
 import { isUndefined } from "lodash";
 import { Col, FBSelect, Row } from "../../../ui";
 import { MoveStepInput } from "./input";
+import { LOCATION_NODES } from "./location";
 
 export const overwriteAxis = (
   axis: Axis,
@@ -21,7 +22,7 @@ export const getOverwriteState = (step: Move, axis: Xyz): {
 } => {
   const overwrite = step.body?.reverse().find(x =>
     x.kind == "axis_overwrite"
-    && !["point", "identifier"].includes(x.args.axis_operand.kind)
+    && !LOCATION_NODES.includes(x.args.axis_operand.kind)
     && x.args.axis == axis);
   if (overwrite?.kind == "axis_overwrite") {
     switch (overwrite.args.axis_operand.kind) {
