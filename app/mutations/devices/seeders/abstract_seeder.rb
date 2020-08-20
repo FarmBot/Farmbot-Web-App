@@ -234,7 +234,7 @@ module Devices
                         pullout_direction: ToolSlot::POSITIVE_X,
                         gantry_mounted: false)
         Points::Create.run!(pointer_type: "ToolSlot",
-                            name: name,
+                            name: "Slot",
                             x: x,
                             y: y,
                             z: z,
