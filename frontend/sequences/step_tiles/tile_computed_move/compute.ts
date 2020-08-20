@@ -1,5 +1,5 @@
 import { Vector3, Xyz, AxisOverwrite, AxisAddition } from "farmbot";
-import { findPointerByTypeAndId } from "../../../resources/selectors";
+import { findPointerByTypeAndId, findSlotByToolId } from "../../../resources/selectors";
 import { maybeFindVariable } from "../../../resources/sequence_meta";
 import {
   AxisSelection, ComputeCoordinateProps, ComputeOverwriteProps,
@@ -49,6 +49,10 @@ const overwrite = (props: ComputeOverwriteProps): number | undefined => {
       const { pointer_type, pointer_id } = props.operand.args;
       const point = findPointerByTypeAndId(resources, pointer_type, pointer_id);
       return point.body[props.axis];
+    case "tool":
+      const { tool_id } = props.operand.args;
+      const toolSlot = findSlotByToolId(resources, tool_id);
+      return toolSlot?.body[props.axis];
     case "identifier":
       const { label } = props.operand.args;
       const variable = maybeFindVariable(label, resources, props.sequenceUuid);

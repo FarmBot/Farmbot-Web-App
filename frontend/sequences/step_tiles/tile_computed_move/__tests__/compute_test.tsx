@@ -4,7 +4,9 @@ import {
 import { computeCoordinate } from "../compute";
 import { fakeNumericMoveStepCeleryScript } from "../test_fixtures";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
-import { SpecialValue } from "farmbot";
+import { SpecialValue, Xyz } from "farmbot";
+import { fakeTool, fakeToolSlot } from "../../../../__test_support__/fake_state/resources";
+import { cloneDeep } from "lodash";
 
 describe("computeCoordinate()", () => {
   it("computes coordinate", () => {
@@ -40,6 +42,43 @@ describe("computeCoordinate()", () => {
       sequenceUuid: "seqUuid",
     });
     expect(coordinate).toEqual({ x: 10, y: 15, z: 18 });
+  });
+
+  it("computes coordinate for tool", () => {
+    const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
+    const botPosition = { x: 0, y: 0, z: 0 };
+    const tool1 = fakeTool();
+    tool1.body.id = 1;
+    const tool2 = fakeTool();
+    tool2.body.id = 2;
+    const slot = fakeToolSlot();
+    slot.body.tool_id = 1;
+    slot.body.x = 100;
+    slot.body.y = 200;
+    slot.body.z = 300;
+    const resourceIndex = buildResourceIndex([tool1, tool2, slot]).index;
+    ["x", "y", "z"].map((axis: Xyz) =>
+      moveStep.body && moveStep.body.push({
+        kind: "axis_overwrite",
+        args: {
+          axis,
+          axis_operand: { kind: "tool", args: { tool_id: 1 } },
+        },
+      }));
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: {
+        axis: "x",
+        axis_operand: { kind: "tool", args: { tool_id: 2 } },
+      },
+    });
+    const coordinate = computeCoordinate({
+      step: moveStep,
+      botPosition,
+      resourceIndex,
+      sequenceUuid: "seqUuid",
+    });
+    expect(coordinate).toEqual({ x: 100, y: 200, z: 300 });
   });
 
   it("computes coordinate with special value overwrites", () => {
