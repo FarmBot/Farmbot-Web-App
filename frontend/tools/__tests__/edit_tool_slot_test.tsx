@@ -37,6 +37,7 @@ import { push } from "../../history";
 import {
   setToolHover,
 } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
+import { SpecialStatus } from "farmbot";
 
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
@@ -73,6 +74,16 @@ describe("<EditToolSlot />", () => {
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "direction", "gantry-mounted", "meta value",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(0);
+  });
+
+  it("renders save error", () => {
+    const p = fakeProps();
+    const toolSlot = fakeToolSlot();
+    toolSlot.specialStatus = SpecialStatus.DIRTY;
+    p.findToolSlot = () => toolSlot;
+    const wrapper = mount(<EditToolSlot {...p} />);
+    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
   });
 
   it("unhovers tool slot on unmount", () => {
@@ -81,12 +92,26 @@ describe("<EditToolSlot />", () => {
     expect(setToolHover).toHaveBeenCalledWith(undefined);
   });
 
-  it("updates tool slot", () => {
+  it("updates tool slot", async () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
     const slot = fakeToolSlot();
-    const wrapper = mount<EditToolSlot>(<EditToolSlot {...fakeProps()} />);
-    wrapper.instance().updateSlot(slot)({ x: 123 });
+    const wrapper = mount<EditToolSlot>(<EditToolSlot {...p} />);
+    await wrapper.instance().updateSlot(slot)({ x: 123 });
     expect(edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(save).toHaveBeenCalledWith(slot.uuid);
+    expect(wrapper.state().saveError).toEqual(false);
+  });
+
+  it("errors while updating tool slot", async () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.reject());
+    const slot = fakeToolSlot();
+    const wrapper = mount<EditToolSlot>(<EditToolSlot {...p} />);
+    await wrapper.instance().updateSlot(slot)({ x: 123 });
+    expect(edit).toHaveBeenCalledWith(slot, { x: 123 });
+    expect(save).toHaveBeenCalledWith(slot.uuid);
+    expect(wrapper.state().saveError).toEqual(true);
   });
 
   it("moves to tool slot", () => {

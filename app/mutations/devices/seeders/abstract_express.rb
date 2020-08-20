@@ -77,10 +77,16 @@ module Devices
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup
 
-        s.dig(:body, 1, :args, :location, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 1, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 1, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 1, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-        s.dig(:body, 3, :args, :location, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 4, :args, :location, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 3, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 3, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 3, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 4, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 4, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         Sequences::Create.run!(s, device: device)
       end
 
