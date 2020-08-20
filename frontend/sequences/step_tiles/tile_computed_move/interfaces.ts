@@ -1,11 +1,11 @@
 import {
-  Coordinate, Identifier, Point, Tool, TaggedSequence, Move, Xyz, AxisOverwrite,
+  Identifier, Point, Tool, TaggedSequence, Move, Xyz, AxisOverwrite,
 } from "farmbot";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import { HardwareFlags } from "../../interfaces";
 import { BotPosition, ShouldDisplay } from "../../../devices/interfaces";
 
-export type LocationNode = Coordinate | Identifier | Point | Tool;
+export type LocationNode = Identifier | Point | Tool;
 
 export interface ComputedMoveProps {
   currentSequence: TaggedSequence;
@@ -65,6 +65,7 @@ export enum LocSelection {
   custom = "custom",
   offset = "offset",
   point = "point",
+  tool = "tool",
   identifier = "identifier",
   none = "",
 }
