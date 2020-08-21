@@ -136,10 +136,16 @@ module Devices
 
         s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
         s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:tool_id] = seeder_id
-        s.dig(:body, 1, :args, :location, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 1, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 1, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 1, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
         s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-        s.dig(:body, 3, :args, :location, :args)[:tool_id] = seed_bin_id
-        s.dig(:body, 4, :args, :location, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 3, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 3, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 3, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 4, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 4, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
+        s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
 
         Sequences::Create.run!(s, device: device)
         # when ProductLines::EXPRESS then raise "TODO"

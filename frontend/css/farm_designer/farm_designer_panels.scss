@@ -872,6 +872,15 @@
   }
 }
 
+.edit-tool-slot-panel {
+  .save-error {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+    color: $darkest_red;
+  }
+}
+
 .add-tool-slot-panel-content,
 .edit-tool-slot-panel-content {
   max-height: calc(100vh - 14rem);
