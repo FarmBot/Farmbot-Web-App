@@ -30,16 +30,16 @@ module Api
         url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.img"
         render json: { image_url: url }
       when NONE
-        render_none
+        platform_missing(platform)
       else
         Rollbar.error("Bad FBOS platform?", { platform: platform })
-        render_none
+        platform_missing(platform)
       end
     end
 
     private
 
-    def render_none
+    def platform_missing(platform)
       err = { error: BAD_PLATFORM % [platform] }
       render json: err, status: 404
     end
