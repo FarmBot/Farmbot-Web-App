@@ -1356,6 +1356,40 @@ ALTER SEQUENCE public.regimens_id_seq OWNED BY public.regimens.id;
 
 
 --
+-- Name: releases_tables; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.releases_tables (
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    image_url character varying,
+    version character varying,
+    platform character varying,
+    channel character varying
+);
+
+
+--
+-- Name: releases_tables_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.releases_tables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: releases_tables_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.releases_tables_id_seq OWNED BY public.releases_tables.id;
+
+
+--
 -- Name: resource_update_steps; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -2018,6 +2052,13 @@ ALTER TABLE ONLY public.regimens ALTER COLUMN id SET DEFAULT nextval('public.reg
 
 
 --
+-- Name: releases_tables id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.releases_tables ALTER COLUMN id SET DEFAULT nextval('public.releases_tables_id_seq'::regclass);
+
+
+--
 -- Name: saved_gardens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2349,6 +2390,14 @@ ALTER TABLE ONLY public.regimen_items
 
 ALTER TABLE ONLY public.regimens
     ADD CONSTRAINT regimens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: releases_tables releases_tables_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.releases_tables
+    ADD CONSTRAINT releases_tables_pkey PRIMARY KEY (id);
 
 
 --
@@ -3396,6 +3445,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200704150931'),
 ('20200801150609'),
 ('20200804150609'),
-('20200807182602');
+('20200807182602'),
+('20200823211337');
 
 

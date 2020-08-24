@@ -39,6 +39,7 @@ FarmBot::Application.routes.draw do
       web_app_config: [:destroy, :show, :update],
     }.to_a.map { |(name, only)| resource name, only: only }
     get "/corpus" => "corpuses#show", as: :api_corpus
+    get "/releases" => "releases#show", as: :releases
 
     resources(:points, except: []) { post :search, on: :collection }
 
