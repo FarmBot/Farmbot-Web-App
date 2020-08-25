@@ -236,11 +236,18 @@ fieldset {
     margin-left: 0.5rem;
     margin-top: 0.2rem;
   }
+  .help-icon {
+    margin: 0 0 0.5rem 0.25rem;
+    color: $dark_gray;
+    font-size: 1rem;
+    vertical-align: middle;
+  }
 }
 
 .throttle-display {
   .throttle-row {
     display: flex;
+    white-space: nowrap;
     .saucer {
       margin-right: 1rem;
     }
@@ -1233,6 +1240,13 @@ ul {
     display: inline-block;
     margin-left: 1rem;
     margin-top: 0.5rem;
+  }
+  .log-stream-link {
+    margin-top: 1rem;
+    text-align: center;
+    .fa-external-link {
+      margin-left: 0.5rem;
+    }
   }
 }
 

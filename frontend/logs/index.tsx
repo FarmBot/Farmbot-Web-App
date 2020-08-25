@@ -99,6 +99,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
                 setFilterLevel={this.setFilterLevel}
                 dispatch={this.props.dispatch}
                 sourceFbosConfig={this.props.sourceFbosConfig}
+                bot={this.props.bot}
                 getConfigValue={this.props.getConfigValue} />
             </Popover>
           </div>

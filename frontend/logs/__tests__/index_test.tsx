@@ -10,6 +10,7 @@ import { LogsProps } from "../interfaces";
 import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -28,6 +29,7 @@ describe("<Logs />", () => {
     sourceFbosConfig: jest.fn(),
     getConfigValue: x => mockStorj[x],
     shouldDisplay: () => false,
+    bot: bot,
   });
 
   it("renders", () => {

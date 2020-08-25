@@ -9,6 +9,7 @@ import { ConfigurationName } from "farmbot";
 import { MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 interface LogSettingRecord {
   label: string;
@@ -117,11 +118,19 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
         sourceFbosConfig={sourceFbosConfig}
         getConfigValue={getConfigValue} />;
     };
+    const { private_ip } = this.props.bot.hardware.informational_settings;
     return <div className={"logs-settings-menu"}>
       {t("Sequence logs:")}
       {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
       {t("Firmware logs:")}
       {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
+      {DevSettings.futureFeaturesEnabled() && private_ip &&
+        <div className={"log-stream-link"}>
+          <a href={`http://${private_ip}/logger`} target={"_blank"}>
+            {t("debug log stream")}
+            <i className="fa fa-external-link" />
+          </a>
+        </div>}
     </div>;
   }
 }

@@ -68,12 +68,13 @@ describe("<EditToolSlot />", () => {
   it("renders", () => {
     const p = fakeProps();
     const toolSlot = fakeToolSlot();
-    toolSlot.body.meta = { meta_key: "meta value" };
+    toolSlot.body.meta = { meta_key: "meta value", tool_direction: "standard" };
     p.findToolSlot = () => toolSlot;
     const wrapper = mount(<EditToolSlot {...p} />);
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "direction", "gantry-mounted", "meta value",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.text().toLowerCase()).not.toContain("standard");
     expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(0);
   });
 
