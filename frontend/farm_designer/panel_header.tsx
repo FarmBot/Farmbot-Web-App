@@ -232,7 +232,7 @@ export const NavTab = (props: NavTabProps) =>
       getCurrentTab() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
-    <img width={25} height={25}
+    <img width={35} height={30}
       src={TAB_ICON[props.panel]}
       title={PANEL_TITLE()[props.panel]} />
   </Link>;
