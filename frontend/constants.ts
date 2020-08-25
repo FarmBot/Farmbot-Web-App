@@ -52,6 +52,13 @@ export namespace ToolTips {
   export const SENSOR_HISTORY =
     trim(`View and filter historical sensor reading data.`);
 
+  // FarmBot OS
+  export const VOLTAGE_STATUS =
+    trim(`Raspberry Pi power status since last reboot. If supply voltage
+    drops below the standard operational threshold the indicator will turn
+    red. Once the voltage level recovers the status will turn yellow,
+    indicating that a low voltage event has occurred.`);
+
   // FarmBot OS Settings: Firmware
   export const FIRMWARE_VALUE_API =
     trim(`Firmware value from your choice in the dropdown to the left, as
@@ -530,7 +537,7 @@ export namespace Content {
     trim(`Please check your email to confirm email address changes.`);
 
   export const ACCOUNT_PASSWORD_CHANGE =
-    trim(`Upon successful password change, your FarmBot will factory reset
+    trim(`Upon successful password change, your FarmBot will soft reset
     allowing you to configure it with the updated credentials.
     You will also be logged out of other browser sessions. Continue?`);
 
@@ -742,28 +749,37 @@ export namespace Content {
     trim(`This will shutdown FarmBot's Raspberry Pi. To turn it
     back on, unplug FarmBot and plug it back in.`);
 
-  export const FACTORY_RESET_WARNING =
-    trim(`Factory resetting your FarmBot will destroy all data on the device,
-    revoking your FarmBot's ability to connect to your web app account and your
-    home wifi. Upon factory resetting, your device will restart into
-    Configurator mode. Factory resetting your FarmBot will not affect any data
-    or settings from your web app account, allowing you to do a complete restore
-    to your device once it is back online and paired with your web app
-    account.`);
+  export const SOFT_RESET_WARNING =
+    trim(`Soft resetting your FarmBot will revoke your FarmBot's ability
+    to connect to your web app account and your home WiFi network.
+    Upon soft resetting, your device will go into Configurator mode.`);
 
-  export const FACTORY_RESET_ALERT =
-    trim(`Warning: This will erase all data stored on your FarmBot's SD card,
+  export const SOFT_RESET_ALERT =
+    trim(`Warning: This will erase data stored on your FarmBot's SD card,
     requiring you to reconfigure FarmBot so that it can reconnect to your
-    WiFi network and a web app account. Factory resetting the device will
+    WiFi network and web app account. Soft resetting the device will
     not delete data stored in your web app account. Are you sure you wish
     to continue?`);
 
-  export const AUTO_FACTORY_RESET =
-    trim(`Automatically factory reset when the WiFi network cannot be
+  export const HARD_RESET_WARNING =
+    trim(`Hard reset your FarmBot by reflashing the latest version of
+    FarmBot OS onto the microSD card. This will erase all data from the
+    device and allow you to start from a clean slate. This is recommended
+    if you are experiencing problems with your setup. Upon hard resetting,
+    your device will go into Configurator mode.`);
+
+  export const OS_RESET_WARNING =
+    trim(`{{ resetMethod }} resetting your FarmBot will not affect any of
+    your data or settings from your web app account, allowing you to do a
+    complete restore to your device once it is back online and paired with
+    your web app account.`);
+
+  export const AUTO_SOFT_RESET =
+    trim(`Automatically soft reset when the WiFi network cannot be
     detected. Useful for network changes.`);
 
-  export const AUTO_FACTORY_RESET_PERIOD =
-    trim(`Time in minutes to attempt connecting to WiFi before a factory
+  export const AUTO_SOFT_RESET_PERIOD =
+    trim(`Time in minutes to attempt connecting to WiFi before a soft
     reset.`);
 
   export const NOT_HTTPS =
@@ -1149,8 +1165,9 @@ export enum DeviceSetting {
   powerAndReset = `Power and Reset`,
   restartFarmbot = `Restart Farmbot`,
   shutdownFarmbot = `Shutdown Farmbot`,
-  factoryReset = `Factory Reset`,
-  autoFactoryReset = `Automatic Factory Reset`,
+  softReset = `Soft Reset`,
+  hardReset = `Hard Reset`,
+  autoSoftReset = `Automatic Soft Reset`,
   connectionAttemptPeriod = `Connection Attempt Period`,
   changeOwnership = `Change Ownership`,
 

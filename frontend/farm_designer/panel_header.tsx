@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { getPathArray } from "../history";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
@@ -10,6 +10,7 @@ import {
   getFwHardwareValue, hasSensors,
 } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
+import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
 
 export enum Panel {
   Map = "Map",
@@ -117,70 +118,124 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Settings]: iconFile(Icon.settings),
 };
 
+export const PANEL_SLUG: { [key in Panel]: string } = {
+  [Panel.Map]: "",
+  [Panel.Plants]: "plants",
+  [Panel.Groups]: "groups",
+  [Panel.Sequences]: "sequences",
+  [Panel.Regimens]: "regimens",
+  [Panel.SavedGardens]: "gardens",
+  [Panel.FarmEvents]: "events",
+  [Panel.Zones]: "zones",
+  [Panel.Points]: "points",
+  [Panel.Weeds]: "weeds",
+  [Panel.Controls]: "controls",
+  [Panel.Sensors]: "sensors",
+  [Panel.Photos]: "photos",
+  [Panel.Farmware]: "farmware",
+  [Panel.Tools]: "tools",
+  [Panel.Messages]: "messages",
+  [Panel.Logs]: "logs",
+  [Panel.Help]: "help",
+  [Panel.Settings]: "settings",
+};
+
+export const PANEL_BY_SLUG: Record<string, Panel> = {};
+Object.entries(PANEL_SLUG).map(([panel, slug]: [Panel, string]) =>
+  PANEL_BY_SLUG[slug] = panel);
+
+export const PANEL_PATH: Partial<{ [key in Panel]: () => string }> = {
+  [Panel.Map]: () => "/app/designer",
+  [Panel.Sequences]: computeEditorUrlFromState("Sequence"),
+  [Panel.Regimens]: computeEditorUrlFromState("Regimen"),
+};
+
+export const PANEL_TITLE = (): { [key in Panel]: string } => ({
+  [Panel.Map]: t("Map"),
+  [Panel.Plants]: t("Plants"),
+  [Panel.Groups]: t("Groups"),
+  [Panel.Sequences]: t("Sequences"),
+  [Panel.Regimens]: t("Regimens"),
+  [Panel.SavedGardens]: t("Gardens"),
+  [Panel.FarmEvents]: t("Events"),
+  [Panel.Zones]: t("Zones"),
+  [Panel.Points]: t("Points"),
+  [Panel.Weeds]: t("Weeds"),
+  [Panel.Controls]: t("Controls"),
+  [Panel.Sensors]: t("Sensors"),
+  [Panel.Photos]: t("Photos"),
+  [Panel.Farmware]: t("Farmware"),
+  [Panel.Tools]: t("Tools"),
+  [Panel.Messages]: t("Messages"),
+  [Panel.Logs]: t("Logs"),
+  [Panel.Help]: t("Help"),
+  [Panel.Settings]: t("Settings"),
+});
+
 // tslint:disable-next-line:cyclomatic-complexity
 const getCurrentTab = (): Tabs => {
   const pathArray = getPathArray();
   if (pathArray.join("/") === "/app/designer") {
     return Panel.Map;
-  } else if (pathArray.includes("groups")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Groups])) {
     return Panel.Groups;
-  } else if (pathArray.includes("sequences")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Sequences])) {
     return Panel.Sequences;
-  } else if (pathArray.includes("regimens")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Regimens])) {
     return Panel.Regimens;
-  } else if (pathArray.includes("gardens")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.SavedGardens])) {
     return Panel.SavedGardens;
-  } else if (pathArray.includes("events")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.FarmEvents])) {
     return Panel.FarmEvents;
-  } else if (pathArray.includes("zones")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Zones])) {
     return Panel.Zones;
-  } else if (pathArray.includes("points")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Points])) {
     return Panel.Points;
-  } else if (pathArray.includes("weeds")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Weeds])) {
     return Panel.Weeds;
-  } else if (pathArray.includes("controls")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Controls])) {
     return Panel.Controls;
-  } else if (pathArray.includes("sensors")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Sensors])) {
     return Panel.Sensors;
-  } else if (pathArray.includes("photos")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Photos])) {
     return Panel.Photos;
-  } else if (pathArray.includes("farmware")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Farmware])) {
     return Panel.Farmware;
-  } else if (pathArray.includes("tools")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Tools])) {
     return Panel.Tools;
-  } else if (pathArray.includes("messages")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Messages])) {
     return Panel.Messages;
-  } else if (pathArray.includes("help")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Help])) {
     return Panel.Help;
-  } else if (pathArray.includes("settings")) {
+  } else if (pathArray.includes(PANEL_SLUG[Panel.Settings])) {
     return Panel.Settings;
   } else {
     return Panel.Plants;
   }
 };
 
+export const getPanelPath = (panel: Panel) => {
+  const defaultLinkFn = () => `/app/designer/${PANEL_SLUG[panel]}`;
+  const getPath = PANEL_PATH[panel] || defaultLinkFn;
+  return getPath();
+};
+
 export interface NavTabProps {
   panel: Panel;
-  linkTo: string;
-  title: string;
-  icon?: string;
   desktopHide?: boolean;
 }
 
-export const NavTab = (props: NavTabProps) => {
-  const common = DevSettings.futureFeaturesEnabled()
-    ? { width: 25, height: 25 }
-    : { width: 30, height: 30 };
-  return <Link to={props.linkTo} style={{ flex: 0.3 }}
+export const NavTab = (props: NavTabProps) =>
+  <Link to={getPanelPath(props.panel)}
+    style={{ flex: 0.3 }}
     className={[
       getCurrentTab() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
-    {props.icon
-      ? <i className={props.icon} {...common} title={props.title} />
-      : <img {...common} src={TAB_ICON[props.panel]} title={props.title} />}
+    <img width={25} height={25}
+      src={TAB_ICON[props.panel]}
+      title={PANEL_TITLE()[props.panel]} />
   </Link>;
-};
 
 const displayScrollIndicator = () => {
   const element = document.getElementsByClassName("panel-tabs")[1];
@@ -189,7 +244,7 @@ const displayScrollIndicator = () => {
   return mobile && !end;
 };
 
-const showSensors = () => {
+export const showSensors = () => {
   const getWebAppConfigVal = getWebAppConfigValue(store.getState);
   const firmwareHardware = getFwHardwareValue(getFbosConfig(
     store.getState().resources.index));
@@ -202,84 +257,25 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
   const hidden = props.hidden ? "hidden" : "";
   return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${hidden}`}>
     {displayScrollIndicator() && <div className={"scroll-indicator"} />}
-    <div className="panel-tabs">
-      <NavTab panel={Panel.Map}
-        linkTo={"/app/designer"}
-        title={t("Map")} desktopHide={true} />
-      <NavTab
-        panel={Panel.Plants}
-        linkTo={"/app/designer/plants"}
-        title={t("Plants")} />
-      <NavTab
-        panel={Panel.Groups}
-        linkTo={"/app/designer/groups"}
-        title={t("Groups")} />
-      <NavTab
-        panel={Panel.SavedGardens}
-        linkTo={"/app/designer/gardens"}
-        title={t("Gardens")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Sequences}
-          linkTo={"/app/designer/sequences"}
-          title={t("Sequences")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Regimens}
-          linkTo={"/app/designer/regimens"}
-          title={t("Regimens")} />}
-      <NavTab
-        panel={Panel.FarmEvents}
-        linkTo={"/app/designer/events"}
-        title={t("Events")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Zones}
-          linkTo={"/app/designer/zones"}
-          title={t("Zones")} />}
-      <NavTab
-        panel={Panel.Points}
-        linkTo={"/app/designer/points"}
-        title={t("Points")} />
-      <NavTab
-        panel={Panel.Weeds}
-        linkTo={"/app/designer/weeds"}
-        title={t("Weeds")} />
-      <NavTab
-        panel={Panel.Controls}
-        linkTo={"/app/designer/controls"}
-        title={t("Controls")} />
-      {showSensors() &&
-        <NavTab
-          panel={Panel.Sensors}
-          linkTo={"/app/designer/sensors"}
-          title={t("Sensors")} />}
-      <NavTab
-        panel={Panel.Photos}
-        linkTo={"/app/designer/photos"}
-        title={t("Photos")} />
-      <NavTab
-        panel={Panel.Farmware}
-        linkTo={"/app/designer/farmware"}
-        title={t("Farmware")} />
-      <NavTab
-        panel={Panel.Tools}
-        linkTo={"/app/designer/tools"}
-        title={t("Tools")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Messages}
-          linkTo={"/app/designer/messages"}
-          title={t("Messages")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Help}
-          linkTo={"/app/designer/help"}
-          title={t("Help")} />}
-      <NavTab
-        panel={Panel.Settings}
-        linkTo={"/app/designer/settings"}
-        title={t("Settings")} />
+    <div className={"panel-tabs"}>
+      <NavTab panel={Panel.Map} desktopHide={true} />
+      <NavTab panel={Panel.Plants} />
+      <NavTab panel={Panel.Groups} />
+      <NavTab panel={Panel.SavedGardens} />
+      <NavTab panel={Panel.Sequences} />
+      <NavTab panel={Panel.Regimens} />
+      <NavTab panel={Panel.FarmEvents} />
+      {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
+      <NavTab panel={Panel.Points} />
+      <NavTab panel={Panel.Weeds} />
+      <NavTab panel={Panel.Controls} />
+      {showSensors() && <NavTab panel={Panel.Sensors} />}
+      <NavTab panel={Panel.Photos} />
+      <NavTab panel={Panel.Farmware} />
+      <NavTab panel={Panel.Tools} />
+      <NavTab panel={Panel.Messages} />
+      <NavTab panel={Panel.Help} />
+      <NavTab panel={Panel.Settings} />
     </div>
   </div>;
 }

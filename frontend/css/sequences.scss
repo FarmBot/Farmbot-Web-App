@@ -43,6 +43,9 @@
       padding-right: 15px;
     }
   }
+  .sequence-editor-content {
+    margin-right: -15px;
+  }
 }
 
 .farmware-input-panel {
@@ -176,6 +179,11 @@
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 16rem);
+  .step-button {
+    .step-block-wrapper {
+      margin-bottom: 1rem;
+    }
+  }
 }
 
 .farmware-info-panel,
@@ -188,12 +196,6 @@
     }
     margin-left: 15px;
     margin-right: 15px;
-  }
-}
-
-.step-button-cluster {
-  @media screen and (max-width: 767px) {
-    width: 40rem;
   }
 }
 
@@ -241,7 +243,7 @@
     margin-left: -15px;
   }
   .non-empty-state {
-    height: calc(100vh - 19rem);
+    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -513,7 +515,6 @@
     height: 2rem;
   }
   .panel-content {
-    height: calc(100vh - 15rem);
     overflow-y: auto;
     overflow-x: hidden;
     margin-left: -15px;
@@ -524,6 +525,9 @@
 .farmware-list-panel {
   .farmware-list-panel-contents {
     height: calc(100vh - 15rem);
+    @media screen and (max-width: 450px) {
+      max-height: calc(100vh - 11rem);
+    }
     overflow-y: auto;
     overflow-x: hidden;
     margin-right: -20px;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { StepButton } from "./step_buttons";
 import { scrollToBottom, urlFriendly } from "../util";
 import { Row } from "../ui/index";
@@ -215,14 +215,16 @@ export function StepButtonCluster(props: StepButtonProps) {
       </StepButton>] : []),
   ];
 
+  const sequenceUrlName = urlFriendly(props.current?.body.name || "");
+  const click = () => {
+    scrollToBottom("sequenceDiv");
+    inDesigner() && push(`/app/designer/sequences/${sequenceUrlName}`);
+  };
+
   return <Row>
     <div className="step-button-cluster">
       {ALL_THE_BUTTONS.map((stepButton, inx) =>
-        <div key={inx} onClick={() => {
-          scrollToBottom("sequenceDiv");
-          inDesigner() && push(`/app/designer/sequences/${
-            urlFriendly(props.current?.body.name || "")}`);
-        }}>
+        <div className={"step-button"} key={inx} onClick={click}>
           {stepButton}
         </div>)}
     </div>

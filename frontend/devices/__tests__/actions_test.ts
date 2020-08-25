@@ -70,16 +70,16 @@ describe("powerOff()", function () {
   });
 });
 
-describe("factoryReset()", () => {
-  it("doesn't call factoryReset", async () => {
+describe("softReset()", () => {
+  it("doesn't call softReset", async () => {
     window.confirm = () => false;
-    await actions.factoryReset();
+    await actions.softReset();
     expect(mockDevice.current.resetOS).not.toHaveBeenCalled();
   });
 
-  it("calls factoryReset", async () => {
+  it("calls softReset", async () => {
     window.confirm = () => true;
-    await actions.factoryReset();
+    await actions.softReset();
     expect(mockDevice.current.resetOS).toHaveBeenCalled();
   });
 });

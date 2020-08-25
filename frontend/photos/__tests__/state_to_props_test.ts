@@ -10,6 +10,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { JobProgress } from "farmbot";
+import { StringSetting } from "../../session_keys";
 
 describe("getImageJobs()", () => {
   it("returns image upload job list", () => {
@@ -87,7 +88,8 @@ describe("mapStateToProps()", () => {
     const webAppConfig = fakeWebAppConfig();
     webAppConfig.body.photo_filter_begin = "2017-09-03T20:01:40.336Z";
     state.resources = buildResourceIndex([webAppConfig]);
-    expect(mapStateToProps(state).getConfigValue("photo_filter_begin"))
+    const props = mapStateToProps(state);
+    expect(props.getConfigValue(StringSetting.photo_filter_begin))
       .toEqual("2017-09-03T20:01:40.336Z");
   });
 });

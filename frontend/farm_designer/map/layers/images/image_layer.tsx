@@ -5,7 +5,7 @@ import { TaggedImage } from "farmbot";
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep, some } from "lodash";
 import { equals } from "../../../../util";
-import { BooleanSetting } from "../../../../session_keys";
+import { BooleanSetting, StringSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import {
   parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, imageIsHidden,
@@ -40,8 +40,8 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
     } = this.props;
     const cropImages = !!getConfigValue(BooleanSetting.crop_images);
     const getFilterValue = parseFilterSetting(getConfigValue);
-    const imageFilterBegin = getFilterValue("photo_filter_begin");
-    const imageFilterEnd = getFilterValue("photo_filter_end");
+    const imageFilterBegin = getFilterValue(StringSetting.photo_filter_begin);
+    const imageFilterEnd = getFilterValue(StringSetting.photo_filter_end);
     const hoveredImage: TaggedImage | undefined =
       images.filter(img => img.body.id == hoveredMapImage
         || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];

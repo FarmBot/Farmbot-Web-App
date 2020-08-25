@@ -69,7 +69,7 @@ export class Connectivity
             <ChipTemperatureDisplay temperature={soc_temp} />
             <WiFiStrengthDisplay wifiStrength={wifi_level}
               wifiStrengthPercent={wifi_level_percent} />
-            <VoltageDisplay throttled={throttled} />
+            <VoltageDisplay throttleData={throttled} />
           </div>
           <QosPanel pings={this.props.pings} />
         </Col>
