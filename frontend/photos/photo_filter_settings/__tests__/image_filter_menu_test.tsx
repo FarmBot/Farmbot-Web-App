@@ -26,6 +26,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { ImageFilterMenuProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
+import { StringSetting } from "../../../session_keys";
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";
@@ -46,10 +47,10 @@ describe("<ImageFilterMenu />", () => {
   });
 
   it.each<[
-    "beginDate" | "endDate", "photo_filter_begin" | "photo_filter_end", number
+    "beginDate" | "endDate", StringConfigKey, number
   ]>([
-    ["beginDate", "photo_filter_begin", 0],
-    ["endDate", "photo_filter_end", 2],
+    ["beginDate", StringSetting.photo_filter_begin, 0],
+    ["endDate", StringSetting.photo_filter_end, 2],
   ])("sets filter: %s", (filter, key, i) => {
     const p = fakeProps();
     const state = fakeState();
@@ -68,10 +69,10 @@ describe("<ImageFilterMenu />", () => {
   });
 
   it.each<[
-    "beginTime" | "endTime", "photo_filter_begin" | "photo_filter_end", number
+    "beginTime" | "endTime", StringConfigKey, number
   ]>([
-    ["beginTime", "photo_filter_begin", 1],
-    ["endTime", "photo_filter_end", 3],
+    ["beginTime", StringSetting.photo_filter_begin, 1],
+    ["endTime", StringSetting.photo_filter_end, 3],
   ])("sets filter: %s", (filter, key, i) => {
     const p = fakeProps();
     const state = fakeState();
@@ -92,11 +93,11 @@ describe("<ImageFilterMenu />", () => {
 
   it.each<[
     "beginDate" | "endDate",
-    "photo_filter_begin" | "photo_filter_end",
+    StringConfigKey,
     number
   ]>([
-    ["beginDate", "photo_filter_begin", 0],
-    ["endDate", "photo_filter_end", 2],
+    ["beginDate", StringSetting.photo_filter_begin, 0],
+    ["endDate", StringSetting.photo_filter_end, 2],
   ])("unsets filter: %s", (filter, key, i) => {
     const p = fakeProps();
     const state = fakeState();
