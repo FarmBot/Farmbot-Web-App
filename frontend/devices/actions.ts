@@ -73,9 +73,9 @@ export function powerOff() {
     .then(commandOK(noun), commandErr(noun));
 }
 
-/** Factory reset FBOS. */
-export function factoryReset() {
-  if (!confirm(t(Content.FACTORY_RESET_ALERT))) {
+/** Soft reset FBOS. */
+export function softReset() {
+  if (!confirm(t(Content.SOFT_RESET_ALERT))) {
     return;
   }
   getDevice().resetOS();

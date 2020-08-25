@@ -1030,8 +1030,22 @@
   .release-notes-wrapper {
     float: right !important;
   }
-  .network-not-found-timer {
-    margin-top: 1rem;
+  .factory-reset-options {
+    .os-reset-warning {
+      margin: 0;
+      margin-top: 1rem;
+    }
+    a {
+      color: $white;
+      font-weight: bold;
+      text-decoration: none !important;
+    }
+    .fa-external-link {
+      margin-left: 0.5rem;
+    }
+    .network-not-found-timer {
+      margin-top: 1rem;
+    }
   }
   .stall-detection-note,
   .limit-switch-warning {
