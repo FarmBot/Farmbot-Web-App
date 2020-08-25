@@ -10,7 +10,6 @@
 
 nav {
   margin: 3.4rem auto 0;
-  max-width: 140rem;
   button {
     margin: 1.8rem 1.8rem 0 0;
     font-size: 1.3rem !important;
@@ -87,6 +86,9 @@ nav {
       &:hover {
         font-weight: bold;
         color: $white;
+        img {
+          opacity: 0.9;
+        }
       }
       &.active {
         pointer-events: none;
