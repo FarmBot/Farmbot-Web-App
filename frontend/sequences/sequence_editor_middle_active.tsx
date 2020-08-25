@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
@@ -137,13 +137,13 @@ const SequenceBtnGroup = ({
         dispatch(destroy(sequence.uuid, force))
           .then(() => push(sequencesUrlBase()));
       }}>
-      {t("Delete")}
+      <i className={"fa fa-trash"} />
     </button>
     <button
       className="fb-button yellow"
       title={t("copy sequence")}
       onClick={() => dispatch(copySequence(sequence))}>
-      {t("Copy")}
+      <i className={"fa fa-copy"} />
     </button>
     {inDesigner() &&
       <button

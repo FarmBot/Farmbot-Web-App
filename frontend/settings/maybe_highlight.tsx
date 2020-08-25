@@ -28,8 +28,9 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,
   DeviceSetting.restartFarmbot,
   DeviceSetting.shutdownFarmbot,
-  DeviceSetting.factoryReset,
-  DeviceSetting.autoFactoryReset,
+  DeviceSetting.softReset,
+  DeviceSetting.hardReset,
+  DeviceSetting.autoSoftReset,
   DeviceSetting.connectionAttemptPeriod,
   DeviceSetting.changeOwnership,
 ];

@@ -37,7 +37,7 @@ describe("<PowerAndReset/>", () => {
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
     ["Power and Reset", "Restart", "Shutdown",
-      "Factory Reset", "Automatic Factory Reset",
+      "Soft Reset", "Hard Reset", "Automatic Soft Reset",
       "Connection Attempt Period", "Change Ownership"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
@@ -50,7 +50,7 @@ describe("<PowerAndReset/>", () => {
     expect(wrapper.text().toLowerCase())
       .toContain("Power and Reset".toLowerCase());
     expect(wrapper.text().toLowerCase())
-      .not.toContain("Factory Reset".toLowerCase());
+      .not.toContain("Soft Reset".toLowerCase());
   });
 
   it("timer input disabled", () => {

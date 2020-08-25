@@ -3,7 +3,7 @@ import { t } from "../../i18next_wrapper";
 import { ImageFilterMenu } from "./image_filter_menu";
 import { ToggleButton } from "../../controls/toggle_button";
 import { setWebAppConfigValue } from "../../config_storage/actions";
-import { BooleanSetting } from "../../session_keys";
+import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
   toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
 } from "./actions";
@@ -71,8 +71,8 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
 
 export const FiltersEnabledWarning = (props: FiltersEnabledWarningProps) => {
   const filtersEnabled =
-    !!parseFilterSetting(props.getConfigValue)("photo_filter_begin")
-    || !!parseFilterSetting(props.getConfigValue)("photo_filter_end")
+    !!parseFilterSetting(props.getConfigValue)(StringSetting.photo_filter_begin)
+    || !!parseFilterSetting(props.getConfigValue)(StringSetting.photo_filter_end)
     || props.hideUnShownImages
     || !props.getConfigValue(BooleanSetting.show_images);
   return filtersEnabled

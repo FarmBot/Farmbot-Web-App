@@ -62,7 +62,7 @@ describe("<FbosDetails/>", () => {
       "Firmware code", "0.0.0.R.ramps",
       "Firmware path", "ttyACM0",
       "FAKETARGET CPU temperature", "48.3", "C",
-      "WiFi strength", "-49dBm",
+      "WiFi strength", "81%",
       "OS release channel",
       "Uptime", "0 seconds",
       "Memory usage", "0MB",

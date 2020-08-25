@@ -8,6 +8,63 @@
   }
 }
 
+.panel-nav {
+  display: none;
+  @media screen and (max-width: 450px) {
+    display: block;
+  }
+}
+
+.panel-top {
+  margin-top: 0;
+  @media screen and (max-width: 450px) {
+    margin-top: 5rem;
+  }
+}
+
+.controls-panel,
+.sensors-panel,
+.photos-panel,
+.messages-panel,
+.help-panel {
+  .panel-content {
+    padding-top: 1rem;
+    max-height: calc(100vh - 3rem);
+    @media screen and (max-width: 450px) {
+      padding-top: 6rem;
+      max-height: calc(100vh - 9rem);
+    }
+  }
+}
+
+.controls-panel {
+  .panel-content {
+    padding-top: 0;
+    @media screen and (max-width: 450px) {
+      padding-top: 4rem;
+    }
+  }
+}
+
+.plant-inventory-panel,
+.groups-panel,
+.designer-regimen-list-panel,
+.events-panel,
+.point-inventory-panel,
+.weeds-inventory-panel,
+.zones-inventory-panel,
+.tools-panel,
+.tool-slots-panel-content,
+.designer-farmware-list-panel,
+.settings-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    @media screen and (max-width: 450px) {
+      max-height: calc(100vh - 19rem);
+    }
+  }
+}
+
 @keyframes panel-pullout {
   0% {
     transform: translateY(-100%);
@@ -206,6 +263,8 @@
     line-height: 5rem;
     height: 5rem;
     color: $light_gray;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
     &.active {
       border-bottom: 3px solid $white;
       font-weight: bold;
@@ -289,8 +348,6 @@
 .point-inventory-panel,
 .plant-inventory-panel {
   .panel-content {
-    padding: 0;
-    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: inherit;
@@ -498,7 +555,6 @@
 .panel-top {
   &.with-button {
     display: flex;
-    margin-top: 5rem;
     .fb-button {
       margin: 1rem;
       margin-left: 0;
@@ -724,11 +780,9 @@
 .tools-panel {
   .panel-top {
     display: flex;
-    margin-top: 5rem;
   }
   .tool-slots-panel-content,
   .tools-panel-content {
-    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
     .tool-search-item,
@@ -1030,8 +1084,22 @@
   .release-notes-wrapper {
     float: right !important;
   }
-  .network-not-found-timer {
-    margin-top: 1rem;
+  .factory-reset-options {
+    .os-reset-warning {
+      margin: 0;
+      margin-top: 1rem;
+    }
+    a {
+      color: $white;
+      font-weight: bold;
+      text-decoration: none !important;
+    }
+    .fa-external-link {
+      margin-left: 0.5rem;
+    }
+    .network-not-found-timer {
+      margin-top: 1rem;
+    }
   }
   .stall-detection-note,
   .limit-switch-warning {
@@ -1135,6 +1203,14 @@
 .saved-garden-panel-content {
   padding: 0;
   padding-bottom: inherit;
+  .non-empty-state {
+    max-height: calc(100vh - 14rem);
+    @media screen and (max-width: 450px) {
+      max-height: calc(100vh - 19rem);
+    }
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   .row {
     margin: 0;
     margin-top: 1rem;
@@ -1176,7 +1252,6 @@
 .zones-inventory-panel,
 .groups-panel {
   .panel-content {
-    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -1515,8 +1590,6 @@
 .sensors-panel,
 .controls-panel {
   .panel-content {
-    padding-top: 4rem;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
     .widget-wrapper {
@@ -1579,7 +1652,6 @@
 
 .sensors-panel {
   .panel-content {
-    padding-top: 6rem;
     label {
       margin-top: 0;
     }
@@ -1614,8 +1686,6 @@
 .photos-panel {
   .panel-content {
     position: relative;
-    padding-top: 6rem;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
     label {
@@ -1795,7 +1865,10 @@
       margin-left: 0 !important;
     }
     .non-empty-state {
-      max-height: calc(100vh - 9rem);
+      max-height: calc(100vh - 15rem);
+      @media screen and (max-width: 450px) {
+        max-height: calc(100vh - 19rem);
+      }
       overflow-y: scroll;
       overflow-x: hidden;
       padding-bottom: 6rem;
@@ -1823,9 +1896,6 @@
 
 .designer-sequence-editor-panel {
   .panel-content {
-    .button-group {
-      margin: 2rem;
-    }
     .locals-list {
       margin-left: -1rem;
       margin-right: -1rem;
@@ -1875,8 +1945,6 @@
 
 .messages-panel {
   .panel-content {
-    margin-top: 6rem;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
     label {
@@ -1896,8 +1964,6 @@
 
 .help-panel {
   .panel-content {
-    margin-top: 6rem;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: hidden;
     label {
@@ -1905,6 +1971,12 @@
     }
     a {
       text-decoration: none !important;
+    }
+    .hotkey-help-button {
+      text-align: center;
+      button {
+        float: none;
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ jest.mock("../../settings/dev/dev_support", () => ({
   }
 }));
 
-import * as React from "react";
+import React from "react";
 import { DesignerNavTabs, Panel, NavTab, NavTabProps } from "../panel_header";
 import { shallow } from "enzyme";
 
@@ -190,14 +190,11 @@ describe("<DesignerNavTabs />", () => {
 describe("<NavTab />", () => {
   const fakeProps = (): NavTabProps => ({
     panel: Panel.Map,
-    linkTo: "link",
-    title: "title",
-    icon: "fa-star",
-    desktopHide: false,
+    desktopHide: true,
   });
 
   it("renders icon", () => {
     const wrapper = shallow(<NavTab {...fakeProps()} />);
-    expect(wrapper.html()).toContain("fa-star");
+    expect(wrapper.html()).toContain("desktop-hide");
   });
 });

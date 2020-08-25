@@ -2,7 +2,12 @@ jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
   setActiveSequenceByName: jest.fn()
 }));
 
-import * as React from "react";
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor,
@@ -20,6 +25,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   setActiveSequenceByName,
 } from "../../set_active_sequence_by_name";
+import { push } from "../../../history";
 
 describe("<DesignerSequenceEditor />", () => {
   const fakeProps = (): Props => ({
@@ -48,5 +54,16 @@ describe("<DesignerSequenceEditor />", () => {
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
+  });
+
+  it("navigates to full page editor", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    const p = fakeProps();
+    const wrapper = mount(<DesignerSequenceEditor {...p} />);
+    wrapper.find("a").first().simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/sequences/fake");
   });
 });
