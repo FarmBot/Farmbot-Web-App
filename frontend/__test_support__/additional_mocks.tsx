@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 jest.mock("browser-speech", () => ({
   talk: jest.fn(),
@@ -24,4 +24,8 @@ window.TextDecoder = jest.fn();
 jest.mock("../error_boundary", () => ({
   // tslint:disable-next-line:no-any
   ErrorBoundary: (p: any) => <div>{p.children}</div>,
+}));
+
+jest.mock("@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog", () => ({
+  showHotkeysDialog: jest.fn(),
 }));

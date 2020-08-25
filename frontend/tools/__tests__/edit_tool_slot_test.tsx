@@ -1,6 +1,6 @@
 jest.mock("../../api/crud", () => ({
   edit: jest.fn(),
-  save: jest.fn(),
+  save: jest.fn(() => () => "mockSave"),
   destroy: jest.fn(),
 }));
 
@@ -18,7 +18,7 @@ jest.mock("../../farm_designer/map/layers/tool_slots/tool_graphics", () => ({
   ToolSlotSVG: () => <div />,
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -106,7 +106,7 @@ describe("<EditToolSlot />", () => {
 
   it("errors while updating tool slot", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.reject());
+    p.dispatch = jest.fn(x => x?.() == "mockSave" ? Promise.reject() : undefined);
     const slot = fakeToolSlot();
     const wrapper = mount<EditToolSlot>(<EditToolSlot {...p} />);
     await wrapper.instance().updateSlot(slot)({ x: 123 });
