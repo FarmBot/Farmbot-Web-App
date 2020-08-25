@@ -4,7 +4,7 @@ jest.mock("../controls_popup", () => ({
   showControlsPopup: () => mockShowPopUp,
 }));
 
-import * as React from "react";
+import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
@@ -110,9 +110,21 @@ describe("<App />: NavBar", () => {
     const wrapper = mount(<App {...p} />);
     const t = wrapper.text();
     const strings = [
-      "Farm Designer",
+      "Plants",
+      "Groups",
       "Sequences",
       "Regimens",
+      "Gardens",
+      "Events",
+      "Points",
+      "Weeds",
+      "Controls",
+      "Photos",
+      "Farmware",
+      "Tools",
+      "Messages",
+      "Help",
+      "Settings",
     ];
     strings.map(string => expect(t).toContain(string));
     wrapper.unmount();

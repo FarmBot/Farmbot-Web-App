@@ -3,7 +3,7 @@ import {
   BooleanConfigKey,
   StringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
-import { BooleanSetting } from "../../session_keys";
+import { BooleanSetting, StringSetting } from "../../session_keys";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TaggedImage } from "farmbot";
 import { last } from "lodash";
@@ -16,14 +16,14 @@ import {
 } from "../../farm_designer/map/layers/images/map_image";
 
 export const IMAGE_LAYER_CONFIG_KEYS: (BooleanConfigKey | StringConfigKey)[] = [
-  "photo_filter_begin",
-  "photo_filter_end",
+  StringSetting.photo_filter_begin,
+  StringSetting.photo_filter_end,
   BooleanSetting.crop_images,
   BooleanSetting.show_images,
 ];
 
 export const parseFilterSetting = (getConfigValue: GetWebAppConfigValue) =>
-  (setting: "photo_filter_begin" | "photo_filter_end"): string | undefined => {
+  (setting: StringConfigKey): string | undefined => {
     const value = getConfigValue(setting);
     return value ? value.toString() : undefined;
   };
@@ -78,8 +78,8 @@ export const getImageShownStatusFlags =
     return {
       layerOn: !!getConfigValue(BooleanSetting.show_images),
       inRange: !!imageInRange(image,
-        getFilterValue("photo_filter_begin"),
-        getFilterValue("photo_filter_end")),
+        getFilterValue(StringSetting.photo_filter_begin),
+        getFilterValue(StringSetting.photo_filter_end)),
       notHidden: !imageIsHidden(hiddenImages, [], false, image?.body.id),
       zMatch: cameraZCheck(image?.body.meta.z,
         env["CAMERA_CALIBRATION_camera_z"]),

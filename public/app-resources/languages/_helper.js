@@ -60,7 +60,8 @@ var HelperNamespace = (function () {
     "Else Execute", "Connecting FarmBot to the Internet", "move to home",
     "emergency stop", "SYNC ERROR", "inactive", "error", "No messages.",
     "back to regimens", "back to sequences", "back to farmware list",
-    "Verify Password",
+    "Verify Password", "Camera Calibration", "Installing FarmBot OS",
+    "For IT Security Professionals", "visualize",
   ];
 
   /**

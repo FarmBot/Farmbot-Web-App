@@ -73,6 +73,9 @@ export class RawEditToolSlot
             <ul className="meta">
               {Object.entries(toolSlot.body.meta).map(([key, value]) => {
                 switch (key) {
+                  case "tool_direction":
+                    return <div key={key}
+                      className={`meta-${key}-not-displayed`} />;
                   default:
                     return <li key={key}>
                       <label>{key}</label>

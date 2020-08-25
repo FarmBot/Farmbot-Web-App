@@ -36,7 +36,7 @@ jest.mock("../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
   SequenceSettingsMenu,
@@ -137,7 +137,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.getWebAppConfigValue = () => undefined;
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 2, "Delete");
+    clickButton(wrapper, 2, "", { icon: "fa-trash" });
     expect(destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), false);
   });
@@ -147,14 +147,14 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.getWebAppConfigValue = () => false;
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 2, "Delete");
+    clickButton(wrapper, 2, "", { icon: "fa-trash" });
     expect(destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), true);
   });
 
   it("copies", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(wrapper, 3, "Copy");
+    clickButton(wrapper, 3, "", { icon: "fa-copy" });
     expect(copySequence).toHaveBeenCalledWith(expect.objectContaining({
       uuid: expect.stringContaining("Sequence")
     }));

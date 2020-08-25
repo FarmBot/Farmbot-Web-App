@@ -1,5 +1,5 @@
 import { TaggedLog, ConfigurationName, ALLOWED_MESSAGE_TYPES } from "farmbot";
-import { SourceFbosConfig, ShouldDisplay } from "../devices/interfaces";
+import { SourceFbosConfig, ShouldDisplay, BotState } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 
@@ -10,6 +10,7 @@ export interface LogsProps {
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
   shouldDisplay: ShouldDisplay;
+  bot: BotState;
 }
 
 export type Filters = Record<ALLOWED_MESSAGE_TYPES, number>;
@@ -52,4 +53,5 @@ export interface LogsSettingsMenuProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
+  bot: BotState;
 }

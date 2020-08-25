@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Saucer, FBSelect } from "../../ui";
+import { Saucer, FBSelect, Help } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { last, isNumber, isString, isUndefined } from "lodash";
-import { Content } from "../../constants";
+import { Content, ToolTips } from "../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
@@ -90,9 +90,9 @@ export function WiFiStrengthDisplay(
   const percent = wifiStrengthPercent || calculatedPercent;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${percent}%`;
-  const numberDisplay =
-    extraInfo ? `${percentString} (${dbString})` : percentString;
   const color = colorFromSignalStrength(percent);
+  const qualityString = `(${WIFI_COLOR_KEY()[color]})`;
+  const numberDisplay = `${percentString} ${extraInfo ? qualityString : ""}`;
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi strength")}: </b>
@@ -100,7 +100,7 @@ export function WiFiStrengthDisplay(
     </p>
     {valueAvailable &&
       <div className="percent-bar"
-        title={`${dbString} (${WIFI_COLOR_KEY()[color]})`}>
+        title={`${dbString} ${qualityString}`}>
         <div className={`percent-bar-fill ${color}`}
           style={{ width: percentString }} />
       </div>}
@@ -145,7 +145,13 @@ export const colorFromThrottle =
 const THROTTLE_COLOR_KEY = () => ({
   red: t("active"),
   yellow: t("occurred"),
-  green: t("ok")
+  green: t("ok"),
+});
+
+const VOLTAGE_COLOR_KEY = () => ({
+  red: t("low"),
+  yellow: t("ok"),
+  green: t("good"),
 });
 
 interface ThrottleIndicatorProps {
@@ -168,29 +174,33 @@ const ThrottleDisplay = (dataString: string) =>
     {Object.keys(THROTTLE_BIT_LOOKUP).map((key: ThrottleType) =>
       <div className="throttle-row" key={key}>
         <ThrottleIndicator throttleDataString={dataString} throttleType={key} />
-        <p>{key}</p>
+        <p><b>{key}</b></p>
+        <p>: {THROTTLE_COLOR_KEY()[colorFromThrottle(dataString, key)]}</p>
       </div>)}
   </div>;
 
 interface VoltageDisplayProps {
   chip?: string;
-  throttled: string | undefined;
+  throttleData: string | undefined;
 }
 
 /** RPI throttle state display row: label, indicator. */
-export const VoltageDisplay = ({ chip, throttled }: VoltageDisplayProps) =>
-  throttled
-    ? <div className="voltage-display">
-      <p>
-        <b>{chip && chip.toUpperCase()} {t("Voltage")}: </b>
-      </p>
-      <Popover usePortal={false}>
-        <ThrottleIndicator
-          throttleDataString={throttled}
-          throttleType={ThrottleType.UnderVoltage} />
-        {ThrottleDisplay(throttled)}
-      </Popover>
-    </div> : <div className="voltage-display" />;
+export const VoltageDisplay = ({ chip, throttleData }: VoltageDisplayProps) => {
+  if (!throttleData) { return <div className="voltage-display" />; }
+  const voltageColor = colorFromThrottle(throttleData, ThrottleType.UnderVoltage);
+  return <div className="voltage-display">
+    <p><b>{chip && chip.toUpperCase()} {t("Voltage")}</b></p>
+    <Help text={ToolTips.VOLTAGE_STATUS} />
+    <p>:&nbsp;{VOLTAGE_COLOR_KEY()[voltageColor]}</p>
+    <Popover usePortal={false}>
+      <ThrottleIndicator
+        throttleDataString={throttleData}
+        throttleType={ThrottleType.UnderVoltage} />
+      {ThrottleDisplay(throttleData)}
+    </Popover>
+
+  </div>;
+};
 
 /** Get the first 8 characters of a commit. */
 const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
@@ -324,7 +334,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay extraInfo={true}
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
-    <VoltageDisplay chip={target} throttled={throttled} />
+    <VoltageDisplay chip={target} throttleData={throttled} />
     <BetaReleaseOptIn
       dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
     {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>

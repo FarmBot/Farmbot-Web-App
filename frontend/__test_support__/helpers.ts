@@ -6,13 +6,14 @@ export function clickButton(
   wrapper: ReactWrapper | ShallowWrapper,
   position: number,
   text: string,
-  options?: { partial_match?: boolean }) {
+  options?: { partial_match?: boolean, icon?: string }) {
   const button = wrapper.find("button").at(position);
   const expectedText = text.toLowerCase();
   const actualText = button.text().toLowerCase();
   options?.partial_match
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);
+  options?.icon && expect(button.html()).toContain(options.icon);
   button.simulate("click");
 }
 

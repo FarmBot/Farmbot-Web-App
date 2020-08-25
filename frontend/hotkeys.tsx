@@ -1,123 +1,125 @@
-import * as React from "react";
+import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
 import { push, getPathArray } from "./history";
-import { Row, Col } from "./ui/index";
 import {
-  Hotkey,
-  Hotkeys,
-  HotkeysTarget,
-  IHotkeyProps,
-  Overlay,
-  Classes,
+  Hotkey, Hotkeys, HotkeysTarget, IHotkeyProps,
 } from "@blueprintjs/core";
-import { findIndex } from "lodash";
-import { t } from "./i18next_wrapper";
 import { unselectPlant } from "./farm_designer/map/actions";
+import { getPanelPath, PANEL_BY_SLUG } from "./farm_designer/panel_header";
+import {
+  showHotkeysDialog,
+} from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
+import { t } from "./i18next_wrapper";
 
-interface Props {
+export interface HotKeysProps {
   dispatch: Function;
 }
 
-interface State {
-  guideOpen: boolean;
+enum HotKey {
+  sync = "sync",
+  navigateRight = "navigateRight",
+  navigateLeft = "navigateLeft",
+  addPlant = "addPlant",
+  addEvent = "addEvent",
+  backToPlantOverview = "backToPlantOverview",
+  toggleGuide = "toggleGuide",
 }
 
-const hotkeyGuideClasses = [
-  "hotkey-guide",
-  Classes.CARD,
-  Classes.ELEVATION_4,
-].join(" ");
+const HOTKEY_BASE_MAP = (): Record<HotKey, IHotkeyProps> => ({
+  [HotKey.sync]: {
+    combo: "ctrl + shift + s",
+    label: t("Sync"),
+  },
+  [HotKey.navigateRight]: {
+    combo: "ctrl + shift + right",
+    label: t("Navigate Right"),
+  },
+  [HotKey.navigateLeft]: {
+    combo: "ctrl + shift + left",
+    label: t("Navigate Left"),
+  },
+  [HotKey.addPlant]: {
+    combo: "ctrl + shift + p",
+    label: t("Add Plant"),
+  },
+  [HotKey.addEvent]: {
+    combo: "ctrl + shift + e",
+    label: t("Add Event"),
+  },
+  [HotKey.backToPlantOverview]: {
+    combo: "esc",
+    label: t("Back to plant overview"),
+  },
+  [HotKey.toggleGuide]: {
+    combo: "shift + ?",
+    label: t("Toggle Guide"),
+  },
+});
+
+export const hotkeysWithActions = (dispatch: Function) => {
+  const links = getLinks();
+  const slug = getPathArray()[3];
+  const idx = links.indexOf(PANEL_BY_SLUG[slug]);
+  const panelPlus = links[idx + 1] || links[0];
+  const panelMinus = links[idx - 1] || links[links.length - 1];
+  const hotkeysBase = HOTKEY_BASE_MAP();
+  const list: IHotkeyProps[] = [
+    {
+      ...hotkeysBase[HotKey.sync],
+      onKeyDown: () => dispatch(sync()),
+    },
+    {
+      ...hotkeysBase[HotKey.navigateRight],
+      onKeyDown: () => push(getPanelPath(panelPlus)),
+    },
+    {
+      ...hotkeysBase[HotKey.navigateLeft],
+      onKeyDown: () => push(getPanelPath(panelMinus)),
+    },
+    {
+      ...hotkeysBase[HotKey.addPlant],
+      onKeyDown: () => push("/app/designer/plants/crop_search"),
+    },
+    {
+      ...hotkeysBase[HotKey.addEvent],
+      onKeyDown: () => push("/app/designer/events/add"),
+    },
+    {
+      ...hotkeysBase[HotKey.backToPlantOverview],
+      onKeyDown: () => {
+        push("/app/designer/plants");
+        dispatch(unselectPlant(dispatch));
+      },
+    },
+    {
+      combo: "ctrl + shift + /",
+      label: t("Open Guide"),
+      onKeyDown: openHotkeyHelpOverlay
+    },
+    hotkeysBase[HotKey.toggleGuide],
+  ];
+  return list;
+};
+
+export const openHotkeyHelpOverlay = () =>
+  showHotkeysDialog(Object.values(HOTKEY_BASE_MAP())
+    .map(hotkey => ({ ...hotkey, global: true })));
 
 @HotkeysTarget
-export class HotKeys extends React.Component<Props, Partial<State>> {
-
-  state: State = { guideOpen: false };
-
-  render() {
-    return <Overlay
-      isOpen={this.state.guideOpen}
-      onClose={this.toggle("guideOpen")}>
-      <div className={hotkeyGuideClasses}>
-        <h3>{t("Hotkeys")}</h3>
-        <i className="fa fa-times"
-          title={t("Close")}
-          onClick={this.toggle("guideOpen")} />
-        {this.hotkeys(this.props.dispatch, "")
-          .map(hotkey => <Row key={hotkey.combo}>
-            <Col xs={5}>
-              <label>{hotkey.label}</label>
-            </Col>
-            <Col xs={7}>
-              <code>{hotkey.combo}</code>
-            </Col>
-          </Row>)}
-      </div>
-    </Overlay>;
-  }
-
-  toggle = (property: keyof State) => () =>
-    this.setState({ [property]: !this.state[property] });
-
-  hotkeys(dispatch: Function, slug: string) {
-    const links = getLinks();
-    const idx = findIndex(links, { slug });
-    const right = "/app/" + (links[idx + 1] || links[0]).slug;
-    const left = "/app/" + (links[idx - 1] || links[links.length - 1]).slug;
-    const hotkeyMap: IHotkeyProps[] = [
-      {
-        combo: "ctrl + shift + s",
-        label: "Sync",
-        onKeyDown: () => dispatch(sync())
-      },
-      {
-        combo: "ctrl + shift + right",
-        label: "Navigate Right",
-        onKeyDown: () => push(right)
-      },
-      {
-        combo: "ctrl + shift + left",
-        label: "Navigate Left",
-        onKeyDown: () => push(left)
-      },
-      {
-        combo: "ctrl + shift + p",
-        label: "Add Plant",
-        onKeyDown: () => push("/app/designer/plants/crop_search")
-      },
-      {
-        combo: "ctrl + shift + e",
-        label: "Add Event",
-        onKeyDown: () => push("/app/designer/events/add")
-      },
-      {
-        combo: "esc",
-        label: "Back to plant overview",
-        onKeyDown: () => {
-          push("/app/designer/plants");
-          dispatch(unselectPlant(dispatch));
-        }
-      },
-      {
-        combo: "ctrl + shift + /",
-        label: "Toggle Guide",
-        onKeyDown: () => this.toggle("guideOpen")()
-      },
-    ];
-    return hotkeyMap;
-  }
+export class HotKeys extends React.Component<HotKeysProps> {
+  render() { return <div className={"hotkeys"} />; }
 
   public renderHotkeys() {
-    const slug = getPathArray()[2];
     return <Hotkeys>
-      {this.hotkeys(this.props.dispatch, slug)
-        .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) =>
+      {hotkeysWithActions(this.props.dispatch)
+        .map((hotkeyProps: IHotkeyProps, index: number) =>
           <Hotkey
             key={index}
             global={true}
-            combo={combo}
-            label={label}
-            onKeyDown={onKeyDown} />)}
+            combo={hotkeyProps.combo}
+            label={hotkeyProps.label}
+            onKeyDown={hotkeyProps.onKeyDown} />)}
     </Hotkeys>;
   }
 }

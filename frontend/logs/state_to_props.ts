@@ -32,5 +32,6 @@ export function mapStateToProps(props: Everything): LogsProps {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
+    bot: props.bot,
   };
 }

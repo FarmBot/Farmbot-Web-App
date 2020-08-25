@@ -1,6 +1,7 @@
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
   NumberConfigKey as WebAppNumberConfigKey,
+  StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
@@ -10,6 +11,7 @@ type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
   | "view_celery_script"
   | "highlight_modified_settings";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
+type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 export const BooleanSetting:
   Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey> = {
@@ -91,4 +93,15 @@ export const NumericSetting:
   /** Other */
   id: "id",
   device_id: "device_id",
+};
+
+export const StringSetting:
+  Record<WebAppStringConfigKeyAll, WebAppStringConfigKey> = {
+  /** Designer settings */
+  photo_filter_begin: "photo_filter_begin",
+  photo_filter_end: "photo_filter_end",
+
+  /** Other */
+  created_at: "created_at",
+  updated_at: "updated_at",
 };

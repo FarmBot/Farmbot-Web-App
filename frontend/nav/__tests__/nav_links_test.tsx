@@ -3,7 +3,13 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-import * as React from "react";
+let mockHasSensors = false;
+jest.mock("../../settings/firmware/firmware_hardware_support", () => ({
+  hasSensors: () => mockHasSensors,
+  getFwHardwareValue: jest.fn(),
+}));
+
+import React from "react";
 import { shallow, mount } from "enzyme";
 import { NavLinks } from "../nav_links";
 
@@ -23,8 +29,17 @@ describe("<NavLinks />", () => {
   });
 
   it("shows active link", () => {
-    mockPath = "/app/designer";
+    mockPath = "/app/designer/plants";
     const wrapper = shallow(<NavLinks close={jest.fn()} alertCount={1} />);
-    expect(wrapper.find("Link").first().hasClass("active")).toBeTruthy();
+    expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
+    expect(wrapper.html().toLowerCase()).not.toContain("sensors");
+  });
+
+  it("shows sensors link", () => {
+    mockHasSensors = true;
+    const wrapper = shallow(<NavLinks close={jest.fn()} alertCount={1}
+      addMap={true} />);
+    expect(wrapper.html().toLowerCase()).toContain("sensors");
+    expect(wrapper.html()).toContain("desktop-hide");
   });
 });

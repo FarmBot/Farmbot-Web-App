@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SequenceBodyItem as Step, TaggedSequence } from "farmbot";
 import { error } from "../toast/toast";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
@@ -6,6 +6,7 @@ import { pushStep, closeCommandMenu } from "./actions";
 import { StepButtonParams } from "./interfaces";
 import { Col } from "../ui/index";
 import { t } from "../i18next_wrapper";
+import { inDesigner } from "../folders/component";
 
 export const stepClick =
   (dispatch: Function,
@@ -21,7 +22,7 @@ export const stepClick =
 
 export function StepButton({ children, step, color, dispatch, current, index }:
   StepButtonParams) {
-  return <Col xs={6} sm={12}>
+  return <Col xs={12} sm={inDesigner() ? 6 : 12} className={"step-block-wrapper"}>
     <div className="block">
       <StepDragger
         dispatch={dispatch}

@@ -5,6 +5,11 @@ jest.mock("../../../api/crud", () => ({
 
 const mockStorj: Dictionary<number | boolean> = {};
 
+let mockDev = false;
+jest.mock("../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { LogsSettingsMenu } from "../settings_menu";
@@ -17,6 +22,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../api/crud";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<LogsSettingsMenu />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -28,12 +34,14 @@ describe("<LogsSettingsMenu />", () => {
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: false, consistent: true }),
     getConfigValue: x => mockStorj[x],
+    bot: bot,
   });
 
   it("renders", () => {
     const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
     ["begin", "steps", "complete"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.find("a").length).toEqual(0);
   });
 
   it("doesn't update", () => {
@@ -90,5 +98,14 @@ describe("<LogsSettingsMenu />", () => {
     mockStorj[NumericSetting.busy_log] = 0;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
+  });
+
+  it("displays link to /logger", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.private_ip = "10.0.0.1";
+    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    expect(wrapper.find("a").last().props().href)
+      .toEqual("http://10.0.0.1/logger");
   });
 });

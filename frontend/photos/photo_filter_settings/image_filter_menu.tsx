@@ -11,6 +11,7 @@ import { setWebAppConfigValues } from "./actions";
 import {
   StringValueUpdate, ImageFilterMenuProps, ImageFilterMenuState,
 } from "./interfaces";
+import { StringSetting } from "../../session_keys";
 
 export class ImageFilterMenu
   extends React.Component<ImageFilterMenuProps, ImageFilterMenuState> {
@@ -32,7 +33,7 @@ export class ImageFilterMenu
   setValues = (update: StringValueUpdate) => {
     Object.entries(update).map(([key, value]) => {
       switch (key) {
-        case "photo_filter_begin":
+        case StringSetting.photo_filter_begin:
           value
             ? this.setState({
               beginDate: formatDate(value, this.props.timeSettings),
@@ -40,7 +41,7 @@ export class ImageFilterMenu
             })
             : this.setState({ beginDate: undefined, beginTime: undefined });
           break;
-        case "photo_filter_end":
+        case StringSetting.photo_filter_end:
           value
             ? this.setState({
               endDate: formatDate(value, this.props.timeSettings),
@@ -54,9 +55,9 @@ export class ImageFilterMenu
   };
 
   updateState = () => {
-    const beginDatetime = this.props.getConfigValue("photo_filter_begin");
-    const endDatetime = this.props.getConfigValue("photo_filter_end");
-    const { timeSettings } = this.props;
+    const { getConfigValue, timeSettings } = this.props;
+    const beginDatetime = getConfigValue(StringSetting.photo_filter_begin);
+    const endDatetime = getConfigValue(StringSetting.photo_filter_end);
     this.setState({
       beginDate: beginDatetime
         ? formatDate(beginDatetime.toString(), timeSettings) : undefined,
