@@ -24,10 +24,10 @@ module Api
       platform = params["platform"] || NONE
       case platform
       when GENESIS
-        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.img"
+        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw"
         render json: { image_url: url }
       when EXPRESS
-        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.img"
+        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.fw"
         render json: { image_url: url }
       when NONE
         platform_missing(platform)
