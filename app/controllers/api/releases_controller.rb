@@ -6,10 +6,7 @@ module Api
   class ReleasesController < Api::AbstractController
     skip_before_action :authenticate_user!, only: [:show]
     NONE = "none"
-    PLATFORMS = [
-      GENESIS = "rpi3",
-      EXPRESS = "rpi",
-    ].join(", ")
+    PLATFORMS = Release::PLATFORMS.join(", ")
     BAD_PLATFORM = "%s is not a valid platform. Valid options: #{PLATFORMS}"
 
     # POST /api/releases
@@ -23,10 +20,10 @@ module Api
     def show
       platform = params["platform"] || NONE
       case platform
-      when GENESIS
+      when Release::GENESIS
         url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw"
         render json: { image_url: url }
-      when EXPRESS
+      when Release::EXPRESS
         url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.fw"
         render json: { image_url: url }
       when NONE
