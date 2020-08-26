@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -16,6 +16,8 @@ import { isTaggedSequence } from "../../resources/tagged_resources";
 import {
   setActiveSequenceByName,
 } from "../set_active_sequence_by_name";
+import { push } from "../../history";
+import { urlFriendly } from "../../util";
 
 export class RawDesignerSequenceEditor extends React.Component<Props> {
 
@@ -25,12 +27,21 @@ export class RawDesignerSequenceEditor extends React.Component<Props> {
 
   render() {
     const panelName = "designer-sequence-editor";
+    const { sequence } = this.props;
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Sequences}
         title={this.props.sequence?.body.name || t("No Sequence selected")}
-        backTo={"/app/designer/sequences"} />
+        backTo={"/app/designer/sequences"}>
+        {sequence && window.innerWidth > 450 &&
+          <a className={"right-button"}
+            title={t("open full-page editor")}
+            onClick={() =>
+              push(`/app/sequences/${urlFriendly(sequence.body.name)}`)}>
+            {t("full editor")}
+          </a>}
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
           notEmpty={this.props.sequence && isTaggedSequence(this.props.sequence)}

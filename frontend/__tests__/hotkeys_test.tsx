@@ -1,44 +1,61 @@
-jest.mock("../history", () => ({ push: jest.fn() }));
+let mockPath = "/app/designer";
+jest.mock("../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
+}));
 const mockSyncThunk = jest.fn();
 jest.mock("../devices/actions", () => ({ sync: () => mockSyncThunk }));
 jest.mock("../farm_designer/map/actions", () => ({ unselectPlant: jest.fn() }));
 
-import { HotKeys } from "../hotkeys";
-import { betterCompact } from "../util";
+import React from "react";
+import { shallow } from "enzyme";
+import { HotKeys, HotKeysProps, hotkeysWithActions } from "../hotkeys";
 import { push } from "../history";
 import { sync } from "../devices/actions";
 import { unselectPlant } from "../farm_designer/map/actions";
+import {
+  showHotkeysDialog,
+} from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
 
-describe("hotkeys", () => {
+describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
+    mockPath = "/app/designer/nope";
     const dispatch = jest.fn();
+    const hotkeys = hotkeysWithActions(dispatch);
+    expect(hotkeys.length).toBe(8);
     const e = {} as KeyboardEvent;
-    const comp = new HotKeys({ dispatch });
-    const hmm = comp.hotkeys(dispatch, "whatever");
-    const fns = betterCompact(hmm.map(item => item.onKeyDown));
-    expect(fns.length).toBe(7);
 
-    fns[0](e);
+    hotkeys[0].onKeyDown?.(e);
     expect(dispatch).toHaveBeenCalledWith(sync());
 
-    fns[1](e);
-    expect(push).toHaveBeenCalledWith("/app/designer");
+    hotkeys[1].onKeyDown?.(e);
+    expect(push).toHaveBeenCalledWith("/app/designer/plants");
 
-    fns[2](e);
-    expect(push).toHaveBeenCalledWith("/app/messages");
+    hotkeys[2].onKeyDown?.(e);
+    expect(push).toHaveBeenCalledWith("/app/designer/settings");
 
-    fns[3](e);
+    hotkeys[3].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants/crop_search");
 
-    fns[4](e);
+    hotkeys[4].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/events/add");
 
-    fns[5](e);
+    hotkeys[5].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants");
-    expect(dispatch).toHaveBeenCalledWith(unselectPlant(dispatch));
+    expect(unselectPlant).toHaveBeenCalled();
 
-    comp.toggle = jest.fn(() => () => { });
-    fns[6](e);
-    expect(comp.toggle).toHaveBeenCalledWith("guideOpen");
+    hotkeys[6].onKeyDown?.(e);
+    expect(showHotkeysDialog).toHaveBeenCalled();
+  });
+});
+
+describe("<HotKeys />", () => {
+  const fakeProps = (): HotKeysProps => ({
+    dispatch: jest.fn(),
+  });
+
+  it("renders", () => {
+    const wrapper = shallow(<HotKeys {...fakeProps()} />);
+    expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });
 });

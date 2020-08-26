@@ -7,6 +7,7 @@ export const DOC_SLUGS = {
   "camera-calibration": "Camera Calibration",
   "the-farmbot-web-app": "Web App",
   "farmware": "Farmware",
+  "farmbot-os#section-installation": "Installing FarmBot OS",
   "connecting-farmbot-to-the-internet": "Connecting FarmBot to the Internet",
   "for-it-security-professionals": "For IT Security Professionals",
 };

@@ -8,6 +8,8 @@ import { ToursWidget } from "../help/tour_list";
 import { DocsWidget } from "../help/docs";
 import { Actions } from "../constants";
 import { Everything } from "../interfaces";
+import { t } from "../i18next_wrapper";
+import { openHotkeyHelpOverlay } from "../hotkeys";
 
 export interface HelpPanelProps {
   dispatch: Function;
@@ -29,6 +31,13 @@ export class RawHelpPanel extends React.Component<HelpPanelProps, {}> {
       <DesignerPanelContent panelName={"help"}>
         <ToursWidget dispatch={this.props.dispatch} />
         <DocsWidget />
+        <div className={"hotkey-help-button"}>
+          <button className={"fb-button gray"}
+            title={t("Open Hotkey Guide")}
+            onClick={openHotkeyHelpOverlay}>
+            {t("Open Hotkey Guide")}
+          </button>
+        </div>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

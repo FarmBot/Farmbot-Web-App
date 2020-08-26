@@ -10,7 +10,6 @@
 
 nav {
   margin: 3.4rem auto 0;
-  max-width: 140rem;
   button {
     margin: 1.8rem 1.8rem 0 0;
     font-size: 1.3rem !important;
@@ -21,6 +20,9 @@ nav {
   display: flex;
   justify-content: space-between;
   padding: 0 1rem;
+  .nav-left {
+    flex: 0;
+  }
 }
 
 .nav-sync {
@@ -46,7 +48,22 @@ nav {
   a {
     text-transform: uppercase;
     color: $gray;
-    i {
+    .link-icon {
+      img {
+        filter: brightness(0%) invert(100%);
+        opacity: 0.8;
+      }
+      .saucer {
+        margin-left: -1rem !important;
+        width: 1.5rem;
+        height: 1.5rem;
+        p {
+          margin-top: 0;
+          font-size: 0.9rem;
+        }
+      }
+    }
+    .nav-link-text {
       display: none;
     }
   }
@@ -61,7 +78,7 @@ nav {
       height: 5.5rem;
       font-size: 1.2rem;
       white-space: nowrap;
-      padding: 2rem 1rem;
+      padding: 1.5rem 0.5rem;
       letter-spacing: 1.2px;
       &:focus {
         font-weight: bold;
@@ -69,11 +86,17 @@ nav {
       &:hover {
         font-weight: bold;
         color: $white;
+        img {
+          opacity: 0.9;
+        }
       }
       &.active {
         pointer-events: none;
         font-weight: bold;
         color: $white;
+        img {
+          opacity: 1;
+        }
         &:after {
           transition: all 0.4s ease;
           transform: translateY(-3px);
@@ -110,7 +133,6 @@ nav {
       }
     }
     div {
-      display: inline;
       vertical-align: middle;
       &:after{
         content: attr(data-title);
@@ -208,18 +230,48 @@ nav {
 }
 
 .mobile-menu {
+  padding: 0;
+  .links {
+    width: 100%;
+    height: calc(100vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      background-color: $medium_gray;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: $medium_gray;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $light_gray;
+    }
+  }
   .nav-links {
     display: block;
     a {
       display: block;
+      padding-left: 1rem;
+      &:before {
+        content: unset;
+      }
+      &:after {
+        content: unset;
+      }
       div .saucer {
         display: inline-flex;
         margin-left: 1rem;
       }
+      .link-icon {
+        display: inline-block;
+        .saucer {
+          display: none;
+        }
+      }
     }
-    i {
+    .nav-link-text {
       display: inline-block;
-      margin-right: 1rem;
+      margin-left: 1rem;
+      margin-top: 0.4rem;
     }
   }
 }

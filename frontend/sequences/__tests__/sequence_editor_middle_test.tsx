@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SequenceEditorMiddle } from "../sequence_editor_middle";
 import { mount } from "enzyme";
 import { SequenceEditorMiddleProps } from "../interfaces";
@@ -27,7 +27,7 @@ describe("<SequenceEditorMiddle/>", () => {
 
   it("active editor", () => {
     const wrapper = mount(<SequenceEditorMiddle {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Delete");
+    expect(wrapper.text().toLowerCase()).toContain("run");
   });
 
   it("inactive editor", () => {

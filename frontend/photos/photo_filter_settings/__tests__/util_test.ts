@@ -8,17 +8,18 @@ import {
   GetImageShownStatusFlagsProps, ImageShowFlags,
 } from "../../images/interfaces";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
+import { StringSetting } from "../../../session_keys";
 
 describe("parseFilterSetting()", () => {
   it("returns set image filter setting", () => {
     const setting = "2017-09-03T20:01:40.336Z";
-    expect(parseFilterSetting(() => setting)("photo_filter_begin"))
+    expect(parseFilterSetting(() => setting)(StringSetting.photo_filter_begin))
       .toEqual(setting);
   });
 
   it("returns unset image filter setting", () => {
     const setting = "";
-    expect(parseFilterSetting(() => setting)("photo_filter_begin"))
+    expect(parseFilterSetting(() => setting)(StringSetting.photo_filter_begin))
       .toEqual(undefined);
   });
 });

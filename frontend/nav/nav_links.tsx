@@ -1,71 +1,59 @@
-import * as React from "react";
+import React from "react";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
-import { computeEditorUrlFromState } from "./compute_editor_url_from_state";
 import { Link } from "../link";
-import { t } from "../i18next_wrapper";
-import { betterCompact } from "../util";
-/** Uses a slug and a child path to compute the `href` of a navbar link. */
-export type LinkComputeFn = (slug: string, childPath: string) => string;
+import {
+  Panel, showSensors, PANEL_SLUG, TAB_ICON, PANEL_TITLE, getPanelPath,
+} from "../farm_designer/panel_header";
 
-/** If no LinkComputeFn is provided, the default behavior prevails. */
-const DEFAULT: LinkComputeFn =
-  (slug, childpath) => `/app/${slug}${childpath}`;
+export const getLinks = (): Panel[] => [
+  Panel.Plants,
+  Panel.Groups,
+  Panel.Sequences,
+  Panel.Regimens,
+  Panel.SavedGardens,
+  Panel.FarmEvents,
+  Panel.Points,
+  Panel.Weeds,
+  Panel.Controls,
+  ...(showSensors() ? [Panel.Sensors] : []),
+  Panel.Photos,
+  Panel.Farmware,
+  Panel.Tools,
+  Panel.Messages,
+  Panel.Help,
+  Panel.Settings,
+];
 
-interface NavLinkParams {
-  /** User visible verbiage. */
-  name: string;
-  /** Font awesome icon name. */
-  icon: string;
-  /** A unique name used for the path in the URL bar. */
-  slug: string;
-  computeHref?: LinkComputeFn;
-  designer?: boolean;
-}
-
-export const getLinks = (): NavLinkParams[] => betterCompact([
-  { name: "Farm Designer", icon: "leaf", slug: "designer" },
-  {
-    name: "Sequences", icon: "server", slug: "sequences",
-    computeHref: computeEditorUrlFromState("Sequence", false)
-  },
-  {
-    name: "Regimens", icon: "calendar-check-o", slug: "regimens",
-    computeHref: computeEditorUrlFromState("Regimen", true), designer: true,
-  },
-  {
-    name: "Messages", icon: "list", slug: "messages", designer: true,
-    computeHref: () => "/app/designer/messages",
-  },
-]);
-
-export const NavLinks = (props: NavLinksProps) => {
-  const currPath = getPathArray();
-  return <div className="links">
-    <div className="nav-links">
-      {getLinks().map(link => {
-        const currPageSlug = currPath[link.designer ? 3 : 2];
-        const isActive = !(link.slug === "designer"
-          && ["regimens", "messages"].includes(currPath[3])) &&
-          (currPageSlug === link.slug) ? "active" : "";
-        const childPath = link.slug === "designer" ? "/plants" : "";
-        const fn = link.computeHref || DEFAULT;
+export const NavLinks = (props: NavLinksProps) =>
+  <div className={"links"}>
+    <div className={"nav-links"}>
+      {(props.addMap ? [Panel.Map] : []).concat(getLinks()).map(panel => {
+        const currPageSlug = getPathArray()[3];
+        const isActive = currPageSlug === PANEL_SLUG[panel] ? "active" : "";
+        const desktopHide = PANEL_SLUG[panel] == "" ? "desktop-hide" : "";
+        const NotificationCircle = () =>
+          PANEL_SLUG[panel] === "messages" && props.alertCount > 0
+            ? <div className={"saucer fun"}><p>{props.alertCount}</p></div>
+            : <div className={"no-notifications"} />;
         return <Link
-          to={fn(link.slug, childPath)}
-          className={`${isActive}`}
-          key={link.slug}
+          to={getPanelPath(panel)}
+          className={`${isActive} ${desktopHide}`}
+          key={PANEL_SLUG[panel]}
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
-          <i className={`fa fa-${link.icon}`} />
-          <div data-title={t(link.name)}>
-            {t(link.name)}
-            {link.slug === "messages" && props.alertCount > 0 &&
-              <div className={"saucer fun"}>
-                <p>{props.alertCount}</p>
-              </div>}
+          <div className={"link-icon"}>
+            <img width={25} height={25}
+              src={TAB_ICON[panel]}
+              title={PANEL_TITLE()[panel]} />
+            <NotificationCircle />
+          </div>
+          <div className={"nav-link-text"}
+            data-title={PANEL_TITLE()[panel]}>
+            {PANEL_TITLE()[panel]}
+            <NotificationCircle />
           </div>
         </Link>;
       })}
     </div>
   </div>;
-};

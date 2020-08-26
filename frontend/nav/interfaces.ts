@@ -58,6 +58,7 @@ export interface TickerListProps {
 export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   alertCount: number;
+  addMap?: boolean;
 }
 
 export interface AccountMenuProps {
