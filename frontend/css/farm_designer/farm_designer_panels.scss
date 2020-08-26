@@ -263,6 +263,8 @@
     line-height: 5rem;
     height: 5rem;
     color: $light_gray;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
     &.active {
       border-bottom: 3px solid $white;
       font-weight: bold;
