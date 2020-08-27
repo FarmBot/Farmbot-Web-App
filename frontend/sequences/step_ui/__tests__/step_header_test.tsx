@@ -1,17 +1,30 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
-import { StepHeader, StepHeaderProps } from "..";
+import { StepHeader, StepHeaderProps } from "../step_header";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 
 describe("<StepHeader />", () => {
   const fakeProps = (): StepHeaderProps => ({
-    className: "",
-    helpText: "",
+    className: "step-class",
+    helpText: "help text",
     currentSequence: fakeSequence(),
-    currentStep: { kind: "wait", args: { milliseconds: 0 } },
-    dispatch: Function,
+    currentStep: { kind: "take_photo", args: {} },
+    dispatch: jest.fn(),
     index: 0,
+    children: "child",
     confirmStepDeletion: false,
+  });
+
+  it("renders", () => {
+    const wrapper = mount(<StepHeader  {...fakeProps()} />);
+    const div = wrapper.find("div").at(2);
+    expect(div.hasClass("step-header")).toBeTruthy();
+    expect(div.hasClass("step-class")).toBeTruthy();
+  });
+
+  it("renders with children", () => {
+    const wrapper = mount(<StepHeader  {...fakeProps()} />);
+    expect(wrapper.text()).toContain("child");
   });
 
   it("toggle draggable", () => {

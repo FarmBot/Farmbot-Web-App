@@ -316,9 +316,13 @@
     display: flex;
     padding: 0;
     .step-block-drag {
+      margin: auto;
       width: 100%;
       padding: 0.2rem 0.8rem;
-      line-height: 3rem;
+      label {
+        margin: 0;
+        width: 90%;
+      }
     }
   }
   &.quick-del {
@@ -338,13 +342,15 @@
 }
 
 .block-control {
+  position: absolute;
+  top: 30%;
+  right: 0.75rem;
   transition: all 0.2s ease-out;
   opacity: 0;
   float: right;
   font-size: 1.4rem !important;
-  padding-left: 1rem;
-  line-height: 3rem;
   pointer-events: none;
+
 }
 
 .fb-toggle-button {

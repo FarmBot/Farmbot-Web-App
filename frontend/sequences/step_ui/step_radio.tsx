@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 import {
@@ -16,18 +16,16 @@ export interface StepRadioProps<T extends string> {
 export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
   <Row>
     <Col xs={12}>
-      <div className="bottom-content">
-        <div className="channel-fields">
+      <div className={"bottom-content"}>
+        <div className={"channel-fields"}>
           <form>
             {props.choices.map((choice, i) =>
-              <div key={i} style={{ display: "inline" }}>
-                <label>
-                  <input type="radio" name={choice}
-                    value={choice}
-                    onChange={() => props.onChange(choice)}
-                    checked={props.currentChoice === choice} />
-                  {t(props.choiceLabelLookup[choice])}
-                </label>
+              <div className={"options"} key={i}>
+                <input type={"radio"} name={choice}
+                  value={choice}
+                  onChange={() => props.onChange(choice)}
+                  checked={props.currentChoice === choice} />
+                <label>{t(props.choiceLabelLookup[choice])}</label>
               </div>)}
           </form>
         </div>
@@ -48,7 +46,7 @@ export interface AxisStepRadioProps {
 export const AxisStepRadio = (props: AxisStepRadioProps) => {
   const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
   const CHOICE_LABELS = AXIS_CHOICES.reduce((acc, axis) => {
-    acc[axis] = `${t(props.label)} ${axis}`;
+    acc[axis] = axis;
     return acc;
   }, {} as Record<ALLOWED_AXIS, string>);
 

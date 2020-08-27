@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, FBSelect } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
@@ -23,16 +23,14 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   variable: SequenceMeta,
   uuid: UUID,
 }): SequenceMeta => {
-  if (bodyVariables) {
-    const executeStepData = bodyVariables
-      .filter(v => v.args.label === variable.celeryNode.args.label)[0];
-    if (executeStepData) {
-      return {
-        celeryNode: executeStepData,
-        vector: determineVector(executeStepData, resources, uuid),
-        dropdown: determineDropdown(executeStepData, resources, uuid),
-      };
-    }
+  const executeStepData = bodyVariables?.filter(v =>
+    v.args.label === variable.celeryNode.args.label)[0];
+  if (executeStepData) {
+    return {
+      celeryNode: executeStepData,
+      vector: determineVector(executeStepData, resources, uuid),
+      dropdown: determineDropdown(executeStepData, resources, uuid),
+    };
   }
   return variable;
 };

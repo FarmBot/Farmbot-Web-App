@@ -1,14 +1,15 @@
-import * as React from "react";
-import { IfParams, LHSOptions, operatorOptions } from "./index";
+import React from "react";
+import { LHSOptions, operatorOptions } from "./index";
 import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import { Col, Row, FBSelect, DropDownItem } from "../../../ui";
-import { ALLOWED_OPS } from "farmbot/dist";
+import { ALLOWED_OPS, If } from "farmbot/dist";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
 import { isString } from "lodash";
 import { t } from "../../../i18next_wrapper";
+import { StepParams } from "../../interfaces";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
@@ -22,7 +23,7 @@ const label_ops: Record<ALLOWED_OPS, string> = {
 // tslint:disable-next-line:no-any
 const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops).includes(x);
 
-const updateOp = (props: IfParams) => (ddi: DropDownItem) => {
+const updateOp = (props: StepParams<If>) => (ddi: DropDownItem) => {
   const stepCopy = defensiveClone(props.currentStep);
   const seqCopy = defensiveClone(props.currentSequence).body;
   const val = ddi.value;
@@ -32,7 +33,7 @@ const updateOp = (props: IfParams) => (ddi: DropDownItem) => {
   props.dispatch(overwrite(props.currentSequence, seqCopy));
 };
 
-export function If_(props: IfParams) {
+export function If_(props: StepParams<If>) {
   const { currentStep, resources } = props;
   const sequence = props.currentSequence;
   const { op } = currentStep.args;

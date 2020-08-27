@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LocalsList } from "../locals_list";
 import { ParameterApplication, Coordinate } from "farmbot";
 import {
@@ -33,7 +33,7 @@ describe("<LocalsList/>", () => {
   const fakeProps = (): LocalsListProps => {
     const sequence = fakeSequence();
     return {
-      variableData: {},
+      variableData: undefined,
       sequenceUuid: sequence.uuid,
       resources: buildResourceIndex([sequence]).index,
       onChange: jest.fn(),

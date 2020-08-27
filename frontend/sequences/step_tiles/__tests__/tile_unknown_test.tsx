@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../interfaces";
@@ -19,7 +19,6 @@ describe("<TileUnknown/>", () => {
     dispatch: jest.fn(),
     index: 0,
     resources: emptyState().index,
-    confirmStepDeletion: false,
   });
 
   it("renders step", () => {

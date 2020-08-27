@@ -144,7 +144,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup": return groupVar(ddi.value)(props);
   }
-  console.error("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
+  console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;
 };
 /** Convert a drop down selection to a variable. */
