@@ -8,45 +8,30 @@ module Api
     NONE = "none"
     PLATFORMS = Release::PLATFORMS.join(", ")
     BAD_PLATFORM = "%s is not a valid platform. Valid options: #{PLATFORMS}"
-
-    # POST /api/releases
-    def create
-      raise "Use GH Releases web hook?"
-    end
+    DEFAULT_PARAMS = { platform: NONE, channel: "stable" }
+    RELEVANT_FIELDS = [:image_url, :version, :platform, :channel, :id]
 
     # GET /api/releases
-    # TODO: If this needs more than one input param, extract
-    # into a mutation.
     def show
-      platform = params["platform"] || NONE
-      case platform
-      when Release::GENESIS
-        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw"
-        render json: { image_url: url }
-      when Release::EXPRESS
-        url = "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.fw"
-        render json: { image_url: url }
-      when NONE
-        platform_missing(platform)
+      if params[:platform]
+        render json: release
       else
-        Rollbar.error("Bad FBOS platform?", { platform: platform })
-        platform_missing(platform)
+        sorry "A `platform` param is required", 422
       end
     end
 
     private
 
-    def platform_missing(platform)
-      err = { error: BAD_PLATFORM % [platform] }
-      render json: err, status: 404
+    def relevant_params
+      @relevant_params ||= params.as_json.slice(*RELEVANT_FIELDS)
     end
 
-    # def get_release(platform)
-    #   Release
-    #     .order(:created_at)
-    #     .reverse_order
-    #     .where(platform: platform)
-    #     .first
-    # end
+    def show_params
+      @show_params ||= DEFAULT_PARAMS.merge(relevant_params)
+    end
+
+    def release
+      @release ||= Release.order(created_at: :desc).find_by!(show_params)
+    end
   end
 end
