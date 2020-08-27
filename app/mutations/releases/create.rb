@@ -13,9 +13,8 @@ module Releases
       # * Should not create duplicate
       release = Release.where(inputs.except(:image_url)).first_or_initialize
 
-      unless release.saved?
-        process_images(release)
-      end
+      process_images(release) if release.new_record?
+
       release
     end
 
