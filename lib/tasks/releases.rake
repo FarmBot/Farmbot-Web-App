@@ -14,6 +14,12 @@ NOT SAVING %{platform} %{version} (%{channel})
 "
 
 namespace :releases do
+  desc "Send upgrade notification to devices that are online" do
+    task notify: :environment do
+      Devices.UnattendedUpgrade.run!()
+    end
+  end
+
   desc "Publish the latest release found on farmbot/farmbot_os github org"
   task publish: :environment do
     puts "Downloading releases...."
