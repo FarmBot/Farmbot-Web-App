@@ -1,17 +1,17 @@
 jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
 
-import * as React from "react";
-import { If_ } from "../if";
+import React from "react";
 import { mount, shallow } from "enzyme";
+import { If_ } from "../if";
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { IfParams } from "../index";
 import { emptyState } from "../../../../resources/reducer";
 import { FBSelect } from "../../../../ui";
 import { overwrite } from "../../../../api/crud";
+import { StepParams } from "../../../interfaces";
 
 describe("<If_/>", () => {
-  function fakeProps(): IfParams {
+  function fakeProps(): StepParams<If> {
     const currentStep: If = {
       kind: "_if",
       args: {
@@ -29,7 +29,6 @@ describe("<If_/>", () => {
       index: 0,
       resources: emptyState().index,
       shouldDisplay: jest.fn(),
-      confirmStepDeletion: false,
       showPins: true,
     };
   }

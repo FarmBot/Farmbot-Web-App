@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedSequence } from "farmbot";
 import { SequenceBodyItem } from "farmbot/dist";
 import { DropArea } from "../draggable/drop_area";
@@ -21,10 +21,8 @@ export interface AllStepsProps {
   hardwareFlags?: HardwareFlags;
   farmwareData?: FarmwareData;
   shouldDisplay?: ShouldDisplay;
-  confirmStepDeletion: boolean;
   showPins?: boolean;
   expandStepOptions?: boolean;
-  viewCeleryScript?: boolean;
   visualized?: boolean;
   hoveredStep?: string | undefined;
 }
@@ -50,10 +48,8 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           hardwareFlags: this.props.hardwareFlags,
           farmwareData: this.props.farmwareData,
           shouldDisplay: this.props.shouldDisplay,
-          confirmStepDeletion: this.props.confirmStepDeletion,
           showPins: this.props.showPins,
           expandStepOptions: this.props.expandStepOptions,
-          viewCeleryScript: this.props.viewCeleryScript,
         };
         return <div className="sequence-steps"
           key={readThatCommentAbove}>

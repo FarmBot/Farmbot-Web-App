@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AllSteps, AllStepsProps } from "../all_steps";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
@@ -12,7 +12,6 @@ describe("<AllSteps/>", () => {
     onDrop: jest.fn(),
     dispatch: jest.fn(),
     resources: fakeResourceIndex(),
-    confirmStepDeletion: true,
   });
 
   it("renders empty sequence", () => {
@@ -31,8 +30,8 @@ describe("<AllSteps/>", () => {
     ];
     p.sequence.body.body.map(step => maybeTagStep(step));
     const wrapper = shallow(<AllSteps {...p} />);
-    ["TileMoveRelative", "TileReadPin", "TileWritePin"]
-      .map(element => expect(wrapper.find(element).length).toEqual(1));
+    ["move-relative-step", "read-pin-step", "write-pin-step"]
+      .map(stepClass => expect(wrapper.html()).toContain(stepClass));
   });
 
   it("calls onDrop", () => {

@@ -1,10 +1,10 @@
 const mockEditStep = jest.fn();
 jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { MarkAs } from "../component";
-import { MarkAsProps, UpdateResourceValue } from "../interfaces";
+import { UpdateResourceValue } from "../interfaces";
 import { UpdateResource, Identifier, Resource, resource_type } from "farmbot";
 import {
   fakeSequence, fakePlant, fakeWeed,
@@ -14,6 +14,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import { editStep } from "../../../../api/crud";
 import { NOTHING_SELECTED } from "../../../locals_list/handle_select";
+import { StepParams } from "../../../interfaces";
 
 describe("<MarkAs/>", () => {
   const plant = fakePlant();
@@ -21,13 +22,12 @@ describe("<MarkAs/>", () => {
   const weed = fakeWeed();
   weed.body.id = 2;
 
-  const fakeProps = (): MarkAsProps => ({
+  const fakeProps = (): StepParams<UpdateResource> => ({
     currentSequence: fakeSequence(),
     dispatch: jest.fn(),
     index: 0,
     currentStep: ResourceUpdateResourceStep("Device", 1, "mounted_tool_id", 0),
     resources: buildResourceIndex([plant, weed]).index,
-    confirmStepDeletion: false
   });
 
   it("renders the basic parts", () => {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DropDownItem, Col, FBSelect } from "../../../ui";
 import { SequenceBodyItem, ALLOWED_PIN_MODES, WritePin, ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -6,7 +6,7 @@ import { editStep } from "../../../api/crud";
 import { t } from "../../../i18next_wrapper";
 import { isBoxLed } from "./index";
 
-export function PinModeDropdown(props: StepParams) {
+export function PinModeDropdown(props: StepParams<ReadPin | WritePin>) {
   return <Col xs={6} md={3}>
     <label>{t("Mode")}</label>
     <FBSelect
@@ -42,8 +42,8 @@ export function setPinMode(ddi: DropDownItem, stepParams: StepParams) {
   }));
 }
 
-export function currentModeSelection(currentStep: SequenceBodyItem) {
-  const step = currentStep as WritePin;
+export function currentModeSelection(currentStep: ReadPin | WritePin) {
+  const step = currentStep;
   const pinMode = step.args.pin_mode;
   const modes: { [s: string]: string } = {
     [PinMode.digital]: t("Digital"),

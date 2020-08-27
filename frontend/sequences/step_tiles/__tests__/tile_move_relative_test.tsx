@@ -1,13 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { TileMoveRelative } from "../tile_move_relative";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { MoveRelative } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { StepParams } from "../../interfaces";
 
 describe("<TileMoveRelative/>", () => {
-  function bootstrapTest() {
-    const currentStep: MoveRelative = {
+  const fakeProps = (): StepParams => ({
+    currentSequence: fakeSequence(),
+    currentStep: {
       kind: "move_relative",
       args: {
         x: 1.1,
@@ -15,20 +16,14 @@ describe("<TileMoveRelative/>", () => {
         z: 3,
         speed: 100
       }
-    };
-    return {
-      component: mount(<TileMoveRelative
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index}
-        confirmStepDeletion={false} />)
-    };
-  }
+    },
+    dispatch: jest.fn(),
+    index: 0,
+    resources: emptyState().index,
+  });
 
   it("renders inputs", () => {
-    const block = bootstrapTest().component;
+    const block = mount(<TileMoveRelative {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     expect(inputs.length).toEqual(5);

@@ -1,28 +1,27 @@
-import { NULL_CHOICE, DropDownItem } from "../../../ui/index";
-import { ResourceIndex } from "../../../resources/interfaces";
 import { If } from "farmbot";
+import { DropDownItem } from "../../../ui";
+import { ResourceIndex } from "../../../resources/interfaces";
 import { findByKindAndId } from "../../../resources/selectors";
 import { isString } from "lodash";
 
-interface DisplayLhsProps {
+export interface DisplayLhsProps {
   currentStep: If;
   resources: ResourceIndex;
   lhsOptions: DropDownItem[];
 }
 
-const findDropdownByValue = (needle: string, haystack: DropDownItem[]) =>
-  haystack.filter(x => x.value === needle)[0] || NULL_CHOICE;
-
-export function displayLhs(props: DisplayLhsProps): DropDownItem {
+export function displayLhs(props: DisplayLhsProps): DropDownItem | undefined {
   const { lhs } = props.currentStep.args;
-  const { lhsOptions } = props;
   if (isString(lhs)) {
-    return findDropdownByValue(lhs, lhsOptions);
+    return props.lhsOptions.filter(ddi => ddi.value === lhs)[0];
   } else {
     const { pin_id, pin_type } = lhs.args;
-    const kind = pin_type as "Peripheral" | "Sensor"; // :(
-    const id = pin_id || -1;
-    const { uuid } = findByKindAndId(props.resources, kind, id);
-    return findDropdownByValue(uuid, lhsOptions);
+    switch (pin_type) {
+      case "Sensor":
+      case "Peripheral":
+        const { uuid } = findByKindAndId(props.resources, pin_type, pin_id);
+        return props.lhsOptions.filter(ddi => ddi.value === uuid)[0];
+    }
+
   }
 }

@@ -1,17 +1,17 @@
-import * as React from "react";
+import React from "react";
 import { TileComputedMove } from "../tile_computed_move";
 import { mount } from "enzyme";
 import {
   fakeSequence, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
-import { Move, Wait } from "farmbot/dist";
+import { Move } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 describe("<TileComputedMove />", () => {
-  const fakeProps = (): StepParams => {
+  const fakeProps = (): StepParams<Move> => {
     const currentStep: Move = {
       kind: "move",
       args: {},
@@ -33,7 +33,6 @@ describe("<TileComputedMove />", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: buildResourceIndex([plant]).index,
-      confirmStepDeletion: false,
     };
   };
 
@@ -41,13 +40,5 @@ describe("<TileComputedMove />", () => {
     const wrapper = mount(<TileComputedMove {...fakeProps()} />);
     ["Location"]
       .map(string => expect(wrapper.text()).toContain(string));
-  });
-
-  it("doesn't render move step", () => {
-    const p = fakeProps();
-    const waitStep: Wait = { kind: "wait", args: { milliseconds: 0 } };
-    p.currentStep = waitStep;
-    const wrapper = mount(<TileComputedMove {...p} />);
-    expect(wrapper.text()).toEqual("Expected `move` node");
   });
 });

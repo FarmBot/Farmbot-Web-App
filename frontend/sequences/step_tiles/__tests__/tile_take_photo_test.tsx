@@ -1,8 +1,7 @@
-import * as React from "react";
-import { TileTakePhoto } from "../tile_take_photo";
+import React from "react";
 import { mount } from "enzyme";
+import { TileTakePhoto } from "../tile_take_photo";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { TakePhoto } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";
 import {
@@ -11,18 +10,12 @@ import {
 import { Content } from "../../../constants";
 
 describe("<TileTakePhoto/>", () => {
-  const currentStep: TakePhoto = {
-    kind: "take_photo",
-    args: {}
-  };
-
   const fakeProps = (): StepParams => ({
     currentSequence: fakeSequence(),
-    currentStep: currentStep,
+    currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
     index: 0,
     resources: emptyState().index,
-    confirmStepDeletion: false,
     farmwareData: fakeFarmwareData(),
   });
 
