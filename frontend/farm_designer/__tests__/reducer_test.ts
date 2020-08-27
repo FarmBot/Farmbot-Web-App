@@ -118,6 +118,17 @@ describe("designer reducer", () => {
     });
   });
 
+  it("uses default point color", () => {
+    const action: ReduxAction<DrawnPointPayl> = {
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { cx: 10, cy: 20, z: 0, r: 30 }
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.drawnPoint).toEqual({
+      cx: 10, cy: 20, z: 0, r: 30, color: "green"
+    });
+  });
+
   it("sets current weed data", () => {
     const action: ReduxAction<DrawnWeedPayl> = {
       type: Actions.SET_DRAWN_WEED_DATA,
@@ -137,6 +148,17 @@ describe("designer reducer", () => {
     const state = oldState();
     state.drawnWeed = { cx: 0, cy: 0, z: 0, r: 0, color: "red" };
     const newState = designer(state, action);
+    expect(newState.drawnWeed).toEqual({
+      cx: 10, cy: 20, z: 0, r: 30, color: "red"
+    });
+  });
+
+  it("uses default weed color", () => {
+    const action: ReduxAction<DrawnWeedPayl> = {
+      type: Actions.SET_DRAWN_WEED_DATA,
+      payload: { cx: 10, cy: 20, z: 0, r: 30 }
+    };
+    const newState = designer(oldState(), action);
     expect(newState.drawnWeed).toEqual({
       cx: 10, cy: 20, z: 0, r: 30, color: "red"
     });

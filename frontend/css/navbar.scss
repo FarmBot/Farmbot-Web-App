@@ -91,7 +91,6 @@ nav {
         }
       }
       &.active {
-        pointer-events: none;
         font-weight: bold;
         color: $white;
         img {

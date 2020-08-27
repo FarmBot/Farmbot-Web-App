@@ -11,152 +11,52 @@ jest.mock("../../settings/dev/dev_support", () => ({
 }));
 
 import React from "react";
-import { DesignerNavTabs, Panel, NavTab, NavTabProps } from "../panel_header";
-import { shallow } from "enzyme";
+import { shallow, mount, ReactWrapper } from "enzyme";
+import { DesignerNavTabs } from "../panel_header";
+
+const expectOnlyOneActiveIcon = (wrapper: ReactWrapper) =>
+  expect(wrapper.html().match(/active/)?.length).toEqual(1);
+
+const expectColor = (wrapper: ReactWrapper, color: string) =>
+  expect(wrapper.find(".panel-nav").hasClass(`${color}-panel`)).toBeTruthy();
+
+const expectActive = (wrapper: ReactWrapper, slug: string) =>
+  expect(wrapper.find(`#${slug}`).first().hasClass("active")).toBeTruthy();
 
 describe("<DesignerNavTabs />", () => {
-  it("renders for map", () => {
-    mockPath = "/app/designer";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
+  it.each<[string, string, string]>([
+    ["map", "/app/designer", "gray"],
+    ["plants", "/app/designer/plants", "green"],
+    ["plants", "/app/designer/gardens/templates/1", "green"],
+    ["groups", "/app/designer/groups", "blue"],
+    ["tools", "/app/designer/tool-slots", "gray"],
+  ])("shows active %s icon", (slug, path, color) => {
+    mockPath = path;
+    const wrapper = mount(<DesignerNavTabs />);
+    expectOnlyOneActiveIcon(wrapper);
+    expectColor(wrapper, color);
+    expectActive(wrapper, slug);
   });
 
-  it("renders for plants", () => {
-    mockPath = "/app/designer/plants";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("green-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
+  it("shows inactive icons for sequences page", () => {
+    mockPath = "/app/sequences";
+    const wrapper = mount(<DesignerNavTabs />);
+    expect(wrapper.find(".active").length).toEqual(0);
   });
 
-  it("renders for groups", () => {
-    mockPath = "/app/designer/groups";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("blue-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
+  it("shows inactive icons for logs page", () => {
+    mockPath = "/app/logs";
+    const wrapper = mount(<DesignerNavTabs />);
+    expect(wrapper.find(".active").length).toEqual(0);
   });
 
-  it("renders for saved gardens", () => {
-    mockPath = "/app/designer/gardens";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("navy-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for sequences", () => {
-    mockPath = "/app/designer/sequences";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for regimens", () => {
-    mockPath = "/app/designer/regimens";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for farm events", () => {
-    mockPath = "/app/designer/events";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("yellow-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for zones", () => {
+  it("shows active zones icon", () => {
     mockPath = "/app/designer/zones";
     mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("brown-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for points", () => {
-    mockPath = "/app/designer/points";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("teal-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for weeds", () => {
-    mockPath = "/app/designer/weeds";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("red-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for controls", () => {
-    mockPath = "/app/designer/controls";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for sensors", () => {
-    mockPath = "/app/designer/sensors";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for photos", () => {
-    mockPath = "/app/designer/photos";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for farmware", () => {
-    mockPath = "/app/designer/farmware";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for tools", () => {
-    mockPath = "/app/designer/tools";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for messages", () => {
-    mockPath = "/app/designer/messages";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for help", () => {
-    mockPath = "/app/designer/help";
-    mockDev = true;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
-  });
-
-  it("renders for settings", () => {
-    mockPath = "/app/designer/settings";
-    mockDev = false;
-    const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
-    expect(wrapper.html()).toContain("active");
+    const wrapper = mount(<DesignerNavTabs />);
+    expectOnlyOneActiveIcon(wrapper);
+    expectColor(wrapper, "brown");
+    expectActive(wrapper, "zones");
   });
 
   it("renders scroll indicator", () => {
@@ -170,7 +70,7 @@ describe("<DesignerNavTabs />", () => {
 
   it("doesn't render scroll indicator when wide", () => {
     Object.defineProperty(document, "getElementsByClassName", {
-      value: () => [{}, { scrollWidth: 500, scrollLeft: 0, clientWidth: 75 }],
+      value: () => [{}, { scrollWidth: 500, scrollLeft: 0, clientWidth: 750 }],
       configurable: true
     });
     const wrapper = shallow(<DesignerNavTabs />);
@@ -185,16 +85,11 @@ describe("<DesignerNavTabs />", () => {
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.html()).not.toContain("scroll-indicator");
   });
-});
 
-describe("<NavTab />", () => {
-  const fakeProps = (): NavTabProps => ({
-    panel: Panel.Map,
-    desktopHide: true,
-  });
-
-  it("renders icon", () => {
-    const wrapper = shallow(<NavTab {...fakeProps()} />);
-    expect(wrapper.html()).toContain("desktop-hide");
+  it("calls onScroll", () => {
+    const wrapper = shallow<DesignerNavTabs>(<DesignerNavTabs />);
+    wrapper.setState({ atEnd: false });
+    wrapper.find(".panel-tabs").simulate("scroll");
+    expect(wrapper.state().atEnd).toEqual(true);
   });
 });

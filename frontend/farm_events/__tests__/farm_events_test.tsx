@@ -44,7 +44,7 @@ describe("<PureFarmEvents/>", () => {
     p.calendarRows = row;
     const results = render(<PureFarmEvents {...p} />);
     expect(results.text()).toContain("Every 4 hours");
-    expect(results.html()).not.toContain("gray");
+    expect(results.find(".farm-event-data-block").hasClass("gray")).toBeFalsy();
   });
 
   it("filters farm events: finds none", () => {
