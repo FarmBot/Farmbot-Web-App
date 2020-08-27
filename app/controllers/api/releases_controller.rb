@@ -23,7 +23,7 @@ module Api
     private
 
     def relevant_params
-      @relevant_params ||= params.as_json.slice(*RELEVANT_FIELDS)
+      @relevant_params ||= params.as_json.symbolize_keys.slice(*RELEVANT_FIELDS)
     end
 
     def show_params
