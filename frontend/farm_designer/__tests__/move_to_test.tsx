@@ -118,6 +118,12 @@ describe("chooseLocation()", () => {
       payload: { x: 1, y: 2, z: 0 }
     });
   });
+
+  it("doesn't update coordinates", () => {
+    const dispatch = jest.fn();
+    chooseLocation({ dispatch, gardenCoords: undefined });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
 });
 
 describe("mapStateToProps()", () => {

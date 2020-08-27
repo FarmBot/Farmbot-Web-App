@@ -40,6 +40,5 @@ describe("<NavLinks />", () => {
     const wrapper = shallow(<NavLinks close={jest.fn()} alertCount={1}
       addMap={true} />);
     expect(wrapper.html().toLowerCase()).toContain("sensors");
-    expect(wrapper.html()).toContain("desktop-hide");
   });
 });

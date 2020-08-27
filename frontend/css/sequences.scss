@@ -138,7 +138,6 @@
   height: calc(100vh - 25rem);
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 15px;
 }
 
 .farmware-input-panel-contents {
@@ -582,11 +581,11 @@
   display: none;
   @media screen and (max-width: 767px) {
     display: block;
-    min-height: 3rem;
     .add-command {
       display: block;
       margin: auto;
       margin-top: 1rem;
+      margin-bottom: 1rem;
       float: none !important;
     }
   }

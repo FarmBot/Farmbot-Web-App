@@ -11,6 +11,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
 import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
+import { compact } from "lodash";
 
 export enum Panel {
   Map = "Map",
@@ -50,7 +51,7 @@ export enum PanelColor {
   red = "red",
 }
 
-export const TAB_COLOR: { [key in Panel]: PanelColor } = {
+export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Map]: PanelColor.gray,
   [Panel.Plants]: PanelColor.green,
   [Panel.Groups]: PanelColor.blue,
@@ -96,7 +97,7 @@ export enum Icon {
 
 export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;
 
-export const TAB_ICON: { [key in Panel]: string } = {
+export const TAB_ICON: Record<Panel, string> = {
   [Panel.Map]: iconFile(Icon.map),
   [Panel.Plants]: iconFile(Icon.plant),
   [Panel.Groups]: iconFile(Icon.groups),
@@ -118,7 +119,7 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Settings]: iconFile(Icon.settings),
 };
 
-export const PANEL_SLUG: { [key in Panel]: string } = {
+export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Map]: "",
   [Panel.Plants]: "plants",
   [Panel.Groups]: "groups",
@@ -140,17 +141,21 @@ export const PANEL_SLUG: { [key in Panel]: string } = {
   [Panel.Settings]: "settings",
 };
 
+const ALT_PANEL_SLUG: Record<string, string> = {
+  [PANEL_SLUG[Panel.Tools]]: "tool-slots",
+};
+
 export const PANEL_BY_SLUG: Record<string, Panel> = {};
 Object.entries(PANEL_SLUG).map(([panel, slug]: [Panel, string]) =>
   PANEL_BY_SLUG[slug] = panel);
 
-export const PANEL_PATH: Partial<{ [key in Panel]: () => string }> = {
+const PANEL_PATH: Partial<Record<Panel, () => string>> = {
   [Panel.Map]: () => "/app/designer",
   [Panel.Sequences]: computeEditorUrlFromState("Sequence"),
   [Panel.Regimens]: computeEditorUrlFromState("Regimen"),
 };
 
-export const PANEL_TITLE = (): { [key in Panel]: string } => ({
+export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Map]: t("Map"),
   [Panel.Plants]: t("Plants"),
   [Panel.Groups]: t("Groups"),
@@ -172,45 +177,23 @@ export const PANEL_TITLE = (): { [key in Panel]: string } => ({
   [Panel.Settings]: t("Settings"),
 });
 
-// tslint:disable-next-line:cyclomatic-complexity
-const getCurrentTab = (): Tabs => {
+export const getCurrentPanel = (): Tabs | undefined => {
   const pathArray = getPathArray();
   if (pathArray.join("/") === "/app/designer") {
     return Panel.Map;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Groups])) {
-    return Panel.Groups;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Sequences])) {
-    return Panel.Sequences;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Regimens])) {
-    return Panel.Regimens;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.SavedGardens])) {
-    return Panel.SavedGardens;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.FarmEvents])) {
-    return Panel.FarmEvents;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Zones])) {
-    return Panel.Zones;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Points])) {
-    return Panel.Points;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Weeds])) {
-    return Panel.Weeds;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Controls])) {
-    return Panel.Controls;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Sensors])) {
-    return Panel.Sensors;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Photos])) {
-    return Panel.Photos;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Farmware])) {
-    return Panel.Farmware;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Tools])) {
-    return Panel.Tools;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Messages])) {
-    return Panel.Messages;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Help])) {
-    return Panel.Help;
-  } else if (pathArray.includes(PANEL_SLUG[Panel.Settings])) {
-    return Panel.Settings;
-  } else {
+  } else if (pathArray[2] == "sequences") {
+    return undefined;
+  } else if (pathArray[2] == "logs") {
+    return undefined;
+  } else if (pathArray[4] == "templates") {
     return Panel.Plants;
+  } else {
+    const panelMatches = Object.values(PANEL_SLUG).map(slug => {
+      if ([slug, ALT_PANEL_SLUG[slug]].includes(pathArray[3])) {
+        return PANEL_BY_SLUG[slug];
+      }
+    });
+    return compact(panelMatches)[0];
   }
 };
 
@@ -220,16 +203,17 @@ export const getPanelPath = (panel: Panel) => {
   return getPath();
 };
 
-export interface NavTabProps {
+interface NavTabProps {
   panel: Panel;
   desktopHide?: boolean;
 }
 
-export const NavTab = (props: NavTabProps) =>
-  <Link to={getPanelPath(props.panel)}
+const NavTab = (props: NavTabProps) =>
+  <Link id={PANEL_SLUG[props.panel] || "map"}
+    to={getPanelPath(props.panel)}
     style={{ flex: 0.3 }}
     className={[
-      getCurrentTab() === props.panel ? "active" : "",
+      getCurrentPanel() === props.panel ? "active" : "",
       props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
     <img width={35} height={30}
@@ -239,7 +223,7 @@ export const NavTab = (props: NavTabProps) =>
 
 const displayScrollIndicator = () => {
   const element = document.getElementsByClassName("panel-tabs")[1];
-  const mobile = element?.scrollWidth < 430;
+  const mobile = element?.clientWidth < 450;
   const end = element?.scrollWidth - element?.scrollLeft == element?.clientWidth;
   return mobile && !end;
 };
@@ -252,30 +236,48 @@ export const showSensors = () => {
     && hasSensors(firmwareHardware);
 };
 
-export function DesignerNavTabs(props: { hidden?: boolean }) {
-  const tab = getCurrentTab();
-  const hidden = props.hidden ? "hidden" : "";
-  return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${hidden}`}>
-    {displayScrollIndicator() && <div className={"scroll-indicator"} />}
-    <div className={"panel-tabs"}>
-      <NavTab panel={Panel.Map} desktopHide={true} />
-      <NavTab panel={Panel.Plants} />
-      <NavTab panel={Panel.Groups} />
-      <NavTab panel={Panel.SavedGardens} />
-      <NavTab panel={Panel.Sequences} />
-      <NavTab panel={Panel.Regimens} />
-      <NavTab panel={Panel.FarmEvents} />
-      {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
-      <NavTab panel={Panel.Points} />
-      <NavTab panel={Panel.Weeds} />
-      <NavTab panel={Panel.Controls} />
-      {showSensors() && <NavTab panel={Panel.Sensors} />}
-      <NavTab panel={Panel.Photos} />
-      <NavTab panel={Panel.Farmware} />
-      <NavTab panel={Panel.Tools} />
-      <NavTab panel={Panel.Messages} />
-      <NavTab panel={Panel.Help} />
-      <NavTab panel={Panel.Settings} />
-    </div>
-  </div>;
+interface DesignerNavTabsProps {
+  hidden?: boolean;
+}
+
+interface DesignerNavTabsState {
+  atEnd?: boolean;
+}
+
+export class DesignerNavTabs
+  extends React.Component<DesignerNavTabsProps, DesignerNavTabsState> {
+  state: DesignerNavTabsState = {};
+
+  componentDidMount = () => this.updateScroll();
+
+  updateScroll = () => this.setState({ atEnd: !displayScrollIndicator() });
+
+  render() {
+    const tab = getCurrentPanel();
+    const hidden = this.props.hidden ? "hidden" : "";
+    const color = TAB_COLOR[tab || Panel.Plants];
+    return <div className={`panel-nav ${color}-panel ${hidden}`}>
+      {!this.state.atEnd && <div className={"scroll-indicator"} />}
+      <div className={"panel-tabs"} onScroll={this.updateScroll}>
+        <NavTab panel={Panel.Map} desktopHide={true} />
+        <NavTab panel={Panel.Plants} />
+        <NavTab panel={Panel.Groups} />
+        <NavTab panel={Panel.SavedGardens} />
+        <NavTab panel={Panel.Sequences} />
+        <NavTab panel={Panel.Regimens} />
+        <NavTab panel={Panel.FarmEvents} />
+        {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
+        <NavTab panel={Panel.Points} />
+        <NavTab panel={Panel.Weeds} />
+        <NavTab panel={Panel.Controls} />
+        {showSensors() && <NavTab panel={Panel.Sensors} />}
+        <NavTab panel={Panel.Photos} />
+        <NavTab panel={Panel.Farmware} />
+        <NavTab panel={Panel.Tools} />
+        <NavTab panel={Panel.Messages} />
+        <NavTab panel={Panel.Help} />
+        <NavTab panel={Panel.Settings} />
+      </div>
+    </div>;
+  }
 }

@@ -15,8 +15,7 @@ import {
 const zoomLevels =
   [0.1, 0.15, 0.2, 0.25, 0.33, 0.41, 0.5, 0.6, 0.75, 1.0, 1.25, 1.5, 1.8];
 
-const foundIndex = findIndex(zoomLevels, (x) => x === 1);
-const zoomLevel1Index = foundIndex === -1 ? 9 : foundIndex;
+const zoomLevel1Index = findIndex(zoomLevels, x => x === 1);
 const zoomLevelsCount = zoomLevels.length;
 export const maxZoomIndex = zoomLevelsCount - 1;
 const clampZoom = (index: number): number => clamp(index, 0, maxZoomIndex);
