@@ -1,5 +1,4 @@
 require "open-uri"
-require "google-cloud-storage"
 
 NEW_RELEASE_TEMPLATE = "
 NEW RELEASE:
