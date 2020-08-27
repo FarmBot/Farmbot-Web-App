@@ -11,21 +11,19 @@ module Releases
     def execute
       # * Should be able to run this multiple times
       # * Should not create duplicate
-      release = Release
-        .where(inputs.except(:image_url))
-        .first_or_initialize
-      if release.saved?
-        release
-      else
+      release = Release.where(inputs.except(:image_url)).first_or_initialize
+
+      unless release.saved?
         process_images(release)
       end
+      release
     end
 
     private
 
     # Copy the file from Github to Google Cloud Storage.
     def process_images(release)
-      release.image_url = Release.transload(image_url)
+      release.update!(image_url: Release.transload(image_url))
     end
   end
 end
