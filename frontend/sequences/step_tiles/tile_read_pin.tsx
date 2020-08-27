@@ -1,41 +1,34 @@
-import * as React from "react";
+import React from "react";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { StepWrapper } from "../step_ui";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 import { PinModeDropdown, PinSelect } from "./pin_support";
+import { ReadPin } from "farmbot";
 
-export function TileReadPin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence
-  } = props;
-  const className = "read-pin-step";
-  if (currentStep.kind !== "read_pin") { throw new Error("never"); }
-  return <StepWrapper>
-    <StepHeader
-      className={className}
-      helpText={ToolTips.READ_PIN}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <StepContent className={className}>
-      <Row>
-        <PinSelect {...props}
-          label={t("sensor or peripheral")}
-          placeholder={t("Select a sensor")} />
-        <PinModeDropdown {...props} />
-        <Col xs={6} md={3}>
-          <label>{t("Data Label")}</label>
-          <StepInputBox dispatch={dispatch}
-            index={index}
-            step={currentStep}
-            sequence={currentSequence}
-            field="label" />
-        </Col>
-      </Row>
-    </StepContent>
+export const TileReadPin = (props: StepParams<ReadPin>) =>
+  <StepWrapper
+    className={"read-pin-step"}
+    helpText={ToolTips.READ_PIN}
+    currentSequence={props.currentSequence}
+    currentStep={props.currentStep}
+    dispatch={props.dispatch}
+    index={props.index}
+    resources={props.resources}>
+    <Row>
+      <PinSelect {...props}
+        label={t("sensor or peripheral")}
+        placeholder={t("Select a sensor")} />
+      <PinModeDropdown {...props} />
+      <Col xs={6} md={3}>
+        <label>{t("Data Label")}</label>
+        <StepInputBox field={"label"}
+          dispatch={props.dispatch}
+          index={props.index}
+          step={props.currentStep}
+          sequence={props.currentSequence} />
+      </Col>
+    </Row>
   </StepWrapper>;
-}

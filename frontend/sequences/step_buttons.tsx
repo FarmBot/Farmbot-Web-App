@@ -22,7 +22,8 @@ export const stepClick =
 
 export function StepButton({ children, step, color, dispatch, current, index }:
   StepButtonParams) {
-  return <Col xs={12} sm={inDesigner() ? 6 : 12} className={"step-block-wrapper"}>
+  return <Col xs={12} sm={inDesigner() ? 6 : 12} lg={6}
+    className={"step-block-wrapper"}>
     <div className="block">
       <StepDragger
         dispatch={dispatch}
@@ -34,7 +35,7 @@ export function StepButton({ children, step, color, dispatch, current, index }:
           title={t("add step")}
           onClick={stepClick(dispatch, step, current, index)}>
           <div className="step-block-drag">
-            {children}
+            <label>{children}</label>
             <i className="fa fa-arrows block-control" />
           </div>
         </button>

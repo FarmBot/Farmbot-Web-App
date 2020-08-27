@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LocationForm } from "../location_form";
 import {
   fakeSequence,
@@ -124,6 +124,13 @@ describe("<LocationForm/>", () => {
       label: "Custom Coordinates",
       value: ""
     });
+  });
+
+  it("uses custom filter for dropdown", () => {
+    const p = fakeProps();
+    p.customFilterRule = () => false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list).toEqual([]);
   });
 
   it("renders collapse icon: open", () => {

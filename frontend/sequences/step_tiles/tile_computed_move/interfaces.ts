@@ -2,23 +2,9 @@ import {
   Identifier, Point, Tool, TaggedSequence, Move, Xyz, AxisOverwrite,
 } from "farmbot";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
-import { HardwareFlags } from "../../interfaces";
 import { BotPosition, ShouldDisplay } from "../../../devices/interfaces";
 
 export type LocationNode = Identifier | Point | Tool;
-
-export interface ComputedMoveProps {
-  currentSequence: TaggedSequence;
-  currentStep: Move;
-  dispatch: Function;
-  index: number;
-  resources: ResourceIndex;
-  confirmStepDeletion: boolean;
-  hardwareFlags: HardwareFlags | undefined;
-  expandStepOptions: boolean;
-  viewCeleryScript: boolean;
-  shouldDisplay: ShouldDisplay | undefined;
-}
 
 export interface ComputedMoveState {
   locationSelection: LocSelection | undefined;

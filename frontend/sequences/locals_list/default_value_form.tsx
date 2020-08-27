@@ -6,7 +6,7 @@ import { LocationForm } from "./location_form";
 import {
   SequenceMeta, determineVector, determineDropdown,
 } from "../../resources/sequence_meta";
-import { Help, DropDownItem } from "../../ui";
+import { Help } from "../../ui";
 import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
@@ -16,9 +16,6 @@ export interface DefaultValueFormProps {
   resources: ResourceIndex;
   onChange: (v: ParameterDeclaration) => void;
 }
-
-export const NO_GROUPS =
-  (d: DropDownItem) => (d.headingId != "PointGroup");
 
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
   if (props.variableNode.kind === "parameter_declaration") {
@@ -32,12 +29,10 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         variable={defaultValueVariableData(props.resources, props.variableNode)}
         sequenceUuid={""}
         resources={props.resources}
-        shouldDisplay={() => true}
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideTypeLabel={true}
         hideGroups={true}
-        onChange={change(props.onChange, props.variableNode)}
-        customFilterRule={NO_GROUPS} />
+        onChange={change(props.onChange, props.variableNode)} />
     </div>;
   } else {
     return <div className={"no-default-value-form"} />;

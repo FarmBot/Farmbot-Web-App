@@ -1,35 +1,28 @@
 const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
-import * as React from "react";
+import React from "react";
 import { TileWritePin } from "../tile_write_pin";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { StepParams } from "../../interfaces";
 
-function fakeProps() {
-  const currentStep: WritePin = {
+const fakeProps = (): StepParams<WritePin> => ({
+  currentSequence: fakeSequence(),
+  currentStep: {
     kind: "write_pin",
-    args: {
-      pin_number: 3,
-      pin_value: 2,
-      pin_mode: 1
-    }
-  };
-  return {
-    currentSequence: fakeSequence(),
-    currentStep: currentStep,
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
-    confirmStepDeletion: false,
-    shouldDisplay: () => false,
-    showPins: false,
-  };
-}
+    args: { pin_number: 3, pin_value: 2, pin_mode: 1 },
+  },
+  dispatch: jest.fn(),
+  index: 0,
+  resources: emptyState().index,
+  shouldDisplay: () => false,
+  showPins: false,
+});
 
-describe("<TileWritePin/>", () => {
+describe("<TileWritePin />", () => {
   it("renders inputs: Analog", () => {
     const wrapper = mount(<TileWritePin {...fakeProps()} />);
     const inputs = wrapper.find("input");
@@ -66,14 +59,5 @@ describe("<TileWritePin/>", () => {
     expect(buttons.at(1).text()).toEqual("Digital");
     expect(labels.at(2).text()).toEqual("set to");
     expect(buttons.at(2).text()).toEqual("ON");
-  });
-
-  it("throws when not a WritePin step", () => {
-    console.error = jest.fn();
-    const p = fakeProps();
-    // tslint:disable-next-line:no-any
-    p.currentStep.kind = "wrong_step" as any;
-    expect(() => mount(<TileWritePin {...p} />))
-      .toThrow("Not a write_pin block.");
   });
 });

@@ -1,10 +1,12 @@
-import * as React from "react";
+import React from "react";
 import {
   CeleryNode, LegalArgString, If, Execute, Nothing,
-  SequenceBodyItem as Step, TaggedSequence, LegalSequenceKind,
+  SequenceBodyItem, TaggedSequence, LegalSequenceKind,
 } from "farmbot";
-import { FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS } from "../interfaces";
-import { ExecuteBlock } from "./tile_execute";
+import {
+  FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS, RemoveParams, MoveParams, SpliceParams,
+} from "../interfaces";
+import { TileExecute } from "./tile_execute";
 import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
 import { defensiveClone, move as arrayMover } from "../../util";
 import { TileIf } from "./tile_if";
@@ -36,13 +38,7 @@ import { TileReboot } from "./tile_reboot";
 import { TileOldMarkAs } from "./tile_old_mark_as";
 import { TileShutdown } from "./tile_shutdown";
 import { TileComputedMove } from "./tile_computed_move";
-
-interface MoveParams {
-  step: Step;
-  to: number;
-  from: number;
-  sequence: TaggedSequence
-}
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 export function move({ step, sequence, to, from }: MoveParams) {
   const copy = defensiveClone(step);
@@ -54,31 +50,18 @@ export function move({ step, sequence, to, from }: MoveParams) {
   } else {
     seq.body.splice(to, 0, defensiveClone(copy));
     delete seq.body[from];
-    seq.body = compact(seq.body);
   }
+  seq.body = compact(seq.body);
   return overwrite(sequence, next.body);
 }
 
-interface CopyParams {
-  step: Step;
-  index: number;
-  sequence: TaggedSequence
-}
-
-export function splice({ step, sequence, index }: CopyParams) {
+export function splice({ step, sequence, index }: SpliceParams) {
   const copy = forceSetStepTag(defensiveClone(step));
   const next = defensiveClone(sequence);
   const seq = next.body;
   seq.body = seq.body || [];
   seq.body.splice(index, 0, copy);
   return overwrite(sequence, next.body);
-}
-
-interface RemoveParams {
-  index: number;
-  dispatch: Function;
-  sequence: TaggedSequence;
-  confirmStepDeletion: boolean;
 }
 
 export function remove(props: RemoveParams) {
@@ -140,30 +123,33 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
 
 // tslint:disable-next-line:cyclomatic-complexity
 export function renderCeleryNode(props: StepParams) {
-  switch (props.currentStep.kind) {
-    case "_if": return <TileIf {...props} />;
-    case "execute_script": return <TileExecuteScript {...props} />;
-    case "execute": return <ExecuteBlock {...props} />;
-    case "find_home": return <TileFindHome {...props} />;
-    case "move": return <TileComputedMove {...props} />;
-    case "move_absolute": return <TileMoveAbsolute {...props} />;
+  const step = props.currentStep;
+  switch (step.kind) {
+    case "_if": return <TileIf {...props} currentStep={step} />;
+    case "execute_script":
+      return <TileExecuteScript {...props} currentStep={step} />;
+    case "execute": return <TileExecute {...props} currentStep={step} />;
+    case "find_home": return <TileFindHome {...props} currentStep={step} />;
+    case "move": return <TileComputedMove {...props} currentStep={step} />;
+    case "move_absolute": return <TileMoveAbsolute {...props} currentStep={step} />;
     case "move_relative": return <TileMoveRelative {...props} />;
-    case "read_pin": return <TileReadPin {...props} />;
-    case "send_message": return <TileSendMessage {...props} />;
+    case "read_pin": return <TileReadPin {...props} currentStep={step} />;
+    case "send_message": return <TileSendMessage {...props} currentStep={step} />;
     case "take_photo": return <TileTakePhoto {...props} />;
     case "wait": return <TileWait {...props} />;
-    case "write_pin": return <TileWritePin {...props} />;
-    case "update_resource": return <TileMarkAs {...props} />;
+    case "write_pin": return <TileWritePin {...props} currentStep={step} />;
+    case "update_resource": return <TileMarkAs {...props} currentStep={step} />;
     case "resource_update" as LegalSequenceKind:
       return <TileOldMarkAs {...props} />;
-    case "set_servo_angle": return <TileSetServoAngle {...props} />;
-    case "toggle_pin": return <TileTogglePin {...props} />;
-    case "zero": return <TileSetZero {...props} />;
-    case "calibrate": return <TileCalibrate {...props} />;
-    case "home": return <TileMoveHome {...props} />;
-    case "reboot": return <TileReboot {...props} />;
+    case "set_servo_angle":
+      return <TileSetServoAngle {...props} currentStep={step} />;
+    case "toggle_pin": return <TileTogglePin {...props} currentStep={step} />;
+    case "zero": return <TileSetZero {...props} currentStep={step} />;
+    case "calibrate": return <TileCalibrate {...props} currentStep={step} />;
+    case "home": return <TileMoveHome {...props} currentStep={step} />;
+    case "reboot": return <TileReboot {...props} currentStep={step} />;
     case "emergency_lock": return <TileEmergencyStop {...props} />;
-    case "assertion": return <TileAssertion {...props} />;
+    case "assertion": return <TileAssertion {...props} currentStep={step} />;
     case "power_off": return <TileShutdown {...props} />;
     case "sync": case "read_status":
     case "emergency_unlock": case "install_first_party_farmware":
@@ -186,10 +172,11 @@ export function isRecursive(step: If, sequence: TaggedSequence) {
     || checkBranch(step.args._then, step, sequence);
 }
 
-export const stringifyStep = (step: Step) =>
-  JSON.stringify(
-    step,
-    (key, value) => key == "uuid" || (key == "body" && value.length == 0)
-      ? undefined
-      : value,
-    2);
+export const stringifySequenceData =
+  (data: SequenceBodyItem | SequenceResource) =>
+    JSON.stringify(
+      data,
+      (key, value) => key == "uuid" || (key == "body" && value.length == 0)
+        ? undefined
+        : value,
+      2);

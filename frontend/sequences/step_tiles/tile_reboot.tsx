@@ -1,28 +1,23 @@
-import * as React from "react";
+import React from "react";
 import { StepParams } from "../interfaces";
 import { Content } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { StepWrapper } from "../step_ui";
 import { t } from "../../i18next_wrapper";
-import { ALLOWED_PACKAGES, SequenceBodyItem, Reboot } from "farmbot";
+import { ALLOWED_PACKAGES, Reboot } from "farmbot";
 import { editStep } from "../../api/crud";
-// import { StepRadio } from "../step_ui/step_radio";
-// const PACKAGE_CHOICES = (): Record<ALLOWED_PACKAGES, string> => ({
-//   "arduino_firmware": t("Just the Arduino"),
-//   "farmbot_os": t("Entire system")
-// });
+import { StepRadio } from "../step_ui/step_radio";
+import { DevSettings } from "../../settings/dev/dev_support";
 
-function assertReboot(x: SequenceBodyItem): asserts x is Reboot {
-  if (x.kind !== "reboot") {
-    throw new Error(`${x.kind} is not "reboot"`);
-  }
-}
+const PACKAGE_CHOICES = (): Record<ALLOWED_PACKAGES, string> => ({
+  "arduino_firmware": t("Just the Arduino"),
+  "farmbot_os": t("Entire system")
+});
 
 type RELEVANT_KEYS = "currentStep" | "currentSequence" | "index" | "dispatch";
-type RebootEditProps = Pick<StepParams, RELEVANT_KEYS>;
+type RebootEditProps = Pick<StepParams<Reboot>, RELEVANT_KEYS>;
 
 export const rebootExecutor =
-  (pkg: ALLOWED_PACKAGES) => (step: SequenceBodyItem) => {
-    assertReboot(step);
+  (pkg: ALLOWED_PACKAGES) => (step: Reboot) => {
     step.args.package = pkg;
   };
 
@@ -37,28 +32,22 @@ export const editTheRebootStep =
     }));
   };
 
-export function TileReboot(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "reboot-step";
-  assertReboot(currentStep);
-  return <StepWrapper>
-    <StepHeader
-      className={className}
-      helpText={Content.RESTART_FARMBOT}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <StepContent className={className}>
-      <p>
-        {t(Content.REBOOT_STEP)}
-      </p>
-      {/* <StepRadio
+export const TileReboot = (props: StepParams<Reboot>) =>
+  <StepWrapper
+    className={"reboot-step"}
+    helpText={Content.RESTART_FARMBOT}
+    currentSequence={props.currentSequence}
+    currentStep={props.currentStep}
+    dispatch={props.dispatch}
+    index={props.index}
+    resources={props.resources}>
+    <p>
+      {t(Content.REBOOT_STEP)}
+    </p>
+    {DevSettings.futureFeaturesEnabled() &&
+      <StepRadio
         choices={Object.keys(PACKAGE_CHOICES())}
         choiceLabelLookup={PACKAGE_CHOICES()}
-        currentChoice={currentStep.args.package as ALLOWED_PACKAGES}
-        onChange={editTheRebootStep(props)} /> */}
-    </StepContent>
+        currentChoice={props.currentStep.args.package as ALLOWED_PACKAGES}
+        onChange={editTheRebootStep(props)} />}
   </StepWrapper>;
-}

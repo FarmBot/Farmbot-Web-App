@@ -1,10 +1,11 @@
 import {
-  locationFormList, dropDownName, formatTool, groups2Ddi,
+  locationFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
 } from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
   fakeToolSlot, fakeTool, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
@@ -126,5 +127,30 @@ describe("groups2Ddi", () => {
     expect(result.length).toEqual(1);
     expect(result[0].label).toEqual(fakes[0].body.name);
     expect(result[0].value).toEqual("1");
+  });
+});
+
+describe("activeToolDDIs()", () => {
+  it("returns active tools", () => {
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = 1;
+    const tool = fakeTool();
+    tool.body.name = undefined;
+    tool.body.id = 1;
+    const resourceIndex = buildResourceIndex([toolSlot, tool]).index;
+    expect(activeToolDDIs(resourceIndex)).toEqual([
+      { label: "Untitled tool (0, 0, 0)", value: "1", headingId: "Tool" },
+    ]);
+  });
+
+  it("doesn't return inactive tools", () => {
+    const toolSlot1 = fakeToolSlot();
+    toolSlot1.body.tool_id = undefined;
+    const toolSlot2 = fakeToolSlot();
+    toolSlot2.body.tool_id = -1;
+    const tool = fakeTool();
+    tool.body.id = -1;
+    const resourceIndex = buildResourceIndex([toolSlot1, toolSlot2, tool]).index;
+    expect(activeToolDDIs(resourceIndex)).toEqual([]);
   });
 });

@@ -1455,6 +1455,11 @@ ul {
 }
 
 .update-resource-step {
+  &.step-content {
+    .row {
+      margin: 0;
+    }
+  }
   .update-resource-step-resource {
     margin-bottom: 1rem;
   }
@@ -1515,6 +1520,15 @@ ul {
   }
 }
 
+.read-pin-step {
+  &.step-content {
+    div[class*=col-] {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}
+
 .computed-move-step {
   &.step-content {
     padding-left: 2.5rem !important;
@@ -1529,55 +1543,52 @@ ul {
       display: inline;
       margin-left: 0.5rem;
     }
-  }
-  div[class*=col-] {
-    padding: 0;
-  }
-  label {
-    padding-top: 1rem;
-    &.safe-z {
-      padding-top: 0.65rem;
+    div[class*=col-] {
+      padding: 0;
     }
-  }
-  .row {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
-  }
-  .expandable-header {
-    text-align: center;
-  }
-  span {
-    color: $dark_gray;
-  }
-  .input {
-    position: relative;
-    border: 3px solid $transparent;
-    &.lua {
-      border-color: $yellow;
-      &:after {
-        content: "lua";
-        position: absolute;
-        top: -0.25rem;
-        right: -0.3rem;
-        color: $dark_gray;
-        background: $yellow;
-        padding: 0.2rem 0.4rem;
-        font-size: 0.65rem;
-        font-weight: bold;
-        text-transform: uppercase;
+    .row {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+    label {
+      padding-top: 1rem;
+      &.safe-z {
+        padding-top: 0.65rem;
       }
     }
-  }
-  .filter-search,
-  .fb-checkbox {
-    border: 3px solid $transparent;
-  }
-  .bp3-checkbox {
-    padding-top: 0.75rem;
-    margin-left: 0.25rem;
-  }
-  pre {
-    font-size: 1rem;
+    .expandable-header {
+      text-align: center;
+    }
+    span {
+      color: $dark_gray;
+    }
+    .input {
+      position: relative;
+      border: 3px solid $transparent;
+      &.lua {
+        border-color: $yellow;
+        &:after {
+          content: "lua";
+          position: absolute;
+          top: -0.25rem;
+          right: -0.3rem;
+          color: $dark_gray;
+          background: $yellow;
+          padding: 0.2rem 0.4rem;
+          font-size: 0.65rem;
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+      }
+    }
+    .filter-search,
+    .fb-checkbox {
+      border: 3px solid $transparent;
+    }
+    .bp3-checkbox {
+      padding-top: 0.75rem;
+      margin-left: 0.25rem;
+    }
   }
 }
 

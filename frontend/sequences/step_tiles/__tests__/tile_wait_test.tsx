@@ -1,26 +1,22 @@
-import * as React from "react";
-import { TileWait } from "../tile_wait";
+import React from "react";
 import { mount } from "enzyme";
+import { TileWait } from "../tile_wait";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
 describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
-    args: {
-      milliseconds: 100
-    }
-  };
-
   const fakeProps = (): StepParams => ({
     currentSequence: fakeSequence(),
-    currentStep: currentStep,
+    currentStep: {
+      kind: "wait",
+      args: {
+        milliseconds: 100
+      }
+    },
     dispatch: jest.fn(),
     index: 0,
     resources: emptyState().index,
-    confirmStepDeletion: false,
   });
 
   it("renders inputs", () => {

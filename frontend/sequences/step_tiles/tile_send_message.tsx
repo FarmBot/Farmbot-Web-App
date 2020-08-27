@@ -1,45 +1,18 @@
-import * as React from "react";
+import React from "react";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
-import { SendMessage, TaggedSequence } from "farmbot";
-import { StepParams, ChannelName, isMessageType } from "../interfaces";
-import { ResourceIndex } from "../../resources/interfaces";
+import { SendMessage } from "farmbot";
+import { ChannelName, isMessageType, StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import {
-  MESSAGE_STATUSES,
-  EACH_CHANNEL,
-  channel,
-  MESSAGE_STATUSES_DDI,
+  MESSAGE_STATUSES, EACH_CHANNEL, channel, MESSAGE_STATUSES_DDI,
 } from "./tile_send_message_support";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { StepWrapper } from "../step_ui";
 import { t } from "../../i18next_wrapper";
 
-export function TileSendMessage(props: StepParams) {
-  if (props.currentStep.kind === "send_message") {
-    return <RefactoredSendMessage
-      currentStep={props.currentStep}
-      currentSequence={props.currentSequence}
-      dispatch={props.dispatch}
-      index={props.index}
-      resources={props.resources}
-      confirmStepDeletion={props.confirmStepDeletion} />;
-  } else {
-    throw new Error("TileSendMessage expects send_message");
-  }
-}
+export class TileSendMessage extends React.Component<StepParams<SendMessage>> {
 
-export interface SendMessageParams {
-  currentStep: SendMessage;
-  currentSequence: TaggedSequence;
-  dispatch: Function;
-  index: number;
-  resources: ResourceIndex;
-  confirmStepDeletion: boolean;
-}
-
-export class RefactoredSendMessage
-  extends React.Component<SendMessageParams, {}> {
   get currentSelection() {
     return MESSAGE_STATUSES_DDI[this.props.currentStep.args.message_type];
   }
@@ -87,56 +60,51 @@ export class RefactoredSendMessage
 
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
-    const className = "send-message-step";
-
-    return <StepWrapper>
-      <StepHeader
-        className={className}
-        helpText={t(ToolTips.SEND_MESSAGE)}
-        currentSequence={currentSequence}
-        currentStep={currentStep}
-        dispatch={dispatch}
-        index={index}
-        confirmStepDeletion={this.props.confirmStepDeletion} />
-      <StepContent className={className}>
-        <Row>
-          <Col xs={12}>
-            <label>{t("Message")}</label>
-            <span className="char-limit">
-              {this.props.currentStep.args.message.length}/300
-                </span>
-            <StepInputBox dispatch={dispatch}
-              step={currentStep}
-              sequence={currentSequence}
-              index={index}
-              field="message" />
-            <div className="bottom-content">
-              <div className="channel-options">
-                <label>{t("type")}</label>
-                <FBSelect
-                  onChange={this.setMsgType}
-                  selectedItem={this.currentSelection}
-                  list={MESSAGE_STATUSES} />
-              </div>
-              <div className="channel-fields">
-                {EACH_CHANNEL.map((chan, inx) => {
-                  return <fieldset key={inx}>
-                    <label htmlFor={chan.name}>
-                      {chan.label}
-                    </label>
-                    <input type="checkbox" name={chan.name}
-                      id={chan.name}
-                      onChange={this.toggle(chan.name)}
-                      checked={
-                        this.hasChannel(chan.name) || chan.alwaysOn}
-                      disabled={chan.alwaysOn} />
-                  </fieldset>;
-                })}
-              </div>
+    return <StepWrapper
+      className={"send-message-step"}
+      helpText={t(ToolTips.SEND_MESSAGE)}
+      currentSequence={currentSequence}
+      currentStep={currentStep}
+      dispatch={dispatch}
+      index={index}
+      resources={this.props.resources}>
+      <Row>
+        <Col xs={12}>
+          <label>{t("Message")}</label>
+          <span className="char-limit">
+            {currentStep.args.message.length}/300
+          </span>
+          <StepInputBox dispatch={dispatch}
+            step={currentStep}
+            sequence={currentSequence}
+            index={index}
+            field="message" />
+          <div className="bottom-content">
+            <div className="channel-options">
+              <label>{t("type")}</label>
+              <FBSelect
+                onChange={this.setMsgType}
+                selectedItem={this.currentSelection}
+                list={MESSAGE_STATUSES} />
             </div>
-          </Col>
-        </Row>
-      </StepContent>
+            <div className="channel-fields">
+              {EACH_CHANNEL.map((chan, inx) => {
+                return <fieldset key={inx}>
+                  <label htmlFor={chan.name}>
+                    {chan.label}
+                  </label>
+                  <input type="checkbox" name={chan.name}
+                    id={chan.name}
+                    onChange={this.toggle(chan.name)}
+                    checked={
+                      this.hasChannel(chan.name) || chan.alwaysOn}
+                    disabled={chan.alwaysOn} />
+                </fieldset>;
+              })}
+            </div>
+          </div>
+        </Col>
+      </Row>
     </StepWrapper>;
   }
 }

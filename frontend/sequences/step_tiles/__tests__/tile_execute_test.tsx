@@ -9,39 +9,29 @@ jest.mock("../../../api/crud", () => ({
   editStep: mockEditStep,
 }));
 
-import * as React from "react";
-import {
-  ExecuteBlock,
-  ExecBlockParams,
-  RefactoredExecuteBlock,
-} from "../tile_execute";
+import React from "react";
+import { TileExecute } from "../tile_execute";
 import { mount, shallow } from "enzyme";
 import { Execute, ParameterApplication, Coordinate } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { LocalsList } from "../../locals_list/locals_list";
+import { StepParams } from "../../interfaces";
 
 const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
   ({ kind: "coordinate", args: { x, y, z } });
 
-function fakeProps(): ExecBlockParams {
-  const currentStep: Execute = {
-    kind: "execute",
-    args: { sequence_id: 0 }
-  };
-  return {
-    currentSequence: fakeSequence(),
-    currentStep,
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
-    shouldDisplay: () => false,
-    confirmStepDeletion: false,
-  };
-}
+const fakeProps = (): StepParams<Execute> => ({
+  currentSequence: fakeSequence(),
+  currentStep: { kind: "execute", args: { sequence_id: 0 } },
+  dispatch: jest.fn(),
+  index: 0,
+  resources: emptyState().index,
+  shouldDisplay: () => false,
+});
 
-describe("<ExecuteBlock/>", () => {
+describe("<ExecuteBlock />", () => {
   it("renders inputs", () => {
-    const block = mount(<ExecuteBlock {...fakeProps()} />);
+    const block = mount(<TileExecute {...fakeProps()} />);
     const inputs = block.find("input");
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
@@ -51,25 +41,16 @@ describe("<ExecuteBlock/>", () => {
   it("renders inputs when sequence has a variable", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    const block = mount(<ExecuteBlock {...p} />);
+    const block = mount(<TileExecute {...p} />);
     const inputs = block.find("input");
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
     expect(block.text()).toContain("Select a sequence");
   });
 
-  it("throws error", () => {
-    const p = fakeProps();
-    p.currentStep = { kind: "take_photo", args: {} } as unknown as Execute;
-    expect(() => ExecuteBlock(p)).toThrowError(/not/);
-  });
-});
-
-describe("<RefactoredExecuteBlock />", () => {
   it("selects sequence", () => {
     const p = fakeProps();
-    const block = mount<RefactoredExecuteBlock>(
-      <RefactoredExecuteBlock {...p} />);
+    const block = mount<TileExecute>(<TileExecute {...p} />);
     block.instance().changeSelection({ label: "", value: 10 });
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
@@ -77,10 +58,20 @@ describe("<RefactoredExecuteBlock />", () => {
     });
   });
 
+  it("handles string value", () => {
+    const p = fakeProps();
+    const block = mount<TileExecute>(<TileExecute {...p} />);
+    block.instance().changeSelection({ label: "", value: "10" });
+    mockEditStep.mock.calls[0][0].executor(p.currentStep);
+    expect(p.currentStep).toEqual({
+      kind: "execute", args: { sequence_id: 0 }
+    });
+  });
+
   it("doesn't show location selection dropdowns", () => {
     const p = fakeProps();
     p.currentStep.args.sequence_id = 0;
-    const wrapper = shallow(<RefactoredExecuteBlock {...p} />);
+    const wrapper = shallow(<TileExecute {...p} />);
     expect(wrapper.find("LocalsList").length).toEqual(0);
   });
 
@@ -99,7 +90,7 @@ describe("<RefactoredExecuteBlock />", () => {
         vector: undefined,
       }
     };
-    const wrapper = shallow(<RefactoredExecuteBlock {...p} />);
+    const wrapper = shallow(<TileExecute {...p} />);
     const variable = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {
@@ -134,7 +125,7 @@ describe("<RefactoredExecuteBlock />", () => {
         vector: undefined,
       }
     };
-    const wrapper = mount(<RefactoredExecuteBlock {...p} />);
+    const wrapper = mount(<TileExecute {...p} />);
     expect(wrapper.html()).toContain("Coordinate (10, 20, 30)");
   });
 
@@ -159,7 +150,7 @@ describe("<RefactoredExecuteBlock />", () => {
         vector: undefined,
       }
     };
-    const wrapper = shallow(<RefactoredExecuteBlock {...p} />);
+    const wrapper = shallow(<TileExecute {...p} />);
     const variable = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {

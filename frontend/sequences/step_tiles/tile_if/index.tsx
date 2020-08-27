@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { DropDownItem, NULL_CHOICE, Row } from "../../../ui/index";
-import { TaggedSequence, ParameterApplication } from "farmbot";
+import { ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
@@ -12,29 +12,18 @@ import { ThenElse } from "./then_else";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import { ToolTips } from "../../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
+import { StepWrapper } from "../../step_ui";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName,
 } from "../pin_support";
-import { ShouldDisplay } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
 import {
   addOrEditParamApps, variableList,
 } from "../../locals_list/variable_support";
 import { t } from "../../../i18next_wrapper";
+import { StepParams } from "../../interfaces";
 
-export interface IfParams {
-  currentSequence: TaggedSequence;
-  currentStep: If;
-  dispatch: Function;
-  index: number;
-  resources: ResourceIndex;
-  shouldDisplay?: ShouldDisplay;
-  confirmStepDeletion: boolean;
-  showPins?: boolean;
-}
-
-export interface ThenElseParams extends IfParams {
+export interface ThenElseParams extends StepParams<If> {
   thenElseKey: "_then" | "_else";
 }
 
@@ -79,40 +68,31 @@ export function seqDropDown(i: ResourceIndex) {
   return results;
 }
 
-export function InnerIf(props: IfParams) {
-  const {
-    index,
-    dispatch,
-    currentStep,
-    currentSequence,
-    confirmStepDeletion,
-  } = props;
-  const recursive = isRecursive(currentStep, currentSequence);
-  const className = "if-step";
-  return <StepWrapper>
-    <StepHeader
-      className={className}
+export class InnerIf extends React.Component<StepParams<If>> {
+
+  render() {
+    const { currentStep, currentSequence } = this.props;
+    const recursive = isRecursive(currentStep, currentSequence);
+    return <StepWrapper
+      className={"if-step"}
       helpText={ToolTips.IF}
       currentSequence={currentSequence}
       currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={confirmStepDeletion}>
-      {recursive &&
+      dispatch={this.props.dispatch}
+      index={this.props.index}
+      resources={this.props.resources}
+      warning={recursive &&
         <span>
           <i className="fa fa-exclamation-triangle" />
-          &nbsp;{t("Recursive condition.")}
-        </span>
-      }
-    </StepHeader>
-    <StepContent className={className}>
-      <If_ {...props} />
+            &nbsp;{t("Recursive condition.")}
+        </span>}>
+      <If_ {...this.props} />
       <Row>
-        <ThenElse thenElseKey={"_then"} {...props} />
-        <ThenElse thenElseKey={"_else"} {...props} />
+        <ThenElse thenElseKey={"_then"} {...this.props} />
+        <ThenElse thenElseKey={"_else"} {...this.props} />
       </Row>
-    </StepContent>
-  </StepWrapper>;
+    </StepWrapper>;
+  }
 }
 
 /** Creates a function that can be used in the `onChange` event of a _else or

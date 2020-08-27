@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import {
   CheckConflictCaseProps, MoveAbsoluteWarningProps, HardwareFlags,
 } from "../interfaces";
-import { StepWarning, conflictsString } from "../step_ui/index";
+import { StepWarning, conflictsString } from "../step_ui";
 import { some } from "lodash";
 import { Vector3, Xyz } from "farmbot";
 import { betterMerge } from "../../util";

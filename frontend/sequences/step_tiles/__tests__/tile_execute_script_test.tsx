@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TileExecuteScript } from "../tile_execute_script";
 import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
@@ -11,25 +11,21 @@ import {
 } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileExecuteScript/>", () => {
-  const fakeProps = (): StepParams => {
-    const currentStep: ExecuteScript = {
-      kind: "execute_script",
-      args: {
-        label: "farmware-to-execute"
-      }
-    };
+  const fakeProps = (): StepParams<ExecuteScript> => {
     const farmwareData = fakeFarmwareData();
     farmwareData.farmwareNames = ["one", "two", "three"];
     farmwareData.firstPartyFarmwareNames = ["one"];
     farmwareData.farmwareConfigs = { "farmware-to-execute": [] };
     return {
       currentSequence: fakeSequence(),
-      currentStep,
+      currentStep: {
+        kind: "execute_script",
+        args: { label: "farmware-to-execute" }
+      },
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
       farmwareData,
-      confirmStepDeletion: false,
     };
   };
 
@@ -43,13 +39,6 @@ describe("<TileExecuteScript/>", () => {
     expect(labels.at(0).text()).toEqual("Package Name");
     expect(labels.at(1).text()).toEqual("Manual input");
     expect(inputs.at(1).props().value).toEqual("farmware-to-execute");
-  });
-
-  it("renders error on wrong step", () => {
-    const p = fakeProps();
-    p.currentStep = { kind: "wait", args: { milliseconds: 100 } };
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.text()).toContain("ERROR");
   });
 
   it("renders farmware list", () => {
@@ -72,14 +61,14 @@ describe("<TileExecuteScript/>", () => {
 
   it("doesn't show manual input if installed farmware is selected", () => {
     const p = fakeProps();
-    (p.currentStep as ExecuteScript).args.label = "two";
+    p.currentStep.args.label = "two";
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(1);
   });
 
   it("shows special 1st-party Farmware name", () => {
     const p = fakeProps();
-    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.currentStep.args.label = "plant-detection";
     p.farmwareData?.farmwareNames.push("plant-detection");
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(0);
@@ -94,7 +83,8 @@ describe("<TileExecuteScript/>", () => {
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("button").text()).toEqual("Manual Input");
     expect(wrapper.find("label").at(1).text()).toEqual("Manual input");
-    expect(wrapper.find("input").at(1).props().value).toEqual("farmware-to-execute");
+    expect(wrapper.find("input").at(1).props().value)
+      .toEqual("farmware-to-execute");
   });
 
   it("uses drop-down to update step", () => {
@@ -135,7 +125,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("displays warning when camera is disabled", () => {
     const p = fakeProps();
-    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.currentStep.args.label = "plant-detection";
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
@@ -143,7 +133,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("displays warning when camera is uncalibrated", () => {
     const p = fakeProps();
-    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.currentStep.args.label = "plant-detection";
     p.farmwareData && (p.farmwareData.cameraCalibrated = false);
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain(Content.CAMERA_NOT_CALIBRATED);

@@ -1,20 +1,9 @@
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
-import {
-  UpdateResource, TaggedSequence, Resource, Identifier, Nothing, Pair, Point,
-} from "farmbot";
+import { Resource, Identifier, Nothing, Pair, Point } from "farmbot";
 import { KnownField } from "./field_selection";
 
 export type ResourceArg = Resource | Identifier | Point;
 export type MaybeResourceArg = ResourceArg | Nothing;
-
-export interface MarkAsProps {
-  currentSequence: TaggedSequence;
-  currentStep: UpdateResource;
-  dispatch: Function;
-  index: number;
-  resources: ResourceIndex;
-  confirmStepDeletion: boolean;
-}
 
 export type UpdateResourceValue = Pair["args"]["value"];
 
@@ -26,6 +15,7 @@ export interface FieldAndValue {
 export interface MarkAsState {
   resource: MaybeResourceArg;
   fieldsAndValues: FieldAndValue[];
+  viewRaw?: boolean;
 }
 
 export interface GetSelectedValueProps {

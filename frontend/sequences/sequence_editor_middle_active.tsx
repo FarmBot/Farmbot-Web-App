@@ -4,7 +4,7 @@ import {
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
 } from "./interfaces";
 import { editCurrentSequence } from "./actions";
-import { splice, move } from "./step_tiles";
+import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
 import { DropArea } from "../draggable/drop_area";
@@ -26,7 +26,6 @@ import { Content } from "../constants";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
-import { NO_GROUPS } from "./locals_list/default_value_form";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
@@ -214,8 +213,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
         collapsed={props.variablesCollapsed}
         toggleVarShow={props.toggleVarShow}
         shouldDisplay={props.shouldDisplay}
-        hideGroups={true}
-        customFilterRule={NO_GROUPS} />
+        hideGroups={true} />
     </ErrorBoundary>
   </div>;
 };
@@ -250,12 +248,10 @@ export class SequenceEditorMiddleActive extends
       hardwareFlags: this.props.hardwareFlags,
       farmwareData: this.props.farmwareData,
       shouldDisplay: this.props.shouldDisplay,
-      confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
       hoveredStep: this.props.hoveredStep,
-      viewCeleryScript: !!getConfig(BooleanSetting.view_celery_script),
     };
   }
 
@@ -281,8 +277,7 @@ export class SequenceEditorMiddleActive extends
       <div className="sequence" id="sequenceDiv"
         style={{ height: this.stepSectionHeight }}>
         {this.state.viewSequenceCeleryScript
-          ? <pre>{JSON.stringify(this.props.sequence.body,
-            (key, value) => key == "uuid" ? undefined : value, 2)}</pre>
+          ? <pre>{stringifySequenceData(this.props.sequence.body)}</pre>
           : <div className={"sequence-step-components"}>
             <ErrorBoundary>
               <AllSteps {...this.stepProps} />
