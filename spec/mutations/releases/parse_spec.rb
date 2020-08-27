@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Sensors::Create do
+describe Releases::Parse do
   HUGE_EXAMPLE = {
     draft: false,
     prerelease: false,
@@ -45,7 +45,7 @@ describe Sensors::Create do
     ],
   }
 
-  it "creates a release" do
+  it "parses a release" do
     raw_json = `curl -s https://api.github.com/repos/farmbot/farmbot_os/releases/latest`
     input = JSON.parse(raw_json, symbolize_names: true)
     output = Releases::Parse.run!(input)
@@ -64,7 +64,7 @@ describe Sensors::Create do
                       })
   end
 
-  it "refuses to publish drafts" do
+  it "refuses to parse drafts" do
     boom = -> do
       Releases::Parse.run!({ draft: true, prerelease: false, tag_name: "v11.0.1", assets: [] })
     end
