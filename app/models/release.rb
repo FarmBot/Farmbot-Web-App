@@ -1,4 +1,5 @@
 require "open-uri"
+require "google-cloud-storage"
 
 class Release < ApplicationRecord
   PLATFORMS = [GENESIS = "rpi3", EXPRESS = "rpi"]
