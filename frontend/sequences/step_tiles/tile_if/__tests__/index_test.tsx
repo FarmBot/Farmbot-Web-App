@@ -2,15 +2,10 @@ jest.mock("../../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
-  seqDropDown,
-  InnerIf,
-  IfParams,
-  IfBlockDropDownHandler,
-  LHSOptions,
-  ThenElseParams,
+  seqDropDown, InnerIf, IfBlockDropDownHandler, LHSOptions, ThenElseParams,
 } from "../index";
 import {
   buildResourceIndex, FAKE_RESOURCES,
@@ -20,6 +15,7 @@ import { overwrite } from "../../../../api/crud";
 import {
   fakeSensor, fakePeripheral,
 } from "../../../../__test_support__/fake_state/resources";
+import { StepParams } from "../../../interfaces";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex
@@ -28,7 +24,7 @@ const fakeId = fakeTaggedSequence.body.id || 0;
 const fakeName = fakeTaggedSequence.body.name || "";
 const expectedItem = { label: fakeName, value: fakeId };
 
-function fakeProps(): IfParams {
+function fakeProps(): StepParams<If> {
   const currentStep: If = {
     kind: "_if",
     args: {
@@ -46,7 +42,6 @@ function fakeProps(): IfParams {
     index: 0,
     resources: fakeResourceIndex,
     shouldDisplay: jest.fn(),
-    confirmStepDeletion: false,
     showPins: true,
   };
 }

@@ -1897,13 +1897,11 @@
 .designer-sequence-editor-panel {
   .panel-content {
     .locals-list {
-      margin-left: -1rem;
-      margin-right: -1rem;
       max-height: 26rem;
     }
     .add-command-button-container {
       display: block;
-      margin: 2rem;
+      margin: 1rem;
       text-align: center;
       .add-command {
         float: none;

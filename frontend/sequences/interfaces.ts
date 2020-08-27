@@ -172,6 +172,7 @@ export interface SequencesListState {
 
 export interface MoveAbsState {
   more: boolean;
+  viewRaw?: boolean;
 }
 
 export interface StepButtonParams {
@@ -191,14 +192,24 @@ export interface StepButtonParams {
   index?: number | undefined;
 }
 
-export interface CopyParams {
-  dispatch: Function;
+export interface MoveParams {
+  step: SequenceBodyItem;
+  to: number;
+  from: number;
+  sequence: TaggedSequence
+}
+
+export interface SpliceParams {
+  index: number;
+  sequence: TaggedSequence;
   step: SequenceBodyItem;
 }
 
 export interface RemoveParams {
   index: number;
   dispatch: Function;
+  sequence: TaggedSequence;
+  confirmStepDeletion: boolean;
 }
 
 export interface StepInputProps {
@@ -239,17 +250,19 @@ export interface FarmwareData {
   cameraCalibrated: boolean;
 }
 
-export interface StepParams {
+export interface StepParams<T = SequenceBodyItem> {
   currentSequence: TaggedSequence;
-  currentStep: SequenceBodyItem;
+  currentStep: T;
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareData?: FarmwareData;
   shouldDisplay?: ShouldDisplay;
-  confirmStepDeletion: boolean;
   showPins?: boolean;
   expandStepOptions?: boolean;
-  viewCeleryScript?: boolean;
+}
+
+export interface StepState {
+  viewRaw?: boolean;
 }

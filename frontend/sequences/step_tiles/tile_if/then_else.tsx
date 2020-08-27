@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ThenElseParams, seqDropDown, IfBlockDropDownHandler } from "./index";
 import { Col, FBSelect } from "../../../ui";
 import { LocalsList } from "../../locals_list/locals_list";
@@ -31,7 +31,7 @@ export function ThenElse(props: ThenElseParams) {
           onChange={assignVariable(body || [])}
           locationDropdownKey={JSON.stringify(props.currentSequence)}
           allowedVariableNodes={AllowedVariableNodes.identifier}
-          shouldDisplay={props.shouldDisplay || (() => false)} />
+          shouldDisplay={props.shouldDisplay} />
       </Col>}
   </Col>;
 }

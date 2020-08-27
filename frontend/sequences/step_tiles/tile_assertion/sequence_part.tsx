@@ -1,12 +1,12 @@
+import React from "react";
 import { DropDownItem } from "../../../ui/fb_select";
 import { editStep } from "../../../api/crud";
 import { Assertion } from "farmbot/dist/corpus";
-import React from "react";
 import { SequenceSelectBox } from "../../sequence_select_box";
-import { AssertionStepProps } from "../tile_assertion";
 import { t } from "../../../i18next_wrapper";
+import { StepParams } from "../../interfaces";
 
-export function SequencePart(props: AssertionStepProps) {
+export function SequencePart(props: StepParams<Assertion>) {
   const onChange = (ddi: DropDownItem) => props.dispatch(editStep({
     step: props.currentStep,
     index: props.index,

@@ -1,8 +1,13 @@
 jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
 
-import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
-import { render } from "enzyme";
+let mockDev = false;
+jest.mock("../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev },
+}));
+
 import React from "react";
+import { render } from "enzyme";
+import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
@@ -12,31 +17,30 @@ import { editStep } from "../../../api/crud";
 import { Reboot } from "farmbot";
 import { Content } from "../../../constants";
 
-const fakeProps = (): StepParams => ({
-  currentSequence: fakeSequence(),
-  currentStep: {
-    kind: "reboot",
-    args: {
-      package: "farmbot_os"
-    }
-  },
-  dispatch: jest.fn(),
-  index: 1,
-  resources: buildResourceIndex().index,
-  confirmStepDeletion: false,
-});
+describe("<TileReboot />", () => {
+  const fakeProps = (): StepParams<Reboot> => ({
+    currentSequence: fakeSequence(),
+    currentStep: {
+      kind: "reboot",
+      args: {
+        package: "farmbot_os"
+      }
+    },
+    dispatch: jest.fn(),
+    index: 1,
+    resources: buildResourceIndex().index,
+  });
 
-describe("<TileReboot/>", () => {
   it("renders", () => {
     const block = render(<TileReboot {...fakeProps()} />);
     expect(block.text()).toContain(Content.REBOOT_STEP);
+    expect(block.text().toLowerCase()).not.toContain("arduino");
   });
 
-  it("crashes if the step is of the wrong `kind`", () => {
-    const p = fakeProps();
-    p.currentStep = { kind: "sync", args: {} };
-    const boom = () => TileReboot(p);
-    expect(boom).toThrowError();
+  it("renders package selector", () => {
+    mockDev = true;
+    const block = render(<TileReboot {...fakeProps()} />);
+    expect(block.text().toLowerCase()).toContain("arduino");
   });
 
   it("edits the reboot step", () => {
@@ -54,7 +58,7 @@ describe("<TileReboot/>", () => {
 
   it("executes the executor", () => {
     const p = fakeProps();
-    const step = p.currentStep as Reboot;
+    const step = p.currentStep;
     step.args.package = "X";
     const fn = rebootExecutor("arduino_firmware");
     fn(step);

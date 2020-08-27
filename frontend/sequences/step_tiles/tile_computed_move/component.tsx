@@ -1,5 +1,5 @@
 import React from "react";
-import { StepWrapper, StepHeader, StepContent } from "../../step_ui";
+import { StepWrapper } from "../../step_ui";
 import { Row, Col, ExpandableHeader } from "../../../ui";
 import { ToolTips } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
@@ -8,7 +8,7 @@ import { editStep } from "../../../api/crud";
 import { some } from "lodash";
 import { MoveAbsoluteWarning } from "../tile_move_absolute_conflict_check";
 import {
-  ComputedMoveProps, ComputedMoveState, CommitMoveField, AxisSelection,
+  ComputedMoveState, CommitMoveField, AxisSelection,
   LocationNode, LocSelection, SetAxisState,
 } from "./interfaces";
 import { computeCoordinate } from "./compute";
@@ -28,7 +28,7 @@ import {
   getSpeedState, getSpeedNode, speedOverwrite, SpeedInputRow,
 } from "./speed";
 import { SafeZCheckbox, getSafeZState, SAFE_Z } from "./safe_z";
-import { stringifyStep } from "../index";
+import { StepParams } from "../../interfaces";
 
 /**
  * _Computed move_
@@ -67,11 +67,11 @@ import { stringifyStep } from "../index";
  *
  */
 export class ComputedMove
-  extends React.Component<ComputedMoveProps, ComputedMoveState> {
+  extends React.Component<StepParams<Move>, ComputedMoveState> {
   state: ComputedMoveState = {
     locationSelection: getLocationState(this.step).locationSelection,
     location: getLocationState(this.step).location,
-    more: this.props.expandStepOptions,
+    more: !!this.props.expandStepOptions,
     selection: {
       x: getOverwriteState(this.step, "x").selection,
       y: getOverwriteState(this.step, "y").selection,
@@ -315,46 +315,30 @@ export class ComputedMove
         onChange={this.toggleSafeZ} />
       : <div className={"safe-z-checkbox-hidden"} />;
 
-  get viewRawState() { return this.state.viewRaw ?? true; }
-  get viewRaw() { return this.props.viewCeleryScript && this.viewRawState; }
-  get toggleViewRaw() {
-    return this.props.viewCeleryScript
-      ? () => this.setState({ viewRaw: !this.viewRawState })
-      : undefined;
-  }
-
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
-    const className = "computed-move-step";
-    return <StepWrapper>
-      <StepHeader
-        className={className}
-        helpText={ToolTips.COMPUTED_MOVE}
-        currentSequence={currentSequence}
-        currentStep={currentStep}
-        dispatch={dispatch}
-        index={index}
-        confirmStepDeletion={this.props.confirmStepDeletion}
-        toggleViewRaw={this.toggleViewRaw}>
-        <MoveAbsoluteWarning
-          coordinate={computeCoordinate({
-            step: this.step,
-            botPosition: { x: undefined, y: undefined, z: undefined },
-            resourceIndex: this.props.resources,
-            sequenceUuid: currentSequence.uuid,
-          })}
-          hardwareFlags={this.props.hardwareFlags} />
-      </StepHeader>
-      {this.viewRaw
-        ? <pre>{stringifyStep(this.step)}</pre>
-        : <StepContent className={className}>
-          <this.LocationInputRow />
-          <this.OverwriteInputRow />
-          <this.OffsetInputRow />
-          <this.VarianceInputRow />
-          <this.SpeedInputRow />
-          <this.SafeZCheckbox />
-        </StepContent>}
+    return <StepWrapper
+      className={"computed-move-step"}
+      helpText={ToolTips.COMPUTED_MOVE}
+      currentSequence={currentSequence}
+      currentStep={currentStep}
+      dispatch={dispatch}
+      index={index}
+      resources={this.props.resources}
+      warning={<MoveAbsoluteWarning
+        coordinate={computeCoordinate({
+          step: this.step,
+          botPosition: { x: undefined, y: undefined, z: undefined },
+          resourceIndex: this.props.resources,
+          sequenceUuid: currentSequence.uuid,
+        })}
+        hardwareFlags={this.props.hardwareFlags} />}>
+      <this.LocationInputRow />
+      <this.OverwriteInputRow />
+      <this.OffsetInputRow />
+      <this.VarianceInputRow />
+      <this.SpeedInputRow />
+      <this.SafeZCheckbox />
     </StepWrapper>;
   }
 }

@@ -1,10 +1,11 @@
-import * as React from "react";
-import { mount } from "enzyme";
+import React from "react";
+import { mount, shallow } from "enzyme";
 import { DefaultValueFormProps, DefaultValueForm } from "../default_value_form";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { Coordinate } from "farmbot";
+import { Coordinate, ParameterApplication } from "farmbot";
+import { LocationForm } from "../location_form";
 
 describe("<DefaultValueForm />", () => {
   const COORDINATE: Coordinate =
@@ -40,5 +41,34 @@ describe("<DefaultValueForm />", () => {
     wrapper.find("input").first().simulate("change");
     wrapper.find("input").first().simulate("blur");
     expect(p.onChange).toHaveBeenCalledWith(p.variableNode);
+  });
+
+  it("updates with coordinate", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<DefaultValueForm {...p} />);
+    const pa: ParameterApplication = {
+      kind: "parameter_application",
+      args: { label: "label", data_value: COORDINATE },
+    };
+    wrapper.find(LocationForm).simulate("change", pa);
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: { label: "label", default_value: COORDINATE }
+    });
+  });
+
+  it("doesn't update with point_groups", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<DefaultValueForm {...p} />);
+    const pa: ParameterApplication = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: {
+          kind: "point_group", args: { point_group_id: 1 }
+        }
+      }
+    };
+    wrapper.find(LocationForm).simulate("change", pa);
+    expect(p.onChange).not.toHaveBeenCalled();
   });
 });

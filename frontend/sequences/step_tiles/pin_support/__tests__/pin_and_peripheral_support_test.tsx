@@ -344,12 +344,3 @@ describe("celery2DropDown()", () => {
     });
   });
 });
-
-describe("<PinSelect />", () => {
-  it("crashes on bad step `kind`s", () => {
-    const p = fakeStepParams();
-    p.currentStep = { kind: "execute", args: { sequence_id: 23 } };
-    const boom = () => PinSupport.PinSelect(p);
-    expect(boom).toThrowError("PinSelect can't render execute");
-  });
-});

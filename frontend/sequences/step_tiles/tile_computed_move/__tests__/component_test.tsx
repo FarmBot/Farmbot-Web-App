@@ -11,16 +11,16 @@ import {
   fakeHardwareFlags,
 } from "../../../../__test_support__/fake_sequence_step_data";
 import { editStep } from "../../../../api/crud";
-import { ComputedMoveProps, LocSelection, AxisSelection } from "../interfaces";
+import { LocSelection, AxisSelection } from "../interfaces";
 import {
   fakeNumericMoveStepCeleryScript, fakeNumericMoveStepState,
   fakeLuaMoveStepCeleryScript, fakeLuaMoveStepState,
 } from "../test_fixtures";
 import { inputEvent } from "../../../../__test_support__/fake_html_events";
-import { StepHeader } from "../../../step_ui";
+import { StepParams } from "../../../interfaces";
 
 describe("<ComputedMove />", () => {
-  const fakeProps = (): ComputedMoveProps => {
+  const fakeProps = (): StepParams<Move> => {
     const currentStep: Move = { kind: "move", args: {} };
     return {
       currentSequence: fakeSequence(),
@@ -29,9 +29,7 @@ describe("<ComputedMove />", () => {
       index: 0,
       resources: emptyState().index,
       hardwareFlags: fakeHardwareFlags(),
-      confirmStepDeletion: false,
       expandStepOptions: false,
-      viewCeleryScript: false,
       shouldDisplay: jest.fn(),
     };
   };
@@ -40,17 +38,6 @@ describe("<ComputedMove />", () => {
     const p = fakeProps();
     const wrapper = mount<ComputedMove>(<ComputedMove {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("location");
-  });
-
-  it("renders raw", () => {
-    const p = fakeProps();
-    p.viewCeleryScript = true;
-    p.currentStep.body = [];
-    const wrapper = mount<ComputedMove>(<ComputedMove {...p} />);
-    expect(wrapper.state().viewRaw).toEqual(undefined);
-    expect(wrapper.text().toLowerCase()).toContain("args");
-    wrapper.find(StepHeader).props().toggleViewRaw?.();
-    expect(wrapper.state().viewRaw).toEqual(false);
   });
 
   it("deconstructs step: numeric", () => {

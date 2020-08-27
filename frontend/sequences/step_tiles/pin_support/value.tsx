@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { DropDownItem, Col, FBSelect } from "../../../ui";
 import { isNumber } from "lodash";
-import { SequenceBodyItem, WritePin } from "farmbot";
+import { WritePin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { t } from "../../../i18next_wrapper";
@@ -54,8 +54,8 @@ export function setPinValueFromDdi(ddi: DropDownItem, stepParams: StepParams) {
   }
 }
 
-export function currentValueSelection(currentStep: SequenceBodyItem) {
-  const step = currentStep as WritePin;
+export function currentValueSelection(currentStep: WritePin) {
+  const step = currentStep;
   const pinValue = step.args.pin_value;
   const values: { [s: string]: string } = {
     0: t("OFF"),

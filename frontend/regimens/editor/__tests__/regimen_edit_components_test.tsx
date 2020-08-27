@@ -12,7 +12,7 @@ jest.mock("../../../history", () => ({
   push: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   RegimenNameInput, RegimenButtonGroup, OpenSchedulerButton,
@@ -26,6 +26,7 @@ import { Color, VariableDeclaration } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy, save, overwrite } from "../../../api/crud";
 import { push } from "../../../history";
+import { cloneDeep } from "lodash";
 
 const fakeProps = (): RegimenProps => ({
   regimen: fakeRegimen(),
@@ -83,9 +84,20 @@ describe("editRegimenVariables()", () => {
     }
   };
 
-  it("updates bodyVariables", () => {
+  it("adds bodyVariables", () => {
     const regimen = fakeRegimen();
     editRegimenVariables({ dispatch: jest.fn(), regimen })([])(testVariable);
+    expect(overwrite).toHaveBeenCalledWith(regimen,
+      expect.objectContaining({ body: [testVariable] }));
+  });
+
+  it("edits bodyVariables", () => {
+    const regimen = fakeRegimen();
+    const existingVariable = cloneDeep(testVariable);
+    existingVariable.args.data_value.args = { x: 0, y: 0, z: 0 };
+    editRegimenVariables({
+      dispatch: jest.fn(), regimen
+    })([existingVariable])(testVariable);
     expect(overwrite).toHaveBeenCalledWith(regimen,
       expect.objectContaining({ body: [testVariable] }));
   });

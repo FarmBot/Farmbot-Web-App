@@ -20,6 +20,7 @@ jest.mock("../step_tiles/index", () => ({
   splice: jest.fn(),
   move: jest.fn(),
   renderCeleryNode: () => <div />,
+  stringifySequenceData: jest.fn(),
 }));
 
 jest.mock("../../devices/actions", () => ({
@@ -56,7 +57,7 @@ import {
   fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus, ParameterDeclaration } from "farmbot";
-import { move, splice } from "../step_tiles";
+import { move, splice, stringifySequenceData } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
@@ -68,7 +69,7 @@ import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 
-describe("<SequenceEditorMiddleActive/>", () => {
+describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
     const sequence = fakeSequence();
     sequence.specialStatus = SpecialStatus.DIRTY;
@@ -107,11 +108,10 @@ describe("<SequenceEditorMiddleActive/>", () => {
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
     expect(wrapper.state().viewSequenceCeleryScript).toEqual(false);
-    expect(wrapper.text()).not.toContain("locals");
+    expect(stringifySequenceData).not.toHaveBeenCalled();
     wrapper.find(SequenceHeader).props().toggleViewSequenceCeleryScript();
     expect(wrapper.state().viewSequenceCeleryScript).toEqual(true);
-    expect(wrapper.text()).toContain("locals");
-    expect(wrapper.text()).not.toContain("uuid");
+    expect(stringifySequenceData).toHaveBeenCalled();
   });
 
   it("saves", async () => {

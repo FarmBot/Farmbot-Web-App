@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { TileIf } from "../tile_if";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { If, Wait } from "farmbot/dist";
+import { If } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
 describe("<TileIf />", () => {
-  const fakeProps = (): StepParams => {
+  const fakeProps = (): StepParams<If> => {
     const currentStep: If = {
       kind: "_if",
       args: {
@@ -24,7 +24,6 @@ describe("<TileIf />", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      confirmStepDeletion: false,
       showPins: true,
     };
   };
@@ -33,13 +32,5 @@ describe("<TileIf />", () => {
     const wrapper = mount(<TileIf {...fakeProps()} />);
     ["Variable", "Operator", "Value", "Then Execute", "Else Execute"]
       .map(string => expect(wrapper.text()).toContain(string));
-  });
-
-  it("doesn't render if step", () => {
-    const p = fakeProps();
-    const waitStep: Wait = { kind: "wait", args: { milliseconds: 0 } };
-    p.currentStep = waitStep;
-    const wrapper = mount(<TileIf {...p} />);
-    expect(wrapper.text()).toEqual("Expected `_if` node");
   });
 });
