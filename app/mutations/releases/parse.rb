@@ -1,6 +1,17 @@
 # FIND EXAMPLE JSON:
 # curl -s https://api.github.com/repos/farmbot/farmbot_os/releases/latest
 module Releases
+  # Github has a JSON format for their own concept of "releases".
+  # FarmBot also has a concept of a "release", but it is not the same schema.
+  # A single Github release contains mutiple "assets" (*.fw files) that
+  # we must convert into multiple FarmBot Release objects.
+  # 1 Github Release ==> multiple farmbot releases
+  #
+  # This class serves as a means of turning a Github release (JSON)
+  # into an array of hashes that can be passed `Release::Create`.
+  #
+  # Example JSON can be downloaded via:
+  # `curl -s https://api.github.com/repos/farmbot/farmbot_os/releases/latest`
   class Parse < Mutations::Command
     CONTENT_TYPE = "application/octet-stream"
     PREFIX = "farmbot"
@@ -34,27 +45,33 @@ module Releases
     end
 
     def execute
-      assets.select do |asset|
-        asset[:name].start_with?(PREFIX) &&
-        asset[:name].end_with?(SUFFIX) &&
-        (asset[:content_type] == CONTENT_TYPE) &&
-        (asset[:state] == STATE)
-      end.map do |asset|
-        channel = prerelease ? "beta" : "stable"
-        platform = asset.fetch(:name).scan(/^farmbot-.*-/).first.split("-").last
-        unless Release::PLATFORMS.include?(platform)
-          raise "Invalid platform?"
-        end
-        ({
-          image_url: asset.fetch(:browser_download_url),
-          version: tag_name,
-          platform: platform,
-          channel: channel,
-        })
-      end
+      assets
+        .select { |asset| valid_asset?(asset) }
+        .map { |asset| convert_to_farmbot_release(asset) }
     end
 
     private
+
+    def convert_to_farmbot_release(asset)
+      channel = prerelease ? "beta" : "stable"
+      platform = asset.fetch(:name).scan(/^farmbot-.*-/).first.split("-").last
+      unless Release::PLATFORMS.include?(platform)
+        raise "Invalid platform?"
+      end
+      ({
+        image_url: asset.fetch(:browser_download_url),
+        version: tag_name,
+        platform: platform,
+        channel: channel,
+      })
+    end
+
+    def valid_asset?(asset)
+      asset[:name].start_with?(PREFIX) &&
+        asset[:name].end_with?(SUFFIX) &&
+        (asset[:content_type] == CONTENT_TYPE) &&
+        (asset[:state] == STATE)
+    end
 
     def no_drafts!
       if draft
