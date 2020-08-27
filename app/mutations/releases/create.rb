@@ -1,3 +1,5 @@
+# Rake task "requires" this.
+
 module Releases
   class Create < Mutations::Command
     required do
