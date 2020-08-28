@@ -88,6 +88,7 @@
 .sequence-editor-content {
   hr {
     margin-right: 15px;
+    margin-bottom: 0;
   }
 }
 
@@ -131,22 +132,12 @@
   }
 }
 
-.execute-sequence{
-  position:relative;
-  padding: 0 15px 0 15px;
-  width: 50%;
-  @media screen and (max-width: 1075px){
-    width: 100%;
-  }
-}
-
 .sequence,
 .regimen {
   width: 100%;
   height: calc(100vh - 25rem);
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 15px;
 }
 
 .farmware-input-panel-contents {
@@ -590,11 +581,11 @@
   display: none;
   @media screen and (max-width: 767px) {
     display: block;
-    min-height: 3rem;
     .add-command {
       display: block;
       margin: auto;
       margin-top: 1rem;
+      margin-bottom: 1rem;
       float: none !important;
     }
   }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   selectAllSavedPeripherals, selectAllSavedSensors,
 } from "../../../resources/selectors";
@@ -7,6 +7,7 @@ import { DropDownItem, Col, FBSelect } from "../../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
   TaggedPeripheral, TaggedSensor, ResourceName, Nothing, SequenceBodyItem,
+  WritePin, TogglePin,
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../../util/errors";
@@ -246,7 +247,7 @@ export function celery2DropDown(input: PinNumber, ri: ResourceIndex):
     : namedPin2DropDown(ri, input);
 }
 
-interface PinSelectProps extends StepParams {
+interface PinSelectProps extends StepParams<WritePin | TogglePin | ReadPin> {
   label?: string;
   placeholder?: string;
   width?: number;
@@ -254,11 +255,6 @@ interface PinSelectProps extends StepParams {
 
 export const PinSelect = (props: PinSelectProps): JSX.Element => {
   const step = props.currentStep;
-  if (step.kind !== "write_pin"
-    && step.kind !== "toggle_pin"
-    && step.kind !== "read_pin") {
-    throw new Error("PinSelect can't render " + step.kind);
-  }
   const { currentSequence, resources, showPins } = props;
   const { pin_number } = step.args;
   const width = props.width || 6;

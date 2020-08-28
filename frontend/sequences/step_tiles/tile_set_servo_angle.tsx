@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui";
+import { StepWrapper } from "../step_ui";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 import { SetServoAngle } from "farmbot";
@@ -11,7 +11,7 @@ import { StepRadio } from "../step_ui/step_radio";
 
 const PIN_CHOICES = ["4", "5", "6", "11"];
 const CHOICE_LABELS = () => PIN_CHOICES.reduce((acc, pinNumber) => {
-  acc[pinNumber] = `${t("Pin")} ${pinNumber}`;
+  acc[pinNumber] = pinNumber;
   return acc;
 }, {} as Record<string, string>);
 
@@ -20,7 +20,7 @@ type Keys =
   | "currentStep"
   | "currentSequence"
   | "index";
-type Props = Pick<StepParams, Keys>;
+type Props = Pick<StepParams<SetServoAngle>, Keys>;
 
 export const createServoEditFn = (y: string) => (x: SetServoAngle) => {
   x.args.pin_number = parseInt(y, 10);
@@ -37,7 +37,7 @@ export const pinNumberChanger = (props: Props) => (y: string) => {
 
 export function ServoPinSelection(props: Props) {
   const { currentStep } = props;
-  const num = (currentStep as SetServoAngle).args.pin_number;
+  const num = currentStep.args.pin_number;
   if (typeof num !== "number") { throw new Error("NO!"); }
   const onChange = pinNumberChanger(props);
 
@@ -48,36 +48,30 @@ export function ServoPinSelection(props: Props) {
     onChange={onChange} />;
 }
 
-export function TileSetServoAngle(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "set-servo-angle-step";
-  return <StepWrapper>
-    <StepHeader
-      className={className}
-      helpText={ToolTips.SET_SERVO_ANGLE}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <StepContent className={className}>
-      <Row>
-        <Col lg={4} xs={6}>
-          <label>
-            {t("Servo angle (0-180)")}
-          </label>
-          <StepInputBox
-            dispatch={dispatch}
-            step={currentStep}
-            sequence={currentSequence}
-            index={index}
-            field={"pin_value"} />
-        </Col>
-        <Col lg={8} xs={6}>
-          <label>{t("Servo pin")}</label>
-          <ServoPinSelection {...props} />
-        </Col>
-      </Row>
-    </StepContent>
+export const TileSetServoAngle = (props: StepParams<SetServoAngle>) =>
+  <StepWrapper
+    className={"set-servo-angle-step"}
+    helpText={ToolTips.SET_SERVO_ANGLE}
+    currentSequence={props.currentSequence}
+    currentStep={props.currentStep}
+    dispatch={props.dispatch}
+    index={props.index}
+    resources={props.resources}>
+    <Row>
+      <Col lg={4} xs={6}>
+        <label>
+          {t("Angle (0-180)")}
+        </label>
+        <StepInputBox
+          field={"pin_value"}
+          dispatch={props.dispatch}
+          step={props.currentStep}
+          sequence={props.currentSequence}
+          index={props.index} />
+      </Col>
+      <Col lg={8} xs={6}>
+        <label>{t("Servo pin")}</label>
+        <ServoPinSelection {...props} />
+      </Col>
+    </Row>
   </StepWrapper>;
-}

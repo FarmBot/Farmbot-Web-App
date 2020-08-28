@@ -1,5 +1,7 @@
 import { Vector3, Xyz, AxisOverwrite, AxisAddition } from "farmbot";
-import { findPointerByTypeAndId, findSlotByToolId } from "../../../resources/selectors";
+import {
+  findPointerByTypeAndId, findSlotByToolId,
+} from "../../../resources/selectors";
 import { maybeFindVariable } from "../../../resources/sequence_meta";
 import {
   AxisSelection, ComputeCoordinateProps, ComputeOverwriteProps,

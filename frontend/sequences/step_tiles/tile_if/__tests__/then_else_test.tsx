@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ThenElse } from "../then_else";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
@@ -24,7 +24,6 @@ describe("<ThenElse/>", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      confirmStepDeletion: false,
       thenElseKey: "_then",
     };
   }

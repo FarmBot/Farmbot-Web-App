@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication, Xyz } from "farmbot";
@@ -6,7 +6,7 @@ import { Row, Col, BlurableInput } from "../../ui";
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui";
+import { StepWrapper } from "../step_ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
   determineDropdown, determineVector, Vector3Plus,
@@ -22,13 +22,13 @@ import {
 import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
-import { NO_GROUPS } from "../locals_list/default_value_form";
 
-export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
+export class TileMoveAbsolute
+  extends React.Component<StepParams<MoveAbsolute>, MoveAbsState> {
   state: MoveAbsState = {
     more: !!this.props.expandStepOptions || this.hasOffset || this.hasSpeed
   };
-  get step() { return this.props.currentStep as MoveAbsolute; }
+  get step() { return this.props.currentStep; }
   get args() { return this.step.args; }
   get hasOffset(): boolean {
     const { x, y, z } = this.args.offset.args;
@@ -41,10 +41,12 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
     const copy = defensiveClone(this.props.currentSequence).body;
-    const step = (copy.body || [])[this.props.index] as MoveAbsolute;
-    delete step.args.location.args;
-    step.args = betterMerge(step.args, update);
-    this.props.dispatch(overwrite(this.props.currentSequence, copy));
+    const step = (copy.body || [])[this.props.index];
+    if (step?.kind == "move_absolute") {
+      delete step.args.location.args;
+      step.args = betterMerge(step.args, update);
+      this.props.dispatch(overwrite(this.props.currentSequence, copy));
+    }
   }
 
   /** Update offset value. */
@@ -98,13 +100,12 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       onChange={(x) => x &&
         x.kind == "parameter_application" &&
         this.updateLocation(x)}
-      shouldDisplay={this.props.shouldDisplay || (() => false)}
+      shouldDisplay={this.props.shouldDisplay}
       hideHeader={true}
       hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      width={3}
-      customFilterRule={NO_GROUPS} />
+      width={3} />
 
   SpeedInput = () =>
     <Col xs={3}>
@@ -138,40 +139,33 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     </Row>
 
   render() {
-    const { currentStep, dispatch, index, currentSequence } = this.props;
-    const isMobile = window.innerWidth < 660;
-    const className = "move-absolute-step";
-    return <StepWrapper>
-      <StepHeader
-        className={className}
-        helpText={ToolTips.MOVE_ABSOLUTE}
-        currentSequence={currentSequence}
-        currentStep={currentStep}
-        dispatch={dispatch}
-        index={index}
-        confirmStepDeletion={this.props.confirmStepDeletion}>
-        <MoveAbsoluteWarning
-          coordinate={getPositionSum(this.vector, this.args.offset.args)}
-          hardwareFlags={this.props.hardwareFlags} />
-      </StepHeader>
-      <StepContent className={className}>
-        <Row>
-          <div className={"dynamic-column"}>
-            <div className="input-line">
-              <this.LocationForm />
-            </div>
-            <div className="more-options">
-              <ExpandableHeader
-                expanded={this.state.more}
-                title={isMobile ? "" : t("Options")}
-                onClick={() => this.setState({ more: !this.state.more })} />
-            </div>
+    return <StepWrapper
+      className={"move-absolute-step"}
+      helpText={ToolTips.MOVE_ABSOLUTE}
+      currentSequence={this.props.currentSequence}
+      currentStep={this.props.currentStep}
+      dispatch={this.props.dispatch}
+      index={this.props.index}
+      resources={this.props.resources}
+      warning={<MoveAbsoluteWarning
+        coordinate={getPositionSum(this.vector, this.args.offset.args)}
+        hardwareFlags={this.props.hardwareFlags} />}>
+      <Row>
+        <div className={"dynamic-column"}>
+          <div className="input-line">
+            <this.LocationForm />
           </div>
-        </Row>
-        <Collapse isOpen={this.state.more}>
-          <this.OptionsForm />
-        </Collapse>
-      </StepContent>
+          <div className="more-options">
+            <ExpandableHeader
+              expanded={this.state.more}
+              title={window.innerWidth < 660 ? "" : t("Options")}
+              onClick={() => this.setState({ more: !this.state.more })} />
+          </div>
+        </div>
+      </Row>
+      <Collapse isOpen={this.state.more}>
+        <this.OptionsForm />
+      </Collapse>
     </StepWrapper>;
   }
 }

@@ -5,7 +5,9 @@ import { computeCoordinate } from "../compute";
 import { fakeNumericMoveStepCeleryScript } from "../test_fixtures";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
 import { SpecialValue, Xyz } from "farmbot";
-import { fakeTool, fakeToolSlot } from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeTool, fakeToolSlot,
+} from "../../../../__test_support__/fake_state/resources";
 import { cloneDeep } from "lodash";
 
 describe("computeCoordinate()", () => {

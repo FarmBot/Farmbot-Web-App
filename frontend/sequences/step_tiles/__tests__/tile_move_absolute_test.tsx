@@ -1,4 +1,6 @@
-import * as React from "react";
+jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
+
+import React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import {
@@ -20,10 +22,12 @@ import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { overwrite } from "../../../api/crud";
+import { cloneDeep } from "lodash";
 
-describe("<TileMoveAbsolute/>", () => {
-  const fakeProps = (): StepParams => {
-    const currentStep: MoveAbsolute = {
+describe("<TileMoveAbsolute />", () => {
+  const fakeProps = (): StepParams<MoveAbsolute> => {
+    const step: MoveAbsolute = {
       kind: "move_absolute",
       args: {
         location: { kind: "coordinate", args: { x: 1.1, y: 2, z: 3 } },
@@ -31,23 +35,16 @@ describe("<TileMoveAbsolute/>", () => {
         offset: { kind: "coordinate", args: { x: 4.4, y: 5, z: 6 } }
       }
     };
+    const sequence = fakeSequence({ body: [step] });
     return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
+      currentSequence: sequence,
+      currentStep: step,
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
       hardwareFlags: fakeHardwareFlags(),
-      confirmStepDeletion: false,
     };
   };
-
-  function ordinaryMoveAbs(p = fakeProps()) {
-    p.currentSequence.body.body = [p.currentStep];
-    p.index = 0;
-    p.dispatch = jest.fn();
-    return new TileMoveAbsolute(p);
-  }
 
   function checkField(
     block: ReactWrapper, position: number, label: string, value: string | number,
@@ -87,7 +84,7 @@ describe("<TileMoveAbsolute/>", () => {
     tool.body.id = 1;
     p.resources = buildResourceIndex([toolSlot, tool]).index;
     const toolKind: Tool = { kind: "tool", args: { tool_id: 1 } };
-    (p.currentStep as MoveAbsolute).args.location = toolKind;
+    p.currentStep.args.location = toolKind;
     const block = mount(<TileMoveAbsolute {...p} />);
     const xOffsetInput = block.find("input").at(1);
     expect(xOffsetInput.props().name).toEqual("offset-x");
@@ -97,16 +94,7 @@ describe("<TileMoveAbsolute/>", () => {
     expect(yOffsetInput.props().disabled).toBeFalsy();
   });
 
-  it("updates input value", () => {
-    const tma = ordinaryMoveAbs();
-    const mock = jest.fn();
-    tma.updateArgs = mock;
-    const cb = tma.updateInputValue("x", "location");
-    cb(inputEvent("23.456"));
-    expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
-  });
-
-  it("Options visible on greater screen width", () => {
+  it("renders options on wide screens", () => {
     const p = fakeProps();
     Object.defineProperty(window, "innerWidth", {
       value: 800,
@@ -116,7 +104,7 @@ describe("<TileMoveAbsolute/>", () => {
     expect(wrapper.find("h4").text()).toEqual("Options  []");
   });
 
-  it("Options not visible on small screen width like mobile", () => {
+  it("doesn't render options on narrow screens", () => {
     const p = fakeProps();
     Object.defineProperty(window, "innerWidth", {
       value: 360,
@@ -129,8 +117,8 @@ describe("<TileMoveAbsolute/>", () => {
   it("expands form", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
-    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
-    (p.currentStep as MoveAbsolute).args.speed = 100;
+    p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
+    p.currentStep.args.speed = 100;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(false);
     wrapper.find("h4").simulate("click");
@@ -147,7 +135,7 @@ describe("<TileMoveAbsolute/>", () => {
   it("expands form when offset is present", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
-    (p.currentStep as MoveAbsolute).args.offset.args.z = 100;
+    p.currentStep.args.offset.args.z = 100;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(true);
   });
@@ -155,8 +143,8 @@ describe("<TileMoveAbsolute/>", () => {
   it("not expanding form when speed is 100", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
-    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
-    (p.currentStep as MoveAbsolute).args.speed = 100;
+    p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
+    p.currentStep.args.speed = 100;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(false);
   });
@@ -164,42 +152,82 @@ describe("<TileMoveAbsolute/>", () => {
   it("expands form when speed is not 100", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
-    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
-    (p.currentStep as MoveAbsolute).args.speed = 50;
+    p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
+    p.currentStep.args.speed = 50;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(true);
   });
 
-  describe("updateArgs", () => {
-    it("calls OVERWRITE_RESOURCE for the correct resource", () => {
-      const tma = ordinaryMoveAbs();
-      tma.updateArgs({});
-      expect(tma.props.dispatch).toHaveBeenCalled();
-      const payload =
-        expect.objectContaining({ uuid: tma.props.currentSequence.uuid });
-      const action =
-        expect.objectContaining({ type: "OVERWRITE_RESOURCE", payload });
-      expect(tma.props.dispatch).toHaveBeenCalledWith(action);
+  it("returns correct node", () => {
+    const p = fakeProps();
+    p.currentStep.args.location = {
+      kind: "identifier",
+      args: { label: "label" },
+    };
+    const block = new TileMoveAbsolute(p);
+    expect(block.celeryNode).toEqual({
+      kind: "parameter_application",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "identifier",
+          args: { label: "label" },
+        }
+      }
     });
   });
 
-  describe("updateLocation", () => {
+  describe("updateInputValue()", () => {
+    it("updates input value", () => {
+      const block = new TileMoveAbsolute(fakeProps());
+      const mock = jest.fn();
+      block.updateArgs = mock;
+      const cb = block.updateInputValue("x", "location");
+      cb(inputEvent("23.456"));
+      expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
+    });
+  });
+
+  describe("updateArgs()", () => {
+    it("updates args", () => {
+      const p = fakeProps();
+      const block = new TileMoveAbsolute(p);
+      const location: Coordinate = {
+        kind: "coordinate", args: { x: 4, y: 5, z: 6 }
+      };
+      block.updateArgs({ location });
+      const expected = cloneDeep(p.currentSequence.body);
+      p.currentStep.args.location = location;
+      expected.body = [p.currentStep];
+      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+    });
+
+    it("handles missing body", () => {
+      const p = fakeProps();
+      p.currentSequence.body.body = undefined;
+      const block = new TileMoveAbsolute(p);
+      block.updateArgs({});
+      expect(overwrite).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateLocation()", () => {
     it("handles empty selections", () => {
-      const tma = ordinaryMoveAbs();
-      tma.updateArgs = jest.fn();
+      const block = new TileMoveAbsolute(fakeProps());
+      block.updateArgs = jest.fn();
       const location: Coordinate = {
         kind: "coordinate", args: { x: 0, y: 0, z: 0 }
       };
-      tma.updateLocation({
+      block.updateLocation({
         kind: "parameter_application",
         args: { label: "", data_value: location }
       });
-      expect(tma.updateArgs).toHaveBeenCalledWith({ location });
+      expect(block.updateArgs).toHaveBeenCalledWith({ location });
     });
 
     it("handles point / tool selections", () => {
-      const tma = ordinaryMoveAbs();
-      tma.updateArgs = jest.fn();
+      const block = new TileMoveAbsolute(fakeProps());
+      block.updateArgs = jest.fn();
       [fakePoint(), fakeTool()].map(selection => {
         const data_value = (): Tool | Point => {
           switch (selection.kind) {
@@ -218,14 +246,14 @@ describe("<TileMoveAbsolute/>", () => {
           kind: "parameter_application",
           args: { label: "", data_value: data_value() }
         };
-        tma.updateLocation(variable);
-        expect(tma.updateArgs).toHaveBeenCalledWith({ location: data_value() });
+        block.updateLocation(variable);
+        expect(block.updateArgs).toHaveBeenCalledWith({ location: data_value() });
       });
     });
 
     it("handles variables", () => {
       const p = fakeProps();
-      const block = ordinaryMoveAbs(p);
+      const block = new TileMoveAbsolute(p);
       block.updateLocation({
         kind: "parameter_application",
         args: {
@@ -234,14 +262,18 @@ describe("<TileMoveAbsolute/>", () => {
           }
         }
       });
-      expect(p.dispatch).toHaveBeenCalled();
-      const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
-      expect(p.dispatch).toHaveBeenCalledWith(action);
+      const expected = cloneDeep(p.currentSequence.body);
+      p.currentStep.args.location = {
+        kind: "identifier",
+        args: { label: "parent" },
+      };
+      expected.body = [p.currentStep];
+      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
 
     it("changes variable", () => {
       const p = fakeProps();
-      const block = ordinaryMoveAbs(p);
+      const block = new TileMoveAbsolute(p);
       const wrapper = shallow(<block.LocationForm />);
       wrapper.props().onChange({
         kind: "parameter_application",
@@ -251,9 +283,13 @@ describe("<TileMoveAbsolute/>", () => {
           }
         }
       });
-      expect(p.dispatch).toHaveBeenCalled();
-      const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
-      expect(p.dispatch).toHaveBeenCalledWith(action);
+      const expected = cloneDeep(p.currentSequence.body);
+      p.currentStep.args.location = {
+        kind: "identifier",
+        args: { label: "parent" },
+      };
+      expected.body = [p.currentStep];
+      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
   });
 });

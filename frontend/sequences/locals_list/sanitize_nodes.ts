@@ -56,7 +56,7 @@ function climb(t: Traversable | unknown, cb: TreeClimberCB) {
   const climbArgs = /** RECURSION ALERT! */
     (a: Args) => Object.keys(a).map(arg => climb(a[arg], cb));
   const climbBody = /** WEE OOO WEE OO */
-    (body: Body = []) => body.map(item => climb(item, cb));
+    (body: Traversable[]) => body.map(item => climb(item, cb));
 
   if (isTraversable(t)) {
     t.body = t.body || [];

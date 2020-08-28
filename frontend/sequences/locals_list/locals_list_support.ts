@@ -39,7 +39,7 @@ export enum AllowedVariableNodes {
 interface CommonProps {
   sequenceUuid: UUID;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
+  shouldDisplay?: ShouldDisplay;
   /** Update stored data based on the variable provided. */
   onChange: OnChange;
   /** Use when a local set of variables exists; i.e., execute step body. */

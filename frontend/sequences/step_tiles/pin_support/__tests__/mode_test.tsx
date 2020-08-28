@@ -3,7 +3,7 @@ jest.mock("../../../../api/crud", () => ({
   editStep: mockEditStep
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
 import {
@@ -95,7 +95,11 @@ describe("setPinMode()", () => {
 
 describe("currentModeSelection()", () => {
   it("gets current mode", () => {
-    const results = currentModeSelection(fakeStepParams().currentStep);
+    const step: WritePin = {
+      kind: "write_pin",
+      args: { pin_number: 3, pin_value: 1, pin_mode: 1 }
+    };
+    const results = currentModeSelection(step);
     expect(results.label).toEqual("Analog");
     expect(results.value).toEqual(1);
   });
@@ -129,8 +133,7 @@ describe("<PinModeDropdown />", () => {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
-    p.currentStep = step;
-    const wrapper = shallow(<PinModeDropdown {...p} />);
+    const wrapper = shallow(<PinModeDropdown {...p} currentStep={step} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: 0 });
     expect(editStep).toHaveBeenCalled();
   });

@@ -6,7 +6,7 @@ jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
 jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
@@ -20,7 +20,7 @@ import { Link } from "../../link";
 import { Session } from "../../session";
 import { refresh } from "../../api/crud";
 
-describe("NavBar", () => {
+describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
     timeSettings: fakeTimeSettings(),
     consistent: true,
@@ -38,7 +38,7 @@ describe("NavBar", () => {
     apiFirmwareValue: undefined,
   });
 
-  it("has correct parent classname", () => {
+  it("has correct parent className", () => {
     const wrapper = shallow(<NavBar {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("nav-wrapper")).toBeTruthy();
   });
@@ -58,6 +58,13 @@ describe("NavBar", () => {
     const wrapper = mount(<NavBar {...p} />);
     wrapper.mount();
     expect(maybeSetTimezone).toHaveBeenCalledWith(p.dispatch, p.device);
+  });
+
+  it("handles missing user", () => {
+    const p = fakeProps();
+    p.user = undefined;
+    const wrapper = mount(<NavBar {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("menu");
   });
 
   it("logs out", () => {

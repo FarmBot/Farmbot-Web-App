@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   editStep: jest.fn(x => x.executor(mockStep)),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { AxisStepRadio, AxisStepRadioProps } from "../step_radio";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
@@ -29,7 +29,7 @@ describe("<StepRadio />", () => {
   it("renders", () => {
     const wrapper = mount(<AxisStepRadio {...fakeProps()} />);
     expect(wrapper.find("input").length).toEqual(4);
-    expect(wrapper.text()).toContain("Find");
+    expect(wrapper.text()).toContain("all");
   });
 
   it("handles update for find_home", () => {

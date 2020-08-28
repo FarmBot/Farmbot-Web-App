@@ -1,21 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { StepWrapper } from "../step_ui";
 
-export function TileSystemAction(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "system-action-step";
-  return <StepWrapper>
-    <StepHeader
-      className={className}
-      helpText={ToolTips.SYSTEM_ACTION}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <StepContent className={className} />
-  </StepWrapper>;
-
-}
+export const TileSystemAction = (props: StepParams) =>
+  <StepWrapper
+    className={"system-action-step"}
+    helpText={ToolTips.SYSTEM_ACTION}
+    currentSequence={props.currentSequence}
+    currentStep={props.currentStep}
+    dispatch={props.dispatch}
+    index={props.index}
+    resources={props.resources} />;

@@ -29,6 +29,15 @@
         margin-top: 0;
         vertical-align: middle;
       }
+      form {
+        padding-top: 0.5rem;
+        .options {
+          display: inline;
+          label {
+            margin-left: 0.25rem;
+          }
+        }
+      }
     }
   }
   pre {
@@ -220,27 +229,33 @@
   }
   &.assertion-step {
     background: $light_purple;
-    input {
-      height: 3rem;
-    }
-    .assertion-sequence,
-    .assertion-type {
-      margin-top: 10px;
+    textarea {
+      margin-bottom: 1rem;
     }
   }
   &.execute-step {
     background: $light_gray;
     padding-bottom: 1rem;
+    &.step-content {
+      .row {
+        margin: 0;
+      }
+    }
   }
   &.execute-script-step {
     background: $light_magenta;
     padding-bottom: 1rem;
+  }
+  &.execute-script-step a {
+    color: $magenta;
+    text-decoration: none !important;
   }
   &.take-photo-step {
     background: $light_brown;
   }
   &.take-photo-step a {
     color: $dark_brown;
+    text-decoration: none !important;
   }
   &.update-resource-step {
     background: $light_brown;
@@ -287,5 +302,8 @@
   }
   .bp3-collapse {
     overflow: hidden;
+  }
+  p {
+    font-size: 1.3rem;
   }
 }

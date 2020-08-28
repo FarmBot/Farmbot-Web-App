@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { addOrEditDeclarationLocals } from "../locals_list/handle_select";
 import { LocalsListProps, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone, betterCompact } from "../../util/util";
@@ -39,22 +39,24 @@ export const isParameterDeclaration =
  * If none are found, shows nothing.
  */
 export const LocalsList = (props: LocalsListProps) => {
+  const variableData = Object.values(props.variableData || {});
+  const { bodyVariables } = props;
   return <div className="locals-list">
-    {betterCompact(Object.values(props.variableData || {})
+    {betterCompact(variableData
       // Show variables if in Sequence header or not already defined
-      .filter(v => v && (!props.bodyVariables || isParameterDeclaration(v.celeryNode)))
+      .filter(v => v && (!bodyVariables || isParameterDeclaration(v.celeryNode)))
       // Show default values for parameters as a fallback if not in Sequence header
-      .map(v => v && props.bodyVariables && isParameterDeclaration(v.celeryNode)
-        ? convertFormVariable(v, props.resources) : v))
+      .map(v => v && bodyVariables && isParameterDeclaration(v.celeryNode)
+        ? convertFormVariable(v.celeryNode, props.resources) : v))
       .map(variable => <LocationForm
         key={variable.celeryNode.args.label}
         locationDropdownKey={props.locationDropdownKey}
-        bodyVariables={props.bodyVariables}
+        bodyVariables={bodyVariables}
         variable={variable}
         sequenceUuid={props.sequenceUuid}
         resources={props.resources}
         shouldDisplay={props.shouldDisplay}
-        hideVariableLabel={Object.values(props.variableData || {}).length < 2}
+        hideVariableLabel={variableData.length < 2}
         allowedVariableNodes={props.allowedVariableNodes}
         collapsible={props.collapsible}
         collapsed={props.collapsed}
@@ -66,13 +68,13 @@ export const LocalsList = (props: LocalsListProps) => {
 };
 
 /** Show a parameter_declaration as its default value in the location form. */
-const convertFormVariable = (variable: SequenceMeta, resources: ResourceIndex):
-  SequenceMeta | undefined => {
-  if (variable.celeryNode.kind === "parameter_declaration") {
+const convertFormVariable =
+  (variable: ParameterDeclaration, resources: ResourceIndex):
+    SequenceMeta | undefined => {
     const converted: ParameterApplication = {
       kind: "parameter_application", args: {
-        label: variable.celeryNode.args.label,
-        data_value: variable.celeryNode.args.default_value
+        label: variable.args.label,
+        data_value: variable.args.default_value
       }
     };
     return {
@@ -81,5 +83,4 @@ const convertFormVariable = (variable: SequenceMeta, resources: ResourceIndex):
       vector: determineVector(converted, resources),
       default: true,
     };
-  }
-};
+  };
