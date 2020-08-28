@@ -124,6 +124,36 @@ def const_reassign(target, const, value)
   end
 end
 
+def destroy_everything!
+  Device.update_all(mounted_tool_id: nil)
+  [
+    Primitive,
+    FarmEvent,
+    Release,
+    FarmwareEnv,
+    Alert,
+    Sensor,
+    Peripheral,
+    Log,
+    PinBinding,
+    PointGroupItem,
+    PointGroup,
+    Point,
+    TokenIssuance,
+    ToolSlot,
+    User,
+    PlantTemplate,
+    SavedGarden,
+    SensorReading,
+    FarmwareInstallation,
+    Tool,
+    Delayed::Job,
+    Delayed::Backend::ActiveRecord::Job,
+    Fragment,
+    Device,
+  ].map(&:delete_all)
+end
+
 class StubResp
   attr_accessor :code, :body
 

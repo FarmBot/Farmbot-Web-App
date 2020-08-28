@@ -298,7 +298,8 @@ module Api
       msg = "MQTT ACCESS DENIED #{reason}"
       puts msg unless Rails.env.test?
       if device_id_in_username > 0
-        Device.find(device_id_in_username).delay.tell(msg)
+        dev = Device.find_by(id: device_id_in_username)
+        dev && dev.delay.tell(msg)
       end
     end
   end
