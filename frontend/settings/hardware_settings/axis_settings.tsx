@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import { t } from "../../i18next_wrapper";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
@@ -7,7 +8,6 @@ import { disabledAxisMap } from "./axis_tracking_status";
 import { AxisSettingsProps } from "./interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
-import { t } from "../../i18next_wrapper";
 import { calculateScale } from "./motors";
 import { hasEncoders } from "../firmware/firmware_hardware_support";
 import { getDevice } from "../../device";
@@ -18,6 +18,8 @@ import { SpacePanelHeader } from "./space_panel_header";
 import {
   settingRequiredLabel, encodersOrLimitSwitchesRequired,
 } from "./encoders_or_stall_detection";
+import { SafeHeight, SoilHeight } from "../fbos_settings/z_height_inputs";
+import { Feature } from "../../devices/interfaces";
 
 export function AxisSettings(props: AxisSettingsProps) {
 
@@ -151,6 +153,14 @@ export function AxisSettings(props: AxisSettingsProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         intSize={"long"} />
+      {props.shouldDisplay(Feature.safe_height_input) &&
+        <SafeHeight
+          dispatch={dispatch}
+          sourceFbosConfig={props.sourceFbosConfig} />}
+      {props.shouldDisplay(Feature.safe_height_input) &&
+        <SoilHeight
+          dispatch={dispatch}
+          sourceFbosConfig={props.sourceFbosConfig} />}
     </Collapse>
   </Highlight>;
 }

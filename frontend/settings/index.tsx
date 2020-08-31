@@ -114,6 +114,7 @@ export class RawDesignerSettings
         <AxisSettings {...commonProps}
           bot={this.props.bot}
           sourceFwConfig={sourceFwConfig}
+          sourceFbosConfig={sourceFbosConfig}
           shouldDisplay={this.props.shouldDisplay}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
