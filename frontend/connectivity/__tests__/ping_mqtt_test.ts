@@ -10,7 +10,7 @@ import {
   startPinging,
   PING_INTERVAL,
 } from "../ping_mqtt";
-import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
+import { Farmbot } from "farmbot";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
 const state: Partial<FarmBotInternalConfig> = {
@@ -20,13 +20,6 @@ const state: Partial<FarmBotInternalConfig> = {
 
 function fakeBot(): Farmbot {
   const fb: Partial<Farmbot> = {
-    rpcShim: jest.fn((_: RpcRequestBodyItem[]): RpcRequest => ({
-      kind: "rpc_request",
-      args: {
-        label: "ping",
-        priority: 0
-      }
-    })),
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
