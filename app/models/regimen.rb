@@ -1,31 +1,25 @@
-# Regimens are an ordered checklist of "TODO" items for a bot, spread out at
-# specified times after a start date.
-# Examples: Water cabbage 3 times a day for 40 days, then twice a day for 20
-#           days after that.
-# A regimen takes a SEQUENCES and repeats them over a fixed amount of time slots
+# Regimens are an ordered checklist of "TODO" items for a bot,
+# spread out at specified times after a start date. Example:
+# Water cabbage three times per day during first month, then
+# once daily for the next month.
 class Regimen < ApplicationRecord
-  # Regimen gets pluralized strangely by Rails.
-  # Occasionally to "regimans".
-  # This is the workaround.
+  # Rails inflector does a poor job of pluralizing this word,
+  # such as "regimans" or "regimina". This is the workaround.
+  # PRs welcome.
   self.table_name = "regimens"
+
+  belongs_to :device
+  has_many :regimen_items, dependent: :destroy
+  has_many :farm_events, as: :executable
+  has_one :fragment, as: :owner
+  validates :device, presence: true
   validates :name, presence: true
   validates :name, uniqueness: { scope: :device }
-  has_many  :farm_events, as: :executable
 
-  has_many   :regimen_items, dependent: :destroy
-  belongs_to :device
-  validates  :device, presence: true
-  has_one    :fragment,  as: :owner
-
-  # PROBLEM:
-  #  * sync messages send MQTT packets when models update in a background job.
-  #  * regimen_items are a "nested resource". The user does not know they exist
-  #    outside of a regimen
-  #  * We still need to be notified of updates to `regimen_item`s.
-  #
-  # SOLUTION:
-  #  * _always_ send update messages for Regimens, even though its kind of
-  #    wasteful.
+  # Detecting changes in child regimen_items is difficult.
+  # Whenever a Regimen is saved, we pretend that the changes
+  # require a sync/broadcast even though it is slightly
+  # ineffficient
   def notable_changes?
     true
   end
