@@ -1,11 +1,12 @@
-import * as React from "react";
-import { Widget, WidgetHeader, FallbackImg, WidgetBody } from "../../ui/index";
+import React from "react";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { Flipper } from "./flipper";
 import { sortedFeeds } from "./edit";
 import { t } from "../../i18next_wrapper";
+import { WebcamImg } from "./webcam_img";
 
 type State = {
   /** Current index in the webcam feed list.
@@ -67,9 +68,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
         <div className="image-flipper">
           <div className={imageClass}>
             <p>{msg}</p>
-            <FallbackImg className="image-flipper-image"
-              src={flipper.current.url}
-              fallback={PLACEHOLDER_FARMBOT} />
+            <WebcamImg key={flipper.current.url} src={flipper.current.url} />
           </div>
           <button
             onClick={() => flipper.down((_, current) => this.setState({ current }))}

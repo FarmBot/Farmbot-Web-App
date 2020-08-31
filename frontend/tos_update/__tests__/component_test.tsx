@@ -47,7 +47,6 @@ describe("<TosUpdate/>", () => {
   const fakeFormEvent = formEvent();
 
   it("submits a form", async () => {
-    location.assign = jest.fn();
     const i = shallow<TosUpdate>(<TosUpdate />).instance();
     i.setState(fake);
     await i.submit(fakeFormEvent);

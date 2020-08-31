@@ -8,3 +8,12 @@ export interface WebcamPanelProps {
   save(tr: TaggedWebcamFeed): void;
   destroy(tr: TaggedWebcamFeed): void;
 }
+
+export interface WebcamImgProps {
+  src: string;
+}
+
+export interface WebcamImgState {
+  needsFallback: boolean;
+  isLoaded: boolean;
+}
