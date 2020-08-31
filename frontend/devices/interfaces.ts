@@ -51,6 +51,7 @@ export enum Feature {
   none_firmware = "none_firmware",
   ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",
+  safe_height_input = "safe_height_input",
   sensors = "sensors",
   soil_height = "soil_height",
   update_resource = "update_resource",

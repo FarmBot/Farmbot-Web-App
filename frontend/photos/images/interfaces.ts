@@ -60,6 +60,7 @@ export interface PhotoButtonsProps {
   deletePhoto(): void;
   toggleCrop(): void;
   toggleRotation(): void;
+  toggleFullscreen(): void;
   canCrop: boolean;
   canTransform: boolean;
   imageUrl: string | undefined;
@@ -108,4 +109,5 @@ export interface PhotoFooterProps {
 export interface PhotosState {
   crop: boolean;
   rotate: boolean;
+  fullscreen: boolean;
 }

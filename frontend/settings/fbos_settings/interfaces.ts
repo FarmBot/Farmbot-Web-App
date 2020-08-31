@@ -74,3 +74,8 @@ export interface OsUpdateButtonProps {
   botOnline: boolean;
   shouldDisplay: ShouldDisplay;
 }
+
+export interface ZHeightInputProps {
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+}

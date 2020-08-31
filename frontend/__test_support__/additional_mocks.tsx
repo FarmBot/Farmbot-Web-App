@@ -9,7 +9,7 @@ jest.mock("../open_farm/cached_crop", () => ({
 }));
 
 const { ancestorOrigins } = window.location;
-delete window.location;
+delete (window as { location: Location | undefined }).location;
 window.location = {
   assign: jest.fn(),
   reload: jest.fn(),
@@ -18,6 +18,8 @@ window.location = {
   pathname: "", href: "", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
 };
+
+window.alert = jest.fn();
 
 window.TextDecoder = jest.fn();
 

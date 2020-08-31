@@ -120,7 +120,8 @@ describe("resource reducer", () => {
     const folder = fakeFolder();
     folder.body.id = 1;
     const startingState = buildResourceIndex([folder]);
-    delete startingState.index.sequenceFolders.localMetaAttributes[1].open;
+    (startingState.index.sequenceFolders.localMetaAttributes[1].open as unknown)
+      = undefined;
     const action = { type: Actions.FOLDER_TOGGLE, payload: { id: 1 } };
     const newState = resourceReducer(startingState, action);
     expect(newState.index.sequenceFolders.localMetaAttributes[1].open)

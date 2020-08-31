@@ -57,15 +57,16 @@ export class FlipperImage
     const url = this.props.image.body.attachment_processed_at
       ? this.props.image.body.attachment_url
       : PLACEHOLDER_FARMBOT;
+    const { isLoaded } = this.state;
     return <div className={"image-jsx"}>
-      {!this.state.isLoaded &&
-        <PlaceholderImg
-          textOverlay={t("Image loading (try refreshing)")} />}
-      {this.props.transformImage
-        ? <this.SvgImage />
-        : <img onLoad={e => this.onImageLoad(e.currentTarget)}
-          className={`image-flipper-image is-loaded-${this.state.isLoaded}`}
-          src={url} />}
+      {!isLoaded && <PlaceholderImg textOverlay={t("Loading...")} />}
+      <div className={"flipper-image"}
+        style={isLoaded ? {} : { display: "none" }}>
+        {this.props.transformImage
+          ? <this.SvgImage />
+          : <img className={"image-flipper-image"} src={url}
+            onLoad={e => this.onImageLoad(e.currentTarget)} />}
+      </div>
     </div>;
   }
 }

@@ -32,6 +32,9 @@ describe("<AxisSettings />", () => {
     sourceFwConfig: x => ({
       value: bot.hardware.mcu_params[x], consistent: true
     }),
+    sourceFbosConfig: x => ({
+      value: bot.hardware.configuration[x], consistent: true
+    }),
     firmwareConfig: fakeFirmwareConfig().body,
     botOnline: true,
     firmwareHardware: undefined,
@@ -110,5 +113,23 @@ describe("<AxisSettings />", () => {
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).first().props().toolTip)
       .toContain("stall detection");
+  });
+
+  it("shows z height inputs", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.controlPanelState.axis_settings = true;
+    const wrapper = mount(<AxisSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("safe height");
+    expect(wrapper.text().toLowerCase()).toContain("soil height");
+  });
+
+  it("doesn't show z height inputs", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => false;
+    p.controlPanelState.axis_settings = true;
+    const wrapper = mount(<AxisSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("safe height");
+    expect(wrapper.text().toLowerCase()).not.toContain("soil height");
   });
 });

@@ -260,7 +260,6 @@ describe("onPublicBroadcast", () => {
   });
 
   it("triggers when appropriate", () => {
-    location.assign = jest.fn();
     window.confirm = jest.fn(() => true);
     console.log = jest.fn();
     onPublicBroadcast({});

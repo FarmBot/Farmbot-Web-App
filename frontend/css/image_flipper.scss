@@ -3,6 +3,26 @@
   margin-top: 1rem;
 }
 
+.bp3-overlay {
+  .image-flipper {
+    z-index: 20;
+    margin: auto;
+    width: fit-content;
+    margin-top: 3%;
+    .image-flipper-image,
+    svg {
+      max-height: none;
+      height: 80vh;
+    }
+  }
+}
+
+.desktop-only {
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
+
 .image-jsx {
   overflow: hidden;
 }
@@ -34,14 +54,6 @@
   &:hover {
     background-color: rgba(0, 0, 0, 0.7);
   }
-}
-
-.is-loaded-false {
-  display: none;
-}
-
-.is-loaded-true {
-  display: block;
 }
 
 .no-flipper-image-container {
