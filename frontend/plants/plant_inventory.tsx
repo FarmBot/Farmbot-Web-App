@@ -18,7 +18,7 @@ import { SearchField } from "../ui/search_field";
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
   dispatch: Function;
-  hoveredPlantListItem?: string | undefined;
+  hoveredPlantListItem: string | undefined;
 }
 
 interface State {

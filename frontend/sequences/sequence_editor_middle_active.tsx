@@ -29,7 +29,6 @@ import { isUndefined } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
-import { Feature } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -96,11 +95,10 @@ export const SequenceSettingsMenu =
         confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
         label={DeviceSetting.discardUnsavedSequenceChanges}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
-      {props.shouldDisplay(Feature.computed_move) &&
-        <SequenceSetting {...commonProps}
-          setting={BooleanSetting.view_celery_script}
-          label={DeviceSetting.viewCeleryScript}
-          description={Content.VIEW_CELERY_SCRIPT} />}
+      <SequenceSetting {...commonProps}
+        setting={BooleanSetting.view_celery_script}
+        label={DeviceSetting.viewCeleryScript}
+        description={Content.VIEW_CELERY_SCRIPT} />
     </div>;
   };
 

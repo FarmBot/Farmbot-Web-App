@@ -4,12 +4,7 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
-  | "time_format_seconds"
-  | "crop_images"
-  | "show_camera_view_area"
-  | "view_celery_script"
-  | "highlight_modified_settings";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -35,7 +30,7 @@ export const BooleanSetting:
   show_images: "show_images",
   show_zones: "show_zones",
   show_sensor_readings: "show_sensor_readings",
-  show_camera_view_area: "show_camera_view_area" as WebAppBooleanConfigKey,
+  show_camera_view_area: "show_camera_view_area",
   disable_animations: "disable_animations",
   display_map_missed_steps: "display_map_missed_steps",
   display_trail: "display_trail",
@@ -43,8 +38,8 @@ export const BooleanSetting:
   dynamic_map: "dynamic_map",
   xy_swap: "xy_swap",
   confirm_plant_deletion: "confirm_plant_deletion",
-  crop_images: "crop_images" as WebAppBooleanConfigKey,
-  highlight_modified_settings: "highlight_modified_settings" as WebAppBooleanConfigKey,
+  crop_images: "crop_images",
+  highlight_modified_settings: "highlight_modified_settings",
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",
@@ -52,7 +47,7 @@ export const BooleanSetting:
   show_pins: "show_pins",
   expand_step_options: "expand_step_options",
   discard_unsaved_sequences: "discard_unsaved_sequences",
-  view_celery_script: "view_celery_script" as WebAppBooleanConfigKey,
+  view_celery_script: "view_celery_script",
 
   /** App settings */
   disable_i18n: "disable_i18n",
@@ -61,7 +56,7 @@ export const BooleanSetting:
   enable_browser_speak: "enable_browser_speak",
   discard_unsaved: "discard_unsaved",
   time_format_24_hour: "time_format_24_hour",
-  time_format_seconds: "time_format_seconds" as WebAppBooleanConfigKey,
+  time_format_seconds: "time_format_seconds",
   disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
   user_interface_read_only_mode: "user_interface_read_only_mode",
 

@@ -15,6 +15,7 @@ public/assets/
 public/direct_upload/temp/*.jpg
 public/dist
 tmp
+*.tsbuildinfo
 api_docs.md
 erd_diagram.png
 erd.pdf
