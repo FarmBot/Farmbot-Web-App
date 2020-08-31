@@ -1797,9 +1797,12 @@
           }
         }
       }
-      .version-string {
-        display: inline;
-        margin-left: 1rem;
+      .update-take-photo {
+        margin-top: 1rem;
+        .version-string {
+          display: inline;
+          margin-left: 1rem;
+        }
       }
       .capture-rotate-setting {
         margin-top: 1rem;

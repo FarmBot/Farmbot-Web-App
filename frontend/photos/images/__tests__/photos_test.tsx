@@ -184,8 +184,8 @@ describe("<Photos/>", () => {
   it("flips photo", () => {
     const p = fakeProps();
     p.images = fakeImages;
-    const wrapper = shallow(<Photos {...p} />);
-    wrapper.find("ImageFlipper").simulate("flip", "uuid");
+    const wrapper = mount<Photos>(<Photos {...p} />);
+    wrapper.instance().onFlip("uuid");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_IMAGE, payload: "uuid",
     });
@@ -195,10 +195,13 @@ describe("<Photos/>", () => {
     const wrapper = shallow<Photos>(<Photos {...fakeProps()} />);
     expect(wrapper.state().crop).toEqual(true);
     expect(wrapper.state().rotate).toEqual(true);
+    expect(wrapper.state().fullscreen).toEqual(false);
     wrapper.instance().toggleCrop();
     wrapper.instance().toggleRotation();
+    wrapper.instance().toggleFullscreen();
     expect(wrapper.state().crop).toEqual(false);
     expect(wrapper.state().rotate).toEqual(false);
+    expect(wrapper.state().fullscreen).toEqual(true);
   });
 
   it("unselects photos upon exit", () => {
