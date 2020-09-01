@@ -23,13 +23,14 @@ describe("attachEventListeners", () => {
     const dev = getDevice();
     attachEventListeners(dev, jest.fn(), jest.fn());
     [
-      FbjsEventName.status,
+      FbjsEventName.legacy_status,
       FbjsEventName.logs,
       FbjsEventName.malformed,
       FbjsEventName.offline,
       FbjsEventName.online,
       FbjsEventName.online,
       FbjsEventName.sent,
+      FbjsEventName.upsert,
       FbjsEventName.publicBroadcast,
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
     [

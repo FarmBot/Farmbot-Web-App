@@ -122,13 +122,21 @@ const legacyChecks = (getState: GetState) => {
 
 /** Legacy handler for bots that have not upgraded to FBOS v8 yet.
  *    - RC 21 JAN 18 */
-export const onStatus =
+export const onLegacyStatus =
   (dispatch: Function, getState: GetState) =>
     slowDown((msg: BotStateTree) => {
       setBothUp();
       dispatch(incomingLegacyStatus(msg));
       legacyChecks(getState);
     });
+
+export const onStatus =
+  (dispatch: Function, getState: GetState) =>
+    (msg: DeepPartial<BotStateTree>) => {
+      setBothUp();
+      dispatch(incomingStatus(msg));
+      legacyChecks(getState);
+    };
 
 type Client = { connected?: boolean };
 
@@ -180,7 +188,8 @@ export const attachEventListeners =
       bot.on(FbjsEventName.offline, onOffline);
       bot.on(FbjsEventName.sent, onSent(bot.client));
       bot.on(FbjsEventName.logs, onLogs(dispatch, getState));
-      bot.on(FbjsEventName.status, onStatus(dispatch, getState));
+      bot.on(FbjsEventName.legacy_status, onLegacyStatus(dispatch, getState));
+      bot.on(FbjsEventName.upsert, onStatus(dispatch, getState));
       bot.on(FbjsEventName.malformed, onMalformed);
       bot.client.subscribe(FbjsEventName.publicBroadcast);
       bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);
