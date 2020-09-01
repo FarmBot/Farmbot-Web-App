@@ -361,20 +361,12 @@ describe("<SequenceSettingsMenu />", () => {
 
   it("renders settings", () => {
     const wrapper = mount(<SequenceSettingsMenu {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("celery");
     wrapper.find("button").at(0).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
     wrapper.find("button").at(2).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
-  });
-
-  it("renders all settings", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
-    const wrapper = mount(<SequenceSettingsMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("celery");
   });
 });
 

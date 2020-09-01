@@ -105,8 +105,6 @@ describe("responseRejected", () => {
       request: { responseURL: "" },
       response: { status: 451 }
     };
-    window.alert = jest.fn();
-    window.location.assign = jest.fn();
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
     expect(window.alert).toHaveBeenCalledWith(
       expect.stringContaining("accept the new terms"));
