@@ -1,6 +1,7 @@
 module Regimens
   class Create < Mutations::Command
     include FarmEvents::FragmentHelpers
+    include Regimens::Helpers
     using Sequences::CanonicalCeleryHelpers
 
     required do
@@ -16,6 +17,10 @@ module Regimens
     end
 
     optional { body }
+
+    def validate
+      validate_regimen_items!
+    end
 
     def execute
       Regimen.auto_sync_debounce do
