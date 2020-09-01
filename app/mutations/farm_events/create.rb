@@ -34,8 +34,7 @@ module FarmEvents
     def execute
       FarmEvent.auto_sync_debounce do
         FarmEvent.transaction do
-          clean_params.delete(:body)
-          wrap_fragment_with(FarmEvent.create!(p))
+          wrap_fragment_with(FarmEvent.create!(clean_params))
         end
       end
     rescue CeleryScript::TypeCheckError => q
@@ -49,7 +48,8 @@ module FarmEvents
         p = inputs.merge(executable: executable).symbolize_keys
         # Needs to be set this way for cleanup operations:
         p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
-        p
+        p.delete(:body)
+        @clean_params = p
       end
     end
 

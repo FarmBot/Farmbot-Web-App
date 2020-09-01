@@ -1,7 +1,8 @@
 module FarmEvents
   module OccurenceHelpers
     MAX_OCCURENCES = 500
-    TOO_MANY = "FarmEvents can't have more than #{MAX_OCCURENCES} occurences"
+    TOO_MANY = "Farm events can't have more than #{MAX_OCCURENCES}" \
+    " occurences (%s occurences detected)."
     CONVERSION_TABLE = {
       "minutely" => 1,
       "hourly" => 60,
@@ -25,7 +26,7 @@ module FarmEvents
                                                       time_unit: time_unit,
                                                       repeat: repeat)
       if count > MAX_OCCURENCES
-        add_error(:occurences, :too_many, TOO_MANY)
+        add_error(:occurences, :too_many, TOO_MANY % [count])
       end
     end
   end
