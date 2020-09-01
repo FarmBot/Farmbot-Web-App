@@ -1,4 +1,4 @@
-# require_relative "../../lib/hstore_filter"
+require_relative "../../lib/mutations/hstore_filter"
 
 module Points
   class Update < Mutations::Command
