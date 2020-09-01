@@ -15,7 +15,6 @@ import {
   SpecialStatus,
   TaggedPlantTemplate,
   TaggedSavedGarden,
-  TaggedPointGroup,
   TaggedWeedPointer,
 } from "farmbot";
 
@@ -109,5 +108,3 @@ export const isTaggedSavedGarden =
   (x: object): x is TaggedSavedGarden => is("SavedGarden")(x);
 export const isTaggedPlantTemplate =
   (x: object): x is TaggedPlantTemplate => is("PlantTemplate")(x);
-export const isTaggedPointGroup =
-  (x: object): x is TaggedPointGroup => is("PointGroup")(x);
