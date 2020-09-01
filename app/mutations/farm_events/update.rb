@@ -4,6 +4,7 @@ module FarmEvents
 
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
+    include FarmEvents::OccurenceHelpers
     using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
@@ -24,6 +25,10 @@ module FarmEvents
     def validate
       validate_executable if (executable_id || executable_type)
       validate_ownership
+      validate_occurences(start_time: start_time || farm_event.start_time,
+                          end_time: end_time || farm_event.end_time,
+                          time_unit: time_unit || farm_event.time_unit,
+                          repeat: repeat || farm_event.repeat)
     end
 
     def execute
