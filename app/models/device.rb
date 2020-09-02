@@ -44,6 +44,7 @@ class Device < ApplicationRecord
                        }
   validates :ota_hour,
     inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
+  before_validation :perform_gradual_upgrade
 
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
@@ -205,7 +206,7 @@ class Device < ApplicationRecord
   #           OTA system needs a UTC, though.
   #
   # SOLUTION: Perform a gradual update of legacy data.
-  def gradual_legacy_update_utc
+  def perform_gradual_upgrade
     if legacy_ota_device?
       self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
     end
