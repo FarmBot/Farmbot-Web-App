@@ -1,5 +1,7 @@
 import React from "react";
-import { ImageFlipperProps, ImageFlipperState } from "./interfaces";
+import {
+  ImageFlipperProps, ImageFlipperState, PlaceholderImgProps,
+} from "./interfaces";
 import { Content, Actions } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { FlipperImage } from "./flipper_image";
@@ -7,14 +9,15 @@ import { FlipperImage } from "./flipper_image";
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 
 /** Placeholder image with text overlay. */
-export const PlaceholderImg = ({ textOverlay }: { textOverlay: string }) =>
-  <div className="no-flipper-image-container">
-    <p>{t(textOverlay)}</p>
-    <img className="image-flipper-image" src={PLACEHOLDER_FARMBOT} />
+export const PlaceholderImg = (props: PlaceholderImgProps) =>
+  <div className={"no-flipper-image-container"}>
+    <p>{t(props.textOverlay)}</p>
+    <img className={"image-flipper-image"}
+      src={PLACEHOLDER_FARMBOT} width={props.width} height={props.height} />
   </div>;
 
 export class ImageFlipper extends
-  React.Component<ImageFlipperProps, Partial<ImageFlipperState>> {
+  React.Component<ImageFlipperProps, ImageFlipperState> {
   state: ImageFlipperState = { disableNext: true, disablePrev: false };
 
   onImageLoad = (img: HTMLImageElement) => {
@@ -44,7 +47,7 @@ export class ImageFlipper extends
   render() {
     const multipleImages = this.props.images.length > 1;
     const image = this.props.currentImage || this.props.images[0];
-    return <div className="image-flipper">
+    return <div className="image-flipper" id={this.props.id}>
       {this.props.images.length > 0
         ? <FlipperImage
           key={image.body.attachment_url}
@@ -52,6 +55,7 @@ export class ImageFlipper extends
           transformImage={this.props.transformImage}
           dispatch={this.props.dispatch}
           getConfigValue={this.props.getConfigValue}
+          flipperId={this.props.id}
           env={this.props.env}
           onImageLoad={this.onImageLoad}
           image={image} />
