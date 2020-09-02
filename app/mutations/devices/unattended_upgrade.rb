@@ -16,7 +16,7 @@ module Devices
     end
 
     def latest_version(chan)
-      Release.maybe_find_latest({ channel: chan }).version
+      Release.maybe_find_latest(channel: chan).version
     end
   end
 end
