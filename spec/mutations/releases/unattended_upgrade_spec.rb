@@ -15,7 +15,18 @@ describe Devices::UnattendedUpgrade do
     end
   end
 
+  it "runs upgrades" do
+    destroy_everything!
+    create_example_releases
+    dev = FactoryBot.create(:device, fbos_version: "1.0.0", ota_hour: nil, ota_hour_utc: Time.now.utc.hour)
+    dev.fbos_config.update!(update_channel: "stable", os_auto_update: true)
+    expect_any_instance_of(Device).to receive(:send_upgrade_request)
+    Devices::UnattendedUpgrade.run!()
+    expect(Device.count).to eq(1)
+  end
+
   it "specifies eligible devices for all update channels" do
+    destroy_everything!
     create_example_releases do |params|
       ota_hour_utc = [nil, Time.now.utc.hour].sample
       device_params = params
