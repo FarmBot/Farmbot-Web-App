@@ -1,6 +1,6 @@
 import {
   BotState, SourceFwConfig,
-  ControlPanelState, Axis, ShouldDisplay,
+  ControlPanelState, Axis, ShouldDisplay, SourceFbosConfig,
 } from "../../devices/interfaces";
 import { McuParamName, McuParams, FirmwareHardware, Xyz } from "farmbot";
 import { IntegerSize } from "../../util";
@@ -17,6 +17,7 @@ export interface AxisSettingsProps {
   bot: BotState;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  sourceFbosConfig: SourceFbosConfig;
   firmwareConfig: FirmwareConfig | undefined;
   botOnline: boolean;
   firmwareHardware: FirmwareHardware | undefined;

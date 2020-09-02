@@ -1,5 +1,5 @@
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect, ConnectedComponent } from "react-redux";
 import { init, error } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
@@ -166,4 +166,5 @@ export class RawApp extends React.Component<AppProps, {}> {
   }
 }
 
-export const App = connect(mapStateToProps)(RawApp);
+export const App = connect(mapStateToProps)(
+  RawApp) as ConnectedComponent<typeof RawApp, { children?: React.ReactNode }>;

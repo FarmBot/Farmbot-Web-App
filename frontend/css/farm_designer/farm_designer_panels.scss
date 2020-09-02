@@ -679,6 +679,11 @@
   }
 }
 
+.plant-panel-content,
+.points-panel-content {
+  padding: 0;
+}
+
 .plants-panel-content {
   li {
     margin-top: 1rem;
@@ -1792,9 +1797,12 @@
           }
         }
       }
-      .version-string {
-        display: inline;
-        margin-left: 1rem;
+      .update-take-photo {
+        margin-top: 1rem;
+        .version-string {
+          display: inline;
+          margin-left: 1rem;
+        }
       }
       .capture-rotate-setting {
         margin-top: 1rem;
@@ -1912,6 +1920,9 @@
     }
     label {
       margin-top: 0;
+    }
+    @media screen and (max-width: 767px) {
+      padding: 0;
     }
   }
 }

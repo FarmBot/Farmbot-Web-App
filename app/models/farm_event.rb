@@ -3,25 +3,25 @@
 # because they can only perform one sequence. Also unlike Regimens, they can run
 # forever.
 class FarmEvent < ApplicationRecord
-  NEVER              = "never"
-  UNITS_OF_TIME      = %w(never minutely hourly daily weekly monthly yearly)
+  NEVER = "never"
+  UNITS_OF_TIME = %w(never minutely hourly daily weekly monthly yearly)
   EXECUTABLE_CLASSES = [Sequence, Regimen]
-  FE_USE             = "still in use by some farm events"
-  WITH_YEAR          = "%m/%d/%y"
-  NO_YEAR            = "%m/%d"
+  FE_USE = "still in use by some farm events"
+  WITH_YEAR = "%m/%d/%y"
+  NO_YEAR = "%m/%d"
 
   belongs_to :device
   belongs_to :executable, polymorphic: true
-  validates  :device_id,  presence:    true
-  validates  :executable, presence:    true
-  validate   :within_20_year_window
-  has_one    :fragment,  as: :owner
+  validates :device_id, presence: true
+  validates :executable, presence: true
+  validate :within_20_year_window
+  has_one :fragment, as: :owner
 
   def within_20_year_window
     too_early = start_time && start_time < (Time.now - 20.years)
-    too_late  = end_time   && end_time   > (Time.now + 20.years)
-    errors.add :start_time, "too far in the past"   if too_early
-    errors.add :end_time,   "too far in the future" if too_late
+    too_late = end_time && end_time > (Time.now + 20.years)
+    errors.add :start_time, "too far in the past" if too_early
+    errors.add :end_time, "too far in the future" if too_late
   end
 
   # Check if an executable is in use.

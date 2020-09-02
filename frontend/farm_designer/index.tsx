@@ -114,10 +114,6 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     saveZoomLevelIndex(this.props.dispatch, newIndex);
   }
 
-  childComponent(props: Props) {
-    return this.props.children || React.createElement(Plants, props);
-  }
-
   get mapPanelClassName() { return mapPanelClassName(); }
 
   render() {
@@ -166,7 +162,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
       <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
-        {this.childComponent(this.props)}
+        {this.props.children || React.createElement(Plants)}
       </div>
 
       <div

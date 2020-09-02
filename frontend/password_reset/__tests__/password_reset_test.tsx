@@ -1,18 +1,47 @@
+jest.mock("../../toast/toast", () => {
+  return {
+    init: jest.fn(),
+    error: jest.fn(),
+  };
+});
+
+import * as moxios from "moxios";
 import * as React from "react";
+import { API } from "../../api";
+import { DeepPartial } from "redux";
+import { error } from "../../toast/toast";
+import { inputEvent } from "../../__test_support__/fake_html_events";
 import { mount } from "enzyme";
 import { PasswordReset, State } from "../password_reset";
-import * as moxios from "moxios";
-import { inputEvent } from "../../__test_support__/fake_html_events";
 
 describe("<PasswordReset/>", () => {
   beforeEach(function () {
     // import and pass your custom axios instance to this method
     moxios.install();
+    API.setBaseUrl("localhost");
   });
 
   afterEach(function () {
     // import and pass your custom axios instance to this method
     moxios.uninstall();
+  });
+
+  it("handles form submission errors", (done) => {
+    type InputEvent = React.SyntheticEvent<HTMLInputElement>;
+    const eventLike: DeepPartial<InputEvent> = { preventDefault: jest.fn() };
+    const pr = new PasswordReset({});
+
+    pr.submit(eventLike as InputEvent);
+    expect(eventLike.preventDefault).toHaveBeenCalled();
+    moxios.wait(function () {
+      const request = moxios.requests.mostRecent();
+      request
+        .respondWith({ status: 400, response: { err: "xyz" } })
+        .then(() => {
+          expect(error).toHaveBeenCalledWith("Err: xyz");
+          done();
+        });
+    });
   });
 
   it("resets the users password", (done) => {

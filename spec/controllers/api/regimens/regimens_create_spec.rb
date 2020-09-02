@@ -88,9 +88,9 @@ describe Api::RegimensController do
       sign_in user
       s = FakeSequence.with_parameters
       payload = { device: s.device,
-                 name: "specs",
-                 color: "red",
-                 body: [
+                  name: "specs",
+                  color: "red",
+                  body: [
         {
           kind: "parameter_declaration",
           args: {
@@ -101,7 +101,7 @@ describe Api::RegimensController do
           },
         },
       ],
-                 regimen_items: [{ time_offset: 100, sequence_id: s.id }] }
+                  regimen_items: [{ time_offset: 100, sequence_id: s.id }] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
@@ -135,6 +135,28 @@ describe Api::RegimensController do
       expect(msg).to include("but got nothing")
       # Make sure corpus entries are properly formatted.
       expect(msg).to include('"coordinate",')
+    end
+
+    it "limits the number of regimen items" do
+      sign_in user
+      color = %w(blue green yellow orange purple pink gray red).sample
+
+      name = (1..3).map { Faker::Games::Pokemon.name }.join(" ")
+      payload = {
+        name: name,
+        color: color,
+        regimen_items: [
+          { time_offset: 123, sequence_id: sequence.id },
+          { time_offset: 456, sequence_id: sequence.id },
+        ],
+      }
+
+      const_reassign(Regimens::Helpers, :ITEM_LIMIT, 1) do
+        post :create, body: payload.to_json, format: :json
+      end
+
+      expect(response.status).to eq(422)
+      expect(json).to eq(regimen_items: "Regimens can't have more than 500 items")
     end
   end
 end

@@ -43,7 +43,7 @@ export class TileMoveAbsolute
     const copy = defensiveClone(this.props.currentSequence).body;
     const step = (copy.body || [])[this.props.index];
     if (step?.kind == "move_absolute") {
-      delete step.args.location.args;
+      step.args.location.args = {} as MoveAbsolute["args"]["location"]["args"];
       step.args = betterMerge(step.args, update);
       this.props.dispatch(overwrite(this.props.currentSequence, copy));
     }

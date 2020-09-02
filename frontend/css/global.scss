@@ -590,6 +590,7 @@ fieldset {
 
 .webcam-stream-unavailable img {
   width: 100%;
+  max-width: 100%;
   opacity: 0.40;
 }
 
@@ -2013,6 +2014,11 @@ textarea:focus {
       top: 0.1rem;
     }
   }
+}
+
+.z-height-input {
+  padding-left: 1rem;
+  padding-right: 3rem;
 }
 
 .read-only-icon {

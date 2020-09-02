@@ -43,16 +43,18 @@ export class ImageFlipper extends
 
   render() {
     const multipleImages = this.props.images.length > 1;
+    const image = this.props.currentImage || this.props.images[0];
     return <div className="image-flipper">
       {this.props.images.length > 0
         ? <FlipperImage
+          key={image.body.attachment_url}
           crop={this.props.crop}
           transformImage={this.props.transformImage}
           dispatch={this.props.dispatch}
           getConfigValue={this.props.getConfigValue}
           env={this.props.env}
           onImageLoad={this.onImageLoad}
-          image={this.props.currentImage || this.props.images[0]} />
+          image={image} />
         : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET} />}
       <button
         onClick={this.go(1)}
