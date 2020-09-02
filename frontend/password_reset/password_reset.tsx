@@ -42,7 +42,7 @@ export class PasswordReset extends React.Component<Props, State> {
     this.setState(state);
   };
 
-  submit(e: React.SyntheticEvent<HTMLInputElement>) {
+  submit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     const { password, passwordConfirmation } = this.state;
     const token = window.location.href.split("/").pop();

@@ -12,6 +12,7 @@ describe("<FlipperImage />", () => {
     crop: false,
     env: {},
     getConfigValue: jest.fn(),
+    flipperId: "",
     transformImage: false,
     onImageLoad: jest.fn(),
   });
@@ -20,7 +21,32 @@ describe("<FlipperImage />", () => {
     const p = fakeProps();
     p.image.body.attachment_processed_at = undefined;
     const wrapper = mount(<FlipperImage {...p} />);
-    expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
+    expect(wrapper.find("img").first().props().src).toEqual(PLACEHOLDER_FARMBOT);
+  });
+
+  it("renders placeholder at specific size", () => {
+    Object.defineProperty(document, "getElementById", {
+      value: () => ({ clientWidth: 200, clientHeight: 100 }),
+      configurable: true
+    });
+    const p = fakeProps();
+    p.image.body.attachment_processed_at = undefined;
+    const wrapper = mount(<FlipperImage {...p} />);
+    expect(wrapper.find("img").first().props().src).toEqual(PLACEHOLDER_FARMBOT);
+    expect(wrapper.find("img").first().props().width).toEqual(200);
+    expect(wrapper.find("img").first().props().height).toEqual(100);
+  });
+
+  it("renders placeholder at default size", () => {
+    Object.defineProperty(document, "getElementById", {
+      value: () => ({}), configurable: true
+    });
+    const p = fakeProps();
+    p.image.body.attachment_processed_at = undefined;
+    const wrapper = mount(<FlipperImage {...p} />);
+    expect(wrapper.find("img").first().props().src).toEqual(PLACEHOLDER_FARMBOT);
+    expect(wrapper.find("img").first().props().width).toEqual(undefined);
+    expect(wrapper.find("img").first().props().height).toEqual(undefined);
   });
 
   it("knows when image is loaded", () => {
