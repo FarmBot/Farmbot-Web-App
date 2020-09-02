@@ -190,4 +190,24 @@ class Device < ApplicationRecord
       device.tell(TOO_MANY_CONNECTIONS, ["fatal_email"])
     end
   end
+
+  def self.get_utc_ota_hour(timezone, local_ota_hour)
+    utc_offset = Time.now.in_time_zone(timezone).utc_offset / 60 / 60
+    (local_ota_hour + utc_offset) % 24
+  end
+
+  def legacy_ota_device?
+    !ota_hour_utc && ota_hour && timezone
+  end
+
+  # PROBLEM:  The device table has an `ota_hour` column. The
+  #           column uses localtime rather than UTC. The new
+  #           OTA system needs a UTC, though.
+  #
+  # SOLUTION: Perform a gradual update of legacy data.
+  def gradual_legacy_update_utc
+    if legacy_ota_device?
+      self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
+    end
+  end
 end
