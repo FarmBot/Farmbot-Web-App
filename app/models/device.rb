@@ -44,6 +44,7 @@ class Device < ApplicationRecord
                        }
   validates :ota_hour,
     inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
+  before_validation :perform_gradual_upgrade
 
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
@@ -188,6 +189,26 @@ class Device < ApplicationRecord
     if last_sent_at < 1.day.ago
       device.update!(mqtt_rate_limit_email_sent_at: Time.now)
       device.tell(TOO_MANY_CONNECTIONS, ["fatal_email"])
+    end
+  end
+
+  def self.get_utc_ota_hour(timezone, local_ota_hour)
+    utc_offset = Time.now.in_time_zone(timezone).utc_offset / 60 / 60
+    (local_ota_hour + utc_offset) % 24
+  end
+
+  def legacy_ota_device?
+    !ota_hour_utc && ota_hour && timezone
+  end
+
+  # PROBLEM:  The device table has an `ota_hour` column. The
+  #           column uses localtime rather than UTC. The new
+  #           OTA system needs a UTC, though.
+  #
+  # SOLUTION: Perform a gradual update of legacy data.
+  def perform_gradual_upgrade
+    if legacy_ota_device?
+      self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
     end
   end
 end
