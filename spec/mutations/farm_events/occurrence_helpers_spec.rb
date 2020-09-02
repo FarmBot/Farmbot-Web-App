@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe FarmEvents::OccurenceHelpers do
+describe FarmEvents::OccurrenceHelpers do
   FE_EXAMPLES = [
     [0, 27, "yearly"],
     [1, 37, "weekly"],
@@ -35,7 +35,7 @@ describe FarmEvents::OccurenceHelpers do
     params = { start_time: now, end_time: now + 1.year }
     FE_EXAMPLES.map do |(expected, repeat, time_unit)|
       i = params.merge(repeat: repeat, time_unit: time_unit)
-      actual = FarmEvents::OccurenceHelpers.occurences(i)
+      actual = FarmEvents::OccurrenceHelpers.occurrences(i)
       expect(actual).to eq(expected)
     end
   end

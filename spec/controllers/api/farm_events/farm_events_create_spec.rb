@@ -95,7 +95,7 @@ describe Api::FarmEventsController do
       before = FarmEvent.count
       post :create, body: input.to_json
       expect(response.status).to eq(422)
-      expect(json.fetch(:occurences)).to include("Farm events can't have more than 500 occurences")
+      expect(json.fetch(:occurrences)).to include("Farm events can't have more than 500 occurrences")
     end
 
     it "makes a farm_event" do

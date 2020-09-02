@@ -2,7 +2,7 @@ module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
-    include FarmEvents::OccurenceHelpers
+    include FarmEvents::OccurrenceHelpers
     using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
@@ -28,7 +28,7 @@ module FarmEvents
       validate_end_time
       validate_executable
       cleaner_params = clean_params.slice(:start_time, :end_time, :time_unit, :repeat)
-      validate_occurences(**cleaner_params)
+      validate_occurrences(**cleaner_params)
     end
 
     def execute
