@@ -5,6 +5,15 @@ module Devices
     # end
 
     def execute
+      all_eligible_devices.map do |d|
+        puts "TODO: OTA For device_#{d.id}"
+      end
+    end
+
+    def all_eligible_devices
+      Release::CHANNEL
+        .map { |chan| eligible_devices(chan) }
+        .reduce(:or)
     end
 
     def eligible_devices(chan)
