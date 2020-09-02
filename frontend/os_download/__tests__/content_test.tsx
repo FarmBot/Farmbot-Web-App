@@ -46,7 +46,7 @@ describe("<OsDownload />", () => {
 
   it("handles missing data", async () => {
     delete globalConfig.GENESIS_IMG_OVERRIDE;
-    delete mockRelease.assets;
+    (mockRelease.assets as unknown) = undefined;
     const wrapper = await mount(<OsDownload />);
     wrapper.update();
     expect(wrapper.find("a").first().props().href)

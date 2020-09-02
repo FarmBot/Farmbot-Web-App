@@ -14,7 +14,7 @@ import { startCase } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
-import { Popover } from "@blueprintjs/core";
+import { Overlay, Popover } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages, selectImage } from "./actions";
 import { Xyz } from "farmbot";
@@ -63,6 +63,12 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
       onClick={props.toggleRotation}>
       <i className={"fa fa-repeat"} />
     </button>
+    <button
+      className={"fb-button gray desktop-only"}
+      title={t("View fullscreen")}
+      onClick={props.toggleFullscreen}>
+      <i className={"fa fa-arrows-alt"} />
+    </button>
     <p>
       {imageUploadJobProgress &&
         `${t("uploading photo")}...${imageUploadJobProgress}`}
@@ -105,7 +111,7 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
 
 export class Photos extends React.Component<PhotosProps, PhotosState> {
   state: PhotosState = {
-    crop: true, rotate: true,
+    crop: true, rotate: true, fullscreen: false,
   };
 
   componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
@@ -127,15 +133,31 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
 
   toggleCrop = () => this.setState({ crop: !this.state.crop });
   toggleRotation = () => this.setState({ rotate: !this.state.rotate });
+  toggleFullscreen = () => this.setState({ fullscreen: !this.state.fullscreen });
+
+  get canTransform() {
+    return this.props.flags.sizeMatch && this.props.flags.zMatch;
+  }
+  get canCrop() { return this.canTransform && this.state.rotate; }
 
   onFlip = (uuid: string | undefined) => {
     this.props.dispatch(selectImage(uuid));
     this.props.dispatch(setShownMapImages(uuid));
   }
 
+  ImageFlipper = () =>
+    <ImageFlipper
+      onFlip={this.onFlip}
+      currentImage={this.props.currentImage}
+      dispatch={this.props.dispatch}
+      currentImageSize={this.props.currentImageSize}
+      transformImage={this.canCrop}
+      getConfigValue={this.props.getConfigValue}
+      env={this.props.env}
+      crop={this.state.crop}
+      images={this.props.images} />
+
   render() {
-    const canTransform = this.props.flags.sizeMatch && this.props.flags.zMatch;
-    const canCrop = canTransform && this.state.rotate;
     return <div className="photos">
       <PhotoButtons
         syncStatus={this.props.syncStatus}
@@ -144,21 +166,17 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
         deletePhoto={this.deletePhoto}
         toggleCrop={this.toggleCrop}
         toggleRotation={this.toggleRotation}
+        toggleFullscreen={this.toggleFullscreen}
         imageUrl={this.props.currentImage?.body.attachment_url}
-        canTransform={canTransform}
-        canCrop={canCrop}
+        canTransform={this.canTransform}
+        canCrop={this.canCrop}
         env={this.props.env}
         imageJobs={this.props.imageJobs} />
-      <ImageFlipper
-        onFlip={this.onFlip}
-        currentImage={this.props.currentImage}
-        dispatch={this.props.dispatch}
-        currentImageSize={this.props.currentImageSize}
-        transformImage={canCrop}
-        getConfigValue={this.props.getConfigValue}
-        env={this.props.env}
-        crop={this.state.crop}
-        images={this.props.images} />
+      <this.ImageFlipper />
+      <Overlay isOpen={this.state.fullscreen}
+        onClose={this.toggleFullscreen}>
+        <this.ImageFlipper />
+      </Overlay>
       <PhotoFooter
         image={this.props.currentImage}
         flags={this.props.flags}

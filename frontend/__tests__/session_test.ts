@@ -51,7 +51,6 @@ describe("clear()", () => {
     jest.clearAllMocks();
     localStorage.foo = "bar";
     sessionStorage.foo = "bar";
-    location.assign = jest.fn();
     expect(localStorage.foo).toBeTruthy();
     expect(sessionStorage.foo).toBeTruthy();
     expect(Session.clear()).toEqual(undefined);

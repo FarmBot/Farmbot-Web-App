@@ -126,7 +126,7 @@ describe Api::LogsController do
 
     it "deletes all logs" do
       SmarfDoc.note("WARNING: All logs will be deleted upon request, " +
-      "regardless of the specific log id provided.")
+                    "regardless of the specific log id provided.")
       sign_in user
       before = user.device.logs.count
       delete :destroy, params: { id: 123 }
@@ -163,7 +163,7 @@ describe Api::LogsController do
   end
 
   describe "#search" do
-    EXAMPLES = [
+    SEARCH_EXAMPLES = [
       [1, "success"],
       [1, "busy"],
       [1, "warn"],
@@ -193,39 +193,39 @@ describe Api::LogsController do
       sign_in user
       Log.destroy_all
       conf = user.device.web_app_config
-      EXAMPLES.map do |(verbosity, type)|
+      SEARCH_EXAMPLES.map do |(verbosity, type)|
         FactoryBot.create(:log, device: user.device,
                                 verbosity: verbosity,
                                 type: type)
       end
       conf.update(success_log: 3,
-                             busy_log: 3,
-                             warn_log: 3,
-                             error_log: 3,
-                             info_log: 3,
-                             fun_log: 3,
-                             debug_log: 3)
+                  busy_log: 3,
+                  warn_log: 3,
+                  error_log: 3,
+                  info_log: 3,
+                  fun_log: 3,
+                  debug_log: 3)
       get :search
       expect(response.status).to eq(200)
-      expect(json.length).to eq(EXAMPLES.length)
+      expect(json.length).to eq(SEARCH_EXAMPLES.length)
     end
 
     it "filters NO logs based on log filtering settings in `WebAppConfig` " do
       sign_in user
       Log.destroy_all
       conf = user.device.web_app_config
-      EXAMPLES.map do |(verbosity, type)|
+      SEARCH_EXAMPLES.map do |(verbosity, type)|
         FactoryBot.create(:log, device: user.device,
                                 verbosity: verbosity,
                                 type: type)
       end
       conf.update(success_log: 0,
-                             busy_log: 0,
-                             warn_log: 0,
-                             error_log: 0,
-                             info_log: 0,
-                             fun_log: 0,
-                             debug_log: 0)
+                  busy_log: 0,
+                  warn_log: 0,
+                  error_log: 0,
+                  info_log: 0,
+                  fun_log: 0,
+                  debug_log: 0)
       get :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(0)

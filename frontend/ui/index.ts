@@ -9,7 +9,6 @@ export * from "./column";
 export * from "./doc_link";
 export * from "./empty_state_wrapper";
 export * from "./expandable_header";
-export * from "./fallback_img";
 export * from "./fb_select";
 export * from "./help";
 export * from "./input_error";

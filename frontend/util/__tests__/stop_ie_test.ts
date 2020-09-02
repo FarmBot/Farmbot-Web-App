@@ -3,8 +3,6 @@ import { times } from "lodash";
 
 describe("stopIE()", () => {
   beforeEach(() => {
-    window.location.assign = jest.fn();
-    window.alert = jest.fn();
     window.hasOwnProperty = () => true;
     Array.prototype.hasOwnProperty = () => true;
     Object.defineProperty(Object, "entries", {

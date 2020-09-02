@@ -130,6 +130,15 @@ export namespace ToolTips {
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
 
+  export const SAFE_HEIGHT =
+    trim(`Z axis coordinate (millimeters) to which the z axis should be
+    retracted during Safe Z moves. It is recommended to choose a value at
+    which the z axis is all of the way up to provide as much clearance as
+    possible.`);
+
+  export const SOIL_HEIGHT =
+    trim(`Z axis coordinate (millimeters) of soil level.`);
+
   // Hardware Settings: Motors
   export const MAX_SPEED =
     trim(`Maximum travel speed after acceleration in millimeters per second.
@@ -1181,6 +1190,8 @@ export enum DeviceSetting {
   negativeCoordinatesOnly = `Negative Coordinates Only`,
   findAxisLength = `Find axis length (mm)`,
   axisLength = `Set Axis Length (mm)`,
+  safeHeight = `Safe Height`,
+  soilHeight = `Soil Height`,
 
   // Motors
   motors = `Motors`,

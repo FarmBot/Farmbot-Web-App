@@ -2,6 +2,7 @@ module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
+    include FarmEvents::OccurrenceHelpers
     using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
@@ -26,20 +27,30 @@ module FarmEvents
     def validate
       validate_end_time
       validate_executable
+      cleaner_params = clean_params.slice(:start_time, :end_time, :time_unit, :repeat)
+      validate_occurrences(**cleaner_params)
     end
 
     def execute
       FarmEvent.auto_sync_debounce do
         FarmEvent.transaction do
-          p = inputs.merge(executable: executable)
-          # Needs to be set this way for cleanup operations:
-          p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
-          p.delete(:body)
-          wrap_fragment_with(FarmEvent.create!(p))
+          wrap_fragment_with(FarmEvent.create!(clean_params))
         end
       end
     rescue CeleryScript::TypeCheckError => q
       add_error :farm_event, :farm_event, q.message
+    end
+
+    def clean_params
+      if @clean_params
+        @clean_params
+      else
+        p = inputs.merge(executable: executable).symbolize_keys
+        # Needs to be set this way for cleanup operations:
+        p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
+        p.delete(:body)
+        @clean_params = p
+      end
     end
 
     def validate_end_time

@@ -64,7 +64,6 @@ describe("<FrontPage />", () => {
 
   it("redirects when already logged in", () => {
     mockAuth = auth;
-    location.assign = jest.fn();
     const el = mount(<FrontPage />);
     el.mount();
     expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
@@ -72,7 +71,6 @@ describe("<FrontPage />", () => {
 
   it("submits login: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
-    location.assign = jest.fn();
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeFormEvent);
@@ -100,7 +98,6 @@ describe("<FrontPage />", () => {
 
   it("submits login: TOS update", async () => {
     mockAxiosResponse = Promise.reject({ response: { status: 451 } });
-    window.location.assign = jest.fn();
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeFormEvent);
