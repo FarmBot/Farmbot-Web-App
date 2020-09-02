@@ -10,11 +10,17 @@ SimpleCov.start do
 end
 SimpleCov.coverage_dir("coverage_api")
 
-require "codecov"
-SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::Codecov,
-])
+if ENV["CODECOV_TOKEN"]
+  require "codecov"
+  SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Codecov,
+  ])
+else
+  SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+  ])
+end
 require "pry"
 
 ENV["RAILS_ENV"] ||= "test"
