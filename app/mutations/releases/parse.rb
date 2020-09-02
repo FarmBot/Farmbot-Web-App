@@ -75,7 +75,7 @@ module Releases
 
     def no_drafts!
       if draft
-        add_error :draft, :no_derafts, "Don't publish drafts."
+        add_error :draft, :no_drafts, "Don't publish drafts."
       end
     end
   end

@@ -5,9 +5,7 @@ module Devices
     # end
 
     def execute
-      all_eligible_devices.map do |d|
-        puts "TODO: OTA For device_#{d.id}"
-      end
+      all_eligible_devices.map(&:send_upgrade_request)
     end
 
     def all_eligible_devices
