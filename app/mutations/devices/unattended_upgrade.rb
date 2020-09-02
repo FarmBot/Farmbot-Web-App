@@ -21,6 +21,8 @@ module Devices
         .where.not(fbos_version: latest_version(chan))
         .where("fbos_configs.os_auto_update" => true)
         .where(ota_hour_utc: [nil, Time.now.utc.hour])
+        .order("RANDOM()")
+        .limit(200)
     end
 
     def latest_version(chan)
