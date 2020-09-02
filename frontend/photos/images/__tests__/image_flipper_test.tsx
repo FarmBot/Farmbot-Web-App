@@ -19,6 +19,7 @@ describe("<ImageFlipper/>", () => {
   }
 
   const fakeProps = (): ImageFlipperProps => ({
+    id: "",
     dispatch: jest.fn(),
     images: prepareImages(fakeImages),
     currentImage: undefined,

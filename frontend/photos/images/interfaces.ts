@@ -5,6 +5,7 @@ import { UserEnv } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface ImageFlipperProps {
+  id: string;
   onFlip(uuid: string | undefined): void;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
@@ -27,6 +28,7 @@ export interface FlipperImageProps {
   transformImage: boolean;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
+  flipperId: string;
   env: UserEnv;
   onImageLoad(img: HTMLImageElement): void;
 }
@@ -35,6 +37,12 @@ export interface FlipperImageState {
   isLoaded: boolean;
   width: number | undefined;
   height: number | undefined;
+}
+
+export interface PlaceholderImgProps {
+  textOverlay: string;
+  width?: number;
+  height?: number;
 }
 
 export interface PhotosProps {
