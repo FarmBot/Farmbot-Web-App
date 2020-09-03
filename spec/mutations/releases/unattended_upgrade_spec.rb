@@ -93,7 +93,6 @@ describe Devices::UnattendedUpgrade do
         next "#{id} OTA update hour is #{ota_hour_utc}, not #{hr}" if ota_hour_utc != hr
         "#{id} is OK??"
       end.map { |s| puts s }
-      binding.pry
     end
     expect(eligible_devices.count).to eq(2)
   end
