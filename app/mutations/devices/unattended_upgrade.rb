@@ -21,6 +21,7 @@ module Devices
     def eligible_devices(chan)
       Device
         .includes(:fbos_config)
+        .where("last_saw_api > ?", 3.days.ago)
         .where("fbos_configs.update_channel" => chan)
         .where.not(fbos_version: latest_version(chan))
         .where("fbos_configs.os_auto_update" => true)
