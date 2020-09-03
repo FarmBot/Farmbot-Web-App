@@ -60,7 +60,7 @@ module Releases
       end
       ({
         image_url: asset.fetch(:browser_download_url),
-        version: tag_name,
+        version: tag_name.downcase.delete_prefix("v"),
         platform: platform,
         channel: channel,
       })
