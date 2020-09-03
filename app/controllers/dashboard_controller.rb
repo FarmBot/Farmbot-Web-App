@@ -3,12 +3,15 @@ class DashboardController < ApplicationController
   layout "dashboard"
 
   # === THESE CONSTANTS ARE CONFIGURABLE: ===
-  EVERY_STATIC_PAGE = [:front_page,
-                       :main_app,
-                       :password_reset,
-                       :tos_update,
-                       :os_download,
-                       :demo]
+  EVERY_STATIC_PAGE = [
+                        :demo,
+                        :front_page,
+                        :main_app,
+                        :os_download,
+                        :password_reset,
+                        :terminal,
+                        :tos_update,
+                      ]
 
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
                                                    # <= See PUBLIC_OUTPUT_DIR
@@ -17,6 +20,7 @@ class DashboardController < ApplicationController
   CSS_INPUTS = {
     front_page: "/css/laptop_splash.scss",
     default: "/css/_index.scss",
+    terminal: "/css/xterm.css",
   }.with_indifferent_access
 
   JS_INPUTS = {
@@ -25,7 +29,8 @@ class DashboardController < ApplicationController
     password_reset: "/password_reset/index.tsx",
     tos_update: "/tos_update/index.tsx",
     demo: "/demo/index.tsx",
-    os_download: "/os_download/index.tsx"
+    os_download: "/os_download/index.tsx",
+    terminal: "/terminal/index.tsx",
   }.with_indifferent_access
 
   # === THESE CONSTANTS ARE NON-CONFIGURABLE. ===
