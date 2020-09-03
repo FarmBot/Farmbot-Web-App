@@ -145,8 +145,8 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
     this.props.dispatch(setShownMapImages(uuid));
   }
 
-  ImageFlipper = () =>
-    <ImageFlipper
+  ImageFlipper = ({ id }: { id: string }) =>
+    <ImageFlipper id={id}
       onFlip={this.onFlip}
       currentImage={this.props.currentImage}
       dispatch={this.props.dispatch}
@@ -172,10 +172,10 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
         canCrop={this.canCrop}
         env={this.props.env}
         imageJobs={this.props.imageJobs} />
-      <this.ImageFlipper />
+      <this.ImageFlipper id={"panel-flipper"} />
       <Overlay isOpen={this.state.fullscreen}
         onClose={this.toggleFullscreen}>
-        <this.ImageFlipper />
+        <this.ImageFlipper id={"fullscreen-flipper"} />
       </Overlay>
       <PhotoFooter
         image={this.props.currentImage}

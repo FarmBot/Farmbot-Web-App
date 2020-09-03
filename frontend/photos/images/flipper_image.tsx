@@ -58,8 +58,10 @@ export class FlipperImage
       ? this.props.image.body.attachment_url
       : PLACEHOLDER_FARMBOT;
     const { isLoaded } = this.state;
+    const flipper = document.getElementById(this.props.flipperId);
     return <div className={"image-jsx"}>
-      {!isLoaded && <PlaceholderImg textOverlay={t("Loading...")} />}
+      {!isLoaded && <PlaceholderImg textOverlay={t("Loading...")}
+        width={flipper?.clientWidth} height={flipper?.clientHeight} />}
       <div className={"flipper-image"}
         style={isLoaded ? {} : { display: "none" }}>
         {this.props.transformImage
