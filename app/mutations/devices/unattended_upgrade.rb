@@ -9,7 +9,11 @@ module Devices
     end
 
     def all_eligible_devices
-      Release::CHANNEL
+      Release
+        .distinct
+        .pluck(:channel)
+        .compact
+        .sort
         .map { |chan| eligible_devices(chan) }
         .reduce(:or)
     end
@@ -26,7 +30,7 @@ module Devices
     end
 
     def latest_version(chan)
-      Release.maybe_find_latest(channel: chan).version
+      Release.maybe_find_latest(channel: chan)&.version
     end
   end
 end
