@@ -211,4 +211,24 @@ class Device < ApplicationRecord
       self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
     end
   end
+
+  UPGRADE_RPC = {
+    kind: "rpc_request",
+    args: {
+      label: "FROM_API",
+      priority: 500,
+    },
+    body: [
+      {
+        kind: "check_updates",
+        args: {
+          package: "farmbot_os",
+        },
+      },
+    ],
+  }.to_json
+
+  def send_upgrade_request
+    Transport.current.amqp_send(UPGRADE_RPC, id, "from_clients")
+  end
 end

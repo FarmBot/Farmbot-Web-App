@@ -114,4 +114,11 @@ describe Device do
     device.update!(ota_hour: 4)
     expect(device.ota_hour).to eq(4)
   end
+
+  it "sends upgrade request" do
+    expect(Transport.current).to receive(:amqp_send).with(Device::UPGRADE_RPC,
+                                                          device.id,
+                                                          "from_clients")
+    device.send_upgrade_request
+  end
 end

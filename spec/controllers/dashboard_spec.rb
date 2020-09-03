@@ -20,17 +20,14 @@ describe DashboardController do
       expect(response.status).to eq(200)
       # first entry in api_docs.md
       SmarfDoc.note("Documentation generated for the " +
-        "[FarmBot Web App](https://github.com/FarmBot/Farmbot-Web-App).")
+                    "[FarmBot Web App](https://github.com/FarmBot/Farmbot-Web-App).")
     end
 
     it "returns error on invalid path" do
-      expect { get :main_app, params: { path: "nope.jpg" } }
-        .to raise_error(ActionController::RoutingError)
+      expect { get :main_app, params: { path: "nope.jpg" } }.to raise_error(ActionController::RoutingError)
     end
 
     it "receives CSP violation reports (malformed JSON)" do
-      # expect(Rollbar).to receive(:info)
-      # .with("CSP Violation", { problem: "Crashed while parsing report" })
       post :csp_reports, body: "NOT JSON ! ! !"
       expect(json).to eq(problem: "Crashed while parsing report")
     end
@@ -62,7 +59,7 @@ describe DashboardController do
     it "handles self hosted image uploads" do
       name = "wow.jpg"
       params = { key: "whatever/" + name,
-                file: StringIO.new(File.open("./spec/fixture.jpg").read) }
+                 file: StringIO.new(File.open("./spec/fixture.jpg").read) }
       post :direct_upload, params: params
       file = File.join("public", "direct_upload", "temp", name)
       expect(File.file?(file)).to be(true)
