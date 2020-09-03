@@ -9,7 +9,7 @@ gem "delayed_job"
 gem "devise"
 gem "discard"
 gem "font-awesome-rails"
-gem "google-cloud-storage", "~> 1.11", require: false
+gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
 gem "mutations"
 gem "pg"

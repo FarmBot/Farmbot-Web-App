@@ -15,6 +15,10 @@ describe Api::RmqUtilsController do
       password: token }
   end
 
+  before(:each) do
+    destroy_everything!
+  end
+
   it "limits users to 20 connections per 5 minutes" do
     empty_mail_bag
     u = credentials.fetch(:username)

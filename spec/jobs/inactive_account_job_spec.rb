@@ -3,9 +3,11 @@ require "spec_helper"
 describe InactiveAccountJob do
   let!(:yes) { FactoryBot.create(:user, last_sign_in_at: 3.years.ago) }
   let!(:no) { FactoryBot.create(:user, last_sign_in_at: 3.days.ago) }
+  let!(:not_sure) { FactoryBot.create(:user, last_sign_in_at: nil) }
 
   it "Processes deletion" do
     # === Expect a clean slate.
+    expect(not_sure.last_sign_in_at).to be(nil)
     expect(yes.inactivity_warning_sent_at).to be(nil)
     expect(no.inactivity_warning_sent_at).to be(nil)
     empty_mail_bag
@@ -28,6 +30,7 @@ describe InactiveAccountJob do
     yes.update!(inactivity_warning_sent_at: 15.days.ago)
     run_jobs_now { InactiveAccountJob.new.perform }
     expect(User.where(id: yes.id).count).to eq(0)
+    expect(not_sure.reload.last_sign_in_at).to be
   end
 
   it "does not delete an account during the waiting period"
