@@ -5,7 +5,7 @@ module Releases
     required do
       # "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw"
       string :image_url
-      string :version, matches: Release::VERSION_INPUT_FORMAT
+      string :version, matches: Release::VERSION_STORAGE_FORMAT
       string :platform, in: Release::PLATFORMS
       string :channel, in: Release::CHANNEL # "stable"
     end
