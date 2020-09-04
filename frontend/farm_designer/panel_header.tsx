@@ -33,6 +33,7 @@ export enum Panel {
   Logs = "Logs",
   Help = "Help",
   Settings = "Settings",
+  Shop = "Shop",
 }
 
 type Tabs = keyof typeof Panel;
@@ -71,6 +72,7 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Logs]: PanelColor.gray,
   [Panel.Help]: PanelColor.gray,
   [Panel.Settings]: PanelColor.gray,
+  [Panel.Shop]: PanelColor.gray,
 };
 
 export enum Icon {
@@ -93,6 +95,7 @@ export enum Icon {
   logs = "logs",
   help = "help",
   settings = "settings",
+  shop = "shop",
 }
 
 export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;
@@ -117,6 +120,7 @@ export const TAB_ICON: Record<Panel, string> = {
   [Panel.Logs]: iconFile(Icon.logs),
   [Panel.Help]: iconFile(Icon.help),
   [Panel.Settings]: iconFile(Icon.settings),
+  [Panel.Shop]: iconFile(Icon.shop),
 };
 
 export const PANEL_SLUG: Record<Panel, string> = {
@@ -139,6 +143,7 @@ export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Logs]: "logs",
   [Panel.Help]: "help",
   [Panel.Settings]: "settings",
+  [Panel.Shop]: "shop",
 };
 
 const ALT_PANEL_SLUG: Record<string, string> = {
@@ -175,6 +180,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Logs]: t("Logs"),
   [Panel.Help]: t("Help"),
   [Panel.Settings]: t("Settings"),
+  [Panel.Shop]: t("Shop"),
 });
 
 export const getCurrentPanel = (): Tabs | undefined => {
