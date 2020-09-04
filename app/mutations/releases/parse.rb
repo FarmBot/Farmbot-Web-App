@@ -47,6 +47,7 @@ module Releases
     def execute
       assets
         .select { |asset| valid_asset?(asset) }
+        .map(&:with_indifferent_access)
         .map { |asset| convert_to_farmbot_release(asset) }
     end
 
@@ -54,9 +55,9 @@ module Releases
 
     def convert_to_farmbot_release(asset)
       channel = prerelease ? "beta" : "stable"
-      platform = asset.fetch(:name).scan(/^farmbot-.*-/).first.split("-").last
+      platform = asset.fetch(:name).gsub("farmbot-", "").split("-").first
       unless Release::PLATFORMS.include?(platform)
-        raise "Invalid platform?"
+        raise "Invalid platform?: #{platform}"
       end
       ({
         image_url: asset.fetch(:browser_download_url),
