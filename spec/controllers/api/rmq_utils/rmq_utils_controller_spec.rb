@@ -209,9 +209,7 @@ describe Api::RmqUtilsController do
      ".sync.*",
      ".telemetry.*",
      ".telemetry",
-     ".sync",
-     ".status_v8.*",
-     ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
+     ".sync"].map { |x| expect(random_channel(x).match(r)).to be }
   end
 
   it "allows farmbot_guest users, regardless of password" do

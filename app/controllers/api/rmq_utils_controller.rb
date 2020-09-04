@@ -35,9 +35,7 @@ module Api
           cache.expire(key, TTL) if needs_ttl
           yield
         else
-          Device
-            .delay
-            .connection_warning(username) if !is_guest
+          Device.delay.connection_warning(username) if !is_guest
           raise RateLimit, username
         end
       end
@@ -49,6 +47,8 @@ module Api
       from_api
       from_clients
       from_device
+      terminal_output
+      terminal_input
       logs
       nerves_hub
       ping
