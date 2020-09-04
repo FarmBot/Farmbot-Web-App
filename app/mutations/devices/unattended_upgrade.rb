@@ -9,7 +9,11 @@ module Devices
     end
 
     def all_eligible_devices
-      Release::CHANNEL
+      Release
+        .distinct
+        .pluck(:channel)
+        .compact
+        .sort
         .map { |chan| eligible_devices(chan) }
         .reduce(:or)
     end
@@ -17,6 +21,7 @@ module Devices
     def eligible_devices(chan)
       Device
         .includes(:fbos_config)
+        .where("last_saw_api > ?", 3.days.ago)
         .where("fbos_configs.update_channel" => chan)
         .where.not(fbos_version: latest_version(chan))
         .where("fbos_configs.os_auto_update" => true)
@@ -26,7 +31,7 @@ module Devices
     end
 
     def latest_version(chan)
-      Release.maybe_find_latest(channel: chan).version
+      Release.maybe_find_latest(channel: chan)&.version
     end
   end
 end
