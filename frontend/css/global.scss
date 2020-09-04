@@ -1740,6 +1740,11 @@ ul {
   .fa-info-circle {
     color: $blue;
   }
+  &.bulletin-alert {
+    img, iframe {
+      width: 100%;
+    }
+  }
   .problem-alert-title {
     margin-top: 0.15rem;
     margin-bottom: 1rem;
