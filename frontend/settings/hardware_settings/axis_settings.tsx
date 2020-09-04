@@ -157,7 +157,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         <SafeHeight
           dispatch={dispatch}
           sourceFbosConfig={props.sourceFbosConfig} />}
-      {props.shouldDisplay(Feature.safe_height_input) &&
+      {props.shouldDisplay(Feature.soil_height) &&
         <SoilHeight
           dispatch={dispatch}
           sourceFbosConfig={props.sourceFbosConfig} />}
