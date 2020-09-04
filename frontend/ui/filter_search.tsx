@@ -36,7 +36,12 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       itemRenderer={this.default}
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
-      popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
+      popoverProps={{
+        popoverClassName: [
+          "filter-search-popover",
+          minimal ? Classes.MINIMAL : "",
+        ].join(" ")
+      }}>
       <Button
         alignText={Alignment.LEFT}
         text={item ? item.label : t("(No selection)")} />

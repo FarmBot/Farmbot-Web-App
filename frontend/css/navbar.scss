@@ -53,13 +53,28 @@ nav {
         filter: brightness(0%) invert(100%);
         opacity: 0.8;
       }
-      .saucer {
+      .saucer, .external-icon {
         margin-left: -1rem !important;
         width: 1.5rem;
         height: 1.5rem;
         p {
           margin-top: 0;
           font-size: 0.9rem;
+        }
+      }
+      .external-icon {
+        position: relative;
+        visibility: hidden;
+        background: $dark_gray;
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 2px;
+        i {
+          margin-top: -1px;
+          color: $medium_light_gray;
+        }
+        &:before {
+          z-index: 0;
         }
       }
     }
@@ -88,6 +103,9 @@ nav {
         color: $white;
         img {
           opacity: 0.9;
+        }
+        .external-icon {
+          visibility: visible;
         }
       }
       &.active {
@@ -119,7 +137,7 @@ nav {
         height: 3px;
         background: $dark_gray;
       }
-      div .saucer {
+      div .saucer, .external-icon {
         display: inline-flex;
         margin-left: 1rem;
         text-align: center;
@@ -223,8 +241,8 @@ nav {
       }
     }
   }
-  .bp3-popover-arrow-fill {
-    fill: $dark_gray;
+  .bp3-popover-arrow {
+    visibility: hidden;
   }
 }
 
@@ -235,6 +253,7 @@ nav {
     height: calc(100vh);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-bottom: 3rem;
     &::-webkit-scrollbar {
       background-color: $medium_gray;
     }
@@ -256,13 +275,16 @@ nav {
       &:after {
         content: unset;
       }
-      div .saucer {
+      div .saucer, .external-icon {
         display: inline-flex;
         margin-left: 1rem;
       }
+      div .external-icon {
+        vertical-align: unset;
+      }
       .link-icon {
         display: inline-block;
-        .saucer {
+        .saucer, .external-icon {
           display: none;
         }
       }
