@@ -22,6 +22,10 @@ export namespace ExternalUrl {
   const SOFTWARE_DOCS = "https://software.farm.bot";
   const FORUM = "https://forum.farmbot.org";
   const SHOPIFY_CDN = "https://cdn.shopify.com/s/files/1/2040/0289/files";
+  const FARMBOT = "https://farm.bot";
+  const MY_FARMBOT_WEB_APP = "https://my.farm.bot";
+
+  export const myFarmBot = MY_FARMBOT_WEB_APP;
 
   const FBOS_RAW =
     `${GITHUB_RAW}/${Org.FarmBot}/${FarmBotRepo.FarmBotOS}/staging`;
@@ -47,5 +51,11 @@ export namespace ExternalUrl {
     export const desktop =
       `${SHOPIFY_CDN}/Farm_Designer_Loop.mp4?9552037556691879018`;
     export const mobile = `${SHOPIFY_CDN}/Controls.png?9668345515035078097`;
+  }
+
+  const PRODUCTS = `${FARMBOT}/products`;
+  export namespace Store {
+    export const home = FARMBOT;
+    export const cameraCalibrationCard = `${PRODUCTS}/camera-calibration-card`;
   }
 }
