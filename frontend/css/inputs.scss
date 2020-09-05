@@ -105,6 +105,12 @@ select {
   }
 }
 
+.filter-search-popover {
+  .bp3-popover-content {
+    max-width: 40rem;
+  }
+}
+
 .filter-search-item-none::after {
   content: "*";
 }

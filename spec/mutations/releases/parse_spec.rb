@@ -88,6 +88,6 @@ describe Releases::Parse do
       })
     end
 
-    expect(boom).to raise_error("Invalid platform?")
+    expect(boom).to raise_error("Invalid platform?: bbb3")
   end
 end

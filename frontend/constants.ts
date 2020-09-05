@@ -134,10 +134,10 @@ export namespace ToolTips {
     trim(`Z axis coordinate (millimeters) to which the z axis should be
     retracted during Safe Z moves. It is recommended to choose a value at
     which the z axis is all of the way up to provide as much clearance as
-    possible.`);
+    possible. (default: 0)`);
 
   export const SOIL_HEIGHT =
-    trim(`Z axis coordinate (millimeters) of soil level.`);
+    trim(`Z axis coordinate (millimeters) of soil level. (default: 0)`);
 
   // Hardware Settings: Motors
   export const MAX_SPEED =
