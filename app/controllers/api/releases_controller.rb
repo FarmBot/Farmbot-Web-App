@@ -22,8 +22,17 @@ module Api
 
     private
 
+    def update_channel
+      dev = Device.find_by(id: params[:unsafe_device_id])
+      dev ? { channel: dev.fbos_config.update_channel } : {}
+    end
+
     def relevant_params
-      @relevant_params ||= params.as_json.symbolize_keys.slice(*RELEVANT_FIELDS)
+      @relevant_params ||= params
+        .as_json
+        .symbolize_keys
+        .slice(*RELEVANT_FIELDS)
+        .merge(update_channel)
     end
 
     def show_params
