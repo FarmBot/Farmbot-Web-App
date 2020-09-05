@@ -15,6 +15,7 @@ import { formatEnvKey } from "../remote_env/translators";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Content, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../photo_filter_settings/util";
+import { ExternalUrl } from "../../external_urls";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -70,7 +71,7 @@ export class CameraCalibration extends
                   {t("as described in the software documentation.")}
                   <i className={"fa fa-external-link"} />
                 </a>,
-                <a href={"https://farm.bot/products/camera-calibration-card"}
+                <a href={ExternalUrl.Store.cameraCalibrationCard}
                   target={"_blank"}>
                   {t(ToolTips.CAMERA_CALIBRATION_CARD_SHOP_LINK)}
                   <i className={"fa fa-external-link"} />

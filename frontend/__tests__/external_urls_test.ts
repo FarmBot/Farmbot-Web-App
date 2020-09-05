@@ -29,5 +29,11 @@ describe("ExternalUrl", () => {
       .toEqual("https://cdn.shopify.com/s/files/1/2040/0289/files/Farm_Designer_Loop.mp4?9552037556691879018");
     expect(ExternalUrl.Video.mobile)
       .toEqual("https://cdn.shopify.com/s/files/1/2040/0289/files/Controls.png?9668345515035078097");
+    expect(ExternalUrl.Store.home)
+      .toEqual("https://farm.bot");
+    expect(ExternalUrl.myFarmBot)
+      .toEqual("https://my.farm.bot");
+    expect(ExternalUrl.Store.cameraCalibrationCard)
+      .toEqual("https://farm.bot/products/camera-calibration-card");
   });
 });

@@ -24,6 +24,7 @@ import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { Session } from "../session";
+import { ExternalUrl } from "../external_urls";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -339,14 +340,14 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     </p>
     <p>
       {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
-      <a href={"https://my.farm.bot"} target="_blank"
+      <a href={ExternalUrl.myFarmBot} target="_blank"
         onClick={() => Session.clear()}
         title={"my.farm.bot"}>
         {"my.farm.bot"}
       </a>.
     </p>
     <a className="link-button fb-button green"
-      href={"https://my.farm.bot"} target="_blank"
+      href={ExternalUrl.myFarmBot} target="_blank"
       onClick={() => Session.clear()}
       title={t("Make a real account")}>
       {t("Make a real account")}
