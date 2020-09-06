@@ -17,13 +17,11 @@ import { DemoIframe } from "../demo_iframe";
 import I from "i18next";
 
 describe("DemoIframe loader", () => {
-  it("calls  expected callbacks", (done) => {
-    import("../index").then(() => {
-      expect(stopIE).toHaveBeenCalled();
-      expect(detectLanguage).toHaveBeenCalled();
-      expect(I.init).toHaveBeenCalled();
-      expect(attachToRoot).toHaveBeenCalledWith(DemoIframe);
-      done();
-    });
+  it("calls expected callbacks", async () => {
+    await import("../index");
+    expect(stopIE).toHaveBeenCalled();
+    expect(detectLanguage).toHaveBeenCalled();
+    expect(I.init).toHaveBeenCalled();
+    expect(attachToRoot).toHaveBeenCalledWith(DemoIframe);
   });
 });

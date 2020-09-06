@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
@@ -138,7 +138,8 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo.pulloutDirection = ToolPulloutDirection.NEGATIVE_X;
     const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+      .getToolProps({ qx: 0, qy: 0 }))
+      .toEqual({
         dispatch: expect.any(Function),
         hovered: false,
         pulloutDirection: ToolPulloutDirection.NEGATIVE_X,
@@ -158,7 +159,8 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo = undefined;
     const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+      .getToolProps({ qx: 0, qy: 0 }))
+      .toEqual({
         dispatch: expect.any(Function),
         hovered: false,
         pulloutDirection: ToolPulloutDirection.POSITIVE_X,

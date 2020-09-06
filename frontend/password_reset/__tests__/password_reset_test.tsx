@@ -17,9 +17,11 @@ describe("<PasswordReset/>", () => {
     (response: { status: number, response: {} }) =>
       new Promise<Partial<AxiosResponse>>(
         (resolve: (value: Partial<AxiosResponse>) => void, reject) =>
-          moxios.wait(() => moxios.requests.mostRecent()
-            .respondWith(response)
-            .then(resolve, reject)));
+          moxios.wait(() => {
+            moxios.requests.mostRecent()
+              .respondWith(response)
+              .then(resolve, reject);
+          }));
 
   it("handles form submission errors", async () => {
     const pr = new PasswordReset({});

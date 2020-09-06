@@ -5,9 +5,9 @@ import {
 } from "farmbot";
 import {
   FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS, RemoveParams, MoveParams, SpliceParams,
+  StepParams, StepInputProps, StepTitleBarProps,
 } from "../interfaces";
 import { TileExecute } from "./tile_execute";
-import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
 import { defensiveClone, move as arrayMover } from "../../util";
 import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
@@ -121,7 +121,7 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   return assign(copy.args, { [field]: parsedNumber });
 }
 
-// tslint:disable-next-line:cyclomatic-complexity
+// eslint-disable-next-line complexity
 export function renderCeleryNode(props: StepParams) {
   const step = props.currentStep;
   switch (step.kind) {

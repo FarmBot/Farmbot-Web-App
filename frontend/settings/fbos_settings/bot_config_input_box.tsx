@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BlurableInput } from "../../ui";
 import { SourceFbosConfig } from "../../devices/interfaces";
 import { ConfigurationName } from "farmbot/dist";
@@ -36,7 +36,8 @@ export class BotConfigInputBox
   render() {
     const current = this.config.value;
     const boxValue = (isNumber(current) || isBoolean(current))
-      ? current.toString() : "";
+      ? current.toString()
+      : "";
 
     return <BlurableInput
       type="number"

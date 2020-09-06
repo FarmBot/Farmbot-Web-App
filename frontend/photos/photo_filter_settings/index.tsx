@@ -40,8 +40,9 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       <button className="fb-button red" onClick={clearFilters}>
         {t("Reset filters")}
       </button>
-      <ImageFilterMenu key={JSON.stringify(IMAGE_LAYER_CONFIG_KEYS
-        .map(key => props.getConfigValue(key)))}
+      <ImageFilterMenu
+        key={JSON.stringify(IMAGE_LAYER_CONFIG_KEYS
+          .map(key => props.getConfigValue(key)))}
         dispatch={dispatch}
         getConfigValue={props.getConfigValue}
         timeSettings={props.timeSettings}

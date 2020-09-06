@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
@@ -70,8 +70,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   AccountMenu = () => {
     const hasName = this.props.user?.body.name;
-    const firstName = hasName ?
-      `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
+    const firstName = hasName
+      ? `${hasName.split(" ")[0].slice(0, 9)} ▾`
+      : `${t("Menu")} ▾`;
     return <div className="menu-popover">
       <Popover
         popoverClassName={"menu-popover"}

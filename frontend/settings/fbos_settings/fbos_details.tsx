@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Saucer, FBSelect, Help } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { last, isNumber, isString, isUndefined } from "lodash";
@@ -117,7 +117,8 @@ export enum ThrottleType {
 
 /** Bit positions for throttle flags. */
 const THROTTLE_BIT_LOOKUP:
-  Record<ThrottleType, Record<"active" | "occurred", number>> = {
+  Record<ThrottleType, Record<"active" | "occurred", number>> =
+{
   [ThrottleType.UnderVoltage]: { active: 0, occurred: 16 },
   [ThrottleType.ArmFrequencyCapped]: { active: 1, occurred: 17 },
   [ThrottleType.Throttled]: { active: 2, occurred: 18 },
@@ -129,9 +130,9 @@ export const colorFromThrottle =
   (throttled: string, throttleType: ThrottleType) => {
     const throttleCode = parseInt(throttled, 16);
     const bit = THROTTLE_BIT_LOOKUP[throttleType];
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const active = throttleCode & (1 << bit.active);
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const occurred = throttleCode & (1 << bit.occurred);
     if (active) {
       return "red";
@@ -222,7 +223,7 @@ const CommitDisplay = (
       ? shortCommit
       : <a
         href={`${ExternalUrl.gitHubFarmBot}/${repo}/tree/${shortCommit}`}
-        target="_blank">
+        target="_blank" rel={"noreferrer"}>
         {shortCommit}
       </a>}
   </p>;
@@ -284,8 +285,9 @@ const reformatDatetime = (datetime: string, timeSettings: TimeSettings) =>
 
 export const reformatFwVersion =
   (firmwareVersion: string | undefined): string => {
-    const version = firmwareVersion ?
-      firmwareVersion.split(".").slice(0, 3).join(".") : "none";
+    const version = firmwareVersion
+      ? firmwareVersion.split(".").slice(0, 3).join(".")
+      : "none";
     const displayVersion = version.includes("---") ? version : `v${version}`;
     const board = FIRMWARE_CHOICES_DDI[boardType(firmwareVersion)]?.label || "";
     return version == "none" ? "---" : `${displayVersion} ${board}`;

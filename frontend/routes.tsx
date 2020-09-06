@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { store as _store } from "./redux/store";
 import { history } from "./history";
 import { Store } from "./redux/interfaces";
@@ -15,7 +15,7 @@ interface RootComponentProps { store: Store; }
 
 export const attachAppToDom = () => {
   attachToRoot(RootComponent, { store: _store });
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _store.dispatch(ready() as any);
 };
 

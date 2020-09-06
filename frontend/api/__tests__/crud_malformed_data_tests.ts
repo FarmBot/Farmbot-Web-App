@@ -1,14 +1,9 @@
-const mockDevice = {
-  on: jest.fn(() => { return Promise.resolve(); }),
-};
-
-jest.mock("../../device", () => ({
-  getDevice: () => mockDevice
-}));
+const mockDevice = { on: jest.fn(() => Promise.resolve()) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("axios", () => ({
-  get: () => { return Promise.resolve({ data: "" }); },
-  put: () => { return Promise.resolve({ data: "" }); },
+  get: () => Promise.resolve({ data: "" }),
+  put: () => Promise.resolve({ data: "" }),
 }));
 
 import { refresh, updateViaAjax } from "../crud";
@@ -23,7 +18,7 @@ describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
 
   // 1. Enters the `catch` block.
-  it("rejects malformed API data", (done) => {
+  it("rejects malformed API data", async () => {
     const device1: TaggedDevice = {
       "uuid": "Device.6.1",
       "kind": "Device",
@@ -42,32 +37,29 @@ describe("refresh()", () => {
     const dispatch = jest.fn();
     const { mock } = dispatch;
     console.error = jest.fn();
-    thunk(dispatch);
-    setImmediate(() => {
-      expect(dispatch).toHaveBeenCalledTimes(2);
-      // Test call to refresh();
-      const firstCall = mock.calls[0][0];
-      const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
-      expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);
-      const dispatchPayload1 = get(firstCall, "payload", "NO TYPE FOUND");
-      expect(dispatchPayload1).toBe(device1.uuid);
-      const secondCall = mock.calls[1][0];
-      const dispatchAction2 = get(secondCall, "type", "NO TYPE FOUND");
-      expect(dispatchAction2).toEqual(Actions.REFRESH_RESOURCE_NO);
-      const dispatchPayl = get(secondCall,
-        "payload.err.message",
-        "NO ERR MSG FOUND");
-      expect(dispatchPayl).toEqual("Unable to refresh");
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("Device"));
-      done();
-    });
+    await thunk(dispatch);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    // Test call to refresh();
+    const firstCall = mock.calls[0][0];
+    const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
+    expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);
+    const dispatchPayload1 = get(firstCall, "payload", "NO TYPE FOUND");
+    expect(dispatchPayload1).toBe(device1.uuid);
+    const secondCall = mock.calls[1][0];
+    const dispatchAction2 = get(secondCall, "type", "NO TYPE FOUND");
+    expect(dispatchAction2).toEqual(Actions.REFRESH_RESOURCE_NO);
+    const dispatchPayl = get(secondCall,
+      "payload.err.message",
+      "NO ERR MSG FOUND");
+    expect(dispatchPayl).toEqual("Unable to refresh");
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("Device"));
   });
 });
 
 describe("updateViaAjax()", () => {
-  it("rejects malformed API data", () => {
+  it("rejects malformed API data", async () => {
     const payload = {
       uuid: "",
       statusBeforeError: SpecialStatus.DIRTY,
@@ -76,11 +68,10 @@ describe("updateViaAjax()", () => {
     };
     payload.uuid = Object.keys(payload.index.all)[0];
     console.error = jest.fn();
-    updateViaAjax(payload).catch(e => {
-      expect("" + e).toEqual("Error: Just saved a malformed TR.");
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("Peripheral"));
-    });
+    await expect(updateViaAjax(payload)).rejects
+      .toThrowError("Just saved a malformed TR.");
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("Peripheral"));
   });
 });

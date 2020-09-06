@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { store } from "../redux/store";
 import { ControlPanelState } from "../devices/interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "../devices/actions";
@@ -352,18 +352,19 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 
   render() {
-    return <div className={[
-      "setting",
-      this.props.className,
-      this.state.className,
-    ].join(" ")}
+    const hoverClass = this.state.hovered ? "hovered" : "";
+    return <div
+      className={[
+        "setting",
+        this.props.className,
+        this.state.className,
+      ].join(" ")}
       onMouseEnter={this.toggleHover(true)}
       onMouseLeave={this.toggleHover(false)}
       hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
       {this.props.children}
       {this.props.settingName &&
-        <i className={`fa fa-anchor ${this.props.className} ${
-          this.state.hovered ? "hovered" : ""}`}
+        <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
           onClick={() => push(linkToSetting(this.props.settingName))} />}
     </div>;
   }

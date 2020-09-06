@@ -66,7 +66,7 @@ describe("sensorsAsDropDowns()", () => {
   });
 });
 
-describe("peripheralsAsDropDowns()", () => {
+describe("sensorsAsDropDowns() & peripheralsAsDropDowns()", () => {
   it("doesn't add peripheral/sensor headers when none available", () => {
     const ri = buildResourceIndex([]);
     const sResult = PinSupport.sensorsAsDropDowns(ri.index);
@@ -141,7 +141,7 @@ describe("findByPinNumber()", () => {
     Object
       .keys(ri.references)
       .map(key => {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ri.references[key] = { kind: "Intentionally wrong" } as any;
       });
     const boom = () => PinSupport.findByPinNumber(ri, np);

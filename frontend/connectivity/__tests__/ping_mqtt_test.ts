@@ -45,12 +45,11 @@ describe("ping util", () => {
     expect(readPing(bot, "out")).toEqual(456);
   });
 
-  it("binds event handlers with startPinging()", (done) => {
+  it("binds event handlers with startPinging()", async () => {
     const bot = fakeBot();
-    startPinging(bot);
+    await startPinging(bot);
     setTimeout(() => {
       expect(bot.ping).toHaveBeenCalled();
-      done();
     }, PING_INTERVAL + 10);
   });
 });

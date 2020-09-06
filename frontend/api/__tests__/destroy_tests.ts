@@ -45,7 +45,7 @@ describe("destroy", () => {
   });
 
   API.setBaseUrl("http://localhost:3000");
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fakeGetState = () => ({ resources: { index: {} } } as any);
   const fakeDestroy = () => destroy("fakeResource")(jest.fn(), fakeGetState);
 
@@ -60,23 +60,23 @@ describe("destroy", () => {
     expect(axios.delete).not.toHaveBeenCalled();
   };
 
-  it("not confirmed", () => {
+  it("not confirmed", async () => {
     window.confirm = () => false;
-    expect(fakeDestroy()).rejects.toEqual("User pressed cancel");
+    await expect(fakeDestroy()).rejects.toEqual("User pressed cancel");
     expectNotDestroyed();
   });
 
-  it("id: 0", () => {
+  it("id: 0", async () => {
     mockResource.body.id = 0;
     window.confirm = () => true;
-    expect(fakeDestroy()).resolves.toEqual("");
+    await expect(fakeDestroy()).resolves.toEqual("");
     expect(destroyOK).toHaveBeenCalledWith(mockResource);
   });
 
-  it("id: undefined", () => {
+  it("id: undefined", async () => {
     mockResource.body.id = undefined;
     window.confirm = () => true;
-    expect(fakeDestroy()).resolves.toEqual("");
+    await expect(fakeDestroy()).resolves.toEqual("");
     expect(destroyOK).toHaveBeenCalledWith(mockResource);
   });
 

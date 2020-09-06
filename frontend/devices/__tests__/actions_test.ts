@@ -36,9 +36,6 @@ import {
   fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import {
-  changeStepSize, commandErr,
-} from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import axios from "axios";
@@ -313,7 +310,7 @@ describe("isLog()", function () {
 
 describe("commandErr()", () => {
   it("sends toast", () => {
-    commandErr()();
+    actions.commandErr()();
     expect(error).toHaveBeenCalledWith("Command failed");
   });
 });
@@ -328,7 +325,7 @@ describe("toggleControlPanel()", () => {
 describe("changeStepSize()", () => {
   it("returns a redux action", () => {
     const payload = 23;
-    const result = changeStepSize(payload);
+    const result = actions.changeStepSize(payload);
     expect(result.type).toBe(Actions.CHANGE_STEP_SIZE);
     expect(result.payload).toBe(payload);
   });

@@ -1,12 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../farm_designer/map/util";
 import { history } from "../history";
 import { BlurableInput, Row, Col } from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
 import { PlantStage, Xyz } from "farmbot";
-import { Moment } from "moment";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { Actions } from "../constants";
 import { Link } from "../link";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
@@ -173,7 +172,7 @@ export function PlantPanel(props: PlantPanelProps) {
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
-          to={`/app/designer/plants/crop_search/` + slug}>
+          to={`/app/designer/plants/crop_search/${slug}`}>
           {startCase(slug)}
         </Link>
       </ListItem>
@@ -196,7 +195,7 @@ export function PlantPanel(props: PlantPanelProps) {
         <EditPlantLocation {...commonProps} plantLocation={{ x, y, z }} />
       </ListItem>
       <ListItem name={t("Size")}>
-        <EditPlantRadius  {...commonProps} radius={info.radius} />
+        <EditPlantRadius {...commonProps} radius={info.radius} />
       </ListItem>
       <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Status")}>

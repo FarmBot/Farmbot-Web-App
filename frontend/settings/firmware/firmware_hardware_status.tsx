@@ -1,13 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { Popover, Position } from "@blueprintjs/core";
-import { FIRMWARE_CHOICES_DDI } from "./firmware_hardware_support";
+import {
+  FIRMWARE_CHOICES_DDI, isFwHardwareValue, boardType,
+} from "./firmware_hardware_support";
 import { flashFirmware } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
 import { BotState } from "../../devices/interfaces";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { Alert } from "farmbot";
-import { isFwHardwareValue, boardType } from "./firmware_hardware_support";
 import { Help } from "../../ui";
 import { ToolTips } from "../../constants";
 
@@ -29,7 +30,8 @@ export const FirmwareHardwareStatusIcon =
 
 export const lookup = (value: string | undefined) =>
   value && Object.keys(FIRMWARE_CHOICES_DDI).includes(value)
-    ? FIRMWARE_CHOICES_DDI[value].label : undefined;
+    ? FIRMWARE_CHOICES_DDI[value].label
+    : undefined;
 
 export interface FirmwareHardwareStatusDetailsProps {
   botOnline: boolean;

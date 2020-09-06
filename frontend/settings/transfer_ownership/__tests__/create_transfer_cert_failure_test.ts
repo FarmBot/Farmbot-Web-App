@@ -10,7 +10,7 @@ jest.mock("axios", () => {
   };
 });
 
-import { transferOwnership } from "../transfer_ownership";
+import { transferOwnership, TransferProps } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import {
   submitOwnershipChange,
@@ -21,20 +21,14 @@ import { error } from "../../../toast/toast";
 API.setBaseUrl("http://foo.bar");
 
 describe("transferOwnership", () => {
-  it("passes rejected promises down the chain", async () => {
-    const p = {
-      email: "admin@admin.com",
-      password: "password123",
-      server: "http://127.0.0.1:3000",
-      device: getDevice()
-    };
+  const fakeProps = (): TransferProps => ({
+    email: "admin@admin.com",
+    password: "password123",
+    device: getDevice(),
+  });
 
-    try {
-      await transferOwnership(p);
-      fail("If you see this message, transferOwnership(p) is hiding errors.");
-    } catch (error) {
-      expect(error).toEqual("NOPE");
-    }
+  it("passes rejected promises down the chain", async () => {
+    await expect(transferOwnership(fakeProps())).rejects.toEqual("NOPE");
   });
 });
 

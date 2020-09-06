@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
 import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
 import { round, transformXY, scaleIcon } from "../../util";
@@ -33,7 +33,7 @@ export class GardenPlant extends
       type: Actions.HOVER_PLANT_LIST_ITEM,
       payload: hovered ? this.props.uuid : undefined
     });
-    this.setState({ hover: hovered ? true : false });
+    this.setState({ hover: hovered });
   };
 
   get grayscale() {

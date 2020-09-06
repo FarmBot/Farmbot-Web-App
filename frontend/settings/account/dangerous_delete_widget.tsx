@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { Col, Row } from "../../ui";
-import { DangerousDeleteProps, DangerousDeleteState } from "./interfaces";
+import { DangerousDeleteProps, DeletionRequest } from "./interfaces";
 import { BlurablePassword } from "../../ui/blurable_password";
 import { t } from "../../i18next_wrapper";
 
 /** Widget for permanently deleting large amounts of user data. */
 export class DangerousDeleteWidget extends
-  React.Component<DangerousDeleteProps, DangerousDeleteState> {
-  state: DangerousDeleteState = { password: "" };
+  React.Component<DangerousDeleteProps, DeletionRequest> {
+  state: DeletionRequest = { password: "" };
 
   componentWillUnmount() {
     this.setState({ password: "" });

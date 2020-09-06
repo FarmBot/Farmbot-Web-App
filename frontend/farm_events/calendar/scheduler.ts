@@ -1,5 +1,4 @@
-import moment from "moment";
-import { Moment, unitOfTime } from "moment";
+import moment, { Moment } from "moment";
 import { range } from "lodash";
 import { NEVER } from "../edit_fe_form";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
@@ -57,7 +56,7 @@ export function scheduler({
 }
 
 /** Translate farmbot interval names to momentjs interval names */
-const LOOKUP: Record<TimeUnit, unitOfTime.Base> = {
+const LOOKUP: Record<TimeUnit, moment.unitOfTime.Base> = {
   "never": "ms",
   "minutely": "minutes",
   "hourly": "hours",

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
@@ -45,7 +45,7 @@ describe("<Alerts />", () => {
   it("renders no alerts", () => {
     const wrapper = mount(<Alerts {...fakeProps()} />);
     expect(wrapper.html())
-      .toContain(`<div class="problem-alerts-content"></div>`);
+      .toContain("<div class=\"problem-alerts-content\"></div>");
   });
 
   it("renders alerts", () => {
@@ -76,7 +76,7 @@ describe("<FirmwareAlerts />", () => {
     const p = fakeProps();
     p.alerts = [];
     const wrapper = mount(<FirmwareAlerts {...p} />);
-    expect(wrapper.html()).toEqual(`<div class="firmware-alerts"></div>`);
+    expect(wrapper.html()).toEqual("<div class=\"firmware-alerts\"></div>");
   });
 
   it("renders alerts", () => {

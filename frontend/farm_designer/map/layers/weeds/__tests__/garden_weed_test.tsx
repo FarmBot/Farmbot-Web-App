@@ -3,7 +3,7 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { GardenWeed } from "../garden_weed";
 import { GardenWeedProps } from "../../../interfaces";
 import { fakeWeed } from "../../../../../__test_support__/fake_state/resources";
@@ -51,8 +51,8 @@ describe("<GardenWeed />", () => {
     const wrapper = svgMount(<GardenWeed {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find("image").hasClass("animate")).toBeTruthy();
-    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy;
-    expect(wrapper.find("circle").last().hasClass("animate")).toBeTruthy;
+    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy();
+    expect(wrapper.find("circle").last().hasClass("animate")).toBeTruthy();
   });
 
   it("hovers weed", () => {
@@ -99,7 +99,7 @@ describe("<GardenWeed />", () => {
     p.selected = false;
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
-    expect(wrapper.find("circle").last().hasClass("weed-radius")).toBeTruthy;
+    expect(wrapper.html()).not.toContain("weed-indicator");
   });
 
   it("shows selection indicator", () => {
@@ -107,7 +107,7 @@ describe("<GardenWeed />", () => {
     p.selected = true;
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
-    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeTruthy;
+    expect(wrapper.html()).toContain("weed-indicator");
   });
 
   it("doesn't render selection indicator when icon is hovered", () => {
@@ -117,6 +117,6 @@ describe("<GardenWeed />", () => {
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
     wrapper.find(GardenWeed).setState({ iconHovered: true });
-    expect(wrapper.find("circle").last().hasClass("weed-indicator")).toBeFalsy;
+    expect(wrapper.html()).not.toContain("weed-indicator");
   });
 });

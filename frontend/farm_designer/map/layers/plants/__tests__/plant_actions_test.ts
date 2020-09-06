@@ -99,7 +99,7 @@ describe("dropPlant", () => {
 
   it("throws error", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.gardenCoords = undefined as any;
     expect(() => dropPlant(p))
       .toThrowError(/while trying to add a plant/);
@@ -191,9 +191,9 @@ describe("dragPlant", () => {
 
   it("moves plant: same location", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.qPageX = undefined as any;
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.qPageY = undefined as any;
     dragPlant(p);
     expect(p.setMapState).toHaveBeenCalledWith({
@@ -223,7 +223,7 @@ describe("setActiveSpread", () => {
 
   it("sets crop spread value", async () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.selectedPlant = undefined as any;
     await setActiveSpread(p);
     expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 100 });
@@ -244,7 +244,7 @@ describe("beginPlantDrag", () => {
 
   it("starts drag: not plant", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.plant = undefined as any;
     beginPlantDrag(p);
     expect(cachedCrop).not.toHaveBeenCalled();

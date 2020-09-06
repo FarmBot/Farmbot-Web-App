@@ -15,5 +15,5 @@ export function findAll<T extends TaggedResource>(
       results.push(item as T);
     }
   });
-  return sortResourcesById(results) as T[];
+  return sortResourcesById(results);
 }

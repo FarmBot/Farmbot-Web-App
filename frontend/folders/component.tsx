@@ -11,10 +11,9 @@ import {
   FolderNodeProps,
   FolderProps,
   FolderState,
-  AddFolderBtn,
+  AddFolderBtnProps,
   AddSequenceProps,
   ToggleFolderBtnProps,
-  FolderNodeState,
   FolderPanelTopProps,
   SequenceDropAreaProps,
   FolderButtonClusterProps,
@@ -102,7 +101,7 @@ const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {
   </button>;
 };
 
-const AddFolderBtn = ({ folder, close }: AddFolderBtn) => {
+const AddFolderBtn = ({ folder, close }: AddFolderBtnProps) => {
   return <button
     className="fb-button green"
     title={t("Create subfolder")}
@@ -162,36 +161,30 @@ export const FolderNameInput = ({ node }: FolderNameInputProps) =>
     </button>
   </div>;
 
-export class FolderNameEditor
-  extends React.Component<FolderNodeProps, FolderNodeState> {
-  state: FolderNodeState = { settingsOpen: false };
-  close = () => this.setState({ settingsOpen: false });
-  render() {
-    const { node } = this.props;
-    const settingsOpenClass = this.state.settingsOpen ? "open" : "";
-    return <div className={"folder-list-item"}>
-      <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
-        title={"Open/Close Folder"}
-        onClick={() => toggleFolderOpenState(node.id)} />
-      <ColorPicker
-        saucerIcon={"fa-folder"}
-        current={node.color}
-        onChange={color => setFolderColor(node.id, color)} />
-      <div className="folder-name">
-        {node.editing
-          ? <FolderNameInput node={node} />
-          : <p>{node.name}</p>}
-      </div>
-      <Popover className="folder-settings-icon" usePortal={false}
-        isOpen={this.state.settingsOpen}>
-        <i className={`fa fa-ellipsis-v ${settingsOpenClass}`}
-          onClick={() =>
-            this.setState({ settingsOpen: !this.state.settingsOpen })} />
-        <FolderButtonCluster {...this.props} close={this.close} />
-      </Popover>
-    </div>;
-  }
-}
+export const FolderNameEditor = (props: FolderNodeProps) => {
+  const { node } = props;
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  return <div className={"folder-list-item"}>
+    <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
+      title={"Open/Close Folder"}
+      onClick={() => toggleFolderOpenState(node.id)} />
+    <ColorPicker
+      saucerIcon={"fa-folder"}
+      current={node.color}
+      onChange={color => setFolderColor(node.id, color)} />
+    <div className="folder-name">
+      {node.editing
+        ? <FolderNameInput node={node} />
+        : <p>{node.name}</p>}
+    </div>
+    <Popover className="folder-settings-icon" usePortal={false}
+      isOpen={settingsOpen}>
+      <i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
+        onClick={() => setSettingsOpen(!settingsOpen)} />
+      <FolderButtonCluster {...props} close={() => setSettingsOpen(false)} />
+    </Popover>
+  </div>;
+};
 
 const FolderNode = (props: FolderNodeProps) => {
   const { node, sequences } = props;

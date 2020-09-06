@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import axios from "axios";
 import { error as log, init as logInit } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
@@ -14,10 +14,9 @@ export interface State {
   serverPort?: string;
 }
 
-export interface Props { }
 
-export class PasswordReset extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class PasswordReset extends React.Component<{}, State> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       password: "",

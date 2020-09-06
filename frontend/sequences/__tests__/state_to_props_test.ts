@@ -23,7 +23,7 @@ describe("mapStateToProps()", () => {
     state.bot.hardware.informational_settings.controller_version = "2.0.0";
     state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
     const props = mapStateToProps(state);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(props.shouldDisplay("some_feature" as any)).toBeFalsy();
     expect(props.shouldDisplay(Feature.jest_feature)).toBeTruthy();
   });

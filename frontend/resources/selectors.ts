@@ -193,15 +193,16 @@ export function maybeGetTimeSettings(index: ResourceIndex): TimeSettings {
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   const dev = index.references[Object.keys(index.byKind.Device)[0] || "nope"];
-  return (dev?.kind === "Device") ?
-    dev : undefined;
+  return (dev?.kind === "Device")
+    ? dev
+    : undefined;
 }
 
 export const getDeviceAccountSettings =
   (index: ResourceIndex): TaggedDevice => {
     const device = maybeGetDevice(index);
     switch (Object.keys(index.byKind.Device).length) {
-      case 0: return bail(`Tried to load device before it was loaded.`);
+      case 0: return bail("Tried to load device before it was loaded.");
       case 1: return device ? device : bail("Malformed device!");
       default: return bail("Found more than 1 device");
     }
@@ -227,7 +228,7 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
   if (user) {
     return user;
   } else {
-    throw new Error(`PROBLEM: Tried to fetch user before it was available.`);
+    throw new Error("PROBLEM: Tried to fetch user before it was available.");
   }
 }
 

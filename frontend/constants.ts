@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 import { trim } from "./util";
 
 export namespace ToolTips {

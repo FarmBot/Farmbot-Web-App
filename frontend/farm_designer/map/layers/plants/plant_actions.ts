@@ -148,7 +148,8 @@ export const setActiveSpread = (props: {
   setMapState: (x: Partial<GardenMapState>) => void,
 }): void => {
   const defaultSpread = props.selectedPlant
-    ? defaultSpreadCmDia(props.selectedPlant.body.radius) : 0;
+    ? defaultSpreadCmDia(props.selectedPlant.body.radius)
+    : 0;
   cachedCrop(props.slug)
     .then(({ spread }) =>
       props.setMapState({ activeDragSpread: spread || defaultSpread }));

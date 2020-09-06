@@ -24,45 +24,47 @@ export const editCriteria =
     };
 
 /** Toggle string or number equal criteria. */
-export const toggleEqCriteria = <T extends string | number>(
-  eqCriteria: EqCriteria<T>,
-  direction?: "on" | "off",
-) => (key: string, value: T) => {
-  const values: T[] = eqCriteria[key] || [];
-  if (values.includes(value)) {
-    if (direction != "on") {
-      const newValues = values.filter(s => s != value);
-      eqCriteria[key] = newValues;
-      !newValues.length && delete eqCriteria[key];
+export const toggleEqCriteria =
+  <T extends string | number>(
+    eqCriteria: EqCriteria<T>,
+    direction?: "on" | "off",
+  ) => (key: string, value: T) => {
+    const values: T[] = eqCriteria[key] || [];
+    if (values.includes(value)) {
+      if (direction != "on") {
+        const newValues = values.filter(s => s != value);
+        eqCriteria[key] = newValues;
+        !newValues.length && delete eqCriteria[key];
+      }
+    } else {
+      if (direction != "off") {
+        values.push(value);
+        eqCriteria[key] = values;
+      }
     }
-  } else {
-    if (direction != "off") {
-      values.push(value);
-      eqCriteria[key] = values;
-    }
-  }
-};
+  };
 
 /**
  * Toggle and save string or number equal criteria.
  * When adding criteria with a pointerType provided, clear incompatible criteria.
  */
-export const toggleAndEditEqCriteria = <T extends string | number>(
-  group: TaggedPointGroup,
-  key: string,
-  value: T,
-  pointerType?: PointerType,
-) =>
-  (dispatch: Function) => {
-    const tempCriteria = cloneDeep(group.body.criteria);
-    const criteriaField = typeof value == "string" ? "string_eq" : "number_eq";
-    const tempEqCriteria = tempCriteria[criteriaField] as EqCriteria<T>;
-    const wasOff = !tempEqCriteria[key]?.includes(value);
-    toggleEqCriteria<T>(tempEqCriteria)(key, value);
-    pointerType && wasOff && clearSubCriteria(
-      POINTER_TYPES.filter(x => x != pointerType), tempCriteria, key);
-    dispatch(editCriteria(group, tempCriteria));
-  };
+export const toggleAndEditEqCriteria =
+  <T extends string | number>(
+    group: TaggedPointGroup,
+    key: string,
+    value: T,
+    pointerType?: PointerType,
+  ) =>
+    (dispatch: Function) => {
+      const tempCriteria = cloneDeep(group.body.criteria);
+      const criteriaField = typeof value == "string" ? "string_eq" : "number_eq";
+      const tempEqCriteria = tempCriteria[criteriaField] as EqCriteria<T>;
+      const wasOff = !tempEqCriteria[key]?.includes(value);
+      toggleEqCriteria<T>(tempEqCriteria)(key, value);
+      pointerType && wasOff && clearSubCriteria(
+        POINTER_TYPES.filter(x => x != pointerType), tempCriteria, key);
+      dispatch(editCriteria(group, tempCriteria));
+    };
 
 /** Clear incompatible criteria. */
 export const clearSubCriteria = (
@@ -143,17 +145,18 @@ export const editGtLtCriteria =
     };
 
 /** For EqCriteriaSelection form. */
-export const removeEqCriteriaValue = <T extends string | number>(
-  group: TaggedPointGroup,
-  eqCriteria: EqCriteria<T>,
-  eqCriteriaName: string,
-  key: string,
-  value: T,
-) => (dispatch: Function) => {
-  const tempCriteriaField = cloneDeep(eqCriteria);
-  toggleEqCriteria<T>(tempCriteriaField, "off")(key, value);
-  dispatch(editCriteria(group, { [eqCriteriaName]: tempCriteriaField }));
-};
+export const removeEqCriteriaValue =
+  <T extends string | number>(
+    group: TaggedPointGroup,
+    eqCriteria: EqCriteria<T>,
+    eqCriteriaName: string,
+    key: string,
+    value: T,
+  ) => (dispatch: Function) => {
+    const tempCriteriaField = cloneDeep(eqCriteria);
+    toggleEqCriteria<T>(tempCriteriaField, "off")(key, value);
+    dispatch(editCriteria(group, { [eqCriteriaName]: tempCriteriaField }));
+  };
 
 /**
  * For criteria form NumberLtGtInput.

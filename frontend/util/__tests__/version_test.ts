@@ -126,9 +126,8 @@ describe("shouldDisplay()", () => {
       Feature.jest_feature)).toBeTruthy();
     expect(createShouldDisplayFn("10.0.0", fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeTruthy();
-    expect(createShouldDisplayFn("10.0.0",
-      { jest_feature: "1.0.0" }, undefined)(
-        Feature.jest_feature)).toBeTruthy();
+    expect(createShouldDisplayFn("10.0.0", { jest_feature: "1.0.0" },
+      undefined)(Feature.jest_feature)).toBeTruthy();
     globalConfig.FBOS_END_OF_LIFE_VERSION = MinVersionOverride.NEVER;
     expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeTruthy();
@@ -140,19 +139,19 @@ describe("shouldDisplay()", () => {
       Feature.jest_feature)).toBeFalsy();
     expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeFalsy();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const unknown_feature = "unknown_feature" as any;
     expect(createShouldDisplayFn("1.0.0", fakeMinOsData, undefined)(
       unknown_feature)).toBeFalsy();
     expect(createShouldDisplayFn("1.0.0", undefined, undefined)(
       unknown_feature)).toBeFalsy();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(createShouldDisplayFn("1.0.0", "" as any, undefined)(
       unknown_feature)).toBeFalsy();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(createShouldDisplayFn("1.0.0", "{}" as any, undefined)(
       unknown_feature)).toBeFalsy();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(createShouldDisplayFn("1.0.0", "bad" as any, undefined)(
       unknown_feature)).toBeFalsy();
   });

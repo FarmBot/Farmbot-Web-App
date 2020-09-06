@@ -3,7 +3,7 @@ import { info } from "../../toast/toast";
 describe("createReminderFn", () => {
   it("reminds the user as-needed, but never more than once", async () => {
     jest.resetAllMocks();
-    if (!globalConfig) { throw new Error("NO!"); }
+    expect(globalConfig).toBeDefined();
     const old = globalConfig.FBOS_END_OF_LIFE_VERSION;
     globalConfig.FBOS_END_OF_LIFE_VERSION = "6.3.1";
 

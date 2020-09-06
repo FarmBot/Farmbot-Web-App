@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { SaveBtn, Row } from "../../ui";
 import { SpecialStatus } from "farmbot";
-import Axios from "axios";
+import axios from "axios";
 import { API } from "../../api/index";
 import { prettyPrintApiErrors, equals, trim } from "../../util";
 import { Content, DeviceSetting } from "../../constants";
@@ -45,7 +45,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     };
 
   sendChange = () =>
-    Axios
+    axios
       .patch(API.current.usersPath, this.state.form)
       .then(() => {
         success(t("Your password is changed."));

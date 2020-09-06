@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Color } from "../../../../ui/index";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -66,8 +66,8 @@ export const ToolLabel = (props: ToolLabelProps) => {
   const {
     toolName, hovered, x, y, pulloutDirection, quadrant, xySwap, gantryMounted,
   } = props;
-  const labelAnchor = textAnchorPosition
-    (pulloutDirection, quadrant, xySwap, gantryMounted);
+  const labelAnchor =
+    textAnchorPosition(pulloutDirection, quadrant, xySwap, gantryMounted);
   return <text textAnchor={labelAnchor.anchor}
     visibility={hovered ? "visible" : "hidden"}
     x={x}

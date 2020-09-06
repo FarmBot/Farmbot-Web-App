@@ -53,8 +53,9 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   confirmUnsaved = () => {
     const prompt = t("You have unsaved changes. Would you like to save them?");
-    const action = confirm(prompt) ?
-      saveGrid(this.state.gridId) : stashGrid(this.state.gridId);
+    const action = confirm(prompt)
+      ? saveGrid(this.state.gridId)
+      : stashGrid(this.state.gridId);
     this.props.dispatch(action);
   }
 

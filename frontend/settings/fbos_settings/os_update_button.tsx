@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
@@ -163,7 +163,9 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
 
   const tooOld = controller_version
     && (semverCompare("6.0.0", controller_version)
-      === SemverResult.LEFT_IS_GREATER ? Content.TOO_OLD_TO_UPDATE : undefined);
+      === SemverResult.LEFT_IS_GREATER
+      ? Content.TOO_OLD_TO_UPDATE
+      : undefined);
 
   return <button
     className={`fb-button ${tooOld ? "yellow" : buttonStatusProps.color}`}

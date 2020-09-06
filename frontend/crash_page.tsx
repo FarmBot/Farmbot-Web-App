@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { get } from "lodash";
 import { Page } from "./ui/index";
 import { Session } from "./session";
@@ -22,12 +22,16 @@ export function crashPage(error: object) {
         <hr />
         <h2>Resolving the Issue</h2>
         <ol>
-          <li>Perform a "hard refresh" (<strong>CTRL + SHIFT + R</strong> on most machines).</li>
-          <li><span><a onClick={() => Session.clear()}>Log out by clicking here.</a></span></li>
+          <li>{"Perform a \"hard refresh\" ("}
+            <strong>CTRL + SHIFT + R</strong> on most machines).</li>
+          <li><span>
+            <a onClick={() => Session.clear()}>Log out by clicking here.</a>
+          </span></li>
           <li>Send the error information (below) to our developer team via the
-        <a href={ExternalUrl.softwareForum}>FarmBot software
-        forum</a>. Including additional information (such as steps leading up
-        to the error) help us identify solutions more quickly. </li>
+            <a href={ExternalUrl.softwareForum}>FarmBot software
+            forum</a>. Including additional information (such as steps leading up
+            to the error) help us identify solutions more quickly.
+          </li>
         </ol>
         <hr />
         <pre>

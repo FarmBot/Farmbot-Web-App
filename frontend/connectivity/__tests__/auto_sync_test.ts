@@ -138,9 +138,10 @@ describe("routeMqttData", () => {
   it("handles well formed deletion data", () => {
     const results = routeMqttData("bot/device_9/sync/Sequence/1", toBinary({}));
     expect(results.status).toEqual("DELETE");
-    if (results.status !== "DELETE") { fail(); }
-    expect(results.id).toEqual(1);
-    expect(results.kind).toEqual("Sequence");
+    if (results.status == "DELETE") {
+      expect(results.id).toEqual(1);
+      expect(results.kind).toEqual("Sequence");
+    }
   });
 
   it("handles well formed update data", () => {
@@ -155,10 +156,10 @@ describe("routeMqttData", () => {
     const payl = toBinary(fake1);
     const results = routeMqttData("bot/device_9/sync/Sequence/1", payl);
     expect(results.status).toEqual("UPDATE");
-    if (results.status !== "UPDATE") { fail(); }
-
-    expect(results.id).toEqual(1);
-    expect(results.kind).toEqual("Sequence");
-    expect(results.body).toEqual(fake1.body);
+    if (results.status == "UPDATE") {
+      expect(results.id).toEqual(1);
+      expect(results.kind).toEqual("Sequence");
+      expect(results.body).toEqual(fake1.body);
+    }
   });
 });

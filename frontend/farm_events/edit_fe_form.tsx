@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import moment from "moment";
 import { success, error } from "../toast/toast";
 import {
@@ -108,7 +108,8 @@ export function recombine(vm: FarmEventViewModel,
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
   const startTime = isReg && options.forceRegimensToMidnight
-    ? "00:00" : vm.startTime;
+    ? "00:00"
+    : vm.startTime;
   return {
     id: vm.id,
     start_time: offsetTime(vm.startDate, startTime, vm.timeSettings),
@@ -317,7 +318,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     const nextRun = this.nextItemTime(this.props.farmEvent.body, now);
     if (nextRun) {
       const nextRunText = this.props.autoSyncEnabled
-        ? t(`The next item in this event will run {{timeFromNow}}.`,
+        ? t("The next item in this event will run {{timeFromNow}}.",
           { timeFromNow: nextRun.from(now) })
         : t(`The next item in this event will run {{timeFromNow}}, but
       you must first SYNC YOUR DEVICE. If you do not sync, the event will
@@ -402,8 +403,9 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
   const isNew = !parseInt("" + props.fieldGet("id"));
   const startDatetimeError = isNew && !forceMidnight &&
     !moment(props.now).isBefore(moment(offsetTime(props.fieldGet("startDate"),
-      props.fieldGet("startTime"), props.timeSettings))) ?
-    t("Start time and date must be in the future.") : undefined;
+      props.fieldGet("startTime"), props.timeSettings)))
+    ? t("Start time and date must be in the future.")
+    : undefined;
   return <div className="start-time-form">
     <label>
       {t("Starts")}

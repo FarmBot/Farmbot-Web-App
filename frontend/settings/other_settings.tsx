@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { OtherSettingsProps, SettingDescriptionProps } from "./interfaces";
 import { Highlight } from "./maybe_highlight";
 import { DeviceSetting, Content, ToolTips } from "../constants";
@@ -33,7 +33,7 @@ export const OtherSettings = (props: OtherSettingsProps) =>
       {LOG_LEVEL_SETTINGS().map(setting =>
         <LogLevelSetting key={setting.title} {...setting} {...props} />)}
       {LOG_ENABLE_SETTINGS().map(setting =>
-        <LogEnableSetting key={setting.title} {...setting}  {...props} />)}
+        <LogEnableSetting key={setting.title} {...setting} {...props} />)}
     </Collapse>
   </Highlight>;
 

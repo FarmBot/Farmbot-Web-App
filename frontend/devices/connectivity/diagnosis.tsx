@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DiagnosticMessages } from "../../constants";
 import { Col, Row, docLink } from "../../ui/index";
 import { bitArray } from "../../util";
@@ -57,7 +57,8 @@ export function Diagnosis(props: DiagnosisProps) {
         <p>
           {diagnose(props)}
         </p>
-        <a href={docLink("connecting-farmbot-to-the-internet")} target="_blank">
+        <a href={docLink("connecting-farmbot-to-the-internet")}
+          target="_blank" rel={"noreferrer"}>
           <i className="fa fa-external-link" />
           {t("Click here to learn more about error codes.")}
         </a>

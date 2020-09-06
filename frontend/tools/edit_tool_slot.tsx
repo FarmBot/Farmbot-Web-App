@@ -4,10 +4,9 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { getPathArray } from "../history";
+import { push, getPathArray } from "../history";
 import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
-import { push } from "../history";
 import { Panel } from "../farm_designer/panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../devices/actions";

@@ -161,8 +161,6 @@ describe("initLog", () => {
     // expect(action.payload.specialStatus).toBe(undefined);
     if (action.payload.kind === "Log") {
       expect(action.payload.body.message).toBe(log.message);
-    } else {
-      fail();
     }
   });
 });
@@ -205,7 +203,7 @@ describe("onReconnect()", () => {
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
     const setUserEnv = jest.fn(() => Promise.resolve({}));
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();
     expect(setUserEnv).toHaveBeenCalledWith(expect.objectContaining({

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AccountMenuProps } from "./interfaces";
 import { Link } from "../link";
 import { shortRevision } from "../util";
@@ -32,7 +32,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
     </div>
     <div className="app-version">
       <label>{t("APP VERSION")}</label>:&nbsp;
-      <a href={ExternalUrl.webAppRepo} target="_blank">
+      <a href={ExternalUrl.webAppRepo} target="_blank" rel={"noreferrer"}>
         {shortRevision().slice(0, 8)}
       </a>
     </div>

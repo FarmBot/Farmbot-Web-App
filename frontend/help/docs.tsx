@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   Widget, WidgetBody, WidgetHeader, docLink, DOC_SLUGS, DocSlug,
 } from "../ui";
@@ -6,7 +6,7 @@ import { t } from "../i18next_wrapper";
 
 const documentationLink = (slug: DocSlug, label: string) =>
   <a href={docLink(slug)}
-    target="_blank">
+    target="_blank" rel={"noreferrer"}>
     {t(label)}<i className="fa fa-external-link" />
   </a>;
 

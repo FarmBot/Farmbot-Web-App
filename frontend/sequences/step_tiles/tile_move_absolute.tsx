@@ -1,6 +1,5 @@
 import React from "react";
-import { StepParams } from "../interfaces";
-import { MoveAbsState } from "../interfaces";
+import { StepParams, MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication, Xyz } from "farmbot";
 import { Row, Col, BlurableInput } from "../../ui";
 import { defensiveClone, betterMerge } from "../../util";
@@ -34,9 +33,7 @@ export class TileMoveAbsolute
     const { x, y, z } = this.args.offset.args;
     return !!(x || y || z);
   }
-  get hasSpeed(): boolean {
-    return this.args.speed === 100 ? false : true;
-  }
+  get hasSpeed(): boolean { return this.args.speed !== 100; }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {

@@ -27,7 +27,7 @@ export const TileTakePhoto = (props: StepParams) =>
           <Link to={"/app/designer/photos"}>
             {t("photos panel")}
           </Link>.
-          </p>
+        </p>
       </Col>
     </Row>
   </StepWrapper>;

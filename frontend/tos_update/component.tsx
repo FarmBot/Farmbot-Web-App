@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import axios from "axios";
 import { fun as log, error as logError, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
@@ -11,15 +11,14 @@ import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { DEFAULT_APP_PAGE } from "../front_page/front_page";
 
-interface Props { }
 interface State {
   email: string;
   password: string;
   agree_to_terms: boolean;
 }
 
-export class TosUpdate extends React.Component<Props, Partial<State>> {
-  constructor(props: Props) {
+export class TosUpdate extends React.Component<{}, Partial<State>> {
+  constructor(props: {}) {
     super(props);
     this.submit = this.submit.bind(this);
     this.state = { agree_to_terms: false };

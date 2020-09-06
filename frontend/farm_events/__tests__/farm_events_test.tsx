@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { PureFarmEvents } from "../farm_events";
 import {
   calendarRows,
@@ -67,7 +67,7 @@ describe("<PureFarmEvents/>", () => {
       value: () => ({ scrollTo: mockScrollTo }), configurable: true
     });
     const wrapper = shallow(<PureFarmEvents {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const instance = wrapper.instance() as any;
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();
@@ -80,7 +80,7 @@ describe("<PureFarmEvents/>", () => {
       value: () => { }, configurable: true
     });
     const wrapper = shallow(<PureFarmEvents {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const instance = wrapper.instance() as any;
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();

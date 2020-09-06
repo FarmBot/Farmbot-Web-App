@@ -20,8 +20,6 @@ export interface DangerousDeleteProps {
   onClick(payload: DeletionRequest): Thunk;
 }
 
-export interface DangerousDeleteState extends DeletionRequest { }
-
 export interface SettingsPropTypes {
   user: TaggedUser;
   onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;

@@ -76,8 +76,7 @@ export const isWDENVKey = (key: unknown): key is WDENVKey =>
   (EVERY_WD_KEY as string[]).includes("" + key);
 
 export const namespace = <T>(
-  prefix: "WEED_DETECTOR_" | "CAMERA_CALIBRATION_") =>
-  (key: T): WDENVKey => {
+  prefix: "WEED_DETECTOR_" | "CAMERA_CALIBRATION_") => (key: T): WDENVKey => {
     const namespacedKey = prefix + key;
     if (isWDENVKey(namespacedKey)) {
       return namespacedKey;

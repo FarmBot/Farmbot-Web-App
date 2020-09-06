@@ -245,7 +245,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
 
-  it(`returns "*Empty*" calendar row after event is over`, () => {
+  it("returns '*Empty*' calendar row after event is over", () => {
     const testTime = moment("2017-12-27T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
       fakeRegFEResources().index, fakeTimeSettings(), testTime);

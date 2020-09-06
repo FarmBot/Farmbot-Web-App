@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { BlurableInput, BIProps } from "../blurable_input";
 import { error } from "../../toast/toast";
@@ -59,7 +59,7 @@ describe("<BlurableInput />", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
-  it("checks for non-number input", () => {
+  it("allows empty input", () => {
     const p = fakeProps();
     p.type = "number";
     p.allowEmpty = true;

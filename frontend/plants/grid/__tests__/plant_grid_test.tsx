@@ -7,7 +7,7 @@ jest.mock("../../../api/crud", () => ({
   init: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
@@ -103,7 +103,7 @@ describe("PlantGrid", () => {
       "Please make a grid with less than 100 points");
   });
 
-  it("discards unsaved changes", async () => {
+  it("discards unsaved changes", () => {
     window.confirm = jest.fn(() => false);
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);

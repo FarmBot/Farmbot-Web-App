@@ -1,13 +1,11 @@
 import thunk from "redux-thunk";
-import { applyMiddleware, compose } from "redux";
+import { Store, Middleware, applyMiddleware, compose } from "redux";
 import { EnvName, ReduxAction } from "./interfaces";
 import { Actions } from "../constants";
 import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 import { revertToEnglishMiddleware } from "./revert_to_english_middleware";
 import { versionChangeMiddleware } from "./version_tracker_middleware";
 import { Everything } from "../interfaces";
-import { Middleware } from "redux";
-import { Store } from "redux";
 import { refilterLogsMiddleware } from "./refilter_logs_middleware";
 
 export interface MW extends Middleware {
@@ -33,7 +31,7 @@ export function getMiddleware(env: EnvName) {
   const middlewareFns = mwConfig
     .filter(function (mwc) { return (mwc.env === env) || (mwc.env === "*"); })
     .map((mwc) => mwc.fn);
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wow = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
   const dtCompose = wow?.({
     actionsBlacklist: [

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SpecialStatus } from "farmbot";
 import { t } from "../i18next_wrapper";
 
@@ -35,8 +35,7 @@ export function SaveBtn(props: SaveBtnProps) {
   const { savedText, onClick, hidden, disabled } = props;
   const statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
   const klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
-  const spinnerEl = (props.status === SpecialStatus.SAVING) ?
-    spinner : "";
+  const spinnerEl = (props.status === SpecialStatus.SAVING) ? spinner : "";
 
   return <button onClick={onClick} title={t("save")}
     disabled={disabled}

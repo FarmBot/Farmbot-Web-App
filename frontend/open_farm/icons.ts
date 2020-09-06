@@ -20,6 +20,7 @@ export interface OFCropResponse {
 }
 
 export function svgToUrl(xml: string | undefined): string {
-  return xml ?
-    (DATA_URI + encodeURIComponent(xml)) : DEFAULT_ICON;
+  return xml
+    ? (DATA_URI + encodeURIComponent(xml))
+    : DEFAULT_ICON;
 }

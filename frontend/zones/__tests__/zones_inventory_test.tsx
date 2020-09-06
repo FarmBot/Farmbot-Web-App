@@ -5,7 +5,8 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/crud", () => ({ initSaveGetId: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
+import { act } from "react-dom/test-utils";
 import { mount, shallow } from "enzyme";
 import {
   RawZones as Zones, ZonesProps, mapStateToProps,
@@ -27,12 +28,6 @@ describe("<Zones> />", () => {
   it("renders no zones", () => {
     const wrapper = mount(<Zones {...fakeProps()} />);
     expect(wrapper.text()).toContain("No zones yet.");
-  });
-
-  it("changes search term", () => {
-    const wrapper = shallow<Zones>(<Zones {...fakeProps()} />);
-    wrapper.find(SearchField).simulate("change", "0");
-    expect(wrapper.state().searchTerm).toEqual("0");
   });
 
   it("navigates to zone info", () => {
@@ -59,7 +54,7 @@ describe("<Zones> />", () => {
     p.zones[0].body.name = "zone 0";
     p.zones[1].body.name = "zone 1";
     const wrapper = mount(<Zones {...p} />);
-    wrapper.setState({ searchTerm: "0" });
+    act(() => wrapper.find(SearchField).props().onChange("0"));
     expect(wrapper.text()).not.toContain("zone 1");
   });
 

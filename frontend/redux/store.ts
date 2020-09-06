@@ -12,7 +12,7 @@ function dev(): Store {
 }
 
 function prod(): Store {
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return createStore(rootReducer, ({} as any), getMiddleware("production"));
 }
 

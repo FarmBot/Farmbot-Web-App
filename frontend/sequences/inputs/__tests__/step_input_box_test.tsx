@@ -10,7 +10,7 @@ import { InputUnknown } from "../input_unknown";
 describe("StepInputBox", () => {
   it("handles unknown `field` via <InputUnknown/>", () => {
     const props: DeepPartial<StepInputProps> = {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       field: ("something else" as any)
     };
     StepInputBox(props as StepInputProps);

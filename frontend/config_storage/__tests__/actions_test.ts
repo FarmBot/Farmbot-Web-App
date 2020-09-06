@@ -49,7 +49,7 @@ describe("setWebAppConfigValue", () => {
   });
 
   it("fails to set a value", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockConfig = undefined as any;
     const action = () => setWebAppConfigValue(NumericSetting.fun_log, 1)(
       jest.fn(), fakeState);

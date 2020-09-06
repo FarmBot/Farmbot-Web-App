@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
@@ -159,10 +159,12 @@ export const PinNumberInputGroup = (props: {
   setSelectedPin: (pin: number | undefined) => void
 }) => {
   const { pinNumberInput, boundPins, setSelectedPin } = props;
-  const selectedPinNumber = isNumber(pinNumberInput) ? {
-    label: generatePinLabel(pinNumberInput),
-    value: "" + pinNumberInput
-  } : undefined;
+  const selectedPinNumber = isNumber(pinNumberInput)
+    ? {
+      label: generatePinLabel(pinNumberInput),
+      value: "" + pinNumberInput
+    }
+    : undefined;
   return <Row>
     <Col xs={2}>
       <Popover position={Position.TOP}>
@@ -221,10 +223,12 @@ export const ActionTargetDropDown = (props: {
 }) => {
   const { specialActionInput, setSpecialAction } = props;
 
-  const selectedSpecialAction = specialActionInput ? {
-    label: getSpecialActionLabel(specialActionInput),
-    value: "" + specialActionInput
-  } : undefined;
+  const selectedSpecialAction = specialActionInput
+    ? {
+      label: getSpecialActionLabel(specialActionInput),
+      value: "" + specialActionInput
+    }
+    : undefined;
 
   return <FBSelect
     key={"special_action_input_" + specialActionInput}

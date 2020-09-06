@@ -37,11 +37,7 @@ describe("attachEventListeners", () => {
       "message",
       "reconnect",
     ].map(e => {
-      if (dev.client) {
-        expect(dev.client.on).toHaveBeenCalledWith(e, expect.any(Function));
-      } else {
-        fail("Bad mock");
-      }
+      expect(dev.client?.on).toHaveBeenCalledWith(e, expect.any(Function));
     });
     expect(dev.readStatus).toHaveBeenCalled();
     expect(dev.client && dev.client.subscribe).toHaveBeenCalled();

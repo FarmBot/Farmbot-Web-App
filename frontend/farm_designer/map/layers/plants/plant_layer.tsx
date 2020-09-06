@@ -46,7 +46,8 @@ export function PlantLayer(props: PlantLayerProps) {
         animate={animate} />;
       const style: React.SVGProps<SVGGElement>["style"] =
         (props.interactions && p.body.id)
-          ? { cursor: "pointer" } : { pointerEvents: "none" };
+          ? { cursor: "pointer" }
+          : { pointerEvents: "none" };
       const wrapperProps = {
         className: "plant-link-wrapper",
         style,

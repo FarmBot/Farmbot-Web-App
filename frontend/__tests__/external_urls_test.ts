@@ -1,7 +1,7 @@
 jest.unmock("../external_urls");
 import { ExternalUrl } from "../external_urls";
 
-/* tslint:disable:max-line-length */
+/* eslint-disable max-len */
 
 describe("ExternalUrl", () => {
   it("returns urls", () => {

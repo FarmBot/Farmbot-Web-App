@@ -81,8 +81,9 @@ export function commitBulkEditor(): Thunk {
       if (selectedSequenceUUID) {
         const sequence =
           findSequence(resources.index, selectedSequenceUUID).body;
-        const groupedItems = weeks.length > 0 ?
-          groupRegimenItemsByWeek(weeks, dailyOffsetMs, sequence) : undefined;
+        const groupedItems = weeks.length > 0
+          ? groupRegimenItemsByWeek(weeks, dailyOffsetMs, sequence)
+          : undefined;
         // Proceed only if days are selected in the scheduler.
         if (groupedItems && groupedItems.length > 0) {
           const regimen = findRegimen(resources.index, currentRegimen);

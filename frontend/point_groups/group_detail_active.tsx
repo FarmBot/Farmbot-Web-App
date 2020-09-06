@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
 import { DeleteButton } from "../ui/delete_button";
@@ -128,7 +128,8 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
     </label>
     <Help text={`${t("Click plants in map to add or remove.")} ${(
       props.pointsSelectedByGroup.length != props.group.body.point_ids.length)
-      ? t(ToolTips.CRITERIA_SELECTION_COUNT) : ""}`} />
+      ? t(ToolTips.CRITERIA_SELECTION_COUNT)
+      : ""}`} />
     <i onClick={props.toggleIconShow}
       className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
       title={props.iconDisplay

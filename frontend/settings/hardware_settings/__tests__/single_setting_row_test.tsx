@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { SingleSettingRow, SingleSettingRowProps } from "../single_setting_row";
 import { DeviceSetting } from "../../../constants";
@@ -18,7 +18,7 @@ describe("<SingleSettingRow />", () => {
     expect(wrapper.html()).toContain("centered-button-div");
   });
 
-  it("renders button", () => {
+  it("renders input", () => {
     const p = fakeProps();
     p.settingType = "input";
     const wrapper = mount(<SingleSettingRow {...p} />);

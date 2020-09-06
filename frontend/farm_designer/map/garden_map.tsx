@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BooleanSetting } from "../../session_keys";
 import { closePlantInfo, unselectPlant } from "./actions";
 import {
@@ -82,8 +82,9 @@ export class GardenMap extends
   }
 
   get pointsSelectedByGroup(): TaggedPoint[] {
-    return this.group ?
-      pointsSelectedByGroup(this.group, this.props.allPoints) : [];
+    return this.group
+      ? pointsSelectedByGroup(this.group, this.props.allPoints)
+      : [];
   }
 
   get groupSelected(): UUID[] {
@@ -533,8 +534,10 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps} />
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />
-  Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
-    botSize={this.props.botSize} /> : <g />
+  Bugs = () => showBugs()
+    ? <Bugs mapTransformProps={this.mapTransformProps}
+      botSize={this.props.botSize} />
+    : <g />
 
   /** Render layers in order from back to front. */
   render() {

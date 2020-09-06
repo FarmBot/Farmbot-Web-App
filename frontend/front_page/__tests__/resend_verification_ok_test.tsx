@@ -1,11 +1,9 @@
 jest.mock("axios", () => ({
-  post: () => Promise.resolve({
-    data: "whatever"
-  })
+  post: () => Promise.resolve({ data: "whatever" })
 }));
 
+import React from "react";
 import { mount } from "enzyme";
-import * as React from "react";
 import { ResendVerification } from "../resend_verification";
 import { get } from "lodash";
 import { API } from "../../api/index";
@@ -28,17 +26,13 @@ describe("resend_verification.tsx - base case", () => {
     expect(p.onGoBack).toHaveBeenCalledTimes(1);
   });
 
-  it("fires the `ok()` callback", (done) => {
+  it("fires the `ok()` callback", async () => {
     const p = props();
     const el = mount(<ResendVerification {...p} />);
-    expect.assertions(3);
-    el.find("button").last().simulate("click");
+    await el.find("button").last().simulate("click");
     const { calls } = p.ok.mock;
-    setImmediate(() => {
-      expect(p.no).not.toHaveBeenCalled();
-      expect(calls.length).toEqual(1);
-      expect(get(calls[0][0], "data", "NOT FOUND")).toEqual("whatever");
-      done();
-    });
+    expect(p.no).not.toHaveBeenCalled();
+    expect(calls.length).toEqual(1);
+    expect(get(calls[0][0], "data", "NOT FOUND")).toEqual("whatever");
   });
 });

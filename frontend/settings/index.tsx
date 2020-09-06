@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
@@ -134,7 +134,7 @@ export class RawDesignerSettings
         <ErrorHandling {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig} />
-        <PinBindings  {...commonProps}
+        <PinBindings {...commonProps}
           resources={resources}
           firmwareHardware={firmwareHardware} />
         <PinGuard {...commonProps}

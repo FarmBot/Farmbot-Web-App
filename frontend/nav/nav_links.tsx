@@ -40,7 +40,7 @@ export const NavLinks = (props: NavLinksProps) =>
         </Link>)}
       <a className={"shop-link"} key={"shop"}
         draggable={false} onClick={props.close("mobileMenuOpen")}
-        href={ExternalUrl.Store.home} target={"_blank"}>
+        href={ExternalUrl.Store.home} target={"_blank"} rel={"noreferrer"}>
         <NavIconAndText panel={Panel.Shop} customMiniIcon={
           <div className={"external-icon"}>
             <i className="fa fa-external-link-square" />
