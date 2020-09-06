@@ -10,23 +10,16 @@ import {
   startPinging,
   PING_INTERVAL,
 } from "../ping_mqtt";
-import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
+import { Farmbot } from "farmbot";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
-const state: Partial<FarmBotInternalConfig> = {
+let state: Partial<FarmBotInternalConfig> = {
   LAST_PING_IN: 123,
   LAST_PING_OUT: 456
 };
 
 function fakeBot(): Farmbot {
   const fb: Partial<Farmbot> = {
-    rpcShim: jest.fn((_: RpcRequestBodyItem[]): RpcRequest => ({
-      kind: "rpc_request",
-      args: {
-        label: "ping",
-        priority: 0
-      }
-    })),
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
@@ -45,11 +38,19 @@ describe("ping util", () => {
     expect(readPing(bot, "out")).toEqual(456);
   });
 
+  it("handles missing LAST_PING_(IN|OUT)", () => {
+    state = {};
+    const bot = fakeBot();
+    expect(readPing(bot, "in")).toEqual(undefined);
+    expect(readPing(bot, "out")).toEqual(undefined);
+  });
+
   it("binds event handlers with startPinging()", async () => {
+    jest.useFakeTimers();
     const bot = fakeBot();
     await startPinging(bot);
-    setTimeout(() => {
-      expect(bot.ping).toHaveBeenCalled();
-    }, PING_INTERVAL + 10);
+    expect(bot.ping).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(PING_INTERVAL + 10);
+    expect(bot.ping).toHaveBeenCalledTimes(2);
   });
 });

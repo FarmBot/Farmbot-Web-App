@@ -13,7 +13,7 @@ jest.mock("../../../config_storage/actions", () => ({
 
 import { HardwareState } from "../../../devices/interfaces";
 import {
-  incomingLegacyStatus,
+  incomingStatus,
   actOnChannelName,
   showLogOnScreen,
   TITLE,
@@ -56,8 +56,8 @@ describe("readStatus()", () => {
 describe("incomingStatus", () => {
   it("creates an action", () => {
     const stub = {} as HardwareState;
-    const result = incomingLegacyStatus(stub);
-    expect(result.type).toEqual(Actions.LEGACY_BOT_CHANGE);
+    const result = incomingStatus(stub);
+    expect(result.type).toEqual(Actions.STATUS_UPDATE);
     expect(result.payload).toEqual(stub);
   });
 });

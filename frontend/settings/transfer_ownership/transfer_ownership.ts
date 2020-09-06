@@ -1,7 +1,6 @@
-import { Farmbot } from "farmbot";
+import { Farmbot, rpcRequest } from "farmbot";
 import { createTransferCert } from "./create_transfer_cert";
 import { toPairs } from "../../util";
-import { getDevice } from "../../device";
 
 export interface TransferProps {
   email: string;
@@ -15,7 +14,7 @@ export async function transferOwnership(input: TransferProps): Promise<void> {
   try {
     const secret = await createTransferCert(input);
     const body = toPairs({ email, secret });
-    await device.send(getDevice().rpcShim([{
+    await device.send(rpcRequest([{
       kind: "change_ownership", args: {}, body
     }]));
     return Promise.resolve();

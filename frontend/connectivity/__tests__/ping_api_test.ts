@@ -3,8 +3,9 @@ jest.mock("../index", () => ({
   dispatchNetworkUp: jest.fn(),
 }));
 
+let mockResponse: Promise<void> = Promise.reject("Simulated failure");
 jest.mock("axios", () => ({
-  get: jest.fn((_url: string) => Promise.reject("Simulated failure")),
+  get: jest.fn(() => mockResponse),
 }));
 
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
@@ -20,5 +21,12 @@ describe("pingAPI()", () => {
     await pingAPI();
     expect(dispatchNetworkDown).toHaveBeenCalled();
     expect(dispatchNetworkUp).not.toHaveBeenCalled();
+  });
+
+  it("calls dispatchNetworkUp() when API connectivity succeeds", async () => {
+    mockResponse = Promise.resolve();
+    await pingAPI();
+    expect(dispatchNetworkDown).not.toHaveBeenCalled();
+    expect(dispatchNetworkUp).toHaveBeenCalled();
   });
 });

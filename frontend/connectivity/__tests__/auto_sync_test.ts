@@ -117,10 +117,10 @@ describe("routeMqttData", () => {
   it("tosses out irrelevant data", () => {
     const other = "something/else";
     expect(routeMqttData(other, toBinary({})).status).toEqual("SKIP");
-    const status_v8 = "bot/device_0/status_v8/configuration/auto_sync";
-    expect(routeMqttData(status_v8, toBinary({})).status).toEqual("SKIP");
     const sync = "bot/device_0/sync/Resource/0";
     expect(routeMqttData(sync, toBinary({})).status).not.toEqual("SKIP");
+    const syncEdgeCase = "bot/device_0/sync/Resource/";
+    expect(routeMqttData(syncEdgeCase, toBinary({})).status).not.toEqual("SKIP");
   });
 
   it("tosses out data missing an ID", () => {
