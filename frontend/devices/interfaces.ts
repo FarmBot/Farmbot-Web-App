@@ -57,6 +57,7 @@ export enum Feature {
   update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",
+  z2_firmware_params = "z2_firmware_params",
 }
 
 /** Object fetched from ExternalUrl.featureMinVersions. */
