@@ -19,6 +19,7 @@ import { ResourceName } from "farmbot";
 import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
+import { auth } from "../__test_support__/fake_state/token";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -44,6 +45,7 @@ const fakeProps = (): AppProps => ({
   env: {},
   alerts: [],
   apiFirmwareValue: undefined,
+  authAud: undefined,
 });
 
 describe("<App />: Controls Pop-Up", () => {
@@ -144,6 +146,8 @@ describe("<App />: NavBar", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
+    state.auth = auth;
+    state.auth.token.unencoded.aud = "unknown";
     const config = fakeWebAppConfig();
     config.body.x_axis_inverted = true;
     state.resources = buildResourceIndex([config]);
@@ -152,10 +156,12 @@ describe("mapStateToProps()", () => {
     expect(result.axisInversion.x).toEqual(true);
     expect(result.autoSync).toEqual(false);
     expect(result.env).toEqual({ fake: "value" });
+    expect(result.authAud).toEqual("unknown");
   });
 
   it("returns api props", () => {
     const state = fakeState();
+    state.auth = undefined;
     const config = fakeFbosConfig();
     config.body.auto_sync = true;
     const fakeEnv = fakeFarmwareEnv();
@@ -165,5 +171,6 @@ describe("mapStateToProps()", () => {
     const result = mapStateToProps(state);
     expect(result.autoSync).toEqual(true);
     expect(result.env).toEqual({ [fakeEnv.body.key]: fakeEnv.body.value });
+    expect(result.authAud).toEqual(undefined);
   });
 });

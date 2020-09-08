@@ -34,7 +34,12 @@ import { fetchReleases, fetchLatestGHBetaRelease } from "../../devices/actions";
 const mockToken = (): AuthState => ({
   token: {
     encoded: "---",
-    unencoded: { iss: "iss", os_update_server: "os_update_server", jti: "---" }
+    unencoded: {
+      iss: "iss",
+      os_update_server: "os_update_server",
+      jti: "---",
+      aud: "unknown",
+    }
   }
 });
 
