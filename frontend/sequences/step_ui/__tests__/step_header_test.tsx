@@ -16,14 +16,14 @@ describe("<StepHeader />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<StepHeader  {...fakeProps()} />);
+    const wrapper = mount(<StepHeader {...fakeProps()} />);
     const div = wrapper.find("div").at(2);
     expect(div.hasClass("step-header")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
   });
 
   it("renders with children", () => {
-    const wrapper = mount(<StepHeader  {...fakeProps()} />);
+    const wrapper = mount(<StepHeader {...fakeProps()} />);
     expect(wrapper.text()).toContain("child");
   });
 

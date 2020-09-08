@@ -48,13 +48,16 @@ export const LocationForm =
     });
     const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
     const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-    const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
-      label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
-    }))] : [];
+    const variableListItems = displayVariables
+      ? [PARENT(determineVarDDILabel({
+        label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
+      }))]
+      : [];
     const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, variableListItems, displayGroups);
-    const list = props.customFilterRule ?
-      unfiltered.filter(props.customFilterRule) : unfiltered;
+    const list = props.customFilterRule
+      ? unfiltered.filter(props.customFilterRule)
+      : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
     if (variable.default) {

@@ -10,6 +10,13 @@ describe("FBToast", () => {
     return [child, parent];
   };
 
+  const mouseEvent = (
+    children?: { style: Partial<CSSStyleDeclaration> }[],
+    add = jest.fn(),
+  ): MouseEvent => ({
+    currentTarget: { children: [{}, {}, { children }], classList: { add } }
+  }) as unknown as MouseEvent;
+
   it("instantiates", () => {
     const [instance, parent] = newToast();
 
@@ -35,11 +42,7 @@ describe("FBToast", () => {
       { style: { animationPlayState: "Y" } },
       { style: { animationPlayState: "Z" } },
     ];
-    const fakeEvent: MouseEvent = {
-      currentTarget: { children: [{}, {}, { children }] }
-      // tslint:disable-next-line:no-any
-    } as any;
-    i.onEnter(fakeEvent);
+    i.onEnter(mouseEvent(children));
     const playState = children.map(x => x.style.animationPlayState);
     expect(playState).toEqual(["paused", "paused", "paused"]);
   });
@@ -52,27 +55,20 @@ describe("FBToast", () => {
       { style: { animationPlayState: "Y" } },
       { style: { animationPlayState: "Z" } },
     ];
-    const fakeEvent: MouseEvent = {
-      currentTarget: { children: [{}, {}, { children }] }
-      // tslint:disable-next-line:no-any
-    } as any;
-    i.onLeave(fakeEvent);
+    i.onLeave(mouseEvent(children));
     const playState = children.map(x => x.style.animationPlayState);
     expect(playState).toEqual(["running", "running", "running"]);
   });
 
-  it("handles clicks", (done) => {
+  it("handles clicks", () => {
+    jest.useFakeTimers();
     const [i] = newToast();
     i.detach = jest.fn();
-    const e =
-      ({ currentTarget: { classList: { add: jest.fn() } } });
-    // tslint:disable-next-line:no-any
-    i.onClick(e as any);
-    expect(e.currentTarget.classList.add).toHaveBeenCalledWith("poof");
-    setTimeout(() => {
-      expect(i.detach).toHaveBeenCalled();
-      done();
-    }, 200 * 1.1);
+    const add = jest.fn();
+    i.onClick(mouseEvent([], add));
+    jest.advanceTimersByTime(200 * 1.1);
+    expect(add).toHaveBeenCalledWith("poof");
+    expect(i.detach).toHaveBeenCalled();
   });
 
   it("attaches to the DOM", () => {

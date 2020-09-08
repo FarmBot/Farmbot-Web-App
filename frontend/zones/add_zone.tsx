@@ -11,15 +11,11 @@ export interface AddZoneProps {
   dispatch: Function;
 }
 
-export interface AddZoneState {
-}
-
 export const mapStateToProps = (props: Everything): AddZoneProps => ({
   dispatch: props.dispatch,
 });
 
-export class RawAddZone extends React.Component<AddZoneProps, AddZoneState> {
-  state: AddZoneState = {};
+export class RawAddZone extends React.Component<AddZoneProps, {}> {
   render() {
     return <DesignerPanel panelName={"add-zone"} panel={Panel.Zones}>
       <DesignerPanelHeader

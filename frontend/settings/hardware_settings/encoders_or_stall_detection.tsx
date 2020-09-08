@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting, Content } from "../../constants";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
@@ -11,7 +11,7 @@ import { SpacePanelHeader } from "./space_panel_header";
 import { Feature } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 
-// tslint:disable-next-line:cyclomatic-complexity
+// eslint-disable-next-line complexity
 export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
 
   const { encoders_or_stall_detection } = props.controlPanelState;

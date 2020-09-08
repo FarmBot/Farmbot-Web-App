@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
@@ -26,7 +26,7 @@ function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[]
   const last = arr[arr.length - 1]; // most recent item in array
   if (update?.coord &&
     (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
-    arr.push(update);  // unique addition
+    arr.push(update); // unique addition
   } else { // nothing new to add, increase water circle size if watering
     if (watering && last && isNumber(last.water)) { last.water += 1; }
   }

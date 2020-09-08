@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ActivePlantDragHelper } from "../active_plant_drag_helper";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
@@ -26,7 +26,8 @@ describe("<ActivePlantDragHelper/>", () => {
     ["drag-helpers",
       "coordinates-tooltip",
       "long-crosshair",
-      "short-crosshair"].map(string =>
+      "short-crosshair"]
+      .map(string =>
         expect(wrapper.html()).toContain(string));
   });
 

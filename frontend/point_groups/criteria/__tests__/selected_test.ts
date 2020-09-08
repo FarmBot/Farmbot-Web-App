@@ -45,7 +45,7 @@ describe("eqCriteriaSelected()", () => {
 });
 
 describe("criteriaHasKey()", () => {
-  it("has key", () => {
+  it("has string_eq key", () => {
     const criteria = fakeCriteria();
     criteria.string_eq = { plant_stage: ["planted"] };
     const result = criteriaHasKey(criteria, ["string_eq"], "plant_stage");
@@ -59,7 +59,7 @@ describe("criteriaHasKey()", () => {
     expect(result).toBeFalsy();
   });
 
-  it("has key", () => {
+  it("has number_eq key", () => {
     const criteria = fakeCriteria();
     criteria.number_eq = { x: [0] };
     const result = criteriaHasKey(criteria, ["number_eq"], "x");

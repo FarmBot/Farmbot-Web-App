@@ -51,6 +51,9 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           showPins: this.props.showPins,
           expandStepOptions: this.props.expandStepOptions,
         };
+        const hovered = this.props.visualized && this.props.hoveredStep === tag
+          ? "hovered"
+          : "";
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
           <AddCommandButton dispatch={dispatch} index={index} />
@@ -60,9 +63,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
             step={currentStep}
             intent="step_move"
             draggerId={index}>
-            <div className={`sequence-step ${
-              this.props.visualized && this.props.hoveredStep === tag
-                ? "hovered" : ""}`}
+            <div className={`sequence-step ${hovered}`}
               onMouseEnter={dispatch(hoverSequenceStep(tag))}
               onMouseLeave={dispatch(hoverSequenceStep(undefined))}>
               <ErrorBoundary fallback={<TileUnknown {...stepProps} />}>

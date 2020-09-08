@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   BlurableInput, Row, Col, FBSelect, NULL_CHOICE, DropDownItem, Help,
 } from "../../ui";
@@ -34,6 +34,7 @@ export class CameraCalibrationConfig
       wdEnvGet: this.wdEnvGet,
       onChange: this.props.onChange,
     };
+    const { calibrationZ } = this.props;
     return <div className={"camera-calibration-config"}>
       {!simple &&
         <div className={"camera-calibration-configs"}>
@@ -45,7 +46,7 @@ export class CameraCalibrationConfig
             label={t("Invert Hue Range Selection")} />
           <NumberBoxConfig {...commonProps}
             configKey={this.namespace("calibration_object_separation")}
-            label={t(`Calibration Object Separation`)}
+            label={t("Calibration Object Separation")}
             helpText={t(ToolTips.OBJECT_SEPARATION, {
               defaultSeparation: this.getDefault("calibration_object_separation")
             })} />
@@ -53,7 +54,7 @@ export class CameraCalibrationConfig
             <DropdownConfig {...commonProps}
               list={CALIBRATION_DROPDOWNS}
               configKey={this.namespace("calibration_along_axis")}
-              label={t(`Calibration Object Separation along axis`)}
+              label={t("Calibration Object Separation along axis")}
               helpText={t(ToolTips.CALIBRATION_OBJECT_AXIS, {
                 defaultAxis: this.getLabeledDefault("calibration_along_axis")
               })} />
@@ -63,7 +64,7 @@ export class CameraCalibrationConfig
         <Col xs={6}>
           <NumberBoxConfig {...commonProps}
             configKey={this.namespace("camera_offset_x")}
-            label={t(`Camera Offset X`)}
+            label={t("Camera Offset X")}
             helpText={t(ToolTips.CAMERA_OFFSET, {
               defaultX: this.getDefault("camera_offset_x"),
               defaultY: this.getDefault("camera_offset_y"),
@@ -72,7 +73,7 @@ export class CameraCalibrationConfig
         <Col xs={6}>
           <NumberBoxConfig {...commonProps}
             configKey={this.namespace("camera_offset_y")}
-            label={t(`Camera Offset Y`)}
+            label={t("Camera Offset Y")}
             helpText={t(ToolTips.CAMERA_OFFSET, {
               defaultX: this.getDefault("camera_offset_x"),
               defaultY: this.getDefault("camera_offset_y"),
@@ -83,7 +84,7 @@ export class CameraCalibrationConfig
         <DropdownConfig {...commonProps}
           list={ORIGIN_DROPDOWNS}
           configKey={this.namespace("image_bot_origin_location")}
-          label={t(`Origin Location in Image`)}
+          label={t("Origin Location in Image")}
           helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
             defaultOrigin: this.getLabeledDefault("image_bot_origin_location")
           })} />
@@ -92,7 +93,7 @@ export class CameraCalibrationConfig
         <Col xs={6} className={"config-results"}>
           <NumberBoxConfig {...commonProps}
             configKey={this.namespace("coord_scale")}
-            label={t(`Pixel coordinate scale`)}
+            label={t("Pixel coordinate scale")}
             helpText={t(ToolTips.COORDINATE_SCALE, {
               defaultScale: this.getDefault("coord_scale")
             })} />
@@ -100,7 +101,7 @@ export class CameraCalibrationConfig
         <Col xs={6} className={"config-results"}>
           <NumberBoxConfig {...commonProps}
             configKey={this.namespace("total_rotation_angle")}
-            label={t(`Camera rotation`)}
+            label={t("Camera rotation")}
             helpText={t(ToolTips.IMAGE_ROTATION_ANGLE, {
               defaultAngle: this.getDefault("total_rotation_angle")
             })} />
@@ -108,9 +109,8 @@ export class CameraCalibrationConfig
       </Row>
       <Row>
         <p title={JSON.stringify(this.props.calibrationImageCenter)}>
-          {!isUndefined(this.props.calibrationZ)
-            ? `${t("Camera calibrated at z-axis height")}: ${
-            this.props.calibrationZ}`
+          {!isUndefined(calibrationZ)
+            ? `${t("Camera calibrated at z-axis height")}: ${calibrationZ}`
             : t("Camera not yet calibrated.")}
         </p>
       </Row>

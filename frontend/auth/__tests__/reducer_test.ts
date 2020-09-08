@@ -5,7 +5,7 @@ import { AuthState } from "../interfaces";
 describe("Auth reducer", () => {
   function fakeToken(): AuthState {
     const output: Partial<AuthState> = {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       token: ({} as any)
     };
     return output as AuthState;

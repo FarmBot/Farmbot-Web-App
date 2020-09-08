@@ -14,8 +14,6 @@ import { capitalize, isNumber } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
-const TOOL: "Tool" = "Tool";
-
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
   const slots = selectAllToolSlotPointers(resources);
@@ -30,7 +28,7 @@ export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
 type PointerTypeName = Point["pointer_type"];
 type DropdownHeadingId =
   | PointerTypeName
-  | typeof TOOL
+  | "Tool"
   | "PointGroup"
   | "Other";
 
@@ -113,7 +111,7 @@ export const formatTool =
     return {
       label: dropDownName((name || "Untitled tool"), coordinate, gantryMounted),
       value: "" + id,
-      headingId: TOOL
+      headingId: "Tool",
     };
   };
 

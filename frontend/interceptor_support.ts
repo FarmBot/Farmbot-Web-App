@@ -41,7 +41,7 @@ export interface SafeError {
 }
 
 /** Prevents hard-to-find NPEs and type errors inside of interceptors. */
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isSafeError(x: SafeError | any): x is SafeError {
   return !!(
     (box(x).kind === "object") &&

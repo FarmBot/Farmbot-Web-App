@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { GardenSnapshotProps, GardenSnapshot } from "./garden_snapshot";
@@ -17,7 +17,8 @@ export const mapStateToProps = (props: Everything): GardenSnapshotProps => {
   const { openedSavedGarden } = props.resources.consumers.farm_designer;
   return {
     currentSavedGarden: openedSavedGarden
-      ? findSavedGarden(props.resources.index, openedSavedGarden) : undefined,
+      ? findSavedGarden(props.resources.index, openedSavedGarden)
+      : undefined,
     dispatch: props.dispatch,
     plantTemplates: selectAllPlantTemplates(props.resources.index),
   };

@@ -4,7 +4,7 @@ jest.mock("../step_tiles", () => ({
   move: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
@@ -42,7 +42,7 @@ describe("<StepIconGroup />", () => {
 
   it("moves step", () => {
     const wrapper = shallow(<StepIconGroup {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (wrapper.find("StepUpDownButtonPopover").props() as any).onMove(-1)();
     expect(move).toHaveBeenCalledWith(expect.objectContaining({
       from: 0,

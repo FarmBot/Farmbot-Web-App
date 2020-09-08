@@ -57,7 +57,7 @@ enum PinMode {
   analog = 1,
 }
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isPinMode = (x: any): x is ALLOWED_PIN_MODES =>
   Object.values(PinMode).includes(x);
 

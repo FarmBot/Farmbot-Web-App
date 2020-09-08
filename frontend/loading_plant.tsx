@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { Color } from "./ui";
 import { t } from "./i18next_wrapper";
 
-/* tslint:disable:max-line-length */
+/* eslint-disable max-len */
 
 export function LoadingPlant({ animate }: { animate: boolean }) {
   const initialLoadingEl = document.getElementsByClassName("initial-loading-text");

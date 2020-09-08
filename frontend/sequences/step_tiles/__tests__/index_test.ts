@@ -388,7 +388,7 @@ describe("renderCeleryNode()", () => {
       expected: ""
     },
     {
-      // tslint:disable-next-line: no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       node: { kind: "unknown", args: { unknown: 0 } } as any,
       expected: "unknown"
     },

@@ -2,20 +2,13 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
-import {
-  TaggedTool,
-  TaggedToolSlotPointer,
-} from "farmbot";
+import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import { saveOK } from "../actions";
 import { hasId, arrayUnwrap } from "../util";
 import {
-  fakeWebcamFeed,
-  fakeSequence,
-  fakeToolSlot,
-  fakeUser,
+  fakeWebcamFeed, fakeSequence, fakeToolSlot, fakeUser,
 } from "../../__test_support__/fake_state/resources";
-import { resourceReducer } from "../reducer";
-import { emptyState } from "../reducer";
+import { resourceReducer, emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 import { chain } from "lodash";
 
@@ -44,7 +37,8 @@ const fakeIndex = buildResourceIndex().index;
 describe("findSlotByToolId", () => {
   it("returns undefined when not found", () => {
     const state = resourceReducer(buildResourceIndex(), saveOK(fakeTool));
-    expect(state.index.byKindAndId["Tool." + fakeTool.body.id]);
+    expect(state.index.byKindAndId["Tool." + fakeTool.body.id])
+      .toEqual(fakeTool.uuid);
     const result = Selector.findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeFalsy();
   });

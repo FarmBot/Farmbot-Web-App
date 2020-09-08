@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Help } from "../../ui/index";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
@@ -126,7 +126,8 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
       {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
       {DevSettings.futureFeaturesEnabled() && private_ip &&
         <div className={"log-stream-link"}>
-          <a href={`http://${private_ip}/logger`} target={"_blank"}>
+          <a href={`http://${private_ip}/logger`}
+            target={"_blank"} rel={"noreferrer"}>
             {t("debug log stream")}
             <i className="fa fa-external-link" />
           </a>

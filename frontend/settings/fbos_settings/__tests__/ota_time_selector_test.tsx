@@ -13,7 +13,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 describe("assertIsHour()", () => {
   it("asserts that a variable is an HOUR", () => {
     expect(assertIsHour(undefined)).toBe(undefined);
-    // tslint:disable-next-line:no-null-keyword
+    // eslint-disable-next-line no-null/no-null
     expect(assertIsHour(null as unknown as undefined)).toBe(undefined);
     const crashOn = (x: number) => () => assertIsHour(x);
     expect(assertIsHour(undefined)).toBe(undefined);
@@ -41,7 +41,7 @@ describe("<OtaTimeSelector />", () => {
     const p = fakeProps();
     const el = shallow(<OtaTimeSelector {...p} />);
     el.find(FBSelect).simulate("change", { label: "no", value: -1 });
-    // tslint:disable-next-line:no-null-keyword
+    // eslint-disable-next-line no-null/no-null
     expect(p.onChange).toHaveBeenCalledWith(null);
   });
 

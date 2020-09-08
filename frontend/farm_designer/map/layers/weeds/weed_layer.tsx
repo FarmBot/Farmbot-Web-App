@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedWeedPointer } from "farmbot";
 import { GardenWeed } from "./garden_weed";
 import { MapTransformProps } from "../../interfaces";
@@ -21,7 +21,8 @@ export interface WeedLayerProps {
 export function WeedLayer(props: WeedLayerProps) {
   const { visible, weeds, mapTransformProps } = props;
   return <g id={"weeds-layer"} style={props.interactions
-    ? { cursor: "pointer" } : { pointerEvents: "none" }}>
+    ? { cursor: "pointer" }
+    : { pointerEvents: "none" }}>
     {visible &&
       weeds.map(p => {
         const current = p.uuid === props.currentPoint;

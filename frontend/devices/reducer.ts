@@ -11,9 +11,6 @@ import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer, PingResultPayload } from "../connectivity/reducer";
 import { versionOK } from "../util";
-import { DeepPartial } from "redux";
-import { incomingLegacyStatus } from "../connectivity/connect_device";
-import { merge } from "lodash";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -158,12 +155,7 @@ export const botReducer = generateReducer<BotState>(initialState())
       s.osReleaseNotes = payload;
       return s;
     })
-  .add<DeepPartial<HardwareState>>(Actions.STATUS_UPDATE, (s, { payload }) => {
-    s.hardware = merge(s.hardware, payload);
-    legacyStatusHandler(s, incomingLegacyStatus(s.hardware));
-    return s;
-  })
-  .add<HardwareState>(Actions.LEGACY_BOT_CHANGE, legacyStatusHandler)
+  .add<HardwareState>(Actions.STATUS_UPDATE, statusHandler)
   .add<void>(Actions.STASH_STATUS, (s) => {
     stash(s);
     return s;
@@ -195,7 +187,7 @@ const stash = (s: BotState) => {
 const unstash = (s: BotState) =>
   s.hardware.informational_settings.sync_status = s.statusStash;
 
-function legacyStatusHandler(state: BotState,
+function statusHandler(state: BotState,
   action: ReduxAction<HardwareState>): BotState {
   const { payload } = action;
   state.hardware = payload;

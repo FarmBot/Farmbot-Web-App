@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 import { trim } from "./util";
 
 export namespace ToolTips {
@@ -1438,8 +1439,6 @@ export enum Actions {
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",
   SETTING_UPDATE_START = "SETTING_UPDATE_START",
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
-  /** Used in FBOS < v8. Remove ASAP. RC 21 JAN 18 */
-  LEGACY_BOT_CHANGE = "LEGACY_BOT_CHANGE",
   STATUS_UPDATE = "STATUS_UPDATE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
   FETCH_OS_UPDATE_INFO_ERROR = "FETCH_OS_UPDATE_INFO_ERROR",

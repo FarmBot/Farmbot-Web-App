@@ -37,7 +37,7 @@ export const updateLhs =
           }
           break;
         case PinGroupName.Position: // "x", "y", "z"
-        case PinGroupName.Pin:      // "pin0", "pin1", ...
+        case PinGroupName.Pin: // "pin0", "pin1", ...
           stepCopy.args.lhs = "" + ddi.value;
           break;
         default:

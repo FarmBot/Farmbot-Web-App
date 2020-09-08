@@ -20,7 +20,7 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  * possible and then revert to english as soon as we have a chance to read the
  * value of `web_app_config.disable_i18n`.
  */
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const x: DeepPartial<SyncResponse<TaggedWebAppConfig>> = action;
   if (x?.type === Actions.RESOURCE_READY

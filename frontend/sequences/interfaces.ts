@@ -9,9 +9,9 @@ import {
   FarmwareConfig,
   ALLOWED_MESSAGE_TYPES,
   Vector3,
+  TaggedSequence,
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
-import { TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -142,7 +142,7 @@ export enum MessageType {
 
 export const MESSAGE_TYPES = Object.keys(MessageType);
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
   MESSAGE_TYPES.includes(x);
 

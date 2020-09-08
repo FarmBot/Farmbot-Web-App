@@ -28,8 +28,9 @@ export function mapStateToProps(props: Everything): Props {
   const { index } = resources;
   const current = maybeGetRegimen(index, currentRegimen);
   const timeSettings = maybeGetTimeSettings(props.resources.index);
-  const calendar = current ?
-    generateCalendar(current, index, dispatch, timeSettings) : [];
+  const calendar = current
+    ? generateCalendar(current, index, dispatch, timeSettings)
+    : [];
 
   const calledSequences = (): UUID[] => {
     if (current) {

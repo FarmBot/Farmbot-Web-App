@@ -4,6 +4,7 @@ import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
+  ControlPanelState,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
@@ -11,7 +12,6 @@ import {
   ALLOWED_PIN_MODES,
   FirmwareHardware,
 } from "farmbot";
-import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
@@ -116,7 +116,7 @@ export function emergencyLock() {
 
 export function emergencyUnlock(force = false) {
   const noun = t("Emergency unlock");
-  if (force || confirm(t(`Are you sure you want to unlock the device?`))) {
+  if (force || confirm(t("Are you sure you want to unlock the device?"))) {
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));

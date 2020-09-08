@@ -7,7 +7,7 @@ import { overwrite } from "../../api/crud";
 describe("Contextual `Alert` creation", () => {
   it("toggles on", () => {
     const c = fakeFbosConfig();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     c.body.firmware_hardware = undefined as any;
     const s: AlertReducerState = {
       alerts: {}

@@ -15,7 +15,7 @@ describe("revertToEnglishMiddleware", () => {
     const tr = arrayUnwrap(newTaggedResource("WebAppConfig", data));
     const action = resourceReady("WebAppConfig", tr);
     expect(revertToEnglish).not.toHaveBeenCalled();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     revertToEnglishMiddleware.fn({} as any)(dispatch)(action);
     expect(revertToEnglish).toHaveBeenCalled();
     expect(revertToEnglishMiddleware.env).toBe("*");

@@ -1,4 +1,3 @@
-// tslint:disable-next-line:class-name
 class mockFarmbot { connect = () => Promise.resolve(this); }
 
 jest.mock("farmbot", () => {

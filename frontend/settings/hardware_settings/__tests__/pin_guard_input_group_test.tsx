@@ -26,7 +26,7 @@ describe("<PinGuardMCUInputGroup/>", () => {
     };
   };
 
-  it("calls toggle action ", () => {
+  it("calls toggle action", () => {
     const p = fakeProps();
     const wrapper = mount(<PinGuardMCUInputGroup {...p} />);
     wrapper.find("button").last().simulate("click");

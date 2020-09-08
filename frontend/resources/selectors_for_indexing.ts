@@ -16,9 +16,7 @@ import {
 } from "./selectors";
 import { assertUuid } from "./util";
 
-interface IndexLookupDictionary<T extends TaggedResource>
-  extends CowardlyDictionary<T> { }
-
+type IndexLookupDictionary<T extends TaggedResource> = CowardlyDictionary<T>;
 interface Indexer<T extends TaggedResource> {
   (index: ResourceIndex): IndexLookupDictionary<T>;
 }

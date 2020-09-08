@@ -43,13 +43,13 @@ export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
   </fieldset>;
 };
 
-export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
-  <fieldset className="tool-slot-direction-input">
+export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) => {
+  const iconClass = directionIconClass(props.toolPulloutDirection);
+  return <fieldset className="tool-slot-direction-input">
     <label>
       {t("slot direction")}
     </label>
-    <i className={"direction-icon "
-      + directionIconClass(props.toolPulloutDirection)}
+    <i className={`direction-icon ${iconClass}`}
       onClick={() => props.onChange({
         pullout_direction: newSlotDirection(props.toolPulloutDirection)
       })} />
@@ -61,6 +61,7 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
         pullout_direction: parseInt("" + ddi.value)
       })} />
   </fieldset>;
+};
 
 export const ToolSelection = (props: ToolSelectionProps) =>
   <FBSelect
@@ -78,7 +79,8 @@ export const ToolSelection = (props: ToolSelectionProps) =>
       ? {
         label: props.selectedTool.body.name || "untitled",
         value: "" + props.selectedTool.body.id
-      } : NULL_CHOICE}
+      }
+      : NULL_CHOICE}
     onChange={ddi =>
       props.onChange({ tool_id: parseInt("" + ddi.value) })} />;
 

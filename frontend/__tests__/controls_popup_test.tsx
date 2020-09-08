@@ -10,7 +10,7 @@ const mockDevice = {
 };
 jest.mock("../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { ControlsPopup, showControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
@@ -31,21 +31,16 @@ describe("<ControlsPopup />", () => {
     env: {},
   });
 
-  it("Has a false initial state", () => {
+  it("toggles open state", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    expect(wrapper.state("isOpen")).toBeFalsy();
-  });
-
-  it("Toggles state", () => {
-    const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    const parent = wrapper.find("i").first();
-    parent.simulate("click");
-    expect(wrapper.state("isOpen")).toBeTruthy();
+    expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
+    wrapper.find("i").first().simulate("click");
+    expect(wrapper.find(".controls-popup").hasClass("open")).toBeTruthy();
   });
 
   it("x axis is inverted", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    wrapper.setState({ isOpen: true });
+    wrapper.find("i").first().simulate("click");
     const button = wrapper.find("button").at(3);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
@@ -55,7 +50,7 @@ describe("<ControlsPopup />", () => {
 
   it("y axis is not inverted", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    wrapper.setState({ isOpen: true });
+    wrapper.find("i").first().simulate("click");
     const button = wrapper.find("button").at(1);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
@@ -65,7 +60,7 @@ describe("<ControlsPopup />", () => {
 
   it("disabled when closed", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    wrapper.setState({ isOpen: false });
+    expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
     [0, 1, 2, 3].map((i) => wrapper.find("button").at(i).simulate("click"));
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
   });
@@ -75,8 +70,8 @@ describe("<ControlsPopup />", () => {
     swappedProps.xySwap = true;
     swappedProps.axisInversion.x = false;
     const swapped = mount(<ControlsPopup {...swappedProps} />);
-    swapped.setState({ isOpen: true });
-    expect(swapped.state("isOpen")).toBeTruthy();
+    swapped.find("i").first().simulate("click");
+    expect(swapped.find(".controls-popup").hasClass("open")).toBeTruthy();
     const button = swapped.find("button").at(1);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
@@ -86,7 +81,7 @@ describe("<ControlsPopup />", () => {
 
   it("takes photo", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    wrapper.setState({ isOpen: true });
+    wrapper.find("i").first().simulate("click");
     const btn = wrapper.find("button").at(4);
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
@@ -98,7 +93,7 @@ describe("<ControlsPopup />", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
     const wrapper = mount(<ControlsPopup {...p} />);
-    wrapper.setState({ isOpen: true });
+    wrapper.find("i").first().simulate("click");
     const btn = wrapper.find("button").at(4);
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedLog, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
@@ -97,7 +97,7 @@ export const LogsTable = (props: LogsTableProps) => {
 /** Get current verbosity filter level for a message type from LogsState. */
 const getFilterLevel = (state: LogsState) =>
   (type: keyof Filters): number => {
-    const filterLevel = state[type as keyof Filters];
+    const filterLevel = state[type];
     return isNumber(filterLevel) ? filterLevel : 1;
   };
 

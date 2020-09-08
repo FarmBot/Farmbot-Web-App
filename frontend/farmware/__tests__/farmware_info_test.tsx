@@ -15,7 +15,7 @@ jest.mock("../../history", () => ({
   }
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
@@ -95,7 +95,7 @@ describe("<FarmwareInfo />", () => {
   it("doesn't update Farmware: missing name", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.farmware.name = undefined as any;
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 0, "Update");
@@ -112,7 +112,7 @@ describe("<FarmwareInfo />", () => {
   it("doesn't remove Farmware", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.farmware.name = undefined as any;
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");

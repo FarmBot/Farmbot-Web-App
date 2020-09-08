@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
 import { OpenFarmResults } from "./openfarm_search_results";
@@ -73,8 +73,9 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
           onChange={this.handleChange}
           onKeyPress={this.handleChange}
           autoFocus={true}
-          customRightIcon={this.showResultChangeSpinner ?
-            <Spinner radius={10} strokeWidth={3} /> : undefined} />
+          customRightIcon={this.showResultChangeSpinner
+            ? <Spinner radius={10} strokeWidth={3} />
+            : undefined} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"crop-catalog"}>
         <div className="crop-search-result-wrapper row">

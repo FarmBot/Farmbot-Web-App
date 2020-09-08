@@ -8,7 +8,7 @@ import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorRowProps } from "./interfaces";
 
-// tslint:disable-next-line:no-null-keyword
+// eslint-disable-next-line no-null/no-null
 const UNDEFINED = null as unknown as undefined;
 const IMMEDIATELY = -1;
 type PreferredHourFormat = "12h" | "24h";
@@ -118,6 +118,7 @@ export const changeOtaHour =
 
 export function assertIsHour(
   val: number | undefined): asserts val is (HOUR | undefined) {
+  // eslint-disable-next-line no-null/no-null
   if ((val === null) || (val === undefined)) {
     return;
   }
@@ -146,8 +147,9 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     .values(theTimeTable)
     .map(x => ({ ...x, label: t(x.label) }))
     .sort((_x, _y) => (_x.value > _y.value) ? 1 : -1);
-  const selectedItem = (typeof value == "number") ?
-    theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
+  const selectedItem = (typeof value == "number")
+    ? theTimeTable[value as HOUR]
+    : theTimeTable[DEFAULT_HOUR];
   return <Highlight settingName={DeviceSetting.osUpdateTime}>
     <Row>
       <Col xs={5}>

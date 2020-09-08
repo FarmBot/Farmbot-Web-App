@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import axios from "axios";
 import { error as log, success, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
@@ -147,7 +147,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         let errorMessage = prettyPrintApiErrors(error);
         if (errorMessage.toLowerCase().includes("not found")) {
           errorMessage =
-            `That email address is not associated with an account.`;
+            "That email address is not associated with an account.";
         }
         log(t(errorMessage));
       });
@@ -220,7 +220,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             {t("Welcome to the")}
             <br className={showFor(["xs"])} />
             &nbsp;
-              {t("FarmBot Web App")}
+            {t("FarmBot Web App")}
           </h1>
         </Col>
       </Row>

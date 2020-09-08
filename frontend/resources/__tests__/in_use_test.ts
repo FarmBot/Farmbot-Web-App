@@ -60,12 +60,11 @@ describe("in_use tracking at reducer level", () => {
   it("does not track self-referencing Sequences", () => {
     const selfReferential = fakeSequence();
     const sequence_id = selfReferential.body.id;
+    expect(sequence_id).toBeDefined();
     if (sequence_id) {
       selfReferential.body.body = [{ kind: "execute", args: { sequence_id } }];
       const { inUse } = testCase([selfReferential]);
       assertShape(inUse, {});
-    } else {
-      fail("Need an ID for this one.");
     }
   });
 

@@ -147,7 +147,8 @@ export const createSequenceMeta =
   (resources: ResourceIndex, sequence: TaggedSequence): VariableNameSet => {
     const collection = sequence.body.args.locals.body || [];
     const reducer = (acc: VariableNameSet, celeryNode: ScopeDeclarationBodyItem):
-      VariableNameSet => ({
+      VariableNameSet =>
+      ({
         ...acc,
         [celeryNode.args.label]: {
           celeryNode,

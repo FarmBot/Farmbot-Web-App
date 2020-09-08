@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Link } from "../link";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -25,7 +25,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
 
   get text(): JSX.Element {
     return <p>{`${t(Content.CROP_NOT_FOUND_INTRO)} `}
-      <a href={ExternalUrl.OpenFarm.newCrop} target="_blank">
+      <a href={ExternalUrl.OpenFarm.newCrop} target="_blank" rel={"noreferrer"}>
         {t(Content.CROP_NOT_FOUND_LINK)}
       </a>
     </p>;
@@ -45,7 +45,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
         return <Link
           key={resp.crop.slug}
           draggable={false}
-          to={`/app/designer/plants/crop_search/` + crop.slug.toString()}>
+          to={`/app/designer/plants/crop_search/${crop.slug}`}>
           <div className="plant-catalog-tile col-xs-6">
             <label>
               {crop.name}

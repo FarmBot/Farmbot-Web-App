@@ -8,8 +8,11 @@ type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
-export const BooleanSetting:
-  Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey> = {
+type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
+type NumericSettings = Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey>;
+type StringSettings = Record<WebAppStringConfigKeyAll, WebAppStringConfigKey>;
+
+export const BooleanSetting: BooleanSettings = {
   /** Move settings */
   x_axis_inverted: "x_axis_inverted",
   y_axis_inverted: "y_axis_inverted",
@@ -67,8 +70,7 @@ export const BooleanSetting:
   stub_config: "stub_config",
 };
 
-export const NumericSetting:
-  Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey> = {
+export const NumericSetting: NumericSettings = {
   /** Logs settings */
   assertion_log: "assertion_log",
   success_log: "success_log",
@@ -90,8 +92,7 @@ export const NumericSetting:
   device_id: "device_id",
 };
 
-export const StringSetting:
-  Record<WebAppStringConfigKeyAll, WebAppStringConfigKey> = {
+export const StringSetting: StringSettings = {
   /** Designer settings */
   photo_filter_begin: "photo_filter_begin",
   photo_filter_end: "photo_filter_end",

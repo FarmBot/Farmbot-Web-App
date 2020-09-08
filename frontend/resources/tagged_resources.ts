@@ -36,8 +36,9 @@ export interface TaggedResourceBase {
 export function getArrayStatus(i: TaggedResource[]): SpecialStatus {
   const r = betterCompact(chain(i).map(x => x.specialStatus).uniq().value());
   if (r.length) {
-    return (r.includes(SpecialStatus.SAVING)) ?
-      SpecialStatus.SAVING : SpecialStatus.DIRTY;
+    return (r.includes(SpecialStatus.SAVING))
+      ? SpecialStatus.SAVING
+      : SpecialStatus.DIRTY;
   } else {
     return SpecialStatus.SAVED;
   }

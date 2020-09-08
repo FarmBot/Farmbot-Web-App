@@ -1,6 +1,7 @@
 import * as Util from "../util";
 import { times } from "lodash";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { LocationData } from "farmbot";
 
 describe("util", () => {
   describe("scrollToBottom", () => {
@@ -30,7 +31,7 @@ describe("util", () => {
 
   describe("safeStringFetch", () => {
     const data = {
-      // tslint:disable-next-line:no-null-keyword
+      // eslint-disable-next-line no-null/no-null
       "null": null,
       "undefined": undefined,
       "number": 0,
@@ -150,8 +151,7 @@ describe("util", () => {
 
     it("returns valid location_data object when a partial is provided", () => {
       const result = Util.validBotLocationData(
-        // tslint:disable-next-line:no-any
-        { raw_encoders: { x: 123 } } as any);
+        { raw_encoders: { x: 123 } } as LocationData);
       expect(result).toEqual({
         position: { x: undefined, y: undefined, z: undefined },
         scaled_encoders: { x: undefined, y: undefined, z: undefined },

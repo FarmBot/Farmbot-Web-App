@@ -46,6 +46,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
       title={t("Download Photo")}
       href={props.imageUrl}
       target={"_blank"}
+      rel={"noreferrer"}
       download={true}>
       <i className={"fa fa-download"} />
     </a>

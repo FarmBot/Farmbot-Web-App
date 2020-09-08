@@ -3,16 +3,17 @@ jest.mock("../../history", () => ({
   getPathArray: () => [],
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
-import { RawPoints as Points, PointsProps } from "../point_inventory";
+import {
+  RawPoints as Points, PointsProps, mapStateToProps,
+} from "../point_inventory";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
 import { push } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { mapStateToProps } from "../point_inventory";
 import { SearchField } from "../../ui/search_field";
 import { PointSortMenu } from "../../farm_designer/sort_options";
 

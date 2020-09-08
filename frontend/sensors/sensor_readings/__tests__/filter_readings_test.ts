@@ -96,7 +96,7 @@ describe("filterSensorReadings()", () => {
     expect(result[0].body.z).toEqual(expected.z);
   });
 
-  it("filters by location", () => {
+  it("filters by location with deviation", () => {
     const expected = { x: 10, y: 20, z: undefined };
     const locations = [{ x: 1, y: 2, z: 3 }, { x: 0, y: 0, z: 0 }];
     const filters = sensorReadingsState();

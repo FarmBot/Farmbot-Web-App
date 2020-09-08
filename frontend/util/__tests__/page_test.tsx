@@ -24,7 +24,7 @@ describe("attachToRoot()", () => {
   }
   it("attaches page", () => {
     attachToRoot(Foo, { text: "Bar" });
-    expect(document.body.innerHTML).toEqual(`<div id="root"><p>Bar</p></div>`);
+    expect(document.body.innerHTML).toEqual("<div id=\"root\"><p>Bar</p></div>");
     expect(document.body.textContent).toEqual("Bar");
   });
 });
