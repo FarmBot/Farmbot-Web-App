@@ -54,13 +54,11 @@ describe Releases::Parse do
                         image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.fw",
                         version: "11.0.1",
                         platform: "rpi",
-                        channel: "stable",
                       })
     expect(output).to include({
                         image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw",
                         version: "11.0.1",
                         platform: "rpi3",
-                        channel: "stable",
                       })
   end
 
