@@ -60,6 +60,7 @@ export interface AppProps {
   apiFirmwareValue: FirmwareHardware | undefined;
   pings: PingDictionary;
   env: UserEnv;
+  authAud: string | undefined;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -93,6 +94,7 @@ export function mapStateToProps(props: Everything): AppProps {
     apiFirmwareValue: isFwHardwareValue(fwHardware) ? fwHardware : undefined,
     pings: props.bot.connectivity.pings,
     env,
+    authAud: props.auth?.token.unencoded.aud,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -149,6 +151,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         device={getDeviceAccountSettings(this.props.resources)}
         alerts={this.props.alerts}
         apiFirmwareValue={this.props.apiFirmwareValue}
+        authAud={this.props.authAud}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {showControlsPopup() &&

@@ -146,7 +146,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     updatePageInfo(getPathArray()[2] || "", getPathArray()[3]);
 
     return <ErrorBoundary>
-      <div className="nav-wrapper">
+      <div className={[
+        "nav-wrapper",
+        this.props.authAud == "staff" ? "red" : "",
+      ].join(" ")}>
         <nav role="navigation">
           <Row>
             <Col xs={12}>

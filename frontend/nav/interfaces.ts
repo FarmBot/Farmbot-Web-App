@@ -29,6 +29,7 @@ export interface NavBarProps {
   pings: PingDictionary;
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
+  authAud: string | undefined;
 }
 
 export interface NavBarState {

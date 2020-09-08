@@ -36,11 +36,13 @@ describe("<NavBar />", () => {
     pings: fakePings(),
     alerts: [],
     apiFirmwareValue: undefined,
+    authAud: undefined,
   });
 
   it("has correct parent className", () => {
     const wrapper = shallow(<NavBar {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("nav-wrapper")).toBeTruthy();
+    expect(wrapper.find("div").first().hasClass("red")).toBeFalsy();
   });
 
   it("closes nav menu", () => {
@@ -111,5 +113,12 @@ describe("<NavBar />", () => {
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.find(".saucer").length).toEqual(2);
     expect(wrapper.text().toLowerCase()).toContain("connectivity");
+  });
+
+  it("displays navbar visual warning for support tokens", () => {
+    const p = fakeProps();
+    p.authAud = "staff";
+    const wrapper = shallow(<NavBar {...p} />);
+    expect(wrapper.find("div").first().hasClass("red")).toBeTruthy();
   });
 });
