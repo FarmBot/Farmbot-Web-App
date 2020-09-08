@@ -24,7 +24,7 @@ export class RawAddToolSlot
       pointer_type: "ToolSlot", name: t("Slot"), meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
-      gantry_mounted: !hasUTM(this.props.firmwareHardware) ? true : false,
+      gantry_mounted: !hasUTM(this.props.firmwareHardware),
     });
     this.setState({ uuid: action.payload.uuid });
     this.props.dispatch(action);
@@ -44,8 +44,9 @@ export class RawAddToolSlot
   }
 
   get tool() {
-    return this.toolSlot ?
-      this.props.findTool(this.toolSlot.body.tool_id || 0) : undefined;
+    return this.toolSlot
+      ? this.props.findTool(this.toolSlot.body.tool_id || 0)
+      : undefined;
   }
 
   updateSlot = (toolSlot: TaggedToolSlotPointer) =>

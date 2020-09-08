@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { svgToUrl } from "../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch,
@@ -142,8 +142,9 @@ const AddPlantHereButton = (props: {
 }) => {
   const { botPosition, openedSavedGarden, cropName, slug, dispatch } = props;
   const { x, y } = botPosition;
-  const botXY = isNumber(x) && isNumber(y) ?
-    { x: round(x), y: round(y) } : undefined;
+  const botXY = isNumber(x) && isNumber(y)
+    ? { x: round(x), y: round(y) }
+    : undefined;
   const botXYLabel = botXY ? `(${botXY.x}, ${botXY.y})` : `(${t("unknown")})`;
   const click = () => botXY &&
     createPlant({
@@ -174,7 +175,8 @@ const CropDragInfoTile =
 const EditOnOpenFarm = ({ slug }: { slug: string }) =>
   <div className="edit-on-openfarm">
     <span>{t("Edit on")}&nbsp;</span>
-    <a href={ExternalUrl.OpenFarm.cropBrowse + slug} target="_blank"
+    <a href={ExternalUrl.OpenFarm.cropBrowse + slug}
+      target="_blank" rel={"noreferrer"}
       title={t("Open OpenFarm.cc in a new tab")}>
       {"OpenFarm"}
     </a>

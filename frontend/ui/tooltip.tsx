@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DocSlug, docLink } from ".";
 import { t } from "../i18next_wrapper";
 
@@ -9,35 +9,22 @@ export interface ToolTipProps {
   docPage?: DocSlug;
 }
 
-interface State {
-  isOpen: boolean;
-}
-
-export class ToolTip extends React.Component<ToolTipProps, Partial<State>> {
-  state: State = { isOpen: false };
-
-  private toggle = (property: keyof State) => () =>
-    this.setState({ [property]: !this.state[property] });
-
-  public render() {
-    const isOpen = this.state.isOpen ? "open" : "";
-    let { className } = this.props;
-    const { helpText } = this.props;
-    const cn = className ? className += " title-help" : "title-help";
-    return <div className={cn}>
-      <i className={`fa fa-question-circle title-help-icon`}
-        onClick={this.toggle("isOpen")} />
-      <div className={`title-help-text ${isOpen}`}>
-        <i className={"title-help-text-text"}>{t(helpText)}</i>
-        {this.props.docPage &&
-          <a
-            href={docLink(this.props.docPage)}
-            target="_blank">
-            {" " + t("Documentation")}
-            <i className="fa fa-external-link" />
-          </a>}
-        {this.props.children}
-      </div>
-    </div>;
-  }
-}
+export const ToolTip = (props: ToolTipProps) => {
+  const { helpText, className } = props;
+  const [isOpen, setIsOpen] = React.useState(false);
+  return <div className={["title-help", className].filter(x => x).join(" ")}>
+    <i className={"fa fa-question-circle title-help-icon"}
+      onClick={() => setIsOpen(!isOpen)} />
+    <div className={`title-help-text ${isOpen ? "open" : ""}`}>
+      <i className={"title-help-text-text"}>{t(helpText)}</i>
+      {props.docPage &&
+        <a
+          href={docLink(props.docPage)}
+          target="_blank" rel={"noreferrer"}>
+          {" " + t("Documentation")}
+          <i className="fa fa-external-link" />
+        </a>}
+      {props.children}
+    </div>
+  </div>;
+};

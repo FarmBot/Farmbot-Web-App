@@ -122,7 +122,7 @@ export class FBToast {
       return;
     }
     // TSC Thinks this is a node project :-\
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.intervalId = setInterval(this.doPolling, 100) as any;
   }
 }

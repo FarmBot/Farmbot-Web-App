@@ -1,17 +1,15 @@
-const on = jest.fn((_e: string, _cb: unknown) => undefined);
-const stub = () => Promise.resolve();
 const mockBot = {
   client: {
     subscribe: jest.fn(),
-    on
+    on: jest.fn(),
   },
-  on,
-  readStatus: jest.fn(stub),
-  setUserEnv: stub,
+  on: jest.fn(),
+  readStatus: jest.fn(() => Promise.resolve()),
+  setUserEnv: () => Promise.resolve(),
 };
 
-jest.mock("../../../device", () => { return { getDevice: () => mockBot }; });
-jest.mock("../../ping_mqtt", () => { return { startPinging: jest.fn() }; });
+jest.mock("../../../device", () => ({ getDevice: () => mockBot }));
+jest.mock("../../ping_mqtt", () => ({ startPinging: jest.fn() }));
 
 import { getDevice } from "../../../device";
 import { FbjsEventName } from "farmbot/dist/constants";
@@ -23,25 +21,23 @@ describe("attachEventListeners", () => {
     const dev = getDevice();
     attachEventListeners(dev, jest.fn(), jest.fn());
     [
-      FbjsEventName.legacy_status,
+      FbjsEventName.status,
       FbjsEventName.logs,
       FbjsEventName.malformed,
       FbjsEventName.offline,
       FbjsEventName.online,
       FbjsEventName.online,
       FbjsEventName.sent,
-      FbjsEventName.upsert,
       FbjsEventName.publicBroadcast,
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
+    expect(mockBot.readStatus).toHaveBeenCalledTimes(1);
+    mockBot.on.mock.calls[1][1]();
+    expect(mockBot.readStatus).toHaveBeenCalledTimes(2);
     [
       "message",
       "reconnect",
     ].map(e => {
-      if (dev.client) {
-        expect(dev.client.on).toHaveBeenCalledWith(e, expect.any(Function));
-      } else {
-        fail("Bad mock");
-      }
+      expect(dev.client?.on).toHaveBeenCalledWith(e, expect.any(Function));
     });
     expect(dev.readStatus).toHaveBeenCalled();
     expect(dev.client && dev.client.subscribe).toHaveBeenCalled();

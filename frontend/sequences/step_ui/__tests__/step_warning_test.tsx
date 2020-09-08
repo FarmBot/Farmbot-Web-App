@@ -1,7 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
-import { StepWarning } from "../step_warning";
-import { conflictsString } from "../step_warning";
+import { StepWarning, conflictsString } from "../step_warning";
 
 describe("<StepWarning />", () => {
   it("renders", () => {

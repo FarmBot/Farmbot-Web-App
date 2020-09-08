@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { history } from "../history";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
@@ -44,7 +44,7 @@ import { WeedInventoryItem } from "../weeds/weed_inventory_item";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { ToolTransformProps } from "../tools/interfaces";
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType => POINTER_TYPES.includes(x);
 
 export const validPointTypes =
@@ -273,7 +273,8 @@ export class RawSelectPlants
   get itemName() {
     const { value } = POINTER_TYPE_DDI_LOOKUP()[this.selectionPointType];
     const ITEM_NAME_LOOKUP:
-      Record<string, Record<"singular" | "plural", string>> = {
+      Record<string, Record<"singular" | "plural", string>> =
+    {
       "Plant": { singular: t("plant"), plural: t("plants") },
       "GenericPointer": { singular: t("point"), plural: t("points") },
       "Weed": { singular: t("weed"), plural: t("weeds") },

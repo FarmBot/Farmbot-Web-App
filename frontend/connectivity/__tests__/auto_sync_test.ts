@@ -117,10 +117,10 @@ describe("routeMqttData", () => {
   it("tosses out irrelevant data", () => {
     const other = "something/else";
     expect(routeMqttData(other, toBinary({})).status).toEqual("SKIP");
-    const status_v8 = "bot/device_0/status_v8/configuration/auto_sync";
-    expect(routeMqttData(status_v8, toBinary({})).status).toEqual("SKIP");
     const sync = "bot/device_0/sync/Resource/0";
     expect(routeMqttData(sync, toBinary({})).status).not.toEqual("SKIP");
+    const syncEdgeCase = "bot/device_0/sync/Resource/";
+    expect(routeMqttData(syncEdgeCase, toBinary({})).status).not.toEqual("SKIP");
   });
 
   it("tosses out data missing an ID", () => {
@@ -138,9 +138,10 @@ describe("routeMqttData", () => {
   it("handles well formed deletion data", () => {
     const results = routeMqttData("bot/device_9/sync/Sequence/1", toBinary({}));
     expect(results.status).toEqual("DELETE");
-    if (results.status !== "DELETE") { fail(); }
-    expect(results.id).toEqual(1);
-    expect(results.kind).toEqual("Sequence");
+    if (results.status == "DELETE") {
+      expect(results.id).toEqual(1);
+      expect(results.kind).toEqual("Sequence");
+    }
   });
 
   it("handles well formed update data", () => {
@@ -155,10 +156,10 @@ describe("routeMqttData", () => {
     const payl = toBinary(fake1);
     const results = routeMqttData("bot/device_9/sync/Sequence/1", payl);
     expect(results.status).toEqual("UPDATE");
-    if (results.status !== "UPDATE") { fail(); }
-
-    expect(results.id).toEqual(1);
-    expect(results.kind).toEqual("Sequence");
-    expect(results.body).toEqual(fake1.body);
+    if (results.status == "UPDATE") {
+      expect(results.id).toEqual(1);
+      expect(results.kind).toEqual("Sequence");
+      expect(results.body).toEqual(fake1.body);
+    }
   });
 });

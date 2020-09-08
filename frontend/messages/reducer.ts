@@ -31,8 +31,9 @@ const toggleAlert = (s: State, body: TaggedFbosConfig["body"]) => {
 };
 const handleFbosConf =
   (s: State, resource: TaggedResource): State => {
-    return (resource.kind === "FbosConfig") ?
-      toggleAlert(s, resource.body) : s;
+    return (resource.kind === "FbosConfig")
+      ? toggleAlert(s, resource.body)
+      : s;
   };
 
 const pickConfigs = (x: TaggedResource) => x.kind === "FbosConfig";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { readPin } from "../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../util";
@@ -19,10 +19,9 @@ interface CalcStyleProps {
 }
 
 const calcIndicatorStyle = ({ value, mode }: CalcStyleProps) => ({
-  left: `calc(${
-    (mode
-      ? value / 1024 * 0.95 // analog
-      : value / 2) // digital
+  left: `calc(${(mode
+    ? value / 1024 * 0.95 // analog
+    : value / 2) // digital
     * 100}%)`,
   width: `${mode ? 5 : 50}%`
 });
@@ -36,10 +35,12 @@ const calcValueStyle = ({ value, mode }: CalcStyleProps) => ({
 
 const SensorReadingDisplay =
   ({ label, value, mode }: SensorReadingDisplayProps) => {
-    const moistureSensor = label.toLowerCase().includes("moisture") ?
-      "moisture-sensor" : "";
-    const toolSensor = label.toLowerCase().includes("verification") ?
-      "tool-verification-sensor" : "";
+    const moistureSensor = label.toLowerCase().includes("moisture")
+      ? "moisture-sensor"
+      : "";
+    const toolSensor = label.toLowerCase().includes("verification")
+      ? "tool-verification-sensor"
+      : "";
     const valueLabel = toolSensor
       ? `${value} (${value ? t("NO TOOL") : t("TOOL ON")})`
       : value;

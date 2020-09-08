@@ -4,7 +4,7 @@ const mockDevice = {
 };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { OsUpdateButton } from "../os_update_button";
@@ -334,7 +334,7 @@ describe("<OsUpdateButton/>", () => {
   });
 
   it("handles undefined jobs", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     bot.hardware.jobs = undefined as any;
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();

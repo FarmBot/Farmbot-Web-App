@@ -1,7 +1,7 @@
 import { vectorGrid, initPlantGrid } from "../generate_grid";
 import { PlantGridData, PlantGridKey } from "../interfaces";
 
-export const testGridInputs = (): PlantGridData => ({ // primes...
+const testGridInputs = (): PlantGridData => ({
   startX: 11,
   startY: 31,
   spacingH: 5,

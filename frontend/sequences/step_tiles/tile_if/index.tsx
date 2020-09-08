@@ -33,20 +33,22 @@ export type Operator = "lhs"
   | "_then"
   | "_else";
 
-export const LHSOptions =
-  (resources: ResourceIndex, showPins: boolean,
-  ): DropDownItem[] => [
-      {
-        heading: true, headingId: PinGroupName.Position,
-        label: t("Positions"), value: 0,
-      },
-      { value: "x", label: t("X position"), headingId: "Position" },
-      { value: "y", label: t("Y position"), headingId: "Position" },
-      { value: "z", label: t("Z position"), headingId: "Position" },
-      ...peripheralsAsDropDowns(resources),
-      ...sensorsAsDropDowns(resources),
-      ...(showPins ? pinDropdowns(n => `pin${n}`) : []),
-    ];
+export const LHSOptions = (
+  resources: ResourceIndex,
+  showPins: boolean,
+): DropDownItem[] =>
+  [
+    {
+      heading: true, headingId: PinGroupName.Position,
+      label: t("Positions"), value: 0,
+    },
+    { value: "x", label: t("X position"), headingId: "Position" },
+    { value: "y", label: t("Y position"), headingId: "Position" },
+    { value: "z", label: t("Z position"), headingId: "Position" },
+    ...peripheralsAsDropDowns(resources),
+    ...sensorsAsDropDowns(resources),
+    ...(showPins ? pinDropdowns(n => `pin${n}`) : []),
+  ];
 
 export const operatorOptions: DropDownItem[] = [
   { value: "<", label: t("is less than") },
@@ -139,9 +141,11 @@ export const IfBlockDropDownHandler = (props: ThenElseParams) => {
 
   const sequenceId = selectedItem().value;
   const calleeUuid = sequenceId ?
-    findSequenceById(props.resources, sequenceId).uuid : undefined;
-  const calledSequenceVariableData = calleeUuid ?
-    props.resources.sequenceMetas[calleeUuid] : undefined;
+    findSequenceById(props.resources, sequenceId).uuid
+    : undefined;
+  const calledSequenceVariableData = calleeUuid
+    ? props.resources.sequenceMetas[calleeUuid]
+    : undefined;
 
   /** Replaces the execute step body with a new array of bodyVariables. */
   const assignVariable = (bodyVariables: ParameterApplication[]) =>

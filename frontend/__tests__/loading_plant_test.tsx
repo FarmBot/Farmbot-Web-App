@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LoadingPlant } from "../loading_plant";
 import { shallow } from "enzyme";
 
@@ -27,7 +27,7 @@ describe("<LoadingPlant/>", () => {
 
   it("clears initial loading text", () => {
     const el = { outerHTML: "hidden" };
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     document.getElementsByClassName = jest.fn(() => ([el] as any));
     const wrapper = shallow(<LoadingPlant animate={false} />);
     expect(wrapper.find(".loading-plant").length).toEqual(0);

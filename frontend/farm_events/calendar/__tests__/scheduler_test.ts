@@ -7,7 +7,6 @@ import {
   gracePeriodSeconds,
 } from "../scheduler";
 import moment from "moment";
-import { Moment } from "moment";
 import { range, padStart } from "lodash";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
 
@@ -60,14 +59,14 @@ describe("scheduleForFarmEvent", () => {
   interface TestScheduleProps {
     description: string;
     fakeEvent: TimeLine;
-    timeNow: Moment;
-    expected: Moment[];
+    timeNow: moment.Moment;
+    expected: moment.Moment[];
     shortenedBy: number;
   }
 
   function testSchedule(props: TestScheduleProps) {
     const { description, fakeEvent, timeNow, expected, shortenedBy } = props;
-    it(description, () => {
+    it(`${description}`, () => {
       const result = scheduleForFarmEvent(fakeEvent, timeNow);
       expect(result.items.length).toEqual(expected.length);
       expected.map((expectation, index) => {

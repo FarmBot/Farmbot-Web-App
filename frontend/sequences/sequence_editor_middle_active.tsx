@@ -3,13 +3,12 @@ import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
 } from "./interfaces";
-import { editCurrentSequence } from "./actions";
+import { editCurrentSequence, copySequence } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
-import { copySequence } from "./actions";
 import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
@@ -19,10 +18,9 @@ import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
-import { Actions, DeviceSetting } from "../constants";
+import { Content, Actions, DeviceSetting } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
 import { ToggleButton } from "../controls/toggle_button";
-import { Content } from "../constants";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
@@ -187,8 +185,9 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
   const sequenceAndDispatch = { sequence, dispatch };
   const variableData = props.resources.sequenceMetas[sequence.uuid] || {};
   const declarations = betterCompact(Object.values(variableData)
-    .map(v => v &&
-      isScopeDeclarationBodyItem(v.celeryNode) ? v.celeryNode : undefined));
+    .map(v => v && isScopeDeclarationBodyItem(v.celeryNode)
+      ? v.celeryNode
+      : undefined));
   return <div id="sequence-editor-tools" className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch}
       syncStatus={props.syncStatus}

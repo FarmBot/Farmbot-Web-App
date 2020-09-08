@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Joyride, { Step as TourStep, CallBackProps } from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
@@ -42,7 +42,8 @@ export class Tour extends React.Component<TourProps, TourState> {
       const nextStepIndex = index + increment;
       this.setState({ index: nextStepIndex });
       const nextStepTarget = nextStepIndex < this.props.steps.length
-        ? this.props.steps[nextStepIndex].target : "";
+        ? this.props.steps[nextStepIndex].target
+        : "";
       tourPageNavigation(nextStepTarget);
     }
     if (type === "tour:end") {

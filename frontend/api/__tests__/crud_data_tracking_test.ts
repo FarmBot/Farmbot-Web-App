@@ -39,7 +39,7 @@ describe("AJAX data tracking", () => {
 
   it("sets consistency when calling destroy()", () => {
     const uuid = Object.keys(store.getState().resources.index.byKind.Tool)[0];
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     store.dispatch(destroy(uuid) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
@@ -49,7 +49,7 @@ describe("AJAX data tracking", () => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
     });
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     store.dispatch(saveAll(r) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
     const list = (maybeStartTracking as jest.Mock).mock.calls;
@@ -59,7 +59,7 @@ describe("AJAX data tracking", () => {
   });
 
   it("sets consistency when calling initSave()", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action: any = initSave("User", {
       name: "tester123",
       email: "test@test.com"
@@ -69,7 +69,7 @@ describe("AJAX data tracking", () => {
   });
 
   it("sets consistency when calling initSaveGetId()", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action: any = initSaveGetId("User", {
       name: "tester123",
       email: "test@test.com"

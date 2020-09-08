@@ -108,6 +108,26 @@ select {
 .filter-search-popover {
   .bp3-popover-content {
     max-width: 40rem;
+    padding: 0;
+    .bp3-menu {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+  &.few-items {
+    .bp3-input-group {
+      display: none;
+    }
+  }
+}
+
+.filter-search-item {
+  padding-left: 1rem;
+  font-weight: normal !important;
+  .bp3-text-overflow-ellipsis {
+    white-space: normal;
+    padding-left: 1rem;
+    text-indent: -1rem;
   }
 }
 
@@ -117,12 +137,8 @@ select {
 
 .filter-search-heading-item {
   pointer-events: none;
-  font-weight: bold;
-  &:before {
-    content: "➖";
-    font-weight: bold;
-    color: inherit;
-  }
+  font-weight: bold !important;
+  border-bottom: 1px solid $gray;
 }
 
 .fb-checkbox {

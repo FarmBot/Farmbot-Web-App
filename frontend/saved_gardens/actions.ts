@@ -13,7 +13,8 @@ import { stopTracking } from "../connectivity/data_consistency";
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (gardenName?: string | undefined) =>
   axios.post<void>(API.current.snapshotPath, gardenName
-    ? { name: gardenName } : {})
+    ? { name: gardenName }
+    : {})
     .then(() => {
       success(t("Garden Saved."));
       history.push("/app/designer/gardens");
@@ -58,7 +59,8 @@ export const openOrCloseGarden = (props: {
   savedGarden: string | undefined,
   gardenIsOpen: boolean,
   dispatch: Function
-}) => () =>
+}) =>
+  () =>
     !props.gardenIsOpen && isString(props.savedGarden)
       ? props.dispatch(openSavedGarden(props.savedGarden))
       : props.dispatch(closeSavedGarden());

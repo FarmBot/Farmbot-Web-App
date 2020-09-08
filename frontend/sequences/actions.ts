@@ -1,9 +1,8 @@
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { SelectSequence } from "./interfaces";
 import { edit, init, overwrite } from "../api/crud";
-import { defensiveClone } from "../util";
+import { defensiveClone, urlFriendly } from "../util";
 import { push } from "../history";
-import { urlFriendly } from "../util";
 import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { t } from "../i18next_wrapper";

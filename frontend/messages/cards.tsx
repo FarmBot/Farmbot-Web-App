@@ -24,6 +24,7 @@ import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { Session } from "../session";
+import { ExternalUrl } from "../external_urls";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -94,7 +95,8 @@ class BulletinAlert
 
   get bulletinData(): Bulletin {
     return this.state.bulletin || {
-      content: this.state.no_content ? t("Unable to load content.")
+      content: this.state.no_content
+        ? t("Unable to load content.")
         : t("Loading..."),
       href: undefined,
       href_label: undefined,
@@ -116,7 +118,7 @@ class BulletinAlert
       dispatch={this.props.dispatch}
       findApiAlertById={this.props.findApiAlertById}>
       {href && <a className="link-button fb-button green"
-        href={href} target="_blank"
+        href={href} target="_blank" rel={"noreferrer"}
         title={t("Open link in a new tab")}>
         {href_label || t("Find out more")}
       </a>}
@@ -203,7 +205,8 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
           list={getFirmwareChoices()}
           customNullLabel={t("Select one")}
           selectedItem={props.apiFirmwareValue
-            ? FIRMWARE_CHOICES_DDI[props.apiFirmwareValue] : undefined}
+            ? FIRMWARE_CHOICES_DDI[props.apiFirmwareValue]
+            : undefined}
           onChange={changeFirmwareHardware(props.dispatch)} />
       </Col>
       <Col xs={3} hidden={true}>
@@ -310,14 +313,14 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
     iconName={"info-circle"}>
     <p>
       {t("Head over to")}
-      &nbsp;<a href={docLink()} target="_blank"
+      &nbsp;<a href={docLink()} target="_blank" rel={"noreferrer"}
         title={t("Open documentation in a new tab")}>
         {t("software.farm.bot")}
       </a>
       &nbsp;{t("to get started")}.
     </p>
     <a className="link-button fb-button green"
-      href={docLink()} target="_blank"
+      href={docLink()} target="_blank" rel={"noreferrer"}
       title={t("Open documentation in a new tab")}>
       {t("Read the docs")}
     </a>
@@ -339,14 +342,14 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     </p>
     <p>
       {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
-      <a href={"https://my.farm.bot"} target="_blank"
+      <a href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
         onClick={() => Session.clear()}
         title={"my.farm.bot"}>
         {"my.farm.bot"}
       </a>.
     </p>
     <a className="link-button fb-button green"
-      href={"https://my.farm.bot"} target="_blank"
+      href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
       onClick={() => Session.clear()}
       title={t("Make a real account")}>
       {t("Make a real account")}

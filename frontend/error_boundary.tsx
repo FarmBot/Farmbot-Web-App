@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { catchErrors } from "./util";
 import { Apology } from "./apology";
 
@@ -12,6 +12,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error) {
+    // eslint-disable-next-line no-empty
     try { catchErrors(error); } catch (e) { }
     this.setState({ hasError: true });
   }

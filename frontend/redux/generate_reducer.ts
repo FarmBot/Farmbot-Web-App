@@ -24,7 +24,7 @@ export function generateReducer<State>(initialState: State) {
     /** Triggered before each call. Give you a chance to bail on execution if
      * business logic requires it. */
     beforeEach(filter: BeforeEach): GeneratedReducer;
-    /**Triggered after all calls- useful when you have child reducers that need
+    /** Triggered after all calls- useful when you have child reducers that need
      * state passed down. */
     afterEach(handler: ActionHandler<State>): GeneratedReducer;
   }

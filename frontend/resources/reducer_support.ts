@@ -1,4 +1,6 @@
-import { ResourceName, SpecialStatus } from "farmbot";
+import {
+  ResourceName, SpecialStatus, TaggedResource, TaggedSequence,
+} from "farmbot";
 import { combineReducers } from "redux";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
@@ -6,11 +8,9 @@ import { photosReducer as photos } from "../photos/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
-import { RestResources } from "./interfaces";
+import { RestResources, ResourceIndex } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { arrayWrap, arrayUnwrap } from "./util";
-import { TaggedResource, TaggedSequence } from "farmbot";
-import { ResourceIndex } from "./interfaces";
 import {
   sanitizeNodes,
 } from "../sequences/locals_list/sanitize_nodes";
@@ -48,11 +48,13 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   }
 }
 
-type IndexDirection =
-  | /** Resources entering index */ "up"
-  | /** Resources leaving index */ "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
-export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
+export interface Indexer {
+  /** Resources entering index */
+  up: IndexerCallback;
+  /** Resources leaving index */
+  down: IndexerCallback;
+}
 
 export const reindexFolders = (i: ResourceIndex) => {
   const folders = betterCompact(selectAllFolders(i)
@@ -118,8 +120,9 @@ export const reindexFolders = (i: ResourceIndex) => {
     folders: ingest({ folders, localMetaAttributes }),
     localMetaAttributes,
     searchTerm: searchTerm,
-    filteredFolders: searchTerm ?
-      i.sequenceFolders.filteredFolders : undefined
+    filteredFolders: searchTerm
+      ? i.sequenceFolders.filteredFolders
+      : undefined
   };
 
 };
@@ -246,7 +249,8 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   farmware,
   help,
   alerts
-} as any); // tslint:disable-line
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any);
 
 /** The resource reducer must have the first say when a resource-related action
  * fires off. Afterwards, sub-reducers are allowed to make sense of data

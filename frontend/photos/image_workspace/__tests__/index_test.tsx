@@ -32,7 +32,7 @@ describe("<ImageWorkspace />", () => {
   it("triggers onChange() event", () => {
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (iw as any).props = props;
     iw.onHslChange("H")([4, 5]);
     expect(props.onChange).toHaveBeenCalledTimes(2);

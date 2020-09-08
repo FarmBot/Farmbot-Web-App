@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   WidgetBody,
   Col,
@@ -116,8 +116,9 @@ export function sendEmail(email: string) {
 
 export function DidRegister(props: CreateAccountProps) {
   const email = props.get("regEmail");
-  return email ?
-    <ResendPanelBody onClick={() => sendEmail(email)} /> : bail(MISSING_EMAIL);
+  return email
+    ? <ResendPanelBody onClick={() => sendEmail(email)} />
+    : bail(MISSING_EMAIL);
 }
 
 export function CreateAccount(props: CreateAccountProps) {

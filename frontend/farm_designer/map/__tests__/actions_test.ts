@@ -10,7 +10,9 @@ jest.mock("../../../point_groups/actions", () => ({
   overwriteGroup: jest.fn(),
 }));
 
-import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePointGroup, fakePlant,
+} from "../../../__test_support__/fake_state/resources";
 const mockGroup = fakePointGroup();
 jest.mock("../../../point_groups/group_detail", () => ({
   findGroupFromUrl: jest.fn(() => mockGroup)
@@ -22,7 +24,6 @@ import {
   mapPointClickAction,
 } from "../actions";
 import { MovePlantProps } from "../../interfaces";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { DEFAULT_ICON, svgToUrl } from "../../../open_farm/icons";

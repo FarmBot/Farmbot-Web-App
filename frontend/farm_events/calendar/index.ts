@@ -35,7 +35,7 @@ export class Calendar {
     const all = Object
       .keys(this.value)
       .map(x => this.value[x])
-      .filter(x => !!x)        // Poor man's compact() function.
+      .filter(x => !!x) // Poor man's compact() function.
       .filter(x => !!x.length) // Don't bother rendering empty days.
       .map((items): CalendarDay => {
         const item = items[0];

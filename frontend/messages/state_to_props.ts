@@ -23,7 +23,8 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   return {
     alerts: getAllAlerts(props.resources),
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
-      ? apiFirmwareValue : undefined,
+      ? apiFirmwareValue
+      : undefined,
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
     findApiAlertById,

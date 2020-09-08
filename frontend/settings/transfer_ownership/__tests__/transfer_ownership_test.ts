@@ -1,15 +1,9 @@
-const mockDevice = {
-  send: jest.fn(() => Promise.resolve()),
-  rpcShim: jest.fn(() => Promise.resolve()),
-};
+const mockDevice = { send: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("axios", () => ({
+  post: jest.fn(() => ({ data: "FAKE CERT" })),
 }));
-
-jest.mock("axios", () => {
-  return { post: jest.fn(() => ({ data: "FAKE CERT" })) };
-});
 
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
@@ -25,8 +19,7 @@ describe("transferOwnership", () => {
       server: "http://127.0.0.1:3000",
       device: getDevice()
     };
-    const x = await transferOwnership(p);
-    expect(x).toBe(undefined);
+    await expect(transferOwnership(p)).resolves.toBe(undefined);
     expect(mockDevice.send).toHaveBeenCalled();
   });
 });

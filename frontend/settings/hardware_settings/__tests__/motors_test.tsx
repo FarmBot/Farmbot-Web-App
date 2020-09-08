@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { MotorsProps } from "../interfaces";
 import { Motors } from "../motors";
 import { render, mount } from "enzyme";
@@ -59,7 +59,7 @@ describe("<Motors />", () => {
 
   const testParamToggle = (
     description: string, parameter: McuParamName, position: number) => {
-    it(description, () => {
+    it(`${description}`, () => {
       const p = fakeProps();
       p.controlPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });

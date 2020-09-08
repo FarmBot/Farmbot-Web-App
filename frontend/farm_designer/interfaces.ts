@@ -14,13 +14,14 @@ import {
   TaggedWeedPointer,
   PointType,
   SequenceBodyItem,
+  McuParams,
+  TaggedCrop,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
   BotPosition, BotLocationData, ShouldDisplay,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
-import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";

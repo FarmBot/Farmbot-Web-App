@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { sortGroupBy, sortOptionsTable } from "./point_group_sort";
-import { sortBy, isNumber, uniq } from "lodash";
+import { sortBy, uniq } from "lodash";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { t } from "../i18next_wrapper";
 import { Actions } from "../constants";
@@ -116,31 +116,30 @@ export interface PathsProps {
 }
 
 interface PathsState {
-  pathData: { [key: string]: number };
+  pathData: Record<string, number>;
 }
 
 export class Paths extends React.Component<PathsProps, PathsState> {
   state: PathsState = { pathData: {} };
 
   generatePathData = (pathPoints: TaggedPoint[]) => {
+    const newPathData: Record<string, number> = {};
     SORT_TYPES.map((sortType: PointGroupSortType) =>
-      this.state.pathData[sortType] =
-      pathDistance(sortGroupBy(sortType, pathPoints)));
-    this.state.pathData.xy_alternating =
-      pathDistance(alternating(pathPoints, "xy"));
-    this.state.pathData.yx_alternating =
-      pathDistance(alternating(pathPoints, "yx"));
-    this.state.pathData.nn = pathDistance(nn(pathPoints));
+      newPathData[sortType] = pathDistance(sortGroupBy(sortType, pathPoints)));
+    newPathData.xy_alternating = pathDistance(alternating(pathPoints, "xy"));
+    newPathData.yx_alternating = pathDistance(alternating(pathPoints, "yx"));
+    newPathData.nn = pathDistance(nn(pathPoints));
+    this.setState({ pathData: newPathData });
   };
 
+  componentDidMount = () => this.generatePathData(this.props.pathPoints);
+
   render() {
-    if (!isNumber(this.state.pathData.nn)) {
-      this.generatePathData(this.props.pathPoints);
-    }
     return <div className={"group-sort-types"}>
       {SORT_TYPES
         .concat(DevSettings.futureFeaturesEnabled()
-          ? ["xy_alternating", "yx_alternating", "nn"] : [])
+          ? ["xy_alternating", "yx_alternating", "nn"]
+          : [])
         .map(sortType =>
           <PathInfoBar key={sortType}
             sortTypeKey={sortType}

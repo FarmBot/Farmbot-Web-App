@@ -1,3 +1,6 @@
+/* eslint-disable indent */
+/* eslint-disable object-curly-spacing */
+/* eslint-disable max-len */
 import * as React from "react";
 import { GridProps } from "../interfaces";
 import { transformXY, transformForQuadrant } from "../util";

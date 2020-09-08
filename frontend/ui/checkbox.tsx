@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 
 interface CheckboxProps {
@@ -13,10 +13,11 @@ interface CheckboxProps {
 }
 
 export const Checkbox = (props: CheckboxProps) =>
-  <div className={["fb-checkbox",
-    props.partial ? "partial" : "",
-    props.disabled ? "disabled" : "",
-  ].join(" ")}
+  <div
+    className={["fb-checkbox",
+      props.partial ? "partial" : "",
+      props.disabled ? "disabled" : "",
+    ].join(" ")}
     title={props.disabled ? props.customDisabledText ?? t("incompatible") : ""}
     onClick={props.onClick}>
     <input type="checkbox"

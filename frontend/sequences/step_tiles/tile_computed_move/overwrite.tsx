@@ -121,7 +121,8 @@ export const OVERWRITE_OPTION_LOOKUP = () => ({
 const OVERWRITE_OPTIONS = (
   axis: Xyz,
   shouldDisplay: ShouldDisplay | undefined,
-) => [
+) =>
+  [
     { label: t("None"), value: "" },
     OVERWRITE_OPTION_LOOKUP()[AxisSelection.disable],
     OVERWRITE_OPTION_LOOKUP()[AxisSelection.custom],

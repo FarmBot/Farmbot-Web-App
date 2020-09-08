@@ -42,14 +42,13 @@ describe("requestAccountExport", () => {
     window.URL.createObjectURL = jest.fn();
     window.URL.revokeObjectURL = jest.fn();
     const a = await requestAccountExport();
+    expect(a).toBeDefined();
     if (a) {
       expect(a).toBeInstanceOf(HTMLElement);
       expect(a.tagName).toBe("A");
       expect(window.URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
       expect(window.URL.revokeObjectURL).toHaveBeenCalled();
       mock.response.data = undefined;
-    } else {
-      fail();
     }
   });
 });

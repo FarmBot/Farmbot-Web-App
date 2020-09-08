@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { getFbosConfig } from "../../resources/getters";
@@ -36,8 +36,9 @@ export function mapStateToProps(p: Everything): Props {
   if (fbosConfig) {
     const list = betterCompact(selectAllSequences(index).map(sequence2ddi));
     const { boot_sequence_id } = fbosConfig.body;
-    const bs = boot_sequence_id ?
-      findSequenceById(index, boot_sequence_id) : undefined;
+    const bs = boot_sequence_id
+      ? findSequenceById(index, boot_sequence_id)
+      : undefined;
     return {
       list,
       selectedItem: bs ? sequence2ddi(bs) : undefined,

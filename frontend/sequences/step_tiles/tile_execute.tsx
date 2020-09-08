@@ -57,10 +57,12 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
     const { dispatch, currentStep, index, currentSequence, resources
     } = this.props;
     const { sequence_id } = currentStep.args;
-    const calleeUuid = sequence_id ?
-      findSequenceById(resources, sequence_id).uuid : undefined;
-    const calledSequenceVariableData = calleeUuid ?
-      resources.sequenceMetas[calleeUuid] : undefined;
+    const calleeUuid = sequence_id
+      ? findSequenceById(resources, sequence_id).uuid
+      : undefined;
+    const calledSequenceVariableData = calleeUuid
+      ? resources.sequenceMetas[calleeUuid]
+      : undefined;
     return <StepWrapper
       className={"execute-step"}
       helpText={ToolTips.EXECUTE_SEQUENCE}

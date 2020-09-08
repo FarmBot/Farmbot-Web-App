@@ -5,6 +5,7 @@ import {
   Panel, showSensors, PANEL_SLUG, TAB_ICON, PANEL_TITLE,
   getPanelPath, getCurrentPanel,
 } from "../farm_designer/panel_header";
+import { ExternalUrl } from "../external_urls";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,
@@ -39,7 +40,7 @@ export const NavLinks = (props: NavLinksProps) =>
         </Link>)}
       <a className={"shop-link"} key={"shop"}
         draggable={false} onClick={props.close("mobileMenuOpen")}
-        href={"https://shop.farm.bot/"} target={"_blank"}>
+        href={ExternalUrl.Store.home} target={"_blank"} rel={"noreferrer"}>
         <NavIconAndText panel={Panel.Shop} customMiniIcon={
           <div className={"external-icon"}>
             <i className="fa fa-external-link-square" />

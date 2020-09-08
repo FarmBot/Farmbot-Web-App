@@ -1,8 +1,16 @@
-import * as React from "react";
-import { testGridInputs } from "./generate_grid_test";
+import React from "react";
 import { GridInput, InputCell } from "../grid_input";
 import { mount, shallow } from "enzyme";
-import { GridInputProps, InputCellProps } from "../interfaces";
+import { GridInputProps, InputCellProps, PlantGridData } from "../interfaces";
+
+const testGridInputs = (): PlantGridData => ({
+  startX: 11,
+  startY: 31,
+  spacingH: 5,
+  spacingV: 7,
+  numPlantsH: 2,
+  numPlantsV: 3
+});
 
 describe("<GridInput/>", () => {
   const fakeProps = (): GridInputProps => ({

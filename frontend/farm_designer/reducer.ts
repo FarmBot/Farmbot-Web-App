@@ -1,6 +1,11 @@
-import { CropLiveSearchResult, DrawnPointPayl, DrawnWeedPayl } from "./interfaces";
+import {
+  DesignerState,
+  CropLiveSearchResult,
+  DrawnPointPayl,
+  DrawnWeedPayl,
+  HoveredPlantPayl,
+} from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import { DesignerState, HoveredPlantPayl } from "./interfaces";
 import { cloneDeep } from "lodash";
 import { TaggedResource, PointType } from "farmbot";
 import { Actions } from "../constants";
@@ -80,16 +85,18 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<DrawnPointPayl | undefined>(
     Actions.SET_DRAWN_POINT_DATA, (s, { payload }) => {
-      const { color } = (!payload || !payload.color) ?
-        (s.drawnPoint || { color: "green" }) : payload;
+      const { color } = (!payload || !payload.color)
+        ? (s.drawnPoint || { color: "green" })
+        : payload;
       s.drawnPoint = payload;
       s.drawnPoint && (s.drawnPoint.color = color);
       return s;
     })
   .add<DrawnWeedPayl | undefined>(
     Actions.SET_DRAWN_WEED_DATA, (s, { payload }) => {
-      const { color } = (!payload || !payload.color) ?
-        (s.drawnWeed || { color: "red" }) : payload;
+      const { color } = (!payload || !payload.color)
+        ? (s.drawnWeed || { color: "red" })
+        : payload;
       s.drawnWeed = payload;
       s.drawnWeed && (s.drawnWeed.color = color);
       return s;

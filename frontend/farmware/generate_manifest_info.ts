@@ -9,7 +9,7 @@ const addMinorAndPatchZeros = (version: string | undefined): string =>
   version ? ">=" + version + ".0.0" : "";
 
 /** Generate FarmwareManifestInfo for any version of Farmware manifest. */
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const manifestInfo = (manifest: any): FarmwareManifestInfo => {
   if (manifest.farmware_manifest_version) {
     const fw: FarmwareManifestV2 = manifest;

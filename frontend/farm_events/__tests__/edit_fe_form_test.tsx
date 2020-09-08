@@ -6,7 +6,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant,
 } from "../../__test_support__/fake_state/resources";
@@ -479,7 +479,7 @@ describe("recombine()", () => {
     expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
   });
 
-  it(`Recombines local state back into a TaggedFarmEvent["body"]`, () => {
+  it("Recombines local state back into a TaggedFarmEvent['body']", () => {
     const result = recombine({
       id: 1,
       startDate: "2017-08-01",

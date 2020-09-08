@@ -66,10 +66,6 @@ export interface FolderProps {
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
-export interface FolderNodeState {
-  settingsOpen: boolean;
-}
-
 export interface FolderState {
   toggleDirection: boolean;
   movedSequenceUuid?: string;
@@ -125,7 +121,7 @@ export interface SequenceDropAreaState {
   hovered: boolean;
 }
 
-export interface AddFolderBtn {
+export interface AddFolderBtnProps {
   folder?: DeepPartial<Folder>;
   close?(): void;
 }

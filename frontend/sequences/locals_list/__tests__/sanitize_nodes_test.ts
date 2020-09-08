@@ -33,11 +33,8 @@ describe("performAllIndexesOnSequence", () => {
     };
     const result = sanitizeNodes(unusedVar);
     const locals = result.thisSequence.args.locals.body;
-    if (locals) {
-      expect(locals[0]).not.toBeDefined();
-    } else {
-      fail("Expected sanitizeNodes to set body to []");
-    }
+    expect(locals).toEqual([]);
+    expect(locals?.[0]).not.toBeDefined();
   });
 
   it("handles missing parameters / variables", () => {
@@ -51,12 +48,8 @@ describe("performAllIndexesOnSequence", () => {
     };
     sanitizeNodes(missing_declaration);
     const locals = missing_declaration.args.locals.body;
-    if (locals) {
-      expect(locals[0]).toBeDefined();
-      expect(get(locals[0], "uuid")).toBeDefined();
-      expect(locals[0].args.label).toEqual("parent");
-    } else {
-      fail("Expected performAllIndexesOnSequence to fill in missing declarations");
-    }
+    expect(locals?.[0]).toBeDefined();
+    expect(get(locals?.[0], "uuid")).toBeDefined();
+    expect(locals?.[0].args.label).toEqual("parent");
   });
 });

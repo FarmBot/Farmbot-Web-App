@@ -73,13 +73,11 @@ export class DemoIframe extends React.Component<{}, State> {
   };
 
   no = () => {
-    // tslint:disable-next-line:no-null-keyword
-    const message = JSON.stringify(this.state.error, null, 2);
+    const message = JSON.stringify(this.state.error, undefined, 2);
     return <pre> {message} </pre>;
   }
 
   render() {
-    return this.state.error ?
-      this.no() : this.ok();
+    return this.state.error ? this.no() : this.ok();
   }
 }

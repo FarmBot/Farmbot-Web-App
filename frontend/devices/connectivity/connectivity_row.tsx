@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { CowardlyDictionary } from "../../util";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
@@ -30,8 +30,10 @@ const iconLookup: CowardlyDictionary<string> = {
 export function ConnectivityRow(props: StatusRowProps) {
   const { connectionStatus, connectionName, hoveredConnection } = props;
   const colorClass = colorLookup["" + connectionStatus];
-  const connectorColorClass = connectionName === "botFirmware" &&
-    colorClass === "gray" ? "red" : colorClass;
+  const connectorColorClass =
+    connectionName === "botFirmware" && colorClass === "gray"
+      ? "red"
+      : colorClass;
   const hoverClass = hoveredConnection === connectionName ? "hover" : "";
   const hoverOver = props.hover ? props.hover : () => { };
   const className = props.header
@@ -47,6 +49,10 @@ export function ConnectivityRow(props: StatusRowProps) {
     }
   };
 
+  const browserFrom = window.innerWidth <= 450
+    ? t("This phone")
+    : t("This computer");
+
   return <Row>
     <Col xs={1}>
       <div className={className}
@@ -60,9 +66,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     </Col>
     <Col xs={2}>
       <p>
-        {props.from == "browser"
-          ? window.innerWidth <= 450 ? t("This phone") : t("This computer")
-          : props.from}
+        {props.from == "browser" ? browserFrom : props.from}
       </p>
     </Col>
     <Col xs={2}>

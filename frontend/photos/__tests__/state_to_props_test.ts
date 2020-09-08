@@ -51,7 +51,7 @@ describe("getImageJobs()", () => {
   });
 
   it("handles undefined jobs", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const jobs = undefined as any;
     const imageJobs = getImageJobs(jobs);
     expect(imageJobs).toEqual([]);

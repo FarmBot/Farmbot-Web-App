@@ -47,7 +47,8 @@ export const LocalsList = (props: LocalsListProps) => {
       .filter(v => v && (!bodyVariables || isParameterDeclaration(v.celeryNode)))
       // Show default values for parameters as a fallback if not in Sequence header
       .map(v => v && bodyVariables && isParameterDeclaration(v.celeryNode)
-        ? convertFormVariable(v.celeryNode, props.resources) : v))
+        ? convertFormVariable(v.celeryNode, props.resources)
+        : v))
       .map(variable => <LocationForm
         key={variable.celeryNode.args.label}
         locationDropdownKey={props.locationDropdownKey}

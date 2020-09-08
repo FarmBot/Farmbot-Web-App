@@ -1,6 +1,6 @@
 import { Col, Widget, WidgetHeader } from "../ui/index";
 import axios, { AxiosResponse } from "axios";
-import * as React from "react";
+import React from "react";
 import { API } from "../api/index";
 import { UnsafeError } from "../interfaces";
 import { ResendPanelBody } from "./resend_panel_body";
@@ -15,14 +15,7 @@ interface Props {
   onGoBack(): void;
 }
 
-interface State {
-
-}
-
-export class ResendVerification extends React.Component<Props, State> {
-
-  state: State = {};
-
+export class ResendVerification extends React.Component<Props, {}> {
   render() {
     return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
       <Widget>

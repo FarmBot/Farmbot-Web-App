@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedPointGroup } from "farmbot";
 import { MapTransformProps, BotSize } from "../../interfaces";
 import { transformXY } from "../../util";
@@ -162,12 +162,14 @@ export const Zones2D = (props: ZonesProps) => {
   const current = props.group.uuid == props.currentGroup;
   const zone = zone2D(getBoundary(props), props.mapTransformProps);
   const not2D = getZoneType(props.group) !== ZoneType.area;
-  const rectProps: React.SVGProps<SVGElement> = not2D ? {
-    stroke: current ? "white" : "black",
-    strokeWidth: 4,
-    strokeDasharray: 15,
-    fill: "none",
-  } : {};
+  const rectProps: React.SVGProps<SVGElement> = not2D
+    ? {
+      stroke: current ? "white" : "black",
+      strokeWidth: 4,
+      strokeDasharray: 15,
+      fill: "none",
+    }
+    : {};
   const { id } = props.group.body;
   return <g id={`zones-2D-${id}`} onClick={openGroup(id)}
     className={current ? "current" : ""}>

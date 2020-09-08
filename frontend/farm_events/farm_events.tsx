@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { mapStateToProps } from "./map_state_to_props";
 import {
@@ -38,7 +38,7 @@ export class PureFarmEvents
     return sortBy(items, x => x.sortKey)
       .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
-        const url = `/app/designer/events/`
+        const url = "/app/designer/events/"
           + (occur.id || "UNSAVED_EVENT").toString();
         const heading = occur.subheading
           ? occur.subheading
@@ -47,8 +47,9 @@ export class PureFarmEvents
           ? <p style={{ color: "gray" }}> {occur.heading} </p>
           : <p />;
 
-        return <div className={`farm-event-data-block ${
-          occur.color == "gray" ? "" : occur.color}`}
+        return <div
+          className={
+            `farm-event-data-block ${occur.color == "gray" ? "" : occur.color}`}
           key={`${occur.sortKey}.${index}`}>
           <div className="farm-event-data-time">
             {occur.timeStr}

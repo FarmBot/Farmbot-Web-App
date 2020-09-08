@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
@@ -44,7 +44,7 @@ describe("<BoardType/>", () => {
     expect(wrapper.html()).not.toContain("dim");
   });
 
-  it("renders with valid firmwareHardware", () => {
+  it("renders with valid firmwareHardware: inconsistent", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
     p.sourceFbosConfig = () => ({ value: true, consistent: false });

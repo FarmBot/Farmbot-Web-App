@@ -30,7 +30,7 @@ describe("unsavedCheck", () => {
       kind: "WebAppConfig",
       uuid: "NOT SET HERE!",
       specialStatus: configStatus,
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body: (body as any)
     };
     const output = fakeState();
@@ -40,12 +40,12 @@ describe("unsavedCheck", () => {
     // `buildResourceIndex` clears specialStatus. Set it again:
     const configUuid = Object.keys(output.resources.index.all)
       .filter(r => r.includes("WebAppConfig"))[0];
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (output.resources.index.references[configUuid] || {} as any)
       .specialStatus = configStatus;
     const sequenceUuid = Object.keys(output.resources.index.all)
       .filter(r => r.includes("Sequence"))[0];
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (output.resources.index.references[sequenceUuid] || {} as any)
       .specialStatus = sequenceStatus;
     return output;

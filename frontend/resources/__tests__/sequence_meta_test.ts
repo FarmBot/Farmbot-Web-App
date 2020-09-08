@@ -27,7 +27,7 @@ import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
   it("crashes on unknown DDIs", () => {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const baddata: any = {
       kind: "parameter_application",
       args: {

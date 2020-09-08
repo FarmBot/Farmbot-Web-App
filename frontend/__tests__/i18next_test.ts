@@ -28,15 +28,11 @@ describe("generateUrl", () => {
 });
 
 describe("getUserLang", () => {
-  it("gets the user's language", (done) => {
-    getUserLang(LANG_CODE, HOST, PORT)
-      .then(result => {
-        expect(axios.get).toHaveBeenCalled();
-        expect(axios.get).toHaveBeenCalledWith(generateUrl(LANG_CODE, HOST, PORT));
-        expect(result).toEqual("en");
-        done();
-      })
-      .catch(x => fail(x.message));
+  it("gets the user's language", async () => {
+    const result = await getUserLang(LANG_CODE, HOST, PORT);
+    expect(axios.get).toHaveBeenCalled();
+    expect(axios.get).toHaveBeenCalledWith(generateUrl(LANG_CODE, HOST, PORT));
+    expect(result).toEqual("en");
   });
 });
 

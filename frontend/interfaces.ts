@@ -22,7 +22,7 @@ export interface Everything {
  *  In those cases, we can use the `UnsafeError` type instead of `any`, just to
  *  quiet down the linter and to let others know it is inherently unsafe.
  */
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnsafeError = any;
 
 export interface TimeSettings {

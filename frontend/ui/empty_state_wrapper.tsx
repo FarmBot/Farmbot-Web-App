@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 
@@ -28,7 +28,7 @@ interface EmptyStateWrapperProps {
 }
 
 export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
-  !!props.notEmpty
+  props.notEmpty
     ? <div className="non-empty-state">
       <ErrorBoundary>
         {props.children}
