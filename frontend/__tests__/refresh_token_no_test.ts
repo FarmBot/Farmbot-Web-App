@@ -24,7 +24,8 @@ describe("maybeRefreshToken()", () => {
           iss: "---",
           exp: 456,
           mqtt: "---",
-          os_update_server: "---"
+          os_update_server: "---",
+          aud: "unknown",
         }
       }
     };

@@ -16,4 +16,6 @@ interface UnencodedToken {
   beta_os_update_server?: string;
   /** JSON Token Identifier- auto sync needs this to hear its echo on MQTT */
   jti: string;
+  /** Audience claim - usually "bot", "human", or "unknown" */
+  aud: string;
 }
