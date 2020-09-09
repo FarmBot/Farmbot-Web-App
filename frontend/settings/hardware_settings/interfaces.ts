@@ -97,6 +97,7 @@ export interface MotorsProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface EncodersOrStallDetectionProps {

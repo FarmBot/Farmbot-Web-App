@@ -1197,9 +1197,12 @@ export enum DeviceSetting {
   // Motors
   motors = `Motors`,
   maxSpeed = `Max Speed (mm/s)`,
+  maxSpeedTowardHome = `Max Speed toward home (mm/s)`,
   homingSpeed = `Homing Speed (mm/s)`,
   minimumSpeed = `Minimum Speed (mm/s)`,
+  minimumSpeedTowardHome = `Minimum Speed toward home (mm/s)`,
   accelerateFor = `Accelerate for (mm)`,
+  accelerateForTowardHome = `Accelerate for toward home (mm)`,
   stepsPerMm = `Steps per MM`,
   microstepsPerStep = `Microsteps per step`,
   alwaysPowerMotors = `Always Power Motors`,
