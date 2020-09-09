@@ -12,6 +12,59 @@ describe Api::SequencesController do
     let(:user) { FactoryBot.create(:user) }
     let(:nodes) { sequence_body_for(user) }
 
+    it "allows the use of custom coordinates in MOVE" do
+      fixture = {
+        "args": {
+          "locals": {
+            "kind": "scope_declaration",
+            "args": {},
+            "body": [
+              {
+                "kind": "variable_declaration",
+                "args": {
+                  "label": "parent",
+                  "data_value": {
+                    "kind": "coordinate",
+                    "args": {
+                      "x": 50,
+                      "y": 50,
+                      "z": 50,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        "color": "gray",
+        "name": "MOVE V3 QA",
+        "kind": "sequence",
+        "body": [
+          {
+            "kind": "move",
+            "args": {},
+            "body": %w(x y z).map do |axis|
+              {
+                "kind": "axis_overwrite",
+                "args": {
+                  "axis": axis,
+                  "axis_operand": {
+                    "kind": "identifier",
+                    "args": {
+                      "label": "parent",
+                    },
+                  },
+                },
+              }
+            end,
+          },
+        ],
+      }
+      sign_in user
+      post :create, body: fixture.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+    end
+
     it "provides human readable errors for empty write_pin nodes" do
       sign_in user
       body = [
@@ -353,7 +406,7 @@ describe Api::SequencesController do
     it 'provides human readable errors for "nothing" mismatches' do
       sign_in user
       input = { name: "type mismatch",
-               args: {
+                args: {
         locals: {
           kind: "scope_declaration",
           args: {},
@@ -371,7 +424,7 @@ describe Api::SequencesController do
           ],
         },
       },
-               body: [] }
+                body: [] }
       post :create, body: input.to_json, params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:body]).to include(CeleryScript::Checker::MISSING_PARAM)
