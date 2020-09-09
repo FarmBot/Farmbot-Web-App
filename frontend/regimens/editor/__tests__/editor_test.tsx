@@ -2,12 +2,12 @@ jest.mock("../../../regimens/set_active_regimen_by_name", () => ({
   setActiveRegimenByName: jest.fn()
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerRegimenEditor as DesignerRegimenEditor,
 } from "../../editor/editor";
-import { Props } from "../../interfaces";
+import { RegimenEditorProps } from "../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
@@ -15,30 +15,16 @@ import {
 import {
   setActiveRegimenByName,
 } from "../../set_active_regimen_by_name";
-import { auth } from "../../../__test_support__/fake_state/token";
-import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<DesignerRegimenEditor />", () => {
-  const fakeProps = (): Props => {
-    const regimen = fakeRegimen();
-    return {
-      dispatch: jest.fn(),
-      sequences: [],
-      resources: buildResourceIndex([]).index,
-      auth: auth,
-      current: regimen,
-      regimens: [],
-      selectedSequence: undefined,
-      dailyOffsetMs: 1000,
-      weeks: [],
-      bot: bot,
-      calendar: [],
-      regimenUsageStats: {},
-      shouldDisplay: () => false,
-      variableData: {},
-      schedulerOpen: false,
-    };
-  };
+  const fakeProps = (): RegimenEditorProps => ({
+    dispatch: jest.fn(),
+    resources: buildResourceIndex([]).index,
+    current: fakeRegimen(),
+    calendar: [],
+    shouldDisplay: () => false,
+    variableData: {},
+  });
 
   it("renders", () => {
     const wrapper = mount(<DesignerRegimenEditor {...fakeProps()} />);

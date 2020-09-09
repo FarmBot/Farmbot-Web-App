@@ -1,31 +1,9 @@
 import { ResourceColor } from "../interfaces";
-import { Week } from "./bulk_scheduler/interfaces";
-import { AuthState } from "../auth/interfaces";
-import { BotState, ShouldDisplay } from "../devices/interfaces";
-import { TaggedRegimen, TaggedSequence } from "farmbot";
-import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
+import { TaggedRegimen } from "farmbot";
 
 export interface CalendarRow {
   day: string;
   items: RegimenItemCalendarRow[];
-}
-
-export interface Props {
-  dispatch: Function;
-  sequences: TaggedSequence[];
-  variableData: VariableNameSet;
-  auth: AuthState | undefined;
-  bot: BotState;
-  current: TaggedRegimen | undefined;
-  regimens: TaggedRegimen[];
-  resources: ResourceIndex;
-  selectedSequence: TaggedSequence | undefined;
-  dailyOffsetMs: number;
-  weeks: Week[];
-  calendar: CalendarRow[];
-  regimenUsageStats: Record<UUID, boolean | undefined>;
-  shouldDisplay: ShouldDisplay;
-  schedulerOpen: boolean;
 }
 
 export interface RegimenItemCalendarRow {
@@ -70,22 +48,4 @@ export interface RegimenItem {
   regimen_id?: number;
   /** Time (in milliseconds) to wait before executing the sequence */
   time_offset: number;
-}
-
-export interface AddRegimenProps {
-  dispatch: Function;
-  className?: string;
-  children?: React.ReactNode;
-  length: number;
-}
-
-export interface RegimensListProps {
-  dispatch: Function;
-  regimens: TaggedRegimen[];
-  regimen: TaggedRegimen | undefined;
-  usageStats: Record<UUID, boolean | undefined>;
-}
-
-export interface RegimensListState {
-  searchTerm: string;
 }

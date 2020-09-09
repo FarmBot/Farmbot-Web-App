@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -6,28 +6,44 @@ import {
 import { Panel } from "../../farm_designer/panel_header";
 import { t } from "../../i18next_wrapper";
 import { urlFriendly } from "../../util";
-import { mapStateToProps } from "../state_to_props";
 import { BulkScheduler } from "../bulk_scheduler/bulk_scheduler";
-import { BulkEditorProps } from "../bulk_scheduler/interfaces";
-import { TaggedRegimen } from "farmbot";
-import { Props } from "../interfaces";
 import { AddButton } from "../bulk_scheduler/add_button";
 import { commitBulkEditor } from "../bulk_scheduler/actions";
+import { Everything } from "../../interfaces";
+import {
+  maybeGetRegimen, selectAllSequences, maybeGetSequence,
+} from "../../resources/selectors";
+import { RegimenSchedulerProps } from "./interfaces";
 
-export interface DesignerRegimenSchedulerProps extends BulkEditorProps {
-  regimen: TaggedRegimen | undefined;
-}
+export const mapStateToProps = (props: Everything): RegimenSchedulerProps => {
+  const {
+    weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen
+  } = props.resources.consumers.regimens;
+  const selectedSequence =
+    maybeGetSequence(props.resources.index, selectedSequenceUUID);
+  const current = maybeGetRegimen(props.resources.index, currentRegimen);
+  return {
+    dispatch: props.dispatch,
+    sequences: selectAllSequences(props.resources.index),
+    resources: props.resources.index,
+    current,
+    selectedSequence,
+    dailyOffsetMs,
+    weeks,
+  };
+};
 
-export class RawDesignerRegimenScheduler extends React.Component<Props> {
+export class RawDesignerRegimenScheduler
+  extends React.Component<RegimenSchedulerProps> {
   render() {
     const panelName = "designer-regimen-scheduler";
+    const regimenName = this.props.current?.body.name || "";
     return <DesignerPanel panelName={panelName} panel={Panel.Regimens}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Regimens}
         title={t("Scheduler")}
-        backTo={`/app/designer/regimens/${
-          urlFriendly(this.props.current?.body.name || "")}`}>
+        backTo={`/app/designer/regimens/${urlFriendly(regimenName)}`}>
         <AddButton
           active={!!(this.props.sequences?.length)}
           onClick={() => this.props.dispatch(commitBulkEditor())} />

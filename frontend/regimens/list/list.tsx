@@ -1,11 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../../farm_designer/designer_panel";
 import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
-import { mapStateToProps } from "../state_to_props";
-import { Props, RegimensListState } from "../interfaces";
+import { RegimensListProps, RegimensListState } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { SearchField } from "../../ui/search_field";
 import { addRegimen } from "../list/add_regimen";
@@ -13,9 +12,18 @@ import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
 import { Content } from "../../constants";
 import { sortResourcesById } from "../../util";
 import { RegimenListItem } from "../list/regimen_list_item";
+import { Everything } from "../../interfaces";
+import { selectAllRegimens } from "../../resources/selectors";
+import { resourceUsageList } from "../../resources/in_use";
+
+export const mapStateToProps = (props: Everything): RegimensListProps => ({
+  dispatch: props.dispatch,
+  regimens: selectAllRegimens(props.resources.index),
+  regimenUsageStats: resourceUsageList(props.resources.index.inUse),
+});
 
 export class RawDesignerRegimenList
-  extends React.Component<Props, RegimensListState> {
+  extends React.Component<RegimensListProps, RegimensListState> {
   state: RegimensListState = { searchTerm: "" };
 
   render() {
