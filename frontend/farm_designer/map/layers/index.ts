@@ -6,4 +6,6 @@ export * from "./spread/spread_layer";
 export * from "./plant_radius/plant_radius_layer";
 export * from "./tool_slots/tool_slot_layer";
 export * from "./images/image_layer";
+export * from "./logs/logs_layer";
 export * from "./sensor_readings/sensor_readings_layer";
+export * from "./zones/zones_layer";

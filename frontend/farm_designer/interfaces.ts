@@ -16,6 +16,7 @@ import {
   SequenceBodyItem,
   McuParams,
   TaggedCrop,
+  TaggedLog,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -96,6 +97,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
+  logs: TaggedLog[];
 }
 
 export interface MovePlantProps {
@@ -243,6 +245,7 @@ export interface GardenMapProps {
   shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
+  logs: TaggedLog[];
 }
 
 export interface GardenMapState {

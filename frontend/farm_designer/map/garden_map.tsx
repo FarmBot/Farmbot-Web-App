@@ -23,6 +23,8 @@ import {
   FarmBotLayer,
   ImageLayer,
   SensorReadingsLayer,
+  ZonesLayer,
+  LogsLayer,
 } from "./layers";
 import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
@@ -33,7 +35,6 @@ import {
 import { chooseLocation } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
 import { history } from "../../history";
-import { ZonesLayer } from "./layers/zones/zones_layer";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -398,6 +399,12 @@ export class GardenMap extends
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
     getConfigValue={this.props.getConfigValue} />
+  LogsLayer = () => <LogsLayer
+    logs={this.props.logs}
+    cameraCalibrationData={this.props.cameraCalibrationData}
+    visible={!!this.props.showImages}
+    mapTransformProps={this.mapTransformProps}
+    getConfigValue={this.props.getConfigValue} />
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}
@@ -547,6 +554,7 @@ export class GardenMap extends
           <this.MapBackground />
           <svg className={"drop-area-svg"} {...this.svgDropAreaProps()}>
             <this.ImageLayer />
+            <this.LogsLayer />
             <this.Grid />
             <this.ZonesLayer />
             <this.SensorReadingsLayer />
