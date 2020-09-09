@@ -8,11 +8,17 @@ module Api
 
     # GET /api/releases
     def show
-      if show_params[:platform]
-        render json: release
-      else
-        sorry "A `platform` param is required", 422
+      if !show_params[:platform]
+        sorry "A `platform` param is required.", 422
+        return
       end
+
+      if release.version == current_device.fbos_version
+        sorry "Already on the latest version.", 422
+        return
+      end
+
+      render json: release
     end
 
     private
