@@ -717,7 +717,7 @@ export namespace Content {
     trim(`Note: The selected timezone for your FarmBot is different than
     your local browser time.`);
 
-  export const OS_BETA_RELEASES =
+  export const UNSTABLE_RELEASE_CHANNEL_WARNING =
     trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
     FarmBot system stability. Are you sure?`);
 

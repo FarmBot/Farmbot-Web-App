@@ -29,6 +29,7 @@ export type ShouldDisplay = (x: Feature) => boolean;
 export enum Feature {
   api_farmware_env = "api_farmware_env",
   api_farmware_installations = "api_farmware_installations",
+  api_ota_releases = "api_ota_releases",
   api_pin_bindings = "api_pin_bindings",
   assertion_block = "assertion_block",
   backscheduled_regimens = "backscheduled_regimens",

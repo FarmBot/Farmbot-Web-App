@@ -1,9 +1,9 @@
 jest.mock("../../../devices/actions", () => ({ updateConfig: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
-  BetaReleaseOptInButtonProps, BetaReleaseOptIn, reformatFwVersion,
+  OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
   reformatFbosVersion,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
@@ -239,8 +239,8 @@ describe("<FbosDetails/>", () => {
   });
 });
 
-describe("<BetaReleaseOptIn />", () => {
-  const fakeProps = (): BetaReleaseOptInButtonProps => ({
+describe("<OSReleaseChannelSelection />", () => {
+  const fakeProps = (): OSReleaseChannelSelectionProps => ({
     dispatch: jest.fn(),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
   });
@@ -248,7 +248,7 @@ describe("<BetaReleaseOptIn />", () => {
   it("changes to beta channel", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: "stable", consistent: true });
-    const wrapper = shallow(<BetaReleaseOptIn {...p} />);
+    const wrapper = shallow(<OSReleaseChannelSelection {...p} />);
     window.confirm = jest.fn();
     wrapper.find("FBSelect").simulate("change", { label: "", value: "" });
     expect(window.confirm).toHaveBeenCalledWith(
@@ -262,10 +262,19 @@ describe("<BetaReleaseOptIn />", () => {
   it("changes to stable channel", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: "beta", consistent: true });
-    const wrapper = shallow(<BetaReleaseOptIn {...p} />);
+    const wrapper = shallow(<OSReleaseChannelSelection {...p} />);
     window.confirm = () => false;
     wrapper.find("FBSelect").simulate("change", { label: "", value: "stable" });
     expect(updateConfig).toHaveBeenCalledWith({ update_channel: "stable" });
+  });
+
+  it("shows options", () => {
+    const wrapper = shallow(<OSReleaseChannelSelection {...fakeProps()} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { label: "stable", value: "stable" },
+      { label: "beta", value: "beta" },
+      { label: "alpha", value: "alpha" },
+    ]);
   });
 });
 
