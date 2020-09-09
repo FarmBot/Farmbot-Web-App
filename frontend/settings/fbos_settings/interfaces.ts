@@ -28,6 +28,13 @@ export interface AutoUpdateRowProps {
   sourceFbosConfig: SourceFbosConfig;
 }
 
+export interface OtaTimeSelectorProps {
+  disabled: boolean;
+  timeSettings: TimeSettings;
+  device: TaggedDevice;
+  dispatch: Function;
+}
+
 export interface OtaTimeSelectorRowProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
