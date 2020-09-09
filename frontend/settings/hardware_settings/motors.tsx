@@ -17,7 +17,6 @@ import { SpacePanelHeader } from "./space_panel_header";
 import { Col, Help, Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { McuInputBox } from "./mcu_input_box";
-import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
@@ -75,7 +74,7 @@ export function Motors(props: MotorsProps) {
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox
-                setting={"movement_max_spd_z2" as NumberConfigKey}
+                setting={"movement_max_spd_z2"}
                 sourceFwConfig={sourceFwConfig}
                 dispatch={dispatch}
                 scale={scale.z}
@@ -118,7 +117,7 @@ export function Motors(props: MotorsProps) {
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox
-                setting={"movement_min_spd_z2" as NumberConfigKey}
+                setting={"movement_min_spd_z2"}
                 sourceFwConfig={sourceFwConfig}
                 dispatch={dispatch}
                 scale={scale.z}
@@ -149,7 +148,7 @@ export function Motors(props: MotorsProps) {
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox
-                setting={"movement_steps_acc_dec_z2" as NumberConfigKey}
+                setting={"movement_steps_acc_dec_z2"}
                 sourceFwConfig={sourceFwConfig}
                 dispatch={dispatch}
                 scale={scale.z}

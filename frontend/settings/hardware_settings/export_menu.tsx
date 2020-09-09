@@ -1,5 +1,5 @@
 import * as React from "react";
-import { pickBy } from "lodash";
+import { last, pickBy } from "lodash";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { GetState } from "../../redux/interfaces";
 import { edit, save } from "../../api/crud";
@@ -14,14 +14,17 @@ type CondensedFwConfig = {
   }
 };
 
+const getAxisSubKey = (key: string) => last(key.split("_")) || key.slice(-1);
+const getAxisSupKey = (key: string) => key.split("_").slice(0, -1).join("_");
+
 const isAxisKey = (key: string) =>
-  ["_x", "_y", "_z"].includes(key.slice(-2));
+  ["x", "y", "z", "z2"].includes(getAxisSubKey(key));
 const isPinGuardKey = (key: string) =>
   ["_active_state", "_pin_nr", "_time_out"].includes(key.slice(11));
 
 const getSubKeyName = (key: string) => {
   if (isAxisKey(key)) {
-    return key.slice(-1);
+    return getAxisSubKey(key);
   } else if (isPinGuardKey(key)) {
     return key.slice(12);
   } else {
@@ -66,7 +69,7 @@ export const condenseFwConfig =
   (fwConfig: Partial<FirmwareConfig>): CondensedFwConfig => {
     /** Set of parameter keys without suffixes such as `_<x|y|z>`. */
     const reducedParamKeys = new Set(Object.keys(fwConfig).sort()
-      .map(key => isAxisKey(key) ? key.slice(0, -2) : key)
+      .map(key => isAxisKey(key) ? getAxisSupKey(key) : key)
       .map(key => isPinGuardKey(key) ? key.slice(0, 11) : key));
 
     const condensedFwConfig: CondensedFwConfig = {};
