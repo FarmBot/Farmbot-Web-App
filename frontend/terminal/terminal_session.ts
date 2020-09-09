@@ -1,3 +1,4 @@
+import { times } from "lodash";
 import { connect, MqttClient } from "mqtt";
 import { Terminal } from "xterm";
 
@@ -29,6 +30,18 @@ export class TerminalSession {
     });
   }
 
+  erase = (n: number) => {
+    times(Math.max(0, n), () => {
+      this.buffer = this.buffer.slice(0, -2);
+      this.terminal.write("\b \b");
+    });
+  }
+
+  clearBuffer = () => {
+    this.erase(this.buffer.length - 1);
+    this.buffer = "";
+  };
+
   terminalMessageHandler = (m: string, payload: Buffer) => {
     if (m.includes("terminal_output")) {
       this.terminal.write(payload);
@@ -43,12 +56,11 @@ export class TerminalSession {
         if (!["\r", "\r\r"].includes(this.buffer)) {
           this.client.publish(this.tx, this.buffer);
         }
-        this.buffer = "";
+        this.clearBuffer();
         break;
       case "\b":
       case String.fromCharCode(127):
-        this.buffer = this.buffer.slice(0, -2);
-        this.terminal.write('\x1b[D');
+        this.erase(1);
         break;
       default:
         this.terminal.write(key);
