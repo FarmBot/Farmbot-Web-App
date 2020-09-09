@@ -4,16 +4,11 @@ module Api
   # It uses the information provided by FBOS to provide meta
   # data about the next appropriate release.
   class ReleasesController < Api::AbstractController
-    skip_before_action :authenticate_user!, only: [:show]
-    NONE = "none"
-    PLATFORMS = Release::PLATFORMS.join(", ")
-    BAD_PLATFORM = "%s is not a valid platform. Valid options: #{PLATFORMS}"
-    DEFAULT_PARAMS = { platform: NONE, channel: "stable" }
     RELEVANT_FIELDS = [:image_url, :version, :platform, :channel, :id]
 
     # GET /api/releases
     def show
-      if params[:platform]
+      if show_params[:platform]
         render json: release
       else
         sorry "A `platform` param is required", 422
@@ -22,21 +17,12 @@ module Api
 
     private
 
-    def update_channel
-      dev = Device.find_by(id: params[:unsafe_device_id])
-      dev ? { channel: dev.fbos_config.update_channel } : {}
-    end
-
-    def relevant_params
-      @relevant_params ||= params
+    def show_params
+      @show_params ||= params
         .as_json
         .symbolize_keys
         .slice(*RELEVANT_FIELDS)
-        .merge(update_channel)
-    end
-
-    def show_params
-      @show_params ||= DEFAULT_PARAMS.merge(relevant_params)
+        .merge(channel: current_device.fbos_config.update_channel)
     end
 
     def release

@@ -3,8 +3,12 @@ require "spec_helper"
 describe Api::ReleasesController do
   include Devise::Test::ControllerHelpers
 
+  let(:user) { FactoryBot.create(:user) }
+  let(:device) { user.device }
+
   describe "#show" do
     it "returns a 422 if no `platform` is provided" do
+      sign_in user
       get :show, params: {}
       expect(response.status).to eq(422)
       expect(json).to include(error: "A `platform` param is required")
@@ -21,6 +25,7 @@ describe Api::ReleasesController do
                               platform: "rpi3",
                               channel: "stable")
 
+      sign_in user
       get :show, params: { platform: "rpi3", channel: "stable" }
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(rel_b.id)
