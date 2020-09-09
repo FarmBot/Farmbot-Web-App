@@ -249,14 +249,14 @@ const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
-export interface BetaReleaseOptInButtonProps {
+export interface OSReleaseChannelSelectionProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
 }
 
 /** Label and toggle button for opting in to FBOS beta releases. */
-export const BetaReleaseOptIn = (
-  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps,
+export const OSReleaseChannelSelection = (
+  { dispatch, sourceFbosConfig }: OSReleaseChannelSelectionProps,
 ): JSX.Element => {
   const betaOptIn = sourceFbosConfig("update_channel").value;
   return <fieldset className={"os-release-channel"}>
@@ -266,13 +266,13 @@ export const BetaReleaseOptIn = (
     <FBSelect
       selectedItem={{ label: t("" + betaOptIn), value: "" + betaOptIn }}
       onChange={ddi =>
-        (ddi.value == "stable" || confirm(Content.OS_BETA_RELEASES)) &&
+        (ddi.value == "stable" ||
+          confirm(Content.UNSTABLE_RELEASE_CHANNEL_WARNING)) &&
         dispatch(updateConfig({ update_channel: "" + ddi.value }))}
       list={[
         { label: t("stable"), value: "stable" },
         { label: t("beta"), value: "beta" },
-        { label: t("staging"), value: "staging" },
-        { label: t("qa"), value: "qa" },
+        { label: t("alpha"), value: "alpha" },
       ]} />
   </fieldset>;
 };
@@ -337,7 +337,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <WiFiStrengthDisplay extraInfo={true}
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
     <VoltageDisplay chip={target} throttleData={throttled} />
-    <BetaReleaseOptIn
+    <OSReleaseChannelSelection
       dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
     {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>
       {reformatDatetime(last_ota_checkup, props.timeSettings)}</p>}

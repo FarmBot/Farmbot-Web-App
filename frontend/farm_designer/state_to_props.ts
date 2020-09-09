@@ -17,6 +17,7 @@ import {
   selectAllWeedPointers,
   selectAllToolSlotPointers,
   maybeGetSequence,
+  selectAllLogs,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -145,6 +146,7 @@ export function mapStateToProps(props: Everything): Props {
     shouldDisplay,
     mountedToolInfo,
     visualizedSequenceBody,
+    logs: selectAllLogs(props.resources.index),
   };
 }
 

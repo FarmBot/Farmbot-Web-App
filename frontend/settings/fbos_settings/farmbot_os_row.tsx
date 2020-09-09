@@ -90,6 +90,7 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
             bot={bot}
             sourceFbosConfig={sourceFbosConfig}
             shouldDisplay={this.props.shouldDisplay}
+            dispatch={this.props.dispatch}
             botOnline={botOnline} />
         </Col>
       </Row>

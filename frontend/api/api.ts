@@ -169,4 +169,6 @@ export class API {
   /** /api/folders */
   get foldersPath() { return `${this.baseUrl}/api/folders/`; }
   // get syncPath() { return `${this.baseUrl}/api/device/sync/`; }
+  /** /api/releases?platform=:platform */
+  get releasesPath() { return `${this.baseUrl}/api/releases?platform=`; }
 }

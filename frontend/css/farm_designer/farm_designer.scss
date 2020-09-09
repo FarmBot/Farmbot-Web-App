@@ -436,6 +436,71 @@
   }
 }
 
+.logs-layer {
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes capture-animation {
+    0% {
+      fill: rgba(255, 255, 240, 0.7);
+      stroke: rgba(20, 190, 230, 0.7);
+    }
+    100% {
+      fill: rgba(0, 0, 0, 0.02);
+      stroke: rgba(0, 0, 0, 0.02);
+    }
+  }
+
+  .img-full {
+    width: 100%;
+    height: 100%;
+    stroke-opacity: 1;
+    stroke-width: 4px;
+    stroke: rgba(20, 190, 230, 0.7);
+    fill: rgba(255, 255, 240, 0.7);
+  }
+
+  .capture,
+  .scan {
+    .img-scan {
+      visibility: hidden;
+    }
+    &.animate {
+      .img-full {
+        animation: capture-animation 2s ease forwards;
+      }
+    }
+  }
+
+  .scan {
+    .img-scan {
+      visibility: visible;
+      transform: translateX(25%);
+      width: 8%;
+      stroke-opacity: 0;
+    }
+
+    &.animate {
+      @keyframes scan-animation {
+        100% {
+          transform: translate(95%, 0);
+        }
+      }
+
+      .img-scan {
+        transform: none;
+        animation: scan-animation 3s linear alternate infinite;
+      }
+    }
+  }
+}
+
 .zones-layer {
   [id*="zones-1D-"] {
     stroke: $black;

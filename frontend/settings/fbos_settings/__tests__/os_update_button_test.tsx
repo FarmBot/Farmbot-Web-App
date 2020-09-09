@@ -4,13 +4,21 @@ const mockDevice = {
 };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
+let mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
+jest.mock("axios", () => ({
+  get: jest.fn(() => mockResponse),
+}));
+
 import React from "react";
-import { mount } from "enzyme";
+import axios from "axios";
+import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../devices/interfaces";
-import { Content } from "../../../constants";
+import { Actions, Content } from "../../../constants";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { API } from "../../../api";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
@@ -25,6 +33,7 @@ describe("<OsUpdateButton/>", () => {
       ({ value: bot.hardware.configuration[x], consistent: true }),
     botOnline: true,
     shouldDisplay: () => false,
+    dispatch: jest.fn(),
   });
 
   interface TestProps {
@@ -287,7 +296,6 @@ describe("<OsUpdateButton/>", () => {
   it("uses update_channel value", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
-    testProps.shouldDisplay = () => true;
     testProps.update_channel = "stable";
     testProps.availableBetaVersion = "6.1.7-beta";
     const expectedResults = upToDate("6.1.6");
@@ -297,7 +305,6 @@ describe("<OsUpdateButton/>", () => {
   it("uses update_channel value: beta", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
-    testProps.shouldDisplay = () => true;
     testProps.update_channel = "beta";
     testProps.availableBetaVersion = "6.1.7-beta";
     const expectedResults = updateNeeded("6.1.7-beta");
@@ -308,7 +315,6 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.availableVersion = "6.1.5";
     testProps.installedVersion = "6.1.6-rc1";
-    testProps.shouldDisplay = () => true;
     testProps.update_channel = "beta";
     testProps.availableBetaVersion = "6.1.6-rc2";
     const expectedResults = updateNeeded("6.1.6-rc2");
@@ -319,11 +325,59 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.availableVersion = "6.1.5";
     testProps.installedVersion = "6.1.6-rc2";
-    testProps.shouldDisplay = () => true;
     testProps.update_channel = "beta";
     testProps.availableBetaVersion = "6.1.6-rc1";
     const expectedResults = upToDate("6.1.6-rc1");
     testButtonState(testProps, expectedResults);
+  });
+
+  it("ignores beta setting", () => {
+    const testProps = defaultTestProps();
+    testProps.availableVersion = "6.1.5";
+    testProps.installedVersion = "6.1.5";
+    testProps.shouldDisplay = () => true;
+    testProps.update_channel = "beta";
+    testProps.availableBetaVersion = "6.1.6-rc1";
+    const expectedResults = upToDate("6.1.5");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("fetches releases from API", async () => {
+    console.error = jest.fn();
+    API.setBaseUrl("");
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.bot.hardware.informational_settings.target = "rpi";
+    const button = shallow(<OsUpdateButton {...p} />);
+    await button.simulate("pointerEnter");
+    expect(axios.get).toHaveBeenCalledWith(
+      "http://localhost/api/releases?platform=rpi");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.FETCH_OS_UPDATE_INFO_OK,
+      payload: { version: "1.1.1" },
+    });
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("fails to fetch releases from API", async () => {
+    console.error = jest.fn();
+    mockResponse = Promise.reject("error");
+    API.setBaseUrl("");
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.bot.hardware.informational_settings.target = "---";
+    const button = shallow(<OsUpdateButton {...p} />);
+    await button.simulate("pointerEnter");
+    await expect(axios.get).toHaveBeenCalledWith(
+      "http://localhost/api/releases?platform=rpi3");
+    await expect(console.error).toHaveBeenCalledWith(
+      "Could not download FarmBot OS update information.");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.FETCH_OS_UPDATE_INFO_ERROR,
+      payload: "error",
+    });
   });
 
   it("calls checkUpdates", () => {
