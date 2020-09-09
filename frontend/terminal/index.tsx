@@ -8,12 +8,10 @@ const node = document.createElement("DIV");
 node.id = "root";
 document.body.appendChild(node);
 const terminal = new Terminal({});
-// const connectNo = () => { alert("Connection failed"); };
-
 terminal.open(node);
 
-const session: AuthState | null =
-  JSON.parse(localStorage["session"] || "false");
+const storedSession = localStorage["session"] || "false";
+const session: AuthState | null = JSON.parse(storedSession);
 
 let buffer = "";
 
@@ -30,19 +28,24 @@ if (session) {
   client.once("connect", () => {
     console.log("connected");
     client.subscribe(output);
+    client.publish(input, "RingLogger.attach()\r")
     terminal.onKey(({ key: key }) => {
       buffer += key;
       console.log(buffer);
       switch (key) {
         case "\r":
-          buffer += key
-          console.dir("SENDING " + buffer);
-          client.publish(input, buffer);
+          if (!["\r", "\r\r"].includes(buffer)) {
+            client.publish(input, buffer);
+          }
           buffer = "";
           break;
+        case "\b":
         case String.fromCharCode(127):
           buffer = buffer.slice(0, -2);
+          terminal.write('\x1b[D');
           break;
+        default:
+          terminal.write(key);
       }
     });
 
