@@ -2,39 +2,27 @@ jest.mock("../add_regimen", () => ({
   addRegimen: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
+  mapStateToProps,
   RawDesignerRegimenList as DesignerRegimenList,
 } from "../list";
-import { Props } from "../../interfaces";
+import { RegimensListProps } from "../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
-import { auth } from "../../../__test_support__/fake_state/token";
-import { bot } from "../../../__test_support__/fake_state/bot";
 import { SearchField } from "../../../ui/search_field";
 import { addRegimen } from "../add_regimen";
 import { DesignerPanelTop } from "../../../farm_designer/designer_panel";
+import { fakeState } from "../../../__test_support__/fake_state";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<DesignerRegimenList />", () => {
-  const fakeProps = (): Props => ({
+  const fakeProps = (): RegimensListProps => ({
     dispatch: jest.fn(),
-    sequences: [],
-    resources: buildResourceIndex([]).index,
-    auth: auth,
-    current: fakeRegimen(),
     regimens: [],
-    selectedSequence: undefined,
-    dailyOffsetMs: 1000,
-    weeks: [],
-    bot: bot,
-    calendar: [],
     regimenUsageStats: {},
-    shouldDisplay: () => false,
-    variableData: {},
-    schedulerOpen: false,
   });
 
   it("renders empty", () => {
@@ -79,5 +67,14 @@ describe("<DesignerRegimenList />", () => {
     const wrapper = shallow(<DesignerRegimenList {...p} />);
     wrapper.find(DesignerPanelTop).simulate("click");
     expect(addRegimen).toHaveBeenCalledWith(2);
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    const state = fakeState();
+    state.resources = buildResourceIndex([]);
+    const props = mapStateToProps(state);
+    expect(props.regimens).toEqual([]);
   });
 });

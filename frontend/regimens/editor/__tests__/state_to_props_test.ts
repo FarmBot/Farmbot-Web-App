@@ -1,15 +1,15 @@
 import { mapStateToProps } from "../state_to_props";
-import { fakeState } from "../../__test_support__/fake_state";
+import { fakeState } from "../../../__test_support__/fake_state";
 import { TaggedResource } from "farmbot";
 import {
   buildResourceIndex,
-} from "../../__test_support__/resource_index_builder";
-import { newTaggedResource } from "../../sync/actions";
-import { selectAllRegimens } from "../../resources/selectors";
-import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
+} from "../../../__test_support__/resource_index_builder";
+import { newTaggedResource } from "../../../sync/actions";
+import { selectAllRegimens } from "../../../resources/selectors";
+import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import {
   fakeRegimen, fakeSequence,
-} from "../../__test_support__/fake_state/resources";
+} from "../../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
   it("returns props: no regimen selected", () => {

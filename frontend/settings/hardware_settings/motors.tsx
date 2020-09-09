@@ -6,15 +6,17 @@ import { settingToggle } from "../../devices/actions";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
 import { MotorsProps } from "./interfaces";
 import { Header } from "./header";
-import { Collapse } from "@blueprintjs/core";
+import { Collapse, Position } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
-import { SourceFwConfig } from "../../devices/interfaces";
+import { Feature, SourceFwConfig } from "../../devices/interfaces";
 import { calcMicrostepsPerMm } from "../../controls/move/direction_axes_props";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
-import { Help } from "../../ui";
+import { Col, Help, Row } from "../../ui";
+import { t } from "../../i18next_wrapper";
+import { McuInputBox } from "./mcu_input_box";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
@@ -61,6 +63,25 @@ export function Motors(props: MotorsProps) {
         disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
+      {props.shouldDisplay(Feature.z2_firmware_params) &&
+        <Highlight settingName={DeviceSetting.maxSpeedTowardHome}>
+          <Row>
+            <Col xs={8} className={"z-param-label"}>
+              <label>
+                {t(DeviceSetting.maxSpeedTowardHome)}
+              </label>
+              <Help text={ToolTips.MAX_SPEED} position={Position.TOP_RIGHT} />
+            </Col>
+            <Col xs={4} className={"z-param-input"}>
+              <McuInputBox
+                setting={"movement_max_spd_z2"}
+                sourceFwConfig={sourceFwConfig}
+                dispatch={dispatch}
+                scale={scale.z}
+                disabled={arduinoBusy} />
+            </Col>
+          </Row>
+        </Highlight>}
       <NumericMCUInputGroup
         label={DeviceSetting.homingSpeed}
         tooltip={ToolTips.HOME_SPEED}
@@ -85,6 +106,25 @@ export function Motors(props: MotorsProps) {
         disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
+      {props.shouldDisplay(Feature.z2_firmware_params) &&
+        <Highlight settingName={DeviceSetting.minimumSpeedTowardHome}>
+          <Row>
+            <Col xs={8} className={"z-param-label"}>
+              <label>
+                {t(DeviceSetting.minimumSpeedTowardHome)}
+              </label>
+              <Help text={ToolTips.MIN_SPEED} position={Position.TOP_RIGHT} />
+            </Col>
+            <Col xs={4} className={"z-param-input"}>
+              <McuInputBox
+                setting={"movement_min_spd_z2"}
+                sourceFwConfig={sourceFwConfig}
+                dispatch={dispatch}
+                scale={scale.z}
+                disabled={arduinoBusy} />
+            </Col>
+          </Row>
+        </Highlight>}
       <NumericMCUInputGroup
         label={DeviceSetting.accelerateFor}
         tooltip={ToolTips.ACCELERATE_FOR}
@@ -97,6 +137,25 @@ export function Motors(props: MotorsProps) {
         disabled={arduinoBusy}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
+      {props.shouldDisplay(Feature.z2_firmware_params) &&
+        <Highlight settingName={DeviceSetting.accelerateForTowardHome}>
+          <Row>
+            <Col xs={8} className={"z-param-label"}>
+              <label>
+                {t(DeviceSetting.accelerateForTowardHome)}
+              </label>
+              <Help text={ToolTips.ACCELERATE_FOR} position={Position.TOP_RIGHT} />
+            </Col>
+            <Col xs={4} className={"z-param-input"}>
+              <McuInputBox
+                setting={"movement_steps_acc_dec_z2"}
+                sourceFwConfig={sourceFwConfig}
+                dispatch={dispatch}
+                scale={scale.z}
+                disabled={arduinoBusy} />
+            </Col>
+          </Row>
+        </Highlight>}
       <NumericMCUInputGroup
         label={DeviceSetting.stepsPerMm}
         tooltip={ToolTips.STEPS_PER_MM}

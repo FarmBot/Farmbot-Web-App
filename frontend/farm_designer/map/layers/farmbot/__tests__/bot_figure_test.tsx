@@ -237,7 +237,21 @@ describe("<BotFigure/>", () => {
     const view = wrapper.find("#camera-view-area-wrapper");
     expect(view.find("#angled-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    expect(view.find("#cropped-camera-view-area").length)
-      .toBeGreaterThanOrEqual(1);
+    const circle = view.find("#cropped-camera-view-area");
+    expect(circle.length).toBeGreaterThanOrEqual(1);
+    expect(circle.last().props().transform).not.toEqual(undefined);
+  });
+
+  it("doesn't show large cropped camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.center = { x: undefined, y: undefined };
+    p.cameraCalibrationData.rotation = "47";
+    p.cameraViewArea = true;
+    p.cropPhotos = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    const circle = view.find("#cropped-camera-view-area");
+    expect(circle.length).toEqual(0);
   });
 });

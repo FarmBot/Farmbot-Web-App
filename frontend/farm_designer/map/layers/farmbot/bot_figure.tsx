@@ -149,6 +149,7 @@ interface CameraViewAreaProps {
   cameraCalibrationData: CameraCalibrationData;
   mapTransformProps: MapTransformProps;
   cropPhotos: boolean | undefined;
+  logVisual?: boolean;
 }
 
 export const CameraViewArea = (props: CameraViewAreaProps) => {
@@ -203,6 +204,8 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
       center={scaledCenter} radius={5} position={angledView} />}
     <ViewRectangle id={"snapped-camera-view-area"}
       dashed={cropPhotos} position={snappedView} />
+    {props.logVisual && <ImageLogVisuals
+      position={cropPhotos ? snappedView : angledView} />}
     <g id={"angled-camera-view-area-wrapper"}
       clipPath={`url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
       <ViewRectangle id={"angled-camera-view-area"}
@@ -250,3 +253,28 @@ const ViewCircle = (props: ViewCircleProps) =>
     data-comment={props.position?.comment}
     transform={props.position?.transform}
     style={{ transformOrigin: props.position?.transformOrigin }} />;
+
+interface ImageLogVisualsProps {
+  position: MapImagePositionData | undefined;
+}
+
+const ImageLogVisuals = (props: ImageLogVisualsProps) => {
+  if (!props.position) { return <g />; }
+  const { width, height, transform, transformOrigin } = props.position;
+  return <svg id={"image-log-visuals"} width={width} height={height}>
+    <defs>
+      <linearGradient id={"camera-scan-fill"}
+        x1={0} y1={0} x2={"100%"} y2={0}>
+        <stop offset={"0%"} stopColor={Color.cyan} stopOpacity={0} />
+        <stop offset={"50%"} stopColor={Color.cyan} stopOpacity={0.7} />
+        <stop offset={"100%"} stopColor={Color.cyan} stopOpacity={0} />
+      </linearGradient>
+    </defs>
+    <rect className={"img-full"}
+      transform={transform} style={{ transformOrigin }} />
+    <g id={"scan-wrapper"} transform={transform} style={{ transformOrigin }}>
+      <rect className={"img-scan"}
+        height={height} fill={"url(#camera-scan-fill)"} />
+    </g>
+  </svg>;
+};

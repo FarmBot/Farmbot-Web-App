@@ -122,6 +122,7 @@ export class RawDesignerSettings
         <Motors {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
+          shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <EncodersOrStallDetection {...commonProps}
           arduinoBusy={busy}

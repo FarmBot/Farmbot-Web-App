@@ -1,6 +1,16 @@
 import { RegimenItem } from "../interfaces";
-import { TaggedSequence } from "farmbot";
+import { TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
+
+export interface RegimenSchedulerProps {
+  dispatch: Function;
+  sequences: TaggedSequence[];
+  current: TaggedRegimen | undefined;
+  resources: ResourceIndex;
+  selectedSequence: TaggedSequence | undefined;
+  dailyOffsetMs: number;
+  weeks: Week[];
+}
 
 export interface BulkSchedulerOutput {
   index: number;

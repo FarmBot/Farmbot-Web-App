@@ -32,6 +32,7 @@ describe("<Motors />", () => {
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
       arduinoBusy: false,
+      shouldDisplay: () => false,
     };
   };
 
@@ -55,6 +56,13 @@ describe("<Motors />", () => {
     p.firmwareHardware = "farmduino";
     const wrapper = render(<Motors {...p} />);
     expect(wrapper.text()).not.toContain("Motor Current");
+  });
+
+  it("shows Z2 parameters", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = render(<Motors {...p} />);
+    expect(wrapper.text()).toContain("toward");
   });
 
   const testParamToggle = (

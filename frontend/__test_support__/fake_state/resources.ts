@@ -32,7 +32,6 @@ import { fakeResource } from "../fake_resource";
 import {
   ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
-import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
 
 export const resources: Everything["resources"] = buildResourceIndex();
@@ -348,6 +347,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
 
 export function fakeFirmwareConfig(): TaggedFirmwareConfig {
   return fakeResource("FirmwareConfig", {
+    id: idCounter++,
     device_id: idCounter++,
     created_at: "",
     updated_at: "",
@@ -390,6 +390,9 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     movement_invert_endpoints_x: 0,
     movement_invert_endpoints_y: 0,
     movement_invert_endpoints_z: 0,
+    movement_invert_2_endpoints_x: 0,
+    movement_invert_2_endpoints_y: 0,
+    movement_invert_2_endpoints_z: 0,
     movement_invert_motor_x: 0,
     movement_invert_motor_y: 0,
     movement_invert_motor_z: 0,
@@ -399,9 +402,11 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     movement_max_spd_x: 400,
     movement_max_spd_y: 400,
     movement_max_spd_z: 400,
+    movement_max_spd_z2: 400,
     movement_min_spd_x: 50,
     movement_min_spd_y: 50,
     movement_min_spd_z: 50,
+    movement_min_spd_z2: 50,
     movement_secondary_motor_invert_x: 1,
     movement_secondary_motor_x: 1,
     movement_step_per_mm_x: 5,
@@ -419,6 +424,7 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     movement_steps_acc_dec_x: 300,
     movement_steps_acc_dec_y: 300,
     movement_steps_acc_dec_z: 300,
+    movement_steps_acc_dec_z2: 300,
     movement_stop_at_home_x: 0,
     movement_stop_at_home_y: 0,
     movement_stop_at_home_z: 0,
@@ -449,8 +455,8 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_active_state: 1,
     pin_guard_5_pin_nr: 0,
     pin_guard_5_time_out: 60,
-    api_migrated: false
-  } as FirmwareConfig);
+    api_migrated: false,
+  });
 }
 
 export function fakeFarmwareEnv(): TaggedFarmwareEnv {
