@@ -22,7 +22,6 @@ export class TerminalSession {
     return new Promise((resolve) => {
       this.client.once("connect", () => {
         this.client.subscribe(this.rx);
-        this.client.publish(this.tx, "RingLogger.attach()\r")
         this.terminal.onKey(this.terminalKeyboardHandler);
         this.client.on("message", this.terminalMessageHandler);
       });

@@ -258,6 +258,17 @@ module Api
         return
       end
 
+      # Allow Web SSH access, but only to accounts that have
+      # an active `STAFF` token associated with the account.
+      # Such tokens exist for 24 hours after requesting staff
+      # support.
+      if routing_key_param.include?(".terminal_input") && permission_param == "write"
+        unless current_device.token_issuances.where(aud: "staff").any?
+          deny("not_staff")
+          return
+        end
+      end
+
       if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
         return
