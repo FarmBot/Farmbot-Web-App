@@ -33,7 +33,8 @@ class SessionToken < AbstractJwtToken
     jti = SecureRandom.uuid
     TokenIssuance.create!(device_id: user.device.id,
                           exp: exp,
-                          jti: jti)
+                          jti: jti,
+                          aud: aud)
     self.new([{ aud: aud,
                 sub: user.id,
                 iat: iat,

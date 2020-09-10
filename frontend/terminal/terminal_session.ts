@@ -6,7 +6,7 @@ type TerminalLike = Pick<Terminal, "write" | "onKey">;
 type KeysWeNeed = "publish" | "on" | "once" | "publish" | "subscribe";
 
 export class TerminalSession {
-  private buffer: string = "";
+  buffer = "";
   private client: Pick<MqttClient, KeysWeNeed>;
 
   constructor(url: string, public username: string,
@@ -15,8 +15,8 @@ export class TerminalSession {
     this.client = connect(url, { username, password });
   }
 
-  get rx() { return `bot/${this.username}/terminal_output` };
-  get tx() { return `bot/${this.username}/terminal_input` };
+  get rx() { return `bot/${this.username}/terminal_output`; }
+  get tx() { return `bot/${this.username}/terminal_input`; }
 
   connect = () => {
     return new Promise((resolve) => {
@@ -31,7 +31,7 @@ export class TerminalSession {
 
   erase = (n: number) => {
     times(Math.max(0, n), () => {
-      this.buffer = this.buffer.slice(0, -2);
+      this.buffer = this.buffer.slice(0, -1);
       this.terminal.write("\b \b");
     });
   }
@@ -49,7 +49,6 @@ export class TerminalSession {
 
   terminalKeyboardHandler = ({ key: key }: { key: string }) => {
     this.buffer += key;
-    console.log(this.buffer);
     switch (key) {
       case "\r":
         if (!["\r", "\r\r"].includes(this.buffer)) {

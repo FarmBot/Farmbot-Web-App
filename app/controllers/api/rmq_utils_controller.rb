@@ -263,7 +263,8 @@ module Api
       # Such tokens exist for 24 hours after requesting staff
       # support.
       if routing_key_param.include?(".terminal_input") && permission_param == "write"
-        unless current_device.token_issuances.where(aud: "staff").any?
+        query = { aud: "staff", device_id: device_id_in_topic }
+        unless TokenIssuance.where(query).any?
           deny("not_staff")
           return
         end
