@@ -136,6 +136,7 @@ export function mapStateToProps(props: Everything): Props {
     botSize: botSize(props),
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
+    deviceTarget: props.bot.hardware.informational_settings.target,
     latestImages,
     cameraCalibrationData: getCameraCalibrationData(env),
     timeSettings: maybeGetTimeSettings(props.resources.index),

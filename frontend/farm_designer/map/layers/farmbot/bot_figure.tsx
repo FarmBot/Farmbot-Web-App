@@ -152,6 +152,7 @@ interface CameraViewAreaProps {
   logVisual?: boolean;
 }
 
+// eslint-disable-next-line complexity
 export const CameraViewArea = (props: CameraViewAreaProps) => {
   const { cameraCalibrationData, mapTransformProps, cropPhotos } = props;
   const { xySwap } = mapTransformProps;
@@ -195,6 +196,7 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     alreadyRotated: true,
     noRotation: xySwap && cameraRotated,
   });
+  const croppedLogVisual = props.logVisual && cropPhotos;
   return <g id="camera-view-area-wrapper" fill={"none"}
     stroke={Color.darkGray} strokeWidth={2} strokeOpacity={0.75}>
     <clipPath id={`snapped-camera-view-area-clip-path-${x}-${y}`}>
@@ -202,15 +204,17 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     </clipPath>
     {angledView && <ViewCircle id={"camera-photo-center"}
       center={scaledCenter} radius={5} position={angledView} />}
-    <ViewRectangle id={"snapped-camera-view-area"}
-      dashed={cropPhotos} position={snappedView} />
-    {props.logVisual && <ImageLogVisuals
-      position={cropPhotos ? snappedView : angledView} />}
-    <g id={"angled-camera-view-area-wrapper"}
-      clipPath={`url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
+    {props.logVisual
+      ? <ImageLogVisuals position={cropPhotos ? croppedView : angledView} />
+      : <ViewRectangle id={"snapped-camera-view-area"}
+        dashed={cropPhotos} position={snappedView} />}
+    {!croppedLogVisual && <g id={"angled-camera-view-area-wrapper"}
+      clipPath={props.logVisual
+        ? undefined
+        : `url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
       <ViewRectangle id={"angled-camera-view-area"}
         dashed={cropPhotos} position={angledView} />
-    </g>
+    </g>}
     {cropPhotos && croppedView && (largeCrop(rotationAngle)
       ? <ViewCircle id={"cropped-camera-view-area"}
         center={scaledCenter}

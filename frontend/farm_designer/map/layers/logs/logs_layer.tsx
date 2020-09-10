@@ -22,11 +22,15 @@ const ANIMATION_CLASS_LOOKUP: Record<RenderedLog, AnimationClass> = {
   [RenderedLog.imageDetect]: AnimationClass.scan,
 };
 
-const ANIMATION_DURATION_LOOKUP: Record<RenderedLog, number> = {
-  [RenderedLog.imageCapture]: 5,
-  [RenderedLog.imageCalibrate]: 15,
-  [RenderedLog.imageDetect]: 15,
-};
+const ANIMATION_DURATION_LOOKUP =
+  (target: string): Record<RenderedLog, number> => {
+    const slow = target == "rpi";
+    return {
+      [RenderedLog.imageCapture]: slow ? 10 : 5,
+      [RenderedLog.imageCalibrate]: slow ? 60 : 15,
+      [RenderedLog.imageDetect]: slow ? 60 : 15,
+    };
+  };
 
 export const LogsLayer = (props: LogsLayerProps) =>
   <g id="logs-layer" className="logs-layer">
@@ -41,6 +45,7 @@ export const LogsLayer = (props: LogsLayerProps) =>
             cropImage={!!props.getConfigValue(BooleanSetting.crop_images)}
             animate={!props.getConfigValue(BooleanSetting.disable_animations)}
             cameraCalibrationData={props.cameraCalibrationData}
+            deviceTarget={props.deviceTarget}
             mapTransformProps={props.mapTransformProps} />)}
   </g>;
 
@@ -55,7 +60,7 @@ export const LogVisual = (props: LogVisualProps) => {
 
 const ImageVisual = (props: LogVisualProps) => {
   const { x, y, z } = props.log.body;
-  const fadeDelay = ANIMATION_DURATION_LOOKUP[props.visual];
+  const fadeDelay = ANIMATION_DURATION_LOOKUP(props.deviceTarget)[props.visual];
   const fadeDuration = 0.5;
   const [display, setDisplay] = React.useState(true);
   setTimeout(() => setDisplay(false), (fadeDelay + fadeDuration) * 1000);

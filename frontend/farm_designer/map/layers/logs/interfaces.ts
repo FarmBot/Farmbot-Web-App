@@ -20,6 +20,7 @@ export interface LogsLayerProps {
   mapTransformProps: MapTransformProps;
   cameraCalibrationData: CameraCalibrationData;
   getConfigValue: GetWebAppConfigValue;
+  deviceTarget: string;
 }
 
 export interface LogVisualProps {
@@ -29,4 +30,5 @@ export interface LogVisualProps {
   cropImage: boolean;
   animate: boolean;
   mapTransformProps: MapTransformProps;
+  deviceTarget: string;
 }
