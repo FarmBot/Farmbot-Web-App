@@ -98,6 +98,7 @@ export interface Props {
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
+  deviceTarget: string;
 }
 
 export interface MovePlantProps {
@@ -246,6 +247,7 @@ export interface GardenMapProps {
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
+  deviceTarget: string;
 }
 
 export interface GardenMapState {
