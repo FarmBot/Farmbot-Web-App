@@ -33,5 +33,17 @@ describe("TerminalSession", () => {
     expect(ts.buffer).toEqual("wow!");
     ts.erase(1);
     expect(ts.buffer).toEqual("wow");
+    ts.clearBuffer();
+    expect(ts.buffer).toEqual("");
+  });
+
+  it("handles incoming messages from remote device", () => {
+    const terminal = fakeTerminal();
+    const ts = create(terminal);
+    const bufStr = "Hello, world!";
+    const buffer = Buffer.from(bufStr, "utf8");
+    ts.terminalMessageHandler(ts.rx, buffer);
+    ts.terminalMessageHandler("Something else", Buffer.from("no", "utf8"));
+    expect(terminal.write).toHaveBeenCalledWith(buffer);
   });
 });
