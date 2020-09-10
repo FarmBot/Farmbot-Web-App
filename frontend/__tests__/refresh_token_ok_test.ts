@@ -1,7 +1,14 @@
 const mockAuth = (iss = "987"): AuthState => ({
   token: {
     encoded: "---",
-    unencoded: { iss, os_update_server: "---", jti: "---", aud: "unknown" }
+    unencoded: {
+      iss,
+      os_update_server: "---",
+      jti: "---",
+      aud: "unknown",
+      bot: "device_123",
+      mqtt_ws: "//localhost:3000"
+    }
   }
 });
 

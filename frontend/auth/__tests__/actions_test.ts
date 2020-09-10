@@ -39,6 +39,8 @@ const mockToken = (): AuthState => ({
       os_update_server: "os_update_server",
       jti: "---",
       aud: "unknown",
+      bot: "device_123",
+      mqtt_ws: "//localhost:3000"
     }
   }
 });

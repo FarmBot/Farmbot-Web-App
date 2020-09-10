@@ -26,6 +26,8 @@ describe("maybeRefreshToken()", () => {
           mqtt: "---",
           os_update_server: "---",
           aud: "unknown",
+          bot: "device_123",
+          mqtt_ws: "//localhost:3000"
         }
       }
     };
