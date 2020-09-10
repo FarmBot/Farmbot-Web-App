@@ -131,6 +131,7 @@ const fakeProps = (): GardenMapProps => ({
   mountedToolInfo: fakeMountedToolInfo(),
   visualizedSequenceBody: [],
   logs: [],
+  deviceTarget: "",
 });
 
 describe("<GardenMap/>", () => {

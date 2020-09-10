@@ -402,6 +402,7 @@ export class GardenMap extends
   LogsLayer = () => <LogsLayer
     logs={this.props.logs}
     cameraCalibrationData={this.props.cameraCalibrationData}
+    deviceTarget={this.props.deviceTarget}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
     getConfigValue={this.props.getConfigValue} />

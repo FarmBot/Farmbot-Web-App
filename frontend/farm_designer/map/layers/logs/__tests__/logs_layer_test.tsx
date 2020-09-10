@@ -39,6 +39,7 @@ describe("<LogsLayer />", () => {
     mapTransformProps: fakeMapTransformProps(),
     cameraCalibrationData: fakeCameraCalibrationData(),
     getConfigValue: jest.fn(),
+    deviceTarget: "",
   });
 
   it("renders", () => {
@@ -78,10 +79,34 @@ describe("<LogsLayer />", () => {
     expect(wrapper.find(CameraViewArea).length).toEqual(0);
   });
 
+  it("removes visuals more slowly", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.deviceTarget = "rpi";
+    const wrapper = svgMount(<LogsLayer {...p} />);
+    expect(wrapper.find(CameraViewArea).length).toEqual(3);
+    act(() => { jest.advanceTimersByTime(30000); });
+    wrapper.update();
+    expect(wrapper.find(CameraViewArea).length).toEqual(2);
+    act(() => { jest.runAllTimers(); });
+    wrapper.update();
+    expect(wrapper.find(CameraViewArea).length).toEqual(0);
+  });
+
   it("shows full visuals", () => {
     const p = fakeProps();
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     const wrapper = svgMount(<LogsLayer {...p} />);
     expect(wrapper.find("#image-log-visuals").length).toEqual(3);
+    expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(3);
+  });
+
+  it("shows cropped visuals", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    const wrapper = svgMount(<LogsLayer {...p} />);
+    expect(wrapper.find("#image-log-visuals").length).toEqual(3);
+    expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(0);
   });
 });
