@@ -31,13 +31,13 @@ export class TerminalSession {
 
   erase = (n: number) => {
     times(Math.max(0, n), () => {
-      this.buffer = this.buffer.slice(0, -1);
       this.terminal.write("\b \b");
+      this.buffer = this.buffer.slice(0, -1);
     });
   }
 
   clearBuffer = () => {
-    this.erase(this.buffer.length - 1);
+    this.erase(this.buffer.length);
     this.buffer = "";
   };
 
@@ -48,11 +48,10 @@ export class TerminalSession {
   }
 
   terminalKeyboardHandler = ({ key: key }: { key: string }) => {
-    this.buffer += key;
     switch (key) {
       case "\r":
         if (!["\r", "\r\r"].includes(this.buffer)) {
-          this.client.publish(this.tx, this.buffer);
+          this.client.publish(this.tx, this.buffer + key);
         }
         this.clearBuffer();
         break;
@@ -61,6 +60,7 @@ export class TerminalSession {
         this.erase(1);
         break;
       default:
+        this.buffer += key;
         this.terminal.write(key);
     }
   }
