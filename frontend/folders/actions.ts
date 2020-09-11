@@ -70,7 +70,7 @@ export const createFolder = (config: DeepPartial<Folder> = {}) => {
   const d: Function = store.dispatch;
   const folder: Folder = { ...DEFAULTS(), ...config };
   const action = initSave("Folder", folder);
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const p: Promise<{}> = d(action);
   return p;
 };

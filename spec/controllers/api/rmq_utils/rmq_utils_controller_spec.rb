@@ -2,17 +2,49 @@ require "spec_helper"
 
 describe Api::RmqUtilsController do
   include Devise::Test::ControllerHelpers
+  pass = "password123"
+
+  let :user do
+    FactoryBot.create(:user, password: pass, password_confirmation: pass)
+  end
+
   let :credentials do
-    pass = "password123"
-    user = FactoryBot.create(:user,
-                             password: pass,
-                             password_confirmation: pass)
-    token = Auth::CreateToken
-      .run!(email: user.email,
-            password: pass,
-            fbos_version: Gem::Version.new("99.99.99"))[:token].encoded
+    p = { email: user.email,
+          password: pass,
+          fbos_version: Gem::Version.new("99.99.99") }
+    token = Auth::CreateToken.run!(p)[:token].encoded
     { username: "device_#{user.device.id}",
       password: token }
+  end
+
+  before(:each) { destroy_everything! }
+
+  it "Stops access to `#terminal_input` if no `staff` tokens in use" do
+    username = credentials.fetch(:username)
+    real_routing_key = "bot.#{username}.terminal_input"
+    [
+      real_routing_key,
+      "bot.#{username}.terminal_input.123",
+      "bot.device_999.terminal_input.*",
+    ].map do |routing_key|
+      p = credentials.merge(routing_key: routing_key, permission: "write")
+      post :topic_action, params: p
+      expect(response.body).to eq("deny")
+      expect(response.status).to eq(403)
+    end
+  end
+
+  it "allows staff access to `#terminal_input`" do
+    TokenIssuance.create!(device_id: user.device.id,
+                          exp: 5.minutes.from_now.to_i,
+                          jti: SecureRandom.uuid,
+                          aud: "staff")
+    username = credentials.fetch(:username)
+    routing_key = "bot.#{username}.terminal_input"
+    p = credentials.merge(routing_key: routing_key, permission: "write")
+    post :topic_action, params: p
+    expect(response.body).to eq("allow")
+    expect(response.status).to eq(200)
   end
 
   it "limits users to 20 connections per 5 minutes" do
@@ -205,9 +237,7 @@ describe Api::RmqUtilsController do
      ".sync.*",
      ".telemetry.*",
      ".telemetry",
-     ".sync",
-     ".status_v8.*",
-     ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
+     ".sync"].map { |x| expect(random_channel(x).match(r)).to be }
   end
 
   it "allows farmbot_guest users, regardless of password" do

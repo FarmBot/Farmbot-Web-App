@@ -27,7 +27,8 @@ export function StepButtonCluster(props: StepButtonProps) {
         step={{ kind: "move", args: {} }}
         color="blue">
         {t("MOVE")}
-      </StepButton>] : []),
+      </StepButton>]
+      : []),
     ...(shouldDisplay(Feature.computed_move)
       ? []
       : [<StepButton {...commonStepProps}
@@ -212,7 +213,8 @@ export function StepButtonCluster(props: StepButtonProps) {
         }}
         color="brown">
         {t("Mark As...")}
-      </StepButton>] : []),
+      </StepButton>]
+      : []),
   ];
 
   const sequenceUrlName = urlFriendly(props.current?.body.name || "");

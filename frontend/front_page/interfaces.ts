@@ -10,8 +10,8 @@ export interface FrontPageState {
   regPassword: string;
   activePanel:
   | "resendVerificationEmail" /** Render the "resend verification" panel. */
-  | "login"                   /** Render default login panel */
-  | "forgotPassword"          /** Render forgotten password pane */;
+  | "login" /** Render default login panel */
+  | "forgotPassword" /** Render forgotten password pane */;
 }
 
 export type SetterCB = (stat: Partial<FrontPageState>) => void;

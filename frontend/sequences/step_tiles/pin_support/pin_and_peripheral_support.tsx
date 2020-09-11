@@ -7,9 +7,8 @@ import { DropDownItem, Col, FBSelect } from "../../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
   TaggedPeripheral, TaggedSensor, ResourceName, Nothing, SequenceBodyItem,
-  WritePin, TogglePin,
+  WritePin, TogglePin, ReadPin, AllowedPinTypes, NamedPin,
 } from "farmbot";
-import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../../util/errors";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
@@ -111,7 +110,8 @@ export function pinDropdowns(
 
 const pinsAsDropDownsWritePin = (
   resources: ResourceIndex, showPins: boolean,
-): DropDownItem[] => [
+): DropDownItem[] =>
+  [
     ...peripheralsAsDropDowns(resources),
     ...boxLedsAsDropDowns(),
     ...(showPins ? pinDropdowns(n => n) : []),
@@ -119,7 +119,8 @@ const pinsAsDropDownsWritePin = (
 
 const pinsAsDropDownsReadPin = (
   resources: ResourceIndex, showPins: boolean,
-): DropDownItem[] => [
+): DropDownItem[] =>
+  [
     ...sensorsAsDropDowns(resources),
     ...peripheralsAsDropDowns(resources),
     ...(showPins ? pinDropdowns(n => n) : []),

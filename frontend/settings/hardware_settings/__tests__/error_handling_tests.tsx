@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { ErrorHandling } from "../error_handling";
 import { ErrorHandlingProps } from "../interfaces";
@@ -27,6 +27,7 @@ describe("<ErrorHandling />", () => {
     controlPanelState: panelState(),
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
     arduinoBusy: false,
   });
 

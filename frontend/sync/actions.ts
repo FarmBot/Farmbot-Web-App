@@ -38,6 +38,7 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
 
 export function syncFail(e: Error) {
   console.error("DATA SYNC ERROR!");
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   Session.clear() as never;
   throw e;
 }
@@ -49,6 +50,7 @@ const download = (dispatch: Function) =>
       dispatch(resourceReady(kind, newTaggedResource(kind, data)));
     }, syncFail);
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function fetchSyncData(dispatch: Function) {
   const get = download(dispatch);
   /** Resources are placed into groups based on their dependencies.

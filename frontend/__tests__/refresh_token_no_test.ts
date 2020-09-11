@@ -3,10 +3,7 @@ jest.mock("axios", () => ({
     response: { use: jest.fn() },
     request: { use: jest.fn() }
   },
-  get() {
-    return Promise.reject("NO");
-  }
-
+  get: jest.fn(() => Promise.reject("NO")),
 }));
 
 jest.mock("../session", () => ({ Session: { clear: jest.fn() } }));
@@ -18,7 +15,7 @@ API.setBaseUrl("http://blah.whatever.party");
 
 describe("maybeRefreshToken()", () => {
 
-  it("logs you out when a refresh fails", (done) => {
+  it("logs you out when a refresh fails", async () => {
     const t = {
       token: {
         encoded: "---",
@@ -29,12 +26,12 @@ describe("maybeRefreshToken()", () => {
           mqtt: "---",
           os_update_server: "---",
           aud: "unknown",
+          bot: "device_123",
+          mqtt_ws: "//localhost:3000"
         }
       }
     };
-    maybeRefreshToken(t).then((result) => {
-      expect(result).toBeUndefined();
-      done();
-    });
+    const result = await maybeRefreshToken(t);
+    expect(result).toBeUndefined();
   });
 });

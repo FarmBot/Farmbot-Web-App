@@ -1,6 +1,6 @@
 jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToggleButton } from "../../../controls/toggle_button";
@@ -12,6 +12,7 @@ import { DeviceSetting } from "../../../constants";
 describe("BooleanMCUInputGroup", () => {
   const fakeProps = (): BooleanMCUInputGroupProps => ({
     sourceFwConfig: x => ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
     dispatch: jest.fn(),
     tooltip: "Tooltip",
     label: DeviceSetting.invertEncoders,

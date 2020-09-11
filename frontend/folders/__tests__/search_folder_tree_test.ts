@@ -1,4 +1,4 @@
-import { TEST_GRAPH } from "./actions_test";
+import { TEST_GRAPH } from "../test_fixtures";
 import { searchFolderTree, FolderSearchProps } from "../search_folder_tree";
 import { TaggedResource } from "farmbot";
 import { FolderUnion } from "../interfaces";

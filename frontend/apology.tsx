@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Session } from "./session";
 import { ExternalUrl } from "./external_urls";
 
@@ -26,7 +26,7 @@ export function Apology(_: {}) {
     <div style={INNER_STYLE}>
       <h1 style={{ fontSize: "175%" }}>Page Error</h1>
       <span>
-        We can't render this part of the page due to an unrecoverable error.
+        {"We can't render this part of the page due to an unrecoverable error."}
         Here are some things you can try:
       </span>
       <ol>
@@ -34,7 +34,7 @@ export function Apology(_: {}) {
           Refresh the page.
         </li>
         <li>
-          Perform a "hard refresh"
+          {"Perform a \"hard refresh\""}
           (<strong>CTRL + SHIFT + R</strong> on most machines).
         </li>
         <li>

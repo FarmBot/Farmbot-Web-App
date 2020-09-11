@@ -14,7 +14,7 @@ jest.mock("@blueprintjs/core", () => ({
   Popover: (props: { children: JSX.Element }) => <div>{props.children}</div>,
 }));
 
-import * as React from "react";
+import React from "react";
 import { TestButton, TestBtnProps, setMenuOpen } from "../test_button";
 import {
   TaggedSequence, SpecialStatus, ParameterApplication, ParameterDeclaration,
@@ -122,7 +122,7 @@ describe("<TestButton/>", () => {
     expect(result.html()).toContain("locals-list");
   });
 
-  it("has open parameter assignment menu", () => {
+  it("edits body variables", () => {
     const variable: ParameterApplication = {
       kind: "parameter_application",
       args: {

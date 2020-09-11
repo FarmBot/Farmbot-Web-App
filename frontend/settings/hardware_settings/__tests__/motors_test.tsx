@@ -3,10 +3,16 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+let mockDefaultValue = 1;
+jest.mock("../default_values", () => ({
+  getDefaultFwConfigValue: jest.fn(() => () => mockDefaultValue),
+  getModifiedClassName: jest.fn(),
+}));
+
+import React from "react";
 import { MotorsProps } from "../interfaces";
 import { Motors } from "../motors";
-import { render, mount } from "enzyme";
+import { render, mount, shallow } from "enzyme";
 import { McuParamName } from "farmbot";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -17,6 +23,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../api/crud";
+import { SingleSettingRow } from "../single_setting_row";
 
 describe("<Motors />", () => {
   const fakeConfig = fakeFirmwareConfig();
@@ -32,6 +39,7 @@ describe("<Motors />", () => {
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
       arduinoBusy: false,
+      shouldDisplay: () => false,
     };
   };
 
@@ -57,9 +65,30 @@ describe("<Motors />", () => {
     expect(wrapper.text()).not.toContain("Motor Current");
   });
 
+  it("shows Z2 parameters", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = render(<Motors {...p} />);
+    expect(wrapper.text()).toContain("toward");
+  });
+
+  it("shows default value", () => {
+    mockDefaultValue = 1;
+    const wrapper = shallow(<Motors {...fakeProps()} />);
+    expect(wrapper.find(SingleSettingRow).first().props().tooltip)
+      .toContain("enabled");
+  });
+
+  it("shows different default value", () => {
+    mockDefaultValue = 0;
+    const wrapper = shallow(<Motors {...fakeProps()} />);
+    expect(wrapper.find(SingleSettingRow).first().props().tooltip)
+      .toContain("disabled");
+  });
+
   const testParamToggle = (
     description: string, parameter: McuParamName, position: number) => {
-    it(description, () => {
+    it(`${description}`, () => {
       const p = fakeProps();
       p.controlPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });

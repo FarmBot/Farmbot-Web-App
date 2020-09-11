@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
@@ -138,7 +138,8 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo.pulloutDirection = ToolPulloutDirection.NEGATIVE_X;
     const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+      .getToolProps({ qx: 0, qy: 0 }))
+      .toEqual({
         dispatch: expect.any(Function),
         hovered: false,
         pulloutDirection: ToolPulloutDirection.NEGATIVE_X,
@@ -158,7 +159,8 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo = undefined;
     const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 })).toEqual({
+      .getToolProps({ qx: 0, qy: 0 }))
+      .toEqual({
         dispatch: expect.any(Function),
         hovered: false,
         pulloutDirection: ToolPulloutDirection.POSITIVE_X,
@@ -235,7 +237,21 @@ describe("<BotFigure/>", () => {
     const view = wrapper.find("#camera-view-area-wrapper");
     expect(view.find("#angled-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    expect(view.find("#cropped-camera-view-area").length)
-      .toBeGreaterThanOrEqual(1);
+    const circle = view.find("#cropped-camera-view-area");
+    expect(circle.length).toBeGreaterThanOrEqual(1);
+    expect(circle.last().props().transform).not.toEqual(undefined);
+  });
+
+  it("doesn't show large cropped camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.center = { x: undefined, y: undefined };
+    p.cameraCalibrationData.rotation = "47";
+    p.cameraViewArea = true;
+    p.cropPhotos = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    const circle = view.find("#cropped-camera-view-area");
+    expect(circle.length).toEqual(0);
   });
 });

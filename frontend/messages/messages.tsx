@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Alerts } from "../messages/alerts";
 import { mapStateToProps } from "../messages/state_to_props";
@@ -24,7 +24,8 @@ export class RawMessagesPanel
           findApiAlertById={this.props.findApiAlertById} />
         <div className="link-to-logs">
           {this.props.alerts.length > 0
-            ? t("No more messages.") : t("No messages.")}
+            ? t("No more messages.")
+            : t("No messages.")}
           &nbsp;<Link to="/app/logs">{t("View Logs")}</Link>
         </div>
       </DesignerPanelContent>

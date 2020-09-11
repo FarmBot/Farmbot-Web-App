@@ -27,7 +27,7 @@ describe("configureStore", () => {
   it("does not crash on malformed states", () => {
     sessionStorage.setItem("lastState", "Not JSON at all.");
     const result1 = configureStore().getState();
-    // tslint:disable-next-line:no-null-keyword
+    // eslint-disable-next-line no-null/no-null
     expect(result1.auth).toBe(null); // Initialize to default value.
   });
 });

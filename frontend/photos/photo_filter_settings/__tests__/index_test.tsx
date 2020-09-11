@@ -18,12 +18,13 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
-import { toggleAlwaysHighlightImage, toggleSingleImageMode } from "../actions";
+import {
+  toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
+} from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   PhotoFilterSettingsProps, FiltersEnabledWarningProps,
 } from "../interfaces";
-import { setWebAppConfigValues } from "../actions";
 
 describe("<PhotoFilterSettings />", () => {
   const fakeProps = (): PhotoFilterSettingsProps => ({

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { warning } from "../../toast/toast";
 import { McuInputBoxProps } from "../../devices/interfaces";
 import { updateMCU } from "../../devices/actions";
@@ -6,9 +6,9 @@ import { BlurableInput } from "../../ui/index";
 import {
   clampInteger, IntegerSize, getMaxInputFromIntSize,
 } from "../../util";
-
 import { isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { getModifiedClassName } from "./default_values";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
@@ -23,6 +23,14 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     const { filter } = this.props;
     const goodValue = !isUndefined(v) && !(filter && v > filter);
     return goodValue ? (v || 0).toString() : "";
+  }
+
+  get wrapperClassName() {
+    const { firmwareHardware } = this.props;
+    const value = this.key.includes("step_per_mm")
+      ? (this.config.value || 1) / (this.props.scale || 1)
+      : this.config.value;
+    return getModifiedClassName(this.key, value, firmwareHardware);
   }
 
   get showValue() {
@@ -77,6 +85,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     return <BlurableInput
       type="number"
       className={this.className}
+      wrapperClassName={this.wrapperClassName}
       title={this.props.title}
       value={this.showValue}
       onCommit={this.commit}

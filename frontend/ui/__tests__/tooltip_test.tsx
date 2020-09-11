@@ -1,14 +1,12 @@
-import { ToolTip, ToolTipProps } from "../tooltip";
-import { mount } from "enzyme";
 import React from "react";
+import { mount } from "enzyme";
+import { ToolTip, ToolTipProps } from "../tooltip";
 
 describe("<ToolTip />", () => {
-  const fakeProps = (): ToolTipProps => {
-    return {
-      helpText: "such help",
-      docPage: "weed-detection"
-    };
-  };
+  const fakeProps = (): ToolTipProps => ({
+    helpText: "such help",
+    docPage: "weed-detection"
+  });
   const p = fakeProps();
   const wrapper = mount(<ToolTip {...p} />);
 
@@ -16,20 +14,18 @@ describe("<ToolTip />", () => {
     expect(wrapper.find(".title-help-text").html()).toContain("such help");
   });
 
-  it("Has a false initial state", () => {
-    expect(wrapper.state("isOpen")).toBeFalsy();
+  it("has a closed initial state", () => {
+    expect(wrapper.find(".title-help-text").hasClass("open")).toBeFalsy();
   });
 
-  it("Text invisible when closed", () => {
+  it("doesn't show text when closed", () => {
     expect(wrapper.find(".title-help-text").length).toEqual(1);
     expect(wrapper.find(".title-help-text.open").length).toEqual(0);
   });
 
-  it("Toggles state", () => {
-    const parent = wrapper.find(".fa-question-circle");
-    parent.simulate("click");
-    expect(wrapper.state("isOpen")).toBeTruthy();
-    expect(wrapper.find(".title-help-text.open").length).toEqual(1);
+  it("toggles open state", () => {
+    wrapper.find(".fa-question-circle").simulate("click");
+    expect(wrapper.find(".title-help-text").hasClass("open")).toBeTruthy();
   });
 
   it("renders doc link", () => {

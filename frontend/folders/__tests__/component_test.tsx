@@ -34,7 +34,7 @@ jest.mock("@blueprintjs/select", () => ({
   ItemRenderer: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
@@ -424,10 +424,11 @@ describe("<FolderNameEditor />", () => {
     expect(wrapper.find(".folder-name-input").length).toEqual(0);
   });
 
-  it("renders: settings open", () => {
+  it("opens settings menu", () => {
     const p = fakeProps();
-    const wrapper = mount<FolderNameEditor>(<FolderNameEditor {...p} />);
-    wrapper.setState({ settingsOpen: true });
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
+    wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
   });
 
@@ -461,20 +462,13 @@ describe("<FolderNameEditor />", () => {
     expect(setFolderColor).toHaveBeenCalledWith(p.node.id, "green");
   });
 
-  it("opens settings menu", () => {
-    const p = fakeProps();
-    const wrapper = shallow<FolderNameEditor>(<FolderNameEditor {...p} />);
-    expect(wrapper.state().settingsOpen).toBeFalsy();
-    wrapper.find("i").last().simulate("click");
-    expect(wrapper.state().settingsOpen).toBeTruthy();
-  });
-
   it("closes settings menu", () => {
     const p = fakeProps();
-    const wrapper = mount<FolderNameEditor>(<FolderNameEditor {...p} />);
-    wrapper.setState({ settingsOpen: true });
-    wrapper.instance().close();
-    expect(wrapper.state().settingsOpen).toBeFalsy();
+    const wrapper = shallow(<FolderNameEditor {...p} />);
+    wrapper.find(".fa-ellipsis-v").simulate("click");
+    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
+    wrapper.find(FolderButtonCluster).props().close();
+    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });
 

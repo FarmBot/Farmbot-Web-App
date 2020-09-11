@@ -171,8 +171,11 @@ class Device < ApplicationRecord
   # Used by sys admins to debug problems without performing a password reset.
   def help_customer
     Rollbar.error("Someone is creating a debug user token", { device: self.id })
-    token = SessionToken.as_json(users.first, "staff", fbos_version).to_json
-    return "localStorage['session'] = JSON.stringify(#{token});"
+    t = SessionToken.as_json(users.first, "staff", fbos_version)
+    jti = t[:token].unencoded[:jti]
+    # Auto expire after 1 day.
+    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 1.day).to_i)
+    return "localStorage['session'] = JSON.stringify(#{t.to_json});"
   end
 
   TOO_MANY_CONNECTIONS =
@@ -210,5 +213,25 @@ class Device < ApplicationRecord
     if legacy_ota_device?
       self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
     end
+  end
+
+  UPGRADE_RPC = {
+    kind: "rpc_request",
+    args: {
+      label: "FROM_API",
+      priority: 500,
+    },
+    body: [
+      {
+        kind: "check_updates",
+        args: {
+          package: "farmbot_os",
+        },
+      },
+    ],
+  }.to_json
+
+  def send_upgrade_request
+    Transport.current.amqp_send(UPGRADE_RPC, id, "from_clients")
   end
 end

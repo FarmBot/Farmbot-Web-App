@@ -149,8 +149,10 @@ interface CameraViewAreaProps {
   cameraCalibrationData: CameraCalibrationData;
   mapTransformProps: MapTransformProps;
   cropPhotos: boolean | undefined;
+  logVisual?: boolean;
 }
 
+// eslint-disable-next-line complexity
 export const CameraViewArea = (props: CameraViewAreaProps) => {
   const { cameraCalibrationData, mapTransformProps, cropPhotos } = props;
   const { xySwap } = mapTransformProps;
@@ -194,6 +196,7 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     alreadyRotated: true,
     noRotation: xySwap && cameraRotated,
   });
+  const croppedLogVisual = props.logVisual && cropPhotos;
   return <g id="camera-view-area-wrapper" fill={"none"}
     stroke={Color.darkGray} strokeWidth={2} strokeOpacity={0.75}>
     <clipPath id={`snapped-camera-view-area-clip-path-${x}-${y}`}>
@@ -201,13 +204,17 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     </clipPath>
     {angledView && <ViewCircle id={"camera-photo-center"}
       center={scaledCenter} radius={5} position={angledView} />}
-    <ViewRectangle id={"snapped-camera-view-area"}
-      dashed={cropPhotos} position={snappedView} />
-    <g id={"angled-camera-view-area-wrapper"}
-      clipPath={`url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
+    {props.logVisual
+      ? <ImageLogVisuals position={cropPhotos ? croppedView : angledView} />
+      : <ViewRectangle id={"snapped-camera-view-area"}
+        dashed={cropPhotos} position={snappedView} />}
+    {!croppedLogVisual && <g id={"angled-camera-view-area-wrapper"}
+      clipPath={props.logVisual
+        ? undefined
+        : `url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
       <ViewRectangle id={"angled-camera-view-area"}
         dashed={cropPhotos} position={angledView} />
-    </g>
+    </g>}
     {cropPhotos && croppedView && (largeCrop(rotationAngle)
       ? <ViewCircle id={"cropped-camera-view-area"}
         center={scaledCenter}
@@ -250,3 +257,28 @@ const ViewCircle = (props: ViewCircleProps) =>
     data-comment={props.position?.comment}
     transform={props.position?.transform}
     style={{ transformOrigin: props.position?.transformOrigin }} />;
+
+interface ImageLogVisualsProps {
+  position: MapImagePositionData | undefined;
+}
+
+const ImageLogVisuals = (props: ImageLogVisualsProps) => {
+  if (!props.position) { return <g />; }
+  const { width, height, transform, transformOrigin } = props.position;
+  return <svg id={"image-log-visuals"} width={width} height={height}>
+    <defs>
+      <linearGradient id={"camera-scan-fill"}
+        x1={0} y1={0} x2={"100%"} y2={0}>
+        <stop offset={"0%"} stopColor={Color.cyan} stopOpacity={0} />
+        <stop offset={"50%"} stopColor={Color.cyan} stopOpacity={0.7} />
+        <stop offset={"100%"} stopColor={Color.cyan} stopOpacity={0} />
+      </linearGradient>
+    </defs>
+    <rect className={"img-full"}
+      transform={transform} style={{ transformOrigin }} />
+    <g id={"scan-wrapper"} transform={transform} style={{ transformOrigin }}>
+      <rect className={"img-scan"}
+        height={height} fill={"url(#camera-scan-fill)"} />
+    </g>
+  </svg>;
+};

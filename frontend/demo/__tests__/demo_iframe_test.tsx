@@ -1,64 +1,41 @@
 let mockResponse: string | Error = "12345";
-
-jest.mock("axios", () => {
-  return {
-    post: jest.fn(() => {
-      if (typeof mockResponse === "string") {
-        return Promise.resolve(mockResponse);
-      } else {
-        return Promise.reject(mockResponse);
-      }
-    })
-  };
-});
+jest.mock("axios", () => ({
+  post: jest.fn(() =>
+    typeof mockResponse === "string"
+      ? Promise.resolve(mockResponse)
+      : Promise.reject(mockResponse)),
+}));
 
 const mockMqttClient = {
-  on: jest.fn((ev: string, cb: Function) => {
-    (ev == "connect") && cb();
-  }),
+  on: jest.fn((ev: string, cb: Function) => ev == "connect" && cb()),
   subscribe: jest.fn(),
 };
 
-jest
-  .mock("mqtt", () => ({
-    connect: () => mockMqttClient
-  }));
+jest.mock("mqtt", () => ({ connect: () => mockMqttClient }));
 
-import * as React from "react";
+import React from "react";
+import axios from "axios";
 import { shallow } from "enzyme";
 import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
-import Axios from "axios";
+import { MqttClient } from "mqtt";
 
-describe("<DemoIframe/>", () => {
-  function stubOutMqtt(instance: DemoIframe) {
-    const mockMqtt: unknown =
-      jest.fn((): Promise<void> => Promise.resolve());
-    instance.connectMqtt =
-      mockMqtt as typeof instance.connectMqtt;
-    return instance;
-  }
-
-  it("renders OK", async (done) => {
+describe("<DemoIframe />", () => {
+  it("renders OK", async () => {
     mockResponse = "yep.";
     const el = shallow<DemoIframe>(<DemoIframe />);
     expect(el.text()).toContain("DEMO THE APP");
-
-    await stubOutMqtt(el.instance()).requestAccount();
-
-    expect(Axios.post).toHaveBeenCalled();
-    el.update();
+    el.instance().connectMqtt = () =>
+      Promise.resolve() as unknown as Promise<MqttClient>;
+    await el.instance().requestAccount();
+    expect(axios.post).toHaveBeenCalled();
     expect(el.state().stage).toContain(WAITING_ON_API);
-    done();
   });
 
   it("renders errors", async () => {
     mockResponse = new Error("Nope.");
     const el = shallow<DemoIframe>(<DemoIframe />);
-
     await el.instance().connectApi();
-
-    expect(Axios.post).toHaveBeenCalled();
-    el.render();
+    expect(axios.post).toHaveBeenCalled();
     expect(el.state().error).toBe(mockResponse);
   });
 
@@ -73,9 +50,9 @@ describe("<DemoIframe/>", () => {
     const el = shallow<DemoIframe>(<DemoIframe />);
     Math.round = jest.fn(() => 51);
     el.instance().connectApi();
-    expect(Axios.post).toHaveBeenCalled();
-    el.render();
     expect(el.text()).toContain(EASTER_EGG);
+    await expect(axios.post).toHaveBeenCalled();
+    expect(el.text()).toContain(WAITING_ON_API);
   });
 
   it("connects to MQTT", async () => {

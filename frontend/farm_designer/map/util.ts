@@ -278,7 +278,7 @@ export const transformForQuadrant =
   };
 
 /** Determine the current map mode based on path. */
-// tslint:disable-next-line:cyclomatic-complexity
+// eslint-disable-next-line complexity
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
@@ -307,7 +307,8 @@ export const getMode = (): Mode => {
 /** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
   pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
-    ? parseInt(pathArray[4]) : false;
+    ? parseInt(pathArray[4])
+    : false;
 
 export const getZoomLevelFromMap = (map: Element) =>
   parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);

@@ -56,6 +56,7 @@ const beep = (bot: Farmbot) => sendOutboundPing(bot)
 
 export function startPinging(bot: Farmbot) {
   beep(bot);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   setInterval(() => beep(bot), PING_INTERVAL);
 }
 

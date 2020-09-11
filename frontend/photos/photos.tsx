@@ -134,7 +134,7 @@ export class RawDesignerPhotos
             <UpdateImagingPackage version={this.props.versions["plant-detection"]}
               farmwareName={"plant-detection"} botOnline={botOnline} />
           </ToolTip>
-          <WeedDetector  {...common}
+          <WeedDetector {...common}
             wDEnv={this.props.wDEnv}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             shouldDisplay={this.props.shouldDisplay} />
@@ -165,7 +165,7 @@ export const UpdateImagingPackage = (props: UpdateImagingPackageProps) =>
   props.version
     ? <div className={"update"}>
       <p>v{props.version}</p>
-      <i className={`fa fa-refresh`}
+      <i className={"fa fa-refresh"}
         onClick={updateFarmware(props.farmwareName, props.botOnline)} />
     </div>
     : <div className={"update"} />;

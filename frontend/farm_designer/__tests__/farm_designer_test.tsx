@@ -68,6 +68,8 @@ describe("<FarmDesigner/>", () => {
     shouldDisplay: () => false,
     mountedToolInfo: fakeMountedToolInfo(),
     visualizedSequenceBody: [],
+    logs: [],
+    deviceTarget: "",
   });
 
   it("loads default map settings", () => {

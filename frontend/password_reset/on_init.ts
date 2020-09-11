@@ -6,6 +6,7 @@ import { bail } from "../util";
 
 export const MISSING_DIV = "Add a div with id `root` to the page first.";
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export const onInit: Callback = async () => {
   const node = document.createElement("DIV");
   node.id = "root";

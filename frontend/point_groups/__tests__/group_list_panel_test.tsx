@@ -69,7 +69,8 @@ describe("<GroupListPanel />", () => {
     ["3 items",
       "0 items",
       p.groups[0].body.name,
-      p.groups[1].body.name].map(string =>
+      p.groups[1].body.name]
+      .map(string =>
         expect(wrapper.text()).toContain(string));
   });
 

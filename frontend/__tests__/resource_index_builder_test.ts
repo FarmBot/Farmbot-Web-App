@@ -32,10 +32,9 @@ test("buildResourceIndex - add a FarmEvent", () => {
   const key = Object.keys(db.index.byKind.FarmEvent)[0];
   const fe = db.index.references[key];
   expect(fe).toBeTruthy();
+  expect(fe?.kind).toEqual("FarmEvent");
   if (fe?.kind === "FarmEvent") {
     const { body } = fe;
     expect(body).toEqual(STUB_RESOURCE.body);
-  } else {
-    fail("fe was falsy or not a farm event.");
   }
 });

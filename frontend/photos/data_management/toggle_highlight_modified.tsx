@@ -4,15 +4,17 @@ import { ToggleButton } from "../../controls/toggle_button";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { ToggleHighlightModifiedProps } from "./interfaces";
+import { DeviceSetting } from "../../constants";
 
-export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) =>
-  <div className={"highlight-modified-toggle"}>
-    <label>{t("Highlight settings modified from default")}</label>
+export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) => {
+  const { getConfigValue, dispatch } = props;
+  const value = !!getConfigValue(BooleanSetting.highlight_modified_settings);
+  return <div className={"highlight-modified-toggle"}>
+    <label>{t(DeviceSetting.highlightSettingsModifiedFromDefault)}</label>
     <ToggleButton
-      toggleValue={!!props.getConfigValue(
-        BooleanSetting.highlight_modified_settings)}
-      toggleAction={() => props.dispatch(setWebAppConfigValue(
-        BooleanSetting.highlight_modified_settings,
-        !props.getConfigValue(
-          BooleanSetting.highlight_modified_settings)))} />
+      className={value ? "modified" : ""}
+      toggleValue={value}
+      toggleAction={() => dispatch(setWebAppConfigValue(
+        BooleanSetting.highlight_modified_settings, !value))} />
   </div>;
+};

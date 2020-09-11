@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { ZonesLayer, ZonesLayerProps } from "../zones_layer";
 import {
@@ -99,8 +99,8 @@ describe("<ZonesLayer />", () => {
     const wrapper = svgMount(<ZonesLayer {...p} />);
     expect(wrapper.html()).toEqual(
       `<svg>
-        <g class=\"zones-layer\" style=\"cursor: pointer;\">
-          <g id=\"zones-2D-1\" class=\"current\">
+        <g class="zones-layer" style="cursor: pointer;">
+          <g id="zones-2D-1" class="current">
           </g>
         </g>
       </svg>`.replace(/[ ]{2,}/g, "").replace(/[^\S ]/g, ""));

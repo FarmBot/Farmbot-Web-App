@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ParameterManagementProps } from "./interfaces";
 import { Row, Col, BlurableInput, Help } from "../../ui/index";
 import { Header } from "./header";
@@ -10,6 +10,9 @@ import { SettingLoadProgress } from "./setting_load_progress";
 import {
   FwParamExportMenu, importParameters, resendParameters,
 } from "./export_menu";
+import {
+  ToggleHighlightModified,
+} from "../../photos/data_management/toggle_highlight_modified";
 
 export function ParameterManagement(props: ParameterManagementProps) {
 
@@ -35,7 +38,8 @@ export function ParameterManagement(props: ParameterManagementProps) {
             <SettingLoadProgress botOnline={botOnline}
               firmwareHardware={firmwareHardware}
               firmwareConfig={props.firmwareConfig}
-              sourceFwConfig={props.sourceFwConfig} />
+              sourceFwConfig={props.sourceFwConfig}
+              shouldDisplay={props.shouldDisplay} />
           </Col>
         </Row>
       </Highlight>
@@ -73,6 +77,11 @@ export function ParameterManagement(props: ParameterManagementProps) {
         </Row>
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
+      <Highlight settingName={DeviceSetting.highlightSettingsModifiedFromDefault}>
+        <ToggleHighlightModified
+          dispatch={props.dispatch}
+          getConfigValue={props.getConfigValue} />
+      </Highlight>
       <Highlight settingName={DeviceSetting.resetHardwareParams}>
         <Row>
           <Col xs={8}>

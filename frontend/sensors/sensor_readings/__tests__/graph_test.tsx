@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { SensorReadingsPlot, calcTimeParams } from "../graph";
 import { SensorReadingPlotProps } from "../interfaces";
@@ -67,7 +67,7 @@ describe("<SensorReadingPlot />", () => {
     expect(p.hover).toHaveBeenCalledWith(undefined);
   });
 
-  it("hovers point", () => {
+  it("renders reading value", () => {
     const sr = fakeSensorReading();
     sr.body.value = 555;
     const p = fakeProps(sr);

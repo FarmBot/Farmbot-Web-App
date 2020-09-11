@@ -35,9 +35,7 @@ module Api
           cache.expire(key, TTL) if needs_ttl
           yield
         else
-          Device
-            .delay
-            .connection_warning(username) if !is_guest
+          Device.delay.connection_warning(username) if !is_guest
           raise RateLimit, username
         end
       end
@@ -49,6 +47,8 @@ module Api
       from_api
       from_clients
       from_device
+      terminal_output
+      terminal_input
       logs
       nerves_hub
       ping
@@ -258,6 +258,18 @@ module Api
         return
       end
 
+      # Allow Web SSH access, but only to accounts that have
+      # an active `STAFF` token associated with the account.
+      # Such tokens exist for 24 hours after requesting staff
+      # support.
+      if routing_key_param.include?(".terminal_input") && permission_param == "write"
+        query = { aud: "staff", device_id: device_id_in_topic }
+        unless TokenIssuance.where(query).any?
+          deny("not_staff")
+          return
+        end
+      end
+
       if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
         return
@@ -298,7 +310,8 @@ module Api
       msg = "MQTT ACCESS DENIED #{reason}"
       puts msg unless Rails.env.test?
       if device_id_in_username > 0
-        Device.find(device_id_in_username).delay.tell(msg)
+        dev = Device.find_by(id: device_id_in_username)
+        dev && dev.delay.tell(msg)
       end
     end
   end

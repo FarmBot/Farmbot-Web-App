@@ -20,7 +20,7 @@ const label_ops: Record<ALLOWED_OPS, string> = {
   "not": t("is not")
 };
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops).includes(x);
 
 const updateOp = (props: StepParams<If>) => (ddi: DropDownItem) => {

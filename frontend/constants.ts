@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 import { trim } from "./util";
 
 export namespace ToolTips {
@@ -103,147 +104,176 @@ export namespace ToolTips {
     when the device powers on. Warning! This will perform homing on all
     axes when the device powers on. Encoders or limit switches must be enabled.
     It is recommended to make sure homing works properly before enabling
-    this feature. (default: disabled)`);
+    this feature. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const FIND_HOME_ON_BOOT_STALL_DETECTION =
     trim(`If stall detection or limit switches are enabled, find the home
     position when the device powers on. Warning! This will perform homing
     on all axes when the device powers on. Stall detection or limit switches
     must be enabled. It is recommended to make sure homing works properly
-    before enabling this feature. (default: disabled)`);
+    before enabling this feature. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const STOP_AT_HOME =
     trim(`Stop at the home (zero) location of the axis. If enabled, moving
-    past zero is disallowed. (default: enabled)`);
+    past zero is disallowed. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const STOP_AT_MAX =
     trim(`Don't allow movement past the maximum value provided in AXIS LENGTH
     (for AXIS LENGTH values other than '0').
-    (default: enabled)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const NEGATIVE_COORDINATES_ONLY =
     trim(`Restrict travel to negative coordinate locations.
     Overridden by disabling STOP AT HOME.
-    (default: x: disabled, y: disabled, z: enabled)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const AXIS_LENGTH =
     trim(`Set the length of each axis to provide software limits.
-    Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
+    Used only if STOP AT MAX is enabled.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (disabled))`);
 
   export const SAFE_HEIGHT =
     trim(`Z axis coordinate (millimeters) to which the z axis should be
     retracted during Safe Z moves. It is recommended to choose a value at
     which the z axis is all of the way up to provide as much clearance as
-    possible.`);
+    possible. (default: 0)`);
 
   export const SOIL_HEIGHT =
-    trim(`Z axis coordinate (millimeters) of soil level.`);
+    trim(`Z axis coordinate (millimeters) of soil level. (default: 0)`);
 
   // Hardware Settings: Motors
   export const MAX_SPEED =
     trim(`Maximum travel speed after acceleration in millimeters per second.
-    (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
+    (default: x: {{ x }}mm/s, y: {{ y }}mm/s, z: {{ z }}mm/s)`);
+
+  export const MAX_SPEED_Z_TOWARD_HOME =
+    trim(`Maximum travel speed after acceleration in millimeters per second.
+    (default: {{ z }}mm/s)`);
 
   export const HOME_SPEED =
     trim(`Home position adjustment travel speed (homing and finding axis length)
-    in millimeters per second. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
+    in millimeters per second.
+    (default: x: {{ x }}mm/s, y: {{ y }}mm/s, z: {{ z }}mm/s)`);
 
   export const MIN_SPEED =
     trim(`Minimum movement speed in millimeters per second.
     Also used for homing and finding axis length.
-    (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
+    (default: x: {{ x }}mm/s, y: {{ y }}mm/s, z: {{ z }}mm/s)`);
+
+  export const MIN_SPEED_Z_TOWARD_HOME =
+    trim(`Minimum movement speed in millimeters per second.
+    Also used for homing and finding axis length.
+    (default: {{ z }}mm/s)`);
 
   export const ACCELERATE_FOR =
     trim(`Number of millimeters used for acceleration and deceleration.
-    (default: x: 60mm, y: 60mm, z: 12mm)`);
+    (default: x: {{ x }}mm, y: {{ y }}mm, z: {{ z }}mm)`);
+
+  export const ACCELERATE_FOR_Z_TOWARD_HOME =
+    trim(`Number of millimeters used for acceleration and deceleration.
+    (default: {{ z }}mm)`);
 
   export const STEPS_PER_MM =
     trim(`The number of motor steps required to move the axis one millimeter.
-    (default: x: 5, y: 5, z: 25)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MICROSTEPS_PER_STEP =
     trim(`The number of microsteps required to move the motor one step.
-    (default: x: 1, y: 1, z: 1)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ALWAYS_POWER_MOTORS =
     trim(`Keep power applied to motors. Prevents slipping from gravity in
-    certain situations. (default: enabled)`);
+    certain situations. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const INVERT_MOTORS =
     trim(`Invert direction of motor while finding axis length.
-    (default: disabled)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MOTOR_CURRENT =
-    trim(`Motor current in milliamps. (default: 600)`);
+    trim(`Motor current in milliamps.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENABLE_X2_MOTOR =
     trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
-    (default: enabled)`);
+    (default: {{ x2Motor }})`);
+
+  export const INVERT_X2_MOTOR =
+    trim(`Invert direction of motor. (default: {{ x }})`);
 
   // Hardware Settings: Encoders / Stall Detection
   export const ENABLE_ENCODERS =
     trim(`Enable use of rotary encoders for stall detection,
-    finding axis length, and homing. (default: enabled)`);
+    finding axis length, and homing.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENABLE_STALL_DETECTION =
     trim(`Enable use of motor stall detection for detecting missed steps,
-    finding axis length, and homing. (default: disabled)`);
+    finding axis length, and homing.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const STALL_SENSITIVITY =
     trim(`Motor stall sensitivity. Most sensitive: -63.
-    Least sensitive: +63. (default: 63)`);
+    Least sensitive: +63. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const USE_ENCODERS_FOR_POSITIONING =
-    trim(`Use encoders for positioning. (default: disabled)`);
+    trim(`Use encoders for positioning.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const INVERT_ENCODERS =
     trim(`Reverse the direction of encoder position reading.
-    (default: disabled)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MAX_MISSED_STEPS_ENCODERS =
     trim(`Number of steps missed (determined by encoder) before motor is
-    considered to have stalled. (default: 5)`);
+    considered to have stalled. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MAX_MISSED_STEPS_STALL_DETECTION =
     trim(`Maximum motor load (determined by stepper driver) before
-    motor is considered to have stalled. (default: 60)`);
+    motor is considered to have stalled.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MISSED_STEP_DECAY_ENCODERS =
-    trim(`Reduction to missed step total for every good step. (default: 5)`);
+    trim(`Reduction to missed step total for every good step.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MISSED_STEP_DECAY_STALL_DETECTION =
     trim(`Number of steps for stall detection to ignore during acceleration.
-    (default: 100)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
-    / (encoder resolution). (default: 5556 (10000*200/360))`);
+    / (encoder resolution).
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))`);
 
   // Hardware Settings: Limit Switches
   export const ENABLE_LIMIT_SWITCHES =
     trim(`Enable use of electronic limit switches for end detection,
     finding axis length, and homing. Limit switches are contact switches or
     momentary push buttons that can be added to the end of each axis to
-    be engaged when an axis reaches the end. (default: disabled)`);
+    be engaged when an axis reaches the end.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const SWAP_LIMIT_SWITCHES =
-    trim(`Swap axis minimum and maximum limit switches. (default: disabled)`);
+    trim(`Swap axis minimum and maximum limit switches.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const INVERT_LIMIT_SWITCHES =
     trim(`Invert axis limit switches. Enable for normally closed (NC),
-    disable for normally open (NO). (default: disabled)`);
+    disable for normally open (NO).
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   // Hardware Settings: Error Handling
   export const TIMEOUT_AFTER =
     trim(`Amount of time to wait for a command to execute before stopping.
-    (default: 120 seconds)`);
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }} seconds)`);
 
   export const MAX_MOVEMENT_RETRIES =
-    trim(`Number of times to retry a movement before stopping. (default: 3)`);
+    trim(`Number of times to retry a movement before stopping.
+    (default: {{ retries }})`);
 
   export const E_STOP_ON_MOV_ERR =
     trim(`Emergency stop if movement is not complete after the maximum
-    number of retries. (default: disabled)`);
+    number of retries. (default: {{ eStopOnError }})`);
 
   // Hardware Settings: Pin Bindings
   export const PIN_BINDINGS =
@@ -716,7 +746,7 @@ export namespace Content {
     trim(`Note: The selected timezone for your FarmBot is different than
     your local browser time.`);
 
-  export const OS_BETA_RELEASES =
+  export const UNSTABLE_RELEASE_CHANNEL_WARNING =
     trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
     FarmBot system stability. Are you sure?`);
 
@@ -1196,9 +1226,12 @@ export enum DeviceSetting {
   // Motors
   motors = `Motors`,
   maxSpeed = `Max Speed (mm/s)`,
+  maxSpeedTowardHome = `Max Speed toward home (mm/s)`,
   homingSpeed = `Homing Speed (mm/s)`,
   minimumSpeed = `Minimum Speed (mm/s)`,
+  minimumSpeedTowardHome = `Minimum Speed toward home (mm/s)`,
   accelerateFor = `Accelerate for (mm)`,
+  accelerateForTowardHome = `Accelerate for toward home (mm)`,
   stepsPerMm = `Steps per MM`,
   microstepsPerStep = `Microsteps per step`,
   alwaysPowerMotors = `Always Power Motors`,
@@ -1255,6 +1288,7 @@ export enum DeviceSetting {
   paramResend = `Resend parameters`,
   exportParameters = `Export parameters`,
   importParameters = `Import parameters`,
+  highlightSettingsModifiedFromDefault = `Highlight settings modified from default`,
   resetHardwareParams = `Reset hardware parameters`,
 
   // Farm Designer
@@ -1438,8 +1472,6 @@ export enum Actions {
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",
   SETTING_UPDATE_START = "SETTING_UPDATE_START",
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
-  /** Used in FBOS < v8. Remove ASAP. RC 21 JAN 18 */
-  LEGACY_BOT_CHANGE = "LEGACY_BOT_CHANGE",
   STATUS_UPDATE = "STATUS_UPDATE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
   FETCH_OS_UPDATE_INFO_ERROR = "FETCH_OS_UPDATE_INFO_ERROR",

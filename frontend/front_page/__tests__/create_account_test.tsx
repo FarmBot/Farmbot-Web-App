@@ -4,12 +4,12 @@ jest.mock("../resend_verification", () => {
     resendEmail: jest
       .fn()
       .mockReturnValueOnce(Promise.resolve("")) // success case
-      .mockReturnValueOnce(Promise.reject(""))  // failure case
+      .mockReturnValueOnce(Promise.reject("")) // failure case
       .mockReturnValueOnce(Promise.resolve(""))
   };
 });
 
-import * as React from "react";
+import React from "react";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
 } from "../create_account";

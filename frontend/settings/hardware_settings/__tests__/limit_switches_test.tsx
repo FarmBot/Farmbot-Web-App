@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { LimitSwitches } from "../limit_switches";
 import { LimitSwitchesProps } from "../interfaces";
@@ -11,6 +11,7 @@ describe("<LimitSwitches />", () => {
     controlPanelState: panelState(),
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
     arduinoBusy: false,
   });
 

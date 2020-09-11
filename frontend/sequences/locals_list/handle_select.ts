@@ -21,7 +21,7 @@ import { betterCompact } from "../../util";
  * This is specifically an invalid parameter application data value to force the
  * user to make a valid selection to successfully save the parameter application.
  */
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 type DataValue =
@@ -82,9 +82,9 @@ const toolVar = (value: string | number) => ({
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer" | "Weed",
   value: string | number,
-) => ({
-  identifierLabel: label, allowedVariableNodes
-}: NewVarProps): VariableWithAValue =>
+) =>
+  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps):
+    VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FarmwareData } from "../interfaces";
 import { DropDownItem, BlurableInput, Help } from "../../ui/index";
 import { without, isNumber } from "lodash";
@@ -211,8 +211,8 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
   const farmwareInputEntries =
     Object.entries(farmwareInputs(farmwareName, defaultConfigs, currentStep));
 
-  return farmwareInputEntries.length > 0 ?
-    <div className="farmware-step-input-fields">
+  return farmwareInputEntries.length > 0
+    ? <div className="farmware-step-input-fields">
       <div className="checkbox-row">
         <div className={`fb-checkbox ${partial}`}>
           <input type="checkbox" name="parameters"
@@ -252,5 +252,6 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
           </div>
         </fieldset>;
       })}
-    </div> : <div className={"no-farmware-inputs"} />;
+    </div>
+    : <div className={"no-farmware-inputs"} />;
 }

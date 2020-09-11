@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   MapImage, MapImageProps, closestRotation, largeCrop, cropAmount,
   rotated90degrees,
@@ -112,8 +112,10 @@ describe("<MapImage />", () => {
           },
           transform: trim(`scale(${expectedData.sx}, ${expectedData.sy})
       translate(${expectedData.tx}, ${expectedData.ty})`)
-            + (extra ? trim(` scale(${extra.sx}, ${extra.sy})
-      translate(${extra.tx}, ${extra.ty})`) : "") + ` rotate(${expectedData.rotate})`
+            + (extra
+              ? trim(` scale(${extra.sx}, ${extra.sy})
+                       translate(${extra.tx}, ${extra.ty})`)
+              : "") + ` rotate(${expectedData.rotate})`
         });
       });
     };
@@ -132,8 +134,8 @@ describe("<MapImage />", () => {
     calibrationZ: "0"
   };
   INPUT_SET_1.mapTransformProps = fakeMapTransformProps();
-  INPUT_SET_1.mapTransformProps.gridSize = { x: 5900, y: 2900 },
-    INPUT_SET_1.mapTransformProps.quadrant = 3;
+  INPUT_SET_1.mapTransformProps.gridSize = { x: 5900, y: 2900 };
+  INPUT_SET_1.mapTransformProps.quadrant = 3;
 
   const INPUT_SET_2 = cloneDeep(INPUT_SET_1);
   INPUT_SET_2.image.body.meta = {

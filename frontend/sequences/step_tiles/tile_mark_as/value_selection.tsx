@@ -1,12 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../../i18next_wrapper";
-import { FBSelect, BlurableInput } from "../../../ui";
+import { FBSelect, BlurableInput, DropDownItem } from "../../../ui";
 import { isUndefined } from "lodash";
 import {
   ValueSelectionProps, GetSelectedValueProps, KnownValueSelectionProps,
   ResourceArg,
 } from "./interfaces";
-import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllTools, maybeFindToolById } from "../../../resources/selectors";
 import {
@@ -96,7 +95,8 @@ const getSelectedValue = (props: GetSelectedValueProps): DropDownItem => {
       };
     case KnownField.plant_stage:
       const stepResourceType = isIdentifier(props.resource)
-        ? undefined : props.resource.args.resource_type;
+        ? undefined
+        : props.resource.args.resource_type;
       return getStageLookup(stepResourceType)["" + props.value]
         || { label: "" + props.value, value: "" + props.value };
   }

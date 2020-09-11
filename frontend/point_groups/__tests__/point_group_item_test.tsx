@@ -45,7 +45,7 @@ describe("<PointGroupItem/>", () => {
   it("renders", () => {
     const p = fakeProps();
     const el = shallow<PointGroupItem>(<PointGroupItem {...p} />);
-    const i = el.instance() as PointGroupItem;
+    const i = el.instance();
     expect(el.first().prop("onMouseEnter")).toEqual(i.enter);
     expect(el.first().prop("onMouseLeave")).toEqual(i.leave);
     expect(el.first().prop("onClick")).toEqual(i.click);
@@ -57,8 +57,9 @@ describe("<PointGroupItem/>", () => {
     const i = new PointGroupItem(p);
     const fakeImgEvent = imgEvent();
     await i.maybeGetCachedIcon(fakeImgEvent);
-    const slug = i.props.point.body.pointer_type === "Plant" ?
-      i.props.point.body.openfarm_slug : "slug";
+    const slug = i.props.point.body.pointer_type === "Plant"
+      ? i.props.point.body.openfarm_slug
+      : "slug";
     expect(maybeGetCachedPlantIcon)
       .toHaveBeenCalledWith(slug, expect.any(Object), expect.any(Function));
     expect(setImgSrc).not.toHaveBeenCalled();

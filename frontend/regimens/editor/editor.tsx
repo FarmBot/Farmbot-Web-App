@@ -1,11 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../../farm_designer/designer_panel";
 import { Panel } from "../../farm_designer/panel_header";
-import { mapStateToProps } from "../state_to_props";
-import { Props } from "../interfaces";
+import { mapStateToProps } from "./state_to_props";
+import { RegimenEditorProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import {
   setActiveRegimenByName,
@@ -15,7 +15,8 @@ import { isTaggedRegimen } from "../../resources/tagged_resources";
 import { Content } from "../../constants";
 import { ActiveEditor } from "./active_editor";
 
-export class RawDesignerRegimenEditor extends React.Component<Props> {
+export class RawDesignerRegimenEditor
+  extends React.Component<RegimenEditorProps> {
 
   componentDidMount() {
     if (!this.props.current) { setActiveRegimenByName(); }

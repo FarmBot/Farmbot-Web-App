@@ -65,7 +65,7 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
     return <Popover position={Position.BOTTOM} className="release-notes-wrapper">
       <p className="release-notes-button">
         {t("Release Notes")}&nbsp;
-          <i className="fa fa-caret-down" />
+        <i className="fa fa-caret-down" />
       </p>
       <div className="release-notes">
         <h1>{releaseNotes.heading}</h1>
@@ -90,6 +90,7 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
             bot={bot}
             sourceFbosConfig={sourceFbosConfig}
             shouldDisplay={this.props.shouldDisplay}
+            dispatch={this.props.dispatch}
             botOnline={botOnline} />
         </Col>
       </Row>

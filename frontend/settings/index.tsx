@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
@@ -122,6 +122,7 @@ export class RawDesignerSettings
         <Motors {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
+          shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <EncodersOrStallDetection {...commonProps}
           arduinoBusy={busy}
@@ -130,22 +131,27 @@ export class RawDesignerSettings
           firmwareHardware={firmwareHardware} />
         <LimitSwitches {...commonProps}
           arduinoBusy={busy}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
         <ErrorHandling {...commonProps}
           arduinoBusy={busy}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
-        <PinBindings  {...commonProps}
+        <PinBindings {...commonProps}
           resources={resources}
           firmwareHardware={firmwareHardware} />
         <PinGuard {...commonProps}
           arduinoBusy={busy}
           resources={resources}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
         <ParameterManagement {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
+          getConfigValue={getConfigValue}
+          shouldDisplay={this.props.shouldDisplay}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
         <Designer {...commonProps}

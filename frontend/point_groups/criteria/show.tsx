@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, FBSelect, DropDownItem, Checkbox } from "../../ui";
 import {
   AddEqCriteria, editCriteria, AddNumberCriteria,
@@ -118,8 +118,9 @@ export const DaySelection = (props: DaySelectionProps) => {
     <Row>
       <Col xs={5}>
         <FBSelect key={JSON.stringify(group.body)}
-          list={[DAY_OPERATOR_DDI_LOOKUP()["<"],
-          DAY_OPERATOR_DDI_LOOKUP()[">"]]}
+          list={[
+            DAY_OPERATOR_DDI_LOOKUP()["<"],
+            DAY_OPERATOR_DDI_LOOKUP()[">"]]}
           selectedItem={noDayCriteria
             ? { label: t("Select one"), value: "" }
             : DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}

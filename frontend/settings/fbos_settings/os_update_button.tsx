@@ -1,12 +1,14 @@
-import * as React from "react";
+import React from "react";
+import axios from "axios";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../devices/actions";
 import { isString } from "lodash";
-import { BotState } from "../../devices/interfaces";
-import { Content } from "../../constants";
+import { BotState, Feature } from "../../devices/interfaces";
+import { Actions, Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
+import { API } from "../../api";
 
 /** FBOS update button states. */
 enum UpdateButton { upToDate, needsUpdate, unknown, none }
@@ -154,7 +156,9 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { controller_version } = bot.hardware.informational_settings;
 
   /** FBOS beta release opt-in setting. */
-  const betaOptIn = sourceFbosConfig("update_channel").value !== "stable";
+  const betaOptIn = props.shouldDisplay(Feature.api_ota_releases)
+    ? false
+    : sourceFbosConfig("update_channel").value !== "stable";
   /** FBOS update availability. */
   const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn });
 
@@ -163,13 +167,37 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
 
   const tooOld = controller_version
     && (semverCompare("6.0.0", controller_version)
-      === SemverResult.LEFT_IS_GREATER ? Content.TOO_OLD_TO_UPDATE : undefined);
+      === SemverResult.LEFT_IS_GREATER
+      ? Content.TOO_OLD_TO_UPDATE
+      : undefined);
 
   return <button
     className={`fb-button ${tooOld ? "yellow" : buttonStatusProps.color}`}
     title={buttonStatusProps.hoverText}
     disabled={isWorking(osUpdateJob) || !botOnline}
+    onPointerEnter={() => props.dispatch(fetchReleasesFromAPI(
+      props.bot.hardware.informational_settings.target))}
     onClick={checkControllerUpdates}>
     {tooOld || downloadProgress(osUpdateJob) || buttonStatusProps.text}
   </button>;
 };
+
+const fetchReleasesFromAPI = (target: string | undefined) =>
+  (dispatch: Function) => {
+    const platform = (target == "---" ? undefined : target) || "rpi3";
+    axios
+      .get<{ version: string }>(API.current.releasesPath + platform)
+      .then(resp => {
+        dispatch({
+          type: Actions.FETCH_OS_UPDATE_INFO_OK,
+          payload: { version: resp.data.version },
+        });
+      })
+      .catch(fetchError => {
+        console.error(t("Could not download FarmBot OS update information."));
+        dispatch({
+          type: Actions.FETCH_OS_UPDATE_INFO_ERROR,
+          payload: fetchError,
+        });
+      });
+  };

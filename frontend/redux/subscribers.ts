@@ -1,6 +1,5 @@
 import { Everything } from "../interfaces";
-import { Store } from "./interfaces";
-import { EnvName } from "./interfaces";
+import { Store, EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
 import { getWebAppConfig } from "../resources/getters";
 import { TaggedResource, TaggedWebAppConfig } from "farmbot";

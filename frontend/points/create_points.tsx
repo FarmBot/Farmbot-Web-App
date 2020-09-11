@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   Everything,
@@ -313,8 +313,9 @@ export class RawCreatePoints
 
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
-    const panelDescription = this.panel == "weeds" ?
-      Content.CREATE_WEEDS_DESCRIPTION : Content.CREATE_POINTS_DESCRIPTION;
+    const panelDescription = this.panel == "weeds"
+      ? Content.CREATE_WEEDS_DESCRIPTION
+      : Content.CREATE_POINTS_DESCRIPTION;
     const point = this.getPointData();
     return <DesignerPanel panelName={"point-creation"} panel={panelType}>
       <DesignerPanelHeader

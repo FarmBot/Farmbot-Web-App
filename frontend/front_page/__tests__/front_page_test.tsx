@@ -28,7 +28,7 @@ jest.mock("../../api", () => ({
 
 jest.mock("../laptop_splash", () => ({ LaptopSplash: () => <div /> }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   FrontPage, setField, PartialFormEvent, DEFAULT_APP_PAGE,
@@ -237,7 +237,7 @@ describe("<FrontPage />", () => {
     wrapper.instance().setState({ activePanel: "resendVerificationEmail" });
     expect(wrapper.instance().state.activePanel)
       .toEqual("resendVerificationEmail");
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component.find("ResendVerification").props() as any).ok();
     expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
     expect(wrapper.instance().state.activePanel).toEqual("login");
@@ -251,7 +251,7 @@ describe("<FrontPage />", () => {
     wrapper.instance().setState({ activePanel: "resendVerificationEmail" });
     expect(wrapper.instance().state.activePanel)
       .toEqual("resendVerificationEmail");
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component.find("ResendVerification").props() as any).no();
     expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
     expect(wrapper.instance().state.activePanel).toEqual("login");

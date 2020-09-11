@@ -10,11 +10,17 @@ SimpleCov.start do
 end
 SimpleCov.coverage_dir("coverage_api")
 
-require "codecov"
-SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::Codecov,
-])
+if ENV["CODECOV_TOKEN"]
+  require "codecov"
+  SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Codecov,
+  ])
+else
+  SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+  ])
+end
 require "pry"
 
 ENV["RAILS_ENV"] ||= "test"
@@ -122,6 +128,36 @@ def const_reassign(target, const, value)
     target.send(:remove_const, const)
     target.const_set(const, b4)
   end
+end
+
+def destroy_everything!
+  Device.update_all(mounted_tool_id: nil)
+  [
+    Primitive,
+    FarmEvent,
+    Release,
+    FarmwareEnv,
+    Alert,
+    Sensor,
+    Peripheral,
+    Log,
+    PinBinding,
+    PointGroupItem,
+    PointGroup,
+    Point,
+    TokenIssuance,
+    ToolSlot,
+    User,
+    PlantTemplate,
+    SavedGarden,
+    SensorReading,
+    FarmwareInstallation,
+    Tool,
+    Delayed::Job,
+    Delayed::Backend::ActiveRecord::Job,
+    Fragment,
+    Device,
+  ].map(&:delete_all)
 end
 
 class StubResp

@@ -15,7 +15,6 @@ interface Props {
 
 interface State {
   item?: DropDownItem | undefined;
-  minimal?: boolean;
   resetOnSelect?: boolean;
 }
 
@@ -23,12 +22,11 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
 
   public state: State = {
     item: this.props.selectedItem,
-    minimal: false,
     resetOnSelect: false,
   };
 
   render() {
-    const { item, minimal, ...flags } = this.state;
+    const { item, ...flags } = this.state;
     return <SelectComponent
       {...flags}
       items={this.props.items}
@@ -36,7 +34,13 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
       itemRenderer={this.default}
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
-      popoverProps={{ popoverClassName: minimal ? Classes.MINIMAL : "" }}>
+      popoverProps={{
+        popoverClassName: [
+          "filter-search-popover",
+          Classes.MINIMAL,
+          this.props.items.length < 4 ? "few-items" : "",
+        ].join(" ")
+      }}>
       <Button
         alignText={Alignment.LEFT}
         text={item ? item.label : t("(No selection)")} />

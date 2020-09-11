@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BooleanSetting } from "../../session_keys";
 import { closePlantInfo, unselectPlant } from "./actions";
 import {
@@ -23,6 +23,8 @@ import {
   FarmBotLayer,
   ImageLayer,
   SensorReadingsLayer,
+  ZonesLayer,
+  LogsLayer,
 } from "./layers";
 import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
@@ -33,7 +35,6 @@ import {
 import { chooseLocation } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
 import { history } from "../../history";
-import { ZonesLayer } from "./layers/zones/zones_layer";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -82,8 +83,9 @@ export class GardenMap extends
   }
 
   get pointsSelectedByGroup(): TaggedPoint[] {
-    return this.group ?
-      pointsSelectedByGroup(this.group, this.props.allPoints) : [];
+    return this.group
+      ? pointsSelectedByGroup(this.group, this.props.allPoints)
+      : [];
   }
 
   get groupSelected(): UUID[] {
@@ -397,6 +399,13 @@ export class GardenMap extends
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
     getConfigValue={this.props.getConfigValue} />
+  LogsLayer = () => <LogsLayer
+    logs={this.props.logs}
+    cameraCalibrationData={this.props.cameraCalibrationData}
+    deviceTarget={this.props.deviceTarget}
+    visible={!!this.props.showImages}
+    mapTransformProps={this.mapTransformProps}
+    getConfigValue={this.props.getConfigValue} />
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}
@@ -533,8 +542,10 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps} />
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />
-  Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
-    botSize={this.props.botSize} /> : <g />
+  Bugs = () => showBugs()
+    ? <Bugs mapTransformProps={this.mapTransformProps}
+      botSize={this.props.botSize} />
+    : <g />
 
   /** Render layers in order from back to front. */
   render() {
@@ -544,6 +555,7 @@ export class GardenMap extends
           <this.MapBackground />
           <svg className={"drop-area-svg"} {...this.svgDropAreaProps()}>
             <this.ImageLayer />
+            <this.LogsLayer />
             <this.Grid />
             <this.ZonesLayer />
             <this.SensorReadingsLayer />

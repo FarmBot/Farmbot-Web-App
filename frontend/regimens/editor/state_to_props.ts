@@ -1,35 +1,28 @@
-import { Everything, TimeSettings } from "../interfaces";
+import { Everything, TimeSettings } from "../../interfaces";
+import { RegimenItem, RegimenItemCalendarRow, CalendarRow } from "../interfaces";
 import {
-  Props, RegimenItem, RegimenItemCalendarRow, CalendarRow,
-} from "./interfaces";
-import {
-  selectAllSequences,
-  selectAllRegimens,
-  maybeGetSequence,
   maybeGetRegimen,
   findId,
   findSequence,
   findSequenceById,
   maybeGetTimeSettings,
-} from "../resources/selectors";
+} from "../../resources/selectors";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
-import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
-import { randomColor, timeFormatString } from "../util";
-import { resourceUsageList } from "../resources/in_use";
+import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces";
+import { randomColor, timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
-import { getShouldDisplayFn } from "../farmware/state_to_props";
+import { getShouldDisplayFn } from "../../farmware/state_to_props";
+import { RegimenEditorProps } from "./interfaces";
 
-export function mapStateToProps(props: Everything): Props {
-  const { resources, dispatch, bot } = props;
-  const {
-    weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen, schedulerOpen
-  } = resources.consumers.regimens;
-  const { index } = resources;
-  const current = maybeGetRegimen(index, currentRegimen);
+export const mapStateToProps = (props: Everything): RegimenEditorProps => {
+  const { dispatch } = props;
+  const { currentRegimen } = props.resources.consumers.regimens;
+  const current = maybeGetRegimen(props.resources.index, currentRegimen);
   const timeSettings = maybeGetTimeSettings(props.resources.index);
-  const calendar = current ?
-    generateCalendar(current, index, dispatch, timeSettings) : [];
+  const calendar = current
+    ? generateCalendar(current, props.resources.index, dispatch, timeSettings)
+    : [];
 
   const calledSequences = (): UUID[] => {
     if (current) {
@@ -46,23 +39,14 @@ export function mapStateToProps(props: Everything): Props {
       .map(([key, value]) => !variableData[key] && (variableData[key] = value)));
 
   return {
-    dispatch: props.dispatch,
-    sequences: selectAllSequences(index),
+    dispatch,
     variableData,
-    resources: index,
-    auth: props.auth,
+    resources: props.resources.index,
     current,
-    regimens: selectAllRegimens(index),
-    selectedSequence: maybeGetSequence(index, selectedSequenceUUID),
-    dailyOffsetMs,
-    weeks,
-    bot,
     calendar,
-    regimenUsageStats: resourceUsageList(props.resources.index.inUse),
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
-    schedulerOpen,
   };
-}
+};
 
 const SORT_KEY: keyof RegimenItemCalendarRow = "sortKey";
 

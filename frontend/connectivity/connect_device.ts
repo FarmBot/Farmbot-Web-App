@@ -21,7 +21,6 @@ import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
 import { ChannelName, MessageType } from "../sequences/interfaces";
-import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
 import { t } from "../i18next_wrapper";
 import { now } from "../devices/connectivity/qos";
@@ -34,14 +33,10 @@ export const HACKY_FLAGS = {
   alreadyToldUserAboutMalformedMsg: false
 };
 
-/** Action creator that is called when FarmBot OS emits a legacy (FBOS < v8)
- * status update. Coordinate updates, movement, etc.*/
-export const incomingLegacyStatus = (statusMessage: HardwareState) =>
-  ({ type: Actions.LEGACY_BOT_CHANGE, payload: statusMessage });
-
-export const incomingStatus = (payload: DeepPartial<HardwareState>) => ({
-  type: Actions.STATUS_UPDATE, payload
-});
+/** Action creator that is called when FarmBot OS emits a status update.
+ * Coordinate updates, movement, etc.*/
+export const incomingStatus = (statusMessage: HardwareState) =>
+  ({ type: Actions.STATUS_UPDATE, payload: statusMessage });
 
 /** Determine if an incoming log has a certain channel. If it is, execute the
  * supplied callback. */
@@ -120,23 +115,13 @@ const legacyChecks = (getState: GetState) => {
   }
 };
 
-/** Legacy handler for bots that have not upgraded to FBOS v8 yet.
- *    - RC 21 JAN 18 */
-export const onLegacyStatus =
+export const onStatus =
   (dispatch: Function, getState: GetState) =>
     slowDown((msg: BotStateTree) => {
       setBothUp();
-      dispatch(incomingLegacyStatus(msg));
-      legacyChecks(getState);
-    });
-
-export const onStatus =
-  (dispatch: Function, getState: GetState) =>
-    (msg: DeepPartial<BotStateTree>) => {
-      setBothUp();
       dispatch(incomingStatus(msg));
       legacyChecks(getState);
-    };
+    });
 
 type Client = { connected?: boolean };
 
@@ -188,8 +173,7 @@ export const attachEventListeners =
       bot.on(FbjsEventName.offline, onOffline);
       bot.on(FbjsEventName.sent, onSent(bot.client));
       bot.on(FbjsEventName.logs, onLogs(dispatch, getState));
-      bot.on(FbjsEventName.legacy_status, onLegacyStatus(dispatch, getState));
-      bot.on(FbjsEventName.upsert, onStatus(dispatch, getState));
+      bot.on(FbjsEventName.status, onStatus(dispatch, getState));
       bot.on(FbjsEventName.malformed, onMalformed);
       bot.client.subscribe(FbjsEventName.publicBroadcast);
       bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);

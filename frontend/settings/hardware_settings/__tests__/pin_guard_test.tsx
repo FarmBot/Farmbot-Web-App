@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { PinGuard } from "../pin_guard";
 import { PinGuardProps } from "../interfaces";
@@ -10,6 +10,7 @@ describe("<PinGuard />", () => {
     dispatch: jest.fn(),
     controlPanelState: panelState(),
     sourceFwConfig: () => ({ value: 0, consistent: true }),
+    firmwareHardware: undefined,
     resources: fakeState().resources.index,
     arduinoBusy: false,
   });

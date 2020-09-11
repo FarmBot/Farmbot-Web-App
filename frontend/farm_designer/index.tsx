@@ -207,6 +207,8 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           timeSettings={this.props.timeSettings}
           sensors={this.props.sensors}
           groups={this.props.groups}
+          logs={this.props.logs}
+          deviceTarget={this.props.deviceTarget}
           mountedToolInfo={this.props.mountedToolInfo}
           visualizedSequenceBody={this.props.visualizedSequenceBody}
           shouldDisplay={this.props.shouldDisplay} />

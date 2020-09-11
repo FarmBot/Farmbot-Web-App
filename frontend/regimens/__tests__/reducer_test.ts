@@ -59,12 +59,11 @@ describe("popWeek()", () => {
 describe("DESTROY_RESOURCE_OK", () => {
   it("resets selectedSequenceUUID", () => {
     const uuid = STATE.selectedSequenceUUID;
+    expect(uuid).toBeDefined();
     if (uuid) {
       const action = { type: Actions.DESTROY_RESOURCE_OK, payload: { uuid } };
       const nextState = regimensReducer(STATE, action);
       expect(nextState.selectedSequenceUUID).toBe(undefined);
-    } else {
-      fail();
     }
   });
 });

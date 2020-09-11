@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { FBSelect, FBSelectProps } from "../new_fb_select";
 
@@ -35,7 +35,7 @@ describe("<FBSelect />", () => {
     const p = fakeProps();
     p.allowEmpty = true;
     const wrapper = shallow(<FBSelect {...p} />);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((wrapper.find("FilterSearch").props() as any).items)
       .toEqual([
         { label: "Item", value: "item" },
@@ -44,7 +44,7 @@ describe("<FBSelect />", () => {
 
   it("doesn't allow empty", () => {
     const wrapper = shallow(<FBSelect {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((wrapper.find("FilterSearch").props() as any).items)
       .toEqual([{ label: "Item", value: "item" }]);
   });

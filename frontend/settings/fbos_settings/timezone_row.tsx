@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui/index";
 import { DeviceSetting, Content } from "../../constants";
 import { TimezoneRowProps } from "./interfaces";
@@ -13,7 +13,8 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
   Note = () =>
     <div className="note">
       {timezoneMismatch(this.props.device.body.timezone)
-        ? t(Content.DIFFERENT_TZ_WARNING) : ""}
+        ? t(Content.DIFFERENT_TZ_WARNING)
+        : ""}
     </div>;
 
   Selector = () =>

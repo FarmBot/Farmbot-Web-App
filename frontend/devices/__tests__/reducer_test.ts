@@ -5,8 +5,7 @@ import { Actions } from "../../constants";
 import { ControlPanelState, BotState } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { stash } from "../../connectivity/data_consistency";
-import { incomingStatus } from "../../connectivity/connect_device";
-import { Vector3, uuid } from "farmbot";
+import { uuid } from "farmbot";
 import { now } from "../connectivity/qos";
 
 const statusOf = (state: BotState) => {
@@ -90,14 +89,12 @@ describe("botReducer", () => {
     expect(r).toEqual("notes");
   });
 
-  it("Handles status_v8 info", () => {
-    const n = () => Math.round(Math.random() * 1000);
-    const position: Vector3 = { x: n(), y: n(), z: n() };
+  it("handles status update", () => {
     const state = initialState();
     state.hardware.informational_settings.sync_status = "synced";
-    const action = incomingStatus({ location_data: { position } });
+    const action = { type: Actions.STATUS_UPDATE, payload: state.hardware };
     const r = botReducer(state, action);
-    expect(r.hardware.location_data.position).toEqual(position);
+    expect(r.hardware.informational_settings.sync_status).toEqual("synced");
   });
 
   it("resets hardware state when transitioning into maintenance mode.", () => {
@@ -107,7 +104,7 @@ describe("botReducer", () => {
     payload.location_data.position.x = -1;
     payload.location_data.position.y = -1;
     payload.location_data.position.z = -1;
-    const action = { type: Actions.LEGACY_BOT_CHANGE, payload };
+    const action = { type: Actions.STATUS_UPDATE, payload };
     // Make the starting state different than initialState();
     const result = botReducer(state, action);
     // Resets .hardware to initialState()

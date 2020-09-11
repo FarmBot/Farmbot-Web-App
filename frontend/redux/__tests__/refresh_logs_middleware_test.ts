@@ -6,9 +6,9 @@ import { Actions } from "../../constants";
 describe("refilterLogsMiddleware.fn()", () => {
   it("dispatches when required", () => {
     const dispatch = jest.fn();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fn = refilterLogsMiddleware.fn({} as any)(dispatch);
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fn({ type: "any", payload: {} } as any);
     expect(throttledLogRefresh).not.toHaveBeenCalled();
     fn({ type: Actions.SAVE_RESOURCE_OK, payload: { kind: "WebAppConfig" } });

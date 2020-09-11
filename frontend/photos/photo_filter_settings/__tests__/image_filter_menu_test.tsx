@@ -110,7 +110,7 @@ describe("<ImageFilterMenu />", () => {
       currentTarget: { value: "" }
     });
     expect(wrapper.instance().state[filter]).toEqual(undefined);
-    // tslint:disable-next-line:no-null-keyword
+    // eslint-disable-next-line no-null/no-null
     expect(edit).toHaveBeenCalledWith(config, { [key]: null });
     expect(save).toHaveBeenCalledWith(config.uuid);
   });

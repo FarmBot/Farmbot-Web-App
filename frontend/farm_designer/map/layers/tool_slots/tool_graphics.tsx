@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Color } from "../../../../ui/index";
 import { trim } from "../../../../util";
 import { BotOriginQuadrant } from "../../../interfaces";
@@ -496,7 +496,7 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
       {props.toolSlot.body.tool_id &&
         <RotatedTool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
     </svg>
-    : <svg width="3rem" height="3rem" viewBox={`-50 0 100 1`}>
+    : <svg width="3rem" height="3rem" viewBox={"-50 0 100 1"}>
       {pulloutDirection &&
         <ToolbaySlot
           id={-(props.toolSlot.body.id || 1)}
@@ -521,7 +521,8 @@ export const ToolSVG = (props: ToolSVGProps) => {
     pulloutDirection: 0, toolTransformProps: { xySwap: false, quadrant: 2 },
   };
   const viewBox = reduceToolName(props.toolName) === ToolNames.seedTrough
-    ? "-25 0 50 1" : "-40 0 80 1";
+    ? "-25 0 50 1"
+    : "-40 0 80 1";
   return <svg width="3rem" height="3rem" viewBox={viewBox}>
     <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />
   </svg>;

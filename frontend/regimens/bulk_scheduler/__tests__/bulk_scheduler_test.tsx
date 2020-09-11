@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { BulkScheduler } from "../bulk_scheduler";
 import { BulkEditorProps } from "../interfaces";
@@ -32,7 +32,8 @@ describe("<BulkScheduler />", () => {
     const buttons = wrapper.find("button");
     expect(buttons.length).toEqual(5);
     ["Sequence", "Fake Sequence", "Time",
-      "Days", "Week 1", "1234567"].map(string =>
+      "Days", "Week 1", "1234567"]
+      .map(string =>
         expect(wrapper.text()).toContain(string));
   });
 

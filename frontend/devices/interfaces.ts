@@ -1,10 +1,6 @@
 import {
-  BotStateTree, ConfigurationName,
-  McuParamName, SyncStatus,
-  TaggedDevice,
-  Alert,
-  Xyz,
-  LocationData,
+  BotStateTree, ConfigurationName, McuParamName, SyncStatus, TaggedDevice,
+  Alert, Xyz, LocationData, FirmwareHardware,
 } from "farmbot";
 import { ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
@@ -29,6 +25,7 @@ export type ShouldDisplay = (x: Feature) => boolean;
 export enum Feature {
   api_farmware_env = "api_farmware_env",
   api_farmware_installations = "api_farmware_installations",
+  api_ota_releases = "api_ota_releases",
   api_pin_bindings = "api_pin_bindings",
   assertion_block = "assertion_block",
   backscheduled_regimens = "backscheduled_regimens",
@@ -57,6 +54,7 @@ export enum Feature {
   update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",
+  z2_firmware_params = "z2_firmware_params",
 }
 
 /** Object fetched from ExternalUrl.featureMinVersions. */
@@ -151,6 +149,7 @@ export interface McuInputBoxProps {
   max?: number;
   disabled?: boolean;
   title?: string;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface EStopButtonProps {

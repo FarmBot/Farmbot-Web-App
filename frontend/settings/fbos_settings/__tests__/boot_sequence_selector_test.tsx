@@ -66,11 +66,7 @@ const fakeProps = () => {
 describe("mapStateToProps", () => {
   it("creates props", () => {
     const result = fakeProps();
-    if (result.selectedItem) {
-      expect(result.selectedItem.value).toEqual(1);
-    } else {
-      fail();
-    }
+    expect(result.selectedItem?.value).toEqual(1);
   });
 
   it("crashes when config is missing", () => {

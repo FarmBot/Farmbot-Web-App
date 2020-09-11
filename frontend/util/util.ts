@@ -122,6 +122,7 @@ export function betterParseNum(num: string | undefined,
     if (isNumber(maybe) && !isNaN(maybe)) {
       return maybe;
     }
+    // eslint-disable-next-line no-empty
   } catch (_) {
   }
   return fallback;
@@ -149,7 +150,7 @@ export function bitArray(...values: boolean[]) {
   return values
     .map((x): number => x ? 1 : 0)
     .reduce((res, x) => {
-      // tslint:disable-next-line:no-bitwise
+      // eslint-disable-next-line no-bitwise
       return res << 1 | x;
     });
 }

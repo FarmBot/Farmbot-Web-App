@@ -84,8 +84,9 @@ interface LatencyReport {
   total: number;
 }
 
-const mapper = (p: Ping) => (p.kind === "complete") ?
-  p.end - p.start : undefined;
+const mapper = (p: Ping) => (p.kind === "complete")
+  ? p.end - p.start
+  : undefined;
 
 export const calculateLatency =
   (s: PingDictionary): LatencyReport => {

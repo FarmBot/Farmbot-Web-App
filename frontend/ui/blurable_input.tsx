@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { equals, parseIntInput } from "../util";
 import { isNumber } from "lodash";
 import { InputError } from "./input_error";
@@ -108,8 +108,9 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   usualProps = () => {
-    const value = this.state.isEditing ?
-      this.state.buffer : this.props.value;
+    const value = this.state.isEditing
+      ? this.state.buffer
+      : this.props.value;
     return {
       value,
       hidden: !!this.props.hidden,

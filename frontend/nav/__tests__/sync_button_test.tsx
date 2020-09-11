@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SyncButton } from "../sync_button";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { shallow } from "enzyme";
@@ -31,7 +31,7 @@ describe("<SyncButton/>", function () {
 
   it("defaults to `unknown` and gray when uncertain", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.bot.hardware.informational_settings.sync_status = "new" as any;
     const result = shallow(<SyncButton {...p} />);
     expect(result.text()).toContain("new");

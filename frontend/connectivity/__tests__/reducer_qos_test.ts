@@ -1,11 +1,9 @@
-jest.mock("../../redux/store", () => {
-  return {
-    store: {
-      dispatch: jest.fn(),
-      getState: jest.fn(() => ({ NO: "NO" }))
-    }
-  };
-});
+jest.mock("../../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: jest.fn(() => ({ NO: "NO" })),
+  }
+}));
 
 import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
@@ -20,12 +18,7 @@ describe("connectivity reducer", () => {
 
   it("starts a ping", () => {
     const ping = newState().pings["yep"];
-    if (ping) {
-      expect(ping.kind).toBe("pending");
-    } else {
-      fail();
-    }
-
+    expect(ping?.kind).toBe("pending");
   });
 
   it("handles the PING_OK action", () => {

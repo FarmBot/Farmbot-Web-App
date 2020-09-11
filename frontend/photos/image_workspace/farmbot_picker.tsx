@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./interfaces";
 import { Color } from "../../ui/index";
@@ -87,7 +87,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
   customPointer = () => <div className={"no-custom-pointer"} />;
 
   render() {
-    const H_AVG = !!this.props.invertHue
+    const H_AVG = this.props.invertHue
       ? 0
       : ((this.props.h[1] * 2 + this.props.h[0] * 2) / 2);
     /** 💥💥💥SURPRISING CODE AHEAD:
