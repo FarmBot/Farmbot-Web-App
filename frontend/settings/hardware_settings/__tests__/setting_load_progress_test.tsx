@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   SettingLoadProgress, SettingLoadProgressProps,
@@ -15,12 +15,12 @@ describe("<SettingLoadProgress />", () => {
     type ConsistencyLookup = Record<keyof FirmwareConfig, boolean>;
     const consistent: Partial<ConsistencyLookup> = ({
       id: false, movement_motor_current_x: true, encoder_enabled_x: true,
-      encoder_enabled_y: false,
+      encoder_enabled_y: false, movement_min_spd_z2: false,
     });
     const consistencyLookup = consistent as ConsistencyLookup;
     const fakeConfig: Partial<FirmwareConfig> = ({
       id: 0, movement_motor_current_x: 1, encoder_enabled_x: 0,
-      encoder_enabled_y: 0,
+      encoder_enabled_y: 0, movement_min_spd_z2: 100,
     });
     const firmwareConfig = fakeConfig as FirmwareConfig;
     const sourceFwConfig = ((x: keyof FirmwareConfig) => ({
@@ -31,6 +31,7 @@ describe("<SettingLoadProgress />", () => {
       sourceFwConfig,
       firmwareConfig,
       firmwareHardware: undefined,
+      shouldDisplay: () => false,
     };
   };
 
@@ -49,6 +50,16 @@ describe("<SettingLoadProgress />", () => {
     const wrapper = mount(<SettingLoadProgress {...p} />);
     const barStyle = wrapper.find(".load-progress-bar").props().style;
     expect(barStyle?.width).toEqual("67%");
+    expect(barStyle?.background).toEqual(Color.white);
+  });
+
+  it("shows setting load progress with new parameters: 50%", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<SettingLoadProgress {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.width).toEqual("50%");
     expect(barStyle?.background).toEqual(Color.white);
   });
 

@@ -140,4 +140,5 @@ export interface ParameterManagementProps {
   getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;
   arduinoBusy: boolean;
+  shouldDisplay: ShouldDisplay;
 }

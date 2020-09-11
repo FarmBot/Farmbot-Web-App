@@ -151,6 +151,7 @@ export class RawDesignerSettings
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
           getConfigValue={getConfigValue}
+          shouldDisplay={this.props.shouldDisplay}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
         <Designer {...commonProps}

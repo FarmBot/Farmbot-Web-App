@@ -38,7 +38,8 @@ export function ParameterManagement(props: ParameterManagementProps) {
             <SettingLoadProgress botOnline={botOnline}
               firmwareHardware={firmwareHardware}
               firmwareConfig={props.firmwareConfig}
-              sourceFwConfig={props.sourceFwConfig} />
+              sourceFwConfig={props.sourceFwConfig}
+              shouldDisplay={props.shouldDisplay} />
           </Col>
         </Row>
       </Highlight>
