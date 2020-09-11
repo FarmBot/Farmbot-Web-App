@@ -5,6 +5,11 @@ import { Terminal } from "xterm";
 type TerminalLike = Pick<Terminal, "write" | "onKey">;
 type KeysWeNeed = "publish" | "on" | "once" | "publish" | "subscribe";
 
+const CR = "\r";
+const DELETE = String.fromCharCode(127);
+const BACKSPACE = "\b";
+const EMPTY_BUFFER = [CR, (CR + CR), ""];
+
 export class TerminalSession {
   buffer = "";
   private client: Pick<MqttClient, KeysWeNeed>;
@@ -31,7 +36,7 @@ export class TerminalSession {
 
   erase = (n: number) => {
     times(Math.max(0, n), () => {
-      this.terminal.write("\b \b");
+      this.terminal.write(`${BACKSPACE} ${BACKSPACE}`);
       this.buffer = this.buffer.slice(0, -1);
     });
   }
@@ -49,14 +54,14 @@ export class TerminalSession {
 
   terminalKeyboardHandler = ({ key: key }: { key: string }) => {
     switch (key) {
-      case "\r":
-        if (!["\r", "\r\r"].includes(this.buffer)) {
+      case CR:
+        if (!EMPTY_BUFFER.includes(this.buffer)) {
           this.client.publish(this.tx, this.buffer + key);
         }
         this.clearBuffer();
         break;
-      case "\b":
-      case String.fromCharCode(127):
+      case BACKSPACE:
+      case DELETE:
         this.erase(1);
         break;
       default:
