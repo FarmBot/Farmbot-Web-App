@@ -61,7 +61,7 @@ namespace :releases do
     end
 
     def self.prevent_disaster(version:, chan:)
-      if version.include?("rc") && chan != Release::STABLE
+      if version.include?("rc") && chan == Release::STABLE
         puts "Refusing to publish unstable release candidate to stable channel."
         exit 1
       end
