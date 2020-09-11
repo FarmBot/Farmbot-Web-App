@@ -44,13 +44,18 @@ const AXES_PANEL = [
   DeviceSetting.negativeCoordinatesOnly,
   DeviceSetting.findAxisLength,
   DeviceSetting.axisLength,
+  DeviceSetting.safeHeight,
+  DeviceSetting.soilHeight,
 ];
 const MOTORS_PANEL = [
   DeviceSetting.motors,
   DeviceSetting.maxSpeed,
+  DeviceSetting.maxSpeedTowardHome,
   DeviceSetting.homingSpeed,
   DeviceSetting.minimumSpeed,
+  DeviceSetting.minimumSpeedTowardHome,
   DeviceSetting.accelerateFor,
+  DeviceSetting.accelerateForTowardHome,
   DeviceSetting.stepsPerMm,
   DeviceSetting.microstepsPerStep,
   DeviceSetting.alwaysPowerMotors,
@@ -106,6 +111,7 @@ const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.resetHardwareParams,
   DeviceSetting.exportParameters,
   DeviceSetting.importParameters,
+  DeviceSetting.highlightSettingsModifiedFromDefault,
   DeviceSetting.resetHardwareParams,
 ];
 const FARM_DESIGNER_PANEL = [
