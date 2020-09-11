@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting, Content } from "../../constants";
 import { LimitSwitchesProps } from "./interfaces";
@@ -12,7 +12,15 @@ import { t } from "../../i18next_wrapper";
 export function LimitSwitches(props: LimitSwitchesProps) {
 
   const { limit_switches } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, arduinoBusy } = props;
+  const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
+
+  const commonProps = {
+    dispatch,
+    sourceFwConfig,
+    disabled: arduinoBusy,
+    firmwareHardware,
+  };
+
 
   return <Highlight className={"section"}
     settingName={DeviceSetting.limitSwitchSettings}>
@@ -28,45 +36,36 @@ export function LimitSwitches(props: LimitSwitchesProps) {
         </div>
       </Highlight>
       <SpacePanelHeader />
-      <BooleanMCUInputGroup
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.enableLimitSwitches}
         tooltip={ToolTips.ENABLE_LIMIT_SWITCHES}
         x={"movement_enable_endpoints_x"}
         y={"movement_enable_endpoints_y"}
-        z={"movement_enable_endpoints_z"}
-        disabled={arduinoBusy}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
+        z={"movement_enable_endpoints_z"} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.swapLimitSwitches}
         tooltip={ToolTips.SWAP_LIMIT_SWITCHES}
         x={"movement_invert_endpoints_x"}
         y={"movement_invert_endpoints_y"}
         z={"movement_invert_endpoints_z"}
-        disabled={arduinoBusy}
         grayscale={{
           x: !sourceFwConfig("movement_enable_endpoints_x").value,
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
-        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
+        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.invertLimitSwitches}
         tooltip={ToolTips.INVERT_LIMIT_SWITCHES}
         x={"movement_invert_2_endpoints_x"}
         y={"movement_invert_2_endpoints_y"}
         z={"movement_invert_2_endpoints_z"}
-        disabled={arduinoBusy}
         grayscale={{
           x: !sourceFwConfig("movement_enable_endpoints_x").value,
           y: !sourceFwConfig("movement_enable_endpoints_y").value,
           z: !sourceFwConfig("movement_enable_endpoints_z").value
         }}
-        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+        disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])} />
     </Collapse>
   </Highlight>;
 }

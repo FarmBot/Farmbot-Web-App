@@ -1,10 +1,6 @@
 import {
-  BotStateTree, ConfigurationName,
-  McuParamName, SyncStatus,
-  TaggedDevice,
-  Alert,
-  Xyz,
-  LocationData,
+  BotStateTree, ConfigurationName, McuParamName, SyncStatus, TaggedDevice,
+  Alert, Xyz, LocationData, FirmwareHardware,
 } from "farmbot";
 import { ConnectionState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
@@ -153,6 +149,7 @@ export interface McuInputBoxProps {
   max?: number;
   disabled?: boolean;
   title?: string;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface EStopButtonProps {

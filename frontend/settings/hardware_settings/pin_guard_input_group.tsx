@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { McuInputBox } from "./mcu_input_box";
 import { PinGuardMCUInputGroupProps } from "./interfaces";
 import { Row, Col, Help } from "../../ui/index";
@@ -10,6 +10,7 @@ import { PinNumberDropdown } from "./pin_number_dropdown";
 import { ToolTips } from "../../constants";
 import { Position } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
+import { getModifiedClassName } from "./default_values";
 
 export class PinGuardMCUInputGroup
   extends React.Component<PinGuardMCUInputGroupProps> {
@@ -26,6 +27,7 @@ export class PinGuardMCUInputGroup
     <McuInputBox
       setting={this.props.timeoutKey}
       sourceFwConfig={this.props.sourceFwConfig}
+      firmwareHardware={this.props.firmwareHardware}
       dispatch={this.props.dispatch}
       disabled={this.props.disabled}
       filter={32000} />
@@ -40,6 +42,10 @@ export class PinGuardMCUInputGroup
       customText={{ textFalse: t("off"), textTrue: t("on") }}
       toggleValue={inactiveState}
       dim={!sourceFwConfig(activeStateKey).consistent}
+      className={getModifiedClassName(
+        activeStateKey,
+        activeStateValue,
+        this.props.firmwareHardware)}
       disabled={this.props.disabled}
       toggleAction={() =>
         dispatch(settingToggle(activeStateKey, sourceFwConfig))} />;

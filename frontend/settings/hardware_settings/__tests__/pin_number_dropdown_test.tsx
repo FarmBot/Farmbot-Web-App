@@ -1,6 +1,6 @@
 jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { PinNumberDropdown } from "../pin_number_dropdown";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
@@ -27,6 +27,7 @@ describe("<PinNumberDropdown />", () => {
         value: (firmwareConfig || fakeFirmwareConfig()).body[x],
         consistent: true
       }),
+      firmwareHardware: undefined,
       resources: buildResourceIndex(
         firmwareConfig ? [firmwareConfig] : []).index,
       disabled: false,

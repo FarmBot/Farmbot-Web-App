@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Color } from "../../ui/index";
-import { SourceFwConfig } from "../../devices/interfaces";
+import { Feature, ShouldDisplay, SourceFwConfig } from "../../devices/interfaces";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
@@ -11,6 +11,7 @@ export interface SettingLoadProgressProps {
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 const UNTRACKED_KEYS: (keyof FirmwareConfig)[] = [
@@ -26,11 +27,16 @@ const TMC_KEYS: (keyof FirmwareConfig)[] = [
   "movement_microsteps_z",
 ];
 
+const Z2_KEYS: (keyof FirmwareConfig)[] = [
+  "movement_min_spd_z2", "movement_max_spd_z2", "movement_steps_acc_dec_z2",
+];
+
 /** Track firmware configuration adoption by FarmBot OS. */
 export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
   const keys = Object.keys(props.firmwareConfig || {})
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(props.firmwareHardware) ? [] : TMC_KEYS)
+      .concat(props.shouldDisplay(Feature.z2_firmware_params) ? [] : Z2_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>
     props.sourceFwConfig(key).consistent);

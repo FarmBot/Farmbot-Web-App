@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BotState } from "../interfaces";
 import { Diagnosis, DiagnosisProps } from "./diagnosis";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
@@ -16,6 +16,7 @@ import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
+import { isString } from "lodash";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -33,6 +34,14 @@ interface ConnectivityState {
   hoveredConnection: string | undefined;
 }
 
+export const formatMac = (nodeName: string) => {
+  const id = nodeName.split(".")[0].slice(-8);
+  return `${id.slice(0, 2)}
+         :${id.slice(2, 4)}
+         :${id.slice(4, 6)}
+         :${id.slice(6, 8)}`.replace(/\s+/g, "");
+};
+
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
@@ -46,7 +55,7 @@ export class Connectivity
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
-      firmware_version,
+      firmware_version, private_ip, node_name,
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
@@ -69,6 +78,10 @@ export class Connectivity
             <ChipTemperatureDisplay temperature={soc_temp} />
             <WiFiStrengthDisplay wifiStrength={wifi_level}
               wifiStrengthPercent={wifi_level_percent} />
+            {isString(node_name) && !node_name.includes("---") &&
+              <p><b>{t("MAC address")}: </b>{formatMac(node_name)}</p>}
+            {isString(private_ip) &&
+              <p><b>{t("Local IP")}: </b>{private_ip}</p>}
             <VoltageDisplay throttleData={throttled} />
           </div>
           <QosPanel pings={this.props.pings} />

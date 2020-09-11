@@ -47,6 +47,13 @@ export function AxisSettings(props: AxisSettingsProps) {
 
   const scale = calculateScale(sourceFwConfig);
 
+  const commonProps = {
+    dispatch,
+    sourceFwConfig,
+    disabled: busy,
+    firmwareHardware,
+  };
+
   return <Highlight className={"section"}
     settingName={DeviceSetting.axisSettings}>
     <Header
@@ -79,49 +86,37 @@ export function AxisSettings(props: AxisSettingsProps) {
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
-      <BooleanMCUInputGroup
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.findHomeOnBoot}
         tooltip={!showEncoders
           ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
           : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
         grayscale={disabled}
         disabledBy={encodersOrLimitSwitchesRequired(showEncoders)}
-        disabled={busy}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig}
         caution={true} />
-      <BooleanMCUInputGroup
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.stopAtHome}
         tooltip={ToolTips.STOP_AT_HOME}
-        disabled={busy}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
-        z={"movement_stop_at_home_z"}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
+        z={"movement_stop_at_home_z"} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.stopAtMax}
         tooltip={ToolTips.STOP_AT_MAX}
-        disabled={busy}
         grayscale={axisLengthDisabled}
         disabledBy={settingRequiredLabel([DeviceSetting.axisLength])}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
-        z={"movement_stop_at_max_z"}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
+        z={"movement_stop_at_max_z"} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.negativeCoordinatesOnly}
         tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
-        disabled={busy}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
-        z={"movement_home_up_z"}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+        z={"movement_home_up_z"} />
       <CalibrationRow
         type={"calibrate"}
         title={DeviceSetting.findAxisLength}
@@ -134,10 +129,9 @@ export function AxisSettings(props: AxisSettingsProps) {
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
-      <NumericMCUInputGroup
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.axisLength}
         tooltip={ToolTips.AXIS_LENGTH}
-        disabled={busy}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
         z={"movement_axis_nr_steps_z"}
@@ -150,8 +144,6 @@ export function AxisSettings(props: AxisSettingsProps) {
           z: !sourceFwConfig("movement_stop_at_max_z").value,
         }}
         disabledBy={settingRequiredLabel([DeviceSetting.stopAtMax])}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch}
         intSize={"long"} />
       {props.shouldDisplay(Feature.safe_height_input) &&
         <SafeHeight

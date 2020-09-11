@@ -1,6 +1,6 @@
 jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
 import { mount } from "enzyme";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
@@ -21,6 +21,7 @@ describe("<PinGuardMCUInputGroup/>", () => {
       dispatch: jest.fn(),
       sourceFwConfig: x =>
         ({ value: bot.hardware.mcu_params[x], consistent: true }),
+      firmwareHardware: undefined,
       resources: buildResourceIndex([]).index,
       disabled: false,
     };
