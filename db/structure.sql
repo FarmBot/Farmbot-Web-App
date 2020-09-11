@@ -600,7 +600,10 @@ CREATE TABLE public.firmware_configs (
     movement_motor_current_z integer DEFAULT 600,
     movement_stall_sensitivity_x integer DEFAULT 63,
     movement_stall_sensitivity_y integer DEFAULT 63,
-    movement_stall_sensitivity_z integer DEFAULT 63
+    movement_stall_sensitivity_z integer DEFAULT 63,
+    movement_min_spd_z2 integer DEFAULT 50,
+    movement_max_spd_z2 integer DEFAULT 400,
+    movement_steps_acc_dec_z2 integer DEFAULT 300
 );
 
 
@@ -1615,7 +1618,8 @@ CREATE TABLE public.token_issuances (
     exp integer NOT NULL,
     jti character varying(45) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    aud character varying(8) DEFAULT 'unknown'::character varying
 );
 
 
@@ -3448,6 +3452,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200804150609'),
 ('20200807182602'),
 ('20200823211337'),
-('20200902141446');
+('20200902141446'),
+('20200907153510'),
+('20200910175338');
 
 

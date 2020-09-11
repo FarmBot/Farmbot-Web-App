@@ -54,7 +54,6 @@ module Releases
     private
 
     def convert_to_farmbot_release(asset)
-      channel = prerelease ? "beta" : "stable"
       platform = asset.fetch(:name).gsub("farmbot-", "").split("-").first
       unless Release::PLATFORMS.include?(platform)
         raise "Invalid platform?: #{platform}"
@@ -63,7 +62,6 @@ module Releases
         image_url: asset.fetch(:browser_download_url),
         version: tag_name.downcase.delete_prefix("v"),
         platform: platform,
-        channel: channel,
       })
     end
 

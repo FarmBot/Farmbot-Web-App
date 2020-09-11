@@ -5,12 +5,12 @@ module Auth
     required { string :jwt }
 
     def execute
-      token  = SessionToken.decode!(just_the_token)
+      token = SessionToken.decode!(just_the_token)
       claims = token.unencoded
       RequestStore.store[:jwt] = claims.deep_symbolize_keys
       u = User.includes(:device).find(claims["sub"])
-      Device.current = u.device
       check_it!(claims)
+      Device.current = u.device
       u
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound
       add_error :jwt, :decode_error, Auth::ReloadToken::BAD_SUB

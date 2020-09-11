@@ -276,6 +276,7 @@ module CeleryScriptSettingsBag
     },
     axis_operand: {
       defn: [
+        n(:coordinate),
         n(:identifier),
         n(:lua),
         n(:numeric),
