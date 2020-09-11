@@ -171,8 +171,11 @@ class Device < ApplicationRecord
   # Used by sys admins to debug problems without performing a password reset.
   def help_customer
     Rollbar.error("Someone is creating a debug user token", { device: self.id })
-    token = SessionToken.as_json(users.first, "staff", fbos_version).to_json
-    return "localStorage['session'] = JSON.stringify(#{token});"
+    t = SessionToken.as_json(users.first, "staff", fbos_version)
+    jti = t[:token].unencoded[:jti]
+    # Auto expire after 1 day.
+    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 1.day).to_i)
+    return "localStorage['session'] = JSON.stringify(#{t.to_json});"
   end
 
   TOO_MANY_CONNECTIONS =

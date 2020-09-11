@@ -108,6 +108,7 @@ FarmBot::Application.routes.draw do
   # =======================================================================
   get "/" => "dashboard#front_page", as: :front_page
   get "/logout" => "dashboard#logout", as: :logout
+  get "/terminal" => "dashboard#terminal", as: :terminal
 
   get "/app" => "dashboard#main_app", as: :dashboard
   get "/app/designer/controls" => "dashboard#main_app", as: :app_landing_page

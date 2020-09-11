@@ -24,7 +24,8 @@ module Releases
 
     # Copy the file from Github to Google Cloud Storage.
     def process_images(release)
-      release.update!(image_url: Release.transload(image_url))
+      final_url = ENV["GCS_BUCKET"] ? Release.transload(image_url) : image_url
+      release.update!(image_url: final_url)
     end
   end
 end

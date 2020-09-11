@@ -13,9 +13,9 @@ class SessionToken < AbstractJwtToken
   MQTT_WS = ENV["MQTT_WS"] || DEFAULT_MQTT_WS
   EXPIRY = 40.days
   VHOST = ENV.fetch("MQTT_VHOST") { "/" }
-  BETA_OS_URL   = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
-  DEFAULT_OS    = "https://api.github.com/repos/farmbot/farmbot_os/releases" +
-  "/latest"
+  BETA_OS_URL = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
+  DEFAULT_OS = "https://api.github.com/repos/farmbot/farmbot_os/releases" +
+               "/latest"
   # Originally imported from `CalculateVersion` mutation (check source control
   # for context) - RC
   OS_RELEASE_SERVER = ENV.fetch("OS_UPDATE_SERVER", DEFAULT_OS)
@@ -31,19 +31,22 @@ class SessionToken < AbstractJwtToken
       raise Errors::Forbidden, MUST_VERIFY
     end
     jti = SecureRandom.uuid
-    TokenIssuance.create!(device_id: user.device.id, exp: exp, jti: jti)
+    TokenIssuance.create!(device_id: user.device.id,
+                          exp: exp,
+                          jti: jti,
+                          aud: aud)
     self.new([{ aud: aud,
-               sub: user.id,
-               iat: iat,
-               jti: jti,
-               iss: iss,
-               exp: exp,
-               mqtt: MQTT,
-               bot: "device_#{user.device.id}",
-               vhost: VHOST,
-               mqtt_ws: MQTT_WS,
-               os_update_server: OS_RELEASE_SERVER,
-               beta_os_update_server: BETA_OS_URL }])
+                sub: user.id,
+                iat: iat,
+                jti: jti,
+                iss: iss,
+                exp: exp,
+                mqtt: MQTT,
+                bot: "device_#{user.device.id}",
+                vhost: VHOST,
+                mqtt_ws: MQTT_WS,
+                os_update_server: OS_RELEASE_SERVER,
+                beta_os_update_server: BETA_OS_URL }])
   end
 
   def self.as_json(user, aud, fbos_version)

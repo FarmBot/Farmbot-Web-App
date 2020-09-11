@@ -2,7 +2,7 @@ require "open-uri"
 require "google/cloud/storage"
 
 class Release < ApplicationRecord
-  CHANNEL = [BETA = "beta", STABLE = "stable"]
+  CHANNEL = [STABLE = "stable", BETA = "beta", ALPHA = "alpha"]
   GITHUB_URL = "https://api.github.com/repos/farmbot/farmbot_os/releases/latest"
   PLATFORMS = [GENESIS = "rpi3", EXPRESS = "rpi"]
   # Version string, as it appears in Github.

@@ -18,4 +18,9 @@ interface UnencodedToken {
   jti: string;
   /** Audience claim - usually "bot", "human", or "unknown" */
   aud: string;
+  /** This is the username for the MQTT server. Follows format of `device_x`,
+   * where `x` represents the device's `id` property. */
+  bot: string;
+  /** URL for MQTT over websockets. */
+  mqtt_ws: string;
 }

@@ -8,6 +8,8 @@ export const auth: AuthState = {
       os_update_server: "https://api.github.com/repos/farmbot/" +
         "farmbot_os/releases/latest",
       aud: "unknown",
+      bot: "device_123",
+      mqtt_ws: "//localhost:3000"
     },
     encoded: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbk" +
       "BhZG1pbi5jb20iLCJpYXQiOjE0OTU1NjkwODQsImp0aSI6ImIzODkxNWNhLTNkN2Et" +
