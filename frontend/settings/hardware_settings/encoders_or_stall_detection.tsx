@@ -24,6 +24,13 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
   };
   const showEncoders = hasEncoders(firmwareHardware);
 
+  const commonProps = {
+    dispatch,
+    sourceFwConfig,
+    disabled: arduinoBusy,
+    firmwareHardware,
+  };
+
   return <Highlight className={"section"}
     settingName={DeviceSetting.encoders}>
     <Header
@@ -43,7 +50,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           </div>
         </Highlight>}
       <SpacePanelHeader />
-      <BooleanMCUInputGroup
+      <BooleanMCUInputGroup {...commonProps}
         label={encoderSettingName(showEncoders)}
         tooltip={!showEncoders
           ? ToolTips.ENABLE_STALL_DETECTION
@@ -52,11 +59,9 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         disabled={arduinoBusy || !showEncoders
-          && !props.shouldDisplay(Feature.express_stall_detection)}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+          && !props.shouldDisplay(Feature.express_stall_detection)} />
       {!showEncoders &&
-        <NumericMCUInputGroup
+        <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.stallSensitivity}
           tooltip={ToolTips.STALL_SENSITIVITY}
           x={"movement_stall_sensitivity_x"}
@@ -65,35 +70,26 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           min={-63}
           max={63}
           disabledBy={settingRequiredLabel([DeviceSetting.enableStallDetection])}
-          gray={encodersDisabled}
-          disabled={arduinoBusy}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
+          gray={encodersDisabled} />}
       {showEncoders &&
-        <BooleanMCUInputGroup
+        <BooleanMCUInputGroup {...commonProps}
           label={DeviceSetting.useEncodersForPositioning}
           tooltip={ToolTips.USE_ENCODERS_FOR_POSITIONING}
           x={"encoder_use_for_pos_x"}
           y={"encoder_use_for_pos_y"}
           z={"encoder_use_for_pos_z"}
           disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
-          grayscale={encodersDisabled}
-          disabled={arduinoBusy}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
+          grayscale={encodersDisabled} />}
       {showEncoders &&
-        <BooleanMCUInputGroup
+        <BooleanMCUInputGroup {...commonProps}
           label={DeviceSetting.invertEncoders}
           tooltip={ToolTips.INVERT_ENCODERS}
           x={"encoder_invert_x"}
           y={"encoder_invert_y"}
           z={"encoder_invert_z"}
           disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
-          grayscale={encodersDisabled}
-          disabled={arduinoBusy}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
-      <NumericMCUInputGroup
+          grayscale={encodersDisabled} />}
+      <NumericMCUInputGroup {...commonProps}
         label={!showEncoders
           ? DeviceSetting.maxMotorLoad
           : DeviceSetting.maxMissedSteps}
@@ -104,11 +100,8 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         y={"encoder_missed_steps_max_y"}
         z={"encoder_missed_steps_max_z"}
         disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
-        gray={encodersDisabled}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
-      <NumericMCUInputGroup
+        gray={encodersDisabled} />
+      <NumericMCUInputGroup {...commonProps}
         label={!showEncoders
           ? DeviceSetting.gracePeriod
           : DeviceSetting.missedStepDecay}
@@ -119,12 +112,9 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
         disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
-        gray={encodersDisabled}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
+        gray={encodersDisabled} />
       {showEncoders &&
-        <NumericMCUInputGroup
+        <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.encoderScaling}
           tooltip={ToolTips.ENCODER_SCALING}
           x={"encoder_scaling_x"}
@@ -135,10 +125,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           zScale={sourceFwConfig("movement_microsteps_z").value}
           intSize={"long"}
           disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
-          gray={encodersDisabled}
-          disabled={arduinoBusy}
-          sourceFwConfig={sourceFwConfig}
-          dispatch={dispatch} />}
+          gray={encodersDisabled} />}
     </Collapse>
   </Highlight>;
 }

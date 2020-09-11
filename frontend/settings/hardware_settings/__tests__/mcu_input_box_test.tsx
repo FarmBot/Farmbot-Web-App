@@ -1,6 +1,6 @@
 jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { McuInputBox } from "../mcu_input_box";
 import { shallow, mount } from "enzyme";
 import { McuInputBoxProps } from "../../../devices/interfaces";
@@ -12,6 +12,7 @@ describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => ({
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
     setting: "encoder_enabled_x",
     dispatch: jest.fn()
   });

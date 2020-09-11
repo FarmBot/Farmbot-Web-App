@@ -4,7 +4,7 @@ jest.mock("../export_menu", () => ({
   FwParamExportMenu: () => <div />,
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   ParameterManagement, ParameterImport, ParameterImportProps,
@@ -24,6 +24,7 @@ describe("<ParameterManagement />", () => {
     sourceFwConfig: () => ({ value: 0, consistent: true }),
     firmwareHardware: undefined,
     arduinoBusy: false,
+    getConfigValue: jest.fn(),
   });
 
   it("renders", () => {

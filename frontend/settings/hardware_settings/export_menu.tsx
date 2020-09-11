@@ -1,5 +1,5 @@
-import * as React from "react";
-import { last, pickBy } from "lodash";
+import React from "react";
+import { pickBy } from "lodash";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { GetState } from "../../redux/interfaces";
 import { edit, save } from "../../api/crud";
@@ -14,7 +14,7 @@ type CondensedFwConfig = {
   }
 };
 
-const getAxisSubKey = (key: string) => last(key.split("_")) || key.slice(-1);
+const getAxisSubKey = (key: string) => key.split("_").slice(-1)[0];
 const getAxisSupKey = (key: string) => key.split("_").slice(0, -1).join("_");
 
 const isAxisKey = (key: string) =>
@@ -83,7 +83,8 @@ export const condenseFwConfig =
         if (fwConfigKey.startsWith(key)) {
           UNITS[key] && (condensedFwConfig[key]["units"] =
             JSON.stringify(UNITS[key]));
-          condensedFwConfig[key][getSubKeyName(fwConfigKey)] = value;
+          const subKey = getSubKeyName(fwConfigKey);
+          condensedFwConfig[key][subKey] = value;
         }
       });
     });

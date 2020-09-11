@@ -437,6 +437,9 @@
     background: $medium_light_gray !important;
     filter: grayscale(100%);
   }
+  &.modified {
+    box-shadow: 0 0 0px 3px $yellow !important;
+  }
 }
 
 .front-page-button {

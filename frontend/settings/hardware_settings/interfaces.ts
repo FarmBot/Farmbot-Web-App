@@ -7,6 +7,7 @@ import { IntegerSize } from "../../util";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { ResourceIndex } from "../../resources/interfaces";
 import { DeviceSetting } from "../../constants";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface ZeroRowProps {
   botDisconnected: boolean;
@@ -26,6 +27,7 @@ export interface AxisSettingsProps {
 
 export interface BooleanMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   dispatch: Function;
   tooltip: string;
   label: DeviceSetting;
@@ -54,6 +56,7 @@ export interface CalibrationRowProps {
 
 export interface NumericMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   dispatch: Function;
   tooltip: string;
   label: DeviceSetting;
@@ -74,6 +77,7 @@ export interface NumericMCUInputGroupProps {
 
 export interface PinGuardMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   dispatch: Function;
   label: DeviceSetting;
   pinNumKey: McuParamName;
@@ -87,6 +91,7 @@ export interface PinGuardProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   resources: ResourceIndex;
   arduinoBusy: boolean;
 }
@@ -113,6 +118,7 @@ export interface LimitSwitchesProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
 }
 
@@ -120,6 +126,7 @@ export interface ErrorHandlingProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
 }
 
@@ -130,6 +137,7 @@ export interface ParameterManagementProps {
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   firmwareHardware: FirmwareHardware | undefined;
+  getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;
   arduinoBusy: boolean;
 }

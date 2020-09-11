@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { NumericMCUInputGroupProps } from "../interfaces";
@@ -7,6 +7,7 @@ import { DeviceSetting } from "../../../constants";
 describe("<NumericMCUInputGroup />", () => {
   const fakeProps = (): NumericMCUInputGroupProps => ({
     sourceFwConfig: () => ({ value: 0, consistent: true }),
+    firmwareHardware: undefined,
     dispatch: jest.fn(),
     tooltip: "tip",
     label: DeviceSetting.motors,

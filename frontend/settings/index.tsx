@@ -131,9 +131,11 @@ export class RawDesignerSettings
           firmwareHardware={firmwareHardware} />
         <LimitSwitches {...commonProps}
           arduinoBusy={busy}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
         <ErrorHandling {...commonProps}
           arduinoBusy={busy}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
         <PinBindings {...commonProps}
           resources={resources}
@@ -141,12 +143,14 @@ export class RawDesignerSettings
         <PinGuard {...commonProps}
           arduinoBusy={busy}
           resources={resources}
+          firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
         <ParameterManagement {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
+          getConfigValue={getConfigValue}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
         <Designer {...commonProps}

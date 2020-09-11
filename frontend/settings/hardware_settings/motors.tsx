@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
@@ -17,9 +17,10 @@ import { SpacePanelHeader } from "./space_panel_header";
 import { Col, Help, Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { McuInputBox } from "./mcu_input_box";
+import { getDefaultFwConfigValue, getModifiedClassName } from "./default_values";
 
 export const calculateScale =
-  (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
+  (sourceFwConfig: SourceFwConfig): Record<Xyz, number> => {
     const getV = (key: McuParamName) => sourceFwConfig(key).value;
     return {
       x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
@@ -39,6 +40,15 @@ export function Motors(props: MotorsProps) {
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
   const scale = calculateScale(sourceFwConfig);
 
+  const commonProps = {
+    dispatch,
+    sourceFwConfig,
+    arduinoBusy,
+    firmwareHardware,
+  };
+
+  const getDefault = getDefaultFwConfigValue(props.firmwareHardware);
+
   return <Highlight className={"section"}
     settingName={DeviceSetting.motors}>
     <Header
@@ -51,7 +61,7 @@ export function Motors(props: MotorsProps) {
         customIcon={"exclamation-triangle"} />}
     <Collapse isOpen={!!controlPanelState.motors}>
       <SpacePanelHeader />
-      <NumericMCUInputGroup
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.maxSpeed}
         tooltip={ToolTips.MAX_SPEED}
         x={"movement_max_spd_x"}
@@ -59,10 +69,7 @@ export function Motors(props: MotorsProps) {
         z={"movement_max_spd_z"}
         xScale={scale.x}
         yScale={scale.y}
-        zScale={scale.z}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
+        zScale={scale.z} />
       {props.shouldDisplay(Feature.z2_firmware_params) &&
         <Highlight settingName={DeviceSetting.maxSpeedTowardHome}>
           <Row>
@@ -70,19 +77,20 @@ export function Motors(props: MotorsProps) {
               <label>
                 {t(DeviceSetting.maxSpeedTowardHome)}
               </label>
-              <Help text={ToolTips.MAX_SPEED} position={Position.TOP_RIGHT} />
+              <Help
+                text={t(ToolTips.MAX_SPEED_Z_TOWARD_HOME, {
+                  z: getDefault("movement_max_spd_z2") / scale.z
+                })}
+                position={Position.TOP_RIGHT} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
-              <McuInputBox
+              <McuInputBox {...commonProps}
                 setting={"movement_max_spd_z2"}
-                sourceFwConfig={sourceFwConfig}
-                dispatch={dispatch}
-                scale={scale.z}
-                disabled={arduinoBusy} />
+                scale={scale.z} />
             </Col>
           </Row>
         </Highlight>}
-      <NumericMCUInputGroup
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.homingSpeed}
         tooltip={ToolTips.HOME_SPEED}
         x={"movement_home_spd_x"}
@@ -90,11 +98,8 @@ export function Motors(props: MotorsProps) {
         z={"movement_home_spd_z"}
         xScale={scale.x}
         yScale={scale.y}
-        zScale={scale.z}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
-      <NumericMCUInputGroup
+        zScale={scale.z} />
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.minimumSpeed}
         tooltip={ToolTips.MIN_SPEED}
         x={"movement_min_spd_x"}
@@ -102,10 +107,7 @@ export function Motors(props: MotorsProps) {
         z={"movement_min_spd_z"}
         xScale={scale.x}
         yScale={scale.y}
-        zScale={scale.z}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
+        zScale={scale.z} />
       {props.shouldDisplay(Feature.z2_firmware_params) &&
         <Highlight settingName={DeviceSetting.minimumSpeedTowardHome}>
           <Row>
@@ -113,19 +115,20 @@ export function Motors(props: MotorsProps) {
               <label>
                 {t(DeviceSetting.minimumSpeedTowardHome)}
               </label>
-              <Help text={ToolTips.MIN_SPEED} position={Position.TOP_RIGHT} />
+              <Help
+                text={t(ToolTips.MIN_SPEED_Z_TOWARD_HOME, {
+                  z: getDefault("movement_min_spd_z2") / scale.z
+                })}
+                position={Position.TOP_RIGHT} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
-              <McuInputBox
+              <McuInputBox {...commonProps}
                 setting={"movement_min_spd_z2"}
-                sourceFwConfig={sourceFwConfig}
-                dispatch={dispatch}
-                scale={scale.z}
-                disabled={arduinoBusy} />
+                scale={scale.z} />
             </Col>
           </Row>
         </Highlight>}
-      <NumericMCUInputGroup
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.accelerateFor}
         tooltip={ToolTips.ACCELERATE_FOR}
         x={"movement_steps_acc_dec_x"}
@@ -133,10 +136,7 @@ export function Motors(props: MotorsProps) {
         z={"movement_steps_acc_dec_z"}
         xScale={scale.x}
         yScale={scale.y}
-        zScale={scale.z}
-        disabled={arduinoBusy}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
+        zScale={scale.z} />
       {props.shouldDisplay(Feature.z2_firmware_params) &&
         <Highlight settingName={DeviceSetting.accelerateForTowardHome}>
           <Row>
@@ -144,19 +144,20 @@ export function Motors(props: MotorsProps) {
               <label>
                 {t(DeviceSetting.accelerateForTowardHome)}
               </label>
-              <Help text={ToolTips.ACCELERATE_FOR} position={Position.TOP_RIGHT} />
+              <Help
+                text={t(ToolTips.ACCELERATE_FOR_Z_TOWARD_HOME, {
+                  z: getDefault("movement_steps_acc_dec_z2") / scale.z
+                })}
+                position={Position.TOP_RIGHT} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
-              <McuInputBox
+              <McuInputBox {...commonProps}
                 setting={"movement_steps_acc_dec_z2"}
-                sourceFwConfig={sourceFwConfig}
-                dispatch={dispatch}
-                scale={scale.z}
-                disabled={arduinoBusy} />
+                scale={scale.z} />
             </Col>
           </Row>
         </Highlight>}
-      <NumericMCUInputGroup
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.stepsPerMm}
         tooltip={ToolTips.STEPS_PER_MM}
         x={"movement_step_per_mm_x"}
@@ -165,66 +166,69 @@ export function Motors(props: MotorsProps) {
         xScale={sourceFwConfig("movement_microsteps_x").value}
         yScale={sourceFwConfig("movement_microsteps_y").value}
         zScale={sourceFwConfig("movement_microsteps_z").value}
-        disabled={arduinoBusy}
-        float={false}
-        sourceFwConfig={props.sourceFwConfig}
-        dispatch={props.dispatch} />
-      <NumericMCUInputGroup
+        float={false} />
+      <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.microstepsPerStep}
         tooltip={ToolTips.MICROSTEPS_PER_STEP}
         x={"movement_microsteps_x"}
         y={"movement_microsteps_y"}
-        z={"movement_microsteps_z"}
-        disabled={arduinoBusy}
-        sourceFwConfig={props.sourceFwConfig}
-        dispatch={props.dispatch} />
-      <BooleanMCUInputGroup
+        z={"movement_microsteps_z"} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.alwaysPowerMotors}
         tooltip={ToolTips.ALWAYS_POWER_MOTORS}
         x={"movement_keep_active_x"}
         y={"movement_keep_active_y"}
-        z={"movement_keep_active_z"}
-        disabled={arduinoBusy}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
+        z={"movement_keep_active_z"} />
+      <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.invertMotors}
         tooltip={ToolTips.INVERT_MOTORS}
         x={"movement_invert_motor_x"}
         y={"movement_invert_motor_y"}
-        z={"movement_invert_motor_z"}
-        disabled={arduinoBusy}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+        z={"movement_invert_motor_z"} />
       {isTMCBoard(firmwareHardware) &&
-        <NumericMCUInputGroup
+        <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.motorCurrent}
           tooltip={ToolTips.MOTOR_CURRENT}
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
-          z={"movement_motor_current_z"}
-          disabled={arduinoBusy}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
+          z={"movement_motor_current_z"} />}
       <SingleSettingRow settingType="button"
         label={DeviceSetting.enable2ndXMotor}
-        tooltip={ToolTips.ENABLE_X2_MOTOR}>
+        tooltip={t(ToolTips.ENABLE_X2_MOTOR, {
+          x2Motor: getDefault("movement_secondary_motor_x")
+            ? t("enabled")
+            : t("disabled")
+        })}>
         <ToggleButton
-          className={"no-float"}
           toggleValue={enable2ndXMotor.value}
           dim={!enable2ndXMotor.consistent}
+          className={[
+            "no-float",
+            getModifiedClassName(
+              "movement_secondary_motor_x",
+              enable2ndXMotor.value,
+              firmwareHardware)].join(" ")}
           disabled={arduinoBusy}
           toggleAction={() => dispatch(
             settingToggle("movement_secondary_motor_x", sourceFwConfig))} />
       </SingleSettingRow>
       <SingleSettingRow settingType="button"
         label={DeviceSetting.invert2ndXMotor}
-        tooltip={ToolTips.INVERT_MOTORS}>
+        tooltip={t(ToolTips.INVERT_X2_MOTOR, {
+          x: getDefault("movement_secondary_motor_invert_x")
+            ? t("enabled")
+            : t("disabled")
+        })}>
         <ToggleButton
-          className={"no-float"}
           grayscale={!enable2ndXMotor.value}
           toggleValue={invert2ndXMotor.value}
           dim={!invert2ndXMotor.consistent}
+          className={[
+            "no-float",
+            getModifiedClassName(
+              "movement_secondary_motor_invert_x",
+              invert2ndXMotor.value,
+              firmwareHardware)].join(" ")}
           disabled={arduinoBusy}
           toggleAction={() => dispatch(
             settingToggle("movement_secondary_motor_invert_x", sourceFwConfig))} />
