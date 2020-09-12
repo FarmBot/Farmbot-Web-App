@@ -10,7 +10,6 @@ module.exports = {
     },
     plugins: [
         "@typescript-eslint",
-        "@typescript-eslint/tslint",
         "eslint-comments",
         "jest",
         "react",
@@ -71,21 +70,6 @@ module.exports = {
         ],
         "@typescript-eslint/restrict-plus-operands": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
-        "@typescript-eslint/tslint/config": [
-            "error",
-            {
-                rules: {
-                    whitespace: [
-                        true,
-                        "check-branch",
-                        "check-decl",
-                        "check-operator",
-                        "check-separator",
-                        "check-type",
-                    ]
-                }
-            }
-        ],
         "@typescript-eslint/type-annotation-spacing": "error",
         "@typescript-eslint/unbound-method": "off",
         "array-bracket-spacing": "error",

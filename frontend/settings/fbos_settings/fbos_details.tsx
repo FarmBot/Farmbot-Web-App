@@ -1,7 +1,7 @@
 import React from "react";
 import { Saucer, FBSelect, Help } from "../../ui";
 import { updateConfig } from "../../devices/actions";
-import { last, isNumber, isString, isUndefined } from "lodash";
+import { last, isNumber, isString } from "lodash";
 import { Content, ToolTips } from "../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig } from "../../devices/interfaces";
@@ -85,8 +85,8 @@ export function WiFiStrengthDisplay(
   const calculatedPercent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
-  const valueAvailable = !isUndefined(wifiStrength)
-    || !isUndefined(wifiStrengthPercent);
+  const valueAvailable = isNumber(wifiStrength)
+    || isNumber(wifiStrengthPercent);
   const percent = wifiStrengthPercent || calculatedPercent;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${percent}%`;
