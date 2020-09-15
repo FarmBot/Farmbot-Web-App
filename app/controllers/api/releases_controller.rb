@@ -13,7 +13,7 @@ module Api
         return
       end
 
-      if release.version == current_device.fbos_version
+      if release.version == current_device_version
         sorry "Already on the latest version.", 422
         return
       end
@@ -33,6 +33,19 @@ module Api
 
     def release
       @release ||= Release.order(created_at: :desc).find_by!(show_params)
+    end
+
+    # current_device.fbos_version follows this format:
+    #     10.1.0.pre.RC1 10.1.2
+    #
+    # release.version follows this format:
+    #     11.0.2-rc2 12.0.0-rc4
+    #
+    # This method helps unify the two formats for easier comparison.
+    def current_device_version
+      (current_device.fbos_version || "")
+        .downcase
+        .gsub(".pre.", "-")
     end
   end
 end
