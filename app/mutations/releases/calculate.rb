@@ -7,13 +7,6 @@ module Releases
       string :platform, in: Release::PLATFORMS
     end
 
-    # optional do
-    #   string :image_url
-    #   string :version, matches: Release::VERSION_STORAGE_FORMAT
-    #   string :channel, in: Release::CHANNEL
-    #   integer :id
-    # end
-
     def validate
       if release.version == device_version
         add_error :version, :uptodate, UP_TO_DATE
@@ -24,10 +17,14 @@ module Releases
       release
     end
 
+    def query
+      inputs
+        .except(:device)
+        .merge(channel: device.fbos_config.update_channel || "stable")
+    end
+
     def release
-      @release ||= Release
-        .order(created_at: :desc)
-        .find_by!(inputs.except(:device))
+      @release ||= Release.order(created_at: :desc).find_by!(query)
     end
 
     # current_device.fbos_version follows this format:
