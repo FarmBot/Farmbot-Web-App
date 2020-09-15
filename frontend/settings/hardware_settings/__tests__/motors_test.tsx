@@ -67,6 +67,7 @@ describe("<Motors />", () => {
 
   it("shows Z2 parameters", () => {
     const p = fakeProps();
+    p.firmwareHardware = "express_k10";
     p.shouldDisplay = () => true;
     const wrapper = render(<Motors {...p} />);
     expect(wrapper.text()).toContain("toward");

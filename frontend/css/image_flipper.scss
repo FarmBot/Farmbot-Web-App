@@ -9,9 +9,18 @@
     margin: auto;
     width: fit-content;
     margin-top: 3%;
-    .image-flipper-image,
-    svg {
-      max-height: 80vh;
+    .no-flipper-image-container,
+    .flipper-image {
+      height: 80vh;
+      width: 80vw;
+      text-align: center;
+      .image-flipper-image,
+      svg {
+        height: 100%;
+        max-width: unset;
+        max-height: unset;
+        min-height: unset;
+      }
     }
   }
 }

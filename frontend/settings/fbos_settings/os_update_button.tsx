@@ -115,9 +115,15 @@ const equalToLatest = (
   isString(installedVersion) && isString(latest) &&
   semverCompare(installedVersion, latest) === SemverResult.EQUAL;
 
+interface ButtonVersionStatusProps {
+  bot: BotState;
+  betaOptIn: boolean;
+  ignoreBot: boolean;
+}
+
 /** Color, text, and hover text for update button: release version status. */
 const buttonVersionStatus =
-  ({ bot, betaOptIn }: { bot: BotState, betaOptIn: boolean }): ButtonProps => {
+  ({ bot, betaOptIn, ignoreBot }: ButtonVersionStatusProps): ButtonProps => {
     // Information about available releases.
     const { currentOSVersion, currentBetaOSVersion, currentBetaOSCommit } = bot;
     // Currently installed FBOS version data.
@@ -125,24 +131,25 @@ const buttonVersionStatus =
     const {
       controller_version, commit, currently_on_beta, update_available
     } = botInfo;
+    const betaSelected = !ignoreBot && betaOptIn;
+    const onBeta = !ignoreBot && !!currently_on_beta;
 
     /** Newest release version, given settings and data available. */
     const latestReleaseV =
-      getLatestVersion(currentOSVersion, currentBetaOSVersion, betaOptIn);
+      getLatestVersion(currentOSVersion, currentBetaOSVersion, betaSelected);
     /** Installed version. */
-    const installedVersion =
-      getInstalledVersion(controller_version, !!currently_on_beta);
+    const installedVersion = getInstalledVersion(controller_version, onBeta);
     /** FBOS update button status. */
     const btnStatus = compareWithBotVersion(latestReleaseV, installedVersion);
 
     /** Beta update special cases. */
     const uncertainty = (btnStatus === UpdateButton.upToDate) &&
-      equalToLatest(latestReleaseV, installedVersion) && betaOptIn;
+      equalToLatest(latestReleaseV, installedVersion) && betaSelected;
     /** `1.0.0-beta vs 1.0.0-beta`: installed beta is older. */
     const oldBetaCommit = (latestReleaseV === currentBetaOSVersion) &&
       !betaCommitsAreEqual(commit, currentBetaOSCommit);
     /** Button status modification required for release edge cases. */
-    const updateStatusOverride = update_available
+    const updateStatusOverride = !ignoreBot && update_available
       || (uncertainty && oldBetaCommit);
 
     return buttonProps(
@@ -154,13 +161,12 @@ const buttonVersionStatus =
 export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { bot, sourceFbosConfig, botOnline } = props;
   const { controller_version } = bot.hardware.informational_settings;
+  const ignoreBot = props.shouldDisplay(Feature.api_ota_releases);
 
   /** FBOS beta release opt-in setting. */
-  const betaOptIn = props.shouldDisplay(Feature.api_ota_releases)
-    ? false
-    : sourceFbosConfig("update_channel").value !== "stable";
+  const betaOptIn = sourceFbosConfig("update_channel").value !== "stable";
   /** FBOS update availability. */
-  const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn });
+  const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn, ignoreBot });
 
   /** FBOS update download progress data. */
   const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];
