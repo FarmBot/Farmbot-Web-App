@@ -22,9 +22,7 @@ import { API } from "../../../api";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
-    bot.currentOSVersion = "6.1.6";
-    bot.hardware.informational_settings.controller_version = "6.1.6";
-    bot.hardware.configuration.update_channel = "stable";
+    applyTestProps(defaultTestProps());
   });
 
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -106,13 +104,11 @@ describe("<OsUpdateButton/>", () => {
       disabled: true,
     });
 
-  const testButtonState = (
-    testProps: TestProps,
-    expected: Results) => {
+  const applyTestProps = (testProps: TestProps) => {
     const {
       installedVersion, installedCommit, onBeta, update_available,
       availableVersion, availableBetaVersion, availableBetaCommit,
-      shouldDisplay, update_channel,
+      update_channel,
     } = testProps;
     bot.hardware.informational_settings.controller_version = installedVersion;
     bot.hardware.informational_settings.commit = installedCommit;
@@ -123,9 +119,13 @@ describe("<OsUpdateButton/>", () => {
     bot.currentBetaOSVersion = availableBetaVersion;
     bot.currentBetaOSCommit = availableBetaCommit;
     bot.hardware.configuration.update_channel = update_channel;
+    return bot;
+  };
 
+  const testButtonState = (testProps: TestProps, expected: Results) => {
     const p = fakeProps();
-    p.shouldDisplay = shouldDisplay;
+    p.bot = applyTestProps(testProps);
+    p.shouldDisplay = testProps.shouldDisplay;
     const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     expect(osUpdateButton.text()).toBe(expected.text);
@@ -337,6 +337,10 @@ describe("<OsUpdateButton/>", () => {
     testProps.installedVersion = "6.1.5";
     testProps.shouldDisplay = () => true;
     testProps.update_channel = "beta";
+    testProps.onBeta = true;
+    testProps.update_available = true;
+    testProps.installedCommit = "1";
+    testProps.availableBetaCommit = "2";
     testProps.availableBetaVersion = "6.1.6-rc1";
     const expectedResults = upToDate("6.1.5");
     testButtonState(testProps, expectedResults);

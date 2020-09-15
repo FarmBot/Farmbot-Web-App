@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FarmbotOsRow, getOsReleaseNotesForVersion } from "../farmbot_os_row";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -30,8 +30,28 @@ describe("<FarmbotOsRow/>", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     p.bot.hardware.informational_settings.currently_on_beta = true;
-    const wrapper = mount(<FarmbotOsRow {...fakeProps()} />);
+    const wrapper = mount(<FarmbotOsRow {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("1.0.0-beta");
+  });
+
+  it("uses controller version", () => {
+    const p = fakeProps();
+    p.bot.osReleaseNotes = "intro\n\n# v1\n\n* note";
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    p.deviceAccount.body.fbos_version = "2.0.0";
+    const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
+    const notes = mount(wrapper.instance().ReleaseNotes());
+    expect(notes.text().toLowerCase()).toContain("v1");
+  });
+
+  it("uses fbos version", () => {
+    const p = fakeProps();
+    p.bot.osReleaseNotes = "intro\n\n# v2\n\n* note";
+    p.bot.hardware.informational_settings.controller_version = undefined;
+    p.deviceAccount.body.fbos_version = "2.0.0";
+    const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
+    const notes = mount(wrapper.instance().ReleaseNotes());
+    expect(notes.text().toLowerCase()).toContain("v2");
   });
 });
 
