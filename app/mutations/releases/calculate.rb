@@ -14,7 +14,12 @@ module Releases
     end
 
     def execute
-      release.as_json.merge(query: query).merge(device_id: device.id)
+      debug_data = { query: query,
+                     inputs: raw_inputs,
+                     device_id: device.id,
+                     "release.version" => release.version,
+                     device_version: device_version }
+      release.as_json.merge(debug_data)
     end
 
     def query

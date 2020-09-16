@@ -11,7 +11,7 @@ describe Api::ReleasesController do
       sign_in user
       get :show, params: {}
       expect(response.status).to eq(422)
-      expect(json).to include(platform: "Platform is required")
+      expect(json).to include(platform: "Platform can't be nil")
     end
 
     it "returns a 422 when device is already up-to-date" do

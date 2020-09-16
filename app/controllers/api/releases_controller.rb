@@ -8,18 +8,8 @@ module Api
 
     # GET /api/releases
     def show
-      mutate Releases::Calculate.run(show_params)
-    end
-
-    private
-
-    def show_params
-      @show_params ||= params
-        .as_json
-        .symbolize_keys
-        .slice(*RELEVANT_FIELDS)
-        .merge(channel: current_device.fbos_config.update_channel)
-        .merge(device: current_device)
+      mutate Releases::Calculate.run(device: current_device,
+                                     platform: params[:platform])
     end
   end
 end

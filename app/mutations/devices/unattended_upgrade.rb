@@ -1,9 +1,5 @@
 module Devices
   class UnattendedUpgrade < Mutations::Command
-    # def validate
-    #   eligible_devices.map { |dev| begin_upgrade(dev) }
-    # end
-
     def execute
       all_eligible_devices.map(&:send_upgrade_request)
     end
