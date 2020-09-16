@@ -1,5 +1,5 @@
 import {
-  boardType, getFwHardwareValue, getBoardCategory, hasSensors,
+  boardType, getFwHardwareValue, getBoardCategory, hasSensors, isExpress,
 } from "../firmware_hardware_support";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 
@@ -68,5 +68,17 @@ describe("hasSensors()", () => {
 
   it("doesn't have sensors", () => {
     expect(hasSensors("express_k10")).toEqual(false);
+  });
+});
+
+describe("isExpress()", () => {
+  it("is express", () => {
+    expect(isExpress("express_k10")).toEqual(true);
+  });
+
+  it("isn't express", () => {
+    expect(isExpress(undefined)).toEqual(false);
+    expect(isExpress("arduino")).toEqual(false);
+    expect(isExpress("farmduino")).toEqual(false);
   });
 });

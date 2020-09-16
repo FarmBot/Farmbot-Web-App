@@ -5,7 +5,6 @@ import { DeviceSetting, ToolTips } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { BotConfigInputBox } from "./bot_config_input_box";
 import { ZHeightInputProps } from "./interfaces";
-import { ConfigurationName } from "farmbot";
 
 export const SafeHeight = (props: ZHeightInputProps) =>
   <Highlight settingName={DeviceSetting.safeHeight}>
@@ -18,7 +17,7 @@ export const SafeHeight = (props: ZHeightInputProps) =>
       </Col>
       <Col xs={4} className={"z-height-input"}>
         <BotConfigInputBox
-          setting={"safe_height" as ConfigurationName}
+          setting={"safe_height"}
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig} />
       </Col>
@@ -36,7 +35,7 @@ export const SoilHeight = (props: ZHeightInputProps) =>
       </Col>
       <Col xs={4} className={"z-height-input"}>
         <BotConfigInputBox
-          setting={"soil_height" as ConfigurationName}
+          setting={"soil_height"}
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig} />
       </Col>

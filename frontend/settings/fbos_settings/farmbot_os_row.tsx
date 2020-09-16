@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, Markdown } from "../../ui/index";
 import { OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
@@ -60,20 +60,15 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
   ReleaseNotes = () => {
     const { osReleaseNotes, hardware } = this.props.bot;
     const { controller_version } = hardware.informational_settings;
-    const releaseNotes =
-      getOsReleaseNotesForVersion(osReleaseNotes, controller_version);
-    return <Popover position={Position.BOTTOM} className="release-notes-wrapper">
-      <p className="release-notes-button">
-        {t("Release Notes")}&nbsp;
-        <i className="fa fa-caret-down" />
-      </p>
-      <div className="release-notes">
-        <h1>{releaseNotes.heading}</h1>
-        <Markdown>
-          {releaseNotes.notes}
-        </Markdown>
-      </div>
-    </Popover>;
+    const { fbos_version } = this.props.deviceAccount.body;
+    const version = controller_version || fbos_version;
+    const releaseNotes = getOsReleaseNotesForVersion(osReleaseNotes, version);
+    return <div className="release-notes">
+      <h1>{releaseNotes.heading}</h1>
+      <Markdown>
+        {releaseNotes.notes}
+      </Markdown>
+    </div>;
   }
 
   render() {
@@ -96,7 +91,15 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
       </Row>
       <Row>
         <Col xs={7} className="no-pad"><this.Version /></Col>
-        <Col xs={5} className="no-pad"><this.ReleaseNotes /></Col>
+        <Col xs={5} className="no-pad">
+          <Popover position={Position.BOTTOM} className="release-notes-wrapper">
+            <p className="release-notes-button">
+              {t("Release Notes")}&nbsp;
+              <i className="fa fa-caret-down" />
+            </p>
+            <this.ReleaseNotes />
+          </Popover>
+        </Col>
       </Row>
     </Highlight>;
   }
