@@ -14,7 +14,7 @@ module Releases
     end
 
     def execute
-      release
+      release.as_json.merge(query: query).merge(device_id: device.id)
     end
 
     def query
