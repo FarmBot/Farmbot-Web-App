@@ -8,31 +8,8 @@ module Api
 
     # GET /api/releases
     def show
-      if !show_params[:platform]
-        sorry "A `platform` param is required.", 422
-        return
-      end
-
-      if release.version == current_device.fbos_version
-        sorry "Already on the latest version.", 422
-        return
-      end
-
-      render json: release
-    end
-
-    private
-
-    def show_params
-      @show_params ||= params
-        .as_json
-        .symbolize_keys
-        .slice(*RELEVANT_FIELDS)
-        .merge(channel: current_device.fbos_config.update_channel)
-    end
-
-    def release
-      @release ||= Release.order(created_at: :desc).find_by!(show_params)
+      mutate Releases::Calculate.run(device: current_device,
+                                     platform: params[:platform])
     end
   end
 end
