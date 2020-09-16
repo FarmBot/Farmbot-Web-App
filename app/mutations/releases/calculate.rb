@@ -40,7 +40,7 @@ module Releases
     #
     # This method helps unify the two formats for easier comparison.
     def device_version
-      @device_version ||= (device.fbos_version || "")
+      @device_version ||= (device.reload.fbos_version || "")
         .downcase
         .gsub(".pre.", "-")
     end
