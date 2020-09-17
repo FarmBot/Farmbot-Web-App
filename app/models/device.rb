@@ -200,17 +200,16 @@ class Device < ApplicationRecord
     (local_ota_hour + utc_offset) % 24
   end
 
-  def legacy_ota_device?
-    !ota_hour_utc && ota_hour && timezone
-  end
-
   # PROBLEM:  The device table has an `ota_hour` column. The
   #           column uses localtime rather than UTC. The new
   #           OTA system needs a UTC, though.
   #
   # SOLUTION: Perform a gradual update of legacy data.
+  # TODO: Remove this method once FBOS < v12 hits EOL.
   def perform_gradual_upgrade
-    if legacy_ota_device?
+    if ota_hour &&
+       timezone &&
+       ActiveSupport::TimeZone[timezone].present?
       self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
     end
   end
