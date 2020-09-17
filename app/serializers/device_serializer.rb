@@ -8,6 +8,7 @@ class DeviceSerializer < ApplicationSerializer
              :name,
              :needs_reset,
              :ota_hour,
+             :ota_hour_utc,
              :serial_number,
              :throttled_at,
              :throttled_until,

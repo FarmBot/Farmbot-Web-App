@@ -27,7 +27,7 @@ describe Api::DevicesController do
       sign_in user
       before = user.device.timezone
       put :update,
-          body: { id: user.device.id, timezone: "NO!" }.to_json,
+          body: { id: user.device.id, timezone: "bad TZ" }.to_json,
           session: { format: :json }
       # put path, params, options
       user.reload
