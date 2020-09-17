@@ -31,7 +31,7 @@ module Devices
         .maybe_find_latest(channel: chan)
         .version
         .downcase
-        .gsub(".pre.", "-")
+        .gsub("-", ".pre.")
     end
   end
 end

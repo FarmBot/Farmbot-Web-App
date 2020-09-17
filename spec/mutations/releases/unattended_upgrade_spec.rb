@@ -104,4 +104,23 @@ describe Devices::UnattendedUpgrade do
     end
     expect(eligible_devices.count).to eq(2)
   end
+
+  it "does not push updates if you are already up to date" do
+    Release.create!(image_url: "https://localhost/farmbot-rpi-12.0.0-rc9.fw",
+                    version: "12.0.0-rc9",
+                    platform: "rpi",
+                    channel: "beta",
+                    version: "12.0.0-rc9")
+    device = FactoryBot.create(:device)
+    device.update!(last_saw_api: Time.now,
+                   ota_hour_utc: nil,
+                   fbos_version: "12.0.0.pre.RC9")
+    device.fbos_config.update!(os_auto_update: true,
+                               update_channel: "beta")
+    eligible_devices = Devices::UnattendedUpgrade
+      .new
+      .all_eligible_devices
+      .pluck(:id)
+    expect(eligible_devices).to_not include(device.id)
+  end
 end
