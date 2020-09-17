@@ -26,11 +26,18 @@ module Devices
         .limit(200)
     end
 
+    # rory = Device.find(3091)
+    # uu = Devices::UnattendedUpgrade.new
+    # irb(main):003:0> uu.latest_version("beta")
+    # => "12.0.0.pre.rc9"
+    # irb(main):004:0> rory.fbos_version
+    # => "12.0.0.pre.RC9"
+
     def latest_version(chan)
       Release
         .maybe_find_latest(channel: chan)
         .version
-        .downcase
+        .upcase
         .gsub("-", ".pre.")
     end
   end
