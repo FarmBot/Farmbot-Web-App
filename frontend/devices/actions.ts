@@ -216,8 +216,8 @@ export const fetchReleases =
             console.error(t("Could not download FarmBot OS update information."));
           dispatch({
             type: options.beta
-              ? "FETCH_BETA_OS_UPDATE_INFO_ERROR"
-              : "FETCH_OS_UPDATE_INFO_ERROR",
+              ? Actions.FETCH_BETA_OS_UPDATE_INFO_ERROR
+              : Actions.FETCH_OS_UPDATE_INFO_ERROR,
             payload: ferror
           });
         });
