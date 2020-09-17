@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Markdown } from "../../ui/index";
-import { OsUpdateButton } from "./os_update_button";
+import { fetchReleasesFromAPI, OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
 import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
@@ -35,6 +35,9 @@ const getVersionString =
   };
 
 export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
+
+  componentDidMount = () => this.props.dispatch(fetchReleasesFromAPI(
+    this.props.bot.hardware.informational_settings.target))
 
   Version = () => {
     const { controller_version, currently_on_beta } =

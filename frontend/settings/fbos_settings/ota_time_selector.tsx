@@ -7,7 +7,7 @@ import { ColWidth } from "./farmbot_os_settings";
 import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "./interfaces";
-import { isUndefined, range } from "lodash";
+import { isNumber, isUndefined, range } from "lodash";
 
 const hourToUtcHour =
   (hour: number | undefined, offset: number): number | undefined =>
@@ -16,7 +16,7 @@ const hourToUtcHour =
 export const ASAP = () => t("As soon as possible");
 
 const formatHour = (hour: number | undefined, hour24: boolean) =>
-  isUndefined(hour)
+  !isNumber(hour)
     ? ASAP()
     : moment().startOf("day")
       .add(hour, "hours")
@@ -28,7 +28,7 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
   const localHour = // hourToUtcHour(device.body.ota_hour_utc, -utcOffset) ??
     device.body.ota_hour;
   return <FBSelect key={formatHour(localHour, hour24)}
-    selectedItem={isUndefined(localHour)
+    selectedItem={!isNumber(localHour)
       ? undefined
       : { label: formatHour(localHour, hour24), value: localHour }}
     onChange={ddi => {

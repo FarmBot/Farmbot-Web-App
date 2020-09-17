@@ -258,13 +258,13 @@ export interface OSReleaseChannelSelectionProps {
 export const OSReleaseChannelSelection = (
   { dispatch, sourceFbosConfig }: OSReleaseChannelSelectionProps,
 ): JSX.Element => {
-  const betaOptIn = sourceFbosConfig("update_channel").value;
+  const channel = sourceFbosConfig("update_channel").value;
   return <fieldset className={"os-release-channel"}>
     <label>
       {t("OS release channel")}
     </label>
     <FBSelect
-      selectedItem={{ label: t("" + betaOptIn), value: "" + betaOptIn }}
+      selectedItem={{ label: t("" + channel), value: "" + channel }}
       onChange={ddi =>
         (ddi.value == "stable" ||
           confirm(Content.UNSTABLE_RELEASE_CHANNEL_WARNING)) &&

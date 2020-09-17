@@ -11,7 +11,7 @@ import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
 
 /** FBOS update button states. */
-enum UpdateButton { upToDate, needsUpdate, unknown, none }
+enum UpdateButton { upToDate, needsUpdate, needsDowngrade, unknown, none }
 
 interface ButtonProps {
   color: "green" | "gray" | "yellow";
@@ -24,7 +24,11 @@ const buttonProps =
   (status: UpdateButton, hoverText: string | undefined): ButtonProps => {
     switch (status) {
       case UpdateButton.needsUpdate:
-        return { color: "green", text: t("UPDATE"), hoverText };
+        const upgrade = `${t("UPDATE TO")} ${hoverText}`;
+        return { color: "green", text: upgrade, hoverText: upgrade };
+      case UpdateButton.needsDowngrade:
+        const downgrade = `${t("DOWNGRADE TO")} ${hoverText}`;
+        return { color: "green", text: downgrade, hoverText: downgrade };
       case UpdateButton.upToDate:
         return { color: "gray", text: t("UP TO DATE"), hoverText };
       case UpdateButton.unknown:
@@ -93,15 +97,25 @@ const betaCommitsAreEqual = (
 const compareWithBotVersion = (
   candidate: string | undefined,
   installedVersion: string | undefined,
+  allowDowngrades: boolean,
 ): UpdateButton => {
   if (!isString(installedVersion)) { return UpdateButton.none; }
-  if (!isString(candidate)) { return UpdateButton.unknown; }
+  if (!isString(candidate)) {
+    return allowDowngrades
+      ? UpdateButton.upToDate
+      : UpdateButton.unknown;
+  }
 
   // If all values are known, match comparison result with button state.
   switch (semverCompare(candidate, installedVersion)) {
     case SemverResult.RIGHT_IS_GREATER:
+      return allowDowngrades
+        ? UpdateButton.needsDowngrade
+        : UpdateButton.upToDate;
     case SemverResult.EQUAL:
-      return UpdateButton.upToDate;
+      return allowDowngrades
+        ? UpdateButton.needsDowngrade
+        : UpdateButton.upToDate;
     default:
       return UpdateButton.needsUpdate;
   }
@@ -140,7 +154,8 @@ const buttonVersionStatus =
     /** Installed version. */
     const installedVersion = getInstalledVersion(controller_version, onBeta);
     /** FBOS update button status. */
-    const btnStatus = compareWithBotVersion(latestReleaseV, installedVersion);
+    const btnStatus =
+      compareWithBotVersion(latestReleaseV, installedVersion, ignoreBot);
 
     /** Beta update special cases. */
     const uncertainty = (btnStatus === UpdateButton.upToDate) &&
@@ -179,7 +194,7 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
 
   return <button
     className={`fb-button ${tooOld ? "yellow" : buttonStatusProps.color}`}
-    title={buttonStatusProps.hoverText}
+    title={tooOld || buttonStatusProps.hoverText}
     disabled={isWorking(osUpdateJob) || !botOnline}
     onPointerEnter={() => props.dispatch(fetchReleasesFromAPI(
       props.bot.hardware.informational_settings.target))}
@@ -188,9 +203,22 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   </button>;
 };
 
-const fetchReleasesFromAPI = (target: string | undefined) =>
+const onError = (dispatch: Function) => {
+  console.error(t("Could not download FarmBot OS update information."));
+  dispatch({
+    type: Actions.FETCH_OS_UPDATE_INFO_OK,
+    payload: { version: undefined },
+  });
+};
+
+export const fetchReleasesFromAPI = (target: string | undefined) =>
   (dispatch: Function) => {
-    const platform = (target == "---" ? undefined : target) || "rpi3";
+    const platform = target == "---" ? undefined : target;
+    if (!platform) {
+      console.error("Platform not available.");
+      dispatch(onError);
+      return;
+    }
     axios
       .get<{ version: string }>(API.current.releasesPath + platform)
       .then(resp => {
@@ -200,10 +228,9 @@ const fetchReleasesFromAPI = (target: string | undefined) =>
         });
       })
       .catch(fetchError => {
-        console.error(t("Could not download FarmBot OS update information."));
-        dispatch({
-          type: Actions.FETCH_OS_UPDATE_INFO_ERROR,
-          payload: fetchError,
-        });
+        fetchError.toString().includes("404")
+          && console.error("No releases found for platform and channel.");
+        console.error(fetchError);
+        dispatch(onError);
       });
   };
