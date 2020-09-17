@@ -10,28 +10,14 @@ jest.mock("../session", () => ({ Session: { clear: jest.fn() } }));
 
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";
+import { auth } from "../__test_support__/fake_state/token";
 
 API.setBaseUrl("http://blah.whatever.party");
 
 describe("maybeRefreshToken()", () => {
 
   it("logs you out when a refresh fails", async () => {
-    const t = {
-      token: {
-        encoded: "---",
-        unencoded: {
-          jti: "---",
-          iss: "---",
-          exp: 456,
-          mqtt: "---",
-          os_update_server: "---",
-          aud: "unknown",
-          bot: "device_123",
-          mqtt_ws: "//localhost:3000"
-        }
-      }
-    };
-    const result = await maybeRefreshToken(t);
+    const result = await maybeRefreshToken(auth);
     expect(result).toBeUndefined();
   });
 });

@@ -1,16 +1,8 @@
-const mockAuth = (iss = "987"): AuthState => ({
-  token: {
-    encoded: "---",
-    unencoded: {
-      iss,
-      os_update_server: "---",
-      jti: "---",
-      aud: "unknown",
-      bot: "device_123",
-      mqtt_ws: "//localhost:3000"
-    }
-  }
-});
+import { auth } from "../__test_support__/fake_state/token";
+const mockAuth = (iss = "987"): AuthState => {
+  auth.token.unencoded.iss = iss;
+  return auth;
+};
 
 jest.mock("axios", () => ({
   get: jest.fn(() => Promise.resolve({ data: mockAuth("000") })),

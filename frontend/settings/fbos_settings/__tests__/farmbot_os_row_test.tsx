@@ -1,16 +1,23 @@
-import * as React from "react";
-import { FarmbotOsRow, getOsReleaseNotesForVersion } from "../farmbot_os_row";
+jest.mock("../os_update_button", () => ({
+  fetchReleasesFromAPI: jest.fn(),
+  OsUpdateButton: () => <div />,
+}));
+
+import React from "react";
 import { mount } from "enzyme";
+import { FarmbotOsRow, getOsReleaseNotesForVersion } from "../farmbot_os_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FarmbotOsRowProps } from "../interfaces";
-import { fakeState } from "../../../__test_support__/fake_state";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import { fetchReleasesFromAPI } from "../os_update_button";
+import { cloneDeep } from "lodash";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
-describe("<FarmbotOsRow/>", () => {
+describe("<FarmbotOsRow />", () => {
   const fakeProps = (): FarmbotOsRowProps => ({
-    bot,
-    dispatch: jest.fn(x => x(jest.fn(), fakeState)),
+    bot: cloneDeep(bot),
+    dispatch: mockDispatch(),
     sourceFbosConfig: x => ({
       value: bot.hardware.configuration[x], consistent: true,
     }),
@@ -26,12 +33,39 @@ describe("<FarmbotOsRow/>", () => {
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
 
+  it("fetches API OS release info", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.target = "rpi";
+    mount(<FarmbotOsRow {...p} />);
+    expect(fetchReleasesFromAPI).toHaveBeenCalledWith("rpi");
+  });
+
   it("shows beta version string", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     p.bot.hardware.informational_settings.currently_on_beta = true;
-    const wrapper = mount(<FarmbotOsRow {...fakeProps()} />);
+    const wrapper = mount(<FarmbotOsRow {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("1.0.0-beta");
+  });
+
+  it("uses controller version", () => {
+    const p = fakeProps();
+    p.bot.osReleaseNotes = "intro\n\n# v1\n\n* note";
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    p.deviceAccount.body.fbos_version = "2.0.0";
+    const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
+    const notes = mount(wrapper.instance().ReleaseNotes());
+    expect(notes.text().toLowerCase()).toContain("v1");
+  });
+
+  it("uses fbos version", () => {
+    const p = fakeProps();
+    p.bot.osReleaseNotes = "intro\n\n# v2\n\n* note";
+    p.bot.hardware.informational_settings.controller_version = undefined;
+    p.deviceAccount.body.fbos_version = "2.0.0";
+    const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
+    const notes = mount(wrapper.instance().ReleaseNotes());
+    expect(notes.text().toLowerCase()).toContain("v2");
   });
 });
 

@@ -287,8 +287,10 @@ module Api
           v = fbos_version
           bot.last_saw_api = Time.now
           # Do _not_ set the FBOS version to 0.0.0 if the UA header is missing.
-          bot.fbos_version = v.to_s if v != NULL
-          bot.save!
+          if v > NULL && v < NOT_FBOS
+            bot.fbos_version = v.to_s
+            bot.save!
+          end
         end
       end
     end

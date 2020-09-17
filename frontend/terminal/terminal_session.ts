@@ -23,6 +23,8 @@ export class TerminalSession {
   get rx() { return `bot/${this.username}/terminal_output`; }
   get tx() { return `bot/${this.username}/terminal_input`; }
 
+  upload = (payload: string) => this.client.publish(this.tx, payload);
+
   connect = () => {
     return new Promise((resolve) => {
       this.client.once("connect", () => {
@@ -56,7 +58,7 @@ export class TerminalSession {
     switch (key) {
       case CR:
         if (!EMPTY_BUFFER.includes(this.buffer)) {
-          this.client.publish(this.tx, this.buffer + key);
+          this.upload(this.buffer + key);
         }
         this.clearBuffer();
         break;
