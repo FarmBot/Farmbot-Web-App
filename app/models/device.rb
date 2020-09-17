@@ -207,10 +207,12 @@ class Device < ApplicationRecord
   # SOLUTION: Perform a gradual update of legacy data.
   # TODO: Remove this method once FBOS < v12 hits EOL.
   def perform_gradual_upgrade
-    if ota_hour &&
-       timezone &&
-       ActiveSupport::TimeZone[timezone].present?
-      self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
+    if ota_hour && timezone
+      valid = ActiveSupport::TimeZone[timezone].present?
+      valid && self.ota_hour_utc = Device.get_utc_ota_hour(timezone, ota_hour)
+    else
+      self.ota_hour = nil
+      self.ota_hour_utc = nil
     end
   end
 
