@@ -214,6 +214,15 @@ describe("<OsUpdateButton/>", () => {
     testButtonState(testProps, expectedResults);
   });
 
+  it("considers upgrade path", () => {
+    const testProps = defaultTestProps();
+    testProps.availableVersion = "16.1.5";
+    testProps.installedVersion = "6.1.5";
+    testProps.shouldDisplay = () => false;
+    const expectedResults = updateNeeded("11.1.0");
+    testButtonState(testProps, expectedResults);
+  });
+
   it("beta update available", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.5";
@@ -352,9 +361,9 @@ describe("<OsUpdateButton/>", () => {
 
   it("ignores beta setting: upgrade", () => {
     const testProps = apiReleasesProps();
-    testProps.availableVersion = "6.1.5";
+    testProps.availableVersion = "16.1.5";
     testProps.installedVersion = "6.1.4";
-    const expectedResults = updateNeeded("6.1.5");
+    const expectedResults = updateNeeded("16.1.5");
     testButtonState(testProps, expectedResults);
   });
 

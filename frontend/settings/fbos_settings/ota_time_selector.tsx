@@ -25,7 +25,7 @@ const formatHour = (hour: number | undefined, hour24: boolean) =>
 export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
   const { device, dispatch, timeSettings } = props;
   const { utcOffset, hour24 } = timeSettings;
-  const localHour = // hourToUtcHour(device.body.ota_hour_utc, -utcOffset) ??
+  const localHour = hourToUtcHour(device.body.ota_hour_utc, -utcOffset) ??
     device.body.ota_hour;
   return <FBSelect key={formatHour(localHour, hour24)}
     selectedItem={!isNumber(localHour)

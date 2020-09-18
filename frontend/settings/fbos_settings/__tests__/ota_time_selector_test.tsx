@@ -37,6 +37,15 @@ describe("<OtaTimeSelector />", () => {
     expect(wrapper.text()).not.toContain(ASAP());
   });
 
+  it("renders the current value using UTC data", () => {
+    const p = fakeProps();
+    p.device.body.ota_hour_utc = 17;
+    const wrapper = mount(<OtaTimeSelector {...p} />);
+    expect(wrapper.find(FBSelect).props().selectedItem)
+      .toEqual({ label: "5:00 PM", value: 17 });
+    expect(wrapper.text()).not.toContain(ASAP());
+  });
+
   it("selects an OTA update time", () => {
     const p = fakeProps();
     const wrapper = shallow(<OtaTimeSelector {...p} />);
