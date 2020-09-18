@@ -65,6 +65,10 @@ export interface FarmbotOsRowProps {
   deviceAccount: TaggedDevice;
 }
 
+export interface FarmbotOsRowState {
+  version: string | undefined;
+}
+
 export interface FbosDetailsProps {
   botInfoSettings: InformationalSettings;
   dispatch: Function;

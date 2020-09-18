@@ -5,7 +5,7 @@ import { SemverResult, semverCompare, fallbackData } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../devices/actions";
 import { isString } from "lodash";
-import { BotState, Feature } from "../../devices/interfaces";
+import { BotState, Feature, ShouldDisplay } from "../../devices/interfaces";
 import { Actions, Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
@@ -24,7 +24,9 @@ const buttonProps =
   (status: UpdateButton, hoverText: string | undefined): ButtonProps => {
     switch (status) {
       case UpdateButton.needsUpdate:
-        const upgrade = `${t("UPDATE TO")} ${hoverText}`;
+        const upgrade = hoverText
+          ? `${t("UPDATE TO")} ${hoverText}`
+          : t("UPDATE");
         return { color: "green", text: upgrade, hoverText: upgrade };
       case UpdateButton.needsDowngrade:
         const downgrade = `${t("DOWNGRADE TO")} ${hoverText}`;
@@ -213,7 +215,7 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
     title={tooOld || buttonStatusProps.hoverText}
     disabled={isWorking(osUpdateJob) || !botOnline}
     onPointerEnter={() => props.dispatch(fetchReleasesFromAPI(
-      props.bot.hardware.informational_settings.target))}
+      props.bot.hardware.informational_settings.target, props.shouldDisplay))}
     onClick={checkControllerUpdates}>
     {tooOld || downloadProgress(osUpdateJob) || buttonStatusProps.text}
   </button>;
@@ -227,26 +229,28 @@ const onError = (dispatch: Function) => {
   });
 };
 
-export const fetchReleasesFromAPI = (target: string | undefined) =>
-  (dispatch: Function) => {
-    const platform = target == "---" ? undefined : target;
-    if (!platform) {
-      console.error("Platform not available.");
-      dispatch(onError);
-      return;
-    }
-    axios
-      .get<{ version: string }>(API.current.releasesPath + platform)
-      .then(resp => {
-        dispatch({
-          type: Actions.FETCH_OS_UPDATE_INFO_OK,
-          payload: { version: resp.data.version },
-        });
-      })
-      .catch(fetchError => {
-        fetchError.toString().includes("404")
-          && console.error("No releases found for platform and channel.");
-        console.error(fetchError);
+export const fetchReleasesFromAPI =
+  (target: string | undefined, shouldDisplay: ShouldDisplay) =>
+    (dispatch: Function) => {
+      if (!shouldDisplay(Feature.api_ota_releases)) { return; }
+      const platform = target == "---" ? undefined : target;
+      if (!platform) {
+        console.error("Platform not available.");
         dispatch(onError);
-      });
-  };
+        return;
+      }
+      axios
+        .get<{ version: string }>(API.current.releasesPath + platform)
+        .then(resp => {
+          dispatch({
+            type: Actions.FETCH_OS_UPDATE_INFO_OK,
+            payload: { version: resp.data.version },
+          });
+        })
+        .catch(fetchError => {
+          fetchError.toString().includes("404")
+            && console.error("No releases found for platform and channel.");
+          console.error(fetchError);
+          dispatch(onError);
+        });
+    };

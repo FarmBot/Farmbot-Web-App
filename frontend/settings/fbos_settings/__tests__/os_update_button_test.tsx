@@ -310,6 +310,17 @@ describe("<OsUpdateButton/>", () => {
     testButtonState(testProps, expectedResults);
   });
 
+  it("handles FBOS update available override: unknown version", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "6.1.6";
+    testProps.availableVersion = undefined;
+    testProps.update_available = true;
+    const expectedResults = {
+      text: "UPDATE", title: "UPDATE", color: "green", disabled: false,
+    };
+    testButtonState(testProps, expectedResults);
+  });
+
   it("uses update_channel value", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "6.1.6";
@@ -398,6 +409,7 @@ describe("<OsUpdateButton/>", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.bot.hardware.informational_settings.target = "rpi";
+    p.shouldDisplay = () => true;
     const button = shallow(<OsUpdateButton {...p} />);
     await button.simulate("pointerEnter");
     expect(axios.get).toHaveBeenCalledWith(
@@ -480,7 +492,7 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("---")(outerDispatch);
+    await fetchReleasesFromAPI("---", () => true)(outerDispatch);
     await expect(axios.get).not.toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledWith("Platform not available.");
     expect(innerDispatch).toHaveBeenCalledWith({
@@ -494,7 +506,7 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchReleasesFromAPI("rpi", () => true)(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
     expect(console.error).not.toHaveBeenCalled();
@@ -504,12 +516,23 @@ describe("fetchReleasesFromAPI()", () => {
     });
   });
 
+  it("doesn't fetch version when using old system", async () => {
+    mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
+    const innerDispatch = jest.fn();
+    const outerDispatch = mockDispatch(innerDispatch);
+    console.error = jest.fn();
+    await fetchReleasesFromAPI("rpi", () => false)(outerDispatch);
+    await expect(axios.get).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(outerDispatch).not.toHaveBeenCalled();
+  });
+
   it("errors while fetching version: already up to date", async () => {
     mockResponse = Promise.reject({ data: { version: "error" } });
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchReleasesFromAPI("rpi", () => true)(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
     await expect(console.error).toHaveBeenCalledWith({
@@ -528,7 +551,7 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchReleasesFromAPI("rpi", () => true)(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
     await expect(console.error).toHaveBeenCalledWith("error 404");

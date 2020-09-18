@@ -36,8 +36,23 @@ describe("<FarmbotOsRow />", () => {
   it("fetches API OS release info", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.target = "rpi";
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
     mount(<FarmbotOsRow {...p} />);
-    expect(fetchReleasesFromAPI).toHaveBeenCalledWith("rpi");
+    expect(fetchReleasesFromAPI).toHaveBeenCalledWith("rpi",
+      expect.any(Function));
+    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+  });
+
+  it("fetches API OS release info when bot version changes", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.target = "rpi";
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    const wrapper = mount(<FarmbotOsRow {...p} />);
+    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+    wrapper.setState({ version: "1.0.0" });
+    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+    wrapper.setState({ version: "2.0.0" });
+    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(2);
   });
 
   it("shows beta version string", () => {

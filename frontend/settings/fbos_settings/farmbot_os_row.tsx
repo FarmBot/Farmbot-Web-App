@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col, Markdown } from "../../ui/index";
 import { fetchReleasesFromAPI, OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
-import { FarmbotOsRowProps } from "./interfaces";
+import { FarmbotOsRowProps, FarmbotOsRowState } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../i18next_wrapper";
 import { ErrorBoundary } from "../../error_boundary";
@@ -34,10 +34,26 @@ const getVersionString =
     return fbosVersion ? fbosVersion + extension : t(" unknown (offline)");
   };
 
-export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
+export class FarmbotOsRow
+  extends React.Component<FarmbotOsRowProps, FarmbotOsRowState> {
+  state: FarmbotOsRowState = {
+    version: this.props.bot.hardware.informational_settings.controller_version,
+  };
 
-  componentDidMount = () => this.props.dispatch(fetchReleasesFromAPI(
-    this.props.bot.hardware.informational_settings.target))
+  componentDidMount = () => {
+    const { dispatch, shouldDisplay, bot } = this.props;
+    const { target } = bot.hardware.informational_settings;
+    dispatch(fetchReleasesFromAPI(target, shouldDisplay));
+  }
+
+  componentDidUpdate = () => {
+    const { dispatch, shouldDisplay, bot } = this.props;
+    const { controller_version, target } = bot.hardware.informational_settings;
+    if (controller_version && this.state.version != controller_version) {
+      this.setState({ version: controller_version });
+      dispatch(fetchReleasesFromAPI(target, shouldDisplay));
+    }
+  };
 
   Version = () => {
     const { controller_version, currently_on_beta } =
