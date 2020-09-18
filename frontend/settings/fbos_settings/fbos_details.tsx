@@ -85,8 +85,7 @@ export function WiFiStrengthDisplay(
   const calculatedPercent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
-  const valueAvailable = isNumber(wifiStrength)
-    || isNumber(wifiStrengthPercent);
+  const valueAvailable = isWifi(wifiStrength, wifiStrengthPercent);
   const percent = wifiStrengthPercent || calculatedPercent;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${percent}%`;
@@ -106,6 +105,43 @@ export function WiFiStrengthDisplay(
       </div>}
   </div>;
 }
+
+export const isWifi = (
+  wifiStrength: number | undefined,
+  wifiStrengthPercent: number | undefined,
+) =>
+  isNumber(wifiStrength) || isNumber(wifiStrengthPercent);
+
+export const LocalIpAddress = ({ address }: { address: string | undefined }) =>
+  isString(address)
+    ? <p><b>{t("Local IP")}: </b>{address}</p>
+    : <div className={"no-local-ip"} />;
+
+const calcMac =
+  (nodeName: string, target: string | undefined, wifi: boolean) => {
+    const firstHalf = target == "rpi4" ? "dca632" : "b827eb";
+    const snLast6 = nodeName.split(".")[0].slice(-6);
+    const lastHalf = wifi
+      // eslint-disable-next-line no-bitwise
+      ? (parseInt(snLast6, 16) ^ parseInt("555555", 16)).toString(16)
+      : snLast6;
+    const address = firstHalf + lastHalf;
+    const formattedAddress = (address.match(/.{1,2}/g) as string[]).join(":");
+    return formattedAddress;
+  };
+
+export interface MacAddressProps {
+  wifi: boolean;
+  nodeName: string | undefined;
+  target: string | undefined;
+}
+
+export const MacAddress = ({ wifi, nodeName, target }: MacAddressProps) =>
+  isString(nodeName) && !nodeName.includes("---")
+    ? <p className={"mac-address"}>
+      <b>{t("MAC address")}: </b>{calcMac(nodeName, target, wifi)}
+    </p>
+    : <div className={"no-mac-address"} />;
 
 /** Available throttle info. */
 export enum ThrottleType {
@@ -322,7 +358,9 @@ export function FbosDetails(props: FbosDetailsProps) {
     <p><b>{t("Target")}: </b>{target}</p>
     <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
     <p><b>{t("Device ID")}: </b>{props.deviceAccount.body.id}</p>
-    {isString(private_ip) && <p><b>{t("Local IP address")}: </b>{private_ip}</p>}
+    <LocalIpAddress address={private_ip} />
+    <MacAddress nodeName={node_name} target={target}
+      wifi={isWifi(wifi_level, wifi_level_percent)} />
     <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
     <CommitDisplay title={t("Firmware commit")}
       repo={FarmBotRepo.FarmBotArduinoFirmware} commit={firmwareCommit} />

@@ -2,7 +2,7 @@ jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
 
 import React from "react";
 import { mount } from "enzyme";
-import { Connectivity, ConnectivityProps, formatMac } from "../connectivity";
+import { Connectivity, ConnectivityProps } from "../connectivity";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
 import { fill } from "lodash";
@@ -73,7 +73,7 @@ describe("<Connectivity />", () => {
     p.bot.hardware.informational_settings.node_name = "f-12345678";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("1.0.0.1");
-    expect(wrapper.text().toLowerCase()).toContain("12:34:56:78");
+    expect(wrapper.text().toLowerCase()).toContain("b8:27:eb:34:56:78");
   });
 
   it("doesn't display more network info", () => {
@@ -83,12 +83,5 @@ describe("<Connectivity />", () => {
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("ip");
     expect(wrapper.text().toLowerCase()).not.toContain("mac");
-  });
-});
-
-describe("formatMac()", () => {
-  it("returns formatted MAC address", () => {
-    expect(formatMac("farmbot-00000000abcdefgh")).toEqual("ab:cd:ef:gh");
-    expect(formatMac("farmbot-0000000012345678.local")).toEqual("12:34:56:78");
   });
 });

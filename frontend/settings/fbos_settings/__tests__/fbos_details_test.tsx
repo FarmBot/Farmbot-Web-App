@@ -4,7 +4,7 @@ import React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
   OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
-  reformatFbosVersion,
+  reformatFbosVersion, MacAddress, MacAddressProps,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -220,7 +220,7 @@ describe("<FbosDetails/>", () => {
     const p = fakeProps();
     p.botInfoSettings.private_ip = "192.168.0.100";
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("ip address");
+    expect(wrapper.text().toLowerCase()).toContain("local ip");
   });
 
   it("displays last OTA check date", () => {
@@ -291,6 +291,30 @@ describe("colorFromTemp()", () => {
     expect(colorFromTemp(9)).toEqual("blue");
     expect(colorFromTemp(-1)).toEqual("lightblue");
   });
+});
+
+describe("<MacAddress />", () => {
+  const fakeProps = (): MacAddressProps => ({
+    nodeName: undefined,
+    target: undefined,
+    wifi: false,
+  });
+
+  it.each<[string, string | undefined, string | undefined, boolean]>([
+    ["", undefined, undefined, false],
+    ["", "---", "rpi", false],
+    ["MAC address: b8:27:eb:34:56:78", "farmbot-12345678.local", undefined, false],
+    ["MAC address: dc:a6:32:cd:ef:gh", "farmbot-00000000abcdefgh", "rpi4", false],
+    ["MAC address: dc:a6:32:55:98:ba", "farmbot-00000000abcdefgh", "rpi4", true],
+  ])("renders formatted MAC address: %s", (expected, nodeName, target, wifi) => {
+    const p = fakeProps();
+    p.nodeName = nodeName;
+    p.target = target;
+    p.wifi = wifi;
+    const wrapper = mount(<MacAddress {...p} />);
+    expect(wrapper.text()).toEqual(expected);
+  });
+
 });
 
 describe("colorFromThrottle()", () => {
