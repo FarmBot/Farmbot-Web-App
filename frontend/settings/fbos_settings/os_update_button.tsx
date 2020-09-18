@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { JobProgress } from "farmbot/dist";
-import { SemverResult, semverCompare } from "../../util";
+import { SemverResult, semverCompare, fallbackData } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../devices/actions";
 import { isString } from "lodash";
@@ -76,6 +76,18 @@ const getLatestVersion = (
   }
 };
 
+const adjustLatestVersion = (
+  latestVersion: string | undefined,
+  upgradePathStep: string,
+  ignoreBot: boolean,
+): string | undefined => {
+  if (ignoreBot || !latestVersion) { return latestVersion; }
+  switch (semverCompare(latestVersion, upgradePathStep)) {
+    case SemverResult.LEFT_IS_GREATER: return upgradePathStep;
+    default: return latestVersion;
+  }
+};
+
 /** Determine the installed version. */
 const getInstalledVersion = (
   controllerVersion: string | undefined,
@@ -147,10 +159,14 @@ const buttonVersionStatus =
     } = botInfo;
     const betaSelected = !ignoreBot && betaOptIn;
     const onBeta = !ignoreBot && !!currently_on_beta;
+    const upgradePathStep =
+      (bot.minOsFeatureData || fallbackData)[Feature.api_ota_releases] as string;
 
     /** Newest release version, given settings and data available. */
-    const latestReleaseV =
+    const latestVersion =
       getLatestVersion(currentOSVersion, currentBetaOSVersion, betaSelected);
+    const latestReleaseV =
+      adjustLatestVersion(latestVersion, upgradePathStep, ignoreBot);
     /** Installed version. */
     const installedVersion = getInstalledVersion(controller_version, onBeta);
     /** FBOS update button status. */
