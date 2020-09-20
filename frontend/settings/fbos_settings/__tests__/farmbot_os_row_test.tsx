@@ -1,5 +1,5 @@
 jest.mock("../os_update_button", () => ({
-  fetchReleasesFromAPI: jest.fn(),
+  fetchOsUpdateVersion: jest.fn(),
   OsUpdateButton: () => <div />,
 }));
 
@@ -10,7 +10,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { FarmbotOsRowProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
-import { fetchReleasesFromAPI } from "../os_update_button";
+import { fetchOsUpdateVersion } from "../os_update_button";
 import { cloneDeep } from "lodash";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
@@ -38,9 +38,8 @@ describe("<FarmbotOsRow />", () => {
     p.bot.hardware.informational_settings.target = "rpi";
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     mount(<FarmbotOsRow {...p} />);
-    expect(fetchReleasesFromAPI).toHaveBeenCalledWith("rpi",
-      expect.any(Function));
-    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersion).toHaveBeenCalledWith("rpi");
+    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
   });
 
   it("fetches API OS release info when bot version changes", () => {
@@ -48,19 +47,11 @@ describe("<FarmbotOsRow />", () => {
     p.bot.hardware.informational_settings.target = "rpi";
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     const wrapper = mount(<FarmbotOsRow {...p} />);
-    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
     wrapper.setState({ version: "1.0.0" });
-    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
     wrapper.setState({ version: "2.0.0" });
-    expect(fetchReleasesFromAPI).toHaveBeenCalledTimes(2);
-  });
-
-  it("shows beta version string", () => {
-    const p = fakeProps();
-    p.bot.hardware.informational_settings.controller_version = "1.0.0";
-    p.bot.hardware.informational_settings.currently_on_beta = true;
-    const wrapper = mount(<FarmbotOsRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("1.0.0-beta");
+    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(2);
   });
 
   it("uses controller version", () => {
@@ -86,24 +77,31 @@ describe("<FarmbotOsRow />", () => {
 
 describe("getOsReleaseNotesForVersion()", () => {
   it("fetches OS release notes", () => {
-    const mockData = "intro\n\n# v10\n\n* note";
+    const mockData = "intro\n\n# v10\n\n* note 10";
     const result = getOsReleaseNotesForVersion(mockData, "10.0.0");
     expect(result.heading).toEqual("FarmBot OS v10");
-    expect(result.notes).toEqual("* note");
+    expect(result.notes).toEqual("* note 10");
   });
 
   it("falls back to recent OS version", () => {
-    const mockData = "intro\n\n# v10\n\n* note";
+    const mockData = "intro\n\n# v11\n\n* note 11";
     const result = getOsReleaseNotesForVersion(mockData, undefined);
-    expect(result.heading).toEqual("FarmBot OS v10");
-    expect(result.notes).toEqual("* note");
+    expect(result.heading).toEqual("FarmBot OS v11");
+    expect(result.notes).toEqual("* note 11");
   });
 
   it("falls back to known OS release note", () => {
-    const mockData = "intro\n\n# v10\n\n* note";
-    const result = getOsReleaseNotesForVersion(mockData, "11.0.0");
-    expect(result.heading).toEqual("FarmBot OS v11");
-    expect(result.notes).toEqual("* note");
+    const mockData = "intro\n\n# v11\n\n* note 11\n\n# v13\n\n* note 13";
+    const result = getOsReleaseNotesForVersion(mockData, "12.0.0");
+    expect(result.heading).toEqual("FarmBot OS v12");
+    expect(result.notes).toEqual("* note 11\n");
+  });
+
+  it("falls back to latest OS release note", () => {
+    const mockData = "intro\n\n# v10\n\n* note 10";
+    const result = getOsReleaseNotesForVersion(mockData, "12.0.0");
+    expect(result.heading).toEqual("FarmBot OS v12");
+    expect(result.notes).toEqual("* note 10");
   });
 
   it("fails to fetch OS release notes", () => {

@@ -380,3 +380,4 @@ const linkToSetting = (settingName: DeviceSetting) =>
   `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
 
 export const linkToFbosSettings = () => linkToSetting(DeviceSetting.farmbotOS);
+export const linkToHardReset = () => linkToSetting(DeviceSetting.hardReset);

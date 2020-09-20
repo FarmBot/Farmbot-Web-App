@@ -290,7 +290,7 @@ export interface OSReleaseChannelSelectionProps {
   sourceFbosConfig: SourceFbosConfig;
 }
 
-/** Label and toggle button for opting in to FBOS beta releases. */
+/** Label and dropdown for selecting FBOS release channel. */
 export const OSReleaseChannelSelection = (
   { dispatch, sourceFbosConfig }: OSReleaseChannelSelectionProps,
 ): JSX.Element => {
