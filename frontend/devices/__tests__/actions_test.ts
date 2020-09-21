@@ -17,10 +17,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   readStatus: jest.fn(() => Promise.resolve())
 };
 
-const mockDevice = {
-  current: mockDeviceDefault
-};
-
+const mockDevice = { current: mockDeviceDefault };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice.current }));
 
 jest.mock("../../api/crud", () => ({
@@ -28,8 +25,8 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockGetRelease: Promise<{}> = Promise.resolve({});
-jest.mock("axios", () => ({ get: jest.fn(() => mockGetRelease) }));
+let mockGet: Promise<{}> = Promise.resolve({});
+jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
 
 import * as actions from "../actions";
 import {
@@ -331,96 +328,13 @@ describe("changeStepSize()", () => {
   });
 });
 
-describe("fetchReleases()", () => {
-  it("fetches latest OS release version", async () => {
-    mockGetRelease = Promise.resolve({ data: { tag_name: "v1.0.0" } });
-    const dispatch = jest.fn();
-    await actions.fetchReleases("url")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: { version: "1.0.0", commit: undefined },
-      type: Actions.FETCH_OS_UPDATE_INFO_OK
-    });
-  });
-
-  it("fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.resolve({
-      data: { tag_name: "v1.0.0-beta", target_commitish: "commit" }
-    });
-    const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: { version: "1.0.0-beta", commit: "commit" },
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
-    });
-  });
-
-  it("fails to fetches latest OS release version", async () => {
-    mockGetRelease = Promise.reject("error");
-    const dispatch = jest.fn();
-    console.error = jest.fn();
-    await actions.fetchReleases("url")(dispatch);
-    await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(console.error).toHaveBeenCalledWith(
-      "Could not download FarmBot OS update information.");
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: "error",
-      type: Actions.FETCH_OS_UPDATE_INFO_ERROR
-    });
-  });
-
-  it("fails to fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.reject("error");
-    const dispatch = jest.fn();
-    await actions.fetchReleases("url", { beta: true })(dispatch);
-    await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: "error",
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_ERROR
-    });
-  });
-});
-
-describe("fetchLatestGHBetaRelease()", () => {
-  it.each<[string, string]>([
-    ["v1.0.0-beta", "1.0.0-beta"],
-    ["v1.0.0-rc1", "1.0.0-rc1"],
-  ])("fetches latest beta OS release version: %s", async (tag_name, version) => {
-    mockGetRelease = Promise.resolve({ data: [{ tag_name }] });
-    const dispatch = jest.fn();
-    await actions.fetchLatestGHBetaRelease("url/001")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: { version, commit: undefined },
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
-    });
-  });
-
-  it("fails to fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.reject("error");
-    const dispatch = jest.fn();
-    await actions.fetchLatestGHBetaRelease("url/001")(dispatch);
-    await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: "error",
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_ERROR
-    });
-  });
-});
-
 describe("fetchMinOsFeatureData()", () => {
   const EXPECTED_URL = expect.stringContaining("FEATURE_MIN_VERSIONS.json");
   afterEach(() =>
     jest.restoreAllMocks());
 
   it("fetches min OS feature data: empty", async () => {
-    mockGetRelease = Promise.resolve({ data: {} });
+    mockGet = Promise.resolve({ data: {} });
     const dispatch = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
@@ -431,7 +345,7 @@ describe("fetchMinOsFeatureData()", () => {
   });
 
   it("fetches min OS feature data", async () => {
-    mockGetRelease = Promise.resolve({
+    mockGet = Promise.resolve({
       data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
     });
     const dispatch = jest.fn();
@@ -444,7 +358,7 @@ describe("fetchMinOsFeatureData()", () => {
   });
 
   it("fetches bad min OS feature data: not an object", async () => {
-    mockGetRelease = Promise.resolve({ data: "bad" });
+    mockGet = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
     await actions.fetchMinOsFeatureData()(dispatch);
@@ -455,7 +369,7 @@ describe("fetchMinOsFeatureData()", () => {
   });
 
   it("fetches bad min OS feature data", async () => {
-    mockGetRelease = Promise.resolve({ data: { a: "0", b: 0 } });
+    mockGet = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
     await actions.fetchMinOsFeatureData()(dispatch);
@@ -466,7 +380,7 @@ describe("fetchMinOsFeatureData()", () => {
   });
 
   it("fails to fetch min OS feature data", async () => {
-    mockGetRelease = Promise.reject("error");
+    mockGet = Promise.reject("error");
     const dispatch = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
@@ -482,7 +396,7 @@ describe("fetchOsReleaseNotes()", () => {
   const EXPECTED_URL = expect.stringContaining("RELEASE_NOTES.md");
 
   it("fetches OS release notes", async () => {
-    mockGetRelease = Promise.resolve({
+    mockGet = Promise.resolve({
       data: "intro\n\n# v6\n\n* note"
     });
     const dispatch = jest.fn();
@@ -495,7 +409,7 @@ describe("fetchOsReleaseNotes()", () => {
   });
 
   it("errors while fetching OS release notes", async () => {
-    mockGetRelease = Promise.reject({ error: "" });
+    mockGet = Promise.reject({ error: "" });
     const dispatch = jest.fn();
     await actions.fetchOsReleaseNotes()(dispatch);
     await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);

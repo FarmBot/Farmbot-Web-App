@@ -271,6 +271,13 @@ fieldset {
   }
 }
 
+.mac-address {
+  font-size: 1rem;
+  b {
+    font-size: 1.1rem;
+  }
+}
+
 .network-info,
 .fbos-info {
   margin: auto;
