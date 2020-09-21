@@ -1,7 +1,7 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   CameraSelection, cameraDisabled, cameraCalibrated,
@@ -30,12 +30,14 @@ describe("<CameraSelection/>", () => {
     expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
   });
 
+  const expectInfoCall = () => expect(info).toHaveBeenCalledWith(
+    "Sending camera configuration...", { title: "Sending" });
+
   it("changes camera", () => {
     const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
     cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
-    expect(info)
-      .toHaveBeenCalledWith("Sending camera configuration...", "Sending");
+    expectInfoCall();
     expect(mockDevice.setUserEnv)
       .toHaveBeenCalledWith({ camera: "\"mycamera\"" });
   });
@@ -45,8 +47,7 @@ describe("<CameraSelection/>", () => {
     const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
     await cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
-    await expect(info)
-      .toHaveBeenCalledWith("Sending camera configuration...", "Sending");
+    await expectInfoCall();
     expect(error)
       .toHaveBeenCalledWith("An error occurred during configuration.");
   });
@@ -57,8 +58,7 @@ describe("<CameraSelection/>", () => {
     const wrapper = shallow(<CameraSelection {...p} />);
     wrapper.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
-    expect(info)
-      .toHaveBeenCalledWith("Sending camera configuration...", "Sending");
+    expectInfoCall();
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("camera", "\"mycamera\"");
   });
 });

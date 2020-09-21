@@ -5,7 +5,14 @@ describe("FBToast", () => {
   const newToast = (idPrefix = ""): [FBToast, HTMLDivElement] => {
     const parent = document.createElement("div");
     const child =
-      new FBToast(parent, "title", "message" + (count++), "red", idPrefix, false);
+      new FBToast(parent, {
+        title: "title",
+        message: "message" + (count++),
+        color: "red",
+        idPrefix,
+        noTimer: false,
+        noDismiss: false,
+      });
     parent.appendChild(child.toastEl);
     return [child, parent];
   };
@@ -69,6 +76,18 @@ describe("FBToast", () => {
     jest.advanceTimersByTime(200 * 1.1);
     expect(add).toHaveBeenCalledWith("poof");
     expect(i.detach).toHaveBeenCalled();
+  });
+
+  it("handles clicks: noDismiss", () => {
+    jest.useFakeTimers();
+    const [i] = newToast();
+    i.noDismiss = true;
+    i.detach = jest.fn();
+    const add = jest.fn();
+    i.onClick(mouseEvent([], add));
+    jest.runAllTimers();
+    expect(add).not.toHaveBeenCalled();
+    expect(i.detach).not.toHaveBeenCalled();
   });
 
   it("attaches to the DOM", () => {
@@ -158,6 +177,19 @@ describe("FBToast", () => {
     i.parent = parent;
     i.isAttached = false;
     i.noTimer = true;
+    i.intervalId = 0;
+    i.run();
+    expect(i.toastEl.className).toContain("no-timer");
+    expect(i.isAttached).toEqual(true);
+    expect(i.intervalId).toEqual(0);
+  });
+
+  it("run doesn't do polling: noDismiss", () => {
+    const [i, parent] = newToast();
+    i.parent = parent;
+    i.isAttached = false;
+    i.noTimer = false;
+    i.noDismiss = true;
     i.intervalId = 0;
     i.run();
     expect(i.toastEl.className).toContain("no-timer");

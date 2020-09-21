@@ -25,6 +25,8 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+jest.mock("../../history", () => ({ push: jest.fn() }));
+
 let mockGet: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
 
@@ -40,6 +42,8 @@ import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 import { DeepPartial } from "redux";
 import { Farmbot } from "farmbot";
+import { push } from "../../history";
+import { linkToFbosSettings } from "../../settings/maybe_highlight";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -134,10 +138,7 @@ describe("sync()", function () {
     state.bot.hardware.informational_settings.controller_version = "1.0.0";
     actions.sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
-    expect(info).toBeCalledWith(
-      expect.stringContaining("old version"),
-      expect.stringContaining("Please Update"),
-      "red");
+    expectBadVersionCall();
   });
 
   it("doesn't call sync: disconnected", () => {
@@ -145,8 +146,9 @@ describe("sync()", function () {
     state.bot.hardware.informational_settings.controller_version = undefined;
     actions.sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
-    const expectedMessage = ["FarmBot is not connected.", "Disconnected", "red"];
-    expect(info).toBeCalledWith(...expectedMessage);
+    expect(info).toBeCalledWith("FarmBot is not connected.", {
+      title: "Disconnected", color: "red",
+    });
   });
 });
 
@@ -431,10 +433,16 @@ describe("updateConfig()", () => {
   });
 });
 
+const expectBadVersionCall = () => {
+  expect(push).toHaveBeenCalledWith(linkToFbosSettings());
+  expect(error).toHaveBeenCalledWith(
+    expect.stringContaining("old version"),
+    { title: "Please Update", noDismiss: true });
+};
+
 describe("badVersion()", () => {
   it("warns of old FBOS version", () => {
     actions.badVersion();
-    expect(info).toHaveBeenCalledWith(
-      expect.stringContaining("old version"), "Please Update", "red");
+    expectBadVersionCall();
   });
 });

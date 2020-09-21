@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
 import { init, error } from "./toast/toast";
 import { NavBar } from "./nav";
@@ -126,7 +126,7 @@ export class RawApp extends React.Component<AppProps, {}> {
   componentDidMount() {
     setTimeout(() => {
       if (!this.isLoaded) {
-        error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), t("Warning"));
+        error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), { title: t("Warning") });
       }
     }, LOAD_TIME_FAILURE_MS);
   }

@@ -90,7 +90,7 @@ describe("<Photos/>", () => {
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
-      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
     expect(mockDevice.takePhoto).not.toHaveBeenCalled();
   });
 

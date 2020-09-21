@@ -89,14 +89,14 @@ const startTimeWarning = () => {
   const message =
     t("Event start time needs to be in the future, not the past.");
   const title = t("Unable to save event.");
-  error(message, title);
+  error(message, { title });
 };
 
 const nothingToRunWarning = () => {
   const message =
     t("All items scheduled before the start time. Nothing to run.");
   const title = t("Unable to save event.");
-  error(message, title);
+  error(message, { title });
 };
 
 type RecombineOptions = { forceRegimensToMidnight: boolean };
@@ -508,7 +508,7 @@ export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
           history.push("/app/designer/events");
-          success(t("Deleted event."), t("Deleted"));
+          success(t("Deleted event."), { title: t("Deleted") });
         })}>
     {t("Delete")}
   </button>;

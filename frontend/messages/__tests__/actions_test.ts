@@ -30,7 +30,7 @@ describe("seedAccount()", () => {
     expect(axios.post).toHaveBeenCalledWith("/api/stub", {
       product_line: "genesis_1.2"
     });
-    expect(info).toHaveBeenCalledWith("Seeding in progress.", "Busy");
+    expect(info).toHaveBeenCalledWith("Seeding in progress.", { title: "Busy" });
     expect(dismiss).toHaveBeenCalled();
   });
 

@@ -12,7 +12,7 @@ jest.mock("../actions", () => ({
   detectPlants: jest.fn(() => jest.fn()),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { WeedDetector } from "../index";
 import { API } from "../../../api";
@@ -72,7 +72,7 @@ describe("<WeedDetector />", () => {
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
-      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
     expect(detectPlants).not.toHaveBeenCalled();
   });
 
