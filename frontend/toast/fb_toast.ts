@@ -1,4 +1,5 @@
 import { uuid } from "farmbot";
+import { CreateToastProps } from "./interfaces";
 
 /** This is a [surprisingly reliable] legacy component.
  * TODO: Convert this to React. */
@@ -28,17 +29,17 @@ export class FBToast {
   public message = "";
   public isAttached = false;
   public noTimer = false;
+  public noDismiss = false;
 
-  constructor(public parent: Element,
-    title: string,
-    raw_message: string,
-    color: string,
-    idPrefix: string,
-    noTimer: boolean) {
+  constructor(public parent: Element, props: CreateToastProps) {
+
+    const { title, color, idPrefix, noTimer, noDismiss } = props;
+    const raw_message = props.message;
 
     idPrefix && (this.toastEl.id = `${idPrefix}-toast-${uuid()}`);
 
-    this.noTimer = noTimer;
+    this.noTimer = noTimer || false;
+    this.noDismiss = noDismiss || false;
 
     this.message = raw_message.replace(/\s+/g, " ");
     /** Fill contents. */
@@ -100,6 +101,7 @@ export class FBToast {
   };
 
   onClick = (e: MouseEvent) => {
+    if (this.noDismiss) { return; }
     (e.currentTarget as Element).classList.add("poof");
     setTimeout(this.detach, 200);
   }
@@ -117,7 +119,7 @@ export class FBToast {
     /** Append children. */
     this.parent.appendChild(this.toastEl);
     this.isAttached = true;
-    if (this.noTimer) {
+    if (this.noTimer || this.noDismiss) {
       this.toastEl.classList.add("no-timer");
       return;
     }

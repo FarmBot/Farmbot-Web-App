@@ -161,7 +161,7 @@ describe("<FrontPage />", () => {
     await expect(axios.post).toHaveBeenCalledWith("resetPath",
       { email: "foo@bar.io" });
     await expect(success).toHaveBeenCalledWith(
-      "Email has been sent.", "Forgot Password");
+      "Email has been sent.", { title: "Forgot Password" });
     expect(el.instance().state.activePanel).toEqual("login");
   });
 

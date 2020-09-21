@@ -63,7 +63,7 @@ export function showLogOnScreen(log: Log) {
       case MessageType.busy:
         return busy;
       case MessageType.debug:
-        return (msg: string, title: string) => info(msg, title, "gray");
+        return (msg: string, title: string) => info(msg, { title, color: "gray" });
       case MessageType.info:
       default:
         return info;
@@ -141,17 +141,17 @@ export function onMalformed() {
 
 export const onOnline = () => {
   removeToast("offline");
-  success(t("Reconnected to the message broker."), t("Online"));
+  success(t("Reconnected to the message broker."), { title: t("Online") });
   dispatchNetworkUp("user.mqtt", now());
 };
 
 export const onReconnect = () =>
   warning(t("Attempting to reconnect to the message broker"),
-    t("Offline"), "yellow", "offline");
+    { title: t("Offline"), color: "yellow", idPrefix: "offline" });
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt", now());
-  error(t(Content.MQTT_DISCONNECTED), t("Error"), "red", "offline");
+  error(t(Content.MQTT_DISCONNECTED), { idPrefix: "offline" });
 };
 
 export function onPublicBroadcast(payl: unknown) {

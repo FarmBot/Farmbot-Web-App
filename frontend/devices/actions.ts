@@ -23,6 +23,8 @@ import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
+import { linkToFbosSettings } from "../settings/maybe_highlight";
+import { push } from "../history";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -52,7 +54,7 @@ export const commandErr =
 /** Toast message upon request success. */
 export const commandOK = (noun = "Command") => () => {
   const msg = t(noun) + t(" request sent to device.");
-  success(msg, t("Request sent"));
+  success(msg, { title: t("Request sent") });
 };
 
 /** Update FBOS. */
@@ -136,7 +138,9 @@ export function sync(): Thunk {
       if (currentFBOSversion) {
         badVersion();
       } else {
-        info(t("FarmBot is not connected."), t("Disconnected"), "red");
+        info(t("FarmBot is not connected."), {
+          title: t("Disconnected"), color: "red",
+        });
       }
     }
   };
@@ -366,6 +370,7 @@ export function changeStepSize(integer: number) {
 }
 
 export function badVersion() {
-  info(t("You are running an old version of FarmBot OS."),
-    t("Please Update"), "red");
+  push(linkToFbosSettings());
+  error(t(Content.OLD_FBOS_UNSUPPORTED),
+    { title: t("Please Update"), noDismiss: true });
 }

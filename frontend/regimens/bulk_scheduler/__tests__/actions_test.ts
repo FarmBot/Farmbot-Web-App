@@ -150,7 +150,7 @@ describe("setTimeOffset()", () => {
     expect(() => setTimeOffset(NaN))
       .toThrowError("Bad time input on regimen page: null");
     expect(warning).toBeCalledWith(
-      "Time is not properly formatted.", "Bad Input");
+      "Time is not properly formatted.", { title: "Bad Input" });
   });
 });
 

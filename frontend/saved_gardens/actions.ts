@@ -33,7 +33,7 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
     history.push("/app/designer/plants");
     dispatch(unselectSavedGarden);
     const busyToastTitle = t("Please wait");
-    info(t("while your garden is applied."), busyToastTitle, "blue");
+    info(t("while your garden is applied."), { title: busyToastTitle });
   });
 
 export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {

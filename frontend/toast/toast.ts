@@ -1,79 +1,59 @@
 import { createToast, createToastOnce } from "./toast_internal_support";
 import { t } from "../i18next_wrapper";
+import { ToastOptions } from "./interfaces";
 
 /**
  * Orange message with "Warning" as the default title.
  */
-export const warning = (
-  message: string,
-  title = t("Warning"),
-  color = "orange",
-  idPrefix = "",
-  noTimer = false,
-) => {
-  createToastOnce(message, title, color, idPrefix, noTimer, console.warn);
-};
+export const warning = (message: string, options: ToastOptions = {}) =>
+  createToastOnce({
+    message,
+    title: t("Warning"),
+    color: "orange",
+    ...options,
+    fallbackLogger: console.warn,
+  });
 
 /**
  *  Red message with "Error" as the default title.
  */
-export const error = (
-  message: string,
-  title = t("Error"),
-  color = "red",
-  idPrefix = "",
-  noTimer = false,
-) => {
-  createToastOnce(message, title, color, idPrefix, noTimer, console.error);
-};
+export const error = (message: string, options: ToastOptions = {}) =>
+  createToastOnce({
+    message,
+    title: t("Error"),
+    color: "red",
+    ...options,
+    fallbackLogger: console.error,
+  });
 
 /**
  *  Green message with "Success" as the default title.
  */
-export const success = (
-  message: string,
-  title = t("Success"),
-  color = "green",
-  idPrefix = "",
-  noTimer = false,
-) =>
-  createToast(message, title, color, idPrefix, noTimer);
+export const success = (message: string, options: ToastOptions = {}) =>
+  createToast({ message, title: t("Success"), color: "green", ...options });
 
 /**
  *  Blue message with "FYI" as the default title.
  */
-export const info = (
-  message: string,
-  title = t("FYI"),
-  color = "blue",
-  idPrefix = "",
-  noTimer = false,
-) =>
-  createToast(message, title, color, idPrefix, noTimer);
+export const info = (message: string, options: ToastOptions = {}) =>
+  createToast({ message, title: t("FYI"), color: "blue", ...options });
 
 /**
  *  Yellow message with "Busy" as the default title.
  */
-export const busy = (
-  message: string,
-  title = t("Busy"),
-  color = "yellow",
-  idPrefix = "",
-  noTimer = false,
-) =>
-  createToast(message, title, color, idPrefix, noTimer);
+export const busy = (message: string, options: ToastOptions = {}) =>
+  createToast({ message, title: t("Busy"), color: "yellow", ...options });
 
 /**
  *  Dark blue message with "Did you know?" as the default title.
  */
-export const fun = (
-  message: string,
-  title = t("Did you know?"),
-  color = "dark-blue",
-  idPrefix = "",
-  noTimer = false,
-) =>
-  createToast(message, title, color, idPrefix, noTimer);
+export const fun = (message: string, options: ToastOptions = {}) =>
+  createToast({
+    message,
+    title: t("Did you know?"),
+    color: "dark-blue",
+    ...options,
+  });
 
 /**
  *  Adds a hidden container div for holding toast messages.

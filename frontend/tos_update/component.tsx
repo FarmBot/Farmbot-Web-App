@@ -100,7 +100,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
     logInit();
     const body = t("Before logging in, you must agree to our latest Terms" +
       " of Service and Privacy Policy");
-    log(body, t("New Terms of Service"));
+    log(body, { title: t("New Terms of Service") });
   }
 
   render() {
