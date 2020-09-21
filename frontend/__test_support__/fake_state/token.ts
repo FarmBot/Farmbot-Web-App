@@ -5,8 +5,6 @@ export const auth: AuthState = {
     unencoded: {
       jti: "xyz",
       iss: "//localhost:3000",
-      os_update_server: "https://api.github.com/repos/farmbot/" +
-        "farmbot_os/releases/latest",
       aud: "unknown",
       bot: "device_123",
       mqtt_ws: "//localhost:3000"

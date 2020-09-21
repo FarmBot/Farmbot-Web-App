@@ -75,8 +75,7 @@ export const initialState = (): BotState => ({
     }
   },
   dirty: false,
-  currentOSVersion: undefined,
-  currentBetaOSVersion: undefined,
+  osUpdateVersion: undefined,
   minOsFeatureData: undefined,
   osReleaseNotes: undefined,
   connectivity: {
@@ -137,12 +136,7 @@ export const botReducer = generateReducer<BotState>(initialState())
       return s;
     })
   .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentOSVersion = payload.version;
-    return s;
-  })
-  .add<OsUpdateInfo>(Actions.FETCH_BETA_OS_UPDATE_INFO_OK, (s, { payload }) => {
-    s.currentBetaOSVersion = payload.version;
-    s.currentBetaOSCommit = payload.commit;
+    s.osUpdateVersion = payload.version;
     return s;
   })
   .add<MinOsFeatureLookup>(Actions.FETCH_MIN_OS_FEATURE_INFO_OK,

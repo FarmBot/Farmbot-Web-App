@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  fetchReleases, fetchMinOsFeatureData,
-  fetchLatestGHBetaRelease,
-  fetchOsReleaseNotes,
-} from "../devices/actions";
+import { fetchMinOsFeatureData, fetchOsReleaseNotes } from "../devices/actions";
 import { AuthState } from "./interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as Sync from "../sync/actions";
@@ -20,10 +16,6 @@ import { readOnlyInterceptor } from "../read_only_mode";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
-  const { os_update_server, beta_os_update_server } = authState.token.unencoded;
-  dispatch(fetchReleases(os_update_server));
-  beta_os_update_server && beta_os_update_server != "NOT_SET" &&
-    dispatch(fetchLatestGHBetaRelease(beta_os_update_server));
   dispatch(getFirstPartyFarmwareList());
   dispatch(fetchMinOsFeatureData());
   dispatch(fetchOsReleaseNotes());

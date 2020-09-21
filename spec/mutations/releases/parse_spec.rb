@@ -51,13 +51,13 @@ describe Releases::Parse do
     output = Releases::Parse.run!(input)
     expect(output.count).to be 2
     expect(output).to include({
-                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi-11.0.1.fw",
-                        version: "11.0.1",
+                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.0.1/farmbot-rpi-12.0.1.fw",
+                        version: "12.0.1",
                         platform: "rpi",
                       })
     expect(output).to include({
-                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v11.0.1/farmbot-rpi3-11.0.1.fw",
-                        version: "11.0.1",
+                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.0.1/farmbot-rpi3-12.0.1.fw",
+                        version: "12.0.1",
                         platform: "rpi3",
                       })
   end

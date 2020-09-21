@@ -7,11 +7,11 @@ import { ColWidth } from "./farmbot_os_settings";
 import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "./interfaces";
-import { isNumber, isUndefined, range } from "lodash";
+import { isNumber, range } from "lodash";
 
 const hourToUtcHour =
   (hour: number | undefined, offset: number): number | undefined =>
-    isUndefined(hour) ? undefined : (hour + offset) % 24;
+    !isNumber(hour) ? undefined : (hour + offset) % 24;
 
 export const ASAP = () => t("As soon as possible");
 
