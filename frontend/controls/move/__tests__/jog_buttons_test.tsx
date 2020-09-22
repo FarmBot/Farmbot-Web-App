@@ -10,7 +10,7 @@ jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
@@ -86,7 +86,7 @@ describe("<JogButtons/>", function () {
     expect(cameraBtn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     cameraBtn.simulate("click");
     expect(error).toHaveBeenCalledWith(
-      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
     expect(mockDevice.takePhoto).not.toHaveBeenCalled();
   });
 

@@ -127,7 +127,9 @@ describe("showLogOnScreen", () => {
   it("routes `debug` to toastr.info()", () => {
     const log = fakeLog(MessageType.debug, ["toast"]);
     showLogOnScreen(log);
-    expect(info).toHaveBeenCalledWith(log.message, TITLE(), "gray");
+    expect(info).toHaveBeenCalledWith(log.message, {
+      title: TITLE(), color: "gray",
+    });
   });
 });
 
@@ -178,7 +180,7 @@ describe("onOffline", () => {
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
     expect(error).toHaveBeenCalledWith(
-      Content.MQTT_DISCONNECTED, "Error", "red", "offline");
+      Content.MQTT_DISCONNECTED, { idPrefix: "offline" });
   });
 });
 
@@ -196,7 +198,7 @@ describe("onReconnect()", () => {
     onReconnect();
     expect(warning).toHaveBeenCalledWith(
       "Attempting to reconnect to the message broker",
-      "Offline", "yellow", "offline");
+      { title: "Offline", color: "yellow", idPrefix: "offline" });
   });
 });
 

@@ -255,7 +255,7 @@ describe("<EditFEForm />", () => {
   const expectStartTimeToBeRejected = () => {
     expect(error).toHaveBeenCalledWith(
       "Event start time needs to be in the future, not the past.",
-      "Unable to save event.");
+      { title: "Unable to save event." });
   };
 
   it("displays error message on save (add): start time has passed", () => {
@@ -276,7 +276,7 @@ describe("<EditFEForm />", () => {
     const i = instance(p);
     i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "Nothing to run."), "Unable to save event.");
+      "Nothing to run."), { title: "Unable to save event." });
   });
 
   it("displays error message on save: no items", async () => {
@@ -287,7 +287,7 @@ describe("<EditFEForm />", () => {
     const i = instance(p);
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "Nothing to run."), "Unable to save event.");
+      "Nothing to run."), { title: "Unable to save event." });
   });
 
   it("displays error message on save: save error", async () => {
@@ -640,6 +640,6 @@ describe("<FarmEventDeleteButton />", () => {
     await wrapper.find("button").simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
     expect(history.push).toHaveBeenCalledWith("/app/designer/events");
-    expect(success).toHaveBeenCalledWith("Deleted event.", "Deleted");
+    expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });
   });
 });

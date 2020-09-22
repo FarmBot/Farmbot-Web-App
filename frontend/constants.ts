@@ -926,6 +926,10 @@ export namespace Content {
     trim(`Your version of FarmBot OS is outdated and will soon no longer
     be supported. Please update your device as soon as possible.`);
 
+  export const OLD_FBOS_UNSUPPORTED =
+    trim(`You are running an old version of FarmBot OS that is no longer
+    supported.`);
+
   export const EXPERIMENTAL_WARNING =
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
     broken and may break or otherwise hinder your usage of the rest of the

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../ui/index";
 import {
   CameraSelectionProps, CameraSelectionState,
@@ -25,7 +25,7 @@ export const cameraBtnProps = (env: UserEnv) => {
     ? {
       class: "pseudo-disabled",
       click: () =>
-        error(t(ToolTips.SELECT_A_CAMERA), t(Content.NO_CAMERA_SELECTED)),
+        error(t(ToolTips.SELECT_A_CAMERA), { title: t(Content.NO_CAMERA_SELECTED) }),
       title: t(Content.NO_CAMERA_SELECTED)
     }
     : { class: "", click: undefined, title: "" };
@@ -77,7 +77,7 @@ export class CameraSelection
     const { props } = this;
     const configKey = "camera";
     const config = { [configKey]: JSON.stringify(selectedCamera.value) };
-    info(t("Sending camera configuration..."), t("Sending"));
+    info(t("Sending camera configuration..."), { title: t("Sending") });
     props.shouldDisplay(Feature.api_farmware_env)
       ? props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]))
       : getDevice()

@@ -141,7 +141,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     const data = { email };
     axios.post(API.current.passwordResetPath, data)
       .then(() => {
-        success(t("Email has been sent."), t("Forgot Password"));
+        success(t("Email has been sent."), { title: t("Forgot Password") });
         this.setState({ activePanel: "login" });
       }).catch(error => {
         let errorMessage = prettyPrintApiErrors(error);
