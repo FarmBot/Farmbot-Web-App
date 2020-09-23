@@ -70,5 +70,36 @@ describe("<InputCell/>", () => {
       currentTarget: { value: "6" }
     });
     expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 6);
+    expect(wrapper.find("input").props().value).toEqual("6");
+  });
+
+  it("calls onChange with no value", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<InputCell {...p} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { value: "" }
+    });
+    expect(p.onChange).not.toHaveBeenCalled();
+    expect(wrapper.find("input").props().value).toEqual("");
+  });
+
+  it("calls onBlur", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<InputCell {...p} />);
+    wrapper.find("input").first().simulate("blur");
+    expect(p.preview).toHaveBeenCalled();
+    expect(wrapper.find("input").props().value).toEqual("2");
+  });
+
+  it("calls onBlur with no value", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<InputCell {...p} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { value: "" }
+    });
+    expect(wrapper.find("input").props().value).toEqual("");
+    wrapper.find("input").first().simulate("blur");
+    expect(p.preview).not.toHaveBeenCalled();
+    expect(wrapper.find("input").props().value).toEqual("2");
   });
 });

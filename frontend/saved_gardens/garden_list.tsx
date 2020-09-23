@@ -13,7 +13,9 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
   return <div className="saved-garden-info"
     onClick={() => dispatch(openSavedGarden(savedGarden.uuid))}>
     <Col>
-      <span>{savedGarden.body.name}</span>
+      <span className={"saved-garden-search-item-name"}>
+        {savedGarden.body.name}
+      </span>
       <p><i>{props.plantTemplateCount} {t("plants")}</i></p>
     </Col>
   </div>;

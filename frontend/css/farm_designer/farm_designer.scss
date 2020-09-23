@@ -255,6 +255,23 @@
       }
     }
   }
+  .plant-search-item-name,
+  .group-search-item-name,
+  .regimen-search-item-name,
+  .saved-garden-search-item-name,
+  .weed-search-item-name,
+  .point-search-item-name {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 60%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-left: 1rem;
+  }
+  .group-search-item-name {
+    margin-left: 0;
+  }
   .plant-search-item-age {
     @extend %panel-item-base;
   }
@@ -262,15 +279,6 @@
     @extend %panel-item-base;
     padding-top: 0.6rem;
     line-height: 1rem;
-  }
-  .plant-search-item-name {
-    display: inline-block;
-    vertical-align: middle;
-    white-space: nowrap;
-    width: 8em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-left: 1rem;
   }
   .weed-search-item,
   .point-search-item {
@@ -295,12 +303,7 @@
   .regimen-search-item-name,
   .weed-search-item-name,
   .point-search-item-name {
-    display: inline-block;
-    vertical-align: middle;
-    white-space: nowrap;
     width: 40%;
-    overflow: hidden;
-    text-overflow: ellipsis;
     margin-left: 1.25rem;
   }
   .tool-search-item,

@@ -21,6 +21,7 @@ module Devices
       def point_groups_spinach; end
       def point_groups_broccoli; end
       def point_groups_beet; end
+      def point_groups_all_plants; end
       def sequences_water_all_plants; end
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
