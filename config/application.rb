@@ -56,7 +56,6 @@ module FarmBot
     SecureHeaders::Configuration.default do |config|
       config.hsts = "max-age=#{1.week.to_i}"
       # We need this off in dev mode otherwise email previews won't show up.
-      config.x_frame_options = "ALLOW-FROM https://farm.bot" # For marketing demos
       config.x_content_type_options = "nosniff"
       config.x_xss_protection = "1; mode=block"
       config.x_download_options = "noopen"
@@ -91,6 +90,7 @@ module FarmBot
         ),
         form_action: %w('self'),
         frame_src: %w(*),       # We need "*" to support webcam users.
+        frame_ancestors: %w('none'),
         img_src: %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
         media_src: %w(),
