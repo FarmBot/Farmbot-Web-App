@@ -13,6 +13,7 @@ module Devices
         :point_groups_spinach,
         :point_groups_broccoli,
         :point_groups_beet,
+        :point_groups_all_plants,
 
         # PERIPHERALS ============================
         :peripherals_vacuum,
@@ -149,15 +150,19 @@ module Devices
       end
 
       def point_groups_spinach
-        add_point_group("Spinach plants", "spinach")
+        add_point_group(name: "Spinach plants", openfarm_slug: "spinach")
       end
 
       def point_groups_broccoli
-        add_point_group("Broccoli plants", "broccoli")
+        add_point_group(name: "Broccoli plants", openfarm_slug: "broccoli")
       end
 
       def point_groups_beet
-        add_point_group("Beet plants", "beet")
+        add_point_group(name: "Beet plants", openfarm_slug: "beet")
+      end
+
+      def point_groups_all_plants
+        add_point_group(name: "All plants")
       end
 
       def sequences_water_all_plants
@@ -165,15 +170,7 @@ module Devices
 
         s.dig(:body, 0, :args)[:sequence_id] = water_plant_id
         s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:point_group_id] =
-          spinach_group_id
-
-        s.dig(:body, 1, :args)[:sequence_id] = water_plant_id
-        s.dig(:body, 1, :body, 0, :args, :data_value, :args)[:point_group_id] =
-          broccoli_group_id
-
-        s.dig(:body, 2, :args)[:sequence_id] = water_plant_id
-        s.dig(:body, 2, :body, 0, :args, :data_value, :args)[:point_group_id] =
-          beet_group_id
+          all_plants_group_id
 
         Sequences::Create.run!(s, device: device)
       end
@@ -244,7 +241,7 @@ module Devices
                             device: device)
       end
 
-      def add_point_group(name, openfarm_slug)
+      def add_point_group(name:, openfarm_slug: nil)
         PointGroups::Create.run!(device: device,
                                  name: name,
                                  point_ids: [],
@@ -252,7 +249,7 @@ module Devices
                                  criteria: {
                                    string_eq: {
                                      pointer_type: ["Plant"],
-                                     openfarm_slug: [openfarm_slug],
+                                     openfarm_slug: openfarm_slug ? [openfarm_slug] : nil,
                                    },
                                    number_eq: { },
                                     number_lt: { },
@@ -277,16 +274,8 @@ module Devices
         @water_plant_id ||= device.sequences.find_by!(name: "Water plant").id
       end
 
-      def spinach_group_id
-        @spinach_group_id ||= device.point_groups.find_by!(name: "Spinach plants").id
-      end
-
-      def broccoli_group_id
-        @broccoli_group_id ||= device.point_groups.find_by!(name: "Broccoli plants").id
-      end
-
-      def beet_group_id
-        @beet_group_id ||= device.point_groups.find_by!(name: "Beet plants").id
+      def all_plants_group_id
+        @all_plants_group_id ||= device.point_groups.find_by!(name: "All plants").id
       end
 
       def water_id

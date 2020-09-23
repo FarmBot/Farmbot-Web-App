@@ -948,28 +948,4 @@
           :kind: point_group
           :args:
             :point_group_id: 0
-    :comment: Water all spinach plants
-  - :kind: execute
-    :args:
-      :sequence_id: 0
-    :body:
-    - :kind: parameter_application
-      :args:
-        :label: parent
-        :data_value:
-          :kind: point_group
-          :args:
-            :point_group_id: 0
-    :comment: Water all broccoli plants
-  - :kind: execute
-    :args:
-      :sequence_id: 0
-    :body:
-    - :kind: parameter_application
-      :args:
-        :label: parent
-        :data_value:
-          :kind: point_group
-          :args:
-            :point_group_id: 0
-    :comment: Water all beet plants
+    :comment: Water all plants

@@ -44,15 +44,22 @@ export const LABELS = (
 export function InputCell(props: InputCellProps) {
   const { gridKey, onChange, grid, xy_swap, preview } = props;
   const { label, regular_icon, swapped_icon } = LABELS(props.itemType)[gridKey];
+  const [value, setValue] = React.useState("" + grid[gridKey]);
   return <Col xs={5}>
     <label>
       <i className={`fa ${xy_swap ? swapped_icon : regular_icon}`} />
       {t(label)}
     </label>
     <input name={gridKey}
-      value={grid[gridKey]}
-      onBlur={preview}
+      value={value}
+      onBlur={() => {
+        const number = parseInt(value, 10);
+        isNaN(number)
+          ? setValue("" + grid[gridKey])
+          : preview();
+      }}
       onChange={e => {
+        setValue(e.currentTarget.value);
         const number = parseInt(e.currentTarget.value, 10);
         !isNaN(number) && onChange(gridKey, number);
       }} />
