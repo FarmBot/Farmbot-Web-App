@@ -60,7 +60,6 @@ module FarmBot
       config.x_xss_protection = "1; mode=block"
       config.x_download_options = "noopen"
       config.x_permitted_cross_domain_policies = "none"
-      config.frame_ancestors = "none"
       config.referrer_policy =
         %w(origin-when-cross-origin strict-origin-when-cross-origin)
       connect_src = ALL_LOCAL_URIS + [
@@ -91,6 +90,7 @@ module FarmBot
         ),
         form_action: %w('self'),
         frame_src: %w(*),       # We need "*" to support webcam users.
+        frame_ancestors: %w('none'),
         img_src: %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
         media_src: %w(),
