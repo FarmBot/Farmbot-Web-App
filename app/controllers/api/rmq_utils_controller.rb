@@ -54,7 +54,6 @@ module Api
       ping
       pong
       status
-      status_v8
       sync
       telemetry
       \\#
