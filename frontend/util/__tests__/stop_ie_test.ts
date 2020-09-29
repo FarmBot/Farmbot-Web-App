@@ -1,5 +1,4 @@
-import { stopIE, temporarilyStopFrames } from "../stop_ie";
-import { times } from "lodash";
+import { stopIE } from "../stop_ie";
 
 describe("stopIE()", () => {
   beforeEach(() => {
@@ -45,19 +44,5 @@ describe("stopIE()", () => {
     Array.prototype.hasOwnProperty = () => { throw new Error(); };
     stopIE();
     expectToHaveBeenStopped();
-  });
-
-  it("temporarily warns users about using frames", () => {
-    const top_ = { location: { host: "A" } };
-    const self_ = "B";
-    times(10, () => temporarilyStopFrames(top_, self_));
-    expect(window.alert).toHaveBeenCalled();
-  });
-
-  it("doesn't temporarily warn users about using frames: not in frame", () => {
-    const top_ = { location: { host: "A" } };
-    const self_ = top_;
-    times(10, () => temporarilyStopFrames(top_, self_));
-    expect(window.alert).not.toHaveBeenCalled();
   });
 });
