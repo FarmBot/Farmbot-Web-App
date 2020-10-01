@@ -4,7 +4,7 @@ import { stopIE } from "../util/stop_ie";
 import I, { InitOptions } from "i18next";
 import { TryFarmbot } from "./try_farmbot";
 
-// ENTRY POINT FOR WEB APP DEMO IFRAME ===========
+// ENTRY POINT FOR WEB APP DEMO LINK ===========
 
 stopIE();
 
