@@ -29,14 +29,6 @@ describe SessionToken do
     expect(actual["bot"]).to eq(expected["bot"])
   end
 
-  it "issues a token to a user" do
-    token = SessionToken.issue_to(user, iat: 000,
-                                        exp: 456,
-                                        iss: "//lycos.com:9867",
-                                        fbos_version: Gem::Version.new("9.9.9"))
-    expect(token.unencoded[:beta_os_update_server]).to be_kind_of(String)
-  end
-
   it "doesn't honor expired tokens" do
     user.update!(confirmed_at: Time.now)
     token = SessionToken.issue_to(user, iat: 000,
