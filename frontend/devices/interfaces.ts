@@ -68,12 +68,8 @@ export interface BotState {
   statusStash?: SyncStatus | undefined;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
-  /** The current os version on the github release api */
-  currentOSVersion?: string;
-  /** The current beta os version on the github release api */
-  currentBetaOSVersion?: string;
-  /** The current beta os commit on the github release api */
-  currentBetaOSCommit?: string;
+  /** Version of available FBOS update from releases API. undefined: up to date */
+  osUpdateVersion?: string | undefined;
   /** JSON string of minimum required FBOS versions for various features. */
   minOsFeatureData?: MinOsFeatureLookup;
   /** Notes notifying users of changes that may require intervention. */
@@ -97,7 +93,6 @@ export type HardwareState = BotStateTree;
 
 export interface GithubRelease {
   tag_name: string;
-  target_commitish: string;
   assets: {
     name: string;
     browser_download_url: string;
@@ -105,8 +100,7 @@ export interface GithubRelease {
 }
 
 export interface OsUpdateInfo {
-  version: string;
-  commit: string;
+  version: string | undefined;
 }
 
 export interface MoveRelProps {

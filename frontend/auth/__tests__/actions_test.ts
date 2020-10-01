@@ -18,45 +18,20 @@ jest.mock("../../api/api", () => ({
   }
 }));
 
-jest.mock("../../devices/actions", () => ({
-  fetchReleases: jest.fn(),
-  fetchLatestGHBetaRelease: jest.fn(),
-  fetchMinOsFeatureData: jest.fn(),
-  fetchOsReleaseNotes: jest.fn(),
-}));
-
 import { didLogin } from "../actions";
 import { Actions } from "../../constants";
 import { API } from "../../api/api";
-import { AuthState } from "../interfaces";
-import { fetchReleases, fetchLatestGHBetaRelease } from "../../devices/actions";
 import { auth } from "../../__test_support__/fake_state/token";
-
-const mockToken = (): AuthState => {
-  auth.token.unencoded.os_update_server = "os_update_server";
-  auth.token.unencoded.beta_os_update_server = "beta_os_update_server";
-  return auth;
-};
 
 describe("didLogin()", () => {
   it("bootstraps the user session", () => {
     const dispatch = jest.fn();
-    const result = didLogin(mockToken(), dispatch);
+    const result = didLogin(auth, dispatch);
     expect(result).toBeUndefined();
 
-    const { iss } = mockToken().token.unencoded;
+    const { iss } = auth.token.unencoded;
     expect(API.setBaseUrl).toHaveBeenCalledWith(iss);
     const actions = dispatch.mock.calls.map(x => x && x[0] && x[0].type);
     expect(actions).toContain(Actions.REPLACE_TOKEN);
-  });
-
-  it("fetches beta release info", () => {
-    const dispatch = jest.fn();
-    const mockAuth = mockToken();
-    mockAuth.token.unencoded.beta_os_update_server = "beta_os_update_server";
-    didLogin(mockAuth, dispatch);
-    expect(fetchReleases).toHaveBeenCalledWith("os_update_server");
-    expect(fetchLatestGHBetaRelease)
-      .toHaveBeenCalledWith("beta_os_update_server");
   });
 });

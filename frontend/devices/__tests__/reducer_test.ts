@@ -60,16 +60,8 @@ describe("botReducer", () => {
   it("fetches OS update info", () => {
     const r = botReducer(initialState(), {
       type: Actions.FETCH_OS_UPDATE_INFO_OK,
-      payload: { version: "1.2.3", commit: undefined }
-    }).currentOSVersion;
-    expect(r).toBe("1.2.3");
-  });
-
-  it("fetches beta OS update info", () => {
-    const r = botReducer(initialState(), {
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK,
-      payload: { version: "1.2.3", commit: undefined }
-    }).currentBetaOSVersion;
+      payload: { version: "1.2.3" }
+    }).osUpdateVersion;
     expect(r).toBe("1.2.3");
   });
 

@@ -1,8 +1,8 @@
 import React from "react";
 import { Row, Col, Markdown } from "../../ui/index";
-import { fetchReleasesFromAPI, OsUpdateButton } from "./os_update_button";
+import { fetchOsUpdateVersion, OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
-import { FarmbotOsRowProps } from "./interfaces";
+import { FarmbotOsRowProps, FarmbotOsRowState } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../i18next_wrapper";
 import { ErrorBoundary } from "../../error_boundary";
@@ -14,11 +14,16 @@ export const getOsReleaseNotesForVersion = (
   osReleaseNotes: string | undefined,
   version: string | undefined,
 ) => {
-  const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION || "10";
+  const lastKnownNoteV = "11";
+  const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION || lastKnownNoteV;
   const majorVersion = (version || fallback).split(".")[0];
   const allReleaseNotes = osReleaseNotes || "";
   const notesByVersion = allReleaseNotes.split("# v");
-  const fallbackNotes = notesByVersion.filter(x => x.startsWith("10"))[0];
+  const latestNote = notesByVersion[notesByVersion.length - 1];
+  const latestNoteMajorVersion = latestNote.split("\n")[0];
+  const fallbackNotes = parseInt(latestNoteMajorVersion) > parseInt(majorVersion)
+    ? notesByVersion.filter(x => x.startsWith(lastKnownNoteV))[0]
+    : latestNote;
   const thisReleaseNotes = notesByVersion
     .filter(x => x.startsWith(majorVersion))[0] || fallbackNotes || "";
   const notes = thisReleaseNotes.split("\n\n").slice(1).join("\n")
@@ -27,22 +32,35 @@ export const getOsReleaseNotesForVersion = (
   return { heading, notes };
 };
 
-const getVersionString =
-  (fbosVersion: string | undefined, onBeta: boolean | undefined): string => {
-    const needsExtension = fbosVersion && !fbosVersion.includes("-") && onBeta;
-    const extension = needsExtension ? "-beta" : "";
-    return fbosVersion ? fbosVersion + extension : t(" unknown (offline)");
+export class FarmbotOsRow
+  extends React.Component<FarmbotOsRowProps, FarmbotOsRowState> {
+  state: FarmbotOsRowState = {
+    version: this.props.bot.hardware.informational_settings.controller_version,
+    channel: "" + this.props.sourceFbosConfig("update_channel").value,
   };
 
-export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
+  componentDidMount = () => {
+    const { dispatch } = this.props;
+    const { target } = this.props.bot.hardware.informational_settings;
+    dispatch(fetchOsUpdateVersion(target));
+  }
 
-  componentDidMount = () => this.props.dispatch(fetchReleasesFromAPI(
-    this.props.bot.hardware.informational_settings.target))
+  componentDidUpdate = () => {
+    const { dispatch, bot, sourceFbosConfig } = this.props;
+    const { controller_version, target } = bot.hardware.informational_settings;
+    const channel = "" + sourceFbosConfig("update_channel").value;
+    const versionChange =
+      controller_version && this.state.version != controller_version;
+    const channelChange = channel && this.state.channel != channel;
+    if (versionChange || channelChange) {
+      this.setState({ version: controller_version, channel });
+      dispatch(fetchOsUpdateVersion(target));
+    }
+  };
 
   Version = () => {
-    const { controller_version, currently_on_beta } =
-      this.props.bot.hardware.informational_settings;
-    const version = getVersionString(controller_version, currently_on_beta);
+    const { controller_version } = this.props.bot.hardware.informational_settings;
+    const version = controller_version || t("unknown (offline)");
     return <Popover position={Position.BOTTOM_LEFT}>
       <p>
         {t("Version {{ version }}", { version })}
@@ -75,7 +93,6 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
   }
 
   render() {
-    const { sourceFbosConfig, bot, botOnline } = this.props;
     return <Highlight settingName={DeviceSetting.farmbotOS}>
       <Row>
         <Col xs={5}>
@@ -85,11 +102,10 @@ export class FarmbotOsRow extends React.Component<FarmbotOsRowProps> {
         </Col>
         <Col xs={7}>
           <OsUpdateButton
-            bot={bot}
-            sourceFbosConfig={sourceFbosConfig}
+            bot={this.props.bot}
             shouldDisplay={this.props.shouldDisplay}
             dispatch={this.props.dispatch}
-            botOnline={botOnline} />
+            botOnline={this.props.botOnline} />
         </Col>
       </Row>
       <Row>

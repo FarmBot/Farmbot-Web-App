@@ -104,14 +104,14 @@ export enum FbosVersionFallback {
   NULL = "0.0.0",
 }
 
-const fallbackData: MinOsFeatureLookup = {
+export const fallbackData: MinOsFeatureLookup = {
   [Feature.api_farmware_env]: "8.0.0",
   [Feature.api_farmware_installations]: "8.0.0",
   [Feature.update_resource]: "10.0.0",
   [Feature.express_stall_detection]: "10.1.3",
   [Feature.computed_move]: "11.0.0",
-  [Feature.api_ota_releases]: "11.0.2",
-  [Feature.z2_firmware_params]: MinVersionOverride.NEVER,
+  [Feature.api_ota_releases]: "11.1.0",
+  [Feature.z2_firmware_params]: "12.0.0",
   [Feature.safe_height_input]: MinVersionOverride.NEVER,
   [Feature.soil_height]: MinVersionOverride.NEVER,
   [Feature.boot_sequence]: MinVersionOverride.NEVER,

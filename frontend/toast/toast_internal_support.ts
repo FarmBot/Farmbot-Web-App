@@ -1,12 +1,10 @@
 import { FBToast } from "./fb_toast";
+import { CreateToastOnceProps, CreateToastProps } from "./interfaces";
 
 /**
  * The function responsible for attaching the messages to the container.
  */
-export const createToast = (
-  message: string, title: string, color: string, idPrefix: string,
-  noTimer: boolean,
-) => {
+export const createToast = (props: CreateToastProps) => {
 
   /**
    * Container element for all of the messages created from init().
@@ -20,21 +18,16 @@ export const createToast = (
   /**
    * Create elements.
    */
-  const t = new FBToast(parent, title, message, color, idPrefix, noTimer);
+  const t = new FBToast(parent, props);
   t.run();
 };
 
-export const createToastOnce = (message: string,
-  title: string,
-  color: string,
-  idPrefix: string,
-  noTimer: boolean,
-  fallbackLogger = console.warn,
-) => {
+export const createToastOnce = (props: CreateToastOnceProps) => {
+  const { message, fallbackLogger } = props;
   if (FBToast.everyMessage[message]) {
-    fallbackLogger(message);
+    (fallbackLogger || console.warn)(message);
   } else {
-    createToast(message, title, color, idPrefix, noTimer);
+    createToast(props);
     FBToast.everyMessage[message] = true;
   }
 };

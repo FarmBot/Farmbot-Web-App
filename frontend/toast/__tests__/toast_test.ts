@@ -1,10 +1,9 @@
-jest.mock("../toast_internal_support", () => {
-  return {
-    createToast: jest.fn(),
-    createToastOnce: jest.fn()
-  };
-});
+jest.mock("../toast_internal_support", () => ({
+  createToast: jest.fn(),
+  createToastOnce: jest.fn(),
+}));
 
+import { ToastOptions } from "../interfaces";
 import { createToastOnce, createToast } from "../toast_internal_support";
 
 const {
@@ -19,76 +18,98 @@ const {
 }: typeof import("../toast") = jest.requireActual("../toast");
 
 describe("toasts", () => {
+  const message = "test suite msg";
+  const customOptions: ToastOptions = {
+    title: "new title",
+    color: "purple",
+    idPrefix: "id-prefix",
+    noTimer: true,
+    noDismiss: true,
+  };
+
   it("pops a warning() toast", () => {
-    warning("test suite msg 1");
-    expect(createToastOnce).toHaveBeenCalledWith(
-      "test suite msg 1", "Warning", "orange", "", false, console.warn);
+    warning(message);
+    expect(createToastOnce).toHaveBeenCalledWith({
+      message: message,
+      title: "Warning",
+      color: "orange",
+      fallbackLogger: console.warn,
+    });
   });
 
   it("pops a warning() toast with different title and color", () => {
-    warning("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToastOnce).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true, console.warn);
+    warning(message, customOptions);
+    expect(createToastOnce).toHaveBeenCalledWith({
+      message,
+      ...customOptions,
+      fallbackLogger: console.warn,
+    });
   });
 
   it("pops a error() toast", () => {
-    error("test suite msg 2");
-    expect(createToastOnce).toHaveBeenCalledWith(
-      "test suite msg 2", "Error", "red", "", false, console.error);
+    error(message);
+    expect(createToastOnce).toHaveBeenCalledWith({
+      message,
+      title: "Error",
+      color: "red",
+      fallbackLogger: console.error,
+    });
   });
 
   it("pops a error() toast with different title and color", () => {
-    error("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToastOnce).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true, console.error);
+    error(message, customOptions);
+    expect(createToastOnce).toHaveBeenCalledWith({
+      message,
+      ...customOptions,
+      fallbackLogger: console.error,
+    });
   });
 
   it("pops a success() toast", () => {
-    success("test suite msg");
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "Success", "green", "", false);
+    success(message);
+    expect(createToast)
+      .toHaveBeenCalledWith({ message, title: "Success", color: "green" });
   });
 
   it("pops a success() toast with different title and color", () => {
-    success("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true);
+    success(message, customOptions);
+    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a info() toast", () => {
-    info("test suite msg");
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "FYI", "blue", "", false);
+    info(message);
+    expect(createToast)
+      .toHaveBeenCalledWith({ message, title: "FYI", color: "blue" });
   });
 
   it("pops a info() toast with different title and color", () => {
-    info("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true);
+    info(message, customOptions);
+    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a busy() toast", () => {
-    busy("test suite msg");
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "Busy", "yellow", "", false);
+    busy(message);
+    expect(createToast)
+      .toHaveBeenCalledWith({ message, title: "Busy", color: "yellow" });
   });
 
   it("pops a busy() toast with different title and color", () => {
-    busy("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true);
+    busy(message, customOptions);
+    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a fun() toast", () => {
-    fun("test suite msg");
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "Did you know?", "dark-blue", "", false);
+    fun(message);
+    expect(createToast).toHaveBeenCalledWith({
+      message,
+      title: "Did you know?",
+      color: "dark-blue",
+    });
   });
 
   it("pops a fun() toast with different title and color", () => {
-    fun("test suite msg", "new title", "purple", "id-prefix", true);
-    expect(createToast).toHaveBeenCalledWith(
-      "test suite msg", "new title", "purple", "id-prefix", true);
+    fun(message, customOptions);
+    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   const getToastContainerCount = () =>

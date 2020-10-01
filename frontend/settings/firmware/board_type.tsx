@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../ui";
 import { info } from "../../toast/toast";
 import { ColWidth } from "../fbos_settings/farmbot_os_settings";
@@ -26,7 +26,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
   sendOffConfig = (selectedItem: DropDownItem) => {
     const firmware_hardware = selectedItem.value;
     if (selectedItem && isFwHardwareValue(firmware_hardware)) {
-      info(t("Sending firmware configuration..."), t("Sending"));
+      info(t("Sending firmware configuration..."), { title: t("Sending") });
       this.props.dispatch(updateConfig({ firmware_hardware }));
       this.forceUpdate();
     }

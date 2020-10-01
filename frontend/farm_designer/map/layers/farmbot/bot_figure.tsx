@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
@@ -215,7 +215,7 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
       <ViewRectangle id={"angled-camera-view-area"}
         dashed={cropPhotos} position={angledView} />
     </g>}
-    {cropPhotos && croppedView && (largeCrop(rotationAngle)
+    {cropPhotos && croppedView && (largeCrop(rotationAngle) && angledView
       ? <ViewCircle id={"cropped-camera-view-area"}
         center={scaledCenter}
         radius={scaledShortEdge / 2}
@@ -246,7 +246,7 @@ interface ViewCircleProps {
   id: string;
   center: Record<"x" | "y", number>;
   radius: number;
-  position: MapImagePositionData | undefined;
+  position: MapImagePositionData;
 }
 
 const ViewCircle = (props: ViewCircleProps) =>
@@ -254,9 +254,9 @@ const ViewCircle = (props: ViewCircleProps) =>
     cx={props.center.x}
     cy={props.center.y}
     r={props.radius}
-    data-comment={props.position?.comment}
-    transform={props.position?.transform}
-    style={{ transformOrigin: props.position?.transformOrigin }} />;
+    data-comment={props.position.comment}
+    transform={props.position.transform}
+    style={{ transformOrigin: props.position.transformOrigin }} />;
 
 interface ImageLogVisualsProps {
   position: MapImagePositionData | undefined;

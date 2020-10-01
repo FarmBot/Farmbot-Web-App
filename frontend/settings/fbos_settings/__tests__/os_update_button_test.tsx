@@ -1,34 +1,35 @@
-const mockDevice = {
-  checkUpdates: jest.fn(() => Promise.resolve()),
-  updateConfig: jest.fn(() => Promise.resolve()),
-};
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+jest.mock("../../../devices/actions", () => ({
+  checkControllerUpdates: jest.fn(),
+  bulkToggleControlPanel: jest.fn(),
+  toggleControlPanel: jest.fn(),
+}));
 
 let mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
-jest.mock("axios", () => ({
-  get: jest.fn(() => mockResponse),
-}));
+jest.mock("axios", () => ({ get: jest.fn(() => mockResponse) }));
+
+jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import React from "react";
 import axios from "axios";
 import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { fetchReleasesFromAPI, OsUpdateButton } from "../os_update_button";
+import {
+  fetchOsUpdateVersion, OLDEST_OTA_ABLE_VERSION, OsUpdateButton,
+} from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../devices/interfaces";
 import { Actions, Content } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { API } from "../../../api";
+import { cloneDeep } from "lodash";
+import { push } from "../../../history";
+import {
+  checkControllerUpdates, toggleControlPanel,
+} from "../../../devices/actions";
 
-describe("<OsUpdateButton/>", () => {
-  beforeEach(() => {
-    applyTestProps(defaultTestProps());
-  });
-
+describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({
-    bot,
-    sourceFbosConfig: x =>
-      ({ value: bot.hardware.configuration[x], consistent: true }),
+    bot: cloneDeep(bot),
     botOnline: true,
     shouldDisplay: () => false,
     dispatch: jest.fn(),
@@ -36,25 +37,14 @@ describe("<OsUpdateButton/>", () => {
 
   interface TestProps {
     installedVersion: string | undefined;
-    installedCommit: string;
     availableVersion: string | undefined;
-    availableBetaVersion: string | undefined;
-    availableBetaCommit: string | undefined;
-    onBeta: boolean | undefined;
-    update_available?: boolean | undefined;
     shouldDisplay: ShouldDisplay;
-    update_channel: string;
   }
 
   const defaultTestProps = (): TestProps => ({
-    installedVersion: "6.1.6",
-    installedCommit: "",
-    availableVersion: "6.1.6",
-    availableBetaVersion: undefined,
-    availableBetaCommit: undefined,
-    onBeta: false,
-    shouldDisplay: () => false,
-    update_channel: "stable",
+    installedVersion: "12.0.0",
+    availableVersion: undefined,
+    shouldDisplay: () => true,
   });
 
   interface Results {
@@ -88,10 +78,10 @@ describe("<OsUpdateButton/>", () => {
       disabled: false,
     });
 
-  const cantConnect = (entity: string): Results =>
+  const cantConnect = (title: string | undefined): Results =>
     ({
-      text: `Can't connect to ${entity}`,
-      title: undefined,
+      text: "Can't connect to bot",
+      title,
       color: "yellow",
       disabled: false,
     });
@@ -108,31 +98,15 @@ describe("<OsUpdateButton/>", () => {
     ({
       text: progress,
       title: undefined,
-      color: "gray",
+      color: "green",
       disabled: true,
     });
 
-  const applyTestProps = (testProps: TestProps) => {
-    const {
-      installedVersion, installedCommit, onBeta, update_available,
-      availableVersion, availableBetaVersion, availableBetaCommit,
-      update_channel,
-    } = testProps;
-    bot.hardware.informational_settings.controller_version = installedVersion;
-    bot.hardware.informational_settings.commit = installedCommit;
-    bot.hardware.informational_settings.currently_on_beta = onBeta;
-    bot.hardware.informational_settings.update_available =
-      update_available || false;
-    bot.currentOSVersion = availableVersion;
-    bot.currentBetaOSVersion = availableBetaVersion;
-    bot.currentBetaOSCommit = availableBetaCommit;
-    bot.hardware.configuration.update_channel = update_channel;
-    return bot;
-  };
-
   const testButtonState = (testProps: TestProps, expected: Results) => {
     const p = fakeProps();
-    p.bot = applyTestProps(testProps);
+    const { installedVersion, availableVersion } = testProps;
+    p.bot.hardware.informational_settings.controller_version = installedVersion;
+    p.bot.osUpdateVersion = availableVersion;
     p.shouldDisplay = testProps.shouldDisplay;
     const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
@@ -145,6 +119,7 @@ describe("<OsUpdateButton/>", () => {
   it("renders buttons: too old", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "5.0.0";
+    testProps.availableVersion = "12.0.0";
     const expectedResults = tooOld();
     testButtonState(testProps, expectedResults);
   });
@@ -152,233 +127,59 @@ describe("<OsUpdateButton/>", () => {
   it("renders buttons: not connected", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = undefined;
-    testProps.availableVersion = undefined;
-    const expectedResults = cantConnect("bot");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("renders buttons: connected to releases but not bot", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = undefined;
-    const expectedResults = cantConnect("bot");
-    expectedResults.title = "6.1.6";
+    testProps.availableVersion = "12.0.0";
+    const expectedResults = cantConnect("12.0.0");
     testButtonState(testProps, expectedResults);
   });
 
   it("renders buttons: no releases available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
+    testProps.installedVersion = "12.0.0";
     testProps.availableVersion = undefined;
-    testProps.update_channel = "beta";
-    const expectedResults = cantConnect("release server");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("renders buttons: only beta release available", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.availableVersion = undefined;
-    testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.update_channel = "beta";
-    const expectedResults = updateNeeded("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("renders buttons: no beta release available", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.availableBetaVersion = undefined;
-    testProps.update_channel = "beta";
-    const expectedResults = upToDate("6.1.6");
+    const expectedResults = upToDate(undefined);
     testButtonState(testProps, expectedResults);
   });
 
   it("up to date", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    const expectedResults = upToDate("6.1.6");
+    testProps.installedVersion = "12.0.0";
+    testProps.availableVersion = undefined;
+    const expectedResults = upToDate(undefined);
     testButtonState(testProps, expectedResults);
   });
 
-  it("up to date: newer", () => {
+  it("downgrade to equal", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "7.0.0";
-    const expectedResults = upToDate("6.1.6");
+    testProps.installedVersion = "12.0.0";
+    testProps.availableVersion = "12.0.0";
+    const expectedResults = downgradeNeeded("12.0.0");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("downgrade", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "13.0.0";
+    testProps.availableVersion = "12.0.0";
+    const expectedResults = downgradeNeeded("12.0.0");
     testButtonState(testProps, expectedResults);
   });
 
   it("update available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.5";
-    const expectedResults = updateNeeded("6.1.6");
+    testProps.installedVersion = "12.0.0";
+    testProps.availableVersion = "13.0.0";
+    const expectedResults = updateNeeded("13.0.0");
     testButtonState(testProps, expectedResults);
   });
 
-  it("beta update available", () => {
+  it("considers upgrade path", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.5";
-    testProps.availableBetaVersion = "7.0.0-beta";
-    testProps.update_channel = "beta";
-    const expectedResults = updateNeeded("7.0.0-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("latest newer than beta update: latest installed", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.update_channel = "beta";
-    const expectedResults = upToDate("6.1.6");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("latest newer than beta update: beta installed", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.update_channel = "beta";
-    testProps.onBeta = true;
-    const expectedResults = updateNeeded("6.1.6");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("latest newer than beta update: beta installed (beta disabled)", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.availableBetaVersion = "6.1.6-beta";
-    testProps.update_channel = "stable";
-    testProps.onBeta = true;
-    const expectedResults = updateNeeded("6.1.6");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("on latest beta update", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.7";
-    testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.update_channel = "beta";
-    testProps.onBeta = true;
-    const expectedResults = upToDate("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("on latest beta update: already has beta suffix", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.7-beta";
-    testProps.availableBetaVersion = "6.1.7-beta";
-    testProps.update_channel = "beta";
-    const expectedResults = upToDate("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("beta update has same numeric version: newer commit", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "7.0.0";
-    testProps.installedCommit = "old commit";
-    testProps.availableBetaVersion = "7.0.0-beta";
-    testProps.availableBetaCommit = "new commit";
-    testProps.update_channel = "beta";
-    testProps.onBeta = true;
-    const expectedResults = updateNeeded("7.0.0-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("handles installed version newer than available (beta enabled)", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.7";
-    testProps.update_channel = "beta";
-    testProps.onBeta = false;
-    testProps.availableBetaVersion = "6.1.7-beta";
-    const expectedResults = upToDate("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("handles FBOS update available override", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.update_available = true;
-    const expectedResults = updateNeeded("6.1.6");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("uses update_channel value", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.update_channel = "stable";
-    testProps.availableBetaVersion = "6.1.7-beta";
-    const expectedResults = upToDate("6.1.6");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("uses update_channel value: beta", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.6";
-    testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "6.1.7-beta";
-    const expectedResults = updateNeeded("6.1.7-beta");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("compares release candidates: newer", () => {
-    const testProps = defaultTestProps();
-    testProps.availableVersion = "6.1.5";
-    testProps.installedVersion = "6.1.6-rc1";
-    testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "6.1.6-rc2";
-    const expectedResults = updateNeeded("6.1.6-rc2");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("compares release candidates: older", () => {
-    const testProps = defaultTestProps();
-    testProps.availableVersion = "6.1.5";
-    testProps.installedVersion = "6.1.6-rc2";
-    testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "6.1.6-rc1";
-    const expectedResults = upToDate("6.1.6-rc1");
-    testButtonState(testProps, expectedResults);
-  });
-
-  const apiReleasesProps = (): TestProps => ({
-    installedVersion: "6.1.4",
-    installedCommit: "1",
-    availableVersion: "6.1.5",
-    availableBetaVersion: "6.1.6-rc1",
-    availableBetaCommit: "2",
-    onBeta: true,
-    shouldDisplay: () => true,
-    update_channel: "beta",
-  });
-
-  it("ignores beta setting: upgrade", () => {
-    const testProps = apiReleasesProps();
-    testProps.availableVersion = "6.1.5";
-    testProps.installedVersion = "6.1.4";
-    const expectedResults = updateNeeded("6.1.5");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("ignores beta setting: downgrade to equal", () => {
-    const testProps = apiReleasesProps();
-    testProps.availableVersion = "6.1.5";
-    testProps.installedVersion = "6.1.5";
-    const expectedResults = downgradeNeeded("6.1.5");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("ignores beta setting: downgrade", () => {
-    const testProps = apiReleasesProps();
-    testProps.availableVersion = "6.1.4";
-    testProps.installedVersion = "6.1.5";
-    const expectedResults = downgradeNeeded("6.1.4");
-    testButtonState(testProps, expectedResults);
-  });
-
-  it("ignores beta setting: up to date", () => {
-    const testProps = apiReleasesProps();
-    testProps.availableVersion = undefined;
-    testProps.installedVersion = "6.1.5";
-    const expectedResults = upToDate(undefined);
+    testProps.installedVersion = "11.0.0";
+    testProps.availableVersion = "12.0.0";
+    testProps.shouldDisplay = () => false;
+    const expectedResults = (OLDEST_OTA_ABLE_VERSION as string) == "11.1.0"
+      ? tooOld()
+      : updateNeeded("11.1.0");
     testButtonState(testProps, expectedResults);
   });
 
@@ -389,6 +190,7 @@ describe("<OsUpdateButton/>", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.bot.hardware.informational_settings.target = "rpi";
+    p.shouldDisplay = () => true;
     const button = shallow(<OsUpdateButton {...p} />);
     await button.simulate("pointerEnter");
     expect(axios.get).toHaveBeenCalledWith(
@@ -404,13 +206,28 @@ describe("<OsUpdateButton/>", () => {
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
-    expect(mockDevice.checkUpdates).toHaveBeenCalledTimes(1);
+    expect(checkControllerUpdates).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onTooOld", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    const buttons = mount(<OsUpdateButton {...p} />);
+    const osUpdateButton = buttons.find("button").first();
+    osUpdateButton.simulate("click");
+    expect(checkControllerUpdates).not.toHaveBeenCalled();
+    expect(toggleControlPanel).toHaveBeenCalledWith("power_and_reset");
+    expect(push).toHaveBeenCalledWith(
+      "/app/designer/settings?highlight=hard_reset");
   });
 
   it("handles undefined jobs", () => {
+    const p = fakeProps();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    bot.hardware.jobs = undefined as any;
-    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    p.bot.hardware.jobs = undefined as any;
+    p.bot.hardware.informational_settings.controller_version = "12.0.0";
+    p.bot.osUpdateVersion = undefined;
+    const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     expect(osUpdateButton.text()).toEqual("UP TO DATE");
   });
@@ -432,16 +249,19 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
     };
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "12.0.0";
+    testProps.availableVersion = "13.0.0";
     const expectedResults = updating("10%");
-    expectedResults.title = "6.1.6";
-    testButtonState(defaultTestProps(), expectedResults);
+    expectedResults.title = "UPDATE TO 13.0.0";
+    testButtonState(testProps, expectedResults);
   });
 
   it("update success", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "complete", percent: 100, unit: "percent" }
     };
-    testButtonState(defaultTestProps(), upToDate("6.1.6"));
+    testButtonState(defaultTestProps(), upToDate(undefined));
   });
 
   it("update failed", () => {
@@ -449,8 +269,9 @@ describe("<OsUpdateButton/>", () => {
       "FBOS_OTA": { status: "error", percent: 10, unit: "percent" }
     };
     const testProps = defaultTestProps();
-    testProps.installedVersion = "6.1.5";
-    testButtonState(testProps, updateNeeded("6.1.6"));
+    testProps.installedVersion = "12.0.0";
+    testProps.availableVersion = "13.0.0";
+    testButtonState(testProps, updateNeeded("13.0.0"));
   });
 
   it("is disabled", () => {
@@ -460,18 +281,18 @@ describe("<OsUpdateButton/>", () => {
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
-    expect(mockDevice.checkUpdates).not.toHaveBeenCalled();
+    expect(checkControllerUpdates).not.toHaveBeenCalled();
   });
 });
 
-describe("fetchReleasesFromAPI()", () => {
+describe("fetchOsUpdateVersion()", () => {
   API.setBaseUrl("");
 
   it("doesn't fetch version", async () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("---")(outerDispatch);
+    await fetchOsUpdateVersion("---")(outerDispatch);
     await expect(axios.get).not.toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledWith("Platform not available.");
     expect(innerDispatch).toHaveBeenCalledWith({
@@ -485,7 +306,7 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchOsUpdateVersion("rpi")(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
     expect(console.error).not.toHaveBeenCalled();
@@ -500,12 +321,11 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchOsUpdateVersion("rpi")(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
-    await expect(console.error).toHaveBeenCalledWith({
-      data: { version: "error" }
-    });
+    await expect(console.error).toHaveBeenCalledWith(
+      JSON.stringify({ data: { version: "error" } }));
     expect(console.error).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
     expect(innerDispatch).toHaveBeenCalledWith({
@@ -519,10 +339,11 @@ describe("fetchReleasesFromAPI()", () => {
     const innerDispatch = jest.fn();
     const outerDispatch = mockDispatch(innerDispatch);
     console.error = jest.fn();
-    await fetchReleasesFromAPI("rpi")(outerDispatch);
+    await fetchOsUpdateVersion("rpi")(outerDispatch);
     await expect(axios.get).toHaveBeenCalledWith(
       "http://localhost/api/releases?platform=rpi");
-    await expect(console.error).toHaveBeenCalledWith("error 404");
+    await expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("error 404"));
     expect(console.error).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
     expect(console.error).toHaveBeenCalledWith(

@@ -90,7 +90,8 @@ describe("<App />: Loading", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     jest.runAllTimers();
     expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("App could not be fully loaded"), "Warning");
+      expect.stringContaining("App could not be fully loaded"),
+      { title: "Warning" });
     wrapper.unmount();
   });
 

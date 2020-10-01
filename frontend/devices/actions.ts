@@ -3,8 +3,7 @@ import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
-  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
-  ControlPanelState,
+  MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis, ControlPanelState,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
@@ -24,6 +23,8 @@ import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
+import { linkToFbosSettings } from "../settings/maybe_highlight";
+import { push } from "../history";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -53,7 +54,7 @@ export const commandErr =
 /** Toast message upon request success. */
 export const commandOK = (noun = "Command") => () => {
   const msg = t(noun) + t(" request sent to device.");
-  success(msg, t("Request sent"));
+  success(msg, { title: t("Request sent") });
 };
 
 /** Update FBOS. */
@@ -137,7 +138,9 @@ export function sync(): Thunk {
       if (currentFBOSversion) {
         badVersion();
       } else {
-        info(t("FarmBot is not connected."), t("Disconnected"), "red");
+        info(t("FarmBot is not connected."), {
+          title: t("Disconnected"), color: "red",
+        });
       }
     }
   };
@@ -163,65 +166,6 @@ export function execSequence(
     throw new Error(t("Can't execute unsaved sequences"));
   }
 }
-
-const tagNameToVersionString = (tagName: string): string =>
-  tagName.toLowerCase().replace("v", "");
-
-/**
- * Fetch FarmBot OS beta release data.
- * Ignores a specific release provided by the url (i.e., `releases/1234`)
- * in favor of the latest `-beta` release.
- */
-export const fetchLatestGHBetaRelease =
-  (url: string) =>
-    (dispatch: Function) => {
-      const urlArray = url.split("/");
-      const releasesURL = urlArray.splice(0, urlArray.length - 1).join("/");
-      axios
-        .get<GithubRelease[]>(releasesURL)
-        .then(resp => {
-          const latestBeta = resp.data.filter(x =>
-            x.tag_name.includes("beta") || x.tag_name.includes("rc"))[0];
-          const { tag_name, target_commitish } = latestBeta;
-          const version = tagNameToVersionString(tag_name);
-          dispatch({
-            type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK,
-            payload: { version, commit: target_commitish }
-          });
-        })
-        .catch(ferror => dispatch({
-          type: "FETCH_BETA_OS_UPDATE_INFO_ERROR",
-          payload: ferror
-        }));
-    };
-
-/** Fetch FarmBot OS release data. */
-export const fetchReleases =
-  (url: string, options = { beta: false }) =>
-    (dispatch: Function) => {
-      axios
-        .get<GithubRelease>(url)
-        .then(resp => {
-          const { tag_name, target_commitish } = resp.data;
-          const version = tagNameToVersionString(tag_name);
-          dispatch({
-            type: options.beta
-              ? Actions.FETCH_BETA_OS_UPDATE_INFO_OK
-              : Actions.FETCH_OS_UPDATE_INFO_OK,
-            payload: { version, commit: target_commitish }
-          });
-        })
-        .catch((ferror) => {
-          !options.beta &&
-            console.error(t("Could not download FarmBot OS update information."));
-          dispatch({
-            type: options.beta
-              ? Actions.FETCH_BETA_OS_UPDATE_INFO_ERROR
-              : Actions.FETCH_OS_UPDATE_INFO_ERROR,
-            payload: ferror
-          });
-        });
-    };
 
 /**
  * Structure and type checks for fetched minimum FBOS version feature object.
@@ -426,6 +370,7 @@ export function changeStepSize(integer: number) {
 }
 
 export function badVersion() {
-  info(t("You are running an old version of FarmBot OS."),
-    t("Please Update"), "red");
+  push(linkToFbosSettings());
+  error(t(Content.OLD_FBOS_UNSUPPORTED),
+    { title: t("Please Update"), noDismiss: true });
 }

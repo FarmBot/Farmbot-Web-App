@@ -10,25 +10,35 @@ jest.mock("../fb_toast", () => {
 });
 
 import { FBToast } from "../fb_toast";
+import { CreateToastOnceProps } from "../interfaces";
 import { createToastOnce, createToast } from "../toast_internal_support";
 
 describe("toast internal support files", () => {
+  const fakeProps = (): CreateToastOnceProps => ({
+    message: "foo",
+    title: "bar",
+    color: "baz",
+    idPrefix: "id-prefix",
+    noTimer: false,
+    noDismiss: false,
+  });
+
   it("creates a toast and attaches to DOM", () => {
-    const msg = "foo";
-    const fallback = jest.fn();
+    const p = fakeProps();
+    p.fallbackLogger = jest.fn();
     const container = document.createElement("DIV");
     container.className = "toast-container";
     document.body.appendChild(container);
 
-    createToastOnce(msg, "bar", "baz", "id-prefix", false, fallback);
+    createToastOnce(p);
 
-    expect(FBToast.everyMessage[msg]).toBe(true);
-    expect(fallback).not.toHaveBeenCalled();
+    expect(FBToast.everyMessage[p.message]).toBe(true);
+    expect(p.fallbackLogger).not.toHaveBeenCalled();
     expect(mockRun).toHaveBeenCalled();
 
-    createToastOnce(msg, "bar", "baz", "id-prefix", false, fallback);
+    createToastOnce(p);
 
-    expect(fallback).toHaveBeenCalled();
+    expect(p.fallbackLogger).toHaveBeenCalled();
   });
 
   it("uses default fallback logger", () => {
@@ -37,17 +47,19 @@ describe("toast internal support files", () => {
     const container = document.createElement("DIV");
     container.className = "toast-container";
     document.body.appendChild(container);
-    const msg = "foo";
-    delete FBToast.everyMessage[msg];
-    createToastOnce(msg, "bar", "baz", "", false);
+    const p = fakeProps();
+    p.idPrefix = "";
+    delete FBToast.everyMessage[p.message];
+    createToastOnce(p);
     expect(console.warn).not.toHaveBeenCalled();
     expect(mockRun).toHaveBeenCalled();
-    createToastOnce(msg, "bar", "baz", "", false);
+    createToastOnce(p);
     expect(console.warn).toHaveBeenCalled();
   });
 
   it("crashes if you don't attach .toast-container", () => {
+    const p = fakeProps();
     document.body.innerHTML = "";
-    expect(() => createToast("x", "y", "z", "id-prefix", false)).toThrow();
+    expect(() => createToast(p)).toThrow();
   });
 });
