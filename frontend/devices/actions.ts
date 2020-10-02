@@ -369,8 +369,8 @@ export function changeStepSize(integer: number) {
   };
 }
 
-export function badVersion() {
+export function badVersion(options = { noDismiss: true }) {
   push(linkToFbosSettings());
   error(t(Content.OLD_FBOS_UNSUPPORTED),
-    { title: t("Please Update"), noDismiss: true });
+    { title: t("Please Update"), noTimer: true, ...options });
 }
