@@ -76,7 +76,7 @@ export function downloadProgress(job: JobProgress | undefined) {
           return megaBytes + "MB";
         }
       case "percent":
-        return job.percent + "%";
+        return job.percent.toFixed(0) + "%";
     }
   }
 }
