@@ -116,6 +116,7 @@ FarmBot::Application.routes.draw do
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
 
   get "/demo" => "dashboard#demo", as: :demo_main
+  get "/try_farmbot" => "dashboard#try_farmbot", as: :try_farmbot_main
   get "/os" => "dashboard#os_download", as: :os_download
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/tos_update" => "dashboard#tos_update", as: :tos_update
