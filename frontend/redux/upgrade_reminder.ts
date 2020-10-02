@@ -23,7 +23,7 @@ export function createReminderFn() {
   return function reminder(version: string) {
 
     if (!alreadyChecked[version] && !versionOK(version)) {
-      badVersion();
+      badVersion({ noDismiss: false });
       alreadyChecked[version] = true;
     }
 

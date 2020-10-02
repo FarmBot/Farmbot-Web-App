@@ -17,7 +17,7 @@ describe("createReminderFn", () => {
     expect(info).toHaveBeenCalledTimes(0);
 
     ding("1.0.0");
-    expect(badVersion).toHaveBeenCalled();
+    expect(badVersion).toHaveBeenCalledWith({ noDismiss: false });
     expect(info).toHaveBeenCalledTimes(0);
 
     ding("6.3.2");

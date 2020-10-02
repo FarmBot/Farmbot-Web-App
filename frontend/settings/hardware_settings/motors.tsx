@@ -8,9 +8,9 @@ import { MotorsProps } from "./interfaces";
 import { Header } from "./header";
 import { Collapse, Position } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
-import { Feature, SourceFwConfig } from "../../devices/interfaces";
+import { SourceFwConfig } from "../../devices/interfaces";
 import { calcMicrostepsPerMm } from "../../controls/move/direction_axes_props";
-import { isTMCBoard, isExpress } from "../firmware/firmware_hardware_support";
+import { isTMCBoard, hasZ2Params } from "../firmware/firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
@@ -48,7 +48,7 @@ export function Motors(props: MotorsProps) {
   };
 
   const getDefault = getDefaultFwConfigValue(props.firmwareHardware);
-  const express = isExpress(firmwareHardware);
+  const z2Params = hasZ2Params(firmwareHardware, props.shouldDisplay);
 
   return <Highlight className={"section"}
     settingName={DeviceSetting.motors}>
@@ -71,7 +71,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {props.shouldDisplay(Feature.z2_firmware_params) && express &&
+      {z2Params &&
         <Highlight settingName={DeviceSetting.maxSpeedTowardHome}>
           <Row>
             <Col xs={8} className={"z-param-label"}>
@@ -109,7 +109,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {props.shouldDisplay(Feature.z2_firmware_params) && express &&
+      {z2Params &&
         <Highlight settingName={DeviceSetting.minimumSpeedTowardHome}>
           <Row>
             <Col xs={8} className={"z-param-label"}>
@@ -138,7 +138,7 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {props.shouldDisplay(Feature.z2_firmware_params) && express &&
+      {z2Params &&
         <Highlight settingName={DeviceSetting.accelerateForTowardHome}>
           <Row>
             <Col xs={8} className={"z-param-label"}>

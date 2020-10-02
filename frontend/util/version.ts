@@ -112,8 +112,9 @@ export const fallbackData: MinOsFeatureLookup = {
   [Feature.computed_move]: "11.0.0",
   [Feature.api_ota_releases]: "11.1.0",
   [Feature.z2_firmware_params]: "12.0.0",
-  [Feature.safe_height_input]: MinVersionOverride.NEVER,
-  [Feature.soil_height]: MinVersionOverride.NEVER,
+  [Feature.safe_height_input]: "12.1.0",
+  [Feature.soil_height]: "12.1.0",
+  [Feature.z2_firmware_params_tmc]: MinVersionOverride.NEVER,
   [Feature.boot_sequence]: MinVersionOverride.NEVER,
 };
 
