@@ -26,8 +26,18 @@ describe("prettyPrintApiErrors", () => {
 });
 
 describe("catchErrors", () => {
+  const e = new Error("TEST");
+
   it("re-raises errors when Rollbar is not detected", () => {
-    const e = new Error("TEST");
     expect(() => catchErrors(e)).toThrow("TEST");
+  });
+
+  it("passes errors to Rollbar", () => {
+    window.Rollbar = {
+      configure: jest.fn(),
+      error: jest.fn()
+    };
+    catchErrors(e);
+    window.Rollbar && expect(window.Rollbar.error).toHaveBeenCalledWith(e);
   });
 });
