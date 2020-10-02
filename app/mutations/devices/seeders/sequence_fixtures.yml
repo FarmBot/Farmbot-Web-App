@@ -232,13 +232,13 @@
             :kind: identifier
             :args:
               :label: parent
-      - :kind: axis_addition
+      - :kind: axis_overwrite
         :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: special_value
             :args:
-              :number: 300
+              :label: "safe_height"
     :comment: Move above plant
   - :kind: take_photo
     :args: {}
@@ -285,13 +285,13 @@
             :kind: identifier
             :args:
               :label: parent
-      - :kind: axis_addition
+      - :kind: axis_overwrite
         :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: special_value
             :args:
-              :number: 300
+              :label: "safe_height"
     :comment: Move above plant
   - :kind: write_pin
     :args:
