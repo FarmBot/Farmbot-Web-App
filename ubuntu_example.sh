@@ -28,7 +28,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 # Install FarmBot Web App
 # ⚠ SKIP THIS STEP IF UPGRADING!
-git clone https://github.com/FarmBot/Farmbot-Web-App --depth=5 --branch=master
+git clone https://github.com/FarmBot/Farmbot-Web-App --depth=5 --branch=main
 
 cd Farmbot-Web-App
 
@@ -81,7 +81,7 @@ sudo docker-compose run web npm run test
   # To update to later versions of FarmBot,
   # shut down the server, create a database backup
   # and run commands below.
-  git pull https://github.com/FarmBot/Farmbot-Web-App.git master
+  git pull https://github.com/FarmBot/Farmbot-Web-App.git main
   sudo docker-compose build
   sudo docker-compose run web bundle install   # <== ⚠ UPGRADE USERS ONLY
   sudo docker-compose run web npm install      # <== ⚠ UPGRADE USERS ONLY
