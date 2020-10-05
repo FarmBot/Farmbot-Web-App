@@ -1,7 +1,7 @@
 module Logs
   class Create < Mutations::Command
-    BLACKLIST = /WPA|PSK|PASSWORD|NERVES/
-    BAD_WORDS = "Log message contained blacklisted words"
+    EXCLUDE = /WPA|PSK|PASSWORD|NERVES/
+    BAD_WORDS = "Log message contained EXCLUDEed words"
 
     required do
       # TODO: Some strange stuff happened with caching in the log service.
@@ -57,7 +57,7 @@ module Logs
     end
 
     def has_bad_words
-      !!inputs[:message].upcase.match(BLACKLIST)
+      !!inputs[:message].upcase.match(EXCLUDE)
     end
   end
 end

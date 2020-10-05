@@ -2,7 +2,7 @@ module Sequences
   class Update < Mutations::Command
     include CeleryScriptValidators
     using CanonicalCeleryHelpers
-    BLACKLIST = [:sequence, :device, :args, :body, :folder_id]
+    EXCLUDE = [:sequence, :device, :args, :body, :folder_id]
     BASE = "Can't add 'parent' to sequence because "
     EXPL = {
       FarmEvent => BASE + "it is in use by FarmEvents on these dates: %{items}",
@@ -46,7 +46,7 @@ module Sequences
       Sequence.auto_sync_debounce do
         ActiveRecord::Base.transaction do
           sequence.migrated_nodes = true
-          sequence.update!(inputs.except(*BLACKLIST).merge(folder_stuff))
+          sequence.update!(inputs.except(*EXCLUDE).merge(folder_stuff))
           CeleryScript::StoreCelery.run!(sequence: sequence,
                                          args: args,
                                          body: body)
@@ -55,6 +55,7 @@ module Sequences
       end
       CeleryScript::FetchCelery.run!(sequence: sequence, args: args, body: body)
     end
+
     def folder_stuff
       if folder_id
         return { folder: device.folders.find_by(id: folder_id) }
