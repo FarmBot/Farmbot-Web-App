@@ -11,6 +11,7 @@ class DashboardController < ApplicationController
                         :password_reset,
                         :terminal,
                         :tos_update,
+                        :try_farmbot,
                       ]
 
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
@@ -29,6 +30,7 @@ class DashboardController < ApplicationController
     password_reset: "/password_reset/index.tsx",
     tos_update: "/tos_update/index.tsx",
     demo: "/demo/index.tsx",
+    try_farmbot: "/try_farmbot/index.tsx",
     os_download: "/os_download/index.tsx",
     terminal: "/terminal/index.tsx",
   }.with_indifferent_access

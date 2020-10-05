@@ -4,7 +4,6 @@ if Rails.env == "development"
   DATE_RANGE_LO = 1..3
   DATE_RANGE_HI = 3..8
   ENV["MQTT_HOST"] = "blooper.io"
-  ENV["OS_UPDATE_SERVER"] = "http://example-server.com"
   # CREDIT: Faker Ruby Gem
   VEGGIES = %w(artichoke arugula asparagus broccoli cabbage carrot cauliflower
                celery cucumber eggplant garlic kale kohlrabi leek lettuce okra

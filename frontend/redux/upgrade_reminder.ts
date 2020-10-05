@@ -1,8 +1,11 @@
 import { info } from "../toast/toast";
-import { semverCompare, SemverResult, FbosVersionFallback } from "../util";
+import {
+  semverCompare, SemverResult, FbosVersionFallback, versionOK,
+} from "../util";
 import { Content } from "../constants";
 import { Dictionary } from "lodash";
 import { t } from "../i18next_wrapper";
+import { badVersion } from "../devices/actions";
 
 const IDEAL_VERSION =
   globalConfig.FBOS_END_OF_LIFE_VERSION || FbosVersionFallback.NULL;
@@ -18,6 +21,11 @@ export function createReminderFn() {
   };
 
   return function reminder(version: string) {
+
+    if (!alreadyChecked[version] && !versionOK(version)) {
+      badVersion({ noDismiss: false });
+      alreadyChecked[version] = true;
+    }
 
     // Did we check this particular version yet?
     !alreadyChecked[version]

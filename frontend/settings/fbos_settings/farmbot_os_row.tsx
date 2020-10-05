@@ -15,19 +15,19 @@ export const getOsReleaseNotesForVersion = (
   version: string | undefined,
 ) => {
   const lastKnownNoteV = "11";
-  const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION || lastKnownNoteV;
-  const majorVersion = (version || fallback).split(".")[0];
-  const allReleaseNotes = osReleaseNotes || "";
-  const notesByVersion = allReleaseNotes.split("# v");
-  const latestNote = notesByVersion[notesByVersion.length - 1];
-  const latestNoteMajorVersion = latestNote.split("\n")[0];
-  const fallbackNotes = parseInt(latestNoteMajorVersion) > parseInt(majorVersion)
-    ? notesByVersion.filter(x => x.startsWith(lastKnownNoteV))[0]
+  const fallbackV = globalConfig.FBOS_END_OF_LIFE_VERSION || lastKnownNoteV;
+  const majorVersion = (version || fallbackV).split(".")[0];
+  const stripVersion = (n: string) => n.split("\n\n").slice(1).join("\n");
+  const notesByV = (osReleaseNotes || "").split("# v");
+  const allNotes = notesByV.filter(n => stripVersion(n).replace(/\s/g, ""));
+  const getNote = (v: string) => allNotes.filter(x => x.startsWith(v))[0];
+  const latestNote = allNotes[allNotes.length - 1] || "";
+  const latestNoteMajorV = latestNote.split("\n")[0];
+  const fallbackNotes = parseInt(latestNoteMajorV) > parseInt(majorVersion)
+    ? getNote(lastKnownNoteV)
     : latestNote;
-  const thisReleaseNotes = notesByVersion
-    .filter(x => x.startsWith(majorVersion))[0] || fallbackNotes || "";
-  const notes = thisReleaseNotes.split("\n\n").slice(1).join("\n")
-    || t("Could not get release notes.");
+  const releaseNotes = getNote(majorVersion) || fallbackNotes || "";
+  const notes = stripVersion(releaseNotes) || t("Could not get release notes.");
   const heading = "FarmBot OS v" + majorVersion;
   return { heading, notes };
 };

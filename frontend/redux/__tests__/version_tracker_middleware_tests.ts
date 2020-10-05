@@ -1,3 +1,5 @@
+jest.mock("../../devices/actions", () => ({ badVersion: jest.fn() }));
+
 import { fakeState } from "../../__test_support__/fake_state";
 import { versionChangeMiddleware } from "../version_tracker_middleware";
 import {
