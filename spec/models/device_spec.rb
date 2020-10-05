@@ -5,6 +5,8 @@ describe Device do
   let(:user) { device.users.first }
   # [timezone, local_ota_hour, expected]
   conversions = [
+    # Timezones obseerving DST:
+    # ["Australia/Canberra", 7, 17],
     ["Africa/Addis_Ababa", 6, 9],
     ["Africa/Kampala", 22, 1],
     ["Africa/Lagos", 15, 16],
@@ -15,7 +17,6 @@ describe Device do
     ["Asia/Omsk", 11, 17],
     ["Asia/Qatar", 0, 3],
     ["Asia/Seoul", 18, 3],
-    ["Australia/Canberra", 7, 17],
     ["Australia/Perth", 21, 5],
     ["Etc/GMT+4", 20, 16],
     ["Europe/Berlin", 11, 13],
