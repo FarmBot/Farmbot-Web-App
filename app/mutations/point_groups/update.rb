@@ -1,7 +1,7 @@
 module PointGroups
   class Update < Mutations::Command
     include PointGroups::Helpers
-    BLACKLISTED_FIELDS = [:device, :point_ids, :point_group]
+    EXCLUDED_FIELDS = [:device, :point_ids, :point_group]
 
     required do
       model :device, class: Device
@@ -37,7 +37,7 @@ module PointGroups
 
     def update_attributes
       @update_attributes ||= inputs
-        .except(*BLACKLISTED_FIELDS)
+        .except(*EXCLUDED_FIELDS)
         .merge(criteria: criteria || point_group.criteria)
     end
 

@@ -93,7 +93,7 @@ describe Api::LogsController do
       expect(json[:message]).to eq("HELLO")
     end
 
-    it "disallows blacklisted (sensitive) words in logs" do
+    it "disallows excluded (sensitive) words in logs" do
       Log.destroy_all
       stub = { meta: { x: 1, y: 2, z: 3, type: "info" },
                channels: ["toast"],

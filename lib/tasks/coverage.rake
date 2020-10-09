@@ -7,7 +7,7 @@ COV_API_BUILDS_PER_PAGE = 5
 COV_BUILDS_TO_FETCH = 20
 PULL_REQUEST = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
-BASE_BRANCHES = ["master", "staging"]
+BASE_BRANCHES = ["main", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
@@ -43,17 +43,17 @@ end
 # Determine the base branch of the current build.
 def get_base_branch(pull_data)
   current_branch = BASE_BRANCHES.empty? ||
-    BASE_BRANCHES.include?(CURRENT_BRANCH) ? CURRENT_BRANCH : "staging"
+                   BASE_BRANCHES.include?(CURRENT_BRANCH) ? CURRENT_BRANCH : "staging"
   provided_base_branch =
-    CURRENT_BRANCH.start_with?("master-hotfix/") ? "master" : nil;
+    CURRENT_BRANCH.start_with?("main-hotfix/") ? "main" : nil
   pull_data.dig("base", "ref") || provided_base_branch || current_branch
 end
 
 # Gather relevant coverage data.
 def relevant_data(build)
   { branch: build["branch"],
-   commit: build["commit_sha"],
-   percent: build["covered_percent"] }
+    commit: build["commit_sha"],
+    percent: build["covered_percent"] }
 end
 
 # Fetch relevant coverage build data from commit.
@@ -128,7 +128,7 @@ end
 
 # Calculate coverage results from JSON coverage report.
 def get_json_coverage_results()
-  results = {lines: {covered: 0, total: 0}, branches: {covered: 0, total: 0}}
+  results = { lines: { covered: 0, total: 0 }, branches: { covered: 0, total: 0 } }
   begin
     data = open_json(JSON_COVERAGE_FILE_PATH)
   rescue Errno::ENOENT
@@ -142,15 +142,15 @@ def get_json_coverage_results()
         lineMap[line] = count
       end
     end
-    results[:lines][:covered] += lineMap.map{ |line, count| count }
-      .filter{ |count| count != 0}.length
+    results[:lines][:covered] += lineMap.map { |line, count| count }
+      .filter { |count| count != 0 }.length
     results[:lines][:total] += lineMap.length
 
     branches = []
     file_coverage["b"].each do |branch, counts|
-      counts.map{ |count| branches.push(count) }
+      counts.map { |count| branches.push(count) }
     end
-    results[:branches][:covered] += branches.filter{ |count| count != 0 }.length
+    results[:branches][:covered] += branches.filter { |count| count != 0 }.length
     results[:branches][:total] += branches.length
   end
   results
@@ -190,11 +190,11 @@ namespace :coverage do
     begin
       # Fetch current build coverage data from the HTML summary.
       statements, branches, functions, lines =
-      Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
-        .css(CSS_SELECTOR)
-        .map(&:text)
-        .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
-        .map { |x| Pair.new(*x) }
+        Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
+          .css(CSS_SELECTOR)
+          .map(&:text)
+          .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
+          .map { |x| Pair.new(*x) }
     rescue Errno::ENOENT
     end
 
@@ -202,9 +202,11 @@ namespace :coverage do
     puts "Checking JSON report..." if lines.nil?
     results = get_json_coverage_results()
     lines_json_report = Pair.new(
-      results[:lines][:covered].to_f, results[:lines][:total].to_f)
+      results[:lines][:covered].to_f, results[:lines][:total].to_f
+    )
     branches_json_report = Pair.new(
-        results[:branches][:covered].to_f, results[:branches][:total].to_f)
+      results[:branches][:covered].to_f, results[:branches][:total].to_f
+    )
     if results[:lines][:total] > 0
       lines = lines || lines_json_report
       branches = branches || branches_json_report

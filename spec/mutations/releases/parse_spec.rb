@@ -46,18 +46,59 @@ describe Releases::Parse do
   }
 
   it "parses a release" do
-    raw_json = `curl -s https://api.github.com/repos/farmbot/farmbot_os/releases/latest`
-    input = JSON.parse(raw_json, symbolize_names: true)
+    input = {
+      draft: false,
+      prerelease: false,
+      tag_name: "v12.1.0",
+      assets: [
+        {
+          name: "farmbot-rpi-12.1.0.fw",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi-12.1.0.fw",
+        },
+        {
+          name: "farmbot-rpi-12.1.0.img",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi-12.1.0.img",
+        },
+        {
+          name: "farmbot-rpi-12.1.0.sha256",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi-12.1.0.sha256",
+        },
+        {
+          name: "farmbot-rpi3-12.1.0.fw",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi3-12.1.0.fw",
+        },
+        {
+          name: "farmbot-rpi3-12.1.0.img",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi3-12.1.0.img",
+        },
+        {
+          name: "farmbot-rpi3-12.1.0.sha256",
+          content_type: "application/octet-stream",
+          state: "uploaded",
+          browser_download_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi3-12.1.0.sha256",
+        },
+      ],
+    }
     output = Releases::Parse.run!(input)
     expect(output.count).to be 2
     expect(output).to include({
-                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.0.1/farmbot-rpi-12.0.1.fw",
-                        version: "12.0.1",
+                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi-12.1.0.fw",
+                        version: "12.1.0",
                         platform: "rpi",
                       })
     expect(output).to include({
-                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.0.1/farmbot-rpi3-12.0.1.fw",
-                        version: "12.0.1",
+                        image_url: "https://github.com/FarmBot/farmbot_os/releases/download/v12.1.0/farmbot-rpi3-12.1.0.fw",
+                        version: "12.1.0",
                         platform: "rpi3",
                       })
   end

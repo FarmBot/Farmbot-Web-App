@@ -34,7 +34,7 @@ export function getMiddleware(env: EnvName) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wow = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
   const dtCompose = wow?.({
-    actionsBlacklist: [
+    actionsExcludelist: [
       Actions.NETWORK_EDGE_CHANGE,
       Actions.PING_NO,
       Actions.PING_OK,
