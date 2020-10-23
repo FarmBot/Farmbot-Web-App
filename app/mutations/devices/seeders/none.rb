@@ -22,9 +22,12 @@ module Devices
       def point_groups_broccoli; end
       def point_groups_beet; end
       def point_groups_all_plants; end
+      def point_groups_all_points; end
+      def point_groups_all_weeds; end
       def sequences_water_all_plants; end
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
+      def settings_soil_height; end
       def settings_firmware; end
       def settings_hide_sensors; end
       def tool_slots_slot_1; end
