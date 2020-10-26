@@ -22,7 +22,8 @@ describe Api::DevicesController do
         expect(device.send(resource.pluralize).reload.count).to be > 0
       end
 
-      device.update(name: "#{SecureRandom.hex(10)}")
+      device.update!(name: "#{SecureRandom.hex(10)}",
+                     mounted_tool_id: device.tools.first.id)
 
       run_jobs_now { post :reset, body: { password: password }.to_json }
 

@@ -467,7 +467,9 @@ CREATE TABLE public.fbos_configs (
     firmware_path character varying,
     firmware_debug_log boolean DEFAULT false,
     update_channel character varying(7) DEFAULT 'stable'::character varying,
-    boot_sequence_id integer
+    boot_sequence_id integer,
+    safe_height integer DEFAULT 0,
+    soil_height integer DEFAULT 0
 );
 
 
@@ -3454,6 +3456,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200823211337'),
 ('20200902141446'),
 ('20200907153510'),
-('20200910175338');
+('20200910175338'),
+('20200914165414');
 
 
