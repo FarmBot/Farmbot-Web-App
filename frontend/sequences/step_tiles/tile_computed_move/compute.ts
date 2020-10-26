@@ -8,6 +8,8 @@ import {
   FetchSpecialValueProps, ComputeAddProps,
 } from "./interfaces";
 import { isUndefined } from "lodash";
+import { validFbosConfig } from "../../../util";
+import { getFbosConfig } from "../../../resources/getters";
 
 /** Doesn't support lua. Max variance is used. */
 export const computeCoordinate = (props: ComputeCoordinateProps): Vector3 => {
@@ -64,6 +66,7 @@ const overwrite = (props: ComputeOverwriteProps): number | undefined => {
         axis: props.axis,
         label: props.operand.args.label,
         botPosition: props.botPosition,
+        resources: resources,
       });
     case "numeric":
       return props.operand.args.number;
@@ -71,13 +74,14 @@ const overwrite = (props: ComputeOverwriteProps): number | undefined => {
 };
 
 const fetchSpecialValue = (props: FetchSpecialValueProps): number | undefined => {
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
   switch (props.label) {
     case AxisSelection.disable:
       return props.botPosition[props.axis] || 0;
     case AxisSelection.safe_height:
+      return fbosConfig?.safe_height || 0;
     case AxisSelection.soil_height:
-      // Once supported, this will change to the user-defined API value.
-      return 0;
+      return fbosConfig?.soil_height || 0;
   }
 };
 

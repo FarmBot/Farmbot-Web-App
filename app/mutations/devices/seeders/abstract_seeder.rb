@@ -14,6 +14,8 @@ module Devices
         :point_groups_broccoli,
         :point_groups_beet,
         :point_groups_all_plants,
+        :point_groups_all_points,
+        :point_groups_all_weeds,
 
         # PERIPHERALS ============================
         :peripherals_vacuum,
@@ -35,6 +37,7 @@ module Devices
         :settings_default_map_size_y,
         :settings_device_name,
         :settings_change_firmware_config_defaults,
+        :settings_soil_height,
         :settings_firmware,
         :settings_hide_sensors,
 
@@ -165,6 +168,14 @@ module Devices
         add_point_group(name: "All plants")
       end
 
+      def point_groups_all_points
+        add_point_group(name: "All points", pointer_type: "GenericPointer")
+      end
+
+      def point_groups_all_weeds
+        add_point_group(name: "All weeds", pointer_type: "Weed")
+      end
+
       def sequences_water_all_plants
         s = SequenceSeeds::WATER_ALL_PLANTS.deep_dup
 
@@ -179,7 +190,12 @@ module Devices
       def settings_default_map_size_y; end
       def settings_device_name; end
       def settings_change_firmware_config_defaults; end
-      def settings_firmware; end
+      def settings_soil_height; end
+
+      def settings_soil_height
+        device.fbos_config.update!(soil_height: -200)
+      end
+
       def tool_slots_slot_1; end
       def tool_slots_slot_2; end
       def tool_slots_slot_3; end
@@ -241,14 +257,14 @@ module Devices
                             device: device)
       end
 
-      def add_point_group(name:, openfarm_slug: nil)
+      def add_point_group(name:, pointer_type: "Plant", openfarm_slug: nil)
         PointGroups::Create.run!(device: device,
                                  name: name,
                                  point_ids: [],
                                  sort_type: "yx_ascending",
                                  criteria: {
                                    string_eq: {
-                                     pointer_type: ["Plant"],
+                                     pointer_type: [pointer_type],
                                      openfarm_slug: openfarm_slug ? [openfarm_slug] : nil,
                                    },
                                    number_eq: { },

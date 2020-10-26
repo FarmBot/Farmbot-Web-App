@@ -6,6 +6,7 @@ import { fakeNumericMoveStepCeleryScript } from "../test_fixtures";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
 import { SpecialValue, Xyz } from "farmbot";
 import {
+  fakeFbosConfig,
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { cloneDeep } from "lodash";
@@ -84,6 +85,55 @@ describe("computeCoordinate()", () => {
   });
 
   it("computes coordinate with special value overwrites", () => {
+    const moveStep = fakeNumericMoveStepCeleryScript;
+    const currentLocationNode: SpecialValue = {
+      kind: "special_value",
+      args: { label: "current_location" }
+    };
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: { axis: "x", axis_operand: currentLocationNode },
+    });
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: { axis: "y", axis_operand: currentLocationNode },
+    });
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: {
+        axis: "y",
+        axis_operand: { kind: "special_value", args: { label: "safe_height" } },
+      },
+    });
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: {
+        axis: "z",
+        axis_operand: { kind: "special_value", args: { label: "soil_height" } },
+      },
+    });
+    moveStep.body && moveStep.body.push({
+      kind: "axis_overwrite",
+      args: {
+        axis: "z",
+        axis_operand: { kind: "special_value", args: { label: "other" } },
+      },
+    });
+    const botPosition = { x: 1, y: undefined, z: 3 };
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.soil_height = 30;
+    fbosConfig.body.safe_height = 20;
+    const resourceIndex = buildResourceIndex([fbosConfig]).index;
+    const coordinate = computeCoordinate({
+      step: moveStep,
+      botPosition,
+      resourceIndex,
+      sequenceUuid: "seqUuid",
+    });
+    expect(coordinate).toEqual({ x: 1, y: 20, z: 30 });
+  });
+
+  it("computes coordinate with missing special value overwrites", () => {
     const moveStep = fakeNumericMoveStepCeleryScript;
     const currentLocationNode: SpecialValue = {
       kind: "special_value",

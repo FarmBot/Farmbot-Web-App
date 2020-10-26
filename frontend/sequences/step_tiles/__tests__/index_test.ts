@@ -40,7 +40,7 @@ describe("move()", () => {
     p.to = 0;
     move(p);
     expect(overwrite).toHaveBeenCalledWith(p.sequence,
-      expect.objectContaining({ body: [step2, step1] }));
+      expect.objectContaining({ body: [cloneDeep(step2), cloneDeep(step1)] }));
   });
 
   it("moves step forward", () => {
