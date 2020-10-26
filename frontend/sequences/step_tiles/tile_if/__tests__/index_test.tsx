@@ -16,6 +16,7 @@ import {
   fakeSensor, fakePeripheral,
 } from "../../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../../interfaces";
+import { cloneDeep } from "lodash";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex
@@ -113,7 +114,7 @@ describe("IfBlockDropDownHandler()", () => {
       expect.objectContaining({
         body: [{
           kind: "_if",
-          args: expect.objectContaining({ _else: execute })
+          args: expect.objectContaining({ _else: cloneDeep(execute) })
         }]
       }));
 
