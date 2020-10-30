@@ -240,16 +240,16 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
               {config.label}
             </label>
           </div>
-          <div className="farmware-input-group">
-            {inputsInBody.includes(envName) &&
+          {inputsInBody.includes(envName) &&
+            <div className="farmware-input-group">
               <BlurableInput
                 value={config.value}
                 onCommit={changePairValue(envName, config.label)}
-                disabled={outdated} />}
-            {!isDefault(envName, config.value) &&
-              <i className="fa fa-times-circle"
-                onClick={resetPairValue(envName, config.label)} />}
-          </div>
+                disabled={outdated} />
+              {!isDefault(envName, config.value) &&
+                <i className="fa fa-times-circle"
+                  onClick={resetPairValue(envName, config.label)} />}
+            </div>}
         </fieldset>;
       })}
     </div>

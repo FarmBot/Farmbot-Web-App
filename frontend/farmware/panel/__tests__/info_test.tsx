@@ -18,6 +18,7 @@ describe("<DesignerFarmwareInfo />", () => {
   const fakeProps = (): DesignerFarmwareInfoProps => ({
     dispatch: jest.fn(),
     env: {},
+    userEnv: {},
     currentFarmware: undefined,
     botToMqttStatus: "up",
     farmwares: {},
