@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -26,6 +26,7 @@ import { BasicFarmwarePage } from "../basic_farmware_page";
 export interface DesignerFarmwareInfoProps {
   dispatch: Function;
   env: UserEnv;
+  userEnv: UserEnv;
   botToMqttStatus: NetworkState;
   farmwares: Farmwares;
   syncStatus: SyncStatus | undefined;
@@ -45,6 +46,7 @@ export const mapStateToProps = (props: Everything): DesignerFarmwareInfoProps =>
     farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
     botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
     env,
+    userEnv: props.bot.hardware.user_env,
     dispatch: props.dispatch,
     syncStatus: props.bot.hardware.informational_settings.sync_status,
     shouldDisplay,
@@ -80,6 +82,7 @@ export class RawDesignerFarmwareInfo
         {farmware && needsFarmwareForm(farmware)
           ? <FarmwareForm farmware={farmware}
             env={this.props.env}
+            userEnv={this.props.userEnv}
             shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             botOnline={this.botOnline}

@@ -22,6 +22,7 @@ body {
   padding: 0;
   .bp3-popover-target {
     float: left;
+    margin-top: 0.5rem;
   }
 }
 
@@ -1614,9 +1615,12 @@ ul {
 }
 
 .checkbox-row {
+  display: flex;
   margin-top: 1rem;
   label {
-    vertical-align: text-bottom;
+    padding: 0;
+    line-height: 2rem;
+    margin-bottom: 0;
   }
   .fb-checkbox {
     display: inline;
@@ -1625,9 +1629,7 @@ ul {
   }
   .bp3-popover-wrapper,
   .bp3-popover-target {
-    display: inline-block !important;
     margin-left: 1rem;
-    margin-top: 0.4rem;
   }
 }
 
@@ -1636,11 +1638,14 @@ ul {
   margin-left: 3rem;
   i {
     position: absolute;
-    top: 0.55rem;
+    top: 0.85rem;
     right: 1rem;
     color: $light_gray;
     &:hover {
       color: $dark_gray;
+    }
+    &.fa-refresh {
+      right: 3rem;
     }
   }
 }
