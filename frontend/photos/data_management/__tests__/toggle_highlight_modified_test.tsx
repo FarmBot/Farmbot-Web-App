@@ -15,10 +15,19 @@ describe("<ToggleHighlightModified />", () => {
     getConfigValue: jest.fn(),
   });
 
-  it("toggles", () => {
+  it("toggles on", () => {
     const wrapper = mount(<ToggleHighlightModified {...fakeProps()} />);
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.highlight_modified_settings, true);
+  });
+
+  it("toggles off", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const wrapper = mount(<ToggleHighlightModified {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.highlight_modified_settings, false);
   });
 });

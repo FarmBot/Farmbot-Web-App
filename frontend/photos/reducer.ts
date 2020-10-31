@@ -1,9 +1,10 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
+import { UUID } from "../resources/interfaces";
 
 export interface PhotosState {
-  currentImage: string | undefined;
+  currentImage: UUID | undefined;
   currentImageSize: Record<"height" | "width", number | undefined>;
 }
 
@@ -21,7 +22,7 @@ export const photosReducer = generateReducer<PhotosState>(photosState)
     }
     return s;
   })
-  .add<string>(Actions.SELECT_IMAGE, (s, { payload }) => {
+  .add<UUID | undefined>(Actions.SELECT_IMAGE, (s, { payload }) => {
     s.currentImage = payload;
     return s;
   })

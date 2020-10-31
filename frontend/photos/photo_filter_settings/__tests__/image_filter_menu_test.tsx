@@ -4,6 +4,7 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import {
+  fakeImage,
   fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 const mockConfig = fakeWebAppConfig();
@@ -25,8 +26,8 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { ImageFilterMenuProps } from "../interfaces";
-import { Slider } from "@blueprintjs/core";
 import { StringSetting } from "../../../session_keys";
+import { MarkedSlider } from "../../../ui";
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";
@@ -249,12 +250,22 @@ describe("<ImageFilterMenu />", () => {
     expect(save).toHaveBeenCalledWith(config.uuid);
   });
 
+  it("gets image index", () => {
+    const p = fakeProps();
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 3 };
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    const image = fakeImage();
+    image.body.created_at = "2001-01-08T00:00:00.000Z";
+    const index = wrapper.instance().getImageIndex(image);
+    expect(index).toEqual(1);
+  });
+
   it("changes slider", () => {
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     expect(wrapper.state().slider).toEqual(undefined);
-    wrapper.find(Slider).simulate("change", 1);
+    wrapper.find(MarkedSlider).simulate("change", 1);
     expect(wrapper.state().slider).toEqual(1);
   });
 

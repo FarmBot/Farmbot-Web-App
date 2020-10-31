@@ -868,15 +868,6 @@
       line-height: unset !important;
     }
   }
-  .bp3-slider {
-    margin-left: 3rem;
-    margin-top: 1rem;
-    width: 80%;
-  }
-  .bp3-slider-label {
-    white-space: nowrap;
-    text-align: center;
-  }
   input {
     background: $white;
   }
@@ -918,5 +909,40 @@
   }
   .fb-toggle-button {
     margin-left: 1rem;
+  }
+}
+
+.sliders {
+  position: relative;
+  padding-bottom: 2rem;
+  .bp3-slider {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    width: 80%;
+  }
+  .bp3-slider-label {
+    white-space: nowrap;
+    text-align: center;
+  }
+  .data-slider {
+    pointer-events: none;
+    .bp3-slider-track {
+      display: none;
+    }
+    .bp3-start {
+      &:first-of-type {
+        display: none;
+      }
+      top: 0.53rem;
+      width: 0.5px;
+      background: $dark_gray;
+      opacity: 0.25;
+      box-shadow: none;
+      height: 0.55rem;
+    }
+  }
+  .input-slider {
+    position: absolute;
+    top: -1rem;
   }
 }

@@ -31,13 +31,14 @@ const getImages = (ri: ResourceIndex): TaggedImage[] =>
     .reverse()
     .value();
 
-export const getCurrentImage =
-  (images: TaggedImage[], currentImgUuid: string | undefined): TaggedImage => {
-    const firstImage = images[0];
-    const currentImage =
-      images.filter(i => i.uuid === currentImgUuid)[0] || firstImage;
-    return currentImage;
-  };
+const getCurrentImage = (
+  images: TaggedImage[],
+  currentImageUuid: string | undefined,
+): TaggedImage | undefined => {
+  const latestImage = images[0];
+  const currentImage = images.filter(i => i.uuid === currentImageUuid)[0];
+  return currentImage || latestImage;
+};
 
 export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
   const images = getImages(props.resources.index);

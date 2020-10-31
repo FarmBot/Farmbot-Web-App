@@ -1,9 +1,11 @@
 import React from "react";
 import moment from "moment";
 import { success, error } from "../../toast/toast";
-import { ImageFlipper } from "./image_flipper";
 import {
-  PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosState,
+  getIndexOfUuid, getNextIndexes, ImageFlipper, selectNextImage,
+} from "./image_flipper";
+import {
+  PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
 } from "./interfaces";
 import { getDevice } from "../../device";
 import { Content } from "../../constants";
@@ -16,8 +18,9 @@ import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Overlay, Popover } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
-import { setShownMapImages, selectImage } from "./actions";
-import { Xyz } from "farmbot";
+import { setShownMapImages } from "./actions";
+import { TaggedImage, Xyz } from "farmbot";
+import { MarkedSlider } from "../../ui";
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -110,8 +113,8 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
   </div>;
 };
 
-export class Photos extends React.Component<PhotosProps, PhotosState> {
-  state: PhotosState = {
+export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
+  state: PhotosComponentState = {
     crop: true, rotate: true, fullscreen: false,
   };
 
@@ -124,10 +127,15 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
   }
 
   deletePhoto = () => {
-    const img = this.props.currentImage || this.props.images[0];
-    if (img?.uuid) {
-      this.props.dispatch(destroy(img.uuid))
-        .then(() => success(t("Image Deleted.")))
+    const { dispatch, images } = this.props;
+    const currentImageUuid = this.props.currentImage?.uuid;
+    if (currentImageUuid) {
+      dispatch(destroy(currentImageUuid))
+        .then(() => {
+          success(t("Image Deleted."));
+          const { nextIndex } = getNextIndexes(images, currentImageUuid, 1);
+          this.props.dispatch(selectNextImage(images, nextIndex));
+        })
         .catch(() => error(t("Could not delete image.")));
     }
   }
@@ -141,14 +149,8 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
   }
   get canCrop() { return this.canTransform && this.state.rotate; }
 
-  onFlip = (uuid: string | undefined) => {
-    this.props.dispatch(selectImage(uuid));
-    this.props.dispatch(setShownMapImages(uuid));
-  }
-
   ImageFlipper = ({ id }: { id: string }) =>
     <ImageFlipper id={id}
-      onFlip={this.onFlip}
       currentImage={this.props.currentImage}
       dispatch={this.props.dispatch}
       currentImageSize={this.props.currentImageSize}
@@ -157,6 +159,22 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
       env={this.props.env}
       crop={this.state.crop}
       images={this.props.images} />
+
+  get highestIndex() { return this.props.images.length - 1; }
+
+  getImageIndex = (image: TaggedImage | undefined) =>
+    this.highestIndex - getIndexOfUuid(this.props.images, image?.uuid);
+
+  renderLabel = (value: number) => {
+    if (value == this.highestIndex) { return t("newest"); }
+    if (value == 0) { return t("oldest"); }
+    return "";
+  }
+
+  onSliderChange = (index: number) =>
+    this.props.dispatch(selectNextImage(
+      this.props.images,
+      this.highestIndex - Math.min(index, this.highestIndex)))
 
   render() {
     return <div className="photos">
@@ -184,6 +202,16 @@ export class Photos extends React.Component<PhotosProps, PhotosState> {
         size={this.props.currentImageSize}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings} />
+      {this.props.images.length > 1 &&
+        <MarkedSlider
+          min={0}
+          max={this.highestIndex}
+          labelStepSize={Math.max(this.props.images.length, 2) - 1}
+          labelRenderer={this.renderLabel}
+          value={this.getImageIndex(this.props.currentImage)}
+          onChange={this.onSliderChange}
+          images={this.props.images}
+          imageIndex={this.getImageIndex} />}
     </div>;
   }
 }
