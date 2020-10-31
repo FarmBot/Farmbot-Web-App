@@ -333,4 +333,34 @@ describe("designer reducer", () => {
     const newState = designer(state, action);
     expect(newState.cameraViewGridId).toEqual("gridId");
   });
+
+  it("adds gridId", () => {
+    const state = oldState();
+    state.gridIds = [];
+    const action: ReduxAction<string> = {
+      type: Actions.TOGGLE_GRID_ID, payload: "gridId"
+    };
+    const newState = designer(state, action);
+    expect(newState.gridIds).toEqual(["gridId"]);
+  });
+
+  it("removes gridId", () => {
+    const state = oldState();
+    state.gridIds = ["gridId"];
+    const action: ReduxAction<string> = {
+      type: Actions.TOGGLE_GRID_ID, payload: "gridId"
+    };
+    const newState = designer(state, action);
+    expect(newState.gridIds).toEqual([]);
+  });
+
+  it("toggle soil height labels", () => {
+    const state = oldState();
+    state.soilHeightLabels = false;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
+    };
+    const newState = designer(state, action);
+    expect(newState.soilHeightLabels).toEqual(true);
+  });
 });

@@ -111,7 +111,8 @@ describe("<AdditionalWeedProperties />", () => {
   it("renders unknown source", () => {
     const p = fakeProps();
     p.point.body.meta = {
-      meta_key: "meta value", created_by: undefined, key: undefined
+      meta_key: "meta value", created_by: undefined, key: undefined,
+      color: "red", type: "weed",
     };
     const wrapper = mount(<AdditionalWeedProperties {...p} />);
     expect(wrapper.text()).toContain("unknown");

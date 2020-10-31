@@ -291,6 +291,13 @@
       vertical-align: middle;
       margin-right: 0.25rem;
     }
+    .quick-delete {
+      display: inline;
+      color: $dark_red;
+      &.hovered {
+        font-weight: bold;
+      }
+    }
   }
   .weed-search-item-info,
   .point-search-item-info {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedGenericPointer } from "farmbot";
 import { Saucer } from "../ui";
 import { Actions } from "../constants";
@@ -7,6 +7,8 @@ import { t } from "../i18next_wrapper";
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { mapPointClickAction } from "../farm_designer/map/actions";
+import { DevSettings } from "../settings/dev/dev_support";
+import { destroy } from "../api/crud";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
@@ -20,7 +22,7 @@ export class PointInventoryItem extends
 
   render() {
     const point = this.props.tpp.body;
-    const { tpp, dispatch } = this.props;
+    const { tpp, dispatch, hovered } = this.props;
     const pointId = (point.id || "ERR_NO_POINT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
@@ -32,6 +34,10 @@ export class PointInventoryItem extends
     };
 
     const click = () => {
+      if (DevSettings.quickDeleteEnabled()) {
+        dispatch(destroy(tpp.uuid, true));
+        return;
+      }
       if (getMode() == Mode.boxSelect) {
         mapPointClickAction(dispatch, tpp.uuid)();
         toggle("leave");
@@ -42,17 +48,19 @@ export class PointInventoryItem extends
     };
 
     return <div
-      className={`point-search-item ${this.props.hovered ? "hovered" : ""}`}
+      className={`point-search-item ${hovered ? "hovered" : ""}`}
       key={pointId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
       onClick={click}>
-      <Saucer color={point.meta.color || "green"} />
+      {DevSettings.quickDeleteEnabled()
+        ? <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>
+        : <Saucer color={point.meta.color || "green"} />}
       <span className="point-search-item-name">
         {point.name || t("Untitled point")}
       </span>
       <p className="point-search-item-info">
-        <i>{`(${point.x}, ${point.y}) r${point.radius}`}</i>
+        <i>{`(${point.x}, ${point.y}, ${point.z}) r${point.radius}`}</i>
       </p>
     </div>;
   }

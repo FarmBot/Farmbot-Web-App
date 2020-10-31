@@ -89,6 +89,8 @@ export interface GardenPointProps {
   cropPhotos: boolean;
   hovered: boolean;
   dispatch: Function;
+  soilHeightLabels: boolean;
+  soilHeightRange: Record<"min" | "max", number>;
 }
 
 export interface GardenWeedProps {

@@ -41,6 +41,8 @@ export const initialState: DesignerState = {
   alwaysHighlightImage: false,
   hoveredMapImage: undefined,
   cameraViewGridId: undefined,
+  gridIds: [],
+  soilHeightLabels: false,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -169,5 +171,15 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.SHOW_CAMERA_VIEW_POINTS, (s, { payload }) => {
     s.cameraViewGridId = payload;
+    return s;
+  })
+  .add<string>(Actions.TOGGLE_GRID_ID, (s, { payload }) => {
+    s.gridIds = s.gridIds.includes(payload)
+      ? s.gridIds.filter(id => payload != id)
+      : s.gridIds.concat(payload);
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
+    s.soilHeightLabels = !s.soilHeightLabels;
     return s;
   });

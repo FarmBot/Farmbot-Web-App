@@ -8,7 +8,16 @@ jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
 }));
 
-import * as React from "react";
+let mockDelMode = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: {
+    quickDeleteEnabled: () => mockDelMode,
+  }
+}));
+
+jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
+
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   PointInventoryItem, PointInventoryItemProps,
@@ -17,6 +26,7 @@ import { fakePoint } from "../../__test_support__/fake_state/resources";
 import { push } from "../../history";
 import { Actions } from "../../constants";
 import { mapPointClickAction } from "../../farm_designer/map/actions";
+import { destroy } from "../../api/crud";
 
 describe("<PointInventoryItem> />", () => {
   const fakeProps = (): PointInventoryItemProps => ({
@@ -37,6 +47,30 @@ describe("<PointInventoryItem> />", () => {
     p.tpp.body.name = "";
     const wrapper = mount(<PointInventoryItem {...p} />);
     expect(wrapper.text()).toContain("Untitled point");
+  });
+
+  it("deletes point", () => {
+    mockDelMode = true;
+    mockPath = "/app/designer/points";
+    const p = fakeProps();
+    p.tpp.body.id = 1;
+    const wrapper = shallow(<PointInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+    expect(destroy).toHaveBeenCalledWith(p.tpp.uuid, true);
+    mockDelMode = false;
+  });
+
+  it("hovers point in quick delete mode", () => {
+    mockDelMode = true;
+    mockPath = "/app/designer/points";
+    const p = fakeProps();
+    p.tpp.body.id = 1;
+    p.hovered = true;
+    const wrapper = shallow(<PointInventoryItem {...p} />);
+    expect(wrapper.find(".quick-delete").hasClass("hovered")).toBeTruthy();
+    mockDelMode = false;
   });
 
   it("navigates to point", () => {
