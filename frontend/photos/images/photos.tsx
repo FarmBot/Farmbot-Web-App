@@ -210,8 +210,8 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
           labelRenderer={this.renderLabel}
           value={this.getImageIndex(this.props.currentImage)}
           onChange={this.onSliderChange}
-          images={this.props.images}
-          imageIndex={this.getImageIndex} />}
+          items={this.props.images}
+          itemValue={this.getImageIndex} />}
     </div>;
   }
 }

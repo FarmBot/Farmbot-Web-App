@@ -18,6 +18,8 @@ import {
 } from "../../../../../__test_support__/fake_camera_data";
 import { shallow } from "enzyme";
 import { CameraViewArea } from "../../farmbot/bot_figure";
+import { Color } from "../../../../../ui";
+import { tagAsSoilHeight } from "../../../../../points/soil_height";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -29,7 +31,7 @@ describe("<GardenPoint/>", () => {
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
     soilHeightLabels: false,
-    soilHeightRange: { min: -200, max: 0 },
+    getSoilHeightColor: () => "rgb(128, 128, 128)",
   });
 
   it("renders point", () => {
@@ -98,22 +100,23 @@ describe("<GardenPoint/>", () => {
   it("shows z labels", () => {
     const p = fakeProps();
     p.point.body.z = -100;
-    p.point.body.meta.created_by = "measure-soil-height";
+    tagAsSoilHeight(p.point);
     p.soilHeightLabels = true;
     const wrapper = svgMount(<GardenPoint {...p} />);
     expect(wrapper.text()).toContain("-100");
     expect(wrapper.find("text").first().props().fill)
-      .toEqual("rgb(128, 128, 128)");
+      .toEqual(p.getSoilHeightColor(-100));
+    expect(wrapper.find("text").first().props().stroke).toEqual(Color.black);
   });
 
   it("shows hovered z label", () => {
     const p = fakeProps();
     p.hovered = true;
     p.point.body.z = -100;
-    p.point.body.meta.created_by = "measure-soil-height";
+    tagAsSoilHeight(p.point);
     p.soilHeightLabels = true;
     const wrapper = svgMount(<GardenPoint {...p} />);
     expect(wrapper.text()).toContain("-100");
-    expect(wrapper.find("text").first().props().fill).toEqual("black");
+    expect(wrapper.find("text").first().props().stroke).toEqual(Color.orange);
   });
 });

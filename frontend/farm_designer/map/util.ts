@@ -1,6 +1,6 @@
 import { BotOriginQuadrant } from "../interfaces";
-import { McuParams } from "farmbot";
-import { StepsPerMmXY } from "../../devices/interfaces";
+import { McuParams, Xyz } from "farmbot";
+import { StepsPerMm } from "../../devices/interfaces";
 import {
   CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode,
   TaggedPlant,
@@ -218,20 +218,22 @@ export function transformXY(
 /** Determine bot axis lengths according to firmware settings */
 export function getBotSize(
   botMcuParams: McuParams,
-  stepsPerMmXY: StepsPerMmXY,
-  defaultLength: AxisNumberProperty,
+  stepsPerMm: StepsPerMm,
+  defaultLength: Record<Xyz, number>,
 ): BotSize {
   const stopAtMaxXY = {
     x: !!botMcuParams.movement_stop_at_max_x,
-    y: !!botMcuParams.movement_stop_at_max_y
+    y: !!botMcuParams.movement_stop_at_max_y,
+    z: !!botMcuParams.movement_stop_at_max_z,
   };
   const axisLengthXY = {
     x: botMcuParams.movement_axis_nr_steps_x || 0,
-    y: botMcuParams.movement_axis_nr_steps_y || 0
+    y: botMcuParams.movement_axis_nr_steps_y || 0,
+    z: botMcuParams.movement_axis_nr_steps_z || 0,
   };
 
-  const getAxisLength = (axis: "x" | "y"): CheckedAxisLength => {
-    const axisStepsPerMm = stepsPerMmXY[axis];
+  const getAxisLength = (axis: "x" | "y" | "z"): CheckedAxisLength => {
+    const axisStepsPerMm = stepsPerMm[axis];
     if (axisStepsPerMm && axisLengthXY[axis] !== 0 && stopAtMaxXY[axis]) {
       return { value: axisLengthXY[axis] / axisStepsPerMm, isDefault: false };
     } else {
@@ -239,7 +241,7 @@ export function getBotSize(
     }
   };
 
-  return { x: getAxisLength("x"), y: getAxisLength("y") };
+  return { x: getAxisLength("x"), y: getAxisLength("y"), z: getAxisLength("z") };
 }
 
 /** Calculate map dimensions */

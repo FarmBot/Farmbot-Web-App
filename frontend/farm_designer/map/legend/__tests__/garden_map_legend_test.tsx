@@ -14,7 +14,7 @@ jest.mock("../../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
@@ -25,6 +25,12 @@ import {
   fakeTimeSettings,
 } from "../../../../__test_support__/fake_time_settings";
 import { setWebAppConfigValue } from "../../../../config_storage/actions";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../../../__test_support__/fake_bot_data";
+import {
+  fakeFirmwareConfig,
+} from "../../../../__test_support__/fake_state/resources";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -45,6 +51,11 @@ describe("<GardenMapLegend />", () => {
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
     shouldDisplay: () => true,
+    allPoints: [],
+    sourceFbosConfig: () => ({ value: 0, consistent: true }),
+    firmwareConfig: fakeFirmwareConfig().body,
+    botLocationData: fakeBotLocationData(),
+    botSize: fakeBotSize(),
   });
 
   it("renders", () => {
@@ -53,6 +64,7 @@ describe("<GardenMapLegend />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
+    expect(wrapper.html()).not.toContain("-100");
   });
 
   it("renders with readings", () => {
@@ -60,6 +72,12 @@ describe("<GardenMapLegend />", () => {
     p.hasSensorReadings = true;
     const wrapper = mount(<GardenMapLegend {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("readings");
+  });
+
+  it("renders z display", () => {
+    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    wrapper.find(".fb-toggle-button").last().simulate("click");
+    expect(wrapper.html()).toContain("-100");
   });
 });
 

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { VirtualFarmBot } from "../index";
 import { shallow } from "enzyme";
 import { VirtualFarmBotProps } from "../../../interfaces";
@@ -12,24 +12,21 @@ import {
 import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
+import {
+  fakeBotLocationData,
+} from "../../../../../__test_support__/fake_bot_data";
 
 describe("<VirtualFarmBot/>", () => {
-  function fakeProps(): VirtualFarmBotProps {
-    return {
-      botLocationData: {
-        position: { x: 0, y: 0, z: 0 },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: undefined, y: undefined, z: undefined },
-      },
-      mapTransformProps: fakeMapTransformProps(),
-      plantAreaOffset: { x: 100, y: 100 },
-      peripherals: [],
-      eStopStatus: false,
-      getConfigValue: () => true,
-      mountedToolInfo: fakeMountedToolInfo(),
-      cameraCalibrationData: fakeCameraCalibrationData(),
-    };
-  }
+  const fakeProps = (): VirtualFarmBotProps => ({
+    botLocationData: fakeBotLocationData(),
+    mapTransformProps: fakeMapTransformProps(),
+    plantAreaOffset: { x: 100, y: 100 },
+    peripherals: [],
+    eStopStatus: false,
+    getConfigValue: () => true,
+    mountedToolInfo: fakeMountedToolInfo(),
+    cameraCalibrationData: fakeCameraCalibrationData(),
+  });
 
   it("shows bot position", () => {
     const p = fakeProps();

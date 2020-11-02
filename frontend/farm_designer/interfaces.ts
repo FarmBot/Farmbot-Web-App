@@ -20,7 +20,7 @@ import {
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
-  BotPosition, BotLocationData, ShouldDisplay,
+  BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
@@ -99,6 +99,7 @@ export interface Props {
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
   deviceTarget: string;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface MovePlantProps {

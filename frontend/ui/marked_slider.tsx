@@ -2,34 +2,38 @@ import React from "react";
 import { Slider, MultiSlider } from "@blueprintjs/core";
 import { TaggedImage } from "farmbot";
 
-export interface MarkedSliderProps {
+export interface MarkedSliderProps<T> {
   min: number;
   max: number;
   labelStepSize: number;
   value: number;
-  onChange(value: number): void
+  onChange?(value: number): void
   onRelease?(value: number): void
   labelRenderer(value: number): string;
-  images?: TaggedImage[];
-  imageIndex(image: TaggedImage): number;
+  items?: T[];
+  itemValue(image: T): number;
+  itemLabelRenderer?(value: number): string;
+  vertical?: boolean;
 }
 
-export const MarkedSlider = (props: MarkedSliderProps) =>
-  <div className={"sliders"}>
+export function MarkedSlider<T = TaggedImage>(props: MarkedSliderProps<T>) {
+  return <div className={`sliders ${props.vertical ? "vertical" : ""}`}>
     <MultiSlider
-      className={"data-slider"}
+      className={`data-slider ${props.vertical ? "vertical" : ""}`}
+      vertical={props.vertical}
       min={props.min}
       max={props.max}
-      labelRenderer={false}
+      labelRenderer={props.itemLabelRenderer || false}
       showTrackFill={false}>
-      {props.images?.map((image, index) =>
+      {props.items?.map((item, index) =>
         <MultiSlider.Handle key={index}
           className={"slider-image"}
           type={"start"}
-          value={props.imageIndex(image)} />)}
+          value={props.itemValue(item)} />)}
     </MultiSlider>
     <Slider
-      className={"input-slider"}
+      className={`input-slider ${props.vertical ? "vertical" : ""}`}
+      vertical={props.vertical}
       min={props.min}
       max={props.max}
       labelStepSize={props.labelStepSize}
@@ -39,3 +43,4 @@ export const MarkedSlider = (props: MarkedSliderProps) =>
       labelRenderer={props.labelRenderer}
       showTrackFill={false} />
   </div>;
+}

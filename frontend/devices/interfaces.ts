@@ -116,7 +116,7 @@ export type Axis = Xyz | "all";
 export type BotPosition = Record<Xyz, number | undefined>;
 export type BotLocationData = LocationData;
 
-export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
+export type StepsPerMm = Record<Xyz, number | undefined>;
 
 export type UserEnv = Record<string, string | undefined>;
 

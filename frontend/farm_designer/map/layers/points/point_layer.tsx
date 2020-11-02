@@ -1,8 +1,9 @@
 import React from "react";
-import { TaggedGenericPointer, TaggedPoint } from "farmbot";
+import { TaggedGenericPointer } from "farmbot";
 import { GardenPoint } from "./garden_point";
 import { MapTransformProps } from "../../interfaces";
 import { CameraCalibrationData, DesignerState } from "../../../interfaces";
+import { getSoilHeightColor } from "../../../../points/soil_height";
 
 export interface PointLayerProps {
   visible: boolean;
@@ -18,7 +19,7 @@ export interface PointLayerProps {
 export function PointLayer(props: PointLayerProps) {
   const { visible, genericPoints, mapTransformProps, designer } = props;
   const { cameraViewGridId, hoveredPoint, gridIds, soilHeightLabels } = designer;
-  const { min, max } = heightLabelRange(genericPoints);
+  const getColor = getSoilHeightColor(genericPoints);
   const style: React.CSSProperties =
     props.interactions ? {} : { pointerEvents: "none" };
   return <g id={"point-layer"} style={style}>
@@ -36,14 +37,8 @@ export function PointLayer(props: PointLayerProps) {
             cropPhotos={props.cropPhotos}
             dispatch={props.dispatch}
             soilHeightLabels={soilHeightLabels}
-            soilHeightRange={{ min, max }}
+            getSoilHeightColor={getColor}
             mapTransformProps={mapTransformProps} />)}
   </g>;
 }
 
-const heightLabelRange = (genericPoints: TaggedPoint[]) => {
-  const soilHeights = genericPoints
-    .filter(p => p.body.meta.created_by == "measure-soil-height")
-    .map(p => p.body.z);
-  return { min: Math.min(...soilHeights), max: Math.max(...soilHeights) };
-};
