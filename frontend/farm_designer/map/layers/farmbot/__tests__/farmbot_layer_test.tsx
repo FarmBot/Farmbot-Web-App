@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FarmBotLayer } from "../farmbot_layer";
 import { shallow } from "enzyme";
 import { FarmBotLayerProps } from "../../../interfaces";
@@ -11,30 +11,24 @@ import {
 import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../../../../__test_support__/fake_bot_data";
 
 describe("<FarmBotLayer/>", () => {
-  function fakeProps(): FarmBotLayerProps {
-    return {
-      visible: true,
-      botLocationData: {
-        position: { x: undefined, y: undefined, z: undefined },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: undefined, y: undefined, z: undefined },
-      },
-      mapTransformProps: fakeMapTransformProps(),
-      stopAtHome: { x: true, y: true },
-      botSize: {
-        x: { value: 3000, isDefault: true },
-        y: { value: 1500, isDefault: true }
-      },
-      plantAreaOffset: { x: 100, y: 100 },
-      peripherals: [],
-      eStopStatus: false,
-      getConfigValue: jest.fn(),
-      mountedToolInfo: fakeMountedToolInfo(),
-      cameraCalibrationData: fakeCameraCalibrationData(),
-    };
-  }
+  const fakeProps = (): FarmBotLayerProps => ({
+    visible: true,
+    botLocationData: fakeBotLocationData(),
+    mapTransformProps: fakeMapTransformProps(),
+    stopAtHome: { x: true, y: true },
+    botSize: fakeBotSize(),
+    plantAreaOffset: { x: 100, y: 100 },
+    peripherals: [],
+    eStopStatus: false,
+    getConfigValue: jest.fn(),
+    mountedToolInfo: fakeMountedToolInfo(),
+    cameraCalibrationData: fakeCameraCalibrationData(),
+  });
 
   it("shows layer elements", () => {
     const p = fakeProps();

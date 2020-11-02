@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { Popover, Position } from "@blueprintjs/core";
@@ -17,6 +17,7 @@ export interface PointSortMenuProps {
 export const PointSortMenu = (props: PointSortMenuProps) => {
   const sortTerm = props.sortOptions.sortBy;
   const bySizeSelected = sortTerm == "radius" ? "selected" : "";
+  const zSelected = sortTerm == "z" ? "selected" : "";
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
     <i className="fa fa-search" />
     <div className="point-sort-menu">
@@ -30,6 +31,8 @@ export const PointSortMenu = (props: PointSortMenuProps) => {
           title={t("size")}
           onClick={() =>
             props.onChange({ sortBy: "radius", reverse: true })} />
+        <i className={zSelected} title={t("z")} onClick={() =>
+          props.onChange({ sortBy: "z", reverse: true })}>z</i>
       </div>
     </div>
   </Popover>;

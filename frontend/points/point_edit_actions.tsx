@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 import { getDevice } from "../device";
 import { destroy, edit, save } from "../api/crud";
@@ -11,6 +11,9 @@ import { parseIntInput } from "../util";
 import { UUID } from "../resources/interfaces";
 import { plantAge } from "../plants/map_state_to_props";
 import { EditWeedStatus } from "../plants/edit_plant_status";
+import {
+  MEASURE_SOIL_HEIGHT_NAME, soilHeightPoint, toggleSoilHeight,
+} from "./soil_height";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -61,6 +64,12 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         radius={props.point.body.radius}
         updatePoint={props.updatePoint} />
     </ListItem>
+    {props.point.body.pointer_type == "GenericPointer" &&
+      <ListItem>
+        <EditPointSoilHeightTag
+          point={props.point as TaggedGenericPointer}
+          updatePoint={props.updatePoint} />
+      </ListItem>}
   </ul>;
 
 export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
@@ -106,9 +115,10 @@ export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =
 
 const REMOVAL_METHODS = ["automatic", "manual"];
 
-const SOURCE_LOOKUP = (): Record<string, string> => ({
+export const SOURCE_LOOKUP = (): Record<string, string> => ({
   "plant-detection": t("Weed Detector"),
   "farm-designer": t("Farm Designer"),
+  [MEASURE_SOIL_HEIGHT_NAME]: t("Soil Height Detector"),
 });
 
 export interface PointActionsProps {
@@ -207,3 +217,18 @@ export const EditPointColor = (props: EditPointColorProps) =>
         onChange={color => props.updatePoint({ meta: { color } })} />
     </Col>
   </div>;
+
+export interface EditPointSoilHeightTagProps {
+  updatePoint(update: PointUpdate): void;
+  point: TaggedGenericPointer;
+}
+
+export const EditPointSoilHeightTag = (props: EditPointSoilHeightTagProps) =>
+  <Row>
+    <Col xs={6} className={"soil-height-checkbox"}>
+      <label>{t("at soil level")}</label>
+      <input type="checkbox" name="is_soil_height"
+        onChange={() => props.updatePoint(toggleSoilHeight(props.point))}
+        checked={soilHeightPoint(props.point)} />
+    </Col>
+  </Row>;

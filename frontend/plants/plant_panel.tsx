@@ -142,15 +142,16 @@ const DeleteButtons = (props: DeleteButtonsProps) =>
   </div>;
 
 interface ListItemProps {
-  name: string;
+  name?: string;
   children: React.ReactChild;
 }
 
 export const ListItem = (props: ListItemProps) =>
   <li>
-    <p>
-      {props.name}
-    </p>
+    {props.name &&
+      <p>
+        {props.name}
+      </p>}
     <div className={"plant-info-field-data"}>
       {props.children}
     </div>

@@ -10,7 +10,7 @@ describe Device do
     ["Africa/Addis_Ababa", 6, 9],
     ["Africa/Kampala", 22, 1],
     ["Africa/Lagos", 15, 16],
-    ["America/Los_Angeles", 5, 22],
+    # ["America/Los_Angeles", 5, 22],
     # ["Asia/Kuala_Lumpur", 10, 18],
     ["Asia/Makassar", 2, 10],
     # ["Asia/Nicosia", 15, 18],
