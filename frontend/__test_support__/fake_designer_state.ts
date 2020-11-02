@@ -28,4 +28,6 @@ export const fakeDesignerState = (): DesignerState => ({
   alwaysHighlightImage: false,
   hoveredMapImage: undefined,
   cameraViewGridId: undefined,
+  gridIds: [],
+  soilHeightLabels: false,
 });

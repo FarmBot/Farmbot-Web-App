@@ -1,5 +1,6 @@
 import {
   parseFilterSetting, imageInRange, imageIsHidden, getImageShownStatusFlags,
+  calculateImageAgeInfo,
 } from "../util";
 import {
   fakeImage, fakeWebAppConfig,
@@ -21,6 +22,20 @@ describe("parseFilterSetting()", () => {
     const setting = "";
     expect(parseFilterSetting(() => setting)(StringSetting.photo_filter_begin))
       .toEqual(undefined);
+  });
+});
+
+describe("calculateImageAgeInfo()", () => {
+  it("returns image age info", () => {
+    const image1 = fakeImage();
+    image1.body.created_at = "2020-02-20T20:20:20.000Z";
+    const image2 = fakeImage();
+    image2.body.created_at = "2010-01-10T10:10:10.000Z";
+    const result = calculateImageAgeInfo([image1, image2]);
+    expect(result).toEqual({
+      newestDate: "2020-02-20T20:20:20.000Z",
+      toOldest: 3693,
+    });
   });
 });
 

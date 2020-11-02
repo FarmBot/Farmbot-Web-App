@@ -18,6 +18,7 @@ import {
   fakeImage, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({
@@ -25,7 +26,7 @@ describe("<Photos/>", () => {
     currentImage: undefined,
     currentImageSize: { width: undefined, height: undefined },
     flags: fakeImageShowFlags(),
-    dispatch: jest.fn(),
+    dispatch: mockDispatch(),
     timeSettings: fakeTimeSettings(),
     imageJobs: [],
     botToMqttStatus: "up",
@@ -128,18 +129,6 @@ describe("<Photos/>", () => {
     await expect(error).toHaveBeenCalled();
   });
 
-  it("deletes most recent photo", async () => {
-    const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve());
-    p.images = fakeImages;
-    const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
-    await button.simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.images[0].uuid);
-    await expect(success).toHaveBeenCalled();
-  });
-
   it("no photos to delete", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
     const button = wrapper.find("button").at(1);
@@ -181,16 +170,6 @@ describe("<Photos/>", () => {
     expect(wrapper.text()).toContain("X:---");
   });
 
-  it("flips photo", () => {
-    const p = fakeProps();
-    p.images = fakeImages;
-    const wrapper = mount<Photos>(<Photos {...p} />);
-    wrapper.instance().onFlip("uuid");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_IMAGE, payload: "uuid",
-    });
-  });
-
   it("toggles state", () => {
     const wrapper = shallow<Photos>(<Photos {...fakeProps()} />);
     expect(wrapper.state().crop).toEqual(true);
@@ -210,6 +189,42 @@ describe("<Photos/>", () => {
     wrapper.unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
+    });
+  });
+
+  it("returns slider label", () => {
+    const p = fakeProps();
+    p.images = [fakeImage(), fakeImage(), fakeImage()];
+    const wrapper = shallow<Photos>(<Photos {...p} />);
+    expect(wrapper.instance().renderLabel(0)).toEqual("oldest");
+    expect(wrapper.instance().renderLabel(1)).toEqual("");
+    expect(wrapper.instance().renderLabel(2)).toEqual("newest");
+  });
+
+  it("returns image index", () => {
+    const p = fakeProps();
+    const image1 = fakeImage();
+    image1.uuid = "Image 1 UUID";
+    p.images = [fakeImage(), image1, fakeImage()];
+    const wrapper = shallow<Photos>(<Photos {...p} />);
+    expect(wrapper.instance().getImageIndex(image1)).toEqual(1);
+    expect(wrapper.instance().getImageIndex(undefined)).toEqual(2);
+  });
+
+  it("selects next image", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const image = fakeImage();
+    image.uuid = "Image UUID";
+    p.images = [image, fakeImage(), fakeImage()];
+    const wrapper = shallow<Photos>(<Photos {...p} />);
+    wrapper.instance().onSliderChange(99);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_IMAGE, payload: image.uuid,
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [undefined],
     });
   });
 });

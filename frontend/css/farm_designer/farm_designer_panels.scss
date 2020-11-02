@@ -1551,10 +1551,12 @@
 
 .weeds-inventory-panel,
 .zones-inventory-panel,
+.point-inventory-panel,
 .groups-panel {
   .panel-content {
     padding: 0;
     padding-bottom: inherit;
+    .points-section-header,
     .pending-weeds-header,
     .active-weeds-header,
     .removed-weeds-header {
@@ -1571,6 +1573,7 @@
         float: right;
       }
     }
+    .no-points,
     .no-weeds {
       margin-left: 2rem;
     }

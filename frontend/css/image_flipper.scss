@@ -239,6 +239,13 @@
     height: 0px;
     float: right!important;
   }
+  .bp3-slider {
+    margin-left: 2rem;
+    width: 90%;
+    .bp3-slider-label:empty {
+      display: none;
+    }
+  }
 }
 
 .camera-calibration,

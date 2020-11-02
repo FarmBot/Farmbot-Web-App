@@ -5,8 +5,32 @@ import {
 import { Content, Actions } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { FlipperImage } from "./flipper_image";
+import { selectImage, setShownMapImages } from "./actions";
+import { TaggedImage } from "farmbot";
+import { UUID } from "../../resources/interfaces";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
+
+export const getIndexOfUuid = (images: TaggedImage[], uuid: UUID | undefined) =>
+  uuid ? images.map(x => x.uuid).indexOf(uuid) : 0;
+
+export const getNextIndexes = (
+  images: TaggedImage[],
+  currentImageUuid: UUID | undefined,
+  increment: -1 | 1,
+) => {
+  const currentIndex = getIndexOfUuid(images, currentImageUuid);
+  const nextIndex = currentIndex + increment;
+  const indexAfterNext = currentIndex + (increment * 2);
+  return { nextIndex, indexAfterNext };
+};
+
+export const selectNextImage = (images: TaggedImage[], index: number) =>
+  (dispatch: Function) => {
+    const nextImageUuid = images.map(x => x.uuid)[index];
+    dispatch(selectImage(nextImageUuid));
+    dispatch(setShownMapImages(nextImageUuid));
+  };
 
 /** Placeholder image with text overlay. */
 export const PlaceholderImg = (props: PlaceholderImgProps) =>
@@ -27,30 +51,30 @@ export class ImageFlipper extends
     });
   }
 
+  get uuids() { return this.props.images.map(x => x.uuid); }
+
   go = (increment: -1 | 1) => () => {
-    const { images, currentImage } = this.props;
-    const uuids = images.map(x => x.uuid);
-    const currentIndex = currentImage ? uuids.indexOf(currentImage.uuid) : 0;
-    const nextIndex = currentIndex + increment;
-    const tooHigh = (index: number): boolean => index > (uuids.length - 1);
+    const currentImageUuid = this.props.currentImage?.uuid;
+    const { nextIndex, indexAfterNext } =
+      getNextIndexes(this.props.images, currentImageUuid, increment);
+    const tooHigh = (index: number): boolean => index > this.uuids.length - 1;
     const tooLow = (index: number): boolean => index < 0;
     if (!tooHigh(nextIndex) && !tooLow(nextIndex)) {
-      this.props.onFlip(uuids[nextIndex]);
+      this.props.dispatch(selectNextImage(this.props.images, nextIndex));
     }
-    const indexAfterNext = currentIndex + (increment * 2);
     this.setState({
       disableNext: tooLow(indexAfterNext),
-      disablePrev: tooHigh(indexAfterNext)
+      disablePrev: tooHigh(indexAfterNext),
     });
   }
 
   render() {
-    const multipleImages = this.props.images.length > 1;
-    const image = this.props.currentImage || this.props.images[0];
+    const { images, currentImage } = this.props;
+    const multipleImages = images.length > 1;
     return <div className="image-flipper" id={this.props.id}>
-      {this.props.images.length > 0
+      {currentImage && images.length > 0
         ? <FlipperImage
-          key={image.body.attachment_url}
+          key={currentImage.body.attachment_url}
           crop={this.props.crop}
           transformImage={this.props.transformImage}
           dispatch={this.props.dispatch}
@@ -58,7 +82,7 @@ export class ImageFlipper extends
           flipperId={this.props.id}
           env={this.props.env}
           onImageLoad={this.onImageLoad}
-          image={image} />
+          image={currentImage} />
         : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET} />}
       <button
         onClick={this.go(1)}

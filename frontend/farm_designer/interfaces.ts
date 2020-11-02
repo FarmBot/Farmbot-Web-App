@@ -148,6 +148,8 @@ export interface DesignerState {
   alwaysHighlightImage: boolean;
   hoveredMapImage: number | undefined;
   cameraViewGridId: string | undefined;
+  gridIds: string[];
+  soilHeightLabels: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

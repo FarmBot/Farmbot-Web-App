@@ -443,9 +443,8 @@ export class GardenMap extends
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
-    hoveredPoint={this.props.designer.hoveredPoint}
+    designer={this.props.designer}
     visible={!!this.props.showPoints}
-    cameraViewGridId={this.props.designer.cameraViewGridId}
     cameraCalibrationData={this.props.cameraCalibrationData}
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     interactions={this.interactions("GenericPointer")}

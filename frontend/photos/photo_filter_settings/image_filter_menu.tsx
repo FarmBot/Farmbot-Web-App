@@ -1,17 +1,17 @@
 import React from "react";
-import { BlurableInput } from "../../ui";
+import { BlurableInput, MarkedSlider } from "../../ui";
 import { offsetTime } from "../../farm_events/edit_fe_form";
 import moment from "moment";
 import {
   formatDate, formatTime,
 } from "../../farm_events/map_state_to_props_add_edit";
-import { Slider } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { setWebAppConfigValues } from "./actions";
 import {
   StringValueUpdate, ImageFilterMenuProps, ImageFilterMenuState,
 } from "./interfaces";
 import { StringSetting } from "../../session_keys";
+import { TaggedImage } from "farmbot";
 
 export class ImageFilterMenu
   extends React.Component<ImageFilterMenuProps, ImageFilterMenuState> {
@@ -170,6 +170,11 @@ export class ImageFilterMenu
     return Math.max(Math.round(this.imageAgeInfo.toOldest / 5), 1);
   }
 
+  getImageIndex = (image: TaggedImage) =>
+    this.imageAgeInfo.toOldest -
+    Math.abs(moment(image.body.created_at)
+      .diff(moment(this.imageAgeInfo.newestDate), "days"))
+
   render() {
     const { beginDate, beginTime, endDate, endTime } = this.state;
     return <div className={"image-filter-menu"}>
@@ -237,7 +242,7 @@ export class ImageFilterMenu
         </tbody>
       </table>
       {this.imageAgeInfo.newestDate !== "" &&
-        <Slider
+        <MarkedSlider
           min={-1}
           max={this.imageAgeInfo.toOldest}
           labelStepSize={this.labelStepSize}
@@ -245,7 +250,8 @@ export class ImageFilterMenu
           onChange={slider => this.setState({ slider })}
           onRelease={this.sliderChange}
           labelRenderer={this.renderLabel}
-          showTrackFill={false} />}
+          images={this.props.images}
+          imageIndex={this.getImageIndex} />}
     </div>;
   }
 }

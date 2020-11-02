@@ -1,6 +1,4 @@
-import {
-  mapStateToProps, getImageJobs, getCurrentImage,
-} from "../state_to_props";
+import { mapStateToProps, getImageJobs } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
@@ -58,20 +56,6 @@ describe("getImageJobs()", () => {
   });
 });
 
-describe("getCurrentImage()", () => {
-  it("currentImage undefined", () => {
-    const images = [fakeImage()];
-    const currentImage = getCurrentImage(images, undefined);
-    expect(currentImage).toEqual(images[0]);
-  });
-
-  it("currentImage defined", () => {
-    const images = [fakeImage(), fakeImage()];
-    const currentImage = getCurrentImage(images, images[1].uuid);
-    expect(currentImage).toEqual(images[1]);
-  });
-});
-
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
@@ -91,5 +75,23 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.getConfigValue(StringSetting.photo_filter_begin))
       .toEqual("2017-09-03T20:01:40.336Z");
+  });
+
+  it("currentImage undefined", () => {
+    const state = fakeState();
+    const images = [fakeImage()];
+    state.resources.consumers.photos.currentImage = undefined;
+    state.resources = buildResourceIndex(images);
+    const props = mapStateToProps(state);
+    expect(props.currentImage).toEqual(images[0]);
+  });
+
+  it("currentImage defined", () => {
+    const state = fakeState();
+    const images = [fakeImage(), fakeImage()];
+    state.resources.consumers.photos.currentImage = images[1].uuid;
+    state.resources = buildResourceIndex(images);
+    const props = mapStateToProps(state);
+    expect(props.currentImage).toEqual(images[1]);
   });
 });

@@ -3,7 +3,7 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { GardenPoint } from "../garden_point";
 import { GardenPointProps } from "../../../interfaces";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
@@ -28,6 +28,8 @@ describe("<GardenPoint/>", () => {
     cameraViewGridId: undefined,
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
+    soilHeightLabels: false,
+    soilHeightRange: { min: -200, max: 0 },
   });
 
   it("renders point", () => {
@@ -35,6 +37,7 @@ describe("<GardenPoint/>", () => {
     expect(wrapper.find("#point-radius").props().r).toEqual(100);
     expect(wrapper.find("#point-center").props().r).toEqual(2);
     expect(wrapper.find("#point-radius").props().fill).toEqual("transparent");
+    expect(wrapper.find("text").length).toEqual(0);
   });
 
   it("hovers point", () => {
@@ -90,5 +93,27 @@ describe("<GardenPoint/>", () => {
     p.cropPhotos = true;
     const wrapper = shallow(<GardenPoint {...p} />);
     expect(wrapper.find(CameraViewArea).length).toEqual(0);
+  });
+
+  it("shows z labels", () => {
+    const p = fakeProps();
+    p.point.body.z = -100;
+    p.point.body.meta.created_by = "measure-soil-height";
+    p.soilHeightLabels = true;
+    const wrapper = svgMount(<GardenPoint {...p} />);
+    expect(wrapper.text()).toContain("-100");
+    expect(wrapper.find("text").first().props().fill)
+      .toEqual("rgb(128, 128, 128)");
+  });
+
+  it("shows hovered z label", () => {
+    const p = fakeProps();
+    p.hovered = true;
+    p.point.body.z = -100;
+    p.point.body.meta.created_by = "measure-soil-height";
+    p.soilHeightLabels = true;
+    const wrapper = svgMount(<GardenPoint {...p} />);
+    expect(wrapper.text()).toContain("-100");
+    expect(wrapper.find("text").first().props().fill).toEqual("black");
   });
 });

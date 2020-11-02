@@ -72,15 +72,6 @@ describe("<ImageWorkspace />", () => {
     expect(p.onProcessPhoto).not.toHaveBeenCalled();
   });
 
-  it("processes first photo", () => {
-    const p = fakeProps();
-    const photo = fakeImage();
-    p.images = [photo];
-    const iw = new ImageWorkspace(p);
-    iw.maybeProcessPhoto();
-    expect(p.onProcessPhoto).toHaveBeenCalledWith(photo.body.id);
-  });
-
   it("processes selected photo", () => {
     const p = fakeProps();
     const photo1 = fakeImage();
@@ -99,6 +90,7 @@ describe("<ImageWorkspace />", () => {
     const p = fakeProps();
     p.botOnline = true;
     p.images = [image];
+    p.currentImage = image;
     const wrapper = mount(<ImageWorkspace {...p} />);
     clickButton(wrapper, 0, "scan current image");
     expect(p.onProcessPhoto).toHaveBeenCalledWith(image.body.id);
