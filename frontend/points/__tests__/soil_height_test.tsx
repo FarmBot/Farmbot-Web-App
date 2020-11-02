@@ -10,8 +10,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import {
   EditSoilHeight, EditSoilHeightProps, getSoilHeightColor,
-  MEASURE_SOIL_HEIGHT_NAME, tagAsSoilHeight,
-  toggleSoilHeight,
+  tagAsSoilHeight, toggleSoilHeight,
 } from "../soil_height";
 import { edit } from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -23,11 +22,14 @@ import {
 describe("toggleSoilHeight()", () => {
   it("returns update", () => {
     const point = fakePoint();
+    point.body.meta = {};
     expect(toggleSoilHeight(point)).toEqual({
-      meta: { created_by: MEASURE_SOIL_HEIGHT_NAME }
+      meta: { at_soil_level: "true" }
     });
     tagAsSoilHeight(point);
-    expect(toggleSoilHeight(point)).toEqual({ meta: { created_by: "" } });
+    expect(toggleSoilHeight(point)).toEqual({
+      meta: { at_soil_level: "false" }
+    });
   });
 });
 

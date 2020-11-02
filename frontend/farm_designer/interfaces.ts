@@ -328,6 +328,7 @@ export interface DrawnPointPayl {
   z: number;
   r: number;
   color?: string;
+  at_soil_level?: boolean;
 }
 
 export interface DrawnWeedPayl {

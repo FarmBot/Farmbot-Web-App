@@ -720,6 +720,9 @@
         }
         .data-slider {
           .bp3-start {
+            &:first-of-type {
+              display: unset;
+            }
             height: 5px;
           }
           .bp3-slider-label {

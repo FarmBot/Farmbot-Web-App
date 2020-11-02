@@ -504,6 +504,9 @@
         margin-top: 0;
       }
     }
+    .blue {
+      float: none;
+    }
   }
 }
 
@@ -527,19 +530,6 @@
     margin-bottom: 0.5rem !important;
     font-size: 1.2rem;
   }
-  .soil-height-checkbox {
-    margin-top: 1rem;
-    input {
-      float: left;
-      width: 2rem !important;
-      box-shadow: none !important;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-    label {
-      margin-top: 0;
-    }
-  }
   .weed-removal-method-section {
     .weed-removal-method {
       display: flex;
@@ -555,6 +545,20 @@
         font-weight: normal;
       }
     }
+  }
+}
+
+.soil-height-checkbox {
+  margin-top: 1rem;
+  input {
+    float: left;
+    width: 2rem !important;
+    box-shadow: none !important;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+  label {
+    margin-top: 0 !important;
   }
 }
 

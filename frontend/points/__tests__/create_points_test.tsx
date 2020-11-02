@@ -10,7 +10,7 @@ jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawCreatePoints as CreatePoints,
@@ -59,6 +59,7 @@ describe("<CreatePoints />", () => {
     deviceY: 1.23,
     deviceX: 3.21,
     xySwap: false,
+    botPosition: { x: undefined, y: undefined, z: undefined },
   });
 
   it("renders for points", () => {
@@ -125,6 +126,76 @@ describe("<CreatePoints />", () => {
     });
   });
 
+  it("adds soil height flag", () => {
+    mockPath = "/app/designer/points/add";
+    const p = fakeProps();
+    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
+    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
+    const wrapper = shallow(panel.instance().PointProperties());
+    wrapper.find("input").last().simulate("change", {
+      currentTarget: { checked: true }
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        cx: 0, cy: 0, z: 0, r: 100, color: "green", at_soil_level: true,
+      }
+    });
+  });
+
+  it("creates point with soil height flag", () => {
+    mockPath = "/app/designer/points/add";
+    const p = fakeProps();
+    p.drawnPoint = FAKE_POINT;
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.setState({ at_soil_level: true });
+    wrapper.update();
+    clickButton(wrapper, 1, "save");
+    expect(initSave).toHaveBeenCalledWith("Point", {
+      meta: {
+        color: "red", created_by: "farm-designer", type: "point",
+        at_soil_level: "true",
+      },
+      name: "My Point",
+      pointer_type: "GenericPointer",
+      plant_stage: "active",
+      radius: 345, x: 13, y: 22, z: 0,
+    });
+  });
+
+  it.each<[string]>([
+    ["point"],
+    ["weed"],
+  ])("uses current location: %s", (type) => {
+    mockPath = `/app/designer/${type}s/add`;
+    const p = fakeProps();
+    p.drawnPoint = FAKE_POINT;
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.setState({ cx: 10, cy: 20, r: 30 });
+    clickButton(wrapper, 0, "use FarmBot's current position");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { color: "red", cx: 1, cy: 2, z: 3, r: 30, name: "My Point" },
+      type: type == "point"
+        ? Actions.SET_DRAWN_POINT_DATA
+        : Actions.SET_DRAWN_WEED_DATA,
+    });
+    expect(wrapper.state()).toEqual({ cx: 1, cy: 2, z: 3, r: 30 });
+  });
+
+  it("doesn't use current location", () => {
+    mockPath = "/app/designer/points/add";
+    const p = fakeProps();
+    p.drawnPoint = FAKE_POINT;
+    p.botPosition = { x: undefined, y: undefined, z: undefined };
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.setState({ cx: 10, cy: 20, r: 30 });
+    jest.resetAllMocks();
+    clickButton(wrapper, 0, "use FarmBot's current position");
+    expect(p.dispatch).not.toHaveBeenCalled();
+    expect(wrapper.state()).toEqual({ cx: 10, cy: 20, r: 30 });
+  });
+
   it("updates weed name", () => {
     mockPath = "/app/designer/weeds/add";
     const p = fakeProps();
@@ -145,7 +216,7 @@ describe("<CreatePoints />", () => {
     mockPath = "/app/designer/points/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 0, "save");
+    clickButton(wrapper, 1, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: "Created Point",
@@ -159,7 +230,7 @@ describe("<CreatePoints />", () => {
     mockPath = "/app/designer/weeds/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 0, "save");
+    clickButton(wrapper, 1, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "red", created_by: "farm-designer", type: "weed" },
       name: "Created Weed",
