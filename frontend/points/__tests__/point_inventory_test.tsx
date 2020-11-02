@@ -29,7 +29,7 @@ describe("<Points> />", () => {
     hoveredPoint: undefined,
     gridIds: [],
     soilHeightLabels: false,
-    sourceFbosConfig: () => ({ value: true, consistent: true }),
+    sourceFbosConfig: () => ({ value: 0, consistent: true }),
   });
 
   it("renders no points", () => {

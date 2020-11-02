@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { TaggedGenericPointer } from "farmbot";
+import { TaggedGenericPointer, TaggedPoint } from "farmbot";
 import { round } from "lodash";
 import { edit, save } from "../api/crud";
 import { Everything } from "../interfaces";
@@ -10,21 +10,23 @@ import { Row, Col, BlurableInput } from "../ui";
 
 export const MEASURE_SOIL_HEIGHT_NAME = "measure-soil-height";
 
-export const soilHeightPoint = (point: TaggedGenericPointer) =>
-  point.body.meta.created_by == MEASURE_SOIL_HEIGHT_NAME;
+export const soilHeightPoint = (point: TaggedPoint) =>
+  (point.body.meta.created_by == MEASURE_SOIL_HEIGHT_NAME
+    || point.body.meta.at_soil_level == "true")
+  && point.body.meta.at_soil_level != "false";
 
 export const tagAsSoilHeight = (point: TaggedGenericPointer) =>
-  point.body.meta.created_by = MEASURE_SOIL_HEIGHT_NAME;
+  point.body.meta.at_soil_level = "true";
 
-export const toggleSoilHeight = (point: TaggedGenericPointer) =>
+export const toggleSoilHeight = (point: TaggedPoint) =>
   ({
     meta: {
       ...point.body.meta,
-      created_by: soilHeightPoint(point) ? "" : MEASURE_SOIL_HEIGHT_NAME,
+      at_soil_level: "" + !soilHeightPoint(point),
     }
   });
 
-export const soilHeightQuery = { created_by: MEASURE_SOIL_HEIGHT_NAME };
+export const soilHeightQuery = { at_soil_level: "true" };
 
 export const getSoilHeightColor =
   (genericPoints: TaggedGenericPointer[]) => {
@@ -39,7 +41,7 @@ export const getSoilHeightColor =
     };
   };
 
-export const setSoilHeight = (soilHeight: number) =>
+const setSoilHeight = (soilHeight: number) =>
   (dispatch: Function, getState: () => Everything) => {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig) {

@@ -35,7 +35,7 @@ export const ZDisplay = (props: ZDisplayProps) => {
     .map(p => p.body.z).sort()[0];
   const soil = props.allPoints.filter(soilHeightPoint)
     .map(p => p.body.z).sort()[0];
-  const values = props.allPoints.filter(p => p.body.z != 0)
+  const values = props.allPoints.filter(p => soilHeightPoint(p) || p.body.z != 0)
     .map(p => Math.abs(p.body.z));
   const getFbosValue = (key: ConfigurationName) =>
     parseInt("" + (props.sourceFbosConfig(key).value || 0));
