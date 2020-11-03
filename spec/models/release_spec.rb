@@ -1,7 +1,10 @@
 require "spec_helper"
 describe Release do
   it "finds the latest version for a set of params" do
+    fake_image = "http://farm.bot/fw.fw"
     Release.destroy_all
+    expected = { "rpi_release_tag" => nil, "rpi_release_url" => nil }
+    expect(Release.latest_image(platform: "rpi")).to eq(expected)
     [
       ["stable", "rpi", "11.0.1"],
       ["stable", "rpi3", "11.0.1"],
@@ -12,7 +15,7 @@ describe Release do
       ["beta", "rpi", "11.1.0"],
       ["beta", "rpi3", "11.1.0"],
     ].map do |(chan, plat, ver)|
-      Release.create!(image_url: "http://farm.bot/fw.fw",
+      Release.create!(image_url: fake_image,
                       version: ver,
                       platform: plat,
                       channel: chan)
@@ -23,6 +26,11 @@ describe Release do
     expect(rel.platform).to eq("rpi")
     expect(rel.version).to eq("11.1.0")
     expect(rel.version).to eq("11.1.0")
+    expected2 = {
+      "rpi_release_tag" => "11.1.0",
+      "rpi_release_url" => "http://farm.bot/fw.fw",
+    }
+    expect(Release.latest_image(platform: "rpi")).to eq(expected2)
   end
 
   # Not a fan of this test due to the high number of stubs

@@ -136,6 +136,10 @@ class DashboardController < ApplicationController
   end
 
   def set_global_config
-    @global_config = GlobalConfig.dump.to_json
+    @global_config = GlobalConfig
+      .dump
+      .merge(Release.latest_image(platform: "rpi"))
+      .merge(Release.latest_image(platform: "rpi3"))
+      .to_json
   end
 end
