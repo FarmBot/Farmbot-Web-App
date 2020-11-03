@@ -5,22 +5,16 @@ describe Device do
   let(:user) { device.users.first }
   # [timezone, local_ota_hour, expected]
   conversions = [
-    # Timezones observing DST:
-    # ["Australia/Canberra", 7, 17],
+    # DST-free Timezones for easy testing:
     ["Africa/Addis_Ababa", 6, 9],
     ["Africa/Kampala", 22, 1],
     ["Africa/Lagos", 15, 16],
-    # ["America/Los_Angeles", 5, 22],
-    # ["Asia/Kuala_Lumpur", 10, 18],
     ["Asia/Makassar", 2, 10],
-    # ["Asia/Nicosia", 15, 18],
     ["Asia/Omsk", 11, 17],
     ["Asia/Qatar", 0, 3],
     ["Asia/Seoul", 18, 3],
     ["Australia/Perth", 21, 5],
     ["Etc/GMT+4", 20, 16],
-    # ["Europe/Berlin", 11, 13],
-    # ["Europe/Bucharest", 4, 7],
   ]
 
   it "converts legacy ota_hour to ota_hour_utc" do

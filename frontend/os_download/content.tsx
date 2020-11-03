@@ -1,61 +1,21 @@
 import * as React from "react";
-import axios from "axios";
 import { t } from "../i18next_wrapper";
-import { GithubRelease } from "../devices/interfaces";
 import { Content } from "../constants";
-import { ExternalUrl } from "../external_urls";
-
-interface OsDownloadState {
-  tagName: string;
-  genesisImg: string;
-  expressImg: string;
-}
-
-const getImgLink = (assets: GithubRelease["assets"], target: string) =>
-  assets.filter(asset => asset.name.includes("img")
-    && asset.name.includes(target))[0]?.browser_download_url || "";
-
-const tagNameFromUrl = (url: string) => {
-  const tagPart = url.split("/")[7] || "";
-  return tagPart.startsWith("v") ? tagPart : "";
-};
 
 const downloadButtonText = (versionString: string) =>
-  `${t("DOWNLOAD")} ${versionString}`;
+  `${t("DOWNLOAD")} v${versionString}`;
 
-export class OsDownload extends React.Component<{}, OsDownloadState> {
-  state: OsDownloadState = { tagName: "", genesisImg: "", expressImg: "" };
+export class OsDownload extends React.Component<{}, {}> {
+  state = {};
 
-  get genesisTagName() {
-    return this.state.tagName || tagNameFromUrl(this.genesisImgDownloadLink);
+  platformLink(platform: string) {
+    const expressImgDownloadLink = globalConfig[`${platform}_release_url`];
+    const expressTagName = globalConfig[`${platform}_release_tag`];
+    return <a className="transparent-link-button"
+      href={expressImgDownloadLink}>
+      {downloadButtonText(expressTagName)}
+    </a>;
   }
-
-  get expressTagName() {
-    return this.state.tagName || tagNameFromUrl(this.expressImgDownloadLink);
-  }
-
-  get genesisImgDownloadLink() {
-    return globalConfig.GENESIS_IMG_OVERRIDE ||
-      this.state.genesisImg ||
-      globalConfig.GENESIS_IMG_FALLBACK || "";
-  }
-
-  get expressImgDownloadLink() {
-    return globalConfig.EXPRESS_IMG_OVERRIDE ||
-      this.state.expressImg ||
-      globalConfig.EXPRESS_IMG_FALLBACK || "";
-  }
-
-  fetchLatestRelease = () =>
-    axios.get<GithubRelease>(ExternalUrl.latestRelease)
-      .then(resp =>
-        this.setState({
-          tagName: resp.data.tag_name,
-          genesisImg: getImgLink(resp.data.assets, "rpi3"),
-          expressImg: getImgLink(resp.data.assets, "rpi-"),
-        })).catch(() => { });
-
-  componentDidMount() { this.fetchLatestRelease(); }
 
   render() {
     return <div className="static-page os-download-page">
@@ -82,10 +42,7 @@ export class OsDownload extends React.Component<{}, OsDownloadState> {
               </td>
               <td>{t("Raspberry Pi 3")}</td>
               <td>
-                <a className="transparent-link-button"
-                  href={this.genesisImgDownloadLink}>
-                  {downloadButtonText(this.genesisTagName)}
-                </a>
+                {this.platformLink("rpi3")}
               </td>
             </tr>
             <tr>
@@ -95,10 +52,7 @@ export class OsDownload extends React.Component<{}, OsDownloadState> {
               </td>
               <td>{t("Raspberry Pi Zero W")}</td>
               <td>
-                <a className="transparent-link-button"
-                  href={this.expressImgDownloadLink}>
-                  {downloadButtonText(this.expressTagName)}
-                </a>
+                {this.platformLink("rpi")}
               </td>
             </tr>
           </tbody>

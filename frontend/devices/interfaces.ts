@@ -92,14 +92,6 @@ export interface BotState {
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
-export interface GithubRelease {
-  tag_name: string;
-  assets: {
-    name: string;
-    browser_download_url: string;
-  }[];
-}
-
 export interface OsUpdateInfo {
   version: string | undefined;
 }
