@@ -54,7 +54,7 @@ jest.mock("../../../point_groups/group_detail", () => ({
   findGroupFromUrl: () => mockGroup,
 }));
 
-import * as React from "react";
+import React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow, mount } from "enzyme";
 import { GardenMapProps } from "../../interfaces";
@@ -82,6 +82,9 @@ import { fakeMountedToolInfo } from "../../../__test_support__/fake_tool_info";
 import {
   fakeCameraCalibrationData,
 } from "../../../__test_support__/fake_camera_data";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../../__test_support__/fake_bot_data";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -103,15 +106,8 @@ const fakeProps = (): GardenMapProps => ({
   weeds: [],
   allPoints: [],
   toolSlots: [],
-  botLocationData: {
-    position: { x: 0, y: 0, z: 0 },
-    scaled_encoders: { x: undefined, y: undefined, z: undefined },
-    raw_encoders: { x: undefined, y: undefined, z: undefined },
-  },
-  botSize: {
-    x: { value: 3000, isDefault: true },
-    y: { value: 1500, isDefault: true }
-  },
+  botLocationData: fakeBotLocationData(),
+  botSize: fakeBotSize(),
   stopAtHome: { x: true, y: true },
   hoveredPlant: undefined,
   zoomLvl: 1,

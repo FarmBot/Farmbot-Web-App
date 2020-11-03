@@ -137,6 +137,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         {this.props.openfarm_slug ? t("Grid and Row Planting") : t("Grid")}
       </h3>
       <GridInput
+        key={JSON.stringify(this.state.grid)}
         itemType={this.props.openfarm_slug ? "plants" : "points"}
         xy_swap={this.props.xy_swap}
         disabled={this.state.status === "dirty"}

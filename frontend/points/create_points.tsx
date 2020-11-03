@@ -1,16 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  Everything,
-  ResourceColor,
-} from "../interfaces";
+import { Everything, ResourceColor } from "../interfaces";
 import { initSave } from "../api/crud";
-import {
-  Row,
-  Col,
-  BlurableInput,
-  ColorPicker,
-} from "../ui/index";
+import { Row, Col, BlurableInput, ColorPicker } from "../ui/index";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
 import { deletePoints } from "../api/delete_points";
@@ -22,7 +14,7 @@ import {
   DesignerPanelHeader,
   DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { parseIntInput } from "../util";
+import { parseIntInput, validBotLocationData } from "../util";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { push, getPathArray } from "../history";
@@ -31,6 +23,11 @@ import { success } from "../toast/toast";
 import { PlantGrid } from "../plants/grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import {
+  definedPosition, positionButtonTitle,
+} from "../tools/tool_slot_edit_components";
+import { BotPosition } from "../devices/interfaces";
+import { round } from "lodash";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -41,6 +38,7 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
     deviceX: position.x || 0,
     deviceY: position.y || 0,
     xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
+    botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   };
 }
 
@@ -50,6 +48,7 @@ export interface CreatePointsProps {
   deviceX: number;
   deviceY: number;
   xySwap: boolean;
+  botPosition: BotPosition;
 }
 
 type CreatePointsState = Partial<DrawnPointPayl>;
@@ -98,6 +97,7 @@ export class RawCreatePoints
       z: this.attr("z"),
       r: this.attr("r"),
       color: this.attr("color") || this.defaultColor,
+      at_soil_level: this.attr("at_soil_level"),
     };
   }
 
@@ -141,30 +141,38 @@ export class RawCreatePoints
     this.cancel();
   }
 
+  updateAttr = (key: keyof CreatePointsState, value: string) => {
+    if (this.props.drawnPoint) {
+      const point = this.getPointData();
+      switch (key) {
+        case "name":
+        case "color":
+          this.setState({ [key]: value });
+          point[key] = value;
+          break;
+        case "at_soil_level":
+          this.setState({ [key]: !!value });
+          point[key] = !!value;
+          break;
+        default:
+          const intValue = parseIntInput(value);
+          this.setState({ [key]: intValue });
+          point[key] = intValue;
+      }
+      this.props.dispatch({
+        type: this.panel == "weeds"
+          ? Actions.SET_DRAWN_WEED_DATA
+          : Actions.SET_DRAWN_POINT_DATA,
+        payload: point
+      });
+    }
+  }
+
   /** Update fields. */
   updateValue = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
-      if (this.props.drawnPoint) {
-        const point = this.getPointData();
-        switch (key) {
-          case "name":
-          case "color":
-            this.setState({ [key]: value });
-            point[key] = value;
-            break;
-          default:
-            const intValue = parseIntInput(value);
-            this.setState({ [key]: intValue });
-            point[key] = intValue;
-        }
-        this.props.dispatch({
-          type: this.panel == "weeds"
-            ? Actions.SET_DRAWN_WEED_DATA
-            : Actions.SET_DRAWN_POINT_DATA,
-          payload: point
-        });
-      }
+      this.updateAttr(key, value);
     };
   }
 
@@ -190,6 +198,7 @@ export class RawCreatePoints
         color: this.attr("color") || this.defaultColor,
         created_by: "farm-designer",
         type: this.panel == "weeds" ? "weed" : "point",
+        ...(this.attr("at_soil_level") ? { at_soil_level: "true" } : {}),
       },
       x: this.attr("cx"),
       y: this.attr("cy"),
@@ -258,6 +267,24 @@ export class RawCreatePoints
           </Col>
         </Row>
       </ListItem>
+      <button
+        className={"fb-button blue"}
+        title={positionButtonTitle(this.props.botPosition)}
+        onClick={() => {
+          const position = definedPosition(this.props.botPosition);
+          if (position) {
+            const { x, y, z } = position;
+            this.setState({ cx: round(x), cy: round(y), z: round(z) }, () =>
+              this.props.dispatch({
+                type: this.panel == "weeds"
+                  ? Actions.SET_DRAWN_WEED_DATA
+                  : Actions.SET_DRAWN_POINT_DATA,
+                payload: this.getPointData(),
+              }));
+          }
+        }}>
+        {t("use FarmBot's current position")}
+      </button>
       <ListItem name={t("Size")}>
         <Row>
           <Col xs={6}>
@@ -271,6 +298,20 @@ export class RawCreatePoints
           </Col>
         </Row>
       </ListItem>
+      {this.panel == "points" &&
+        <ListItem>
+          <Row>
+            <Col xs={6} className={"soil-height-checkbox"}>
+              <label>{t("at soil level")}</label>
+              <input
+                name="at_soil_level"
+                type="checkbox"
+                onChange={e => this.updateAttr("at_soil_level",
+                  "" + e.currentTarget.checked)}
+                checked={this.attr("at_soil_level")} />
+            </Col>
+          </Row>
+        </ListItem>}
     </ul>
 
   PointActions = () =>

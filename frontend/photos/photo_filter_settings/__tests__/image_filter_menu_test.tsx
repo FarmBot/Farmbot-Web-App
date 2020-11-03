@@ -256,7 +256,7 @@ describe("<ImageFilterMenu />", () => {
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     const image = fakeImage();
     image.body.created_at = "2001-01-08T00:00:00.000Z";
-    const index = wrapper.instance().getImageIndex(image);
+    const index = wrapper.instance().getImageOffset(image);
     expect(index).toEqual(1);
   });
 

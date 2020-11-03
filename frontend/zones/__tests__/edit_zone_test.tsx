@@ -9,7 +9,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditZone as EditZone, EditZoneProps, mapStateToProps,
@@ -29,6 +29,7 @@ describe("<EditZone />", () => {
     botSize: {
       x: { value: 3000, isDefault: true },
       y: { value: 1500, isDefault: true },
+      z: { value: 400, isDefault: true },
     },
   });
 

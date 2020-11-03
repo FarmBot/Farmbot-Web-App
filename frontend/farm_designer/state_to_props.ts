@@ -19,7 +19,9 @@ import {
   maybeGetSequence,
   selectAllLogs,
 } from "../resources/selectors";
-import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
+import {
+  validBotLocationData, validFwConfig, unpackUUID, validFbosConfig,
+} from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { Props, CameraCalibrationData } from "./interfaces";
 import { TaggedPlant, BotSize } from "./map/interfaces";
@@ -36,6 +38,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { isToolFlipped } from "../tools/tool_slot_edit_components";
 import { UserEnv } from "../devices/interfaces";
+import { sourceFbosConfigValue } from "../settings/source_config_value";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -76,8 +79,10 @@ export function mapStateToProps(props: Everything): Props {
     : allWeeds.filter(x => x.body.plant_stage !== "removed");
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
-  const { mcu_params } = props.bot.hardware;
+  const { hardware } = props.bot;
+  const { mcu_params } = hardware;
   const firmwareSettings = fwConfig || mcu_params;
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
 
   const mountedToolId =
     getDeviceAccountSettings(props.resources.index).body.mounted_tool_id;
@@ -99,7 +104,7 @@ export function mapStateToProps(props: Everything): Props {
     .map(x => {
       const label = x.body.label;
       const pinStatus = x.body.pin
-        ? props.bot.hardware.pins[x.body.pin]
+        ? hardware.pins[x.body.pin]
         : undefined;
       const value = pinStatus ? pinStatus.value > 0 : false;
       return { label, value };
@@ -131,12 +136,12 @@ export function mapStateToProps(props: Everything): Props {
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
-    botLocationData: validBotLocationData(props.bot.hardware.location_data),
+    botLocationData: validBotLocationData(hardware.location_data),
     botMcuParams: firmwareSettings,
     botSize: botSize(props),
     peripherals,
-    eStopStatus: props.bot.hardware.informational_settings.locked,
-    deviceTarget: props.bot.hardware.informational_settings.target,
+    eStopStatus: hardware.informational_settings.locked,
+    deviceTarget: hardware.informational_settings.target,
     latestImages,
     cameraCalibrationData: getCameraCalibrationData(env),
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -148,6 +153,7 @@ export function mapStateToProps(props: Everything): Props {
     mountedToolInfo,
     visualizedSequenceBody,
     logs: selectAllLogs(props.resources.index),
+    sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
   };
 }
 
@@ -173,12 +179,13 @@ export const botSize = (props: Everything): BotSize => {
   const { mcu_params } = props.bot.hardware;
   const firmwareSettings = fwConfig || mcu_params;
   const fw = firmwareSettings;
-  const stepsPerMmXY = {
+  const stepsPerMm = {
     x: calcMicrostepsPerMm(fw.movement_step_per_mm_x, fw.movement_microsteps_x),
     y: calcMicrostepsPerMm(fw.movement_step_per_mm_y, fw.movement_microsteps_y),
+    z: calcMicrostepsPerMm(fw.movement_step_per_mm_z, fw.movement_microsteps_z),
   };
   return getBotSize(
     firmwareSettings,
-    stepsPerMmXY,
+    stepsPerMm,
     getDefaultAxisLength(getConfigValue));
 };

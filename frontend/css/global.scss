@@ -288,6 +288,9 @@ fieldset {
   padding: 1rem;
   box-shadow: 0px 0px 10px $light_gray;
   width: 18rem;
+  .ip-address {
+    word-break: break-all;
+  }
 }
 
 .qos-display {

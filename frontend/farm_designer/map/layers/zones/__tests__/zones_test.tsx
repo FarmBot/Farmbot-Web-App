@@ -1,6 +1,6 @@
 jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
   Zones0D, ZonesProps, Zones1D, Zones2D, getZoneType, ZoneType, spaceSelected,
@@ -18,7 +18,8 @@ const fakeProps = (): ZonesProps => ({
   group: fakePointGroup(),
   botSize: {
     x: { value: 3000, isDefault: true },
-    y: { value: 1500, isDefault: true }
+    y: { value: 1500, isDefault: true },
+    z: { value: 400, isDefault: true },
   },
   mapTransformProps: fakeMapTransformProps(),
   currentGroup: undefined,
@@ -198,7 +199,8 @@ describe("getZoneType()", () => {
 describe("spaceSelected()", () => {
   const botSize = {
     x: { value: 3000, isDefault: true },
-    y: { value: 1500, isDefault: true }
+    y: { value: 1500, isDefault: true },
+    z: { value: 400, isDefault: true },
   };
 
   it("is selected: area", () => {

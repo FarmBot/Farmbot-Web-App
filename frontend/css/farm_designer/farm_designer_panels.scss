@@ -504,6 +504,9 @@
         margin-top: 0;
       }
     }
+    .blue {
+      float: none;
+    }
   }
 }
 
@@ -542,6 +545,20 @@
         font-weight: normal;
       }
     }
+  }
+}
+
+.soil-height-checkbox {
+  margin-top: 1rem;
+  input {
+    float: left;
+    width: 2rem !important;
+    box-shadow: none !important;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+  label {
+    margin-top: 0 !important;
   }
 }
 
@@ -1570,7 +1587,32 @@
       }
       .fb-toggle-button {
         margin-right: 2rem;
+        margin-top: 0.25rem;
         float: right;
+      }
+    }
+    .points-section {
+      .row {
+        margin-left: -5px;
+        margin-right: 0;
+        label {
+          line-height: 3.5rem;
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+        .input {
+          height: 3rem;
+        }
+        button {
+          margin-top: 0.85rem;
+          float: right;
+        }
+        .bp3-popover-wrapper {
+          display: none;
+        }
+      }
+      .delete {
+        margin: 0 0 2rem 1rem;
       }
     }
     .no-points,
@@ -1582,7 +1624,7 @@
       float: right;
       font-size: 2rem;
       margin-right: 2rem;
-      margin-top: 0.25rem;
+      margin-top: 0;
       color: $dark_gray;
     }
     i {

@@ -194,6 +194,7 @@ describe("botSize()", () => {
     expect(botSize(state)).toEqual({
       x: { value: 2900, isDefault: true },
       y: { value: 1400, isDefault: true },
+      z: { value: 400, isDefault: true },
     });
   });
 
@@ -206,6 +207,7 @@ describe("botSize()", () => {
     expect(botSize(state)).toEqual({
       x: { value: 1000, isDefault: true },
       y: { value: 1000, isDefault: true },
+      z: { value: 400, isDefault: true },
     });
   });
 
@@ -226,6 +228,7 @@ describe("botSize()", () => {
     expect(mapStateToProps(state).botSize).toEqual({
       x: { value: 50, isDefault: false },
       y: { value: 25, isDefault: false },
+      z: { value: 400, isDefault: true },
     });
   });
 });

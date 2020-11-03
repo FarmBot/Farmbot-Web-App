@@ -20,6 +20,7 @@ import { SearchField } from "../../ui/search_field";
 import { PointSortMenu } from "../../farm_designer/sort_options";
 import { deletePoints } from "../../api/delete_points";
 import { Actions } from "../../constants";
+import { tagAsSoilHeight } from "../soil_height";
 
 describe("<Points> />", () => {
   const fakeProps = (): PointsProps => ({
@@ -28,6 +29,7 @@ describe("<Points> />", () => {
     hoveredPoint: undefined,
     gridIds: [],
     soilHeightLabels: false,
+    sourceFbosConfig: () => ({ value: 0, consistent: true }),
   });
 
   it("renders no points", () => {
@@ -86,7 +88,7 @@ describe("<Points> />", () => {
   it("expands soil height section", () => {
     const p = fakeProps();
     const soilHeightPoint = fakePoint();
-    soilHeightPoint.body.meta.created_by = "measure-soil-height";
+    tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const wrapper = mount<Points>(<Points {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("soil height");
@@ -117,6 +119,7 @@ describe("<Points> />", () => {
     p.genericPoints = [fakePoint(), gridPoint];
     window.confirm = () => false;
     const wrapper = mount<Points>(<Points {...p} />);
+    wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".delete").first().simulate("click");
     expect(deletePoints).not.toHaveBeenCalled();
   });
@@ -128,6 +131,7 @@ describe("<Points> />", () => {
     p.genericPoints = [fakePoint(), gridPoint];
     window.confirm = () => true;
     const wrapper = mount<Points>(<Points {...p} />);
+    wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".delete").first().simulate("click");
     expect(deletePoints).toHaveBeenCalledWith("points",
       { meta: { gridId: "123" } });
@@ -148,9 +152,10 @@ describe("<Points> />", () => {
   it("toggles height label visibility", () => {
     const p = fakeProps();
     const soilHeightPoint = fakePoint();
-    soilHeightPoint.body.meta.created_by = "measure-soil-height";
+    tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const wrapper = mount<Points>(<Points {...p} />);
+    wrapper.setState({ soilHeight: true });
     wrapper.find(".fb-toggle-button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined

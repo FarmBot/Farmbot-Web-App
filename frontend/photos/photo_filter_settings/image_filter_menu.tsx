@@ -170,7 +170,7 @@ export class ImageFilterMenu
     return Math.max(Math.round(this.imageAgeInfo.toOldest / 5), 1);
   }
 
-  getImageIndex = (image: TaggedImage) =>
+  getImageOffset = (image: TaggedImage) =>
     this.imageAgeInfo.toOldest -
     Math.abs(moment(image.body.created_at)
       .diff(moment(this.imageAgeInfo.newestDate), "days"))
@@ -250,8 +250,8 @@ export class ImageFilterMenu
           onChange={slider => this.setState({ slider })}
           onRelease={this.sliderChange}
           labelRenderer={this.renderLabel}
-          images={this.props.images}
-          imageIndex={this.getImageIndex} />}
+          items={this.props.images}
+          itemValue={this.getImageOffset} />}
     </div>;
   }
 }

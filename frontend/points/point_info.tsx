@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
@@ -11,7 +11,7 @@ import { TaggedGenericPointer } from "farmbot";
 import { maybeFindGenericPointerById } from "../resources/selectors";
 import { Actions } from "../constants";
 import {
-  EditPointProperties, updatePoint, PointActions,
+  EditPointProperties, updatePoint, PointActions, lookupPointSource,
 } from "./point_edit_actions";
 import { ListItem } from "../plants/plant_panel";
 
@@ -56,12 +56,16 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
               {Object.entries(this.point.body.meta).map(([key, value]) => {
                 switch (key) {
                   case "color":
-                  case "created_by":
+                  case "at_soil_level":
                   case "removal_method":
                   case "type":
                   case "gridId":
                     return <div key={key}
                       className={`meta-${key}-not-displayed`} />;
+                  case "created_by":
+                    return <ListItem name={t("Source")} key={key}>
+                      {lookupPointSource(value)}
+                    </ListItem>;
                   default:
                     return <ListItem key={key} name={key}>
                       {value || ""}

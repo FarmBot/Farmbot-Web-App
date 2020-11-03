@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import {
@@ -22,26 +22,30 @@ import {
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
+import { Xyz } from "farmbot";
 
 export const getDefaultAxisLength =
-  (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
+  (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
     const mapSizeX = parseInt("" + getConfigValue(NumericSetting.map_size_x));
     const mapSizeY = parseInt("" + getConfigValue(NumericSetting.map_size_y));
     if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
-      return { x: mapSizeX, y: mapSizeY };
+      return { x: mapSizeX, y: mapSizeY, z: 400 };
     }
-    return { x: 2900, y: 1400 };
+    return { x: 2900, y: 1400, z: 400 };
   };
 
-export const getGridSize =
-  (getConfigValue: GetWebAppConfigValue, botSize: BotSize) => {
-    if (getConfigValue(BooleanSetting.dynamic_map)) {
-      // Render the map size according to device axis length.
-      return { x: round(botSize.x.value), y: round(botSize.y.value) };
-    }
-    // Use a default map size.
-    return getDefaultAxisLength(getConfigValue);
-  };
+export const getGridSize = (
+  getConfigValue: GetWebAppConfigValue,
+  botSize: BotSize,
+): AxisNumberProperty => {
+  if (getConfigValue(BooleanSetting.dynamic_map)) {
+    // Render the map size according to device axis length.
+    return { x: round(botSize.x.value), y: round(botSize.y.value) };
+  }
+  // Use a default map size.
+  const defaultSize = getDefaultAxisLength(getConfigValue);
+  return { x: defaultSize.x, y: defaultSize.y };
+};
 
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
@@ -158,6 +162,11 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
         shouldDisplay={this.props.shouldDisplay}
+        allPoints={this.props.allPoints}
+        sourceFbosConfig={this.props.sourceFbosConfig}
+        firmwareConfig={this.props.botMcuParams}
+        botLocationData={this.props.botLocationData}
+        botSize={this.props.botSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
       <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />

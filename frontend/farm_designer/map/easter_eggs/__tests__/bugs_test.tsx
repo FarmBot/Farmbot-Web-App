@@ -2,7 +2,7 @@ jest.mock("../../../../settings/maybe_highlight", () => ({
   getHighlightName: () => "surprise",
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
@@ -23,7 +23,8 @@ describe("<Bugs />", () => {
     mapTransformProps: fakeMapTransformProps(),
     botSize: {
       x: { value: 3000, isDefault: true },
-      y: { value: 1500, isDefault: true }
+      y: { value: 1500, isDefault: true },
+      z: { value: 400, isDefault: true },
     },
   });
 

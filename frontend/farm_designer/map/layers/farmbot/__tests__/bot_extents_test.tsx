@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BotExtents } from "../bot_extents";
 import { shallow } from "enzyme";
 import { bot } from "../../../../../__test_support__/fake_state/bot";
@@ -17,7 +17,8 @@ describe("<VirtualFarmBot/>", () => {
       stopAtHome: { x: true, y: true },
       botSize: {
         x: { value: 3000, isDefault: true },
-        y: { value: 1500, isDefault: true }
+        y: { value: 1500, isDefault: true },
+        z: { value: 400, isDefault: true },
       }
     };
   }
@@ -36,7 +37,8 @@ describe("<VirtualFarmBot/>", () => {
     const p = fakeProps();
     p.botSize = {
       x: { value: 100, isDefault: false },
-      y: { value: 100, isDefault: false }
+      y: { value: 100, isDefault: false },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const home = wrapper.find("#home-lines").find("line");
@@ -52,7 +54,8 @@ describe("<VirtualFarmBot/>", () => {
     p.stopAtHome.x = false;
     p.botSize = {
       x: { value: 3000, isDefault: true },
-      y: { value: 100, isDefault: false }
+      y: { value: 100, isDefault: false },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const home = wrapper.find("#home-lines").find("line");
@@ -69,7 +72,8 @@ describe("<VirtualFarmBot/>", () => {
     p.stopAtHome.y = false;
     p.botSize = {
       x: { value: 100, isDefault: false },
-      y: { value: 100, isDefault: false }
+      y: { value: 100, isDefault: false },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const home = wrapper.find("#home-lines").find("line");
@@ -84,7 +88,8 @@ describe("<VirtualFarmBot/>", () => {
     p.mapTransformProps.quadrant = 1;
     p.botSize = {
       x: { value: 100, isDefault: false },
-      y: { value: 100, isDefault: false }
+      y: { value: 100, isDefault: false },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const home = wrapper.find("#home-lines").find("line");
@@ -101,7 +106,8 @@ describe("<VirtualFarmBot/>", () => {
     p.stopAtHome.y = false;
     p.botSize = {
       x: { value: 100, isDefault: false },
-      y: { value: 100, isDefault: true }
+      y: { value: 100, isDefault: true },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const max = wrapper.find("#max-lines").find("line");
@@ -115,7 +121,8 @@ describe("<VirtualFarmBot/>", () => {
     p.mapTransformProps.xySwap = true;
     p.botSize = {
       x: { value: 100, isDefault: false },
-      y: { value: 100, isDefault: true }
+      y: { value: 100, isDefault: true },
+      z: { value: 400, isDefault: true },
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const max = wrapper.find("#max-lines").find("line");
