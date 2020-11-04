@@ -14,19 +14,29 @@ const createPair = (envName: string, label: string, value: string): Pair => ({
   comment: label
 });
 
+/** Prepare body pairs for manipulation. */
+const cleanAll = (pairs: Pair[] | undefined): Pair[] => {
+  const newPairs = pairs || [];
+  newPairs.map((pair, index) => {
+    newPairs[index].args.value = "" + pair.args.value;
+  });
+  return newPairs;
+};
+
 /** Add Pair to body (for editStep) */
 const executorAdd = (inputPair: Pair) => (s: ExecuteScript) => {
-  s.body = s.body || [];
+  s.body = cleanAll(s.body);
   s.body.push(inputPair);
 };
 
 /** Add all pairs to body (for editStep) */
 const executorAddAll = (fwName: string, configs: FarmwareConfig[]) =>
   (s: ExecuteScript) => {
+    s.body = cleanAll(s.body);
     configs.map(config => {
       const envName = getConfigEnvName(fwName, config.name);
       if (!hasPair(s, envName)) {
-        const pair = createPair(envName, config.label, config.value);
+        const pair = createPair(envName, config.label, config.value.toString());
         s.body = s.body || [];
         s.body.push(pair);
       }
@@ -36,7 +46,7 @@ const executorAddAll = (fwName: string, configs: FarmwareConfig[]) =>
 /** Replace Pair in body (for editStep) */
 const executorReplace = (inputPair: Pair) => (s: ExecuteScript) => {
   const inputName = inputPair.args.label;
-  s.body = s.body || [];
+  s.body = cleanAll(s.body);
   // Find index of inputPair in step body
   const inputIndex = without(s.body.map((pair, idx) => {
     if (pair.args.label == inputName) { return idx; }
@@ -48,7 +58,8 @@ const executorReplace = (inputPair: Pair) => (s: ExecuteScript) => {
 
 /** Remove pair in body (for editStep) */
 const executorRemove = (inputName: string) => (s: ExecuteScript) => {
-  s.body = (s.body || []).filter(x => x.args.label !== inputName);
+  s.body = cleanAll(s.body);
+  s.body = s.body.filter(x => x.args.label !== inputName);
 };
 
 /** Remove all pairs from body (for editStep) */
@@ -96,7 +107,7 @@ const farmwareInputs =
       .map(config => {
         inputs[getConfigEnvName(fwName, config.name)] = {
           label: config.label,
-          value: config.value
+          value: config.value.toString(),
         };
       });
 

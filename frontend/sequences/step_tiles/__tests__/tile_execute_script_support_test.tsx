@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   FarmwareInputsProps, FarmwareInputs,
@@ -18,7 +18,9 @@ describe("<FarmwareInputs />", () => {
         }]
       },
       farmwareInstalled: true,
-      defaultConfigs: [{ name: "input_1", label: "Input 1", value: "1" }],
+      defaultConfigs: [{
+        name: "input_1", label: "Input 1", value: 1 as unknown as string,
+      }],
       updateStep: jest.fn(),
     };
   };
@@ -137,7 +139,7 @@ describe("<FarmwareInputs />", () => {
     bulkBtn.simulate("change");
     expect(p.currentStep.body).toEqual([{
       kind: "pair",
-      args: { label: "my_farmware_input_1", value: 1 },
+      args: { label: "my_farmware_input_1", value: "1" },
       comment: "Input 1",
     },
     {
