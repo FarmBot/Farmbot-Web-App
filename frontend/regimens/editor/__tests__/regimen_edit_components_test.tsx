@@ -86,9 +86,10 @@ describe("editRegimenVariables()", () => {
 
   it("adds bodyVariables", () => {
     const regimen = fakeRegimen();
-    editRegimenVariables({ dispatch: jest.fn(), regimen })([])(testVariable);
+    const variables = cloneDeep(testVariable);
+    editRegimenVariables({ dispatch: jest.fn(), regimen })([])(variables);
     expect(overwrite).toHaveBeenCalledWith(regimen,
-      expect.objectContaining({ body: [testVariable] }));
+      expect.objectContaining({ body: [variables] }));
   });
 
   it("edits bodyVariables", () => {

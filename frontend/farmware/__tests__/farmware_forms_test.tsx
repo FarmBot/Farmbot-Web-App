@@ -4,11 +4,11 @@ const mockDevice = {
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   needsFarmwareForm, farmwareHelpText, getConfigEnvName,
-  FarmwareForm, FarmwareFormProps, ConfigFields,
+  FarmwareForm, FarmwareFormProps, ConfigFields, ConfigFieldsProps,
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
@@ -50,13 +50,14 @@ describe("farmwareHelpText()", () => {
 });
 
 describe("<ConfigFields />", () => {
-  const fakeProps = () => {
+  const fakeProps = (): ConfigFieldsProps => {
     return {
       farmware: fakeFarmware(),
       getValue: jest.fn(),
       dispatch: jest.fn(),
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),
+      userEnv: {},
     };
   };
 
@@ -98,6 +99,26 @@ describe("<ConfigFields />", () => {
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "my_fake_farmware_config_1", 1);
   });
+
+  it("updates to bot value", () => {
+    const p = fakeProps();
+    p.getValue = () => "0";
+    p.farmware.name = "My Farmware";
+    p.userEnv = { my_farmware_config_1: "2" };
+    const wrapper = shallow(<ConfigFields {...p} />);
+    wrapper.find(".fa-refresh").simulate("click");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("my_farmware_config_1", "2");
+  });
+
+  it("resets to default value", () => {
+    const p = fakeProps();
+    p.getValue = () => "0";
+    p.farmware.name = "My Farmware";
+    p.farmware.config = [{ name: "config_1", label: "Config 1", value: "1" }];
+    const wrapper = shallow(<ConfigFields {...p} />);
+    wrapper.find(".fa-times-circle").simulate("click");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("my_farmware_config_1", "1");
+  });
 });
 
 describe("<FarmwareForm />", () => {
@@ -105,6 +126,7 @@ describe("<FarmwareForm />", () => {
     return {
       farmware: fakeFarmware(),
       env: {},
+      userEnv: {},
       dispatch: jest.fn(),
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),

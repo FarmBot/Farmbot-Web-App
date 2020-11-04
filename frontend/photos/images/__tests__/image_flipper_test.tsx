@@ -1,3 +1,8 @@
+jest.mock("../actions", () => ({
+  selectImage: jest.fn(),
+  setShownMapImages: jest.fn(),
+}));
+
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { ImageFlipper, PLACEHOLDER_FARMBOT } from "../image_flipper";
@@ -6,6 +11,9 @@ import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
 import { ImageFlipperProps } from "../interfaces";
 import { Actions } from "../../../constants";
+import { UUID } from "../../../resources/interfaces";
+import { selectImage, setShownMapImages } from "../actions";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<ImageFlipper/>", () => {
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
@@ -20,23 +28,32 @@ describe("<ImageFlipper/>", () => {
 
   const fakeProps = (): ImageFlipperProps => ({
     id: "",
-    dispatch: jest.fn(),
+    dispatch: mockDispatch(),
     images: prepareImages(fakeImages),
     currentImage: undefined,
     currentImageSize: { width: undefined, height: undefined },
-    onFlip: jest.fn(),
     crop: false,
     env: {},
     getConfigValue: jest.fn(),
     transformImage: false,
   });
 
+  const expectFlip = (uuid: UUID) => {
+    expect(selectImage).toHaveBeenCalledWith(uuid);
+    expect(setShownMapImages).toHaveBeenCalledWith(uuid);
+  };
+
+  const expectNoFlip = () => {
+    expect(selectImage).not.toHaveBeenCalled();
+    expect(setShownMapImages).not.toHaveBeenCalled();
+  };
+
   it("defaults to index 0 and flips up", () => {
     const p = fakeProps();
     const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
     const up = flipper.instance().go(1);
     up();
-    expect(p.onFlip).toHaveBeenCalledWith(p.images[1].uuid);
+    expectFlip(p.images[1].uuid);
   });
 
   it("flips down", () => {
@@ -45,7 +62,7 @@ describe("<ImageFlipper/>", () => {
     const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
     const down = flipper.instance().go(-1);
     down();
-    expect(p.onFlip).toHaveBeenCalledWith(p.images[0].uuid);
+    expectFlip(p.images[0].uuid);
   });
 
   it("stops at upper end", () => {
@@ -54,7 +71,7 @@ describe("<ImageFlipper/>", () => {
     const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
     const up = flipper.instance().go(1);
     up();
-    expect(p.onFlip).not.toHaveBeenCalled();
+    expectNoFlip();
   });
 
   it("stops at lower end", () => {
@@ -63,7 +80,7 @@ describe("<ImageFlipper/>", () => {
     const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
     const down = flipper.instance().go(-1);
     down();
-    expect(p.onFlip).not.toHaveBeenCalled();
+    expectNoFlip();
   });
 
   it("disables flippers when no images", () => {
@@ -98,7 +115,7 @@ describe("<ImageFlipper/>", () => {
     expect(nextButton.text().toLowerCase()).toBe("next");
     expect(nextButton.prop("disabled")).toBeFalsy();
     wrapper.find("button").last().simulate("click");
-    expect(p.onFlip).toHaveBeenLastCalledWith(p.images[0].uuid);
+    expectFlip(p.images[0].uuid);
     expect(wrapper.find("button").last().render().prop("disabled")).toBeTruthy();
   });
 
@@ -110,13 +127,13 @@ describe("<ImageFlipper/>", () => {
     expect(prevButton.text().toLowerCase()).toBe("prev");
     expect(prevButton.props().disabled).toBeFalsy();
     prevButton.simulate("click");
-    expect(p.onFlip).toHaveBeenCalledWith(p.images[2].uuid);
+    expectFlip(p.images[2].uuid);
     jest.resetAllMocks();
     wrapper.update();
     const updatedPrevButton = wrapper.find("button").first();
     expect(updatedPrevButton.props().disabled).toBeTruthy();
     updatedPrevButton.simulate("click");
-    expect(p.onFlip).not.toHaveBeenCalled();
+    expectNoFlip();
   });
 
   it("renders placeholder", () => {

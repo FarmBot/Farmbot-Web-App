@@ -6,7 +6,6 @@ import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 export interface ImageFlipperProps {
   id: string;
-  onFlip(uuid: string | undefined): void;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   currentImageSize: Record<"height" | "width", number | undefined>;
@@ -114,7 +113,7 @@ export interface PhotoFooterProps {
   flags: ImageShowFlags;
 }
 
-export interface PhotosState {
+export interface PhotosComponentState {
   crop: boolean;
   rotate: boolean;
   fullscreen: boolean;

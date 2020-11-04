@@ -3,7 +3,7 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { GardenPoint } from "../garden_point";
 import { GardenPointProps } from "../../../interfaces";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
@@ -18,6 +18,8 @@ import {
 } from "../../../../../__test_support__/fake_camera_data";
 import { shallow } from "enzyme";
 import { CameraViewArea } from "../../farmbot/bot_figure";
+import { Color } from "../../../../../ui";
+import { tagAsSoilHeight } from "../../../../../points/soil_height";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -28,6 +30,8 @@ describe("<GardenPoint/>", () => {
     cameraViewGridId: undefined,
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
+    soilHeightLabels: false,
+    getSoilHeightColor: () => "rgb(128, 128, 128)",
   });
 
   it("renders point", () => {
@@ -35,6 +39,7 @@ describe("<GardenPoint/>", () => {
     expect(wrapper.find("#point-radius").props().r).toEqual(100);
     expect(wrapper.find("#point-center").props().r).toEqual(2);
     expect(wrapper.find("#point-radius").props().fill).toEqual("transparent");
+    expect(wrapper.find("text").length).toEqual(0);
   });
 
   it("hovers point", () => {
@@ -90,5 +95,28 @@ describe("<GardenPoint/>", () => {
     p.cropPhotos = true;
     const wrapper = shallow(<GardenPoint {...p} />);
     expect(wrapper.find(CameraViewArea).length).toEqual(0);
+  });
+
+  it("shows z labels", () => {
+    const p = fakeProps();
+    p.point.body.z = -100;
+    tagAsSoilHeight(p.point);
+    p.soilHeightLabels = true;
+    const wrapper = svgMount(<GardenPoint {...p} />);
+    expect(wrapper.text()).toContain("-100");
+    expect(wrapper.find("text").first().props().fill)
+      .toEqual(p.getSoilHeightColor(-100));
+    expect(wrapper.find("text").first().props().stroke).toEqual(Color.black);
+  });
+
+  it("shows hovered z label", () => {
+    const p = fakeProps();
+    p.hovered = true;
+    p.point.body.z = -100;
+    tagAsSoilHeight(p.point);
+    p.soilHeightLabels = true;
+    const wrapper = svgMount(<GardenPoint {...p} />);
+    expect(wrapper.text()).toContain("-100");
+    expect(wrapper.find("text").first().props().stroke).toEqual(Color.orange);
   });
 });

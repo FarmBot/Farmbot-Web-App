@@ -1,17 +1,19 @@
-import * as React from "react";
+import React from "react";
 import { TaggedGenericPointer } from "farmbot";
-import { Saucer } from "../ui";
 import { Actions } from "../constants";
 import { push } from "../history";
 import { t } from "../i18next_wrapper";
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { mapPointClickAction } from "../farm_designer/map/actions";
+import { DevSettings } from "../settings/dev/dev_support";
+import { destroy } from "../api/crud";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
   dispatch: Function;
   hovered: boolean;
+  colorOverride?: string;
 }
 
 // The individual points that show up in the farm designer sub nav.
@@ -20,7 +22,8 @@ export class PointInventoryItem extends
 
   render() {
     const point = this.props.tpp.body;
-    const { tpp, dispatch } = this.props;
+    const color = point.meta.color || "green";
+    const { tpp, dispatch, hovered, colorOverride } = this.props;
     const pointId = (point.id || "ERR_NO_POINT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
@@ -32,6 +35,10 @@ export class PointInventoryItem extends
     };
 
     const click = () => {
+      if (DevSettings.quickDeleteEnabled()) {
+        dispatch(destroy(tpp.uuid, true));
+        return;
+      }
       if (getMode() == Mode.boxSelect) {
         mapPointClickAction(dispatch, tpp.uuid)();
         toggle("leave");
@@ -42,17 +49,24 @@ export class PointInventoryItem extends
     };
 
     return <div
-      className={`point-search-item ${this.props.hovered ? "hovered" : ""}`}
+      className={`point-search-item ${hovered ? "hovered" : ""}`}
       key={pointId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
       onClick={click}>
-      <Saucer color={point.meta.color || "green"} />
+      {DevSettings.quickDeleteEnabled()
+        ? <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>
+        : <div className={`saucer ${colorOverride ? "" : color}`}
+          style={colorOverride
+            ? { background: colorOverride, border: "2px solid black" }
+            : {}} />}
       <span className="point-search-item-name">
         {point.name || t("Untitled point")}
       </span>
       <p className="point-search-item-info">
-        <i>{`(${point.x}, ${point.y}) r${point.radius}`}</i>
+        <i>{colorOverride
+          ? `(${point.x}, ${point.y}) z${point.z}`
+          : `(${point.x}, ${point.y}) r${point.radius}`}</i>
       </p>
     </div>;
   }

@@ -1,109 +1,70 @@
-import * as React from "react";
-import axios from "axios";
+import React from "react";
 import { t } from "../i18next_wrapper";
-import { GithubRelease } from "../devices/interfaces";
 import { Content } from "../constants";
-import { ExternalUrl } from "../external_urls";
 
-interface OsDownloadState {
-  tagName: string;
-  genesisImg: string;
-  expressImg: string;
+interface PlatformContent {
+  imageUrl: string;
+  releaseTag: string;
+  kits: string[];
+  computer: string;
 }
 
-const getImgLink = (assets: GithubRelease["assets"], target: string) =>
-  assets.filter(asset => asset.name.includes("img")
-    && asset.name.includes(target))[0]?.browser_download_url || "";
+const PLATFORM_DATA = (): PlatformContent[] => [
+  {
+    computer: "Raspberry Pi 3",
+    imageUrl: globalConfig.rpi3_release_url,
+    releaseTag: globalConfig.rpi3_release_tag,
+    kits: [
+      "Genesis v1.2",
+      "Genesis v1.3",
+      "Genesis v1.4",
+      "Genesis v1.5",
+      "Genesis XL v1.4",
+      "Genesis XL v1.5",
+    ],
+  },
+  {
+    computer: "Raspberry Pi Zero W",
+    imageUrl: globalConfig.rpi_release_url,
+    releaseTag: globalConfig.rpi_release_tag,
+    kits: [
+      "Express v1.0",
+      "Express XL v1.0",
+    ],
+  },
+];
 
-const tagNameFromUrl = (url: string) => {
-  const tagPart = url.split("/")[7] || "";
-  return tagPart.startsWith("v") ? tagPart : "";
-};
+const OsDownloadRow = (content: PlatformContent) =>
+  <tr key={content.computer}>
+    <td>
+      {content.kits.map(kit => <span key={kit}>{kit}</span>)}
+    </td>
+    <td>
+      {content.computer}
+    </td>
+    <td>
+      <a className="transparent-link-button" href={content.imageUrl}>
+        {`${t("DOWNLOAD")} v${content.releaseTag}`}
+      </a>
+    </td>
+  </tr>;
 
-const downloadButtonText = (versionString: string) =>
-  `${t("DOWNLOAD")} ${versionString}`;
-
-export class OsDownload extends React.Component<{}, OsDownloadState> {
-  state: OsDownloadState = { tagName: "", genesisImg: "", expressImg: "" };
-
-  get genesisTagName() {
-    return this.state.tagName || tagNameFromUrl(this.genesisImgDownloadLink);
-  }
-
-  get expressTagName() {
-    return this.state.tagName || tagNameFromUrl(this.expressImgDownloadLink);
-  }
-
-  get genesisImgDownloadLink() {
-    return globalConfig.GENESIS_IMG_OVERRIDE ||
-      this.state.genesisImg ||
-      globalConfig.GENESIS_IMG_FALLBACK || "";
-  }
-
-  get expressImgDownloadLink() {
-    return globalConfig.EXPRESS_IMG_OVERRIDE ||
-      this.state.expressImg ||
-      globalConfig.EXPRESS_IMG_FALLBACK || "";
-  }
-
-  fetchLatestRelease = () =>
-    axios.get<GithubRelease>(ExternalUrl.latestRelease)
-      .then(resp =>
-        this.setState({
-          tagName: resp.data.tag_name,
-          genesisImg: getImgLink(resp.data.assets, "rpi3"),
-          expressImg: getImgLink(resp.data.assets, "rpi-"),
-        })).catch(() => { });
-
-  componentDidMount() { this.fetchLatestRelease(); }
-
-  render() {
-    return <div className="static-page os-download-page">
-      <div className="all-content-wrapper">
-        <h1>{t("Download FarmBot OS")}</h1>
-        <p>{t(Content.DOWNLOAD_FBOS)}</p>
-        <table>
-          <thead>
-            <tr>
-              <th>{t("FarmBot Kit")}</th>
-              <th>{t("Internal Computer")}</th>
-              <th>{t("Download Link")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span>{"Genesis v1.2"}</span>
-                <span>{"Genesis v1.3"}</span>
-                <span>{"Genesis v1.4"}</span>
-                <span>{"Genesis v1.5"}</span>
-                <span>{"Genesis XL v1.4"}</span>
-                <span>{"Genesis XL v1.5"}</span>
-              </td>
-              <td>{t("Raspberry Pi 3")}</td>
-              <td>
-                <a className="transparent-link-button"
-                  href={this.genesisImgDownloadLink}>
-                  {downloadButtonText(this.genesisTagName)}
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span>{"Express v1.0"}</span>
-                <span>{"Express XL v1.0"}</span>
-              </td>
-              <td>{t("Raspberry Pi Zero W")}</td>
-              <td>
-                <a className="transparent-link-button"
-                  href={this.expressImgDownloadLink}>
-                  {downloadButtonText(this.expressTagName)}
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>;
-  }
-}
+export const OsDownloadPage = () =>
+  <div className="static-page os-download-page">
+    <div className="all-content-wrapper">
+      <h1>{t("Download FarmBot OS")}</h1>
+      <p>{t(Content.DOWNLOAD_FBOS)}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>{t("FarmBot Kit")}</th>
+            <th>{t("Internal Computer")}</th>
+            <th>{t("Download Link")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {PLATFORM_DATA().map(OsDownloadRow)}
+        </tbody>
+      </table>
+    </div>
+  </div>;

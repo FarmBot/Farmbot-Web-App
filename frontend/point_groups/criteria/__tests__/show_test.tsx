@@ -187,6 +187,7 @@ describe("<LocationSelection />", () => {
     botSize: {
       x: { value: 3000, isDefault: true },
       y: { value: 1500, isDefault: true },
+      z: { value: 400, isDefault: true },
     },
   });
 

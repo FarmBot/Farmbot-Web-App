@@ -114,7 +114,7 @@ export const isWifi = (
 
 export const LocalIpAddress = ({ address }: { address: string | undefined }) =>
   isString(address)
-    ? <p><b>{t("Local IP")}: </b>{address}</p>
+    ? <p className={"ip-address"}><b>{t("Local IP")}: </b>{address}</p>
     : <div className={"no-local-ip"} />;
 
 const calcMac =

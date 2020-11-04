@@ -35,6 +35,7 @@ export interface ImageFilterMenuProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   imageAgeInfo: { newestDate: string, toOldest: number };
+  images?: TaggedImage[];
 }
 
 export interface FilterNearTimeState {

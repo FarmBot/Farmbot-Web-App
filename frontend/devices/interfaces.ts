@@ -92,14 +92,6 @@ export interface BotState {
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
-export interface GithubRelease {
-  tag_name: string;
-  assets: {
-    name: string;
-    browser_download_url: string;
-  }[];
-}
-
 export interface OsUpdateInfo {
   version: string | undefined;
 }
@@ -116,7 +108,7 @@ export type Axis = Xyz | "all";
 export type BotPosition = Record<Xyz, number | undefined>;
 export type BotLocationData = LocationData;
 
-export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
+export type StepsPerMm = Record<Xyz, number | undefined>;
 
 export type UserEnv = Record<string, string | undefined>;
 

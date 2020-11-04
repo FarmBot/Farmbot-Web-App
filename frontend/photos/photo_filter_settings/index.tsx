@@ -46,6 +46,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
         dispatch={dispatch}
         getConfigValue={props.getConfigValue}
         timeSettings={props.timeSettings}
+        images={props.images}
         imageAgeInfo={calculateImageAgeInfo(props.images)} />
       <FilterNearTime {...commonProps} />
       <FilterOlderOrNewer {...commonProps} />

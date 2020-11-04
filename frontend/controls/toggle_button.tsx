@@ -17,7 +17,7 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       "-1": "🚫"
     };
     const togval = String(this.props.toggleValue);
-    return captions[togval] || "---";
+    return captions[togval] || " ";
   }
 
   css() {

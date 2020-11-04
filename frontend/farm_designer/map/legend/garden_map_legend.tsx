@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LayerToggle } from "../legend/layer_toggle";
 import { GardenMapLegendProps } from "../interfaces";
 import { atMaxZoom, atMinZoom } from "../zoom";
@@ -19,6 +19,7 @@ import {
   BooleanConfigKey as WebAppBooleanConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 import { ToggleButton } from "../../../controls/toggle_button";
+import { ZDisplay, ZDisplayToggle } from "./z_display";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -145,6 +146,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
   const menuClass = props.legendMenuOpen ? "active" : "";
+  const [zDisplayOpen, setZDisplayOpen] = React.useState(false);
   return <div className={`garden-map-legend ${menuClass} ${props.className}`}>
     <div className={"menu-pullout " + menuClass}
       onClick={props.toggle(BooleanSetting.legend_menu_open)}>
@@ -154,11 +156,21 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <i className="fa fa-2x fa-arrow-left" />
     </div>
     <div className="content">
-      <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
-      <LayerToggles {...props} />
-      <MoveModeLink />
-      <SelectModeLink />
-      <BugsControls />
+      <div className="menu-content">
+        <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
+        <LayerToggles {...props} />
+        <MoveModeLink />
+        <SelectModeLink />
+        <BugsControls />
+        <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />
+      </div>
+      {zDisplayOpen &&
+        <ZDisplay
+          allPoints={props.allPoints}
+          firmwareConfig={props.firmwareConfig}
+          sourceFbosConfig={props.sourceFbosConfig}
+          botLocationData={props.botLocationData}
+          botSize={props.botSize} />}
     </div>
   </div>;
 }

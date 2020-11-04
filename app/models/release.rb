@@ -29,4 +29,12 @@ class Release < ApplicationRecord
   def self.maybe_find_latest(query)
     Release.order(created_at: :desc).find_by(query)
   end
+
+  def self.latest_image(platform:)
+    rel = maybe_find_latest(platform: platform, channel: "stable")
+    {
+      "#{platform}_release_url" => rel&.image_url,
+      "#{platform}_release_tag" => rel&.version,
+    }
+  end
 end

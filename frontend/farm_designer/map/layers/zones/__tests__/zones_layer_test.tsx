@@ -16,7 +16,8 @@ describe("<ZonesLayer />", () => {
     currentGroup: undefined,
     botSize: {
       x: { value: 3000, isDefault: true },
-      y: { value: 1500, isDefault: true }
+      y: { value: 1500, isDefault: true },
+      z: { value: 400, isDefault: true },
     },
     mapTransformProps: fakeMapTransformProps(),
     startDrag: jest.fn(),

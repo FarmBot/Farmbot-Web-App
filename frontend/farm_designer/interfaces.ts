@@ -20,7 +20,7 @@ import {
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
-  BotPosition, BotLocationData, ShouldDisplay,
+  BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
@@ -99,6 +99,7 @@ export interface Props {
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
   deviceTarget: string;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface MovePlantProps {
@@ -148,6 +149,8 @@ export interface DesignerState {
   alwaysHighlightImage: boolean;
   hoveredMapImage: number | undefined;
   cameraViewGridId: string | undefined;
+  gridIds: string[];
+  soilHeightLabels: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -325,6 +328,7 @@ export interface DrawnPointPayl {
   z: number;
   r: number;
   color?: string;
+  at_soil_level?: boolean;
 }
 
 export interface DrawnWeedPayl {

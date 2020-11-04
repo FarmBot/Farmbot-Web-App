@@ -51,6 +51,8 @@
             :kind: numeric
             :args:
               :number: 50
+      - :kind: safe_z
+        :args: {}
     :comment: Move to above tool
   - :kind: move
     :args: {}
@@ -239,6 +241,8 @@
             :kind: special_value
             :args:
               :label: "safe_height"
+      - :kind: safe_z
+        :args: {}
     :comment: Move above plant
   - :kind: take_photo
     :args: {}
@@ -292,6 +296,8 @@
             :kind: special_value
             :args:
               :label: "safe_height"
+      - :kind: safe_z
+        :args: {}
     :comment: Move above plant
   - :kind: write_pin
     :args:
@@ -357,9 +363,9 @@
         :args:
           :axis: z
           :axis_operand:
-            :kind: identifier
+            :kind: special_value
             :args:
-              :label: parent
+              :label: "soil_height"
       - :kind: axis_addition
         :args:
           :axis: z
@@ -367,6 +373,8 @@
             :kind: numeric
             :args:
               :number: 150
+      - :kind: safe_z
+        :args: {}
     :comment: Move to above plant
   - :kind: move
     :args: {}
@@ -389,16 +397,16 @@
         :args:
           :axis: z
           :axis_operand:
-            :kind: identifier
+            :kind: special_value
             :args:
-              :label: parent
+              :label: "soil_height"
       - :kind: axis_addition
         :args:
           :axis: z
           :axis_operand:
             :kind: numeric
             :args:
-              :number: 75
+              :number: -25
       - :kind: speed_overwrite
         :args:
           :axis: z
@@ -438,9 +446,9 @@
         :args:
           :axis: z
           :axis_operand:
-            :kind: identifier
+            :kind: special_value
             :args:
-              :label: parent
+              :label: "soil_height"
       - :kind: axis_addition
         :args:
           :axis: z
@@ -467,7 +475,7 @@
     :args:
       :speed: 100
       :axis: z
-    :comment: Move to safe Z
+    :comment: Find home
   - :kind: move
     :args: {}
     :body:
@@ -499,6 +507,8 @@
             :kind: numeric
             :args:
               :number: 50
+      - :kind: safe_z
+        :args: {}
     :comment: Move above seed trough
   - :kind: write_pin
     :args:

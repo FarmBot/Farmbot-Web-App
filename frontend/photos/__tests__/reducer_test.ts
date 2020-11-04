@@ -10,7 +10,7 @@ describe("photosReducer", () => {
     currentImageSize: { width: undefined, height: undefined },
   });
 
-  it("Removes UUIDs from state on deletion", () => {
+  it("removes UUIDs from state on deletion", () => {
     const image = fakeImage();
     const oldState = fakeState();
     oldState.currentImage = image.uuid;
@@ -20,6 +20,17 @@ describe("photosReducer", () => {
     });
     expect(oldState.currentImage).not.toEqual(newState.currentImage);
     expect(newState.currentImage).toBeUndefined();
+  });
+
+  it("doesn't remove UUIDs from state on deletion if not current image", () => {
+    const image = fakeImage();
+    const oldState = fakeState();
+    oldState.currentImage = "other";
+    const newState = photosReducer(oldState, {
+      type: Actions.DESTROY_RESOURCE_OK,
+      payload: image
+    });
+    expect(oldState.currentImage).toEqual(newState.currentImage);
   });
 
   it("adds UUID to state on SELECT_IMAGE", () => {

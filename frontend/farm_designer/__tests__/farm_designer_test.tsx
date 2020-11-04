@@ -11,7 +11,7 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../plants/plant_inventory", () => ({ Plants: () => <div /> }));
 
-import * as React from "react";
+import React from "react";
 import { RawFarmDesigner as FarmDesigner } from "../index";
 import { mount } from "enzyme";
 import { Props } from "../interfaces";
@@ -33,6 +33,9 @@ import { fakeMountedToolInfo } from "../../__test_support__/fake_tool_info";
 import {
   fakeCameraCalibrationData,
 } from "../../__test_support__/fake_camera_data";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../__test_support__/fake_bot_data";
 
 describe("<FarmDesigner/>", () => {
   const fakeProps = (): Props => ({
@@ -46,16 +49,9 @@ describe("<FarmDesigner/>", () => {
     plants: [],
     toolSlots: [],
     crops: [],
-    botLocationData: {
-      position: { x: undefined, y: undefined, z: undefined },
-      scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined },
-    },
+    botLocationData: fakeBotLocationData(),
     botMcuParams: bot.hardware.mcu_params,
-    botSize: {
-      x: { value: 3000, isDefault: true },
-      y: { value: 1500, isDefault: true },
-    },
+    botSize: fakeBotSize(),
     peripherals: [],
     eStopStatus: false,
     latestImages: [],
@@ -70,6 +66,7 @@ describe("<FarmDesigner/>", () => {
     visualizedSequenceBody: [],
     logs: [],
     deviceTarget: "",
+    sourceFbosConfig: jest.fn(),
   });
 
   it("loads default map settings", () => {

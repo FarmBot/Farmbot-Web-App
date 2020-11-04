@@ -124,6 +124,7 @@ export interface FetchSpecialValueProps {
   axis: Xyz;
   label: string;
   botPosition: BotPosition;
+  resources: ResourceIndex;
 }
 
 export interface ComputeAddProps {

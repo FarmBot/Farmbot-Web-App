@@ -3,12 +3,15 @@ import {
   TaggedGenericPointer,
   TaggedPlantTemplate,
   TaggedWeedPointer,
+  TaggedPoint,
+  Xyz,
+  McuParams,
 } from "farmbot";
 import {
   State, BotOriginQuadrant, MountedToolInfo, CameraCalibrationData,
 } from "../interfaces";
 import {
-  BotPosition, BotLocationData, ShouldDisplay,
+  BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
 } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TimeSettings } from "../../interfaces";
@@ -53,6 +56,11 @@ export interface GardenMapLegendProps {
   gardenId?: number;
   className?: string;
   shouldDisplay: ShouldDisplay;
+  allPoints: TaggedPoint[];
+  sourceFbosConfig: SourceFbosConfig;
+  firmwareConfig: McuParams;
+  botLocationData: BotLocationData;
+  botSize: BotSize;
 }
 
 export type MapTransformProps = {
@@ -89,6 +97,8 @@ export interface GardenPointProps {
   cropPhotos: boolean;
   hovered: boolean;
   dispatch: Function;
+  soilHeightLabels: boolean;
+  getSoilHeightColor(z: number): string;
 }
 
 export interface GardenWeedProps {
@@ -121,7 +131,7 @@ export interface DragHelpersProps extends DragHelpersBaseProps {
 
 export type AxisNumberProperty = Record<"x" | "y", number>;
 export type CheckedAxisLength = { value: number, isDefault: boolean };
-export type BotSize = Record<"x" | "y", CheckedAxisLength>;
+export type BotSize = Record<Xyz, CheckedAxisLength>;
 
 export interface BotExtentsProps {
   mapTransformProps: MapTransformProps;

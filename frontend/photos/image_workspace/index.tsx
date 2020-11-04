@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FarmbotColorPicker } from "./farmbot_picker";
 import { BlurableInput, Row, Col, Help, ExpandableHeader } from "../../ui";
 import { HSV } from "./interfaces";
@@ -72,9 +72,9 @@ export class ImageWorkspace
     };
 
   maybeProcessPhoto = () => {
-    const img = this.props.currentImage || this.props.images[0];
-    if (img?.body.id) {
-      this.props.onProcessPhoto(img.body.id);
+    const currentImageId = this.props.currentImage?.body.id;
+    if (currentImageId) {
+      this.props.onProcessPhoto(currentImageId);
     }
   };
 

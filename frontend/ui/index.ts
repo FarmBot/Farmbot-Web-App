@@ -14,6 +14,7 @@ export * from "./help";
 export * from "./input_error";
 export * from "./left_panel";
 export * from "./markdown";
+export * from "./marked_slider";
 export * from "./new_fb_select";
 export * from "./page";
 export * from "./right_panel";

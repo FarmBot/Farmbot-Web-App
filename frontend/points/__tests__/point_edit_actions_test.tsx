@@ -3,7 +3,12 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+jest.mock("../soil_height", () => ({
+  toggleSoilHeight: jest.fn(),
+  soilHeightPoint: jest.fn(),
+}));
+
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   EditPointLocation, EditPointLocationProps,
@@ -12,11 +17,14 @@ import {
   EditPointNameProps,
   AdditionalWeedProperties,
   AdditionalWeedPropertiesProps,
+  EditPointSoilHeightTag,
+  EditPointSoilHeightTagProps,
 } from "../point_edit_actions";
 import {
   fakePoint, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { edit, save } from "../../api/crud";
+import { toggleSoilHeight } from "../soil_height";
 
 describe("updatePoint()", () => {
   it("updates a point", () => {
@@ -102,6 +110,20 @@ describe("<EditPointColor />", () => {
   });
 });
 
+describe("<EditPointSoilHeightTag />", () => {
+  const fakeProps = (): EditPointSoilHeightTagProps => ({
+    updatePoint: jest.fn(),
+    point: fakePoint(),
+  });
+
+  it("edits soil height flag", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EditPointSoilHeightTag {...p} />);
+    wrapper.find("input").first().simulate("change");
+    expect(toggleSoilHeight).toHaveBeenCalledWith(p.point);
+  });
+});
+
 describe("<AdditionalWeedProperties />", () => {
   const fakeProps = (): AdditionalWeedPropertiesProps => ({
     point: fakeWeed(),
@@ -111,7 +133,8 @@ describe("<AdditionalWeedProperties />", () => {
   it("renders unknown source", () => {
     const p = fakeProps();
     p.point.body.meta = {
-      meta_key: "meta value", created_by: undefined, key: undefined
+      meta_key: "meta value", created_by: undefined, key: undefined,
+      color: "red", type: "weed",
     };
     const wrapper = mount(<AdditionalWeedProperties {...p} />);
     expect(wrapper.text()).toContain("unknown");

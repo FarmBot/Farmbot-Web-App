@@ -176,11 +176,12 @@
         }
       }
       .point-sort-menu {
-        width: 60px;
+        width: 80px;
         label {
           margin-top: 0;
         }
         i {
+          cursor: pointer;
           padding: 0.5rem;
           color: $medium_light_gray;
           &.selected {
@@ -291,6 +292,13 @@
       vertical-align: middle;
       margin-right: 0.25rem;
     }
+    .quick-delete {
+      display: inline;
+      color: $dark_red;
+      &.hovered {
+        font-weight: bold;
+      }
+    }
   }
   .weed-search-item-info,
   .point-search-item-info {
@@ -396,6 +404,9 @@
   stroke-width: 2;
   stroke-opacity: 0.3;
   fill-opacity: 0.1;
+  text {
+    paint-order: stroke;
+  }
 }
 
 .map-weed {
@@ -641,27 +652,87 @@
   right: -120px;
   z-index: 3;
   transition: all 0.4s ease;
-  box-shadow: 0px 1px 4px #555;
-  max-width: 120px;
   &.active {
     transform: translateX(-140px);
   }
   .content {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    background: rgba(255, 255, 255, .75);
-    padding: 10px;
-    border-radius: 5px;
-    >*+* {
-      margin-top: 1rem;
-    }
-    label {
+    flex-direction: row-reverse;
+    .menu-content {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap;
+      max-width: 120px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, .75);
+      border-radius: 5px;
+      box-shadow: 0px 1px 4px #555;
+      >*+* {
+        margin-top: 1rem;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .z-display-toggle {
+        margin-left: 1rem;
+        margin-right: 1rem;
+        label {
+          display: inline;
+        }
+      }
     }
-   }
+    .z-display {
+      position: relative;
+      padding: 2rem;
+      padding-left: 3rem;
+      margin-right: 1.25rem;
+      background: rgba(255, 255, 255, .75);
+      border-radius: 5px;
+      box-shadow: 0px 1px 4px #555;
+      label {
+        position: absolute;
+        top: 0.5rem;
+        left: 44%;
+      }
+      .sliders {
+        height: 98%;
+        .bp3-slider {
+          height: 100%;
+          margin-left: 1rem;
+        }
+        .input-slider {
+          pointer-events: none;
+          .bp3-slider-handle {
+            left: 3.8px;
+            height: 8px;
+            width: 9px;
+            background: none;
+            box-shadow: none;
+            border: 1px solid $dark_gray;
+            border-radius: 2px;
+            .bp3-slider-label {
+              margin-left: -6px;
+              margin-top: -14px;
+            }
+          }
+        }
+        .data-slider {
+          .bp3-start {
+            &:first-of-type {
+              display: unset;
+            }
+            height: 5px;
+          }
+          .bp3-slider-label {
+            margin-left: -6rem;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
   .toggle-buttons {
     display: flex;
     flex-direction: column;
@@ -861,15 +932,6 @@
       line-height: unset !important;
     }
   }
-  .bp3-slider {
-    margin-left: 3rem;
-    margin-top: 1rem;
-    width: 80%;
-  }
-  .bp3-slider-label {
-    white-space: nowrap;
-    text-align: center;
-  }
   input {
     background: $white;
   }
@@ -911,5 +973,64 @@
   }
   .fb-toggle-button {
     margin-left: 1rem;
+  }
+}
+
+.sliders {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+  .bp3-slider {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    width: 80%;
+  }
+  &.vertical {
+    .bp3-slider {
+      margin-top: 0;
+    }
+  }
+  .bp3-slider-label {
+    white-space: nowrap;
+    text-align: center;
+    &:empty {
+      display: none;
+    }
+  }
+  .data-slider {
+    pointer-events: none;
+    .bp3-slider-axis,
+    .bp3-slider-track {
+      display: none;
+    }
+    .bp3-slider-label {
+      box-shadow: none;
+    }
+    .bp3-start {
+      &:first-of-type {
+        display: none;
+      }
+      top: 0.53rem;
+      width: 0.5px;
+      background: transparentize($dark_gray, 0.75);
+      box-shadow: none;
+      height: 0.55rem;
+      border-radius: 0;
+    }
+    &.vertical {
+      .bp3-start {
+        top: unset;
+        left: 0.53rem;
+        height: 0.5px;
+        width: 0.55rem;
+        border-radius: 0;
+      }
+    }
+  }
+  .input-slider {
+    position: absolute;
+    top: 0;
   }
 }

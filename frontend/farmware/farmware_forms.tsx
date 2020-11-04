@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Col, BlurableInput } from "../ui/index";
 import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
@@ -10,6 +10,7 @@ import { t } from "../i18next_wrapper";
 export interface FarmwareFormProps {
   farmware: FarmwareManifestInfo;
   env: UserEnv;
+  userEnv: UserEnv;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
@@ -32,14 +33,17 @@ export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined):
   return "";
 }
 
+export interface ConfigFieldsProps {
+  farmware: FarmwareManifestInfo;
+  getValue(farmwareName: string, currentConfig: FarmwareConfig): string;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  userEnv: UserEnv;
+  dispatch: Function;
+}
+
 /** Return a div that includes all Farmware input fields. */
-export function ConfigFields(props: {
-  farmware: FarmwareManifestInfo,
-  getValue: (farmwareName: string, currentConfig: FarmwareConfig) => string,
-  shouldDisplay: ShouldDisplay,
-  saveFarmwareEnv: SaveFarmwareEnv,
-  dispatch: Function,
-}): JSX.Element {
+export function ConfigFields(props: ConfigFieldsProps): JSX.Element {
 
   /** Set a Farmware input value on FBOS. */
   function inputChange(key: string) {
@@ -51,16 +55,28 @@ export function ConfigFields(props: {
     };
   }
 
-  const { farmware, getValue } = props;
+  const { farmware, getValue, userEnv } = props;
   return <div className={"farmware-config-fields"}>
     {farmware.config.map(config => {
       const configEnvName =
         getConfigEnvName(farmware.name, config.name);
+      const value = getValue(farmware.name, config);
+      const botValue = userEnv[configEnvName];
       return <div key={config.name} id={config.name}>
         <label>{config.label}</label>
-        <BlurableInput type="text"
-          onCommit={inputChange(configEnvName)}
-          value={getValue(farmware.name, config)} />
+        <div className={"farmware-input-group"}>
+          <BlurableInput type="text"
+            onCommit={inputChange(configEnvName)}
+            value={value} />
+          {botValue && !(value == botValue) &&
+            <i className="fa fa-refresh" title={t("update to FarmBot's value")}
+              onClick={() => props.dispatch(props.saveFarmwareEnv(
+                configEnvName, botValue))} />}
+          {!(value == config.value) &&
+            <i className="fa fa-times-circle" title={t("reset to default")}
+              onClick={() => props.dispatch(props.saveFarmwareEnv(
+                configEnvName, config.value))} />}
+        </div>
       </div>;
     })}
   </div>;
@@ -98,6 +114,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
       <ConfigFields
         farmware={farmware}
         getValue={getValue}
+        userEnv={props.userEnv}
         shouldDisplay={props.shouldDisplay}
         saveFarmwareEnv={props.saveFarmwareEnv}
         dispatch={props.dispatch} />

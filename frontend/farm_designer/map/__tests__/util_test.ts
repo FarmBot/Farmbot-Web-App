@@ -22,11 +22,9 @@ import {
   scaleIcon,
   defaultSpreadCmDia,
 } from "../util";
-import { McuParams } from "farmbot";
-import {
-  AxisNumberProperty, BotSize, MapTransformProps, Mode,
-} from "../interfaces";
-import { StepsPerMmXY } from "../../../devices/interfaces";
+import { McuParams, Xyz } from "farmbot";
+import { BotSize, MapTransformProps, Mode } from "../interfaces";
+import { StepsPerMm } from "../../../devices/interfaces";
 import {
   fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
@@ -164,11 +162,11 @@ describe("getbotSize()", () => {
       movement_axis_nr_steps_x: undefined,
       movement_axis_nr_steps_y: undefined
     };
-    const stepsPerMmXY: StepsPerMmXY = { x: undefined, y: undefined };
-    const defaultLength: AxisNumberProperty = { x: 3000, y: 1500 };
+    const stepsPerMm: StepsPerMm = { x: undefined, y: undefined, z: undefined };
+    const defaultLength: Record<Xyz, number> = { x: 3000, y: 1500, z: 400 };
     return {
       botMcuParams,
-      stepsPerMmXY,
+      stepsPerMm,
       defaultLength
     };
   }
@@ -176,13 +174,14 @@ describe("getbotSize()", () => {
   function expectDefaultSize(botSize: BotSize) {
     expect(botSize).toEqual({
       x: { value: 3000, isDefault: true },
-      y: { value: 1500, isDefault: true }
+      y: { value: 1500, isDefault: true },
+      z: { value: 400, isDefault: true },
     });
   }
 
   it("returns default bed size: when settings undefined", () => {
     const p = fakeProps();
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expectDefaultSize(botSize);
   });
 
@@ -194,7 +193,7 @@ describe("getbotSize()", () => {
       movement_axis_nr_steps_x: 100,
       movement_axis_nr_steps_y: 100
     };
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expectDefaultSize(botSize);
   });
 
@@ -203,10 +202,12 @@ describe("getbotSize()", () => {
     p.botMcuParams = {
       movement_stop_at_max_x: 1,
       movement_stop_at_max_y: 1,
+      movement_stop_at_max_z: 1,
       movement_axis_nr_steps_x: 0,
-      movement_axis_nr_steps_y: 0
+      movement_axis_nr_steps_y: 0,
+      movement_axis_nr_steps_z: 0,
     };
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expectDefaultSize(botSize);
   });
 
@@ -215,11 +216,13 @@ describe("getbotSize()", () => {
     p.botMcuParams = {
       movement_stop_at_max_x: 1,
       movement_stop_at_max_y: 1,
+      movement_stop_at_max_z: 1,
       movement_axis_nr_steps_x: 100,
-      movement_axis_nr_steps_y: 100
+      movement_axis_nr_steps_y: 100,
+      movement_axis_nr_steps_z: 100,
     };
-    p.stepsPerMmXY = { x: 0, y: 0 };
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    p.stepsPerMm = { x: 0, y: 0, z: 0 };
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expectDefaultSize(botSize);
   });
 
@@ -231,11 +234,12 @@ describe("getbotSize()", () => {
       movement_axis_nr_steps_x: 500,
       movement_axis_nr_steps_y: 1400
     };
-    p.stepsPerMmXY = { x: 5, y: 7 };
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    p.stepsPerMm = { x: 5, y: 7, z: 25 };
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expect(botSize).toEqual({
       x: { value: 100, isDefault: false },
-      y: { value: 200, isDefault: false }
+      y: { value: 200, isDefault: false },
+      z: { value: 400, isDefault: true },
     });
   });
 
@@ -244,14 +248,17 @@ describe("getbotSize()", () => {
     p.botMcuParams = {
       movement_stop_at_max_x: 0,
       movement_stop_at_max_y: 1,
+      movement_stop_at_max_z: 1,
       movement_axis_nr_steps_x: 500,
-      movement_axis_nr_steps_y: 1400
+      movement_axis_nr_steps_y: 1400,
+      movement_axis_nr_steps_z: 1400,
     };
-    p.stepsPerMmXY = { x: 5, y: 7 };
-    const botSize = getBotSize(p.botMcuParams, p.stepsPerMmXY, p.defaultLength);
+    p.stepsPerMm = { x: 5, y: 7, z: 25 };
+    const botSize = getBotSize(p.botMcuParams, p.stepsPerMm, p.defaultLength);
     expect(botSize).toEqual({
       x: { value: 3000, isDefault: true },
-      y: { value: 200, isDefault: false }
+      y: { value: 200, isDefault: false },
+      z: { value: 56, isDefault: false },
     });
   });
 });

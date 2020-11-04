@@ -10,17 +10,21 @@ interface ConnectedComponent {
 type Info = UnboundRouteConfig<{}, {}>;
 
 const fakeCallback = (
-  component: ConnectedComponent,
-  child: ConnectedComponent | undefined,
-  info: Info,
+  component: ConnectedComponent | Function,
+  child?: ConnectedComponent | undefined,
+  info?: Info,
 ) => {
   if (info?.$ == "*") {
     expect(component.name).toEqual("FourOhFour");
   } else {
+    if (typeof component == "function") {
+      expect(component.name).toEqual("Apology");
+      return;
+    }
     expect(component.displayName).toContain("Connect");
-    expect(component.displayName).toContain(info.key);
-    expect(component.WrappedComponent.name).toContain(info.key);
-    if (child && info.children) {
+    expect(component.displayName).toContain(info?.key);
+    expect(component.WrappedComponent.name).toContain(info?.key);
+    if (child && info?.children) {
       expect(child.displayName).toContain("Connect");
       expect(child.displayName).toContain(info.childKey);
       expect(child.WrappedComponent.name).toContain(info.childKey);
@@ -36,6 +40,7 @@ const fakeRouteEnterEvent: RouteEnterEvent = {
 
 describe("UNBOUND_ROUTES", () => {
   it("generates correct routes", () => {
+    jest.autoMockOn();
     console.error = jest.fn();
     UNBOUND_ROUTES
       .map(r => r(fakeCallback))
