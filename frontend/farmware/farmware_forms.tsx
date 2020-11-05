@@ -75,7 +75,7 @@ export function ConfigFields(props: ConfigFieldsProps): JSX.Element {
           {!(value == config.value) &&
             <i className="fa fa-times-circle" title={t("reset to default")}
               onClick={() => props.dispatch(props.saveFarmwareEnv(
-                configEnvName, config.value))} />}
+                configEnvName, config.value.toString()))} />}
         </div>
       </div>;
     })}
