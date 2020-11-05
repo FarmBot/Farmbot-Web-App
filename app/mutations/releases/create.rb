@@ -24,8 +24,25 @@ module Releases
 
     # Copy the file from Github to Google Cloud Storage.
     def process_images(release)
-      final_url = ENV["GCS_BUCKET"] ? Release.transload(image_url) : image_url
-      release.update!(image_url: final_url)
+      release.update!(image_url: maybe_transload(image_url),
+                      dot_img_url: maybe_transload(dot_img_url))
+    end
+
+    # NOTE: FarmBot, Inc. currently follows a naming
+    # convention when transferring file assets from Github.
+    # There is an expectation that the URL to the *.fw and *.img
+    # files on Github are identical, excluding the file extension.
+    # Example of acceptable URLs:
+    # https://github.com/FarmBot/farmbot_os/releases/farmbot-rpi3-1.2.3.fw
+    # https://github.com/FarmBot/farmbot_os/releases/farmbot-rpi3-1.2.3.img
+    # If the URL convention changes, this method must be updated.
+    # -RC 5 NOV 2020
+    def dot_img_url
+      @dot_img_url ||= image_url.sub(/\.fw\z/, ".img")
+    end
+
+    def maybe_transload(url)
+      ENV["GCS_BUCKET"] ? Release.transload(url) : url
     end
   end
 end

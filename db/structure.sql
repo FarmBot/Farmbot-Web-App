@@ -1372,7 +1372,8 @@ CREATE TABLE public.releases (
     image_url character varying,
     version character varying,
     platform character varying,
-    channel character varying
+    channel character varying,
+    dot_img_url character varying
 );
 
 
@@ -3457,6 +3458,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200902141446'),
 ('20200907153510'),
 ('20200910175338'),
-('20200914165414');
+('20200914165414'),
+('20201105145245');
 
 

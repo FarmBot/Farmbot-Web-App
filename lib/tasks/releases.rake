@@ -55,9 +55,20 @@ namespace :releases do
     end
 
     def self.create_releases(metadata, channel)
-      Releases::Parse.run!(metadata)
+      output = Releases::Parse.run!(metadata)
         .map { |params| Releases::Create.run!(params.merge(channel: channel)) }
         .map { |release| print_release(release) }
+      if channel == "stable"
+        # QA cycles are expected to be short.
+        # Do not allow devices to stay on unstable channels
+        # when a QA cycle ends.
+        puts "=== Moving all devices to `stable`"
+        FbosConfig
+          .where
+          .not(update_channel: "stable")
+          .update_all(update_channel: "stable")
+      end
+      output
     end
 
     def self.prevent_disaster(version:, chan:)

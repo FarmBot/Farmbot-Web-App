@@ -33,7 +33,7 @@ class Release < ApplicationRecord
   def self.latest_image(platform:)
     rel = maybe_find_latest(platform: platform, channel: "stable")
     {
-      "#{platform}_release_url" => rel&.image_url,
+      "#{platform}_release_url" => rel&.dot_img_url,
       "#{platform}_release_tag" => rel&.version,
     }
   end

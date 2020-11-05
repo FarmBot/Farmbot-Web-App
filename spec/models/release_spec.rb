@@ -16,6 +16,7 @@ describe Release do
       ["beta", "rpi3", "11.1.0"],
     ].map do |(chan, plat, ver)|
       Release.create!(image_url: fake_image,
+                      dot_img_url: fake_image.sub(/\.fw\z/, ".img"),
                       version: ver,
                       platform: plat,
                       channel: chan)
@@ -28,7 +29,7 @@ describe Release do
     expect(rel.version).to eq("11.1.0")
     expected2 = {
       "rpi_release_tag" => "11.1.0",
-      "rpi_release_url" => "http://farm.bot/fw.fw",
+      "rpi_release_url" => "http://farm.bot/fw.img",
     }
     expect(Release.latest_image(platform: "rpi")).to eq(expected2)
   end
