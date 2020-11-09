@@ -649,11 +649,11 @@
 .garden-map-legend {
   position: fixed;
   top: 110px;
-  right: -120px;
+  right: -140px;
   z-index: 3;
   transition: all 0.4s ease;
   &.active {
-    transform: translateX(-140px);
+    transform: translateX(-150px);
   }
   .content {
     display: flex;
@@ -662,24 +662,25 @@
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
-      max-width: 120px;
+      max-width: 134px;
       padding: 1rem;
       background: rgba(255, 255, 255, .75);
       border-radius: 5px;
       box-shadow: 0px 1px 4px #555;
       >*+* {
-        margin-top: 1rem;
+        margin-top: 0.75rem;
       }
-      label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .z-display-toggle {
-        margin-left: 1rem;
-        margin-right: 1rem;
-        label {
-          display: inline;
+      .zoom-buttons {
+        display: grid;
+        margin: auto;
+        width: 90%;
+        button {
+          margin: auto;
+          grid-row: 1;
+          grid-column: 2;
+          &.zoom-out {
+            grid-column: 1;
+          }
         }
       }
     }
@@ -733,20 +734,20 @@
       }
     }
   }
-  .toggle-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .toggle-buttons,
+  .z-display-toggle {
     fieldset {
-      width: 100%;
+      display: flex;
+      align-items: center;
+      line-height: 2.75rem;
     }
     label {
-      margin-bottom: 0;
+      margin: 0;
+      width: 100%;
     }
     button {
-      float: none;
-      margin-bottom: 0.5rem;
-      margin-left: 2rem;
+      margin: 0;
+      width: 5rem;
     }
   }
   .caret-menu-button {

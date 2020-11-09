@@ -15,11 +15,13 @@ export interface ZDisplayToggleProps {
 
 export const ZDisplayToggle = (props: ZDisplayToggleProps) =>
   <div className={"z-display-toggle"}>
-    <label>{t("z")}</label>
-    <ToggleButton toggleValue={props.open}
-      title={props.open ? t("hide z display") : t("show z display")}
-      customText={{ textTrue: "", textFalse: "" }}
-      toggleAction={() => props.setOpen(!props.open)} />
+    <fieldset>
+      <label>{t("z")}</label>
+      <ToggleButton toggleValue={props.open}
+        title={props.open ? t("hide z display") : t("show z display")}
+        customText={{ textTrue: "", textFalse: "" }}
+        toggleAction={() => props.setOpen(!props.open)} />
+    </fieldset>
   </div>;
 
 export interface ZDisplayProps {
