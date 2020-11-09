@@ -46,7 +46,8 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       this.props.dim ? "dim" : "",
       this.props.grayscale ? "grayscale" : "",
     ].join(" ");
-    const cb = () => !this.props.disabled && this.props.toggleAction();
+    const cb = (e: React.MouseEvent) =>
+      !this.props.disabled && this.props.toggleAction(e);
     return <button
       disabled={!!this.props.disabled}
       className={allCss}
