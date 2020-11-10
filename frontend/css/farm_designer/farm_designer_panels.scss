@@ -757,6 +757,12 @@
       margin-right: 0.35rem;
       cursor: default !important;
     }
+    input {
+      &.numPlantsH,
+      &.numPlantsV {
+        -moz-appearance: unset !important;
+      }
+    }
   }
   .grid-planting-toggle {
     margin-top: 1rem;

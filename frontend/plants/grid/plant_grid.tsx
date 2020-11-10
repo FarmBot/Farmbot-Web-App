@@ -14,6 +14,7 @@ import { GridInput } from "./grid_input";
 import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
 import { ToggleButton } from "../../controls/toggle_button";
 import { Actions } from "../../constants";
+import { round } from "lodash";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
@@ -43,7 +44,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   onChange = (key: PlantGridKey, val: number) => {
     const grid = { ...this.state.grid, [key]: val };
-    this.setState({ grid });
+    this.setState({ grid }, this.performPreview);
   };
 
   onUseCurrentPosition = (position: Record<"x" | "y", number>) => {
@@ -51,16 +52,9 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     this.setState({ grid }, this.performPreview);
   };
 
-  confirmUnsaved = () => {
-    const prompt = t("You have unsaved changes. Would you like to save them?");
-    const action = confirm(prompt)
-      ? saveGrid(this.state.gridId)
-      : stashGrid(this.state.gridId);
-    this.props.dispatch(action);
-  }
-
   componentWillUnmount() {
-    (this.state.status === "dirty") && this.confirmUnsaved();
+    (this.state.status === "dirty") &&
+      this.props.dispatch(stashGrid(this.state.gridId));
     this.props.dispatch(showCameraViewPoints(undefined));
   }
 
@@ -148,7 +142,13 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         preview={this.performPreview} />
       <HexPackingToggle value={this.state.offsetPacking}
         toggle={() => this.setState({
-          offsetPacking: !this.state.offsetPacking
+          offsetPacking: !this.state.offsetPacking,
+          grid: {
+            ...this.state.grid,
+            spacingH: !this.state.offsetPacking
+              ? round(0.866 * this.state.grid.spacingV)
+              : this.state.grid.spacingH,
+          },
         }, this.performPreview)} />
       {!this.props.openfarm_slug &&
         <ToggleCameraViewArea value={this.state.cameraView}

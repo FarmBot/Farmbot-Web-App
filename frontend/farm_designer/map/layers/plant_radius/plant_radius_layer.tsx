@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
-import { transformXY, round } from "../../util";
+import { transformXY } from "../../util";
 
 export interface PlantRadiusLayerProps {
   visible: boolean;
@@ -38,7 +38,7 @@ export interface PlantRadiusProps {
 export const PlantRadius = (props: PlantRadiusProps) => {
   const { radius, x, y, id } = props.plant.body;
   const { visible, mapTransformProps, animate } = props;
-  const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+  const { qx, qy } = transformXY(x, y, mapTransformProps);
   return <g id={`plant-radius-${id}`}>
     {visible &&
       <circle
