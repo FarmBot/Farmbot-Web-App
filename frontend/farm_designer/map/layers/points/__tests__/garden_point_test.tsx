@@ -20,6 +20,7 @@ import { shallow } from "enzyme";
 import { CameraViewArea } from "../../farmbot/bot_figure";
 import { Color } from "../../../../../ui";
 import { tagAsSoilHeight } from "../../../../../points/soil_height";
+import { SpecialStatus } from "farmbot";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -39,7 +40,16 @@ describe("<GardenPoint/>", () => {
     expect(wrapper.find("#point-radius").props().r).toEqual(100);
     expect(wrapper.find("#point-center").props().r).toEqual(2);
     expect(wrapper.find("#point-radius").props().fill).toEqual("transparent");
+    expect(wrapper.find("#point-radius").props().strokeDasharray).toBeFalsy();
     expect(wrapper.find("text").length).toEqual(0);
+  });
+
+  it("renders unsaved grid point", () => {
+    const p = fakeProps();
+    p.point.specialStatus = SpecialStatus.DIRTY;
+    p.point.body.meta.gridId = "123";
+    const wrapper = svgMount(<GardenPoint {...p} />);
+    expect(wrapper.find("#point-radius").props().strokeDasharray).toEqual("4 5");
   });
 
   it("hovers point", () => {

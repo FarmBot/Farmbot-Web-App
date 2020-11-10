@@ -69,7 +69,7 @@ describe("<InputCell/>", () => {
     wrapper.find("input").first().simulate("change", {
       currentTarget: { value: "6" }
     });
-    expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 6);
+    expect(p.onChange).not.toHaveBeenCalled();
     expect(wrapper.find("input").props().value).toEqual("6");
   });
 
@@ -87,6 +87,7 @@ describe("<InputCell/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<InputCell {...p} />);
     wrapper.find("input").first().simulate("blur");
+    expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 2);
     expect(p.preview).toHaveBeenCalled();
     expect(wrapper.find("input").props().value).toEqual("2");
   });

@@ -104,21 +104,11 @@ describe("PlantGrid", () => {
   });
 
   it("discards unsaved changes", () => {
-    window.confirm = jest.fn(() => false);
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     wrapper.setState({ status: "dirty" });
     wrapper.unmount();
     expect(p.dispatch).toHaveBeenCalledWith("STASH_GRID_MOCK");
-  });
-
-  it("keeps unsaved changes", () => {
-    window.confirm = jest.fn(() => true);
-    const p = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ status: "dirty" });
-    wrapper.unmount();
-    expect(p.dispatch).toHaveBeenCalledWith("SAVE_GRID_MOCK");
   });
 
   it("handles data changes", () => {
@@ -138,13 +128,26 @@ describe("PlantGrid", () => {
     expect(wrapper.state().grid.startY).toEqual(2);
   });
 
-  it("toggles packing method", () => {
+  it("toggles packing method on", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     expect(wrapper.state().offsetPacking).toBeFalsy();
     wrapper.find(".grid-planting-toggle").first().find("button")
       .simulate("click");
     expect(wrapper.state().offsetPacking).toBeTruthy();
+    expect(wrapper.state().grid.spacingH).toEqual(217);
+    expect(init).toHaveBeenCalledTimes(6);
+  });
+
+  it("toggles packing method off", () => {
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ offsetPacking: true });
+    expect(wrapper.state().offsetPacking).toBeTruthy();
+    wrapper.find(".grid-planting-toggle").first().find("button")
+      .simulate("click");
+    expect(wrapper.state().offsetPacking).toBeFalsy();
+    expect(wrapper.state().grid.spacingH).toEqual(250);
     expect(init).toHaveBeenCalledTimes(6);
   });
 

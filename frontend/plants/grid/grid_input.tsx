@@ -50,19 +50,17 @@ export function InputCell(props: InputCellProps) {
       <i className={`fa ${xy_swap ? swapped_icon : regular_icon}`} />
       {t(label)}
     </label>
-    <input name={gridKey}
+    <input name={gridKey} className={gridKey}
+      type={"number"}
       value={value}
       onBlur={() => {
         const number = parseInt(value, 10);
+        !isNaN(number) && onChange(gridKey, number);
         isNaN(number)
           ? setValue("" + grid[gridKey])
           : preview();
       }}
-      onChange={e => {
-        setValue(e.currentTarget.value);
-        const number = parseInt(e.currentTarget.value, 10);
-        !isNaN(number) && onChange(gridKey, number);
-      }} />
+      onChange={e => setValue(e.currentTarget.value)} />
   </Col>;
 }
 
