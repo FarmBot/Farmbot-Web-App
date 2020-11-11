@@ -18,6 +18,7 @@ import {
   selectAllToolSlotPointers,
   maybeGetSequence,
   selectAllLogs,
+  selectAllTools,
 } from "../resources/selectors";
 import {
   validBotLocationData, validFwConfig, unpackUUID, validFbosConfig,
@@ -133,6 +134,7 @@ export function mapStateToProps(props: Everything): Props {
     genericPoints,
     weeds,
     allPoints: selectAllPoints(props.resources.index),
+    tools: selectAllTools(props.resources.index),
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,

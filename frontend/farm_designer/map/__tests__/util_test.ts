@@ -4,6 +4,12 @@ jest.mock("../../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
+import { fakeState } from "../../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../../redux/store", () => ({
+  store: { getState: () => mockState },
+}));
+
 import {
   round,
   translateScreenToGarden,
@@ -390,6 +396,10 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.templateView);
     mockPath = "/app/designer/groups/1";
     expect(getMode()).toEqual(Mode.editGroup);
+    mockPath = "";
+    mockState.resources.consumers.farm_designer.profileOpen = true;
+    expect(getMode()).toEqual(Mode.profile);
+    mockState.resources.consumers.farm_designer.profileOpen = false;
     mockPath = "";
     expect(getMode()).toEqual(Mode.none);
   });
