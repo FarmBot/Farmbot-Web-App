@@ -40,6 +40,11 @@ jest.mock("../background/selection_box_actions", () => ({
 
 jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
 
+jest.mock("../profile", () => ({
+  chooseProfile: jest.fn(),
+  ProfileLine: () => <g />,
+}));
+
 jest.mock("../../../history", () => ({
   history: {
     push: jest.fn(),
@@ -85,6 +90,7 @@ import {
 import {
   fakeBotLocationData, fakeBotSize,
 } from "../../../__test_support__/fake_bot_data";
+import { chooseProfile } from "../profile";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -214,6 +220,16 @@ describe("<GardenMap/>", () => {
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
+  it("starts drag on background: does nothing when in profile mode", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.profile;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).not.toHaveBeenCalled();
+  });
+
   it("starts drag on background: creating points", () => {
     const wrapper = mount(<GardenMap {...fakeProps()} />);
     mockMode = Mode.createPoint;
@@ -279,6 +295,17 @@ describe("<GardenMap/>", () => {
       pageX: 1000, pageY: 2000, preventDefault: jest.fn()
     });
     expect(chooseLocation).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining({ pageX: 1000, pageY: 2000 }));
+  });
+
+  it("selects profile location", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.profile;
+    wrapper.find(".drop-area-svg").simulate("click", {
+      pageX: 1000, pageY: 2000, preventDefault: jest.fn()
+    });
+    expect(chooseProfile).toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining({ pageX: 1000, pageY: 2000 }));
   });
@@ -405,6 +432,15 @@ describe("<GardenMap/>", () => {
 
   it("doesn't close panel: move mode", () => {
     mockMode = Mode.moveTo;
+    const p = fakeProps();
+    p.designer.selectedPoints = [fakePlant().uuid];
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.instance().closePanel()();
+    expect(closePlantInfo).not.toHaveBeenCalled();
+  });
+
+  it("doesn't close panel: profile mode", () => {
+    mockMode = Mode.profile;
     const p = fakeProps();
     p.designer.selectedPoints = [fakePlant().uuid];
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);

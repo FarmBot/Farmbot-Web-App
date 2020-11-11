@@ -43,6 +43,7 @@ import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
 import { throttle } from "lodash";
 import { SequenceVisualization } from "./sequence_visualization";
+import { chooseProfile, ProfileLine } from "./profile";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -186,6 +187,7 @@ export class GardenMap extends
       case Mode.createWeed:
       case Mode.clickToAdd:
       case Mode.editPlant:
+      case Mode.profile:
         break;
       case Mode.boxSelect:
         startNewSelectionBox({
@@ -279,6 +281,14 @@ export class GardenMap extends
           dispatch: this.props.dispatch
         });
         break;
+      case Mode.profile:
+        // Choose profile location
+        e.preventDefault();
+        chooseProfile({
+          gardenCoords: this.getGardenCoordinates(e),
+          dispatch: this.props.dispatch
+        });
+        break;
     }
   }
 
@@ -351,6 +361,7 @@ export class GardenMap extends
   closePanel = () => {
     switch (getMode()) {
       case Mode.moveTo:
+      case Mode.profile:
         return () => { };
       case Mode.boxSelect:
         return this.props.designer.selectedPoints
@@ -418,6 +429,11 @@ export class GardenMap extends
     groups={this.props.groups}
     startDrag={this.startDragOnBackground}
     currentGroup={this.group?.uuid} />
+  ProfileLine = () => <ProfileLine
+    designer={this.props.designer}
+    botPosition={this.props.botLocationData.position}
+    plantAreaOffset={this.props.gridOffset}
+    mapTransformProps={this.mapTransformProps} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
     sensorReadings={this.props.sensorReadings}
@@ -557,6 +573,7 @@ export class GardenMap extends
             <this.LogsLayer />
             <this.Grid />
             <this.ZonesLayer />
+            <this.ProfileLine />
             <this.SensorReadingsLayer />
             <this.SpreadLayer />
             <this.PlantRadiusLayer />

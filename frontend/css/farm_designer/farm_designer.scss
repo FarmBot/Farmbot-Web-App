@@ -1035,3 +1035,114 @@
     top: 0;
   }
 }
+
+.profile-viewer {
+  position: fixed;
+  bottom: 0;
+  z-index: 99;
+  width: 100%;
+  background: #e5e5e5;
+  transform: translateY(21rem);
+  transition: transform 0.5s ease-out;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+  @media screen and (max-width: 450px) {
+    &.panel-open {
+      display: none;
+    }
+  }
+  &.open {
+    transform: translateY(0);
+    .profile-button {
+      i {
+        line-height: 6rem;
+      }
+    }
+  }
+  .profile-button {
+    margin: auto;
+    cursor: pointer;
+    margin-top: -3rem;
+    border-radius: 50%;
+    width: 6rem;
+    height: 6rem;
+    background: $magenta;
+    transition: background-color 0.3s ease-out;
+    text-align: center;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .3);
+    &:hover {
+      background: lighten($magenta, 5%);
+    }
+    i {
+      color: $off_white;
+      line-height: 3.25rem;
+      font-size: 2rem;
+      transition: line-height 0.5s ease-out;
+    }
+  }
+  .profile-content {
+    label {
+      display: block;
+      margin: auto;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .no-profile {
+      height: 12.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .left-label,
+    .right-label {
+      position: absolute;
+      top: 50%;
+      font-weight: bold;
+    }
+    .left-label {
+      left: 2rem;
+    }
+    .right-label {
+      right: 2rem;
+    }
+    svg {
+      display: block;
+      margin: auto;
+      height: 10rem;
+      width: 90%;
+      border-radius: 5px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fafafa;
+      box-shadow: 0 0 4px rgba(0, 0, 0, .1);
+      &.expand {
+        height: unset;
+        max-height: 60vh;
+      }
+    }
+    .profile-options {
+      width: 100%;
+      height: 4rem;
+      text-align: center;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      background: #f2f2f2;
+      box-shadow: 0px 0px 1px 0px #666666;
+      button {
+        display: inline;
+        float: none;
+        margin-right: 3rem;
+      }
+      label {
+        display: inline;
+        margin-right: 0.5rem;
+        line-height: 2rem;
+        vertical-align: text-top;
+      }
+      input {
+        height: 2rem;
+        width: 5rem;
+        margin-right: 3rem;
+      }
+    }
+  }
+}

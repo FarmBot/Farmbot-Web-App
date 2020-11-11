@@ -43,6 +43,11 @@ export const initialState: DesignerState = {
   cameraViewGridId: undefined,
   gridIds: [],
   soilHeightLabels: false,
+  profileOpen: false,
+  profileAxis: "x",
+  profilePosition: { x: undefined, y: undefined },
+  profileWidth: 100,
+  profileFollowBot: false,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -181,5 +186,26 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
+    return s;
+  })
+  .add<boolean>(Actions.SET_PROFILE_OPEN, (s, { payload }) => {
+    s.profileOpen = payload;
+    return s;
+  })
+  .add<"x" | "y">(Actions.SET_PROFILE_AXIS, (s, { payload }) => {
+    s.profileAxis = payload;
+    return s;
+  })
+  .add<Record<"x" | "y", number | undefined>>(
+    Actions.SET_PROFILE_POSITION, (s, { payload }) => {
+      s.profilePosition = payload;
+      return s;
+    })
+  .add<number>(Actions.SET_PROFILE_WIDTH, (s, { payload }) => {
+    s.profileWidth = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_PROFILE_FOLLOW_BOT, (s, { payload }) => {
+    s.profileFollowBot = payload;
     return s;
   });

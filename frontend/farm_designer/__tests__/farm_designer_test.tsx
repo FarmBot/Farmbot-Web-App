@@ -47,6 +47,7 @@ describe("<FarmDesigner/>", () => {
     weeds: [],
     allPoints: [],
     plants: [],
+    tools: [],
     toolSlots: [],
     crops: [],
     botLocationData: fakeBotLocationData(),

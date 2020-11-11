@@ -181,7 +181,23 @@ enum ToolColor {
   soilSensorPCB = "rgba(255, 215, 0)",
   seedBin = "rgba(128, 128, 128)",
   seedTray = "rgba(128, 128, 128)",
+  none = "rgba(102, 102, 102)",
 }
+
+const TOOL_COLOR_LOOKUP: Record<ToolNames, ToolColor> = {
+  [ToolNames.weeder]: ToolColor.weeder,
+  [ToolNames.wateringNozzle]: ToolColor.wateringNozzle,
+  [ToolNames.seeder]: ToolColor.seeder,
+  [ToolNames.soilSensor]: ToolColor.soilSensor,
+  [ToolNames.seedBin]: ToolColor.seedBin,
+  [ToolNames.seedTray]: ToolColor.seedTray,
+  [ToolNames.seedTrough]: ToolColor.seedTray,
+  [ToolNames.emptyToolSlot]: ToolColor.none,
+  [ToolNames.tool]: ToolColor.none,
+};
+
+export const getToolColor = (toolName: string | undefined) =>
+  TOOL_COLOR_LOOKUP[reduceToolName(toolName)];
 
 const Weeder = (props: ToolGraphicProps) => {
   const { x, y, hovered } = props;

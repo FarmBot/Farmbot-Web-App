@@ -17,6 +17,7 @@ import {
   McuParams,
   TaggedCrop,
   TaggedLog,
+  TaggedTool,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -80,6 +81,7 @@ export interface Props {
   weeds: TaggedWeedPointer[];
   allPoints: TaggedPoint[];
   plants: TaggedPlant[];
+  tools: TaggedTool[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
   botLocationData: BotLocationData;
@@ -151,6 +153,11 @@ export interface DesignerState {
   cameraViewGridId: string | undefined;
   gridIds: string[];
   soilHeightLabels: boolean;
+  profileOpen: boolean;
+  profileAxis: "x" | "y";
+  profilePosition: Record<"x" | "y", number | undefined>;
+  profileWidth: number;
+  profileFollowBot: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
