@@ -88,13 +88,16 @@ describe("<Points> />", () => {
   it("expands soil height section", () => {
     const p = fakeProps();
     const soilHeightPoint = fakePoint();
+    soilHeightPoint.body.meta.color = "orange";
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const wrapper = mount<Points>(<Points {...p} />);
+    expect(wrapper.html()).not.toContain("soil-orange");
     expect(wrapper.text().toLowerCase()).toContain("soil height");
     expect(wrapper.state().soilHeight).toEqual(false);
     wrapper.find(".fa-caret-down").first().simulate("click");
     expect(wrapper.state().soilHeight).toEqual(true);
+    expect(wrapper.html()).toContain("soil-orange");
   });
 
   it("expands grid points section", () => {
