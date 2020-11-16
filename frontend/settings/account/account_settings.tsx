@@ -7,7 +7,7 @@ import { Collapse } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { BlurableInput, Row } from "../../ui";
 import { TaggedUser } from "farmbot";
-import { edit } from "../../api/crud";
+import { edit, save } from "../../api/crud";
 import { SettingDescriptionProps } from "../interfaces";
 import { BooleanSetting } from "../../session_keys";
 import { Setting } from "../farm_designer_settings";
@@ -43,9 +43,11 @@ export const AccountSettings = (props: AccountSettingsProps) =>
             type="text"
             name="name"
             value={props.user.body.name || ""}
-            onCommit={e =>
+            onCommit={e => {
               props.dispatch(edit(
-                props.user, { name: e.currentTarget.value }))} />
+                props.user, { name: e.currentTarget.value }));
+              props.dispatch(save(props.user.uuid));
+            }} />
         </Row>
       </Highlight>
       <Highlight settingName={DeviceSetting.accountEmail}>
@@ -61,6 +63,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
               success(t(Content.CHECK_EMAIL_TO_CONFIRM));
               props.dispatch(edit(
                 props.user, { email: e.currentTarget.value }));
+              props.dispatch(save(props.user.uuid));
             }} />
         </Row>
       </Highlight>
