@@ -12,7 +12,7 @@ import {
   selectAllTools,
 } from "../resources/selectors";
 import { SaveBtn } from "../ui";
-import { edit, destroy } from "../api/crud";
+import { edit, destroy, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { error } from "../toast/toast";
@@ -69,6 +69,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         <SaveBtn
           onClick={() => {
             this.props.dispatch(edit(tool, { name: toolName }));
+            this.props.dispatch(save(tool.uuid));
             push("/app/designer/tools");
           }}
           disabled={!this.state.toolName || nameTaken}
