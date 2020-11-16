@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   ToolbaySlot, RotatedTool, ToolProps, ToolGraphicProps, ToolSlotGraphicProps,
-  ToolNames, ToolSVG, ToolSVGProps, ToolSlotSVG, ToolSlotSVGProps,
+  ToolNames, ToolSVG, ToolSVGProps, ToolSlotSVG, ToolSlotSVGProps, getToolColor,
 } from "../tool_graphics";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { Color } from "../../../../../ui";
@@ -277,6 +277,13 @@ describe("<RotatedTool/>", () => {
     const wrapper = svgMount(<RotatedTool {...p} />);
     expect(wrapper.find("#seed-trough").find("circle").length).toEqual(0);
     expect(wrapper.find("#seed-trough").find("rect").length).toEqual(1);
+  });
+});
+
+describe("getToolColor()", () => {
+  it("returns tool color", () => {
+    expect(getToolColor("weeder")).toEqual("rgba(238, 102, 102)");
+    expect(getToolColor("N/A")).toEqual("rgba(102, 102, 102)");
   });
 });
 

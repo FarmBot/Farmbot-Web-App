@@ -23,6 +23,7 @@ import {
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
+import { ProfileViewer } from "./map/profile";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -225,6 +226,17 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
       {this.props.designer.openedSavedGarden &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
+
+      <ProfileViewer
+        dispatch={this.props.dispatch}
+        designer={this.props.designer}
+        botSize={this.props.botSize}
+        botPosition={this.props.botLocationData.position}
+        negativeZ={!!this.props.botMcuParams.movement_home_up_z}
+        sourceFbosConfig={this.props.sourceFbosConfig}
+        mountedToolInfo={this.props.mountedToolInfo}
+        tools={this.props.tools}
+        allPoints={this.props.allPoints} />
     </div>;
   }
 }

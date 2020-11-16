@@ -363,4 +363,54 @@ describe("designer reducer", () => {
     const newState = designer(state, action);
     expect(newState.soilHeightLabels).toEqual(true);
   });
+
+  it("opens profile", () => {
+    const state = oldState();
+    state.profileOpen = false;
+    const action: ReduxAction<boolean> = {
+      type: Actions.SET_PROFILE_OPEN, payload: true,
+    };
+    const newState = designer(state, action);
+    expect(newState.profileOpen).toEqual(true);
+  });
+
+  it("sets profile axis", () => {
+    const state = oldState();
+    state.profileAxis = "x";
+    const action: ReduxAction<"x" | "y"> = {
+      type: Actions.SET_PROFILE_AXIS, payload: "y",
+    };
+    const newState = designer(state, action);
+    expect(newState.profileAxis).toEqual("y");
+  });
+
+  it("sets profile position", () => {
+    const state = oldState();
+    state.profilePosition = { x: undefined, y: undefined };
+    const action: ReduxAction<Record<"x" | "y", number>> = {
+      type: Actions.SET_PROFILE_POSITION, payload: { x: 1, y: 2 },
+    };
+    const newState = designer(state, action);
+    expect(newState.profilePosition).toEqual({ x: 1, y: 2 });
+  });
+
+  it("sets profile width", () => {
+    const state = oldState();
+    state.profileWidth = 100;
+    const action: ReduxAction<number> = {
+      type: Actions.SET_PROFILE_WIDTH, payload: 200,
+    };
+    const newState = designer(state, action);
+    expect(newState.profileWidth).toEqual(200);
+  });
+
+  it("sets profile to follow bot", () => {
+    const state = oldState();
+    state.profileFollowBot = false;
+    const action: ReduxAction<boolean> = {
+      type: Actions.SET_PROFILE_FOLLOW_BOT, payload: true,
+    };
+    const newState = designer(state, action);
+    expect(newState.profileFollowBot).toEqual(true);
+  });
 });

@@ -757,6 +757,12 @@
       margin-right: 0.35rem;
       cursor: default !important;
     }
+    input {
+      &.numPlantsH,
+      &.numPlantsV {
+        -moz-appearance: unset !important;
+      }
+    }
   }
   .grid-planting-toggle {
     margin-top: 1rem;
@@ -1573,12 +1579,18 @@
   .panel-content {
     padding: 0;
     padding-bottom: inherit;
+    .points-section-header {
+      cursor: pointer;
+      label {
+        cursor: pointer;
+      }
+    }
     .points-section-header,
     .pending-weeds-header,
     .active-weeds-header,
     .removed-weeds-header {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
       label {
         margin: 0;
         width: 44%;

@@ -30,4 +30,9 @@ export const fakeDesignerState = (): DesignerState => ({
   cameraViewGridId: undefined,
   gridIds: [],
   soilHeightLabels: false,
+  profileOpen: false,
+  profileAxis: "x",
+  profilePosition: { x: undefined, y: undefined },
+  profileWidth: 100,
+  profileFollowBot: false,
 });

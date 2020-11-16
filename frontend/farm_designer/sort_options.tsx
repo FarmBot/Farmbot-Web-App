@@ -16,6 +16,9 @@ export interface PointSortMenuProps {
 
 export const PointSortMenu = (props: PointSortMenuProps) => {
   const sortTerm = props.sortOptions.sortBy;
+  const defaultSelected = sortTerm ? "" : "selected";
+  const byAgeSelected = sortTerm == "created_at" ? "selected" : "";
+  const byNameSelected = sortTerm == "name" ? "selected" : "";
   const bySizeSelected = sortTerm == "radius" ? "selected" : "";
   const zSelected = sortTerm == "z" ? "selected" : "";
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
@@ -23,15 +26,23 @@ export const PointSortMenu = (props: PointSortMenuProps) => {
     <div className="point-sort-menu">
       <label>{t("sort by")}</label>
       <div>
-        <i className={`fa fa-sort ${sortTerm ? "" : "selected"}`}
-          title={t("age")}
+        <i className={`fa fa-sort ${defaultSelected}`}
+          title={t("default")}
           onClick={() =>
             props.onChange({ sortBy: undefined, reverse: false })} />
+        <i className={`fa fa-calendar ${byAgeSelected}`}
+          title={t("age")}
+          onClick={() =>
+            props.onChange({ sortBy: "created_at", reverse: false })} />
+        <i className={`fa fa-font ${byNameSelected}`}
+          title={t("name")}
+          onClick={() =>
+            props.onChange({ sortBy: "name", reverse: false })} />
         <i className={`fa fa-sort-amount-desc ${bySizeSelected}`}
           title={t("size")}
           onClick={() =>
             props.onChange({ sortBy: "radius", reverse: true })} />
-        <i className={zSelected} title={t("z")} onClick={() =>
+        <i className={`z ${zSelected}`} title={t("z")} onClick={() =>
           props.onChange({ sortBy: "z", reverse: true })}>z</i>
       </div>
     </div>

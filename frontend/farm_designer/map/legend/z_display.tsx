@@ -15,11 +15,13 @@ export interface ZDisplayToggleProps {
 
 export const ZDisplayToggle = (props: ZDisplayToggleProps) =>
   <div className={"z-display-toggle"}>
-    <label>{t("z")}</label>
-    <ToggleButton toggleValue={props.open}
-      title={props.open ? t("hide z display") : t("show z display")}
-      customText={{ textTrue: "", textFalse: "" }}
-      toggleAction={() => props.setOpen(!props.open)} />
+    <fieldset>
+      <label>{t("z")}</label>
+      <ToggleButton toggleValue={props.open}
+        title={props.open ? t("hide z display") : t("show z display")}
+        customText={{ textTrue: "", textFalse: "" }}
+        toggleAction={() => props.setOpen(!props.open)} />
+    </fieldset>
   </div>;
 
 export interface ZDisplayProps {
@@ -37,10 +39,8 @@ export const ZDisplay = (props: ZDisplayProps) => {
     .map(p => p.body.z).sort()[0];
   const values = props.allPoints.filter(p => soilHeightPoint(p) || p.body.z != 0)
     .map(p => Math.abs(p.body.z));
-  const getFbosValue = (key: ConfigurationName) =>
-    parseInt("" + (props.sourceFbosConfig(key).value || 0));
-  const soilHeight = Math.abs(getFbosValue("soil_height"));
-  const safeHeight = Math.abs(getFbosValue("safe_height"));
+  const soilHeight = getFbosZValue(props.sourceFbosConfig, "soil_height");
+  const safeHeight = getFbosZValue(props.sourceFbosConfig, "safe_height");
   values.push(soilHeight);
   values.push(safeHeight);
   const zPosition = Math.abs(props.botLocationData.position.z || 0);
@@ -67,3 +67,7 @@ export const ZDisplay = (props: ZDisplayProps) => {
       }} />
   </div>;
 };
+
+export const getFbosZValue =
+  (sourceFbosConfig: SourceFbosConfig, key: ConfigurationName) =>
+    Math.abs(parseInt("" + (sourceFbosConfig(key).value || 0)));

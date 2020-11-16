@@ -191,4 +191,5 @@ export enum Mode {
   createWeed = "createWeed",
   templateView = "templateView",
   editGroup = "editGroup",
+  profile = "profile",
 }

@@ -56,10 +56,8 @@ export class PointInventoryItem extends
       onClick={click}>
       {DevSettings.quickDeleteEnabled()
         ? <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>
-        : <div className={`saucer ${colorOverride ? "" : color}`}
-          style={colorOverride
-            ? { background: colorOverride, border: "2px solid black" }
-            : {}} />}
+        : <div className={`saucer ${colorOverride ? `soil-${color}` : color}`}
+          style={colorOverride ? { background: colorOverride } : {}} />}
       <span className="point-search-item-name">
         {point.name || t("Untitled point")}
       </span>

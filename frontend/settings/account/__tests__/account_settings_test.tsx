@@ -1,5 +1,6 @@
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import React from "react";
@@ -7,7 +8,7 @@ import { shallow } from "enzyme";
 import { AccountSettingsProps, AccountSettings } from "../account_settings";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { fakeUser } from "../../../__test_support__/fake_state/resources";
-import { edit } from "../../../api/crud";
+import { edit, save } from "../../../api/crud";
 import { success } from "../../../toast/toast";
 import { Content } from "../../../constants";
 
@@ -27,6 +28,7 @@ describe("<AccountSettings />", () => {
       currentTarget: { value: "new name" }
     });
     expect(edit).toHaveBeenCalledWith(p.user, { name: "new name" });
+    expect(save).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("changes email", () => {
@@ -37,6 +39,7 @@ describe("<AccountSettings />", () => {
       currentTarget: { value: "new email" }
     });
     expect(edit).toHaveBeenCalledWith(p.user, { email: "new email" });
+    expect(save).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
   });
 });

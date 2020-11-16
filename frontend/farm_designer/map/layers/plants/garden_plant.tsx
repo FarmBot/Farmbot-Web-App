@@ -1,7 +1,7 @@
 import React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
 import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
-import { round, transformXY, scaleIcon } from "../../util";
+import { transformXY, scaleIcon } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
@@ -51,7 +51,7 @@ export class GardenPlant extends
     const { icon, hover } = this.state;
     const plantIconSize = scaleIcon(radius);
     const iconRadius = hover ? plantIconSize * 1.1 : plantIconSize;
-    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+    const { qx, qy } = transformXY(x, y, mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
     const className = [
       "plant-image",

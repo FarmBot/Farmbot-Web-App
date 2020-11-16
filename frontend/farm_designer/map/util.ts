@@ -7,6 +7,7 @@ import {
 } from "./interfaces";
 import { trim } from "../../util";
 import { history, getPathArray } from "../../history";
+import { store } from "../../redux/store";
 
 /*
  * Farm Designer Map Utilities
@@ -284,6 +285,9 @@ export const transformForQuadrant =
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
+    if (store.getState().resources.consumers.farm_designer.profileOpen) {
+      return Mode.profile;
+    }
     if ((pathArray[3] === "groups" || pathArray[3] === "zones")
       && pathArray[4]) { return Mode.editGroup; }
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
@@ -347,6 +351,7 @@ export const allowInteraction = () => {
     case Mode.moveTo:
     case Mode.createPoint:
     case Mode.createWeed:
+    case Mode.profile:
       return false;
     default:
       return true;

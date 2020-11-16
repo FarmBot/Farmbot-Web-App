@@ -6,6 +6,7 @@ import { mapPointClickAction } from "../../actions";
 import { CameraViewArea } from "../farmbot/bot_figure";
 import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
+import { SpecialStatus } from "farmbot";
 
 export const GardenPoint = (props: GardenPointProps) => {
 
@@ -21,12 +22,14 @@ export const GardenPoint = (props: GardenPointProps) => {
   const { id, x, y, z, meta } = point.body;
   const { qx, qy } = transformXY(x, y, mapTransformProps);
   const color = meta.color || "green";
+  const unsaved = point.specialStatus !== SpecialStatus.SAVED;
   return <g id={`point-${id}`} className={"map-point"} stroke={color}
     onMouseEnter={iconHover("start")}
     onMouseLeave={iconHover("end")}
     onClick={mapPointClickAction(props.dispatch, point.uuid,
       `/app/designer/points/${id}`)}>
     <circle id="point-radius" cx={qx} cy={qy} r={point.body.radius}
+      strokeDasharray={meta.gridId && unsaved ? "4 5" : undefined}
       fill={hovered ? color : "transparent"} />
     <circle id="point-center" cx={qx} cy={qy} r={2} />
     {props.soilHeightLabels && soilHeightPoint(point) &&

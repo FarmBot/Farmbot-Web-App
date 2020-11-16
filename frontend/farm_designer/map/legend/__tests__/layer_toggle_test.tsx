@@ -15,7 +15,7 @@ describe("<LayerToggle/>", () => {
 
   it("renders", () => {
     const wrapper = shallow(<LayerToggle {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("FarmBot?");
+    expect(wrapper.text()).toEqual("FarmBot");
     expect(wrapper.html()).toContain("green");
   });
 

@@ -176,7 +176,7 @@
         }
       }
       .point-sort-menu {
-        width: 80px;
+        width: 110px;
         label {
           margin-top: 0;
         }
@@ -291,6 +291,34 @@
       width: 3rem;
       vertical-align: middle;
       margin-right: 0.25rem;
+      &[class*=soil-] {
+        border-width: 2px;
+        border-style: solid;
+        &.soil-blue {
+          border-color: $blue;
+        }
+        &.soil-green {
+          border-color: $green;
+        }
+        &.soil-yellow {
+          border-color: $yellow;
+        }
+        &.soil-orange {
+          border-color: $orange;
+        }
+        &.soil-purple {
+          border-color: $purple;
+        }
+        &.soil-pink {
+          border-color: $pink;
+        }
+        &.soil-gray {
+          border-color: $gray;
+        }
+        &.soil-red {
+          border-color: $red;
+        }
+      }
     }
     .quick-delete {
       display: inline;
@@ -649,11 +677,11 @@
 .garden-map-legend {
   position: fixed;
   top: 110px;
-  right: -120px;
+  right: -140px;
   z-index: 3;
   transition: all 0.4s ease;
   &.active {
-    transform: translateX(-140px);
+    transform: translateX(-150px);
   }
   .content {
     display: flex;
@@ -662,24 +690,25 @@
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
-      max-width: 120px;
+      max-width: 134px;
       padding: 1rem;
       background: rgba(255, 255, 255, .75);
       border-radius: 5px;
       box-shadow: 0px 1px 4px #555;
       >*+* {
-        margin-top: 1rem;
+        margin-top: 0.75rem;
       }
-      label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .z-display-toggle {
-        margin-left: 1rem;
-        margin-right: 1rem;
-        label {
-          display: inline;
+      .zoom-buttons {
+        display: grid;
+        margin: auto;
+        width: 90%;
+        button {
+          margin: auto;
+          grid-row: 1;
+          grid-column: 2;
+          &.zoom-out {
+            grid-column: 1;
+          }
         }
       }
     }
@@ -733,20 +762,20 @@
       }
     }
   }
-  .toggle-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .toggle-buttons,
+  .z-display-toggle {
     fieldset {
-      width: 100%;
+      display: flex;
+      align-items: center;
+      line-height: 2.75rem;
     }
     label {
-      margin-bottom: 0;
+      margin: 0;
+      width: 100%;
     }
     button {
-      float: none;
-      margin-bottom: 0.5rem;
-      margin-left: 2rem;
+      margin: 0;
+      width: 5rem;
     }
   }
   .caret-menu-button {
@@ -1032,5 +1061,116 @@
   .input-slider {
     position: absolute;
     top: 0;
+  }
+}
+
+.profile-viewer {
+  position: fixed;
+  bottom: 0;
+  z-index: 99;
+  width: 100%;
+  background: #e5e5e5;
+  transform: translateY(21rem);
+  transition: transform 0.5s ease-out;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+  @media screen and (max-width: 450px) {
+    &.panel-open {
+      display: none;
+    }
+  }
+  &.open {
+    transform: translateY(0);
+    .profile-button {
+      i {
+        line-height: 6rem;
+      }
+    }
+  }
+  .profile-button {
+    margin: auto;
+    cursor: pointer;
+    margin-top: -3rem;
+    border-radius: 50%;
+    width: 6rem;
+    height: 6rem;
+    background: $magenta;
+    transition: background-color 0.3s ease-out;
+    text-align: center;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .3);
+    &:hover {
+      background: lighten($magenta, 5%);
+    }
+    i {
+      color: $off_white;
+      line-height: 3.25rem;
+      font-size: 2rem;
+      transition: line-height 0.5s ease-out;
+    }
+  }
+  .profile-content {
+    label {
+      display: block;
+      margin: auto;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .no-profile {
+      height: 12.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .left-label,
+    .right-label {
+      position: absolute;
+      top: 50%;
+      font-weight: bold;
+    }
+    .left-label {
+      left: 2rem;
+    }
+    .right-label {
+      right: 2rem;
+    }
+    svg {
+      display: block;
+      margin: auto;
+      height: 10rem;
+      width: 90%;
+      border-radius: 5px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fafafa;
+      box-shadow: 0 0 4px rgba(0, 0, 0, .1);
+      &.expand {
+        height: unset;
+        max-height: 60vh;
+      }
+    }
+    .profile-options {
+      width: 100%;
+      height: 4rem;
+      text-align: center;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      background: #f2f2f2;
+      box-shadow: 0px 0px 1px 0px #666666;
+      button {
+        display: inline;
+        float: none;
+        margin-right: 3rem;
+      }
+      label {
+        display: inline;
+        margin-right: 0.5rem;
+        line-height: 2rem;
+        vertical-align: text-top;
+      }
+      input {
+        height: 2rem;
+        width: 5rem;
+        margin-right: 3rem;
+      }
+    }
   }
 }

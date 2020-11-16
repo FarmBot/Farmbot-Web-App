@@ -37,12 +37,39 @@ describe("<PointSortMenu />", () => {
     });
   });
 
+  it("changes sort type: by age", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    wrapper.find("i.fa-calendar").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      sortBy: "created_at", reverse: false
+    });
+  });
+
+  it("changes sort type: by name", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    wrapper.find("i.fa-font").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      sortBy: "name", reverse: false
+    });
+  });
+
   it("changes sort type: by size", () => {
     const p = fakeProps();
     const wrapper = shallow(<PointSortMenu {...p} />);
     wrapper.find("i.fa-sort-amount-desc").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "radius", reverse: true
+    });
+  });
+
+  it("changes sort type: by z", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    wrapper.find("i.z").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      sortBy: "z", reverse: true
     });
   });
 
@@ -55,6 +82,22 @@ describe("<PointSortMenu />", () => {
       .toBeFalsy();
   });
 
+  it("shows selected sort method: age", () => {
+    const p = fakeProps();
+    p.sortOptions = { sortBy: "created_at", reverse: false };
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
+    expect(wrapper.find("i.fa-calendar").hasClass("selected")).toBeTruthy();
+  });
+
+  it("shows selected sort method: name", () => {
+    const p = fakeProps();
+    p.sortOptions = { sortBy: "name", reverse: false };
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
+    expect(wrapper.find("i.fa-font").hasClass("selected")).toBeTruthy();
+  });
+
   it("shows selected sort method: size", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "radius", reverse: true };
@@ -62,5 +105,13 @@ describe("<PointSortMenu />", () => {
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
     expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
       .toBeTruthy();
+  });
+
+  it("shows selected sort method: z", () => {
+    const p = fakeProps();
+    p.sortOptions = { sortBy: "z", reverse: true };
+    const wrapper = shallow(<PointSortMenu {...p} />);
+    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
+    expect(wrapper.find("i.z").hasClass("selected")).toBeTruthy();
   });
 });

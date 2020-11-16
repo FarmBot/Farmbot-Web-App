@@ -24,7 +24,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { SaveBtn } from "../../ui";
 import { push } from "../../history";
-import { edit, destroy } from "../../api/crud";
+import { edit, destroy, save } from "../../api/crud";
 import { clickButton } from "../../__test_support__/helpers";
 import { EditToolProps } from "../interfaces";
 
@@ -99,9 +99,13 @@ describe("<EditTool />", () => {
   });
 
   it("saves", () => {
-    const wrapper = shallow(<EditTool {...fakeProps()} />);
+    const p = fakeProps();
+    const tool = fakeTool();
+    p.findTool = () => tool;
+    const wrapper = shallow(<EditTool {...p} />);
     wrapper.find(SaveBtn).simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "Foo" });
+    expect(save).toHaveBeenCalledWith(tool.uuid);
     expect(push).toHaveBeenCalledWith("/app/designer/tools");
   });
 

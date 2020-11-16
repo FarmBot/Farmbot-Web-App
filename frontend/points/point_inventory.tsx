@@ -49,14 +49,13 @@ interface PointsSectionProps {
 const PointsSection = (props: PointsSectionProps) => {
   const { genericPoints, isOpen, dispatch, averageZ } = props;
   return <div className={"points-section"}>
-    <div className={"points-section-header"}>
+    <div className={"points-section-header"} onClick={props.toggleOpen}>
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`}
-        onClick={props.toggleOpen} />
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
       <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
-        toggleAction={props.toggleAction} />
+        toggleAction={e => { e.stopPropagation(); props.toggleAction(); }} />
     </div>
     <Collapse isOpen={isOpen}>
       <button className={"fb-button red delete"}
