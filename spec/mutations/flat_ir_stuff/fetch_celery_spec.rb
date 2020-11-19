@@ -18,7 +18,7 @@ describe CeleryScript::FetchCelery do
     hash = Sequences::Create.run!(params)
     actual = CeleryScript::FetchCelery
       .run!(sequence: Sequence.find(hash[:id]))
-    expected = hash.without(:device_id, :migrated_nodes)
+    expected = hash.without(:device_id)
     expect(actual[:body]).to be_kind_of(Array)
     nodes = Sequence.find(actual[:id]).primary_nodes
     # This table came from the JS implementation, which is "known good".
