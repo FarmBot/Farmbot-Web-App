@@ -39,7 +39,6 @@ const fakeProps = (): AppProps => ({
   getConfigValue: jest.fn(),
   tour: undefined,
   resources: buildResourceIndex().index,
-  autoSync: false,
   alertCount: 0,
   pings: fakePings(),
   env: {},
@@ -155,7 +154,6 @@ describe("mapStateToProps()", () => {
     state.bot.hardware.user_env = { fake: "value" };
     const result = mapStateToProps(state);
     expect(result.axisInversion.x).toEqual(true);
-    expect(result.autoSync).toEqual(false);
     expect(result.env).toEqual({ fake: "value" });
     expect(result.authAud).toEqual("unknown");
   });
@@ -164,13 +162,11 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.auth = undefined;
     const config = fakeFbosConfig();
-    config.body.auto_sync = true;
     const fakeEnv = fakeFarmwareEnv();
     state.resources = buildResourceIndex([config, fakeEnv]);
     state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
     state.bot.hardware.informational_settings.controller_version = "8.0.0";
     const result = mapStateToProps(state);
-    expect(result.autoSync).toEqual(true);
     expect(result.env).toEqual({ [fakeEnv.body.key]: fakeEnv.body.value });
     expect(result.authAud).toEqual(undefined);
   });

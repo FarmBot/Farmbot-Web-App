@@ -11,7 +11,6 @@ export interface SyncButtonProps {
   bot: BotState;
   consistent: boolean;
   onClick?: () => void;
-  autoSync: boolean;
 }
 
 export interface NavBarProps {
@@ -24,7 +23,6 @@ export interface NavBarProps {
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
   device: TaggedDevice;
-  autoSync: boolean;
   alertCount: number;
   pings: PingDictionary;
   alerts: Alert[];

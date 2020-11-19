@@ -13,9 +13,7 @@ import React from "react";
 import axios from "axios";
 import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import {
-  fetchOsUpdateVersion, OLDEST_OTA_ABLE_VERSION, OsUpdateButton,
-} from "../os_update_button";
+import { fetchOsUpdateVersion, OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../devices/interfaces";
 import { Actions, Content } from "../../../constants";
@@ -177,10 +175,7 @@ describe("<OsUpdateButton />", () => {
     testProps.installedVersion = "11.0.0";
     testProps.availableVersion = "12.0.0";
     testProps.shouldDisplay = () => false;
-    const expectedResults = (OLDEST_OTA_ABLE_VERSION as string) == "11.1.0"
-      ? tooOld()
-      : updateNeeded("11.1.0");
-    testButtonState(testProps, expectedResults);
+    testButtonState(testProps, tooOld());
   });
 
   it("fetches releases from API", async () => {

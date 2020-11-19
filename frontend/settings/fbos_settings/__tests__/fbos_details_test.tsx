@@ -46,7 +46,6 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.memory_usage = 0;
     p.botInfoSettings.disk_usage = 0;
     p.deviceAccount.body.id = 12345;
-    p.deviceAccount.body.last_ota_checkup = "2018-01-11T20:20:38.362Z";
     p.deviceAccount.body.fbos_version = "1.0.0";
     p.sourceFbosConfig = () => ({ value: "ttyACM0", consistent: true });
 
@@ -67,7 +66,6 @@ describe("<FbosDetails/>", () => {
       "Uptime", "0 seconds",
       "Memory usage", "0MB",
       "Disk usage", "0%",
-      "Last checked for updates", "January",
     ]
       .map(string => expect(wrapper.text()).toContain(string));
   });
@@ -223,17 +221,10 @@ describe("<FbosDetails/>", () => {
     expect(wrapper.text().toLowerCase()).toContain("local ip");
   });
 
-  it("displays last OTA check date", () => {
-    const p = fakeProps();
-    p.deviceAccount.body.last_ota_checkup = "2018-01-11T20:20:38.362Z";
-    const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toContain("last checked for updates: january");
-  });
-
   it("displays last OTA date", () => {
     const p = fakeProps();
-    p.deviceAccount.body.last_ota = "2018-02-11T20:20:38.362Z";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (p.deviceAccount.body as any).last_ota = "2018-02-11T20:20:38.362Z";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("last updated: february");
   });

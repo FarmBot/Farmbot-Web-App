@@ -2,7 +2,7 @@ jest.mock("../boot_sequence_selector", () => ({
   BootSequenceSelector: () => <div />
 }));
 
-import * as React from "react";
+import React from "react";
 import { FarmBotSettings } from "../farmbot_os_settings";
 import { shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -23,8 +23,17 @@ describe("<FarmBotSettings />", () => {
     timeSettings: fakeTimeSettings(),
   });
 
+  it("doesn't display boot sequence selector", () => {
+    const p = fakeProps();
+    p.bot.controlPanelState.farmbot_settings = true;
+    p.shouldDisplay = () => false;
+    const osSettings = shallow(<FarmBotSettings {...p} />);
+    expect(osSettings.find("BootSequenceSelector").length).toEqual(0);
+  });
+
   it("displays boot sequence selector", () => {
     const p = fakeProps();
+    p.bot.controlPanelState.farmbot_settings = true;
     p.shouldDisplay = () => true;
     const osSettings = shallow(<FarmBotSettings {...p} />);
     expect(osSettings.find("BootSequenceSelector").length).toEqual(1);

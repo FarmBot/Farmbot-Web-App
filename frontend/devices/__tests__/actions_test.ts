@@ -427,8 +427,8 @@ describe("updateConfig()", () => {
     const state = fakeState();
     const fakeConfig = fakeFbosConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateConfig({ auto_sync: true })(jest.fn(), () => state);
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { auto_sync: true });
+    actions.updateConfig({ os_auto_update: true })(jest.fn(), () => state);
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });

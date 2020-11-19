@@ -262,8 +262,6 @@ export function fakeFbosConfig(): TaggedFbosConfig {
     device_id: idCounter++,
     created_at: "",
     updated_at: "",
-    auto_sync: false,
-    beta_opt_in: false,
     disable_factory_reset: false,
     firmware_input_log: false,
     firmware_output_log: false,
@@ -272,7 +270,6 @@ export function fakeFbosConfig(): TaggedFbosConfig {
     sequence_init_log: false,
     network_not_found_timer: 0,
     firmware_hardware: "arduino",
-    api_migrated: false,
     os_auto_update: false,
     arduino_debug_messages: false
   });
@@ -455,7 +452,6 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_active_state: 1,
     pin_guard_5_pin_nr: 0,
     pin_guard_5_time_out: 60,
-    api_migrated: false,
   });
 }
 

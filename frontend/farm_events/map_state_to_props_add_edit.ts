@@ -21,13 +21,8 @@ import {
   TaggedRegimen,
 } from "farmbot";
 import { DropDownItem } from "../ui/index";
-import { validFbosConfig } from "../util";
-import {
-  sourceFbosConfigValue,
-} from "../settings/source_config_value";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
-import { getFbosConfig } from "../resources/getters";
 import { t } from "../i18next_wrapper";
 import { getShouldDisplayFn } from "../farmware/state_to_props";
 
@@ -133,11 +128,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   };
   const dev = getDeviceAccountSettings(props.resources.index);
 
-  const { configuration } = props.bot.hardware;
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
-  const autoSyncEnabled =
-    !!sourceFbosConfigValue(fbosConfig, configuration)("auto_sync").value;
-
   return {
     deviceTimezone: dev
       .body
@@ -154,7 +144,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     findFarmEventByUuid,
     findExecutable,
     timeSettings: maybeGetTimeSettings(props.resources.index),
-    autoSyncEnabled,
     resources: props.resources.index,
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
