@@ -176,7 +176,6 @@ export interface AddEditFarmEventProps {
   dispatch: Function;
   findExecutable: ExecutableQuery;
   timeSettings: TimeSettings;
-  autoSyncEnabled: boolean;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
 }

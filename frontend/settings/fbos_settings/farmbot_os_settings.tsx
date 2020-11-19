@@ -1,8 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { Feature, FarmbotSettingsProps } from "../../devices/interfaces";
 import { FarmbotOsRow } from "./farmbot_os_row";
 import { AutoUpdateRow } from "./auto_update_row";
-import { AutoSyncRow } from "./auto_sync_row";
 import { BootSequenceSelector } from "./boot_sequence_selector";
 import { OtaTimeSelectorRow } from "./ota_time_selector";
 import { NameRow } from "./name_row";
@@ -47,8 +46,6 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
         botOnline={botOnline}
         timeSettings={timeSettings}
         deviceAccount={device} />
-      <AutoSyncRow {...commonProps}
-        sourceFbosConfig={sourceFbosConfig} />
       {shouldDisplay(Feature.boot_sequence) && <BootSequenceSelector />}
     </Collapse>
   </Highlight>;

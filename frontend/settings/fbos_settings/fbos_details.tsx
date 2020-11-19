@@ -15,6 +15,7 @@ import {
   boardType, FIRMWARE_CHOICES_DDI,
 } from "../firmware/firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -339,7 +340,9 @@ export function FbosDetails(props: FbosDetailsProps) {
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
-  const { last_ota, last_ota_checkup, fbos_version } = props.deviceAccount.body;
+  const { fbos_version } = props.deviceAccount.body;
+  const last_ota = props.deviceAccount.body[
+    "last_ota" as keyof DeviceAccountSettings] as string | undefined;
   const firmware_path =
     props.sourceFbosConfig("firmware_path").value || "---";
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
@@ -377,8 +380,6 @@ export function FbosDetails(props: FbosDetailsProps) {
     <VoltageDisplay chip={target} throttleData={throttled} />
     <OSReleaseChannelSelection
       dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
-    {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>
-      {reformatDatetime(last_ota_checkup, props.timeSettings)}</p>}
     {last_ota && <p><b>{t("Last updated")}: </b>
       {reformatDatetime(last_ota, props.timeSettings)}</p>}
   </div>;

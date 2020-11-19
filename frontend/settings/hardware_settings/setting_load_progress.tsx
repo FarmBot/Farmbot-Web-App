@@ -15,7 +15,7 @@ export interface SettingLoadProgressProps {
 }
 
 const UNTRACKED_KEYS: (keyof FirmwareConfig)[] = [
-  "id", "created_at", "updated_at", "device_id", "api_migrated",
+  "id", "created_at", "updated_at", "device_id",
   "param_config_ok", "param_test", "param_use_eeprom", "param_version",
 ];
 

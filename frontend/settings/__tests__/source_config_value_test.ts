@@ -8,24 +8,24 @@ import {
 describe("sourceFbosConfigValue()", () => {
   it("returns api value", () => {
     const fakeConfig = fakeFbosConfig().body;
-    fakeConfig.auto_sync = false;
-    bot.hardware.configuration.auto_sync = true;
+    fakeConfig.safe_height = 1;
+    bot.hardware.configuration.safe_height = 2;
     const source = sourceFbosConfigValue(fakeConfig, bot.hardware.configuration);
-    expect(source("auto_sync")).toEqual({ value: false, consistent: false });
+    expect(source("safe_height")).toEqual({ value: 1, consistent: false });
   });
 
   it("returns bot value", () => {
-    bot.hardware.configuration.auto_sync = true;
+    bot.hardware.configuration.safe_height = 1;
     const source = sourceFbosConfigValue(undefined, bot.hardware.configuration);
-    expect(source("auto_sync")).toEqual({ value: true, consistent: true });
+    expect(source("safe_height")).toEqual({ value: 1, consistent: true });
   });
 
   it("returns api value: consistent with bot", () => {
     const fakeConfig = fakeFbosConfig().body;
-    fakeConfig.auto_sync = true;
-    bot.hardware.configuration.auto_sync = true;
+    fakeConfig.safe_height = 1;
+    bot.hardware.configuration.safe_height = 1;
     const source = sourceFbosConfigValue(fakeConfig, bot.hardware.configuration);
-    expect(source("auto_sync")).toEqual({ value: true, consistent: true });
+    expect(source("safe_height")).toEqual({ value: 1, consistent: true });
   });
 });
 
