@@ -45,7 +45,6 @@ module Sequences
     def execute
       Sequence.auto_sync_debounce do
         ActiveRecord::Base.transaction do
-          sequence.migrated_nodes = true
           sequence.update!(inputs.except(*EXCLUDE).merge(folder_stuff))
           CeleryScript::StoreCelery.run!(sequence: sequence,
                                          args: args,

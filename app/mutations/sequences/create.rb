@@ -24,7 +24,6 @@ module Sequences
       Sequence.auto_sync_debounce do
         ActiveRecord::Base.transaction do
           p = inputs
-            .merge(migrated_nodes: true)
             .without(:body, :args, "body", "args")
             .merge(folder: device.folders.find_by(id: folder_id))
           seq = Sequence.create!(p)
