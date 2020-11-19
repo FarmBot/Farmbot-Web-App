@@ -457,7 +457,6 @@ CREATE TABLE public.fbos_configs (
     sequence_init_log boolean DEFAULT false,
     network_not_found_timer integer,
     firmware_hardware character varying,
-    api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
