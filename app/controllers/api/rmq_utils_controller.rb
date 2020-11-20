@@ -50,7 +50,6 @@ module Api
       terminal_output
       terminal_input
       logs
-      nerves_hub
       ping
       pong
       status

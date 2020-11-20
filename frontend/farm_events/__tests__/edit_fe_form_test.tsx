@@ -39,6 +39,7 @@ import { save, destroy } from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success } from "../../toast/toast";
 import { BlurableInput } from "../../ui";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 const mockSequence = fakeSequence();
 
@@ -52,7 +53,6 @@ describe("<EditFEForm />", () => {
     findExecutable: jest.fn(() => mockSequence),
     title: "title",
     timeSettings: fakeTimeSettings(),
-    autoSyncEnabled: false,
     shouldDisplay: () => false,
     resources: buildResourceIndex([]).index,
   });
@@ -167,7 +167,6 @@ describe("<EditFEForm />", () => {
       dispatch={jest.fn()}
       repeatOptions={repeatOptions()}
       timeSettings={fakeTimeSettings()}
-      autoSyncEnabled={false}
       resources={buildResourceIndex([]).index}
       shouldDisplay={() => false} />);
     el.update();
@@ -175,20 +174,8 @@ describe("<EditFEForm />", () => {
     expect(txt).toContain("Save *");
   });
 
-  it("displays success message on save: manual sync", async () => {
+  it("displays success message on save", async () => {
     const p = fakeProps();
-    p.autoSyncEnabled = false;
-    p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
-    p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
-    const i = instance(p);
-    await i.commitViewModel(moment("2016-05-22T05:00:00.000Z"));
-    expect(success).toHaveBeenCalledWith(
-      expect.stringContaining("must first SYNC YOUR DEVICE"));
-  });
-
-  it("displays success message on save: auto sync", async () => {
-    const p = fakeProps();
-    p.autoSyncEnabled = true;
     p.farmEvent.body.executable_type = "Regimen";
     const regimen = fakeRegimen();
     regimen.body.regimen_items = [{ sequence_id: -1, time_offset: 100000000 }];
@@ -199,8 +186,6 @@ describe("<EditFEForm />", () => {
     await i.commitViewModel(moment("2016-05-22T05:00:00.000Z"));
     expect(success).toHaveBeenCalledWith(
       expect.stringContaining("The next item in this event will run"));
-    expect(success).not.toHaveBeenCalledWith(
-      expect.stringContaining("must first SYNC YOUR DEVICE"));
   });
 
   it("warns about missed regimen items", async () => {
@@ -302,6 +287,28 @@ describe("<EditFEForm />", () => {
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     await expect(save).toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Unable to save event.");
+  });
+
+  it("throws error for invalid executable_type", () => {
+    const p = fakeProps();
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    const i = instance(p);
+    p.farmEvent.body.executable_type = "nope" as ExecutableType;
+    const action = () => i.nextItemTime(p.farmEvent.body, fakeNow);
+    expect(action).toThrowError("nope is not a valid executable_type");
+  });
+
+  it("handles incorrect kind", () => {
+    const p = fakeProps();
+    p.farmEvent.body.executable_type = "Regimen";
+    const regimen = fakeRegimen();
+    regimen.kind = "nope" as "Regimen";
+    p.findExecutable = () => regimen;
+    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
+    const fakeNow = moment("2017-06-01T02:00:00.000Z");
+    const nextItem = instance(p).nextItemTime(p.farmEvent.body, fakeNow);
+    expect(nextItem).toEqual(undefined);
   });
 
   it("allows start time: edit with unsupported OS", () => {

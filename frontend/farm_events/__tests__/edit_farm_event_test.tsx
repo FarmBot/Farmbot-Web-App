@@ -4,7 +4,7 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { RawEditFarmEvent as EditFarmEvent } from "../edit_farm_event";
 import { AddEditFarmEventProps } from "../../farm_designer/interfaces";
@@ -36,7 +36,6 @@ describe("<EditFarmEvent />", () => {
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
-      autoSyncEnabled: false,
       shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,
     };

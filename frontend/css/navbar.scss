@@ -27,16 +27,11 @@ nav {
 
 .nav-sync {
   min-width: 90px;
-  &.auto-sync {
-    background: none !important;
-    box-shadow: none;
-    text-transform: none;
-  }
-  &.auto-sync-busy {
-    background: none !important;
-    box-shadow: none;
+  background: none !important;
+  box-shadow: none;
+  text-transform: none;
+  &.syncing {
     font-style: italic;
-    text-transform: none;
   }
   &:hover {
     background: none !important;

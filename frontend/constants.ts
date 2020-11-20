@@ -586,7 +586,7 @@ export namespace Content {
     All app settings and device settings will be reset to default values.
     This is useful if you want to delete all data to start from scratch
     while avoiding having to fully delete your account, re-signup, and
-    re-configure your FarmBot. Note that when you sync (or auto-sync)
+    re-configure your FarmBot. Note that when FarmBot syncs
     after resetting your account, your FarmBot will delete all of its
     stored Sequences, etc, because your account will no longer have any
     of these resources until you create new ones. Furthermore, upon reset
@@ -760,20 +760,6 @@ export namespace Content {
   export const OS_AUTO_UPDATE =
     trim(`When enabled, FarmBot OS will automatically download and install
     software updates at the chosen time.`);
-
-  export const AUTO_SYNC =
-    trim(`When enabled, device resources such as sequences and regimens
-    will be sent to the device automatically. This removes the need to push
-    "SYNC" after making changes in the web app. Changes to running
-    sequences and regimens while auto sync is enabled will result in
-    instantaneous change.`);
-
-  export const DISABLE_AUTO_SYNC =
-    trim(`Warning: Disabling auto-sync is not recommended, and will not be
-    available as an option in the future. You may experience bugs and
-    decreased system stability, and you must manually sync any changes to
-    your device before they will be executed. Are you sure you wish to
-    continue?`);
 
   // FarmBot OS Settings: Firmware
   export const RESTART_FIRMWARE =
@@ -1195,7 +1181,6 @@ export enum DeviceSetting {
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
-  autoSync = `Auto Sync`,
   bootSequence = `Boot Sequence`,
 
   // Firmware

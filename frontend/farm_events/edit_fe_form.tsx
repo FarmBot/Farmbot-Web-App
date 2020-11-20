@@ -142,7 +142,6 @@ export interface EditFEProps {
   title: string;
   deleteBtn?: boolean;
   timeSettings: TimeSettings;
-  autoSyncEnabled: boolean;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
 }
@@ -313,35 +312,21 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     return recombine(vm, opts);
   }
 
-  /** Use the next item run time to display toast messages. */
-  nextRunTimeActions = (now = moment()) => {
-    const nextRun = this.nextItemTime(this.props.farmEvent.body, now);
-    if (nextRun) {
-      const nextRunText = this.props.autoSyncEnabled
-        ? t("The next item in this event will run {{timeFromNow}}.",
-          { timeFromNow: nextRun.from(now) })
-        : t(`The next item in this event will run {{timeFromNow}}, but
-      you must first SYNC YOUR DEVICE. If you do not sync, the event will
-      not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.from(now) });
-      success(nextRunText);
-    }
-  }
-
   /**  Once saved, if
   *    - Regimen Farm Event:
   *      * If scheduled for today, warn about the possibility of missing tasks.
-  *      * Display the start time difference from now and maybe prompt to sync.
+  *      * Display the start time difference from now.
   *      * Return to calendar view.
   *    - Sequence Farm Event:
   *      * Determine the time for the next item to be run.
-  *      * If auto-sync is disabled, prompt the user to sync.
   *      * Return to calendar view.
   */
   commitViewModel = (now = moment()) => {
     if (this.maybeRejectStartTime(this.updatedFarmEvent)) {
       return startTimeWarning();
     }
-    if (!this.nextItemTime(this.updatedFarmEvent, now)) {
+    const nextRun = this.nextItemTime(this.updatedFarmEvent, now);
+    if (!nextRun) {
       return nothingToRunWarning();
     }
     const { dispatch } = this.props;
@@ -351,7 +336,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         dispatch(maybeWarnAboutMissedTasks(this.props.farmEvent,
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
-        this.nextRunTimeActions(now);
+        success(t("The next item in this event will run {{timeFromNow}}.",
+          { timeFromNow: nextRun.from(now) }));
         history.push("/app/designer/events");
       })
       .catch(() => {

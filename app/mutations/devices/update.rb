@@ -9,10 +9,6 @@ module Devices
     optional do
       string :name
       string :timezone
-      time :last_saw_mq
-      time :last_ota
-      time :last_ota_checkup
-      boolean :needs_reset
       integer :mounted_tool_id, nils: true
       integer :ota_hour, nils: true
     end

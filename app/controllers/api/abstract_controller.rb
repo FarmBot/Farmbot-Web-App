@@ -168,8 +168,8 @@ module Api
       request.format = "json"
       id = request.headers[REQ_ID] || SecureRandom.uuid
       response.headers[REQ_ID] = id
-      # # IMPORTANT: We need to hoist X-Farmbot-Rpc-Id to a global so that it is
-      # #            accessible for use with auto_sync.
+      # IMPORTANT: We need to hoist X-Farmbot-Rpc-Id to a global so that it is
+      #            accessible for use with auto sync.
       Transport.current.set_current_request_id(response.headers[REQ_ID])
     end
 
