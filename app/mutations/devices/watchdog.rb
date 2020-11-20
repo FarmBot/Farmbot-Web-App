@@ -22,10 +22,14 @@ module Devices
       @affected_users ||= User.where(device_id: devices.pluck(:id))
     end
 
+    def eligible_devices
+      @eligible_devices ||= Device
+        .where(last_watchdog: nil)
+        .or(Device.where("last_watchdog < ?", lower_limit))
+    end
+
     def devices
-      Device
-        .where("last_watchdog < ?", lower_limit)
-        .where(last_saw_api: time_window)
+      eligible_devices.where(last_saw_api: time_window)
     end
   end
 end
