@@ -18,11 +18,6 @@ export interface TimezoneRowProps {
   device: TaggedDevice;
 }
 
-export interface AutoSyncRowProps {
-  dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
-}
-
 export interface AutoUpdateRowProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;

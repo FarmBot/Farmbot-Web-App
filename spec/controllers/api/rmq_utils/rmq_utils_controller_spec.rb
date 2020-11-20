@@ -230,8 +230,6 @@ describe Api::RmqUtilsController do
      ".from_device",
      ".logs.*",
      ".logs",
-     ".nerves_hub.*",
-     ".nerves_hub",
      ".status.*",
      ".status",
      ".sync.*",

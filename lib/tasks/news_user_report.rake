@@ -5,6 +5,12 @@ class NewUserReport
   TPL = <<~HEREDOC
     Below is a list of new installations that need a support check-in:
 
+    === 24 Hour Active Devices Count:
+    %{active}
+
+    === Devices requiring customer service check-in:
+    %{dead_bots}
+
     === New device installations today:
     %{daily}
 
@@ -30,10 +36,20 @@ class NewUserReport
       .sort
   end
 
+  def active_today
+    @active_today ||= Device.where("last_saw_api > ?", 1.day.ago).count
+  end
+
+  def dead_bots
+    @dead_bots ||= Devices::Watchdog.run!().pluck(:email)
+  end
+
   def message
     @message ||= TPL % {
       weekly: new_this_week.join("\n"),
       daily: new_today.join("\n"),
+      active: active_today,
+      dead_bots: dead_bots.join("\n"),
     }
   end
 

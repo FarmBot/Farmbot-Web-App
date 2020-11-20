@@ -15,7 +15,6 @@ const FARMBOT_PANEL = [
   DeviceSetting.osUpdateTime,
   DeviceSetting.osAutoUpdate,
   DeviceSetting.farmbotOS,
-  DeviceSetting.autoSync,
   DeviceSetting.bootSequence,
 ];
 const FIRMWARE_PANEL = [

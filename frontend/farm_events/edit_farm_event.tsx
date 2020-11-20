@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
@@ -32,7 +32,6 @@ export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}>
             title={t("Edit event")}
             deleteBtn={true}
             timeSettings={this.props.timeSettings}
-            autoSyncEnabled={this.props.autoSyncEnabled}
             resources={this.props.resources}
             shouldDisplay={this.props.shouldDisplay} />
           : <div className={"redirect"}>{t("Redirecting")}...</div>}

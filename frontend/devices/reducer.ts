@@ -96,7 +96,6 @@ export const botReducer = generateReducer<BotState>(initialState())
       consistent: s.consistent,
       syncStatus: s.hardware.informational_settings.sync_status,
       fbosVersion: s.hardware.informational_settings.controller_version,
-      autoSync: !!s.hardware.configuration.auto_sync
     });
     return s;
   })
@@ -201,7 +200,6 @@ function statusHandler(state: BotState,
     consistent: state.consistent,
     syncStatus,
     fbosVersion: informational_settings.controller_version,
-    autoSync: !!state.hardware.configuration.auto_sync
   };
   state.consistent = info.consistent;
   info.consistent = state.consistent;

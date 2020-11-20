@@ -31,7 +31,6 @@ describe("<NavBar />", () => {
     getConfigValue: jest.fn(),
     tour: undefined,
     device: fakeDevice(),
-    autoSync: false,
     alertCount: 0,
     pings: fakePings(),
     alerts: [],

@@ -59,7 +59,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     <SyncButton
       bot={this.props.bot}
       dispatch={this.props.dispatch}
-      autoSync={this.props.autoSync}
       consistent={this.props.consistent} />
 
   EstopButton = () =>

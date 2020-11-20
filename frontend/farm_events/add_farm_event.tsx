@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
 import {
@@ -35,12 +35,13 @@ export class RawAddFarmEvent
   extends React.Component<AddEditFarmEventProps, State> {
   temporaryValueDefaults = () => {
     const now = new Date();
-    const later = new Date(now.getTime() + 60000);
+    const later = new Date(now.getTime() + 180000);
+    const muchLater = new Date(now.getTime() + 3780000);
     return {
-      startDate: formatDate(now.toString(), this.props.timeSettings),
-      startTime: formatTime(now.toString(), this.props.timeSettings),
-      endDate: formatDate(now.toString(), this.props.timeSettings),
-      endTime: formatTime(later.toString(), this.props.timeSettings),
+      startDate: formatDate(later.toString(), this.props.timeSettings),
+      startTime: formatTime(later.toString(), this.props.timeSettings),
+      endDate: formatDate(later.toString(), this.props.timeSettings),
+      endTime: formatTime(muchLater.toString(), this.props.timeSettings),
       repeat: "1",
       timeUnit: NEVER,
     };
@@ -117,7 +118,6 @@ export class RawAddFarmEvent
             findExecutable={this.props.findExecutable}
             title={t("Add event")}
             timeSettings={this.props.timeSettings}
-            autoSyncEnabled={this.props.autoSyncEnabled}
             resources={this.props.resources}
             shouldDisplay={this.props.shouldDisplay} />
           : <FarmEventForm

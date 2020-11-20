@@ -14,7 +14,6 @@ describe Api::FbosConfigsController do
       expect(response.status).to eq(200)
       {
         device_id: device.id,
-        auto_sync: true,
         disable_factory_reset: true,
         firmware_input_log: false,
         firmware_output_log: false,
@@ -25,7 +24,6 @@ describe Api::FbosConfigsController do
         network_not_found_timer: nil,
         os_auto_update: true,
         firmware_hardware: nil,
-        api_migrated: true,
       }.to_a.map do |key, value|
         actual = json.fetch(key)
         expected = value

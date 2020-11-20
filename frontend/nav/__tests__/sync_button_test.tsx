@@ -10,32 +10,30 @@ describe("<SyncButton/>", function () {
     dispatch: jest.fn(),
     bot: bot,
     consistent: true,
-    autoSync: false,
   });
 
-  it("is gray when inconsistent", () => {
+  it("is inconsistent", () => {
     const p = fakeProps();
     p.consistent = false;
     p.bot.hardware.informational_settings.sync_status = "sync_now";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
+    expect(result.hasClass("c")).toBeFalsy();
   });
 
-  it("is gray when disconnected", () => {
+  it("is disconnected", () => {
     const p = fakeProps();
-    p.consistent = false;
+    p.consistent = true;
     p.bot.hardware.informational_settings.sync_status = "unknown";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
+    expect(result.hasClass("c")).toBeTruthy();
   });
 
-  it("defaults to `unknown` and gray when uncertain", () => {
+  it("handles unknown sync status", () => {
     const p = fakeProps();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.bot.hardware.informational_settings.sync_status = "new" as any;
     const result = shallow(<SyncButton {...p} />);
     expect(result.text()).toContain("new");
-    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
   });
 
   it("syncs when clicked", () => {
@@ -59,31 +57,28 @@ describe("<SyncButton/>", function () {
     expect(result.find(".btn-spinner").length).toEqual(1);
   });
 
-  it("standart font when synced (autosync)", () => {
+  it("standard font when synced", () => {
     const p = fakeProps();
-    p.autoSync = true;
     p.bot.hardware.informational_settings.sync_status = "synced";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.find(".auto-sync").length).toEqual(1);
+    expect(result.find(".syncing").length).toEqual(0);
   });
 
-  it("italicized font when syncing (autosync)", () => {
+  it("italicized font when syncing", () => {
     const p = fakeProps();
-    p.autoSync = true;
     p.bot.hardware.informational_settings.sync_status = "syncing";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.find(".auto-sync-busy").length).toEqual(1);
+    expect(result.find(".syncing").length).toEqual(1);
   });
 
   const testCase = (input: SyncStatus, expected: string) => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = input;
-    p.autoSync = true;
     const result = shallow(<SyncButton {...p} />);
     expect(result.text()).toContain(expected);
   };
 
-  it("renders differently with auto-sync enabled", () => {
+  it("renders sync status", () => {
     testCase("syncing", "Syncing...");
     testCase("sync_now", "Syncing...");
     testCase("synced", "Synced");

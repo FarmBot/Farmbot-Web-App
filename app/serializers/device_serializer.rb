@@ -1,12 +1,8 @@
 class DeviceSerializer < ApplicationSerializer
   attributes :fbos_version,
-             :last_ota_checkup,
-             :last_ota,
              :last_saw_api,
-             :last_saw_mq,
              :mounted_tool_id,
              :name,
-             :needs_reset,
              :ota_hour,
              :ota_hour_utc,
              :serial_number,

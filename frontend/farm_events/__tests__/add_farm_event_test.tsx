@@ -7,7 +7,7 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../resources/actions", () => ({ destroyOK: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddFarmEvent as AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../farm_designer/interfaces";
@@ -45,7 +45,6 @@ describe("<AddFarmEvent />", () => {
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
-      autoSyncEnabled: false,
       shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,
     };

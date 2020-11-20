@@ -54,7 +54,6 @@ export interface AppProps {
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
   resources: ResourceIndex;
-  autoSync: boolean;
   alertCount: number;
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
@@ -88,7 +87,6 @@ export function mapStateToProps(props: Everything): AppProps {
     getConfigValue: webAppConfigValue,
     tour: props.resources.consumers.help.currentTour,
     resources: props.resources.index,
-    autoSync: !!(fbosConfig && fbosConfig.auto_sync),
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
     alerts: getAllAlerts(props.resources),
     apiFirmwareValue: isFwHardwareValue(fwHardware) ? fwHardware : undefined,
@@ -146,7 +144,6 @@ export class RawApp extends React.Component<AppProps, {}> {
         logs={this.props.logs}
         getConfigValue={this.props.getConfigValue}
         tour={this.props.tour}
-        autoSync={this.props.autoSync}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
         alerts={this.props.alerts}

@@ -265,7 +265,6 @@ CREATE TABLE public.devices (
     max_images_count integer DEFAULT 450,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
-    last_saw_mq timestamp without time zone,
     fbos_version character varying(15),
     throttled_until timestamp without time zone,
     throttled_at timestamp without time zone,
@@ -274,12 +273,10 @@ CREATE TABLE public.devices (
     updated_at timestamp without time zone,
     serial_number character varying(32),
     mqtt_rate_limit_email_sent_at timestamp without time zone,
-    last_ota timestamp without time zone,
-    last_ota_checkup timestamp without time zone,
     ota_hour integer DEFAULT 3,
-    needs_reset boolean DEFAULT false,
     first_saw_api timestamp without time zone,
-    ota_hour_utc integer
+    ota_hour_utc integer,
+    last_watchdog timestamp without time zone
 );
 
 
@@ -451,8 +448,6 @@ CREATE TABLE public.fbos_configs (
     device_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    auto_sync boolean DEFAULT true,
-    beta_opt_in boolean DEFAULT false,
     disable_factory_reset boolean DEFAULT true,
     firmware_input_log boolean DEFAULT false,
     firmware_output_log boolean DEFAULT false,
@@ -461,7 +456,6 @@ CREATE TABLE public.fbos_configs (
     sequence_init_log boolean DEFAULT false,
     network_not_found_timer integer,
     firmware_hardware character varying,
-    api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
@@ -590,7 +584,6 @@ CREATE TABLE public.firmware_configs (
     pin_guard_5_active_state integer DEFAULT 1,
     pin_guard_5_pin_nr integer DEFAULT 0,
     pin_guard_5_time_out integer DEFAULT 60,
-    api_migrated boolean DEFAULT true,
     movement_invert_2_endpoints_x integer DEFAULT 0,
     movement_invert_2_endpoints_y integer DEFAULT 0,
     movement_invert_2_endpoints_z integer DEFAULT 0,
@@ -822,7 +815,6 @@ CREATE TABLE public.points (
     plant_stage character varying(10) DEFAULT 'planned'::character varying,
     tool_id integer,
     pullout_direction integer DEFAULT 0,
-    migrated_at timestamp without time zone,
     discarded_at timestamp without time zone,
     gantry_mounted boolean DEFAULT false
 );
@@ -840,7 +832,6 @@ CREATE TABLE public.sequences (
     kind character varying(280) DEFAULT 'sequence'::character varying,
     updated_at timestamp without time zone,
     created_at timestamp without time zone,
-    migrated_nodes boolean DEFAULT false,
     folder_id bigint
 );
 
@@ -3459,6 +3450,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200907153510'),
 ('20200910175338'),
 ('20200914165414'),
-('20201105145245');
+('20201105145245'),
+('20201118183247'),
+('20201120162403');
 
 
