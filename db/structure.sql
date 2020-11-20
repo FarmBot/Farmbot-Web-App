@@ -265,7 +265,6 @@ CREATE TABLE public.devices (
     max_images_count integer DEFAULT 450,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
-    last_saw_mq timestamp without time zone,
     fbos_version character varying(15),
     throttled_until timestamp without time zone,
     throttled_at timestamp without time zone,
@@ -275,9 +274,9 @@ CREATE TABLE public.devices (
     serial_number character varying(32),
     mqtt_rate_limit_email_sent_at timestamp without time zone,
     ota_hour integer DEFAULT 3,
-    needs_reset boolean DEFAULT false,
     first_saw_api timestamp without time zone,
-    ota_hour_utc integer
+    ota_hour_utc integer,
+    last_watchdog timestamp without time zone
 );
 
 
@@ -3452,6 +3451,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200910175338'),
 ('20200914165414'),
 ('20201105145245'),
-('20201118183247');
+('20201118183247'),
+('20201120162403');
 
 
