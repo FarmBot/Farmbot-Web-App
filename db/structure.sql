@@ -1662,7 +1662,7 @@ ALTER SEQUENCE public.tools_id_seq OWNED BY public.tools.id;
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    device_id integer,
+    device_id integer NOT NULL,
     name character varying,
     email character varying(280) DEFAULT ''::character varying NOT NULL,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
@@ -3452,6 +3452,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200914165414'),
 ('20201105145245'),
 ('20201118183247'),
-('20201120162403');
+('20201120162403'),
+('20201124235014');
 
 
