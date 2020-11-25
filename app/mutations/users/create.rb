@@ -34,8 +34,9 @@ module Users
                  password_confirmation: password_confirmation,
                  name: name }
       params[:agreed_to_terms_at] = Time.now
-      user = User.create!(params)
+      user = User.new(params)
       device = Devices::Create.run!(user: user)
+      user.save!
       UserMailer
         .welcome_email(user)
         .deliver_later unless skip_email

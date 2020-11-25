@@ -185,8 +185,8 @@ describe Api::UsersController do
     verified = User.create!(email: Faker::Internet.email,
                             password: "password123",
                             password_confirmation: "password123",
-                            confirmed_at: Time.now)
-
+                            confirmed_at: Time.now,
+                            device: FactoryBot.create(:device))
     post :resend_verification,
          body: { email: verified.email }.to_json,
          format: :json
@@ -198,8 +198,8 @@ describe Api::UsersController do
     it "re-sends verification email" do
       unverified = User.create!(email: Faker::Internet.email,
                                 password: "password123",
-                                password_confirmation: "password123")
-
+                                password_confirmation: "password123",
+                                device: FactoryBot.create(:device))
       post :resend_verification,
            body: { email: unverified.email }.to_json,
            format: :json

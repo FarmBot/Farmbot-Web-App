@@ -51,10 +51,6 @@ module Api
       sorry ONLY_JSON
     end
 
-    rescue_from Errors::NoBot do |exc|
-      sorry "You need to register a device first."
-    end
-
     rescue_from ActiveRecord::RecordNotFound do |exc|
       sorry "Document not found.", 404
     end
@@ -176,10 +172,6 @@ module Api
     # Disable cookies. This is an API!
     def skip_set_cookies_header
       reset_session
-    end
-
-    def no_device
-      raise Errors::NoBot
     end
 
     def authenticate_user!
