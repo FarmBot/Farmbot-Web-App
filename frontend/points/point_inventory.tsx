@@ -24,19 +24,21 @@ import { UUID } from "../resources/interfaces";
 import { deletePoints } from "../api/delete_points";
 import {
   EditSoilHeight,
-  getSoilHeightColor, soilHeightPoint, soilHeightQuery,
+  getSoilHeightColor, soilHeightColorQuery, soilHeightPoint, soilHeightQuery,
 } from "./soil_height";
 import { SourceFbosConfig } from "../devices/interfaces";
 import { validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
+import { Saucer } from "../ui";
 
 interface PointsSectionProps {
   title: string;
+  color?: string;
   isOpen: boolean;
   toggleOpen(): void;
-  toggleValue: boolean;
-  toggleAction(): void;
+  toggleValue?: boolean;
+  toggleAction?(): void;
   genericPoints: TaggedGenericPointer[];
   hoveredPoint: UUID | undefined;
   dispatch: Function;
@@ -47,15 +49,16 @@ interface PointsSectionProps {
 }
 
 const PointsSection = (props: PointsSectionProps) => {
-  const { genericPoints, isOpen, dispatch, averageZ } = props;
-  return <div className={"points-section"}>
+  const { genericPoints, isOpen, dispatch, averageZ, toggleAction } = props;
+  return <div className={`points-section ${isOpen ? "open" : ""}`}>
     <div className={"points-section-header"} onClick={props.toggleOpen}>
+      {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
       <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
-      <ToggleButton
+      {toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
-        toggleAction={e => { e.stopPropagation(); props.toggleAction(); }} />
+        toggleAction={e => { e.stopPropagation(); toggleAction(); }} />}
     </div>
     <Collapse isOpen={isOpen}>
       <button className={"fb-button red delete"}
@@ -65,7 +68,7 @@ const PointsSection = (props: PointsSectionProps) => {
           dispatch(deletePoints("points", { meta: props.metaQuery }))}>
         {t("delete all")}
       </button>
-      {!isUndefined(averageZ) && props.sourceFbosConfig &&
+      {!isUndefined(averageZ) &&
         <EditSoilHeight
           sourceFbosConfig={props.sourceFbosConfig}
           averageZ={averageZ}
@@ -93,6 +96,7 @@ export interface PointsProps {
 interface PointsState extends SortOptions {
   searchTerm: string;
   gridIds: string[];
+  soilHeightColors: string[];
   soilHeight: boolean;
 }
 
@@ -113,13 +117,22 @@ export function mapStateToProps(props: Everything): PointsProps {
 }
 
 export class RawPoints extends React.Component<PointsProps, PointsState> {
-  state: PointsState = { searchTerm: "", gridIds: [], soilHeight: false };
+  state: PointsState = {
+    searchTerm: "", gridIds: [], soilHeightColors: [], soilHeight: false,
+  };
 
   toggleGrid = (gridId: string) => () =>
     this.setState({
       gridIds: this.state.gridIds.includes(gridId)
         ? this.state.gridIds.filter(id => id != gridId)
         : this.state.gridIds.concat(gridId)
+    });
+
+  toggleSoilHeightPointColor = (color: string) => () =>
+    this.setState({
+      soilHeightColors: this.state.soilHeightColors.includes(color)
+        ? this.state.soilHeightColors.filter(c => c != color)
+        : this.state.soilHeightColors.concat(color)
     });
 
   render() {
@@ -133,6 +146,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
     const sortedSoilHeightPoints = this.state.sortBy
       ? soilHeightPoints
       : sortBy(soilHeightPoints, "body.z").reverse();
+    const soilHeightPointColors = compact(uniq(sortedSoilHeightPoints.map(p =>
+      p.body.meta.color)));
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
       <DesignerNavTabs />
       <DesignerPanelTop
@@ -162,7 +177,9 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
                 dispatch={this.props.dispatch} />)}
           {sortedSoilHeightPoints.length > 0 &&
             <PointsSection
-              title={t("Soil Height")}
+              title={soilHeightPointColors.length > 1
+                ? t("All Soil Height")
+                : t("Soil Height")}
               isOpen={soilHeight}
               toggleOpen={() => this.setState({ soilHeight: !soilHeight })}
               toggleValue={this.props.soilHeightLabels}
@@ -176,6 +193,21 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               sourceFbosConfig={this.props.sourceFbosConfig}
               hoveredPoint={this.props.hoveredPoint}
               dispatch={this.props.dispatch} />}
+          {soilHeightPointColors.length > 1 &&
+            soilHeightPointColors.map(color =>
+              <PointsSection key={color}
+                title={t("Soil Height")}
+                color={color}
+                isOpen={this.state.soilHeightColors.includes(color)}
+                toggleOpen={this.toggleSoilHeightPointColor(color)}
+                genericPoints={sortedSoilHeightPoints
+                  .filter(p => p.body.meta.color == color)}
+                metaQuery={soilHeightColorQuery(color)}
+                getColorOverride={getSoilHeightColor(sortedSoilHeightPoints)}
+                averageZ={round(mean(sortedSoilHeightPoints
+                  .filter(p => p.body.meta.color == color).map(p => p.body.z)))}
+                hoveredPoint={this.props.hoveredPoint}
+                dispatch={this.props.dispatch} />)}
           {gridIds.map(gridId => {
             const gridPoints = points.filter(p => p.body.meta.gridId == gridId);
             const pointName = gridPoints[0].body.name;

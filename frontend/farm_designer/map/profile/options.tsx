@@ -17,7 +17,7 @@ export const ProfileOptions = (props: ProfileOptionsProps) =>
       customText={{ textTrue: "x", textFalse: "y" }} />
 
     <label>{t("width")}</label>
-    <input type={"number"} value={props.width}
+    <input type={"number"} value={props.selectionWidth}
       onChange={e => props.dispatch({
         type: Actions.SET_PROFILE_WIDTH,
         payload: parseInt(e.currentTarget.value),

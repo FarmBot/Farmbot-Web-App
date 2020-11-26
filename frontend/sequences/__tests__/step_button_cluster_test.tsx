@@ -4,12 +4,14 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
 import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
+import { FarmwareName } from "../step_tiles/tile_execute_script";
 
 describe("<StepButtonCluster />", () => {
   const commands = ["move to", "move relative",
@@ -22,6 +24,7 @@ describe("<StepButtonCluster />", () => {
     current: undefined,
     shouldDisplay: () => false,
     stepIndex: undefined,
+    farmwareData: fakeFarmwareData(),
   });
 
   it("renders sequence commands", () => {
@@ -34,6 +37,7 @@ describe("<StepButtonCluster />", () => {
   it("renders future commands", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
+    p.farmwareData.farmwareNames = [FarmwareName.MeasureSoilHeight];
     const wrapper = mount(<StepButtonCluster {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("mark as");
   });

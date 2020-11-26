@@ -19,8 +19,13 @@ jest.mock("../../../../../history", () => ({
 }));
 
 import {
-  newPlantKindAndBody, maybeSavePlantLocation, beginPlantDrag, setActiveSpread,
-  dragPlant, createPlant, dropPlant,
+  newPlantKindAndBody, NewPlantKindAndBodyProps,
+  maybeSavePlantLocation, MaybeSavePlantLocationProps,
+  beginPlantDrag, BeginPlantDragProps,
+  setActiveSpread, SetActiveSpreadProps,
+  dragPlant, DragPlantProps,
+  createPlant, CreatePlantProps,
+  dropPlant, DropPlantProps,
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { edit, save, initSave } from "../../../../../api/crud";
@@ -36,21 +41,22 @@ import { error } from "../../../../../toast/toast";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
-    const result = newPlantKindAndBody({
+    const p: NewPlantKindAndBodyProps = {
       x: 0,
       y: 0,
       slug: "mint",
       cropName: "Mint",
       openedSavedGarden: "SavedGarden.1.1"
-    });
+    };
+    const result = newPlantKindAndBody(p);
     expect(result).toEqual(expect.objectContaining({
       kind: "PlantTemplate"
     }));
   });
 });
 
-describe("createPlant", () => {
-  const fakeProps = () => ({
+describe("createPlant()", () => {
+  const fakeProps = (): CreatePlantProps => ({
     cropName: "Mint",
     slug: "mint",
     gardenCoords: { x: 10, y: 20 },
@@ -82,8 +88,8 @@ describe("createPlant", () => {
   });
 });
 
-describe("dropPlant", () => {
-  const fakeProps = () => ({
+describe("dropPlant()", () => {
+  const fakeProps = (): DropPlantProps => ({
     gardenCoords: { x: 10, y: 20 },
     cropSearchResults: [fakeCropLiveSearchResult()],
     openedSavedGarden: undefined,
@@ -106,7 +112,7 @@ describe("dropPlant", () => {
   });
 });
 
-describe("dragPlant", () => {
+describe("dragPlant()", () => {
   beforeEach(function () {
     Object.defineProperty(document, "querySelector", {
       value: () => ({ scrollLeft: 1, scrollTop: 2 }),
@@ -119,13 +125,12 @@ describe("dragPlant", () => {
 
   const plant = fakePlant();
 
-  const fakeProps = () => ({
+  const fakeProps = (): DragPlantProps => ({
     getPlant: () => plant,
     mapTransformProps: fakeMapTransformProps(),
     isDragging: true,
     dispatch: jest.fn(),
     setMapState: jest.fn(),
-    gridSize: { x: 1000, y: 2000 },
     pageX: 100,
     pageY: 200,
     qPageX: 10,
@@ -140,7 +145,7 @@ describe("dragPlant", () => {
       qPageX: 100, qPageY: 200
     });
     expect(movePlant).toHaveBeenCalledWith({
-      deltaX: 90, deltaY: 180, gridSize: p.gridSize,
+      deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
       plant: p.getPlant()
     });
   });
@@ -160,7 +165,7 @@ describe("dragPlant", () => {
       qPageX: 200, qPageY: 2900
     });
     expect(movePlant).toHaveBeenCalledWith({
-      deltaX: 600, deltaY: 200, gridSize: p.gridSize,
+      deltaX: 600, deltaY: 200, gridSize: p.mapTransformProps.gridSize,
       plant: p.getPlant()
     });
   });
@@ -176,7 +181,7 @@ describe("dragPlant", () => {
       qPageX: 100, qPageY: 200
     });
     expect(movePlant).toHaveBeenCalledWith({
-      deltaX: 90, deltaY: 180, gridSize: p.gridSize,
+      deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
       plant: p.getPlant()
     });
   });
@@ -201,14 +206,14 @@ describe("dragPlant", () => {
       qPageX: 100, qPageY: 200
     });
     expect(movePlant).toHaveBeenCalledWith({
-      deltaX: 0, deltaY: 0, gridSize: p.gridSize,
+      deltaX: 0, deltaY: 0, gridSize: p.mapTransformProps.gridSize,
       plant: p.getPlant()
     });
   });
 });
 
-describe("setActiveSpread", () => {
-  const fakeProps = () => ({
+describe("setActiveSpread()", () => {
+  const fakeProps = (): SetActiveSpreadProps => ({
     selectedPlant: fakePlant(),
     slug: "mint",
     setMapState: jest.fn(),
@@ -230,8 +235,8 @@ describe("setActiveSpread", () => {
   });
 });
 
-describe("beginPlantDrag", () => {
-  const fakeProps = () => ({
+describe("beginPlantDrag()", () => {
+  const fakeProps = (): BeginPlantDragProps => ({
     plant: fakePlant(),
     setMapState: jest.fn(),
     selectedPlant: undefined,
@@ -251,8 +256,8 @@ describe("beginPlantDrag", () => {
   });
 });
 
-describe("maybeSavePlantLocation", () => {
-  const fakeProps = () => ({
+describe("maybeSavePlantLocation()", () => {
+  const fakeProps = (): MaybeSavePlantLocationProps => ({
     plant: fakePlant(),
     isDragging: true,
     dispatch: jest.fn(),

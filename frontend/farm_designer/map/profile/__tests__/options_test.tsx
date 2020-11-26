@@ -8,7 +8,7 @@ describe("<ProfileOptions />", () => {
   const fakeProps = (): ProfileOptionsProps => ({
     dispatch: jest.fn(),
     axis: "x",
-    width: 100,
+    selectionWidth: 100,
     followBot: false,
     expanded: false,
     setExpanded: jest.fn(),
