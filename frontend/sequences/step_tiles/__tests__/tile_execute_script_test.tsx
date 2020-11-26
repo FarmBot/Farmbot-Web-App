@@ -1,5 +1,7 @@
 import React from "react";
-import { TileExecuteScript } from "../tile_execute_script";
+import {
+  DefaultFarmwareStep, FarmwareName, TileExecuteScript,
+} from "../tile_execute_script";
 import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ExecuteScript } from "farmbot/dist";
@@ -10,7 +12,7 @@ import {
   fakeFarmwareData,
 } from "../../../__test_support__/fake_sequence_step_data";
 
-describe("<TileExecuteScript/>", () => {
+describe("<TileExecuteScript />", () => {
   const fakeProps = (): StepParams<ExecuteScript> => {
     const farmwareData = fakeFarmwareData();
     farmwareData.farmwareNames = ["one", "two", "three"];
@@ -42,7 +44,7 @@ describe("<TileExecuteScript/>", () => {
   });
 
   it("renders farmware list", () => {
-    const wrapper = shallow(<TileExecuteScript {...fakeProps()} />);
+    const wrapper = shallow(<DefaultFarmwareStep {...fakeProps()} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
       { label: "three", value: "three" },
@@ -52,7 +54,7 @@ describe("<TileExecuteScript/>", () => {
   it("doesn't show 1st party in list", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.showFirstPartyFarmware = true);
-    const wrapper = shallow(<TileExecuteScript {...p} />);
+    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
       { label: "three", value: "three" },
@@ -66,14 +68,25 @@ describe("<TileExecuteScript/>", () => {
     expect(wrapper.find("label").length).toEqual(1);
   });
 
-  it("shows special 1st-party Farmware name", () => {
+  it("shows special 1st-party Farmware name: plant detection", () => {
     const p = fakeProps();
-    p.currentStep.args.label = "plant-detection";
-    p.farmwareData?.farmwareNames.push("plant-detection");
+    p.currentStep.args.label = FarmwareName.PlantDetection;
+    p.farmwareData?.farmwareNames.push(FarmwareName.PlantDetection);
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(0);
     expect(wrapper.text().toLowerCase())
       .toContain("results are viewable from the photos panel.");
+    expect(wrapper.text().toLowerCase()).not.toContain("package");
+  });
+
+  it("shows special 1st-party Farmware name: measure soil height", () => {
+    const p = fakeProps();
+    p.currentStep.args.label = FarmwareName.MeasureSoilHeight;
+    p.farmwareData?.farmwareNames.push(FarmwareName.MeasureSoilHeight);
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.find("label").length).toEqual(0);
+    expect(wrapper.text().toLowerCase())
+      .toContain("results are viewable in the points panel.");
     expect(wrapper.text().toLowerCase()).not.toContain("package");
   });
 
@@ -89,7 +102,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("uses drop-down to update step", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TileExecuteScript {...p} />);
+    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
     wrapper.find("FBSelect").simulate("change", {
       label: "farmware-name",
       value: "farmware-name"
@@ -108,7 +121,7 @@ describe("<TileExecuteScript/>", () => {
     const p = fakeProps();
     p.currentStep.body = [
       { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
-    const wrapper = shallow(<TileExecuteScript {...p} />);
+    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
     wrapper.find("FBSelect").simulate("change", {
       label: "farmware-name",
       value: "farmware-name"
@@ -125,7 +138,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("displays warning when camera is disabled", () => {
     const p = fakeProps();
-    p.currentStep.args.label = "plant-detection";
+    p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
@@ -133,7 +146,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("displays warning when camera is uncalibrated", () => {
     const p = fakeProps();
-    p.currentStep.args.label = "plant-detection";
+    p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraCalibrated = false);
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.text()).toContain(Content.CAMERA_NOT_CALIBRATED);

@@ -58,14 +58,12 @@ export class GardenMap extends
     unselectPlant(this.props.dispatch)();
   }
 
-  /** Assemble the props needed for placement of items in the map. */
+  /** Props needed for placement of items in the map. */
   get mapTransformProps(): MapTransformProps {
-    return {
-      quadrant: this.props.botOriginQuadrant,
-      gridSize: this.props.gridSize,
-      xySwap: !!this.props.getConfigValue(BooleanSetting.xy_swap),
-    };
+    return this.props.mapTransformProps;
   }
+
+  get gridSize() { return this.mapTransformProps.gridSize; }
 
   get mapSize() {
     return getMapSize(this.mapTransformProps, this.props.gridOffset);
@@ -263,7 +261,7 @@ export class GardenMap extends
         gardenCoords: this.getGardenCoordinates(e),
         cropSearchResults: this.props.designer.cropSearchResults,
         openedSavedGarden: this.props.designer.openedSavedGarden,
-        gridSize: this.props.gridSize,
+        gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
       });
     };
@@ -302,7 +300,6 @@ export class GardenMap extends
           isDragging: this.state.isDragging,
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
-          gridSize: this.props.gridSize,
           qPageX: this.state.qPageX,
           qPageY: this.state.qPageY,
           pageX: e.pageX,
@@ -392,8 +389,8 @@ export class GardenMap extends
   svgDropAreaProps = () => ({
     x: this.props.gridOffset.x,
     y: this.props.gridOffset.y,
-    width: this.xySwap ? this.props.gridSize.y : this.props.gridSize.x,
-    height: this.xySwap ? this.props.gridSize.x : this.props.gridSize.y,
+    width: this.xySwap ? this.gridSize.y : this.gridSize.x,
+    height: this.xySwap ? this.gridSize.x : this.gridSize.y,
     onMouseUp: this.endDrag,
     onMouseDown: this.startDrag,
     onMouseMove: this.drag,

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../../i18next_wrapper";
 import { FBSelect } from "../../../ui";
 import {
@@ -15,6 +15,10 @@ import {
   maybeFindVariable, SequenceMeta,
 } from "../../../resources/sequence_meta";
 import { UPDATE_RESOURCE_DDIS } from "./field_selection";
+import {
+  getFwHardwareValue, hasUTM,
+} from "../../../settings/firmware/firmware_hardware_support";
+import { getFbosConfig } from "../../../resources/getters";
 
 export const ResourceSelection = (props: ResourceSelectionProps) =>
   <div className={"update-resource-step-resource"}>
@@ -51,10 +55,14 @@ const resourceList =
     const headingCommon = { heading: true, value: 0 };
     const varLabel = resourceVariableLabel(maybeFindVariable(
       "parent", resources, sequenceUuid));
+    const firmwareHardware = getFwHardwareValue(getFbosConfig(resources));
+    const utm = hasUTM(firmwareHardware);
     return [
       { headingId: "Identifier", label: varLabel, value: "parent" },
       { headingId: "Device", label: t("Device"), ...headingCommon },
-      { headingId: "Device", label: t("Tool Mount"), value: deviceId },
+      ...(utm
+        ? [{ headingId: "Device", label: t("Tool Mount"), value: deviceId }]
+        : []),
       { headingId: "Plant", label: t("Plants"), ...headingCommon },
       ...plants.map(formatPoint),
       { headingId: "GenericPointer", label: t("Points"), ...headingCommon },

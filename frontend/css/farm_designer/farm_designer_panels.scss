@@ -1584,6 +1584,14 @@
       label {
         cursor: pointer;
       }
+      .saucer {
+        display: inline-block;
+        height: 3rem;
+        width: 3rem;
+        vertical-align: middle;
+        margin-right: 0.25rem;
+        margin-left: 1rem;
+      }
     }
     .points-section-header,
     .pending-weeds-header,
@@ -1604,6 +1612,10 @@
       }
     }
     .points-section {
+      &.open {
+        background: rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+      }
       .row {
         margin-left: -5px;
         margin-right: 0;
@@ -1744,9 +1756,31 @@
 
 .designer-farmware-info-panel {
   .panel-content {
+    position: relative;
     padding-top: 2rem;
+    padding-bottom: 12rem;
+    button {
+      float: none;
+    }
+    .reset-configs {
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
+    .farmware-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .farmware-form {
+      margin-top: 1rem;
+    }
     .farmware-input-group {
       margin-left: 0;
+    }
+    .advanced-configs {
+      .expandable-header {
+        margin-top: 2rem;
+      }
     }
   }
 }

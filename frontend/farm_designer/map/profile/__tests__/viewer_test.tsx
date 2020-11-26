@@ -8,6 +8,9 @@ import {
 } from "../../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../../constants";
 import { fakeMountedToolInfo } from "../../../../__test_support__/fake_tool_info";
+import {
+  fakeMapTransformProps,
+} from "../../../../__test_support__/map_transform_props";
 
 describe("<ProfileViewer />", () => {
   const fakeProps = (): ProfileViewerProps => ({
@@ -20,6 +23,7 @@ describe("<ProfileViewer />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     mountedToolInfo: fakeMountedToolInfo(),
     tools: [],
+    mapTransformProps: fakeMapTransformProps(),
   });
 
   it("renders when closed", () => {
@@ -51,12 +55,25 @@ describe("<ProfileViewer />", () => {
   it("renders profile", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
-    p.designer.profilePosition = { x: 1, y: 2 };
+    p.designer.profileFollowBot = true;
+    p.botPosition = { x: undefined, y: undefined, z: undefined };
     const wrapper = mount(<ProfileViewer {...p} />);
     expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
     expect(wrapper.text()).not.toContain("choose a profile");
-    expect(wrapper.html()).toContain("svg");
+    expect(wrapper.text()).toContain("FarmBot position unknown");
+    expect(wrapper.html()).not.toContain("svg");
+  });
+
+  it("renders when open: follow", () => {
+    const p = fakeProps();
+    p.designer.profileOpen = true;
+    const wrapper = mount(<ProfileViewer {...p} />);
+    expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
+    expect(wrapper.find(".profile-button").props().title).toContain("close");
+    expect(wrapper.text()).toContain("choose a profile");
+    expect(wrapper.html()).not.toContain("svg");
     expect(wrapper.text()).toContain("axis");
+    expect(wrapper.find("button").first().text()).toEqual("y");
   });
 
   it("renders profile: follow", () => {

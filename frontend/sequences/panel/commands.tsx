@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -12,6 +12,7 @@ import { urlFriendly } from "../../util";
 import { Everything } from "../../interfaces";
 import { findSequence } from "../../resources/selectors";
 import { getShouldDisplayFn } from "../../farmware/state_to_props";
+import { getFarmwareData } from "../state_to_props";
 
 export const mapStateToProps = (props: Everything): StepButtonProps => {
   const uuid = props.resources.consumers.sequences.current;
@@ -21,6 +22,7 @@ export const mapStateToProps = (props: Everything): StepButtonProps => {
     current,
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     stepIndex: props.resources.consumers.sequences.stepIndex,
+    farmwareData: getFarmwareData(props),
   };
 };
 
@@ -28,18 +30,19 @@ export class RawDesignerSequenceCommands
   extends React.Component<StepButtonProps> {
   render() {
     const panelName = "designer-sequence-commands";
+    const sequenceName = urlFriendly(this.props.current?.body.name || "");
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Sequences}
         title={t("Add Command")}
-        backTo={`/app/designer/sequences/${
-          urlFriendly(this.props.current?.body.name || "")}`} />
+        backTo={`/app/designer/sequences/${sequenceName}`} />
       <DesignerPanelContent panelName={panelName}>
         <StepButtonCluster
           current={this.props.current}
           dispatch={this.props.dispatch}
           shouldDisplay={this.props.shouldDisplay}
+          farmwareData={this.props.farmwareData}
           stepIndex={this.props.stepIndex} />
       </DesignerPanelContent>
     </DesignerPanel>;

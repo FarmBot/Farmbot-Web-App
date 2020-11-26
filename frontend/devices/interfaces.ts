@@ -51,6 +51,7 @@ export enum Feature {
   safe_height_input = "safe_height_input",
   sensors = "sensors",
   soil_height = "soil_height",
+  toggle_peripheral = "toggle_peripheral",
   update_resource = "update_resource",
   use_update_channel = "use_update_channel",
   variables = "variables",

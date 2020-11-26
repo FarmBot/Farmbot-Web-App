@@ -65,7 +65,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
       <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
-        <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>}
+        <p> {formatLogTime(alert.created_at, props.timeSettings)}</p>}
     </div>
     {alert.id && !props.noDismiss && <i className="fa fa-times"
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}

@@ -1,6 +1,6 @@
 import React from "react";
 import { svgMount } from "../../../../__test_support__/svg_mount";
-import { ProfileSvg } from "../content";
+import { getProfileX, ProfileSvg } from "../content";
 import { ProfileSvgProps } from "../interfaces";
 import { fakeBotSize } from "../../../../__test_support__/fake_bot_data";
 import {
@@ -8,11 +8,16 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { fakeMountedToolInfo } from "../../../../__test_support__/fake_tool_info";
 import { Color } from "../../../../ui";
+import {
+  fakeMapTransformProps,
+} from "../../../../__test_support__/map_transform_props";
+import { BotPosition } from "../../../../devices/interfaces";
+import { BotOriginQuadrant } from "../../../interfaces";
 
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({
     allPoints: [],
-    width: 100,
+    selectionWidth: 100,
     axis: "y",
     position: { x: 0, y: 110 },
     expanded: false,
@@ -22,6 +27,7 @@ describe("<ProfileSvg />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     mountedToolInfo: fakeMountedToolInfo(),
     tools: [],
+    mapTransformProps: fakeMapTransformProps(),
   });
 
   it("renders without points", () => {
@@ -180,4 +186,35 @@ describe("<ProfileSvg />", () => {
       x: 970, y: 200, width: 60, height: 20, fill: "rgba(102, 102, 102)",
     });
   });
+});
+
+describe("getProfileX()", () => {
+  it.each<["x" | "y", BotOriginQuadrant, boolean, number, BotPosition, number]>([
+    ["x", 2, false, 100, { x: 1, y: 2, z: 3 }, 1],
+    ["y", 2, false, 100, { x: 1, y: 2, z: 3 }, 98],
+    ["x", 3, false, 100, { x: 1, y: 2, z: 3 }, 1],
+    ["y", 3, false, 100, { x: 1, y: 2, z: 3 }, 2],
+    ["x", 4, false, 100, { x: 1, y: 2, z: 3 }, 99],
+    ["y", 4, false, 100, { x: 1, y: 2, z: 3 }, 98],
+    ["x", 1, false, 100, { x: 1, y: 2, z: 3 }, 99],
+    ["y", 1, false, 100, { x: 1, y: 2, z: 3 }, 2],
+    ["x", 2, true, 100, { x: 1, y: 2, z: 3 }, 1],
+    ["y", 2, true, 100, { x: 1, y: 2, z: 3 }, 2],
+    ["x", 3, true, 100, { x: 1, y: 2, z: 3 }, 99],
+    ["y", 3, true, 100, { x: 1, y: 2, z: 3 }, 2],
+    ["x", 4, true, 100, { x: 1, y: 2, z: 3 }, 99],
+    ["y", 4, true, 100, { x: 1, y: 2, z: 3 }, 98],
+    ["x", 1, true, 100, { x: 1, y: 2, z: 3 }, 1],
+    ["y", 1, true, 100, { x: 1, y: 2, z: 3 }, 98],
+  ])("returns correct position: %s-axis, quadrant %s, rotated: %s",
+    (axis, quadrant, xySwap, width, coordinate, expected) => {
+      const mapTransformProps = fakeMapTransformProps();
+      mapTransformProps.quadrant = quadrant;
+      mapTransformProps.xySwap = xySwap;
+      expect(getProfileX({
+        profileAxis: axis,
+        mapTransformProps,
+        width,
+      })(coordinate)).toEqual(expected);
+    });
 });

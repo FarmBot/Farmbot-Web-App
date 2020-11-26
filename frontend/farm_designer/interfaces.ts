@@ -24,7 +24,9 @@ import {
   BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
-import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
+import {
+  AxisNumberProperty, BotSize, MapTransformProps, TaggedPlant,
+} from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
@@ -240,8 +242,7 @@ export interface GardenMapProps {
   botSize: BotSize;
   stopAtHome: Record<"x" | "y", boolean>;
   zoomLvl: number;
-  botOriginQuadrant: BotOriginQuadrant;
-  gridSize: AxisNumberProperty;
+  mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;

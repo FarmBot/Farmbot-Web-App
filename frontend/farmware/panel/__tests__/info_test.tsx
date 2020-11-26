@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerFarmwareInfo as DesignerFarmwareInfo,
@@ -19,6 +19,7 @@ describe("<DesignerFarmwareInfo />", () => {
     dispatch: jest.fn(),
     env: {},
     userEnv: {},
+    farmwareEnvs: [],
     currentFarmware: undefined,
     botToMqttStatus: "up",
     farmwares: {},

@@ -3,7 +3,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { Feature } from "../../devices/interfaces";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
-  fakeSequence, fakeWebAppConfig, fakeFarmwareEnv,
+  fakeSequence, fakeWebAppConfig, fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
@@ -55,6 +55,25 @@ describe("mapStateToProps()", () => {
     (state.resources.index.references[sequence.uuid] as TaggedSequence).body.body =
       [{ kind: "wait", args: { milliseconds: 100 } }];
     expect(() => mapStateToProps(state)).toThrowError(/No tag on step/);
+  });
+
+  it("returns farmwareNames", () => {
+    const state = fakeState();
+    const farmwareInstallation1 = fakeFarmwareInstallation();
+    farmwareInstallation1.body.package = "farmware installation";
+    const farmwareInstallation2 = fakeFarmwareInstallation();
+    farmwareInstallation2.body.package = "My Fake Farmware";
+    state.resources = buildResourceIndex([
+      farmwareInstallation1, farmwareInstallation2,
+    ]);
+    state.bot.hardware.process_info.farmwares = {
+      "My Fake Farmware": fakeFarmwareManifestV1()
+    };
+    const props = mapStateToProps(state);
+    expect(props.farmwareData.farmwareNames).toEqual([
+      "My Fake Farmware",
+      "farmware installation",
+    ]);
   });
 
   it("returns farmwareConfigs", () => {

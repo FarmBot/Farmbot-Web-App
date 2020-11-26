@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
@@ -75,6 +75,7 @@ export class RawSequences extends React.Component<Props, {}> {
             current={this.props.sequence}
             dispatch={this.props.dispatch}
             shouldDisplay={this.props.shouldDisplay}
+            farmwareData={this.props.farmwareData}
             stepIndex={this.props.stepIndex} />
         </RightPanel>
       </Row>
