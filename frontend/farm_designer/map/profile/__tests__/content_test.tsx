@@ -1,10 +1,11 @@
 import React from "react";
-import { svgMount } from "../../../../__test_support__/svg_mount";
+import { mount } from "enzyme";
 import { getProfileX, ProfileSvg } from "../content";
 import { ProfileSvgProps } from "../interfaces";
 import { fakeBotSize } from "../../../../__test_support__/fake_bot_data";
 import {
-  fakePoint, fakeTool, fakeToolSlot,
+  fakePlant,
+  fakePoint, fakeTool, fakeToolSlot, fakeWeed,
 } from "../../../../__test_support__/fake_state/resources";
 import { fakeMountedToolInfo } from "../../../../__test_support__/fake_tool_info";
 import { Color } from "../../../../ui";
@@ -13,6 +14,9 @@ import {
 } from "../../../../__test_support__/map_transform_props";
 import { BotPosition } from "../../../../devices/interfaces";
 import { BotOriginQuadrant } from "../../../interfaces";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { ToolDimensions } from "../../tool_graphics/tool";
+import { SlotDimensions } from "../../tool_graphics/slot";
 
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({
@@ -28,10 +32,11 @@ describe("<ProfileSvg />", () => {
     mountedToolInfo: fakeMountedToolInfo(),
     tools: [],
     mapTransformProps: fakeMapTransformProps(),
+    getConfigValue: () => true,
   });
 
   it("renders without points", () => {
-    const wrapper = svgMount(<ProfileSvg {...fakeProps()} />);
+    const wrapper = mount(<ProfileSvg {...fakeProps()} />);
     expect(wrapper.html()).not.toContain("profile-point");
   });
 
@@ -40,7 +45,7 @@ describe("<ProfileSvg />", () => {
     p.allPoints = [fakePoint(), fakePoint()];
     p.allPoints[0].body.y = 0;
     p.allPoints[1].body.y = 210;
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.html()).not.toContain("profile-point");
     expect(wrapper.html()).not.toContain("text");
     expect(wrapper.find("#UTM").find("rect").length).toEqual(0);
@@ -58,7 +63,7 @@ describe("<ProfileSvg />", () => {
     p.allPoints[1].body.y = 100;
     p.allPoints[1].body.z = 0;
     p.allPoints[1].body.meta.color = "green";
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.html()).toContain("text");
     expect(wrapper.html()).toContain("line");
     expect(wrapper.html()).toContain("circle");
@@ -69,17 +74,29 @@ describe("<ProfileSvg />", () => {
     const p = fakeProps();
     p.expanded = true;
     p.negativeZ = false;
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.html()).toContain("text");
     expect(wrapper.text()).not.toContain("-100");
+  });
+
+  it("doesn't render soil fill", () => {
+    const wrapper = mount(<ProfileSvg {...fakeProps()} />);
+    expect(wrapper.find("#soil-height").find("rect").length).toEqual(0);
+  });
+
+  it("renders soil fill", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: 100, consistent: true });
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#soil-height").find("rect").length).toEqual(1);
   });
 
   it("renders UTM", () => {
     const p = fakeProps();
     p.botPosition = { x: 200, y: 100, z: 100 };
-    const wrapper = svgMount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM").find("line").length).toEqual(1);
-    expect(wrapper.find("#UTM").find("rect").length).toEqual(1);
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#UTM-and-axis").find("line").length).toEqual(1);
+    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(1);
     expect(wrapper.html()).not.toContain("image");
   });
 
@@ -87,8 +104,8 @@ describe("<ProfileSvg />", () => {
     const p = fakeProps();
     p.expanded = true;
     p.botPosition = { x: 200, y: 100, z: 100 };
-    const wrapper = svgMount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM").find("rect").length).toEqual(3);
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
     expect(wrapper.html()).toContain("image");
   });
 
@@ -97,8 +114,8 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.axis = "y";
     p.botPosition = { x: 200, y: 100, z: 100 };
-    const wrapper = svgMount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM").find("rect").length).toEqual(3);
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
     expect(wrapper.html()).toContain("image");
   });
 
@@ -127,21 +144,24 @@ describe("<ProfileSvg />", () => {
     p.allPoints[4].body.y = 100;
     p.allPoints[4].body.z = 400;
     p.allPoints[4].body.meta.color = "blue";
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("line").at(0).props()).toEqual({
-      x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3, stroke: Color.gridSoil,
+      stroke: Color.gridSoil, x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3,
     });
     expect(wrapper.find("line").at(1).props()).toEqual({
-      x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3, stroke: Color.blue,
+      stroke: Color.blue, x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3,
     });
     expect(wrapper.find("line").at(2).props()).toEqual({
-      x1: 0, y1: 0, x2: 100, y2: 100, strokeWidth: 20,
+      id: "profile-point-connector",
+      x1: 200, y1: 200, x2: 100, y2: 100, strokeWidth: 20, opacity: 0.5,
     });
     expect(wrapper.find("line").at(3).props()).toEqual({
-      x1: 100, y1: 100, x2: 200, y2: 200, strokeWidth: 20,
+      id: "profile-point-connector",
+      x1: 100, y1: 100, x2: 0, y2: 0, strokeWidth: 20, opacity: 0.5,
     });
     expect(wrapper.find("line").at(4).props()).toEqual({
-      x1: 300, y1: 300, x2: 400, y2: 400, strokeWidth: 20,
+      id: "profile-point-connector",
+      x1: 400, y1: 400, x2: 300, y2: 300, strokeWidth: 20, opacity: 0.5,
     });
   });
 
@@ -162,12 +182,18 @@ describe("<ProfileSvg />", () => {
     troughSlot.body.z = 200;
     troughSlot.body.gantry_mounted = true;
     p.allPoints = [toolSlot, troughSlot];
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#profile-tool").first().find("rect").props()).toEqual({
-      x: -30, y: 200, width: 60, height: 20, fill: "rgba(102, 102, 102)",
+      id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
+      x: 200 - ToolDimensions.radius, y: 200,
+      width: ToolDimensions.diameter,
+      height: ToolDimensions.thickness,
     });
     expect(wrapper.find("#profile-tool").last().find("rect").props()).toEqual({
-      x: 170, y: 200, width: 60, height: 20, fill: "rgba(102, 102, 102)",
+      id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
+      x: -ToolDimensions.radius, y: 200,
+      width: ToolDimensions.diameter,
+      height: ToolDimensions.thickness,
     });
   });
 
@@ -175,17 +201,175 @@ describe("<ProfileSvg />", () => {
     const p = fakeProps();
     p.expanded = true;
     p.botPosition.x = 1000;
+    const trough = fakeTool();
+    trough.body.id = 1;
+    trough.body.name = "Seed trough";
+    p.tools = [trough];
     const troughSlot = fakeToolSlot();
+    troughSlot.body.tool_id = trough.body.id;
     troughSlot.body.x = 1000;
     troughSlot.body.y = 110;
     troughSlot.body.z = 200;
     troughSlot.body.gantry_mounted = true;
     p.allPoints = [troughSlot];
-    const wrapper = svgMount(<ProfileSvg {...p} />);
+    const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#profile-tool").first().find("rect").props()).toEqual({
-      x: 970, y: 200, width: 60, height: 20, fill: "rgba(102, 102, 102)",
+      id: "tool-body", fill: "rgba(128, 128, 128)", opacity: 0.75,
+      x: 975.5, y: 200, width: 49, height: ToolDimensions.thickness,
     });
   });
+
+  const toolGraphicsProps = () => {
+    const p = fakeProps();
+    p.expanded = true;
+    const weeder = fakeTool();
+    weeder.body.name = "weeder";
+    weeder.body.id = 1;
+    const seeder = fakeTool();
+    seeder.body.name = "seeder";
+    seeder.body.id = 2;
+    const seedBin = fakeTool();
+    seedBin.body.name = "seed bin";
+    seedBin.body.id = 3;
+    const soilSensor = fakeTool();
+    soilSensor.body.name = "soil sensor";
+    soilSensor.body.id = 4;
+    p.tools = [weeder, seeder, seedBin, soilSensor];
+    const weederSlot = fakeToolSlot();
+    weederSlot.body.x = 0;
+    weederSlot.body.y = 110;
+    weederSlot.body.z = 200;
+    weederSlot.body.tool_id = weeder.body.id;
+    weederSlot.body.pullout_direction = 1;
+    const seederSlot = fakeToolSlot();
+    seederSlot.body.x = 0;
+    seederSlot.body.y = 110;
+    seederSlot.body.z = 200;
+    seederSlot.body.tool_id = seeder.body.id;
+    seederSlot.body.pullout_direction = 1;
+    const seedBinSlot = fakeToolSlot();
+    seedBinSlot.body.x = 0;
+    seedBinSlot.body.y = 110;
+    seedBinSlot.body.z = 200;
+    seedBinSlot.body.tool_id = seedBin.body.id;
+    seedBinSlot.body.pullout_direction = 1;
+    const soilSensorSlot = fakeToolSlot();
+    soilSensorSlot.body.x = 0;
+    soilSensorSlot.body.y = 110;
+    soilSensorSlot.body.z = 200;
+    soilSensorSlot.body.tool_id = soilSensor.body.id;
+    soilSensorSlot.body.pullout_direction = 0;
+    p.allPoints = [weederSlot, seederSlot, seedBinSlot, soilSensorSlot];
+    return p;
+  };
+
+  it("renders tool implements: side", () => {
+    const p = toolGraphicsProps();
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#soil-sensor-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
+    expect(wrapper.find("#no-slot-direction").length).toEqual(1);
+    expect(wrapper.find("#slot-side-profile").length).toEqual(3);
+    expect(wrapper.find("#slot-front-profile").length).toEqual(0);
+    expect(wrapper.find("#weeder-front-view").length).toEqual(0);
+    expect(wrapper.find("#weeder-side-view").length).toEqual(1);
+    expect(wrapper.find("#soil-sensor-front-view").length).toEqual(0);
+    expect(wrapper.find("#soil-sensor-side-view").length).toEqual(1);
+  });
+
+  it("renders tool implements: front", () => {
+    const p = toolGraphicsProps();
+    p.axis = "x";
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#soil-sensor-implement-profile").length).toEqual(1);
+    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
+    expect(wrapper.find("#no-slot-direction").length).toEqual(1);
+    expect(wrapper.find("#slot-side-profile").length).toEqual(0);
+    expect(wrapper.find("#slot-front-profile").length).toEqual(3);
+    expect(wrapper.find("#weeder-front-view").length).toEqual(1);
+    expect(wrapper.find("#weeder-side-view").length).toEqual(0);
+    expect(wrapper.find("#soil-sensor-front-view").length).toEqual(1);
+    expect(wrapper.find("#soil-sensor-side-view").length).toEqual(0);
+  });
+
+  it("renders all points", () => {
+    const p = fakeProps();
+    p.expanded = true;
+    p.selectionWidth = 10000;
+    p.allPoints = [fakePlant(), fakeWeed(), fakeToolSlot(), fakePoint()];
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#profile-map-point").length).toEqual(1);
+    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
+    expect(wrapper.find("#weed-profile-point").length).toEqual(1);
+    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(1);
+  });
+
+  it("doesn't render any points", () => {
+    const p = fakeProps();
+    p.expanded = true;
+    p.selectionWidth = 10000;
+    p.getConfigValue = () => false;
+    p.allPoints = [fakePlant(), fakeWeed(), fakeToolSlot(), fakePoint()];
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#profile-map-point").length).toEqual(0);
+    expect(wrapper.find("#plant-profile-point").length).toEqual(0);
+    expect(wrapper.find("#weed-profile-point").length).toEqual(0);
+    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
+  });
+
+  const SLOT_FRONT = "slot-front-";
+  const SLOT_SIDE = "slot-side-";
+  const SENSOR_FRONT = "-sensor-front-";
+  const SENSOR_SIDE = "-sensor-side-";
+  const SLOT_LEFT = `h -${SlotDimensions.toolToTopBend}`;
+  const SLOT_RIGHT = `h ${SlotDimensions.toolToTopBend}`;
+
+  it.each<[
+    "x" | "y", BotOriginQuadrant, boolean, ToolPulloutDirection, boolean, string[],
+  ]>([
+    ["x", 1, false, 1, false, [SLOT_FRONT, SENSOR_FRONT]],
+    ["x", 1, false, 2, false, [SLOT_FRONT, SENSOR_FRONT]],
+    ["x", 1, false, 3, false, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "112"]],
+    ["x", 1, false, 4, false, [SLOT_SIDE, SLOT_RIGHT, SENSOR_SIDE, "108"]],
+    ["x", 2, false, 1, false, [SLOT_FRONT, SENSOR_FRONT]],
+    ["x", 2, false, 2, false, [SLOT_FRONT, SENSOR_FRONT]],
+    ["x", 2, false, 3, false, [SLOT_SIDE, SLOT_RIGHT, SENSOR_SIDE, "1388"]],
+    ["x", 2, false, 4, false, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "1392"]],
+    ["x", 3, false, 3, false, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "112"]],
+    ["x", 4, false, 4, false, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "1392"]],
+    ["y", 1, true, 1, false, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "2"]],
+    ["y", 1, true, 2, false, [SLOT_SIDE, SLOT_RIGHT, SENSOR_SIDE, "-2"]],
+    ["y", 1, true, 1, true, [SLOT_SIDE, SLOT_LEFT, SENSOR_SIDE, "-2"]],
+    ["y", 1, true, 2, true, [SLOT_SIDE, SLOT_RIGHT, SENSOR_SIDE, "2"]],
+  ])("renders orientation: %s-axis, origin: %s, xySwap: %s, slot: %s, flip: %s",
+    (axis, quadrant, xySwap, slotDirection, flipped, expected) => {
+      const p = fakeProps();
+      p.axis = axis;
+      p.mapTransformProps.quadrant = quadrant;
+      p.mapTransformProps.xySwap = xySwap;
+      p.expanded = true;
+      const soilSensor = fakeTool();
+      soilSensor.body.name = "soil sensor";
+      soilSensor.body.id = 3;
+      p.tools = [soilSensor];
+      const soilSensorSlot = fakeToolSlot();
+      soilSensorSlot.body.x = 0;
+      soilSensorSlot.body.y = 110;
+      soilSensorSlot.body.z = 200;
+      soilSensorSlot.body.tool_id = soilSensor.body.id;
+      soilSensorSlot.body.meta.tool_direction = flipped ? "flipped" : "";
+      soilSensorSlot.body.pullout_direction = slotDirection;
+      p.allPoints = [soilSensorSlot];
+      const wrapper = mount(<ProfileSvg {...p} />);
+      expected.map(string =>
+        expect(wrapper.html().toLowerCase()).toContain(string));
+    });
 });
 
 describe("getProfileX()", () => {

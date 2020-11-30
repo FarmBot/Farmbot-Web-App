@@ -236,6 +236,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         <SavedGardenHUD dispatch={this.props.dispatch} />}
 
       <ProfileViewer
+        getConfigValue={this.props.getConfigValue}
         dispatch={this.props.dispatch}
         designer={this.props.designer}
         botSize={this.props.botSize}

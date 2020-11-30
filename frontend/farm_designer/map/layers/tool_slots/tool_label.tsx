@@ -43,11 +43,10 @@ export const textAnchorPosition = (
     }
   };
   switch (adjustAnchor(rawAnchor()) % 4) {
-    case Anchor.start: return { anchor: "start", x: 40, y: 10 };
     case Anchor.end: return { anchor: "end", x: -40, y: 10 };
     case Anchor.middleTop: return { anchor: "middle", x: 0, y: 60 };
     case Anchor.middleBottom: return { anchor: "middle", x: 0, y: -40 };
-    default: throw new Error("https://xkcd.com/2200");
+    default: return { anchor: "start", x: 40, y: 10 }; // case Anchor.start:
   }
 };
 

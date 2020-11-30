@@ -4,10 +4,10 @@ import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui/index";
 import { botPositionLabel } from "./bot_position_label";
-import {
-  RotatedTool, ToolGraphicProps, ThreeInOneToolHead,
-} from "../tool_slots/tool_graphics";
-import { reduceToolName } from "../tool_slots/tool_slot_point";
+import { RotatedTool } from "../tool_slots/tool_graphics";
+import { ToolGraphicProps } from "../../tool_graphics/interfaces";
+import { reduceToolName } from "../../tool_graphics/all_tools";
+import { ThreeInOneToolHead } from "../../tool_graphics/three_in_one_toolhead";
 import { noop, round } from "lodash";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { MountedToolInfo, CameraCalibrationData } from "../../../interfaces";

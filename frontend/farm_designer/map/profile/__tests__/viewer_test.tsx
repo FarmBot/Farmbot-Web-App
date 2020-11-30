@@ -24,6 +24,7 @@ describe("<ProfileViewer />", () => {
     mountedToolInfo: fakeMountedToolInfo(),
     tools: [],
     mapTransformProps: fakeMapTransformProps(),
+    getConfigValue: () => true,
   });
 
   it("renders when closed", () => {
