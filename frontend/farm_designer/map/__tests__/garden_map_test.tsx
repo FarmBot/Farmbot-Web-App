@@ -91,6 +91,9 @@ import {
   fakeBotLocationData, fakeBotSize,
 } from "../../../__test_support__/fake_bot_data";
 import { chooseProfile } from "../profile";
+import {
+  fakeMapTransformProps,
+} from "../../../__test_support__/map_transform_props";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -117,8 +120,7 @@ const fakeProps = (): GardenMapProps => ({
   stopAtHome: { x: true, y: true },
   hoveredPlant: undefined,
   zoomLvl: 1,
-  botOriginQuadrant: 2,
-  gridSize: { x: 1000, y: 2000 },
+  mapTransformProps: fakeMapTransformProps(),
   gridOffset: { x: 100, y: 100 },
   peripherals: [],
   eStopStatus: false,
@@ -523,20 +525,20 @@ describe("<GardenMap/>", () => {
 
   it("unswapped height and width", () => {
     const p = fakeProps();
-    p.getConfigValue = () => false;
+    p.mapTransformProps.xySwap = false;
     const wrapper = shallow(<GardenMap {...p} />);
     const svg = wrapper.find(".drop-area-svg");
-    expect(svg.props().width).toEqual(1000);
-    expect(svg.props().height).toEqual(2000);
+    expect(svg.props().width).toEqual(3000);
+    expect(svg.props().height).toEqual(1500);
   });
 
   it("swapped height and width", () => {
     const p = fakeProps();
-    p.getConfigValue = () => true;
+    p.mapTransformProps.xySwap = true;
     const wrapper = shallow(<GardenMap {...p} />);
     const svg = wrapper.find(".drop-area-svg");
-    expect(svg.props().width).toEqual(2000);
-    expect(svg.props().height).toEqual(1000);
+    expect(svg.props().width).toEqual(1500);
+    expect(svg.props().height).toEqual(3000);
   });
 
   it("gets group points", () => {

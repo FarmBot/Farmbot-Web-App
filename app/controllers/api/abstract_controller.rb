@@ -8,82 +8,56 @@ module Api
     # endpoint that requires JSON.
     class OnlyJson < Exception; end
 
-    CONSENT_REQUIRED =
-      "all device users must agree to terms of service."
-    NOT_JSON = "That request was not valid JSON. Consider checking the" \
-    " request body with a JSON validator."
-    NULL = Gem::Version.new("0.0.0")
-    NOT_FBOS = Gem::Version.new("999.999.999")
+    class BadAuth < Exception
+      attr_reader :error_hash
 
-    respond_to :json
-    before_action :raw_json, only: [:update, :create]
-    before_action :maybe_enforce_row_lock, only: [:update]
-    before_action :check_fbos_version
-    before_action :set_default_stuff
-    before_action :authenticate_user!
-    skip_before_action :verify_authenticity_token
-    after_action :skip_set_cookies_header
-
-    rescue_from(CeleryScript::TypeCheckError) do |err|
-      sorry err.message
-    end
-
-    rescue_from(ActionController::RoutingError) { sorry "Not found", 404 }
-    rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
-
-    rescue_from(JWT::VerificationError) { |e| auth_err }
-
-    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON }
-    rescue_from(JSON::ParserError) { sorry NOT_JSON }
-
-    rescue_from(ActiveRecord::ValueTooLong) do
-      sorry "Please use reasonable lengths on string inputs"
-    end
-
-    rescue_from Errors::Forbidden do |exc|
-      sorry "You can't perform that action. #{exc.message}", 403
-    end
-
-    ONLY_JSON = "This is a JSON API. " \
-    "Please use a _valid_ JSON object or array. " \
-    "Validate JSON objects at https://jsonlint.com/"
-    rescue_from OnlyJson do |e|
-      sorry ONLY_JSON
-    end
-
-    rescue_from Errors::NoBot do |exc|
-      sorry "You need to register a device first."
-    end
-
-    rescue_from ActiveRecord::RecordNotFound do |exc|
-      sorry "Document not found.", 404
-    end
-
-    rescue_from ActiveRecord::RecordInvalid do |exc|
-      render json: { error: exc.message }, status: 422
-    end
-
-    rescue_from Errors::LegalConsent do |exc|
-      render json: { error: CONSENT_REQUIRED }, status: 451
-    end
-
-    rescue_from ActiveModel::RangeError do |_|
-      sorry "One of those numbers was too big/small. " +
-            "If you need larger numbers, let us know."
+      def initialize(error_hash)
+        @error_hash = error_hash
+      end
     end
 
     TOO_MUCH_DATA = "The resource exceeds database limits. " \
     "Please reduce the amount of data stored in a single resource"
+    STALE_RECORD = "Local data conflicts with remote data. " \
+    "Resolve conflicts and again"
+    ONLY_JSON = "This is a JSON API. Please use a _valid_ " \
+    "JSON object or array. Validate JSON objects at https://jsonlint.com/"
+    NULL = Gem::Version.new("0.0.0")
+    NOT_JSON = "That request was not valid JSON. " \
+    "Consider checking the request body with a JSON validator."
+    NOT_FBOS = Gem::Version.new("999.999.999")
+    IRRELEVANT_ROW_LOCK_FIELDS = [:updated_at, :created_at]
+    CONSENT_REQUIRED = "all device users must agree to terms of service."
+    OUT_OF_RANGE = "One of those numbers was too big/small. " \
+    "If you need larger numbers, let us know."
+    respond_to :json
+    skip_before_action :verify_authenticity_token
+    before_action :set_default_stuff
+    before_action :raw_json, only: [:update, :create]
+    before_action :maybe_enforce_row_lock, only: [:update]
+    before_action :check_fbos_version
+    before_action :authenticate_user!
+    after_action :skip_set_cookies_header
 
+    rescue_from(ActionController::RoutingError) { sorry "Not found", 404 }
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON }
+    rescue_from(ActiveModel::RangeError) { sorry OUT_OF_RANGE }
+    rescue_from(ActiveRecord::RecordInvalid) { |exc| render json: { error: exc.message }, status: 422 }
+    rescue_from(ActiveRecord::RecordNotFound) { |exc| sorry "Document not found.", 404 }
+    rescue_from(ActiveRecord::ValueTooLong) { sorry "Please use reasonable lengths on string inputs" }
+    rescue_from(BadAuth) { |err| render json: err.error_hash, status: 401 }
+    rescue_from(CeleryScript::TypeCheckError) { |err| sorry err.message }
+    rescue_from(Errors::Forbidden) { |exc| sorry("You can't perform that action. #{exc.message}", 403) }
+    rescue_from(Errors::LegalConsent) { |exc| render json: { error: CONSENT_REQUIRED }, status: 451 }
+    rescue_from(JSON::ParserError) { sorry NOT_JSON }
+    rescue_from(JWT::VerificationError) { |e| auth_err }
+    rescue_from(OnlyJson) { |e| sorry ONLY_JSON }
     rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
-
-    STALE_RECORD = "Local data conflicts with remote data. Resolve conflicts and again"
+    rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
 
     def resource # OVERRIDE THIS IN CHILD
       nil
     end
-
-    IRRELEVANT_ROW_LOCK_FIELDS = [:updated_at, :created_at]
 
     def stale_data?
       if resource
@@ -178,10 +152,6 @@ module Api
       reset_session
     end
 
-    def no_device
-      raise Errors::NoBot
-    end
-
     def authenticate_user!
       # All possible information that could be needed for any of the 3 auth
       # strategies.
@@ -204,8 +174,7 @@ module Api
       end
       mark_as_seen
     rescue Mutations::ValidationException => e
-      errors = e.errors.message.merge(strategy: strategy)
-      render json: { error: errors }, status: 401
+      raise BadAuth, { error: e.errors.message.merge(strategy: strategy) }
     end
 
     def auth_err

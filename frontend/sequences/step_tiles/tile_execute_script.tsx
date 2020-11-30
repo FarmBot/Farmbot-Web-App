@@ -10,7 +10,41 @@ import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 import { t } from "../../i18next_wrapper";
 import { Link } from "../../link";
 
+export enum FarmwareName {
+  PlantDetection = "plant-detection",
+  MeasureSoilHeight = "Measure Soil Height",
+}
+
 export const TileExecuteScript = (props: StepParams<ExecuteScript>) => {
+  const {
+    dispatch, currentStep, index, currentSequence, farmwareData,
+  } = props;
+  const farmwareName = props.currentStep.args.label;
+  return <StepWrapper
+    className={"execute-script-step"}
+    helpText={getHelpText(farmwareName)}
+    currentSequence={currentSequence}
+    currentStep={currentStep}
+    dispatch={dispatch}
+    index={index}
+    resources={props.resources}
+    warning={<CameraRequiredStepWarnings farmwareName={farmwareName}
+      farmwareData={farmwareData} />}>
+    <Row>
+      <FarmwareStepContents {...props} />
+    </Row>
+  </StepWrapper>;
+};
+
+const getHelpText = (farmwareName: string) => {
+  switch (farmwareName) {
+    case FarmwareName.PlantDetection: return ToolTips.DETECT_WEEDS;
+    case FarmwareName.MeasureSoilHeight: return ToolTips.MEASURE_SOIL_HEIGHT;
+    default: return ToolTips.EXECUTE_SCRIPT;
+  }
+};
+
+export const DefaultFarmwareStep = (props: StepParams<ExecuteScript>) => {
   const {
     dispatch, currentStep, index, currentSequence, farmwareData,
   } = props;
@@ -55,48 +89,39 @@ export const TileExecuteScript = (props: StepParams<ExecuteScript>) => {
       : [];
   };
 
-  return <StepWrapper
-    className={"execute-script-step"}
-    helpText={farmwareName == "plant-detection"
-      ? ToolTips.DETECT_WEEDS
-      : ToolTips.EXECUTE_SCRIPT}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}
-    warning={<DetectWeedsStepWarnings farmwareName={farmwareName}
-      farmwareData={farmwareData} />}>
-    <Row>
-      {farmwareName == "plant-detection"
-        ? <DetectWeedsStep />
-        : <Col xs={12}>
-          <label>{t("Package Name")}</label>
-          <FBSelect
-            key={JSON.stringify(currentSequence)}
-            list={farmwareList(farmwareData)}
-            selectedItem={selectedFarmwareDDI(farmwareName)}
-            onChange={updateStepFarmwareSelection}
-            allowEmpty={true}
-            customNullLabel={t("Manual Input")} />
-          {!isInstalled(farmwareName) &&
-            <div className="farmware-name-manual-input">
-              <label>{t("Manual input")}</label>
-              <StepInputBox dispatch={dispatch}
-                index={index}
-                step={currentStep}
-                sequence={currentSequence}
-                field="label" />
-            </div>}
-          <FarmwareInputs
-            farmwareName={farmwareName}
-            farmwareInstalled={isInstalled(farmwareName)}
-            defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
-            currentStep={currentStep}
-            updateStep={updateStep} />
-        </Col>}
-    </Row>
-  </StepWrapper>;
+  return <Col xs={12}>
+    <label>{t("Package Name")}</label>
+    <FBSelect
+      key={JSON.stringify(currentSequence)}
+      list={farmwareList(farmwareData)}
+      selectedItem={selectedFarmwareDDI(farmwareName)}
+      onChange={updateStepFarmwareSelection}
+      allowEmpty={true}
+      customNullLabel={t("Manual Input")} />
+    {!isInstalled(farmwareName) &&
+      <div className="farmware-name-manual-input">
+        <label>{t("Manual input")}</label>
+        <StepInputBox dispatch={dispatch}
+          index={index}
+          step={currentStep}
+          sequence={currentSequence}
+          field="label" />
+      </div>}
+    <FarmwareInputs
+      farmwareName={farmwareName}
+      farmwareInstalled={isInstalled(farmwareName)}
+      defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
+      currentStep={currentStep}
+      updateStep={updateStep} />
+  </Col>;
+};
+
+const FarmwareStepContents = (props: StepParams<ExecuteScript>) => {
+  switch (props.currentStep.args.label) {
+    case FarmwareName.PlantDetection: return <DetectWeedsStep />;
+    case FarmwareName.MeasureSoilHeight: return <MeasureSoilHeightStep />;
+    default: return <DefaultFarmwareStep {...props} />;
+  }
 };
 
 const DetectWeedsStep = () =>
@@ -109,19 +134,37 @@ const DetectWeedsStep = () =>
     </p>
   </Col>;
 
-interface DetectWeedsStepWarningsProps {
+const MeasureSoilHeightStep = () =>
+  <Col xs={12}>
+    <p>
+      {`${t("Results are viewable in the")} `}
+      <Link to={"/app/designer/points"}>
+        {t("points panel")}
+      </Link>.
+    </p>
+  </Col>;
+
+interface CameraRequiredStepWarningsProps {
   farmwareName: string;
   farmwareData: FarmwareData | undefined;
 }
 
-const DetectWeedsStepWarnings = (props: DetectWeedsStepWarningsProps) => {
-  if (props.farmwareData && props.farmwareName === "plant-detection") {
-    if (props.farmwareData.cameraDisabled) {
+const CAMERA_REQUIRED: string[] = [
+  FarmwareName.PlantDetection,
+  FarmwareName.MeasureSoilHeight,
+];
+const CALIBRATION_REQUIRED: string[] = [FarmwareName.PlantDetection];
+
+const CameraRequiredStepWarnings = (props: CameraRequiredStepWarningsProps) => {
+  if (props.farmwareData) {
+    if (props.farmwareData.cameraDisabled
+      && CAMERA_REQUIRED.includes(props.farmwareName)) {
       return <StepWarning
         titleBase={t(Content.NO_CAMERA_SELECTED)}
         warning={t(ToolTips.SELECT_A_CAMERA)} />;
     }
-    if (!props.farmwareData.cameraCalibrated) {
+    if (!props.farmwareData.cameraCalibrated
+      && CALIBRATION_REQUIRED.includes(props.farmwareName)) {
       return <StepWarning
         titleBase={t(Content.CAMERA_NOT_CALIBRATED)}
         warning={t(ToolTips.CALIBRATION_REQUIRED)} />;

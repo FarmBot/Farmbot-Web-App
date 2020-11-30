@@ -19,7 +19,7 @@ jest.mock("../actions", () => ({
 
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { AlertCard, changeFirmwareHardware } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
@@ -62,6 +62,22 @@ describe("<AlertCard />", () => {
     expect(wrapper.text()).toContain("Your device has no firmware");
     expect(wrapper.find(".fa-times").length).toEqual(0);
     expect(wrapper.text()).toContain("Apr");
+    expect(wrapper.text()).toContain("Select one");
+  });
+
+  it("renders firmware card with pre-filled selection", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alert.created_at = 1555555555;
+    p.timeSettings.hour24 = false;
+    p.timeSettings.utcOffset = 0;
+    p.apiFirmwareValue = "arduino";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text()).toContain("Your device has no firmware");
+    expect(wrapper.find(".fa-times").length).toEqual(0);
+    expect(wrapper.text()).toContain("Apr");
+    expect(wrapper.text()).not.toContain("Select one");
+    expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
   });
 
   it("renders seed data card", () => {
@@ -162,6 +178,11 @@ describe("changeFirmwareHardware()", () => {
 
   it("doesn't change firmware hardware value", () => {
     changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "" });
+    expect(updateConfig).not.toHaveBeenCalled();
+  });
+
+  it("doesn't change firmware hardware value: no dispatch", () => {
+    changeFirmwareHardware(undefined)({ label: "Arduino", value: "arduino" });
     expect(updateConfig).not.toHaveBeenCalled();
   });
 });

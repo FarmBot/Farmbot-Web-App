@@ -81,8 +81,8 @@ describe("<FarmDesigner/>", () => {
     expect(legendProps.showImages).toBeFalsy();
     expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
     const gardenMapProps = wrapper.find(GardenMap).props();
-    expect(gardenMapProps.gridSize.x).toEqual(2900);
-    expect(gardenMapProps.gridSize.y).toEqual(1400);
+    expect(gardenMapProps.mapTransformProps.gridSize.x).toEqual(2900);
+    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1400);
   });
 
   it("loads image info", () => {

@@ -25,6 +25,7 @@ import { DesignerPhotosProps, DesignerPhotosState } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ImagingDataManagement } from "./data_management";
 import { getImageShownStatusFlags } from "./photo_filter_settings/util";
+import { FarmwareName } from "../sequences/step_tiles/tile_execute_script";
 
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps, DesignerPhotosState> {
@@ -107,8 +108,9 @@ export class RawDesignerPhotos
         <Collapse isOpen={!!this.state.calibration}>
           <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
             docPage={"camera-calibration"}>
-            <UpdateImagingPackage version={this.props.versions["plant-detection"]}
-              farmwareName={"plant-detection"} botOnline={botOnline} />
+            <UpdateImagingPackage
+              version={this.props.versions[FarmwareName.PlantDetection]}
+              farmwareName={FarmwareName.PlantDetection} botOnline={botOnline} />
           </ToolTip>
           <CameraCalibration {...common}
             wDEnv={this.props.wDEnv}
@@ -131,8 +133,9 @@ export class RawDesignerPhotos
           onClick={this.toggle("detection")} />
         <Collapse isOpen={!!this.state.detection}>
           <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"}>
-            <UpdateImagingPackage version={this.props.versions["plant-detection"]}
-              farmwareName={"plant-detection"} botOnline={botOnline} />
+            <UpdateImagingPackage
+              version={this.props.versions[FarmwareName.PlantDetection]}
+              farmwareName={FarmwareName.PlantDetection} botOnline={botOnline} />
           </ToolTip>
           <WeedDetector {...common}
             wDEnv={this.props.wDEnv}

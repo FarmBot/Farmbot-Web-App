@@ -469,6 +469,11 @@ export namespace ToolTips {
     trim(`The Detect Weeds step takes a photo and detects any weeds in the area.
     Visit the Photos panel to view results or change parameters.`);
 
+  export const MEASURE_SOIL_HEIGHT =
+    trim(`The Measure Soil Height step takes a photo and detects the
+    z-axis coordinate of the visible soil surface. Visit the Points panel
+    to view results or visit the Farmware panel to change parameters.`);
+
   export const FARMWARE_CONFIGS =
     trim(`The Farmware will use the parameter values set via the Farmware
     panel for any parameters that are not set in this sequence step.`);

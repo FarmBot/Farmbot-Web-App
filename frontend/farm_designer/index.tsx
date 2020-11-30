@@ -9,7 +9,7 @@ import { Plants } from "../plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, isFinite, isEqual, filter } from "lodash";
-import { AxisNumberProperty, BotSize } from "./map/interfaces";
+import { AxisNumberProperty, BotSize, MapTransformProps } from "./map/interfaces";
 import {
   round, getPanelStatus, MapPanelStatus, mapPanelClassName, getMapPadding,
 } from "./map/util";
@@ -119,6 +119,15 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     saveZoomLevelIndex(this.props.dispatch, newIndex);
   }
 
+  /** Assemble the props needed for placement of items in the map. */
+  get mapTransformProps(): MapTransformProps {
+    return {
+      quadrant: this.getBotOriginQuadrant(),
+      gridSize: getGridSize(this.props.getConfigValue, this.props.botSize),
+      xySwap: !!this.props.getConfigValue(BooleanSetting.xy_swap),
+    };
+  }
+
   get mapPanelClassName() { return mapPanelClassName(); }
 
   render() {
@@ -205,8 +214,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
-          botOriginQuadrant={this.getBotOriginQuadrant()}
-          gridSize={getGridSize(this.props.getConfigValue, this.props.botSize)}
+          mapTransformProps={this.mapTransformProps}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
           eStopStatus={this.props.eStopStatus}
@@ -236,6 +244,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         sourceFbosConfig={this.props.sourceFbosConfig}
         mountedToolInfo={this.props.mountedToolInfo}
         tools={this.props.tools}
+        mapTransformProps={this.mapTransformProps}
         allPoints={this.props.allPoints} />
     </div>;
   }

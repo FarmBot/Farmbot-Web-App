@@ -31,7 +31,9 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
     <div className={"profile-content"}>
       {(isUndefined(x) || isUndefined(y))
         ? <p className={"no-profile"}>
-          {t("Click any location in the map to choose a profile.")}
+          {profileFollowBot
+            ? t("FarmBot position unknown.")
+            : t("Click any location in the map to choose a profile.")}
         </p>
         : <div className={"title-and-svg"}>
           <label>
@@ -41,20 +43,21 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
           <ProfileSvg allPoints={props.allPoints}
             axis={axis}
             position={{ x, y }}
-            width={profileWidth}
+            selectionWidth={profileWidth}
             expanded={expanded}
             botPosition={props.botPosition}
             negativeZ={props.negativeZ}
             sourceFbosConfig={props.sourceFbosConfig}
             mountedToolInfo={props.mountedToolInfo}
             tools={props.tools}
+            mapTransformProps={props.mapTransformProps}
             botSize={props.botSize} />
           <p className={"right-label"}>Z</p>
         </div>}
       <ProfileOptions
         dispatch={dispatch}
         axis={axis}
-        width={profileWidth}
+        selectionWidth={profileWidth}
         followBot={profileFollowBot}
         expanded={expanded}
         setExpanded={setExpanded} />

@@ -6,6 +6,7 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import { scanImage, detectPlants } from "../actions";
 import { error } from "../../../toast/toast";
+import { FarmwareName } from "../../../sequences/step_tiles/tile_execute_script";
 
 describe("scanImage()", () => {
   it("executes with selected image id", () => {
@@ -35,14 +36,16 @@ describe("scanImage()", () => {
 describe("detectPlants()", () => {
   it("executes", () => {
     detectPlants(1)();
-    expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
+    expect(mockDevice.execScript)
+      .toHaveBeenCalledWith(FarmwareName.PlantDetection);
     expect(error).not.toHaveBeenCalled();
   });
 
   it("handles error", async () => {
     mockDevice.execScript = jest.fn(() => Promise.reject());
     await detectPlants(1)();
-    expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
+    expect(mockDevice.execScript)
+      .toHaveBeenCalledWith(FarmwareName.PlantDetection);
     expect(error).not.toHaveBeenCalled();
   });
 

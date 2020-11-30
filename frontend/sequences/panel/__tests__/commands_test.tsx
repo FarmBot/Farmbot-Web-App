@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawDesignerSequenceCommands as DesignerSequenceCommands, mapStateToProps,
@@ -10,6 +10,9 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import {
+  fakeFarmwareData,
+} from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<DesignerSequenceCommands />", () => {
   const fakeProps = (): StepButtonProps => ({
@@ -17,6 +20,7 @@ describe("<DesignerSequenceCommands />", () => {
     current: undefined,
     shouldDisplay: () => false,
     stepIndex: undefined,
+    farmwareData: fakeFarmwareData(),
   });
 
   it("renders", () => {

@@ -1,11 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { ResourceSelection } from "../resource_selection";
 import { ResourceSelectionProps } from "../interfaces";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../../../__test_support__/resource_index_builder";
-import { fakePlant } from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeFbosConfig, fakePlant,
+} from "../../../../__test_support__/fake_state/resources";
 import { Resource } from "farmbot";
 
 describe("<ResourceSelection />", () => {
@@ -27,6 +29,37 @@ describe("<ResourceSelection />", () => {
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.text()).toContain("Mark");
     expect(wrapper.text()).toContain("Select one");
+  });
+
+  it("renders tool mount in list", () => {
+    const p = fakeProps();
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = undefined;
+    p.resources = buildResourceIndex([fbosConfig]).index;
+    const wrapper = mount(<ResourceSelection {...p} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { headingId: "Identifier", label: "Variable - Add new", value: "parent" },
+      { headingId: "Device", label: "Device", heading: true, value: 0 },
+      { headingId: "Device", label: "Tool Mount", value: 0 },
+      { headingId: "Plant", label: "Plants", heading: true, value: 0 },
+      { headingId: "GenericPointer", label: "Points", heading: true, value: 0 },
+      { headingId: "Weed", label: "Weeds", heading: true, value: 0 },
+    ]);
+  });
+
+  it("doesn't render tool mount in list", () => {
+    const p = fakeProps();
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = "express_k10";
+    p.resources = buildResourceIndex([fbosConfig]).index;
+    const wrapper = mount(<ResourceSelection {...p} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { headingId: "Identifier", label: "Variable - Add new", value: "parent" },
+      { headingId: "Device", label: "Device", heading: true, value: 0 },
+      { headingId: "Plant", label: "Plants", heading: true, value: 0 },
+      { headingId: "GenericPointer", label: "Points", heading: true, value: 0 },
+      { headingId: "Weed", label: "Weeds", heading: true, value: 0 },
+    ]);
   });
 
   it("renders resource", () => {
