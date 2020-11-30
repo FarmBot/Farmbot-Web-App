@@ -1,15 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { SlotWithTool, UUID } from "../../../../resources/interfaces";
 import { transformXY } from "../../util";
 import { MapTransformProps } from "../../interfaces";
-import {
-  ToolbaySlot, ToolNames, RotatedTool, GantryToolSlot,
-} from "./tool_graphics";
+import { RotatedTool } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
-import { includes } from "lodash";
 import { t } from "../../../../i18next_wrapper";
 import { mapPointClickAction } from "../../actions";
 import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
+import { ToolbaySlot } from "../../tool_graphics/slot";
+import { GantryToolSlot } from "../../tool_graphics/seed_trough";
+import { reduceToolName } from "../../tool_graphics/all_tools";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -18,19 +18,6 @@ export interface TSPProps {
   dispatch: Function;
   hoveredToolSlot: UUID | undefined;
 }
-
-export const reduceToolName = (raw: string | undefined) => {
-  const lower = (raw || "").toLowerCase();
-  if (raw == "Empty") { return ToolNames.emptyToolSlot; }
-  if (includes(lower, "weeder")) { return ToolNames.weeder; }
-  if (includes(lower, "watering nozzle")) { return ToolNames.wateringNozzle; }
-  if (includes(lower, "seeder")) { return ToolNames.seeder; }
-  if (includes(lower, "soil sensor")) { return ToolNames.soilSensor; }
-  if (includes(lower, "seed bin")) { return ToolNames.seedBin; }
-  if (includes(lower, "seed tray")) { return ToolNames.seedTray; }
-  if (includes(lower, "seed trough")) { return ToolNames.seedTrough; }
-  return ToolNames.tool;
-};
 
 export const ToolSlotPoint = (props: TSPProps) => {
   const { tool, toolSlot } = props.slot;

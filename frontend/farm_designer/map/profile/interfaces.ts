@@ -1,9 +1,13 @@
 import { TaggedPoint, TaggedTool, Xyz } from "farmbot";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BotPosition, SourceFbosConfig } from "../../../devices/interfaces";
+import { Color } from "../../../ui";
 import { DesignerState, MountedToolInfo } from "../../interfaces";
 import { BotSize, AxisNumberProperty, MapTransformProps } from "../interfaces";
 
 export interface ProfileViewerProps {
+  getConfigValue: GetWebAppConfigValue;
   dispatch: Function;
   designer: DesignerState;
   allPoints: TaggedPoint[];
@@ -51,6 +55,17 @@ export interface ProfileSvgProps {
   mountedToolInfo: MountedToolInfo;
   tools: TaggedTool[];
   mapTransformProps: MapTransformProps;
+  getConfigValue: GetWebAppConfigValue;
+}
+
+export interface LabeledHorizontalLineProps {
+  id: string;
+  label: string;
+  y: number;
+  width: number;
+  color: Color;
+  profileHeight?: number;
+  expanded: boolean;
 }
 
 export interface WithinRangeProps {
@@ -77,6 +92,11 @@ export interface GetProfileXProps {
   width: number;
 }
 
+export interface FlipProfileProps {
+  profileAxis: "x" | "y";
+  mapTransformProps: MapTransformProps;
+}
+
 export interface ProfileUtmProps {
   profileAxis: "x" | "y";
   expanded: boolean;
@@ -85,20 +105,48 @@ export interface ProfileUtmProps {
   botPosition: BotPosition;
   mountedToolInfo: MountedToolInfo;
   getX: GetProfileX;
+  reversed: boolean;
 }
 
-export interface ProfilePointProps {
-  point: TaggedPoint;
+export interface PlantPointState {
+  icon: string;
+  spreadDiaCm: number;
+}
+
+export interface ProfilePointProps<T = TaggedPoint> {
+  point: T;
   tools: TaggedTool[];
+  soilHeight: number;
   getX: GetProfileX;
+  profileAxis: "x" | "y";
+  reversed: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface ProfileToolProps {
   toolName: string | undefined;
+  /** tool start */
   x: number;
+  /** tool top */
   y: number;
   width: number;
   height: number;
+  sideView: boolean;
+  slotDirection?: ToolPulloutDirection;
+  reversed: boolean;
+  toolFlipped: boolean;
+}
+
+export interface SlotProfileProps {
+  /** tool start */
+  x: number;
+  /** tool top */
+  y: number;
+  width: number;
+  height: number;
+  sideView: boolean;
+  slotDirection?: ToolPulloutDirection;
+  reversed: boolean;
 }
 
 export interface ProfileGridProps {
