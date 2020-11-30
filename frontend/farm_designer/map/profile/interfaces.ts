@@ -1,4 +1,4 @@
-import { TaggedPoint, TaggedTool } from "farmbot";
+import { TaggedPoint, TaggedTool, Xyz } from "farmbot";
 import { BotPosition, SourceFbosConfig } from "../../../devices/interfaces";
 import { DesignerState, MountedToolInfo } from "../../interfaces";
 import { BotSize, AxisNumberProperty, MapTransformProps } from "../interfaces";
@@ -13,6 +13,7 @@ export interface ProfileViewerProps {
   sourceFbosConfig: SourceFbosConfig;
   mountedToolInfo: MountedToolInfo;
   tools: TaggedTool[];
+  mapTransformProps: MapTransformProps;
 }
 
 export interface HandleProps {
@@ -31,7 +32,7 @@ export interface ProfileLineProps {
 export interface ProfileOptionsProps {
   dispatch: Function;
   axis: "x" | "y";
-  width: number;
+  selectionWidth: number;
   followBot: boolean;
   expanded: boolean;
   setExpanded(expanded: boolean): void;
@@ -40,7 +41,7 @@ export interface ProfileOptionsProps {
 export interface ProfileSvgProps {
   allPoints: TaggedPoint[];
   axis: "x" | "y";
-  width: number;
+  selectionWidth: number;
   position: AxisNumberProperty;
   expanded: boolean;
   botSize: BotSize;
@@ -49,11 +50,12 @@ export interface ProfileSvgProps {
   sourceFbosConfig: SourceFbosConfig;
   mountedToolInfo: MountedToolInfo;
   tools: TaggedTool[];
+  mapTransformProps: MapTransformProps;
 }
 
 export interface WithinRangeProps {
   axis: "x" | "y";
-  width: number;
+  selectionWidth: number;
   profilePosition: AxisNumberProperty;
   location: AxisNumberProperty;
 }
@@ -61,24 +63,34 @@ export interface WithinRangeProps {
 export interface SelectPointsProps {
   allPoints: TaggedPoint[];
   axis: "x" | "y";
-  width: number;
+  selectionWidth: number;
   position: AxisNumberProperty;
   botPositionX: number | undefined;
+}
+
+export type GetProfileX = (coordinate: Record<Xyz, number | undefined>) => number;
+export type GetProfileXFromNumber = (number: number) => number;
+
+export interface GetProfileXProps {
+  profileAxis: "x" | "y";
+  mapTransformProps: MapTransformProps;
+  width: number;
 }
 
 export interface ProfileUtmProps {
   profileAxis: "x" | "y";
   expanded: boolean;
-  width: number;
+  selectionWidth: number;
   position: AxisNumberProperty;
   botPosition: BotPosition;
   mountedToolInfo: MountedToolInfo;
+  getX: GetProfileX;
 }
 
 export interface ProfilePointProps {
   point: TaggedPoint;
-  profileAxis: "x" | "y";
   tools: TaggedTool[];
+  getX: GetProfileX;
 }
 
 export interface ProfileToolProps {
@@ -93,4 +105,5 @@ export interface ProfileGridProps {
   height: number;
   width: number;
   negativeZ: boolean;
+  getX: GetProfileX;
 }

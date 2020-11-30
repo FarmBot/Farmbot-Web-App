@@ -5,17 +5,19 @@ import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
-import { MessageType } from "./interfaces";
+import { FarmwareData, MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { NOTHING_SELECTED } from "./locals_list/handle_select";
 import { push } from "../history";
 import { inDesigner } from "../folders/component";
+import { FarmwareName } from "./step_tiles/tile_execute_script";
 
 export interface StepButtonProps {
   dispatch: Function;
   current: TaggedSequence | undefined;
   shouldDisplay: ShouldDisplay;
   stepIndex: number | undefined;
+  farmwareData: FarmwareData;
 }
 
 export function StepButtonCluster(props: StepButtonProps) {
@@ -61,6 +63,16 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="orange">
       {t("CONTROL PERIPHERAL")}
     </StepButton>,
+    ...(shouldDisplay(Feature.toggle_peripheral)
+      ? [<StepButton {...commonStepProps}
+        step={{
+          kind: "toggle_pin",
+          args: { pin_number: NOTHING_SELECTED }
+        }}
+        color="orange">
+        {t("TOGGLE PERIPHERAL")}
+      </StepButton>]
+      : []),
     <StepButton {...commonStepProps}
       step={{
         kind: "read_pin",
@@ -178,12 +190,23 @@ export function StepButtonCluster(props: StepButtonProps) {
     <StepButton {...commonStepProps}
       step={{
         kind: "execute_script",
-        args: { label: "plant-detection" },
+        args: { label: FarmwareName.PlantDetection },
         comment: t("DETECT WEEDS")
       }}
       color="pink">
       {t("Detect Weeds")}
     </StepButton>,
+    ...(props.farmwareData.farmwareNames.includes(FarmwareName.MeasureSoilHeight)
+      ? [<StepButton {...commonStepProps}
+        step={{
+          kind: "execute_script",
+          args: { label: FarmwareName.MeasureSoilHeight },
+          comment: t("MEASURE SOIL HEIGHT")
+        }}
+        color="pink">
+        {t("Measure soil height")}
+      </StepButton>]
+      : []),
     <StepButton
       {...commonStepProps}
       color="brown"

@@ -22,7 +22,7 @@ import { deletePoints } from "../../api/delete_points";
 import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../soil_height";
 
-describe("<Points> />", () => {
+describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
     genericPoints: [],
     dispatch: jest.fn(),
@@ -98,6 +98,30 @@ describe("<Points> />", () => {
     wrapper.find(".fa-caret-down").first().simulate("click");
     expect(wrapper.state().soilHeight).toEqual(true);
     expect(wrapper.html()).toContain("soil-orange");
+  });
+
+  it("expands soil height color section", () => {
+    const p = fakeProps();
+    const soilHeightPoint = fakePoint();
+    soilHeightPoint.body.meta.color = "orange";
+    soilHeightPoint.body.z = 90;
+    tagAsSoilHeight(soilHeightPoint);
+    const soilHeightPointRed = fakePoint();
+    soilHeightPointRed.body.meta.color = "red";
+    soilHeightPointRed.body.z = 100;
+    tagAsSoilHeight(soilHeightPointRed);
+    p.genericPoints = [fakePoint(), soilHeightPoint, soilHeightPointRed];
+    const wrapper = mount<Points>(<Points {...p} />);
+    expect(wrapper.html()).not.toContain("soil-orange");
+    expect(wrapper.html()).not.toContain("soil-red");
+    expect(wrapper.text().toLowerCase()).toContain("all soil height");
+    expect(wrapper.state().soilHeightColors).toEqual([]);
+    wrapper.find(".fa-caret-down").at(1).simulate("click");
+    expect(wrapper.state().soilHeightColors).toEqual(["red"]);
+    expect(wrapper.html()).not.toContain("soil-orange");
+    expect(wrapper.html()).toContain("soil-red");
+    wrapper.find(".fa-caret-up").first().simulate("click");
+    expect(wrapper.state().soilHeightColors).toEqual([]);
   });
 
   it("expands grid points section", () => {

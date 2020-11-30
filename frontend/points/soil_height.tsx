@@ -26,7 +26,14 @@ export const toggleSoilHeight = (point: TaggedPoint) =>
     }
   });
 
-export const soilHeightQuery = { at_soil_level: "true" };
+export const soilHeightQuery: Record<string, string> = {
+  at_soil_level: "true",
+};
+
+export const soilHeightColorQuery = (color: string) => ({
+  at_soil_level: "true",
+  color,
+});
 
 export const getSoilHeightColor =
   (genericPoints: TaggedGenericPointer[]) => {
@@ -52,22 +59,23 @@ const setSoilHeight = (soilHeight: number) =>
 
 export interface EditSoilHeightProps {
   dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
+  sourceFbosConfig?: SourceFbosConfig;
   averageZ: number;
 }
 
-export const EditSoilHeight = (props: EditSoilHeightProps) =>
-  <Row>
-    <Col xs={4}>
+export const EditSoilHeight = (props: EditSoilHeightProps) => {
+  const { sourceFbosConfig } = props;
+  return <Row>
+    {sourceFbosConfig && <Col xs={4}>
       <label>{t("FarmBot soil z")}</label>
-    </Col>
-    <Col xs={3}>
+    </Col>}
+    {sourceFbosConfig && <Col xs={3}>
       <BlurableInput type="number"
         onCommit={e =>
           props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
-        value={parseFloat("" + props.sourceFbosConfig("soil_height").value)} />
-    </Col>
-    <Col xs={5}>
+        value={parseFloat("" + sourceFbosConfig("soil_height").value)} />
+    </Col>}
+    <Col xs={sourceFbosConfig ? 5 : 12}>
       <button className={"fb-button blue"}
         title={t("use average soil height")}
         onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
@@ -75,3 +83,4 @@ export const EditSoilHeight = (props: EditSoilHeightProps) =>
       </button>
     </Col>
   </Row>;
+};

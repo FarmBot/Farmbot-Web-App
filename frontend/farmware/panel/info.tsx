@@ -5,13 +5,15 @@ import {
 } from "../../farm_designer/designer_panel";
 import { Panel } from "../../farm_designer/panel_header";
 import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
-import { selectAllFarmwareInstallations } from "../../resources/selectors";
+import {
+  selectAllFarmwareEnvs, selectAllFarmwareInstallations,
+} from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
   getShouldDisplayFn, saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
 } from "../state_to_props";
 import { Farmwares, SaveFarmwareEnv } from "../interfaces";
-import { SyncStatus, TaggedFarmwareInstallation } from "farmbot";
+import { SyncStatus, TaggedFarmwareEnv, TaggedFarmwareInstallation } from "farmbot";
 import { getStatus } from "../../connectivity/reducer_support";
 import { t } from "../../i18next_wrapper";
 import { isBotOnline } from "../../devices/must_be_online";
@@ -27,6 +29,7 @@ export interface DesignerFarmwareInfoProps {
   dispatch: Function;
   env: UserEnv;
   userEnv: UserEnv;
+  farmwareEnvs: TaggedFarmwareEnv[];
   botToMqttStatus: NetworkState;
   farmwares: Farmwares;
   syncStatus: SyncStatus | undefined;
@@ -47,6 +50,7 @@ export const mapStateToProps = (props: Everything): DesignerFarmwareInfoProps =>
     botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
     env,
     userEnv: props.bot.hardware.user_env,
+    farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
     dispatch: props.dispatch,
     syncStatus: props.bot.hardware.informational_settings.sync_status,
     shouldDisplay,
@@ -83,6 +87,7 @@ export class RawDesignerFarmwareInfo
           ? <FarmwareForm farmware={farmware}
             env={this.props.env}
             userEnv={this.props.userEnv}
+            farmwareEnvs={this.props.farmwareEnvs}
             shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             botOnline={this.botOnline}

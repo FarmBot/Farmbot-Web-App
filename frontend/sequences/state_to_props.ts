@@ -1,6 +1,8 @@
 import { Everything } from "../interfaces";
 import { Props, HardwareFlags, FarmwareConfigs } from "./interfaces";
-import { selectAllSequences, findSequence } from "../resources/selectors";
+import {
+  selectAllSequences, findSequence, selectAllFarmwareInstallations,
+} from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../settings/hardware_settings/axis_tracking_status";
 import { validFwConfig } from "../util";
@@ -45,24 +47,8 @@ export function mapStateToProps(props: Everything): Props {
       axisLength: calculateAxialLengths({ firmwareSettings }),
     };
   };
-
-  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
-  const farmwares: Farmwares = {};
-  Object.values(botStateFarmwares).map((fm: unknown) => {
-    const info = manifestInfo(fm);
-    farmwares[info.name] = manifestInfo(fm);
-  });
-  const farmwareNames = Object.values(farmwares).map(fw => fw.name);
-  const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
   const getConfig = getWebAppConfigValue(() => props);
-  const showFirstPartyFarmware =
-    !!getConfig(BooleanSetting.show_first_party_farmware);
-  const farmwareConfigs: FarmwareConfigs = {};
-  Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
-
   const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
-
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -74,14 +60,7 @@ export function mapStateToProps(props: Everything): Props {
       .informational_settings
       .sync_status || "unknown"),
     hardwareFlags: hardwareFlags(),
-    farmwareData: {
-      farmwareNames,
-      firstPartyFarmwareNames,
-      showFirstPartyFarmware,
-      farmwareConfigs,
-      cameraDisabled: cameraDisabled(env),
-      cameraCalibrated: cameraCalibrated(env),
-    },
+    farmwareData: getFarmwareData(props),
     shouldDisplay,
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
@@ -91,3 +70,38 @@ export function mapStateToProps(props: Everything): Props {
     hoveredStep: props.resources.consumers.farm_designer.hoveredSequenceStep,
   };
 }
+
+export const getFarmwareData = (props: Everything) => {
+  const getConfig = getWebAppConfigValue(() => props);
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
+  const farmwares: Farmwares = {};
+  Object.values(botStateFarmwares).map((fm: unknown) => {
+    const info = manifestInfo(fm);
+    farmwares[info.name] = manifestInfo(fm);
+  });
+  const farmwareNames = Object.values(farmwares).map(fw => fw.name);
+  selectAllFarmwareInstallations(props.resources.index)
+    .map(x => x.body.package)
+    .map(farmwareName =>
+      farmwareName && !farmwareNames.includes(farmwareName)
+      && farmwareNames.push(farmwareName));
+  const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
+
+  const showFirstPartyFarmware =
+    !!getConfig(BooleanSetting.show_first_party_farmware);
+
+  const farmwareConfigs: FarmwareConfigs = {};
+  Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
+
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+
+  return {
+    farmwareNames,
+    firstPartyFarmwareNames,
+    showFirstPartyFarmware,
+    farmwareConfigs,
+    cameraDisabled: cameraDisabled(env),
+    cameraCalibrated: cameraCalibrated(env),
+  };
+};
