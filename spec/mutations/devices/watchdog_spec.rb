@@ -10,7 +10,7 @@ describe Devices::Watchdog do
     woof_woof = FactoryBot
       .create(:user)
       .device
-      .update!(last_saw_api: 9.hours.ago, name: "woof_woof")
+      .update!(last_saw_api: 17.hours.ago, name: "woof_woof")
     too_soon = FactoryBot
       .create(:user)
       .device
