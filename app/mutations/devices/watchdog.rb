@@ -11,7 +11,7 @@ module Devices
     end
 
     def upper_limit
-      @upper_limit ||= 8.hours.ago
+      @upper_limit ||= 16.hours.ago
     end
 
     def time_window
