@@ -112,15 +112,22 @@ describe Api::FirmwareConfigsController do
   describe "#update" do
     it "handles update requests" do
       sign_in user
-      body = { pin_guard_5_time_out: 23 }
-      body.to_a.map { |key, val| expect(device.firmware_config.send(key)).not_to eq(val) }
+      body = {
+        pin_guard_5_time_out: 23,
+        firmware_debug_log: true,
+        firmware_input_log: true,
+        firmware_output_log: true,
+      }
+      expect(device.firmware_config.pin_guard_5_time_out).not_to eq(23)
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       device.reload
-      body.to_a.map do |key, val|
-        expect(device.firmware_config.send(key)).to eq(val)
-        expect(json[key]).to eq(val)
-      end
+      expect(device.firmware_config.pin_guard_5_time_out).to eq(23)
+      expect(json[:pin_guard_5_time_out]).to eq(23)
+      # Legacy fields that must stay `false` until FBOS v12.1 EOL.
+      expect(json[:firmware_debug_log]).to eq(false)
+      expect(json[:firmware_input_log]).to eq(false)
+      expect(json[:firmware_output_log]).to eq(false)
     end
 
     it "disallows mass assignment attacks against device_id" do

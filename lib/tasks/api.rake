@@ -143,31 +143,8 @@ namespace :api do
     end
   end
 
-  HOTFIXES = {
-    "arduino" => "ttyACM0",
-    "express_k10" => "ttyAMA0",
-    "farmduino" => "ttyACM0",
-    "farmduino_k14" => "ttyACM0",
-    "farmduino_k15" => "ttyACM0",
-  }
-
-  # In June of 2020 we noticed that some (not all) accounts
-  # experienced a nil `firmware_path`, leading to a `code 30`
-  # error in the frontend.
-  # We think this may coincide with the release of the MARK AS
-  # step (and subsequent changes to FBOS data handler code).
-  # This method repairs corrupt data as it is found.
-  # This code should be removed as soon as it is safe to do so.
-  def temp_hotfix!
-    HOTFIXES.each do |(k, v)|
-      problems = FbosConfig.where(firmware_hardware: k, firmware_path: nil)
-      problems.map do |fbc| fbc.update!(firmware_path: v) end
-    end
-  end
-
   desc "Deprecate old FBOS version, delete inactive accounts, etc.."
   task tidy: :environment do
-    temp_hotfix!
     deprecate!
     InactiveAccountJob.perform_later
   end
