@@ -1,11 +1,16 @@
 require "spec_helper"
 
 describe InactiveAccountJob do
-  let!(:yes) { FactoryBot.create(:user, last_sign_in_at: 3.years.ago) }
+  let!(:yes) do
+    user = FactoryBot.create(:user, last_sign_in_at: 3.years.ago)
+    tool = FactoryBot.create(:tool, device: user.device)
+    user.device.update!(mounted_tool_id: tool.id)
+    user
+  end
   let!(:no) { FactoryBot.create(:user, last_sign_in_at: 3.days.ago) }
   let!(:not_sure) { FactoryBot.create(:user, last_sign_in_at: nil) }
 
-  it "Processes deletion" do
+  it "processes deletion" do
     # === Expect a clean slate.
     expect(not_sure.last_sign_in_at).to be(nil)
     expect(yes.inactivity_warning_sent_at).to be(nil)
