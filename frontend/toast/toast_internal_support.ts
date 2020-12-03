@@ -25,7 +25,7 @@ export const createToast = (props: CreateToastProps) => {
 export const createToastOnce = (props: CreateToastOnceProps) => {
   const { message, fallbackLogger } = props;
   if (FBToast.everyMessage[message]) {
-    (fallbackLogger || console.warn)(message);
+    (fallbackLogger || console.log)(message);
   } else {
     createToast(props);
     FBToast.everyMessage[message] = true;

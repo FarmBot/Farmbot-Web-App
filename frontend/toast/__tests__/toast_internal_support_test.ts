@@ -43,7 +43,7 @@ describe("toast internal support files", () => {
 
   it("uses default fallback logger", () => {
     document.body.innerHTML = "";
-    console.warn = jest.fn();
+    console.log = jest.fn();
     const container = document.createElement("DIV");
     container.className = "toast-container";
     document.body.appendChild(container);
@@ -51,10 +51,10 @@ describe("toast internal support files", () => {
     p.idPrefix = "";
     delete FBToast.everyMessage[p.message];
     createToastOnce(p);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
     expect(mockRun).toHaveBeenCalled();
     createToastOnce(p);
-    expect(console.warn).toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalled();
   });
 
   it("crashes if you don't attach .toast-container", () => {

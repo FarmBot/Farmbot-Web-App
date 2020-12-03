@@ -1,5 +1,7 @@
 import { BotState } from "../devices/interfaces";
-import { maybeGetTimeSettings, selectAllImages } from "../resources/selectors";
+import {
+  maybeGetTimeSettings, selectAllFarmwareEnvs, selectAllImages,
+} from "../resources/selectors";
 import { Everything } from "../interfaces";
 import {
   getShouldDisplayFn, getEnv, saveOrEditFarmwareEnv, generateFarmwareDictionary,
@@ -61,6 +63,8 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
     wDEnv: prepopulateEnv(env),
     env,
+    userEnv: props.bot.hardware.user_env,
+    farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
     dispatch: props.dispatch,
     currentImage: getCurrentImage(images, currentImageUuid),
     currentImageSize,
@@ -75,5 +79,6 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     hideUnShownImages,
     alwaysHighlightImage,
     getConfigValue: getWebAppConfigValue(() => props),
+    farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
   };
 };
