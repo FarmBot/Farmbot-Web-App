@@ -108,14 +108,14 @@ describe("<MapImage />", () => {
           opacity: 1,
           style: {
             transformOrigin:
-              `${expectedData.tOriginX}px ${expectedData.tOriginY}px`
+              `${expectedData.tOriginX}px ${expectedData.tOriginY}px`,
+            transform: trim(`scale(${expectedData.sx}, ${expectedData.sy})
+                       translate(${expectedData.tx}px, ${expectedData.ty}px)`)
+              + (extra
+                ? trim(` scale(${extra.sx}, ${extra.sy})
+                       translate(${extra.tx}px, ${extra.ty}px)`)
+                : "") + ` rotate(${expectedData.rotate}deg)`
           },
-          transform: trim(`scale(${expectedData.sx}, ${expectedData.sy})
-      translate(${expectedData.tx}, ${expectedData.ty})`)
-            + (extra
-              ? trim(` scale(${extra.sx}, ${extra.sy})
-                       translate(${extra.tx}, ${extra.ty})`)
-              : "") + ` rotate(${expectedData.rotate})`
         });
       });
     };
@@ -365,8 +365,8 @@ describe("<MapImage />", () => {
     p.disableTranslation = true;
     const wrapper = svgMount(<MapImage {...p} />);
     wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
-    expect(wrapper.find("image").props().transform)
-      .toEqual("scale(-1, -1)  rotate(0)");
+    expect(wrapper.find("image").props().style?.transform)
+      .toEqual("scale(-1, -1)  rotate(0deg)");
   });
 });
 

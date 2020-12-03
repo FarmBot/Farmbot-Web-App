@@ -239,8 +239,10 @@ const ViewRectangle = (props: ViewRectangleProps) =>
     width={props.position?.width}
     height={props.position?.height}
     data-comment={props.position?.comment}
-    transform={props.position?.transform}
-    style={{ transformOrigin: props.position?.transformOrigin }} />;
+    style={{
+      transformOrigin: props.position?.transformOrigin,
+      transform: props.position?.transform,
+    }} />;
 
 interface ViewCircleProps {
   id: string;
@@ -255,8 +257,10 @@ const ViewCircle = (props: ViewCircleProps) =>
     cy={props.center.y}
     r={props.radius}
     data-comment={props.position.comment}
-    transform={props.position.transform}
-    style={{ transformOrigin: props.position.transformOrigin }} />;
+    style={{
+      transformOrigin: props.position.transformOrigin,
+      transform: props.position.transform,
+    }} />;
 
 interface ImageLogVisualsProps {
   position: MapImagePositionData | undefined;
@@ -274,9 +278,8 @@ const ImageLogVisuals = (props: ImageLogVisualsProps) => {
         <stop offset={"100%"} stopColor={Color.cyan} stopOpacity={0} />
       </linearGradient>
     </defs>
-    <rect className={"img-full"}
-      transform={transform} style={{ transformOrigin }} />
-    <g id={"scan-wrapper"} transform={transform} style={{ transformOrigin }}>
+    <rect className={"img-full"} style={{ transformOrigin, transform }} />
+    <g id={"scan-wrapper"} style={{ transformOrigin, transform }}>
       <rect className={"img-scan"}
         height={height} fill={"url(#camera-scan-fill)"} />
     </g>
