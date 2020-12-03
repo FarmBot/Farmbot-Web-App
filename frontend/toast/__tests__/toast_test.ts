@@ -1,10 +1,9 @@
 jest.mock("../toast_internal_support", () => ({
-  createToast: jest.fn(),
   createToastOnce: jest.fn(),
 }));
 
 import { ToastOptions } from "../interfaces";
-import { createToastOnce, createToast } from "../toast_internal_support";
+import { createToastOnce } from "../toast_internal_support";
 
 const {
   warning,
@@ -67,40 +66,40 @@ describe("toasts", () => {
 
   it("pops a success() toast", () => {
     success(message);
-    expect(createToast)
+    expect(createToastOnce)
       .toHaveBeenCalledWith({ message, title: "Success", color: "green" });
   });
 
   it("pops a success() toast with different title and color", () => {
     success(message, customOptions);
-    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
+    expect(createToastOnce).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a info() toast", () => {
     info(message);
-    expect(createToast)
+    expect(createToastOnce)
       .toHaveBeenCalledWith({ message, title: "FYI", color: "blue" });
   });
 
   it("pops a info() toast with different title and color", () => {
     info(message, customOptions);
-    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
+    expect(createToastOnce).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a busy() toast", () => {
     busy(message);
-    expect(createToast)
+    expect(createToastOnce)
       .toHaveBeenCalledWith({ message, title: "Busy", color: "yellow" });
   });
 
   it("pops a busy() toast with different title and color", () => {
     busy(message, customOptions);
-    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
+    expect(createToastOnce).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   it("pops a fun() toast", () => {
     fun(message);
-    expect(createToast).toHaveBeenCalledWith({
+    expect(createToastOnce).toHaveBeenCalledWith({
       message,
       title: "Did you know?",
       color: "dark-blue",
@@ -109,7 +108,7 @@ describe("toasts", () => {
 
   it("pops a fun() toast with different title and color", () => {
     fun(message, customOptions);
-    expect(createToast).toHaveBeenCalledWith({ message, ...customOptions });
+    expect(createToastOnce).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
   const getToastContainerCount = () =>

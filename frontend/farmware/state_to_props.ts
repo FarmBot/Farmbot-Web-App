@@ -57,7 +57,6 @@ export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
 export const generateFarmwareDictionary = (
   bot: BotState,
   ri: ResourceIndex,
-  shouldDisplay: ShouldDisplay = () => true,
 ): Farmwares => {
   const botStateFarmwares = bot.hardware.process_info.farmwares;
 
@@ -75,15 +74,14 @@ export const generateFarmwareDictionary = (
     const info = manifestInfo(fm);
     farmwares[info.name] = manifestInfo(fm);
   });
-  shouldDisplay(Feature.api_farmware_installations) &&
-    taggedFarmwareInstallations.map(x => {
-      const n = namePendingInstall(x.body.package, x.body.id);
-      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || n);
-      const alreadyInstalled = Object.values(farmwares)
-        .map(fw => fw.url).includes(x.body.url);
-      if (x.body.id && !alreadyAdded && !alreadyInstalled) {
-        farmwares[n] = manifestInfoPending(n, x.body.url);
-      }
-    });
+  taggedFarmwareInstallations.map(x => {
+    const n = namePendingInstall(x.body.package, x.body.id);
+    const alreadyAdded = Object.keys(farmwares).includes(x.body.package || n);
+    const alreadyInstalled = Object.values(farmwares)
+      .map(fw => fw.url).includes(x.body.url);
+    if (x.body.id && !alreadyAdded && !alreadyInstalled) {
+      farmwares[n] = manifestInfoPending(n, x.body.url);
+    }
+  });
   return farmwares;
 };

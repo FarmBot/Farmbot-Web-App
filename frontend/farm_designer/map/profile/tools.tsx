@@ -45,8 +45,10 @@ export const UTMProfile = (props: ProfileUtmProps) => {
   const toolInfo = props.mountedToolInfo;
   return <g id={"UTM-and-axis"} opacity={0.75}>
     <line id={"z-axis"} strokeWidth={20} stroke={Color.darkGray} opacity={0.5}
-      x1={profileUtmH - extrusionOffset} y1={0}
-      x2={profileUtmH - extrusionOffset} y2={profileUtmV} />
+      x1={profileUtmH - extrusionOffset}
+      y1={Math.min(0, profileUtmV - UTMDimensions.height)}
+      x2={profileUtmH - extrusionOffset}
+      y2={profileUtmV} />
     <rect id={"UTM"} fill={Color.darkGray} opacity={0.5}
       x={profileUtmH - ToolDimensions.radius}
       y={profileUtmV - UTMDimensions.height}

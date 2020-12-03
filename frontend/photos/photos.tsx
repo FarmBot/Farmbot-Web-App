@@ -26,12 +26,13 @@ import { mapStateToProps } from "./state_to_props";
 import { ImagingDataManagement } from "./data_management";
 import { getImageShownStatusFlags } from "./photo_filter_settings/util";
 import { FarmwareName } from "../sequences/step_tiles/tile_execute_script";
+import { FarmwareForm } from "../farmware/farmware_forms";
 
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps, DesignerPhotosState> {
   state: DesignerPhotosState = {
     filter: false, camera: false, calibration: false, detection: false,
-    manage: false,
+    measure: false, manage: false,
   };
 
   toggle = (key: keyof DesignerPhotosState) => () =>
@@ -68,6 +69,7 @@ export class RawDesignerPhotos
       alwaysHighlightImage: this.props.alwaysHighlightImage,
       getConfigValue: this.props.getConfigValue,
     };
+    const farmwareNames = Object.keys(this.props.farmwares);
     return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"photos"}>
@@ -142,6 +144,30 @@ export class RawDesignerPhotos
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             shouldDisplay={this.props.shouldDisplay} />
         </Collapse>
+        {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
+          <ExpandableHeader
+            expanded={!!this.state.measure}
+            title={t("Measure soil height")}
+            onClick={this.toggle("measure")} />}
+        {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
+          <Collapse isOpen={!!this.state.measure}>
+            <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}>
+              <UpdateImagingPackage
+                version={this.props.versions[FarmwareName.MeasureSoilHeight]}
+                farmwareName={FarmwareName.MeasureSoilHeight}
+                botOnline={botOnline} />
+            </ToolTip>
+            <FarmwareForm
+              farmware={this.props.farmwares[FarmwareName.MeasureSoilHeight]}
+              env={this.props.env}
+              userEnv={this.props.userEnv}
+              farmwareEnvs={this.props.farmwareEnvs}
+              shouldDisplay={this.props.shouldDisplay}
+              saveFarmwareEnv={this.props.saveFarmwareEnv}
+              botOnline={botOnline}
+              hideAdvanced={true}
+              dispatch={this.props.dispatch} />
+          </Collapse>}
         <ExpandableHeader
           expanded={!!this.state.manage}
           title={t("Manage data")}

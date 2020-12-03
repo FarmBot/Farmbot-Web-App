@@ -158,10 +158,10 @@ const generateTransform = (props: TransformProps): string => {
     y: originAdjust.x * swapTranslationAmount * swapRotateAdjust,
   };
   return `scale(${flip.x}, ${flip.y})`
-    + ` translate(${translate.x}, ${translate.y})`
+    + ` translate(${translate.x}px, ${translate.y}px)`
     + (xySwap ? ` scale(${swapFlip.x}, ${swapFlip.y})` : "")
-    + (xySwap ? ` translate(${swapTranslate.x}, ${swapTranslate.y})` : "")
-    + ` rotate(${(xySwap && !props.noRotation ? 90 : 0) - rotate})`;
+    + (xySwap ? ` translate(${swapTranslate.x}px, ${swapTranslate.y}px)` : "")
+    + ` rotate(${(xySwap && !props.noRotation ? 90 : 0) - rotate}deg)`;
 };
 
 interface ParsedCalibrationData {
@@ -268,15 +268,13 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
                 x={0} y={0} height={height} width={width}
                 stroke={Color.orange} strokeWidth={10}
                 fill={Color.black} fillOpacity={0.75}
-                transform={transform}
-                style={{ transformOrigin }} />}
+                style={{ transformOrigin, transform }} />}
             <image
               data-comment={`${imageUploadName}: ${imagePosition.comment}`}
               xlinkHref={imageUrl}
               x={0} y={0}
               height={height} width={width}
-              transform={transform}
-              style={{ transformOrigin }}
+              style={{ transformOrigin, transform }}
               opacity={!this.props.hoveredMapImage || hovered ? 1 : 0.3}
               clipPath={clipName} />
           </g>;
@@ -440,6 +438,7 @@ const CropClipPaths = (props: CropClipPathsProps) => {
   const crop = cropAmount(rotation, { width, height });
   const rotate = alreadyRotated ? 0 : rotation;
   const rotated90 = !alreadyRotated && rotated90degrees(rotation);
+  const transform = `rotate(${rotate - (rotated90 ? 90 : 0)}deg)`;
   return <g id={"crop-clip-paths"}>
     <clipPath id={`circle-${imageId}`}>
       <circle r={narrow} cx={center.x} cy={center.y} />
@@ -447,8 +446,7 @@ const CropClipPaths = (props: CropClipPathsProps) => {
     <clipPath id={`rectangle-${imageId}`}>
       <rect x={crop / 2} y={crop / 2}
         width={round(width - crop)} height={round(height - crop)}
-        style={{ transformOrigin }}
-        transform={`rotate(${rotate - (rotated90 ? 90 : 0)})`} />
+        style={{ transformOrigin, transform }} />
     </clipPath>
   </g>;
 };

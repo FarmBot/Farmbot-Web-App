@@ -37,8 +37,7 @@ const executorAddAll = (fwName: string, configs: FarmwareConfig[]) =>
       const envName = getConfigEnvName(fwName, config.name);
       if (!hasPair(s, envName)) {
         const pair = createPair(envName, config.label, config.value.toString());
-        s.body = s.body || [];
-        s.body.push(pair);
+        (s.body as Pair[]).push(pair);
       }
     });
   };

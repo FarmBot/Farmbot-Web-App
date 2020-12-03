@@ -177,11 +177,21 @@ describe("<FarmwareInputs />", () => {
 
   it("edits an input pair", () => {
     const p = fakeProps();
+    p.currentStep.body = [{
+      kind: "pair",
+      args: { label: "my_farmware_input_1", value: 1 },
+      comment: "Input 1"
+    },
+    {
+      kind: "pair",
+      args: { label: "my_farmware_input_2", value: 0 },
+      comment: "Input 2"
+    }];
     p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
     const wrapper = shallow(<FarmwareInputs {...p} />);
-    const inputs = wrapper.find("fieldset");
-    expect(inputs.find("label").text()).toEqual("Input 1");
-    const inputField = inputs.find("BlurableInput");
+    const input = wrapper.find("fieldset").first();
+    expect(input.find("label").text()).toEqual("Input 1");
+    const inputField = input.find("BlurableInput");
     inputField.simulate("commit", { currentTarget: { value: "2" } });
     expect((p.currentStep.body || [])[0].args.value).toEqual("2");
   });

@@ -245,6 +245,7 @@ describe("<FarmwareForm />", () => {
   });
 
   it("resets calibration configs", () => {
+    window.confirm = jest.fn(() => true);
     const p = fakeProps();
     p.farmware.name = FarmwareName.MeasureSoilHeight;
     p.farmware.config = [];
@@ -259,11 +260,13 @@ describe("<FarmwareForm />", () => {
     p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
     const wrapper = mount(<FarmwareForm {...p} />);
     clickButton(wrapper, 1, "reset calibration values");
+    expect(confirm).toHaveBeenCalledWith("Reset 1 values?");
     expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
     expect(destroy).toHaveBeenCalledTimes(1);
   });
 
   it("resets all configs", () => {
+    window.confirm = jest.fn(() => true);
     const p = fakeProps();
     p.farmware.name = FarmwareName.MeasureSoilHeight;
     p.farmware.config = [];
@@ -278,8 +281,29 @@ describe("<FarmwareForm />", () => {
     p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
     const wrapper = mount(<FarmwareForm {...p} />);
     clickButton(wrapper, 2, "reset all values");
+    expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
     expect(destroy).toHaveBeenCalledWith(farmwareEnv1.uuid);
     expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
     expect(destroy).toHaveBeenCalledTimes(2);
+  });
+
+  it("doesn't reset configs", () => {
+    window.confirm = jest.fn(() => false);
+    const p = fakeProps();
+    p.farmware.name = FarmwareName.MeasureSoilHeight;
+    p.farmware.config = [];
+    p.env = {
+      measure_soil_height_measured_distance: "1",
+      measure_soil_height_calibration_factor: "1",
+    };
+    const farmwareEnv1 = fakeFarmwareEnv();
+    farmwareEnv1.body.key = "measure_soil_height_measured_distance";
+    const farmwareEnv2 = fakeFarmwareEnv();
+    farmwareEnv2.body.key = "measure_soil_height_calibration_factor";
+    p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
+    const wrapper = mount(<FarmwareForm {...p} />);
+    clickButton(wrapper, 2, "reset all values");
+    expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
+    expect(destroy).not.toHaveBeenCalled();
   });
 });

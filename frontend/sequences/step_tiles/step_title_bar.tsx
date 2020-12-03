@@ -1,17 +1,13 @@
-import * as React from "react";
-import {
-  SequenceBodyItem as Step, SequenceBodyItem, LegalSequenceKind,
-} from "farmbot";
+import React from "react";
+import { SequenceBodyItem, LegalSequenceKind } from "farmbot";
 import { StepTitleBarProps } from "../interfaces";
 import { BlurableInput } from "../../ui/index";
 import { updateStepTitle } from "./index";
 import { t } from "../../i18next_wrapper";
+import { FarmwareName } from "./tile_execute_script";
 
-function translate(input: Step): string {
-  // We load translations async. If I put this const outside of the function,
-  // i18next might not have the correct translation loaded. To get around this,
-  // I had to put the translations in the function.
-  const TRANSLATIONS: Partial<Record<SequenceBodyItem["kind"], string>> = {
+const STEP_TITLES =
+  (): Partial<Record<SequenceBodyItem["kind"], string>> => ({
     "_if": t("If ..."),
     "execute_script": t("Run Farmware"),
     "execute": t("Execute Sequence"),
@@ -45,19 +41,21 @@ function translate(input: Step): string {
     "toggle_pin": t("Toggle Peripheral"),
     "zero": t("Set home"),
     "set_user_env": t("Set Farmware Env"),
-  };
-
-  return TRANSLATIONS[input.kind] || input.kind;
-}
+  });
 
 export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
   render() {
+    const { step } = this.props;
+    const { kind } = step;
+    const title = step.kind == "execute_script"
+      && step.args.label == FarmwareName.MeasureSoilHeight
+      && t("MEASURE SOIL HEIGHT");
     return <div className={"step-comment"}
       onMouseEnter={this.props.toggleDraggable("enter")}
       onMouseLeave={this.props.toggleDraggable("leave")}>
       <BlurableInput className="step-label"
         value={this.props.step.comment || ""}
-        placeholder={translate(this.props.step)}
+        placeholder={title || STEP_TITLES()[kind] || kind}
         onCommit={updateStepTitle(this.props)}
         allowEmpty={true} />
     </div>;

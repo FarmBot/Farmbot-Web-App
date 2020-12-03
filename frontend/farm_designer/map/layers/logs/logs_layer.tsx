@@ -9,6 +9,7 @@ const LOG_MESSAGE_LOOKUP: Record<RenderedLog, string> = {
   [RenderedLog.imageCapture]: "Taking photo",
   [RenderedLog.imageCalibrate]: "Calibrating camera",
   [RenderedLog.imageDetect]: "Running weed detector",
+  [RenderedLog.imageMeasure]: "Executing Measure Soil Height",
 };
 
 const LOG_VISUAL_LOOKUP: Record<string, RenderedLog> = {};
@@ -20,6 +21,7 @@ const ANIMATION_CLASS_LOOKUP: Record<RenderedLog, AnimationClass> = {
   [RenderedLog.imageCapture]: AnimationClass.capture,
   [RenderedLog.imageCalibrate]: AnimationClass.scan,
   [RenderedLog.imageDetect]: AnimationClass.scan,
+  [RenderedLog.imageMeasure]: AnimationClass.scan,
 };
 
 const ANIMATION_DURATION_LOOKUP =
@@ -29,6 +31,7 @@ const ANIMATION_DURATION_LOOKUP =
       [RenderedLog.imageCapture]: slow ? 10 : 5,
       [RenderedLog.imageCalibrate]: slow ? 60 : 15,
       [RenderedLog.imageDetect]: slow ? 60 : 15,
+      [RenderedLog.imageMeasure]: slow ? 60 : 15,
     };
   };
 
@@ -54,6 +57,7 @@ export const LogVisual = (props: LogVisualProps) => {
     case RenderedLog.imageCapture:
     case RenderedLog.imageCalibrate:
     case RenderedLog.imageDetect:
+    case RenderedLog.imageMeasure:
       return <ImageVisual {...props} />;
   }
 };

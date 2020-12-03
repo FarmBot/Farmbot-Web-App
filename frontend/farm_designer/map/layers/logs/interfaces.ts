@@ -7,6 +7,7 @@ export enum RenderedLog {
   imageCapture = "imageCapture",
   imageCalibrate = "imageCalibrate",
   imageDetect = "imageDetect",
+  imageMeasure = "imageMeasure",
 }
 
 export enum AnimationClass {
