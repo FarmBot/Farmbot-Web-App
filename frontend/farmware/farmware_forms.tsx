@@ -21,6 +21,7 @@ export interface FarmwareFormProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
   botOnline: boolean;
+  hideAdvanced?: boolean;
 }
 
 /** Namespace a Farmware config with the Farmware name. */
@@ -136,12 +137,14 @@ export class FarmwareForm
 
   ClearConfigsButton = ({ label, prefix, dispatch }: ClearConfigsButtonProps) => {
     const { env } = this.props;
+    const selectedKeys = Object.keys(env).filter(key => key.startsWith(prefix));
     return <button
       className={"fb-button red reset-configs"}
       title={t("Reset Farmware config values")}
-      onClick={() => Object.keys(env)
-        .filter(key => key.startsWith(prefix))
-        .map(key => dispatch(destroy(this.farmwareEnvUuidLookup[key])))}>
+      onClick={() => confirm(t("Reset {{ count }} values?",
+        { count: selectedKeys.length })) &&
+        selectedKeys.map(key =>
+          dispatch(destroy(this.farmwareEnvUuidLookup[key])))}>
       {label}
     </button>;
   }
@@ -170,7 +173,7 @@ export class FarmwareForm
         {runButtonText(farmware.name, env)}
       </button>
       <this.Configs farmwareConfigs={openConfigs} />
-      {collapsedConfigs.length > 0 &&
+      {!this.props.hideAdvanced && collapsedConfigs.length > 0 &&
         <div className={"advanced-configs"}>
           <ExpandableHeader
             expanded={this.state.advanced}
@@ -219,7 +222,7 @@ const run = (env: UserEnv) =>
 
 /** Check if a FarmwareEnv has a value other than "0". */
 const nonZeroValue = (value: string | undefined) =>
-  parseInt(value || "0") > 0;
+  parseFloat(value || "0") > 0;
 
 /** Farmware Run button text. */
 const runButtonText = (farmwareName: string, env: UserEnv) => {

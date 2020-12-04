@@ -303,6 +303,10 @@ export namespace ToolTips {
     trim(`Detect weeds using FarmBot's camera and display them on the
     Farm Designer map.`);
 
+  export const SOIL_HEIGHT_DETECTION =
+    trim(`Detect soil height using FarmBot's camera and display the results
+    on the Farm Designer map.`);
+
   export const CAMERA_CALIBRATION =
     trim(`Calibrate FarmBot's camera for use in the weed detection software.`);
 

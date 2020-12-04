@@ -47,10 +47,10 @@ export class PlantPoint
       </clipPath>
       <clipPath id={`spread-clip-path-${point.uuid}`}>
         <rect
-          x={profileX - spreadRadius}
-          y={profileY - spreadRadius}
-          height={spreadRadius}
-          width={spreadRadius * 2} />
+          x={profileX - spreadRadius - 2}
+          y={profileY - spreadRadius - 2}
+          height={spreadRadius + 2}
+          width={(spreadRadius + 2) * 2} />
       </clipPath>
       <circle className={"plant-radius"} stroke={"none"}
         clipPath={`url(#plant-radius-clip-path-${point.uuid})`}

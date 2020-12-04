@@ -29,13 +29,17 @@ describe("<LogsLayer />", () => {
   detectLog.body.id = undefined;
   detectLog.uuid = "fakeDetectLogUuid";
   detectLog.body.message = "Running weed detector";
+  const measureLog = fakeLog();
+  measureLog.body.id = undefined;
+  measureLog.uuid = "fakeMeasureLogUuid";
+  measureLog.body.message = "Executing Measure Soil Height";
   const otherLog = fakeLog();
   otherLog.body.id = undefined;
   otherLog.uuid = "fakeOtherLogUuid";
   otherLog.body.message = "photo";
   const fakeProps = (): LogsLayerProps => ({
     visible: true,
-    logs: [captureLog1, captureLog2, calibrateLog, detectLog],
+    logs: [captureLog1, captureLog2, calibrateLog, detectLog, measureLog],
     mapTransformProps: fakeMapTransformProps(),
     cameraCalibrationData: fakeCameraCalibrationData(),
     getConfigValue: jest.fn(),
@@ -48,14 +52,15 @@ describe("<LogsLayer />", () => {
       "#image-log-fakeCaptureLog1Uuid-visual",
       "#image-log-fakeCalibrateLogUuid-visual",
       "#image-log-fakeDetectLogUuid-visual",
+      "#image-log-fakeMeasureLogUuid-visual",
     ].map(id => expect(wrapper.find(id).length).toEqual(1));
     [
       "#image-log-fakeCaptureLog2Uuid-visual",
       "#image-log-fakeOtherLogUuid-visual",
     ].map(id => expect(wrapper.find(id).length).toEqual(0));
     expect(wrapper.find(".capture").length).toEqual(1);
-    expect(wrapper.find(".scan").length).toEqual(2);
-    expect(wrapper.find(".animate").length).toEqual(3);
+    expect(wrapper.find(".scan").length).toEqual(3);
+    expect(wrapper.find(".animate").length).toEqual(4);
   });
 
   it("doesn't animate", () => {
@@ -63,17 +68,17 @@ describe("<LogsLayer />", () => {
     p.getConfigValue = () => true;
     const wrapper = svgMount(<LogsLayer {...p} />);
     expect(wrapper.find(".capture").length).toEqual(1);
-    expect(wrapper.find(".scan").length).toEqual(2);
+    expect(wrapper.find(".scan").length).toEqual(3);
     expect(wrapper.find(".animate").length).toEqual(0);
   });
 
   it("removes visuals", () => {
     jest.useFakeTimers();
     const wrapper = svgMount(<LogsLayer {...fakeProps()} />);
-    expect(wrapper.find(CameraViewArea).length).toEqual(3);
+    expect(wrapper.find(CameraViewArea).length).toEqual(4);
     act(() => { jest.advanceTimersByTime(10000); });
     wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(2);
+    expect(wrapper.find(CameraViewArea).length).toEqual(3);
     act(() => { jest.runAllTimers(); });
     wrapper.update();
     expect(wrapper.find(CameraViewArea).length).toEqual(0);
@@ -84,10 +89,10 @@ describe("<LogsLayer />", () => {
     const p = fakeProps();
     p.deviceTarget = "rpi";
     const wrapper = svgMount(<LogsLayer {...p} />);
-    expect(wrapper.find(CameraViewArea).length).toEqual(3);
+    expect(wrapper.find(CameraViewArea).length).toEqual(4);
     act(() => { jest.advanceTimersByTime(30000); });
     wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(2);
+    expect(wrapper.find(CameraViewArea).length).toEqual(3);
     act(() => { jest.runAllTimers(); });
     wrapper.update();
     expect(wrapper.find(CameraViewArea).length).toEqual(0);
@@ -97,8 +102,8 @@ describe("<LogsLayer />", () => {
     const p = fakeProps();
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     const wrapper = svgMount(<LogsLayer {...p} />);
-    expect(wrapper.find("#image-log-visuals").length).toEqual(3);
-    expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(3);
+    expect(wrapper.find("#image-log-visuals").length).toEqual(4);
+    expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(4);
   });
 
   it("shows cropped visuals", () => {
@@ -106,7 +111,7 @@ describe("<LogsLayer />", () => {
     p.getConfigValue = () => true;
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     const wrapper = svgMount(<LogsLayer {...p} />);
-    expect(wrapper.find("#image-log-visuals").length).toEqual(3);
+    expect(wrapper.find("#image-log-visuals").length).toEqual(4);
     expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(0);
   });
 });

@@ -22,6 +22,8 @@ import { ExpandableHeader } from "../../ui";
 import { ToggleButton } from "../../controls/toggle_button";
 import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
 import { updateFarmware } from "../../farmware/farmware_info";
+import { fakeFarmware } from "../../__test_support__/fake_farmwares";
+import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -29,6 +31,8 @@ describe("<DesignerPhotos />", () => {
     shouldDisplay: () => false,
     timeSettings: fakeTimeSettings(),
     env: {},
+    userEnv: {},
+    farmwareEnvs: [],
     wDEnv: {},
     images: [],
     currentImage: undefined,
@@ -43,6 +47,7 @@ describe("<DesignerPhotos />", () => {
     hideUnShownImages: false,
     alwaysHighlightImage: false,
     getConfigValue: jest.fn(),
+    farmwares: {},
   });
 
   it("renders photos panel", () => {
@@ -60,7 +65,10 @@ describe("<DesignerPhotos />", () => {
   });
 
   it("expands sections", () => {
-    const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...fakeProps()} />);
+    const p = fakeProps();
+    const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);
+    p.farmwares = { [FarmwareName.MeasureSoilHeight]: farmware };
+    const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...p} />);
     const headers = wrapper.find(ExpandableHeader);
     Object.keys(wrapper.state())
       .map((section: keyof DesignerPhotosState, index) => {

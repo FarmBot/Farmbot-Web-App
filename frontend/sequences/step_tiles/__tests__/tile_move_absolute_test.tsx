@@ -4,14 +4,10 @@ import React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import {
-  fakeSequence, fakePoint, fakeTool, fakeToolSlot,
+  fakeSequence, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  Coordinate,
-  MoveAbsolute,
-  ParameterApplication,
-  Point,
-  Tool,
+  Coordinate, Identifier, MoveAbsolute, Point, PointGroup, Tool,
 } from "farmbot";
 import {
   fakeHardwareFlags,
@@ -212,63 +208,25 @@ describe("<TileMoveAbsolute />", () => {
   });
 
   describe("updateLocation()", () => {
-    it("handles empty selections", () => {
+    it.each<[string, Tool | Coordinate | Point | Identifier | PointGroup]>([
+      ["tool", { kind: "tool", args: { tool_id: 1 } }],
+      ["empty", { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }],
+      ["point", {
+        kind: "point",
+        args: { pointer_type: "GenericPointer", pointer_id: 1 }
+      }],
+      ["identifier", { kind: "identifier", args: { label: "parent" } }],
+      ["point_group", { kind: "point_group", args: { point_group_id: 1 } }],
+    ])("handles %s selection", (_kind, location) => {
       const block = new TileMoveAbsolute(fakeProps());
       block.updateArgs = jest.fn();
-      const location: Coordinate = {
-        kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-      };
       block.updateLocation({
         kind: "parameter_application",
-        args: { label: "", data_value: location }
+        args: { label: "parent", data_value: location },
       });
-      expect(block.updateArgs).toHaveBeenCalledWith({ location });
-    });
-
-    it("handles point / tool selections", () => {
-      const block = new TileMoveAbsolute(fakeProps());
-      block.updateArgs = jest.fn();
-      [fakePoint(), fakeTool()].map(selection => {
-        const data_value = (): Tool | Point => {
-          switch (selection.kind) {
-            case "Tool": return {
-              kind: "tool", args: { tool_id: selection.body.id || 0 }
-            };
-            default: return {
-              kind: "point", args: {
-                pointer_type: selection.body.pointer_type,
-                pointer_id: selection.body.id || 0
-              }
-            };
-          }
-        };
-        const variable: ParameterApplication = {
-          kind: "parameter_application",
-          args: { label: "", data_value: data_value() }
-        };
-        block.updateLocation(variable);
-        expect(block.updateArgs).toHaveBeenCalledWith({ location: data_value() });
-      });
-    });
-
-    it("handles variables", () => {
-      const p = fakeProps();
-      const block = new TileMoveAbsolute(p);
-      block.updateLocation({
-        kind: "parameter_application",
-        args: {
-          label: "parent", data_value: {
-            kind: "identifier", args: { label: "parent" }
-          }
-        }
-      });
-      const expected = cloneDeep(p.currentSequence.body);
-      p.currentStep.args.location = {
-        kind: "identifier",
-        args: { label: "parent" },
-      };
-      expected.body = [p.currentStep];
-      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+      location.kind == "point_group"
+        ? expect(block.updateArgs).not.toHaveBeenCalled()
+        : expect(block.updateArgs).toHaveBeenCalledWith({ location });
     });
 
     it("changes variable", () => {

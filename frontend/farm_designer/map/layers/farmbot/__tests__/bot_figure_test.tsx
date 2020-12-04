@@ -239,7 +239,7 @@ describe("<BotFigure/>", () => {
       .toBeGreaterThanOrEqual(1);
     const circle = view.find("#cropped-camera-view-area");
     expect(circle.length).toBeGreaterThanOrEqual(1);
-    expect(circle.last().props().transform).not.toEqual(undefined);
+    expect(circle.last().props().style?.transform).not.toEqual(undefined);
   });
 
   it("doesn't show large cropped camera view area", () => {

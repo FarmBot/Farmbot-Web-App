@@ -1,9 +1,9 @@
-import { TaggedImage, SyncStatus, JobProgress } from "farmbot";
+import { TaggedImage, SyncStatus, JobProgress, TaggedFarmwareEnv } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { UserEnv, ShouldDisplay } from "../devices/interfaces";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { SaveFarmwareEnv } from "../farmware/interfaces";
+import { Farmwares, SaveFarmwareEnv } from "../farmware/interfaces";
 import { WD_ENV } from "./remote_env/interfaces";
 
 export interface DesignerPhotosProps {
@@ -25,6 +25,9 @@ export interface DesignerPhotosProps {
   hideUnShownImages: boolean;
   alwaysHighlightImage: boolean;
   getConfigValue: GetWebAppConfigValue;
+  farmwares: Farmwares;
+  userEnv: UserEnv;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface DesignerPhotosState {
@@ -32,5 +35,6 @@ export interface DesignerPhotosState {
   camera: boolean;
   calibration: boolean;
   detection: boolean;
+  measure: boolean;
   manage: boolean;
 }

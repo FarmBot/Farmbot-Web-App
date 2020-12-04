@@ -1790,6 +1790,7 @@
     position: relative;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-bottom: 12rem;
     label {
       margin-top: 0 !important;
     }
@@ -1915,6 +1916,11 @@
           margin-top: 0.5rem;
           margin-left: 0.5rem;
         }
+      }
+    }
+    .farmware-form {
+      button {
+        float: none;
       }
     }
   }

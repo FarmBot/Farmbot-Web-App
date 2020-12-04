@@ -201,7 +201,6 @@ export function StepButtonCluster(props: StepButtonProps) {
         step={{
           kind: "execute_script",
           args: { label: FarmwareName.MeasureSoilHeight },
-          comment: t("MEASURE SOIL HEIGHT")
         }}
         color="pink">
         {t("Measure soil height")}

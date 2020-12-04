@@ -63,14 +63,18 @@ export const SlotFrontProfile = (props: SlotAxisProfileProps) => {
   const slotWidth = SlotDimensions.width;
   const prong = SlotDimensions.prongWidth - SlotDimensions.toolOverlap * 2;
   return <g id={"slot-front-profile"} fill={Color.darkGray} fillOpacity={0.25}>
-    <rect x={x - prong} y={toolbayTop} width={prong} height={toToolBottom} />
-    <rect x={x - prong} y={toolbayTop} width={prong} height={toToolBottom} />
+    {[bendHeight, slotHeight].map(height =>
+      <path key={height} d={trim(`M${x - prong} ${toolbayTop}
+      h ${prong}
+      v ${toToolBottom}
+      h ${toolWidth}
+      v -${toToolBottom}
+      h ${prong}
+      v ${height + toToolBottom}
+      h -${slotWidth}
+      v -${height + toToolBottom}`)} />)}
     <rect x={x - prong} y={toolbayTop} width={prong} height={thick} />
-    <rect x={x + toolWidth} y={toolbayTop} width={prong} height={toToolBottom} />
-    <rect x={x + toolWidth} y={toolbayTop} width={prong} height={toToolBottom} />
     <rect x={x + toolWidth} y={toolbayTop} width={prong} height={thick} />
-    <rect x={x - prong} y={y + toolHeight} width={slotWidth} height={slotHeight} />
-    <rect x={x - prong} y={y + toolHeight} width={slotWidth} height={bendHeight} />
   </g>;
 };
 
