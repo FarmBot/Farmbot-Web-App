@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { ToggleHighlightModifiedProps } from "./interfaces";

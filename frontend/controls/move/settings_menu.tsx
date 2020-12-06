@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { BooleanSetting } from "../../session_keys";
-import { ToggleButton } from "../toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";

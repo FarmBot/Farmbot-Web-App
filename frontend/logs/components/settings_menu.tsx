@@ -1,7 +1,7 @@
 import React from "react";
 import { Help } from "../../ui/index";
 import { ToolTips, DeviceSetting } from "../../constants";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";

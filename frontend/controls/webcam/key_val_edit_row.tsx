@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Row, Col } from "../ui/index";
+import React from "react";
+import { Row, Col } from "../../ui";
 import { KeyValRowProps } from "./key_val_show_row";
-import { t } from "../i18next_wrapper";
+import { t } from "../../i18next_wrapper";
 
-interface Props extends KeyValRowProps {
+export interface KeyValEditRowProps extends KeyValRowProps {
   onLabelChange(e: React.ChangeEvent<HTMLInputElement>): void;
   onValueChange(e: React.ChangeEvent<HTMLInputElement>): void;
   valueType: "number" | "string";
@@ -11,7 +11,7 @@ interface Props extends KeyValRowProps {
 
 /** A row containing two textboxes and a delete button. Useful for maintaining
  * lists of things (peripherals, feeds, tools etc). */
-export function KeyValEditRow(p: Props) {
+export function KeyValEditRow(p: KeyValEditRowProps) {
   return <Row>
     <Col xs={6}>
       <input type="text"

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../i18next_wrapper";
 import {
   DaySelection, EqCriteriaSelection, SubCriteriaSection,
@@ -10,7 +10,7 @@ import {
   PointerType,
   PointTypeSelectionProps,
 } from "./interfaces";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Popover } from "@blueprintjs/core";
 import { selectPoint } from "../../farm_designer/map/actions";
 import { FBSelect, Checkbox, Help } from "../../ui";

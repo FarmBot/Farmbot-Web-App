@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { KeyValShowRow, KeyValRowProps } from "../key_val_show_row";
 

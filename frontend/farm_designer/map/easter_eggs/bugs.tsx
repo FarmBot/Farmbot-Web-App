@@ -1,11 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
 import { random, range, some, clamp, sample, every } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
 import { Row, Col } from "../../../ui";
-import { ToggleButton } from "../../../controls/toggle_button";
+import { ToggleButton } from "../../../ui/toggle_button";
 import { getHighlightName } from "../../../settings/maybe_highlight";
 
 export interface BugsProps {

@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { ImageFilterMenu } from "./image_filter_menu";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {

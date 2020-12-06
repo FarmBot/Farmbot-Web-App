@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui/index";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { Content, DeviceSetting } from "../../constants";
 import { AutoUpdateRowProps } from "./interfaces";

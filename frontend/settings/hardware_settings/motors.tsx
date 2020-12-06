@@ -1,7 +1,7 @@
 import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../constants";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { settingToggle } from "../../devices/actions";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
 import { MotorsProps } from "./interfaces";
