@@ -1,7 +1,6 @@
-import * as React from "react";
-import { Row, Col } from "../ui/index";
-import { ToggleButton } from "./toggle_button";
-import { t } from "../i18next_wrapper";
+import React from "react";
+import { Row, Col, ToggleButton } from "../../ui";
+import { t } from "../../i18next_wrapper";
 
 export interface KeyValRowProps {
   label: string;

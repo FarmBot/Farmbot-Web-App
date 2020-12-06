@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
@@ -17,7 +17,7 @@ import { SearchField } from "../ui/search_field";
 import {
   SortOptions, PointSortMenu, orderedPoints,
 } from "../farm_designer/sort_options";
-import { ToggleButton } from "../controls/toggle_button";
+import { ToggleButton } from "../ui/toggle_button";
 import {
   setWebAppConfigValue, GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";

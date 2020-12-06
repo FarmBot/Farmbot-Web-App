@@ -1,14 +1,11 @@
 let mockPhotoOutcome = Promise.resolve();
 const mockDevice = {
-  home: jest.fn(() => { return Promise.resolve(); }),
-  findHome: jest.fn(() => { return Promise.resolve(); }),
-  takePhoto: jest.fn(() => { return mockPhotoOutcome; }),
-  moveRelative: jest.fn(() => { return Promise.resolve(); }),
+  home: jest.fn((_) => Promise.resolve()),
+  findHome: jest.fn(() => Promise.resolve()),
+  takePhoto: jest.fn(() => mockPhotoOutcome),
+  moveRelative: jest.fn((_) => Promise.resolve()),
 };
-
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { mount } from "enzyme";

@@ -1,4 +1,4 @@
-const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
+const mockDevice = { setUserEnv: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 const mockDeletePoints = jest.fn();

@@ -38,15 +38,3 @@ export interface AxisInputBoxProps {
   value: number | undefined;
   onChange: (key: string, val: number | undefined) => void;
 }
-
-export interface ToggleButtonProps {
-  /** Function that is executed when the toggle button is clicked */
-  toggleAction: (e: React.MouseEvent) => void;
-  toggleValue: number | string | boolean | undefined;
-  disabled?: boolean | undefined;
-  customText?: { textFalse: string, textTrue: string };
-  dim?: boolean;
-  grayscale?: boolean;
-  title?: string;
-  className?: string;
-}

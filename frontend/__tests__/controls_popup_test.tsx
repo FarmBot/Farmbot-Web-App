@@ -5,7 +5,7 @@ jest.mock("../history", () => ({
 }));
 
 const mockDevice = {
-  moveRelative: jest.fn(() => Promise.resolve()),
+  moveRelative: jest.fn((_) => Promise.resolve()),
   takePhoto: jest.fn(() => Promise.resolve()),
 };
 jest.mock("../device", () => ({ getDevice: () => mockDevice }));

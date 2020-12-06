@@ -1,15 +1,11 @@
-const mockTS = { connect: jest.fn() };
-
 jest.mock("xterm/css/xterm.css", () => { });
+const mockTS = { connect: jest.fn() };
 jest.mock("../terminal_session", () => ({ TerminalSession: () => mockTS }));
-jest.mock("../support", () => {
-  return {
-    getCredentials: jest.fn(() => {
-      return { password: "", username: "", url: "" };
-    }),
-    attachTerminal: jest.fn()
-  };
-});
+jest.mock("../support", () => ({
+  getCredentials: jest.fn(() => ({ password: "", username: "", url: "" })),
+  attachTerminal: jest.fn()
+}));
+
 import { attachTerminal, getCredentials } from "../support";
 
 describe("index page", () => {

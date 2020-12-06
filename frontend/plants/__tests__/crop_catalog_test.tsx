@@ -1,16 +1,10 @@
-jest.mock("lodash", () => ({
-  debounce: jest.fn(x => x),
-  trim: jest.fn(x => x),
-  last: () => "fake",
-  times: jest.fn(),
-  set: jest.fn(),
-  throttle: jest.fn(),
-}));
+const lodash = require("lodash");
+lodash.debounce = jest.fn(x => x);
 
 jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 
-import * as React from "react";
-import { RawCropCatalog as CropCatalog } from "../crop_catalog";
+import React from "react";
+import { mapStateToProps, RawCropCatalog as CropCatalog } from "../crop_catalog";
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
@@ -19,6 +13,7 @@ import {
   fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 import { SearchField } from "../../ui/search_field";
+import { fakeState } from "../../__test_support__/fake_state";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => {
@@ -70,5 +65,12 @@ describe("<CropCatalog />", () => {
     p.cropSearchResults = [fakeCropLiveSearchResult()];
     const wrapper = mount(<CropCatalog {...p} />);
     expect(wrapper.find(".spinner").length).toEqual(1);
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    const props = mapStateToProps(fakeState());
+    expect(props.cropSearchInProgress).toEqual(false);
   });
 });

@@ -1,6 +1,17 @@
-import * as React from "react";
-import { ToggleButtonProps } from "./interfaces";
+import React from "react";
 import { t } from "../i18next_wrapper";
+
+export interface ToggleButtonProps {
+  /** Function that is executed when the toggle button is clicked */
+  toggleAction: (e: React.MouseEvent) => void;
+  toggleValue: number | string | boolean | undefined;
+  disabled?: boolean | undefined;
+  customText?: { textFalse: string, textTrue: string };
+  dim?: boolean;
+  grayscale?: boolean;
+  title?: string;
+  className?: string;
+}
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {

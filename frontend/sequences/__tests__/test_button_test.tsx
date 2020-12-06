@@ -1,4 +1,4 @@
-const mockDevice = { execSequence: jest.fn(() => Promise.resolve()) };
+const mockDevice = { execSequence: jest.fn((..._) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 let mockHasParameters = false;

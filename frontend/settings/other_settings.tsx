@@ -11,7 +11,7 @@ import {
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Setting } from "./farm_designer_settings";
 import { Row, Col } from "../ui";
-import { ToggleButton } from "../controls/toggle_button";
+import { ToggleButton } from "../ui/toggle_button";
 import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";

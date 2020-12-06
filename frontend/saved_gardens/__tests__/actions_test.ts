@@ -54,7 +54,7 @@ describe("applyGarden", () => {
 
 describe("destroySavedGarden", () => {
   it("deletes garden", () => {
-    const dispatch = jest.fn(() => Promise.resolve());
+    const dispatch = jest.fn((_) => Promise.resolve());
     destroySavedGarden("SavedGardenUuid")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
     expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");

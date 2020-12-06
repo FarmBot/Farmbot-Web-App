@@ -3,7 +3,7 @@ jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
 import React from "react";
 import { mount } from "enzyme";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToggleButton } from "../../../controls/toggle_button";
+import { ToggleButton } from "../../../ui/toggle_button";
 import { settingToggle } from "../../../devices/actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";

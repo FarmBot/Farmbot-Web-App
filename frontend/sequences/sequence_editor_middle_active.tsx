@@ -20,7 +20,7 @@ import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
 import { Content, Actions, DeviceSetting } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
-import { ToggleButton } from "../controls/toggle_button";
+import { ToggleButton } from "../ui/toggle_button";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";

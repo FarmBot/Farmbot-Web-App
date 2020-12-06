@@ -1,7 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
-import { ToggleButton } from "../toggle_button";
-import { ToggleButtonProps } from "../interfaces";
+import { ToggleButton, ToggleButtonProps } from "../toggle_button";
 
 describe("<ToggleButton/>", function () {
   const fakeProps = (): ToggleButtonProps => ({

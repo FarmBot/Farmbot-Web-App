@@ -1,5 +1,5 @@
 import React from "react";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { settingToggle } from "../../devices/actions";
 import { Row, Col, Help } from "../../ui";
 import { BooleanMCUInputGroupProps } from "./interfaces";

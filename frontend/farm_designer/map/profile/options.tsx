@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../../i18next_wrapper";
 import { Actions } from "../../../constants";
-import { ToggleButton } from "../../../controls/toggle_button";
+import { ToggleButton } from "../../../ui/toggle_button";
 import { ProfileOptionsProps } from "./interfaces";
 
 /** Profile viewer settings. */

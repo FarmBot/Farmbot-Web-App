@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { pinToggle, writePin } from "../../devices/actions";
 import { PeripheralListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
-import { ToggleButton } from "../toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
 import { ANALOG } from "farmbot";

@@ -6,7 +6,7 @@ import { ExternalUrl } from "./external_urls";
 
 /** Use currying to pass down `error` object for now. */
 export function crashPage(error: object) {
-  return class CrashPage extends React.Component<{}, {}> {
+  return class _CrashPage extends React.Component<{}, {}> {
     render() {
       const stack = get(error, "stack", "No stack.");
       const message = get(error, "message", "No message available.");

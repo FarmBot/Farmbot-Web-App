@@ -1,6 +1,6 @@
 const mockDevice = {
-  updateFarmware: jest.fn(() => Promise.resolve({})),
-  removeFarmware: jest.fn(() => Promise.resolve({})),
+  updateFarmware: jest.fn((_) => Promise.resolve({})),
+  removeFarmware: jest.fn((_) => Promise.resolve({})),
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 

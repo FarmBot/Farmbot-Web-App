@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { DeleteButton } from "../delete_button";
 
 describe("<DeleteButton />", () => {
   const fakeProps = () => ({
-    dispatch: jest.fn(() => Promise.resolve()),
+    dispatch: jest.fn((_) => Promise.resolve()),
     uuid: "resource uuid",
   });
 

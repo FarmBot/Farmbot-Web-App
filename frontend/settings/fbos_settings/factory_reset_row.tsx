@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col, docLink } from "../../ui/index";
 import { Content, DeviceSetting } from "../../constants";
 import { softReset, updateConfig } from "../../devices/actions";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { BotConfigInputBox } from "./bot_config_input_box";
 import { FactoryResetRowsProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";

@@ -19,7 +19,7 @@ import {
 } from "../farm_designer/sort_options";
 import { compact, isUndefined, mean, round, sortBy, uniq } from "lodash";
 import { Collapse } from "@blueprintjs/core";
-import { ToggleButton } from "../controls/toggle_button";
+import { ToggleButton } from "../ui/toggle_button";
 import { UUID } from "../resources/interfaces";
 import { deletePoints } from "../api/delete_points";
 import {

@@ -1,6 +1,6 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawLogs as Logs } from "../index";
 import { TaggedLog, Dictionary } from "farmbot";
@@ -88,7 +88,7 @@ describe("<Logs />", () => {
     const p = fakeProps();
     p.logs[0].body.verbosity = -999;
     const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.text()).toContain(-999);
+    expect(wrapper.text()).toContain("-999");
   });
 
   it("loads filter setting", () => {

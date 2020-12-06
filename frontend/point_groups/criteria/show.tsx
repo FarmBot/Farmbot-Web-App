@@ -17,7 +17,7 @@ import {
   DaySelectionProps,
 } from "./interfaces";
 import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Actions } from "../../constants";
 import { spaceSelected } from "../../farm_designer/map/layers/zones/zones";
 
