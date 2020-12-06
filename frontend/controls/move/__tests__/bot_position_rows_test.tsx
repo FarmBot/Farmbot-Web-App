@@ -1,13 +1,11 @@
-const mockDevice = {
-  moveAbsolute: jest.fn(() => Promise.resolve()),
-};
+const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../../config_storage/actions", () => ({
   toggleWebAppBool: jest.fn()
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import { BotPositionRows, BotPositionRowsProps } from "../bot_position_rows";
 import { bot } from "../../../__test_support__/fake_state/bot";

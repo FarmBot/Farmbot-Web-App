@@ -1,7 +1,7 @@
-const mockDevice = { readPin: jest.fn(() => Promise.resolve()) };
+const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { SensorList } from "../sensor_list";
 import { Pins } from "farmbot/dist";
@@ -74,12 +74,11 @@ describe("<SensorList/>", function () {
     expect(wrapper.find(".indicator").at(3).text()).toEqual("0 (TOOL ON)");
   });
 
-  const expectedPayload = (pin_number: number, pin_mode: 0 | 1) =>
-    ({
-      pin_number,
-      label: `pin${pin_number}`,
-      pin_mode
-    });
+  const expectedPayload = (pin_number: number, pin_mode: 0 | 1) => ({
+    pin_number,
+    label: `pin${pin_number}`,
+    pin_mode
+  });
 
   it("reads sensors", () => {
     const wrapper = mount(<SensorList {...fakeProps()} />);

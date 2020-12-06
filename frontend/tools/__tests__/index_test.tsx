@@ -13,10 +13,10 @@ jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
 }));
 
-const mockDevice = { readPin: jest.fn(() => Promise.resolve()) };
+const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawTools as Tools,

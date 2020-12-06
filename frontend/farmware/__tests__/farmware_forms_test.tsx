@@ -1,6 +1,6 @@
 const mockDevice = {
-  execScript: jest.fn(() => Promise.resolve({})),
-  setUserEnv: jest.fn(() => Promise.resolve({}))
+  execScript: jest.fn((..._) => Promise.resolve({})),
+  setUserEnv: jest.fn((_) => Promise.resolve({}))
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -87,7 +87,7 @@ describe("<ConfigFields />", () => {
   });
 
   it("handles change field error", () => {
-    mockDevice.setUserEnv = jest.fn(() => Promise.reject());
+    mockDevice.setUserEnv = jest.fn((_) => Promise.reject());
     const p = fakeProps();
     const wrapper = shallow(<ConfigFields {...p} />);
     wrapper.find("BlurableInput").simulate("commit",

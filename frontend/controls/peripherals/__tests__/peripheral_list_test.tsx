@@ -1,12 +1,10 @@
 const mockDevice = {
-  togglePin: jest.fn(() => Promise.resolve()),
-  writePin: jest.fn(() => Promise.resolve()),
+  togglePin: jest.fn((_) => Promise.resolve()),
+  writePin: jest.fn((_) => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,

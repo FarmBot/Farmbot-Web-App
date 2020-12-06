@@ -4,13 +4,13 @@ jest.mock("../../../devices/actions", () => ({
 }));
 
 const mockDevice = {
-  calibrate: jest.fn(() => Promise.resolve({})),
-  findHome: jest.fn(() => Promise.resolve({})),
-  setZero: jest.fn(() => Promise.resolve({})),
+  calibrate: jest.fn((_) => Promise.resolve({})),
+  findHome: jest.fn((_) => Promise.resolve({})),
+  setZero: jest.fn((_) => Promise.resolve({})),
 };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { AxisSettings } from "../axis_settings";
 import { bot } from "../../../__test_support__/fake_state/bot";

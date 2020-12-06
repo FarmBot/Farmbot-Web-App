@@ -1,7 +1,7 @@
-const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
+const mockDevice = { execScript: jest.fn((_) => Promise.resolve({})) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { BasicFarmwarePage, BasicFarmwarePageProps } from "../basic_farmware_page";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";

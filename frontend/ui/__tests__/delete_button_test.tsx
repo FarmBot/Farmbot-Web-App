@@ -4,7 +4,7 @@ import { DeleteButton } from "../delete_button";
 
 describe("<DeleteButton />", () => {
   const fakeProps = () => ({
-    dispatch: jest.fn(() => Promise.resolve()),
+    dispatch: jest.fn((_) => Promise.resolve()),
     uuid: "resource uuid",
   });
 

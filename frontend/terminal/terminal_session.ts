@@ -32,7 +32,7 @@ export class TerminalSession {
         this.terminal.onKey(this.terminalKeyboardHandler);
         this.client.on("message", this.terminalMessageHandler);
       });
-      resolve();
+      resolve("");
     });
   }
 
