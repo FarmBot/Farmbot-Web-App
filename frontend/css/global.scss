@@ -961,7 +961,7 @@ ul {
       display: none;
     }
   }
-  i {
+  .fa-crosshairs {
     position: fixed;
     bottom: 3rem;
     z-index: 3;
@@ -976,7 +976,7 @@ ul {
     }
   }
   &.open {
-    i {
+    .fa-crosshairs {
       transform: rotate(-135deg);
       &:hover {
         background-color: rgba(0, 0, 0, 0);
@@ -984,13 +984,19 @@ ul {
     }
     .controls-popup-menu-outer {
       transition: all 0.1s 0s ease-in-out;
-      width: 32rem;
+      width: 45rem;
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
       transition-delay: 0.25s !important;
       opacity: 1;
     }
+  }
+  .filter-search {
+    display: inline-block;
+    width: 9rem;
+    padding: 1rem;
+    margin-left: 1rem;
   }
   .arrow-button {
     margin: 5px;

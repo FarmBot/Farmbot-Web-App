@@ -31,6 +31,16 @@ export interface DirectionButtonProps {
   disabled: boolean | undefined;
 }
 
+export interface TakePhotoButtonProps {
+  env: UserEnv;
+  disabled?: boolean;
+}
+
+export interface HomeButtonProps {
+  doFindHome: boolean;
+  disabled: boolean;
+}
+
 export interface StepSizeSelectorProps {
   choices: number[];
   selected: number;
@@ -57,4 +67,5 @@ export interface JogMovementControlsProps extends JogMovementControlsBaseProps {
 export interface ControlsPopupProps extends JogMovementControlsBaseProps {
   dispatch: Function;
   botOnline: boolean;
+  doFindHome: boolean;
 }

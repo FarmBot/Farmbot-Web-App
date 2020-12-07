@@ -17,10 +17,6 @@ export namespace ToolTips {
     selection at that time may differ from the selection currently
     displayed.`);
 
-  export const CRITERIA_ALPHA_FEATURE =
-    trim(`Group filters is a new feature under active development.
-    Use with caution.`);
-
   export const DOT_NOTATION_TIP =
     trim(`Tip: Use dot notation (i.e., 'meta.color') to access meta fields.`);
 

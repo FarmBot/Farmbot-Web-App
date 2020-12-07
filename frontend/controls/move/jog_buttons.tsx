@@ -1,11 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { DirectionButton } from "./direction_button";
-import { homeAll, findHome } from "../../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
-import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
-import { t } from "../../i18next_wrapper";
-import { cameraBtnProps } from "../../photos/capture_settings/camera_selection";
+import { TakePhotoButton } from "./take_photo_button";
+import { HomeButton } from "./home_button";
 const DEFAULT_STEP_SIZE = 100;
 
 /*
@@ -15,9 +13,6 @@ const DEFAULT_STEP_SIZE = 100;
 
 export function JogButtons(props: JogMovementControlsProps) {
   const { stepSize, xySwap, arduinoBusy, doFindHome } = props;
-  const homeBtnAction = doFindHome
-    ? () => findHome("all")
-    : () => homeAll(100);
   const directionAxesProps = buildDirectionProps(props);
   const rightLeft = xySwap ? "y" : "x";
   const upDown = xySwap ? "x" : "y";
@@ -25,17 +20,11 @@ export function JogButtons(props: JogMovementControlsProps) {
     steps: stepSize || DEFAULT_STEP_SIZE,
     disabled: arduinoBusy
   };
-  const camDisabled = cameraBtnProps(props.env);
   return <table className="jog-table">
     <tbody>
       <tr>
         <td>
-          <button
-            className={`fa fa-camera arrow-button fb-button ${
-              camDisabled.class}`}
-            title={camDisabled.title || t("Take a photo")}
-            onClick={camDisabled.click ||
-              (() => getDevice().takePhoto().catch(() => { }))} />
+          <TakePhotoButton env={props.env} />
         </td>
         <td />
         <td />
@@ -56,11 +45,7 @@ export function JogButtons(props: JogMovementControlsProps) {
       </tr>
       <tr>
         <td>
-          <button
-            className="i fa fa-home arrow-button fb-button"
-            title={doFindHome ? t("find home") : t("move to home")}
-            onClick={homeBtnAction}
-            disabled={arduinoBusy || false} />
+          <HomeButton doFindHome={doFindHome} disabled={arduinoBusy} />
         </td>
         <td />
         <td>

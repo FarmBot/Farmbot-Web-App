@@ -68,8 +68,6 @@ export class GroupCriteria extends
     const pointTypes = validPointTypes(criteria.string_eq.pointer_type) || [];
     return <div className="group-criteria">
       <label className="criteria-heading">{t("filters")}</label>
-      <Help text={t(ToolTips.CRITERIA_ALPHA_FEATURE)}
-        customIcon={"exclamation-triangle"} customClass={"alpha-icon"} />
       <Popover>
         <i className="fa fa-gear dark" />
         <this.AdvancedToggleMenu />

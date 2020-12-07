@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page } from "../ui/index";
@@ -100,6 +100,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
                 dispatch={this.props.dispatch}
                 sourceFbosConfig={this.props.sourceFbosConfig}
                 bot={this.props.bot}
+                shouldDisplay={this.props.shouldDisplay}
                 getConfigValue={this.props.getConfigValue} />
             </Popover>
           </div>

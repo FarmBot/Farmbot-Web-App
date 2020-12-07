@@ -9,6 +9,7 @@ import { ErrorBoundary } from "../../error_boundary";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { getLastSeenNumber } from "./last_seen_row";
+import { removeToast } from "../../toast/toast";
 
 export const getOsReleaseNotesForVersion = (
   osReleaseNotes: string | undefined,
@@ -55,6 +56,9 @@ export class FarmbotOsRow
     if (versionChange || channelChange) {
       this.setState({ version: controller_version, channel });
       dispatch(fetchOsUpdateVersion(target));
+    }
+    if (versionChange) {
+      removeToast("EOL");
     }
   };
 

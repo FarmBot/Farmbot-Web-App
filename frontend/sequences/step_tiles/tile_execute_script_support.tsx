@@ -6,6 +6,7 @@ import { ExecuteScript, Pair, FarmwareConfig } from "farmbot";
 import { getConfigEnvName } from "../../farmware/farmware_forms";
 import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
+import { FarmwareName } from "./tile_execute_script";
 
 /** Create a Farmware input pair to include in the step body. */
 const createPair = (envName: string, label: string, value: string): Pair => ({
@@ -127,7 +128,8 @@ export const farmwareList =
     if (farmwareData) {
       const { farmwareNames, firstPartyFarmwareNames } = farmwareData;
       return farmwareNames
-        .filter(x => !firstPartyFarmwareNames.includes(x))
+        .filter(farmwareName => !firstPartyFarmwareNames.includes(farmwareName))
+        .filter(farmwareName => farmwareName != FarmwareName.MeasureSoilHeight)
         .map(farmwareName => ({ value: farmwareName, label: farmwareName }));
     }
     return [];
