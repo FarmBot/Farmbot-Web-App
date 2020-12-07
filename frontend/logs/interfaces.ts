@@ -54,4 +54,5 @@ export interface LogsSettingsMenuProps {
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
   bot: BotState;
+  shouldDisplay: ShouldDisplay;
 }

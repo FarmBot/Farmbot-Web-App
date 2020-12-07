@@ -435,9 +435,12 @@ describe("updateConfig()", () => {
 
 const expectBadVersionCall = () => {
   expect(push).toHaveBeenCalledWith(linkToFbosSettings());
-  expect(error).toHaveBeenCalledWith(
-    expect.stringContaining("old version"),
-    { title: "Please Update", noTimer: true, noDismiss: true });
+  expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
+    title: "Please Update",
+    noTimer: true,
+    noDismiss: true,
+    idPrefix: "EOL",
+  });
 };
 
 describe("badVersion()", () => {
@@ -449,8 +452,11 @@ describe("badVersion()", () => {
   it("warns of old FBOS version: dismiss-able", () => {
     actions.badVersion({ noDismiss: false });
     expect(push).toHaveBeenCalledWith(linkToFbosSettings());
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("old version"),
-      { title: "Please Update", noTimer: true, noDismiss: false });
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
+      title: "Please Update",
+      noTimer: true,
+      noDismiss: false,
+      idPrefix: "EOL",
+    });
   });
 });

@@ -1,10 +1,4 @@
-let mockPhotoOutcome = Promise.resolve();
-const mockDevice = {
-  home: jest.fn((_) => Promise.resolve()),
-  findHome: jest.fn(() => Promise.resolve()),
-  takePhoto: jest.fn(() => mockPhotoOutcome),
-  moveRelative: jest.fn((_) => Promise.resolve()),
-};
+const mockDevice = { moveRelative: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
@@ -12,79 +6,25 @@ import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { error } from "../../../toast/toast";
-import { Content, ToolTips } from "../../../constants";
 
 describe("<JogButtons/>", function () {
-  const jogButtonProps = (): JogMovementControlsProps => {
-    return {
-      stepSize: 100,
-      botPosition: { x: undefined, y: undefined, z: undefined },
-      axisInversion: { x: false, y: false, z: false },
-      arduinoBusy: false,
-      firmwareSettings: bot.hardware.mcu_params,
-      xySwap: false,
-      doFindHome: false,
-      env: {},
-    };
-  };
-
-  it("calls home command", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    jogButtons.find("button").at(3).simulate("click");
-    expect(mockDevice.home).toHaveBeenCalledTimes(1);
-  });
-
-  it("calls find home command", () => {
-    const p = jogButtonProps();
-    p.doFindHome = true;
-    const jogButtons = mount(<JogButtons {...p} />);
-    jogButtons.find("button").at(3).simulate("click");
-    expect(mockDevice.findHome).toHaveBeenCalledTimes(1);
+  const jogButtonProps = (): JogMovementControlsProps => ({
+    stepSize: 100,
+    botPosition: { x: undefined, y: undefined, z: undefined },
+    axisInversion: { x: false, y: false, z: false },
+    arduinoBusy: false,
+    firmwareSettings: bot.hardware.mcu_params,
+    xySwap: false,
+    doFindHome: false,
+    env: {},
   });
 
   it("is disabled", () => {
     const p = jogButtonProps();
     p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
-    jogButtons.find("button").at(3).simulate("click");
-    expect(mockDevice.home).not.toHaveBeenCalled();
-  });
-
-  it("call has correct args", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    jogButtons.find("button").at(3).simulate("click");
-    expect(mockDevice.home)
-      .toHaveBeenCalledWith({ axis: "all", speed: 100 });
-  });
-
-  it("takes photo", () => {
-    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    expect(cameraBtn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-
-    cameraBtn.simulate("click");
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
-    expect(error).not.toHaveBeenCalled();
-  });
-
-  it("error taking photo", () => {
-    mockPhotoOutcome = Promise.reject();
-    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    jogButtons.find("button").at(0).simulate("click");
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
-  });
-
-  it("shows camera as disabled", () => {
-    const p = jogButtonProps();
-    p.env = { camera: "NONE" };
-    const jogButtons = mount(<JogButtons {...p} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    expect(cameraBtn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    cameraBtn.simulate("click");
-    expect(error).toHaveBeenCalledWith(
-      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(mockDevice.takePhoto).not.toHaveBeenCalled();
+    jogButtons.find("button").at(6).simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {

@@ -1,13 +1,13 @@
 import React from "react";
 import { DirectionButton } from "./controls/move/direction_button";
-import { getDevice } from "./device";
 import { buildDirectionProps } from "./controls/move/direction_axes_props";
 import { ControlsPopupProps } from "./controls/move/interfaces";
-import { commandErr } from "./devices/actions";
 import { mapPanelClassName } from "./farm_designer/map/util";
-import { cameraBtnProps } from "./photos/capture_settings/camera_selection";
-import { t } from "./i18next_wrapper";
 import { getPathArray } from "./history";
+import { TakePhotoButton } from "./controls/move/take_photo_button";
+import { HomeButton } from "./controls/move/home_button";
+import { FBSelect } from "./ui";
+import { changeStepSize } from "./devices/actions";
 
 export const ControlsPopup = (props: ControlsPopupProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -18,7 +18,6 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
   const upDown = xySwap ? "x" : "y";
   const movementDisabled = !isOpen || arduinoBusy || !botOnline;
   const commonProps = { steps: stepSize, disabled: movementDisabled };
-  const camDisabled = cameraBtnProps(props.env);
   return <div
     className={`controls-popup ${isOpenClass} ${mapPanelClassName()}`}>
     <i className="fa fa-crosshairs" onClick={() => setIsOpen(!isOpen)} />
@@ -40,13 +39,15 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           axis={rightLeft}
           direction="left"
           directionAxisProps={directionAxesProps[rightLeft]} />
-        <button
-          className={
-            `fa fa-camera arrow-button fb-button brown ${camDisabled.class}`}
-          disabled={!isOpen || !botOnline}
-          title={camDisabled.title || t("Take a photo")}
-          onClick={camDisabled.click ||
-            (() => getDevice().takePhoto().catch(commandErr("Photo")))} />
+        <FBSelect
+          list={[1, 10, 100, 1000, 10000].map(stepSize =>
+            ({ label: "" + stepSize, value: stepSize }))}
+          onChange={ddi =>
+            props.dispatch(changeStepSize(parseInt("" + ddi.value)))}
+          selectedItem={{ label: "" + stepSize, value: stepSize }} />
+        <HomeButton doFindHome={props.doFindHome}
+          disabled={!isOpen || !botOnline || arduinoBusy} />
+        <TakePhotoButton env={props.env} disabled={!isOpen || !botOnline} />
       </div>
     </div>
   </div>;

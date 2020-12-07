@@ -10,7 +10,7 @@ jest.mock("../../../settings/dev/dev_support", () => ({
   DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { LogsSettingsMenu } from "../settings_menu";
 import { ConfigurationName, Dictionary } from "farmbot";
@@ -35,13 +35,21 @@ describe("<LogsSettingsMenu />", () => {
     sourceFbosConfig: () => ({ value: false, consistent: true }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
+    shouldDisplay: () => false,
   });
 
   it("renders", () => {
     const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
-    ["begin", "steps", "complete"].map(string =>
+    ["begin", "steps", "complete", "firmware"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.find("a").length).toEqual(0);
+  });
+
+  it("doesn't display firmware log settings", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("firmware");
   });
 
   it("doesn't update", () => {
