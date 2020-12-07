@@ -1,4 +1,4 @@
-const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
+const mockDevice = { setUserEnv: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
@@ -43,7 +43,7 @@ describe("<CameraSelection/>", () => {
   });
 
   it("handles error changing camera", async () => {
-    mockDevice.setUserEnv = jest.fn(() => { return Promise.reject(); });
+    mockDevice.setUserEnv = jest.fn((_) => { return Promise.reject(); });
     const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
     await cameraSelection.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });

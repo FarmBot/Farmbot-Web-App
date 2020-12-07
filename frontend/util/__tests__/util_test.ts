@@ -68,7 +68,7 @@ describe("util", () => {
   describe("betterCompact", () => {
     it("removes falsy values", () => {
       const before = [{}, {}, undefined];
-      const after = Util.betterCompact(before);
+      const after: ({} | undefined)[] = Util.betterCompact(before);
       expect(after.length).toBe(2);
       expect(after).not.toContain(undefined);
     });

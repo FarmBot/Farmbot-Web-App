@@ -1,4 +1,4 @@
-const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
+const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 let mockPath = "";
@@ -7,7 +7,7 @@ jest.mock("../../history", () => ({
   history: { push: jest.fn() }
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawMoveTo as MoveTo, MoveToProps, MoveToForm, MoveToFormProps,

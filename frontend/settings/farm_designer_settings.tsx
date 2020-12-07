@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { Row, Col, Help } from "../ui";
-import { ToggleButton } from "../controls/toggle_button";
+import { ToggleButton } from "../ui/toggle_button";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "../farm_designer/map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "../farm_designer/map_size_setting";

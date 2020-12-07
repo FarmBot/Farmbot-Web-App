@@ -33,7 +33,7 @@ export function sendOutboundPing(bot: Farmbot) {
       if (!x.done) {
         x.done = true;
         pingOK(id, now());
-        resolve();
+        resolve("");
       }
     };
 

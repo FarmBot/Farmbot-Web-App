@@ -5,7 +5,7 @@ import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("beforeEach", () => {
-  const emptyHandler = <T>(s: T): T => s;
+  const emptyHandler = <T>(s: T, _a: ReduxAction<{}>): T => s;
 
   const readonlyState = () => {
     const config = fakeWebAppConfig();
@@ -15,8 +15,10 @@ describe("beforeEach", () => {
 
   it("Can modify WebAppConfigs, even when in read-only mode", () => {
     const state = readonlyState();
-    const action: ReduxAction<{}> =
-      ({ type: Actions.EDIT_RESOURCE, payload: { uuid: "WebAppConfig.99.99" } });
+    const action = ({
+      type: Actions.EDIT_RESOURCE,
+      payload: { uuid: "WebAppConfig.99.99" },
+    });
     const handler = jest.fn(emptyHandler);
     beforeEach(state, action, handler);
     expect(handler).toHaveBeenCalledWith(state, action);
@@ -25,8 +27,10 @@ describe("beforeEach", () => {
   it("Cannot modify resources in readonly mode", () => {
     // === Don't allow EDIT_RESOURCE
     const state = readonlyState();
-    const action: ReduxAction<{}> =
-      ({ type: Actions.EDIT_RESOURCE, payload: { uuid: "Sequence.99.99" } });
+    const action = ({
+      type: Actions.EDIT_RESOURCE,
+      payload: { uuid: "Sequence.99.99" },
+    });
     const handler = jest.fn(emptyHandler);
     expect(beforeEach(state, action, handler)).toBe(state);
     expect(handler).not.toHaveBeenCalledWith(state, action);

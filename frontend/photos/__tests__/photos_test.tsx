@@ -19,7 +19,7 @@ import {
 } from "../../photos/photos";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { ExpandableHeader } from "../../ui";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
 import { updateFarmware } from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";

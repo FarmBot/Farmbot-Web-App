@@ -12,7 +12,7 @@ import { error, success } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
 import { GridInput } from "./grid_input";
 import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Actions } from "../../constants";
 import { round } from "lodash";
 

@@ -45,6 +45,7 @@ export enum Feature {
   long_scaling_factor = "long_scaling_factor",
   mark_as_step = "mark_as_step",
   named_pins = "named_pins",
+  no_firmware_logs = "no_firmware_logs",
   none_firmware = "none_firmware",
   ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",

@@ -1,7 +1,7 @@
 import React from "react";
 import { Help } from "../../ui/index";
 import { ToolTips, DeviceSetting } from "../../constants";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
@@ -10,6 +10,7 @@ import { MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
+import { Feature } from "../../devices/interfaces";
 
 interface LogSettingRecord {
   label: string;
@@ -119,11 +120,13 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
         getConfigValue={getConfigValue} />;
     };
     const { private_ip } = this.props.bot.hardware.informational_settings;
+    const firmwareLogs = !this.props.shouldDisplay(Feature.no_firmware_logs);
     return <div className={"logs-settings-menu"}>
       {t("Sequence logs:")}
       {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
-      {t("Firmware logs:")}
-      {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
+      {firmwareLogs && t("Firmware logs:")}
+      {firmwareLogs && FIRMWARE_LOG_SETTINGS()
+        .map(p => <LogSettingRow key={p.setting} {...p} />)}
       {DevSettings.futureFeaturesEnabled() && private_ip &&
         <div className={"log-stream-link"}>
           <a href={`http://${private_ip}/logger`}

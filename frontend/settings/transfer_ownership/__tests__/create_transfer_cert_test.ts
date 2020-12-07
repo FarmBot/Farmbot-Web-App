@@ -1,29 +1,28 @@
 const mockDevice = {
-  moveRelative: jest.fn(() => { return Promise.resolve(); }),
+  moveRelative: jest.fn(() => Promise.resolve()),
+  send: jest.fn(() => Promise.resolve()),
 };
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
-
-jest.mock("axios", () => {
-  return { post: jest.fn(() => ({ data: "FAKE CERT" })) };
-});
+jest.mock("axios", () => ({ post: jest.fn(() => ({ data: "FAKE CERT" })) }));
 
 import { createTransferCert } from "../create_transfer_cert";
 import { getDevice } from "../../../device";
 import axios from "axios";
 import { API } from "../../../api";
+import { TransferProps } from "../transfer_ownership";
+
 API.setBaseUrl("http://foo.bar");
-describe("createTransferCert", () => {
+
+describe("createTransferCert()", () => {
+  const fakeProps = (): TransferProps => ({
+    email: "admin@admin.com",
+    password: "password123",
+    device: getDevice(),
+  });
+
   it("creates a transfer cert", async () => {
-    const p = {
-      email: "admin@admin.com",
-      password: "password123",
-      server: "http://127.0.0.1:3000",
-      device: getDevice()
-    };
-    const x = await createTransferCert(p);
+    const x = await createTransferCert(fakeProps());
     expect(x).toBe("FAKE CERT");
     expect(axios.post).toHaveBeenCalled();
     const url = "http://foo.bar/api/users/control_certificate";

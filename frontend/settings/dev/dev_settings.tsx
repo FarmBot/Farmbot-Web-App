@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, BlurableInput } from "../../ui";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { DevSettings } from "./dev_support";
 
 export const DevWidgetFERow = () =>

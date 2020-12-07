@@ -22,8 +22,8 @@ const fakeCallback = (
       return;
     }
     expect(component.displayName).toContain("Connect");
-    expect(component.displayName).toContain(info?.key);
-    expect(component.WrappedComponent.name).toContain(info?.key);
+    expect(component.displayName).toContain(info?.key || "");
+    expect(component.WrappedComponent.name).toContain(info?.key || "");
     if (child && info?.children) {
       expect(child.displayName).toContain("Connect");
       expect(child.displayName).toContain(info.childKey);

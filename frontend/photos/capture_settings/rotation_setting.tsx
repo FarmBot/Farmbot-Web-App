@@ -2,7 +2,7 @@ import React from "react";
 import { ToolTips } from "../../constants";
 import { semverCompare, SemverResult } from "../../util";
 import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Help } from "../../ui";
 import { isUndefined } from "lodash";
 import { RotationSettingProps } from "./interfaces";

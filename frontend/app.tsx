@@ -131,18 +131,19 @@ export class RawApp extends React.Component<AppProps, {}> {
 
   render() {
     const syncLoaded = this.isLoaded;
-    const { location_data, mcu_params } = this.props.bot.hardware;
+    const { bot, dispatch, getConfigValue } = this.props;
+    const { location_data, mcu_params } = bot.hardware;
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
-      <HotKeys dispatch={this.props.dispatch} />
+      <HotKeys dispatch={dispatch} />
       {syncLoaded && <NavBar
         timeSettings={this.props.timeSettings}
         consistent={this.props.consistent}
         user={this.props.user}
-        bot={this.props.bot}
-        dispatch={this.props.dispatch}
+        bot={bot}
+        dispatch={dispatch}
         logs={this.props.logs}
-        getConfigValue={this.props.getConfigValue}
+        getConfigValue={getConfigValue}
         tour={this.props.tour}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
@@ -153,15 +154,16 @@ export class RawApp extends React.Component<AppProps, {}> {
       {syncLoaded && this.props.children}
       {showControlsPopup() &&
         <ControlsPopup
-          dispatch={this.props.dispatch}
+          dispatch={dispatch}
           axisInversion={this.props.axisInversion}
           botPosition={validBotLocationData(location_data).position}
           firmwareSettings={this.props.firmwareConfig || mcu_params}
           xySwap={this.props.xySwap}
-          arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
-          botOnline={isBotOnlineFromState(this.props.bot)}
+          arduinoBusy={!!bot.hardware.informational_settings.busy}
+          botOnline={isBotOnlineFromState(bot)}
           env={this.props.env}
-          stepSize={this.props.bot.stepSize} />}
+          doFindHome={!!getConfigValue(BooleanSetting.home_button_homing)}
+          stepSize={bot.stepSize} />}
     </div>;
   }
 }

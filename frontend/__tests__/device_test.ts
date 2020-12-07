@@ -1,13 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention
 class mockFarmbot { connect = () => Promise.resolve(this); }
+jest.mock("farmbot", () => ({ Farmbot: mockFarmbot }));
 
-jest.mock("farmbot", () => {
-  return { Farmbot: mockFarmbot };
-});
-
-import { fetchNewDevice } from "../device";
+import { fetchNewDevice, getDevice } from "../device";
 import { auth } from "../__test_support__/fake_state/token";
 import { get } from "lodash";
+
+describe("getDevice()", () => {
+  it("crashes if you call getDevice() too soon in the app lifecycle", () => {
+    expect(() => getDevice()).toThrow("NO DEVICE SET");
+  });
+});
 
 describe("fetchNewDevice", () => {
   it("returns an instance of FarmBot", async () => {

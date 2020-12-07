@@ -11,7 +11,7 @@ jest.mock("../../farm_designer/map/actions", () => ({
   setDragIcon: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
 } from "../crop_info";
@@ -122,7 +122,7 @@ describe("searchForCurrentCrop()", () => {
   it("searches", () => {
     mockPath = "/app/designer/plants/crop_search/mint";
     const dispatch = jest.fn();
-    const fakeOFSearch = jest.fn(() => jest.fn());
+    const fakeOFSearch = jest.fn((_) => jest.fn());
     searchForCurrentCrop(fakeOFSearch)(dispatch);
     expect(fakeOFSearch).toHaveBeenCalledWith("mint");
     expect(unselectPlant).toHaveBeenCalled();

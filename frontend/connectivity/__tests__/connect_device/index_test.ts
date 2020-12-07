@@ -204,7 +204,7 @@ describe("onReconnect()", () => {
 
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
-    const setUserEnv = jest.fn(() => Promise.resolve({}));
+    const setUserEnv = jest.fn((_) => Promise.resolve({}));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();

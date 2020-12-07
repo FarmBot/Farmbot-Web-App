@@ -1,5 +1,5 @@
 const mockClient = {
-  once: jest.fn((_: never, fn: Function) => { fn(); }),
+  once: jest.fn((_: string, fn: Function) => { fn(); }),
   on: jest.fn(),
   publish: jest.fn(),
   subscribe: jest.fn(),

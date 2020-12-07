@@ -5,18 +5,18 @@ jest.mock("../history", () => ({
 }));
 
 const mockDevice = {
-  moveRelative: jest.fn(() => Promise.resolve()),
+  moveRelative: jest.fn((_) => Promise.resolve()),
   takePhoto: jest.fn(() => Promise.resolve()),
 };
 jest.mock("../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { ControlsPopup, showControlsPopup } from "../controls_popup";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { ControlsPopupProps } from "../controls/move/interfaces";
 import { error } from "../toast/toast";
-import { Content, ToolTips } from "../constants";
+import { Actions, Content, ToolTips } from "../constants";
 
 describe("<ControlsPopup />", () => {
   const fakeProps = (): ControlsPopupProps => ({
@@ -29,6 +29,7 @@ describe("<ControlsPopup />", () => {
     stepSize: 100,
     botOnline: true,
     env: {},
+    doFindHome: false,
   });
 
   it("toggles open state", () => {
@@ -79,10 +80,21 @@ describe("<ControlsPopup />", () => {
       .toHaveBeenCalledWith({ x: 100, y: 0, z: 0 });
   });
 
+  it("changes step size", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ControlsPopup {...p} />);
+    wrapper.find("i").first().simulate("click");
+    wrapper.find("FBSelect").simulate("change", { label: "", value: 1 });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_STEP_SIZE,
+      payload: 1,
+    });
+  });
+
   it("takes photo", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
-    const btn = wrapper.find("button").at(4);
+    const btn = wrapper.find("button").at(6);
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
@@ -94,7 +106,7 @@ describe("<ControlsPopup />", () => {
     p.env = { camera: "NONE" };
     const wrapper = mount(<ControlsPopup {...p} />);
     wrapper.find("i").first().simulate("click");
-    const btn = wrapper.find("button").at(4);
+    const btn = wrapper.find("button").at(6);
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(

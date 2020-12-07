@@ -74,6 +74,30 @@
   }
 }
 
+.home-button {
+  i {
+    margin-top: -1rem;
+    font-size: 2rem;
+  }
+  .fa-stack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    .fa-stack-1x {
+      top: -1rem;
+      left: -1rem;
+      margin-top: 0;
+      font-size: 1rem;
+    }
+    .fa-stack-2x {
+      margin-top: 0;
+      font-size: 2rem;
+    }
+  }
+}
+
 // ABSOLUTE MOVES
 input {
   &.move-input {

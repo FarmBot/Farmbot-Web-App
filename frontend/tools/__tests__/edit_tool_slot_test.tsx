@@ -4,7 +4,7 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
+const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 let mockPath = "/app/designer/tool-slots/1";

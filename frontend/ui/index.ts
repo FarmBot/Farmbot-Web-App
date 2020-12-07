@@ -21,6 +21,7 @@ export * from "./right_panel";
 export * from "./row";
 export * from "./saucer";
 export * from "./save_button";
+export * from "./toggle_button";
 export * from "./tooltip";
 export * from "./widget";
 export * from "./widget_header";

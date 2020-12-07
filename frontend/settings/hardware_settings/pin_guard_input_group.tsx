@@ -3,7 +3,7 @@ import { McuInputBox } from "./mcu_input_box";
 import { PinGuardMCUInputGroupProps } from "./interfaces";
 import { Row, Col, Help } from "../../ui/index";
 import { settingToggle } from "../../devices/actions";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { PinNumberDropdown } from "./pin_number_dropdown";

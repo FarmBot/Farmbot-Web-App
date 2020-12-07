@@ -1,10 +1,10 @@
 const mockDevice = {
   rebootFirmware: jest.fn(() => Promise.resolve()),
-  flashFirmware: jest.fn(() => Promise.resolve()),
+  flashFirmware: jest.fn((_) => Promise.resolve()),
 };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Firmware } from "../firmware";
 import { FirmwareProps } from "../interfaces";

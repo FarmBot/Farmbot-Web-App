@@ -25,6 +25,7 @@ import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { linkToFbosSettings } from "../settings/maybe_highlight";
 import { push } from "../history";
+import { ToastOptions } from "../toast/interfaces";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -369,8 +370,12 @@ export function changeStepSize(integer: number) {
   };
 }
 
-export function badVersion(options = { noDismiss: true }) {
+export function badVersion(options: ToastOptions = { noDismiss: true }) {
   push(linkToFbosSettings());
-  error(t(Content.OLD_FBOS_UNSUPPORTED),
-    { title: t("Please Update"), noTimer: true, ...options });
+  error(t(Content.OLD_FBOS_UNSUPPORTED), {
+    title: t("Please Update"),
+    noTimer: true,
+    idPrefix: "EOL",
+    ...options,
+  });
 }

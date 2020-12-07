@@ -1,11 +1,11 @@
-import * as React from "react";
-import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
+import React from "react";
 import { mount, shallow } from "enzyme";
-import { Edit } from "../edit";
 import { SpecialStatus } from "farmbot";
+import { Edit } from "../edit";
+import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
 import { WebcamPanelProps } from "../interfaces";
-import { KeyValEditRow } from "../../key_val_edit_row";
+import { KeyValEditRow } from "../key_val_edit_row";
 
 describe("<Edit/>", () => {
   const fakeProps = (): WebcamPanelProps => {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../i18next_wrapper";
 import {
   DaySelection, EqCriteriaSelection, SubCriteriaSection,
@@ -10,7 +10,7 @@ import {
   PointerType,
   PointTypeSelectionProps,
 } from "./interfaces";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Popover } from "@blueprintjs/core";
 import { selectPoint } from "../../farm_designer/map/actions";
 import { FBSelect, Checkbox, Help } from "../../ui";
@@ -68,8 +68,6 @@ export class GroupCriteria extends
     const pointTypes = validPointTypes(criteria.string_eq.pointer_type) || [];
     return <div className="group-criteria">
       <label className="criteria-heading">{t("filters")}</label>
-      <Help text={t(ToolTips.CRITERIA_ALPHA_FEATURE)}
-        customIcon={"exclamation-triangle"} customClass={"alpha-icon"} />
       <Popover>
         <i className="fa fa-gear dark" />
         <this.AdvancedToggleMenu />

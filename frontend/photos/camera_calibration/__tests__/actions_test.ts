@@ -1,4 +1,4 @@
-const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
+const mockDevice = { execScript: jest.fn((..._) => Promise.resolve({})) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import { calibrate, scanImage } from "../actions";

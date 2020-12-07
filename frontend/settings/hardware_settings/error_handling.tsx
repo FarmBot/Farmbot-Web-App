@@ -7,7 +7,7 @@ import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "./mcu_input_box";
 import { settingToggle } from "../../devices/actions";
 import { SingleSettingRow } from "./single_setting_row";
-import { ToggleButton } from "../../controls/toggle_button";
+import { ToggleButton } from "../../ui/toggle_button";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { t } from "../../i18next_wrapper";

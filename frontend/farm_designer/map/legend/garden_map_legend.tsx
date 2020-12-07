@@ -18,7 +18,7 @@ import { Help } from "../../../ui";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
-import { ToggleButton } from "../../../controls/toggle_button";
+import { ToggleButton } from "../../../ui/toggle_button";
 import { ZDisplay, ZDisplayToggle } from "./z_display";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
