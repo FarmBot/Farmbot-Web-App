@@ -73,6 +73,7 @@ module Api
             diff_count = 0
             raw_json
               .except(*IRRELEVANT_ROW_LOCK_FIELDS)
+              .slice(*resource.class.column_names.map(&:to_sym))
               .to_a
               .each do |(key, value)|
               if resource[key] != raw_json[key]
@@ -90,7 +91,9 @@ module Api
     # you don't want to corrupt user data with stale records.
     def maybe_enforce_row_lock
       if stale_data?
-        current_device.delay.tell("== Discarding stale record #{resource.class.table_name}##{resource.id} #{resource.to_json}", ["error"])
+        current_device
+          .delay
+          .tell("Discarding stale record #{resource.class.table_name}##{resource.id} #{resource.to_json}", ["error"])
         render json: { stale_record: STALE_RECORD }, status: 409
       end
     end
