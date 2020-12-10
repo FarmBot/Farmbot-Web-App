@@ -5,7 +5,7 @@ class LogService < AbstractServiceRunner
   THROTTLE_POLICY = ThrottlePolicy.new(name, min: 250, hour: 5_000, day: 25_000)
 
   LOG_TPL = Rails.env.test? ?
-    "\e[32m.\e[0m" : "FBOS LOG (device_%s) [v%s]: %s\n"
+    "\e[32m.\e[0m" : "device_%s FBOS_LOG v%s %s\n"
   ERR_TPL = "MALFORMED LOG CAPTURE: %s"
   # Clean up excess logs in a non-deterministic manner.
   # Performs the slow DB query every nth request.
