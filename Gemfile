@@ -37,7 +37,7 @@ group :development, :test do
   gem "pry"
   gem "rspec-rails"
   gem "rspec"
-  gem 'rspec_junit_formatter'
+  gem "rspec_junit_formatter"
   gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
 end
