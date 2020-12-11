@@ -82,11 +82,12 @@ module FarmBot
         block_all_mixed_content: false, # :( Some webcam feeds use http://
         connect_src: connect_src,
         font_src: %w(
-          'self'
-          data:
           maxcdn.bootstrapcdn.com
-          fonts.googleapis.com
           fonts.gstatic.com
+          fonts.googleapis.com
+          data:
+          cdnjs.cloudflare.com
+          'self'
         ),
         form_action: %w('self'),
         frame_src: %w(*),       # We need "*" to support webcam users.
@@ -121,11 +122,6 @@ module FarmBot
           cdnjs.cloudflare.com
           'unsafe-inline'
           'self'
-        ),
-        font_src: %w(
-          cdnjs.cloudflare.com
-          fonts.gstatic.com
-          localhost:3000
         ),
         worker_src: %w(),
         upgrade_insecure_requests: false, # WHY? Some people run webcam feeds

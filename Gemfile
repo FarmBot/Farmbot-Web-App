@@ -8,7 +8,6 @@ gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
 gem "delayed_job"
 gem "devise"
 gem "discard"
-# gem "font-awesome-rails"
 gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
 gem "mutations"
