@@ -4,7 +4,6 @@ import {
   calendarRows,
 } from "../../__test_support__/farm_event_calendar_support";
 import { render, shallow, mount } from "enzyme";
-import { get } from "lodash";
 import { defensiveClone } from "../../util";
 import { FarmEventProps } from "../../farm_designer/interfaces";
 
@@ -15,17 +14,12 @@ describe("<PureFarmEvents/>", () => {
   });
 
   it("sorts items correctly", () => {
-    const results = render(<PureFarmEvents {...fakeProps()} />);
-    const rows = results
-      .find(".farm-event-data-time")
-      .toArray()
-      .map(x => x.children)
-      .map(x => x[0])
-      .map(x => get(x, "data", "NOT_FOUND"));
-    expect(rows).not.toContain("NOT_FOUND");
-    expect(rows.length).toEqual(21);
-    expect(rows[0]).toEqual("12:05pm");
-    expect(rows[2]).toEqual("02:00pm");
+    const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
+    const times = wrapper.find(".farm-event-data-time").map(x => x.text());
+    expect(times).not.toContain("");
+    expect(times.length).toEqual(21);
+    expect(times[0]).toEqual("12:05pm");
+    expect(times[2]).toEqual("02:00pm");
   });
 
   it("renders FarmEvent lacking a subheading", () => {
