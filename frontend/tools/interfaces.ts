@@ -4,8 +4,9 @@ import {
   TaggedDevice, TaggedSensor, Xyz,
 } from "farmbot";
 import { BotOriginQuadrant } from "../farm_designer/interfaces";
-import { BotState, BotPosition } from "../devices/interfaces";
+import { BotState, BotPosition, UserEnv } from "../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { SaveFarmwareEnv } from "../farmware/interfaces";
 
 export interface AddToolSlotState {
   uuid: UUID | undefined;
@@ -15,6 +16,8 @@ export interface AddToolProps {
   dispatch: Function;
   existingToolNames: string[];
   firmwareHardware: FirmwareHardware | undefined;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  env: UserEnv;
 }
 
 export interface AddToolState {
@@ -29,6 +32,8 @@ export interface EditToolProps {
   mountedToolId: number | undefined;
   isActive(id: number | undefined): boolean;
   existingToolNames: string[];
+  saveFarmwareEnv: SaveFarmwareEnv;
+  env: UserEnv;
 }
 
 export interface EditToolState {

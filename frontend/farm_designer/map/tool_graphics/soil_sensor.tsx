@@ -1,9 +1,10 @@
 import React from "react";
-import { trim } from "lodash";
+import { trim } from "../../../util";
 import { Color } from "../../../ui";
 import { ToolColor } from "./all_tools";
 import { SpecificToolProfileProps, ToolGraphicProps } from "./interfaces";
 import { ToolDimensions } from "./tool";
+import { round } from "lodash";
 
 enum SoilSensorDimensions {
   width = 24,
@@ -71,7 +72,7 @@ export const SoilSensorImplementProfile = (props: SpecificToolProfileProps) => {
   const baseLength = SoilSensorDimensions.baseLength;
   const gap = SoilSensorDimensions.gap;
   const legWidth = SoilSensorDimensions.legWidth;
-  const legH = legWidth / 3;
+  const legH = round(legWidth / 3, 2);
   const legV = SoilSensorDimensions.spikeLength;
   const legOffset = (gap + legWidth) / 2;
   const offset = (props.toolFlipped ? -1 : 1) * SoilSensorDimensions.offset;

@@ -1,11 +1,12 @@
 import React from "react";
 import { svgMount } from "../../../../__test_support__/svg_mount";
-import { ToolProfilePoint } from "../tools";
-import { ProfilePointProps } from "../interfaces";
+import { ToolProfilePoint, UTMProfile } from "../tools";
+import { ProfilePointProps, ProfileUtmProps } from "../interfaces";
 import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { TaggedToolSlotPointer } from "farmbot";
+import { fakeMountedToolInfo } from "../../../../__test_support__/fake_tool_info";
 
 describe("<ToolProfilePoint />", () => {
   const fakeProps = (): ProfilePointProps<TaggedToolSlotPointer> => ({
@@ -29,5 +30,36 @@ describe("<ToolProfilePoint />", () => {
     p.tools = [tool];
     const wrapper = svgMount(<ToolProfilePoint {...p} />);
     expect(wrapper.html()).toContain("seeder-implement-profile");
+  });
+});
+
+describe("<UTMProfile />", () => {
+  const fakeProps = (): ProfileUtmProps => ({
+    getX: () => 0,
+    profileAxis: "y",
+    reversed: false,
+    expanded: true,
+    selectionWidth: 100,
+    position: { x: 0, y: 0 },
+    botPosition: { x: 0, y: 0, z: 0 },
+    mountedToolInfo: fakeMountedToolInfo(),
+  });
+
+  it("renders front view", () => {
+    const p = fakeProps();
+    p.mountedToolInfo.name = "soil sensor";
+    p.profileAxis = "y";
+    const wrapper = svgMount(<UTMProfile {...p} />);
+    expect(wrapper.html()).toContain("front");
+    expect(wrapper.html()).not.toContain("side");
+  });
+
+  it("renders side view", () => {
+    const p = fakeProps();
+    p.mountedToolInfo.name = "soil sensor";
+    p.profileAxis = "x";
+    const wrapper = svgMount(<UTMProfile {...p} />);
+    expect(wrapper.html()).not.toContain("front");
+    expect(wrapper.html()).toContain("side");
   });
 });

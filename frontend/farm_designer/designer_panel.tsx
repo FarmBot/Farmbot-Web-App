@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { history as routeHistory } from "../history";
 import { last, trim } from "lodash";
 import { Link } from "../link";
@@ -66,9 +66,11 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
     </div>
 
     {(props.description || props.descriptionElement) &&
-      <div
-        className={trim(`panel-header-description ${props.panelName}-description
-          ${textColor}-text`)}>
+      <div className={[
+        "panel-header-description",
+        `${props.panelName}-description`,
+        `${textColor}-text`,
+      ].join(" ")}>
         {props.description && t(props.description)}
         {props.descriptionElement}
       </div>}

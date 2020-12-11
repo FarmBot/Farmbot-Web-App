@@ -14,6 +14,7 @@ import {
   getToolColor, reduceToolName, ToolImplementProfile, ToolName,
 } from "../tool_graphics/all_tools";
 import { TaggedToolSlotPointer } from "farmbot";
+import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
 
 export enum UTMDimensions {
   height = 40,
@@ -74,7 +75,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
 };
 
 /** Determine if tool direction is reversed. */
-const getToolDirection = (
+export const getToolDirection = (
   direction: ToolPulloutDirection | undefined,
   flipped: boolean,
   reversed: boolean,
@@ -100,17 +101,18 @@ const mirrorSlot = (
 };
 
 /** Determine toolbay slot view angle (front or side). */
-const slotPulloutAxis = (slotDirection: ToolPulloutDirection | undefined) => {
-  switch (slotDirection) {
-    case ToolPulloutDirection.NEGATIVE_X:
-    case ToolPulloutDirection.POSITIVE_X:
-    default:
-      return "x";
-    case ToolPulloutDirection.NEGATIVE_Y:
-    case ToolPulloutDirection.POSITIVE_Y:
-      return "y";
-  }
-};
+export const slotPulloutAxis =
+  (slotDirection: ToolPulloutDirection | undefined) => {
+    switch (slotDirection) {
+      case ToolPulloutDirection.NEGATIVE_X:
+      case ToolPulloutDirection.POSITIVE_X:
+      default:
+        return "x";
+      case ToolPulloutDirection.NEGATIVE_Y:
+      case ToolPulloutDirection.POSITIVE_Y:
+        return "y";
+    }
+  };
 
 /** Toolbay slot profile. */
 const SlotProfile = (props: SlotProfileProps) => {
@@ -123,7 +125,7 @@ const SlotProfile = (props: SlotProfileProps) => {
 };
 
 /** SVG tool profile element with color and label. */
-const ToolProfile = (props: ProfileToolProps) => {
+export const ToolProfile = (props: ProfileToolProps) => {
   const { toolName, x, y, width, height, sideView } = props;
   const toolType = reduceToolName(toolName);
   const fontColor = toolType == ToolName.seeder
@@ -151,6 +153,8 @@ const ToolProfile = (props: ProfileToolProps) => {
     <SlotProfile sideView={sideView}
       slotDirection={props.slotDirection} reversed={props.reversed}
       x={x} y={y} width={width} height={height} />
+    <CustomToolProfile toolName={toolName} sideView={sideView}
+      xToolMiddle={x + width / 2} yToolBottom={y + height} />
     <ToolImplementProfile x={x + width / 2} y={y + height} toolName={toolName}
       toolFlipped={props.toolFlipped} sideView={sideView} />
     {!(toolType == ToolName.seedTrough && !sideView) &&
@@ -159,10 +163,13 @@ const ToolProfile = (props: ProfileToolProps) => {
         stroke={"none"} fill={fontColor} fontWeight={"bold"}>
         {toolName}
       </text>}
-    <circle id={"point-coordinate-indicator"} opacity={0.5} fill={Color.darkGray}
-      cx={x + width / 2} cy={y} r={5} />
+    {(props.coordinate ?? true) &&
+      <circle id={"point-coordinate-indicator"}
+        opacity={0.5} fill={Color.darkGray}
+        cx={x + width / 2} cy={y} r={5} />}
   </g>;
 };
+
 
 /** Point -> tool profile with color and label (if applicable). */
 export const ToolProfilePoint =
@@ -177,11 +184,11 @@ export const ToolProfilePoint =
     const slotDirection = gantry_mounted
       ? ToolPulloutDirection.NONE
       : pullout_direction;
-    const sideView = props.profileAxis == slotPulloutAxis(slotDirection);
     return <ToolProfile toolName={toolName} reversed={props.reversed}
       x={props.getX(point.body) - width / 2} y={Math.abs(point.body.z)}
       width={width} height={ToolDimensions.thickness}
-      sideView={sideView} slotDirection={slotDirection}
+      sideView={props.profileAxis == slotPulloutAxis(slotDirection)}
+      slotDirection={slotDirection}
       toolFlipped={getToolDirection(
         pullout_direction,
         isToolFlipped(point.body.meta),

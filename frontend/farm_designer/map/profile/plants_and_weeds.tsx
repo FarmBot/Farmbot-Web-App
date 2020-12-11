@@ -30,7 +30,7 @@ export class PlantPoint
     const plantIconSize = scaleIcon(radius) * 2;
     const spreadRadius = (spreadDiaCm || defaultSpreadCmDia(radius)) / 2 * 10;
     const profileX = getX(point.body);
-    const profileY = soilHeight;
+    const profileY = point.body.z == 0 ? soilHeight : point.body.z;
     return <g id={"plant-profile-point"}>
       <defs>
         <radialGradient id={"plant-radius-gradient"}>

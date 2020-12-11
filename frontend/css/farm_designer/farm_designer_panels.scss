@@ -914,6 +914,14 @@
     .save-btn {
       float: right;
     }
+    details {
+      padding: 2rem;
+      .graphics-input {
+        input {
+          width: 97%;
+        }
+      }
+    }
   }
   .add-stock-tools {
     .filter-search {
@@ -1022,6 +1030,17 @@
   }
   .tool-direction-input {
     margin-top: 0;
+  }
+}
+
+.tool-svg {
+  display: flex;
+  div {
+    margin: auto;
+    text-align: center;
+    p {
+      font-style: italic;
+    }
   }
 }
 

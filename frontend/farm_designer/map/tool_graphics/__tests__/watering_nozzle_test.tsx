@@ -9,6 +9,7 @@ import {
 
 describe("<WateringNozzle />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "watering nozzle",
     x: 0,
     y: 0,
     hovered: false,

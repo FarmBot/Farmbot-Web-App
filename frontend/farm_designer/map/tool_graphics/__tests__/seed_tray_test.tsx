@@ -9,6 +9,7 @@ import {
 
 describe("<SeedTray />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "seed tray",
     x: 0,
     y: 0,
     hovered: false,

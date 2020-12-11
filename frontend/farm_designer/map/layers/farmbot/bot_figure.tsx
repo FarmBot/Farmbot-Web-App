@@ -40,6 +40,7 @@ export class BotFigure extends
 
   getToolProps(positionQ: { qx: number, qy: number }): ToolGraphicProps {
     return {
+      toolName: this.props.mountedToolInfo?.name,
       x: positionQ.qx,
       y: positionQ.qy,
       hovered: this.state.hovered,
