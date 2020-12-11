@@ -10,6 +10,7 @@ gem "devise"
 gem "discard"
 gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
+gem "kaminari"
 gem "mutations"
 gem "pg"
 gem "rabbitmq_http_api_client"
@@ -23,7 +24,6 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
-gem "kaminari"
 
 group :development, :test do
   gem "codecov", require: false
