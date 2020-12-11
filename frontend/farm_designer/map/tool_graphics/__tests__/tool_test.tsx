@@ -9,6 +9,7 @@ import {
 
 describe("<StandardTool />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "tool",
     x: 0,
     y: 0,
     hovered: false,
@@ -27,6 +28,7 @@ describe("<StandardTool />", () => {
 
 describe("<EmptySlot />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: undefined,
     x: 0,
     y: 0,
     hovered: false,

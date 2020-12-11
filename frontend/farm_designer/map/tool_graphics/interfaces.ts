@@ -5,6 +5,7 @@ import { BotOriginQuadrant } from "../../interfaces";
 import { ToolName } from "./all_tools";
 
 export interface ToolGraphicProps {
+  toolName: string | undefined;
   x: number;
   y: number;
   hovered: boolean;

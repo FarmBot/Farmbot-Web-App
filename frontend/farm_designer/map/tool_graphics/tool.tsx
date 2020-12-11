@@ -1,4 +1,5 @@
 import React from "react";
+import { CustomToolTop } from "../../../tools/custom_tool_graphics";
 import { Color } from "../../../ui";
 import { ToolGraphicProps } from "./interfaces";
 
@@ -17,6 +18,7 @@ export const StandardTool = (props: ToolGraphicProps) => {
       r={ToolDimensions.radius}
       fillOpacity={0.5}
       fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <CustomToolTop x={x} y={y} toolName={props.toolName} />
   </g>;
 };
 

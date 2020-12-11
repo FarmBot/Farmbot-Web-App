@@ -32,7 +32,7 @@ export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
 export const isPendingInstallation = (farmware: FarmwareManifestInfo | undefined) =>
   !farmware || farmware.installation_pending;
 
-const reduceFarmwareEnv =
+export const reduceFarmwareEnv =
   (ri: ResourceIndex): UserEnv => {
     const farmwareEnv: UserEnv = {};
     selectAllFarmwareEnvs(ri)

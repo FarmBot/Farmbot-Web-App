@@ -29,6 +29,7 @@ describe("<GantryToolSlot />", () => {
 
 describe("<SeedTrough />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "seed trough",
     x: 0,
     y: 0,
     hovered: false,
