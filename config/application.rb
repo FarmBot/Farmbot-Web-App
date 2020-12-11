@@ -105,21 +105,27 @@ module FarmBot
         ),
         plugin_types: %w(),
         script_src: [
-          "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-          "cdnjs.cloudflare.com",
-          "chrome-extension:",
-          "localhost:3808",
           PARCELJS_URL,
           "www.datadoghq-browser-agent.com",
+          "localhost:3808",
+          "chrome-extension:",
+          "cdnjs.cloudflare.com",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "'self'",
         ],
         style_src: %w(
-          'self'
-          'unsafe-inline'
-          fonts.googleapis.com
           maxcdn.bootstrapcdn.com
           fonts.gstatic.com
+          fonts.googleapis.com
+          cdnjs.cloudflare.com
+          'unsafe-inline'
+          'self'
+        ),
+        font_src: %w(
+          cdnjs.cloudflare.com
+          fonts.gstatic.com
+          localhost:3000
         ),
         worker_src: %w(),
         upgrade_insecure_requests: false, # WHY? Some people run webcam feeds

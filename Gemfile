@@ -1,14 +1,14 @@
 source "https://rubygems.org"
 ruby "~> 2.6.5"
 
-gem "rails"
+gem "rails", "6.0.3.4"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
 gem "delayed_job"
 gem "devise"
 gem "discard"
-gem "font-awesome-rails"
+# gem "font-awesome-rails"
 gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
 gem "mutations"

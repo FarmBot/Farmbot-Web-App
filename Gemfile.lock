@@ -116,8 +116,6 @@ GEM
       ruby2_keywords
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
-    font-awesome-rails (4.7.0.5)
-      railties (>= 3.2, < 6.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     google-api-client (0.51.0)
@@ -335,7 +333,6 @@ DEPENDENCIES
   discard
   factory_bot_rails
   faker
-  font-awesome-rails
   google-cloud-storage (~> 1.11)
   hashdiff
   jwt
@@ -348,7 +345,7 @@ DEPENDENCIES
   rabbitmq_http_api_client
   rack-attack
   rack-cors
-  rails
+  rails (= 6.0.3.4)
   rails_12factor
   redis (~> 4.0)
   request_store
