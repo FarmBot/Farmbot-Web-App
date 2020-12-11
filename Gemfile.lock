@@ -107,6 +107,7 @@ GEM
     discard (1.2.0)
       activerecord (>= 4.2, < 7)
     docile (1.3.2)
+    e2mmap (0.1.0)
     erubi (1.10.0)
     factory_bot (6.1.0)
       activesupport (>= 5.0.0)
@@ -308,6 +309,8 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     thor (1.0.1)
+    thwait (0.2.0)
+      e2mmap
     tzinfo (2.0.3)
       concurrent-ruby (~> 1.0)
     uber (0.1.0)
@@ -360,6 +363,7 @@ DEPENDENCIES
   secure_headers
   simplecov
   smarf_doc!
+  thwait
   tzinfo
   valid_url
 
