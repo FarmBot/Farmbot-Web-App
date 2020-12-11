@@ -4,7 +4,7 @@ ruby "~> 2.7.2"
 gem "rails"
 gem "active_model_serializers"
 gem "bunny"
-gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
+gem "delayed_job_active_record"
 gem "delayed_job"
 gem "devise"
 gem "discard"
