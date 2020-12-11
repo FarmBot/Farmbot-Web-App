@@ -154,7 +154,7 @@ export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">
-    <ToolSlotSVG toolSlot={props.toolSlot}
+    <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
       toolName={props.tool ? props.tool.body.name : "Empty"}
       toolTransformProps={props.toolTransformProps} />
     <SlotLocationInputRow

@@ -18,12 +18,18 @@ import {
 import { getFbosConfig } from "../resources/getters";
 import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { AddToolProps, AddToolState } from "./interfaces";
+import {
+  reduceFarmwareEnv, saveOrEditFarmwareEnv,
+} from "../farmware/state_to_props";
+import { CustomToolGraphicsInput } from "./custom_tool_graphics";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
   existingToolNames: betterCompact(selectAllTools(props.resources.index)
     .map(tool => tool.body.name)),
   firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
+  saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
+  env: reduceFarmwareEnv(props.resources.index),
 });
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
@@ -142,7 +148,12 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool">
-          <ToolSVG toolName={this.state.toolName} />
+          <ToolSVG toolName={this.state.toolName} profile={true} />
+          <CustomToolGraphicsInput
+            toolName={this.state.toolName}
+            dispatch={this.props.dispatch}
+            saveFarmwareEnv={this.props.saveFarmwareEnv}
+            env={this.props.env} />
           <label>{t("Name")}</label>
           <input defaultValue={this.state.toolName}
             name="name"

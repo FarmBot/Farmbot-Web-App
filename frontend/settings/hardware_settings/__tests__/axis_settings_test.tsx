@@ -117,19 +117,9 @@ describe("<AxisSettings />", () => {
 
   it("shows z height inputs", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.controlPanelState.axis_settings = true;
     const wrapper = mount(<AxisSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("safe height");
     expect(wrapper.text().toLowerCase()).toContain("soil height");
-  });
-
-  it("doesn't show z height inputs", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    p.controlPanelState.axis_settings = true;
-    const wrapper = mount(<AxisSettings {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("safe height");
-    expect(wrapper.text().toLowerCase()).not.toContain("soil height");
   });
 });

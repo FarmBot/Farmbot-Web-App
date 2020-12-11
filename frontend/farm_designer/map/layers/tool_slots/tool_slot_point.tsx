@@ -31,6 +31,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
   const toolName = tool ? tool.body.name : t("Empty");
   const hovered = toolSlot.uuid === props.hoveredToolSlot;
   const toolProps = {
+    toolName,
     x: qx,
     y: qy,
     hovered,

@@ -27,9 +27,21 @@ describe("<PlantPoint />", () => {
 
   it("renders plant point", () => {
     mockSpread = 100;
-    const wrapper = svgMount(<PlantPoint {...fakeProps()} />);
+    const p = fakeProps();
+    p.point.body.z = 0;
+    p.soilHeight = 200;
+    const wrapper = svgMount(<PlantPoint {...p} />);
     expect(wrapper.find("#plant-profile-point").length).toEqual(1);
     expect(wrapper.find("#spread-profile").length).toEqual(1);
+    expect(wrapper.find("#point-coordinate-indicator").props().cy).toEqual(200);
+  });
+
+  it("renders plant point at z", () => {
+    const p = fakeProps();
+    p.point.body.z = 100;
+    p.soilHeight = 200;
+    const wrapper = svgMount(<PlantPoint {...p} />);
+    expect(wrapper.find("#point-coordinate-indicator").props().cy).toEqual(100);
   });
 
   it("renders default spread", () => {

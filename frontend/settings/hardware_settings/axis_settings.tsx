@@ -19,7 +19,6 @@ import {
   settingRequiredLabel, encodersOrLimitSwitchesRequired,
 } from "./encoders_or_stall_detection";
 import { SafeHeight, SoilHeight } from "../fbos_settings/z_height_inputs";
-import { Feature } from "../../devices/interfaces";
 
 export function AxisSettings(props: AxisSettingsProps) {
 
@@ -145,14 +144,12 @@ export function AxisSettings(props: AxisSettingsProps) {
         }}
         disabledBy={settingRequiredLabel([DeviceSetting.stopAtMax])}
         intSize={"long"} />
-      {props.shouldDisplay(Feature.safe_height_input) &&
-        <SafeHeight
-          dispatch={dispatch}
-          sourceFbosConfig={props.sourceFbosConfig} />}
-      {props.shouldDisplay(Feature.soil_height) &&
-        <SoilHeight
-          dispatch={dispatch}
-          sourceFbosConfig={props.sourceFbosConfig} />}
+      <SafeHeight
+        dispatch={dispatch}
+        sourceFbosConfig={props.sourceFbosConfig} />
+      <SoilHeight
+        dispatch={dispatch}
+        sourceFbosConfig={props.sourceFbosConfig} />
     </Collapse>
   </Highlight>;
 }

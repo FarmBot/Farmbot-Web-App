@@ -18,6 +18,10 @@ import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { error } from "../toast/toast";
 import { EditToolProps, EditToolState } from "./interfaces";
 import { betterCompact } from "../util";
+import { CustomToolGraphicsInput } from "./custom_tool_graphics";
+import {
+  reduceFarmwareEnv, saveOrEditFarmwareEnv,
+} from "../farmware/state_to_props";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -32,6 +36,8 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
   isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
   existingToolNames: betterCompact(selectAllTools(props.resources.index)
     .map(tool => tool.body.name)),
+  saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
+  env: reduceFarmwareEnv(props.resources.index),
 });
 
 export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
@@ -61,7 +67,12 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
       .filter(x => x != tool.body.name).includes(this.state.toolName);
     return <this.PanelWrapper>
       <div className="edit-tool">
-        <ToolSVG toolName={this.state.toolName} />
+        <ToolSVG toolName={this.state.toolName} profile={true} />
+        <CustomToolGraphicsInput
+          toolName={this.state.toolName}
+          dispatch={this.props.dispatch}
+          saveFarmwareEnv={this.props.saveFarmwareEnv}
+          env={this.props.env} />
         <label>{t("Name")}</label>
         <input name="name"
           value={toolName}

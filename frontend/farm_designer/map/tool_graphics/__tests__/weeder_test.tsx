@@ -9,6 +9,7 @@ import {
 
 describe("<Weeder />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "weeder",
     x: 0,
     y: 0,
     hovered: false,

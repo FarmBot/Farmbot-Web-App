@@ -1,5 +1,5 @@
 import React from "react";
-import { trim } from "lodash";
+import { trim } from "../../../util";
 import { Color } from "../../../ui";
 import { ToolColor } from "./all_tools";
 import { SpecificToolProfileProps, ToolGraphicProps } from "./interfaces";
