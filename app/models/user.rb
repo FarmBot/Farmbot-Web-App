@@ -69,17 +69,17 @@ class User < ApplicationRecord
     end
   end
 
-  def aaa
+  def reactivated?
     reload.last_sign_in_at > 3.months.ago
   end
 
-  def bbb
+  def halt_deactivation
     email = self.email
     puts "CANCEL DEACTIVATION FOR #{email}" unless Rails.env.test?
     update!(inactivity_warning_sent_at: nil)
   end
 
-  def ccc
+  def goodbye_forever
     email = self.email
     # Prevent double deletion / race conditions.
     update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
@@ -90,11 +90,10 @@ class User < ApplicationRecord
 
   def deactivate_account
     User.transaction do
-      email = self.email
-      if aaa
-        bbb
+      if reactivated?
+        halt_deactivation
       else
-        ccc
+        goodbye_forever
       end
     end
   end
