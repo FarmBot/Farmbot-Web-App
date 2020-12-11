@@ -1,14 +1,13 @@
 source "https://rubygems.org"
-ruby "~> 2.6.5"
+ruby "~> 2.7.2"
 
-gem "rails", "6.0.3.4"
+gem "rails"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
 gem "delayed_job"
 gem "devise"
 gem "discard"
-# gem "font-awesome-rails"
 gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
 gem "mutations"
@@ -27,8 +26,8 @@ gem "valid_url"
 gem "kaminari"
 
 group :development, :test do
-  gem "climate_control"
   gem "codecov", require: false
+  gem "climate_control"
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "faker"

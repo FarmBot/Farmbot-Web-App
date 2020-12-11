@@ -69,19 +69,32 @@ class User < ApplicationRecord
     end
   end
 
+  def aaa
+    reload.last_sign_in_at > 3.months.ago
+  end
+
+  def bbb
+    email = self.email
+    puts "CANCEL DEACTIVATION FOR #{email}" unless Rails.env.test?
+    update!(inactivity_warning_sent_at: nil)
+  end
+
+  def ccc
+    email = self.email
+    # Prevent double deletion / race conditions.
+    update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
+    self.device.update!(mounted_tool_id: nil)
+    delay.destroy!
+    puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
+  end
+
   def deactivate_account
     User.transaction do
       email = self.email
-      if reload.last_sign_in_at > 3.months.ago
-        puts "CANCEL DEACTIVATION FOR #{email}" unless Rails.env.test?
-        update!(inactivity_warning_sent_at: nil)
-        return # <== DON'T DELETE THIS LINE!!!
+      if aaa
+        bbb
       else
-        # Prevent double deletion / race conditions.
-        update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
-        self.device.update!(mounted_tool_id: nil)
-        delay.destroy!
-        puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
+        ccc
       end
     end
   end
