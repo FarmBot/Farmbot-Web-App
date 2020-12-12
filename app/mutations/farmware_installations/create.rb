@@ -1,9 +1,8 @@
 module FarmwareInstallations
   class Create < Mutations::Command
-
     required do
       string :url
-      model  :device, class: Device
+      model :device, class: Device
     end
 
     def execute
@@ -12,10 +11,10 @@ module FarmwareInstallations
       fwi
     end
 
-  private
+    private
+
     def create_params
-      @create_params ||= { url:     url,
-                           device:  device }
+      @create_params ||= { url: url, device: device }
     end
   end
 end

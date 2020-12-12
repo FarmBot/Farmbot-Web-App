@@ -43,7 +43,10 @@ class Image < ApplicationRecord
   has_one_attached :attachment
 
   def set_attachment_by_url(url)
-    attachment.attach(io: URI.open(url), filename: "image_#{self.id}")
+    io = URI.open(url)
+    fname = "image_#{self.id}"
+    params = { io: io, filename: fname }
+    attachment.attach(**params)
     self.attachment_processed_at = Time.now
     self
   end
