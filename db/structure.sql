@@ -1428,7 +1428,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -2688,10 +2688,10 @@ CREATE INDEX index_fragments_on_device_id ON public.fragments USING btree (devic
 
 
 --
--- Name: index_fragments_on_owner_type_and_owner_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fragments_on_owner; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fragments_on_owner_type_and_owner_id ON public.fragments USING btree (owner_type, owner_id);
+CREATE INDEX index_fragments_on_owner ON public.fragments USING btree (owner_type, owner_id);
 
 
 --
