@@ -9,6 +9,7 @@ import {
 
 describe("<SoilSensor />", () => {
   const fakeProps = (): ToolGraphicProps => ({
+    toolName: "soil sensor",
     x: 0,
     y: 0,
     hovered: false,

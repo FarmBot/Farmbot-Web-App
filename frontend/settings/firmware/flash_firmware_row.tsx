@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui/index";
 import { DeviceSetting } from "../../constants";
 import { FlashFirmwareRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
-import { trim } from "lodash";
+import { trim } from "../../util";
 import { FlashFirmwareBtn, lookup } from "./firmware_hardware_status";
 
 export class FlashFirmwareRow extends React.Component<FlashFirmwareRowProps> {

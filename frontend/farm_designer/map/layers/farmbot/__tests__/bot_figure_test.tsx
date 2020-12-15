@@ -140,6 +140,7 @@ describe("<BotFigure/>", () => {
     expect(wrapper.find<BotFigure>(BotFigure).instance()
       .getToolProps({ qx: 0, qy: 0 }))
       .toEqual({
+        toolName: "fake mounted tool",
         dispatch: expect.any(Function),
         hovered: false,
         pulloutDirection: ToolPulloutDirection.NEGATIVE_X,

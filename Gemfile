@@ -1,16 +1,16 @@
 source "https://rubygems.org"
-ruby "~> 2.6.5"
+ruby "~> 2.7.2"
 
 gem "rails"
 gem "active_model_serializers"
 gem "bunny"
-gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
+gem "delayed_job_active_record"
 gem "delayed_job"
 gem "devise"
 gem "discard"
-gem "font-awesome-rails"
 gem "google-cloud-storage", "~> 1.11"
 gem "jwt"
+gem "kaminari"
 gem "mutations"
 gem "pg"
 gem "rabbitmq_http_api_client"
@@ -24,11 +24,11 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
-gem "kaminari"
+gem "thwait"
 
 group :development, :test do
-  gem "climate_control"
   gem "codecov", require: false
+  gem "climate_control"
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "faker"
@@ -37,7 +37,7 @@ group :development, :test do
   gem "pry"
   gem "rspec-rails"
   gem "rspec"
-  gem 'rspec_junit_formatter'
+  gem "rspec_junit_formatter"
   gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
 end

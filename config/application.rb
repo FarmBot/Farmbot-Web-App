@@ -82,11 +82,12 @@ module FarmBot
         block_all_mixed_content: false, # :( Some webcam feeds use http://
         connect_src: connect_src,
         font_src: %w(
-          'self'
-          data:
           maxcdn.bootstrapcdn.com
-          fonts.googleapis.com
           fonts.gstatic.com
+          fonts.googleapis.com
+          data:
+          cdnjs.cloudflare.com
+          'self'
         ),
         form_action: %w('self'),
         frame_src: %w(*),       # We need "*" to support webcam users.
@@ -105,21 +106,22 @@ module FarmBot
         ),
         plugin_types: %w(),
         script_src: [
-          "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-          "cdnjs.cloudflare.com",
-          "chrome-extension:",
-          "localhost:3808",
           PARCELJS_URL,
           "www.datadoghq-browser-agent.com",
+          "localhost:3808",
+          "chrome-extension:",
+          "cdnjs.cloudflare.com",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "'self'",
         ],
         style_src: %w(
-          'self'
-          'unsafe-inline'
-          fonts.googleapis.com
           maxcdn.bootstrapcdn.com
           fonts.gstatic.com
+          fonts.googleapis.com
+          cdnjs.cloudflare.com
+          'unsafe-inline'
+          'self'
         ),
         worker_src: %w(),
         upgrade_insecure_requests: false, # WHY? Some people run webcam feeds

@@ -8,7 +8,7 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -24,6 +24,8 @@ describe("<AddTool />", () => {
     dispatch: jest.fn(),
     existingToolNames: [],
     firmwareHardware: undefined,
+    saveFarmwareEnv: jest.fn(),
+    env: {},
   });
 
   it("renders", () => {

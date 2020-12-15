@@ -135,6 +135,7 @@ export interface ProfileToolProps {
   slotDirection?: ToolPulloutDirection;
   reversed: boolean;
   toolFlipped: boolean;
+  coordinate?: boolean;
 }
 
 export interface SlotProfileProps {

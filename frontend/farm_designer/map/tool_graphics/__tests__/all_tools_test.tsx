@@ -25,6 +25,7 @@ describe("<Tool />", () => {
   const fakeProps = (): ToolProps => ({
     tool: ToolName.seeder,
     toolProps: {
+      toolName: "seeder",
       x: 10,
       y: 20,
       hovered: false,

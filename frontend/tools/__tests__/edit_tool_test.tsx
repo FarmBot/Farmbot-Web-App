@@ -10,7 +10,7 @@ jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditTool as EditTool, mapStateToProps, isActive,
@@ -39,6 +39,8 @@ describe("<EditTool />", () => {
     mountedToolId: undefined,
     isActive: jest.fn(),
     existingToolNames: [],
+    saveFarmwareEnv: jest.fn(),
+    env: {},
   });
 
   it("renders", () => {

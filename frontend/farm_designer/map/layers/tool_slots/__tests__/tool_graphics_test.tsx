@@ -90,6 +90,7 @@ describe("<ToolbaySlot />", () => {
 
 describe("<RotatedTool/>", () => {
   const fakeToolProps = (): ToolGraphicProps => ({
+    toolName: "tool",
     x: 10,
     y: 20,
     hovered: false,
@@ -309,6 +310,15 @@ describe("<ToolSlotSVG />", () => {
     p.toolSlot.body.pullout_direction = ToolPulloutDirection.POSITIVE_X;
     const wrapper = shallow(<ToolSlotSVG {...p} />);
     expect(wrapper.find(ToolbaySlot).length).toEqual(1);
+    expect(wrapper.html()).not.toContain("side");
+  });
+
+  it("renders slot side", () => {
+    const p = fakeProps();
+    p.profile = true;
+    p.toolSlot.body.pullout_direction = ToolPulloutDirection.POSITIVE_Y;
+    const wrapper = shallow(<ToolSlotSVG {...p} />);
+    expect(wrapper.html()).toContain("side");
   });
 
   it("doesn't render slot", () => {

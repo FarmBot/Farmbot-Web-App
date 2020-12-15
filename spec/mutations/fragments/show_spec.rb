@@ -77,10 +77,9 @@ describe Fragments::Create do
                kind: "internal_farm_event",
                args: {},
                body: body }
-
-    old_logger = config.logger
+    old_logger = Rails.application.config.logger
     spy_logger = StubLog.new
-    config.logger = spy_logger
+    Rails.application.config.logger = spy_logger
     fragment = Fragments::Create.run!(device: device,
                                       owner: farm_event,
                                       flat_ast: Fragments::Preprocessor.run!(**origin))
@@ -95,6 +94,6 @@ describe Fragments::Create do
     # * you have introduced some other issue that's causing rails to
     #   create debug logs (coincidence?)
     expect(spy_logger.count).to be < 14 # See note above
-    config.logger = old_logger
+    Rails.application.config.logger = old_logger
   end
 end
