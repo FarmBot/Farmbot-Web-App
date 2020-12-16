@@ -29,7 +29,9 @@ module Devices
     end
 
     def devices
-      eligible_devices.where(last_saw_api: time_window)
+      eligible_devices
+        .where(last_saw_api: time_window)
+        .where("last_ota_attempt_at > ?", lower_limit - 30.minutes)
     end
   end
 end
