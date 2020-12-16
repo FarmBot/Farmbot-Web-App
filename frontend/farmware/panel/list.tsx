@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
@@ -13,6 +13,7 @@ import { Content, Actions } from "../../constants";
 import { generateFarmwareDictionary } from "../state_to_props";
 import { Link } from "../../link";
 import { farmwareUrlFriendly } from "../set_active_farmware_by_name";
+import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 
 export interface DesignerFarmwareListProps {
   dispatch: Function;
@@ -44,6 +45,7 @@ export class RawDesignerFarmwareList
   render() {
     const farmwareNames = Object.values(this.props.farmwares)
       .map(fw => fw.name)
+      .filter(farmwareName => farmwareName != FarmwareName.MeasureSoilHeight)
       .filter(fwName => !this.props.firstPartyFarmwareNames.includes(fwName));
     const panelName = "designer-farmware-list";
     return <DesignerPanel panelName={panelName} panel={Panel.Farmware}>

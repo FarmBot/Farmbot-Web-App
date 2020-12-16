@@ -13,9 +13,9 @@ import {
   FarmwareForm, FarmwareFormProps, ConfigFields, ConfigFieldsProps,
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
-import { clickButton } from "../../__test_support__/helpers";
+import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { FarmwareConfig } from "farmbot";
-import { ExpandableHeader } from "../../ui";
+import { ExpandableHeader, FBSelect } from "../../ui";
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { destroy } from "../../api/crud";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
@@ -56,18 +56,16 @@ describe("farmwareHelpText()", () => {
 });
 
 describe("<ConfigFields />", () => {
-  const fakeProps = (): ConfigFieldsProps => {
-    return {
-      farmwareName: fakeFarmware().name,
-      farmwareConfigs: fakeFarmware().config,
-      getValue: jest.fn(),
-      dispatch: jest.fn(),
-      shouldDisplay: () => false,
-      saveFarmwareEnv: jest.fn(),
-      userEnv: {},
-      farmwareEnvs: [],
-    };
-  };
+  const fakeProps = (): ConfigFieldsProps => ({
+    farmwareName: fakeFarmware().name,
+    farmwareConfigs: fakeFarmware().config,
+    getValue: jest.fn(),
+    dispatch: jest.fn(),
+    shouldDisplay: () => false,
+    saveFarmwareEnv: jest.fn(),
+    userEnv: {},
+    farmwareEnvs: [],
+  });
 
   it("renders fields", () => {
     const p = fakeProps();
@@ -78,34 +76,44 @@ describe("<ConfigFields />", () => {
 
   it("changes field", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ConfigFields {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: 1 } });
+    const wrapper = mount(<ConfigFields {...p} />);
+    changeBlurableInput(wrapper, "1");
     expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
-      "my_fake_farmware_config_1": 1
+      "my_fake_farmware_config_1": "1"
     });
   });
 
   it("handles change field error", () => {
     mockDevice.setUserEnv = jest.fn((_) => Promise.reject());
     const p = fakeProps();
-    const wrapper = shallow(<ConfigFields {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: 1 } });
+    const wrapper = mount(<ConfigFields {...p} />);
+    changeBlurableInput(wrapper, "1");
     expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
-      "my_fake_farmware_config_1": 1
+      "my_fake_farmware_config_1": "1"
     });
   });
 
   it("changes env var in API", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    const wrapper = shallow(<ConfigFields {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: 1 } });
+    const wrapper = mount(<ConfigFields {...p} />);
+    changeBlurableInput(wrapper, "1");
     expect(mockDevice.setUserEnv).not.toHaveBeenCalled();
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
-      "my_fake_farmware_config_1", 1);
+      "my_fake_farmware_config_1", "1");
+  });
+
+  it("changes env var via dropdown", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.farmwareName = FarmwareName.MeasureSoilHeight;
+    p.farmwareConfigs[0].name = "verbose";
+    const wrapper = shallow(<ConfigFields {...p} />);
+    const input = shallow(wrapper.find("FarmwareInputField").getElement());
+    input.find(FBSelect).simulate("change", { label: "", value: 1 });
+    expect(mockDevice.setUserEnv).not.toHaveBeenCalled();
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
+      "measure_soil_height_verbose", "1");
   });
 
   it("updates to bot value", () => {

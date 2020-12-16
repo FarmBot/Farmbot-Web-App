@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, ExpandableHeader } from "../ui";
+import { BlurableInput, DropDownItem, ExpandableHeader, FBSelect } from "../ui";
 import { Pair, FarmwareConfig, TaggedFarmwareEnv } from "farmbot";
 import { getDevice } from "../device";
 import { ShouldDisplay, Feature, UserEnv } from "../devices/interfaces";
@@ -40,6 +40,59 @@ export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined):
   return "";
 }
 
+enum DropdownInput {
+  images = "verbose",
+  logs = "log_verbosity",
+}
+
+const OPTION_DDIS = (): Record<DropdownInput, DropDownItem[]> => ({
+  verbose: [
+    { label: t("none"), value: 0 },
+    { label: t("single input"), value: 1 },
+    { label: t("colorized depth"), value: 2 },
+    { label: t("grayscale depth"), value: 3 },
+    { label: t("stereo inputs"), value: 4 },
+    { label: t("collage"), value: 5 },
+  ],
+  log_verbosity: [
+    { label: t("none"), value: 0 },
+    { label: t("result toast"), value: 1 },
+    { label: t("debug logs"), value: 2 },
+  ]
+});
+
+interface FarmwareInputFieldProps {
+  farmwareName: string;
+  configName: string;
+  value: string;
+  shouldDisplay: ShouldDisplay;
+  saveEnv(value: string): void;
+}
+
+const FarmwareInputField = (props: FarmwareInputFieldProps) => {
+  const configEnvName = getConfigEnvName(props.farmwareName, props.configName);
+  if (props.farmwareName == FarmwareName.MeasureSoilHeight) {
+    switch (props.configName) {
+      case DropdownInput.images:
+      case DropdownInput.logs:
+        const options = OPTION_DDIS()[props.configName];
+        return <FBSelect
+          key={props.value}
+          list={options}
+          selectedItem={options[parseInt(props.value)]}
+          onChange={ddi => props.saveEnv("" + ddi.value)} />;
+    }
+  }
+  return <BlurableInput type={"text"}
+    onCommit={e => {
+      const value = e.currentTarget.value;
+      props.shouldDisplay(Feature.api_farmware_env)
+        ? props.saveEnv(value)
+        : getDevice().setUserEnv({ [configEnvName]: value }).catch(() => { });
+    }}
+    value={props.value} />;
+};
+
 export interface ConfigFieldsProps {
   farmwareName: string;
   farmwareConfigs: FarmwareConfig[];
@@ -53,38 +106,31 @@ export interface ConfigFieldsProps {
 
 /** Return a div that includes all Farmware input fields. */
 export function ConfigFields(props: ConfigFieldsProps): JSX.Element {
-
-  /** Set a Farmware input value on FBOS. */
-  function inputChange(key: string) {
-    return (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const value = e.currentTarget.value;
-      props.shouldDisplay(Feature.api_farmware_env)
-        ? props.dispatch(props.saveFarmwareEnv(key, value))
-        : getDevice().setUserEnv({ [key]: value }).catch(() => { });
-    };
-  }
-
   const { farmwareName, farmwareConfigs, getValue, userEnv } = props;
   return <div className={"farmware-config-fields"}>
     {farmwareConfigs.map(config => {
-      const configEnvName =
-        getConfigEnvName(farmwareName, config.name);
+      const configEnvName = getConfigEnvName(farmwareName, config.name);
+      const saveEnv = (value: string) =>
+        props.dispatch(props.saveFarmwareEnv(configEnvName, value));
       const value = getValue(farmwareName, config);
       const botValue = userEnv[configEnvName];
-      return <div key={config.name} id={config.name}>
+      const dropdown = farmwareName == FarmwareName.MeasureSoilHeight
+        && Object.values(DropdownInput).includes(config.name as DropdownInput);
+      return <div key={config.name} id={config.name} className={"config-field"}>
         <label>{config.label}</label>
-        <div className={"farmware-input-group"}>
-          <BlurableInput type="text"
-            onCommit={inputChange(configEnvName)}
-            value={value} />
+        <div className={`farmware-input-group ${dropdown ? "dropdown" : ""}`}>
+          <FarmwareInputField
+            farmwareName={farmwareName}
+            configName={config.name}
+            value={value}
+            shouldDisplay={props.shouldDisplay}
+            saveEnv={saveEnv} />
           {botValue && !(value == botValue) &&
             <i className="fa fa-refresh" title={t("update to FarmBot's value")}
-              onClick={() => props.dispatch(props.saveFarmwareEnv(
-                configEnvName, botValue))} />}
+              onClick={() => saveEnv(botValue)} />}
           {!(value == config.value) &&
             <i className="fa fa-times-circle" title={t("reset to default")}
-              onClick={() => props.dispatch(props.saveFarmwareEnv(
-                configEnvName, config.value.toString()))} />}
+              onClick={() => saveEnv(config.value.toString())} />}
         </div>
       </div>;
     })}
@@ -206,8 +252,8 @@ export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
 /** Get a Farmware input value from FBOS. */
 const getValue = (env: UserEnv) =>
   (farmwareName: string, currentConfig: FarmwareConfig) =>
-    (env[getConfigEnvName(farmwareName, currentConfig.name)]
-      || toString(currentConfig.value));
+    env[getConfigEnvName(farmwareName, currentConfig.name)]
+    || toString(currentConfig.value);
 
 /** Execute a Farmware using the provided inputs. */
 const run = (env: UserEnv) =>

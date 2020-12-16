@@ -32,9 +32,15 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   });
   const byColor = groupByColor(profilePoints, profileAxis);
   const width = ceil(props.botSize[profileAxis].value + 1, -2);
-  const height = ceil(props.botSize.z.value + 1, -2);
   const soilHeight = getFbosZValue(props.sourceFbosConfig, "soil_height");
   const safeHeight = getFbosZValue(props.sourceFbosConfig, "safe_height");
+  const maxHeight = Math.max(
+    props.botSize.z.value + 1,
+    Math.max(...props.allPoints.map(p => Math.abs(p.body.z))),
+    soilHeight,
+    safeHeight,
+  );
+  const height = ceil(maxHeight, -2);
   const getX = getProfileX({ profileAxis, mapTransformProps, width });
   const reversed = flipProfile({ profileAxis, mapTransformProps });
   return <svg className={expanded ? "expand" : undefined}
@@ -48,6 +54,10 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
       y={soilHeight} width={width} expanded={expanded} />
     <LabeledHorizontalLine id={"safe-height"} label={t("safe")}
       color={Color.blue} y={safeHeight} width={width} expanded={expanded} />
+    {!props.botSize.z.isDefault &&
+      <LabeledHorizontalLine id={"z-max-height"} label={t("max")} dashed={true}
+        color={Color.gray} y={props.botSize.z.value} width={width}
+        expanded={expanded} />}
     {byColor.map((points, colorIndex) =>
       <g id={`${points[0].body.meta.color}-color-points`} key={colorIndex}>
         {points.map((point, index) => {
@@ -86,6 +96,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
 const LabeledHorizontalLine = (props: LabeledHorizontalLineProps) =>
   <g id={props.id}>
     <line strokeWidth={3} stroke={props.color}
+      strokeDasharray={props.dashed ? 10 : undefined}
       x1={0} y1={props.y} x2={props.width} y2={props.y} />
     {props.expanded && <text x={props.width - 5} y={props.y - 5}
       dominantBaseline={"bottom"} textAnchor={"end"}

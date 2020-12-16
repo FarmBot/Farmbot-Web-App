@@ -1646,16 +1646,30 @@ ul {
 .farmware-input-group {
   position: relative;
   margin-left: 3rem;
-  i {
+  .fa-times-circle,
+  .fa-refresh {
     position: absolute;
     top: 0.85rem;
-    right: 1rem;
     color: $light_gray;
     &:hover {
       color: $dark_gray;
     }
-    &.fa-refresh {
+  }
+  .fa-times-circle {
+    right: 1rem;
+  }
+  .fa-refresh {
+    right: 3rem;
+  }
+  &.dropdown {
+    .filter-search {
+      border: 3px solid $transparent;
+    }
+    .fa-times-circle {
       right: 3rem;
+    }
+    .fa-refresh {
+      right: 5rem;
     }
   }
 }

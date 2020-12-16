@@ -1942,6 +1942,30 @@
         float: none;
       }
     }
+    .farmware-input-group {
+      margin-left: 0;
+    }
+    .farmware-config-fields {
+      margin-left: 1rem;
+      .config-field {
+        margin-top: 1rem;
+      }
+    }
+    .advanced-configs {
+      margin-left: 1rem;
+      .farmware-config-fields {
+        margin-left: 0;
+      }
+      h4 {
+        font-size: 1.5rem;
+        .icon-toggle {
+          font-size: 1.1rem;
+          i {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
   }
   .title-help {
     font-size: 1.3rem;

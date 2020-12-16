@@ -23,6 +23,6 @@ export function StepInputBox(props: StepInputProps) {
     case "z":
       return <InputDefault {...props} />;
     default:
-      return InputUnknown(props);
+      return <InputUnknown {...props} />;
   }
 }

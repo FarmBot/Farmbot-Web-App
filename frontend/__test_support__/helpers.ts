@@ -1,4 +1,4 @@
-import { ReactWrapper, ShallowWrapper } from "enzyme";
+import { ReactWrapper, shallow, ShallowWrapper } from "enzyme";
 import { range } from "lodash";
 
 /** Simulate a click and check button text for a button in a wrapper. */
@@ -25,4 +25,15 @@ export function allButtonText(wrapper: ReactWrapper | ShallowWrapper): string {
   const btnTextArray = btnPositions.map(position =>
     wrapper.find("button").at(position).text());
   return btnTextArray.join("");
+}
+
+/** Simulate BlurableInput commit (when not using shallow). */
+export function changeBlurableInput(
+  wrapper: ReactWrapper,
+  value: string,
+  position = 0,
+) {
+  const input = shallow(wrapper.find("input").at(position).getElement());
+  input.simulate("change", { currentTarget: { value } });
+  input.simulate("blur", { currentTarget: { value } });
 }

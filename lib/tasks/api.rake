@@ -17,6 +17,7 @@ end
 def hard_reset_api
   sh "sudo docker stop $(sudo docker ps -a -q)"
   sh "sudo docker rm $(sudo docker ps -a -q)"
+  sh "sudo docker system prune -af --volumes"
   sh "sudo rm -rf docker_volumes/"
 rescue => exception
   puts exception.message

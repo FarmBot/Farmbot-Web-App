@@ -121,6 +121,7 @@ describe("<ProfileSvg />", () => {
 
   it("renders with matching points", () => {
     const p = fakeProps();
+    p.botSize.z = { value: 100, isDefault: false };
     p.allPoints = [
       fakePoint(), fakePoint(), fakePoint(), fakePoint(), fakePoint(),
     ];
@@ -152,14 +153,18 @@ describe("<ProfileSvg />", () => {
       stroke: Color.blue, x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3,
     });
     expect(wrapper.find("line").at(2).props()).toEqual({
-      id: "profile-point-connector",
-      x1: 200, y1: 200, x2: 100, y2: 100, strokeWidth: 20, opacity: 0.5,
+      stroke: Color.gray, x1: 0, y1: 100, x2: 3000, y2: 100, strokeWidth: 3,
+      strokeDasharray: 10,
     });
     expect(wrapper.find("line").at(3).props()).toEqual({
       id: "profile-point-connector",
-      x1: 100, y1: 100, x2: 0, y2: 0, strokeWidth: 20, opacity: 0.5,
+      x1: 200, y1: 200, x2: 100, y2: 100, strokeWidth: 20, opacity: 0.5,
     });
     expect(wrapper.find("line").at(4).props()).toEqual({
+      id: "profile-point-connector",
+      x1: 100, y1: 100, x2: 0, y2: 0, strokeWidth: 20, opacity: 0.5,
+    });
+    expect(wrapper.find("line").at(5).props()).toEqual({
       id: "profile-point-connector",
       x1: 400, y1: 400, x2: 300, y2: 300, strokeWidth: 20, opacity: 0.5,
     });
