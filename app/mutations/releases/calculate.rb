@@ -10,6 +10,8 @@ module Releases
     def validate
       if release.version == device_version
         add_error :version, :uptodate, UP_TO_DATE
+      else
+        device.update!(last_ota_attempt_at: Time.now)
       end
     end
 
