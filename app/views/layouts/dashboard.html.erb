@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta content="black" name="theme-color">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <title>FarmBot</title>
+    <style>.fa {font-style:normal;display:inline-block;font-size:1rem;}.fa:before {content: "▢";}</style>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
-      crossorigin="anonymous" />
-      <link
+      crossorigin="anonymous">
+    <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css"
       integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
-      crossorigin="anonymous" />
-        <style>
-          body { background: #ccc; }
-          .initial-loading-text { position: absolute; top: 385px;
-          text-align: center; width: 100%; padding-top: 10%; color: #434343; }
-        </style>
-        <%= stylesheet_link_tag *@css_assets %>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="apple-touch-icon" href="/images/favicon.png" type="image/png">
-        <script>
-          /** L@@K!!! THIS IS IMPORT */
-          window.globalConfig = <%= raw(@global_config) %>; // <= DONT MOVE
-          /** ALWAYS LOAD THAT FIRST!!! ^ */
-          window.process = { env: { NODE_ENV: <%= raw(Rails.env.inspect) %> } }
-        </script>
-        <%= render "addons" %>
-        <%= yield :head %>
-      </head>
-      <body>
-        <%= yield %>
-        <%= javascript_include_tag *@js_assets %>
-      </body>
-    </html>
+      crossorigin="anonymous">
+    <style>
+      body { background: #ccc; }
+      .initial-loading-text { position: absolute; top: 385px;
+      text-align: center; width: 100%; padding-top: 10%; color: #434343; }
+    </style>
+    <%= stylesheet_link_tag *@css_assets %>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/images/favicon.png" type="image/png">
+    <script>
+      /** L@@K!!! THIS IS IMPORT */
+      window.globalConfig = <%= raw(@global_config) %>; // <= DONT MOVE
+      /** ALWAYS LOAD THAT FIRST!!! ^ */
+      window.process = { env: { NODE_ENV: <%= raw(Rails.env.inspect) %> } }
+    </script>
+    <%= render "addons" %>
+    <%= yield :head %>
+  </head>
+  <body>
+    <%= yield %>
+    <%= javascript_include_tag *@js_assets %>
+  </body>
+</html>
