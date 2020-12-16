@@ -174,7 +174,7 @@ class Device < ApplicationRecord
     t = SessionToken.as_json(users.first, "staff", fbos_version)
     jti = t[:token].unencoded[:jti]
     # Auto expire after 1 day.
-    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 1.day).to_i)
+    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 2.days).to_i)
     return "localStorage['session'] = JSON.stringify(#{t.to_json});"
   end
 
