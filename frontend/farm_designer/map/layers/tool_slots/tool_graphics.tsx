@@ -11,7 +11,9 @@ import { ToolbaySlot } from "../../tool_graphics/slot";
 import { GantryToolSlot } from "../../tool_graphics/seed_trough";
 import { ToolGraphicProps, ToolProps } from "../../tool_graphics/interfaces";
 import { reduceToolName, Tool, ToolName } from "../../tool_graphics/all_tools";
-import { getToolDirection, slotPulloutAxis, ToolProfile } from "../../profile/tools";
+import {
+  getToolDirection, slotPulloutAxis, ToolProfile,
+} from "../../profile/tools";
 import { ToolDimensions } from "../../tool_graphics/tool";
 
 export const toolbaySlotAngle = (

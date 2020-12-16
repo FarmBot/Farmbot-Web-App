@@ -66,6 +66,7 @@ export interface LabeledHorizontalLineProps {
   color: Color;
   profileHeight?: number;
   expanded: boolean;
+  dashed?: boolean;
 }
 
 export interface WithinRangeProps {

@@ -3,7 +3,7 @@ jest.mock("../../../../settings/dev/dev_support", () => ({
   DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { ValueSelection } from "../value_selection";
 import { ValueSelectionProps } from "../interfaces";
@@ -16,6 +16,7 @@ import {
 import { fakeTool } from "../../../../__test_support__/fake_state/resources";
 import { resource_type, Resource } from "farmbot";
 import { UPDATE_RESOURCE_DDIS } from "../field_selection";
+import { changeBlurableInput } from "../../../../__test_support__/helpers";
 
 const DDI = UPDATE_RESOURCE_DDIS();
 
@@ -64,9 +65,7 @@ describe("<ValueSelection />", () => {
     p.field = "custom_field";
     p.value = "custom_value";
     const wrapper = mount(<ValueSelection {...p} />);
-    const input = shallow(wrapper.find("input").getElement());
-    input.simulate("change", { currentTarget: { value: "1" } });
-    input.simulate("blur", { currentTarget: { value: "1" } });
+    changeBlurableInput(wrapper, "1");
     expect(p.update).toHaveBeenCalledWith({ value: "1" },
       expect.any(Function));
   });

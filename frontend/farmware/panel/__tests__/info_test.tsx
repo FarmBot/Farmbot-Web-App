@@ -5,7 +5,9 @@ import {
   DesignerFarmwareInfoProps,
   mapStateToProps,
 } from "../info";
-import { fakeFarmwares } from "../../../__test_support__/fake_farmwares";
+import {
+  fakeFarmware, fakeFarmwares,
+} from "../../../__test_support__/fake_farmwares";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   fakeFarmwareInstallation,
@@ -39,6 +41,19 @@ describe("<DesignerFarmwareInfo />", () => {
     const p = fakeProps();
     p.farmwares = fakeFarmwares();
     p.currentFarmware = Object.keys(p.farmwares)[0];
+    const wrapper = mount(<DesignerFarmwareInfo {...p} />);
+    ["my fake farmware", "does things", "run"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
+  it("renders farmware installation info panel", () => {
+    const p = fakeProps();
+    const farmware = fakeFarmware();
+    const farmwareInstallation = fakeFarmwareInstallation();
+    farmwareInstallation.body.package = "My New Farmware";
+    p.taggedFarmwareInstallations = [farmwareInstallation];
+    p.currentFarmware = farmwareInstallation.body.package;
+    p.farmwares = { [farmwareInstallation.body.package]: farmware };
     const wrapper = mount(<DesignerFarmwareInfo {...p} />);
     ["my fake farmware", "does things", "run"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));

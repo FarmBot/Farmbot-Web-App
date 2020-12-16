@@ -61,6 +61,8 @@ export const DevWidgetDelModeRow = () =>
 
 export const DevSettingsRows = () =>
   <div className={"dev-settings-rows"}>
+    <Row />
+    <Row />
     <DevWidgetFERow />
     <DevWidgetDelModeRow />
     <DevWidgetFBOSRow />

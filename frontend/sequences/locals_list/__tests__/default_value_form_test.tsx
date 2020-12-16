@@ -6,6 +6,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { Coordinate, ParameterApplication } from "farmbot";
 import { LocationForm } from "../location_form";
+import { changeBlurableInput } from "../../../__test_support__/helpers";
 
 describe("<DefaultValueForm />", () => {
   const COORDINATE: Coordinate =
@@ -38,8 +39,7 @@ describe("<DefaultValueForm />", () => {
   it("updates default value", () => {
     const p = fakeProps();
     const wrapper = mount(<DefaultValueForm {...p} />);
-    wrapper.find("input").first().simulate("change");
-    wrapper.find("input").first().simulate("blur");
+    changeBlurableInput(wrapper, "1", 0);
     expect(p.onChange).toHaveBeenCalledWith(p.variableNode);
   });
 
