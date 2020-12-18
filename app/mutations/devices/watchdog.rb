@@ -23,15 +23,13 @@ module Devices
     end
 
     def eligible_devices
-      @eligible_devices ||= Device
-        .where(last_watchdog: nil)
-        .or(Device.where("last_watchdog < ?", lower_limit))
+      @eligible_devices ||= Device.where("first_saw_api < ?", lower_limit)
     end
 
     def devices
       eligible_devices
         .where(last_saw_api: time_window)
-        .where("last_ota_attempt_at > ?", lower_limit - 30.minutes)
+        .where(last_ota_attempt_at: time_window)
     end
   end
 end
