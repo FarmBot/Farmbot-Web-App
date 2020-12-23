@@ -24,6 +24,7 @@ import { NetworkState } from "../../connectivity/interfaces";
 import { FarmwareInfo } from "../farmware_info";
 import { needsFarmwareForm, FarmwareForm } from "../farmware_forms";
 import { BasicFarmwarePage } from "../basic_farmware_page";
+import { uniq } from "lodash";
 
 export interface DesignerFarmwareInfoProps {
   dispatch: Function;
@@ -70,7 +71,9 @@ export class RawDesignerFarmwareInfo
 
   componentDidMount() {
     const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
-    setActiveFarmwareByName(farmwareNames);
+    Object.values(this.props.taggedFarmwareInstallations)
+      .map(x => x.body.package && farmwareNames.push(x.body.package));
+    setActiveFarmwareByName(uniq(farmwareNames));
   }
 
   render() {

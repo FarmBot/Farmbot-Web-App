@@ -165,7 +165,6 @@ export class RawDesignerPhotos
               shouldDisplay={this.props.shouldDisplay}
               saveFarmwareEnv={this.props.saveFarmwareEnv}
               botOnline={botOnline}
-              hideAdvanced={true}
               dispatch={this.props.dispatch} />
           </Collapse>}
         <ExpandableHeader

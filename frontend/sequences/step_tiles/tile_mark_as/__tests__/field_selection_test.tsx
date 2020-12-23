@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   FieldSelection, isCustomMetaField, UPDATE_RESOURCE_DDIS,
@@ -7,6 +7,7 @@ import { FieldSelectionProps } from "../interfaces";
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
+import { changeBlurableInput } from "../../../../__test_support__/helpers";
 
 const DDI = UPDATE_RESOURCE_DDIS();
 
@@ -65,9 +66,7 @@ describe("<FieldSelection />", () => {
     const p = fakeProps();
     p.field = "custom_field";
     const wrapper = mount(<FieldSelection {...p} />);
-    const input = shallow(wrapper.find("input").getElement());
-    input.simulate("change", { currentTarget: { value: "1" } });
-    input.simulate("blur", { currentTarget: { value: "1" } });
+    changeBlurableInput(wrapper, "1");
     expect(p.update).toHaveBeenCalledWith({ field: "1" });
   });
 
