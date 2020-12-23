@@ -11,8 +11,9 @@ describe Devices::Watchdog do
       .create(:user)
       .device
       .update!(last_saw_api: 17.hours.ago,
+               first_saw_api: 3.days.ago,
                name: "woof_woof",
-               last_ota_attempt_at: 17.hours.ago - 10.minutes)
+               last_ota_attempt_at: 16.hours.ago)
     too_soon = FactoryBot
       .create(:user)
       .device
