@@ -1242,8 +1242,12 @@ ul {
   .fa-ban {
     color: $medium_gray;
   }
-  .table-responsive{
+  .table-responsive {
     border: none;
+  }
+  details {
+    display: inline;
+    margin-top: 1rem;
   }
 }
 

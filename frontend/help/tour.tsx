@@ -1,5 +1,10 @@
 import React from "react";
-import Joyride, { Step as TourStep, CallBackProps } from "react-joyride";
+import Joyride, {
+  Step as TourStep,
+  CallBackProps,
+  EVENTS as TourEvent,
+  ACTIONS as TourAction,
+} from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
 import { TOUR_STEPS, tourPageNavigation } from "./tours";
@@ -37,8 +42,8 @@ export class Tour extends React.Component<TourProps, TourState> {
   callback = ({ action, index, step, type }: CallBackProps) => {
     console.log("Tour debug:", step.target, type, action);
     tourPageNavigation(step.target);
-    if (type === "step:after") {
-      const increment = action === "prev" ? -1 : 1;
+    if (type === TourEvent.STEP_AFTER) {
+      const increment = action === TourAction.PREV ? -1 : 1;
       const nextStepIndex = index + increment;
       this.setState({ index: nextStepIndex });
       const nextStepTarget = nextStepIndex < this.props.steps.length
@@ -46,7 +51,7 @@ export class Tour extends React.Component<TourProps, TourState> {
         : "";
       tourPageNavigation(nextStepTarget);
     }
-    if (type === "tour:end") {
+    if (type === TourEvent.TOUR_END) {
       this.setState({ run: false });
       history.push(this.state.returnPath);
       store.dispatch({ type: Actions.START_TOUR, payload: undefined });
