@@ -41,10 +41,14 @@
       color: $off_white;
     }
   }
+  details,
+  p:empty {
+    display: none;
+  }
 }
 
 .status-ticker-wrapper {
-  padding: 0.6rem 1rem 0;
+  padding: 0.6rem 1rem 0.4rem 1rem;
   transition: all 0.2s ease;
   &:hover {
     background: rgba(255, 255, 255, 0.2);
