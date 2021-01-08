@@ -14,6 +14,7 @@ describe("<StepTitleBar/>", () => {
     index: 0,
     dispatch: jest.fn(),
     sequence: fakeSequence(),
+    pinnedSequenceName: undefined,
     toggleDraggable: jest.fn(),
   });
 

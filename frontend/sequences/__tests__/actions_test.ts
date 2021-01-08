@@ -11,7 +11,7 @@ jest.mock("../set_active_sequence_by_name", () => ({
 }));
 
 import {
-  copySequence, editCurrentSequence, selectSequence, pushStep,
+  copySequence, editCurrentSequence, selectSequence, pushStep, pinSequenceToggle,
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { init, edit, overwrite } from "../../api/crud";
@@ -106,5 +106,14 @@ describe("pushStep()", () => {
     pushStep(NEW_STEP, jest.fn(), sequence);
     expect(overwrite).toHaveBeenCalledWith(sequence,
       expect.objectContaining({ body: [NEW_STEP] }));
+  });
+});
+
+describe("pinSequenceToggle()", () => {
+  it("pins sequence", () => {
+    const sequence = fakeSequence();
+    sequence.body.pinned = false;
+    pinSequenceToggle(sequence)(jest.fn());
+    expect(edit).toHaveBeenCalledWith(sequence, { pinned: true });
   });
 });

@@ -42,6 +42,9 @@ export namespace ToolTips {
     realtime. To edit and create new peripherals, press the EDIT button.
     Make sure to turn things off when you're done!`);
 
+  export const PINNED_SEQUENCES =
+    trim(`Pin a sequence in the sequence editor to add it to this list.`);
+
   export const SENSORS =
     trim(`Add sensors here to monitor FarmBot's sensors.
     To edit and create new sensors, press the EDIT button.`);
@@ -521,6 +524,9 @@ export namespace ToolTips {
 
   export const ASSERTION =
     trim(`Evaluate Lua commands. For power users and software developers.`);
+
+  export const LUA =
+    trim(`Execute Lua commands. For power users and software developers.`);
 
   export const FIRMWARE_ACTION =
     trim(`FarmBot OS or micro-controller firmware action.`);

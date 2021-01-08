@@ -63,22 +63,26 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
     const calledSequenceVariableData = calleeUuid
       ? resources.sequenceMetas[calleeUuid]
       : undefined;
+    const pinned = sequence_id
+      ? findSequenceById(resources, sequence_id).body.pinned
+      : undefined;
     return <StepWrapper
-      className={"execute-step"}
+      className={`execute-step ${pinned ? "pinned" : ""}`}
       helpText={ToolTips.EXECUTE_SEQUENCE}
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
       index={index}
       resources={resources}>
-      <Row>
-        <Col>
-          <SequenceSelectBox
-            onChange={this.changeSelection}
-            resources={resources}
-            sequenceId={currentStep.args.sequence_id} />
-        </Col>
-      </Row>
+      {!pinned &&
+        <Row>
+          <Col>
+            <SequenceSelectBox
+              onChange={this.changeSelection}
+              resources={resources}
+              sequenceId={currentStep.args.sequence_id} />
+          </Col>
+        </Row>}
       <Row>
         {!!calledSequenceVariableData &&
           <Col>

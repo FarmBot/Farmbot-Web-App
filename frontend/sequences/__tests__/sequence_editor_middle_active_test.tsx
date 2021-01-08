@@ -13,7 +13,8 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../actions", () => ({
   copySequence: jest.fn(),
-  editCurrentSequence: jest.fn()
+  editCurrentSequence: jest.fn(),
+  pinSequenceToggle: jest.fn(),
 }));
 
 jest.mock("../step_tiles/index", () => ({
@@ -58,7 +59,7 @@ import {
 } from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus, ParameterDeclaration } from "farmbot";
 import { move, splice, stringifySequenceData } from "../step_tiles";
-import { copySequence, editCurrentSequence } from "../actions";
+import { copySequence, editCurrentSequence, pinSequenceToggle } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
@@ -255,11 +256,29 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.visualized = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.gray").first().simulate("click");
+    wrapper.find(".fb-button.gray").at(1).simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.VISUALIZE_SEQUENCE,
       payload: undefined,
     });
+  });
+
+  it("pins sequence", () => {
+    mockPath = "/app/designer/sequences/1";
+    const p = fakeProps();
+    p.sequence.body.pinned = false;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fb-button.gray").at(0).simulate("click");
+    expect(pinSequenceToggle).toHaveBeenCalledWith(p.sequence);
+  });
+
+  it("unpins sequence", () => {
+    mockPath = "/app/designer/sequences/1";
+    const p = fakeProps();
+    p.sequence.body.pinned = true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fb-button.blue").at(0).simulate("click");
+    expect(pinSequenceToggle).toHaveBeenCalledWith(p.sequence);
   });
 });
 
