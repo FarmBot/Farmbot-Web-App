@@ -13,6 +13,7 @@ module Sequences
       color
       args
       integer :folder_id
+      boolean :pinned
     end
 
     def validate

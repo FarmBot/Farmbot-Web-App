@@ -109,6 +109,7 @@ describe("in_use tracking at reducer level", () => {
       name: "Y",
       kind: "sequence",
       color: "blue",
+      pinned: false,
       folder_id: undefined,
       args: { version: 8, locals: { kind: "scope_declaration", args: {} } }
     })[0];
