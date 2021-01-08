@@ -111,8 +111,9 @@ class DashboardController < ApplicationController
   def direct_upload
     raise "No." unless Api::ImagesController.store_locally
     name = params.fetch(:key).split("/").last
-    path = File.join("public", "direct_upload", "temp", name)
-    File.open(path, "wb") { |f| f.write(params[:file]) }
+    src  = params.fetch(:file).tempfile.path
+    dest = File.join("public", "direct_upload", "temp", name)
+    FileUtils.mv(src, dest)
     render json: ""
   end
 
