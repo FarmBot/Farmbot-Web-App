@@ -38,6 +38,7 @@ describe("commitBulkEditor()", () => {
     const seqBody: TaggedSequence["body"] = {
       id: sequence_id,
       name: "Test Sequence",
+      pinned: false,
       color: "gray",
       folder_id: undefined,
       body: [{ kind: "wait", args: { milliseconds: 100 } }],

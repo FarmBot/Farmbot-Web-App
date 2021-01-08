@@ -38,7 +38,7 @@ module CeleryScriptSettingsBag
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership check_updates
                          emergency_lock emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
-                         install_farmware install_first_party_farmware _if
+                         install_farmware install_first_party_farmware _if lua
                          move_absolute move_relative move power_off read_pin
                          read_status reboot remove_farmware update_resource
                          send_message set_servo_angle set_user_env sync

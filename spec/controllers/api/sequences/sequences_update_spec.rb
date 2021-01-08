@@ -95,15 +95,17 @@ describe Api::SequencesController do
       sequence = FakeSequence.create(device: user.device)
       sequence.update!(updated_at: 2.days.ago)
       updated_at_before = sequence.updated_at.to_i
-      input = { sequence: { name: "Scare Birds", args: {}, body: [] } }
+      input = {
+        sequence: { name: "pinned", pinned: true, args: {}, body: [] }
+        }
       params = { id: sequence.id }
       run_jobs_now do
         patch :update, params: params, body: input.to_json, format: :json
       end
       expect(response.status).to eq(200)
       sequence.reload
-      expect(sequence.updated_at.to_i).to be > updated_at_before
-      expect(sequence.name).to eq(input[:sequence][:name])
+      expect(sequence.pinned).to eq(true)
+      expect(json[:pinned]).to eq(true)
     end
   end
 end

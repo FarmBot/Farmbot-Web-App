@@ -39,6 +39,7 @@ const tr0: TaggedResource = {
     "id": 23,
     "name": "Goto 0, 0, 0",
     "color": "gray",
+    "pinned": false,
     "folder_id": undefined,
     "body": [
       {
@@ -422,6 +423,7 @@ const blankSeq: TaggedSequence = {
   "body": {
     "id": undefined,
     "name": "Repair sequence",
+    "pinned": false,
     "folder_id": undefined,
     "color": "gray",
     "body": [],

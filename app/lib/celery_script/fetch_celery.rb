@@ -94,6 +94,7 @@ module CeleryScript
                args: Sequence::DEFAULT_ARGS,
                color: sequence.color,
                name: sequence.name,
+               pinned: sequence.pinned
              }
     end
 
