@@ -21,6 +21,7 @@ const STEP_TITLES =
     "update_resource": t("Mark As"),
     ["resource_update" as LegalSequenceKind]: t("Deprecated Mark As"),
     "assertion": t("Assertion"),
+    "lua": t("Lua"),
     "set_servo_angle": t("Control Servo"),
     "wait": t("Wait"),
     "write_pin": t("Control Peripheral"),
@@ -45,7 +46,7 @@ const STEP_TITLES =
 
 export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
   render() {
-    const { step } = this.props;
+    const { step, pinnedSequenceName } = this.props;
     const { kind } = step;
     const title = step.kind == "execute_script"
       && step.args.label == FarmwareName.MeasureSoilHeight
@@ -55,7 +56,7 @@ export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
       onMouseLeave={this.props.toggleDraggable("leave")}>
       <BlurableInput className="step-label"
         value={this.props.step.comment || ""}
-        placeholder={title || STEP_TITLES()[kind] || kind}
+        placeholder={title || pinnedSequenceName || STEP_TITLES()[kind] || kind}
         onCommit={updateStepTitle(this.props)}
         allowEmpty={true} />
     </div>;

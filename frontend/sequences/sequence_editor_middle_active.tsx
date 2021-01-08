@@ -3,7 +3,7 @@ import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
 } from "./interfaces";
-import { editCurrentSequence, copySequence } from "./actions";
+import { editCurrentSequence, copySequence, pinSequenceToggle } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
@@ -139,6 +139,12 @@ const SequenceBtnGroup = ({
       title={t("copy sequence")}
       onClick={() => dispatch(copySequence(sequence))}>
       <i className={"fa fa-copy"} />
+    </button>
+    <button
+      className={`fb-button ${sequence.body.pinned ? "blue" : "gray"}`}
+      title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
+      onClick={() => dispatch(pinSequenceToggle(sequence))}>
+      <i className={"fa fa-thumb-tack"} />
     </button>
     {inDesigner() &&
       <button

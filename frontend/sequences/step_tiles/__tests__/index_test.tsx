@@ -188,6 +188,7 @@ describe("updateStepTitle()", () => {
     sequence: fakeSequence(),
     dispatch: jest.fn(),
     index: 0,
+    pinnedSequenceName: undefined,
     toggleDraggable: jest.fn(),
   });
 
@@ -242,6 +243,10 @@ describe("renderCeleryNode()", () => {
       },
       expected: "LuaIf test failsRecover and continue"
         + "Recovery sequenceSelect a sequence",
+    },
+    {
+      node: { kind: "lua", args: { lua: "lua" } },
+      expected: "lua",
     },
     {
       node: {

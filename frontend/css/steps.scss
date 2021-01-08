@@ -116,6 +116,9 @@
   &.assertion-step {
     background: $purple;
   }
+  &.lua-step {
+    background: $purple;
+  }
   &.execute-step {
     background: $gray;
   }
@@ -159,6 +162,27 @@
     background: $brown;
   }
   &.unknown-step {
+    background: $gray;
+  }
+  &.blue {
+    background: $blue;
+  }
+  &.orange {
+    background: $orange;
+  }
+  &.yellow {
+    background: $yellow;
+  }
+  &.red {
+    background: $red;
+  }
+  &.purple {
+    background: $purple;
+  }
+  &.pink {
+    background: $pink;
+  }
+  &.gray {
     background: $gray;
   }
   .help {
@@ -233,12 +257,39 @@
       margin-bottom: 1rem;
     }
   }
+  &.lua-step {
+    background: $light_purple;
+    textarea {
+      margin-bottom: 1rem;
+    }
+  }
   &.execute-step {
     background: $light_gray;
     padding-bottom: 1rem;
-    &.step-content {
-      .row {
-        margin: 0;
+    .row {
+      margin: 0;
+    }
+    &.pinned {
+      .location-form {
+        background: none;
+        margin-top: 0;
+        max-width: unset;
+        .location-form-header {
+          background: none;
+          padding: 0;
+        }
+        .location-form-content {
+          padding: 0;
+        }
+        label {
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
+        }
+        .row {
+          margin-top: 0.5rem;
+          margin-left: -15px;
+          margin-right: -15px;
+        }
       }
     }
   }
@@ -292,6 +343,30 @@
   }
   &.unknown-step {
     background: $light_gray;
+  }
+  &.blue {
+    background: $light_blue !important;
+  }
+  &.green {
+    background: $light_green !important;
+  }
+  &.orange {
+    background: $light_orange !important;
+  }
+  &.yellow {
+    background: $light_yellow !important;
+  }
+  &.red {
+    background: $light_red !important;
+  }
+  &.purple {
+    background: $light_purple !important;
+  }
+  &.pink {
+    background: $light_pink !important;
+  }
+  &.gray {
+    background: $light_gray !important;
   }
   input,
   select {

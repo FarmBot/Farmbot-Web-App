@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { DesignerPanel, DesignerPanelContent } from "../farm_designer/designer_panel";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
@@ -8,9 +8,9 @@ import { JogControlsGroup } from "./move/jog_controls_group";
 import { BotPositionRows } from "./move/bot_position_rows";
 import { BooleanSetting } from "../session_keys";
 import { MotorPositionPlot } from "./move/motor_position_plot";
-import { BotState, UserEnv } from "../devices/interfaces";
+import { BotState, ShouldDisplay, UserEnv } from "../devices/interfaces";
 import {
-  TaggedWebcamFeed, TaggedPeripheral, McuParams, FirmwareHardware,
+  TaggedWebcamFeed, TaggedPeripheral, McuParams, FirmwareHardware, TaggedSequence,
 } from "farmbot";
 import {
   GetWebAppConfigValue, getWebAppConfigValue, toggleWebAppBool,
@@ -22,7 +22,7 @@ import { getShouldDisplayFn, getEnv } from "../farmware/state_to_props";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { isFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import {
-  selectAllWebcamFeeds, selectAllPeripherals,
+  selectAllWebcamFeeds, selectAllPeripherals, selectAllSequences,
 } from "../resources/selectors";
 import { uniq } from "lodash";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
@@ -30,12 +30,21 @@ import { Peripherals } from "./peripherals";
 import { WebcamPanel } from "./webcam";
 import { Popover, Position } from "@blueprintjs/core";
 import { MoveWidgetSettingsMenu } from "./move/settings_menu";
+import { ToolTips } from "../constants";
+import { Col, Row, Widget, WidgetBody, WidgetHeader } from "../ui";
+import { t } from "../i18next_wrapper";
+import { TestButton } from "../sequences/test_button";
+import { ResourceIndex } from "../resources/interfaces";
 
 export interface DesignerControlsProps {
   dispatch: Function;
   bot: BotState;
   feeds: TaggedWebcamFeed[];
   peripherals: TaggedPeripheral[];
+  sequences: TaggedSequence[];
+  resources: ResourceIndex;
+  menuOpen: boolean;
+  shouldDisplay: ShouldDisplay;
   firmwareSettings: McuParams;
   getWebAppConfigVal: GetWebAppConfigValue;
   env: UserEnv;
@@ -60,6 +69,10 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     dispatch: props.dispatch,
     bot: props.bot,
     peripherals: uniq(selectAllPeripherals(props.resources.index)),
+    sequences: selectAllSequences(props.resources.index),
+    resources: props.resources.index,
+    menuOpen: props.resources.consumers.sequences.menuOpen,
+    shouldDisplay,
     firmwareSettings: fwConfig || mcu_params,
     getWebAppConfigVal: getWebAppConfigValue(() => props),
     env,
@@ -87,6 +100,7 @@ export class RawDesignerControls
     const { bot } = this.props;
     const { location_data, informational_settings } = bot.hardware;
     const locationData = validBotLocationData(location_data);
+    const pinnedSequences = this.props.sequences.filter(x => x.body.pinned);
     return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"controls"}>
@@ -128,6 +142,32 @@ export class RawDesignerControls
           dispatch={this.props.dispatch}
           disabled={this.arduinoBusy || !this.botOnline} />
         <hr />
+        {pinnedSequences.length > 0 &&
+          <Widget className={"pinned-sequences-widget"}>
+            <WidgetHeader
+              title={t("Pinned Sequences")}
+              helpText={ToolTips.PINNED_SEQUENCES} />
+            <WidgetBody>
+              {pinnedSequences.map(sequence =>
+                <Row key={sequence.uuid}>
+                  <Col xs={8}>
+                    <label style={{ marginTop: 0, verticalAlign: "top" }}>
+                      {sequence.body.name}
+                    </label>
+                  </Col>
+                  <Col xs={4}>
+                    <TestButton
+                      syncStatus={bot.hardware.informational_settings.sync_status}
+                      sequence={sequence}
+                      resources={this.props.resources}
+                      shouldDisplay={this.props.shouldDisplay}
+                      menuOpen={this.props.menuOpen}
+                      dispatch={this.props.dispatch} />
+                  </Col>
+                </Row>)}
+            </WidgetBody>
+          </Widget>}
+        {pinnedSequences.length > 0 && <hr />}
         {!this.props.getWebAppConfigVal(BooleanSetting.hide_webcam_widget) &&
           <WebcamPanel
             feeds={this.props.feeds}
