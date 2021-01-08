@@ -1,6 +1,6 @@
 module PinBindings
   module Helpers
-    BAD_SEQ_ID       = "Sequence ID is not valid"
+    BAD_SEQ_ID = "Sequence ID is not valid"
     MUTUAL_EXCLUSION = "Pin Bindings require exactly one sequence or special " \
                        "action. Please pick one."
 

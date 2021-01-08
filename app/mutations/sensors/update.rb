@@ -4,7 +4,7 @@ module Sensors
 
     optional do
       integer :pin
-      string  :label
+      string :label
       integer :mode, in: CeleryScriptSettingsBag::ALLOWED_PIN_MODES
     end
 

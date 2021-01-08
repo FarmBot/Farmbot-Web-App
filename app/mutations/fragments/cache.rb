@@ -1,10 +1,10 @@
 module Fragments
   class Cache # CeleryScript Fragment cache, not the other kind.
     def initialize(fragment)
-      @fragment               = fragment
-      @nodes_by_id            = fragment.nodes.index_by(&:id)
-      @arg_set_by_node_id     = fragment.arg_sets.index_by(&:node_id)
-      @primitive_by_id        = fragment.primitives.index_by(&:id)
+      @fragment = fragment
+      @nodes_by_id = fragment.nodes.index_by(&:id)
+      @arg_set_by_node_id = fragment.arg_sets.index_by(&:node_id)
+      @primitive_by_id = fragment.primitives.index_by(&:id)
       @pri_pair_by_arg_set_id = fragment.primitive_pairs.group_by(&:arg_set_id)
       @std_pair_by_arg_set_id = fragment.standard_pairs.group_by(&:arg_set_id)
     end
@@ -14,9 +14,9 @@ module Fragments
       @pri_pair_by_arg_set_id
         .fetch(arg_set.id, [])
         .map do |x|
-          [ArgName.cached_by_id(x.arg_name_id).value,
-           @primitive_by_id.fetch(x.primitive_id).value]
-        end
+        [ArgName.cached_by_id(x.arg_name_id).value,
+         @primitive_by_id.fetch(x.primitive_id).value]
+      end
         .to_h
     end
 
@@ -26,9 +26,9 @@ module Fragments
       @std_pair_by_arg_set_id
         .fetch(arg_set.id, [])
         .map do |x|
-          [ArgName.cached_by_id(x.arg_name_id).value,
-           @nodes_by_id.fetch(x.node_id)]
-        end
+        [ArgName.cached_by_id(x.arg_name_id).value,
+         @nodes_by_id.fetch(x.node_id)]
+      end
     end
 
     # node.body

@@ -1,6 +1,6 @@
 module FbosDetector
   FARMBOT_UA_STRING = "FARMBOTOS"
-  NO_UA_FOUND       = FARMBOT_UA_STRING + "/0.0.0 (RPI3) RPI3 (MISSING)"
+  NO_UA_FOUND = FARMBOT_UA_STRING + "/0.0.0 (RPI3) RPI3 (MISSING)"
 
   # Format the user agent header in a way that is easier for us to parse.
   def self.pretty_ua(request)

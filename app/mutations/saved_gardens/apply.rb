@@ -1,10 +1,9 @@
 module SavedGardens
   class Apply < Mutations::Command
-    DEP_ERROR_REPORT = \
-      "Unable to remove the following plants from the garden: %s"
+    DEP_ERROR_REPORT = "Unable to remove the following plants from the garden: %s"
     required do
-      model   :device, class: Device
-      model   :garden, class: SavedGarden
+      model :device, class: Device
+      model :garden, class: SavedGarden
       boolean :destructive # Not yet implemented. RC 4/20/18
     end
 
@@ -23,16 +22,16 @@ module SavedGardens
     def convert_templates_to_plants
       Plant
         .create!(garden
-        .plant_templates
-        .map do |template|
-          { device_id:     device.id,
-            name:          template.name,
+          .plant_templates
+          .map do |template|
+          { device_id: device.id,
+            name: template.name,
             openfarm_slug: template.openfarm_slug,
-            plant_stage:   "planned",
-            radius:        template.radius,
-            x:             template.x,
-            y:             template.y,
-            z:             template.z }
+            plant_stage: "planned",
+            radius: template.radius,
+            x: template.x,
+            y: template.y,
+            z: template.z }
         end)
     end
 
@@ -47,8 +46,7 @@ module SavedGardens
     end
 
     def plant_error_message
-      @plant_error_message ||= \
-        DEP_ERROR_REPORT % in_use_plants.map(&:fancy_name).join(", ")
+      @plant_error_message ||= DEP_ERROR_REPORT % in_use_plants.map(&:fancy_name).join(", ")
     end
 
     def in_use_plants

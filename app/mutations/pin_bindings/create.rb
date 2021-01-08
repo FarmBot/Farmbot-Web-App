@@ -3,13 +3,13 @@ module PinBindings
     include PinBindings::Helpers
 
     required do
-      model   :device, class: Device
+      model :device, class: Device
       integer :pin_num
     end
 
     optional do
       integer :sequence_id
-      string  :special_action, in: PinBinding.special_actions.values
+      string :special_action, in: PinBinding.special_actions.values
     end
 
     def validate

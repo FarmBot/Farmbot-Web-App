@@ -4,6 +4,15 @@ describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
 
+  it "" do
+    fake_file = ActionDispatch::Http::UploadedFile.new(filename: "wow.jpg", type: "image/jpg", head: "", tempfile: Tempfile.new)
+    name = "wow.jpg"
+    Image.self_hosted_image_upload(key: "/abc.jpg", file: fake_file)
+    expected = "public/direct_upload/temp/abc.jpg"
+    assert File.file?(expected)
+    File.delete(expected)
+  end
+
   it "Creates a policy object" do
     sign_in user
     b4 = Api::ImagesController.store_locally

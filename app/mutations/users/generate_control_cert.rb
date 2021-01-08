@@ -1,8 +1,7 @@
 module Users
   class GenerateControlCert < Mutations::Command
-
     required do
-      model  :device, class: Device
+      model :device, class: Device
       string :password
       string :email
     end
@@ -25,10 +24,10 @@ module Users
 
     def secret
       @secret ||= {
-        email:        email,
-        password:     password,
+        email: email,
+        password: password,
         requested_by: device.users.pluck(:email),
-        id:           SecureRandom.hex
+        id: SecureRandom.hex,
       }.to_json
     end
 

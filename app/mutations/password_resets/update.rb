@@ -15,15 +15,15 @@ module PasswordResets
 
     def execute
       user.update!(password: password,
-                              password_confirmation: password_confirmation)
+                   password_confirmation: password_confirmation)
       Auth::CreateToken.run!(email: user.email,
                              password: password,
-                             fbos_version: Gem::Version.new("999.9.9"),)
+                             fbos_version: Gem::Version.new("999.9.9"))
     rescue JWT::ExpiredSignature
       add_error :reset, :too_old, OLD_TOKEN
     end
 
-private
+    private
 
     def user
       @user = User.find_by!(email: email)
@@ -35,7 +35,7 @@ private
 
     def valid_password?
       length_ok = (password.length > 7)
-      pw_match  = password == password_confirmation
+      pw_match = password == password_confirmation
       add_error :password,
                 :invalid,
                 "too short or does not match" unless (length_ok && pw_match)

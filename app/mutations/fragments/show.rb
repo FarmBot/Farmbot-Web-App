@@ -1,6 +1,6 @@
 module Fragments
   class Show < Mutations::Command
-    ENTRY          = "internal_entry_point"
+    ENTRY = "internal_entry_point"
     EMPTY_FRAGMENT = { kind: "internal_farm_event",
                        args: {},
                        body: [] }
@@ -17,14 +17,14 @@ module Fragments
       end
     end
 
-  private
+    private
 
     def node2cs(node)
-      standard  = cache.get_standard_pairs(node)
-                       .reduce({}) do |acc, (key, value)|
-                         acc[key] = node2cs(value)
-                         acc
-                       end
+      standard = cache.get_standard_pairs(node)
+                      .reduce({}) do |acc, (key, value)|
+        acc[key] = node2cs(value)
+        acc
+      end
       result = { kind: cache.kind(node).value,
                  args: cache.get_primitive_pairs(node).merge(standard),
                  body: recurse_into_body(cache.get_body(node)) }
@@ -42,8 +42,7 @@ module Fragments
     end
 
     def fragment
-      @fragment ||= \
-        Fragment.preload(Fragment::EVERYTHING).where(owner: owner).first
+      @fragment ||= Fragment.preload(Fragment::EVERYTHING).where(owner: owner).first
     end
 
     def entry_node

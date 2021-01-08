@@ -1,13 +1,12 @@
 # A JSON Web Token (JWT) used only for password resets.
 class PasswordResetToken < AbstractJwtToken
   EXPIRY = 24.hours
-  AUD    = "PASSWORD_RESETER"
+  AUD = "PASSWORD_RESETER"
 
   def self.issue_to(user,
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: $API_URL)
-
     self.new([{ sub: user.email,
                 iat: iat,
                 jti: SecureRandom.uuid,

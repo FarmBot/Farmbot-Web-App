@@ -16,7 +16,7 @@ module Api
 
     def update
       mutate FarmEvents::Update.run(raw_json,
-                                    device:     current_device,
+                                    device: current_device,
                                     farm_event: farm_event)
     end
 
@@ -24,7 +24,7 @@ module Api
       if (farm_event.device_id == current_device.id) && farm_event.destroy
         render json: ""
       else
-        raise Errors::Forbidden, 'Not your farm_event.'
+        raise Errors::Forbidden, "Not your farm_event."
       end
     end
 

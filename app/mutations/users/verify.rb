@@ -14,7 +14,7 @@ module Users
                            Gem::Version.new("99.9.9"))
     end
 
-private
+    private
 
     def prevent_token_reuse
       raise User::AlreadyVerified if user.confirmed_at.present?

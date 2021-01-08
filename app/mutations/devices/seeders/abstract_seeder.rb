@@ -267,9 +267,9 @@ module Devices
                                      pointer_type: [pointer_type],
                                      openfarm_slug: openfarm_slug ? [openfarm_slug] : nil,
                                    },
-                                   number_eq: { },
-                                    number_lt: { },
-                                   number_gt: { },
+                                   number_eq: {},
+                                   number_lt: {},
+                                   number_gt: {},
                                    day: { op: "<", days_ago: 0 },
                                  })
       end

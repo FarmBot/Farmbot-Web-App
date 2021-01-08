@@ -14,8 +14,8 @@ class TelemetryService < AbstractServiceRunner
       .split(".")[1]
     json = JSON.parse(payload)
     other_stuff = { device: device_key,
-                   is_telemetry: true,
-                   message: MESSAGE % device_key }
+                    is_telemetry: true,
+                    message: MESSAGE % device_key }
     THROTTLE_POLICY.track(device_key)
     violation = THROTTLE_POLICY.violation_for(device_key)
     unless violation
@@ -23,8 +23,8 @@ class TelemetryService < AbstractServiceRunner
     end
   rescue JSON::ParserError
     puts ({ device: device_key,
-           is_telemetry: true,
-           bad_json: payload,
-           message: FAILURE % device_key }).to_json
+            is_telemetry: true,
+            bad_json: payload,
+            message: FAILURE % device_key }).to_json
   end
 end

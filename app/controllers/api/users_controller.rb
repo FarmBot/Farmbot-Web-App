@@ -36,13 +36,13 @@ module Api
         .merge!(raw_json[:user] || {})
         .deep_symbolize_keys
       { email: user[:email],
-       name: user[:name],
-       password: user[:password],
-       password_confirmation: user[:password_confirmation],
-       new_password: user[:new_password],
-       new_password_confirmation: user[:new_password_confirmation],
-       agree_to_terms: user[:agree_to_terms],
-       skip_email: User::SKIP_EMAIL_VALIDATION }
+        name: user[:name],
+        password: user[:password],
+        password_confirmation: user[:password_confirmation],
+        new_password: user[:new_password],
+        new_password_confirmation: user[:new_password_confirmation],
+        agree_to_terms: user[:agree_to_terms],
+        skip_email: User::SKIP_EMAIL_VALIDATION }
     end
   end
 end

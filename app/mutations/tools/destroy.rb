@@ -45,8 +45,8 @@ module Tools
           results.add(i.fetch(:sequence_id))
         end
       end
-        .to_a
-        .map { |x| Sequence.find(x).name }
+                 .to_a
+                 .map { |x| Sequence.find(x).name }
     end
 
     def slot

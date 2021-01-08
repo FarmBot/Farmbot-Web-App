@@ -1,7 +1,7 @@
 module Users
   class ResendVerification < Mutations::Command
     ALREADY_VERIFIED = "already verified"
-    SENT             = "Check your email!"
+    SENT = "Check your email!"
 
     required { model :user, class: User }
 
@@ -11,7 +11,7 @@ module Users
 
     def execute
       UserMailer.welcome_email(user).deliver_later
-      {user: SENT}
+      { user: SENT }
     end
   end
 end
