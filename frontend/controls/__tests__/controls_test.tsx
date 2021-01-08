@@ -3,7 +3,7 @@ jest.mock("../../config_storage/actions", () => ({
   toggleWebAppBool: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerControls as DesignerControls,
@@ -16,7 +16,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakeWebAppConfig, fakeFbosConfig,
+  fakeWebAppConfig, fakeFbosConfig, fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
@@ -27,6 +27,10 @@ describe("<DesignerControls />", () => {
     bot: bot,
     feeds: [],
     peripherals: [],
+    sequences: [],
+    resources: buildResourceIndex([]).index,
+    menuOpen: false,
+    shouldDisplay: () => true,
     firmwareSettings: bot.hardware.mcu_params,
     getWebAppConfigVal: jest.fn(),
     env: {},
@@ -37,6 +41,7 @@ describe("<DesignerControls />", () => {
     const wrapper = mount(<DesignerControls {...fakeProps()} />);
     ["move", "peripherals", "webcam"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.text().toLowerCase()).not.toContain("pinned");
   });
 
   it("shows plot", () => {
@@ -44,6 +49,15 @@ describe("<DesignerControls />", () => {
     p.getWebAppConfigVal = () => true;
     const wrapper = mount(<DesignerControls {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("seconds ago");
+  });
+
+  it("shows pinned sequences", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.pinned = true;
+    p.sequences = [sequence];
+    const wrapper = mount(<DesignerControls {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("pinned");
   });
 
   it("hides webcam feeds", () => {

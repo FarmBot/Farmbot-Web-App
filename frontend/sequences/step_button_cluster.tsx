@@ -18,6 +18,7 @@ export interface StepButtonProps {
   shouldDisplay: ShouldDisplay;
   stepIndex: number | undefined;
   farmwareData: FarmwareData;
+  sequences: TaggedSequence[];
 }
 
 export function StepButtonCluster(props: StepButtonProps) {
@@ -225,6 +226,12 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="purple">
       {t("ASSERTION")}
     </StepButton>,
+    <StepButton
+      {...commonStepProps}
+      step={{ kind: "lua", args: { lua: "" } }}
+      color="purple">
+      {t("LUA")}
+    </StepButton>,
     ...(shouldDisplay(Feature.update_resource)
       ? [<StepButton
         {...commonStepProps}
@@ -244,13 +251,29 @@ export function StepButtonCluster(props: StepButtonProps) {
     scrollToBottom("sequenceDiv");
     inDesigner() && push(`/app/designer/sequences/${sequenceUrlName}`);
   };
-
+  const pinnedSequences = props.sequences.filter(s => s.body.pinned);
   return <Row>
     <div className="step-button-cluster">
       {ALL_THE_BUTTONS.map((stepButton, inx) =>
         <div className={"step-button"} key={inx} onClick={click}>
           {stepButton}
         </div>)}
+    </div>
+    {pinnedSequences.length > 0 &&
+      <label style={{ marginLeft: "1rem" }}>{t("pinned sequences")}</label>}
+    <div className={"pinned-sequences"}>
+      {props.sequences.filter(s => s.body.pinned)
+        .map(s => s.body.id &&
+          <div className={"step-button"} key={s.uuid} onClick={click}>
+            <StepButton {...commonStepProps}
+              step={{
+                kind: "execute",
+                args: { sequence_id: s.body.id }
+              }}
+              color={s.body.color}>
+              {s.body.name}
+            </StepButton>
+          </div>)}
     </div>
   </Row>;
 }

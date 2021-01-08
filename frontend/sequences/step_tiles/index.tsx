@@ -39,6 +39,7 @@ import { TileOldMarkAs } from "./tile_old_mark_as";
 import { TileShutdown } from "./tile_shutdown";
 import { TileComputedMove } from "./tile_computed_move";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { TileLua } from "./tile_lua";
 
 export function move({ step, sequence, to, from }: MoveParams) {
   const copy = defensiveClone(step);
@@ -150,6 +151,7 @@ export function renderCeleryNode(props: StepParams) {
     case "reboot": return <TileReboot {...props} currentStep={step} />;
     case "emergency_lock": return <TileEmergencyStop {...props} />;
     case "assertion": return <TileAssertion {...props} currentStep={step} />;
+    case "lua": return <TileLua {...props} currentStep={step} />;
     case "power_off": return <TileShutdown {...props} />;
     case "sync": case "read_status":
     case "emergency_unlock": case "install_first_party_farmware":

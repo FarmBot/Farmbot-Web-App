@@ -27,6 +27,19 @@ describe("<StepWrapper />", () => {
     expect(step.hasClass("step-class")).toBeTruthy();
   });
 
+  it("renders pinned sequence", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.pinned = true;
+    sequence.body.color = "red";
+    p.currentStep = { kind: "execute", args: { sequence_id: 1 } };
+    p.resources = buildResourceIndex([sequence]).index;
+    const wrapper = mount(<StepWrapper {...p} />);
+    const step = wrapper.find("div").first();
+    expect(step.find(".step-content").hasClass("red")).toBeTruthy();
+  });
+
   it("toggles celery script view", () => {
     const p = fakeProps();
     const config = fakeWebAppConfig();
