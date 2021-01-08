@@ -5,7 +5,7 @@ module Points
     IN_USE = "Tool in use by the following sequences: %s"
 
     required do
-      model   :point,  class: Point
+      model :point, class: Point
       # Does nil `next_tool_id` mean "I have nothing to say"?
       # Or does it mean: "I want to clear something out"?
       boolean :attempting_change
@@ -20,10 +20,10 @@ module Points
       true
     end
 
-  private
+    private
 
     def is_removal_attempt
-      (attempting_change &&      # Wants to make a change
+      (attempting_change && # Wants to make a change
        (next_tool_id === nil) && # Wants to remove tool_id
        point.tool_id)            # Currently has a tool_id
     end

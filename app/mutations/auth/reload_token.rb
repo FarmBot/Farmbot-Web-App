@@ -17,8 +17,8 @@ module Auth
     def execute
       security_critical_danger = claims["exp"] # Stop infinite sessions
       token = SessionToken.issue_to(user,
-                                    aud:          claims["aud"],
-                                    exp:          security_critical_danger,
+                                    aud: claims["aud"],
+                                    exp: security_critical_danger,
                                     fbos_version: fbos_version)
       return { token: token }
     end

@@ -2,7 +2,7 @@ module Images
   class Create < Mutations::Command
     required do
       string :attachment_url
-      model  :device, class: Device
+      model :device, class: Device
     end
 
     optional do
@@ -11,7 +11,7 @@ module Images
           float :x
           float :y
           float :z
-          string  :name
+          string :name
         end
       end
     end

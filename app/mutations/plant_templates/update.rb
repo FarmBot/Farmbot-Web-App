@@ -1,18 +1,18 @@
 module PlantTemplates
   class Update < Mutations::Command
     required do
-      model   :device,         class: Device
-      model   :plant_template, class: PlantTemplate
+      model :device, class: Device
+      model :plant_template, class: PlantTemplate
     end
 
     optional do
-      float   :radius
-      float   :x
-      float   :y
-      float   :z
+      float :radius
+      float :x
+      float :y
+      float :z
       integer :saved_garden_id
-      string  :name
-      string  :openfarm_slug
+      string :name
+      string :openfarm_slug
     end
 
     def execute

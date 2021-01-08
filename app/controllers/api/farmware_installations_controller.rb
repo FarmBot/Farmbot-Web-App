@@ -24,7 +24,7 @@ module Api
       mutate FarmwareInstallations::Create.run(raw_json, device: current_device)
     end
 
-private
+    private
 
     def farmware_installations
       FarmwareInstallation.where(device: current_device)

@@ -1,7 +1,7 @@
 module PinBindings
   class Destroy < Mutations::Command
     required do
-      model   :pin_binding, class: PinBinding
+      model :pin_binding, class: PinBinding
     end
 
     def execute

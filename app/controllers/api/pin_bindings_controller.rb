@@ -20,7 +20,8 @@ module Api
       mutate PinBindings::Update.run(raw_json, update_params)
     end
 
-private
+    private
+
     def update_params
       @update_params ||= { device: current_device, pin_binding: pin_binding }
     end

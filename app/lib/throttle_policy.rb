@@ -1,8 +1,8 @@
 # Handles devices that spin out of control and send too many logs to the server.
 class ThrottlePolicy
   TTL = { min: 60,
-         hour: 60 * 60,
-         day: 60 * 60 * 24 }
+          hour: 60 * 60,
+          day: 60 * 60 * 24 }
   ROUNDING_HELPERS = { min: :beginning_of_minute,
                        hour: :beginning_of_hour,
                        day: :beginning_of_day }

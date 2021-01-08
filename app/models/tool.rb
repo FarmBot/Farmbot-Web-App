@@ -5,7 +5,7 @@ class Tool < ApplicationRecord
   # We need this for the "status" virtual attribute in ToolSerializer.
   # I could not figure out how to get AR to do it without N+1s.
   # Help appreciated on this one if anyone can get this working the "Rails way"
-  BASE        = 'SELECT
+  BASE = 'SELECT
                   "tools".*,
                   points.id as tool_slot_id
                 FROM
@@ -14,15 +14,13 @@ class Tool < ApplicationRecord
                   "points" ON "points"."tool_id" = "tools"."id"
                 WHERE'
   INDEX_QUERY = BASE + ' "tools"."device_id" = %s;'
-  SHOW_QUERY  = BASE + ' "tools"."id" = %s;'
-  IN_USE      = "Tool in use by the following sequences: %s"
-
+  SHOW_QUERY = BASE + ' "tools"."id" = %s;'
+  IN_USE = "Tool in use by the following sequences: %s"
 
   belongs_to :device
-  has_one    :tool_slot
-  validates  :device, presence: true
-  validates  :name,   uniqueness: { scope: :device }
-
+  has_one :tool_slot
+  validates :device, presence: true
+  validates :name, uniqueness: { scope: :device }
 
   def self.outter_join_slots(device_id)
     self.find_by_sql(INDEX_QUERY % device_id)

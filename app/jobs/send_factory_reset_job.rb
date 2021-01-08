@@ -6,7 +6,7 @@ class SendFactoryResetJob < ApplicationJob
   def self.rpc_payload(device)
     { kind: "rpc_request",
       args: { label: "FROM_API" },
-      body: [ { kind: "factory_reset", args: { package: "farmbot_os" } } ] }
+      body: [{ kind: "factory_reset", args: { package: "farmbot_os" } }] }
   end
 
   def perform(device, transport = Transport)

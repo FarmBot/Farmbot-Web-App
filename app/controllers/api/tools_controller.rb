@@ -1,6 +1,5 @@
 module Api
   class ToolsController < Api::AbstractController
-
     def index
       maybe_paginate tools
     end
@@ -21,7 +20,7 @@ module Api
       mutate Tools::Update.run(update_params)
     end
 
-private
+    private
 
     def update_params
       output = raw_json.merge(tool: tool)

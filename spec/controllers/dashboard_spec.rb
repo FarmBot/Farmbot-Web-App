@@ -57,14 +57,13 @@ describe DashboardController do
     end
 
     it "handles self hosted image uploads" do
-      name = "wow.jpg"
-      params = { key: "whatever/" + name,
-                 file: StringIO.new(File.open("./spec/fixture.jpg").read) }
+      params = { key: "fake_key", file: "fake_file" }
+      be_mocked = receive(:self_hosted_image_upload)
+                    .with(params)
+                    .and_return({something: 'testing'})
+      expect(Image).to(be_mocked)
       post :direct_upload, params: params
-      file = File.join("public", "direct_upload", "temp", name)
-      expect(File.file?(file)).to be(true)
       expect(response.status).to eq(200)
-      File.delete(file)
     end
   end
 end

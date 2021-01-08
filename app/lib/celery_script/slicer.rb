@@ -42,14 +42,14 @@ module CeleryScript
       (s[:args] || {})
         .keys
         .map do |key|
-          v = s[:args][key]
-          if (is_celery_script(v))
-            k = CsHeap::LINK + key.to_s
-            h.put(parentAddr, k, allocate(h, v, parentAddr))
-          else
-            h.put(parentAddr, key, v)
-          end
+        v = s[:args][key]
+        if (is_celery_script(v))
+          k = CsHeap::LINK + key.to_s
+          h.put(parentAddr, k, allocate(h, v, parentAddr))
+        else
+          h.put(parentAddr, key, v)
         end
+      end
     end
 
     def iterate_over_body(heap, canonical_node, parentAddr)
@@ -61,7 +61,7 @@ module CeleryScript
 
     def recurse_into_body(heap, canonical_list, previous_address, index = 0)
       if canonical_list[index]
-        is_head         = index == 0
+        is_head = index == 0
         # BE CAREFUL EDITING THIS LINE, YOU MIGHT BREAK `BODY` NODES:
         heap # See note above!
           .put(previous_address, CsHeap::BODY, previous_address + 1) if is_head

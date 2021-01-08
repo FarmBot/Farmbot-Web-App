@@ -5,7 +5,7 @@
 class RegimenItem < ApplicationRecord
   belongs_to :regimen
   belongs_to :sequence
-  validates  :sequence, presence: true
+  validates :sequence, presence: true
 
   def broadcast?
     false

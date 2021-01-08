@@ -22,7 +22,7 @@ module Api
       mutate Regimens::Destroy.run(regimen: the_regimen, device: current_device)
     end
 
-  private
+    private
 
     def the_regimen
       your_regimens.find(params[:id])

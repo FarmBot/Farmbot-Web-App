@@ -4,7 +4,6 @@ module Api
   # Farmware envs controller handles CRUD for user definable key/value pairs.
   # Usually used for Farmware settings and data.
   class FarmwareEnvsController < Api::AbstractController
-
     def create
       mutate FarmwareEnvs::Create.run(raw_json, device: current_device)
     end
@@ -29,7 +28,7 @@ module Api
       end
     end
 
-  private
+    private
 
     def farmware_env
       farmware_envs.find(params[:id])
