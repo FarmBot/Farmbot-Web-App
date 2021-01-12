@@ -43,7 +43,9 @@ export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
     props.sourceFwConfig(key).consistent);
   const progress = Math.round(loadedKeys.length / keys.length * 100);
   const color = [0, 100].includes(progress) ? Color.darkGray : Color.white;
-  return <div className={"load-progress-bar-wrapper"}>
+  return <div className={"load-progress-bar-wrapper"}
+    onClick={() => console.log(keys.filter((key: McuParamName) =>
+      !props.sourceFwConfig(key).consistent))}>
     <div className={"load-progress-bar"}
       style={{ width: `${progress}%`, background: color }}>
       {props.botOnline

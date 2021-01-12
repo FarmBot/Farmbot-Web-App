@@ -4,11 +4,18 @@ jest.mock("../step_tiles", () => ({
   move: jest.fn(),
 }));
 
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+  history: { getCurrentLocation: () => "" },
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { splice, remove, move } from "../step_tiles";
+import { push } from "../../history";
 
 describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({
@@ -16,6 +23,7 @@ describe("<StepIconGroup />", () => {
     dispatch: jest.fn(),
     step: { kind: "wait", args: { milliseconds: 100 } },
     sequence: fakeSequence(),
+    executeSequenceName: undefined,
     helpText: "helpful text",
     confirmStepDeletion: false,
   });
@@ -49,5 +57,13 @@ describe("<StepIconGroup />", () => {
       to: 0,
       step: fakeProps().step
     }));
+  });
+
+  it("navigates to sequence", () => {
+    const p = fakeProps();
+    p.executeSequenceName = "My Sequence";
+    const wrapper = mount(<StepIconGroup {...p} />);
+    wrapper.find(".fa-external-link").simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/sequences/my_sequence");
   });
 });

@@ -84,4 +84,12 @@ describe("<SettingLoadProgress />", () => {
     expect(barStyle?.width).toEqual("100%");
     expect(barStyle?.background).toEqual(Color.darkGray);
   });
+
+  it("logs loading items", () => {
+    console.log = jest.fn();
+    const p = fakeProps();
+    const wrapper = mount(<SettingLoadProgress {...p} />);
+    wrapper.find(".load-progress-bar-wrapper").simulate("click");
+    expect(console.log).toHaveBeenCalledWith(["encoder_enabled_y"]);
+  });
 });

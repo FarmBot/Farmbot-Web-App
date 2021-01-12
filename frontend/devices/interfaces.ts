@@ -43,6 +43,7 @@ export enum Feature {
   groups = "groups",
   jest_feature = "jest_feature",
   long_scaling_factor = "long_scaling_factor",
+  lua_step = "lua_step",
   mark_as_step = "mark_as_step",
   named_pins = "named_pins",
   no_firmware_logs = "no_firmware_logs",

@@ -19,7 +19,6 @@
   overflow: hidden;
   .bp3-popover-target .saucer {
     float: left;
-    margin-top: 0.4rem;
   }
   @media screen and (max-width: 767px) {
     h3,
@@ -104,6 +103,15 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+  .fa-thumb-tack {
+    color: $placeholder_gray;
+    line-height: 3rem;
+    transform: rotate(45deg);
+    &.pinned {
+      transform: rotate(0deg);
+      color: $dark_gray;
+    }
+  }
 }
 
 .locals-list {
@@ -120,10 +128,16 @@
       width: 100%;
       background: darken($off_white, 5%);
       padding: 1rem;
-      i {
+      .fa-caret-down,
+      .fa-caret-up {
         float: right;
         font-size: 2rem;
         color: $dark_gray;
+      }
+      .bp3-popover-wrapper {
+        display: inline;
+        margin-left: 1rem;
+        font-size: 1.2rem;
       }
     }
     >.location-form-content {
@@ -420,6 +434,10 @@
         margin-right: 3rem;
         width: 2rem;
         color: $orange;
+      }
+      .fa-thumb-tack {
+        margin-right: 3rem;
+        width: 2rem;
       }
     }
     button {

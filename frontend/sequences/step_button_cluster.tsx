@@ -1,7 +1,7 @@
 import React from "react";
 import { StepButton } from "./step_buttons";
 import { scrollToBottom, urlFriendly } from "../util";
-import { Row } from "../ui/index";
+import { Col, Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
@@ -11,6 +11,8 @@ import { NOTHING_SELECTED } from "./locals_list/handle_select";
 import { push } from "../history";
 import { inDesigner } from "../folders/component";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
+import { variableList } from "./locals_list/variable_support";
+import { ResourceIndex } from "../resources/interfaces";
 
 export interface StepButtonProps {
   dispatch: Function;
@@ -19,6 +21,7 @@ export interface StepButtonProps {
   stepIndex: number | undefined;
   farmwareData: FarmwareData;
   sequences: TaggedSequence[];
+  resources: ResourceIndex;
 }
 
 export function StepButtonCluster(props: StepButtonProps) {
@@ -226,12 +229,14 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="purple">
       {t("ASSERTION")}
     </StepButton>,
-    <StepButton
-      {...commonStepProps}
-      step={{ kind: "lua", args: { lua: "" } }}
-      color="purple">
-      {t("LUA")}
-    </StepButton>,
+    ...(shouldDisplay(Feature.lua_step)
+      ? [<StepButton
+        {...commonStepProps}
+        step={{ kind: "lua", args: { lua: "" } }}
+        color="purple">
+        {t("LUA")}
+      </StepButton>]
+      : []),
     ...(shouldDisplay(Feature.update_resource)
       ? [<StepButton
         {...commonStepProps}
@@ -258,22 +263,23 @@ export function StepButtonCluster(props: StepButtonProps) {
         <div className={"step-button"} key={inx} onClick={click}>
           {stepButton}
         </div>)}
-    </div>
-    {pinnedSequences.length > 0 &&
-      <label style={{ marginLeft: "1rem" }}>{t("pinned sequences")}</label>}
-    <div className={"pinned-sequences"}>
-      {props.sequences.filter(s => s.body.pinned)
-        .map(s => s.body.id &&
-          <div className={"step-button"} key={s.uuid} onClick={click}>
-            <StepButton {...commonStepProps}
-              step={{
-                kind: "execute",
-                args: { sequence_id: s.body.id }
-              }}
-              color={s.body.color}>
-              {s.body.name}
-            </StepButton>
-          </div>)}
+      {pinnedSequences.length > 0 &&
+        <Col xs={12}><label>{t("pinned sequences")}</label></Col>}
+      <div className={"pinned-sequences"}>
+        {props.sequences.filter(s => s.body.pinned)
+          .map(s => s.body.id &&
+            <div className={"step-button"} key={s.uuid} onClick={click}>
+              <StepButton {...commonStepProps}
+                step={{
+                  kind: "execute",
+                  args: { sequence_id: s.body.id },
+                  body: variableList(props.resources.sequenceMetas[s.uuid])
+                }}
+                color={s.body.color}>
+                {s.body.name}
+              </StepButton>
+            </div>)}
+      </div>
     </div>
   </Row>;
 }

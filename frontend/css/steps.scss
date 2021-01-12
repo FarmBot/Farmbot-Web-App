@@ -51,6 +51,10 @@
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  &.pinned.no-inputs {
+    border-radius: 3px;
+  }
+  margin-bottom: -1px;
   .bp3-popover-wrapper {
     float: right;
     margin-top: 0.1rem;
@@ -206,10 +210,20 @@
   font-size: 2rem;
 }
 
+.step-control-icons i,
+.step-control-icons .bp3-popover-wrapper,
 .step-control {
-  margin-top: 0.3rem;
+  width: 1.2rem;
+  margin-top: 0.5rem;
   margin-left: 2rem;
   float: right;
+  .bp3-popover-target {
+    display: block;
+    margin-top: -0.5rem;
+  }
+  &.fa-external-link {
+    padding-top: 0.2rem;
+  }
 }
 
 .step-content {
@@ -291,6 +305,9 @@
           margin-right: -15px;
         }
       }
+    }
+    &:empty {
+      display: none;
     }
   }
   &.execute-script-step {

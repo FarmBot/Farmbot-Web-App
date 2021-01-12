@@ -82,6 +82,6 @@ const convertFormVariable =
       celeryNode: converted,
       dropdown: determineDropdown(converted, resources),
       vector: determineVector(converted, resources),
-      default: true,
+      isDefault: true,
     };
   };

@@ -12,6 +12,7 @@ import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
 import { FarmwareName } from "../step_tiles/tile_execute_script";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<StepButtonCluster />", () => {
   const commands = ["move to", "move relative",
@@ -25,6 +26,7 @@ describe("<StepButtonCluster />", () => {
     shouldDisplay: () => false,
     stepIndex: undefined,
     sequences: [],
+    resources: buildResourceIndex().index,
     farmwareData: fakeFarmwareData(),
   });
 
@@ -48,7 +50,7 @@ describe("<StepButtonCluster />", () => {
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
     const steps = wrapper.find(".step-dragger");
-    const stepButton = steps.at(steps.length - 3);
+    const stepButton = steps.at(steps.length - 2);
     expect(stepButton.text().toLowerCase()).toEqual("take photo");
     stepButton.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
     expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({

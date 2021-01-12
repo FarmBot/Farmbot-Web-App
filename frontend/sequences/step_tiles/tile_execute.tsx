@@ -7,7 +7,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { findSequenceById } from "../../resources/selectors_by_id";
-import { LocalsList } from "../locals_list/locals_list";
+import { isParameterDeclaration, LocalsList } from "../locals_list/locals_list";
 import {
   addOrEditParamApps, variableList,
 } from "../locals_list/variable_support";
@@ -66,8 +66,15 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
     const pinned = sequence_id
       ? findSequenceById(resources, sequence_id).body.pinned
       : undefined;
+    const hasVariables = Object.values(calledSequenceVariableData || {})
+      .filter(v => v && isParameterDeclaration(v.celeryNode))
+      .length > 0;
     return <StepWrapper
-      className={`execute-step ${pinned ? "pinned" : ""}`}
+      className={[
+        "execute-step",
+        pinned ? "pinned" : "",
+        hasVariables ? "" : "no-inputs",
+      ].join(" ")}
       helpText={ToolTips.EXECUTE_SEQUENCE}
       currentSequence={currentSequence}
       currentStep={currentStep}
@@ -83,8 +90,8 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
               sequenceId={currentStep.args.sequence_id} />
           </Col>
         </Row>}
-      <Row>
-        {!!calledSequenceVariableData &&
+      {hasVariables &&
+        <Row>
           <Col>
             <LocalsList
               bodyVariables={currentStep.body}
@@ -95,8 +102,8 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
               locationDropdownKey={JSON.stringify(currentSequence)}
               allowedVariableNodes={AllowedVariableNodes.identifier}
               shouldDisplay={this.props.shouldDisplay} />
-          </Col>}
-      </Row>
+          </Col>
+        </Row>}
     </StepWrapper>;
   }
 }

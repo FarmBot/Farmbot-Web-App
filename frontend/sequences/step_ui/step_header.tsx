@@ -14,6 +14,7 @@ export interface StepHeaderProps {
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
+  executeSequence: SequenceResource | undefined;
   pinnedSequence: SequenceResource | undefined;
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
@@ -55,6 +56,7 @@ export class StepHeader
             dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
+            executeSequenceName={this.props.executeSequence?.name}
             helpText={t(helpText)}
             toggleViewRaw={this.props.toggleViewRaw}
             confirmStepDeletion={confirmStepDeletion} />
