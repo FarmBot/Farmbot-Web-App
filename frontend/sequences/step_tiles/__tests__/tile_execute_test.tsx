@@ -48,6 +48,17 @@ describe("<ExecuteBlock />", () => {
     expect(block.text()).toContain("Select a sequence");
   });
 
+  it("renders pinned sequence step", () => {
+    const p = fakeProps();
+    mockSequence.body.id = 1;
+    p.currentStep.args.sequence_id = mockSequence.body.id;
+    mockSequence.body.pinned = true;
+    mockSequence.body.name = "Pinned Sequence";
+    const block = mount(<TileExecute {...p} />);
+    expect(block.html().toLowerCase()).toContain("placeholder=\"pinned sequence");
+    expect(block.html().toLowerCase()).not.toContain("filter-search");
+  });
+
   it("selects sequence", () => {
     const p = fakeProps();
     const block = mount<TileExecute>(<TileExecute {...p} />);

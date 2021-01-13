@@ -8,6 +8,7 @@ import { StepHeader } from "./step_header";
 import { getWebAppConfigValueFromResources } from "../../config_storage/actions";
 import { ResourceIndex } from "../../resources/interfaces";
 import { BooleanSetting } from "../../session_keys";
+import { findSequenceById } from "../../resources/selectors";
 
 export interface StepWrapperProps {
   children?: React.ReactNode;
@@ -45,6 +46,11 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
   render() {
     const confirmStepDeletion =
       !!this.getConfigValue(BooleanSetting.confirm_step_deletion);
+    const step = this.props.currentStep;
+    const executeSequence = step.kind == "execute" && step.args.sequence_id
+      ? findSequenceById(this.props.resources, step.args.sequence_id).body
+      : undefined;
+    const pinnedSequence = executeSequence?.pinned ? executeSequence : undefined;
     return <div className={`step-wrapper ${this.props.className}`}>
       <StepHeader
         className={this.props.className}
@@ -53,6 +59,8 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}
         index={this.props.index}
+        executeSequence={executeSequence}
+        pinnedSequence={pinnedSequence}
         toggleViewRaw={this.toggleViewRaw}
         confirmStepDeletion={confirmStepDeletion}>
         {this.props.warning}
@@ -61,7 +69,9 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         ? <pre>{stringifySequenceData(this.props.currentStep)}</pre>
         : <Row>
           <Col sm={12}>
-            <div className={`step-content ${this.props.className}`}>
+            <div className={[
+              "step-content", this.props.className, pinnedSequence?.color,
+            ].join(" ")}>
               <ErrorBoundary>
                 {this.props.children}
               </ErrorBoundary>

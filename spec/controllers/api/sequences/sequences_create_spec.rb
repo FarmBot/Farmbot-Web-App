@@ -429,5 +429,14 @@ describe Api::SequencesController do
       expect(response.status).to eq(422)
       expect(json[:body]).to include(CeleryScript::Checker::MISSING_PARAM)
     end
+
+    it "pins a new sequence" do
+      sign_in user
+      input = { name: "v. important sequence", body: [], pinned: true }
+      sequence_body_for(user)
+      post :create, body: input.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(json[:pinned]).to eq(true)
+    end
   end
 end

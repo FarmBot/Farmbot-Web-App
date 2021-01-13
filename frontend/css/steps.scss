@@ -51,6 +51,10 @@
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  &.pinned.no-inputs {
+    border-radius: 3px;
+  }
+  margin-bottom: -1px;
   .bp3-popover-wrapper {
     float: right;
     margin-top: 0.1rem;
@@ -116,6 +120,9 @@
   &.assertion-step {
     background: $purple;
   }
+  &.lua-step {
+    background: $purple;
+  }
   &.execute-step {
     background: $gray;
   }
@@ -161,6 +168,27 @@
   &.unknown-step {
     background: $gray;
   }
+  &.blue {
+    background: $blue;
+  }
+  &.orange {
+    background: $orange;
+  }
+  &.yellow {
+    background: $yellow;
+  }
+  &.red {
+    background: $red;
+  }
+  &.purple {
+    background: $purple;
+  }
+  &.pink {
+    background: $pink;
+  }
+  &.gray {
+    background: $gray;
+  }
   .help {
     float: right;
   }
@@ -182,10 +210,20 @@
   font-size: 2rem;
 }
 
+.step-control-icons i,
+.step-control-icons .bp3-popover-wrapper,
 .step-control {
-  margin-top: 0.3rem;
+  width: 1.2rem;
+  margin-top: 0.5rem;
   margin-left: 2rem;
   float: right;
+  .bp3-popover-target {
+    display: block;
+    margin-top: -0.5rem;
+  }
+  &.fa-external-link {
+    padding-top: 0.2rem;
+  }
 }
 
 .step-content {
@@ -233,13 +271,43 @@
       margin-bottom: 1rem;
     }
   }
+  &.lua-step {
+    background: $light_purple;
+    textarea {
+      margin-bottom: 1rem;
+    }
+  }
   &.execute-step {
     background: $light_gray;
     padding-bottom: 1rem;
-    &.step-content {
-      .row {
-        margin: 0;
+    .row {
+      margin: 0;
+    }
+    &.pinned {
+      .location-form {
+        background: none;
+        margin-top: 0;
+        max-width: unset;
+        .location-form-header {
+          background: none;
+          padding: 0;
+        }
+        .location-form-content {
+          padding: 0;
+        }
+        label {
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
+        }
+        .row {
+          margin-top: 0.5rem;
+          margin-left: -15px;
+          margin-right: -15px;
+        }
       }
+    }
+    &:empty {
+      display: none;
     }
   }
   &.execute-script-step {
@@ -292,6 +360,30 @@
   }
   &.unknown-step {
     background: $light_gray;
+  }
+  &.blue {
+    background: $light_blue !important;
+  }
+  &.green {
+    background: $light_green !important;
+  }
+  &.orange {
+    background: $light_orange !important;
+  }
+  &.yellow {
+    background: $light_yellow !important;
+  }
+  &.red {
+    background: $light_red !important;
+  }
+  &.purple {
+    background: $light_purple !important;
+  }
+  &.pink {
+    background: $light_pink !important;
+  }
+  &.gray {
+    background: $light_gray !important;
   }
   input,
   select {

@@ -30,7 +30,7 @@ module Api
       mutate policy_class.run
     end
 
-  private
+    private
 
     def policy_class
       if ImagesController.store_locally

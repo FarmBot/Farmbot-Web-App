@@ -5,7 +5,7 @@ module Auth
     optional do
       string :jwt
       string :bot_token
-      model  :user, class: User
+      model :user, class: User
     end
 
     def execute
@@ -13,8 +13,8 @@ module Auth
       # That's because current_user always has a current_device, but not the
       # other way around, so JWT should get higher preference.
       return :already_connected if user
-      return :jwt               if jwt
-      return :bot               if bot_token
+      return :jwt if jwt
+      return :bot if bot_token
       return nil                # Failure case- can't determine.
     end
   end

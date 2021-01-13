@@ -5,7 +5,7 @@ module Auth
     required do
       string :email
       string :password
-      model  :fbos_version, class: Gem::Version
+      model :fbos_version, class: Gem::Version
     end
 
     optional do

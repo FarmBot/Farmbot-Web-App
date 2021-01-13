@@ -29,6 +29,7 @@ describe("resource reducer", () => {
       kind: "sequence",
       name: "wow",
       folder_id: undefined,
+      pinned: false,
       args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
       body: [],
       color: "red"

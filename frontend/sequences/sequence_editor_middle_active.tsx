@@ -3,7 +3,7 @@ import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
 } from "./interfaces";
-import { editCurrentSequence, copySequence } from "./actions";
+import { editCurrentSequence, copySequence, pinSequenceToggle } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
@@ -166,11 +166,20 @@ export const SequenceNameAndColor = ({ dispatch, sequence }: {
   dispatch: Function, sequence: TaggedSequence
 }) =>
   <Row>
-    <Col xs={11}>
+    <Col xs={10}>
       <BlurableInput value={sequence.body.name}
         placeholder={t("Sequence Name")}
         onCommit={e =>
           dispatch(edit(sequence, { name: e.currentTarget.value }))} />
+    </Col>
+    <Col xs={1} className="pinned-col">
+      <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
+        className={[
+          "fa",
+          "fa-thumb-tack",
+          sequence.body.pinned ? "pinned" : "",
+        ].join(" ")}
+        onClick={() => dispatch(pinSequenceToggle(sequence))} />
     </Col>
     <Col xs={1} className="color-picker-col">
       <ColorPicker

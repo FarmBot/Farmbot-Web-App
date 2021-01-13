@@ -56,10 +56,10 @@ class DashboardController < ApplicationController
   end.with_indifferent_access
 
   PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
-    .sort
-    .uniq
-    .map { |x| File.join("frontend", x) }
-    .join(" ")
+                                                    .sort
+                                                    .uniq
+                                                    .map { |x| File.join("frontend", x) }
+                                                    .join(" ")
 
   PARCEL_HMR_OPTS = [
     "--no-hmr",
@@ -109,10 +109,8 @@ class DashboardController < ApplicationController
   # (for self hosted users) Direct image upload endpoint.
   # Do not use this if you use GCS- it will slow your app down.
   def direct_upload
-    raise "No." unless Api::ImagesController.store_locally
-    name = params.fetch(:key).split("/").last
-    path = File.join("public", "direct_upload", "temp", name)
-    File.open(path, "wb") { |f| f.write(params[:file]) }
+    Image.self_hosted_image_upload(key: params.fetch(:key),
+                                   file: params.fetch(:file))
     render json: ""
   end
 

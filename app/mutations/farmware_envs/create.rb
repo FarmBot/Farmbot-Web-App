@@ -3,9 +3,9 @@ module FarmwareEnvs
     LIMIT = Device::DEFAULT_MAX_CONFIGS
 
     required do
-      model  :device, class: Device
+      model :device, class: Device
       string :key
-      duck   :value, methods: [:to_json]
+      duck :value, methods: [:to_json]
     end
 
     def validate

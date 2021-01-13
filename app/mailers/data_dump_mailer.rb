@@ -1,14 +1,13 @@
 class DataDumpMailer < ApplicationMailer
-  SUBJECT          = "FarmBot Account Data Export"
+  SUBJECT = "FarmBot Account Data Export"
   EXPORT_MIME_TYPE = "application/json"
-  EXPORT_FILENAME  = "export.json"
+  EXPORT_FILENAME = "export.json"
 
   attr_reader :device
 
   def email_json_dump(device)
     @device = device
-    attachments[EXPORT_FILENAME] = \
-      { mime_type: EXPORT_MIME_TYPE, content: export_data }
+    attachments[EXPORT_FILENAME] = { mime_type: EXPORT_MIME_TYPE, content: export_data }
     mail to: recipients, subject: SUBJECT
   end
 

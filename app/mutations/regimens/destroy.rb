@@ -12,8 +12,8 @@ module Regimens
     end
 
     def execute
-       regimen.destroy!
-       return ""
+      regimen.destroy!
+      return ""
     end
   end
 end

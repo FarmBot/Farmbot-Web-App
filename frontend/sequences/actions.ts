@@ -36,6 +36,12 @@ export const copySequence = (payload: TaggedSequence) =>
     setActiveSequenceByName();
   };
 
+export const pinSequenceToggle = (sequence: TaggedSequence) =>
+  (dispatch: Function) => {
+    const pinned = sequence.body.pinned;
+    editCurrentSequence(dispatch, sequence, { pinned: !pinned });
+  };
+
 export function selectSequence(uuid: string): SelectSequence {
   return {
     type: Actions.SELECT_SEQUENCE,

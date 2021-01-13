@@ -20,6 +20,8 @@ describe("<DesignerSequenceCommands />", () => {
     current: undefined,
     shouldDisplay: () => false,
     stepIndex: undefined,
+    sequences: [],
+    resources: buildResourceIndex().index,
     farmwareData: fakeFarmwareData(),
   });
 

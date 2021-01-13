@@ -1,7 +1,7 @@
 module Auth
   module ConsentHelpers
     def maybe_validate_tos
-      return  unless User::ENFORCE_TOS # Not every server has a TOS.
+      return unless User::ENFORCE_TOS # Not every server has a TOS.
       no_tos! unless agree_to_terms
     end
 

@@ -2,7 +2,7 @@ module SavedGardens
   class Create < Mutations::Command
     required do
       string :name
-      model  :device, class: Device
+      model :device, class: Device
     end
 
     optional do

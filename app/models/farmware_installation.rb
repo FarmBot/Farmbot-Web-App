@@ -2,30 +2,23 @@
 # Useful for restoring a device after a re-flash.
 class FarmwareInstallation < ApplicationRecord
   belongs_to :device
-  validates  :url, url: true
+  validates :url, url: true
   validates_uniqueness_of :url, { scope: :device }
   validates_presence_of :device
   # Prevent malice when fetching a farmware manifest
-  MAX_JSON_SIZE   = 5000
-  OTHER_PROBLEM   = "Unknown error: %s"
+  MAX_JSON_SIZE = 5000
+  OTHER_PROBLEM = "Unknown error: %s"
   # Keep a dictionary of known errors if fetching
   # the `package` attr raises a runtime error.
-  KNOWN_PROBLEMS  = {
-    KeyError           =>
-      "Farmware manifest must have a `package` field that is a string.",
-    OpenURI::HTTPError =>
-      "The server is online, but the URL could not be opened.",
-    SocketError        =>
-      "The server at the provided appears to be offline.",
-    Net::OpenTimeout   =>
-      "A timeout error occurred.",
-    JSON::ParserError  =>
-      "Expected Farmware manifest to be valid JSON, "\
-      "but it is not. Consider using a JSON validator.",
-    ActiveRecord::ValueTooLong =>
-      "The name of the package is too long.",
-    Errno::ECONNREFUSED =>
-      "Could not connect to the server at the provided URL."
+  KNOWN_PROBLEMS = {
+    KeyError => "Farmware manifest must have a `package` field that is a string.",
+    OpenURI::HTTPError => "The server is online, but the URL could not be opened.",
+    SocketError => "The server at the provided appears to be offline.",
+    Net::OpenTimeout => "A timeout error occurred.",
+    JSON::ParserError => "Expected Farmware manifest to be valid JSON, " \
+                         "but it is not. Consider using a JSON validator.",
+    ActiveRecord::ValueTooLong => "The name of the package is too long.",
+    Errno::ECONNREFUSED => "Could not connect to the server at the provided URL.",
   }
 
   # Downloads the farmware manifest JSON file in a background
@@ -38,10 +31,9 @@ class FarmwareInstallation < ApplicationRecord
   # a package name in a background worker.
   def maybe_recover_from_fetch_error(error)
     known_error = KNOWN_PROBLEMS[error.class]
-    description = \
-       known_error || (OTHER_PROBLEM % error.class)
+    description = known_error || (OTHER_PROBLEM % error.class)
     update!(package_error: description,
-                       package:       nil)
+            package: nil)
     unless known_error.present?
       raise error
     end
@@ -51,9 +43,9 @@ class FarmwareInstallation < ApplicationRecord
   # main thread!
   def infer_package_name_from_url
     string_io = open(url)
-    string    = string_io.read(MAX_JSON_SIZE)
-    json      = JSON.parse(string)
-    pkg_name  = json.fetch("package")
+    string = string_io.read(MAX_JSON_SIZE)
+    json = JSON.parse(string)
+    pkg_name = json.fetch("package")
     update!(package: pkg_name, package_error: nil)
   rescue => error
     maybe_recover_from_fetch_error(error)

@@ -10,7 +10,7 @@ class Sequence < ApplicationRecord
   NOTHING = { kind: "nothing", args: {} }
   SCOPE_DECLARATION = { kind: "scope_declaration", args: {} }
   DEFAULT_ARGS = { locals: SCOPE_DECLARATION,
-                  version: LATEST_VERSION }
+                   version: LATEST_VERSION }
 
   COLORS = %w(blue green yellow orange purple pink gray red)
   include CeleryScriptSettingsBag

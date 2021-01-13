@@ -49,6 +49,7 @@ export const fakeSequence =
       folder_id: undefined,
       name: "fake",
       kind: "sequence",
+      pinned: false,
       body: [],
       ...body
     });

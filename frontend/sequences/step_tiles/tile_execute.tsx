@@ -7,7 +7,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { findSequenceById } from "../../resources/selectors_by_id";
-import { LocalsList } from "../locals_list/locals_list";
+import { isParameterDeclaration, LocalsList } from "../locals_list/locals_list";
 import {
   addOrEditParamApps, variableList,
 } from "../locals_list/variable_support";
@@ -63,24 +63,35 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
     const calledSequenceVariableData = calleeUuid
       ? resources.sequenceMetas[calleeUuid]
       : undefined;
+    const pinned = sequence_id
+      ? findSequenceById(resources, sequence_id).body.pinned
+      : undefined;
+    const hasVariables = Object.values(calledSequenceVariableData || {})
+      .filter(v => v && isParameterDeclaration(v.celeryNode))
+      .length > 0;
     return <StepWrapper
-      className={"execute-step"}
+      className={[
+        "execute-step",
+        pinned ? "pinned" : "",
+        hasVariables ? "" : "no-inputs",
+      ].join(" ")}
       helpText={ToolTips.EXECUTE_SEQUENCE}
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
       index={index}
       resources={resources}>
-      <Row>
-        <Col>
-          <SequenceSelectBox
-            onChange={this.changeSelection}
-            resources={resources}
-            sequenceId={currentStep.args.sequence_id} />
-        </Col>
-      </Row>
-      <Row>
-        {!!calledSequenceVariableData &&
+      {!pinned &&
+        <Row>
+          <Col>
+            <SequenceSelectBox
+              onChange={this.changeSelection}
+              resources={resources}
+              sequenceId={currentStep.args.sequence_id} />
+          </Col>
+        </Row>}
+      {hasVariables &&
+        <Row>
           <Col>
             <LocalsList
               bodyVariables={currentStep.body}
@@ -91,8 +102,8 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
               locationDropdownKey={JSON.stringify(currentSequence)}
               allowedVariableNodes={AllowedVariableNodes.identifier}
               shouldDisplay={this.props.shouldDisplay} />
-          </Col>}
-      </Row>
+          </Col>
+        </Row>}
     </StepWrapper>;
   }
 }

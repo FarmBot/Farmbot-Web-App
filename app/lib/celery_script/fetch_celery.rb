@@ -34,7 +34,7 @@ module CeleryScript
     def attach_edges(node)
       output = {}
       (edge_nodes.by.primary_node_id[node.id] || [])
-        .map { |edge| output[edge.kind] = edge.value }
+                                         .map { |edge| output[edge.kind] = edge.value }
       output
     end
 
@@ -43,7 +43,7 @@ module CeleryScript
     def attach_primary_nodes(node)
       output = {}
       (primary_nodes.by.parent_id[node.id] || []).select(&:parent_arg_name)
-        .map { |x| output[x.parent_arg_name] = recurse_into_node(x) }
+                                      .map { |x| output[x.parent_arg_name] = recurse_into_node(x) }
       output
     end
 
@@ -94,6 +94,7 @@ module CeleryScript
                args: Sequence::DEFAULT_ARGS,
                color: sequence.color,
                name: sequence.name,
+               pinned: sequence.pinned,
              }
     end
 

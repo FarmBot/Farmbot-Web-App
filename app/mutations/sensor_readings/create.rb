@@ -1,10 +1,10 @@
 module SensorReadings
   class Create < Mutations::Command
     required do
-      model   :device, class: Device
-      float   :x, nils: true, empty_is_nil: true
-      float   :y, nils: true, empty_is_nil: true
-      float   :z, nils: true, empty_is_nil: true
+      model :device, class: Device
+      float :x, nils: true, empty_is_nil: true
+      float :y, nils: true, empty_is_nil: true
+      float :z, nils: true, empty_is_nil: true
       integer :value
       integer :pin
     end
@@ -12,7 +12,7 @@ module SensorReadings
     optional do
       time :read_at
       integer :mode,
-        in:      CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
+        in: CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
         default: CeleryScriptSettingsBag::DIGITAL
     end
 

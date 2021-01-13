@@ -28,7 +28,7 @@ export interface SequenceMeta {
   celeryNode: VariableNode;
   dropdown: DropDownItem;
   vector: Vector3 | Vector3Plus | undefined;
-  default?: boolean;
+  isDefault?: boolean;
 }
 
 /** Converts a "scope declaration body item" (AKA a CeleryScript variable) into
@@ -146,16 +146,17 @@ export const determineEditable = (node: VariableNode): boolean => {
 export const createSequenceMeta =
   (resources: ResourceIndex, sequence: TaggedSequence): VariableNameSet => {
     const collection = sequence.body.args.locals.body || [];
-    const reducer = (acc: VariableNameSet, celeryNode: ScopeDeclarationBodyItem):
-      VariableNameSet =>
-      ({
-        ...acc,
-        [celeryNode.args.label]: {
-          celeryNode,
-          vector: determineVector(celeryNode, resources, sequence.uuid),
-          dropdown: determineDropdown(celeryNode, resources, sequence.uuid),
-        }
-      });
+    const reducer = (
+      acc: VariableNameSet,
+      celeryNode: ScopeDeclarationBodyItem,
+    ): VariableNameSet => ({
+      ...acc,
+      [celeryNode.args.label]: {
+        celeryNode,
+        vector: determineVector(celeryNode, resources, sequence.uuid),
+        dropdown: determineDropdown(celeryNode, resources, sequence.uuid),
+      }
+    });
     return collection.reduce(reducer, {});
   };
 

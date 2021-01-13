@@ -76,6 +76,8 @@ export class RawSequences extends React.Component<Props, {}> {
             dispatch={this.props.dispatch}
             shouldDisplay={this.props.shouldDisplay}
             farmwareData={this.props.farmwareData}
+            sequences={this.props.sequences}
+            resources={this.props.resources}
             stepIndex={this.props.stepIndex} />
         </RightPanel>
       </Row>

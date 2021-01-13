@@ -3,7 +3,7 @@ module WebcamFeeds
     required do
       string :name
       string :url
-      model  :device, class: Device
+      model :device, class: Device
     end
 
     def execute

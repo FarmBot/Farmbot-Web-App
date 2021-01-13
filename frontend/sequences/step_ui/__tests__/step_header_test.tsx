@@ -11,6 +11,8 @@ describe("<StepHeader />", () => {
     currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
     index: 0,
+    executeSequence: undefined,
+    pinnedSequence: undefined,
     children: "child",
     confirmStepDeletion: false,
   });
@@ -25,6 +27,17 @@ describe("<StepHeader />", () => {
   it("renders with children", () => {
     const wrapper = mount(<StepHeader {...fakeProps()} />);
     expect(wrapper.text()).toContain("child");
+  });
+
+  it("renders pinned sequence", () => {
+    const p = fakeProps();
+    p.pinnedSequence = fakeSequence().body;
+    p.pinnedSequence.color = "red";
+    p.pinnedSequence.name = "Pinned Sequence";
+    const wrapper = mount(<StepHeader {...p} />);
+    const step = wrapper.find("div").first();
+    expect(step.find(".step-header").hasClass("red")).toBeTruthy();
+    expect(wrapper.html().toLowerCase()).toContain("pinned");
   });
 
   it("toggle draggable", () => {

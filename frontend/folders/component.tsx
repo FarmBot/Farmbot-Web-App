@@ -61,6 +61,7 @@ export const FolderListItem = (props: FolderItemProps) => {
   const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
   const deprecatedSteps = JSON.stringify(props.sequence.body.body)
     .includes("resource_update");
+  const two = props.sequence.body.pinned || deprecatedSteps;
   return <StepDragger
     dispatch={props.dispatch}
     step={{
@@ -81,10 +82,12 @@ export const FolderListItem = (props: FolderItemProps) => {
       </Link>
       <div className="sequence-list-item-icons">
         {props.inUse &&
-          <i className={`in-use fa fa-hdd-o ${deprecatedSteps ? "two" : ""}`}
+          <i className={`in-use fa fa-hdd-o ${two ? "two" : ""}`}
             title={t(Content.IN_USE)} />}
         {deprecatedSteps && <i className="fa fa-exclamation-triangle"
           title={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
+        {props.sequence.body.pinned &&
+          <i className={"fa fa-thumb-tack"} title={t(Content.IS_PINNED)} />}
         <i className="fa fa-arrows-v"
           onMouseDown={() => props.startSequenceMove(sequence.uuid)}
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />

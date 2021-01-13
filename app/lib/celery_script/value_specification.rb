@@ -3,7 +3,7 @@ module CeleryScript
     attr_reader :name, :values
 
     def initialize(name, values)
-      @name   = name
+      @name = name
       @values = values
     end
 

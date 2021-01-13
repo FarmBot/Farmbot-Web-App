@@ -3,7 +3,7 @@ module FarmEvents
     include FarmEvents::ExecutableHelpers
 
     required do
-      model   :device, class: Device
+      model :device, class: Device
     end
 
     def execute
@@ -13,14 +13,14 @@ module FarmEvents
       end
     end
 
-  private
+    private
 
     def clean_regular_events
       device
         .farm_events
         .where
         .not(executable_type: "Regimen")
-        .where('end_time < ?', DateTime.now)
+        .where("end_time < ?", DateTime.now)
         .map(&:destroy!)
     end
 
@@ -39,16 +39,16 @@ module FarmEvents
         .farm_events
         .where(executable_type: "Regimen")
         .map do |x|
-          reg_items      = x.executable.regimen_items || RegimenItem.none
-          max_offset     = (reg_items.pluck(:time_offset).max || 0) / 1000
-          local_start    = x.start_time.in_time_zone(timezone)
-          a              = local_start < now
-          b              = (local_start.midnight + max_offset) < now
-          should_destroy = a && b
-          Info.new(x, x.executable, should_destroy)
-        end
+        reg_items = x.executable.regimen_items || RegimenItem.none
+        max_offset = (reg_items.pluck(:time_offset).max || 0) / 1000
+        local_start = x.start_time.in_time_zone(timezone)
+        a = local_start < now
+        b = (local_start.midnight + max_offset) < now
+        should_destroy = a && b
+        Info.new(x, x.executable, should_destroy)
+      end
         .select { |x| x.should_destroy? }
-        .map    { |x| x.fe.destroy! }
+        .map { |x| x.fe.destroy! }
     end
   end
 end

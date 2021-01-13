@@ -9,19 +9,19 @@ module CeleryScript
 
     def self.find_all_by_kind(node, name)
       results = []
-      filter = -> (n) { results.push(n) if n.kind == name }
+      filter = ->(n) { results.push(n) if n.kind == name }
       travel(node, filter)
       results
     end
 
     def self.find_all_with_arg(node, arg_name)
       results = []
-      filter = -> (n) { results.push(n) if n.args.has_key?(arg_name) }
+      filter = ->(n) { results.push(n) if n.args.has_key?(arg_name) }
       travel(node, filter)
       results
     end
 
-  private
+    private
 
     def self.visit_node(node, callable)
       if node.is_a?(AstNode) # Keep recursing if it's not a leaf.

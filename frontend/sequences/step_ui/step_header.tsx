@@ -1,9 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui/index";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "../step_icon_group";
 import { t } from "../../i18next_wrapper";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 export interface StepHeaderProps {
   children?: React.ReactNode;
@@ -13,6 +14,8 @@ export interface StepHeaderProps {
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
+  executeSequence: SequenceResource | undefined;
+  pinnedSequence: SequenceResource | undefined;
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
 }
@@ -35,22 +38,25 @@ export class StepHeader
       dispatch,
       index,
       confirmStepDeletion,
+      pinnedSequence,
     } = this.props;
     return <Row>
       <Col sm={12}>
-        <div className={`step-header ${className}`}
+        <div className={`step-header ${className} ${pinnedSequence?.color}`}
           draggable={this.state.draggable}>
           <StepTitleBar
             index={index}
             dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
+            pinnedSequenceName={this.props.pinnedSequence?.name}
             toggleDraggable={this.toggle} />
           <StepIconGroup
             index={index}
             dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
+            executeSequenceName={this.props.executeSequence?.name}
             helpText={t(helpText)}
             toggleViewRaw={this.props.toggleViewRaw}
             confirmStepDeletion={confirmStepDeletion} />

@@ -11,10 +11,10 @@ module PasswordResets
     def execute
       send_email
       # Under no circumstance should you return the token.
-      return {status: "Check your email!"}
+      return { status: "Check your email!" }
     end
 
-private
+    private
 
     def send_email
       UserMailer.password_reset(user, token).deliver_later

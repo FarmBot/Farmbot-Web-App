@@ -1,4 +1,3 @@
-
 module Api
   class GlobalConfigController < Api::AbstractController
     skip_before_action :authenticate_user!
@@ -8,4 +7,3 @@ module Api
     end
   end
 end
-

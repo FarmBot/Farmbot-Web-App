@@ -8,7 +8,7 @@ module Peripherals
     optional do
       integer :pin
       integer :mode
-      string  :label
+      string :label
     end
 
     def execute

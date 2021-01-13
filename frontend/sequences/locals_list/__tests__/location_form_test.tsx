@@ -60,6 +60,7 @@ describe("<LocationForm/>", () => {
         dropdown
       }));
     expect(inputs.length).toBe(0);
+    expect(el.html()).not.toContain("fa-exclamation-triangle");
   });
 
   it("uses body variable data", () => {
@@ -147,5 +148,12 @@ describe("<LocationForm/>", () => {
     p.collapsed = true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.html()).toContain("fa-caret-down");
+  });
+
+  it("renders default value warning", () => {
+    const p = fakeProps();
+    p.variable.isDefault = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 });

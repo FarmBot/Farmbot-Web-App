@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SyncStatus, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
@@ -97,7 +97,7 @@ const Test = (props: TestProps) => {
 };
 
 export interface TestBtnProps {
-  syncStatus: SyncStatus;
+  syncStatus: SyncStatus | undefined;
   sequence: TaggedSequence;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;

@@ -12,6 +12,7 @@ import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
 import { FarmwareName } from "../step_tiles/tile_execute_script";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<StepButtonCluster />", () => {
   const commands = ["move to", "move relative",
@@ -24,6 +25,8 @@ describe("<StepButtonCluster />", () => {
     current: undefined,
     shouldDisplay: () => false,
     stepIndex: undefined,
+    sequences: [],
+    resources: buildResourceIndex().index,
     farmwareData: fakeFarmwareData(),
   });
 
@@ -32,6 +35,7 @@ describe("<StepButtonCluster />", () => {
     commands.map(command =>
       expect(wrapper.text().toLowerCase()).toContain(command));
     expect(wrapper.text().toLowerCase()).not.toContain("mark as");
+    expect(wrapper.text().toLowerCase()).not.toContain("pinned");
   });
 
   it("renders future commands", () => {
@@ -65,7 +69,7 @@ describe("<StepButtonCluster />", () => {
     p.current = fakeSequence();
     p.current.body.name = "sequence 1";
     const wrapper = mount(<StepButtonCluster {...p} />);
-    wrapper.find("div").last().simulate("click");
+    wrapper.find(".step-button").last().simulate("click");
     expect(push).toHaveBeenCalledWith("/app/designer/sequences/sequence_1");
   });
 
@@ -73,7 +77,7 @@ describe("<StepButtonCluster />", () => {
     mockPath = "/app/designer/sequences/commands";
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
-    wrapper.find("div").last().simulate("click");
+    wrapper.find(".step-button").last().simulate("click");
     expect(push).toHaveBeenCalledWith("/app/designer/sequences/");
   });
 
@@ -81,7 +85,17 @@ describe("<StepButtonCluster />", () => {
     mockPath = "/app/sequences/1";
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
-    wrapper.find("div").last().simulate("click");
+    wrapper.find(".step-button").last().simulate("click");
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("shows pinned sequences", () => {
+    mockPath = "/app/sequences/1";
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.pinned = true;
+    p.sequences = [sequence];
+    const wrapper = mount(<StepButtonCluster {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("pinned");
   });
 });

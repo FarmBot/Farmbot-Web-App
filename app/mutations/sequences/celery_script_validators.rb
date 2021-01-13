@@ -1,10 +1,10 @@
 module Sequences
   module CeleryScriptValidators
-    NO_REGIMENS      = "Cant add parent to sequence used by regimen (yet)"
-    NO_TRANSACTION   = "You need to do this in a transaction"
-    ARGS_OF_INTEREST = {"tool_id"     => Tool,
-                        "sequence_id" => Sequence,
-                        "pointer_id"  => Point }
+    NO_REGIMENS = "Cant add parent to sequence used by regimen (yet)"
+    NO_TRANSACTION = "You need to do this in a transaction"
+    ARGS_OF_INTEREST = { "tool_id" => Tool,
+                         "sequence_id" => Sequence,
+                         "pointer_id" => Point }
     ALLOWED_NODE_KEYS = [
       "body",
       "kind",
@@ -13,7 +13,7 @@ module Sequences
       :body,
       :kind,
       :args,
-      :comment
+      :comment,
     ]
 
     def validate_sequence
@@ -30,15 +30,15 @@ module Sequences
     end
 
     def tree
-      hmm  = {
+      hmm = {
         kind: "sequence",
         body: symbolized_input[:body],
         args: {
           version: Sequence::LATEST_VERSION,
-          locals:  symbolized_input
+          locals: symbolized_input
             .deep_symbolize_keys
-            .dig(:args, :locals) || Sequence::SCOPE_DECLARATION
-        }
+            .dig(:args, :locals) || Sequence::SCOPE_DECLARATION,
+        },
       }
       @tree = CeleryScript::AstNode.new(**hmm)
     end

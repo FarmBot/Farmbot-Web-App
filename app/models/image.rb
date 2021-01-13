@@ -106,4 +106,12 @@ class Image < ApplicationRecord
 
     return DEFAULT_URL
   end
+
+  def self.self_hosted_image_upload(key:, file:)
+    raise "No." unless Api::ImagesController.store_locally
+    name = key.split("/").last
+    src = file.tempfile.path
+    dest = File.join("public", "direct_upload", "temp", name)
+    FileUtils.mv(src, dest)
+  end
 end
