@@ -59,6 +59,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}
         index={this.props.index}
+        executeSequence={executeSequence}
         pinnedSequence={pinnedSequence}
         toggleViewRaw={this.toggleViewRaw}
         confirmStepDeletion={confirmStepDeletion}>

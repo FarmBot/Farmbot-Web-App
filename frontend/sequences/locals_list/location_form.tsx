@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect } from "../../ui";
+import { Row, Col, FBSelect, Help } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -12,6 +12,7 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { DefaultValueForm } from "./default_value_form";
 import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
+import { ToolTips } from "../../constants";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -43,7 +44,7 @@ export const LocationForm =
   (props: LocationFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable,
       allowedVariableNodes, hideGroups } = props;
-    const { celeryNode, dropdown, vector } = maybeUseStepData({
+    const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
     const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
@@ -60,7 +61,7 @@ export const LocationForm =
       : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
-    if (variable.default) {
+    if (variable.isDefault) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
@@ -73,6 +74,9 @@ export const LocationForm =
       {!props.hideHeader &&
         <div className="location-form-header">
           <label>{formTitle}</label>
+          {isDefault &&
+            <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
+              customIcon={"exclamation-triangle"} onHover={true} />}
           {props.collapsible &&
             <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
               onClick={props.toggleVarShow} />}

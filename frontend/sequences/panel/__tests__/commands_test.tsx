@@ -21,6 +21,7 @@ describe("<DesignerSequenceCommands />", () => {
     shouldDisplay: () => false,
     stepIndex: undefined,
     sequences: [],
+    resources: buildResourceIndex().index,
     farmwareData: fakeFarmwareData(),
   });
 

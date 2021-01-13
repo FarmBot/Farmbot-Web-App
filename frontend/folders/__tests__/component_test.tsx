@@ -302,6 +302,16 @@ describe("<FolderListItem />", () => {
     expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
   });
 
+  it("renders: in use and pinned", () => {
+    const p = fakeProps();
+    p.inUse = true;
+    p.sequence.body.pinned = true;
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".in-use").length).toEqual(1);
+    expect(wrapper.find(".in-use").hasClass("two")).toBeTruthy();
+    expect(wrapper.find(".fa-thumb-tack").length).toEqual(1);
+  });
+
   it("changes color", () => {
     const p = fakeProps();
     p.sequence.body.id = undefined;

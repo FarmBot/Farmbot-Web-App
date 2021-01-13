@@ -24,6 +24,7 @@ export const mapStateToProps = (props: Everything): StepButtonProps => {
     stepIndex: props.resources.consumers.sequences.stepIndex,
     farmwareData: getFarmwareData(props),
     sequences: selectAllSequences(props.resources.index),
+    resources: props.resources.index,
   };
 };
 
@@ -45,6 +46,7 @@ export class RawDesignerSequenceCommands
           shouldDisplay={this.props.shouldDisplay}
           farmwareData={this.props.farmwareData}
           sequences={this.props.sequences}
+          resources={this.props.resources}
           stepIndex={this.props.stepIndex} />
       </DesignerPanelContent>
     </DesignerPanel>;

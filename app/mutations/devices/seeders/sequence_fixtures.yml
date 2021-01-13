@@ -13,6 +13,7 @@
             :args:
               :tool_id: 0
   :color: gray
+  :pinned: true
   :name: Mount tool
   :body:
   - :kind: find_home
@@ -207,7 +208,8 @@
               :x: 0
               :y: 0
               :z: 0
-  :color: gray
+  :color: pink
+  :pinned: true
   :name: Take photo of plant
   :body:
   - :kind: move
@@ -263,6 +265,7 @@
               :y: 0
               :x: 0
   :color: blue
+  :pinned: true
   :name: Water plant
   :body:
   - :kind: move
@@ -740,6 +743,7 @@
             :args:
               :tool_id: 0
   :color: gray
+  :pinned: true
   :name: Unmount tool
   :body:
   - :kind: find_home

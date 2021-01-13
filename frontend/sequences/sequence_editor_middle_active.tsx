@@ -140,12 +140,6 @@ const SequenceBtnGroup = ({
       onClick={() => dispatch(copySequence(sequence))}>
       <i className={"fa fa-copy"} />
     </button>
-    <button
-      className={`fb-button ${sequence.body.pinned ? "blue" : "gray"}`}
-      title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
-      onClick={() => dispatch(pinSequenceToggle(sequence))}>
-      <i className={"fa fa-thumb-tack"} />
-    </button>
     {inDesigner() &&
       <button
         className={`fb-button ${visualized ? "gray" : "orange"}`}
@@ -172,11 +166,20 @@ export const SequenceNameAndColor = ({ dispatch, sequence }: {
   dispatch: Function, sequence: TaggedSequence
 }) =>
   <Row>
-    <Col xs={11}>
+    <Col xs={10}>
       <BlurableInput value={sequence.body.name}
         placeholder={t("Sequence Name")}
         onCommit={e =>
           dispatch(edit(sequence, { name: e.currentTarget.value }))} />
+    </Col>
+    <Col xs={1} className="pinned-col">
+      <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
+        className={[
+          "fa",
+          "fa-thumb-tack",
+          sequence.body.pinned ? "pinned" : "",
+        ].join(" ")}
+        onClick={() => dispatch(pinSequenceToggle(sequence))} />
     </Col>
     <Col xs={1} className="color-picker-col">
       <ColorPicker

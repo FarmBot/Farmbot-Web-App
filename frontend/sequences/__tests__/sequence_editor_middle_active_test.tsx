@@ -256,7 +256,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.visualized = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.gray").at(1).simulate("click");
+    wrapper.find(".fb-button.gray").at(0).simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.VISUALIZE_SEQUENCE,
       payload: undefined,
@@ -268,7 +268,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.sequence.body.pinned = false;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.gray").at(0).simulate("click");
+    wrapper.find(".fa-thumb-tack").simulate("click");
     expect(pinSequenceToggle).toHaveBeenCalledWith(p.sequence);
   });
 
@@ -277,7 +277,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.sequence.body.pinned = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.blue").at(0).simulate("click");
+    wrapper.find(".fa-thumb-tack").simulate("click");
     expect(pinSequenceToggle).toHaveBeenCalledWith(p.sequence);
   });
 });

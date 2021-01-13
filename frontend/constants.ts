@@ -395,6 +395,9 @@ export namespace ToolTips {
     If the sequence is ever run without the variable explicitly set to
     another value, the default value will be used.`);
 
+  export const USING_DEFAULT_VARIABLE_VALUE =
+    trim(`No location selected. Using default value.`);
+
   export const COMPUTED_MOVE =
     trim(`The Move step instructs FarmBot to move to the specified
     coordinate or distance from its current location.`);
@@ -978,6 +981,9 @@ export namespace Content {
 
   export const INCLUDES_DEPRECATED_STEPS =
     trim(`This sequence includes deprecated steps.`);
+
+  export const IS_PINNED =
+    trim(`This sequence is pinned.`);
 
   // Regimens
   export const NO_REGIMEN_SELECTED =

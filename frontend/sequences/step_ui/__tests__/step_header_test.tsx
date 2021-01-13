@@ -11,6 +11,7 @@ describe("<StepHeader />", () => {
     currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
     index: 0,
+    executeSequence: undefined,
     pinnedSequence: undefined,
     children: "child",
     confirmStepDeletion: false,
