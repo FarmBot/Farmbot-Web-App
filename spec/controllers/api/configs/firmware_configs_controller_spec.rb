@@ -124,10 +124,6 @@ describe Api::FirmwareConfigsController do
       device.reload
       expect(device.firmware_config.pin_guard_5_time_out).to eq(23)
       expect(json[:pin_guard_5_time_out]).to eq(23)
-      # Legacy fields that must stay `false` until FBOS v12.1 EOL.
-      expect(json[:firmware_debug_log]).to eq(false)
-      expect(json[:firmware_input_log]).to eq(false)
-      expect(json[:firmware_output_log]).to eq(false)
     end
 
     it "disallows mass assignment attacks against device_id" do
