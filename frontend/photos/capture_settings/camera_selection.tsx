@@ -3,9 +3,8 @@ import { DropDownItem, Row, Col, FBSelect } from "../../ui/index";
 import {
   CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
-import { info, success, error } from "../../toast/toast";
-import { getDevice } from "../../device";
-import { Feature, UserEnv } from "../../devices/interfaces";
+import { info, error } from "../../toast/toast";
+import { UserEnv } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../constants";
 import { Highlight } from "../../settings/maybe_highlight";
@@ -24,8 +23,9 @@ export const cameraBtnProps = (env: UserEnv) => {
   return disabled
     ? {
       class: "pseudo-disabled",
-      click: () =>
-        error(t(ToolTips.SELECT_A_CAMERA), { title: t(Content.NO_CAMERA_SELECTED) }),
+      click: () => error(t(ToolTips.SELECT_A_CAMERA), {
+        title: t(Content.NO_CAMERA_SELECTED)
+      }),
       title: t(Content.NO_CAMERA_SELECTED)
     }
     : { class: "", click: undefined, title: "" };
@@ -78,17 +78,11 @@ export class CameraSelection
     const configKey = "camera";
     const config = { [configKey]: JSON.stringify(selectedCamera.value) };
     info(t("Sending camera configuration..."), { title: t("Sending") });
-    props.shouldDisplay(Feature.api_farmware_env)
-      ? props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]))
-      : getDevice()
-        .setUserEnv(config)
-        .then(() => success(t("Successfully configured camera!")))
-        .catch(() => error(t("An error occurred during configuration.")));
+    props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]));
   }
 
   render() {
-    const disable = !this.props.shouldDisplay(Feature.api_farmware_env)
-      && !this.props.botOnline;
+    const disable = !this.props.botOnline;
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
         <Col xs={5}>

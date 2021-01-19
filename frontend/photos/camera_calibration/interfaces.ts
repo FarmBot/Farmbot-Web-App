@@ -1,7 +1,7 @@
 import { TaggedImage, SyncStatus } from "farmbot";
 import { WD_ENV } from "../remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
-import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
+import { UserEnv } from "../../devices/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
 
@@ -22,7 +22,6 @@ export interface CameraCalibrationProps {
   V_HI: number;
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   versions: Record<string, string>;

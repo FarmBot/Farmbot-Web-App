@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerSequenceList as DesignerSequenceList,
 } from "../list";
-import { Props } from "../../interfaces";
+import { SequencesProps } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, FAKE_RESOURCES,
@@ -15,7 +15,7 @@ import { mapStateToFolderProps } from "../../../folders/map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<DesignerSequenceList />", () => {
-  const fakeProps = (): Props => ({
+  const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
     sequences: [],

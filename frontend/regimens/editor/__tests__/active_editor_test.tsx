@@ -4,7 +4,7 @@ jest.mock("../../../history", () => ({
   push: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { ActiveEditor } from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
@@ -19,7 +19,6 @@ describe("<ActiveEditor />", () => {
     regimen: fakeRegimen(),
     calendar: [],
     resources: buildResourceIndex([]).index,
-    shouldDisplay: () => false,
     variableData: {},
   });
 

@@ -11,7 +11,7 @@ import {
   State, BotOriginQuadrant, MountedToolInfo, CameraCalibrationData,
 } from "../interfaces";
 import {
-  BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
+  BotPosition, BotLocationData, SourceFbosConfig,
 } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TimeSettings } from "../../interfaces";
@@ -55,7 +55,6 @@ export interface GardenMapLegendProps {
   imageAgeInfo: { newestDate: string, toOldest: number };
   gardenId?: number;
   className?: string;
-  shouldDisplay: ShouldDisplay;
   allPoints: TaggedPoint[];
   sourceFbosConfig: SourceFbosConfig;
   firmwareConfig: McuParams;

@@ -38,7 +38,7 @@ export interface MoveAbsoluteWarningProps {
   hardwareFlags: HardwareFlags | undefined;
 }
 
-export interface Props {
+export interface SequencesProps {
   dispatch: Function;
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
@@ -62,7 +62,6 @@ export interface SequenceEditorMiddleProps {
   syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
-  shouldDisplay: ShouldDisplay;
   getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
   visualized?: boolean;
@@ -83,7 +82,6 @@ export interface SequenceHeaderProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
@@ -97,7 +95,6 @@ export interface SequenceBtnGroupProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
   toggleViewSequenceCeleryScript(): void;
@@ -107,7 +104,6 @@ export interface SequenceBtnGroupProps {
 export interface SequenceSettingsMenuProps {
   dispatch: Function;
   getWebAppConfigValue: GetWebAppConfigValue;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface SequenceSettingProps {
@@ -259,7 +255,6 @@ export interface StepParams<T = SequenceBodyItem> {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareData?: FarmwareData;
-  shouldDisplay?: ShouldDisplay;
   showPins?: boolean;
   expandStepOptions?: boolean;
 }

@@ -18,7 +18,6 @@ import {
   fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 import { generateUuid } from "../../resources/util";
-import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("mapStateToProps()", () => {
   it("hovered plantUUID is undefined", () => {
@@ -176,8 +175,6 @@ describe("getPlants()", () => {
   it("returns API farmware env", () => {
     const state = fakeState();
     state.bot.hardware.user_env = {};
-    state.bot.hardware.informational_settings.controller_version =
-      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     const fwEnv = fakeFarmwareEnv();
     fwEnv.body.key = "CAMERA_CALIBRATION_total_rotation_angle";
     fwEnv.body.value = 15;

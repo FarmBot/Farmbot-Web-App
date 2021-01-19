@@ -1,16 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { WeedDetectorState, WeedDetectorProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";
-import { Feature } from "../../devices/interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { WDENVKey } from "../remote_env/interfaces";
 import { namespace, WEED_DETECTOR_KEY_PART } from "../remote_env/constants";
 import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
-import { envSave } from "../remote_env/actions";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 
@@ -40,9 +38,7 @@ export class WeedDetector
   }
 
   saveEnvVar = (key: WDENVKey, value: number) =>
-    this.props.shouldDisplay(Feature.api_farmware_env)
-      ? this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
-      : envSave(key, value)
+    this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
 
   render() {
     const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);

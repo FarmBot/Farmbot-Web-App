@@ -15,7 +15,6 @@ import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fetchOsUpdateVersion, OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
-import { ShouldDisplay } from "../../../devices/interfaces";
 import { Actions, Content } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { API } from "../../../api";
@@ -29,20 +28,17 @@ describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({
     bot: cloneDeep(bot),
     botOnline: true,
-    shouldDisplay: () => false,
     dispatch: jest.fn(),
   });
 
   interface TestProps {
     installedVersion: string | undefined;
     availableVersion: string | undefined;
-    shouldDisplay: ShouldDisplay;
   }
 
   const defaultTestProps = (): TestProps => ({
     installedVersion: "12.0.0",
     availableVersion: undefined,
-    shouldDisplay: () => true,
   });
 
   interface Results {
@@ -52,60 +48,53 @@ describe("<OsUpdateButton />", () => {
     disabled: boolean;
   }
 
-  const updateNeeded = (version: string | undefined): Results =>
-    ({
-      text: `UPDATE TO ${version}`,
-      title: `UPDATE TO ${version}`,
-      color: "green",
-      disabled: false,
-    });
+  const updateNeeded = (version: string | undefined): Results => ({
+    text: `UPDATE TO ${version}`,
+    title: `UPDATE TO ${version}`,
+    color: "green",
+    disabled: false,
+  });
 
-  const downgradeNeeded = (version: string | undefined): Results =>
-    ({
-      text: `DOWNGRADE TO ${version}`,
-      title: `DOWNGRADE TO ${version}`,
-      color: "green",
-      disabled: false,
-    });
+  const downgradeNeeded = (version: string | undefined): Results => ({
+    text: `DOWNGRADE TO ${version}`,
+    title: `DOWNGRADE TO ${version}`,
+    color: "green",
+    disabled: false,
+  });
 
-  const upToDate = (title: string | undefined): Results =>
-    ({
-      text: "UP TO DATE",
-      title,
-      color: "gray",
-      disabled: false,
-    });
+  const upToDate = (title: string | undefined): Results => ({
+    text: "UP TO DATE",
+    title,
+    color: "gray",
+    disabled: false,
+  });
 
-  const cantConnect = (title: string | undefined): Results =>
-    ({
-      text: "Can't connect to bot",
-      title,
-      color: "yellow",
-      disabled: false,
-    });
+  const cantConnect = (title: string | undefined): Results => ({
+    text: "Can't connect to bot",
+    title,
+    color: "yellow",
+    disabled: false,
+  });
 
-  const tooOld = (): Results =>
-    ({
-      text: Content.TOO_OLD_TO_UPDATE,
-      title: Content.TOO_OLD_TO_UPDATE,
-      color: "yellow",
-      disabled: false,
-    });
+  const tooOld = (): Results => ({
+    text: Content.TOO_OLD_TO_UPDATE,
+    title: Content.TOO_OLD_TO_UPDATE,
+    color: "yellow",
+    disabled: false,
+  });
 
-  const updating = (progress: string): Results =>
-    ({
-      text: progress,
-      title: undefined,
-      color: "green",
-      disabled: true,
-    });
+  const updating = (progress: string): Results => ({
+    text: progress,
+    title: undefined,
+    color: "green",
+    disabled: true,
+  });
 
   const testButtonState = (testProps: TestProps, expected: Results) => {
     const p = fakeProps();
     const { installedVersion, availableVersion } = testProps;
     p.bot.hardware.informational_settings.controller_version = installedVersion;
     p.bot.osUpdateVersion = availableVersion;
-    p.shouldDisplay = testProps.shouldDisplay;
     const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     expect(osUpdateButton.text()).toBe(expected.text);
@@ -170,14 +159,6 @@ describe("<OsUpdateButton />", () => {
     testButtonState(testProps, expectedResults);
   });
 
-  it("considers upgrade path", () => {
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "11.0.0";
-    testProps.availableVersion = "12.0.0";
-    testProps.shouldDisplay = () => false;
-    testButtonState(testProps, tooOld());
-  });
-
   it("fetches releases from API", async () => {
     console.error = jest.fn();
     API.setBaseUrl("");
@@ -185,7 +166,6 @@ describe("<OsUpdateButton />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.bot.hardware.informational_settings.target = "rpi";
-    p.shouldDisplay = () => true;
     const button = shallow(<OsUpdateButton {...p} />);
     await button.simulate("pointerEnter");
     expect(axios.get).toHaveBeenCalledWith(

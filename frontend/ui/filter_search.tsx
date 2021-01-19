@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Button, Classes, MenuItem, Alignment } from "@blueprintjs/core";
 import { Select, ItemRenderer } from "@blueprintjs/select";
 import { DropDownItem } from "./fb_select";
@@ -6,7 +6,7 @@ import { t } from "../i18next_wrapper";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
-interface Props {
+interface FilterSearchProps {
   items: DropDownItem[];
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
@@ -18,7 +18,8 @@ interface State {
   resetOnSelect?: boolean;
 }
 
-export class FilterSearch extends React.Component<Props, Partial<State>> {
+export class FilterSearch
+  extends React.Component<FilterSearchProps, Partial<State>> {
 
   public state: State = {
     item: this.props.selectedItem,

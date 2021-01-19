@@ -12,7 +12,7 @@ import { mount } from "enzyme";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor,
 } from "../editor";
-import { Props } from "../../interfaces";
+import { SequencesProps } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, FAKE_RESOURCES,
@@ -28,7 +28,7 @@ import {
 import { push } from "../../../history";
 
 describe("<DesignerSequenceEditor />", () => {
-  const fakeProps = (): Props => ({
+  const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
     sequences: [],

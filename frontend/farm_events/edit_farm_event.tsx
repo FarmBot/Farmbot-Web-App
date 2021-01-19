@@ -32,8 +32,7 @@ export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}>
             title={t("Edit event")}
             deleteBtn={true}
             timeSettings={this.props.timeSettings}
-            resources={this.props.resources}
-            shouldDisplay={this.props.shouldDisplay} />
+            resources={this.props.resources} />
           : <div className={"redirect"}>{t("Redirecting")}...</div>}
       </DesignerPanelContent>
     </DesignerPanel>;

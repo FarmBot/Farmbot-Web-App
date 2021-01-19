@@ -19,7 +19,6 @@ describe("<SequenceEditorMiddle/>", () => {
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
-      shouldDisplay: jest.fn(),
       getWebAppConfigValue: jest.fn(),
       menuOpen: false,
     };

@@ -1,9 +1,9 @@
-import { parseClassNames } from "../util";
+import { parseColClassNames } from "../util";
 
-describe("parseClassNames", () => {
+describe("parseColClassNames", () => {
   it("parses class names correctly", () => {
     const base = "hello, base.";
-    const results = parseClassNames({
+    const results = parseColClassNames({
       xs: 1,
       sm: 2,
       md: 3,

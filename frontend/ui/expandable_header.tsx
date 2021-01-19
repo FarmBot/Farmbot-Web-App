@@ -1,14 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 
-interface Props {
+interface ExpandableHeaderProps {
   onClick(): void;
   title: string;
   expanded: boolean;
   children?: React.ReactChild;
 }
 
-export const ExpandableHeader = (props: Props) => {
+export const ExpandableHeader = (props: ExpandableHeaderProps) => {
   const { onClick, title, expanded } = props;
   const icon_string = expanded ? "minus" : "plus";
   const nbwhitespace = title != "";

@@ -32,15 +32,8 @@ describe("<TileOldMarkAs />", () => {
     resources: emptyState().index,
   });
 
-  it("renders deprecation notice", () => {
-    const block = mount(<TileOldMarkAs {...fakeProps()} />);
-    expect(block.text()).toContain("deprecated");
-    expect(block.text()).not.toContain("convert");
-  });
-
   it("renders deprecation notice and convert button", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const block = mount(<TileOldMarkAs {...p} />);
     expect(block.text()).toContain("deprecated");
     expect(block.text()).toContain("convert");
@@ -48,7 +41,6 @@ describe("<TileOldMarkAs />", () => {
 
   it("converts set mounted tool step", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const block = mount(<TileOldMarkAs {...p} />);
     expect(block.text()).toContain("deprecated");
     expect(block.text()).toContain("convert");
@@ -81,7 +73,6 @@ describe("<TileOldMarkAs />", () => {
         value: "?",
       }
     } as unknown as SequenceBodyItem;
-    p.shouldDisplay = () => true;
     const block = mount(<TileOldMarkAs {...p} />);
     expect(block.text()).toContain("deprecated");
     expect(block.text()).toContain("convert");

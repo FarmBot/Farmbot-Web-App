@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   RegimenNameInput, editRegimenVariables, RegimenButtonGroup,
   OpenSchedulerButton,
@@ -38,8 +38,7 @@ export class ActiveEditor
       collapsible={true}
       collapsed={this.state.variablesCollapsed}
       toggleVarShow={this.toggleVarShow}
-      allowedVariableNodes={AllowedVariableNodes.parameter}
-      shouldDisplay={this.props.shouldDisplay} />;
+      allowedVariableNodes={AllowedVariableNodes.parameter} />;
   }
 
   render() {

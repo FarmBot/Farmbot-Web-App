@@ -24,7 +24,6 @@ import { DropDownItem } from "../ui/index";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { t } from "../i18next_wrapper";
-import { getShouldDisplayFn } from "../farmware/state_to_props";
 
 export const formatTime = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
@@ -145,6 +144,5 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     findExecutable,
     timeSettings: maybeGetTimeSettings(props.resources.index),
     resources: props.resources.index,
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
 }

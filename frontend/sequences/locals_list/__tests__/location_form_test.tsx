@@ -32,13 +32,11 @@ describe("<LocationForm/>", () => {
     sequenceUuid: fakeSequence().uuid,
     resources: buildResourceIndex().index,
     onChange: jest.fn(),
-    shouldDisplay: jest.fn(),
     allowedVariableNodes: AllowedVariableNodes.parameter,
   });
 
   it("renders correct UI components", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const el = shallow(<LocationForm {...p} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(BlurableInput);
@@ -81,7 +79,6 @@ describe("<LocationForm/>", () => {
   it("shows parent in dropdown", () => {
     const p = fakeProps();
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
       .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
@@ -96,7 +93,6 @@ describe("<LocationForm/>", () => {
 
   it("shows correct variable label", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.variable.dropdown.label = "Externally defined";
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
@@ -109,7 +105,6 @@ describe("<LocationForm/>", () => {
   it("shows add new variable option", () => {
     const p = fakeProps();
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    p.shouldDisplay = () => true;
     p.variable.dropdown.isNull = true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
@@ -118,7 +113,6 @@ describe("<LocationForm/>", () => {
 
   it("shows groups in dropdown", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",

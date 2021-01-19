@@ -30,7 +30,6 @@ describe("<BoardType/>", () => {
     alerts: [],
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
-    shouldDisplay: () => false,
     botOnline: true,
     timeSettings: fakeTimeSettings(),
     firmwareHardware: undefined,
@@ -92,7 +91,6 @@ describe("<BoardType/>", () => {
 
   it("displays new boards", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<BoardType {...p} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([

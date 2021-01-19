@@ -38,7 +38,6 @@ describe("<AxisSettings />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botOnline: true,
     firmwareHardware: undefined,
-    shouldDisplay: () => true,
   });
 
   function testAxisLengthInput(
@@ -84,7 +83,6 @@ describe("<AxisSettings />", () => {
 
   it("doesn't disable calibration: different firmware", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
     p.firmwareHardware = "arduino";
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
@@ -93,7 +91,6 @@ describe("<AxisSettings />", () => {
 
   it("doesn't disable calibration: not disabled", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)

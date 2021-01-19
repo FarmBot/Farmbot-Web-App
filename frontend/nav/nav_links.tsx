@@ -2,7 +2,7 @@ import React from "react";
 import { NavLinksProps } from "./interfaces";
 import { Link } from "../link";
 import {
-  Panel, showSensors, PANEL_SLUG, TAB_ICON, PANEL_TITLE,
+  Panel, showSensors, showFarmware, PANEL_SLUG, TAB_ICON, PANEL_TITLE,
   getPanelPath, getCurrentPanel,
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
@@ -19,7 +19,7 @@ export const getLinks = (): Panel[] => [
   Panel.Controls,
   ...(showSensors() ? [Panel.Sensors] : []),
   Panel.Photos,
-  Panel.Farmware,
+  ...(showFarmware() ? [Panel.Farmware] : []),
   Panel.Tools,
   Panel.Messages,
   Panel.Help,

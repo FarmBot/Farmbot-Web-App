@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Header } from "../hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
 import { FirmwareProps } from "./interfaces";
@@ -30,7 +30,6 @@ export function Firmware(props: FirmwareProps) {
         bot={props.bot}
         alerts={props.alerts}
         dispatch={props.dispatch}
-        shouldDisplay={props.shouldDisplay}
         timeSettings={props.timeSettings}
         firmwareHardware={firmwareHardware}
         sourceFbosConfig={sourceFbosConfig} />

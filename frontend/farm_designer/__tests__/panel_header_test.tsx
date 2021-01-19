@@ -10,9 +10,17 @@ jest.mock("../../settings/dev/dev_support", () => ({
   }
 }));
 
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
+
 import React from "react";
 import { shallow, mount, ReactWrapper } from "enzyme";
 import { DesignerNavTabs } from "../panel_header";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  fakeFarmwareInstallation,
+} from "../../__test_support__/fake_state/resources";
 
 const expectOnlyOneActiveIcon = (wrapper: ReactWrapper) =>
   expect(wrapper.html().match(/active/)?.length).toEqual(1);
@@ -91,5 +99,11 @@ describe("<DesignerNavTabs />", () => {
     wrapper.setState({ atEnd: false });
     wrapper.find(".panel-tabs").simulate("scroll");
     expect(wrapper.state().atEnd).toEqual(true);
+  });
+
+  it("shows farmware tab", () => {
+    mockState.resources = buildResourceIndex([fakeFarmwareInstallation()]);
+    const wrapper = mount(<DesignerNavTabs />);
+    expect(wrapper.html()).toContain("farmware");
   });
 });

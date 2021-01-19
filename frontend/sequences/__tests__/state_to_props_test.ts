@@ -1,7 +1,5 @@
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { Feature } from "../../devices/interfaces";
-import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
   fakeSequence, fakeWebAppConfig, fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
@@ -9,23 +7,19 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "farmbot";
+import { fakeFarmwareManifestV2 } from "../../__test_support__/fake_farmwares";
+import { BooleanSetting } from "../../session_keys";
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
-    const props = fakeState();
-    const returnedProps = mapStateToProps(props);
-    expect(returnedProps.sequence).toEqual(undefined);
-    expect(returnedProps.syncStatus).toEqual("unknown");
-  });
-
-  it("returns shouldDisplay()", () => {
     const state = fakeState();
-    state.bot.hardware.informational_settings.controller_version = "2.0.0";
-    state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
+    const config = fakeWebAppConfig();
+    config.body.show_pins = true;
+    state.resources = buildResourceIndex([config]);
     const props = mapStateToProps(state);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(props.shouldDisplay("some_feature" as any)).toBeFalsy();
-    expect(props.shouldDisplay(Feature.jest_feature)).toBeTruthy();
+    expect(props.sequence).toEqual(undefined);
+    expect(props.syncStatus).toEqual("unknown");
+    expect(props.getWebAppConfigValue(BooleanSetting.show_pins)).toEqual(true);
   });
 
   it("checks for step tags: ok", () => {
@@ -61,13 +55,17 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const farmwareInstallation1 = fakeFarmwareInstallation();
     farmwareInstallation1.body.package = "farmware installation";
+    farmwareInstallation1.body.url = "a";
+    farmwareInstallation1.body.id = 1;
     const farmwareInstallation2 = fakeFarmwareInstallation();
     farmwareInstallation2.body.package = "My Fake Farmware";
+    farmwareInstallation2.body.url = "b";
+    farmwareInstallation2.body.id = 2;
     state.resources = buildResourceIndex([
       farmwareInstallation1, farmwareInstallation2,
     ]);
     state.bot.hardware.process_info.farmwares = {
-      "My Fake Farmware": fakeFarmwareManifestV1()
+      "My Fake Farmware": fakeFarmwareManifestV2()
     };
     const props = mapStateToProps(state);
     expect(props.farmwareData.farmwareNames).toEqual([
@@ -78,13 +76,13 @@ describe("mapStateToProps()", () => {
 
   it("returns farmwareConfigs", () => {
     const state = fakeState();
+    const manifest = fakeFarmwareManifestV2();
+    manifest.config["0"] = { name: "config_1", label: "Config 1", value: "4" };
+    state.bot.hardware.process_info.farmwares = { "My Fake Farmware": manifest };
     const conf = fakeWebAppConfig();
     conf.body.show_first_party_farmware = true;
     state.resources = buildResourceIndex([conf]);
     state.resources.consumers.sequences.current = undefined;
-    state.bot.hardware.process_info.farmwares = {
-      "My Fake Farmware": fakeFarmwareManifestV1()
-    };
     const props = mapStateToProps(state);
     expect(props.farmwareData.farmwareNames).toEqual(["My Fake Farmware"]);
     expect(props.farmwareData.showFirstPartyFarmware).toEqual(true);

@@ -8,7 +8,6 @@ import { Collapse } from "@blueprintjs/core";
 import { hasEncoders } from "../firmware/firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
-import { Feature } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 
 // eslint-disable-next-line complexity
@@ -44,9 +43,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
       {!showEncoders &&
         <Highlight settingName={DeviceSetting.stallDetectionNote}>
           <div className="stall-detection-note">
-            <p>{!props.shouldDisplay(Feature.express_stall_detection)
-              ? t(Content.STALL_DETECTION_NOT_AVAILABLE)
-              : t(Content.STALL_DETECTION_IN_BETA)}</p>
+            <p>{t(Content.STALL_DETECTION_IN_BETA)}</p>
           </div>
         </Highlight>}
       <SpacePanelHeader />
@@ -58,8 +55,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         x={"encoder_enabled_x"}
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
-        disabled={arduinoBusy || !showEncoders
-          && !props.shouldDisplay(Feature.express_stall_detection)} />
+        disabled={arduinoBusy} />
       {!showEncoders &&
         <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.stallSensitivity}

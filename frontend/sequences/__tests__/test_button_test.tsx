@@ -53,7 +53,6 @@ describe("<TestButton/>", () => {
       sequence: fakeSequence(),
       syncStatus: "synced",
       resources: buildResourceIndex().index,
-      shouldDisplay: () => false,
       menuOpen: false,
       dispatch: jest.fn(),
     };
