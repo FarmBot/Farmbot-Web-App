@@ -7,6 +7,7 @@ module Api
       "plant-detection" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/main/packages/plant-detection/manifest_v2.json",
       "historical-camera-calibration" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/main/packages/historical-camera-calibration/manifest_v2.json",
       "historical-plant-detection" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/main/packages/historical-plant-detection/manifest_v2.json",
+      "Measure Soil Height" => "https://raw.githubusercontent.com/FarmBot-Labs/measure-soil-height/main/manifest.json",
     }
       .to_a
       .each_with_index

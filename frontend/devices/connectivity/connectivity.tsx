@@ -1,6 +1,6 @@
 import React from "react";
 import { BotState } from "../interfaces";
-import { Diagnosis, DiagnosisProps } from "./diagnosis";
+import { Diagnosis, ConnectionStatusFlags, getDiagnosisCode } from "./diagnosis";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { Row, Col } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
@@ -20,7 +20,7 @@ import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 export interface ConnectivityProps {
   bot: BotState;
   rowData: StatusRowProps[];
-  flags: DiagnosisProps;
+  flags: ConnectionStatusFlags;
   pings: PingDictionary;
   dispatch: Function;
   device: TaggedDevice;
@@ -73,6 +73,8 @@ export class Connectivity
               wifi={isWifi(wifi_level, wifi_level_percent)} />
             <LocalIpAddress address={private_ip} />
             <VoltageDisplay throttleData={throttled} />
+            <p><b>{t("Connectivity code")}: </b>{
+              getDiagnosisCode(this.props.flags)}</p>
           </div>
           <QosPanel pings={this.props.pings} />
         </Col>

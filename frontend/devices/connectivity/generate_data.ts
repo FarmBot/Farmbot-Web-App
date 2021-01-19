@@ -1,6 +1,6 @@
 import { TaggedDevice, FirmwareHardware } from "farmbot";
 import { BotState } from "../interfaces";
-import { DiagnosisName, DiagnosisProps } from "./diagnosis";
+import { ConnectionName, ConnectionStatusFlags } from "./diagnosis";
 import { StatusRowProps } from "./connectivity_row";
 import {
   browserToMQTT, browserToAPI, botToMQTT, botToAPI, botToFirmware,
@@ -18,7 +18,7 @@ export const connectivityData = (props: ConnectivityDataProps) => {
     .informational_settings.firmware_version;
 
   /** A record of all the things we know about connectivity right now. */
-  const data: Record<DiagnosisName, StatusRowProps> = {
+  const data: Record<ConnectionName, StatusRowProps> = {
     userMQTT: browserToMQTT(props.bot.connectivity.uptime["user.mqtt"]),
     userAPI: browserToAPI(props.bot.connectivity.uptime["user.api"]),
     botMQTT: botToMQTT(props.bot.connectivity.uptime["bot.mqtt"]),
@@ -40,7 +40,7 @@ export const connectivityData = (props: ConnectivityDataProps) => {
     data.botFirmware.connectionMsg = t("Unknown.");
   }
 
-  const flags: DiagnosisProps = {
+  const flags: ConnectionStatusFlags = {
     userMQTT: !!data.userMQTT.connectionStatus,
     userAPI: !!data.userAPI.connectionStatus,
     botMQTT: !!data.botMQTT.connectionStatus,

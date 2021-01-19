@@ -1,5 +1,7 @@
-import * as React from "react";
-import { diagnose, Diagnosis, DiagnosisSaucer } from "../diagnosis";
+import React from "react";
+import {
+  getDiagnosisCode, diagnosisMessage, Diagnosis, DiagnosisSaucer,
+} from "../diagnosis";
 import { DiagnosticMessages } from "../../../constants";
 import { mount } from "enzyme";
 
@@ -40,55 +42,97 @@ describe("<DiagnosisSaucer />", () => {
   });
 });
 
-describe("diagnose()", () => {
-  function testDiagnosis(msg: string,
+describe("getDiagnosisCode()", () => {
+  function testDiagnosis(code: number,
     userAPI: boolean,
     userMQTT: boolean,
     botMQTT: boolean,
     botAPI: boolean,
     botFirmware: boolean) {
-    expect(diagnose({
+    expect(getDiagnosisCode({
       userAPI,
       userMQTT,
       botMQTT,
       botAPI,
       botFirmware
-    })).toContain(msg);
+    })).toEqual(code);
+  }
+
+  it("returns correct code", () => {
+    //                userAPI,userMQ,botMQ,botAPI,botFirmware
+    testDiagnosis(31, true, true, true, true, true);
+    testDiagnosis(30, true, true, true, true, false);
+    testDiagnosis(14, false, true, true, true, false);
+    testDiagnosis(28, true, true, true, false, false);
+    testDiagnosis(12, false, true, true, false, false);
+    testDiagnosis(29, true, true, true, false, true);
+    testDiagnosis(13, false, true, true, false, true);
+    testDiagnosis(27, true, true, false, true, true);
+    testDiagnosis(11, false, true, false, true, true);
+    testDiagnosis(26, true, true, false, true, false);
+    testDiagnosis(10, false, true, false, true, false);
+    testDiagnosis(19, true, false, false, true, true);
+    testDiagnosis(3, false, false, false, true, true);
+    testDiagnosis(18, true, false, false, true, false);
+    testDiagnosis(2, false, false, false, true, false);
+    testDiagnosis(21, true, false, true, false, true);
+    testDiagnosis(5, false, false, true, false, true);
+    testDiagnosis(20, true, false, true, false, false);
+    testDiagnosis(4, false, false, true, false, false);
+    testDiagnosis(23, true, false, true, true, true);
+    testDiagnosis(7, false, false, true, true, true);
+    testDiagnosis(22, true, false, true, true, false);
+    testDiagnosis(6, false, false, true, true, false);
+    testDiagnosis(17, true, false, false, false, true);
+    testDiagnosis(1, false, false, false, false, true);
+    testDiagnosis(16, true, false, false, false, false);
+    testDiagnosis(15, false, true, true, true, true);
+    testDiagnosis(25, true, true, false, false, true);
+    testDiagnosis(9, false, true, false, false, true);
+    testDiagnosis(24, true, true, false, false, false);
+    testDiagnosis(8, false, true, false, false, false);
+    testDiagnosis(0, false, false, false, false, false);
+  });
+});
+
+describe("diagnosisMessage()", () => {
+  function testDiagnosis(msg: string, code: number) {
+    expect(diagnosisMessage(code)).toContain(msg);
   }
 
   it("explains problems", () => {
-    //                               userAPI,userMQ,botMQ,botAPI,botFirmware
-    testDiagnosis(DiagnosticMessages.OK, true, true, true, true, true); // 31
-    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, true, true, true, true, false); // 30
-    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, false, true, true, true, false); // 14
-    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, true, true, true, false, false); // 28
-    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, false, true, true, false, false); // 12
-    testDiagnosis(DiagnosticMessages.INACTIVE, true, true, true, false, true); // 29
-    testDiagnosis(DiagnosticMessages.INACTIVE, false, true, true, false, true); // 13
-    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, true, true, false, true, true); // 27
-    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, false, true, false, true, true); // 11
-    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, true, true, false, true, false); // 26
-    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, false, true, false, true, false); // 10
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, true, true); // 19
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, false, true, true); // 3
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, true, false); // 18
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, false, true, false); // 2
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, true, false, true); // 21
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, true, false, true); // 5
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, true, false, false); // 20
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, true, false, false); // 4
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, true, true, true); // 23
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, true, true, true); // 7
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, true, true, false); // 22
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, true, true, false); // 6
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, false, true); // 17
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, false, false, false, true); // 1
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, true, false, false, false, false); // 16
-    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, false, true, true, true, true); // 15
-    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, true, true, false, false, true); // 25
-    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, false, true, false, false, true); // 9
-    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, true, true, false, false, false); // 24
-    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, false, true, false, false, false); // 8
-    testDiagnosis(DiagnosticMessages.TOTAL_BREAKAGE, false, false, false, false, false); // 0
+    testDiagnosis(DiagnosticMessages.OK, 31);
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, 30);
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, 14);
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, 28);
+    testDiagnosis(DiagnosticMessages.ARDUINO_DISCONNECTED, 12);
+    testDiagnosis(DiagnosticMessages.INACTIVE, 29);
+    testDiagnosis(DiagnosticMessages.INACTIVE, 13);
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, 27);
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, 11);
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, 26);
+    testDiagnosis(DiagnosticMessages.REMOTE_FIREWALL, 10);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 19);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 3);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 18);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 2);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 21);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 5);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 20);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 4);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 23);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 7);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 22);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 6);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 17);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 1);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 16);
+    testDiagnosis(DiagnosticMessages.NO_WS_AVAILABLE, 15);
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, 25);
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, 9);
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, 24);
+    testDiagnosis(DiagnosticMessages.WIFI_OR_CONFIG, 8);
+    testDiagnosis(DiagnosticMessages.TOTAL_BREAKAGE, 0);
+    testDiagnosis(DiagnosticMessages.MISC, -1);
   });
 });

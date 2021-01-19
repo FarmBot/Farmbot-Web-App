@@ -122,7 +122,6 @@ describe("<App />: NavBar", () => {
       "Weeds",
       "Controls",
       "Photos",
-      "Farmware",
       "Tools",
       "Messages",
       "Help",
