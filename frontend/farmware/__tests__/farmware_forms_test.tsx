@@ -1,6 +1,5 @@
 const mockDevice = {
   execScript: jest.fn((..._) => Promise.resolve({})),
-  setUserEnv: jest.fn((_) => Promise.resolve({}))
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -61,7 +60,6 @@ describe("<ConfigFields />", () => {
     farmwareConfigs: fakeFarmware().config,
     getValue: jest.fn(),
     dispatch: jest.fn(),
-    shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     userEnv: {},
     farmwareEnvs: [],
@@ -74,44 +72,21 @@ describe("<ConfigFields />", () => {
     expect(wrapper.text()).toEqual("Config 1");
   });
 
-  it("changes field", () => {
-    const p = fakeProps();
-    const wrapper = mount(<ConfigFields {...p} />);
-    changeBlurableInput(wrapper, "1");
-    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
-      "my_fake_farmware_config_1": "1"
-    });
-  });
-
-  it("handles change field error", () => {
-    mockDevice.setUserEnv = jest.fn((_) => Promise.reject());
-    const p = fakeProps();
-    const wrapper = mount(<ConfigFields {...p} />);
-    changeBlurableInput(wrapper, "1");
-    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
-      "my_fake_farmware_config_1": "1"
-    });
-  });
-
   it("changes env var in API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<ConfigFields {...p} />);
     changeBlurableInput(wrapper, "1");
-    expect(mockDevice.setUserEnv).not.toHaveBeenCalled();
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "my_fake_farmware_config_1", "1");
   });
 
   it("changes env var via dropdown", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.farmwareName = FarmwareName.MeasureSoilHeight;
     p.farmwareConfigs[0].name = "verbose";
     const wrapper = shallow(<ConfigFields {...p} />);
     const input = shallow(wrapper.find("FarmwareInputField").getElement());
     input.find(FBSelect).simulate("change", { label: "", value: 1 });
-    expect(mockDevice.setUserEnv).not.toHaveBeenCalled();
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "measure_soil_height_verbose", "1");
   });
@@ -144,7 +119,6 @@ describe("<FarmwareForm />", () => {
     userEnv: {},
     farmwareEnvs: [],
     dispatch: jest.fn(),
-    shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     botOnline: true,
   });

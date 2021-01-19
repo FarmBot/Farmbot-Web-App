@@ -4,7 +4,6 @@ import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
 import { editStep } from "../../api/crud";
 import { SequenceBodyItem, LegalArgString } from "farmbot";
-import { Feature } from "../../devices/interfaces";
 import { trim } from "../../util";
 
 const convertOldMarkAs = (oldStep: SequenceBodyItem) =>
@@ -43,15 +42,14 @@ export const TileOldMarkAs = (props: StepParams) => {
           ${oldStepArgs.label} as ${oldStepArgs.value}`)}</p>
     <hr />
     <p>{"This step has been deprecated."}</p>
-    {props.shouldDisplay?.(Feature.update_resource) &&
-      <button className="fb-button yellow" style={{ float: "none" }}
-        onClick={() => dispatch(editStep({
-          step: currentStep,
-          sequence: currentSequence,
-          index: index,
-          executor: convertOldMarkAs(currentStep),
-        }))}>
-        {"convert"}
-      </button>}
+    <button className="fb-button yellow" style={{ float: "none" }}
+      onClick={() => dispatch(editStep({
+        step: currentStep,
+        sequence: currentSequence,
+        index: index,
+        executor: convertOldMarkAs(currentStep),
+      }))}>
+      {"convert"}
+    </button>
   </StepWrapper>;
 };

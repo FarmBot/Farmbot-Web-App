@@ -118,8 +118,7 @@ export class RawAddFarmEvent
             findExecutable={this.props.findExecutable}
             title={t("Add event")}
             timeSettings={this.props.timeSettings}
-            resources={this.props.resources}
-            shouldDisplay={this.props.shouldDisplay} />
+            resources={this.props.resources} />
           : <FarmEventForm
             isRegimen={false}
             fieldGet={this.getField}

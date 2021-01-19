@@ -22,7 +22,6 @@ describe("<DesignerRegimenEditor />", () => {
     resources: buildResourceIndex([]).index,
     current: fakeRegimen(),
     calendar: [],
-    shouldDisplay: () => false,
     variableData: {},
   });
 

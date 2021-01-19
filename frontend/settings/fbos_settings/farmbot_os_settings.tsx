@@ -42,7 +42,6 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       <FarmbotOsRow {...commonProps}
         bot={props.bot}
         sourceFbosConfig={sourceFbosConfig}
-        shouldDisplay={shouldDisplay}
         botOnline={botOnline}
         timeSettings={timeSettings}
         deviceAccount={device} />

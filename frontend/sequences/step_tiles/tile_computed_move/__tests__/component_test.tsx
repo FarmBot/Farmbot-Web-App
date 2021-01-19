@@ -30,7 +30,6 @@ describe("<ComputedMove />", () => {
       resources: emptyState().index,
       hardwareFlags: fakeHardwareFlags(),
       expandStepOptions: false,
-      shouldDisplay: jest.fn(),
     };
   };
 

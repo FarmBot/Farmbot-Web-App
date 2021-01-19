@@ -1,13 +1,12 @@
 import React from "react";
 import axios from "axios";
 import { JobProgress } from "farmbot/dist";
-import { SemverResult, semverCompare, fallbackData } from "../../util";
+import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import {
   checkControllerUpdates, bulkToggleControlPanel, toggleControlPanel,
 } from "../../devices/actions";
 import { isString } from "lodash";
-import { BotState, Feature, ShouldDisplay } from "../../devices/interfaces";
 import { Actions, Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
@@ -81,25 +80,6 @@ export function downloadProgress(job: JobProgress | undefined) {
   }
 }
 
-/** Get the latest release to which a bot can update from its installed version. */
-const getUpdateVersion = (
-  bot: BotState,
-  shouldDisplay: ShouldDisplay,
-): string | undefined => {
-  /** Latest available release version for target and channel (from API). */
-  const latestAvailableVersion = bot.osUpdateVersion;
-  /** Does the installed version use the old OTA update system? */
-  const addUpgradePathStep = !shouldDisplay(Feature.api_ota_releases);
-  const minFeatureData = bot.minOsFeatureData || fallbackData;
-  /** Version old bots need to update through to get onto the new update system. */
-  const upgradePathStep = minFeatureData[Feature.api_ota_releases] as string;
-  if (!addUpgradePathStep) { return latestAvailableVersion; }
-  switch (semverCompare(latestAvailableVersion || "", upgradePathStep)) {
-    case SemverResult.LEFT_IS_GREATER: return upgradePathStep;
-    default: return latestAvailableVersion;
-  }
-};
-
 /** Determine the FBOS update button state. */
 const compareWithBotVersion = (
   candidate: string | undefined,
@@ -127,12 +107,12 @@ const compareWithBotVersion = (
 
 /** Shows update availability or download progress. Updates FBOS on click. */
 export const OsUpdateButton = (props: OsUpdateButtonProps) => {
-  const { bot, botOnline, dispatch, shouldDisplay } = props;
+  const { bot, botOnline, dispatch } = props;
   const { target } = bot.hardware.informational_settings;
   const installedVersion = bot.hardware.informational_settings.controller_version;
 
   /** Latest release to which the bot can upgrade from the installed version. */
-  const updateVersion = getUpdateVersion(bot, shouldDisplay);
+  const updateVersion = bot.osUpdateVersion;
   /** Button status: up to date, needs update, too old, or can't connect? */
   const btnStatus = compareWithBotVersion(updateVersion, installedVersion);
   /** Update button color and text. */

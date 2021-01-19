@@ -27,7 +27,6 @@ describe("<DesignerFarmwareInfo />", () => {
     farmwares: {},
     syncStatus: undefined,
     saveFarmwareEnv: jest.fn(),
-    shouldDisplay: jest.fn(),
     taggedFarmwareInstallations: [],
   });
 

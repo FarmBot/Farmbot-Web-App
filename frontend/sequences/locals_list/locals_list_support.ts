@@ -7,7 +7,6 @@ import {
   ResourceIndex, VariableNameSet, UUID,
 } from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
-import { ShouldDisplay } from "../../devices/interfaces";
 import { DropDownItem } from "../../ui";
 
 export type VariableNode =
@@ -39,7 +38,6 @@ export enum AllowedVariableNodes {
 interface CommonProps {
   sequenceUuid: UUID;
   resources: ResourceIndex;
-  shouldDisplay?: ShouldDisplay;
   /** Update stored data based on the variable provided. */
   onChange: OnChange;
   /** Use when a local set of variables exists; i.e., execute step body. */

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import {
-  Props, State, BotOriginQuadrant, isBotOriginQuadrant,
+  FarmDesignerProps, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { Plants } from "../plants/plant_inventory";
@@ -50,7 +50,8 @@ export const getGridSize = (
 
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
-export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
+export class RawFarmDesigner
+  extends React.Component<FarmDesignerProps, Partial<State>> {
 
   initializeSetting =
     (key: keyof State, defaultValue: boolean): boolean => {
@@ -171,7 +172,6 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
-        shouldDisplay={this.props.shouldDisplay}
         allPoints={this.props.allPoints}
         sourceFbosConfig={this.props.sourceFbosConfig}
         firmwareConfig={this.props.botMcuParams}
@@ -202,7 +202,6 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           showSensorReadings={show_sensor_readings}
           selectedPlant={this.props.selectedPlant}
           crops={this.props.crops}
-          dispatch={this.props.dispatch}
           designer={this.props.designer}
           plants={this.props.plants}
           genericPoints={this.props.genericPoints}
@@ -229,7 +228,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           deviceTarget={this.props.deviceTarget}
           mountedToolInfo={this.props.mountedToolInfo}
           visualizedSequenceBody={this.props.visualizedSequenceBody}
-          shouldDisplay={this.props.shouldDisplay} />
+          dispatch={this.props.dispatch} />
       </div>
 
       {this.props.designer.openedSavedGarden &&

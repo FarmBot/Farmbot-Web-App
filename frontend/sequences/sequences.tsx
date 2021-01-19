@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { Page, Row, LeftPanel, CenterPanel, RightPanel } from "../ui";
-import { Props } from "./interfaces";
+import { SequencesProps } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
@@ -27,7 +27,7 @@ export const SequenceBackButton = (props: SequenceBackButtonProps) => {
     title={insertingStep ? t("back to sequence") : t("back to sequences")} />;
 };
 
-export class RawSequences extends React.Component<Props, {}> {
+export class RawSequences extends React.Component<SequencesProps, {}> {
   componentDidMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
   }
@@ -59,7 +59,6 @@ export class RawSequences extends React.Component<Props, {}> {
             resources={this.props.resources}
             hardwareFlags={this.props.hardwareFlags}
             farmwareData={this.props.farmwareData}
-            shouldDisplay={this.props.shouldDisplay}
             getWebAppConfigValue={this.props.getWebAppConfigValue}
             menuOpen={this.props.menuOpen} />
         </CenterPanel>

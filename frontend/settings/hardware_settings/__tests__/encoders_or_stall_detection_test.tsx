@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { EncodersOrStallDetection } from "../encoders_or_stall_detection";
 import { EncodersOrStallDetectionProps } from "../interfaces";
@@ -13,7 +13,6 @@ describe("<EncodersOrStallDetection />", () => {
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
-    shouldDisplay: () => true,
     arduinoBusy: false,
   });
 
@@ -33,19 +32,8 @@ describe("<EncodersOrStallDetection />", () => {
     expect(wrapper.text().toLowerCase()).toContain("stall");
   });
 
-  it("disables stall detection toggles", () => {
+  it("doesn't disable encoder toggles", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
-    p.controlPanelState.encoders_or_stall_detection = true;
-    p.firmwareHardware = "express_k10";
-    const wrapper = mount(<EncodersOrStallDetection {...p} />);
-    expect(wrapper.find(BooleanMCUInputGroup).first().props().disabled)
-      .toEqual(true);
-  });
-
-  it("doesn't disable stall detection toggles: different firmware", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
     p.controlPanelState.encoders_or_stall_detection = true;
     p.firmwareHardware = "arduino";
     const wrapper = mount(<EncodersOrStallDetection {...p} />);
@@ -53,9 +41,8 @@ describe("<EncodersOrStallDetection />", () => {
       .toEqual(false);
   });
 
-  it("doesn't disable stall detection toggles: not disabled", () => {
+  it("doesn't disable stall detection toggles", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.controlPanelState.encoders_or_stall_detection = true;
     p.firmwareHardware = "express_k10";
     const wrapper = mount(<EncodersOrStallDetection {...p} />);

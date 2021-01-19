@@ -4,7 +4,7 @@ import {
 } from "../resources/selectors";
 import { Everything } from "../interfaces";
 import {
-  getShouldDisplayFn, getEnv, saveOrEditFarmwareEnv, generateFarmwareDictionary,
+  getEnv, saveOrEditFarmwareEnv, generateFarmwareDictionary,
 } from "../farmware/state_to_props";
 import { JobProgress, TaggedImage } from "farmbot";
 import { getStatus } from "../connectivity/reducer_support";
@@ -44,8 +44,7 @@ const getCurrentImage = (
 
 export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
   const images = getImages(props.resources.index);
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
 
   const versions: Record<string, string> = {};
   Object.entries(generateFarmwareDictionary(props.bot, props.resources.index))
@@ -70,7 +69,6 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     currentImageSize,
     images,
     syncStatus: props.bot.hardware.informational_settings.sync_status,
-    shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     imageJobs: getImageJobs(props.bot.hardware.jobs),
     versions,

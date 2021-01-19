@@ -112,7 +112,6 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
               </button>
               <LogsFilterMenu
                 toggle={this.toggle} state={this.state}
-                shouldDisplay={this.props.shouldDisplay}
                 setFilterLevel={this.setFilterLevel} />
             </Popover>
           </div>

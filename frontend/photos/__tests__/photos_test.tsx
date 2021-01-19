@@ -28,7 +28,6 @@ import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
     dispatch: jest.fn(),
-    shouldDisplay: () => false,
     timeSettings: fakeTimeSettings(),
     env: {},
     userEnv: {},

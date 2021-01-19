@@ -1,6 +1,3 @@
-const mockDevice = { setUserEnv: jest.fn((_) => Promise.resolve({})) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 const mockScanImage = jest.fn();
 jest.mock("../actions", () => ({
   calibrate: jest.fn(),
@@ -35,7 +32,6 @@ describe("<CameraCalibration/>", () => {
     V_HI: 9,
     botToMqttStatus: "up",
     syncStatus: "synced",
-    shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
     versions: {},
@@ -56,19 +52,8 @@ describe("<CameraCalibration/>", () => {
       expect(wrapper.text()).toContain(string));
   });
 
-  it("saves changes", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
-    expect(mockDevice.setUserEnv)
-      .toHaveBeenCalledWith({ CAMERA_CALIBRATION_H_LO: "3" });
-  });
-
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
@@ -87,7 +72,6 @@ describe("<CameraCalibration/>", () => {
 
   it("saves CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("CameraCalibrationConfig")
       .simulate("change", "CAMERA_CALIBRATION_camera_offset_x", 10);
@@ -97,7 +81,6 @@ describe("<CameraCalibration/>", () => {
 
   it("saves string CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("CameraCalibrationConfig")
       .simulate("change", "CAMERA_CALIBRATION_image_bot_origin_location", 4);
@@ -126,7 +109,6 @@ describe("<CameraCalibration/>", () => {
 
   it("toggles simple version on", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = mount(<CameraCalibration {...p} />);
     wrapper.find("input").first().simulate("change");
@@ -137,7 +119,6 @@ describe("<CameraCalibration/>", () => {
 
   it("toggles simple version off", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
     const wrapper = mount(<CameraCalibration {...p} />);
     wrapper.find("input").first().simulate("change");

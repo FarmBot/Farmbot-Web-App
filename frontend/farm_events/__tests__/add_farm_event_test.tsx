@@ -45,7 +45,6 @@ describe("<AddFarmEvent />", () => {
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
-      shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,
     };
   }

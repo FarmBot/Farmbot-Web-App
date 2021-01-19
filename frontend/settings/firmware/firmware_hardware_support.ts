@@ -35,7 +35,7 @@ export const hasZ2Params = (
   shouldDisplay: ShouldDisplay,
 ) =>
   (isTMCBoard(firmwareHardware) && shouldDisplay(Feature.z2_firmware_params_tmc)) ||
-  (isExpress(firmwareHardware) && shouldDisplay(Feature.z2_firmware_params));
+  isExpress(firmwareHardware);
 
 export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);

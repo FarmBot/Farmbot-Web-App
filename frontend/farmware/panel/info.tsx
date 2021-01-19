@@ -4,13 +4,13 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../../farm_designer/designer_panel";
 import { Panel } from "../../farm_designer/panel_header";
-import { ShouldDisplay, UserEnv } from "../../devices/interfaces";
+import { UserEnv } from "../../devices/interfaces";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
-  getShouldDisplayFn, saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
+  saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
 } from "../state_to_props";
 import { Farmwares, SaveFarmwareEnv } from "../interfaces";
 import { SyncStatus, TaggedFarmwareEnv, TaggedFarmwareInstallation } from "farmbot";
@@ -35,14 +35,12 @@ export interface DesignerFarmwareInfoProps {
   farmwares: Farmwares;
   syncStatus: SyncStatus | undefined;
   currentFarmware: string | undefined;
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   taggedFarmwareInstallations: TaggedFarmwareInstallation[];
 }
 
 export const mapStateToProps = (props: Everything): DesignerFarmwareInfoProps => {
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
   const taggedFarmwareInstallations =
     selectAllFarmwareInstallations(props.resources.index);
   return {
@@ -54,7 +52,6 @@ export const mapStateToProps = (props: Everything): DesignerFarmwareInfoProps =>
     farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
     dispatch: props.dispatch,
     syncStatus: props.bot.hardware.informational_settings.sync_status,
-    shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
   };
@@ -91,7 +88,6 @@ export class RawDesignerFarmwareInfo
             env={this.props.env}
             userEnv={this.props.userEnv}
             farmwareEnvs={this.props.farmwareEnvs}
-            shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             botOnline={this.botOnline}
             dispatch={this.props.dispatch} />
@@ -104,7 +100,6 @@ export class RawDesignerFarmwareInfo
           botOnline={this.botOnline}
           farmware={farmware}
           installations={this.props.taggedFarmwareInstallations}
-          shouldDisplay={this.props.shouldDisplay}
           firstPartyFarmwareNames={[]}
           showFirstParty={false} />
       </DesignerPanelContent>

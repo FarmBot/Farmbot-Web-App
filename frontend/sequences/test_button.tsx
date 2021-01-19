@@ -10,7 +10,6 @@ import {
   addOrEditParamApps, variableList, mergeParameterApplications,
 } from "./locals_list/variable_support";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
-import { ShouldDisplay } from "../devices/interfaces";
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
 import { warning } from "../toast/toast";
@@ -35,7 +34,6 @@ interface ParameterAssignmentMenuProps {
   editBodyVariables(variable: ParameterApplication): void;
   /** Parameter applications prepared for a sequence test. */
   bodyVariables: ParameterApplication[];
-  shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
 
@@ -67,8 +65,7 @@ class ParameterAssignmentMenu
         sequenceUuid={this.props.sequence.uuid}
         resources={this.props.resources}
         onChange={this.props.editBodyVariables}
-        allowedVariableNodes={AllowedVariableNodes.variable}
-        shouldDisplay={this.props.shouldDisplay} />
+        allowedVariableNodes={AllowedVariableNodes.variable} />
     </div>;
   }
 }
@@ -100,7 +97,6 @@ export interface TestBtnProps {
   syncStatus: SyncStatus | undefined;
   sequence: TaggedSequence;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
   /** Parameter assignment menu open? */
   menuOpen: boolean;
   dispatch: Function;
@@ -161,7 +157,6 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
           varData={this.varData}
           editBodyVariables={this.editBodyVariables}
           bodyVariables={this.state.bodyVariables}
-          shouldDisplay={this.props.shouldDisplay}
           sequence={this.props.sequence} />}
     </Popover>;
   }

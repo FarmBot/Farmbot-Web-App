@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { BlurableInput } from "../ui/index";
 import { TimeSettings } from "../interfaces";
 
-interface Props {
+interface EventTimePickerProps {
   /** String, formatted as hh:mm (UTC 24hr time).
    * Ex: 23:45, 06:12 */
   value: string;
@@ -15,7 +15,7 @@ interface Props {
   error?: string;
 }
 
-export function EventTimePicker(props: Props) {
+export function EventTimePicker(props: EventTimePickerProps) {
   const { value, onCommit, disabled, hidden, name } = props;
   return <BlurableInput
     disabled={!!disabled}

@@ -236,10 +236,19 @@ describe("updateMCU()", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateMCU(
-      "param_mov_nr_retry", "0")(jest.fn(), () => state);
+    actions.updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
     expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: "0" });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    expect(warning).not.toHaveBeenCalled();
+  });
+
+  it("handles missing FirmwareConfig", () => {
+    const state = fakeState();
+    state.resources = buildResourceIndex([]);
+    actions.updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+    expect(warning).not.toHaveBeenCalled();
   });
 
   it("prevents update with incompatible value", () => {
@@ -247,8 +256,7 @@ describe("updateMCU()", () => {
     const fakeConfig = fakeFirmwareConfig();
     fakeConfig.body.movement_max_spd_x = 0;
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateMCU(
-      "movement_min_spd_x", "100")(jest.fn(), () => state);
+    actions.updateMCU("movement_min_spd_x", "100")(jest.fn(), () => state);
     expect(warning).toHaveBeenCalledWith(
       "Minimum speed should always be lower than maximum");
   });

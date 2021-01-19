@@ -2,7 +2,7 @@ import {
   Identifier, Point, Tool, TaggedSequence, Move, Xyz, AxisOverwrite,
 } from "farmbot";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
-import { BotPosition, ShouldDisplay } from "../../../devices/interfaces";
+import { BotPosition } from "../../../devices/interfaces";
 
 export type LocationNode = Identifier | Point | Tool;
 
@@ -102,7 +102,6 @@ export interface OverwriteInputRowProps extends InputRowBase {
   locationSelection: LocSelection | undefined;
   setAxisState: SetAxisState;
   setAxisOverwriteState(axis: Xyz, value: AxisSelection): void;
-  shouldDisplay: ShouldDisplay | undefined;
 }
 
 export interface ComputeCoordinateProps {

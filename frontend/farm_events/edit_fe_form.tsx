@@ -32,7 +32,6 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { LocalsList } from "../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../resources/interfaces";
-import { ShouldDisplay } from "../devices/interfaces";
 import {
   addOrEditParamApps, variableList, getRegimenVariableData,
 } from "../sequences/locals_list/variable_support";
@@ -143,7 +142,6 @@ export interface EditFEProps {
   deleteBtn?: boolean;
   timeSettings: TimeSettings;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface EditFEFormState {
@@ -219,8 +217,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     sequenceUuid={this.executable.uuid}
     resources={this.props.resources}
     onChange={this.editBodyVariables(this.bodyVariables)}
-    allowedVariableNodes={AllowedVariableNodes.variable}
-    shouldDisplay={this.props.shouldDisplay} />
+    allowedVariableNodes={AllowedVariableNodes.variable} />
 
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {

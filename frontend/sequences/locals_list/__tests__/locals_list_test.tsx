@@ -39,7 +39,6 @@ describe("<LocalsList/>", () => {
       sequenceUuid: sequence.uuid,
       resources: buildResourceIndex([sequence]).index,
       onChange: jest.fn(),
-      shouldDisplay: jest.fn(),
       allowedVariableNodes: AllowedVariableNodes.parameter,
     };
   };

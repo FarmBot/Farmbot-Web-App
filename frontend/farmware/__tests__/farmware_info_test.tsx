@@ -1,7 +1,4 @@
-const mockDevice = {
-  updateFarmware: jest.fn((_) => Promise.resolve({})),
-  removeFarmware: jest.fn((_) => Promise.resolve({})),
-};
+const mockDevice = { updateFarmware: jest.fn((_) => Promise.resolve({})) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
@@ -9,10 +6,8 @@ jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 jest.mock("../actions", () => ({ retryFetchPackageName: jest.fn() }));
 
 jest.mock("../../history", () => ({
-  history: {
-    push: jest.fn(),
-    getCurrentLocation: jest.fn(() => ({ pathname: "" })),
-  }
+  push: jest.fn(),
+  history: { getCurrentLocation: jest.fn(() => ({ pathname: "" })) }
 }));
 
 import React from "react";
@@ -26,20 +21,17 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
-import { history } from "../../history";
+import { push } from "../../history";
 
 describe("<FarmwareInfo />", () => {
-  const fakeProps = (): FarmwareInfoProps => {
-    return {
-      farmware: fakeFarmware(),
-      showFirstParty: false,
-      firstPartyFarmwareNames: [],
-      dispatch: jest.fn(),
-      installations: [],
-      shouldDisplay: () => false,
-      botOnline: true,
-    };
-  };
+  const fakeProps = (): FarmwareInfoProps => ({
+    farmware: fakeFarmware(),
+    showFirstParty: false,
+    firstPartyFarmwareNames: [],
+    dispatch: jest.fn(),
+    installations: [],
+    botOnline: true,
+  });
 
   it("renders no manifest info message", () => {
     const p = fakeProps();
@@ -102,37 +94,19 @@ describe("<FarmwareInfo />", () => {
     expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
   });
 
-  it("removes Farmware", () => {
-    const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
-    clickButton(wrapper, 1, "Remove");
-    expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/farmware");
-  });
-
-  it("doesn't remove Farmware", () => {
-    const p = fakeProps();
-    p.farmware = fakeFarmware();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.farmware.name = undefined as any;
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 1, "Remove");
-    expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
-  });
-
   it("removes Farmware from API", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
-    p.shouldDisplay = () => true;
     p.installations = [fakeFarmwareInstallation()];
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
     expect(destroy).toHaveBeenCalledWith(p.installations[0].uuid);
+    expect(push).toHaveBeenCalledWith("/app/designer/farmware");
   });
 
   it("errors during removal of Farmware from API: not found", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
-    p.shouldDisplay = () => true;
     p.installations = [];
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
@@ -143,7 +117,6 @@ describe("<FarmwareInfo />", () => {
   it("errors during removal of Farmware from API: no url", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
-    p.shouldDisplay = () => true;
     p.installations = [fakeFarmwareInstallation()];
     if (p.farmware) { p.farmware.url = ""; }
     const wrapperNoUrl = mount(<FarmwareInfo {...p} />);
@@ -155,7 +128,6 @@ describe("<FarmwareInfo />", () => {
   it("errors during removal of Farmware from API: rejected promise", async () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.reject("error"));
-    p.shouldDisplay = () => true;
     p.installations = [fakeFarmwareInstallation()];
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
@@ -163,34 +135,8 @@ describe("<FarmwareInfo />", () => {
     expect(error).toHaveBeenCalledWith("Farmware not found.");
   });
 
-  it("doesn't remove 1st-party Farmware", () => {
-    const p = fakeProps();
-    p.farmware = fakeFarmware();
-    p.farmware.name = "Fake 1st-Party Farmware";
-    p.firstPartyFarmwareNames = ["Fake 1st-Party Farmware"];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    window.confirm = jest.fn(() => false);
-    clickButton(wrapper, 1, "Remove");
-    expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
-  });
-
-  it("removes 1st-party Farmware", () => {
-    const p = fakeProps();
-    p.farmware = fakeFarmware();
-    p.farmware.name = "Fake 1st-Party Farmware";
-    p.firstPartyFarmwareNames = ["Fake 1st-Party Farmware"];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    window.confirm = jest.fn(() => true);
-    clickButton(wrapper, 1, "Remove");
-    expect(window.confirm).toHaveBeenCalledWith(
-      expect.stringContaining("you sure"));
-    expect(mockDevice.removeFarmware)
-      .toHaveBeenCalledWith("Fake 1st-Party Farmware");
-  });
-
   it("displays package name fetch error", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = "package name fetch error";
     p.installations = [farmwareInstallation];
@@ -201,7 +147,6 @@ describe("<FarmwareInfo />", () => {
 
   it("retries package name fetch", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = "package name fetch error";
     p.installations = [farmwareInstallation];
@@ -213,7 +158,6 @@ describe("<FarmwareInfo />", () => {
 
   it("doesn't display package name fetch error", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = undefined;
     p.installations = [farmwareInstallation];

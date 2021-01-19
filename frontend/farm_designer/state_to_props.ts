@@ -24,7 +24,7 @@ import {
   validBotLocationData, validFwConfig, unpackUUID, validFbosConfig,
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { Props, CameraCalibrationData } from "./interfaces";
+import { FarmDesignerProps, CameraCalibrationData } from "./interfaces";
 import { TaggedPlant, BotSize } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString, uniq, chain } from "lodash";
@@ -55,7 +55,7 @@ export const getPlants = (resources: RestResources) => {
     : onlyPlants;
 };
 
-export function mapStateToProps(props: Everything): Props {
+export function mapStateToProps(props: Everything): FarmDesignerProps {
   const plants = getPlants(props.resources);
   const findPlant = plantFinder(plants);
 
@@ -116,8 +116,7 @@ export function mapStateToProps(props: Everything): Props {
     .reverse()
     .value();
 
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
 
   const sensorReadings = chain(selectAllSensorReadings(props.resources.index))
     .sortBy(x => x.body.created_at)
@@ -151,7 +150,7 @@ export function mapStateToProps(props: Everything): Props {
     sensorReadings,
     sensors: selectAllSensors(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
-    shouldDisplay,
+    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     mountedToolInfo,
     visualizedSequenceBody,
     logs: selectAllLogs(props.resources.index),

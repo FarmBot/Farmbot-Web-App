@@ -18,7 +18,6 @@ const fakeProps = (): StepParams<WritePin> => ({
   dispatch: jest.fn(),
   index: 0,
   resources: emptyState().index,
-  shouldDisplay: () => false,
   showPins: false,
 });
 

@@ -56,7 +56,6 @@ export const LocalsList = (props: LocalsListProps) => {
         variable={variable}
         sequenceUuid={props.sequenceUuid}
         resources={props.resources}
-        shouldDisplay={props.shouldDisplay}
         hideVariableLabel={variableData.length < 2}
         allowedVariableNodes={props.allowedVariableNodes}
         collapsible={props.collapsible}

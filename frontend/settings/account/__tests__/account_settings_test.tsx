@@ -5,7 +5,8 @@ jest.mock("../../../api/crud", () => ({
 
 import React from "react";
 import { shallow } from "enzyme";
-import { AccountSettingsProps, AccountSettings } from "../account_settings";
+import { AccountSettings } from "../account_settings";
+import { AccountSettingsProps } from "../interfaces";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { fakeUser } from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";

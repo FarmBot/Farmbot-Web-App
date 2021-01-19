@@ -53,7 +53,6 @@ describe("<EditFEForm />", () => {
     findExecutable: jest.fn(() => mockSequence),
     title: "title",
     timeSettings: fakeTimeSettings(),
-    shouldDisplay: () => false,
     resources: buildResourceIndex([]).index,
   });
 
@@ -167,8 +166,7 @@ describe("<EditFEForm />", () => {
       dispatch={jest.fn()}
       repeatOptions={repeatOptions()}
       timeSettings={fakeTimeSettings()}
-      resources={buildResourceIndex([]).index}
-      shouldDisplay={() => false} />);
+      resources={buildResourceIndex([]).index} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
@@ -266,7 +264,6 @@ describe("<EditFEForm />", () => {
 
   it("displays error message on save: no items", async () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
@@ -280,7 +277,6 @@ describe("<EditFEForm />", () => {
     p.dispatch = jest.fn()
       .mockResolvedValueOnce("")
       .mockRejectedValueOnce("error");
-    p.shouldDisplay = () => true;
     p.farmEvent.body.start_time = "2017-07-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-07-22T06:00:00.000Z";
     const i = instance(p);
@@ -313,7 +309,6 @@ describe("<EditFEForm />", () => {
 
   it("allows start time: edit with unsupported OS", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => false;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");
@@ -325,7 +320,6 @@ describe("<EditFEForm />", () => {
   it("allows start time: add with supported OS", () => {
     const p = fakeProps();
     p.title = "add";
-    p.shouldDisplay = () => true;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");

@@ -209,7 +209,13 @@ fieldset {
     padding-bottom: 1rem;
   }
   a {
+    display: block;
     font-size: 1.1rem;
+  }
+  .blinking {
+    a {
+      display: inline;
+    }
   }
   .fa-external-link {
     margin-right: 0.5rem;

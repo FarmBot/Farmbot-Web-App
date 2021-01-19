@@ -105,7 +105,6 @@ export class RawDesignerSettings
           alerts={this.props.alerts}
           dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}
-          shouldDisplay={this.props.shouldDisplay}
           botOnline={botOnline}
           timeSettings={this.props.timeSettings} />
         <PowerAndReset {...commonProps}
@@ -115,7 +114,6 @@ export class RawDesignerSettings
           bot={this.props.bot}
           sourceFwConfig={sourceFwConfig}
           sourceFbosConfig={sourceFbosConfig}
-          shouldDisplay={this.props.shouldDisplay}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
           botOnline={botOnline} />
@@ -127,7 +125,6 @@ export class RawDesignerSettings
         <EncodersOrStallDetection {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
-          shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <LimitSwitches {...commonProps}
           arduinoBusy={busy}

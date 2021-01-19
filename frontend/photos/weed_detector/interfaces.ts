@@ -1,5 +1,5 @@
 import { WD_ENV } from "../remote_env/interfaces";
-import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
+import { UserEnv } from "../../devices/interfaces";
 import { TaggedImage, SyncStatus } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
@@ -21,7 +21,6 @@ export interface WeedDetectorProps {
   botToMqttStatus: NetworkState;
   timeSettings: TimeSettings;
   syncStatus: SyncStatus | undefined;
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   highlightModified: boolean;
 }

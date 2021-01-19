@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
@@ -8,8 +8,6 @@ import {
 } from "../resources/selectors";
 import { push, getPathArray } from "../history";
 import { GroupDetailActive } from "./group_detail_active";
-import { ShouldDisplay } from "../devices/interfaces";
-import { getShouldDisplayFn } from "../farmware/state_to_props";
 import { uniq } from "lodash";
 import { UUID } from "../resources/interfaces";
 import {
@@ -28,7 +26,6 @@ interface GroupDetailProps {
   dispatch: Function;
   group: TaggedPointGroup | undefined;
   allPoints: TaggedPoint[];
-  shouldDisplay: ShouldDisplay;
   slugs: string[];
   hovered: UUID | undefined;
   editGroupAreaInMap: boolean;
@@ -57,7 +54,6 @@ export function mapStateToProps(props: Everything): GroupDetailProps {
     allPoints: selectAllActivePoints(props.resources.index),
     group: findGroupFromUrl(selectAllPointGroups(props.resources.index)),
     dispatch: props.dispatch,
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     slugs: uniq(selectAllPlantPointers(props.resources.index)
       .map(p => p.body.openfarm_slug)),
     hovered: hoveredPlantListItem,

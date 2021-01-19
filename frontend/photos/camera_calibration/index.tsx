@@ -2,13 +2,11 @@ import React from "react";
 import { Row, Col, docLink, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
-import { envSave } from "../remote_env/actions";
 import { WDENVKey } from "../remote_env/interfaces";
 import { calibrate, scanImage } from "./actions";
 import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { CameraCalibrationConfig, BoolConfig } from "./config";
-import { Feature } from "../../devices/interfaces";
 import { namespace, CAMERA_CALIBRATION_KEY_PART } from "../remote_env/constants";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../remote_env/translators";
@@ -27,10 +25,8 @@ export class CameraCalibration extends
   namespace = namespace<CAMERA_CALIBRATION_KEY_PART>("CAMERA_CALIBRATION_");
 
   saveEnvVar = (key: WDENVKey, value: number) =>
-    this.props.shouldDisplay(Feature.api_farmware_env)
-      ? this.props.dispatch(this.props.saveFarmwareEnv(
-        key, JSON.stringify(formatEnvKey(key, value))))
-      : envSave(key, value)
+    this.props.dispatch(this.props.saveFarmwareEnv(
+      key, JSON.stringify(formatEnvKey(key, value))))
 
   wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
 
