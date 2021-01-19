@@ -1,6 +1,6 @@
 import { isUndefined } from "lodash";
 
-interface Props {
+interface ParseColClassNamesProps {
   xs?: number;
   sm?: number;
   md?: number;
@@ -13,7 +13,7 @@ interface Props {
   xlOffset?: number;
 }
 
-export function parseClassNames(props: Props, base?: string) {
+export function parseColClassNames(props: ParseColClassNamesProps, base?: string) {
 
   const classNames: string[] = [];
   if (base) { classNames.push(base); }

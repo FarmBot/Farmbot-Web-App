@@ -1,50 +1,24 @@
 import { FarmwareManifestInfo } from "./interfaces";
-import {
-  LegacyFarmwareManifest as FarmwareManifestV1,
-  FarmwareManifest as FarmwareManifestV2,
-} from "farmbot";
+import { FarmwareManifest as FarmwareManifestV2 } from "farmbot";
 import { t } from "../i18next_wrapper";
 
-const addMinorAndPatchZeros = (version: string | undefined): string =>
-  version ? ">=" + version + ".0.0" : "";
 
-/** Generate FarmwareManifestInfo for any version of Farmware manifest. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const manifestInfo = (manifest: any): FarmwareManifestInfo => {
-  if (manifest.farmware_manifest_version) {
-    const fw: FarmwareManifestV2 = manifest;
-    return {
-      name: fw.package,
-      installation_pending: false,
-      url: fw.url,
-      config: Object.values(fw.config),
-      meta: {
-        fbos_version: fw.farmbot_os_version_requirement,
-        farmware_tools_version: fw.farmware_tools_version_requirement,
-        description: fw.description,
-        language: fw.language,
-        version: fw.package_version,
-        author: fw.author,
-      }
-    };
-  } else {
-    const fw: FarmwareManifestV1 = manifest;
-    return {
-      name: fw.name,
-      installation_pending: false,
-      url: fw.url,
-      config: fw.config,
-      meta: {
-        fbos_version: addMinorAndPatchZeros(fw.meta.min_os_version_major),
-        farmware_tools_version: fw.farmware_tools_version || ">=0.0.0",
-        description: fw.meta.description,
-        language: fw.meta.language,
-        version: fw.meta.version,
-        author: fw.meta.author,
-      }
-    };
-  }
-};
+/** Generate FarmwareManifestInfo from Farmware manifest. */
+export const manifestInfo =
+  (manifest: FarmwareManifestV2): FarmwareManifestInfo => ({
+    name: manifest.package,
+    installation_pending: false,
+    url: manifest.url,
+    config: Object.values(manifest.config),
+    meta: {
+      fbos_version: manifest.farmbot_os_version_requirement,
+      farmware_tools_version: manifest.farmware_tools_version_requirement,
+      description: manifest.description,
+      language: manifest.language,
+      version: manifest.package_version,
+      author: manifest.author,
+    }
+  });
 
 export const manifestInfoPending = (name: string, url: string) => ({
   name,

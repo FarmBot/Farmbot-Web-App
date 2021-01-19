@@ -1,5 +1,5 @@
-import * as React from "react";
-import { parseClassNames } from "./util";
+import React from "react";
+import { parseColClassNames } from "./util";
 
 interface ColumnProps {
   children?: React.ReactNode;
@@ -26,7 +26,7 @@ interface ColumnProps {
 }
 
 export function Col(props: ColumnProps) {
-  const classNames = parseClassNames(props);
+  const classNames = parseColClassNames(props);
   return <div
     className={classNames + " " + (props.className || "")}
     hidden={!!props.hidden}>

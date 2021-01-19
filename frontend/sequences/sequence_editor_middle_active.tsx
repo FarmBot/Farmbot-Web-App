@@ -105,7 +105,6 @@ const SequenceBtnGroup = ({
   sequence,
   syncStatus,
   resources,
-  shouldDisplay,
   menuOpen,
   getWebAppConfigValue,
   toggleViewSequenceCeleryScript,
@@ -119,7 +118,6 @@ const SequenceBtnGroup = ({
       syncStatus={syncStatus}
       sequence={sequence}
       resources={resources}
-      shouldDisplay={shouldDisplay}
       menuOpen={menuOpen}
       dispatch={dispatch} />
     <button
@@ -153,7 +151,6 @@ const SequenceBtnGroup = ({
         <i className="fa fa-gear" />
         <SequenceSettingsMenu
           dispatch={dispatch}
-          shouldDisplay={shouldDisplay}
           getWebAppConfigValue={getWebAppConfigValue} />
       </Popover>
     </div>
@@ -201,7 +198,6 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
     <SequenceBtnGroup {...sequenceAndDispatch}
       syncStatus={props.syncStatus}
       resources={props.resources}
-      shouldDisplay={props.shouldDisplay}
       getWebAppConfigValue={props.getWebAppConfigValue}
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       visualized={props.visualized}
@@ -218,7 +214,6 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
         collapsible={true}
         collapsed={props.variablesCollapsed}
         toggleVarShow={props.toggleVarShow}
-        shouldDisplay={props.shouldDisplay}
         hideGroups={true} />
     </ErrorBoundary>
   </div>;
@@ -253,7 +248,6 @@ export class SequenceEditorMiddleActive extends
       resources: this.props.resources,
       hardwareFlags: this.props.hardwareFlags,
       farmwareData: this.props.farmwareData,
-      shouldDisplay: this.props.shouldDisplay,
       showPins: !!getConfig(BooleanSetting.show_pins),
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
@@ -269,7 +263,6 @@ export class SequenceEditorMiddleActive extends
         sequence={sequence}
         resources={this.props.resources}
         syncStatus={this.props.syncStatus}
-        shouldDisplay={this.props.shouldDisplay}
         variablesCollapsed={this.state.variablesCollapsed}
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}

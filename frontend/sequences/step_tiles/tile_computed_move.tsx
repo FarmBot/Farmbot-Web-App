@@ -11,5 +11,4 @@ export const TileComputedMove = (props: StepParams<Move>) =>
     index={props.index}
     resources={props.resources}
     hardwareFlags={props.hardwareFlags}
-    expandStepOptions={!!props.expandStepOptions}
-    shouldDisplay={props.shouldDisplay} />;
+    expandStepOptions={!!props.expandStepOptions} />;

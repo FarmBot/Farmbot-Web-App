@@ -1,6 +1,5 @@
 import { mapStateToProps, getImageJobs } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
   fakeWebAppConfig, fakeImage,
 } from "../../__test_support__/fake_state/resources";
@@ -9,6 +8,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { JobProgress } from "farmbot";
 import { StringSetting } from "../../session_keys";
+import { fakeFarmwareManifestV2 } from "../../__test_support__/fake_farmwares";
 
 describe("getImageJobs()", () => {
   it("returns image upload job list", () => {
@@ -57,16 +57,6 @@ describe("getImageJobs()", () => {
 });
 
 describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    state.bot.hardware.process_info.farmwares = {
-      "My Fake Farmware": fakeFarmwareManifestV1(),
-    };
-    const props = mapStateToProps(state);
-    expect(props.images.length).toEqual(2);
-    expect(props.versions).toEqual({ "My Fake Farmware": "0.0.0" });
-  });
-
   it("returns image filter setting", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
@@ -93,5 +83,15 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex(images);
     const props = mapStateToProps(state);
     expect(props.currentImage).toEqual(images[1]);
+  });
+
+  it("returns versions", () => {
+    const state = fakeState();
+    state.resources = buildResourceIndex([]);
+    const manifest = fakeFarmwareManifestV2();
+    manifest.package_version = "1.0.0";
+    state.bot.hardware.process_info.farmwares = { [manifest.package]: manifest };
+    const props = mapStateToProps(state);
+    expect(props.versions).toEqual({ [manifest.package]: "1.0.0" });
   });
 });

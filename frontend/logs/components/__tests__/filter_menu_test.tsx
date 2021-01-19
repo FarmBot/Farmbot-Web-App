@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { LogsFilterMenu } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
@@ -18,7 +18,6 @@ describe("<LogsFilterMenu />", () => {
     toggle: jest.fn(),
     setFilterLevel: jest.fn(),
     state: fakeState,
-    shouldDisplay: () => false,
   });
 
   it("renders", () => {
@@ -31,7 +30,6 @@ describe("<LogsFilterMenu />", () => {
 
   it("renders new types", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));

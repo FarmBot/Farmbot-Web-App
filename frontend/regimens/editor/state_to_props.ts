@@ -12,7 +12,6 @@ import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces";
 import { randomColor, timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
-import { getShouldDisplayFn } from "../../farmware/state_to_props";
 import { RegimenEditorProps } from "./interfaces";
 
 export const mapStateToProps = (props: Everything): RegimenEditorProps => {
@@ -44,7 +43,6 @@ export const mapStateToProps = (props: Everything): RegimenEditorProps => {
     resources: props.resources.index,
     current,
     calendar,
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
 };
 

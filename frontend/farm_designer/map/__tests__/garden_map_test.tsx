@@ -131,7 +131,6 @@ const fakeProps = (): GardenMapProps => ({
   sensors: [],
   timeSettings: fakeTimeSettings(),
   groups: [],
-  shouldDisplay: () => false,
   mountedToolInfo: fakeMountedToolInfo(),
   visualizedSequenceBody: [],
   logs: [],

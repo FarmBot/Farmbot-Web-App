@@ -26,7 +26,6 @@ const fakeProps = (): StepParams<Execute> => ({
   dispatch: jest.fn(),
   index: 0,
   resources: emptyState().index,
-  shouldDisplay: () => false,
 });
 
 describe("<ExecuteBlock />", () => {
@@ -40,7 +39,6 @@ describe("<ExecuteBlock />", () => {
 
   it("renders inputs when sequence has a variable", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const block = mount(<TileExecute {...p} />);
     const inputs = block.find("input");
     expect(inputs.length).toEqual(1);

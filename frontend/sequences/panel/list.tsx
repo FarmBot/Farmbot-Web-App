@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
@@ -6,9 +6,9 @@ import {
 import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
 import { Folders } from "../../folders/component";
 import { mapStateToProps } from "../state_to_props";
-import { Props } from "../interfaces";
+import { SequencesProps } from "../interfaces";
 
-export class RawDesignerSequenceList extends React.Component<Props> {
+export class RawDesignerSequenceList extends React.Component<SequencesProps> {
   render() {
     const panelName = "designer-sequence-list";
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>

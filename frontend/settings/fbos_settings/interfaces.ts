@@ -1,7 +1,6 @@
 import {
   BotState,
   ControlPanelState,
-  ShouldDisplay,
   SourceFbosConfig,
 } from "../../devices/interfaces";
 import { InformationalSettings, TaggedDevice } from "farmbot";
@@ -54,7 +53,6 @@ export interface FarmbotOsRowProps {
   bot: BotState;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
   timeSettings: TimeSettings;
   deviceAccount: TaggedDevice;
@@ -68,7 +66,6 @@ export interface FarmbotOsRowState {
 export interface FbosDetailsProps {
   botInfoSettings: InformationalSettings;
   dispatch: Function;
-  shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
   botToMqttLastSeen: number;
   timeSettings: TimeSettings;
@@ -78,7 +75,6 @@ export interface FbosDetailsProps {
 export interface OsUpdateButtonProps {
   bot: BotState;
   botOnline: boolean;
-  shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
 

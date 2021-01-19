@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { DesignerPanel, DesignerPanelContent } from "../farm_designer/designer_panel";
+import {
+  DesignerPanel, DesignerPanelContent,
+} from "../farm_designer/designer_panel";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import { MustBeOnline, isBotOnlineFromState } from "../devices/must_be_online";
 import { getStatus } from "../connectivity/reducer_support";
@@ -8,7 +10,7 @@ import { JogControlsGroup } from "./move/jog_controls_group";
 import { BotPositionRows } from "./move/bot_position_rows";
 import { BooleanSetting } from "../session_keys";
 import { MotorPositionPlot } from "./move/motor_position_plot";
-import { BotState, ShouldDisplay, UserEnv } from "../devices/interfaces";
+import { BotState, UserEnv } from "../devices/interfaces";
 import {
   TaggedWebcamFeed, TaggedPeripheral, McuParams, FirmwareHardware, TaggedSequence,
 } from "farmbot";
@@ -18,7 +20,7 @@ import {
 import { Everything } from "../interfaces";
 import { validFwConfig, validFbosConfig, validBotLocationData } from "../util";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
-import { getShouldDisplayFn, getEnv } from "../farmware/state_to_props";
+import { getEnv } from "../farmware/state_to_props";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { isFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import {
@@ -44,7 +46,6 @@ export interface DesignerControlsProps {
   sequences: TaggedSequence[];
   resources: ResourceIndex;
   menuOpen: boolean;
-  shouldDisplay: ShouldDisplay;
   firmwareSettings: McuParams;
   getWebAppConfigVal: GetWebAppConfigValue;
   env: UserEnv;
@@ -55,8 +56,7 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
 
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
 
   const { configuration } = props.bot.hardware;
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
@@ -72,7 +72,6 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     sequences: selectAllSequences(props.resources.index),
     resources: props.resources.index,
     menuOpen: props.resources.consumers.sequences.menuOpen,
-    shouldDisplay,
     firmwareSettings: fwConfig || mcu_params,
     getWebAppConfigVal: getWebAppConfigValue(() => props),
     env,
@@ -160,7 +159,6 @@ export class RawDesignerControls
                       syncStatus={bot.hardware.informational_settings.sync_status}
                       sequence={sequence}
                       resources={this.props.resources}
-                      shouldDisplay={this.props.shouldDisplay}
                       menuOpen={this.props.menuOpen}
                       dispatch={this.props.dispatch} />
                   </Col>

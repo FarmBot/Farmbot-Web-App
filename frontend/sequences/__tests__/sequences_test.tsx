@@ -4,12 +4,12 @@ jest.mock("../../history", () => ({
   history: { getCurrentLocation: () => "" },
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton,
 } from "../sequences";
 import { shallow, mount } from "enzyme";
-import { Props } from "../interfaces";
+import { SequencesProps } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -22,8 +22,8 @@ import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 
-describe("<Sequences/>", () => {
-  const fakeProps = (): Props => ({
+describe("<Sequences />", () => {
+  const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
     sequences: [],

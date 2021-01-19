@@ -97,7 +97,6 @@ export class TileMoveAbsolute
       onChange={(x) => x &&
         x.kind == "parameter_application" &&
         this.updateLocation(x)}
-      shouldDisplay={this.props.shouldDisplay}
       hideHeader={true}
       hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}

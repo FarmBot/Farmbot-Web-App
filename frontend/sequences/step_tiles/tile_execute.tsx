@@ -100,8 +100,7 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
               resources={resources}
               onChange={assignVariable(this.props)(currentStep.body || [])}
               locationDropdownKey={JSON.stringify(currentSequence)}
-              allowedVariableNodes={AllowedVariableNodes.identifier}
-              shouldDisplay={this.props.shouldDisplay} />
+              allowedVariableNodes={AllowedVariableNodes.identifier} />
           </Col>
         </Row>}
     </StepWrapper>;

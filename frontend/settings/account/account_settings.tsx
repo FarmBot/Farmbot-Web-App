@@ -1,29 +1,20 @@
-import * as React from "react";
-import { ControlPanelState } from "../../devices/interfaces";
+import React from "react";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting, Content } from "../../constants";
 import { Header } from "../hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { BlurableInput, Row } from "../../ui";
-import { TaggedUser } from "farmbot";
 import { edit, save } from "../../api/crud";
 import { SettingDescriptionProps } from "../interfaces";
 import { BooleanSetting } from "../../session_keys";
 import { Setting } from "../farm_designer_settings";
-import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { resetAccount, deleteUser } from "./actions";
 import { requestAccountExport } from "./request_account_export";
 import { success } from "../../toast/toast";
 import { ChangePassword } from "./change_password";
 import { DangerousDeleteWidget } from "./dangerous_delete_widget";
-
-export interface AccountSettingsProps {
-  dispatch: Function;
-  controlPanelState: ControlPanelState;
-  user: TaggedUser;
-  getConfigValue: GetWebAppConfigValue;
-}
+import { AccountSettingsProps } from "./interfaces";
 
 export const AccountSettings = (props: AccountSettingsProps) =>
   <Highlight className={"section"}

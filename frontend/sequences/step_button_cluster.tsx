@@ -3,7 +3,6 @@ import { StepButton } from "./step_buttons";
 import { scrollToBottom, urlFriendly } from "../util";
 import { Col, Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
-import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
@@ -28,37 +27,11 @@ export function StepButtonCluster(props: StepButtonProps) {
   const { dispatch, current, shouldDisplay, stepIndex } = props;
   const commonStepProps = { dispatch, current, index: stepIndex };
   const ALL_THE_BUTTONS = [
-    ...(shouldDisplay(Feature.computed_move)
-      ? [<StepButton {...commonStepProps}
-        step={{ kind: "move", args: {} }}
-        color="blue">
-        {t("MOVE")}
-      </StepButton>]
-      : []),
-    ...(shouldDisplay(Feature.computed_move)
-      ? []
-      : [<StepButton {...commonStepProps}
-        step={{
-          kind: "move_absolute",
-          args: {
-            location: NOTHING_SELECTED,
-            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
-            speed: CONFIG_DEFAULTS.speed
-          }
-        }}
-        color="blue">
-        {t("MOVE TO")}
-      </StepButton>]),
-    ...(shouldDisplay(Feature.computed_move)
-      ? []
-      : [<StepButton {...commonStepProps}
-        step={{
-          kind: "move_relative",
-          args: { x: 0, y: 0, z: 0, speed: CONFIG_DEFAULTS.speed }
-        }}
-        color="green">
-        {t("MOVE RELATIVE")}
-      </StepButton>]),
+    <StepButton {...commonStepProps}
+      step={{ kind: "move", args: {} }}
+      color="blue">
+      {t("MOVE")}
+    </StepButton>,
     <StepButton {...commonStepProps}
       step={{
         kind: "write_pin",
@@ -237,18 +210,16 @@ export function StepButtonCluster(props: StepButtonProps) {
         {t("LUA")}
       </StepButton>]
       : []),
-    ...(shouldDisplay(Feature.update_resource)
-      ? [<StepButton
-        {...commonStepProps}
-        step={{
-          kind: "update_resource",
-          args: { resource: NOTHING_SELECTED },
-          body: [],
-        }}
-        color="brown">
-        {t("Mark As...")}
-      </StepButton>]
-      : []),
+    <StepButton
+      {...commonStepProps}
+      step={{
+        kind: "update_resource",
+        args: { resource: NOTHING_SELECTED },
+        body: [],
+      }}
+      color="brown">
+      {t("Mark As...")}
+    </StepButton>,
   ];
 
   const sequenceUrlName = urlFriendly(props.current?.body.name || "");

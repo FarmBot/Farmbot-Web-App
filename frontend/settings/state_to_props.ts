@@ -9,7 +9,7 @@ import {
   getDeviceAccountSettings, maybeGetTimeSettings, getUserAccountSettings,
 } from "../resources/selectors";
 import {
-  saveOrEditFarmwareEnv, getShouldDisplayFn, getEnv,
+  saveOrEditFarmwareEnv, getShouldDisplayFn,
 } from "../farmware/state_to_props";
 import { getAllAlerts } from "../messages/state_to_props";
 import { DesignerSettingsProps } from "./interfaces";
@@ -25,8 +25,6 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   resources: props.resources.index,
   deviceAccount: getDeviceAccountSettings(props.resources.index),
   shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
-  env: getEnv(props.resources.index, getShouldDisplayFn(
-    props.resources.index, props.bot), props.bot),
   saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
   timeSettings: maybeGetTimeSettings(props.resources.index),
   alerts: getAllAlerts(props.resources),

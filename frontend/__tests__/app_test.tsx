@@ -150,11 +150,12 @@ describe("mapStateToProps()", () => {
     state.auth.token.unencoded.aud = "unknown";
     const config = fakeWebAppConfig();
     config.body.x_axis_inverted = true;
-    state.resources = buildResourceIndex([config]);
-    state.bot.hardware.user_env = { fake: "value" };
+    const farmwareEnv = fakeFarmwareEnv();
+    farmwareEnv.body.key = "fakeKey";
+    state.resources = buildResourceIndex([config, farmwareEnv]);
     const result = mapStateToProps(state);
     expect(result.axisInversion.x).toEqual(true);
-    expect(result.env).toEqual({ fake: "value" });
+    expect(result.env).toEqual({ fakeKey: "fake_FarmwareEnv_value" });
     expect(result.authAud).toEqual("unknown");
   });
 

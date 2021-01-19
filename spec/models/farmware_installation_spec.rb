@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe FarmwareInstallation do
   FAKE_URL = "https://raw.githubusercontent.com/"\
-             "FarmBot-Labs/set-servo-angle/master"\
+             "FarmBot-Labs/set-servo-angle/main"\
              "/manifest.json"
   let(:device) { FactoryBot.create(:device) }
 

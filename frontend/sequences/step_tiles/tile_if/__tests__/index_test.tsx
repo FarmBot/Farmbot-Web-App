@@ -42,7 +42,6 @@ function fakeProps(): StepParams<If> {
     dispatch: jest.fn(),
     index: 0,
     resources: fakeResourceIndex,
-    shouldDisplay: jest.fn(),
     showPins: true,
   };
 }

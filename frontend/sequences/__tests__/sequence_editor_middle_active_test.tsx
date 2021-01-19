@@ -81,7 +81,6 @@ describe("<SequenceEditorMiddleActive />", () => {
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
-      shouldDisplay: jest.fn(),
       getWebAppConfigValue: jest.fn(),
       menuOpen: false,
     };
@@ -191,7 +190,6 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("has correct height without variable form", () => {
     const p = fakeProps();
     p.resources.sequenceMetas = { [p.sequence.uuid]: {} };
-    p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style).toEqual({
       height: "calc(100vh - 200px)"
@@ -210,7 +208,6 @@ describe("<SequenceEditorMiddleActive />", () => {
     };
     const variables = fakeVariableNameSet("variable", vector, node);
     p.resources.sequenceMetas = { [p.sequence.uuid]: variables };
-    p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style)
       .toEqual({ height: "calc(100vh - 500px)" });
@@ -219,7 +216,6 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("has correct height with variable form collapsed", () => {
     const p = fakeProps();
     p.resources.sequenceMetas = { [p.sequence.uuid]: fakeVariableNameSet() };
-    p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.setState({ variablesCollapsed: true });
     expect(wrapper.find(".sequence").props().style)
@@ -375,7 +371,6 @@ describe("<SequenceSettingsMenu />", () => {
   const fakeProps = (): SequenceSettingsMenuProps => ({
     dispatch: jest.fn(),
     getWebAppConfigValue: jest.fn(),
-    shouldDisplay: () => false,
   });
 
   it("renders settings", () => {

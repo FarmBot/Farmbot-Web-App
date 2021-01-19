@@ -8,7 +8,6 @@ describe("<CaptureSettings />", () => {
   const fakeProps = (): CaptureSettingsProps => ({
     env: {},
     saveFarmwareEnv: jest.fn(),
-    shouldDisplay: jest.fn(),
     botOnline: true,
     dispatch: jest.fn(),
     version: "1.0.14",

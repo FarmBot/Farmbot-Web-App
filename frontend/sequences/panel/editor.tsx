@@ -5,7 +5,7 @@ import {
 } from "../../farm_designer/designer_panel";
 import { Panel } from "../../farm_designer/panel_header";
 import { mapStateToProps } from "../state_to_props";
-import { Props } from "../interfaces";
+import { SequencesProps } from "../interfaces";
 import { t } from "../../i18next_wrapper";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
 import {
@@ -19,7 +19,7 @@ import {
 import { push } from "../../history";
 import { urlFriendly } from "../../util";
 
-export class RawDesignerSequenceEditor extends React.Component<Props> {
+export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 
   componentDidMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
@@ -55,7 +55,6 @@ export class RawDesignerSequenceEditor extends React.Component<Props> {
             syncStatus={this.props.syncStatus}
             hardwareFlags={this.props.hardwareFlags}
             farmwareData={this.props.farmwareData}
-            shouldDisplay={this.props.shouldDisplay}
             getWebAppConfigValue={this.props.getWebAppConfigValue}
             visualized={this.props.visualized}
             hoveredStep={this.props.hoveredStep}

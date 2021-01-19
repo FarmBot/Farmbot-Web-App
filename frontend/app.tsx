@@ -30,7 +30,7 @@ import { ResourceIndex } from "./resources/interfaces";
 import { isBotOnlineFromState } from "./devices/must_be_online";
 import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
-import { getEnv, getShouldDisplayFn } from "./farmware/state_to_props";
+import { getEnv } from "./farmware/state_to_props";
 import { filterAlerts } from "./messages/alerts";
 import {
   isFwHardwareValue,
@@ -66,8 +66,7 @@ export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
   const fwHardware = fbosConfig?.firmware_hardware;
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,

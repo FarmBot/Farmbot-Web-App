@@ -60,7 +60,6 @@ describe("<OverwriteInputRow />", () => {
     onCommit: jest.fn(),
     setAxisState: jest.fn(),
     setAxisOverwriteState: jest.fn(),
-    shouldDisplay: jest.fn(),
   });
 
   it("changes overwrite selection", () => {
@@ -95,18 +94,6 @@ describe("<OverwriteInputRow />", () => {
 
   it("renders options", () => {
     const p = fakeProps();
-    p.shouldDisplay = undefined;
-    const wrapper = mount(<OverwriteInputRow {...p} />);
-    const items = wrapper.find(FBSelect).last().props().list;
-    expect(items)
-      .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);
-    expect(items)
-      .not.toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.soil_height]);
-  });
-
-  it("renders soil height option", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<OverwriteInputRow {...p} />);
     const items = wrapper.find(FBSelect).last().props().list;
     expect(items)

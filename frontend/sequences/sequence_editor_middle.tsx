@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SequenceEditorMiddleProps } from "./interfaces";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { SequenceEditorMiddleActive } from "./sequence_editor_middle_active";
@@ -24,7 +24,6 @@ export class SequenceEditorMiddle
         syncStatus={this.props.syncStatus}
         hardwareFlags={this.props.hardwareFlags}
         farmwareData={this.props.farmwareData}
-        shouldDisplay={this.props.shouldDisplay}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         menuOpen={this.props.menuOpen} />}
     </EmptyStateWrapper>;

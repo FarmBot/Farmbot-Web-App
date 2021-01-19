@@ -1,11 +1,11 @@
 import { maybeGetDevice } from "../resources/selectors";
-import { Feature, UserEnv, ShouldDisplay, BotState } from "../devices/interfaces";
+import { UserEnv, BotState } from "../devices/interfaces";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../resources/selectors_by_kind";
 import { determineInstalledOsVersion, createShouldDisplayFn } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv } from "farmbot";
+import { FarmwareManifest, TaggedFarmwareEnv } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { FarmwareManifestInfo, Farmwares, SaveFarmwareEnv } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
@@ -40,11 +40,7 @@ export const reduceFarmwareEnv =
     return farmwareEnv;
   };
 
-export const getEnv =
-  (ri: ResourceIndex, shouldDisplay: ShouldDisplay, bot: BotState) =>
-    shouldDisplay(Feature.api_farmware_env)
-      ? reduceFarmwareEnv(ri)
-      : bot.hardware.user_env;
+export const getEnv = (ri: ResourceIndex) => reduceFarmwareEnv(ri);
 
 export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
   const lookupData = bot.minOsFeatureData;
@@ -57,6 +53,7 @@ export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
 export const generateFarmwareDictionary = (
   bot: BotState,
   ri: ResourceIndex,
+  includePending = false,
 ): Farmwares => {
   const botStateFarmwares = bot.hardware.process_info.farmwares;
 
@@ -66,13 +63,13 @@ export const generateFarmwareDictionary = (
     (packageName: string | undefined, id: number | undefined): string => {
       const nameBase = packageName || `${t("Unknown Farmware")} ${id}`;
       const pendingInstall = ` (${t("pending install")}...)`;
-      return nameBase + pendingInstall;
+      return includePending ? nameBase : nameBase + pendingInstall;
     };
 
   const farmwares: Farmwares = {};
-  Object.values(botStateFarmwares).map((fm: unknown) => {
+  Object.values(botStateFarmwares).map((fm: FarmwareManifest) => {
     const info = manifestInfo(fm);
-    farmwares[info.name] = manifestInfo(fm);
+    farmwares[info.name] = info;
   });
   taggedFarmwareInstallations.map(x => {
     const n = namePendingInstall(x.body.package, x.body.id);

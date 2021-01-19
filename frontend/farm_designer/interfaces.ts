@@ -74,7 +74,7 @@ export interface MountedToolInfo {
   flipped: boolean;
 }
 
-export interface Props {
+export interface FarmDesignerProps {
   dispatch: Function;
   selectedPlant: TaggedPlant | undefined;
   designer: DesignerState;
@@ -179,7 +179,6 @@ export interface AddEditFarmEventProps {
   findExecutable: ExecutableQuery;
   timeSettings: TimeSettings;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
 }
 
 /**
@@ -253,7 +252,6 @@ export interface GardenMapProps {
   sensors: TaggedSensor[];
   timeSettings: TimeSettings;
   groups: TaggedPointGroup[];
-  shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
