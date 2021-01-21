@@ -26,7 +26,6 @@ describe("<FbosDetails/>", () => {
     botInfoSettings: bot.hardware.informational_settings,
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
-    shouldDisplay: () => false,
     botToMqttLastSeen: 0,
     deviceAccount: fakeDevice(),
     timeSettings: fakeTimeSettings(),

@@ -21,7 +21,6 @@ describe("<FarmbotOsRow />", () => {
     sourceFbosConfig: x => ({
       value: bot.hardware.configuration[x], consistent: true,
     }),
-    shouldDisplay: () => false,
     botOnline: false,
     deviceAccount: fakeDevice(),
     timeSettings: fakeTimeSettings(),

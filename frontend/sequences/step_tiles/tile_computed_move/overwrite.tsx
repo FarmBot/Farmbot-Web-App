@@ -2,7 +2,7 @@ import React from "react";
 import { AxisSelection, OverwriteInputRowProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { Xyz, Move, AxisOverwrite } from "farmbot";
-import { Axis, Feature, ShouldDisplay } from "../../../devices/interfaces";
+import { Axis } from "../../../devices/interfaces";
 import { isUndefined } from "lodash";
 import { Col, FBSelect, Row } from "../../../ui";
 import { MoveStepInput } from "./input";
@@ -84,7 +84,7 @@ export const OverwriteInputRow = (props: OverwriteInputRowProps) =>
         {showDropdown(props.selection[axis])
           ? <FBSelect
             key={props.selection[axis]}
-            list={OVERWRITE_OPTIONS(axis, props.shouldDisplay)}
+            list={OVERWRITE_OPTIONS(axis)}
             selectedItem={getOverwriteSelection(props.selection[axis])}
             onChange={ddi =>
               props.setAxisOverwriteState(axis, ddi.value as AxisSelection)} />
@@ -118,15 +118,12 @@ export const OVERWRITE_OPTION_LOOKUP = () => ({
   },
 });
 
-const OVERWRITE_OPTIONS = (
-  axis: Xyz,
-  shouldDisplay: ShouldDisplay | undefined,
-) =>
+const OVERWRITE_OPTIONS = (axis: Xyz) =>
   [
     { label: t("None"), value: "" },
     OVERWRITE_OPTION_LOOKUP()[AxisSelection.disable],
     OVERWRITE_OPTION_LOOKUP()[AxisSelection.custom],
-    ...(axis == "z" && shouldDisplay?.(Feature.soil_height)
+    ...(axis == "z"
       ? [OVERWRITE_OPTION_LOOKUP()[AxisSelection.soil_height]]
       : []),
     ...(axis == "z"

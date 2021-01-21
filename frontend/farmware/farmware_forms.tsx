@@ -2,7 +2,7 @@ import React from "react";
 import { BlurableInput, DropDownItem, ExpandableHeader, FBSelect } from "../ui";
 import { Pair, FarmwareConfig, TaggedFarmwareEnv } from "farmbot";
 import { getDevice } from "../device";
-import { ShouldDisplay, Feature, UserEnv } from "../devices/interfaces";
+import { UserEnv } from "../devices/interfaces";
 import { toString, snakeCase, isEqual } from "lodash";
 import { FarmwareManifestInfo, SaveFarmwareEnv } from "./interfaces";
 import { t } from "../i18next_wrapper";
@@ -17,7 +17,6 @@ export interface FarmwareFormProps {
   env: UserEnv;
   userEnv: UserEnv;
   farmwareEnvs: TaggedFarmwareEnv[];
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
   botOnline: boolean;
@@ -65,12 +64,10 @@ interface FarmwareInputFieldProps {
   farmwareName: string;
   configName: string;
   value: string;
-  shouldDisplay: ShouldDisplay;
   saveEnv(value: string): void;
 }
 
 const FarmwareInputField = (props: FarmwareInputFieldProps) => {
-  const configEnvName = getConfigEnvName(props.farmwareName, props.configName);
   if (props.farmwareName == FarmwareName.MeasureSoilHeight) {
     switch (props.configName) {
       case DropdownInput.images:
@@ -84,12 +81,7 @@ const FarmwareInputField = (props: FarmwareInputFieldProps) => {
     }
   }
   return <BlurableInput type={"text"}
-    onCommit={e => {
-      const value = e.currentTarget.value;
-      props.shouldDisplay(Feature.api_farmware_env)
-        ? props.saveEnv(value)
-        : getDevice().setUserEnv({ [configEnvName]: value }).catch(() => { });
-    }}
+    onCommit={e => props.saveEnv(e.currentTarget.value)}
     value={props.value} />;
 };
 
@@ -97,7 +89,6 @@ export interface ConfigFieldsProps {
   farmwareName: string;
   farmwareConfigs: FarmwareConfig[];
   getValue(farmwareName: string, currentConfig: FarmwareConfig): string;
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   userEnv: UserEnv;
   farmwareEnvs: TaggedFarmwareEnv[];
@@ -123,7 +114,6 @@ export function ConfigFields(props: ConfigFieldsProps): JSX.Element {
             farmwareName={farmwareName}
             configName={config.name}
             value={value}
-            shouldDisplay={props.shouldDisplay}
             saveEnv={saveEnv} />
           {botValue && !(value == botValue) &&
             <i className="fa fa-refresh" title={t("update to FarmBot's value")}
@@ -167,8 +157,7 @@ export class FarmwareForm
 
   Configs = ({ farmwareConfigs }: ConfigsProps) => {
     const {
-      farmware, env, userEnv, farmwareEnvs, shouldDisplay, saveFarmwareEnv,
-      dispatch,
+      farmware, env, userEnv, farmwareEnvs, saveFarmwareEnv, dispatch,
     } = this.props;
     return <ConfigFields
       farmwareName={farmware.name}
@@ -176,7 +165,6 @@ export class FarmwareForm
       getValue={getValue(env)}
       userEnv={userEnv}
       farmwareEnvs={farmwareEnvs}
-      shouldDisplay={shouldDisplay}
       saveFarmwareEnv={saveFarmwareEnv}
       dispatch={dispatch} />;
   }

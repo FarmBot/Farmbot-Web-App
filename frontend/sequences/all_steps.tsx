@@ -7,7 +7,6 @@ import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
 import { HardwareFlags, FarmwareData } from "./interfaces";
-import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
 import { ErrorBoundary } from "../error_boundary";
 import { TileUnknown } from "./step_tiles/tile_unknown";
@@ -20,7 +19,6 @@ export interface AllStepsProps {
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareData?: FarmwareData;
-  shouldDisplay?: ShouldDisplay;
   showPins?: boolean;
   expandStepOptions?: boolean;
   visualized?: boolean;
@@ -47,7 +45,6 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           resources: this.props.resources,
           hardwareFlags: this.props.hardwareFlags,
           farmwareData: this.props.farmwareData,
-          shouldDisplay: this.props.shouldDisplay,
           showPins: this.props.showPins,
           expandStepOptions: this.props.expandStepOptions,
         };

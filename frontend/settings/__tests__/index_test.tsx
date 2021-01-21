@@ -9,7 +9,7 @@ jest.mock("../../settings/maybe_highlight", () => ({
   getHighlightName: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import { RawDesignerSettings as DesignerSettings } from "..";
 import { DesignerSettingsProps } from "../interfaces";
@@ -49,7 +49,6 @@ describe("<DesignerSettings />", () => {
     sourceFbosConfig: () => ({ value: 10, consistent: true }),
     resources: buildResourceIndex().index,
     deviceAccount: fakeDevice(),
-    env: {},
     alerts: [],
     shouldDisplay: jest.fn(),
     saveFarmwareEnv: jest.fn(),

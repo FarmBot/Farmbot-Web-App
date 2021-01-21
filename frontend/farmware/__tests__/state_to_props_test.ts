@@ -7,6 +7,7 @@ jest.mock("../../api/crud", () => ({
 import {
   saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
   isPendingInstallation,
+  getShouldDisplayFn,
 } from "../state_to_props";
 import {
   buildResourceIndex,
@@ -15,48 +16,42 @@ import {
   fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
-import {
-  fakeFarmwareManifestV1, fakeFarmware,
-} from "../../__test_support__/fake_farmwares";
-import { DevSettings } from "../../settings/dev/dev_support";
+import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Feature } from "../../devices/interfaces";
 
 describe("getEnv()", () => {
-  it("returns bot state env", () => {
-    const env = { foo: "bar" };
-    const state = fakeState();
-    state.bot.hardware.user_env = env;
-    const gotEnv = getEnv(state.resources.index, () => false, state.bot);
-    expect(gotEnv).toEqual(env);
-  });
-
   it("returns API farmware env", () => {
     const state = fakeState();
     state.bot.hardware.user_env = {};
-    state.bot.hardware.informational_settings.controller_version =
-      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     state.resources = buildResourceIndex([fakeFarmwareEnv()]);
-    const gotEnv = getEnv(state.resources.index, () => true, state.bot);
+    const gotEnv = getEnv(state.resources.index);
     expect(gotEnv).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"
     });
   });
 });
 
+describe("getShouldDisplayFn()", () => {
+  it("returns shouldDisplay()", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = "2.0.0";
+    state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
+    const shouldDisplay = getShouldDisplayFn(state.resources.index, state.bot);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(shouldDisplay("some_feature" as any)).toBeFalsy();
+    expect(shouldDisplay(Feature.jest_feature)).toBeTruthy();
+  });
+});
+
 describe("generateFarmwareDictionary()", () => {
   it("includes API FarmwareInstallations", () => {
     const state = fakeState();
-    state.bot.hardware.informational_settings.controller_version =
-      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     const farmware1 = fakeFarmwareInstallation();
     farmware1.body.id = 2;
     const farmware2 = fakeFarmwareInstallation();
     farmware2.body.url = "farmware 2 url";
     state.resources = buildResourceIndex([farmware1, farmware2]);
-    const botFarmware = fakeFarmwareManifestV1();
-    botFarmware.url = farmware2.body.url;
-    const botFarmwareName = "farmware_0";
-    state.bot.hardware.process_info.farmwares = { [botFarmwareName]: botFarmware };
     const farmwares = generateFarmwareDictionary(state.bot, state.resources.index);
     expect(farmwares).toEqual({
       "Unknown Farmware 2 (pending install...)":
@@ -66,10 +61,6 @@ describe("generateFarmwareDictionary()", () => {
           url: "https://",
           installation_pending: true,
         }),
-      [botFarmware.name]: expect.objectContaining({
-        name: botFarmware.name,
-        installation_pending: false,
-      }),
     });
   });
 });

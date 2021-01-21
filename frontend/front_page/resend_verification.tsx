@@ -6,7 +6,7 @@ import { UnsafeError } from "../interfaces";
 import { ResendPanelBody } from "./resend_panel_body";
 import { t } from "../i18next_wrapper";
 
-interface Props {
+interface ResendVerificationProps {
   email: string;
   /** Callback when resend succeeds */
   ok(resp: AxiosResponse): void;
@@ -15,7 +15,8 @@ interface Props {
   onGoBack(): void;
 }
 
-export class ResendVerification extends React.Component<Props, {}> {
+export class ResendVerification
+  extends React.Component<ResendVerificationProps, {}> {
   render() {
     return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
       <Widget>

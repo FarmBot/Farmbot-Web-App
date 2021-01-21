@@ -30,8 +30,7 @@ export function ThenElse(props: ThenElseParams) {
           resources={props.resources}
           onChange={assignVariable(body || [])}
           locationDropdownKey={JSON.stringify(props.currentSequence)}
-          allowedVariableNodes={AllowedVariableNodes.identifier}
-          shouldDisplay={props.shouldDisplay} />
+          allowedVariableNodes={AllowedVariableNodes.identifier} />
       </Col>}
   </Col>;
 }

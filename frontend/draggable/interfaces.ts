@@ -32,18 +32,15 @@ export interface StepMoveDataXfer extends DataXferBase {
   intent: "step_move";
 }
 
-/** Interface for store.draggable . */
 export interface DraggableState {
   dataTransfer: { [key: string]: DataXfer | undefined };
 }
 
-/* Props for <DropArea /> */
 export interface DropAreaProps {
   callback?: (key: string) => void;
   isLocked?: boolean;
 }
 
-/* State for <DropArea /> */
 export interface DropAreaState {
   isHovered?: boolean;
 }

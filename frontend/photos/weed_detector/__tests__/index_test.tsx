@@ -1,6 +1,3 @@
-const mockDevice = { setUserEnv: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 const mockDeletePoints = jest.fn();
 jest.mock("../../../api/delete_points", () => ({
   deletePoints: mockDeletePoints,
@@ -36,7 +33,6 @@ describe("<WeedDetector />", () => {
     currentImage: undefined,
     images: [],
     syncStatus: "synced",
-    shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     highlightModified: false,
   });
@@ -91,18 +87,8 @@ describe("<WeedDetector />", () => {
     expect(wrapper.instance().state.deletionProgress).toEqual("");
   });
 
-  it("saves changes", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    const wrapper = shallow(<WeedDetector {...p} />);
-    wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
-    expect(mockDevice.setUserEnv)
-      .toHaveBeenCalledWith({ WEED_DETECTOR_H_LO: "3" });
-  });
-
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<WeedDetector {...p} />);
     wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
     expect(p.saveFarmwareEnv)

@@ -46,7 +46,7 @@ describe("<SettingLoadProgress />", () => {
 
   it("shows setting load progress: 67%", () => {
     const p = fakeProps();
-    p.firmwareHardware = "express_k10";
+    p.firmwareHardware = "farmduino_k15";
     const wrapper = mount(<SettingLoadProgress {...p} />);
     const barStyle = wrapper.find(".load-progress-bar").props().style;
     expect(barStyle?.width).toEqual("67%");

@@ -10,5 +10,4 @@ export const TileIf = (props: StepParams<If>) =>
     dispatch={props.dispatch}
     index={props.index}
     resources={props.resources}
-    shouldDisplay={props.shouldDisplay}
     showPins={props.showPins} />;

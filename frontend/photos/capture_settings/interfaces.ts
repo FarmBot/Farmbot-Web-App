@@ -1,10 +1,9 @@
-import { UserEnv, ShouldDisplay } from "../../devices/interfaces";
+import { UserEnv } from "../../devices/interfaces";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
 
 export interface CaptureSettingsProps {
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
   dispatch: Function;
   version: string;
@@ -40,7 +39,6 @@ export interface CameraSelectionProps {
   env: UserEnv;
   botOnline: boolean;
   saveFarmwareEnv: SaveFarmwareEnv;
-  shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
 

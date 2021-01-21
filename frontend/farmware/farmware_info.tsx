@@ -1,15 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { TaggedFarmwareInstallation } from "farmbot";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
 import { Content } from "../constants";
-import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { destroy } from "../api/crud";
 import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
 import { Popover } from "@blueprintjs/core";
 import { retryFetchPackageName } from "./actions";
-import { history } from "../history";
+import { push } from "../history";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
 
@@ -19,7 +18,6 @@ export interface FarmwareInfoProps {
   showFirstParty: boolean;
   firstPartyFarmwareNames: string[];
   installations: TaggedFarmwareInstallation[];
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 
@@ -120,7 +118,6 @@ interface RemoveFarmwareProps {
   dispatch: Function;
   firstPartyFarmwareNames: string[];
   installations: TaggedFarmwareInstallation[];
-  shouldDisplay: ShouldDisplay;
 }
 
 /** Uninstall a Farmware. */
@@ -131,12 +128,8 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
       const isFirstParty = firstPartyFarmwareNames &&
         firstPartyFarmwareNames.includes(farmwareName);
       if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
-        props.shouldDisplay(Feature.api_farmware_installations)
-          ? removeFromAPI({ url, installations, dispatch })
-          : getDevice()
-            .removeFarmware(farmwareName)
-            .catch(commandErr("Farmware Removal"));
-        history.push("/app/designer/farmware");
+        removeFromAPI({ url, installations, dispatch });
+        push("/app/designer/farmware");
       }
     }
   };

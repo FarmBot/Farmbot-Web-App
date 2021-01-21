@@ -12,6 +12,7 @@ import {
 import { getFbosConfig } from "../resources/getters";
 import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
 import { compact } from "lodash";
+import { selectAllFarmwareInstallations } from "../resources/selectors";
 
 export enum Panel {
   Map = "Map",
@@ -242,6 +243,16 @@ export const showSensors = () => {
     && hasSensors(firmwareHardware);
 };
 
+export const showFarmware = () => {
+  const { resources } = store.getState();
+  const all = selectAllFarmwareInstallations(resources.index);
+  const { firstPartyFarmwareNames } = resources.consumers.farmware;
+  const installs = all
+    .map(fw => fw.body.package || "")
+    .filter(fwName => !firstPartyFarmwareNames.includes(fwName));
+  return installs.length > 0;
+};
+
 interface DesignerNavTabsProps {
   hidden?: boolean;
 }
@@ -278,7 +289,7 @@ export class DesignerNavTabs
         <NavTab panel={Panel.Controls} />
         {showSensors() && <NavTab panel={Panel.Sensors} />}
         <NavTab panel={Panel.Photos} />
-        <NavTab panel={Panel.Farmware} />
+        {showFarmware() && <NavTab panel={Panel.Farmware} />}
         <NavTab panel={Panel.Tools} />
         <NavTab panel={Panel.Messages} />
         <NavTab panel={Panel.Help} />

@@ -22,7 +22,6 @@ export interface AxisSettingsProps {
   firmwareConfig: FirmwareConfig | undefined;
   botOnline: boolean;
   firmwareHardware: FirmwareHardware | undefined;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface BooleanMCUInputGroupProps {
@@ -110,7 +109,6 @@ export interface EncodersOrStallDetectionProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
-  shouldDisplay: ShouldDisplay;
   arduinoBusy: boolean;
 }
 

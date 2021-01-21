@@ -100,8 +100,7 @@ export class RawDesignerPhotos
             env={this.props.env}
             botOnline={botOnline}
             version={this.props.versions["take-photo"] || ""}
-            saveFarmwareEnv={this.props.saveFarmwareEnv}
-            shouldDisplay={this.props.shouldDisplay} />
+            saveFarmwareEnv={this.props.saveFarmwareEnv} />
         </Collapse>
         <ExpandableHeader
           expanded={!!this.state.calibration}
@@ -126,8 +125,7 @@ export class RawDesignerPhotos
             H_HI={wDEnvGet("CAMERA_CALIBRATION_H_HI")}
             S_HI={wDEnvGet("CAMERA_CALIBRATION_S_HI")}
             V_HI={wDEnvGet("CAMERA_CALIBRATION_V_HI")}
-            versions={this.props.versions}
-            shouldDisplay={this.props.shouldDisplay} />
+            versions={this.props.versions} />
         </Collapse>
         <ExpandableHeader
           expanded={!!this.state.detection}
@@ -141,8 +139,7 @@ export class RawDesignerPhotos
           </ToolTip>
           <WeedDetector {...common}
             wDEnv={this.props.wDEnv}
-            saveFarmwareEnv={this.props.saveFarmwareEnv}
-            shouldDisplay={this.props.shouldDisplay} />
+            saveFarmwareEnv={this.props.saveFarmwareEnv} />
         </Collapse>
         {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
           <ExpandableHeader
@@ -162,7 +159,6 @@ export class RawDesignerPhotos
               env={this.props.env}
               userEnv={this.props.userEnv}
               farmwareEnvs={this.props.farmwareEnvs}
-              shouldDisplay={this.props.shouldDisplay}
               saveFarmwareEnv={this.props.saveFarmwareEnv}
               botOnline={botOnline}
               dispatch={this.props.dispatch} />

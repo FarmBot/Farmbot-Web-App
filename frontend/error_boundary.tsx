@@ -3,10 +3,10 @@ import { catchErrors } from "./util";
 import { Apology } from "./apology";
 
 interface State { hasError?: boolean; }
-interface Props { fallback?: React.ReactElement }
+interface ErrorBoundaryProps { fallback?: React.ReactElement }
 
-export class ErrorBoundary extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }

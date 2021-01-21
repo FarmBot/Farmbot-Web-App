@@ -1,19 +1,15 @@
-const mockDevice = { setUserEnv: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   CameraSelection, cameraDisabled, cameraCalibrated,
 } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
-import { info, error } from "../../../toast/toast";
+import { info } from "../../../toast/toast";
 
-describe("<CameraSelection/>", () => {
+describe("<CameraSelection />", () => {
   const fakeProps = (): CameraSelectionProps => ({
     env: {},
     botOnline: true,
-    shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
     dispatch: jest.fn(),
   });
@@ -33,28 +29,8 @@ describe("<CameraSelection/>", () => {
   const expectInfoCall = () => expect(info).toHaveBeenCalledWith(
     "Sending camera configuration...", { title: "Sending" });
 
-  it("changes camera", () => {
-    const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
-    cameraSelection.find("FBSelect")
-      .simulate("change", { label: "My Camera", value: "mycamera" });
-    expectInfoCall();
-    expect(mockDevice.setUserEnv)
-      .toHaveBeenCalledWith({ camera: "\"mycamera\"" });
-  });
-
-  it("handles error changing camera", async () => {
-    mockDevice.setUserEnv = jest.fn((_) => { return Promise.reject(); });
-    const cameraSelection = shallow(<CameraSelection {...fakeProps()} />);
-    await cameraSelection.find("FBSelect")
-      .simulate("change", { label: "My Camera", value: "mycamera" });
-    await expectInfoCall();
-    expect(error)
-      .toHaveBeenCalledWith("An error occurred during configuration.");
-  });
-
   it("stores config in API", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = shallow(<CameraSelection {...p} />);
     wrapper.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });

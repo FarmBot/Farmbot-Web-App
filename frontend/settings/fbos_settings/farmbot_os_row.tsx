@@ -73,7 +73,6 @@ export class FarmbotOsRow
         <FbosDetails
           botInfoSettings={this.props.bot.hardware.informational_settings}
           dispatch={this.props.dispatch}
-          shouldDisplay={this.props.shouldDisplay}
           sourceFbosConfig={this.props.sourceFbosConfig}
           botToMqttLastSeen={getLastSeenNumber(this.props.bot)}
           timeSettings={this.props.timeSettings}
@@ -107,7 +106,6 @@ export class FarmbotOsRow
         <Col xs={7}>
           <OsUpdateButton
             bot={this.props.bot}
-            shouldDisplay={this.props.shouldDisplay}
             dispatch={this.props.dispatch}
             botOnline={this.props.botOnline} />
         </Col>

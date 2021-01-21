@@ -275,7 +275,6 @@ export class ComputedMove
         overwrite={this.state.overwrite}
         locationSelection={this.state.locationSelection}
         disabledAxes={this.disabledAxes}
-        shouldDisplay={this.props.shouldDisplay}
         onCommit={this.commit}
         setAxisState={this.setAxisState}
         setAxisOverwriteState={this.setAxisOverwriteState} />

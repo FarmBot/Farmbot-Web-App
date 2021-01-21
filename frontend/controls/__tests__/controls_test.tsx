@@ -1,7 +1,5 @@
-jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => () => 1),
-  toggleWebAppBool: jest.fn(),
-}));
+const actions = require("../../config_storage/actions");
+actions.toggleWebAppBool = jest.fn();
 
 import React from "react";
 import { mount } from "enzyme";
@@ -30,7 +28,6 @@ describe("<DesignerControls />", () => {
     sequences: [],
     resources: buildResourceIndex([]).index,
     menuOpen: false,
-    shouldDisplay: () => true,
     firmwareSettings: bot.hardware.mcu_params,
     getWebAppConfigVal: jest.fn(),
     env: {},

@@ -30,7 +30,6 @@ describe("<Firmware />", () => {
     botOnline: true,
     bot: bot,
     alerts: [],
-    shouldDisplay: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
 

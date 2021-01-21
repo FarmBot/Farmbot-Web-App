@@ -13,7 +13,7 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 
-interface Props {
+interface BootSequenceSelectorProps {
   list: DropDownItem[];
   selectedItem: Readonly<DropDownItem> | undefined;
   config: TaggedFbosConfig;
@@ -30,7 +30,7 @@ export const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
   return undefined;
 };
 
-export function mapStateToProps(p: Everything): Props {
+export function mapStateToProps(p: Everything): BootSequenceSelectorProps {
   const { index } = p.resources;
   const fbosConfig = getFbosConfig(index);
   if (fbosConfig) {
@@ -51,7 +51,8 @@ export function mapStateToProps(p: Everything): Props {
   }
 }
 
-export class RawBootSequenceSelector extends React.Component<Props, {}> {
+export class RawBootSequenceSelector
+  extends React.Component<BootSequenceSelectorProps, {}> {
   onChange = (_selected: DropDownItem) => {
     const payload = { boot_sequence_id: _selected.value as number | undefined };
     this.props.dispatch(edit(this.props.config, payload));

@@ -1,24 +1,22 @@
 import { Everything } from "../interfaces";
-import { Props, HardwareFlags, FarmwareConfigs } from "./interfaces";
-import {
-  selectAllSequences, findSequence, selectAllFarmwareInstallations,
-} from "../resources/selectors";
+import { SequencesProps, HardwareFlags, FarmwareConfigs } from "./interfaces";
+import { selectAllSequences, findSequence } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../settings/hardware_settings/axis_tracking_status";
 import { validFwConfig } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
-import { Farmwares } from "../farmware/interfaces";
-import { manifestInfo } from "../farmware/generate_manifest_info";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { mapStateToFolderProps } from "../folders/map_state_to_props";
-import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
+import {
+  generateFarmwareDictionary, getEnv, getShouldDisplayFn,
+} from "../farmware/state_to_props";
 import {
   cameraDisabled, cameraCalibrated,
 } from "../photos/capture_settings/camera_selection";
 
-export function mapStateToProps(props: Everything): Props {
+export function mapStateToProps(props: Everything): SequencesProps {
   const uuid = props.resources.consumers.sequences.current;
   const sequence = uuid ? findSequence(props.resources.index, uuid) : undefined;
   (sequence?.body.body || []).map(x => getStepTag(x));
@@ -73,19 +71,9 @@ export function mapStateToProps(props: Everything): Props {
 
 export const getFarmwareData = (props: Everything) => {
   const getConfig = getWebAppConfigValue(() => props);
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
-  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
-  const farmwares: Farmwares = {};
-  Object.values(botStateFarmwares).map((fm: unknown) => {
-    const info = manifestInfo(fm);
-    farmwares[info.name] = manifestInfo(fm);
-  });
+  const farmwares =
+    generateFarmwareDictionary(props.bot, props.resources.index, true);
   const farmwareNames = Object.values(farmwares).map(fw => fw.name);
-  selectAllFarmwareInstallations(props.resources.index)
-    .map(x => x.body.package)
-    .map(farmwareName =>
-      farmwareName && !farmwareNames.includes(farmwareName)
-      && farmwareNames.push(farmwareName));
   const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
 
   const showFirstPartyFarmware =
@@ -94,7 +82,7 @@ export const getFarmwareData = (props: Everything) => {
   const farmwareConfigs: FarmwareConfigs = {};
   Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
 
-  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
+  const env = getEnv(props.resources.index);
 
   return {
     farmwareNames,

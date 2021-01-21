@@ -50,7 +50,6 @@ describe("<GardenMapLegend />", () => {
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
-    shouldDisplay: () => true,
     allPoints: [],
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     firmwareConfig: fakeFirmwareConfig().body,

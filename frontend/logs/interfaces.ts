@@ -35,7 +35,6 @@ export interface LogsFilterMenuProps {
   toggle: (property: keyof LogsState) => ToggleEventHandler;
   state: LogsState;
   setFilterLevel: SetNumSetting;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface LogSettingProps {

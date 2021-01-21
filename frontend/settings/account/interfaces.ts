@@ -1,10 +1,12 @@
 import { TaggedUser } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { ControlPanelState } from "../../devices/interfaces";
 import { Thunk } from "../../redux/interfaces";
 
-export interface Props {
-  user: TaggedUser;
+export interface AccountSettingsProps {
   dispatch: Function;
+  controlPanelState: ControlPanelState;
+  user: TaggedUser;
   getConfigValue: GetWebAppConfigValue;
 }
 
@@ -18,10 +20,4 @@ export interface DangerousDeleteProps {
   confirmation: string;
   dispatch: Function;
   onClick(payload: DeletionRequest): Thunk;
-}
-
-export interface SettingsPropTypes {
-  user: TaggedUser;
-  onChange: React.EventHandler<React.FormEvent<HTMLInputElement>>;
-  onSave: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }

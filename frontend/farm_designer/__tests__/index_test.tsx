@@ -16,7 +16,7 @@ import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
 } from "../index";
 import { mount } from "enzyme";
-import { Props } from "../interfaces";
+import { FarmDesignerProps } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   fakeImage, fakeWebAppConfig,
@@ -40,8 +40,8 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
-describe("<FarmDesigner/>", () => {
-  const fakeProps = (): Props => ({
+describe("<FarmDesigner />", () => {
+  const fakeProps = (): FarmDesignerProps => ({
     dispatch: jest.fn(),
     selectedPlant: undefined,
     designer: fakeDesignerState(),

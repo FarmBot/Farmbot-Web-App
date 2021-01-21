@@ -42,8 +42,7 @@ export class RawDesignerRegimenEditor
             regimen={regimen}
             calendar={this.props.calendar}
             resources={this.props.resources}
-            variableData={this.props.variableData}
-            shouldDisplay={this.props.shouldDisplay} />}
+            variableData={this.props.variableData} />}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

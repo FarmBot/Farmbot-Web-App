@@ -5,7 +5,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
-import { SetServoAngle } from "farmbot";
+import { SetServoAngle, TaggedSequence } from "farmbot";
 import { editStep } from "../../api/crud";
 import { StepRadio } from "../step_ui/step_radio";
 
@@ -15,18 +15,18 @@ const CHOICE_LABELS = () => PIN_CHOICES.reduce((acc, pinNumber) => {
   return acc;
 }, {} as Record<string, string>);
 
-type Keys =
-  | "dispatch"
-  | "currentStep"
-  | "currentSequence"
-  | "index";
-type Props = Pick<StepParams<SetServoAngle>, Keys>;
+interface SetServoAngleProps {
+  currentSequence: TaggedSequence;
+  currentStep: SetServoAngle;
+  dispatch: Function;
+  index: number;
+}
 
 export const createServoEditFn = (y: string) => (x: SetServoAngle) => {
   x.args.pin_number = parseInt(y, 10);
 };
 
-export const pinNumberChanger = (props: Props) => (y: string) => {
+export const pinNumberChanger = (props: SetServoAngleProps) => (y: string) => {
   props.dispatch(editStep({
     step: props.currentStep,
     sequence: props.currentSequence,
@@ -35,7 +35,7 @@ export const pinNumberChanger = (props: Props) => (y: string) => {
   }));
 };
 
-export function ServoPinSelection(props: Props) {
+export function ServoPinSelection(props: SetServoAngleProps) {
   const { currentStep } = props;
   const num = currentStep.args.pin_number;
   if (typeof num !== "number") { throw new Error("NO!"); }

@@ -28,7 +28,6 @@ describe("<If_/>", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      shouldDisplay: jest.fn(),
       showPins: true,
     };
   }

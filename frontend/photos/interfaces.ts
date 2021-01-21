@@ -1,6 +1,6 @@
 import { TaggedImage, SyncStatus, JobProgress, TaggedFarmwareEnv } from "farmbot";
 import { TimeSettings } from "../interfaces";
-import { UserEnv, ShouldDisplay } from "../devices/interfaces";
+import { UserEnv } from "../devices/interfaces";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Farmwares, SaveFarmwareEnv } from "../farmware/interfaces";
@@ -16,7 +16,6 @@ export interface DesignerPhotosProps {
   botToMqttStatus: NetworkState;
   timeSettings: TimeSettings;
   syncStatus: SyncStatus | undefined;
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   imageJobs: JobProgress[];
   versions: Record<string, string>;
