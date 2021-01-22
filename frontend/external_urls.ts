@@ -20,6 +20,7 @@ export namespace ExternalUrl {
   const GITHUB_API = "https://api.github.com";
   const OPENFARM = "https://openfarm.cc";
   const SOFTWARE_DOCS = "https://software.farm.bot";
+  const DEVELOPER_DOCS = "https://developer.farm.bot";
   const FORUM = "https://forum.farmbot.org";
   const SHOPIFY_CDN = "https://cdn.shopify.com/s/files/1/2040/0289/files";
   const FARMBOT = "https://farm.bot";
@@ -39,6 +40,7 @@ export namespace ExternalUrl {
   export const webAppRepo = `${gitHubFarmBot}/${FarmBotRepo.FarmBotWebApp}`;
 
   export const softwareDocs = `${SOFTWARE_DOCS}/docs`;
+  export const developerDocs = `${DEVELOPER_DOCS}/docs`;
   export const softwareForum = `${FORUM}/c/software`;
 
   export namespace OpenFarm {
