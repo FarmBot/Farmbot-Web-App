@@ -95,6 +95,8 @@ export enum Icon {
   messages = "messages",
   logs = "logs",
   help = "help",
+  documentation = "documentation",
+  support = "support",
   settings = "settings",
   shop = "shop",
 }
@@ -147,8 +149,9 @@ export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Shop]: "shop",
 };
 
-const ALT_PANEL_SLUG: Record<string, string> = {
-  [PANEL_SLUG[Panel.Tools]]: "tool-slots",
+const ALT_PANEL_SLUG: Record<string, string[]> = {
+  [PANEL_SLUG[Panel.Tools]]: ["tool-slots"],
+  [PANEL_SLUG[Panel.Help]]: ["developer", "tours", "support"],
 };
 
 export const PANEL_BY_SLUG: Record<string, Panel> = {};
@@ -196,7 +199,8 @@ export const getCurrentPanel = (): Tabs | undefined => {
     return Panel.Plants;
   } else {
     const panelMatches = Object.values(PANEL_SLUG).map(slug => {
-      if ([slug, ALT_PANEL_SLUG[slug]].includes(pathArray[3])) {
+      const altSlugs = ALT_PANEL_SLUG[slug];
+      if ([slug, ...(altSlugs || [])].includes(pathArray[3])) {
         return PANEL_BY_SLUG[slug];
       }
     });

@@ -686,6 +686,19 @@ export namespace Content {
     trim(`If you want to play around and keep your data, feel free to make a
     real account at`);
 
+  // Support
+  export const PRIORITY_SUPPORT =
+    trim(`Get in touch with our support staff. Only available to customers
+    with a`);
+
+  export const STANDARD_SUPPORT =
+    trim(`Get in touch with our support staff. Only available to customers
+    who have purchased a full FarmBot kit from FarmBot Inc.`);
+
+  export const FORUM_SUPPORT =
+    trim(`Have a question for the greater FarmBot community? Get help by
+    asking our global community of users on the`);
+
   // App Settings
   export const INTERNATIONALIZE_WEB_APP =
     trim(`Turn off to set Web App to English.`);
