@@ -208,26 +208,6 @@
 }
 
 .panel-content {
-  .select-results-container {
-    top: 4rem;
-    margin-bottom: 12rem;
-    max-height: none;
-  }
-  .select-result {
-    padding: 0;
-    margin-bottom: 1rem;
-    background: transparent;
-    border-bottom: none;
-    transition: all 0.4s ease;
-    &:last-child {
-      margin-bottom: 14rem;
-    }
-    &:hover {
-      background: rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
-    }
-  }
-
   %panel-item-base {
     text-align: right;
     font-size: 1rem;
