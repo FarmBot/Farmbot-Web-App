@@ -23,8 +23,7 @@ import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
-import { linkToFbosSettings } from "../settings/maybe_highlight";
-import { push } from "../history";
+import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
 
 const ON = 1, OFF = 0;
@@ -371,7 +370,7 @@ export function changeStepSize(integer: number) {
 }
 
 export function badVersion(options: ToastOptions = { noDismiss: true }) {
-  push(linkToFbosSettings());
+  goToFbosSettings();
   error(t(Content.OLD_FBOS_UNSUPPORTED), {
     title: t("Please Update"),
     noTimer: true,

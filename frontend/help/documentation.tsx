@@ -10,14 +10,16 @@ export interface DocumentationPanelProps {
   url: string;
 }
 
-export const DocumentationPanel = (props: DocumentationPanelProps) =>
-  <DesignerPanel panelName={"documentation"} panel={Panel.Help}>
+export const DocumentationPanel = (props: DocumentationPanelProps) => {
+  const page = location.search.split("?page=").pop();
+  return <DesignerPanel panelName={"documentation"} panel={Panel.Help}>
     <DesignerNavTabs />
     <HelpHeader />
     <DesignerPanelContent panelName={"documentation"}>
-      <iframe src={props.url} />
+      <iframe src={page ? `${props.url}/${page}` : props.url} />
     </DesignerPanelContent>
   </DesignerPanel>;
+};
 
 export const SoftwareDocsPanel = () =>
   <DocumentationPanel url={ExternalUrl.softwareDocs} />;

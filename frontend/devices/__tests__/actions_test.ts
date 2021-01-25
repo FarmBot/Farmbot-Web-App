@@ -25,7 +25,9 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({ push: jest.fn() }));
+jest.mock("../../settings/maybe_highlight", () => ({
+  goToFbosSettings: jest.fn(),
+}));
 
 let mockGet: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
@@ -42,8 +44,7 @@ import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 import { DeepPartial } from "redux";
 import { Farmbot } from "farmbot";
-import { push } from "../../history";
-import { linkToFbosSettings } from "../../settings/maybe_highlight";
+import { goToFbosSettings } from "../../settings/maybe_highlight";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -442,7 +443,7 @@ describe("updateConfig()", () => {
 });
 
 const expectBadVersionCall = () => {
-  expect(push).toHaveBeenCalledWith(linkToFbosSettings());
+  expect(goToFbosSettings).toHaveBeenCalled();
   expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
     title: "Please Update",
     noTimer: true,
@@ -459,7 +460,7 @@ describe("badVersion()", () => {
 
   it("warns of old FBOS version: dismiss-able", () => {
     actions.badVersion({ noDismiss: false });
-    expect(push).toHaveBeenCalledWith(linkToFbosSettings());
+    expect(goToFbosSettings).toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
       title: "Please Update",
       noTimer: true,
