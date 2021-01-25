@@ -94,28 +94,30 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       apiFirmwareValue: this.props.apiFirmwareValue,
     });
     return <div className="connection-status-popover">
-      <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"connectivity-popover-portal"}
-        popoverClassName="connectivity-popover">
-        {window.innerWidth <= 450
-          ? <DiagnosisSaucer {...data.flags} className={"nav"} />
-          : <div className={"connectivity-button"}>
-            {t("Connectivity")}
-            <DiagnosisSaucer {...data.flags} className={"nav"} />
-          </div>}
-        <ErrorBoundary>
-          <Connectivity
-            bot={this.props.bot}
-            rowData={data.rowData}
-            flags={data.flags}
-            dispatch={this.props.dispatch}
-            device={this.props.device}
-            pings={this.props.pings}
-            alerts={this.props.alerts}
-            apiFirmwareValue={this.props.apiFirmwareValue}
-            timeSettings={this.props.timeSettings} />
-        </ErrorBoundary>
-      </Popover>
+      <ErrorBoundary>
+        <Popover position={Position.BOTTOM_RIGHT}
+          portalClassName={"connectivity-popover-portal"}
+          popoverClassName="connectivity-popover">
+          {window.innerWidth <= 450
+            ? <DiagnosisSaucer {...data.flags} className={"nav"} />
+            : <div className={"connectivity-button"}>
+              {t("Connectivity")}
+              <DiagnosisSaucer {...data.flags} className={"nav"} />
+            </div>}
+          <ErrorBoundary>
+            <Connectivity
+              bot={this.props.bot}
+              rowData={data.rowData}
+              flags={data.flags}
+              dispatch={this.props.dispatch}
+              device={this.props.device}
+              pings={this.props.pings}
+              alerts={this.props.alerts}
+              apiFirmwareValue={this.props.apiFirmwareValue}
+              timeSettings={this.props.timeSettings} />
+          </ErrorBoundary>
+        </Popover>
+      </ErrorBoundary>
     </div>;
   }
 

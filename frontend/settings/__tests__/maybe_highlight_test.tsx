@@ -11,11 +11,11 @@ jest.mock("../../redux/store", () => ({
 
 jest.mock("../../history", () => ({ push: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight,
-  linkToFbosSettings,
+  goToFbosSettings,
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import {
@@ -190,9 +190,10 @@ describe("maybeOpenPanel()", () => {
   });
 });
 
-describe("linkToFbosSettings()", () => {
+describe("goToFbosSettings()", () => {
   it("renders correct path", () => {
-    expect(linkToFbosSettings())
-      .toEqual("/app/designer/settings?highlight=farmbot_os");
+    goToFbosSettings();
+    expect(push).toHaveBeenCalledWith(
+      "/app/designer/settings?highlight=farmbot_os");
   });
 });
