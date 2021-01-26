@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../../ui";
 import { BotLocationData } from "../../devices/interfaces";
-import { moveAbs } from "../../devices/actions";
+import { moveAbsolute } from "../../devices/actions";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { GetWebAppBool } from "./interfaces";
@@ -54,7 +54,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
         label={t("Raw Encoder data")} />}
     <AxisInputBoxGroup
       position={locationData.position}
-      onCommit={moveAbs}
+      onCommit={moveAbsolute}
       disabled={arduinoBusy} />
   </div>;
 };

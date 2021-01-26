@@ -1,4 +1,4 @@
-jest.mock("../../devices/actions", () => ({
+jest.mock("../toggle_section", () => ({
   toggleControlPanel: jest.fn(),
   bulkToggleControlPanel: jest.fn(),
 }));
@@ -18,9 +18,7 @@ import {
   goToFbosSettings,
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
-import {
-  toggleControlPanel, bulkToggleControlPanel,
-} from "../../devices/actions";
+import { toggleControlPanel, bulkToggleControlPanel } from "../toggle_section";
 import { push } from "../../history";
 
 describe("<Highlight />", () => {
