@@ -4,19 +4,9 @@ import { Row, Col } from "../../ui";
 import { StepWrapper } from "../step_ui";
 import { Lua } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
-import { editStep } from "../../api/crud";
-
+import { LuaTextArea } from "./tile_lua_support";
 
 export const TileLua = (props: StepParams<Lua>) => {
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    props.dispatch(editStep({
-      step: props.currentStep,
-      index: props.index,
-      sequence: props.currentSequence,
-      executor(c: Lua) { c.args.lua = e.currentTarget.value; }
-    }));
-  };
-  const { lua } = props.currentStep.args;
   return <StepWrapper
     className={"lua-step"}
     helpText={ToolTips.LUA}
@@ -27,9 +17,7 @@ export const TileLua = (props: StepParams<Lua>) => {
     resources={props.resources}>
     <Row>
       <Col xs={12}>
-        <div className={"lua"}>
-          <textarea value={lua} onChange={onChange} />
-        </div>
+        <LuaTextArea<Lua> {...props} />
       </Col>
     </Row>
   </StepWrapper>;

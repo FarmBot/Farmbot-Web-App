@@ -161,6 +161,7 @@ export class RawDesignerPhotos
               farmwareEnvs={this.props.farmwareEnvs}
               saveFarmwareEnv={this.props.saveFarmwareEnv}
               botOnline={botOnline}
+              docPage={"measure-soil-height"}
               dispatch={this.props.dispatch} />
           </Collapse>}
         <ExpandableHeader

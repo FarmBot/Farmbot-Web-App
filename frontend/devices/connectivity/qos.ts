@@ -99,7 +99,7 @@ export const calculateLatency =
     const average = Math.round(latency.reduce((a, b) => a + b, 0) / latency.length);
 
     const report = {
-      best: Math.min(...latency),
+      best: Math.abs(Math.min(...latency)),
       worst: Math.max(...latency),
       average,
       total: latency.length

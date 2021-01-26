@@ -25,10 +25,18 @@ describe("<SoftwareDocsPanel />", () => {
     expect(wrapper.find("iframe").props().src)
       .toEqual("https://software.farm.bot/docs");
   });
+
+  it("navigates to specific doc page", () => {
+    location.search = "?page=farmware";
+    const wrapper = mount(<SoftwareDocsPanel />);
+    expect(wrapper.find("iframe").props().src)
+      .toEqual("https://software.farm.bot/docs/farmware");
+  });
 });
 
 describe("<DeveloperDocsPanel />", () => {
   it("renders developer docs", () => {
+    location.search = "";
     const wrapper = mount(<DeveloperDocsPanel />);
     expect(wrapper.find("iframe").props().src)
       .toEqual("https://developer.farm.bot/docs");

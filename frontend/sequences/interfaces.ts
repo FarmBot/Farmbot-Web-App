@@ -216,6 +216,7 @@ export interface StepInputProps {
   type_?: "text" | "hidden" | undefined;
   index: number;
   fieldOverride?: boolean;
+  keyCallback?: (key: string, buffer: string) => void;
 }
 
 export interface StepTitleBarProps {

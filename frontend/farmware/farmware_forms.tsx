@@ -1,5 +1,7 @@
 import React from "react";
-import { BlurableInput, DropDownItem, ExpandableHeader, FBSelect } from "../ui";
+import {
+  BlurableInput, DocSlug, DropDownItem, ExpandableHeader, FBSelect, ToolTip,
+} from "../ui";
 import { Pair, FarmwareConfig, TaggedFarmwareEnv } from "farmbot";
 import { getDevice } from "../device";
 import { UserEnv } from "../devices/interfaces";
@@ -21,6 +23,7 @@ export interface FarmwareFormProps {
   dispatch: Function;
   botOnline: boolean;
   hideAdvanced?: boolean;
+  docPage?: DocSlug;
 }
 
 /** Namespace a Farmware config with the Farmware name. */
@@ -195,6 +198,7 @@ export class FarmwareForm
     const collapsedConfigs = farmware.config.filter(collapsed);
 
     return <div className={"farmware-form"}>
+      {this.props.docPage && <ToolTip helpText={""} docPage={this.props.docPage} />}
       <button
         className={["fb-button green farmware-button",
           nonZeroValue(env.measure_soil_height_measured_distance)
