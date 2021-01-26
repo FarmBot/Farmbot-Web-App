@@ -1,10 +1,5 @@
-const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({
-  editStep: mockEditStep,
-}));
-
 import React from "react";
-import { shallow } from "enzyme";
+import { mount } from "enzyme";
 import { TileLua } from "../tile_lua";
 import { StepParams } from "../../interfaces";
 import { Lua } from "farmbot";
@@ -22,13 +17,9 @@ describe("<TileLua />", () => {
     resources: buildResourceIndex([]).index,
   });
 
-  it("renders with sequence part", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<TileLua {...p} />);
-    wrapper.find("textarea").simulate("change", {
-      currentTarget: { value: "123" }
-    });
-    mockEditStep.mock.calls[0][0].executor(p.currentStep);
-    expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
+  it("renders with textarea", () => {
+    const wrapper = mount(<TileLua {...fakeProps()} />);
+    expect(wrapper.text()).toContain("lua");
+    expect(wrapper.html()).toContain("textarea");
   });
 });
