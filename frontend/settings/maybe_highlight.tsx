@@ -1,7 +1,7 @@
 import React from "react";
 import { store } from "../redux/store";
 import { ControlPanelState } from "../devices/interfaces";
-import { toggleControlPanel, bulkToggleControlPanel } from "../devices/actions";
+import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
 import { trim, some } from "lodash";

@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { ControlPanelState } from "../../devices/interfaces";
-import { toggleControlPanel } from "../../devices/actions";
+import { toggleControlPanel } from "../toggle_section";
 import { ExpandableHeader } from "../../ui/expandable_header";
 import { t } from "../../i18next_wrapper";
 import { DeviceSetting } from "../../constants";

@@ -3,7 +3,7 @@ import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
-  MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis, ControlPanelState,
+  MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
@@ -227,22 +227,6 @@ export const fetchOsReleaseNotes = () =>
       });
   };
 
-/**
- * Toggles visibility of individual sections in the giant controls panel
- * found on the Devices page.
- */
-export function toggleControlPanel(payload: keyof ControlPanelState) {
-  return { type: Actions.TOGGLE_CONTROL_PANEL_OPTION, payload };
-}
-
-/** Toggle visibility of all hardware control panel sections. */
-export function bulkToggleControlPanel(open: boolean) {
-  return {
-    type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-    payload: open,
-  };
-}
-
 /** Factory reset all firmware settings. */
 export function MCUFactoryReset() {
   if (!confirm(t(Content.MCU_RESET_ALERT))) {
@@ -278,7 +262,7 @@ export function moveRelative(props: MoveRelProps) {
     .then(noop, commandErr("Relative movement"));
 }
 
-export function moveAbs(props: MoveRelProps) {
+export function moveAbsolute(props: MoveRelProps) {
   const noun = t("Absolute movement");
   return getDevice()
     .moveAbsolute(props)

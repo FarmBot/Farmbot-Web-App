@@ -5,9 +5,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
-import {
-  bulkToggleControlPanel, MCUFactoryReset,
-} from "../devices/actions";
+import { MCUFactoryReset } from "../devices/actions";
 import { FarmBotSettings } from "./fbos_settings/farmbot_os_settings";
 import { Firmware } from "./firmware/firmware";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
@@ -25,33 +23,10 @@ import { SearchField } from "../ui/search_field";
 import { mapStateToProps } from "./state_to_props";
 import { Actions } from "../constants";
 import { ExtraSettings } from "../farm_designer/map/easter_eggs/bugs";
-import { ControlPanelState } from "../devices/interfaces";
 import { OtherSettings } from "./other_settings";
 import { AccountSettings } from "./account/account_settings";
 import { DevSettingsRows } from "./dev/dev_settings";
-
-interface ToggleSettingsOpenProps {
-  dispatch: Function;
-  panels: ControlPanelState;
-}
-
-class ToggleSettingsOpen extends React.Component<ToggleSettingsOpenProps> {
-
-  get open() {
-    return Object.values(this.props.panels)
-      .filter((open: boolean) => open)
-      .length > 0;
-  }
-
-  render() {
-    return <a><button className="fb-button gray"
-      title={t("toggle settings open")}
-      onClick={() =>
-        this.props.dispatch(bulkToggleControlPanel(!this.open))}>
-      <i className={`fa fa-chevron-${!this.open ? "right" : "down"}`} />
-    </button></a>;
-  }
-}
+import { bulkToggleControlPanel, ToggleSettingsOpen } from "./toggle_section";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {

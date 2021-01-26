@@ -10,8 +10,15 @@ import {
 } from "./tile_send_message_support";
 import { StepWrapper } from "../step_ui";
 import { t } from "../../i18next_wrapper";
+import { InputLengthIndicator } from "../inputs/input_length_indicator";
 
-export class TileSendMessage extends React.Component<StepParams<SendMessage>> {
+interface TileSendMessageState {
+  message: string;
+}
+
+export class TileSendMessage
+  extends React.Component<StepParams<SendMessage>, TileSendMessageState> {
+  state: TileSendMessageState = { message: this.props.currentStep.args.message };
 
   get currentSelection() {
     return MESSAGE_STATUSES_DDI[this.props.currentStep.args.message_type];
@@ -58,6 +65,9 @@ export class TileSendMessage extends React.Component<StepParams<SendMessage>> {
     }));
   };
 
+  updateMessage = (_key: string, buffer: string) =>
+    this.setState({ message: buffer });
+
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
     return <StepWrapper
@@ -71,13 +81,13 @@ export class TileSendMessage extends React.Component<StepParams<SendMessage>> {
       <Row>
         <Col xs={12}>
           <label>{t("Message")}</label>
-          <span className="char-limit">
-            {currentStep.args.message.length}/300
-          </span>
+          <InputLengthIndicator field={"message"}
+            value={this.state.message} />
           <StepInputBox dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
             index={index}
+            keyCallback={this.updateMessage}
             field="message" />
           <div className="bottom-content">
             <div className="channel-options">

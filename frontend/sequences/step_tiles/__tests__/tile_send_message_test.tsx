@@ -5,7 +5,7 @@ jest.mock("../../../api/crud", () => ({
 
 import React from "react";
 import { TileSendMessage } from "../tile_send_message";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
 import { channel } from "../tile_send_message_support";
@@ -110,5 +110,12 @@ describe("<TileSendMessage/>", () => {
     mockStep = i.props.currentStep;
     expect(() => i.setMsgType({ label: "", value: "nope" }))
       .toThrowError("message_type must be one of ALLOWED_MESSAGE_TYPES.");
+  });
+
+  it("updates message", () => {
+    const wrapper = shallow<TileSendMessage>(<TileSendMessage {...fakeProps()} />);
+    expect(wrapper.state().message).toEqual("send this message");
+    wrapper.instance().updateMessage("k", "new");
+    expect(wrapper.state().message).toEqual("new");
   });
 });

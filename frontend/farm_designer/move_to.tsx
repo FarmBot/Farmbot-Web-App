@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col } from "../ui";
 import { Everything } from "../interfaces";
 import { BotPosition } from "../devices/interfaces";
 import { connect } from "react-redux";
-import { moveAbs } from "../devices/actions";
+import { moveAbsolute } from "../devices/actions";
 import { history } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
 import { isNumber } from "lodash";
@@ -86,7 +86,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
           value={this.state.z} />
         <Row>
           <button
-            onClick={() => moveAbs(this.vector)}
+            onClick={() => moveAbsolute(this.vector)}
             className={`fb-button gray ${botOnline ? "" : "pseudo-disabled"}`}
             title={botOnline
               ? t("Move to this coordinate")

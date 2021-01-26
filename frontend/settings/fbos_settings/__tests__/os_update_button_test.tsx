@@ -1,5 +1,8 @@
 jest.mock("../../../devices/actions", () => ({
   checkControllerUpdates: jest.fn(),
+}));
+
+jest.mock("../../toggle_section", () => ({
   bulkToggleControlPanel: jest.fn(),
   toggleControlPanel: jest.fn(),
 }));
@@ -20,9 +23,8 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { API } from "../../../api";
 import { cloneDeep } from "lodash";
 import { push } from "../../../history";
-import {
-  checkControllerUpdates, toggleControlPanel,
-} from "../../../devices/actions";
+import { checkControllerUpdates } from "../../../devices/actions";
+import { toggleControlPanel } from "../../toggle_section";
 
 describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({

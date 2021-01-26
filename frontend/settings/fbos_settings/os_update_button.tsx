@@ -3,9 +3,8 @@ import axios from "axios";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
-import {
-  checkControllerUpdates, bulkToggleControlPanel, toggleControlPanel,
-} from "../../devices/actions";
+import { checkControllerUpdates } from "../../devices/actions";
+import { bulkToggleControlPanel, toggleControlPanel } from "../toggle_section";
 import { isString } from "lodash";
 import { Actions, Content } from "../../constants";
 import { t } from "../../i18next_wrapper";

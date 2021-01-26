@@ -9,7 +9,7 @@ import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
-import { moveAbs } from "../devices/actions";
+import { moveAbsolute } from "../devices/actions";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsEdit } from "./state_to_props";
 import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
@@ -91,7 +91,7 @@ export class RawEditToolSlot
                   ? this.props.botPosition.x ?? toolSlot.body.x
                   : toolSlot.body.x;
                 const { y, z } = toolSlot.body;
-                moveAbs({ x, y, z });
+                moveAbsolute({ x, y, z });
               }}>
               {t("Move FarmBot to slot location")}
             </button>
