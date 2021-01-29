@@ -70,17 +70,30 @@ namespace :api do
       "rm -rf",
       DashboardController::CACHE_DIR,
       DashboardController::PUBLIC_OUTPUT_DIR,
+      "public/assets/monaco",
     ].join(" ") unless ENV["NO_CLEAN"]
+  end
+
+  def add_monaco
+    src = "node_modules/monaco-editor/min/vs"
+    dst = "public/assets/monaco"
+    lua = "basic-languages/lua"
+    sh "cp -r #{src} #{dst}"
+    sh "rm -rf #{dst}/*language*"
+    sh "mkdir #{dst}/basic-languages"
+    sh "cp -r #{src}/#{lua} #{dst}/#{lua}"
   end
 
   desc "Serve javascript assets (via Parcel bundler)."
   task serve_assets: :environment do
     clean_assets
+    add_monaco
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
   desc "Don't call this directly. Use `rake assets:precompile`."
   task parcel_compile: :environment do
+    add_monaco
     parcel "build"
   end
 

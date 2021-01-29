@@ -7,44 +7,62 @@ const mockSyncThunk = jest.fn();
 jest.mock("../devices/actions", () => ({ sync: () => mockSyncThunk }));
 jest.mock("../farm_designer/map/actions", () => ({ unselectPlant: jest.fn() }));
 
+import { fakeState } from "../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../redux/store", () => ({
+  store: { getState: () => mockState, dispatch: jest.fn() },
+}));
+
+jest.mock("../api/crud", () => ({ save: jest.fn() }));
+
 import React from "react";
 import { shallow } from "enzyme";
-import { HotKeys, HotKeysProps, hotkeysWithActions } from "../hotkeys";
+import { HotKey, HotKeys, HotKeysProps, hotkeysWithActions } from "../hotkeys";
 import { push } from "../history";
 import { sync } from "../devices/actions";
 import { unselectPlant } from "../farm_designer/map/actions";
 import {
   showHotkeysDialog,
 } from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
+import { save } from "../api/crud";
 
 describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
     mockPath = "/app/designer/nope";
     const dispatch = jest.fn();
     const hotkeys = hotkeysWithActions(dispatch);
-    expect(hotkeys.length).toBe(8);
+    expect(Object.values(hotkeys).length).toBe(9);
     const e = {} as KeyboardEvent;
 
-    hotkeys[0].onKeyDown?.(e);
+    hotkeys[HotKey.save].onKeyDown?.(e);
+    expect(save).not.toHaveBeenCalled();
+    mockState.resources.consumers.sequences.current = "uuid";
+    hotkeys[HotKey.save].onKeyDown?.(e);
+    expect(save).not.toHaveBeenCalled();
+    mockPath = "/app/designer/sequences/1";
+    hotkeys[HotKey.save].onKeyDown?.(e);
+    expect(save).toHaveBeenCalledWith("uuid");
+
+    hotkeys[HotKey.sync].onKeyDown?.(e);
     expect(dispatch).toHaveBeenCalledWith(sync());
 
-    hotkeys[1].onKeyDown?.(e);
+    hotkeys[HotKey.navigateRight].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants");
 
-    hotkeys[2].onKeyDown?.(e);
+    hotkeys[HotKey.navigateLeft].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/settings");
 
-    hotkeys[3].onKeyDown?.(e);
+    hotkeys[HotKey.addPlant].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants/crop_search");
 
-    hotkeys[4].onKeyDown?.(e);
+    hotkeys[HotKey.addEvent].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/events/add");
 
-    hotkeys[5].onKeyDown?.(e);
+    hotkeys[HotKey.backToPlantOverview].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants");
     expect(unselectPlant).toHaveBeenCalled();
 
-    hotkeys[6].onKeyDown?.(e);
+    hotkeys[HotKey.openGuide].onKeyDown?.(e);
     expect(showHotkeysDialog).toHaveBeenCalled();
   });
 });
