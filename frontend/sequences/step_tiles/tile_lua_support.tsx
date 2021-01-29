@@ -1,26 +1,56 @@
 import React from "react";
+import Editor, { loader } from "@monaco-editor/react";
+loader.config({ paths: { vs: "/assets/monaco" } });
 import { StepParams } from "../interfaces";
 import { Assertion, Lua } from "farmbot/dist/corpus";
 import { editStep } from "../../api/crud";
 import { InputLengthIndicator } from "../inputs/input_length_indicator";
+import { debounce } from "lodash";
 
-export function LuaTextArea<Step extends Lua | Assertion>(props: StepParams<Step>) {
-  const [lua, setLua] = React.useState(props.currentStep.args.lua);
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setLua(e.currentTarget.value);
-  const onBlur = () => {
-    props.dispatch(editStep({
-      step: props.currentStep,
-      index: props.index,
-      sequence: props.currentSequence,
-      executor(c: Step) { c.args.lua = lua; }
+interface LuaTextAreaState {
+  lua: string;
+}
+
+export class LuaTextArea<Step extends Lua | Assertion>
+  extends React.Component<StepParams<Step>, LuaTextAreaState> {
+  state: LuaTextAreaState = { lua: this.props.currentStep.args.lua };
+
+  updateStep = debounce((newLua: string) => {
+    this.props.dispatch(editStep({
+      step: this.props.currentStep,
+      index: this.props.index,
+      sequence: this.props.currentSequence,
+      executor(c: Step) { c.args.lua = newLua; }
     }));
+  }, 500);
+
+  onChange = (value: string) => {
+    this.setLua(value || "");
+    this.updateStep(this.state.lua);
   };
-  return <div className={"lua"}>
-    <textarea value={lua} onChange={onChange} onBlur={onBlur}
-      style={getTextAreaStyleHeight(lua)} />
-    <InputLengthIndicator field={"lua"} value={lua} />
-  </div>;
+
+  setLua = (value: string) => this.setState({ lua: value });
+
+  FallbackEditor = () =>
+    <textarea
+      value={this.state.lua}
+      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+        this.setLua(e.currentTarget.value)}
+      onBlur={() => this.updateStep(this.state.lua)}
+      style={getTextAreaStyleHeight(this.state.lua)} />;
+
+  render() {
+    return <div className={"lua-input"}>
+      <div className={"lua-editor"}>
+        <Editor
+          language={"lua"}
+          value={this.state.lua}
+          loading={<this.FallbackEditor />}
+          onChange={this.onChange} />
+      </div>
+      <InputLengthIndicator field={"lua"} value={this.state.lua} />
+    </div>;
+  }
 }
 
 const getTextAreaStyleHeight = (contents: string) => ({
