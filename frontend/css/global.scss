@@ -1446,6 +1446,18 @@ ul {
   }
 }
 
+.lua-input {
+  .lua-editor {
+    height: 20rem;
+  }
+  .char-limit {
+    padding: 0.5rem;
+  }
+  textarea {
+    height: 100% !important;
+  }
+}
+
 .input {
   border: 3px solid $transparent;
   &.modified {

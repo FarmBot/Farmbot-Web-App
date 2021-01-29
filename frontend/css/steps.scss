@@ -267,15 +267,13 @@
   }
   &.assertion-step {
     background: $light_purple;
-    textarea {
+    .lua-input {
       margin-bottom: 1rem;
     }
   }
   &.lua-step {
+    padding: 0;
     background: $light_purple;
-    textarea {
-      margin-bottom: 1rem;
-    }
   }
   &.execute-step {
     background: $light_gray;
