@@ -13,15 +13,25 @@ describe("<InputLengthIndicator />", () => {
 
   it("shows indicator", () => {
     const wrapper = mount(<InputLengthIndicator {...fakeProps()} />);
-    expect(wrapper.text()).toContain("292/300");
+    expect(wrapper.text()).toContain("290/300");
     expect(wrapper.find("span").props().hidden).toBeFalsy();
   });
 
   it("shows indicator for unknown field", () => {
     const p = fakeProps();
     p.field = "url";
+    p.value = "url";
     const wrapper = mount(<InputLengthIndicator {...p} />);
-    expect(wrapper.text()).toContain("292/300");
+    expect(wrapper.text()).toContain("5/1500");
+    expect(wrapper.find("span").hasClass("over")).toBeFalsy();
+  });
+
+  it("shows indicator when over limit", () => {
+    const p = fakeProps();
+    p.value = repeat(" ", 301);
+    const wrapper = mount(<InputLengthIndicator {...p} />);
+    expect(wrapper.text()).toContain("301/300");
+    expect(wrapper.find("span").hasClass("over")).toBeTruthy();
   });
 
   it("hides indicator", () => {

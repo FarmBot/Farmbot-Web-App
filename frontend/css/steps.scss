@@ -208,6 +208,10 @@
   display: inline-block;
   text-align: center;
   font-size: 2rem;
+  i {
+    margin-right: 0.35rem;
+    margin-left: 0 !important;
+  }
 }
 
 .step-control-icons i,

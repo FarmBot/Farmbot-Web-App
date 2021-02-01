@@ -1,12 +1,13 @@
 import React from "react";
-import { Help } from "../ui/help";
+import { Help } from "../../ui/help";
 import { Popover, Position } from "@blueprintjs/core";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
-import { splice, remove, move } from "./step_tiles";
-import { push } from "../history";
-import { sequencesUrlBase } from "../folders/component";
-import { urlFriendly } from "../util";
-import { setActiveSequenceByName } from "./set_active_sequence_by_name";
+import { splice, remove, move } from "../step_tiles";
+import { push } from "../../history";
+import { sequencesUrlBase } from "../../folders/component";
+import { urlFriendly } from "../../util";
+import { setActiveSequenceByName } from "../set_active_sequence_by_name";
+import { t } from "../../i18next_wrapper";
 
 export interface StepIconBarProps {
   index: number;
@@ -17,12 +18,13 @@ export interface StepIconBarProps {
   helpText: string;
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
+  toggleMonacoEditor?(): void;
 }
 
 export function StepUpDownButtonPopover(
   { onMove }: { onMove: (d: number) => () => void }) {
   return <Popover position={Position.TOP} usePortal={false}>
-    <i className="fa fa-arrows-v" />
+    <i title={t("move step")} className="fa fa-arrows-v" />
     <div className={"step-up-down-arrows"}>
       <i className="fa fa-arrow-circle-up" onClick={onMove(-1)} />
       <i className="fa fa-arrow-circle-down" onClick={onMove(2)} />
@@ -49,13 +51,24 @@ export function StepIconGroup(props: StepIconBarProps) {
 
   return <span className={"step-control-icons"}>
     <StepUpDownButtonPopover onMove={onMove} />
-    <i className={"fa fa-clone"} onClick={onClone} />
-    <i className={"fa fa-trash"} onClick={onTrash} />
-    <Help text={helpText} position={Position.TOP} />
+    <i className={"fa fa-clone"}
+      title={t("duplicate step")}
+      onClick={onClone} />
+    <i className={"fa fa-trash"}
+      title={t("delete step")}
+      onClick={onTrash} />
+    <Help text={helpText} position={Position.TOP} title={t("help")} />
     {props.toggleViewRaw &&
-      <i className={"fa fa-code"} onClick={props.toggleViewRaw} />}
+      <i className={"fa fa-code"}
+        title={t("toggle code view")}
+        onClick={props.toggleViewRaw} />}
+    {props.toggleMonacoEditor &&
+      <i className={"fa fa-font"}
+        title={t("toggle fancy editor")}
+        onClick={props.toggleMonacoEditor} />}
     {props.executeSequenceName &&
       <i className={"fa fa-external-link"}
+        title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
   </span>;
 }

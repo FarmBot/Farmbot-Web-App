@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { TileAssertion } from "../tile_assertion";
 import { TypePart } from "../tile_assertion/type_part";
 import { SequencePart } from "../tile_assertion/sequence_part";
@@ -23,5 +23,12 @@ describe("<TileAssertion />", () => {
     expect(wrapper.find(LuaTextArea).length).toEqual(1);
     expect(wrapper.find(TypePart).length).toEqual(1);
     expect(wrapper.find(SequencePart).length).toEqual(0);
+  });
+
+  it("changes editor", () => {
+    const wrapper = mount(<TileAssertion {...fakeAssertProps()} />);
+    expect(wrapper.find(".fallback-lua-editor").length).toEqual(0);
+    wrapper.find(".fa-font").simulate("click");
+    expect(wrapper.find(".fallback-lua-editor").length).toEqual(1);
   });
 });

@@ -22,4 +22,11 @@ describe("<TileLua />", () => {
     expect(wrapper.text()).toContain("lua");
     expect(wrapper.html()).toContain("textarea");
   });
+
+  it("changes editor", () => {
+    const wrapper = mount(<TileLua {...fakeProps()} />);
+    expect(wrapper.find(".fallback-lua-editor").length).toEqual(0);
+    wrapper.find(".fa-font").simulate("click");
+    expect(wrapper.find(".fallback-lua-editor").length).toEqual(1);
+  });
 });

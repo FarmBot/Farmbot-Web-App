@@ -74,6 +74,10 @@ input[type=time] {
 .char-limit {
   float: right;
   font-size: 1.4rem;
+  &.over {
+    color: $darkest_red;
+    font-weight: bold;
+  }
 }
 
 .markdown {

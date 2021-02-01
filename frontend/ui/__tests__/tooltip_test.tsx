@@ -1,4 +1,7 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
 
 import React from "react";
 import { mount } from "enzyme";
