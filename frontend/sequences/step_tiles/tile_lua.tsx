@@ -7,6 +7,7 @@ import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 
 export const TileLua = (props: StepParams<Lua>) => {
+  const [monaco, setMonaco] = React.useState(true);
   return <StepWrapper
     className={"lua-step"}
     helpText={ToolTips.LUA}
@@ -14,10 +15,11 @@ export const TileLua = (props: StepParams<Lua>) => {
     currentStep={props.currentStep}
     dispatch={props.dispatch}
     index={props.index}
+    toggleMonacoEditor={() => setMonaco(!monaco)}
     resources={props.resources}>
     <Row>
       <Col xs={12}>
-        <LuaTextArea<Lua> {...props} />
+        <LuaTextArea<Lua> {...props} useMonacoEditor={monaco} />
       </Col>
     </Row>
   </StepWrapper>;

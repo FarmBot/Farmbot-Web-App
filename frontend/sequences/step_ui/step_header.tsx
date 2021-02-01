@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col } from "../../ui/index";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
-import { StepIconGroup } from "../step_icon_group";
+import { StepIconGroup } from "./step_icon_group";
 import { t } from "../../i18next_wrapper";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
@@ -18,6 +18,7 @@ export interface StepHeaderProps {
   pinnedSequence: SequenceResource | undefined;
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
+  toggleMonacoEditor?(): void;
 }
 
 interface StepHeaderState {
@@ -59,6 +60,7 @@ export class StepHeader
             executeSequenceName={this.props.executeSequence?.name}
             helpText={t(helpText)}
             toggleViewRaw={this.props.toggleViewRaw}
+            toggleMonacoEditor={this.props.toggleMonacoEditor}
             confirmStepDeletion={confirmStepDeletion} />
           {this.props.children}
         </div>

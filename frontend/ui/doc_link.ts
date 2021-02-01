@@ -1,5 +1,5 @@
 import { ExternalUrl } from "../external_urls";
-import { push } from "../history";
+import { getPathArray, push } from "../history";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
  * rename / move links in the future. */
@@ -21,5 +21,11 @@ export type DocSlug = keyof typeof DOC_SLUGS;
 export const docLink = (slug?: DocSlug) =>
   `${ExternalUrl.softwareDocs}/${slug || ""}`;
 
-export const docLinkClick = (slug: DocSlug) => () =>
-  push(`/app/designer/help?page=${slug}`);
+export const docLinkClick = (slug: DocSlug) => () => {
+  const path = `/app/designer/help?page=${slug}`;
+  if (getPathArray()[3] == "help") {
+    location.assign(window.location.origin + path);
+  } else {
+    push(path);
+  }
+};

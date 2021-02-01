@@ -7,12 +7,17 @@ import { editStep } from "../../api/crud";
 import { InputLengthIndicator } from "../inputs/input_length_indicator";
 import { debounce } from "lodash";
 
+export interface LuaTextAreaProps<Step extends Lua | Assertion>
+  extends StepParams<Step> {
+  useMonacoEditor: boolean;
+}
+
 interface LuaTextAreaState {
   lua: string;
 }
 
 export class LuaTextArea<Step extends Lua | Assertion>
-  extends React.Component<StepParams<Step>, LuaTextAreaState> {
+  extends React.Component<LuaTextAreaProps<Step>, LuaTextAreaState> {
   state: LuaTextAreaState = { lua: this.props.currentStep.args.lua };
 
   updateStep = debounce((newLua: string) => {
@@ -31,8 +36,8 @@ export class LuaTextArea<Step extends Lua | Assertion>
 
   setLua = (value: string) => this.setState({ lua: value });
 
-  FallbackEditor = () =>
-    <textarea
+  FallbackEditor = ({ loading }: { loading?: boolean }) =>
+    <textarea className={loading ? "" : "fallback-lua-editor"}
       value={this.state.lua}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
         this.setLua(e.currentTarget.value)}
@@ -42,11 +47,14 @@ export class LuaTextArea<Step extends Lua | Assertion>
   render() {
     return <div className={"lua-input"}>
       <div className={"lua-editor"}>
-        <Editor
-          language={"lua"}
-          value={this.state.lua}
-          loading={<this.FallbackEditor />}
-          onChange={this.onChange} />
+        {this.props.useMonacoEditor
+          ? <Editor
+            language={"lua"}
+            options={{ minimap: { enabled: false } }}
+            value={this.state.lua}
+            loading={<this.FallbackEditor loading={true} />}
+            onChange={this.onChange} />
+          : <this.FallbackEditor />}
       </div>
       <InputLengthIndicator field={"lua"} value={this.state.lua} />
     </div>;
