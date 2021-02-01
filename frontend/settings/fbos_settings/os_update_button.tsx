@@ -3,15 +3,13 @@ import axios from "axios";
 import { JobProgress } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
-import {
-  checkControllerUpdates, bulkToggleControlPanel, toggleControlPanel,
-} from "../../devices/actions";
+import { checkControllerUpdates } from "../../devices/actions";
+import { bulkToggleControlPanel, toggleControlPanel } from "../toggle_section";
 import { isString } from "lodash";
 import { Actions, Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
-import { push } from "../../history";
-import { highlight, linkToHardReset } from "../maybe_highlight";
+import { highlight, goToHardReset } from "../maybe_highlight";
 
 /**
  * FBOS versions older than this can't connect to the available OTA system
@@ -138,7 +136,7 @@ const onTooOld = (dispatch: Function) => () => {
   highlight.highlighted = false;
   dispatch(bulkToggleControlPanel(false));
   dispatch(toggleControlPanel("power_and_reset"));
-  push(linkToHardReset());
+  goToHardReset();
 };
 
 /** For errors fetching data from releases API. */

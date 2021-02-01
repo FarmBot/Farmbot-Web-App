@@ -1,10 +1,10 @@
-jest.mock("../step_tiles", () => ({
+jest.mock("../../step_tiles", () => ({
   splice: jest.fn(),
   remove: jest.fn(),
   move: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({
+jest.mock("../../../history", () => ({
   push: jest.fn(),
   getPathArray: () => [],
   history: { getCurrentLocation: () => "" },
@@ -13,9 +13,9 @@ jest.mock("../../history", () => ({
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { splice, remove, move } from "../step_tiles";
-import { push } from "../../history";
+import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { splice, remove, move } from "../../step_tiles";
+import { push } from "../../../history";
 
 describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({

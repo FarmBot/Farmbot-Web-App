@@ -1,10 +1,10 @@
 import React from "react";
 import { DiagnosticMessages } from "../../constants";
-import { Col, Row, docLink } from "../../ui/index";
+import { Col, Row, docLinkClick } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
-import { linkToFbosSettings } from "../../settings/maybe_highlight";
+import { goToFbosSettings } from "../../settings/maybe_highlight";
 
 export type ConnectionName =
   | "userAPI"
@@ -49,7 +49,7 @@ export function Diagnosis(statusFlags: ConnectionStatusFlags) {
       <Col xs={10} className={"connectivity-diagnosis"}>
         <p className="blinking">
           {t("Always")}&nbsp;
-          <a className="blinking" href={linkToFbosSettings()}>
+          <a className="blinking" onClick={goToFbosSettings}>
             <u>{t("upgrade FarmBot OS")}</u>
           </a>
             &nbsp;{t("before troubleshooting.")}
@@ -57,13 +57,11 @@ export function Diagnosis(statusFlags: ConnectionStatusFlags) {
         <p>
           {diagnosisMessage(getDiagnosisCode(statusFlags))}
         </p>
-        <a href={docLink("connecting-farmbot-to-the-internet")}
-          target="_blank" rel={"noreferrer"}>
+        <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
           <i className="fa fa-external-link" />
           {t("Click here to learn more about error codes.")}
         </a>
-        <a href={docLink("for-it-security-professionals")}
-          target="_blank" rel={"noreferrer"}>
+        <a onClick={docLinkClick("for-it-security-professionals")}>
           <i className="fa fa-external-link" />
           {t("Click here for IT security professionals info.")}
         </a>

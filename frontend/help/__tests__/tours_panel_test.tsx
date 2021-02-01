@@ -1,15 +1,15 @@
 import React from "react";
-import { RawHelpPanel as HelpPanel, mapStateToProps } from "../help";
 import { mount } from "enzyme";
+import { RawToursPanel as ToursPanel, mapStateToProps } from "../tours_panel";
 import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { tourNames } from "../tours";
 import { fakeState } from "../../__test_support__/fake_state";
 
-describe("<HelpPanel />", () => {
+describe("<ToursPanel />", () => {
   it("starts tour", () => {
     const dispatch = jest.fn();
-    const wrapper = mount(<HelpPanel dispatch={dispatch} />);
+    const wrapper = mount(<ToursPanel dispatch={dispatch} />);
     clickButton(wrapper, 0, "start tour");
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.START_TOUR,

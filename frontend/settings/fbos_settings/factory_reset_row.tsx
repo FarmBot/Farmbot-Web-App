@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, docLink } from "../../ui/index";
+import { Row, Col, docLinkClick } from "../../ui/index";
 import { Content, DeviceSetting } from "../../constants";
 import { softReset, updateConfig } from "../../devices/actions";
 import { ToggleButton } from "../../ui/toggle_button";
@@ -45,9 +45,7 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
         </Col>
         <Col xs={6}>
           <a className="link-button fb-button red"
-            href={docLink("farmbot-os#section-installation")}
-            target="_blank" rel={"noreferrer"}
-            title={t("Open link in a new tab")}>
+            onClick={docLinkClick("farmbot-os#section-installation")}>
             {t("HARD RESET")}
             <i className="fa fa-external-link" />
           </a>

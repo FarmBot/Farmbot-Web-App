@@ -148,7 +148,8 @@ export class RawDesignerPhotos
             onClick={this.toggle("measure")} />}
         {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
           <Collapse isOpen={!!this.state.measure}>
-            <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}>
+            <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
+              docPage={"measure-soil-height"}>
               <UpdateImagingPackage
                 version={this.props.versions[FarmwareName.MeasureSoilHeight]}
                 farmwareName={FarmwareName.MeasureSoilHeight}

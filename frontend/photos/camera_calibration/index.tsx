@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, docLink, Color } from "../../ui";
+import { Row, Col, docLinkClick, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { WDENVKey } from "../remote_env/interfaces";
@@ -63,8 +63,7 @@ export class CameraCalibration extends
               label={t("use alternative method")}
               helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
               links={[
-                <a href={docLink("camera-calibration")}
-                  target={"_blank"} rel={"noreferrer"}>
+                <a onClick={docLinkClick("camera-calibration")}>
                   {t("as described in the software documentation.")}
                   <i className={"fa fa-external-link"} />
                 </a>,

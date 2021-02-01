@@ -208,6 +208,10 @@
   display: inline-block;
   text-align: center;
   font-size: 2rem;
+  i {
+    margin-right: 0.35rem;
+    margin-left: 0 !important;
+  }
 }
 
 .step-control-icons i,
@@ -267,15 +271,13 @@
   }
   &.assertion-step {
     background: $light_purple;
-    textarea {
+    .lua-input {
       margin-bottom: 1rem;
     }
   }
   &.lua-step {
+    padding: 0;
     background: $light_purple;
-    textarea {
-      margin-bottom: 1rem;
-    }
   }
   &.execute-step {
     background: $light_gray;

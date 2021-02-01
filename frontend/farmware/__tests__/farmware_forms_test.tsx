@@ -129,6 +129,14 @@ describe("<FarmwareForm />", () => {
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("label").last().text()).toContain("Config 1");
     expect(wrapper.find("input").props().value).toEqual("4");
+    expect(wrapper.find(".title-help").length).toEqual(0);
+  });
+
+  it("has help link", () => {
+    const p = fakeProps();
+    p.docPage = "farmware";
+    const wrapper = mount(<FarmwareForm {...p} />);
+    expect(wrapper.find(".title-help").length).toEqual(1);
   });
 
   it("renders no fields", () => {

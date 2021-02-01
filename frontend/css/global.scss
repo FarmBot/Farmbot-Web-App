@@ -74,6 +74,10 @@ input[type=time] {
 .char-limit {
   float: right;
   font-size: 1.4rem;
+  &.over {
+    color: $darkest_red;
+    font-weight: bold;
+  }
 }
 
 .markdown {
@@ -372,28 +376,6 @@ a {
   margin-left: 1rem;
 }
 
-.select-search-container {
-  input {
-    cursor: pointer;
-  }
-  &:after {
-    content: "\25BE";
-    position: absolute;
-    top: 0.2rem;
-    right: 1rem;
-    color: $dark_gray;
-    font-size: 2rem;
-    line-height: initial;
-    pointer-events: none;
-  }
-}
-
-.thin-search-wrapper {
-  .select-search-container:after {
-    content: "";
-  }
-}
-
 .drag-drop-area {
   &.visible {
     margin: 0.75rem 0;
@@ -596,10 +578,6 @@ fieldset {
   }
 }
 
-.webcam-stream {
-  width: 100%;
-}
-
 .webcam-stream-unavailable {
   position: relative;
   width: 100%;
@@ -637,12 +615,6 @@ fieldset {
   vertical-align: middle;
   text-align: center;
   font-size: 1.5rem;
-}
-
-.clear-webcam-url-btn {
-  position: absolute !important;
-  top: 6.2rem;
-  left: 2rem;
 }
 
 h3 {
@@ -700,59 +672,6 @@ input:disabled {
 ul {
   list-style-type: none !important;
   padding: 0;
-}
-
-.select {
-  position: relative;
-  input {
-    height: 30px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 3rem !important;
-  }
-  .select-results-container {
-    position: absolute;
-    left: 0;
-    right: 0;
-    z-index: 2;
-    max-height: 15rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    &.is-open-false {
-      display: none;
-    }
-    &.is-open-true {
-      display: block;
-    }
-  }
-  .select-result {
-    background: $off_white;
-    padding: 0.2rem 0 0.2rem 1.4rem;
-    border-bottom: 1px solid $gray;
-    cursor: pointer;
-    &:hover {
-      background: $light_gray;
-    }
-    &.is-hidden {
-      display: none;
-    }
-    padding-left: 1rem !important;
-    &.is-heading {
-      pointer-events: none !important;
-      label {
-        font-weight: bold !important;
-        text-transform: uppercase;
-        padding-left: 0 !important;
-      }
-    }
-    label {
-      margin-top: 0 !important;
-      text-transform: none;
-      font-weight: normal;
-      cursor: pointer;
-    }
-  }
 }
 
 .coming-soon {
@@ -1135,28 +1054,6 @@ ul {
   }
 }
 
-.farmware-selection-panel {
-  .filter-search {
-    i {
-      top: 38% !important;
-    }
-  }
-}
-
-.farmware-page {
-  button {
-    margin: 0.5rem;
-  }
-}
-
-.farmware-input-panel,
-.farmware-info-panel {
-  label,
-  h4 {
-    margin-top: 2rem;
-  }
-}
-
 .farmware-info {
   margin-top: 1rem;
 }
@@ -1176,23 +1073,6 @@ ul {
     p {
       font-weight: bold;
     }
-  }
-}
-
-.farmware-settings-menu {
-  position: absolute !important;
-  top: 3rem;
-  right: 3rem;
-  float: right !important;
-}
-
-.farmware-settings-menu {
-  top: 1rem;
-}
-
-.farmware-settings-menu-contents {
-  label {
-    margin-top: 0.5rem;
   }
 }
 
@@ -1319,26 +1199,11 @@ ul {
   }
 }
 
-.messages-page {
-  max-width: 785px;
-  padding-left: 2rem !important;
-  padding-right: 2rem !important;
-}
-
 .link-to-logs {
   margin-top: 2rem;
   margin-bottom: 4rem;
   text-align: center;
   font-style: italic;
-}
-
-.account-page {
-  label {
-    margin-top: 5px;
-  }
-  input {
-    margin-bottom: 1rem;
-  }
 }
 
 .map-size-setting {
@@ -1374,40 +1239,6 @@ ul {
     overflow: inherit;
     width: inherit;
     white-space: inherit;
-  }
-}
-
-.tools-widget,
-.toolbay-widget {
-  .fa-gear {
-    color: $dark_gray;
-    margin-top: 0.5rem;
-  }
-  .fb-button {
-    margin-left: 1rem;
-  }
-}
-
-.toolbay-slot-menu {
-  .direction-icon {
-    color: $dark_gray;
-    margin-left: 1rem;
-  }
-  label {
-    margin-top: 1rem;
-  }
-  .fb-button {
-    margin-top: 1rem;
-  }
-  .filter-search {
-    i {
-      top: 38% !important;
-    }
-  }
-  input[type="checkbox"] {
-    vertical-align: middle;
-    margin-top: 0;
-    margin-left: 0.5rem;
   }
 }
 
@@ -1448,9 +1279,7 @@ ul {
 
 .sensors-widget,
 .webcam-widget,
-.peripherals-widget,
-.tools-widget,
-.toolbay-widget {
+.peripherals-widget {
   .del-button {
     margin-top: 0.5rem;
   }
@@ -1621,6 +1450,18 @@ ul {
   }
 }
 
+.lua-input {
+  .lua-editor {
+    height: 20rem;
+  }
+  .char-limit {
+    padding: 0.5rem;
+  }
+  textarea {
+    height: 100% !important;
+  }
+}
+
 .input {
   border: 3px solid $transparent;
   &.modified {
@@ -1702,19 +1543,6 @@ ul {
   .default-value-tooltip {
     position: absolute;
     right: 0;
-  }
-}
-
-.documentation-widget,
-.input-line-widget {
-  .fa-external-link {
-    margin-left: 1rem;
-  }
-  label {
-    margin-top: 1rem;
-  }
-  a {
-    margin-left: 1rem;
   }
 }
 

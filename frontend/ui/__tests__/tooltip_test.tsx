@@ -1,6 +1,12 @@
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { ToolTip, ToolTipProps } from "../tooltip";
+import { push } from "../../history";
 
 describe("<ToolTip />", () => {
   const fakeProps = (): ToolTipProps => ({
@@ -31,7 +37,13 @@ describe("<ToolTip />", () => {
   it("renders doc link", () => {
     expect(wrapper.text()).toContain("Documentation");
     expect(wrapper.find("i").at(2).html()).toContain("fa-external-link");
-    expect(wrapper.find("a").html())
-      .toContain("https://software.farm.bot/docs/weed-detection");
+    wrapper.find("a").simulate("click");
+    expect(push).toHaveBeenCalledWith(expect.stringContaining("weed-detection"));
+  });
+
+  it("stops propagation", () => {
+    const e = { stopPropagation: jest.fn() };
+    wrapper.find(".title-help").simulate("click", e);
+    expect(e.stopPropagation).toHaveBeenCalled();
   });
 });

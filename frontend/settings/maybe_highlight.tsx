@@ -1,7 +1,7 @@
 import React from "react";
 import { store } from "../redux/store";
 import { ControlPanelState } from "../devices/interfaces";
-import { toggleControlPanel, bulkToggleControlPanel } from "../devices/actions";
+import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
@@ -375,8 +375,8 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 }
 
-const linkToSetting = (settingName: DeviceSetting) =>
+export const linkToSetting = (settingName: DeviceSetting) =>
   `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
 
-export const linkToFbosSettings = () => linkToSetting(DeviceSetting.farmbotOS);
-export const linkToHardReset = () => linkToSetting(DeviceSetting.hardReset);
+export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
+export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

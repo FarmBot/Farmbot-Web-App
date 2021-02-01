@@ -1,6 +1,4 @@
-.farmware-input-panel,
-.sequence-editor-panel,
-.regimen-editor-panel {
+.sequence-editor-panel {
   margin: -3rem -1.5rem -3rem;
   height: calc(100vh - 5rem);
   background: $light_gray;
@@ -8,7 +6,6 @@
     display: none;
     &.open {
       display: block;
-      &.farmware-info-open,
       &.inserting-item,
       &.inserting-step {
         display: none;
@@ -47,40 +44,12 @@
   }
 }
 
-.farmware-input-panel {
-  padding-left: 0;
-  padding-right: 0;
-  h3 {
-    padding-left: 15px;
-  }
-  .title-help-text {
-    margin-bottom: 1.5rem;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  @media screen and (max-width: 767px) {
-    .title-help-text {
-      padding-left: 3rem;
-      padding-right: 3rem;
-    }
-  }
-}
-
-.farmware-input-panel-contents,
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -10px;
   @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 0;
-  }
-}
-
-.farmware-input-panel-contents {
-  .farmware-info-button {
-    position: absolute;
-    top: 5rem;
-    left: 61%;
   }
 }
 
@@ -154,15 +123,6 @@
   overflow-x: hidden;
 }
 
-.farmware-input-panel-contents {
-  padding: 15px;
-  width: 100%;
-  height: calc(100vh - 18rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 15px;
-}
-
 .sequence-steps {
   margin-right: 25px;
   margin-left: 10px;
@@ -171,12 +131,6 @@
       box-shadow: 0px 0px 15px #ff7700;
     }
   }
-}
-
-.regimen-list {
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 19rem);
 }
 
 .step-button-cluster {
@@ -191,25 +145,14 @@
   }
 }
 
-.farmware-info-panel,
 .step-button-cluster-panel {
   @media screen and (max-width: 767px) {
     display: none;
-    &.farmware-info-open,
     &.inserting-step {
       display: block;
     }
     margin-left: 15px;
     margin-right: 15px;
-  }
-}
-
-.farmware-info-panel {
-  .back-to-farmware {
-    text-align: left !important;
-  }
-  button {
-    margin-bottom: 3rem;
   }
 }
 
@@ -221,8 +164,7 @@
 }
 
 .farmware-list-items,
-.sequence-list-item,
-.regimen-list {
+.sequence-list-item {
   button {
     text-align: left;
     label {
@@ -483,9 +425,7 @@
   }
 }
 
-.farmware-list-panel,
-.sequence-list-panel,
-.regimen-list-panel {
+.sequence-list-panel {
   padding-top: 0.4rem;
   margin-right: 5px;
   @media screen and (max-width: 1075px) {
@@ -531,42 +471,10 @@
   }
 }
 
-.farmware-list-panel {
-  .farmware-list-panel-contents {
-    height: calc(100vh - 15rem);
-    @media screen and (max-width: 450px) {
-      max-height: calc(100vh - 11rem);
-    }
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-right: -20px;
-    margin-left: -15px;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  label {
-    font-weight: bold;
-    font-size: 1.4rem;
-  }
-  p {
-    font-size: 1.2rem;
-  }
-}
-
 .farmware-list-items {
   margin-left: -15px;
 }
 
-.farmware-input-panel-contents {
-  @media screen and (max-width: 767px) {
-    margin-left: 15px;
-    margin-right: 15px;
-    padding-right: 5rem;
-  }
-}
-
-.back-to-farmware,
-.back-to-regimens,
 .back-to-sequences {
   display: none;
   &.open {
@@ -580,7 +488,6 @@
       text-align: center;
       line-height: 6rem;
       margin-left: 15px;
-      &.farmware-info-open,
       &.inserting-step,
       &.inserting-item {
         margin-left: 0;
@@ -605,21 +512,6 @@
       margin-top: 1rem;
       margin-bottom: 1rem;
       float: none !important;
-    }
-  }
-}
-
-.farmware-info-button {
-  display: none;
-  @media screen and (max-width: 767px) {
-    &.open {
-      display: block;
-      margin: 4rem;
-      margin-top: 1rem;
-      margin-left: 2rem;
-    }
-    &.farmware-info-open {
-      display: none;
     }
   }
 }

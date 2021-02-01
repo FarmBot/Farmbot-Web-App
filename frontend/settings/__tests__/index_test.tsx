@@ -11,7 +11,7 @@ jest.mock("../../settings/maybe_highlight", () => ({
 
 import React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
-import { RawDesignerSettings as DesignerSettings } from "..";
+import { RawDesignerSettings as DesignerSettings } from "../index";
 import { DesignerSettingsProps } from "../interfaces";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";

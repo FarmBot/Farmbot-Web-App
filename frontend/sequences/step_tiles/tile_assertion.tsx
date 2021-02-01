@@ -3,23 +3,25 @@ import { StepParams } from "../interfaces";
 import { Row, Col } from "../../ui";
 import { StepWrapper } from "../step_ui";
 import { TypePart } from "./tile_assertion/type_part";
-import { LuaPart } from "./tile_assertion/lua_part";
 import { SequencePart } from "./tile_assertion/sequence_part";
 import { Assertion } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
+import { LuaTextArea } from "./tile_lua_support";
 
-export const TileAssertion = (props: StepParams<Assertion>) =>
-  <StepWrapper
+export const TileAssertion = (props: StepParams<Assertion>) => {
+  const [monaco, setMonaco] = React.useState(true);
+  return <StepWrapper
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}
     currentSequence={props.currentSequence}
     currentStep={props.currentStep}
     dispatch={props.dispatch}
     index={props.index}
+    toggleMonacoEditor={() => setMonaco(!monaco)}
     resources={props.resources}>
     <Row>
       <Col xs={12}>
-        <LuaPart {...props} />
+        <LuaTextArea<Assertion> {...props} useMonacoEditor={monaco} />
       </Col>
     </Row>
     <Row>
@@ -34,3 +36,4 @@ export const TileAssertion = (props: StepParams<Assertion>) =>
         </Col>}
     </Row>
   </StepWrapper>;
+};
