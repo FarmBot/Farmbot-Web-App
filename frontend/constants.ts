@@ -57,7 +57,8 @@ export namespace ToolTips {
     trim(`Raspberry Pi power status since last reboot. If supply voltage
     drops below the standard operational threshold the indicator will turn
     red. Once the voltage level recovers the status will turn yellow,
-    indicating that a low voltage event has occurred.`);
+    indicating that a low voltage event has occurred. Low voltage may
+    adversely affect WiFi and camera functionality.`);
 
   // FarmBot OS Settings: Firmware
   export const FIRMWARE_VALUE_API =

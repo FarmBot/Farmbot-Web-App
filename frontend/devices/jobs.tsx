@@ -21,6 +21,7 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
     return <DesignerPanel panelName={"jobs"} panel={Panel.Logs}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"jobs"}>
+        <p>{t("Job count")}: {Object.values(this.props.jobs).length}</p>
         <table>
           <thead>
             <tr>
@@ -33,10 +34,13 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
           <tbody>
             {Object.entries(this.props.jobs).map(([title, job]) => {
               if (!job) { return; }
+              const percent = job.unit == "percent" && job.percent;
               return <tr key={title}>
-                <td>{title}</td>
+                <td className={"job-name"} title={title}>{title}</td>
                 <td>
                   {job.unit == "percent" ? job[job.unit] : job[job.unit]}
+                  <div className={"progress"}
+                    style={percent ? { width: `${percent}%` } : {}} />
                 </td>
                 <td>{job.unit}</td>
                 <td>{job.status}</td>

@@ -63,11 +63,11 @@ export class CameraCalibration extends
               label={t("use alternative method")}
               helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
               links={[
-                <a onClick={docLinkClick("camera-calibration")}>
+                <a key={0} onClick={docLinkClick("camera-calibration")}>
                   {t("as described in the software documentation.")}
                   <i className={"fa fa-external-link"} />
                 </a>,
-                <a href={ExternalUrl.Store.cameraCalibrationCard}
+                <a key={1} href={ExternalUrl.Store.cameraCalibrationCard}
                   target={"_blank"} rel={"noreferrer"}>
                   {t(ToolTips.CAMERA_CALIBRATION_CARD_SHOP_LINK)}
                   <i className={"fa fa-external-link"} />
