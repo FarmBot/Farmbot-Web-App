@@ -19,6 +19,7 @@ export interface StepIconBarProps {
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
   toggleMonacoEditor?(): void;
+  links?: React.ReactElement[];
 }
 
 export function StepUpDownButtonPopover(
@@ -57,7 +58,8 @@ export function StepIconGroup(props: StepIconBarProps) {
     <i className={"fa fa-trash"}
       title={t("delete step")}
       onClick={onTrash} />
-    <Help text={helpText} position={Position.TOP} title={t("help")} />
+    <Help text={helpText} position={Position.TOP} title={t("help")}
+      links={props.links} />
     {props.toggleViewRaw &&
       <i className={"fa fa-code"}
         title={t("toggle code view")}

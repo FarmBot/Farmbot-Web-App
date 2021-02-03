@@ -14,18 +14,32 @@ export const DOC_SLUGS = {
   "for-it-security-professionals": "For IT Security Professionals",
 };
 
+export const DEV_DOC_SLUGS = {
+  "lua": "Lua",
+};
+
 export type DocSlug = keyof typeof DOC_SLUGS;
+export type DevDocSlug = keyof typeof DEV_DOC_SLUGS;
 
 /** WHY?: The function keeps things DRY. It also makes life easier when the
  * documentation URL / slug name changes. */
 export const docLink = (slug?: DocSlug) =>
   `${ExternalUrl.softwareDocs}/${slug || ""}`;
 
-export const docLinkClick = (slug: DocSlug) => () => {
-  const path = `/app/designer/help?page=${slug}`;
-  if (getPathArray()[3] == "help") {
+export const devDocLink = (slug?: DevDocSlug) =>
+  `${ExternalUrl.developerDocs}/${slug || ""}`;
+
+const genericDocLinkClick = <T>(slug: T, page: "help" | "developer") => () => {
+  const path = `/app/designer/${page}?page=${slug}`;
+  if (getPathArray()[3] == page) {
     location.assign(window.location.origin + path);
   } else {
     push(path);
   }
 };
+
+export const docLinkClick = (slug: DocSlug) =>
+  genericDocLinkClick<DocSlug>(slug, "help");
+
+export const devDocLinkClick = (slug: DevDocSlug) =>
+  genericDocLinkClick<DevDocSlug>(slug, "developer");

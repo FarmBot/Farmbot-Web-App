@@ -21,6 +21,7 @@ export interface StepWrapperProps {
   index: number;
   resources: ResourceIndex;
   toggleMonacoEditor?(): void;
+  links?: React.ReactElement[];
 }
 
 export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
@@ -56,6 +57,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
       <StepHeader
         className={this.props.className}
         helpText={this.props.helpText}
+        links={this.props.links}
         currentSequence={this.props.currentSequence}
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}

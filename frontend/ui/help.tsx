@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   Popover, PopoverInteractionKind, PopoverPosition, Position,
 } from "@blueprintjs/core";
@@ -26,7 +26,7 @@ export function Help(props: HelpProps) {
       title={props.title} />
     <div className={"help-text-content"}>
       {t(props.text)}
-      {props.links?.map((link, index) => <div key={index}>{link}</div>)}
+      {props.links}
     </div>
   </Popover>;
 }

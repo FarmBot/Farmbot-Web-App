@@ -31,12 +31,16 @@ const PAGES = (): Pages => ({
     title: t("Get Help"),
     icon: Icon.support,
   },
-  hotkeys: {
-    title: t("Hotkeys"),
-    fa_icon: "keyboard-o",
-    onClick: openHotkeyHelpOverlay,
-  }
 });
+
+const maybeAddHotkeysMenuItem = (): [string, Page][] =>
+  window.innerWidth > 450
+    ? [["hotkeys", {
+      title: t("Hotkeys"),
+      fa_icon: "keyboard-o",
+      onClick: openHotkeyHelpOverlay,
+    }]]
+    : [];
 
 export const HelpHeader = () => {
   const [isOpen, setOpen] = React.useState(false);
@@ -50,6 +54,7 @@ export const HelpHeader = () => {
       <Collapse isOpen={isOpen}>
         {Object.entries(PAGES())
           .filter(([slug, _page]) => slug != currentSlug)
+          .concat(maybeAddHotkeysMenuItem())
           .map(PageLink)}
       </Collapse>}
   </div>;
