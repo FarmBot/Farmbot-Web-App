@@ -1,6 +1,7 @@
 import React from "react";
+import { t } from "../../i18next_wrapper";
 import { StepParams } from "../interfaces";
-import { Row, Col } from "../../ui";
+import { Row, Col, devDocLinkClick } from "../../ui";
 import { StepWrapper } from "../step_ui";
 import { TypePart } from "./tile_assertion/type_part";
 import { SequencePart } from "./tile_assertion/sequence_part";
@@ -13,6 +14,11 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
   return <StepWrapper
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}
+    links={[
+      <a key={"lua"} onClick={devDocLinkClick("lua")}>
+        {" " + t("Documentation")}
+        <i className="fa fa-external-link" />
+      </a>]}
     currentSequence={props.currentSequence}
     currentStep={props.currentStep}
     dispatch={props.dispatch}

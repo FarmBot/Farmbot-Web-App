@@ -15,6 +15,11 @@ import { push } from "../../history";
 import { openHotkeyHelpOverlay } from "../../hotkeys";
 
 describe("<HelpHeader />", () => {
+  beforeEach(() => {
+    Object.defineProperty(window, "innerWidth",
+      { value: 500, configurable: true });
+  });
+
   it.each<[string, string]>([
     ["software documentation", "/app/designer/"],
     ["software documentation", "/app/designer/help"],
@@ -27,11 +32,20 @@ describe("<HelpHeader />", () => {
     expect(wrapper.text().toLowerCase()).toContain(title);
   });
 
+  it("hides hotkeys menu item", () => {
+    Object.defineProperty(window, "innerWidth",
+      { value: 400, configurable: true });
+    const wrapper = mount(<HelpHeader />);
+    wrapper.find(".help-panel-header").simulate("click");
+    expect(wrapper.text().toLowerCase()).not.toContain("hotkeys");
+  });
+
   it("opens menu", () => {
     const wrapper = mount(<HelpHeader />);
     expect(wrapper.html()).toContain("fa-chevron-down");
     wrapper.find(".help-panel-header").simulate("click");
     expect(wrapper.html()).toContain("fa-chevron-up");
+    expect(wrapper.text().toLowerCase()).toContain("hotkeys");
   });
 
   it("selects panel", () => {

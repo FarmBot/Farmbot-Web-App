@@ -19,6 +19,7 @@ export interface StepHeaderProps {
   confirmStepDeletion: boolean;
   toggleViewRaw?: () => void;
   toggleMonacoEditor?(): void;
+  links?: React.ReactElement[];
 }
 
 interface StepHeaderState {
@@ -59,6 +60,7 @@ export class StepHeader
             sequence={currentSequence}
             executeSequenceName={this.props.executeSequence?.name}
             helpText={t(helpText)}
+            links={this.props.links}
             toggleViewRaw={this.props.toggleViewRaw}
             toggleMonacoEditor={this.props.toggleMonacoEditor}
             confirmStepDeletion={confirmStepDeletion} />

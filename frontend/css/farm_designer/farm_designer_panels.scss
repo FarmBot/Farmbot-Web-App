@@ -2255,6 +2255,22 @@
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
+    margin-top: 1rem;
+    .job-name {
+      max-width: 20rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .progress {
+      position: absolute;
+      left: 0;
+      height: 2.9rem;
+      background: $green;
+      opacity: 0.5;
+      margin-top: -2.5rem;
+      border-radius: 0;
+      pointer-events: none;
+    }
   }
 }
 

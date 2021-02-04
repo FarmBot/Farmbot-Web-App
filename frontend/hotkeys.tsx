@@ -126,7 +126,7 @@ export const hotkeysWithActions = (dispatch: Function) => {
 
 export const openHotkeyHelpOverlay = () =>
   showHotkeysDialog(Object.values(HOTKEY_BASE_MAP())
-    .filter(hotkey => hotkey.combo == "ctrl + shift + /")
+    .filter(hotkey => hotkey.combo != "ctrl + shift + /")
     .map(hotkey => ({ ...hotkey, global: true })));
 
 @HotkeysTarget
