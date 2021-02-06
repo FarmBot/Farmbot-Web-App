@@ -172,11 +172,6 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.xy_swap,
   },
   {
-    title: DeviceSetting.homeButtonBehavior,
-    description: t("Perform homing when pressing the home button."),
-    setting: BooleanSetting.home_button_homing,
-  },
-  {
     title: DeviceSetting.showMotorPositionPlotDisplay,
     description: "",
     setting: BooleanSetting.show_motor_plot,

@@ -857,6 +857,30 @@ ul {
       z-index: 3;
     }
   }
+  .bp3-popover-wrapper {
+    display: inline;
+    float: right;
+  }
+  .fa-ellipsis-v {
+    font-size: 1.2rem;
+  }
+  .axis-actions {
+    width: 10rem;
+    .fb-button {
+      width: 100%;
+      float: none;
+    }
+    a {
+      display: block;
+      padding: 1rem 0.5rem 0 0.5rem;
+      text-decoration: none !important;
+      font-size: 1.4rem;
+    }
+    .fa-external-link {
+      margin-top: 0.25rem;
+      float: right;
+    }
+  }
 }
 
 .motor-position-plot-border {

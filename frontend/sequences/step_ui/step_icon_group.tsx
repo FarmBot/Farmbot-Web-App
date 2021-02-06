@@ -51,26 +51,26 @@ export function StepIconGroup(props: StepIconBarProps) {
   };
 
   return <span className={"step-control-icons"}>
-    <StepUpDownButtonPopover onMove={onMove} />
-    <i className={"fa fa-clone"}
-      title={t("duplicate step")}
-      onClick={onClone} />
-    <i className={"fa fa-trash"}
-      title={t("delete step")}
-      onClick={onTrash} />
-    <Help text={helpText} position={Position.TOP} title={t("help")}
-      links={props.links} />
-    {props.toggleViewRaw &&
-      <i className={"fa fa-code"}
-        title={t("toggle code view")}
-        onClick={props.toggleViewRaw} />}
-    {props.toggleMonacoEditor &&
-      <i className={"fa fa-font"}
-        title={t("toggle fancy editor")}
-        onClick={props.toggleMonacoEditor} />}
     {props.executeSequenceName &&
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
+    {props.toggleMonacoEditor &&
+      <i className={"fa fa-font"}
+        title={t("toggle fancy editor")}
+        onClick={props.toggleMonacoEditor} />}
+    {props.toggleViewRaw &&
+      <i className={"fa fa-code"}
+        title={t("toggle code view")}
+        onClick={props.toggleViewRaw} />}
+    <Help text={helpText} position={Position.TOP} title={t("help")}
+      links={props.links} />
+    <i className={"fa fa-trash"}
+      title={t("delete step")}
+      onClick={onTrash} />
+    <i className={"fa fa-clone"}
+      title={t("duplicate step")}
+      onClick={onClone} />
+    <StepUpDownButtonPopover onMove={onMove} />
   </span>;
 }

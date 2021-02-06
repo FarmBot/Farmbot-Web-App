@@ -151,7 +151,6 @@ const CONTROLS_SETTINGS = [
   DeviceSetting.displayScaledEncoderPosition,
   DeviceSetting.displayRawEncoderPosition,
   DeviceSetting.swapXAndYAxisJogButtons,
-  DeviceSetting.homeButtonBehavior,
   DeviceSetting.showMotorPositionPlotDisplay,
 ];
 const SEQUENCE_SETTINGS = [

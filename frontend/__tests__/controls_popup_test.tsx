@@ -29,7 +29,6 @@ describe("<ControlsPopup />", () => {
     stepSize: 100,
     botOnline: true,
     env: {},
-    doFindHome: false,
   });
 
   it("toggles open state", () => {
@@ -94,7 +93,7 @@ describe("<ControlsPopup />", () => {
   it("takes photo", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
-    const btn = wrapper.find("button").at(6);
+    const btn = wrapper.find("button").at(7);
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
@@ -106,7 +105,7 @@ describe("<ControlsPopup />", () => {
     p.env = { camera: "NONE" };
     const wrapper = mount(<ControlsPopup {...p} />);
     wrapper.find("i").first().simulate("click");
-    const btn = wrapper.find("button").at(6);
+    const btn = wrapper.find("button").at(7);
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(

@@ -53,6 +53,7 @@ export class StepHeader
             sequence={currentSequence}
             pinnedSequenceName={this.props.pinnedSequence?.name}
             toggleDraggable={this.toggle} />
+          {this.props.children}
           <StepIconGroup
             index={index}
             dispatch={dispatch}
@@ -64,7 +65,6 @@ export class StepHeader
             toggleViewRaw={this.props.toggleViewRaw}
             toggleMonacoEditor={this.props.toggleMonacoEditor}
             confirmStepDeletion={confirmStepDeletion} />
-          {this.props.children}
         </div>
       </Col>
     </Row>;

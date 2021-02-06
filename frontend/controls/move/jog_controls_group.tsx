@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { McuParams } from "farmbot";
 import { BotPosition, UserEnv } from "../../devices/interfaces";
 import { changeStepSize } from "../../devices/actions";
@@ -41,7 +41,6 @@ export const JogControlsGroup = (props: JogControlsGroupProps) => {
       arduinoBusy={arduinoBusy}
       env={props.env}
       firmwareSettings={firmwareSettings}
-      xySwap={getValue(BooleanSetting.xy_swap)}
-      doFindHome={getValue(BooleanSetting.home_button_homing)} />
+      xySwap={getValue(BooleanSetting.xy_swap)} />
   </div>;
 };
