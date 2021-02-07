@@ -35,13 +35,13 @@ describe("<StepIconGroup />", () => {
 
   it("deletes step", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find("i").at(2).simulate("click");
+    wrapper.find("i").at(1).simulate("click");
     expect(remove).toHaveBeenCalledWith(expect.objectContaining({ index: 0 }));
   });
 
   it("duplicates step", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find("i").at(1).simulate("click");
+    wrapper.find("i").at(2).simulate("click");
     expect(splice).toHaveBeenCalledWith(expect.objectContaining({
       index: 0,
       step: fakeProps().step

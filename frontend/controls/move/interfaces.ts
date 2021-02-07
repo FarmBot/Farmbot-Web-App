@@ -53,19 +53,14 @@ export interface DirectionAxesProps {
   firmwareSettings: McuParams;
 }
 
-interface JogMovementControlsBaseProps extends DirectionAxesProps {
+export interface JogMovementControlsProps extends DirectionAxesProps {
   stepSize: number;
   arduinoBusy: boolean;
   xySwap: boolean;
   env: UserEnv;
 }
 
-export interface JogMovementControlsProps extends JogMovementControlsBaseProps {
-  doFindHome: boolean;
-}
-
-export interface ControlsPopupProps extends JogMovementControlsBaseProps {
+export interface ControlsPopupProps extends JogMovementControlsProps {
   dispatch: Function;
   botOnline: boolean;
-  doFindHome: boolean;
 }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 import { Xyz } from "farmbot";
 import { t } from "../../i18next_wrapper";
@@ -29,7 +29,7 @@ export function StepWarning(props: StepWarningProps) {
   return <div className="step-warning">
     <Popover
       position={Position.RIGHT_TOP}
-      interactionKind={PopoverInteractionKind.HOVER}
+      interactionKind={PopoverInteractionKind.CLICK}
       popoverClassName={"help"}>
       <i className="fa fa-exclamation-triangle" />
       <div className={"step-warning-text"}>

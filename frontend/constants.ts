@@ -1366,8 +1366,6 @@ export enum DeviceSetting {
   displayRawEncoderPosition = `Raw encoder position`,
   swapJogButtonsXAndYAxis = `x and y axis`,
   swapXAndYAxisJogButtons = `swap x and y axis jog buttons`,
-  homeButtonBehaviorPerformHoming = `perform homing (find home)`,
-  homeButtonBehavior = `home button behavior (find home)`,
   showMotorPositionPlot = `show`,
   showMotorPositionPlotDisplay = `show motor position plot display`,
 

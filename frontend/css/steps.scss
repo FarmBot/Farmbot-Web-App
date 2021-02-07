@@ -47,6 +47,7 @@
 }
 
 .step-header {
+  display: flex;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
@@ -76,6 +77,7 @@
   }
   .step-comment {
     display: inline;
+    width: 100%;
   }
   input {
     width: auto;
@@ -195,6 +197,11 @@
   .step-warning {
     display: inline-block;
     float: none;
+    width: 100%;
+    overflow: hidden;
+    height: 2rem;
+    margin-top: 0.25rem;
+    font-size: 1.4rem;
     .bp3-popover-wrapper {
       float: left;
     }
@@ -212,6 +219,10 @@
     margin-right: 0.35rem;
     margin-left: 0 !important;
   }
+}
+
+.step-control-icons {
+  display: flex;
 }
 
 .step-control-icons i,

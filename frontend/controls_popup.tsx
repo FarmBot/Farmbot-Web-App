@@ -45,7 +45,9 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           onChange={ddi =>
             props.dispatch(changeStepSize(parseInt("" + ddi.value)))}
           selectedItem={{ label: "" + stepSize, value: stepSize }} />
-        <HomeButton doFindHome={props.doFindHome}
+        <HomeButton doFindHome={true}
+          disabled={!isOpen || !botOnline || arduinoBusy} />
+        <HomeButton doFindHome={false}
           disabled={!isOpen || !botOnline || arduinoBusy} />
         <TakePhotoButton env={props.env} disabled={!isOpen || !botOnline} />
       </div>
