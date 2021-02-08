@@ -43,6 +43,11 @@
     @media screen and (max-width: 450px) {
       padding-top: 4rem;
     }
+    .move {
+      .bot-is-online-wrapper {
+        display: inline-block;
+      }
+    }
   }
 }
 

@@ -42,25 +42,27 @@ export interface HomeButtonProps {
 }
 
 export interface StepSizeSelectorProps {
-  choices: number[];
+  dispatch: Function;
   selected: number;
-  selector: (num: number) => void;
 }
 
 export interface DirectionAxesProps {
-  axisInversion: Record<Xyz, boolean>;
   botPosition: BotPosition;
   firmwareSettings: McuParams;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface JogMovementControlsProps extends DirectionAxesProps {
   stepSize: number;
-  arduinoBusy: boolean;
-  xySwap: boolean;
+  disabled: boolean;
   env: UserEnv;
 }
 
-export interface ControlsPopupProps extends JogMovementControlsProps {
+export interface ControlsPopupProps extends DirectionAxesProps {
+  stepSize: number;
+  arduinoBusy: boolean;
+  env: UserEnv;
   dispatch: Function;
   botOnline: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }

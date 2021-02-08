@@ -1,5 +1,6 @@
 import { DirectionAxesProps } from "./interfaces";
 import { McuParams } from "farmbot";
+import { BooleanSetting } from "../../session_keys";
 
 export const calcMicrostepsPerMm = (
   steps_per_mm: number | undefined,
@@ -34,11 +35,11 @@ export function calculateAxialLengths(props: { firmwareSettings: McuParams }) {
 }
 
 export function buildDirectionProps(props: DirectionAxesProps) {
-  const { firmwareSettings, botPosition } = props;
+  const { firmwareSettings, botPosition, getConfigValue } = props;
   const lengths = calculateAxialLengths(props);
   return {
     x: {
-      isInverted: props.axisInversion.x,
+      isInverted: !!getConfigValue(BooleanSetting.x_axis_inverted),
       stopAtHome: !!firmwareSettings.movement_stop_at_home_x,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_x,
       axisLength: lengths.x,
@@ -46,7 +47,7 @@ export function buildDirectionProps(props: DirectionAxesProps) {
       position: botPosition.x
     },
     y: {
-      isInverted: props.axisInversion.y,
+      isInverted: !!getConfigValue(BooleanSetting.y_axis_inverted),
       stopAtHome: !!firmwareSettings.movement_stop_at_home_y,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_y,
       axisLength: lengths.y,
@@ -54,7 +55,7 @@ export function buildDirectionProps(props: DirectionAxesProps) {
       position: botPosition.y
     },
     z: {
-      isInverted: props.axisInversion.z,
+      isInverted: !!getConfigValue(BooleanSetting.z_axis_inverted),
       stopAtHome: !!firmwareSettings.movement_stop_at_home_z,
       stopAtMax: !!firmwareSettings.movement_stop_at_max_z,
       axisLength: lengths.z,

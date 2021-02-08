@@ -4,6 +4,7 @@ import { JogMovementControlsProps } from "./interfaces";
 import { buildDirectionProps } from "./direction_axes_props";
 import { TakePhotoButton } from "./take_photo_button";
 import { HomeButton } from "./home_button";
+import { BooleanSetting } from "../../session_keys";
 const DEFAULT_STEP_SIZE = 100;
 
 /*
@@ -12,13 +13,14 @@ const DEFAULT_STEP_SIZE = 100;
  */
 
 export function JogButtons(props: JogMovementControlsProps) {
-  const { stepSize, xySwap, arduinoBusy } = props;
+  const { stepSize, disabled, getConfigValue } = props;
   const directionAxesProps = buildDirectionProps(props);
+  const xySwap = !!getConfigValue(BooleanSetting.xy_swap);
   const rightLeft = xySwap ? "y" : "x";
   const upDown = xySwap ? "x" : "y";
   const commonProps = {
     steps: stepSize || DEFAULT_STEP_SIZE,
-    disabled: arduinoBusy
+    disabled,
   };
   return <table className="jog-table">
     <tbody>
@@ -46,10 +48,10 @@ export function JogButtons(props: JogMovementControlsProps) {
       </tr>
       <tr>
         <td>
-          <HomeButton doFindHome={false} disabled={arduinoBusy} />
+          <HomeButton doFindHome={false} disabled={disabled} />
         </td>
         <td>
-          <HomeButton doFindHome={true} disabled={arduinoBusy} />
+          <HomeButton doFindHome={true} disabled={disabled} />
         </td>
         <td />
         <td>
