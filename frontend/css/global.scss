@@ -841,6 +841,10 @@ ul {
   }
   .axis-titles {
     margin-bottom: 1rem;
+    .bp3-popover-wrapper {
+      display: inline;
+      float: right;
+    }
   }
   p {
     text-align: center;
@@ -857,12 +861,10 @@ ul {
       z-index: 3;
     }
   }
-  .bp3-popover-wrapper {
-    display: inline;
-    float: right;
-  }
   .fa-ellipsis-v {
     font-size: 1.2rem;
+    width: 1rem;
+    text-align: center;
   }
   .axis-actions {
     width: 10rem;
@@ -874,11 +876,16 @@ ul {
       display: block;
       padding: 1rem 0.5rem 0 0.5rem;
       text-decoration: none !important;
-      font-size: 1.4rem;
-    }
-    .fa-external-link {
-      margin-top: 0.25rem;
-      float: right;
+      font-size: 1.2rem;
+      .fa-external-link {
+        margin-top: 0.25rem;
+        float: right;
+      }
+      &:hover {
+        .fa-external-link {
+          font-weight: bold;
+        }
+      }
     }
   }
 }
@@ -901,7 +908,6 @@ ul {
   border-radius: 3rem;
   height: 6rem;
   width: 6rem;
-  cursor: pointer;
 }
 
 .controls-popup {

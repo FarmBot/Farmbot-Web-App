@@ -107,6 +107,7 @@ export enum FbosVersionFallback {
 export const fallbackData: MinOsFeatureLookup = {
   [Feature.no_firmware_logs]: "12.2.2",
   [Feature.lua_step]: "12.3.4",
+  [Feature.home_single_axis]: MinVersionOverride.NEVER,
   [Feature.toggle_peripheral]: MinVersionOverride.NEVER,
   [Feature.z2_firmware_params_tmc]: MinVersionOverride.NEVER,
   [Feature.boot_sequence]: MinVersionOverride.NEVER,

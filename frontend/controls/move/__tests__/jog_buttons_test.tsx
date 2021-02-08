@@ -15,14 +15,15 @@ describe("<JogButtons />", () => {
     stepSize: 100,
     botPosition: { x: undefined, y: undefined, z: undefined },
     getConfigValue: key => mockConfig.body[key],
-    disabled: false,
+    arduinoBusy: false,
+    botOnline: true,
     firmwareSettings: bot.hardware.mcu_params,
     env: {},
   });
 
   it("is disabled", () => {
     const p = jogButtonProps();
-    p.disabled = true;
+    p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(7).simulate("click");
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();

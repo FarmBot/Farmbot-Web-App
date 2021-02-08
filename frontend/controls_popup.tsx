@@ -9,7 +9,6 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const isOpenClass = isOpen ? "open" : "";
   const { stepSize, arduinoBusy, botOnline } = props;
-  const movementDisabled = !isOpen || arduinoBusy || !botOnline;
   return <div
     className={`controls-popup ${isOpenClass} ${mapPanelClassName()}`}>
     <i className="fa fa-crosshairs" onClick={() => setIsOpen(!isOpen)} />
@@ -19,7 +18,8 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           stepSize={stepSize}
           botPosition={props.botPosition}
           getConfigValue={props.getConfigValue}
-          disabled={movementDisabled}
+          arduinoBusy={arduinoBusy}
+          botOnline={isOpen && botOnline}
           env={props.env}
           firmwareSettings={props.firmwareSettings} />
         <StepSizeSelector dispatch={props.dispatch} selected={stepSize} />

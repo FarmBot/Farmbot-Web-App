@@ -41,6 +41,7 @@ export enum Feature {
   firmware_restart = "firmware_restart",
   flash_firmware = "flash_firmware",
   groups = "groups",
+  home_single_axis = "home_single_axis",
   jest_feature = "jest_feature",
   long_scaling_factor = "long_scaling_factor",
   lua_step = "lua_step",
