@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelContent,
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
@@ -20,6 +20,7 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
   render() {
     return <DesignerPanel panelName={"jobs"} panel={Panel.Logs}>
       <DesignerNavTabs />
+      <DesignerPanelTop panel={Panel.Logs} />
       <DesignerPanelContent panelName={"jobs"}>
         <p>{t("Job count")}: {Object.values(this.props.jobs).length}</p>
         <table>

@@ -15,7 +15,8 @@ jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import React from "react";
 import { shallow, mount } from "enzyme";
-import { BotPositionRows, BotPositionRowsProps } from "../bot_position_rows";
+import { BotPositionRows } from "../bot_position_rows";
+import { BotPositionRowsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../../session_keys";
@@ -32,6 +33,7 @@ describe("<BotPositionRows />", () => {
     firmwareSettings: {},
     firmwareHardware: undefined,
     botOnline: true,
+    shouldDisplay: () => true,
   });
 
   it("inputs axis destination", () => {

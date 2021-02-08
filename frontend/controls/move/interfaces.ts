@@ -1,4 +1,6 @@
-import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
+import {
+  BotLocationData, BotPosition, BotState, ShouldDisplay, UserEnv,
+} from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
@@ -54,15 +56,31 @@ export interface DirectionAxesProps {
 
 export interface JogMovementControlsProps extends DirectionAxesProps {
   stepSize: number;
-  disabled: boolean;
+  botOnline: boolean;
   env: UserEnv;
+  arduinoBusy: boolean;
 }
 
-export interface ControlsPopupProps extends DirectionAxesProps {
-  stepSize: number;
-  arduinoBusy: boolean;
-  env: UserEnv;
+export interface JogControlsGroupProps extends JogMovementControlsProps {
   dispatch: Function;
+}
+
+export type ControlsPopupProps = JogControlsGroupProps;
+
+export interface BotPositionRowsProps {
+  locationData: BotLocationData;
+  getValue: GetWebAppBool;
+  arduinoBusy: boolean;
+  firmwareSettings: McuParams;
+  firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
-  getConfigValue: GetWebAppConfigValue;
+  shouldDisplay: ShouldDisplay;
+}
+
+export interface AxisActionsProps {
+  arduinoBusy: boolean;
+  hardwareDisabled: boolean;
+  botOnline: boolean;
+  axis: Xyz;
+  shouldDisplay: ShouldDisplay;
 }

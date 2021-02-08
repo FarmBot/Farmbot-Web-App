@@ -32,6 +32,7 @@ describe("<DesignerControls />", () => {
     getWebAppConfigVal: jest.fn(),
     env: {},
     firmwareHardware: undefined,
+    shouldDisplay: () => true,
   });
 
   it("renders controls", () => {
