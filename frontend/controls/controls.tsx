@@ -127,6 +127,7 @@ export class RawDesignerControls
               locationData={locationData}
               getValue={this.getValue}
               arduinoBusy={this.arduinoBusy}
+              botOnline={this.botOnline}
               firmwareSettings={this.props.firmwareSettings}
               firmwareHardware={this.props.firmwareHardware} />
           </MustBeOnline>

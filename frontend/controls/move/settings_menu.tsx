@@ -54,11 +54,6 @@ export const MoveWidgetSettingsMenu = (
     <Setting label={DeviceSetting.swapJogButtonsXAndYAxis}
       setting={BooleanSetting.xy_swap} />
 
-    <p>{t("Home button behavior")}</p>
-    <Setting
-      label={DeviceSetting.homeButtonBehaviorPerformHoming}
-      setting={BooleanSetting.home_button_homing} />
-
     <div className={"motor-position-plot-setting-row"}>
       <p>{t("Motor position plot")}</p>
       <Setting

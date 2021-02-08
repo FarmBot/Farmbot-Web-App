@@ -161,7 +161,6 @@ export class RawApp extends React.Component<AppProps, {}> {
           arduinoBusy={!!bot.hardware.informational_settings.busy}
           botOnline={isBotOnlineFromState(bot)}
           env={this.props.env}
-          doFindHome={!!getConfigValue(BooleanSetting.home_button_homing)}
           stepSize={bot.stepSize} />}
     </div>;
   }

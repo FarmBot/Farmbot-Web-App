@@ -82,7 +82,6 @@ export class CameraSelection
   }
 
   render() {
-    const disable = !this.props.botOnline;
     return <Highlight settingName={DeviceSetting.camera}>
       <Row>
         <Col xs={5}>
@@ -95,8 +94,7 @@ export class CameraSelection
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
-            onChange={this.sendOffConfig}
-            extraClass={disable ? "disabled" : ""} />
+            onChange={this.sendOffConfig} />
         </Col>
       </Row>
     </Highlight>;

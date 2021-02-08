@@ -15,7 +15,6 @@ describe("<JogButtons/>", function () {
     arduinoBusy: false,
     firmwareSettings: bot.hardware.mcu_params,
     xySwap: false,
-    doFindHome: false,
     env: {},
   });
 
@@ -23,13 +22,13 @@ describe("<JogButtons/>", function () {
     const p = jogButtonProps();
     p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
-    jogButtons.find("button").at(6).simulate("click");
+    jogButtons.find("button").at(7).simulate("click");
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    const button = jogButtons.find("button").at(6);
+    const button = jogButtons.find("button").at(7);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
@@ -41,7 +40,7 @@ describe("<JogButtons/>", function () {
     (p.stepSize as number | undefined) = undefined;
     p.xySwap = true;
     const jogButtons = mount(<JogButtons {...p} />);
-    const button = jogButtons.find("button").at(6);
+    const button = jogButtons.find("button").at(7);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
