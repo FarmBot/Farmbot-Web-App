@@ -6,15 +6,18 @@ import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 
-describe("<JogButtons/>", function () {
+describe("<JogButtons />", () => {
+  const mockConfig = fakeWebAppConfig();
+
   const jogButtonProps = (): JogMovementControlsProps => ({
     stepSize: 100,
     botPosition: { x: undefined, y: undefined, z: undefined },
-    axisInversion: { x: false, y: false, z: false },
+    getConfigValue: key => mockConfig.body[key],
     arduinoBusy: false,
+    botOnline: true,
     firmwareSettings: bot.hardware.mcu_params,
-    xySwap: false,
     env: {},
   });
 
@@ -36,9 +39,9 @@ describe("<JogButtons/>", function () {
   });
 
   it("has swapped xy jog buttons", () => {
+    mockConfig.body.xy_swap = true;
     const p = jogButtonProps();
     (p.stepSize as number | undefined) = undefined;
-    p.xySwap = true;
     const jogButtons = mount(<JogButtons {...p} />);
     const button = jogButtons.find("button").at(7);
     expect(button.props().title).toBe("move y axis (100)");

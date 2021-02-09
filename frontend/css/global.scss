@@ -841,6 +841,10 @@ ul {
   }
   .axis-titles {
     margin-bottom: 1rem;
+    .bp3-popover-wrapper {
+      display: inline;
+      float: right;
+    }
   }
   p {
     text-align: center;
@@ -857,12 +861,10 @@ ul {
       z-index: 3;
     }
   }
-  .bp3-popover-wrapper {
-    display: inline;
-    float: right;
-  }
   .fa-ellipsis-v {
     font-size: 1.2rem;
+    width: 1rem;
+    text-align: center;
   }
   .axis-actions {
     width: 10rem;
@@ -874,11 +876,16 @@ ul {
       display: block;
       padding: 1rem 0.5rem 0 0.5rem;
       text-decoration: none !important;
-      font-size: 1.4rem;
-    }
-    .fa-external-link {
-      margin-top: 0.25rem;
-      float: right;
+      font-size: 1.2rem;
+      .fa-external-link {
+        margin-top: 0.25rem;
+        float: right;
+      }
+      &:hover {
+        .fa-external-link {
+          font-weight: bold;
+        }
+      }
     }
   }
 }
@@ -895,13 +902,12 @@ ul {
 .controls-popup-menu-outer {
   position: fixed;
   bottom: 3rem;
-  right: 4rem;
+  right: 1rem;
   z-index: 2;
   background: $dark_gray;
   border-radius: 3rem;
   height: 6rem;
   width: 6rem;
-  cursor: pointer;
 }
 
 .controls-popup {
@@ -925,6 +931,10 @@ ul {
       background-color: rgba(0, 0, 0, 0.2);
     }
   }
+  .move-amount-wrapper,
+  .jog-table {
+    display: none;
+  }
   &.open {
     .fa-crosshairs {
       transform: rotate(-135deg);
@@ -934,12 +944,32 @@ ul {
     }
     .controls-popup-menu-outer {
       transition: all 0.1s 0s ease-in-out;
-      width: 45rem;
+      width: 36rem;
+      height: 14rem;
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
       transition-delay: 0.25s !important;
       opacity: 1;
+    }
+    .jog-table {
+      display: block;
+      margin: 0;
+      float: right;
+      td {
+        padding: 0;
+      }
+    }
+    .move-amount-wrapper {
+      display: inline-block;
+      width: 100%;
+      box-shadow: none;
+      margin-left: 2rem;
+      padding-top: 0.5rem;
+      .move-amount {
+        width: 18%;
+        height: 2rem;
+      }
     }
   }
   .filter-search {

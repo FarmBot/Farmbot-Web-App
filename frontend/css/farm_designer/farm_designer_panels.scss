@@ -43,6 +43,12 @@
     @media screen and (max-width: 450px) {
       padding-top: 4rem;
     }
+    .move {
+      .unavailable,
+      .bot-is-online-wrapper {
+        display: inline-block;
+      }
+    }
   }
 }
 
@@ -2255,19 +2261,25 @@
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
-    margin-top: 1rem;
+    padding: 0;
+    p {
+      padding: 1rem;
+    }
     .job-name {
       max-width: 20rem;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    tr {
+      transform: scale(1);
+    }
     .progress {
       position: absolute;
+      top: 0;
       left: 0;
-      height: 2.9rem;
+      height: 99%;
       background: $green;
       opacity: 0.5;
-      margin-top: -2.5rem;
       border-radius: 0;
       pointer-events: none;
     }

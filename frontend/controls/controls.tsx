@@ -10,7 +10,7 @@ import { JogControlsGroup } from "./move/jog_controls_group";
 import { BotPositionRows } from "./move/bot_position_rows";
 import { BooleanSetting } from "../session_keys";
 import { MotorPositionPlot } from "./move/motor_position_plot";
-import { BotState, UserEnv } from "../devices/interfaces";
+import { BotState, ShouldDisplay, UserEnv } from "../devices/interfaces";
 import {
   TaggedWebcamFeed, TaggedPeripheral, McuParams, FirmwareHardware, TaggedSequence,
 } from "farmbot";
@@ -20,7 +20,7 @@ import {
 import { Everything } from "../interfaces";
 import { validFwConfig, validFbosConfig, validBotLocationData } from "../util";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
-import { getEnv } from "../farmware/state_to_props";
+import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { isFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import {
@@ -50,6 +50,7 @@ export interface DesignerControlsProps {
   getWebAppConfigVal: GetWebAppConfigValue;
   env: UserEnv;
   firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
 export const mapStateToProps = (props: Everything): DesignerControlsProps => {
@@ -76,6 +77,7 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     getWebAppConfigVal: getWebAppConfigValue(() => props),
     env,
     firmwareHardware,
+    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
 };
 
@@ -119,8 +121,9 @@ export class RawDesignerControls
               dispatch={this.props.dispatch}
               stepSize={bot.stepSize}
               botPosition={locationData.position}
-              getValue={this.getValue}
+              getConfigValue={this.getValue}
               arduinoBusy={this.arduinoBusy}
+              botOnline={true} // covered by MustBeOnline
               env={this.props.env}
               firmwareSettings={this.props.firmwareSettings} />
             <BotPositionRows
@@ -128,6 +131,7 @@ export class RawDesignerControls
               getValue={this.getValue}
               arduinoBusy={this.arduinoBusy}
               botOnline={this.botOnline}
+              shouldDisplay={this.props.shouldDisplay}
               firmwareSettings={this.props.firmwareSettings}
               firmwareHardware={this.props.firmwareHardware} />
           </MustBeOnline>

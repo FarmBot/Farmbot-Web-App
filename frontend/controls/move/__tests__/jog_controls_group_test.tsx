@@ -1,6 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
-import { JogControlsGroup, JogControlsGroupProps } from "../jog_controls_group";
+import { JogControlsGroup } from "../jog_controls_group";
+import { JogControlsGroupProps } from "../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
 
@@ -9,8 +10,9 @@ describe("<JogControlsGroup />", () => {
     dispatch: jest.fn(),
     stepSize: 100,
     botPosition: { x: undefined, y: undefined, z: undefined },
-    getValue: jest.fn(),
+    getConfigValue: jest.fn(),
     arduinoBusy: false,
+    botOnline: true,
     firmwareSettings: {},
     env: {},
   });

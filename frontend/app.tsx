@@ -154,12 +154,11 @@ export class RawApp extends React.Component<AppProps, {}> {
       {showControlsPopup() &&
         <ControlsPopup
           dispatch={dispatch}
-          axisInversion={this.props.axisInversion}
           botPosition={validBotLocationData(location_data).position}
           firmwareSettings={this.props.firmwareConfig || mcu_params}
-          xySwap={this.props.xySwap}
           arduinoBusy={!!bot.hardware.informational_settings.busy}
           botOnline={isBotOnlineFromState(bot)}
+          getConfigValue={getConfigValue}
           env={this.props.env}
           stepSize={bot.stepSize} />}
     </div>;
