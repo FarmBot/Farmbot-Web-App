@@ -78,15 +78,19 @@
   .step-comment {
     display: inline;
     width: 100%;
+    overflow: hidden;
+  }
+  .input {
+    width: 100%;
   }
   input {
-    width: auto;
+    width: 100%;
     padding: 0rem;
     background-color: transparent;
     box-shadow: none;
     color: $dark_gray;
     font-weight: bold;
-    min-width: 130px;
+    text-overflow: ellipsis;
   }
   p {
     font-size: 1rem;
