@@ -15,6 +15,7 @@ describe("<ImagingDataManagement />", () => {
   const fakeProps = (): ImagingDataManagementProps => ({
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
+    farmwareEnvs: [],
   });
 
   it("renders toggle", () => {
@@ -27,5 +28,13 @@ describe("<ImagingDataManagement />", () => {
     mockDev = false;
     const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("highlight");
+  });
+
+  it("toggles advanced", () => {
+    mockDev = true;
+    const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
+    expect(wrapper.find(".farmware-env-editor").length).toEqual(0);
+    wrapper.find(".expandable-header").simulate("click");
+    expect(wrapper.find(".farmware-env-editor").length).toEqual(1);
   });
 });

@@ -7,6 +7,7 @@ import {
 } from "./source_config_value";
 import {
   getDeviceAccountSettings, maybeGetTimeSettings, getUserAccountSettings,
+  selectAllFarmwareEnvs,
 } from "../resources/selectors";
 import {
   saveOrEditFarmwareEnv, getShouldDisplayFn,
@@ -31,4 +32,5 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   bot: props.bot,
   searchTerm: props.resources.consumers.farm_designer.settingsSearchTerm,
   user: getUserAccountSettings(props.resources.index),
+  farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
 });

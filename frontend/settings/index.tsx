@@ -27,6 +27,7 @@ import { OtherSettings } from "./other_settings";
 import { AccountSettings } from "./account/account_settings";
 import { DevSettingsRows } from "./dev/dev_settings";
 import { bulkToggleControlPanel, ToggleSettingsOpen } from "./toggle_section";
+import { EnvEditor } from "../photos/data_management/env_editor";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -135,6 +136,10 @@ export class RawDesignerSettings
           searchTerm={this.props.searchTerm}
           getConfigValue={getConfigValue}
           sourceFbosConfig={sourceFbosConfig} />
+        {this.props.searchTerm == "env" &&
+          <EnvEditor
+            dispatch={this.props.dispatch}
+            farmwareEnvs={this.props.farmwareEnvs} />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}
