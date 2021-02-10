@@ -1134,6 +1134,9 @@ export namespace Content {
     Caution: FarmBot will make three small x-axis and y-axis movements
     during calibration.`);
 
+  export const FARMWARE_ENV_EDITOR_WARNING =
+    trim(`Warning: Changing the values below may cause app and device errors.`);
+
   // Other
   export const DOWNLOAD_FBOS =
     trim(`Download the version of FarmBot OS that corresponds to your

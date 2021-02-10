@@ -111,7 +111,7 @@ export const DEFAULT_FORMATTER: Translation = {
       }
 
     } catch (error) {
-      throw new Error(`An input from FarmWare caused a crash.
+      throw new Error(`An invalid config input caused a crash.
       This is the value we got: ${val}
       This is the error: ${error}
       `);

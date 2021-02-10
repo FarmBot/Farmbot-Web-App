@@ -5,9 +5,8 @@ describe FarmwareEnv do
     p = {
       device: FactoryBot.create(:device),
       key: Faker::Games::Pokemon.name,
-      value:  "===" * 300
+      value:  "===" * 334
     }
-    expect { FarmwareEnv.create!(p) }
-      .to raise_error(ActiveRecord::ValueTooLong)
+    expect { FarmwareEnv.create!(p) }.to raise_error(ActiveRecord::ValueTooLong)
   end
 end
