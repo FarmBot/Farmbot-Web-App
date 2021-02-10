@@ -56,6 +56,7 @@ describe("<DesignerSettings />", () => {
     bot: bot,
     searchTerm: "",
     user: fakeUser(),
+    farmwareEnvs: [],
   });
 
   it("renders settings", () => {
@@ -154,6 +155,13 @@ describe("<DesignerSettings />", () => {
     originSetting.find("div").last().simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);
+  });
+
+  it("renders env editor", () => {
+    const p = fakeProps();
+    p.searchTerm = "env";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("editor");
   });
 
   it("renders dev settings", () => {

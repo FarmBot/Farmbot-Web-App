@@ -171,6 +171,7 @@ export class RawDesignerPhotos
         <Collapse isOpen={!!this.state.manage}>
           <ImagingDataManagement
             dispatch={this.props.dispatch}
+            farmwareEnvs={this.props.farmwareEnvs}
             getConfigValue={this.props.getConfigValue} />
         </Collapse>
       </DesignerPanelContent>
