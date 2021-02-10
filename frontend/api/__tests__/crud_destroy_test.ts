@@ -122,11 +122,13 @@ describe("destroy", () => {
 
 describe("destroyAll", () => {
   it("confirmed", async () => {
-    window.confirm = () => true;
+    window.confirm = jest.fn(() => true);
     mockDelete = Promise.resolve();
     await expect(destroyAll("FarmwareEnv")).resolves.toEqual(undefined);
     expect(axios.delete)
       .toHaveBeenCalledWith("http://localhost:3000/api/farmware_envs/all");
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Are you sure you want to delete all items?");
   });
 
   it("confirmation overridden", async () => {
@@ -143,6 +145,15 @@ describe("destroyAll", () => {
     await expect(destroyAll("FarmwareEnv"))
       .rejects.toEqual("User pressed cancel");
     expect(axios.delete).not.toHaveBeenCalled();
+  });
+
+  it("uses custom confirmation message", async () => {
+    window.confirm = jest.fn(() => false);
+    mockDelete = Promise.resolve();
+    await expect(destroyAll("FarmwareEnv", false, "custom"))
+      .rejects.toEqual("User pressed cancel");
+    expect(axios.delete).not.toHaveBeenCalled();
+    expect(window.confirm).toHaveBeenCalledWith("custom");
   });
 
   it("rejected", async () => {
