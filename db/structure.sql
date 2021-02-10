@@ -412,7 +412,7 @@ CREATE TABLE public.farmware_envs (
     id bigint NOT NULL,
     device_id bigint,
     key character varying(100),
-    value character varying(300),
+    value character varying(1000),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -3521,6 +3521,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201211161018'),
 ('20201216101103'),
 ('20210107224804'),
-('20210201145935');
+('20210201145935'),
+('20210210144434');
 
 
