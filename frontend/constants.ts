@@ -1137,6 +1137,10 @@ export namespace Content {
   export const FARMWARE_ENV_EDITOR_WARNING =
     trim(`Warning: Changing the values below may cause app and device errors.`);
 
+  export const FARMWARE_ENV_EDITOR_INFO =
+    trim(`Environment variables added here can be accessed via the LUA
+    sequence step 'env()' function.`);
+
   // Other
   export const DOWNLOAD_FBOS =
     trim(`Download the version of FarmBot OS that corresponds to your
