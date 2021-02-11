@@ -17,3 +17,8 @@ export interface EnvEditorProps {
   farmwareEnvs: TaggedFarmwareEnv[];
   title?: string;
 }
+
+export interface ClearFarmwareDataProps {
+  farmwareEnvs: TaggedFarmwareEnv[];
+  children?: React.ReactChild;
+}

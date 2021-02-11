@@ -233,8 +233,10 @@ export function destroy(uuid: string, force = false) {
   };
 }
 
-export function destroyAll(resourceName: ResourceName, force = false) {
-  if (force || confirm(t("Are you sure you want to delete all items?"))) {
+export function destroyAll(resourceName: ResourceName, force = false,
+  customConfirmation?: string) {
+  if (force || confirm(
+    customConfirmation || t("Are you sure you want to delete all items?"))) {
     return axios.delete(urlFor(resourceName) + "all");
   } else {
     return Promise.reject("User pressed cancel");

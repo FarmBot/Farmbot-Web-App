@@ -17,7 +17,7 @@ export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
         getConfigValue={props.getConfigValue} />}
     <fieldset>
       <label>{t("clear all config data")}</label>
-      <ClearFarmwareData />
+      <ClearFarmwareData farmwareEnvs={props.farmwareEnvs} />
     </fieldset>
     {DevSettings.futureFeaturesEnabled() &&
       <div className={"advanced"}>
