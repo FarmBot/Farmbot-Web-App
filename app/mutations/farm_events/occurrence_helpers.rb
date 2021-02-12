@@ -11,7 +11,6 @@ module FarmEvents
       "monthly" => 60 * 24 * 7 * 30,
       "yearly" => 60 * 24 * 7 * 30 * 12,
     }
-
     def self.occurrences(start_time:, end_time:, time_unit:, repeat:)
       return 1 if time_unit == "never"
       minutes = [(end_time - start_time) / 60, 1].max.to_f

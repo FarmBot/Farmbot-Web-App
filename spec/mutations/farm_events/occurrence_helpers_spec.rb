@@ -35,7 +35,7 @@ describe FarmEvents::OccurrenceHelpers do
     params = { start_time: now, end_time: now + 1.year }
     FE_EXAMPLES.map do |(expected, repeat, time_unit)|
       i = params.merge(repeat: repeat, time_unit: time_unit)
-      actual = FarmEvents::OccurrenceHelpers.occurrences(i)
+      actual = FarmEvents::OccurrenceHelpers.occurrences(**i)
       expect(actual).to eq(expected)
     end
   end
