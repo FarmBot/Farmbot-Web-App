@@ -235,4 +235,24 @@ class Device < ApplicationRecord
   def send_upgrade_request
     Transport.current.amqp_send(UPGRADE_RPC, id, "from_clients")
   end
+
+  def provide_feedback(message, slug = "Not provided")
+    webhook_url = ENV["FEEDBACK_WEBHOOK_URL"]
+    if webhook_url
+      email = self.users.pluck(:email).join(" ")
+      firmware_kind = fbos_config.firmware_hardware
+      payload = {
+        "text": [
+          "`Device ID`: #{id}",
+          "`Email`: #{email}",
+          "`Model`: #{firmware_kind}",
+          "`Slug`: #{slug}",
+          "`Message`: #{message}"
+        ].join("\n")
+      }.to_json
+      Faraday.post(webhook_url,
+                   payload,
+                   "Content-Type" => "application/json")
+    end
+  end
 end

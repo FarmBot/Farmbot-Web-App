@@ -116,6 +116,10 @@ def run_jobs_now
   Delayed::Worker.delay_jobs = delay_jobs
 end
 
+def with_modified_env(options, &block)
+  ClimateControl.modify(options, &block)
+end
+
 # Reassign constants without getting a bunch of warnings to STDOUT.
 # This is just for testing purposes, so NBD.
 def const_reassign(target, const, value)
