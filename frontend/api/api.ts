@@ -171,4 +171,6 @@ export class API {
   // get syncPath() { return `${this.baseUrl}/api/device/sync/`; }
   /** /api/releases?platform=:platform */
   get releasesPath() { return `${this.baseUrl}/api/releases?platform=`; }
+  /** /api/feedback */
+  get feedbackPath() { return `${this.baseUrl}/api/feedback`; }
 }

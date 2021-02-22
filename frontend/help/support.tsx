@@ -1,4 +1,6 @@
+import axios from "axios";
 import React from "react";
+import { API } from "../api";
 import { Content } from "../constants";
 import { ExternalUrl } from "../external_urls";
 import {
@@ -7,6 +9,7 @@ import {
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import { DevSettings } from "../settings/dev/dev_support";
+import { success } from "../toast/toast";
 import { Col, Row } from "../ui";
 import { HelpHeader } from "./header";
 
@@ -79,5 +82,25 @@ export const SupportPanel = () =>
           </a>.
         </p>
       </div>
+      <div className={"feedback-support"}>
+        <h1>{t("Provide feedback")}</h1>
+        <Feedback />
+      </div>
     </DesignerPanelContent>
   </DesignerPanel>;
+
+export const Feedback = () => {
+  const [message, setMessage] = React.useState("");
+  return <div className={"feedback"}>
+    <input value={message} onChange={e => setMessage(e.currentTarget.value)} />
+    <button className={"fb-button green"}
+      onClick={() =>
+        axios.post(API.current.feedbackPath, { message })
+          .then(() => {
+            success(t("Feedback sent."));
+            setMessage("");
+          })}>
+      {t("submit")}
+    </button>
+  </div>;
+};
