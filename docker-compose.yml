@@ -37,7 +37,8 @@ services:
 
   db:
     env_file: ".env"
-    image: postgres:10
+    # Know to work: 10, 11
+    image: postgres:13
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
     # ports: ["5432:5432"]
 

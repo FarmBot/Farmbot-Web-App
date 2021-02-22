@@ -11,7 +11,7 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+            - cache-v2-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: After cache restore
           command: |
@@ -40,7 +40,7 @@ commands:
             #sudo docker images
             #if [ ! -f docker_cache/images.tar.gz ]; then sudo docker save $(sudo docker images ruby -q) | gzip > docker_cache/images.tar.gz; fi
       - save_cache:
-          key: cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: cache-v2-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
           paths:
             - docker_volumes
             - node_modules
