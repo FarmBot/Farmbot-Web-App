@@ -1,9 +1,9 @@
 jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToggleButton } from "../../../ui/toggle_button";
+import { ToggleButton } from "../../../ui";
 import { settingToggle } from "../../../devices/actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
@@ -67,5 +67,16 @@ describe("BooleanMCUInputGroup", () => {
     [0, 1, 2].map(button =>
       expect(wrapper.find(ToggleButton).at(button).props().disabled)
         .toEqual(true));
+  });
+
+  it("overrides advanced hide", () => {
+    const p = fakeProps();
+    p.advanced = true;
+    p.showAdvanced = false;
+    bot.hardware.mcu_params.encoder_invert_x = 0;
+    bot.hardware.mcu_params.encoder_invert_y = 0;
+    bot.hardware.mcu_params.encoder_invert_z = 1;
+    const wrapper = shallow(<BooleanMCUInputGroup {...p} />);
+    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
   });
 });

@@ -4,6 +4,10 @@ import { Slider } from "@blueprintjs/core";
 import { startCase } from "lodash";
 import { MESSAGE_TYPES, MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
+import {
+  getModifiedClassName, getModifiedClassNameDefaultFalse,
+} from "../../settings/default_values";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 const MENU_ORDER: string[] = [
   MessageType.success,
@@ -61,10 +65,14 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
             {t(startCase(logType))}
           </label>
           <button
-            className={"fb-button fb-toggle-button " + btnColor(logType)}
+            className={[
+              "fb-button fb-toggle-button " + btnColor(logType),
+              getModifiedClassNameDefaultFalse(props.state[logType] == 0),
+            ].join(" ")}
             title={t("toggle logs")}
             onClick={props.toggle(logType)} />
           <Slider min={0} max={3} stepSize={1}
+            className={getModifiedClassName(logType + "_log" as keyof WebAppConfig)}
             onChange={props.setFilterLevel(logType)}
             value={props.state[logType]} />
         </fieldset>)}

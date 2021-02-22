@@ -12,6 +12,7 @@ import {
 } from "./interfaces";
 import { StringSetting } from "../../session_keys";
 import { TaggedImage } from "farmbot";
+import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";
 
 export class ImageFilterMenu
   extends React.Component<ImageFilterMenuProps, ImageFilterMenuState> {
@@ -203,6 +204,7 @@ export class ImageFilterMenu
               <BlurableInput
                 type="date"
                 name="beginDate"
+                className={getModifiedClassNameDefaultFalse(beginDate)}
                 value={beginDate || ""}
                 allowEmpty={true}
                 onCommit={this.setDatetime("beginDate")} />
@@ -211,6 +213,7 @@ export class ImageFilterMenu
               <BlurableInput
                 type="time"
                 name="beginTime"
+                className={getModifiedClassNameDefaultFalse(beginTime)}
                 value={beginTime || ""}
                 allowEmpty={true}
                 disabled={!beginDate}
@@ -225,6 +228,7 @@ export class ImageFilterMenu
               <BlurableInput
                 type="date"
                 name="endDate"
+                className={getModifiedClassNameDefaultFalse(endDate)}
                 value={endDate || ""}
                 allowEmpty={true}
                 onCommit={this.setDatetime("endDate")} />
@@ -233,6 +237,7 @@ export class ImageFilterMenu
               <BlurableInput
                 type="time"
                 name="endTime"
+                className={getModifiedClassNameDefaultFalse(endTime)}
                 value={endTime || ""}
                 allowEmpty={true}
                 disabled={!endDate}

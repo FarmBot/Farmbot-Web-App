@@ -1,5 +1,6 @@
 import {
   sequence2ddi, mapStateToProps, RawBootSequenceSelector,
+  BootSequenceSelectorProps,
 } from "../boot_sequence_selector";
 import {
   fakeSequence, fakeFbosConfig,
@@ -12,7 +13,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { FBSelect } from "../../../ui";
 
-describe("sequence2ddi", () => {
+describe("sequence2ddi()", () => {
   it("converts TaggedSequences", () => {
     const s = fakeSequence();
     s.body.id = 1;
@@ -52,21 +53,15 @@ describe("sequence2ddi", () => {
   });
 });
 
-const fakeProps = () => {
-  const state = fakeState();
-  const sequence = fakeSequence();
-  const config = fakeFbosConfig();
-  sequence.body.id = 1;
-  config.body.boot_sequence_id = 1;
-  state.resources =
-    buildResourceIndex([config, fakeFbosConfig(), sequence]);
-  return mapStateToProps(state);
-};
-
-describe("mapStateToProps", () => {
+describe("mapStateToProps()", () => {
   it("creates props", () => {
-    const result = fakeProps();
-    expect(result.selectedItem?.value).toEqual(1);
+    const state = fakeState();
+    const sequence = fakeSequence();
+    const config = fakeFbosConfig();
+    sequence.body.id = 1;
+    config.body.boot_sequence_id = 1;
+    state.resources = buildResourceIndex([config, fakeFbosConfig(), sequence]);
+    expect(mapStateToProps(state).selectedItem?.value).toEqual(1);
   });
 
   it("crashes when config is missing", () => {
@@ -84,19 +79,32 @@ describe("mapStateToProps", () => {
   });
 });
 
-describe("RawBootSequenceSelector", () => {
+describe("<RawBootSequenceSelector />", () => {
+  const fakeProps = (): BootSequenceSelectorProps => ({
+    list: [],
+    selectedItem: undefined,
+    config: fakeFbosConfig(),
+    dispatch: jest.fn(),
+  });
+
   it("handles the `onChange` event", () => {
-    const props = fakeProps();
-    const el = new RawBootSequenceSelector(props);
+    const p = fakeProps();
+    const el = new RawBootSequenceSelector(p);
     el.onChange({ label: "X", value: 3 });
-    expect(props.dispatch).toHaveBeenCalled();
-    expect(props.dispatch)
+    expect(p.dispatch).toHaveBeenCalled();
+    expect(p.dispatch)
       .toHaveBeenCalledWith(expect.objectContaining({ type: "EDIT_RESOURCE" }));
   });
 
+  it("renders: no selection", () => {
+    const wrapper = mount(<RawBootSequenceSelector {...fakeProps()} />);
+    expect(wrapper.find(FBSelect).props().selectedItem).toEqual(undefined);
+  });
+
   it("renders", () => {
-    const props = fakeProps();
-    const el = mount(<RawBootSequenceSelector {...props} />);
-    expect(el.find(FBSelect).length).toEqual(1);
+    const p = fakeProps();
+    p.selectedItem = { value: 1, label: "" };
+    const wrapper = mount(<RawBootSequenceSelector {...p} />);
+    expect(wrapper.find(FBSelect).props().selectedItem).toEqual(p.selectedItem);
   });
 });

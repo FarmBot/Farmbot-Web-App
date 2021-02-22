@@ -1,5 +1,5 @@
-import * as React from "react";
-import { FBSelect, DropDownItem } from "../../ui/index";
+import React from "react";
+import { FBSelect, DropDownItem } from "../../ui";
 import { updateMCU } from "../../devices/actions";
 import { isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
@@ -13,6 +13,7 @@ import { Dictionary, NamedPin, McuParamName } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { SourceFwConfig } from "../../devices/interfaces";
+import { getModifiedClassNameDefaultFalse } from "../default_values";
 
 interface PinNumberDropdownProps {
   sourceFwConfig: SourceFwConfig;
@@ -34,6 +35,7 @@ export const PinNumberDropdown = (props: PinNumberDropdownProps) => {
   const classes = [
     props.sourceFwConfig(pinNumKey).consistent ? "" : "dim",
     props.disabled ? "disabled" : "",
+    getModifiedClassNameDefaultFalse(pinNumberValue),
   ];
   return <FBSelect
     extraClass={classes.join(" ")}

@@ -1138,10 +1138,6 @@
     float: right !important;
   }
   .factory-reset-options {
-    .os-reset-warning {
-      margin: 0;
-      margin-top: 1rem;
-    }
     a {
       color: $white;
       font-weight: bold;
@@ -1149,9 +1145,6 @@
     }
     .fa-external-link {
       margin-left: 0.5rem;
-    }
-    .network-not-found-timer {
-      margin-top: 1rem;
     }
   }
   .stall-detection-note,
@@ -1900,9 +1893,11 @@
         line-height: 3rem;
         font-style: normal;
       }
+      .filter-search {
+        margin-right: -1rem;
+      }
       .bp3-popover-wrapper {
         display: inline;
-        margin-left: 0.5rem;
       }
       .fb-toggle-button {
         margin-top: 2rem;

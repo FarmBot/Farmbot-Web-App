@@ -2,8 +2,7 @@ import React from "react";
 import { Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
-import { Row, Col, Help } from "../ui";
-import { ToggleButton } from "../ui/toggle_button";
+import { Row, Col, Help, ToggleButton } from "../ui";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "../farm_designer/map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "../farm_designer/map_size_setting";
@@ -15,6 +14,7 @@ import {
   DesignerSettingsSectionProps, SettingProps,
   DesignerSettingsPropsBase, SettingDescriptionProps,
 } from "./interfaces";
+import { getModifiedClassName } from "./default_values";
 
 export const Designer = (props: DesignerSettingsSectionProps) => {
   const { getConfigValue, dispatch, controlPanelState } = props;
@@ -35,7 +35,8 @@ export const Designer = (props: DesignerSettingsSectionProps) => {
 export const PlainDesignerSettings =
   (settingsProps: DesignerSettingsPropsBase) =>
     DESIGNER_SETTINGS(settingsProps).map(setting =>
-      <Setting key={setting.title} {...setting} {...settingsProps} />);
+      <Setting key={setting.title} {...setting} {...settingsProps}
+        useToolTip={true} />);
 
 export const Setting = (props: SettingProps) => {
   const { title, setting, callback, defaultOn } = props;
@@ -59,6 +60,7 @@ export const Setting = (props: SettingProps) => {
               }
             }}
             title={`${t("toggle")} ${title}`}
+            className={getModifiedClassName(setting)}
             customText={{ textFalse: t("off"), textTrue: t("on") }} />}
         </Col>
       </Row>
@@ -130,10 +132,11 @@ const DESIGNER_SETTINGS =
   ]);
 
 const OriginSelector = (props: DesignerSettingsPropsBase) => {
-  const quadrant = props.getConfigValue(NumericSetting.bot_origin_quadrant);
-  const update = (value: number) => () => props.dispatch(setWebAppConfigValue(
-    NumericSetting.bot_origin_quadrant, value));
-  return <div className="farmbot-origin">
+  const settingKey = NumericSetting.bot_origin_quadrant;
+  const quadrant = props.getConfigValue(settingKey);
+  const update = (value: number) => () =>
+    props.dispatch(setWebAppConfigValue(settingKey, value));
+  return <div className={`farmbot-origin ${getModifiedClassName(settingKey)}`}>
     <div className="quadrants">
       {[2, 1, 3, 4].map(q =>
         <div key={"quadrant_" + q}

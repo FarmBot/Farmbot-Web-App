@@ -1,9 +1,7 @@
 import React from "react";
-import { ToggleButton } from "../../ui/toggle_button";
 import { settingToggle } from "../../devices/actions";
-import { Row, Col, Help } from "../../ui";
+import { Row, Col, Help, ToggleButton } from "../../ui";
 import { BooleanMCUInputGroupProps } from "./interfaces";
-import { Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import {
@@ -65,17 +63,28 @@ export class BooleanMCUInputGroup
     </div>;
   }
 
+  get getDefault() { return getDefaultFwConfigValue(this.props.firmwareHardware); }
+
   get tooltip() {
-    const getDefault = getDefaultFwConfigValue(this.props.firmwareHardware);
     return t(this.props.tooltip, {
-      x: getDefault(this.props.x) ? t("enabled") : t("disabled"),
-      y: getDefault(this.props.y) ? t("enabled") : t("disabled"),
-      z: getDefault(this.props.z) ? t("enabled") : t("disabled"),
+      x: this.getDefault(this.props.x) ? t("enabled") : t("disabled"),
+      y: this.getDefault(this.props.y) ? t("enabled") : t("disabled"),
+      z: this.getDefault(this.props.z) ? t("enabled") : t("disabled"),
     });
   }
 
+  get anyModified() {
+    const modified = (setting: McuParamName) =>
+      this.getDefault(setting) != this.props.sourceFwConfig(setting).value;
+    return modified(this.props.x)
+      || modified(this.props.y)
+      || modified(this.props.z);
+  }
+
   render() {
-    return <Highlight settingName={this.props.label}>
+    return <Highlight settingName={this.props.label}
+      hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)}
+      className={this.props.advanced ? "advanced" : undefined}>
       <Row>
         <Col xs={12} className={"widget-body-tooltips"}>
           <label>
@@ -83,7 +92,7 @@ export class BooleanMCUInputGroup
             {this.props.caution &&
               <i className="fa fa-exclamation-triangle caution-icon" />}
           </label>
-          <Help text={this.tooltip} position={Position.TOP_RIGHT} />
+          <Help text={this.tooltip} />
         </Col>
       </Row>
       <Row><this.Toggles /></Row>

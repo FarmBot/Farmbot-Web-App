@@ -1,6 +1,6 @@
 import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
-import { ToolTips, DeviceSetting, Content } from "../../constants";
+import { ToolTips, DeviceSetting } from "../../constants";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
 import { EncodersOrStallDetectionProps } from "./interfaces";
 import { Header } from "./header";
@@ -9,6 +9,7 @@ import { hasEncoders } from "../firmware/firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../dev/dev_support";
 
 // eslint-disable-next-line complexity
 export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
@@ -40,12 +41,6 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
       panel={"encoders_or_stall_detection"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders_or_stall_detection}>
-      {!showEncoders &&
-        <Highlight settingName={DeviceSetting.stallDetectionNote}>
-          <div className="stall-detection-note">
-            <p>{t(Content.STALL_DETECTION_IN_BETA)}</p>
-          </div>
-        </Highlight>}
       <SpacePanelHeader />
       <BooleanMCUInputGroup {...commonProps}
         label={encoderSettingName(showEncoders)}
@@ -56,7 +51,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         disabled={arduinoBusy} />
-      {!showEncoders &&
+      {!showEncoders && DevSettings.futureFeaturesEnabled() &&
         <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.stallSensitivity}
           tooltip={ToolTips.STALL_SENSITIVITY}

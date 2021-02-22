@@ -9,7 +9,6 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { BoardType } from "./board_type";
 import { isFwHardwareValue } from "./firmware_hardware_support";
-import { FlashFirmwareRow } from "./flash_firmware_row";
 
 export function Firmware(props: FirmwareProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
@@ -40,9 +39,6 @@ export function Firmware(props: FirmwareProps) {
         buttonText={t("RESTART")}
         color={"yellow"}
         action={restartFirmware} />
-      <FlashFirmwareRow
-        botOnline={botOnline}
-        firmwareHardware={firmwareHardware} />
     </Collapse>
   </Highlight>;
 }

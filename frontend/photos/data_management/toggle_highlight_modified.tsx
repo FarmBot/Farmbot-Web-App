@@ -1,10 +1,11 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../ui/toggle_button";
+import { ToggleButton } from "../../ui";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { ToggleHighlightModifiedProps } from "./interfaces";
 import { DeviceSetting } from "../../constants";
+import { getModifiedClassName } from "../../settings/default_values";
 
 export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) => {
   const { getConfigValue, dispatch } = props;
@@ -12,7 +13,7 @@ export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) => 
   return <div className={"highlight-modified-toggle"}>
     <label>{t(DeviceSetting.highlightSettingsModifiedFromDefault)}</label>
     <ToggleButton
-      className={value ? "modified" : ""}
+      className={getModifiedClassName(BooleanSetting.highlight_modified_settings)}
       toggleValue={value}
       toggleAction={() => dispatch(setWebAppConfigValue(
         BooleanSetting.highlight_modified_settings, !value))} />

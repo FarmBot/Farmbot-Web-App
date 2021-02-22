@@ -6,7 +6,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { PowerAndReset } from "../power_and_reset";
 import { mount } from "enzyme";
 import { PowerAndResetProps } from "../interfaces";
@@ -30,6 +30,7 @@ describe("<PowerAndReset/>", () => {
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     botOnline: true,
+    showAdvanced: true,
   });
 
   it("renders in open state", () => {
@@ -38,7 +39,7 @@ describe("<PowerAndReset/>", () => {
     const wrapper = mount(<PowerAndReset {...p} />);
     ["Power and Reset", "Restart", "Shutdown",
       "Soft Reset", "Hard Reset", "Automatic Soft Reset",
-      "Connection Attempt Period", "Change Ownership"]
+      "Connection Attempt Period"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
   });
@@ -71,13 +72,5 @@ describe("<PowerAndReset/>", () => {
     clickButton(wrapper, 3, "yes");
     expect(edit).toHaveBeenCalledWith(fakeConfig, { disable_factory_reset: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
-  });
-
-  it("shows change ownership button", () => {
-    const p = fakeProps();
-    p.controlPanelState.power_and_reset = true;
-    const wrapper = mount(<PowerAndReset {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toContain("Change Ownership".toLowerCase());
   });
 });

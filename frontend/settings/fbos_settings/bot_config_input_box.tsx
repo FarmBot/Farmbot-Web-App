@@ -5,6 +5,7 @@ import { ConfigurationName } from "farmbot/dist";
 import { updateConfig } from "../../devices/actions";
 import { parseIntInput } from "../../util";
 import { isNumber, isBoolean, isNaN } from "lodash";
+import { getModifiedClassName } from "./default_values";
 
 export interface BotConfigInputBoxProps {
   setting: ConfigurationName;
@@ -38,10 +39,10 @@ export class BotConfigInputBox
     const boxValue = (isNumber(current) || isBoolean(current))
       ? current.toString()
       : "";
-
     return <BlurableInput
       type="number"
       className={!this.config.consistent ? "dim" : ""}
+      wrapperClassName={getModifiedClassName(this.props.setting, current)}
       onCommit={this.change(this.props.setting, this.props.dispatch)}
       value={boxValue}
       disabled={this.props.disabled} />;

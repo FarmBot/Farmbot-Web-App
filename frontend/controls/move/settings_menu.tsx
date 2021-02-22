@@ -1,12 +1,13 @@
 import React from "react";
 import { BooleanSetting } from "../../session_keys";
-import { ToggleButton } from "../../ui/toggle_button";
+import { ToggleButton } from "../../ui";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
 import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
 import { DeviceSetting } from "../../constants";
+import { getModifiedClassName } from "../../settings/default_values";
 
 export const moveWidgetSetting =
   (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
@@ -16,6 +17,7 @@ export const moveWidgetSetting =
           {t(label)}
         </label>
         <ToggleButton
+          className={getModifiedClassName(setting)}
           toggleAction={toggle(BooleanSetting[setting])}
           toggleValue={getValue(setting)} />
       </fieldset>;

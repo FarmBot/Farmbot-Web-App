@@ -8,6 +8,7 @@ import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "./interfaces";
 import { isNumber, range } from "lodash";
+import { getModifiedClassNameSpecifyDefault } from "../default_values";
 
 const hourToUtcHour =
   (hour: number | undefined, offset: number): number | undefined =>
@@ -43,7 +44,10 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
       .map(hour => ({ label: formatHour(hour, hour24), value: hour }))}
     allowEmpty={true}
     customNullLabel={ASAP()}
-    extraClass={props.disabled ? "disabled" : ""} />;
+    extraClass={[
+      props.disabled ? "disabled" : "",
+      getModifiedClassNameSpecifyDefault(localHour, 3),
+    ].join(" ")} />;
 };
 
 export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {

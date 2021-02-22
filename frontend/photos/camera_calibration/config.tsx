@@ -14,6 +14,7 @@ import {
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { ToolTips } from "../../constants";
+import { getModifiedClassName } from "../default_values";
 
 export class CameraCalibrationConfig
   extends React.Component<CameraCalibrationConfigProps, {}> {
@@ -139,6 +140,7 @@ export const BoolConfig = (props: BoolConfigProps) => {
       type="checkbox"
       name={props.configKey}
       id={props.configKey}
+      className={getModifiedClassName(props.configKey, value)}
       checked={props.invert ? !value : value}
       onChange={e => {
         const { checked } = e.currentTarget;
@@ -165,6 +167,8 @@ export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
     <Help text={props.helpText} />
     <BlurableInput type="number"
       id={props.configKey}
+      className={getModifiedClassName(props.configKey,
+        props.wdEnvGet(props.configKey))}
       value={"" + props.wdEnvGet(props.configKey)}
       onCommit={e =>
         props.onChange(props.configKey, parseFloat(e.currentTarget.value))}
@@ -188,6 +192,8 @@ export const DropdownConfig = (props: DropdownConfigProps) =>
     </label>
     <Help text={props.helpText} />
     <FBSelect
+      extraClass={getModifiedClassName(props.configKey,
+        props.wdEnvGet(props.configKey))}
       list={props.list}
       onChange={ddi => {
         if (isNumber(ddi.value)) {

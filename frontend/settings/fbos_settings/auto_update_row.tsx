@@ -1,11 +1,11 @@
 import React from "react";
-import { Row, Col } from "../../ui/index";
-import { ToggleButton } from "../../ui/toggle_button";
+import { Row, Col, Help, ToggleButton } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { Content, DeviceSetting } from "../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { getModifiedClassName } from "./default_values";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
@@ -15,15 +15,17 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
         <label>
           {t(DeviceSetting.osAutoUpdate)}
         </label>
+        <Help text={Content.OS_AUTO_UPDATE} />
       </Col>
       <Col xs={3}>
         <ToggleButton toggleValue={osAutoUpdate.value}
           dim={!osAutoUpdate.consistent}
+          className={getModifiedClassName("os_auto_update",
+            !!osAutoUpdate.value)}
           toggleAction={() => props.dispatch(updateConfig({
             os_auto_update: !osAutoUpdate.value
           }))} />
       </Col>
     </Row>
-    <Row><p>{t(Content.OS_AUTO_UPDATE)}</p></Row>
   </Highlight>;
 }

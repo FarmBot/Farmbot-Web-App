@@ -38,6 +38,7 @@ describe("<AxisSettings />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botOnline: true,
     firmwareHardware: undefined,
+    showAdvanced: true,
   });
 
   function testAxisLengthInput(

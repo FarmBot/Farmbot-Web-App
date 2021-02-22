@@ -16,6 +16,7 @@ import {
 } from "../firmware/firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { getModifiedClassName } from "./default_values";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -301,6 +302,7 @@ export const OSReleaseChannelSelection = (
       {t("OS release channel")}
     </label>
     <FBSelect
+      extraClass={getModifiedClassName("update_channel", channel)}
       selectedItem={{ label: t("" + channel), value: "" + channel }}
       onChange={ddi =>
         (ddi.value == "stable" ||

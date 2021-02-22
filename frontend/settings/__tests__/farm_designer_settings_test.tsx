@@ -3,14 +3,17 @@ jest.mock("../../farm_designer/map/layers/farmbot/bot_trail", () => ({
 }));
 
 jest.mock("../../config_storage/actions", () => ({
+  getWebAppConfigValue: jest.fn(() => jest.fn()),
   setWebAppConfigValue: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { PlainDesignerSettings, Setting } from "../farm_designer_settings";
 import { DesignerSettingsPropsBase, SettingProps } from "../interfaces";
-import { resetVirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
+import {
+  resetVirtualTrail,
+} from "../../farm_designer/map/layers/farmbot/bot_trail";
 import { BooleanSetting } from "../../session_keys";
 import { DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
