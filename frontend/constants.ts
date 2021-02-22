@@ -1215,6 +1215,7 @@ export enum DeviceSetting {
   farmbotSettings = `FarmBot`,
   name = `name`,
   timezone = `timezone`,
+  time_zone = `time zone`,
   camera = `camera`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
@@ -1316,6 +1317,7 @@ export enum DeviceSetting {
   exportParameters = `Export parameters`,
   importParameters = `Import parameters`,
   highlightSettingsModifiedFromDefault = `Highlight settings modified from default`,
+  showAdvancedSettings = `Show advanced settings`,
   resetHardwareParams = `Reset hardware parameters`,
 
   // Farm Designer

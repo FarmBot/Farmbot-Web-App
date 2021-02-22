@@ -4,6 +4,7 @@ import { t } from "../../i18next_wrapper";
 import { Help, BlurableInput, Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { CaptureSizeSelectionProps, CaptureSizeSelectionState } from "./interfaces";
 import { Camera, parseCameraSelection } from "./camera_selection";
+import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
 
 export class CaptureSizeSelection
   extends React.Component<CaptureSizeSelectionProps, CaptureSizeSelectionState> {
@@ -23,6 +24,8 @@ export class CaptureSizeSelection
         <Col xs={7}>
           <FBSelect
             key={selectedSize.value}
+            extraClass={getModifiedClassNameSpecifyDefault(
+              selectedSize.value, Size.r640x480)}
             list={Object.values(SIZE_OPTIONS(parseCameraSelection(env)))
               .filter(ddi => !!ddi)
               .map((ddi: DropDownItem) => ddi)}

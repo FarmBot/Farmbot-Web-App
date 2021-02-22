@@ -1,10 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { LockableButton } from "./lockable_button";
 import { axisTrackingStatus } from "./axis_tracking_status";
-import { Row, Col, Help } from "../../ui/index";
+import { Row, Col, Help } from "../../ui";
 import { CalibrationRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
-import { Position } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
 
 export class CalibrationRow extends React.Component<CalibrationRowProps> {
@@ -37,7 +36,7 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
           <label>
             {t(this.props.title)}
           </label>
-          <Help text={t(this.props.toolTip)} position={Position.TOP_RIGHT} />
+          <Help text={t(this.props.toolTip)} />
         </Col>
       </Row>
       <Row><this.Axes /></Row>

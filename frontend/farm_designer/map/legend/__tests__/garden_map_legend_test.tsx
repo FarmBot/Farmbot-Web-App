@@ -11,6 +11,7 @@ jest.mock("../../zoom", () => ({
 }));
 
 jest.mock("../../../../config_storage/actions", () => ({
+  getWebAppConfigValue: jest.fn(() => jest.fn()),
   setWebAppConfigValue: jest.fn(),
 }));
 

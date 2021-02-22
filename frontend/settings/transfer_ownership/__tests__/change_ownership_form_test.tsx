@@ -5,10 +5,10 @@ jest.mock("../../transfer_ownership/transfer_ownership", () => ({
   transferOwnership: jest.fn(() => Promise.resolve()),
 }));
 
-import * as React from "react";
+import React from "react";
 import { ChangeOwnershipForm } from "../change_ownership_form";
 import { mount, shallow } from "enzyme";
-import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
+import { transferOwnership } from "../transfer_ownership";
 import { API } from "../../../api";
 
 describe("<ChangeOwnershipForm/>", () => {
@@ -16,12 +16,21 @@ describe("<ChangeOwnershipForm/>", () => {
 
   it("renders", () => {
     const wrapper = mount(<ChangeOwnershipForm />);
+    wrapper.setState({ open: true });
     ["email", "password", "server"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
+  it("opens form", () => {
+    const wrapper = shallow<ChangeOwnershipForm>(<ChangeOwnershipForm />);
+    expect(wrapper.state().open).toEqual(false);
+    wrapper.find("ExpandableHeader").simulate("click");
+    expect(wrapper.state().open).toEqual(true);
+  });
+
   it("submits", () => {
     const wrapper = mount(<ChangeOwnershipForm />);
+    wrapper.setState({ open: true });
     wrapper.find("button").simulate("click");
     expect(transferOwnership).toHaveBeenCalledWith({
       device: mockDevice,

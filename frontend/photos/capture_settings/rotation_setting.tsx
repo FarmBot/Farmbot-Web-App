@@ -1,11 +1,11 @@
 import React from "react";
+import { t } from "../../i18next_wrapper";
 import { ToolTips } from "../../constants";
 import { semverCompare, SemverResult } from "../../util";
-import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../ui/toggle_button";
-import { Help } from "../../ui";
+import { Help, ToggleButton } from "../../ui";
 import { isUndefined } from "lodash";
 import { RotationSettingProps } from "./interfaces";
+import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";
 
 export const DISABLE_ROTATE_AT_CAPTURE_KEY =
   "take_photo_disable_rotation_adjustment";
@@ -22,6 +22,7 @@ export const RotationSetting = (props: RotationSettingProps) => {
       <label>{t("Rotate during capture")}</label>
       <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />
       <ToggleButton toggleValue={!disableRotation}
+        className={getModifiedClassNameDefaultFalse(disableRotation)}
         toggleAction={() => props.dispatch(props.saveFarmwareEnv(
           DISABLE_ROTATE_AT_CAPTURE_KEY,
           disableRotation ? "0" : "1"))} />

@@ -14,12 +14,12 @@ import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { SelectModeLink } from "../../../plants/select_plants";
 import { DeviceSetting, Content } from "../../../constants";
-import { Help } from "../../../ui";
+import { Help, ToggleButton } from "../../../ui";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
-import { ToggleButton } from "../../../ui/toggle_button";
 import { ZDisplay, ZDisplayToggle } from "./z_display";
+import { getModifiedClassName } from "../../../settings/default_values";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -57,6 +57,7 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
     <label>{t(props.label)}</label>
     {props.helpText && <Help text={props.helpText} />}
     <ToggleButton
+      className={getModifiedClassName(props.setting)}
       title={t(props.label)}
       toggleAction={() =>
         props.dispatch(setWebAppConfigValue(props.setting, !value))}
@@ -95,30 +96,36 @@ const LayerToggles = (props: GardenMapLegendProps) => {
   const subMenuProps = { dispatch, getConfigValue };
   return <div className="toggle-buttons">
     <LayerToggle
+      settingName={BooleanSetting.show_plants}
       value={props.showPlants}
       label={DeviceSetting.showPlants}
       onClick={toggle(BooleanSetting.show_plants)} />
     <LayerToggle
+      settingName={BooleanSetting.show_points}
       value={props.showPoints}
       label={DeviceSetting.showPoints}
       onClick={toggle(BooleanSetting.show_points)} />
     <LayerToggle
+      settingName={BooleanSetting.show_weeds}
       value={props.showWeeds}
       label={DeviceSetting.showWeeds}
       onClick={toggle(BooleanSetting.show_weeds)}
       submenuTitle={t("extras")}
       popover={<PointsSubMenu {...subMenuProps} />} />
     <LayerToggle
+      settingName={BooleanSetting.show_spread}
       value={props.showSpread}
       label={DeviceSetting.showSpread}
       onClick={toggle(BooleanSetting.show_spread)} />
     <LayerToggle
+      settingName={BooleanSetting.show_farmbot}
       value={props.showFarmbot}
       label={DeviceSetting.showFarmbot}
       onClick={toggle(BooleanSetting.show_farmbot)}
       submenuTitle={t("extras")}
       popover={<FarmbotSubMenu {...subMenuProps} />} />
     <LayerToggle
+      settingName={BooleanSetting.show_images}
       value={props.showImages}
       label={DeviceSetting.showPhotos}
       onClick={toggle(BooleanSetting.show_images)}
@@ -133,11 +140,13 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           helpText={Content.CROP_MAP_IMAGES} />
       </div>} />
     <LayerToggle
+      settingName={BooleanSetting.show_zones}
       value={props.showZones}
       label={DeviceSetting.showAreas}
       onClick={toggle(BooleanSetting.show_zones)} />
     {props.hasSensorReadings &&
       <LayerToggle
+        settingName={BooleanSetting.show_sensor_readings}
         value={props.showSensorReadings}
         label={DeviceSetting.showReadings}
         onClick={toggle(BooleanSetting.show_sensor_readings)} />}

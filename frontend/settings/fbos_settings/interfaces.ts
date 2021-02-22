@@ -41,12 +41,14 @@ export interface PowerAndResetProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
+  showAdvanced: boolean;
 }
 
 export interface FactoryResetRowsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
+  showAdvanced: boolean;
 }
 
 export interface FarmbotOsRowProps {

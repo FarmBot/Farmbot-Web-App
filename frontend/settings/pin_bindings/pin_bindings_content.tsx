@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, Help } from "../../ui";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
@@ -52,8 +52,7 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
   return <div className="pin-bindings">
     <Highlight settingName={DeviceSetting.stockPinBindings}>
       <Row>
-        <Help text={ToolTips.PIN_BINDINGS}
-          position={Position.TOP_RIGHT} />
+        <Help text={ToolTips.PIN_BINDINGS} />
         <StockPinBindingsButton
           dispatch={dispatch} firmwareHardware={firmwareHardware} />
         <Popover

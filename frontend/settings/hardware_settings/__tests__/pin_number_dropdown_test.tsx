@@ -36,7 +36,7 @@ describe("<PinNumberDropdown />", () => {
   it("renders undefined", () => {
     const wrapper = mount(<PinNumberDropdown {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Select a pin");
-    expect(wrapper.find(FBSelect).props().extraClass).toEqual(" ");
+    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("");
   });
 
   it("renders disabled", () => {
@@ -44,14 +44,14 @@ describe("<PinNumberDropdown />", () => {
     p.disabled = true;
     const wrapper = mount(<PinNumberDropdown {...p} />);
     expect(wrapper.text()).toEqual("Select a pin");
-    expect(wrapper.find(FBSelect).props().extraClass).toEqual(" disabled");
+    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("disabled");
   });
 
   it("renders when inconsistent", () => {
     const p = fakeProps();
     p.sourceFwConfig = () => ({ value: 0, consistent: false });
     const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.find(FBSelect).props().extraClass).toEqual("dim ");
+    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("dim");
   });
 
   it("renders pin label", () => {

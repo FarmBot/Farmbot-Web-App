@@ -1,9 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { Header } from "../hardware_settings/header";
-import { Collapse, Popover, Position } from "@blueprintjs/core";
+import { Collapse } from "@blueprintjs/core";
 import { FactoryResetRows } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
-import { ChangeOwnershipForm } from "./change_ownership_form";
 import { FbosButtonRow } from "./fbos_button_row";
 import { Content, DeviceSetting } from "../../constants";
 import { reboot, powerOff } from "../../devices/actions";
@@ -11,7 +10,7 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 
 export function PowerAndReset(props: PowerAndResetProps) {
-  const { dispatch, sourceFbosConfig, botOnline } = props;
+  const { dispatch, sourceFbosConfig, botOnline, showAdvanced } = props;
   const { power_and_reset } = props.controlPanelState;
   return <Highlight className={"section"}
     settingName={DeviceSetting.powerAndReset}>
@@ -37,18 +36,9 @@ export function PowerAndReset(props: PowerAndResetProps) {
         action={powerOff} />
       <FactoryResetRows
         dispatch={dispatch}
+        showAdvanced={showAdvanced}
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline} />
-      {botOnline &&
-        <Highlight settingName={DeviceSetting.changeOwnership}>
-          <Popover position={Position.BOTTOM_LEFT}>
-            <p className={"release-notes-button"}>
-              {t(DeviceSetting.changeOwnership)}&nbsp;
-              <i className="fa fa-caret-down" />
-            </p>
-            <ChangeOwnershipForm />
-          </Popover>
-        </Highlight>}
     </Collapse>
   </Highlight>;
 }

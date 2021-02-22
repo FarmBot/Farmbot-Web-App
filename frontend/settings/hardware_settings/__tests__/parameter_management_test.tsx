@@ -4,6 +4,11 @@ jest.mock("../export_menu", () => ({
   FwParamExportMenu: () => <div />,
 }));
 
+jest.mock("../../../config_storage/actions", () => ({
+  getWebAppConfigValue: jest.fn(() => jest.fn()),
+  setWebAppConfigValue: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -13,6 +18,8 @@ import { ParameterManagementProps } from "../interfaces";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { Content } from "../../../constants";
 import { importParameters, resendParameters } from "../export_menu";
+import { setWebAppConfigValue } from "../../../config_storage/actions";
+import { BooleanSetting } from "../../../session_keys";
 
 describe("<ParameterManagement />", () => {
   const fakeProps = (): ParameterManagementProps => ({
@@ -52,6 +59,15 @@ describe("<ParameterManagement />", () => {
     wrapper.find("button.yellow").last().simulate("click");
     expect(confirm).toHaveBeenCalledWith(Content.PARAMETER_IMPORT_CONFIRM);
     expect(importParameters).toHaveBeenCalledWith("");
+  });
+
+  it("toggles advanced settings", () => {
+    const p = fakeProps();
+    p.controlPanelState.parameter_management = true;
+    const wrapper = mount(<ParameterManagement {...p} />);
+    wrapper.find(".fb-toggle-button").at(1).simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.show_advanced_settings, true);
   });
 });
 

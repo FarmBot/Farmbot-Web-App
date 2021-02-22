@@ -1,7 +1,6 @@
 import React from "react";
-import { Help } from "../../ui/index";
+import { Help, ToggleButton } from "../../ui";
 import { ToolTips, DeviceSetting } from "../../constants";
-import { ToggleButton } from "../../ui/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
@@ -11,6 +10,7 @@ import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { Feature } from "../../devices/interfaces";
+import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
 
 interface LogSettingRecord {
   label: string;
@@ -74,6 +74,7 @@ const LogSetting = (props: LogSettingProps) => {
     <ToggleButton
       toggleValue={config.value}
       dim={!config.consistent}
+      className={getModifiedClassName(setting, config.value)}
       toggleAction={() => {
         props.dispatch(updateConfig({ [setting]: !config.value }));
         if (!config.value === true) {

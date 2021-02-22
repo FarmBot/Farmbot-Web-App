@@ -12,8 +12,9 @@ import { betterCompact } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
+import { getModifiedClassName } from "./default_values";
 
-interface BootSequenceSelectorProps {
+export interface BootSequenceSelectorProps {
   list: DropDownItem[];
   selectedItem: Readonly<DropDownItem> | undefined;
   config: TaggedFbosConfig;
@@ -61,6 +62,8 @@ export class RawBootSequenceSelector
 
   SelectionInput = () =>
     <FBSelect
+      extraClass={getModifiedClassName("boot_sequence_id",
+        this.props.selectedItem?.value)}
       allowEmpty={true}
       list={this.props.list}
       selectedItem={this.props.selectedItem}

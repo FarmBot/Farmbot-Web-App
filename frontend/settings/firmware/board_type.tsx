@@ -5,12 +5,15 @@ import { ColWidth } from "../fbos_settings/farmbot_os_settings";
 import { updateConfig } from "../../devices/actions";
 import { BoardTypeProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
-import { FirmwareHardwareStatus } from "./firmware_hardware_status";
+import {
+  FirmwareHardwareStatus, FlashFirmwareBtn,
+} from "./firmware_hardware_status";
 import {
   isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
 } from "./firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
+import { getModifiedClassName } from "../fbos_settings/default_values";
 
 export class BoardType extends React.Component<BoardTypeProps, {}> {
   get sending() {
@@ -35,7 +38,10 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
   FirmwareSelection = () =>
     <FBSelect
       key={this.props.firmwareHardware + "" + this.sending}
-      extraClass={this.sending ? "dim" : ""}
+      extraClass={[
+        this.sending ? "dim" : "",
+        getModifiedClassName("firmware_hardware", this.props.firmwareHardware),
+      ].join(" ")}
       list={getFirmwareChoices()}
       selectedItem={this.selectedBoard}
       onChange={this.sendOffConfig} />
@@ -56,6 +62,11 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             bot={this.props.bot}
             dispatch={this.props.dispatch}
             timeSettings={this.props.timeSettings} />
+        </Col>
+        <Col xs={ColWidth.description}>
+          <FlashFirmwareBtn
+            apiFirmwareValue={this.props.firmwareHardware}
+            botOnline={this.props.botOnline} />
         </Col>
       </Row>
       <Row>

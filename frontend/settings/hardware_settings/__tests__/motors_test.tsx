@@ -40,6 +40,7 @@ describe("<Motors />", () => {
       firmwareHardware: undefined,
       arduinoBusy: false,
       shouldDisplay: () => false,
+      showAdvanced: true,
     };
   };
 

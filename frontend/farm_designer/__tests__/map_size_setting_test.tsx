@@ -1,8 +1,9 @@
 jest.mock("../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn()
+  getWebAppConfigValue: jest.fn(() => jest.fn()),
+  setWebAppConfigValue: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { MapSizeInputs, MapSizeInputsProps } from "../map_size_setting";
 import { mount } from "enzyme";
 import { setWebAppConfigValue } from "../../config_storage/actions";
