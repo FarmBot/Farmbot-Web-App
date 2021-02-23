@@ -30,3 +30,4 @@ public/system
 config/application.yml
 coverage
 mqtt/
+dump.sql
