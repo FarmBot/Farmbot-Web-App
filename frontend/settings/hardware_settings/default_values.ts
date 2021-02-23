@@ -3,9 +3,7 @@ import {
   NumberConfigKey as NumberFirmwareConfigKey,
 } from "farmbot/dist/resources/configs/firmware";
 import { cloneDeep } from "lodash";
-import { getWebAppConfigValue } from "../../config_storage/actions";
-import { store } from "../../redux/store";
-import { BooleanSetting } from "../../session_keys";
+import { getModifiedClassNameSpecifyDefault } from "../default_values";
 
 const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = {
   encoder_enabled_x: 1,
@@ -163,10 +161,6 @@ export const getModifiedClassName = (
   value: number | undefined,
   firmwareHardware: FirmwareHardware | undefined,
 ) => {
-  const highlightModified = getWebAppConfigValue(store.getState)(
-    BooleanSetting.highlight_modified_settings);
   const defaultValue = getDefaultFwConfigValue(firmwareHardware)(key);
-  return highlightModified && (defaultValue != value)
-    ? "modified"
-    : "";
+  return getModifiedClassNameSpecifyDefault(value, defaultValue);
 };

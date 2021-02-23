@@ -4,7 +4,7 @@ import {
   NumberConfigKey as NumberFbosConfigKey,
 } from "farmbot/dist/resources/configs/fbos";
 import { ConfigurationName } from "farmbot";
-import { getModifiedClassNameSpecifyDefault } from "../default_values";
+import { getModifiedClassNameSpecifyModified } from "../default_values";
 
 type Key = BooleanFbosConfigKey | StringFbosConfigKey | NumberFbosConfigKey
   | ConfigurationName;
@@ -31,10 +31,11 @@ const DEFAULT_FBOS_CONFIG_VALUES: Record<Key, Value> = {
   soil_height: 0,
 };
 
-export const modifiedFromDefault = (key: Key, value: Value) =>
-  value != DEFAULT_FBOS_CONFIG_VALUES[key];
+export const modifiedFromDefault = (key: Key, value: Value) => {
+  if (key == "network_not_found_timer" && value == 20) { return false; }
+  return value != DEFAULT_FBOS_CONFIG_VALUES[key];
+};
 
 export const getModifiedClassName = (key: Key, value: Value) => {
-  const defaultValue = DEFAULT_FBOS_CONFIG_VALUES[key];
-  return getModifiedClassNameSpecifyDefault(value, defaultValue);
+  return getModifiedClassNameSpecifyModified(modifiedFromDefault(key, value));
 };
