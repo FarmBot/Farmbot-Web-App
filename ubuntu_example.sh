@@ -1,4 +1,4 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 20.04 Machine
+# How to install FarmBot Web API on a Fresh Ubuntu 20.10 Machine
 
 # IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
 # longterm support to self-hosted users. If you have never administered a
