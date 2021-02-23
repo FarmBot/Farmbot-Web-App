@@ -30,4 +30,5 @@ public/system
 config/application.yml
 coverage
 mqtt/
+# v13 upgrade creates a DB backup as dump.sql:
 dump.sql
