@@ -22,8 +22,9 @@ export function LimitSwitches(props: LimitSwitchesProps) {
   };
 
 
-  return <Highlight className={"section"}
-    settingName={DeviceSetting.limitSwitchSettings}>
+  return <Highlight className={"section advanced"}
+    settingName={DeviceSetting.limitSwitchSettings}
+    hidden={!props.showAdvanced}>
     <Header
       expanded={limit_switches}
       title={DeviceSetting.limitSwitchSettings}

@@ -28,6 +28,7 @@ import { maybeOpenPanel } from "../maybe_highlight";
 import { ControlPanelState } from "../../devices/interfaces";
 import { panelState } from "../../__test_support__/control_panel_state";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
+import { API } from "../../api";
 
 const getSetting =
   (wrapper: ReactWrapper, position: number, containsString: string) => {
@@ -169,5 +170,14 @@ describe("<DesignerSettings />", () => {
     p.searchTerm = "developer";
     const wrapper = mount(<DesignerSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("unstable fe");
+  });
+
+  it("renders change ownership form", () => {
+    API.setBaseUrl("");
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.sync_status = "synced";
+    p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("change ownership");
   });
 });

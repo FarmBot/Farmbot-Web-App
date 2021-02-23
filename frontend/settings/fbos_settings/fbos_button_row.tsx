@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Row, Col } from "../../ui";
+import React from "react";
+import { Row, Col, Help } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
@@ -20,6 +20,7 @@ export const FbosButtonRow = (props: FbosButtonRowProps) => {
         <label>
           {t(props.label)}
         </label>
+        <Help text={props.description} />
       </Col>
       <Col xs={5}>
         <button
@@ -32,6 +33,5 @@ export const FbosButtonRow = (props: FbosButtonRowProps) => {
         </button>
       </Col>
     </Row>
-    <Row><p>{t(props.description)}</p></Row>
   </Highlight>;
 };

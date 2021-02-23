@@ -19,15 +19,14 @@ describe("<ImagingDataManagement />", () => {
   });
 
   it("renders toggle", () => {
-    mockDev = true;
     const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("highlight");
   });
 
-  it("doesn't render toggle", () => {
+  it("doesn't render advanced", () => {
     mockDev = false;
     const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("highlight");
+    expect(wrapper.text().toLowerCase()).not.toContain("advanced");
   });
 
   it("toggles advanced", () => {

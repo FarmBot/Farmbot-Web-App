@@ -24,7 +24,7 @@ export function AxisSettings(props: AxisSettingsProps) {
 
   const {
     dispatch, bot, sourceFwConfig, firmwareConfig, botOnline,
-    firmwareHardware
+    firmwareHardware, showAdvanced,
   } = props;
   const mcuParams = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
   const { axis_settings } = props.bot.controlPanelState;
@@ -51,6 +51,7 @@ export function AxisSettings(props: AxisSettingsProps) {
     sourceFwConfig,
     disabled: busy,
     firmwareHardware,
+    showAdvanced,
   };
 
   return <Highlight className={"section"}
@@ -95,6 +96,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
         z={"movement_home_at_boot_z"}
+        advanced={true}
         caution={true} />
       <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.stopAtHome}

@@ -1,7 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { ImageFilterMenu } from "./image_filter_menu";
-import { ToggleButton } from "../../ui/toggle_button";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
@@ -15,7 +14,10 @@ import {
   PhotoFilterSettingsProps, FiltersEnabledWarningProps,
 } from "./interfaces";
 import { FilterOlderOrNewer } from "./filter_older_or_newer";
-import { Help } from "../../ui";
+import { Help, ToggleButton } from "../../ui";
+import {
+  getModifiedClassName, getModifiedClassNameDefaultFalse,
+} from "../../settings/default_values";
 
 export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const { dispatch, flags, alwaysHighlightImage, hideUnShownImages } = props;
@@ -53,12 +55,14 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     </div>
     <label className={"toggle-label"}>{t("show photos in map")}</label>
     <ToggleButton toggleValue={!layerOff}
+      className={getModifiedClassName(BooleanSetting.show_images)}
       toggleAction={() =>
         dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
     <label className={"toggle-label"}>
       {t("always highlight current photo in map")}
     </label>
     <ToggleButton disabled={layerOff}
+      className={getModifiedClassNameDefaultFalse(alwaysHighlightImage)}
       toggleValue={alwaysHighlightImage}
       toggleAction={() =>
         dispatch(toggleAlwaysHighlightImage(alwaysHighlightImage, image))} />
@@ -66,6 +70,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       {t("only show current photo in map")}
     </label>
     <ToggleButton disabled={layerOff}
+      className={getModifiedClassNameDefaultFalse(hideUnShownImages)}
       toggleValue={hideUnShownImages}
       toggleAction={() => dispatch(toggleSingleImageMode(image))} />
   </div>;

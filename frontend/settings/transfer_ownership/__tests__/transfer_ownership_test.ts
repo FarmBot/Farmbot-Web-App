@@ -7,7 +7,7 @@ jest.mock("axios", () => ({ post: jest.fn(() => mockPost) }));
 import { transferOwnership, TransferProps } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import { API } from "../../../api";
-import { submitOwnershipChange } from "../../fbos_settings/change_ownership_form";
+import { submitOwnershipChange } from "../change_ownership_form";
 import { error } from "../../../toast/toast";
 
 API.setBaseUrl("http://foo.bar");
@@ -34,7 +34,9 @@ describe("transferOwnership", () => {
 describe("submitOwnershipChange()", () => {
   it("pops a toast when things go wrong", async () => {
     mockPost = Promise.reject("NOPE");
-    await submitOwnershipChange({ email: "email", password: "password" });
+    await submitOwnershipChange({
+      email: "email", password: "password", open: true
+    });
     expect(error).toHaveBeenCalledWith("Bad username or password");
   });
 });

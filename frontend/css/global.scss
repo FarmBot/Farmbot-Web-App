@@ -323,20 +323,17 @@ fieldset {
 }
 
 .os-release-channel {
-  width: 100%;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
   label {
-    vertical-align: bottom;
-    margin-bottom: 0.75rem;
+    margin: 0;
     margin-right: 1rem;
+    line-height: 3rem;
   }
   .filter-search {
-    display: inline;
-    span {
-      width: 40%;
-    }
-    .bp3-popover-wrapper {
-      display: inline;
+    display: inline-block;
+    width: 50%;
+    button {
+      margin: 0;
     }
   }
 }
@@ -453,6 +450,9 @@ a {
   }
   .row {
     margin-bottom: 1rem;
+    &:empty {
+      margin-bottom: 0;
+    }
   }
   label {
     margin-top: 0.5rem;
@@ -1516,11 +1516,31 @@ ul {
   }
 }
 
-.input {
-  border: 3px solid $transparent;
-  &.modified {
-    border-color: $yellow;
+.modified {
+  box-shadow: 0 0 0px 3px $yellow !important;
+  &.bp3-slider {
+    box-shadow: none !important;
+    .bp3-slider-handle {
+      box-shadow: 0 0 0px 3px $yellow;
+    }
   }
+}
+
+.modified-start {
+  box-shadow: none !important;
+  .bp3-start {
+    box-shadow: 0 0 0px 3px $yellow;
+  }
+}
+
+.modified-end {
+  box-shadow: none !important;
+  .bp3-end {
+    box-shadow: 0 0 0px 3px $yellow;
+  }
+}
+
+.input {
   .fa-undo {
     position: absolute;
     top: 1rem;
@@ -1931,6 +1951,11 @@ textarea:focus {
     transition: background-color 10s linear, box-shadow 10s linear;
     background-color: transparent;
     box-shadow: none;
+  }
+  &.advanced {
+    border-left: 3px solid $blue;
+    padding-left: 1rem;
+    margin-left: -1rem;
   }
   .fa-anchor {
     position: absolute;

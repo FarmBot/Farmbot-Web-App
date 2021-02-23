@@ -1,8 +1,9 @@
-import * as React from "react";
-import { FBSelect, DropDownItem } from "../../ui/index";
+import React from "react";
+import { FBSelect, DropDownItem } from "../../ui";
 import { list } from "./tz_list";
 import { inferTimezone } from "./guess_timezone";
 import { isString } from "lodash";
+import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";
 
 const CHOICES: DropDownItem[] = list.map(x => ({ label: x, value: x }));
 
@@ -33,6 +34,7 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
 
   render() {
     return <FBSelect
+      extraClass={getModifiedClassNameDefaultFalse(this.props.currentTimezone)}
       list={CHOICES}
       selectedItem={this.selectedItem()}
       onChange={this.itemSelected} />;

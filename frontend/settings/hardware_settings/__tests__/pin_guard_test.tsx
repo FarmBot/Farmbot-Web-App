@@ -19,6 +19,6 @@ describe("<PinGuard />", () => {
     const p = fakeProps();
     p.controlPanelState.pin_guard = true;
     const wrapper = mount(<PinGuard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("number");
+    expect(wrapper.text().toLowerCase()).toContain("select a pin");
   });
 });

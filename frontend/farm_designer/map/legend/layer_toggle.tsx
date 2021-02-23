@@ -2,8 +2,11 @@ import React from "react";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { DeviceSetting } from "../../../constants";
+import { getModifiedClassName } from "../../../settings/default_values";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export interface LayerToggleProps {
+  settingName: BooleanConfigKey;
   label: DeviceSetting;
   value: boolean | undefined;
   onClick(): void;
@@ -15,7 +18,12 @@ export interface LayerToggleProps {
 export function LayerToggle(props: LayerToggleProps) {
   const { label, value, onClick, popover, submenuTitle } = props;
   const title = submenuTitle || t("more");
-  const classNames = `fb-button fb-toggle-button ${value ? "green" : "red"}`;
+  const classNames = [
+    "fb-button",
+    "fb-toggle-button",
+    value ? "green" : "red",
+    getModifiedClassName(props.settingName),
+  ].join(" ");
   return <fieldset>
     <label>
       <span>

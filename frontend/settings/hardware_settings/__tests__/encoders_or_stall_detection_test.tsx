@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../../dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { EncodersOrStallDetection } from "../encoders_or_stall_detection";
@@ -48,6 +53,14 @@ describe("<EncodersOrStallDetection />", () => {
     const wrapper = mount(<EncodersOrStallDetection {...p} />);
     expect(wrapper.find(BooleanMCUInputGroup).first().props().disabled)
       .toEqual(false);
+  });
+
+  it("shows sensitivity setting", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.controlPanelState.encoders_or_stall_detection = true;
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<EncodersOrStallDetection {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("sensitivity");
   });
 });

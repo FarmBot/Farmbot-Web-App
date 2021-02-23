@@ -1,16 +1,19 @@
 import React from "react";
-import { Row, Col, docLinkClick } from "../../ui/index";
+import { Row, Col, docLinkClick, Help, ToggleButton } from "../../ui";
 import { Content, DeviceSetting } from "../../constants";
 import { softReset, updateConfig } from "../../devices/actions";
-import { ToggleButton } from "../../ui/toggle_button";
 import { BotConfigInputBox } from "./bot_config_input_box";
 import { FactoryResetRowsProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { getModifiedClassName, modifiedFromDefault } from "./default_values";
+import { ConfigurationName } from "farmbot";
 
 export function FactoryResetRows(props: FactoryResetRowsProps) {
-  const { dispatch, sourceFbosConfig, botOnline } = props;
+  const { dispatch, sourceFbosConfig, botOnline, showAdvanced } = props;
   const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
+  const isModified = (key: ConfigurationName) =>
+    modifiedFromDefault(key, sourceFbosConfig(key).value);
   const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
   return <div className={"factory-reset-options"}>
     <Highlight settingName={DeviceSetting.softReset}>
@@ -19,6 +22,8 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
           <label>
             {t(DeviceSetting.softReset)}
           </label>
+          <Help text={`${Content.SOFT_RESET_WARNING}
+            ${t(Content.OS_RESET_WARNING, { resetMethod: t("Soft") })}`} />
         </Col>
         <Col xs={6}>
           <button
@@ -31,10 +36,6 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
           </button>
         </Col>
       </Row>
-      <Row><p>{t(Content.SOFT_RESET_WARNING)}</p></Row>
-      <Row className={"os-reset-warning"}>
-        <p>{t(Content.OS_RESET_WARNING, { resetMethod: t("Soft") })}</p>
-      </Row>
     </Highlight>
     <Highlight settingName={DeviceSetting.hardReset}>
       <Row>
@@ -42,6 +43,8 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
           <label>
             {t(DeviceSetting.hardReset)}
           </label>
+          <Help text={`${Content.HARD_RESET_WARNING}
+            ${t(Content.OS_RESET_WARNING, { resetMethod: t("Hard") })}`} />
         </Col>
         <Col xs={6}>
           <a className="link-button fb-button red"
@@ -51,22 +54,24 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
           </a>
         </Col>
       </Row>
-      <Row><p>{t(Content.HARD_RESET_WARNING)}</p></Row>
-      <Row className={"os-reset-warning"}>
-        <p>{t(Content.OS_RESET_WARNING, { resetMethod: t("Hard") })}</p>
-      </Row>
     </Highlight>
-    <Highlight settingName={DeviceSetting.autoSoftReset}>
+    <Highlight settingName={DeviceSetting.autoSoftReset}
+      hidden={!(showAdvanced ||
+        modifiedFromDefault("disable_factory_reset", disableFactoryReset.value))}
+      className={"advanced"}>
       <Row>
         <Col xs={9}>
           <label>
             {t(DeviceSetting.autoSoftReset)}
           </label>
+          <Help text={Content.AUTO_SOFT_RESET} />
         </Col>
         <Col xs={3}>
           <ToggleButton
             toggleValue={!disableFactoryReset.value}
             dim={!disableFactoryReset.consistent}
+            className={getModifiedClassName("disable_factory_reset",
+              !!disableFactoryReset.value)}
             toggleAction={() => {
               dispatch(updateConfig({
                 disable_factory_reset: !disableFactoryReset.value
@@ -74,14 +79,16 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
             }} />
         </Col>
       </Row>
-      <Row><p>{t(Content.AUTO_SOFT_RESET)}</p></Row>
     </Highlight>
-    <Highlight settingName={DeviceSetting.connectionAttemptPeriod}>
+    <Highlight settingName={DeviceSetting.connectionAttemptPeriod}
+      hidden={!(showAdvanced || isModified("network_not_found_timer"))}
+      className={"advanced"}>
       <Row>
         <Col xs={12}>
           <label style={maybeDisableTimer}>
             {t(DeviceSetting.connectionAttemptPeriod)}
           </label>
+          <Help text={Content.AUTO_SOFT_RESET_PERIOD} />
         </Col>
         <Col xs={12}>
           <BotConfigInputBox
@@ -90,11 +97,6 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
             disabled={!!disableFactoryReset.value}
             sourceFbosConfig={sourceFbosConfig} />
         </Col>
-      </Row>
-      <Row>
-        <p className="network-not-found-timer">
-          {t(Content.AUTO_SOFT_RESET_PERIOD)}
-        </p>
       </Row>
     </Highlight>
   </div>;

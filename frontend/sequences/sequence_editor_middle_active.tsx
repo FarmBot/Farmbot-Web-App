@@ -1,4 +1,5 @@
 import React from "react";
+import { t } from "../i18next_wrapper";
 import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
@@ -6,7 +7,9 @@ import {
 import { editCurrentSequence, copySequence, pinSequenceToggle } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
-import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
+import {
+  BlurableInput, Row, Col, SaveBtn, ColorPicker, Help, ToggleButton,
+} from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { TaggedSequence } from "farmbot";
@@ -17,16 +20,15 @@ import { LocalsList, localListCallback } from "./locals_list/locals_list";
 import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
-import { t } from "../i18next_wrapper";
 import { Content, Actions, DeviceSetting } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
-import { ToggleButton } from "../ui/toggle_button";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
+import { getModifiedClassName } from "../settings/default_values";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -60,6 +62,7 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
     </label>
     <Help text={t(props.description)} />
     <ToggleButton
+      className={getModifiedClassName(props.setting)}
       toggleValue={value}
       toggleAction={() => proceed() &&
         props.dispatch(setWebAppConfigValue(props.setting, !value))} />

@@ -32,8 +32,7 @@ class FarmwareInstallation < ApplicationRecord
   def maybe_recover_from_fetch_error(error)
     known_error = KNOWN_PROBLEMS[error.class]
     description = known_error || (OTHER_PROBLEM % error.class)
-    update!(package_error: description,
-            package: nil)
+    update!(package_error: description, package: nil)
     unless known_error.present?
       raise error
     end

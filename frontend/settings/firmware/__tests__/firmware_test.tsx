@@ -39,7 +39,7 @@ describe("<Firmware />", () => {
     const wrapper = mount(<Firmware {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
-    clickButton(wrapper, 1, "restart");
+    clickButton(wrapper, 2, "restart");
     expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 
@@ -50,7 +50,7 @@ describe("<Firmware />", () => {
     const wrapper = mount(<Firmware {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Flash Firmware".toLowerCase());
-    clickButton(wrapper, 2, "flash firmware");
+    clickButton(wrapper, 0, "flash firmware");
     expect(mockDevice.flashFirmware).toHaveBeenCalledWith("arduino");
   });
 });

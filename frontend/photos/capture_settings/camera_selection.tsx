@@ -1,5 +1,5 @@
 import React from "react";
-import { DropDownItem, Row, Col, FBSelect } from "../../ui/index";
+import { DropDownItem, Row, Col, FBSelect } from "../../ui";
 import {
   CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
@@ -8,6 +8,7 @@ import { UserEnv } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../constants";
 import { Highlight } from "../../settings/maybe_highlight";
+import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -94,7 +95,9 @@ export class CameraSelection
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
-            onChange={this.sendOffConfig} />
+            onChange={this.sendOffConfig}
+            extraClass={getModifiedClassNameSpecifyDefault(
+              this.selectedCamera().value, Camera.USB)} />
         </Col>
       </Row>
     </Highlight>;

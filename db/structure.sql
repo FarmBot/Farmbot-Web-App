@@ -1803,7 +1803,8 @@ CREATE TABLE public.web_app_configs (
     crop_images boolean DEFAULT false,
     show_camera_view_area boolean DEFAULT false,
     view_celery_script boolean DEFAULT false,
-    highlight_modified_settings boolean DEFAULT false
+    highlight_modified_settings boolean DEFAULT true,
+    show_advanced_settings boolean DEFAULT false
 );
 
 
@@ -3522,6 +3523,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201216101103'),
 ('20210107224804'),
 ('20210201145935'),
-('20210210144434');
-
-
+('20210210144434'),
+('20210217010948');

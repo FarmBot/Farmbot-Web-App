@@ -8,9 +8,9 @@ import { store } from "../../redux/store";
 import { BooleanSetting } from "../../session_keys";
 
 const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = {
-  encoder_enabled_x: 0,
-  encoder_enabled_y: 0,
-  encoder_enabled_z: 0,
+  encoder_enabled_x: 1,
+  encoder_enabled_y: 1,
+  encoder_enabled_z: 1,
   encoder_invert_x: 0,
   encoder_invert_y: 0,
   encoder_invert_z: 0,
@@ -116,18 +116,31 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
 
 const DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES =
   cloneDeep(DEFAULT_FIRMWARE_CONFIG_VALUES);
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_max_spd_x = 800;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_max_spd_y = 900;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_max_spd_z = 1000;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_max_spd_z2 = 500;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_x = 300;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_y = 300;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_z = 375;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_z2 = 375;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_home_spd_x = 800;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_home_spd_y = 900;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_home_spd_z = 500;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_x = 60;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_y = 60;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_z = 75;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_z2 = 75;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_motor_current_x = 800;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_motor_current_y = 800;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_x = 60;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_y = 60;
-DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_z = 60;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_z = 70;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_x = 100;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_y = 100;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_z = 100;
 
-const DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES =
-  cloneDeep(DEFAULT_FIRMWARE_CONFIG_VALUES);
-DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES.encoder_enabled_x = 1;
-DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES.encoder_enabled_y = 1;
-DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES.encoder_enabled_z = 1;
+const DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES = DEFAULT_FIRMWARE_CONFIG_VALUES;
 
 export const getDefaultFwConfigValue =
   (firmwareHardware: FirmwareHardware | undefined) =>

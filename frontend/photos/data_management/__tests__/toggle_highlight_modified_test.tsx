@@ -1,5 +1,6 @@
 jest.mock("../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
+  getWebAppConfigValue: jest.fn(() => jest.fn()),
 }));
 
 import React from "react";

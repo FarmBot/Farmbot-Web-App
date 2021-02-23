@@ -1,12 +1,11 @@
 import React from "react";
 import { BooleanMCUInputGroup } from "./boolean_mcu_input_group";
 import { ToolTips, DeviceSetting } from "../../constants";
-import { ToggleButton } from "../../ui/toggle_button";
 import { settingToggle } from "../../devices/actions";
 import { NumericMCUInputGroup } from "./numeric_mcu_input_group";
 import { MotorsProps } from "./interfaces";
 import { Header } from "./header";
-import { Collapse, Position } from "@blueprintjs/core";
+import { Collapse } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../devices/interfaces";
 import { calcMicrostepsPerMm } from "../../controls/move/direction_axes_props";
@@ -14,7 +13,7 @@ import { isTMCBoard, hasZ2Params } from "../firmware/firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
-import { Col, Help, Row } from "../../ui";
+import { Col, Help, Row, ToggleButton } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { McuInputBox } from "./mcu_input_box";
 import { getDefaultFwConfigValue, getModifiedClassName } from "./default_values";
@@ -35,6 +34,7 @@ export const calculateScale =
 export function Motors(props: MotorsProps) {
   const {
     dispatch, controlPanelState, sourceFwConfig, firmwareHardware, arduinoBusy,
+    showAdvanced,
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
@@ -45,6 +45,7 @@ export function Motors(props: MotorsProps) {
     sourceFwConfig,
     arduinoBusy,
     firmwareHardware,
+    showAdvanced,
   };
 
   const getDefault = getDefaultFwConfigValue(props.firmwareHardware);
@@ -81,8 +82,7 @@ export function Motors(props: MotorsProps) {
               <Help
                 text={t(ToolTips.MAX_SPEED_Z_TOWARD_HOME, {
                   z: getDefault("movement_max_spd_z2") / scale.z
-                })}
-                position={Position.TOP_RIGHT} />
+                })} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox {...commonProps}
@@ -119,8 +119,7 @@ export function Motors(props: MotorsProps) {
               <Help
                 text={t(ToolTips.MIN_SPEED_Z_TOWARD_HOME, {
                   z: getDefault("movement_min_spd_z2") / scale.z
-                })}
-                position={Position.TOP_RIGHT} />
+                })} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox {...commonProps}
@@ -148,8 +147,7 @@ export function Motors(props: MotorsProps) {
               <Help
                 text={t(ToolTips.ACCELERATE_FOR_Z_TOWARD_HOME, {
                   z: getDefault("movement_steps_acc_dec_z2") / scale.z
-                })}
-                position={Position.TOP_RIGHT} />
+                })} />
             </Col>
             <Col xs={4} className={"z-param-input"}>
               <McuInputBox {...commonProps}
@@ -167,13 +165,15 @@ export function Motors(props: MotorsProps) {
         xScale={sourceFwConfig("movement_microsteps_x").value}
         yScale={sourceFwConfig("movement_microsteps_y").value}
         zScale={sourceFwConfig("movement_microsteps_z").value}
+        advanced={true}
         float={false} />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.microstepsPerStep}
         tooltip={ToolTips.MICROSTEPS_PER_STEP}
         x={"movement_microsteps_x"}
         y={"movement_microsteps_y"}
-        z={"movement_microsteps_z"} />
+        z={"movement_microsteps_z"}
+        advanced={true} />
       <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.alwaysPowerMotors}
         tooltip={ToolTips.ALWAYS_POWER_MOTORS}

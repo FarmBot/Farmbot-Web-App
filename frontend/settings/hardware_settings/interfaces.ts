@@ -22,6 +22,7 @@ export interface AxisSettingsProps {
   firmwareConfig: FirmwareConfig | undefined;
   botOnline: boolean;
   firmwareHardware: FirmwareHardware | undefined;
+  showAdvanced: boolean;
 }
 
 export interface BooleanMCUInputGroupProps {
@@ -39,6 +40,8 @@ export interface BooleanMCUInputGroupProps {
   displayAlert?: string | undefined;
   disabled?: boolean;
   disabledBy?: string;
+  advanced?: boolean;
+  showAdvanced?: boolean;
 }
 
 export interface CalibrationRowProps {
@@ -72,6 +75,8 @@ export interface NumericMCUInputGroupProps {
   max?: number;
   disabled?: boolean;
   disabledBy?: string;
+  advanced?: boolean;
+  showAdvanced?: boolean;
 }
 
 export interface PinGuardMCUInputGroupProps {
@@ -102,6 +107,7 @@ export interface MotorsProps {
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
   shouldDisplay: ShouldDisplay;
+  showAdvanced: boolean;
 }
 
 export interface EncodersOrStallDetectionProps {
@@ -118,6 +124,7 @@ export interface LimitSwitchesProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
+  showAdvanced: boolean;
 }
 
 export interface ErrorHandlingProps {

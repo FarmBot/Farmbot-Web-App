@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { FbosButtonRow, FbosButtonRowProps } from "../fbos_button_row";
 import { DeviceSetting } from "../../../constants";
@@ -15,6 +15,6 @@ describe("<FbosButtonRow />", () => {
 
   it("renders", () => {
     const wrapper = mount(<FbosButtonRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("description");
+    expect(wrapper.text().toLowerCase()).toContain("click");
   });
 });

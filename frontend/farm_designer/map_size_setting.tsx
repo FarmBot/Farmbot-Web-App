@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
@@ -8,6 +8,7 @@ import { NumericSetting } from "../session_keys";
 import {
   NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
+import { getModifiedClassName } from "../settings/default_values";
 
 interface LengthInputProps {
   value: number;
@@ -25,6 +26,7 @@ const LengthInput = (props: LengthInputProps) =>
       <input
         type="number"
         name={props.setting}
+        className={getModifiedClassName(props.setting)}
         value={"" + props.value}
         onChange={e => props.dispatch(setWebAppConfigValue(
           props.setting, e.currentTarget.value))} />

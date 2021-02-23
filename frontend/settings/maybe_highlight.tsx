@@ -11,6 +11,7 @@ const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
   DeviceSetting.name,
   DeviceSetting.timezone,
+  DeviceSetting.time_zone,
   DeviceSetting.camera,
   DeviceSetting.osUpdateTime,
   DeviceSetting.osAutoUpdate,
@@ -31,7 +32,6 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.hardReset,
   DeviceSetting.autoSoftReset,
   DeviceSetting.connectionAttemptPeriod,
-  DeviceSetting.changeOwnership,
 ];
 const AXES_PANEL = [
   DeviceSetting.axisSettings,
@@ -111,6 +111,7 @@ const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.exportParameters,
   DeviceSetting.importParameters,
   DeviceSetting.highlightSettingsModifiedFromDefault,
+  DeviceSetting.showAdvancedSettings,
   DeviceSetting.resetHardwareParams,
 ];
 const FARM_DESIGNER_PANEL = [
@@ -253,6 +254,10 @@ ALTERNATE_NAMES[DeviceSetting.missedStepDecay].push(DeviceSetting.gracePeriod);
 ALTERNATE_NAMES[DeviceSetting.gracePeriod].push(DeviceSetting.missedStepDecay);
 ALTERNATE_NAMES[DeviceSetting.maxMotorLoad].push(DeviceSetting.maxMissedSteps);
 ALTERNATE_NAMES[DeviceSetting.maxMissedSteps].push(DeviceSetting.maxMotorLoad);
+ALTERNATE_NAMES[DeviceSetting.firmware].push(DeviceSetting.flashFirmware);
+ALTERNATE_NAMES[DeviceSetting.flashFirmware].push(DeviceSetting.firmware);
+ALTERNATE_NAMES[DeviceSetting.time_zone].push(DeviceSetting.timezone);
+ALTERNATE_NAMES[DeviceSetting.timezone].push(DeviceSetting.time_zone);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
