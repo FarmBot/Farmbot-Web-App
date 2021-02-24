@@ -298,6 +298,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     legend_menu_open: false,
     raw_encoders: true,
     scaled_encoders: true,
+    show_advanced_settings: true,
     show_spread: false,
     show_farmbot: true,
     show_images: false,

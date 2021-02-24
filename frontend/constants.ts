@@ -700,6 +700,10 @@ export namespace Content {
     trim(`Have a question for the greater FarmBot community? Get help by
     asking our global community of users on the`);
 
+  export const FEEDBACK_NOTICE =
+    trim(`Feedback submitted through this form will be linked to your user
+    account and email so that we may follow up when necessary.`);
+
   // App Settings
   export const INTERNATIONALIZE_WEB_APP =
     trim(`Turn off to set Web App to English.`);

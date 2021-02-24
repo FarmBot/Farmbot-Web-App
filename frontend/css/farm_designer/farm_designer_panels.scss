@@ -1209,6 +1209,7 @@
       }
     }
   }
+  .show-advanced-toggle,
   .highlight-modified-toggle {
     margin-right: 4.5rem;
   }
@@ -2268,6 +2269,13 @@
     }
   }
   .feedback {
+    p {
+      color: $medium_light_gray;
+      margin-bottom: 1rem !important;
+    }
+    textarea {
+      font-size: 1.1rem;
+    }
     button {
       margin-top: 1rem;
     }

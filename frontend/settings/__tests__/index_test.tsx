@@ -175,6 +175,7 @@ describe("<DesignerSettings />", () => {
   it("renders change ownership form", () => {
     API.setBaseUrl("");
     const p = fakeProps();
+    p.getConfigValue = () => true;
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
     const wrapper = mount(<DesignerSettings {...p} />);

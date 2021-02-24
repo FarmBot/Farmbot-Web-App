@@ -8,6 +8,9 @@ import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import { settingRequiredLabel } from "./encoders_or_stall_detection";
 import { t } from "../../i18next_wrapper";
+import { getDefaultFwConfigValue } from "./default_values";
+import { McuParamName } from "farmbot";
+import { some } from "lodash";
 
 export function LimitSwitches(props: LimitSwitchesProps) {
 
@@ -21,10 +24,17 @@ export function LimitSwitches(props: LimitSwitchesProps) {
     firmwareHardware,
   };
 
+  const anyModified = some([
+    "movement_enable_endpoints_x",
+    "movement_enable_endpoints_y",
+    "movement_enable_endpoints_z",
+  ].map((key: McuParamName) =>
+    getDefaultFwConfigValue(props.firmwareHardware)(key)
+    != props.sourceFwConfig(key).value));
 
   return <Highlight className={"section advanced"}
     settingName={DeviceSetting.limitSwitchSettings}
-    hidden={!props.showAdvanced}>
+    hidden={!(props.showAdvanced || anyModified)}>
     <Header
       expanded={limit_switches}
       title={DeviceSetting.limitSwitchSettings}

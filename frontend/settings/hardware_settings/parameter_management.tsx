@@ -15,7 +15,7 @@ import {
 } from "../../photos/data_management/toggle_highlight_modified";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
-import { getModifiedClassName } from "../default_values";
+import { getModifiedClassName, modifiedFromDefault } from "../default_values";
 
 export function ParameterManagement(props: ParameterManagementProps) {
   const {
@@ -23,6 +23,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
     getConfigValue,
   } = props;
   const { parameter_management } = props.controlPanelState;
+  const showAdvanced = !!getConfigValue(BooleanSetting.show_advanced_settings);
   return <Highlight className={"section"}
     settingName={DeviceSetting.parameterManagement}>
     <Header
@@ -82,20 +83,23 @@ export function ParameterManagement(props: ParameterManagementProps) {
         </Row>
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
-      <Highlight settingName={DeviceSetting.highlightSettingsModifiedFromDefault}>
+      <Highlight settingName={DeviceSetting.highlightSettingsModifiedFromDefault}
+        hidden={!(showAdvanced
+          || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
+        className={"advanced"}>
         <ToggleHighlightModified
           dispatch={dispatch}
           getConfigValue={getConfigValue} />
       </Highlight>
       <Highlight settingName={DeviceSetting.showAdvancedSettings}>
-        <div className={"highlight-modified-toggle"}>
+        <div className={"show-advanced-toggle"}>
           <label>{t(DeviceSetting.showAdvancedSettings)}</label>
           <ToggleButton
             className={getModifiedClassName(BooleanSetting.show_advanced_settings)}
-            toggleValue={!!getConfigValue(BooleanSetting.show_advanced_settings)}
+            toggleValue={!!showAdvanced}
             toggleAction={() => dispatch(setWebAppConfigValue(
               BooleanSetting.show_advanced_settings,
-              !getConfigValue(BooleanSetting.show_advanced_settings)))} />
+              !showAdvanced))} />
         </div>
       </Highlight>
       <Highlight settingName={DeviceSetting.resetHardwareParams}>
