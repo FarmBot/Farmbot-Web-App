@@ -30,7 +30,9 @@ describe("<Feedback />", () => {
   it("sends feedback", async () => {
     API.setBaseUrl("");
     const wrapper = shallow(<Feedback />);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "abc" } });
+    wrapper.find("textarea").simulate("change", {
+      currentTarget: { value: "abc" }
+    });
     await wrapper.find("button").simulate("click");
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/feedback",
       { message: "abc" });

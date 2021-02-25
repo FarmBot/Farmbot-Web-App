@@ -4,8 +4,7 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
-  | "show_advanced_settings";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -15,7 +14,7 @@ type StringSettings = Record<WebAppStringConfigKeyAll, WebAppStringConfigKey>;
 
 export const BooleanSetting: BooleanSettings = {
   /** Move settings */
-  show_advanced_settings: "show_advanced_settings" as WebAppBooleanConfigKey,
+  show_advanced_settings: "show_advanced_settings",
   x_axis_inverted: "x_axis_inverted",
   y_axis_inverted: "y_axis_inverted",
   z_axis_inverted: "z_axis_inverted",

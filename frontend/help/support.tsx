@@ -92,7 +92,8 @@ export const SupportPanel = () =>
 export const Feedback = () => {
   const [message, setMessage] = React.useState("");
   return <div className={"feedback"}>
-    <input value={message} onChange={e => setMessage(e.currentTarget.value)} />
+    <p>{t(Content.FEEDBACK_NOTICE)}</p>
+    <textarea value={message} onChange={e => setMessage(e.currentTarget.value)} />
     <button className={"fb-button green"}
       onClick={() =>
         axios.post(API.current.feedbackPath, { message })

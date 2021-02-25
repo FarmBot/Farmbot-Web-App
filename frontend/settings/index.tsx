@@ -89,7 +89,7 @@ export class RawDesignerSettings
         <PowerAndReset {...commonProps}
           sourceFbosConfig={sourceFbosConfig}
           botOnline={botOnline} />
-        {botOnline && <ChangeOwnershipForm />}
+        {botOnline && showAdvanced && <ChangeOwnershipForm />}
         <AxisSettings {...commonProps}
           bot={this.props.bot}
           sourceFwConfig={sourceFwConfig}

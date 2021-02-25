@@ -37,7 +37,9 @@ services:
 
   db:
     env_file: ".env"
-    image: postgres:10
+    # Know to work: 10, 11
+    image: postgres:13
+    restart: always
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
     # ports: ["5432:5432"]
 
@@ -81,6 +83,7 @@ services:
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
+    restart: always
     command: bundle exec rake jobs:work
 
   log_digests:
@@ -88,6 +91,7 @@ services:
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
+    restart: always
     command: bundle exec rake api:log_digest
 
   rabbit_jobs:

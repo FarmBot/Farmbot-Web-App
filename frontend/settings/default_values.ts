@@ -72,26 +72,28 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   show_camera_view_area: false,
   view_celery_script: false,
   highlight_modified_settings: true,
-  ["show_advanced_settings" as BooleanWebAppConfigKey]: false,
+  show_advanced_settings: false,
+};
+
+export const getModifiedClassNameSpecifyModified = (modified: boolean) => {
+  const getValue = getWebAppConfigValue(store.getState);
+  const highlightModified = getValue(BooleanSetting.highlight_modified_settings);
+  return highlightModified && modified ? "modified" : "";
 };
 
 export const getModifiedClassNameSpecifyDefault =
-  (value: Value, defaultValue: Value) => {
-    const getValue = getWebAppConfigValue(store.getState);
-    const highlightModified = getValue(BooleanSetting.highlight_modified_settings);
-    return highlightModified && (defaultValue != value) ? "modified" : "";
-  };
+  (value: Value, defaultValue: Value) =>
+    getModifiedClassNameSpecifyModified(defaultValue != value);
 
-export const getModifiedClassNameDefaultFalse =
-  (value: Value) => {
-    const getValue = getWebAppConfigValue(store.getState);
-    const highlightModified = getValue(BooleanSetting.highlight_modified_settings);
-    return highlightModified && !!value ? "modified" : "";
-  };
+export const getModifiedClassNameDefaultFalse = (value: Value) =>
+  getModifiedClassNameSpecifyModified(!!value);
 
-export const getModifiedClassName = (key: Key) => {
+export const getModifiedClassName = (key: Key) =>
+  getModifiedClassNameSpecifyModified(modifiedFromDefault(key));
+
+export const modifiedFromDefault = (key: Key) => {
   const getValue = getWebAppConfigValue(store.getState);
   const value = getValue(key);
   const defaultValue = DEFAULT_WEB_APP_CONFIG_VALUES[key];
-  return getModifiedClassNameSpecifyDefault(value, defaultValue);
+  return defaultValue != value;
 };
