@@ -34,7 +34,9 @@ export function JogButtons(props: JogMovementControlsProps) {
         </td>
         <td />
         <td />
-        <td>
+        <td style={props.highlightAxis == upDown
+          ? { border: "2px solid yellow" }
+          : {}}>
           <DirectionButton {...commonProps}
             axis={upDown}
             direction="up"
@@ -69,14 +71,18 @@ export function JogButtons(props: JogMovementControlsProps) {
             direction="down"
             directionAxisProps={directionAxesProps[upDown]} />
         </td>
-        <td>
+        <td style={props.highlightAxis == rightLeft
+          ? { border: "2px solid yellow" }
+          : {}}>
           <DirectionButton {...commonProps}
             axis={rightLeft}
             direction="right"
             directionAxisProps={directionAxesProps[rightLeft]} />
         </td>
         <td />
-        <td>
+        <td style={props.highlightAxis == "z"
+          ? { border: "2px solid yellow" }
+          : {}}>
           <DirectionButton {...commonProps}
             axis="z"
             direction="down"

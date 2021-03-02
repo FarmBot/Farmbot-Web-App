@@ -9,7 +9,7 @@ export const DOC_SLUGS = {
   "measure-soil-height": "Measure Soil Height",
   "the-farmbot-web-app": "Web App",
   "farmware": "Farmware",
-  "farmbot-os#section-installation": "Installing FarmBot OS",
+  "farmbot-os": "Installing FarmBot OS",
   "connecting-farmbot-to-the-internet": "Connecting FarmBot to the Internet",
   "for-it-security-professionals": "For IT Security Professionals",
 };

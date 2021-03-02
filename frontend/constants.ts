@@ -518,7 +518,8 @@ export namespace ToolTips {
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle. An angle of 90 degrees
     corresponds to the servo midpoint (or, for a continuous rotation
-    servo, no movement).`);
+    servo, no movement). Tip: follow with a WAIT command to allow the servo
+    to reach the target position.`);
 
   export const TOGGLE_PIN =
     trim(`Toggle a digital pin on or off.`);
@@ -979,6 +980,10 @@ export namespace Content {
   export const NO_SEQUENCES =
     trim(`Click "+" to create a new sequence.`);
 
+  export const RECURSIVE =
+    trim(`This step executes the sequence that contains it, which may
+    cause an infinite loop.`);
+
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
     encoders, stall detection, or limit switches enabled for the chosen axis.
@@ -1210,6 +1215,62 @@ export namespace TourContent {
   // Fun stuff
   export const APP_SETTINGS =
     trim(`Toggle various settings to customize your web app experience.`);
+}
+
+export namespace SetupWizardContent {
+  export const INTRO =
+    trim(`Welcome to the setup wizard. This process will guide you through
+    the steps necessary to get your FarmBot set up and running. Each step
+    will include an action to perform and a question about the outcome, which
+    can be answered yes or no. Answering yes will continue to the next step,
+    while answering no will display a list of results that can be selected for
+    specific troubleshooting tips.`);
+
+  export const OFFLINE =
+    trim(`Unable to connect to FarmBot. Please reconnect FarmBot to continue.`);
+
+  export const NO_SETUP_NETWORK =
+    trim(`Try waiting three minutes from power on. Check the Raspberry
+    Pi power LED. Check that the SD is fully inserted. Try downloading a new
+    FarmBot OS image, ensuring that the device model is correct. Try
+    re-flashing the SD card via Etcher. If possible, ensure line-of-sight
+    between devices when trying to connect.`);
+
+  export const PRESS_RIGHT_JOG_BUTTON =
+    trim(`Standing from where you will normally view the FarmBot,
+    **press the right arrow button**.`);
+
+  export const PRESS_UP_JOG_BUTTON =
+    trim(`Standing from where you will normally view the FarmBot,
+    **press the up arrow button**.`);
+
+  export const PRESS_DOWN_JOG_BUTTON =
+    trim(`Standing from where you will normally view the FarmBot,
+    **press the z-axis down arrow button**.`);
+
+  export const NO_MOTOR_MOVEMENT =
+    trim(`It made sounds like it was trying to move, but didn't move`);
+
+  export const NO_MOTOR_ACTIVITY =
+    trim(`Check motor cable connections. Try again while observing
+    electronics box LED activity.`);
+
+  export const CAMERA_CALIBRATION =
+    trim(`Camera calibration allows correct photo rotation and placement
+    in the Farm Designer map. Place the camera calibration card on the soil
+    underneath the camera with the side shown below face up. The card must
+    be fully visible to the camera.`);
+
+  export const CAMERA_VOLTAGE_LOW =
+    trim(`Camera voltage may be low. Try a different Raspberry Pi USB
+    power cable.`);
+
+  export const CONFIGURATOR_CONNECTION_PROMPT =
+    trim(`Is your phone or computer connected to the FarmBot WiFi network?`);
+
+  export const CHECK_CAMERA_CABLE =
+    trim(`Check that the camera is plugged in to a Raspberry Pi USB port
+    and ensure that all connectors are securely fastened.`);
 }
 
 export enum DeviceSetting {

@@ -6,7 +6,7 @@ describe("<StepWarning />", () => {
   it("renders", () => {
     const wrapper = mount(<StepWarning warning={"warning"} />);
     expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
-    expect(wrapper.text()).toContain("Hardware setting conflict");
+    expect(wrapper.html()).toContain("Hardware setting conflict");
   });
 
   it("lists axes", () => {
@@ -14,7 +14,7 @@ describe("<StepWarning />", () => {
       warning={"warning"}
       conflicts={{ x: true, y: true, z: false }} />);
     expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
-    expect(wrapper.text()).toContain("Hardware setting conflict: x, y");
+    expect(wrapper.html()).toContain("Hardware setting conflict: x, y");
   });
 
   it("conflictsString()", () => {

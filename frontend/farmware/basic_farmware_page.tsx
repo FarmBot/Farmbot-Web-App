@@ -1,15 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { isPendingInstallation } from "./state_to_props";
 import { FarmwareManifestInfo } from "./interfaces";
-import { commandErr } from "../devices/actions";
-import { getDevice } from "../device";
+import { runFarmware } from "../devices/actions";
 import { t } from "../i18next_wrapper";
-
-/** Execute a Farmware. */
-const run = (farmwareName: string) => () => {
-  getDevice().execScript(farmwareName)
-    .then(() => { }, commandErr("Farmware execution"));
-};
 
 export interface BasicFarmwarePageProps {
   farmwareName: string;
@@ -24,7 +17,7 @@ export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
       className="fb-button green farmware-button"
       disabled={isPendingInstallation(farmware) || !botOnline}
       title={t("Run Farmware")}
-      onClick={run(farmwareName)}>
+      onClick={() => runFarmware(farmwareName, [], t("Farmware execution"))}>
       {t("Run")}
     </button>
     <p>

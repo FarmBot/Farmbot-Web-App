@@ -34,6 +34,14 @@ describe("seedAccount()", () => {
     expect(dismiss).toHaveBeenCalled();
   });
 
+  it("seeds account: no callback", async () => {
+    await seedAccount()({ label: "Genesis v1.2", value: "genesis_1.2" });
+    expect(axios.post).toHaveBeenCalledWith("/api/stub", {
+      product_line: "genesis_1.2"
+    });
+    expect(info).toHaveBeenCalledWith("Seeding in progress.", { title: "Busy" });
+  });
+
   it("returns error while trying to seed account", async () => {
     mockPostResponse = Promise.reject({ response: { data: ["error"] } });
     const dismiss = jest.fn();

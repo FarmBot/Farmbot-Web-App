@@ -126,7 +126,7 @@ describe("resource reducer", () => {
     const action = { type: Actions.FOLDER_TOGGLE, payload: { id: 1 } };
     const newState = resourceReducer(startingState, action);
     expect(newState.index.sequenceFolders.localMetaAttributes[1].open)
-      .toEqual(false);
+      .toEqual(true);
   });
 });
 

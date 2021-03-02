@@ -1,6 +1,5 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { getDevice } from "../device";
 import { destroy, edit, save } from "../api/crud";
 import { ResourceColor } from "../interfaces";
 import {
@@ -16,6 +15,7 @@ import { EditWeedStatus } from "../plants/edit_plant_status";
 import {
   MEASURE_SOIL_HEIGHT_NAME, soilHeightPoint, toggleSoilHeight,
 } from "./soil_height";
+import { moveAbsolute } from "../devices/actions";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -140,7 +140,7 @@ export const PointActions = ({ x, y, z, uuid, dispatch }: PointActionsProps) =>
       className="fb-button gray no-float"
       type="button"
       title={t("move to location")}
-      onClick={() => getDevice().moveAbsolute({ x, y, z })}>
+      onClick={() => moveAbsolute({ x, y, z })}>
       {t("Move Device to location")}
     </button>
     <button

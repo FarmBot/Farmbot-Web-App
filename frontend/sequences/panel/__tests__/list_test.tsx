@@ -25,7 +25,7 @@ describe("<DesignerSequenceList />", () => {
     farmwareData: fakeFarmwareData(),
     shouldDisplay: jest.fn(),
     getWebAppConfigValue: jest.fn(),
-    menuOpen: false,
+    menuOpen: undefined,
     stepIndex: undefined,
     folderData: mapStateToFolderProps(fakeState()),
   });

@@ -44,6 +44,19 @@ describe("connectivityData()", () => {
     });
   });
 
+  it("returns connected for demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const result = connectivityData(fakeProps());
+    expect(result.flags).toEqual({
+      userMQTT: true,
+      userAPI: true,
+      botMQTT: true,
+      botAPI: true,
+      botFirmware: true,
+    });
+    localStorage.setItem("myBotIs", "");
+  });
+
   const UNKNOWN = "Unknown.";
 
   it("returns unknown for states with prerequisites: user.mqtt down", () => {

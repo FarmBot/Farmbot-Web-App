@@ -48,7 +48,7 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
         </Col>
         <Col xs={6}>
           <a className="link-button fb-button red"
-            onClick={docLinkClick("farmbot-os#section-installation")}>
+            onClick={docLinkClick("farmbot-os")}>
             {t("HARD RESET")}
             <i className="fa fa-external-link" />
           </a>

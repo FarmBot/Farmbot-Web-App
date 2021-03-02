@@ -7,8 +7,6 @@ import {
 import {
   PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
 } from "./interfaces";
-import { getDevice } from "../../device";
-import { Content } from "../../constants";
 import { timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
@@ -21,6 +19,7 @@ import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage, Xyz } from "farmbot";
 import { MarkedSlider } from "../../ui";
+import { takePhoto } from "../../devices/actions";
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -29,8 +28,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
     <MustBeOnline
       syncStatus={props.syncStatus}
       networkState={props.botToMqttStatus}
-      hideBanner={true}
-      lockOpen={process.env.NODE_ENV !== "production"}>
+      hideBanner={true}>
       <button
         className={`fb-button green ${camDisabled.class}`}
         title={camDisabled.title}
@@ -120,12 +118,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
 
   componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
 
-  takePhoto = () => {
-    const ok = () => success(t(Content.PROCESSING_PHOTO));
-    const no = () => error(t("Error taking photo"));
-    getDevice().takePhoto().then(ok, no);
-  }
-
   deletePhoto = () => {
     const { dispatch, images } = this.props;
     const currentImageUuid = this.props.currentImage?.uuid;
@@ -181,7 +173,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       <PhotoButtons
         syncStatus={this.props.syncStatus}
         botToMqttStatus={this.props.botToMqttStatus}
-        takePhoto={this.takePhoto}
+        takePhoto={takePhoto}
         deletePhoto={this.deletePhoto}
         toggleCrop={this.toggleCrop}
         toggleRotation={this.toggleRotation}

@@ -48,7 +48,7 @@ export interface SequencesProps {
   farmwareData: FarmwareData;
   shouldDisplay: ShouldDisplay;
   getWebAppConfigValue: GetWebAppConfigValue;
-  menuOpen: boolean;
+  menuOpen: UUID | undefined;
   stepIndex: number | undefined;
   folderData: Folders["props"];
   visualized?: boolean;
@@ -63,7 +63,7 @@ export interface SequenceEditorMiddleProps {
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
   getWebAppConfigValue: GetWebAppConfigValue;
-  menuOpen: boolean;
+  menuOpen: UUID | undefined;
   visualized?: boolean;
   hoveredStep?: string | undefined;
 }
@@ -82,7 +82,7 @@ export interface SequenceHeaderProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
   resources: ResourceIndex;
-  menuOpen: boolean;
+  menuOpen: UUID | undefined;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
   toggleViewSequenceCeleryScript: () => void;
@@ -95,7 +95,7 @@ export interface SequenceBtnGroupProps {
   sequence: TaggedSequence;
   syncStatus: SyncStatus;
   resources: ResourceIndex;
-  menuOpen: boolean;
+  menuOpen: UUID | undefined;
   getWebAppConfigValue: GetWebAppConfigValue;
   toggleViewSequenceCeleryScript(): void;
   visualized?: boolean;
@@ -150,7 +150,7 @@ export interface Sequence extends CeleryScriptSequence {
 
 export interface SequenceReducerState {
   current: string | undefined;
-  menuOpen: boolean;
+  menuOpen: UUID | undefined;
   stepIndex: number | undefined;
 }
 

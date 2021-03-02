@@ -26,7 +26,6 @@ describe("<ImageWorkspace />", () => {
     botOnline: true,
     timeSettings: fakeTimeSettings(),
     namespace: jest.fn(() => "CAMERA_CALIBRATION_H_HI"),
-    highlightModified: false,
   });
 
   it("triggers onChange() event", () => {
@@ -110,18 +109,9 @@ describe("<ImageWorkspace />", () => {
     expect(wrapper.state().open).toEqual(true);
   });
 
-  it("returns the modified class", () => {
+  it("returns the unmodified class", () => {
     const p = fakeProps();
     p.blur = 7;
-    p.highlightModified = true;
-    const iw = new ImageWorkspace(p);
-    expect(iw.getModifiedClass("blur")).toEqual("modified");
-  });
-
-  it("doesn't return the modified class", () => {
-    const p = fakeProps();
-    p.blur = 7;
-    p.highlightModified = false;
     const iw = new ImageWorkspace(p);
     expect(iw.getModifiedClass("blur")).toEqual("");
   });

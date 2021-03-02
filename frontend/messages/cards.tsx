@@ -217,7 +217,7 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     </Row>
   </AlertCardTemplate>;
 
-const SEED_DATA_OPTIONS = (): DropDownItem[] => [
+export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.2", value: "genesis_1.2" },
   { label: "Genesis v1.3", value: "genesis_1.3" },
   { label: "Genesis v1.4", value: "genesis_1.4" },
@@ -229,7 +229,7 @@ const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Custom Bot", value: "none" },
 ];
 
-const SEED_DATA_OPTIONS_DDI: Record<string, DropDownItem> = {};
+export const SEED_DATA_OPTIONS_DDI: Record<string, DropDownItem> = {};
 SEED_DATA_OPTIONS().map(ddi => SEED_DATA_OPTIONS_DDI[ddi.value] = ddi);
 
 class SeedDataMissing
