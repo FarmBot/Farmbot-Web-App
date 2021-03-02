@@ -11,7 +11,7 @@ describe("sequence reducer", () => {
     const sequence = fakeSequence();
     sequence.uuid = "sequence";
     const state: SequenceReducerState = {
-      current: before, menuOpen: false, stepIndex: undefined
+      current: before, menuOpen: undefined, stepIndex: undefined
     };
     const action = { type: actionType, payload: sequence };
     const stateAfter = sequenceReducer(state, action);
@@ -24,7 +24,7 @@ describe("sequence reducer", () => {
 
   it("sets current sequence with string", () => {
     const state: SequenceReducerState = {
-      current: undefined, menuOpen: false, stepIndex: undefined
+      current: undefined, menuOpen: undefined, stepIndex: undefined
     };
     const action = { type: Actions.SELECT_SEQUENCE, payload: "sequence" };
     const stateAfter = sequenceReducer(state, action);
@@ -33,7 +33,7 @@ describe("sequence reducer", () => {
 
   it("sets step position", () => {
     const state: SequenceReducerState = {
-      current: undefined, menuOpen: false, stepIndex: undefined
+      current: undefined, menuOpen: undefined, stepIndex: undefined
     };
     const action = { type: Actions.SET_SEQUENCE_STEP_POSITION, payload: 1 };
     const stateAfter = sequenceReducer(state, action);

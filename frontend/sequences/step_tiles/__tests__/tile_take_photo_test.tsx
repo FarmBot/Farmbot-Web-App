@@ -38,6 +38,6 @@ describe("<TileTakePhoto/>", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
     const wrapper = mount(<TileTakePhoto {...p} />);
-    expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
+    expect(wrapper.html()).toContain(Content.NO_CAMERA_SELECTED);
   });
 });

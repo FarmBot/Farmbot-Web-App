@@ -9,7 +9,7 @@ interface StepWarningProps {
   titleBase?: string;
 }
 
-const TITLE_BASE = t("Hardware setting conflict");
+const TITLE_BASE = () => t("Hardware setting conflict");
 
 export const conflictsString = (conflicts: Record<Xyz, boolean>) => {
   const conflictAxes: string[] = [];
@@ -23,19 +23,21 @@ export const conflictsString = (conflicts: Record<Xyz, boolean>) => {
 export function StepWarning(props: StepWarningProps) {
   const { conflicts, warning, titleBase } = props;
   const warningTitle = () => {
-    return (titleBase || TITLE_BASE) +
+    return (titleBase || TITLE_BASE()) +
       (conflicts ? ": " + conflictsString(conflicts) : "");
   };
-  return <div className="step-warning">
+  return <div className={"step-warning step-control"} title={warningTitle()}>
     <Popover
       position={Position.RIGHT_TOP}
       interactionKind={PopoverInteractionKind.CLICK}
       popoverClassName={"help"}>
       <i className="fa fa-exclamation-triangle" />
       <div className={"step-warning-text"}>
+        {warningTitle()}
+        <br />
+        <br />
         {warning}
       </div>
     </Popover>
-    &nbsp;{warningTitle()}
   </div>;
 }

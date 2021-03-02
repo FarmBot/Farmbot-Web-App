@@ -3,7 +3,6 @@ import {
   BlurableInput, DocSlug, DropDownItem, ExpandableHeader, FBSelect, ToolTip,
 } from "../ui";
 import { Pair, FarmwareConfig, TaggedFarmwareEnv } from "farmbot";
-import { getDevice } from "../device";
 import { UserEnv } from "../devices/interfaces";
 import { toString, snakeCase, isEqual } from "lodash";
 import { FarmwareManifestInfo, SaveFarmwareEnv } from "./interfaces";
@@ -13,6 +12,7 @@ import { destroy } from "../api/crud";
 import { UUID } from "../resources/interfaces";
 import { equals } from "../util";
 import { FarmwareName } from "../sequences/step_tiles/tile_execute_script";
+import { runFarmware } from "../devices/actions";
 
 export interface FarmwareFormProps {
   farmware: FarmwareManifestInfo;
@@ -23,6 +23,7 @@ export interface FarmwareFormProps {
   dispatch: Function;
   botOnline: boolean;
   hideAdvanced?: boolean;
+  hideResets?: boolean;
   docPage?: DocSlug;
 }
 
@@ -221,15 +222,15 @@ export class FarmwareForm
             <this.Configs farmwareConfigs={collapsedConfigs} />
           </Collapse>
         </div>}
-      {farmware.name == FarmwareName.MeasureSoilHeight
+      {!this.props.hideResets && farmware.name == FarmwareName.MeasureSoilHeight
         && <this.ClearConfigsButton
           label={t("Reset calibration values")}
           prefix={"measure_soil_height_calibration_"}
           dispatch={dispatch} />}
-      <this.ClearConfigsButton
+      {!this.props.hideResets && <this.ClearConfigsButton
         label={t("Reset all values")}
         prefix={snakeCase(farmware.name)}
-        dispatch={dispatch} />
+        dispatch={dispatch} />}
     </div>;
   }
 }
@@ -255,7 +256,7 @@ const run = (env: UserEnv) =>
       const value = getValue(env)(farmwareName, x);
       return { kind: "pair", args: { value, label } };
     });
-    getDevice().execScript(farmwareName, pairs).catch(() => { });
+    runFarmware(farmwareName, pairs);
   };
 
 /** Check if a FarmwareEnv has a value other than "0". */

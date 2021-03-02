@@ -1,20 +1,20 @@
-jest.mock("../../../devices/actions", () => ({
-  updateMCU: jest.fn(),
-  commandErr: jest.fn(),
-}));
-
 const mockDevice = {
-  calibrate: jest.fn((_) => Promise.resolve({})),
-  findHome: jest.fn((_) => Promise.resolve({})),
-  setZero: jest.fn((_) => Promise.resolve({})),
+  updateMCU: jest.fn(() => Promise.resolve()),
+  calibrate: jest.fn(() => Promise.resolve()),
+  findHome: jest.fn(() => Promise.resolve()),
+  setZero: jest.fn(() => Promise.resolve()),
 };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
+}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { AxisSettings } from "../axis_settings";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { updateMCU } from "../../../devices/actions";
 import {
   fakeFirmwareConfig,
 } from "../../../__test_support__/fake_state/resources";
@@ -23,10 +23,19 @@ import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { AxisSettingsProps } from "../interfaces";
 import { CalibrationRow } from "../calibration_row";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { fakeState } from "../../../__test_support__/fake_state";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
+import { edit } from "../../../api/crud";
 
 describe("<AxisSettings />", () => {
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeFirmwareConfig()]);
+
   const fakeProps = (): AxisSettingsProps => ({
-    dispatch: jest.fn(),
+    dispatch: mockDispatch(jest.fn(), () => state),
     bot,
     controlPanelState: panelState(),
     sourceFwConfig: x => ({
@@ -51,9 +60,11 @@ describe("<AxisSettings />", () => {
     input.onChange && input.onChange(e);
     input.onSubmit && input.onSubmit(e);
     expected
-      ? expect(updateMCU)
-        .toHaveBeenCalledWith("movement_axis_nr_steps_x", expected)
-      : expect(updateMCU).not.toHaveBeenCalled();
+      ? expect(edit)
+        .toHaveBeenCalledWith(expect.any(Object), {
+          movement_axis_nr_steps_x: expected,
+        })
+      : expect(edit).not.toHaveBeenCalled();
   }
 
   it("long int: too long", () => {

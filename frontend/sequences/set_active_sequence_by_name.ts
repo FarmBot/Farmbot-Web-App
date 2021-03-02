@@ -7,7 +7,7 @@ import { setMenuOpen } from "./test_button";
 const setSequence = (uuid: string) => store.dispatch(selectSequence(uuid));
 
 export function setActiveSequenceByName() {
-  store.dispatch(setMenuOpen(false));
+  store.dispatch(setMenuOpen(undefined));
   if (lastUrlChunk() == "sequences") {
     return;
   }

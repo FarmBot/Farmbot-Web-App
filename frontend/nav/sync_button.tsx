@@ -3,6 +3,7 @@ import { SyncStatus } from "farmbot/dist";
 import { SyncButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
 import { t } from "../i18next_wrapper";
+import { forceOnline } from "../devices/must_be_online";
 
 const TEXT_MAPPING = (): Record<SyncStatus, string> => ({
   "synced": t("Synced"),
@@ -20,7 +21,7 @@ const spinner = <span className="btn-spinner sync" />;
 export function SyncButton(props: SyncButtonProps) {
   const { bot, dispatch, consistent } = props;
   const { sync_status } = bot.hardware.informational_settings;
-  const syncStatus = sync_status || "unknown";
+  const syncStatus = forceOnline() ? "synced" : sync_status || "unknown";
   const text = TEXT_MAPPING()[syncStatus] || syncStatus.replace("_", " ");
   const spinnerEl = (syncStatus === "syncing") ? spinner : "";
   const className = `nav-sync fb-button ${syncStatus} ${consistent ? "c" : ""}`;

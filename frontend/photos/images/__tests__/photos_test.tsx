@@ -99,7 +99,7 @@ describe("<Photos/>", () => {
     mockDevice.takePhoto = jest.fn(() => Promise.reject());
     const wrapper = mount(<Photos {...fakeProps()} />);
     await clickButton(wrapper, 0, "take photo");
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
+    await expect(mockDevice.takePhoto).toHaveBeenCalled();
     await expect(error).toHaveBeenCalled();
   });
 

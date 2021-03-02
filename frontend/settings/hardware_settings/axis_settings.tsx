@@ -10,9 +10,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { calculateScale } from "./motors";
 import { hasEncoders } from "../firmware/firmware_hardware_support";
-import { getDevice } from "../../device";
-import { commandErr } from "../../devices/actions";
-import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { findAxisLength, findHome, setHome } from "../../devices/actions";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
 import {
@@ -70,9 +68,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         toolTip={!showEncoders
           ? ToolTips.FIND_HOME_STALL_DETECTION
           : ToolTips.FIND_HOME_ENCODERS}
-        action={axis => getDevice()
-          .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
-          .catch(commandErr("'Find Home' request"))}
+        action={findHome}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
@@ -81,8 +77,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         title={DeviceSetting.setHome}
         axisTitle={t("SET HOME")}
         toolTip={ToolTips.SET_HOME_POSITION}
-        action={axis => getDevice().setZero(axis)
-          .catch(commandErr("Set home"))}
+        action={setHome}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />
@@ -125,8 +120,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         toolTip={!showEncoders
           ? ToolTips.FIND_LENGTH_STALL_DETECTION
           : ToolTips.FIND_LENGTH_ENCODERS}
-        action={axis => getDevice().calibrate({ axis })
-          .catch(commandErr("Find axis length"))}
+        action={findAxisLength}
         mcuParams={mcuParams}
         arduinoBusy={busy}
         botOnline={botOnline} />

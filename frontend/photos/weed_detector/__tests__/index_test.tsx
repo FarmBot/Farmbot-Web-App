@@ -34,7 +34,6 @@ describe("<WeedDetector />", () => {
     images: [],
     syncStatus: "synced",
     saveFarmwareEnv: jest.fn(),
-    highlightModified: false,
   });
 
   it("renders", () => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { DiagnosticMessages } from "../../constants";
-import { Col, Row, docLinkClick } from "../../ui/index";
+import { Col, Row, docLinkClick } from "../../ui";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
@@ -14,6 +14,10 @@ export type ConnectionName =
   | "botFirmware";
 
 export type ConnectionStatusFlags = Record<ConnectionName, boolean>;
+export interface DiagnosisProps {
+  statusFlags: ConnectionStatusFlags;
+  hideGraphic?: boolean;
+}
 export interface DiagnosisSaucerProps extends ConnectionStatusFlags {
   className?: string;
 }
@@ -34,16 +38,16 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
   </div>;
 };
 
-export function Diagnosis(statusFlags: ConnectionStatusFlags) {
-  const diagnosisBoolean = diagnosisStatus(statusFlags);
+export function Diagnosis(props: DiagnosisProps) {
+  const diagnosisBoolean = diagnosisStatus(props.statusFlags);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
   return <div className={"diagnosis-section"}>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>
     </div>
     <Row>
-      <Col xs={1}>
-        <DiagnosisSaucer {...statusFlags} />
+      <Col xs={1} hidden={props.hideGraphic}>
+        <DiagnosisSaucer {...props.statusFlags} />
         <div className={"saucer-connector last " + diagnosisColor} />
       </Col>
       <Col xs={10} className={"connectivity-diagnosis"}>
@@ -55,7 +59,7 @@ export function Diagnosis(statusFlags: ConnectionStatusFlags) {
             &nbsp;{t("before troubleshooting.")}
         </p>
         <p>
-          {diagnosisMessage(getDiagnosisCode(statusFlags))}
+          {diagnosisMessage(getDiagnosisCode(props.statusFlags))}
         </p>
         <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
           <i className="fa fa-external-link" />

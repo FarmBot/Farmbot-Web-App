@@ -58,7 +58,7 @@
   margin-bottom: -1px;
   .bp3-popover-wrapper {
     float: right;
-    margin-top: 0.1rem;
+    margin-top: 0.35rem;
   }
   ::-webkit-input-placeholder {
     color: $dark_gray;
@@ -199,13 +199,8 @@
     float: right;
   }
   .step-warning {
-    display: inline-block;
-    float: none;
-    width: 100%;
-    overflow: hidden;
-    height: 2rem;
-    margin-top: 0.25rem;
     font-size: 1.4rem;
+    color: $darkest_red;
     .bp3-popover-wrapper {
       float: left;
     }
@@ -236,12 +231,16 @@
   margin-top: 0.5rem;
   margin-left: 2rem;
   float: right;
+  line-height: 1rem;
   .bp3-popover-target {
     display: block;
     margin-top: -0.5rem;
   }
   &.fa-external-link {
     padding-top: 0.2rem;
+  }
+  &.fa-code {
+    font-weight: bold;
   }
 }
 

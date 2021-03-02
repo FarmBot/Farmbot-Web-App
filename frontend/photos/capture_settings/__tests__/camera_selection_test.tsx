@@ -4,7 +4,6 @@ import {
   CameraSelection, cameraDisabled, cameraCalibrated,
 } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
-import { info } from "../../../toast/toast";
 
 describe("<CameraSelection />", () => {
   const fakeProps = (): CameraSelectionProps => ({
@@ -26,15 +25,11 @@ describe("<CameraSelection />", () => {
     expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
   });
 
-  const expectInfoCall = () => expect(info).toHaveBeenCalledWith(
-    "Sending camera configuration...", { title: "Sending" });
-
   it("stores config in API", () => {
     const p = fakeProps();
     const wrapper = shallow(<CameraSelection {...p} />);
     wrapper.find("FBSelect")
       .simulate("change", { label: "My Camera", value: "mycamera" });
-    expectInfoCall();
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("camera", "\"mycamera\"");
   });
 });

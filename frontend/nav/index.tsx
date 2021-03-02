@@ -2,8 +2,8 @@ import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
-import { Row, Col } from "../ui/index";
-import { getPathArray } from "../history";
+import { Row, Col } from "../ui";
+import { getPathArray, push } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
@@ -22,6 +22,8 @@ import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
+import { DevSettings } from "../settings/dev/dev_support";
+import { WizardData } from "../wizard/data";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -101,7 +103,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           {window.innerWidth <= 450
             ? <DiagnosisSaucer {...data.flags} className={"nav"} />
             : <div className={"connectivity-button"}>
-              {t("Connectivity")}
+              <p>{t("Connectivity")}</p>
               <DiagnosisSaucer {...data.flags} className={"nav"} />
             </div>}
           <ErrorBoundary>
@@ -120,6 +122,18 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       </ErrorBoundary>
     </div>;
   }
+
+  SetupButton = () => {
+    const firmwareHardware = this.props.apiFirmwareValue;
+    return DevSettings.futureFeaturesEnabled() && !WizardData.getComplete()
+      ? <a className={"setup-button"}
+        onClick={() => push("/app/designer/setup")}>
+        {t("Setup")}
+        {window.innerWidth > 450 &&
+          `: ${WizardData.progressPercent(firmwareHardware)}% ${t("complete")}`}
+      </a>
+      : <div />;
+  };
 
   AppNavLinks = () =>
     <div className={"app-nav-links"}>
@@ -168,6 +182,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       <this.EstopButton />
                       <this.SyncButton />
                       <this.ConnectionStatus />
+                      <this.SetupButton />
                       <RunTour currentTour={this.props.tour} />
                     </ErrorBoundary>
                   </div>

@@ -39,8 +39,7 @@ export class CameraCalibration extends
         <MustBeOnline
           syncStatus={this.props.syncStatus}
           networkState={this.props.botToMqttStatus}
-          hideBanner={true}
-          lockOpen={process.env.NODE_ENV !== "production"}>
+          hideBanner={true}>
           <button
             className={`fb-button green ${camDisabled.class}`}
             title={camDisabled.title}
@@ -56,28 +55,14 @@ export class CameraCalibration extends
             <p>{easyCalibration
               ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
               : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
-            <BoolConfig
+            <CameraCalibrationMethodConfig
               wdEnvGet={wdEnvGet}
-              configKey={this.namespace("easy_calibration")}
-              invert={true}
-              label={t("use alternative method")}
-              helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
-              links={[
-                <a key={0} onClick={docLinkClick("camera-calibration")}>
-                  {t("as described in the software documentation.")}
-                  <i className={"fa fa-external-link"} />
-                </a>,
-                <a key={1} href={ExternalUrl.Store.cameraCalibrationCard}
-                  target={"_blank"} rel={"noreferrer"}>
-                  {t(ToolTips.CAMERA_CALIBRATION_CARD_SHOP_LINK)}
-                  <i className={"fa fa-external-link"} />
-                </a>]}
-              onChange={this.saveEnvVar} />
+              saveEnvVar={this.saveEnvVar} />
           </div>
           {!easyCalibration &&
             <ImageWorkspace
-              botOnline={
-                isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
+              botOnline={isBotOnline(
+                this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={scanImage(easyCalibration)}
               images={this.props.images}
               currentImage={this.props.currentImage}
@@ -93,7 +78,6 @@ export class CameraCalibration extends
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
               namespace={this.namespace}
-              highlightModified={this.props.highlightModified}
               invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
           <CameraCalibrationConfig
             values={this.props.wDEnv}
@@ -106,11 +90,36 @@ export class CameraCalibration extends
   }
 }
 
+interface CameraCalibrationMethodConfigProps {
+  wdEnvGet(key: WDENVKey): number;
+  saveEnvVar(key: WDENVKey, value: number): void;
+}
+
+export const CameraCalibrationMethodConfig =
+  (props: CameraCalibrationMethodConfigProps) =>
+    <BoolConfig
+      wdEnvGet={props.wdEnvGet}
+      configKey={"CAMERA_CALIBRATION_easy_calibration"}
+      invert={true}
+      label={t("use alternative method")}
+      helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
+      links={[
+        <a key={0} onClick={docLinkClick("camera-calibration")}>
+          {t("as described in the software documentation.")}
+          <i className={"fa fa-external-link"} />
+        </a>,
+        <a key={1} href={ExternalUrl.Store.cameraCalibrationCard}
+          target={"_blank"} rel={"noreferrer"}>
+          {t(ToolTips.CAMERA_CALIBRATION_CARD_SHOP_LINK)}
+          <i className={"fa fa-external-link"} />
+        </a>]}
+      onChange={props.saveEnvVar} />;
+
 const WIDTH = 177;
 const HEIGHT = 127;
 const SCALE = 3;
 
-const CalibrationCardSVG = (props: { grid: boolean }) =>
+export const CalibrationCardSVG = (props: { grid: boolean }) =>
   <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
     width={`${WIDTH / SCALE}px`}
     height={`${HEIGHT / SCALE}px`}>

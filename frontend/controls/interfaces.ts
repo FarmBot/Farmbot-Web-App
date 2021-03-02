@@ -1,5 +1,12 @@
-import { BotPosition } from "../devices/interfaces";
-import { Vector3, McuParams, Xyz, AxisState } from "farmbot";
+import {
+  BotPosition, BotState, ShouldDisplay, UserEnv,
+} from "../devices/interfaces";
+import {
+  Vector3, McuParams, Xyz, AxisState, SyncStatus, TaggedSequence,
+  FirmwareHardware, TaggedPeripheral, TaggedWebcamFeed,
+} from "farmbot";
+import { ResourceIndex, UUID } from "../resources/interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;
@@ -37,4 +44,27 @@ export interface AxisInputBoxProps {
   axis: Xyz;
   value: number | undefined;
   onChange: (key: string, val: number | undefined) => void;
+}
+
+export interface PinnedSequencesProps {
+  syncStatus: SyncStatus | undefined;
+  sequences: TaggedSequence[];
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  dispatch: Function;
+}
+
+export interface DesignerControlsProps {
+  dispatch: Function;
+  bot: BotState;
+  feeds: TaggedWebcamFeed[];
+  peripherals: TaggedPeripheral[];
+  sequences: TaggedSequence[];
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  firmwareSettings: McuParams;
+  getConfigValue: GetWebAppConfigValue;
+  env: UserEnv;
+  firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
 }

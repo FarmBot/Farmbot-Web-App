@@ -150,3 +150,8 @@ export interface SlotEditRowsProps {
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
 }
+
+export interface ToolVerificationProps {
+  sensors: TaggedSensor[];
+  bot: BotState;
+}

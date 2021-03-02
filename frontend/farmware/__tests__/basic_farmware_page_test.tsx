@@ -21,7 +21,7 @@ describe("<BasicFarmwarePage />", () => {
   it("runs Farmware", () => {
     const wrapper = mount(<BasicFarmwarePage {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
-    expect(mockDevice.execScript).toHaveBeenCalledWith("My Farmware");
+    expect(mockDevice.execScript).toHaveBeenCalledWith("My Farmware", []);
   });
 
   it("renders Farmware pending install", () => {

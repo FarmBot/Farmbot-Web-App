@@ -22,6 +22,5 @@ export interface PeripheralsProps {
   bot: BotState;
   peripherals: TaggedPeripheral[];
   dispatch: Function;
-  disabled: boolean | undefined;
   firmwareHardware: FirmwareHardware | undefined;
 }

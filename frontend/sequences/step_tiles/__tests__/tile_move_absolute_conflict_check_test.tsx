@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { MoveAbsoluteWarningProps } from "../../interfaces";
 import {
@@ -39,7 +39,7 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.axisLength.x = 100;
     }
     const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too high (negativeOnly)", () => {
@@ -51,7 +51,7 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.axisLength.x = 100;
     }
     const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low (negativeOnly)", () => {
@@ -62,7 +62,7 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.negativeOnly.x = true;
     }
     const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low", () => {
@@ -73,6 +73,6 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.stopAtMax.x = true;
     }
     const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

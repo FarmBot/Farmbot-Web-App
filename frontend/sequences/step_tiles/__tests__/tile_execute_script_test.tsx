@@ -6,7 +6,7 @@ import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ExecuteScript } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
-import { Actions, Content } from "../../../constants";
+import { Actions } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
 import {
   fakeFarmwareData,
@@ -141,7 +141,7 @@ describe("<TileExecuteScript />", () => {
     p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
     const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 
   it("displays warning when camera is uncalibrated", () => {
@@ -149,6 +149,6 @@ describe("<TileExecuteScript />", () => {
     p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraCalibrated = false);
     const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.text()).toContain(Content.CAMERA_NOT_CALIBRATED);
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 });

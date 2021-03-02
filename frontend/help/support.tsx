@@ -11,6 +11,7 @@ import { t } from "../i18next_wrapper";
 import { DevSettings } from "../settings/dev/dev_support";
 import { success } from "../toast/toast";
 import { Col, Row } from "../ui";
+import { WizardStepSlug } from "../wizard/data";
 import { HelpHeader } from "./header";
 
 export const SupportPanel = () =>
@@ -89,19 +90,29 @@ export const SupportPanel = () =>
     </DesignerPanelContent>
   </DesignerPanel>;
 
-export const Feedback = () => {
+export interface FeedbackProps {
+  stepSlug?: WizardStepSlug;
+  keep?: boolean;
+}
+
+export const Feedback = (props: FeedbackProps) => {
   const [message, setMessage] = React.useState("");
+  const [sent, setSent] = React.useState(false);
   return <div className={"feedback"}>
+    <textarea value={message} onChange={e => {
+      setSent(false);
+      setMessage(e.currentTarget.value);
+    }} />
     <p>{t(Content.FEEDBACK_NOTICE)}</p>
-    <textarea value={message} onChange={e => setMessage(e.currentTarget.value)} />
-    <button className={"fb-button green"}
-      onClick={() =>
-        axios.post(API.current.feedbackPath, { message })
+    <button className={`fb-button ${sent ? "gray" : "green"}`}
+      onClick={() => sent
+        ? success(t("Feedback already sent."))
+        : axios.post(API.current.feedbackPath, { message, slug: props.stepSlug })
           .then(() => {
             success(t("Feedback sent."));
-            setMessage("");
+            props.keep ? setSent(true) : setMessage("");
           })}>
-      {t("submit")}
+      {sent ? t("submitted") : t("submit")}
     </button>
   </div>;
 };

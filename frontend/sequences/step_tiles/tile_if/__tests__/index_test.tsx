@@ -94,7 +94,7 @@ describe("<InnerIf />", () => {
     const p = fakeProps();
     p.currentStep.args._then = execute;
     const wrapper = mount(<InnerIf {...p} />);
-    expect(wrapper.text()).toContain("Recursive condition");
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 });
 

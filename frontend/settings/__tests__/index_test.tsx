@@ -165,6 +165,13 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("editor");
   });
 
+  it("renders setup settings", () => {
+    const p = fakeProps();
+    p.searchTerm = "setup";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("setup");
+  });
+
   it("renders dev settings", () => {
     const p = fakeProps();
     p.searchTerm = "developer";

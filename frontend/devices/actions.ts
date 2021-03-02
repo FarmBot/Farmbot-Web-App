@@ -10,6 +10,7 @@ import {
   McuParams, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
   FirmwareHardware,
+  Pair,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
@@ -25,6 +26,7 @@ import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
+import { forceOnline } from "./must_be_online";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -52,10 +54,17 @@ export const commandErr =
   (noun = "Command") => () => error(t(`${noun} failed`));
 
 /** Toast message upon request success. */
-export const commandOK = (noun = "Command") => () => {
-  const msg = t(noun) + t(" request sent to device.");
+export const commandOK = (noun = "Command", message?: string) => () => {
+  if (forceOnline()) { return maybeNoop(); }
+  const msg = message || (t(noun) + t(" request sent to device."));
   success(msg, { title: t("Request sent") });
 };
+
+const maybeNoop = () =>
+  forceOnline() &&
+  info(t("Sorry, that feature is unavailable in demo accounts."), {
+    title: t("Unavailable")
+  });
 
 /** Update FBOS. */
 export function checkControllerUpdates() {
@@ -69,6 +78,7 @@ export function checkControllerUpdates() {
 /** Shutdown FBOS. */
 export function powerOff() {
   const noun = t("Power Off Bot");
+  maybeNoop();
   getDevice()
     .powerOff()
     .then(commandOK(noun), commandErr(noun));
@@ -79,12 +89,14 @@ export function softReset() {
   if (!confirm(t(Content.SOFT_RESET_ALERT))) {
     return;
   }
+  maybeNoop();
   getDevice().resetOS();
 }
 
 /** Reboot FBOS. */
 export function reboot() {
   const noun = t("Reboot Bot");
+  maybeNoop();
   getDevice()
     .reboot()
     .then(commandOK(noun), commandErr(noun));
@@ -93,6 +105,7 @@ export function reboot() {
 /** Restart Farmduino firmware serial connection. */
 export function restartFirmware() {
   const noun = t("Restart Firmware");
+  maybeNoop();
   const device = getDevice();
   return device
     .rebootFirmware()
@@ -103,6 +116,7 @@ export function restartFirmware() {
 
 export function flashFirmware(firmwareName: FirmwareHardware) {
   const noun = t("Flash Firmware");
+  maybeNoop();
   getDevice()
     .flashFirmware(firmwareName)
     .then(commandOK(noun), commandErr(noun));
@@ -110,6 +124,7 @@ export function flashFirmware(firmwareName: FirmwareHardware) {
 
 export function emergencyLock() {
   const noun = t("Emergency stop");
+  maybeNoop();
   getDevice()
     .emergencyLock()
     .then(commandOK(noun), commandErr(noun));
@@ -118,6 +133,7 @@ export function emergencyLock() {
 export function emergencyUnlock(force = false) {
   const noun = t("Emergency unlock");
   if (force || confirm(t("Are you sure you want to unlock the device?"))) {
+    maybeNoop();
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));
@@ -131,6 +147,7 @@ export function sync(): Thunk {
       getState().bot.hardware.informational_settings.controller_version;
     const IS_OK = versionOK(currentFBOSversion);
     if (IS_OK) {
+      maybeNoop();
       getDevice()
         .sync()
         .catch(commandErr(noun));
@@ -165,6 +182,31 @@ export function execSequence(
   } else {
     throw new Error(t("Can't execute unsaved sequences"));
   }
+}
+
+export function takePhoto() {
+  maybeNoop();
+  getDevice().takePhoto()
+    .then(commandOK("", Content.PROCESSING_PHOTO))
+    .catch(() => error(t("Error taking photo")));
+}
+
+export function runFarmware(
+  farmwareName: string,
+  pairs?: Pair[],
+  errorMsg?: string,
+) {
+  maybeNoop();
+  getDevice().execScript(farmwareName, pairs)
+    .then(maybeNoop, errorMsg ? commandErr(errorMsg) : noop);
+}
+
+export function updateFarmware(farmwareName: string) {
+  maybeNoop();
+  getDevice()
+    .updateFarmware(farmwareName)
+    .then(maybeNoop)
+    .catch(commandErr("Update"));
 }
 
 /**
@@ -232,6 +274,7 @@ export function MCUFactoryReset() {
   if (!confirm(t(Content.MCU_RESET_ALERT))) {
     return;
   }
+  maybeNoop();
   return getDevice().resetMCU().catch(commandErr("MCU Reset"));
 }
 
@@ -257,54 +300,77 @@ export function settingToggle(
 }
 
 export function moveRelative(props: MoveRelProps) {
+  maybeNoop();
   return getDevice()
     .moveRelative(props)
-    .then(noop, commandErr("Relative movement"));
+    .then(maybeNoop, commandErr("Relative movement"));
 }
 
 export function moveAbsolute(props: MoveRelProps) {
   const noun = t("Absolute movement");
+  maybeNoop();
   return getDevice()
     .moveAbsolute(props)
-    .then(noop, commandErr(noun));
+    .then(maybeNoop, commandErr(noun));
 }
 
 export function pinToggle(pin_number: number) {
   const noun = t("Setting toggle");
+  maybeNoop();
   return getDevice()
     .togglePin({ pin_number })
-    .then(noop, commandErr(noun));
+    .then(maybeNoop, commandErr(noun));
 }
 
 export function readPin(
   pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES,
 ) {
   const noun = t("Read pin");
+  maybeNoop();
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
-    .then(noop, commandErr(noun));
+    .then(maybeNoop, commandErr(noun));
 }
 
 export function writePin(
   pin_number: number, pin_value: number, pin_mode: ALLOWED_PIN_MODES,
 ) {
   const noun = t("Write pin");
+  maybeNoop();
   return getDevice()
     .writePin({ pin_number, pin_mode, pin_value })
-    .then(noop, commandErr(noun));
+    .then(maybeNoop, commandErr(noun));
 }
 
-export function homeAll(speed: number) {
-  const noun = t("'Home All' command");
+export function moveToHome(axis: Axis) {
+  const noun = t("'Move To Home' command");
+  maybeNoop();
   getDevice()
-    .home({ axis: "all", speed })
+    .home({ axis, speed: CONFIG_DEFAULTS.speed })
     .catch(commandErr(noun));
 }
 
-export function findHome(axis: Axis, speed = CONFIG_DEFAULTS.speed) {
+export function findHome(axis: Axis) {
   const noun = t("'Find Home' command");
+  maybeNoop();
   getDevice()
-    .findHome({ axis, speed })
+    .findHome({ axis, speed: CONFIG_DEFAULTS.speed })
+    .catch(commandErr(noun));
+}
+
+export function setHome(axis: Axis) {
+  const noun = t("'Set Home' command");
+  maybeNoop();
+  getDevice()
+    .setZero(axis)
+    .catch(commandErr(noun));
+}
+
+export function findAxisLength(axis: Axis) {
+  const noun = t("'Find Axis Length' command");
+  maybeNoop();
+  getDevice()
+    .calibrate({ axis })
     .catch(commandErr(noun));
 }
 

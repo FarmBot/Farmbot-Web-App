@@ -43,7 +43,7 @@ describe("<TileFindHome/>", () => {
     p.currentStep.args.axis = "x";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = true);
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
+    expect(wrapper.html()).not.toContain(CONFLICT_TEXT_BASE);
   });
 
   it("renders warning: all axes", () => {
@@ -51,7 +51,7 @@ describe("<TileFindHome/>", () => {
     p.currentStep.args.axis = "all";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = false);
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("renders warning: one axis", () => {
@@ -59,6 +59,6 @@ describe("<TileFindHome/>", () => {
     p.currentStep.args.axis = "x";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = false);
     const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

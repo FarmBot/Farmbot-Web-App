@@ -3,10 +3,6 @@ import {
 } from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-
-export type ToggleWebAppBool = (key: BooleanConfigKey) => () => void;
-export type GetWebAppBool = (key: BooleanConfigKey) => boolean;
 
 export interface MoveProps {
   dispatch: Function;
@@ -59,6 +55,7 @@ export interface JogMovementControlsProps extends DirectionAxesProps {
   botOnline: boolean;
   env: UserEnv;
   arduinoBusy: boolean;
+  highlightAxis?: Xyz;
 }
 
 export interface JogControlsGroupProps extends JogMovementControlsProps {
@@ -69,7 +66,7 @@ export type ControlsPopupProps = JogControlsGroupProps;
 
 export interface BotPositionRowsProps {
   locationData: BotLocationData;
-  getValue: GetWebAppBool;
+  getConfigValue: GetWebAppConfigValue;
   arduinoBusy: boolean;
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
@@ -83,4 +80,15 @@ export interface AxisActionsProps {
   botOnline: boolean;
   axis: Xyz;
   shouldDisplay: ShouldDisplay;
+}
+
+export interface MoveControlsProps {
+  dispatch: Function;
+  bot: BotState;
+  getConfigValue: GetWebAppConfigValue;
+  firmwareSettings: McuParams;
+  firmwareHardware: FirmwareHardware | undefined;
+  shouldDisplay: ShouldDisplay;
+  env: UserEnv;
+  highlightAxis?: Xyz;
 }

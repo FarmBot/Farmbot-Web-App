@@ -25,7 +25,6 @@ export interface CameraCalibrationProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   versions: Record<string, string>;
-  highlightModified: boolean;
 }
 
 export interface CameraCalibrationConfigProps {

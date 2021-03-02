@@ -13,7 +13,9 @@ import {
   CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS,
 } from "../remote_env/constants";
 import { Collapse } from "@blueprintjs/core";
-import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";
+import {
+  getModifiedClassNameDefaultFalse, getModifiedClassNameSpecifyModified,
+} from "../../settings/default_values";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -48,7 +50,6 @@ export interface ImageWorkspaceProps extends NumericValues {
   botOnline: boolean;
   timeSettings: TimeSettings;
   namespace(key: CAMERA_CALIBRATION_KEY_PART): WDENVKey;
-  highlightModified: boolean;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -96,9 +97,7 @@ export class ImageWorkspace
 
   getModifiedClass =
     (key: CAMERA_CALIBRATION_KEY_PART & keyof ImageWorkspaceProps) =>
-      (this.props.highlightModified && (this.getDefault(key) != this.props[key]))
-        ? "modified"
-        : "";
+      getModifiedClassNameSpecifyModified(this.getDefault(key) != this.props[key]);
 
   render() {
     const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;

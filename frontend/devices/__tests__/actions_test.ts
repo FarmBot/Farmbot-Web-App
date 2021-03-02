@@ -329,11 +329,11 @@ describe("writePin()", () => {
   });
 });
 
-describe("homeAll()", () => {
+describe("moveToHome()", () => {
   it("calls home", async () => {
-    await actions.homeAll(100);
+    await actions.moveToHome("x");
     expect(mockDevice.current.home)
-      .toHaveBeenCalledWith({ axis: "all", speed: 100 });
+      .toHaveBeenCalledWith({ axis: "x", speed: 100 });
     expect(success).not.toHaveBeenCalled();
   });
 });
@@ -343,13 +343,6 @@ describe("findHome()", () => {
     await actions.findHome("all");
     expect(mockDevice.current.findHome)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
-    expect(success).not.toHaveBeenCalled();
-  });
-
-  it("calls find_home with speed", async () => {
-    await actions.findHome("all", 99);
-    expect(mockDevice.current.findHome)
-      .toHaveBeenCalledWith({ axis: "all", speed: 99 });
     expect(success).not.toHaveBeenCalled();
   });
 });
@@ -384,6 +377,15 @@ describe("commandOK()", () => {
     expect(success).toHaveBeenCalledWith(
       "Command request sent to device.",
       { title: "Request sent" });
+  });
+
+  it("sends demo account toast", () => {
+    localStorage.setItem("myBotIs", "online");
+    actions.commandOK()();
+    expect(success).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith(
+      "Sorry, that feature is unavailable in demo accounts.",
+      { title: "Unavailable" });
   });
 });
 
