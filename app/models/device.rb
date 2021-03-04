@@ -31,10 +31,11 @@ class Device < ApplicationRecord
     define_method(name) { super() || klass.create!(device: self) }
   end
 
-  has_many :in_use_tools
-  has_many :in_use_points
-  has_many :users
   has_many :folders
+  has_many :in_use_points
+  has_many :in_use_tools
+  has_many :users
+  has_many :wizard_step_results
 
   validates_presence_of :name
   validates :timezone, inclusion: {
@@ -44,6 +45,7 @@ class Device < ApplicationRecord
                        }
   validates :ota_hour,
     inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
+  validates :fb_order_number, uniqueness: true, allow_nil: true
   before_validation :perform_gradual_upgrade
 
   # Give the user back the amount of logs they are allowed to view.
