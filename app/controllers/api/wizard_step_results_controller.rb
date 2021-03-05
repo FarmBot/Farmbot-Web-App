@@ -9,7 +9,8 @@ module Api
     end
 
     def update
-      render json: wizard_step_result.update!(update_params)
+      wizard_step_result.update!(update_params)
+      render json: wizard_step_result
     end
 
     def destroy
@@ -24,11 +25,11 @@ module Api
     end
 
     def wizard_step_result
-      wizard_step_results.find(params[:id])
+      @wizard_step_result ||= wizard_step_results.find(params[:id])
     end
 
     def wizard_step_results
-      current_device.wizard_step_result
+      @wizard_step_results ||= current_device.wizard_step_results
     end
   end
 end
