@@ -1,9 +1,11 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { Row, Col } from "../ui";
+import { destroyAllWizardStepResults } from "./actions";
 import { WizardData } from "./data";
+import { SetupWizardSettingsProps } from "./interfaces";
 
-export const SetupWizardSettings = () =>
+export const SetupWizardSettings = (props: SetupWizardSettingsProps) =>
   <div className={"setup-settings"}>
     <Row />
     <Row />
@@ -14,7 +16,11 @@ export const SetupWizardSettings = () =>
         </label>
       </Col>
       <Col xs={4}>
-        <button className={"fb-button red"} onClick={WizardData.reset}>
+        <button className={"fb-button red"} onClick={() => {
+          props.dispatch(destroyAllWizardStepResults(
+            props.wizardStepResults));
+          WizardData.reset();
+        }}>
           {t("restart")}
         </button>
       </Col>

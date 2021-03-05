@@ -1,8 +1,6 @@
-jest.mock("../data", () => ({
-  WizardData: {
-    setOrderNumber: jest.fn(),
-    getOrderNumber: jest.fn(),
-  },
+jest.mock("../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 let mockOnlineValue = true;
@@ -13,15 +11,31 @@ jest.mock("../../devices/must_be_online", () => ({
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { botOnlineReq, ProductRegistration } from "../prerequisites";
-import { WizardData } from "../data";
+import { WizardStepComponentProps } from "../interfaces";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
+import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import { bot } from "../../__test_support__/fake_state/bot";
+import { edit } from "../../api/crud";
 
 describe("<ProductRegistration />", () => {
+  const fakeProps = (): WizardStepComponentProps => ({
+    setStepSuccess: jest.fn(() => jest.fn()),
+    resources: buildResourceIndex([fakeDevice()]).index,
+    bot: bot,
+    dispatch: mockDispatch(),
+    getConfigValue: jest.fn(),
+  });
+
   it("updates value", () => {
-    const wrapper = shallow(<ProductRegistration />);
+    const wrapper = shallow(<ProductRegistration {...fakeProps()} />);
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "123" }
     });
-    expect(WizardData.setOrderNumber).toHaveBeenCalledWith("123");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      fb_order_number: "123"
+    });
   });
 });
 

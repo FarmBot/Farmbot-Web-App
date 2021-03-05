@@ -125,12 +125,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
+    const { wizardStepResults } = this.props;
     return DevSettings.futureFeaturesEnabled() && !WizardData.getComplete()
       ? <a className={"setup-button"}
         onClick={() => push("/app/designer/setup")}>
         {t("Setup")}
         {window.innerWidth > 450 &&
-          `: ${WizardData.progressPercent(firmwareHardware)}% ${t("complete")}`}
+          `: ${WizardData.progressPercent(
+            wizardStepResults, firmwareHardware)}% ${t("complete")}`}
       </a>
       : <div />;
   };

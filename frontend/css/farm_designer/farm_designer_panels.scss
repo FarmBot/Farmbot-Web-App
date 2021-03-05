@@ -1110,20 +1110,6 @@
       }
     }
   }
-  .bp3-collapse::-webkit-scrollbar {
-    display:none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-  }
-  .disable_scrollbar::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-  }
-  .bp3-collapse-body::-webkit-scrollbar {
-    display: none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-  }
   .section {
     margin-bottom: 2rem;
   }
@@ -2004,6 +1990,11 @@
       margin-bottom: 0;
     }
   }
+}
+
+.settings-panel-content,
+.setup-panel,
+.photos-panel {
   .bp3-collapse::-webkit-scrollbar {
     display: none !important;
     width: 0px !important;
@@ -2404,6 +2395,7 @@
     h1 {
       font-weight: bold;
       font-size: 2rem;
+      cursor: default;
     }
     h2 {
       font-weight: bold;
@@ -2428,6 +2420,17 @@
       border: 1px solid $dark_red;
       border-radius: 5px;
     }
+    .wizard-header {
+      margin-bottom: 2rem;
+    }
+    .wizard-section {
+      h2 {
+        margin-top: 0;
+      }
+      .bp3-collapse-body {
+        margin-bottom: 2rem;
+      }
+    }
     .wizard-step {
       margin-left: -15px;
       margin-right: -15px;
@@ -2450,6 +2453,9 @@
     .wizard-step-header {
       padding: 0.5rem 1.5rem 0 1.5rem;
       cursor: pointer;
+      &.open {
+        background: $lighter_gray;
+      }
       p {
         display: inline;
         color: $medium_light_gray;
@@ -2472,6 +2478,10 @@
       border: 3px solid $gray;
       padding: 0.5rem;
       background: $panel_light_gray;
+      &.no-border {
+        border: none;
+        padding: 0;
+      }
       &:empty {
         display: none;
       }
@@ -2553,6 +2563,9 @@
 
 .camera-check {
   text-align: center;
+  p {
+    margin-top: 1rem;
+  }
   button {
     float: none;
   }

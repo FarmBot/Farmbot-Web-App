@@ -8,17 +8,18 @@ import {
   TroubleshootingTipsProps, WizardStepContainerProps, WizardStepHeaderProps,
 } from "./interfaces";
 import { Feedback } from "../help/support";
+import moment from "moment";
 
 const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
-  const resultDate = props.stepResult?.timestamp;
+  const resultDate = props.stepResult?.updated_at;
   const stepDone = props.stepResult?.answer;
   const stepFail = stepDone == false;
   const normalStepColor = stepDone ? "green" : "gray";
   const stepColor = stepFail ? "red" : normalStepColor;
 
 
-  return <div className={"wizard-step-header"}
+  return <div className={`wizard-step-header ${stepOpen ? "open" : ""}`}
     onClick={props.openStep(props.step.slug)}>
     <h3>{t(props.step.title)}</h3>
     <Saucer color={stepColor}>
@@ -36,7 +37,7 @@ const WizardStepHeader = (props: WizardStepHeaderProps) => {
       </p>
       {resultDate && <p>
         {stepDone ? t("Completed") : t("Updated")}&nbsp;
-        {formatLogTime(resultDate, props.timeSettings)}
+        {formatLogTime(moment(resultDate).unix(), props.timeSettings)}
       </p>}
     </div>}
   </div>;
@@ -65,7 +66,9 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             !prerequisite.status() && <prerequisite.indicator key={index} />)}
         </div>}
       <Markdown>{step.content}</Markdown>
-      <div className={"wizard-components"}>
+      <div className={`wizard-components ${step.componentBorder ?? true
+        ? ""
+        : "no-border"}`}>
         {step.component &&
           <step.component setStepSuccess={setSuccess}
             bot={props.bot}

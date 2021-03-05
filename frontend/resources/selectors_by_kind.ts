@@ -22,6 +22,7 @@ import {
   TaggedAlert,
   TaggedPointGroup,
   TaggedFolder,
+  TaggedWizardStepResult,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -101,6 +102,8 @@ export const selectAllSavedSensors =
   (input: ResourceIndex) => selectAllSensors(input).filter(isSaved);
 export const selectAllWebcamFeeds =
   (i: ResourceIndex) => findAll<TaggedWebcamFeed>(i, "WebcamFeed");
+export const selectAllWizardStepResults =
+  (i: ResourceIndex) => findAll<TaggedWizardStepResult>(i, "WizardStepResult");
 export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
 export const selectAllAlerts =

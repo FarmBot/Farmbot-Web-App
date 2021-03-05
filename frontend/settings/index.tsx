@@ -146,7 +146,9 @@ export class RawDesignerSettings
             dispatch={this.props.dispatch}
             farmwareEnvs={this.props.farmwareEnvs} />}
         {this.props.searchTerm.toLowerCase() == "setup" &&
-          <SetupWizardSettings />}
+          <SetupWizardSettings
+            dispatch={this.props.dispatch}
+            wizardStepResults={this.props.wizardStepResults} />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}

@@ -282,6 +282,7 @@ export function urlFor(tag: ResourceName) {
     User: API.current.usersPath,
     WebAppConfig: API.current.webAppConfigPath,
     WebcamFeed: API.current.webcamFeedPath,
+    WizardStepResult: API.current.wizardStepResultsPath,
     Folder: API.current.foldersPath,
   };
   const url = OPTIONS[tag];

@@ -1,29 +1,40 @@
+jest.mock("../actions", () => ({
+  addOrUpdateWizardStepResult: jest.fn(),
+  destroyAllWizardStepResults: jest.fn(),
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
 import { mapStateToProps, RawSetupWizard as SetupWizard } from "../index";
-import { SetupWizardProps, WizardResults } from "../interfaces";
+import { SetupWizardProps } from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   WizardData, WizardSectionSlug, WizardStepSlug, WIZARD_STEPS,
 } from "../data";
 import { BooleanSetting } from "../../session_keys";
-import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import {
+  fakeWebAppConfig, fakeWizardStepResult,
+} from "../../__test_support__/fake_state/resources";
+import {
+  addOrUpdateWizardStepResult,
+  destroyAllWizardStepResults,
+} from "../actions";
 
 describe("<SetupWizard />", () => {
   const fakeProps = (): SetupWizardProps => ({
-    resources: buildResourceIndex([]).index,
+    resources: buildResourceIndex([fakeDevice()]).index,
     bot: bot,
-    dispatch: jest.fn(),
+    dispatch: jest.fn(() => Promise.resolve()),
     getConfigValue: jest.fn(),
     timeSettings: fakeTimeSettings(),
     firmwareHardware: undefined,
-  });
-
-  const fakeResults = (): WizardResults => ({
-    [WizardStepSlug.intro]: { timestamp: 0, answer: true, outcome: "done" },
+    wizardStepResults: [],
+    device: fakeDevice(),
   });
 
   it("renders", () => {
@@ -33,8 +44,11 @@ describe("<SetupWizard />", () => {
   });
 
   it("renders with results", () => {
-    WizardData.update(fakeResults());
     const p = fakeProps();
+    const result = fakeWizardStepResult();
+    result.body.slug = WizardStepSlug.intro;
+    result.body.answer = true;
+    p.wizardStepResults = [result];
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.html()).toContain("fa-check");
   });
@@ -47,18 +61,21 @@ describe("<SetupWizard />", () => {
   });
 
   it("resets setup", () => {
-    WizardData.update(fakeResults());
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().results).toEqual(fakeResults());
+    const p = fakeProps();
+    const result = fakeWizardStepResult();
+    result.body.slug = "slug";
+    p.wizardStepResults = [result];
+    const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
+    expect(wrapper.instance().results).toEqual({ slug: result.body });
     wrapper.instance().reset();
-    expect(wrapper.state().results).toEqual({});
+    expect(destroyAllWizardStepResults).toHaveBeenCalledTimes(1);
   });
 
   it("toggles section", () => {
     const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().connectivity).toEqual(true);
-    wrapper.instance().toggleSection(WizardSectionSlug.connectivity)();
-    expect(wrapper.state().connectivity).toEqual(false);
+    expect(wrapper.state().intro).toEqual(true);
+    wrapper.instance().toggleSection(WizardSectionSlug.intro)();
+    expect(wrapper.state().intro).toEqual(false);
   });
 
   it("opens step", () => {
@@ -75,28 +92,37 @@ describe("<SetupWizard />", () => {
     expect(wrapper.state().stepOpen).toEqual(undefined);
   });
 
-  it("updates data", () => {
+  it("updates data", async () => {
     const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().results).toEqual({});
-    wrapper.instance().updateData(fakeResults())();
-    expect(wrapper.state().results).toEqual(fakeResults());
+    expect(wrapper.instance().results).toEqual({});
+    await wrapper.instance().updateData(fakeWizardStepResult().body)();
+    expect(addOrUpdateWizardStepResult).toHaveBeenCalled();
   });
 
-  it("updates data and progresses to next step", () => {
+  it("updates data and progresses to next step", async () => {
     const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.orderInfo);
-    wrapper.instance().updateData(fakeResults(), WizardStepSlug.intro)();
     expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.intro);
+    await wrapper.instance().updateData(
+      fakeWizardStepResult().body, WizardStepSlug.orderInfo)();
+    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.orderInfo);
   });
 
-  it("updates data and completes setup", () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
+  it("updates data and completes setup", async () => {
+    const p = fakeProps();
+    p.wizardStepResults = WIZARD_STEPS(undefined).map(step => {
+      const stepResult = fakeWizardStepResult();
+      stepResult.body.answer = true;
+      stepResult.body.slug = step.slug;
+      return stepResult;
+    });
+    const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
     expect(WizardData.getComplete()).toEqual(false);
-    const doneResults: WizardResults = {};
-    WIZARD_STEPS(undefined).map(step =>
-      doneResults[step.slug] = { timestamp: 1, answer: true, outcome: undefined });
-    wrapper.instance().updateData(doneResults)();
-    expect(WizardData.getComplete()).toEqual(true);
+    const result = fakeWizardStepResult().body;
+    result.slug = WizardStepSlug.intro;
+    result.answer = true;
+    result.outcome = undefined;
+    await wrapper.instance().updateData(result)();
+    await expect(WizardData.getComplete()).toEqual(true);
   });
 });
 

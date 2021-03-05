@@ -1,6 +1,7 @@
 import { BotState } from "../devices/interfaces";
 import {
   TaggedUser, TaggedLog, TaggedDevice, Alert, FirmwareHardware,
+  TaggedWizardStepResult,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
@@ -28,6 +29,7 @@ export interface NavBarProps {
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
   authAud: string | undefined;
+  wizardStepResults: TaggedWizardStepResult[];
 }
 
 export interface NavBarState {

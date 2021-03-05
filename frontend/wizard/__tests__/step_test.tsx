@@ -6,8 +6,18 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { WizardSectionSlug, WizardStepSlug } from "../data";
+import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 
 describe("<WizardStepContainer />", () => {
+  const fakeResult = () => {
+    const result = fakeWizardStepResult().body;
+    result.slug = WizardStepSlug.intro;
+    result.answer = false;
+    result.outcome = "nothing";
+    result.updated_at = undefined;
+    return result;
+  };
+
   const fakeProps = (): WizardStepContainerProps => {
     const fakeWizardStep = (): WizardStep => ({
       section: WizardSectionSlug.axes,
@@ -20,7 +30,7 @@ describe("<WizardStepContainer />", () => {
     });
     return {
       step: fakeWizardStep(),
-      results: {},
+      results: { [WizardStepSlug.intro]: fakeResult() },
       section: {
         slug: WizardSectionSlug.axes,
         title: "Title",
@@ -37,30 +47,29 @@ describe("<WizardStepContainer />", () => {
     };
   };
 
+
   it("renders", () => {
-    const wrapper = mount(<WizardStepContainer {...fakeProps()} />);
+    const p = fakeProps();
+    p.results = {};
+    const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("content");
     expect(wrapper.text().toLowerCase()).not.toContain("try again");
   });
 
   it("renders done", () => {
     const p = fakeProps();
-    p.results = {
-      [WizardStepSlug.intro]: {
-        timestamp: 1, answer: true, outcome: undefined,
-      }
-    };
+    const result = fakeResult();
+    result.answer = true;
+    result.outcome = undefined;
+    result.updated_at = "2018-01-11T20:20:38.362Z";
+    p.results = { [WizardStepSlug.intro]: result };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.html()).toContain("fa-check");
+    expect(wrapper.text().toLowerCase()).toContain("completed");
   });
 
   it("renders troubleshooting tips", () => {
     const p = fakeProps();
-    p.results = {
-      [WizardStepSlug.intro]: {
-        timestamp: 1, answer: false, outcome: "nothing",
-      }
-    };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("try again");
   });
@@ -77,11 +86,6 @@ describe("<WizardStepContainer />", () => {
     p.step.outcomes.push({
       slug: "one", description: "Two", tips: "Three.",
     });
-    p.results = {
-      [WizardStepSlug.intro]: {
-        timestamp: 1, answer: false, outcome: "nothing",
-      }
-    };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("try again");
     expect(wrapper.text().toLowerCase()).toContain("problem");
@@ -93,11 +97,6 @@ describe("<WizardStepContainer />", () => {
   it("goes to step", () => {
     const p = fakeProps();
     p.step.outcomes[0].goToStep = { text: "goto", step: WizardStepSlug.intro };
-    p.results = {
-      [WizardStepSlug.intro]: {
-        timestamp: 1, answer: false, outcome: "nothing",
-      }
-    };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("goto");
     const e = { stopPropagation: jest.fn() };
@@ -108,12 +107,35 @@ describe("<WizardStepContainer />", () => {
 
   it("renders manual entry", () => {
     const p = fakeProps();
-    p.results = {
-      [WizardStepSlug.intro]: {
-        timestamp: 1, answer: false, outcome: "other",
-      }
-    };
+    const result = fakeWizardStepResult().body;
+    result.outcome = "other";
+    p.results = { [WizardStepSlug.intro]: result };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("provide");
+  });
+
+  it("indicates when prerequisites not met", () => {
+    const p = fakeProps();
+    p.step.prerequisites = [{
+      status: () => false,
+      indicator: () => <p>not met</p>,
+    }];
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("not met");
+  });
+
+  it("renders component", () => {
+    const p = fakeProps();
+    p.step.component = () => <p>component</p>;
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("component");
+  });
+
+  it("renders component without border", () => {
+    const p = fakeProps();
+    p.step.component = () => <p>component</p>;
+    p.step.componentBorder = false;
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.html()).toContain("no-border");
   });
 });
