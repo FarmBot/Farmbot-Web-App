@@ -9,6 +9,7 @@ module Devices
     optional do
       string :name
       string :timezone
+      string :fb_order_number, nils: true
       integer :mounted_tool_id, nils: true
       integer :ota_hour, nils: true
     end
