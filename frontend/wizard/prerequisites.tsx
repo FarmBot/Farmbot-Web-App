@@ -1,10 +1,12 @@
 import React from "react";
+import { edit, save } from "../api/crud";
 import { SetupWizardContent } from "../constants";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { t } from "../i18next_wrapper";
 import { store } from "../redux/store";
+import { getDeviceAccountSettings } from "../resources/selectors";
 import { BlurableInput } from "../ui";
-import { WizardData } from "./data";
+import { WizardStepComponentProps } from "./interfaces";
 
 const botOnlinePrereqStatus = () =>
   isBotOnlineFromState(store.getState().bot);
@@ -19,9 +21,14 @@ export const botOnlineReq = {
   indicator: botOnlinePrereqMessage,
 };
 
-export const ProductRegistration = () =>
-  <div className={"product-registration"}>
+export const ProductRegistration = (props: WizardStepComponentProps) => {
+  const device = getDeviceAccountSettings(props.resources);
+  return <div className={"product-registration"}>
     <label>{t("Order number")}</label>
-    <BlurableInput value={WizardData.getOrderNumber()}
-      onCommit={e => WizardData.setOrderNumber(e.currentTarget.value)} />
+    <BlurableInput value={device.body.fb_order_number || ""}
+      onCommit={e => {
+        props.dispatch(edit(device, { fb_order_number: e.currentTarget.value }));
+        props.dispatch(save(device.uuid));
+      }} />
   </div>;
+};

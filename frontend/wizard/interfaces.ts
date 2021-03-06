@@ -1,4 +1,5 @@
-import { FirmwareHardware } from "farmbot";
+import { FirmwareHardware, TaggedDevice, TaggedWizardStepResult } from "farmbot";
+import { WizardStepResult } from "farmbot/dist/resources/api_resources";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BotState } from "../devices/interfaces";
 import { TimeSettings } from "../interfaces";
@@ -8,6 +9,8 @@ import { WizardSectionSlug, WizardStepSlug } from "./data";
 export interface SetupWizardProps extends WizardOutcomeComponentProps {
   timeSettings: TimeSettings;
   firmwareHardware: FirmwareHardware | undefined;
+  wizardStepResults: TaggedWizardStepResult[];
+  device: TaggedDevice | undefined;
 }
 
 export interface WizardStepOutcome {
@@ -53,6 +56,7 @@ export interface WizardStep {
   prerequisites?: WizardStepPrerequisite[];
   content: string;
   component?: React.ComponentType<WizardStepComponentProps>;
+  componentBorder?: boolean;
   question: string;
   outcomes: WizardStepOutcome[];
 }
@@ -71,23 +75,17 @@ export interface WizardToCSection {
 export type WizardToC = Partial<Record<WizardSectionSlug, WizardToCSection>>;
 export type WizardSteps = WizardStep[];
 
-export interface WizardStepResult {
-  timestamp: number;
-  answer: boolean | undefined;
-  outcome: string | undefined;
-}
-
 export type WizardResults = Partial<Record<WizardStepSlug, WizardStepResult>>;
 
 export type WizardSectionsOpen = Partial<Record<WizardSectionSlug, boolean>>;
 
 export interface SetupWizardState extends WizardSectionsOpen {
-  results: WizardResults;
   stepOpen: WizardStepSlug | undefined;
 }
 
 export interface WizardHeaderProps {
   reset(): void;
+  results: TaggedWizardStepResult[];
   firmwareHardware: FirmwareHardware | undefined;
 }
 
@@ -127,4 +125,9 @@ export interface TroubleshootingTipsProps extends WizardOutcomeComponentProps {
 
 export interface CameraCheckBaseProps extends WizardStepComponentProps {
   component: React.ComponentType<WizardStepComponentProps>;
+}
+
+export interface SetupWizardSettingsProps {
+  dispatch: Function;
+  wizardStepResults: TaggedWizardStepResult[];
 }

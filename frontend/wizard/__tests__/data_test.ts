@@ -1,41 +1,17 @@
 import { uniq } from "lodash";
+import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import {
   WizardData, WizardStepSlug, WIZARD_SECTIONS, WIZARD_STEPS, WIZARD_STEP_SLUGS,
 } from "../data";
-import { WizardStepResult } from "../interfaces";
 
 describe("WizardData()", () => {
-  const fakeStepResult = (): WizardStepResult => ({
-    timestamp: 0, answer: true, outcome: "done",
-  });
-
-  it("fetches results", () => {
-    expect(WizardData.fetch()).toEqual({});
-  });
-
-  it("updates results", () => {
-    const update = {
-      [WizardStepSlug.intro]:
-        fakeStepResult()
-    };
-    expect(WizardData.update(update)).toEqual(update);
-  });
-
-  it("gets missing number", () => {
-    expect(WizardData.getOrderNumber()).toEqual("");
-  });
-
-  it("sets number", () => {
-    WizardData.setOrderNumber("123");
-    expect(WizardData.getOrderNumber()).toEqual("123");
-  });
-
   it("counts completed steps", () => {
-    WizardData.update({ [WizardStepSlug.intro]: fakeStepResult() });
-    const result = fakeStepResult();
-    result.answer = undefined;
-    WizardData.update({ [WizardStepSlug.photo]: result });
-    expect(WizardData.doneCount()).toEqual(1);
+    const result0 = fakeWizardStepResult();
+    result0.body.answer = undefined;
+    const result1 = fakeWizardStepResult();
+    result1.body.answer = true;
+    const results = [result0, result1];
+    expect(WizardData.doneCount(results)).toEqual(1);
   });
 
   it("sets setup complete", () => {
@@ -44,11 +20,9 @@ describe("WizardData()", () => {
   });
 
   it("resets setup progress", () => {
-    WizardData.update({ [WizardStepSlug.intro]: fakeStepResult() });
     WizardData.setComplete();
     WizardData.reset();
     expect(WizardData.getComplete()).toEqual(false);
-    expect(WizardData.fetch()).toEqual({});
   });
 });
 

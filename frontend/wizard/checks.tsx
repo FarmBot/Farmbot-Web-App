@@ -55,6 +55,7 @@ import {
   BooleanConfigKey as BooleanWebAppConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 import { toggleWebAppBool } from "../config_storage/actions";
+import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -91,7 +92,8 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
       setError(false);
     }}>
     <props.component {...props} />
-    {imageUrl && <img src={imageUrl} />}
+    <p>{t("Images may take up to 30 seconds to appear.")}</p>
+    <img src={imageUrl || PLACEHOLDER_FARMBOT} />
   </div>;
 };
 

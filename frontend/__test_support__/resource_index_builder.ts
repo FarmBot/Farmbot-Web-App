@@ -400,6 +400,7 @@ const KIND_PRIORITY: ResourceLookupTable = {
   Image: 4,
   Log: 4,
   WebcamFeed: 4,
+  WizardStepResult: 4,
   Crop: 4,
 };
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,

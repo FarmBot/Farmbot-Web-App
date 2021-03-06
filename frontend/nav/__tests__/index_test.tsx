@@ -48,6 +48,7 @@ describe("<NavBar />", () => {
     alerts: [],
     apiFirmwareValue: undefined,
     authAud: undefined,
+    wizardStepResults: [],
   });
 
   it("has correct parent className", () => {

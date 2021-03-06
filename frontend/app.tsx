@@ -7,11 +7,13 @@ import { LoadingPlant } from "./loading_plant";
 import { BotState, UserEnv } from "./devices/interfaces";
 import {
   ResourceName, TaggedUser, TaggedLog, Xyz, Alert, FirmwareHardware,
+  TaggedWizardStepResult,
 } from "farmbot";
 import {
   maybeFetchUser,
   maybeGetTimeSettings,
   getDeviceAccountSettings,
+  selectAllWizardStepResults,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup, showControlsPopup } from "./controls_popup";
@@ -60,6 +62,7 @@ export interface AppProps {
   pings: PingDictionary;
   env: UserEnv;
   authAud: string | undefined;
+  wizardStepResults: TaggedWizardStepResult[];
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -92,6 +95,7 @@ export function mapStateToProps(props: Everything): AppProps {
     pings: props.bot.connectivity.pings,
     env,
     authAud: props.auth?.token.unencoded.aud,
+    wizardStepResults: selectAllWizardStepResults(props.resources.index),
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -149,6 +153,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         alerts={this.props.alerts}
         apiFirmwareValue={this.props.apiFirmwareValue}
         authAud={this.props.authAud}
+        wizardStepResults={this.props.wizardStepResults}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {showControlsPopup() &&

@@ -247,6 +247,7 @@ class Device < ApplicationRecord
         "text": [
           "`Device ID`: #{id}",
           "`Email`: #{email}",
+          "`Order Number`: #{fb_order_number}",
           "`Model`: #{firmware_kind}",
           "`Slug`: #{slug}",
           "`Message`: #{message}"
