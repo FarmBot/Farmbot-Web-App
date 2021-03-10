@@ -12,11 +12,10 @@ class Device < ApplicationRecord
   THROTTLE_OFF = "Cooldown period has ended. " \
                  "Resuming log storage."
 
-  PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
-                        images logs peripherals pin_bindings plant_templates
-                        points point_groups regimens saved_gardens
-                        sensor_readings sensors sequences token_issuances tools
-                        webcam_feeds fragments)
+  PLURAL_RESOURCES = %i(alerts farm_events farmware_envs farmware_installations
+    folders fragments images logs peripherals pin_bindings plant_templates
+    point_groups points regimens saved_gardens sensor_readings sensors sequences
+    token_issuances tools webcam_feeds wizard_step_results)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 
@@ -31,11 +30,9 @@ class Device < ApplicationRecord
     define_method(name) { super() || klass.create!(device: self) }
   end
 
-  has_many :folders
   has_many :in_use_points
   has_many :in_use_tools
   has_many :users
-  has_many :wizard_step_results
 
   validates_presence_of :name
   validates :timezone, inclusion: {

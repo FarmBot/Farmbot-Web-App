@@ -1,12 +1,24 @@
 import React from "react";
 import { mount } from "enzyme";
-import { WizardStepContainer } from "../step";
-import { WizardStep, WizardStepContainerProps } from "../interfaces";
+import { WizardStepContainer, WizardStepHeader } from "../step";
+import {
+  WizardStep, WizardStepContainerProps, WizardStepHeaderProps,
+} from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { WizardSectionSlug, WizardStepSlug } from "../data";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
+
+const fakeWizardStep = (): WizardStep => ({
+  section: WizardSectionSlug.controls,
+  slug: WizardStepSlug.intro,
+  title: "Home",
+  content: "content",
+  outcomes: [{ slug: "nothing", description: "Nothing", tips: "Try again." }],
+  component: () => <p>component</p>,
+  question: "Did the FarmBot?",
+});
 
 describe("<WizardStepContainer />", () => {
   const fakeResult = () => {
@@ -18,34 +30,23 @@ describe("<WizardStepContainer />", () => {
     return result;
   };
 
-  const fakeProps = (): WizardStepContainerProps => {
-    const fakeWizardStep = (): WizardStep => ({
-      section: WizardSectionSlug.axes,
-      slug: WizardStepSlug.intro,
-      title: "Home",
-      content: "content",
-      outcomes: [{ slug: "nothing", description: "Nothing", tips: "Try again." }],
-      component: () => <p>component</p>,
-      question: "Did the FarmBot?",
-    });
-    return {
-      step: fakeWizardStep(),
-      results: { [WizardStepSlug.intro]: fakeResult() },
-      section: {
-        slug: WizardSectionSlug.axes,
-        title: "Title",
-        steps: [fakeWizardStep()]
-      },
-      stepOpen: WizardStepSlug.intro,
-      openStep: jest.fn(() => jest.fn()),
-      setStepSuccess: jest.fn(() => jest.fn()),
-      timeSettings: fakeTimeSettings(),
-      resources: buildResourceIndex([]).index,
-      bot: bot,
-      dispatch: jest.fn(),
-      getConfigValue: jest.fn(),
-    };
-  };
+  const fakeProps = (): WizardStepContainerProps => ({
+    step: fakeWizardStep(),
+    results: { [WizardStepSlug.intro]: fakeResult() },
+    section: {
+      slug: WizardSectionSlug.controls,
+      title: "Title",
+      steps: [fakeWizardStep()]
+    },
+    stepOpen: WizardStepSlug.intro,
+    openStep: jest.fn(() => jest.fn()),
+    setStepSuccess: jest.fn(() => jest.fn()),
+    timeSettings: fakeTimeSettings(),
+    resources: buildResourceIndex([]).index,
+    bot: bot,
+    dispatch: jest.fn(),
+    getConfigValue: jest.fn(),
+  });
 
 
   it("renders", () => {
@@ -137,5 +138,26 @@ describe("<WizardStepContainer />", () => {
     p.step.componentBorder = false;
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.html()).toContain("no-border");
+  });
+});
+
+describe("<WizardStepHeader />", () => {
+  const fakeProps = (): WizardStepHeaderProps => ({
+    step: fakeWizardStep(),
+    stepResult: undefined,
+    section: {
+      slug: WizardSectionSlug.controls,
+      title: "Title",
+      steps: [fakeWizardStep()]
+    },
+    stepOpen: WizardStepSlug.intro,
+    openStep: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+    showProgress: true,
+  });
+
+  it("shows progress", () => {
+    const wrapper = mount(<WizardStepHeader {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("step 0 of 1");
   });
 });

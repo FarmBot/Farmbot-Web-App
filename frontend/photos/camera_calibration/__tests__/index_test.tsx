@@ -35,6 +35,7 @@ describe("<CameraCalibration/>", () => {
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
     versions: {},
+    showAdvanced: false,
   });
 
   it("renders", () => {
@@ -45,7 +46,6 @@ describe("<CameraCalibration/>", () => {
       "HUE017947",
       "SATURATION025558",
       "VALUE025569",
-      "Processing Parameters",
       "Scan current image",
     ].map(string =>
       expect(wrapper.text()).toContain(string));

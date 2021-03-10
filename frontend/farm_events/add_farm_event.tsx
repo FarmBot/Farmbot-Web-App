@@ -8,12 +8,8 @@ import { init, destroy } from "../api/crud";
 import {
   EditFEForm, FarmEventForm, FarmEventViewModel, NEVER,
 } from "./edit_fe_form";
-import { betterCompact, betterMerge } from "../util";
-import { entries } from "../resources/util";
-import {
-  AddEditFarmEventProps,
-  TaggedExecutable,
-} from "../farm_designer/interfaces";
+import { betterMerge } from "../util";
+import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
@@ -25,6 +21,7 @@ import { SpecialStatus } from "farmbot";
 import { destroyOK } from "../resources/actions";
 import { Content } from "../constants";
 import { error } from "../toast/toast";
+import { DropDownItem } from "../ui";
 
 interface State {
   uuid: string;
@@ -49,24 +46,14 @@ export class RawAddFarmEvent
 
   state: State = { uuid: "", temporaryValues: this.temporaryValueDefaults() };
 
-  get sequences() { return betterCompact(entries(this.props.sequencesById)); }
-
-  get regimens() { return betterCompact(entries(this.props.regimensById)); }
-
-  get executables() {
-    return ([] as TaggedExecutable[])
-      .concat(this.sequences)
-      .concat(this.regimens)
-      .filter(x => x.body.id);
-  }
-
-  get executable(): TaggedExecutable | undefined { return this.executables[0]; }
-
-  componentDidMount() {
-    if (this.executable) {
+  initFarmEvent = (ddi: DropDownItem) => {
+    const executable = this.props.findExecutable(
+      ddi.headingId === "Sequence" ? "Sequence" : "Regimen",
+      parseInt("" + ddi.value));
+    if (executable) {
       const executable_type: ExecutableType =
-        (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
-      const executable_id = this.executable.body.id || 1;
+        executable.kind === "Sequence" ? "Sequence" : "Regimen";
+      const executable_id = executable.body.id || 1;
       const { uuid } = this.props.findExecutable(executable_type, executable_id);
       const varData = this.props.resources.sequenceMetas[uuid];
       const action = init("FarmEvent", {
@@ -99,6 +86,7 @@ export class RawAddFarmEvent
   render() {
     const farmEvent = this.props.findFarmEventByUuid(this.state.uuid);
     const panelName = "add-farm-event";
+    const executableOptions = this.props.executableOptions.filter(x => !x.heading);
     return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -124,12 +112,14 @@ export class RawAddFarmEvent
             fieldGet={this.getField}
             fieldSet={this.setField}
             timeSettings={this.props.timeSettings}
-            executableOptions={[]}
-            executableSet={() => { }}
+            executableOptions={executableOptions}
+            executableSet={this.initFarmEvent}
             executableGet={() => undefined}
             dispatch={this.props.dispatch}
             specialStatus={SpecialStatus.DIRTY}
-            onSave={() => error(t(Content.MISSING_EXECUTABLE))} />}
+            onSave={() => error(executableOptions.length < 1
+              ? t(Content.MISSING_EXECUTABLE)
+              : t("Please select a sequence or regimen."))} />}
       </DesignerPanelContent>
     </DesignerPanel>;
   }

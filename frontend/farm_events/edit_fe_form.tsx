@@ -379,6 +379,7 @@ export interface StartTimeFormProps {
   fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
   now?: moment.Moment;
+  disabled?: boolean;
 }
 
 export const StartTimeForm = (props: StartTimeFormProps) => {
@@ -397,6 +398,7 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
       <Col xs={6}>
         <BlurableInput
           type="date"
+          disabled={props.disabled}
           className="add-event-start-date"
           name="start_date"
           value={props.fieldGet("startDate")}
@@ -411,7 +413,7 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
           value={props.fieldGet("startTime")}
           error={startDatetimeError}
           onCommit={e => props.fieldSet("startTime", e.currentTarget.value)}
-          disabled={forceMidnight}
+          disabled={props.disabled || forceMidnight}
           hidden={forceMidnight} />
       </Col>
     </Row>
@@ -423,6 +425,7 @@ export interface RepeatFormProps {
   fieldGet(key: FarmEventViewModelKey): string;
   fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
+  disabled?: boolean;
 }
 
 export const RepeatForm = (props: RepeatFormProps) => {
@@ -434,7 +437,7 @@ export const RepeatForm = (props: RepeatFormProps) => {
           name="timeUnit"
           onChange={e => props.fieldSet("timeUnit",
             (!e.currentTarget.checked || props.isRegimen) ? "never" : "daily")}
-          disabled={props.isRegimen}
+          disabled={props.disabled || props.isRegimen}
           checked={allowRepeat} />
         {t("Repeats?")}
       </label>
@@ -526,11 +529,13 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
       selectedItem={props.executableGet()} />
     {props.children}
     <StartTimeForm
+      disabled={!props.executableGet()}
       isRegimen={isRegimen}
       fieldGet={fieldGet}
       fieldSet={fieldSet}
       timeSettings={timeSettings} />
     <RepeatForm
+      disabled={!props.executableGet()}
       isRegimen={isRegimen}
       fieldGet={fieldGet}
       fieldSet={fieldSet}

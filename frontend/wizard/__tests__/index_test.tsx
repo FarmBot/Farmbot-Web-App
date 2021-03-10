@@ -1,6 +1,8 @@
 jest.mock("../actions", () => ({
   addOrUpdateWizardStepResult: jest.fn(),
   destroyAllWizardStepResults: jest.fn(),
+  completeSetup: jest.fn(),
+  resetSetup: jest.fn(),
 }));
 
 import React from "react";
@@ -13,15 +15,14 @@ import {
 import { mapStateToProps, RawSetupWizard as SetupWizard } from "../index";
 import { SetupWizardProps } from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
-import {
-  WizardData, WizardSectionSlug, WizardStepSlug, WIZARD_STEPS,
-} from "../data";
+import { WizardSectionSlug, WizardStepSlug, WIZARD_STEPS } from "../data";
 import { BooleanSetting } from "../../session_keys";
 import {
   fakeWebAppConfig, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
 import {
   addOrUpdateWizardStepResult,
+  completeSetup,
   destroyAllWizardStepResults,
 } from "../actions";
 
@@ -39,6 +40,7 @@ describe("<SetupWizard />", () => {
 
   it("renders", () => {
     const p = fakeProps();
+    p.device = undefined;
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("setup");
   });
@@ -54,8 +56,9 @@ describe("<SetupWizard />", () => {
   });
 
   it("renders when complete", () => {
-    WizardData.setComplete();
     const p = fakeProps();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    p.device && ((p.device.body as any).setup_completed_at = "123");
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("setup complete");
   });
@@ -116,13 +119,12 @@ describe("<SetupWizard />", () => {
       return stepResult;
     });
     const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
-    expect(WizardData.getComplete()).toEqual(false);
     const result = fakeWizardStepResult().body;
     result.slug = WizardStepSlug.intro;
     result.answer = true;
     result.outcome = undefined;
     await wrapper.instance().updateData(result)();
-    await expect(WizardData.getComplete()).toEqual(true);
+    await expect(completeSetup).toHaveBeenCalled();
   });
 });
 

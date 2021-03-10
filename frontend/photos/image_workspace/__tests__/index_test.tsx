@@ -26,6 +26,7 @@ describe("<ImageWorkspace />", () => {
     botOnline: true,
     timeSettings: fakeTimeSettings(),
     namespace: jest.fn(() => "CAMERA_CALIBRATION_H_HI"),
+    showAdvanced: false,
   });
 
   it("triggers onChange() event", () => {
@@ -90,9 +91,11 @@ describe("<ImageWorkspace />", () => {
     p.botOnline = true;
     p.images = [image];
     p.currentImage = image;
+    p.showAdvanced = true;
     const wrapper = mount(<ImageWorkspace {...p} />);
     clickButton(wrapper, 0, "scan current image");
     expect(p.onProcessPhoto).toHaveBeenCalledWith(image.body.id);
+    expect(wrapper.text().toLowerCase()).toContain("parameters");
   });
 
   it("disables scan image button when offline", () => {
@@ -103,7 +106,9 @@ describe("<ImageWorkspace />", () => {
   });
 
   it("opens", () => {
-    const wrapper = shallow<ImageWorkspace>(<ImageWorkspace {...fakeProps()} />);
+    const p = fakeProps();
+    p.showAdvanced = true;
+    const wrapper = shallow<ImageWorkspace>(<ImageWorkspace {...p} />);
     expect(wrapper.state().open).toEqual(false);
     wrapper.find(ExpandableHeader).simulate("click");
     expect(wrapper.state().open).toEqual(true);

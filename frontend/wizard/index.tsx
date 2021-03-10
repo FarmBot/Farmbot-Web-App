@@ -10,8 +10,8 @@ import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
 import { Saucer } from "../ui";
 import {
-  WIZARD_SECTIONS, WIZARD_STEP_SLUGS, WizardData,
-  WIZARD_STEPS, WizardSectionSlug, WizardStepSlug,
+  WIZARD_SECTIONS, WIZARD_STEP_SLUGS,
+  WIZARD_STEPS, WizardSectionSlug, WizardStepSlug, setupProgressString,
 } from "./data";
 import {
   SetupWizardProps, SetupWizardState, WizardHeaderProps, WizardResults,
@@ -25,9 +25,14 @@ import { WizardStepContainer } from "./step";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
-import { WizardStepResult } from "farmbot/dist/resources/api_resources";
 import {
-  addOrUpdateWizardStepResult, destroyAllWizardStepResults,
+  DeviceAccountSettings, WizardStepResult,
+} from "farmbot/dist/resources/api_resources";
+import {
+  addOrUpdateWizardStepResult,
+  destroyAllWizardStepResults,
+  completeSetup,
+  resetSetup,
 } from "./actions";
 
 export const mapStateToProps = (props: Everything): SetupWizardProps => ({
@@ -82,7 +87,7 @@ export class RawSetupWizard
           stepOpen: WIZARD_STEP_SLUGS(this.firmwareHardware)[0],
           ...this.sectionsOpen(),
         });
-        WizardData.reset();
+        this.props.dispatch(resetSetup(this.props.device));
       });
   }
 
@@ -97,9 +102,9 @@ export class RawSetupWizard
           ...this.sectionsOpen(),
           stepOpen: nextStepSlug || this.state.stepOpen,
         });
-        WizardData.doneCount(this.props.wizardStepResults)
+        this.props.wizardStepResults.filter(result => result.body.answer).length
           == WIZARD_STEPS(this.firmwareHardware).length
-          && WizardData.setComplete();
+          && this.props.dispatch(completeSetup(this.props.device));
       });
   }
 
@@ -158,7 +163,8 @@ export class RawSetupWizard
                     resources={this.props.resources} />)}
               </Collapse>
             </div>)}
-        {WizardData.getComplete() &&
+        {this.props.device?.body["setup_completed_at" as
+          keyof DeviceAccountSettings] &&
           <div className={"setup-complete"}>
             <Saucer color={"green"}><i className={"fa fa-check"} /></Saucer>
             <p>{t("Setup Complete!")}</p>
@@ -172,8 +178,7 @@ const WizardHeader = (props: WizardHeaderProps) =>
   <div className={"wizard-header"}>
     <h1>{t("Setup")}</h1>
     <p className={"progress-meter"}>
-      {WizardData.progressPercent(
-        props.results, props.firmwareHardware)}% {t("complete")}
+      {setupProgressString(props.results, props.firmwareHardware)}
     </p>
     <button className={"fb-button red start-over"}
       disabled={props.results.length < 1}
