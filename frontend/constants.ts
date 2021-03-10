@@ -1236,6 +1236,10 @@ export namespace SetupWizardContent {
     re-flashing the SD card via Etcher. If possible, ensure line-of-sight
     between devices when trying to connect.`);
 
+  export const FIND_MAP_ORIGIN =
+    trim(`Find the origin in the map. The origin is at the coordinate (0, 0),
+    with arrows pointing along the X and Y axes.`);
+
   export const PRESS_RIGHT_JOG_BUTTON =
     trim(`Standing from where you will normally view the FarmBot,
     **press the right arrow button**.`);

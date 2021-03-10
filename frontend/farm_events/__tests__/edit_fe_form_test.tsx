@@ -97,6 +97,13 @@ describe("<EditFEForm />", () => {
     expect(i.executableGet().label).toEqual(mockSequence.body.name);
   });
 
+  it("errors upon bad executable", () => {
+    const p = fakeProps();
+    p.farmEvent.body.executable_type = "nope" as ExecutableType;
+    console.error = jest.fn();
+    expect(() => instance(p)).toThrowError("nope is not a valid executable_type");
+  });
+
   it("sets the executable", () => {
     const p = fakeProps();
     const i = instance(p);
@@ -522,7 +529,7 @@ describe("offsetTime()", () => {
 });
 
 describe("destructureFarmEvent", () => {
-  it("Converts UTC to Bot's local time", () => {
+  it("converts UTC to bot's local time", () => {
     const fe = fakeFarmEvent("Sequence", 12);
     fe.body.start_time = "2017-12-28T21:32:00.000Z";
     fe.body.end_time = "2018-12-28T22:32:00.000Z";
@@ -531,6 +538,19 @@ describe("destructureFarmEvent", () => {
     const { startTime, endTime } = destructureFarmEvent(fe, timeSettings);
     expect(startTime).toBe("22:32");
     expect(endTime).toBe("23:32");
+  });
+
+  it("handles missing times", () => {
+    const fe = fakeFarmEvent("Sequence", 1);
+    fe.body.end_time = undefined;
+    fe.body.repeat = 0;
+    fe.body.executable_id = 0;
+    const timeSettings = fakeTimeSettings();
+    const result = destructureFarmEvent(fe, timeSettings);
+    expect(result.endDate).toEqual(expect.stringContaining("-"));
+    expect(result.endTime).toEqual(expect.stringContaining(":"));
+    expect(result.repeat).toEqual("1");
+    expect(result.executable_id).toEqual("");
   });
 });
 

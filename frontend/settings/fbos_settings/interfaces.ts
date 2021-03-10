@@ -62,7 +62,7 @@ export interface FarmbotOsRowProps {
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
   timeSettings: TimeSettings;
-  deviceAccount: TaggedDevice;
+  device: TaggedDevice;
 }
 
 export interface FarmbotOsRowState {

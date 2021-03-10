@@ -22,38 +22,29 @@ import {
   InvertJogButton,
   SwapJogButton,
   DisableStallDetection,
+  RotateMapToggle,
+  SelectMapOrigin,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 
-export namespace WizardData {
-  enum StorageKey {
-    complete = "setup_complete",
-  }
-
-  const getItem = (key: StorageKey) => localStorage.getItem(key);
-  const setItem = (key: StorageKey, value: string) =>
-    localStorage.setItem(key, value);
-
-  export const doneCount = (results: TaggedWizardStepResult[]) =>
-    results.filter(result => result.body.answer).length;
-  export const progressPercent = (
-    results: TaggedWizardStepResult[],
-    firmwareHardware: FirmwareHardware | undefined,
-  ) =>
-    round(doneCount(results) / WIZARD_STEPS(firmwareHardware).length * 100);
-  export const getComplete = () => !!getItem(StorageKey.complete);
-  export const setComplete = () => setItem(StorageKey.complete, "true");
-  export const reset = () => setItem(StorageKey.complete, "");
-}
+export const setupProgressString = (
+  results: TaggedWizardStepResult[],
+  firmwareHardware: FirmwareHardware | undefined,
+) => {
+  const completed = results.filter(result => result.body.answer).length;
+  const total = WIZARD_STEPS(firmwareHardware).length;
+  return `${round(completed / total * 100)}% ${t("complete")}`;
+};
 
 export enum WizardSectionSlug {
   intro = "intro",
   connectivity = "connectivity",
-  axes = "axes",
+  map = "map",
   motors = "motors",
+  controls = "controls",
   peripherals = "peripherals",
   camera = "camera",
   tools = "tools",
@@ -64,8 +55,9 @@ export const WIZARD_TOC =
     const toc: WizardToC = {
       [WizardSectionSlug.intro]: { title: t("INTRO"), steps: [] },
       [WizardSectionSlug.connectivity]: { title: t("CONNECTIVITY"), steps: [] },
+      [WizardSectionSlug.map]: { title: t("MAP"), steps: [] },
       [WizardSectionSlug.motors]: { title: t("MOTORS"), steps: [] },
-      [WizardSectionSlug.axes]: { title: t("HOME and AXES"), steps: [] },
+      [WizardSectionSlug.controls]: { title: t("MANUAL CONTROLS"), steps: [] },
       [WizardSectionSlug.peripherals]: { title: t("PERIPHERALS"), steps: [] },
       [WizardSectionSlug.camera]: { title: t("CAMERA"), steps: [] },
     };
@@ -86,6 +78,8 @@ export enum WizardStepSlug {
   configuratorNetwork = "configuratorNetwork",
   configuratorBrowser = "configuratorBrowser",
   configuratorSteps = "configuratorSteps",
+  xySwap = "xySwap",
+  mapOrigin = "mapOrigin",
   xMotor = "xMotor",
   yMotor = "yMotor",
   zMotor = "zMotor",
@@ -287,11 +281,43 @@ export const WIZARD_STEPS = (
       ],
     },
     {
+      section: WizardSectionSlug.map,
+      slug: WizardStepSlug.xySwap,
+      title: t("Rotate Map"),
+      content: t("Observe the orientation of the virtual FarmBot in the map."),
+      question: t("Does the map rotation match FarmBot as you normally view it?"),
+      outcomes: [
+        {
+          slug: "rotated",
+          description: t("The map is rotated incorrectly"),
+          tips: t("Toggle map rotation."),
+          component: RotateMapToggle,
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.map,
+      slug: WizardStepSlug.mapOrigin,
+      title: t("Map Origin"),
+      content: t(SetupWizardContent.FIND_MAP_ORIGIN),
+      question: t("Does the map origin match your real FarmBot's origin?"),
+      outcomes: [
+        {
+          slug: "incorrectOrigin",
+          description: t("The map origin is in a different corner"),
+          tips: t("Select the correct map origin."),
+          component: SelectMapOrigin,
+        },
+      ],
+    },
+    {
       section: WizardSectionSlug.motors,
       slug: WizardStepSlug.xMotor,
       title: t("X-Axis Motor"),
       prerequisites: [botOnlineReq],
-      content: t("Press the right arrow."),
+      content: xySwap
+        ? t("Press the up arrow.")
+        : t("Press the right arrow."),
       component: ControlsCheck("x"),
       question: t("Did FarmBot's x-axis move?"),
       outcomes: [
@@ -323,7 +349,9 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.yMotor,
       title: t("Y-Axis Motor"),
       prerequisites: [botOnlineReq],
-      content: t("Press the up arrow."),
+      content: xySwap
+        ? t("Press the right arrow.")
+        : t("Press the up arrow."),
       component: ControlsCheck("y"),
       question: t("Did FarmBot's y-axis move?"),
       outcomes: [
@@ -383,7 +411,7 @@ export const WIZARD_STEPS = (
       ],
     },
     {
-      section: WizardSectionSlug.axes,
+      section: WizardSectionSlug.controls,
       slug: WizardStepSlug.xAxis,
       title: t("X-axis"),
       prerequisites: [botOnlineReq],
@@ -418,7 +446,7 @@ export const WIZARD_STEPS = (
       ],
     },
     {
-      section: WizardSectionSlug.axes,
+      section: WizardSectionSlug.controls,
       slug: WizardStepSlug.yAxis,
       title: t("Y-axis"),
       prerequisites: [botOnlineReq],
@@ -453,7 +481,7 @@ export const WIZARD_STEPS = (
       ],
     },
     {
-      section: WizardSectionSlug.axes,
+      section: WizardSectionSlug.controls,
       slug: WizardStepSlug.zAxis,
       title: t("Z-axis"),
       prerequisites: [botOnlineReq],

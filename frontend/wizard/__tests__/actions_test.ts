@@ -7,9 +7,13 @@ jest.mock("../../api/crud", () => ({
 
 import { destroy, edit, initSave, save } from "../../api/crud";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import {
   addOrUpdateWizardStepResult,
+  completeSetup,
   destroyAllWizardStepResults,
+  resetSetup,
+  setOrderNumber,
 } from "../actions";
 
 describe("addOrUpdateWizardStepResult()", () => {
@@ -44,5 +48,38 @@ describe("destroyAllWizardStepResults()", () => {
       fakeWizardStepResult(),
     ])(jest.fn());
     expect(destroy).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe("completeSetup()", () => {
+  it("sets setup as completed", () => {
+    const device = fakeDevice();
+    completeSetup(device)?.(jest.fn());
+    expect(edit).toHaveBeenCalledWith(device, {
+      setup_completed_at: expect.stringContaining("Z"),
+    });
+    expect(save).toHaveBeenCalledWith(device.uuid);
+  });
+});
+
+describe("resetSetup()", () => {
+  it("sets setup as not completed", () => {
+    const device = fakeDevice();
+    resetSetup(device)?.(jest.fn());
+    expect(edit).toHaveBeenCalledWith(device, {
+      setup_completed_at: undefined,
+    });
+    expect(save).toHaveBeenCalledWith(device.uuid);
+  });
+});
+
+describe("setOrderNumber()", () => {
+  it("sets order number", () => {
+    const device = fakeDevice();
+    setOrderNumber(device, "123")?.(jest.fn());
+    expect(edit).toHaveBeenCalledWith(device, {
+      fb_order_number: "123",
+    });
+    expect(save).toHaveBeenCalledWith(device.uuid);
   });
 });

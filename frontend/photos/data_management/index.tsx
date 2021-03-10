@@ -7,6 +7,7 @@ import { EnvEditor } from "./env_editor";
 import { ExpandableHeader } from "../../ui";
 import { Collapse } from "@blueprintjs/core";
 import { ClearFarmwareData } from "./clear_farmware_data";
+import { ShowAdvancedToggle } from "../../settings/hardware_settings";
 
 export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
   const [advanced, setAdvanced] = React.useState(false);
@@ -18,6 +19,9 @@ export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
       <label>{t("clear all config data")}</label>
       <ClearFarmwareData farmwareEnvs={props.farmwareEnvs} />
     </fieldset>
+    <ShowAdvancedToggle
+      dispatch={props.dispatch}
+      getConfigValue={props.getConfigValue} />
     {DevSettings.futureFeaturesEnabled() &&
       <div className={"advanced"}>
         <ExpandableHeader

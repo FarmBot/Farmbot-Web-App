@@ -1,5 +1,5 @@
 import React from "react";
-import { ParameterManagementProps } from "./interfaces";
+import { ParameterManagementProps, ShowAdvancedToggleProps } from "./interfaces";
 import { Row, Col, BlurableInput, Help, ToggleButton } from "../../ui";
 import { Header } from "./header";
 import { Collapse, Popover, Position } from "@blueprintjs/core";
@@ -23,7 +23,6 @@ export function ParameterManagement(props: ParameterManagementProps) {
     getConfigValue,
   } = props;
   const { parameter_management } = props.controlPanelState;
-  const showAdvanced = !!getConfigValue(BooleanSetting.show_advanced_settings);
   return <Highlight className={"section"}
     settingName={DeviceSetting.parameterManagement}>
     <Header
@@ -84,7 +83,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
       <Highlight settingName={DeviceSetting.highlightSettingsModifiedFromDefault}
-        hidden={!(showAdvanced
+        hidden={!(!!getConfigValue(BooleanSetting.show_advanced_settings)
           || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
         className={"advanced"}>
         <ToggleHighlightModified
@@ -92,15 +91,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
           getConfigValue={getConfigValue} />
       </Highlight>
       <Highlight settingName={DeviceSetting.showAdvancedSettings}>
-        <div className={"show-advanced-toggle"}>
-          <label>{t(DeviceSetting.showAdvancedSettings)}</label>
-          <ToggleButton
-            className={getModifiedClassName(BooleanSetting.show_advanced_settings)}
-            toggleValue={!!showAdvanced}
-            toggleAction={() => dispatch(setWebAppConfigValue(
-              BooleanSetting.show_advanced_settings,
-              !showAdvanced))} />
-        </div>
+        <ShowAdvancedToggle dispatch={dispatch} getConfigValue={getConfigValue} />
       </Highlight>
       <Highlight settingName={DeviceSetting.resetHardwareParams}>
         <Row>
@@ -166,3 +157,17 @@ export class ParameterImport
     </Highlight>;
   }
 }
+
+export const ShowAdvancedToggle = (props: ShowAdvancedToggleProps) => {
+  const showAdvanced = !!props.getConfigValue(
+    BooleanSetting.show_advanced_settings);
+  return <div className={"show-advanced-toggle"}>
+    <label>{t(DeviceSetting.showAdvancedSettings)}</label>
+    <ToggleButton
+      className={getModifiedClassName(BooleanSetting.show_advanced_settings)}
+      toggleValue={!!showAdvanced}
+      toggleAction={() => props.dispatch(setWebAppConfigValue(
+        BooleanSetting.show_advanced_settings,
+        !showAdvanced))} />
+  </div>;
+};

@@ -74,6 +74,7 @@ export class WeedDetector
             images={this.props.images}
             onChange={this.change}
             timeSettings={this.props.timeSettings}
+            showAdvanced={this.props.showAdvanced}
             namespace={this.namespace}
             iteration={wDEnvGet(this.namespace("iteration"))}
             morph={wDEnvGet(this.namespace("morph"))}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Markdown } from "../../ui/index";
+import { Row, Col, Markdown } from "../../ui";
 import { fetchOsUpdateVersion, OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
 import { FarmbotOsRowProps, FarmbotOsRowState } from "./interfaces";
@@ -76,7 +76,7 @@ export class FarmbotOsRow
           sourceFbosConfig={this.props.sourceFbosConfig}
           botToMqttLastSeen={getLastSeenNumber(this.props.bot)}
           timeSettings={this.props.timeSettings}
-          deviceAccount={this.props.deviceAccount} />
+          deviceAccount={this.props.device} />
       </ErrorBoundary>
     </Popover>;
   }
@@ -84,7 +84,7 @@ export class FarmbotOsRow
   ReleaseNotes = () => {
     const { osReleaseNotes, hardware } = this.props.bot;
     const { controller_version } = hardware.informational_settings;
-    const { fbos_version } = this.props.deviceAccount.body;
+    const { fbos_version } = this.props.device.body;
     const version = controller_version || fbos_version;
     const releaseNotes = getOsReleaseNotesForVersion(osReleaseNotes, version);
     return <div className="release-notes">

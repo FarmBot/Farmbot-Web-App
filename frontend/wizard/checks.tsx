@@ -56,6 +56,7 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { toggleWebAppBool } from "../config_storage/actions";
 import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
+import { OriginSelector } from "../settings/farm_designer_settings";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -309,6 +310,21 @@ export const SwapJogButton = (props: WizardOutcomeComponentProps) =>
       toggleAction={() => props.dispatch(toggleWebAppBool(BooleanSetting.xy_swap))}
       toggleValue={!!props.getConfigValue(BooleanSetting.xy_swap)} />
   </fieldset>;
+
+export const RotateMapToggle = (props: WizardOutcomeComponentProps) =>
+  <fieldset>
+    <label>
+      {t("Rotate map")}
+    </label>
+    <ToggleButton
+      toggleAction={() => props.dispatch(toggleWebAppBool(BooleanSetting.xy_swap))}
+      toggleValue={!!props.getConfigValue(BooleanSetting.xy_swap)} />
+  </fieldset>;
+
+export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
+  <OriginSelector
+    dispatch={props.dispatch}
+    getConfigValue={props.getConfigValue} />;
 
 export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources));

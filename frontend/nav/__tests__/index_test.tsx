@@ -30,7 +30,6 @@ import { Link } from "../../link";
 import { Session } from "../../session";
 import { refresh } from "../../api/crud";
 import { push } from "../../history";
-import { WizardData } from "../../wizard/data";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -147,8 +146,10 @@ describe("<NavBar />", () => {
 
   it("doesn't display setup button when complete", () => {
     mockDev = true;
-    WizardData.setComplete();
-    const wrapper = mount(<NavBar {...fakeProps()} />);
+    const p = fakeProps();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (p.device.body as any).setup_completed_at = "123";
+    const wrapper = mount(<NavBar {...p} />);
     expect(wrapper.find(".setup-button").length).toEqual(0);
   });
 

@@ -147,3 +147,8 @@ export interface ParameterManagementProps {
   arduinoBusy: boolean;
   shouldDisplay: ShouldDisplay;
 }
+
+export interface ShowAdvancedToggleProps {
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+}

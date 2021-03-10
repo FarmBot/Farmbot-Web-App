@@ -148,6 +148,7 @@ export class RawDesignerSettings
         {this.props.searchTerm.toLowerCase() == "setup" &&
           <SetupWizardSettings
             dispatch={this.props.dispatch}
+            device={this.props.deviceAccount}
             wizardStepResults={this.props.wizardStepResults} />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}

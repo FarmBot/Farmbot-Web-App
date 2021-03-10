@@ -47,6 +47,8 @@ import {
   InvertMotor,
   lowVoltageProblemStatus,
   PeripheralsCheck,
+  RotateMapToggle,
+  SelectMapOrigin,
   SoilHeightMeasurementCheck,
   SwapJogButton,
   SwitchCameraCalibrationMethod,
@@ -370,6 +372,28 @@ describe("<SwapJogButton />", () => {
     const wrapper = mount(<SwapJogButton {...p} />);
     wrapper.find("button").first().simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { xy_swap: true });
+  });
+});
+
+describe("<RotateMapToggle />", () => {
+  const state = fakeState();
+  const config = fakeWebAppConfig();
+  config.body.xy_swap = false;
+  state.resources = buildResourceIndex([config]);
+
+  it("rotates map", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount(<RotateMapToggle {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { xy_swap: true });
+  });
+});
+
+describe("<SelectMapOrigin />", () => {
+  it("renders origin selector", () => {
+    const wrapper = mount(<SelectMapOrigin {...fakeProps()} />);
+    expect(wrapper.html()).toContain("farmbot-origin");
   });
 });
 

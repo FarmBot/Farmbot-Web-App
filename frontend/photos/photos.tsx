@@ -26,6 +26,7 @@ import { ImagingDataManagement } from "./data_management";
 import { getImageShownStatusFlags } from "./photo_filter_settings/util";
 import { FarmwareName } from "../sequences/step_tiles/tile_execute_script";
 import { FarmwareForm } from "../farmware/farmware_forms";
+import { BooleanSetting } from "../session_keys";
 
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps, DesignerPhotosState> {
@@ -112,6 +113,8 @@ export class RawDesignerPhotos
           </ToolTip>
           <CameraCalibration {...common}
             wDEnv={this.props.wDEnv}
+            showAdvanced={!!this.props.getConfigValue(
+              BooleanSetting.show_advanced_settings)}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             iteration={wDEnvGet("CAMERA_CALIBRATION_iteration")}
             morph={wDEnvGet("CAMERA_CALIBRATION_morph")}
@@ -136,31 +139,40 @@ export class RawDesignerPhotos
           </ToolTip>
           <WeedDetector {...common}
             wDEnv={this.props.wDEnv}
+            showAdvanced={!!this.props.getConfigValue(
+              BooleanSetting.show_advanced_settings)}
             saveFarmwareEnv={this.props.saveFarmwareEnv} />
         </Collapse>
-        {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
-          <ExpandableHeader
-            expanded={!!this.state.measure}
-            title={t("Measure soil height")}
-            onClick={this.toggle("measure")} />}
-        {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
-          <Collapse isOpen={!!this.state.measure}>
-            <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
-              docPage={"measure-soil-height"}>
+        <ExpandableHeader
+          expanded={!!this.state.measure}
+          title={t("Measure soil height")}
+          onClick={this.toggle("measure")} />
+        <Collapse isOpen={!!this.state.measure}>
+          <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
+            docPage={"measure-soil-height"}>
+            {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
               <UpdateImagingPackage
                 version={this.props.versions[FarmwareName.MeasureSoilHeight]}
                 farmwareName={FarmwareName.MeasureSoilHeight}
-                botOnline={botOnline} />
-            </ToolTip>
-            <FarmwareForm
+                botOnline={botOnline} />}
+          </ToolTip>
+          {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
+            ? <FarmwareForm
               farmware={this.props.farmwares[FarmwareName.MeasureSoilHeight]}
               env={this.props.env}
               userEnv={this.props.userEnv}
               farmwareEnvs={this.props.farmwareEnvs}
               saveFarmwareEnv={this.props.saveFarmwareEnv}
               botOnline={botOnline}
+              hideAdvanced={!this.props.getConfigValue(
+                BooleanSetting.show_advanced_settings)}
               dispatch={this.props.dispatch} />
-          </Collapse>}
+            : <div className={"farmware-form"}>
+              <button className={"fb-button green farmware-button pseudo-disabled"}>
+                {t("measure")}
+              </button>
+            </div>}
+        </Collapse>
         <ExpandableHeader
           expanded={!!this.state.manage}
           title={t("Manage data")}
