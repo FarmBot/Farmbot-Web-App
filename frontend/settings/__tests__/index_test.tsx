@@ -58,6 +58,7 @@ describe("<DesignerSettings />", () => {
     searchTerm: "",
     user: fakeUser(),
     farmwareEnvs: [],
+    wizardStepResults: [],
   });
 
   it("renders settings", () => {

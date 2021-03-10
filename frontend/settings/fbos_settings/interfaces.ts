@@ -12,6 +12,11 @@ export interface NameRowProps {
   widget?: boolean;
 }
 
+export interface OrderNumberRowProps {
+  dispatch: Function;
+  device: TaggedDevice;
+}
+
 export interface TimezoneRowProps {
   dispatch: Function;
   device: TaggedDevice;

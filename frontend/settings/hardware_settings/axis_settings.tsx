@@ -110,6 +110,7 @@ export function AxisSettings(props: AxisSettingsProps) {
       <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.negativeCoordinatesOnly}
         tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
+        advanced={true}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
         z={"movement_home_up_z"} />

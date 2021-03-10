@@ -64,6 +64,7 @@ import { calibrate } from "../../photos/camera_calibration/actions";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
+import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -80,7 +81,7 @@ describe("<CameraCheck />", () => {
     oldImage.body.id = 1;
     p.resources = buildResourceIndex([oldImage]).index;
     const wrapper = mount(<CameraCheck {...p} />);
-    expect(wrapper.find("img").length).toEqual(0);
+    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
     const newImage = fakeImage();
     newImage.body.attachment_url = "url";
     newImage.body.id = 10;
@@ -88,14 +89,14 @@ describe("<CameraCheck />", () => {
     wrapper.setProps(p);
     expect(wrapper.find("img").props().src).toEqual("url");
     wrapper.find(".camera-check").simulate("click");
-    expect(wrapper.find("img").length).toEqual(0);
+    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("handles empty images", () => {
     const p = fakeProps();
     p.resources = buildResourceIndex([]).index;
     const wrapper = mount(<CameraCheck {...p} />);
-    expect(wrapper.find("img").length).toEqual(0);
+    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("handles undefined fields", () => {
@@ -108,7 +109,7 @@ describe("<CameraCheck />", () => {
     image.body.id = undefined;
     p.resources = buildResourceIndex([image]).index;
     wrapper.setProps(p);
-    expect(wrapper.find("img").length).toEqual(0);
+    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("searches recent logs", () => {

@@ -2,8 +2,7 @@ import { t } from "../i18next_wrapper";
 import { round } from "lodash";
 import { SetupWizardContent, ToolTips } from "../constants";
 import {
-  WizardResults, WizardSection, WizardStepResult, WizardSteps, WizardToC,
-  WizardToCSection,
+  WizardSection, WizardSteps, WizardToC, WizardToCSection,
 } from "./interfaces";
 import { botOnlineReq, ProductRegistration } from "./prerequisites";
 import {
@@ -24,43 +23,30 @@ import {
   SwapJogButton,
   DisableStallDetection,
 } from "./checks";
-import { FirmwareHardware } from "farmbot";
+import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
+import { GetWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 export namespace WizardData {
   enum StorageKey {
-    results = "setup_results",
     complete = "setup_complete",
-    order = "setup_order_number",
   }
 
   const getItem = (key: StorageKey) => localStorage.getItem(key);
   const setItem = (key: StorageKey, value: string) =>
     localStorage.setItem(key, value);
 
-  export const fetch = (): WizardResults =>
-    JSON.parse(getItem(StorageKey.results) || "{}");
-  export const update = (update: WizardResults) => {
-    const newData = { ...fetch(), ...update };
-    setItem(StorageKey.results, JSON.stringify(newData));
-    return newData;
-  };
-
-  export const setOrderNumber = (value: string) =>
-    setItem(StorageKey.order, value);
-  export const getOrderNumber = () => getItem(StorageKey.order) || "";
-
-  export const doneCount = () => Object.values(fetch())
-    .filter((stepResult: WizardStepResult) => stepResult.answer).length;
-  export const progressPercent =
-    (firmwareHardware: FirmwareHardware | undefined) =>
-      round(doneCount() / WIZARD_STEPS(firmwareHardware).length * 100);
+  export const doneCount = (results: TaggedWizardStepResult[]) =>
+    results.filter(result => result.body.answer).length;
+  export const progressPercent = (
+    results: TaggedWizardStepResult[],
+    firmwareHardware: FirmwareHardware | undefined,
+  ) =>
+    round(doneCount(results) / WIZARD_STEPS(firmwareHardware).length * 100);
   export const getComplete = () => !!getItem(StorageKey.complete);
   export const setComplete = () => setItem(StorageKey.complete, "true");
-  export const reset = () => {
-    setItem(StorageKey.results, "{}");
-    setItem(StorageKey.complete, "");
-  };
+  export const reset = () => setItem(StorageKey.complete, "");
 }
 
 export enum WizardSectionSlug {
@@ -121,8 +107,20 @@ export enum WizardStepSlug {
   soilSensor = "soilSensor",
 }
 
-export const WIZARD_STEPS =
-  (firmwareHardware: FirmwareHardware | undefined): WizardSteps => [
+export const WIZARD_STEPS = (
+  firmwareHardware: FirmwareHardware | undefined,
+  getConfigValue?: GetWebAppConfigValue,
+): WizardSteps => {
+  const xySwap = !!getConfigValue?.(BooleanSetting.xy_swap);
+  const positiveMovementInstruction = (swap: boolean) =>
+    swap
+      ? SetupWizardContent.PRESS_UP_JOG_BUTTON
+      : SetupWizardContent.PRESS_RIGHT_JOG_BUTTON;
+  const positiveMovementQuestion = (swap: boolean) =>
+    swap
+      ? t("Did FarmBot **move away from you**?")
+      : t("Did FarmBot **move to the right**?");
+  return [
     {
       section: WizardSectionSlug.intro,
       slug: WizardStepSlug.intro,
@@ -389,9 +387,9 @@ export const WIZARD_STEPS =
       slug: WizardStepSlug.xAxis,
       title: t("X-axis"),
       prerequisites: [botOnlineReq],
-      content: t(SetupWizardContent.PRESS_RIGHT_JOG_BUTTON),
+      content: positiveMovementInstruction(xySwap),
       component: ControlsCheck("x"),
-      question: t("Did FarmBot **move to the right**?"),
+      question: positiveMovementQuestion(xySwap),
       outcomes: [
         {
           slug: "nothing",
@@ -401,7 +399,7 @@ export const WIZARD_STEPS =
         },
         {
           slug: "inverted",
-          description: t("It moved left"),
+          description: t("It moved the opposite direction"),
           tips: t("Invert x-axis jog buttons"),
           component: InvertJogButton("x"),
         },
@@ -424,9 +422,9 @@ export const WIZARD_STEPS =
       slug: WizardStepSlug.yAxis,
       title: t("Y-axis"),
       prerequisites: [botOnlineReq],
-      content: t(SetupWizardContent.PRESS_RIGHT_JOG_BUTTON),
+      content: positiveMovementInstruction(!xySwap),
       component: ControlsCheck("y"),
-      question: t("Did FarmBot **move to the away from you**?"),
+      question: positiveMovementQuestion(!xySwap),
       outcomes: [
         {
           slug: "nothing",
@@ -436,7 +434,7 @@ export const WIZARD_STEPS =
         },
         {
           slug: "inverted",
-          description: t("It moved left"),
+          description: t("It moved the opposite direction"),
           tips: t("Invert y-axis jog buttons"),
           component: InvertJogButton("y"),
         },
@@ -494,8 +492,9 @@ export const WIZARD_STEPS =
       slug: WizardStepSlug.valve,
       title: t("Solenoid Valve"),
       prerequisites: [botOnlineReq],
-      content: t("Press the solenoid valve ON/OFF toggle."),
+      content: t("Press the WATER ON/OFF toggle."),
       component: PeripheralsCheck,
+      componentBorder: false,
       question: t("Is water flowing?"),
       outcomes: [
         {
@@ -517,6 +516,7 @@ export const WIZARD_STEPS =
       prerequisites: [botOnlineReq],
       content: t("Press the vacuum pump ON/OFF toggle."),
       component: PeripheralsCheck,
+      componentBorder: false,
       question: t("Is the vacuum pump running?"),
       outcomes: [
         {
@@ -538,6 +538,7 @@ export const WIZARD_STEPS =
       prerequisites: [botOnlineReq],
       content: t("Press the lighting ON/OFF toggle."),
       component: PeripheralsCheck,
+      componentBorder: false,
       question: t("Did the lights turn on?"),
       outcomes: [
         {
@@ -611,7 +612,7 @@ export const WIZARD_STEPS =
       prerequisites: [botOnlineReq],
       content: t("Press the button below to calibrate the camera."),
       component: CameraCalibrationCheck,
-      question: t("Did calibration complete successfully?"),
+      question: t("Did calibration complete without error logs?"),
       outcomes: [
         {
           slug: "cameraError",
@@ -749,16 +750,20 @@ export const WIZARD_STEPS =
       }]
       : []),
   ];
+};
 
 export const WIZARD_STEP_SLUGS =
   (firmwareHardware: FirmwareHardware | undefined): WizardStepSlug[] =>
     WIZARD_STEPS(firmwareHardware).map(step => step.slug);
 
-export const WIZARD_SECTIONS =
-  (firmwareHardware: FirmwareHardware | undefined): WizardSection[] => {
-    const toC = WIZARD_TOC(firmwareHardware);
-    WIZARD_STEPS(firmwareHardware).map(step => toC[step.section]?.steps.push(step));
-    return Object.entries(toC)
-      .map(([sectionSlug, sectionData]: [WizardSectionSlug, WizardToCSection]) =>
-        ({ slug: sectionSlug, ...sectionData }));
-  };
+export const WIZARD_SECTIONS = (
+  firmwareHardware: FirmwareHardware | undefined,
+  getConfigValue?: GetWebAppConfigValue,
+): WizardSection[] => {
+  const toC = WIZARD_TOC(firmwareHardware);
+  WIZARD_STEPS(firmwareHardware, getConfigValue)
+    .map(step => toC[step.section]?.steps.push(step));
+  return Object.entries(toC)
+    .map(([sectionSlug, sectionData]: [WizardSectionSlug, WizardToCSection]) =>
+      ({ slug: sectionSlug, ...sectionData }));
+};

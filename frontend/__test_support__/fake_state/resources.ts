@@ -27,6 +27,7 @@ import {
   TaggedPointGroup,
   TaggedFolder,
   TaggedWeedPointer,
+  TaggedWizardStepResult,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
@@ -213,6 +214,18 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
     updated_at: "---",
     url: "http://i.imgur.com/iAOUmEB.jpg",
     name: "wcf #" + id
+  });
+}
+
+export function fakeWizardStepResult(): TaggedWizardStepResult {
+  const id = idCounter++;
+  return fakeResource("WizardStepResult", {
+    id,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-11T20:20:38.362Z",
+    slug: "step",
+    answer: false,
+    outcome: "error",
   });
 }
 

@@ -5,7 +5,9 @@ import {
   BotState, ControlPanelState,
 } from "../devices/interfaces";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedDevice, Alert, TaggedUser, TaggedFarmwareEnv } from "farmbot";
+import {
+  TaggedDevice, Alert, TaggedUser, TaggedFarmwareEnv, TaggedWizardStepResult,
+} from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { DeviceSetting } from "../constants";
 import {
@@ -32,6 +34,7 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   searchTerm: string;
   user: TaggedUser;
   farmwareEnvs: TaggedFarmwareEnv[];
+  wizardStepResults: TaggedWizardStepResult[];
 }
 
 export interface DesignerSettingsSectionProps {

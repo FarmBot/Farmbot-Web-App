@@ -6,7 +6,7 @@ import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import { saveOK } from "../actions";
 import { hasId, arrayUnwrap } from "../util";
 import {
-  fakeWebcamFeed, fakeSequence, fakeToolSlot, fakeUser,
+  fakeWebcamFeed, fakeSequence, fakeToolSlot, fakeUser, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
 import { resourceReducer, emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
@@ -64,6 +64,21 @@ describe("getFeeds", () => {
       resourceReady("WebcamFeed", feed),
     ].reduce(resourceReducer, emptyState());
     expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed.body);
+  });
+});
+
+describe("getWizardStepResults", () => {
+  it("returns empty array", () => {
+    expect(Selector.selectAllWizardStepResults(emptyState().index).length).toBe(0);
+  });
+
+  it("finds the only WizardStepResult", () => {
+    const feed = fakeWizardStepResult();
+    const state = [
+      resourceReady("WizardStepResult", feed),
+    ].reduce(resourceReducer, emptyState());
+    expect(Selector.selectAllWizardStepResults(state.index)[0].body)
+      .toEqual(feed.body);
   });
 });
 
