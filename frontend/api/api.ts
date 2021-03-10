@@ -173,4 +173,6 @@ export class API {
   get releasesPath() { return `${this.baseUrl}/api/releases?platform=`; }
   /** /api/feedback */
   get feedbackPath() { return `${this.baseUrl}/api/feedback`; }
+  /** /api/wizard_step_results/:id */
+  get wizardStepResultsPath() { return `${this.baseUrl}/api/wizard_step_results/`; }
 }

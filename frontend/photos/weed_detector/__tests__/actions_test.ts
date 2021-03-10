@@ -34,7 +34,7 @@ describe("detectPlants()", () => {
   it("executes", () => {
     detectPlants(1)();
     expect(mockDevice.execScript)
-      .toHaveBeenCalledWith(FarmwareName.PlantDetection);
+      .toHaveBeenCalledWith(FarmwareName.PlantDetection, undefined);
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -42,7 +42,7 @@ describe("detectPlants()", () => {
     mockDevice.execScript = jest.fn(() => Promise.reject());
     await detectPlants(1)();
     expect(mockDevice.execScript)
-      .toHaveBeenCalledWith(FarmwareName.PlantDetection);
+      .toHaveBeenCalledWith(FarmwareName.PlantDetection, undefined);
     expect(error).not.toHaveBeenCalled();
   });
 

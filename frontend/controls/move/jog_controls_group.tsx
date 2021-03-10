@@ -17,5 +17,6 @@ export const JogControlsGroup = (props: JogControlsGroupProps) =>
       arduinoBusy={props.arduinoBusy}
       botOnline={props.botOnline}
       env={props.env}
+      highlightAxis={props.highlightAxis}
       firmwareSettings={props.firmwareSettings} />
   </div>;

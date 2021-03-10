@@ -10,7 +10,6 @@ import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
-import { TaggedSensor } from "farmbot";
 import { Content } from "../constants";
 import { history } from "../history";
 import { Row, Col, Help } from "../ui";
@@ -19,13 +18,10 @@ import {
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
 import { Link } from "../link";
 import { edit, save } from "../api/crud";
-import { readPin } from "../devices/actions";
-import { isBotOnlineFromState } from "../devices/must_be_online";
 import {
   setToolHover, ToolSlotSVG, ToolSVG,
 } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolSelection } from "./tool_slot_edit_components";
-import { error } from "../toast/toast";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import {
   ToolsProps, ToolsState, ToolSlotInventoryItemProps, ToolInventoryItemProps,
@@ -35,14 +31,7 @@ import { mapPointClickAction } from "../farm_designer/map/actions";
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { SearchField } from "../ui/search_field";
-
-const toolStatus = (value: number | undefined): string => {
-  switch (value) {
-    case 1: return t("disconnected");
-    case 0: return t("connected");
-    default: return t("unknown");
-  }
-};
+import { ToolVerification } from "./tool_verification";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "" };
@@ -55,26 +44,6 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   get mountedToolId() { return this.props.device.body.mounted_tool_id; }
 
   get mountedTool() { return this.props.findTool(this.mountedToolId || 0); }
-
-  get toolVerificationPin() {
-    const toolVerificationSensor =
-      this.props.sensors.filter(sensor => sensor.body.label.toLowerCase()
-        .includes("tool verification"))[0] as TaggedSensor | undefined;
-    return toolVerificationSensor ? toolVerificationSensor.body.pin || 63 : 63;
-  }
-
-  get pins() { return this.props.bot.hardware.pins; }
-
-  get toolVerificationValue() {
-    const pinData = this.pins[this.toolVerificationPin];
-    return pinData ? pinData.value : undefined;
-  }
-
-  get arduinoBusy() {
-    return !!this.props.bot.hardware.informational_settings.busy;
-  }
-
-  get botOnline() { return isBotOnlineFromState(this.props.bot); }
 
   get noUTM() { return !hasUTM(this.props.firmwareHardware); }
 
@@ -95,19 +64,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         isActive={this.props.isActive}
         filterSelectedTool={true}
         filterActiveTools={false} />
-      <div className="tool-verification-status">
-        <p>{t("status")}: {toolStatus(this.toolVerificationValue)}</p>
-        <button
-          className={`fb-button yellow ${this.botOnline ? "" : "pseudo-disabled"}`}
-          disabled={this.arduinoBusy}
-          title={this.botOnline ? "" : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}
-          onClick={() => this.botOnline
-            ? readPin(this.toolVerificationPin,
-              `pin${this.toolVerificationPin}`, 0)
-            : error(t(Content.NOT_AVAILABLE_WHEN_OFFLINE))}>
-          {t("verify")}
-        </button>
-      </div>
+      <ToolVerification sensors={this.props.sensors} bot={this.props.bot} />
     </div>
 
   ToolSlots = () =>

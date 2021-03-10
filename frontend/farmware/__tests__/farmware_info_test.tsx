@@ -104,6 +104,19 @@ describe("<FarmwareInfo />", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/farmware");
   });
 
+  it("doesn't remove Farmware from API", () => {
+    window.confirm = () => false;
+    const p = fakeProps();
+    p.farmware && (p.farmware.name = "fake");
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.installations = [fakeFarmwareInstallation()];
+    p.firstPartyFarmwareNames = ["fake"];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(destroy).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("errors during removal of Farmware from API: not found", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());

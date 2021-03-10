@@ -30,6 +30,7 @@ import { bulkToggleControlPanel, ToggleSettingsOpen } from "./toggle_section";
 import { EnvEditor } from "../photos/data_management/env_editor";
 import { BooleanSetting } from "../session_keys";
 import { ChangeOwnershipForm } from "./transfer_ownership/change_ownership_form";
+import { SetupWizardSettings } from "../wizard/settings";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -140,10 +141,14 @@ export class RawDesignerSettings
           searchTerm={this.props.searchTerm}
           getConfigValue={getConfigValue}
           sourceFbosConfig={sourceFbosConfig} />
-        {this.props.searchTerm == "env" &&
+        {this.props.searchTerm.toLowerCase() == "env" &&
           <EnvEditor
             dispatch={this.props.dispatch}
             farmwareEnvs={this.props.farmwareEnvs} />}
+        {this.props.searchTerm.toLowerCase() == "setup" &&
+          <SetupWizardSettings
+            dispatch={this.props.dispatch}
+            wizardStepResults={this.props.wizardStepResults} />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}

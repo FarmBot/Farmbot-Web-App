@@ -1,7 +1,6 @@
 import React from "react";
 import { TaggedFarmwareInstallation } from "farmbot";
-import { getDevice } from "../device";
-import { commandErr } from "../devices/actions";
+import { updateFarmware } from "../devices/actions";
 import { Content } from "../constants";
 import { destroy } from "../api/crud";
 import { error } from "../toast/toast";
@@ -91,7 +90,7 @@ const FarmwareManagementSection =
           className="fb-button yellow no-float"
           disabled={isPendingInstallation(farmware)}
           title={t("update Farmware")}
-          onClick={updateFarmware(farmware.name, botOnline)}>
+          onClick={requestFarmwareUpdate(farmware.name, botOnline)}>
           {t("Update")}
         </button>
         <button
@@ -104,13 +103,10 @@ const FarmwareManagementSection =
     </div>;
 
 /** Update a Farmware to the latest version. */
-export const updateFarmware =
+export const requestFarmwareUpdate =
   (farmwareName: string | undefined, botOnline: boolean) => () => {
     if (farmwareName && botOnline) {
-      getDevice()
-        .updateFarmware(farmwareName)
-        .then(() => { })
-        .catch(commandErr("Update"));
+      updateFarmware(farmwareName);
     }
   };
 
@@ -123,14 +119,12 @@ interface RemoveFarmwareProps {
 /** Uninstall a Farmware. */
 const uninstallFarmware = (props: RemoveFarmwareProps) =>
   (farmwareName: string | undefined, url: string | undefined) => () => {
-    if (farmwareName) {
-      const { installations, dispatch, firstPartyFarmwareNames } = props;
-      const isFirstParty = firstPartyFarmwareNames &&
-        firstPartyFarmwareNames.includes(farmwareName);
-      if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
-        removeFromAPI({ url, installations, dispatch });
-        push("/app/designer/farmware");
-      }
+    const { installations, dispatch, firstPartyFarmwareNames } = props;
+    const isFirstParty = firstPartyFarmwareNames && farmwareName &&
+      firstPartyFarmwareNames.includes(farmwareName);
+    if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
+      removeFromAPI({ url, installations, dispatch });
+      push("/app/designer/farmware");
     }
   };
 

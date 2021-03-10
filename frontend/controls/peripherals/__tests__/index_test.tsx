@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Peripherals } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -9,15 +9,12 @@ import { SpecialStatus, FirmwareHardware } from "farmbot";
 import { error } from "../../../toast/toast";
 
 describe("<Peripherals />", () => {
-  function fakeProps(): PeripheralsProps {
-    return {
-      bot,
-      peripherals: [fakePeripheral()],
-      dispatch: jest.fn(),
-      disabled: false,
-      firmwareHardware: undefined,
-    };
-  }
+  const fakeProps = (): PeripheralsProps => ({
+    bot,
+    peripherals: [fakePeripheral()],
+    dispatch: jest.fn(),
+    firmwareHardware: undefined,
+  });
 
   it("renders", () => {
     const wrapper = mount(<Peripherals {...fakeProps()} />);

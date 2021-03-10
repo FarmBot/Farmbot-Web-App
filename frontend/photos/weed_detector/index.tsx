@@ -1,6 +1,6 @@
 import React from "react";
 import { WeedDetectorState, WeedDetectorProps } from "./interfaces";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";
@@ -48,8 +48,7 @@ export class WeedDetector
         <MustBeOnline
           syncStatus={this.props.syncStatus}
           networkState={this.props.botToMqttStatus}
-          hideBanner={true}
-          lockOpen={process.env.NODE_ENV !== "production"}>
+          hideBanner={true}>
           <button
             className={`fb-button green ${camDisabled.class}`}
             title={camDisabled.title}
@@ -70,7 +69,6 @@ export class WeedDetector
           <ImageWorkspace
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-            highlightModified={this.props.highlightModified}
             onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
             currentImage={this.props.currentImage}
             images={this.props.images}

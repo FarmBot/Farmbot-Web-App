@@ -12,6 +12,7 @@ if Rails.env == "development"
 
   [
     FarmwareEnv,
+    WizardStepResult,
     Alert,
     Sensor,
     Peripheral,

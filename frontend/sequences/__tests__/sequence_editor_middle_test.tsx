@@ -20,7 +20,7 @@ describe("<SequenceEditorMiddle/>", () => {
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
       getWebAppConfigValue: jest.fn(),
-      menuOpen: false,
+      menuOpen: undefined,
     };
   }
 

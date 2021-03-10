@@ -2,10 +2,11 @@ import { SequenceReducerState } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
+import { UUID } from "../resources/interfaces";
 
 export const initialState: SequenceReducerState = {
   current: undefined,
-  menuOpen: false,
+  menuOpen: undefined,
   stepIndex: undefined,
 };
 
@@ -22,7 +23,7 @@ export const sequenceReducer = generateReducer<SequenceReducerState>(initialStat
     s.current = payload;
     return s;
   })
-  .add<boolean>(Actions.SET_SEQUENCE_POPUP_STATE, function (s, { payload }) {
+  .add<UUID | undefined>(Actions.SET_SEQUENCE_POPUP_STATE, (s, { payload }) => {
     s.menuOpen = payload;
     return s;
   })

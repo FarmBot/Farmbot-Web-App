@@ -1,5 +1,5 @@
 import React from "react";
-import { DropDownItem, NULL_CHOICE, Row } from "../../../ui/index";
+import { DropDownItem, NULL_CHOICE, Row } from "../../../ui";
 import { ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
@@ -11,8 +11,8 @@ import { If_ } from "./if";
 import { ThenElse } from "./then_else";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { ToolTips } from "../../../constants";
-import { StepWrapper } from "../../step_ui";
+import { Content, ToolTips } from "../../../constants";
+import { StepWarning, StepWrapper } from "../../step_ui";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName,
 } from "../pin_support";
@@ -84,10 +84,9 @@ export class InnerIf extends React.Component<StepParams<If>> {
       index={this.props.index}
       resources={this.props.resources}
       warning={recursive &&
-        <span>
-          <i className="fa fa-exclamation-triangle" />
-            &nbsp;{t("Recursive condition.")}
-        </span>}>
+        <StepWarning
+          titleBase={t("Recursive condition.")}
+          warning={t(Content.RECURSIVE)} />}>
       <If_ {...this.props} />
       <Row>
         <ThenElse thenElseKey={"_then"} {...this.props} />

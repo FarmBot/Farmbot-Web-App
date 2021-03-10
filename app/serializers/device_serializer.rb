@@ -1,5 +1,6 @@
 class DeviceSerializer < ApplicationSerializer
   attributes :fbos_version,
+             :fb_order_number,
              :last_saw_api,
              :mounted_tool_id,
              :name,

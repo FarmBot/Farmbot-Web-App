@@ -7,7 +7,7 @@ jest.mock("../../settings/dev/dev_support", () => ({
 }));
 
 jest.mock("../../farmware/farmware_info", () => ({
-  updateFarmware: jest.fn(),
+  requestFarmwareUpdate: jest.fn(),
 }));
 
 import React from "react";
@@ -18,10 +18,9 @@ import {
   UpdateImagingPackageProps,
 } from "../../photos/photos";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { ExpandableHeader } from "../../ui";
-import { ToggleButton } from "../../ui/toggle_button";
+import { ExpandableHeader, ToggleButton } from "../../ui";
 import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
-import { updateFarmware } from "../../farmware/farmware_info";
+import { requestFarmwareUpdate } from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 
@@ -99,7 +98,7 @@ describe("<UpdateImagingPackage />", () => {
     p.version = "1.0.0";
     const wrapper = mount(<UpdateImagingPackage {...p} />);
     wrapper.find("i").simulate("click");
-    expect(updateFarmware).toHaveBeenCalledWith("take-photo", true);
+    expect(requestFarmwareUpdate).toHaveBeenCalledWith("take-photo", true);
   });
 
   it("doesn't render update button", () => {

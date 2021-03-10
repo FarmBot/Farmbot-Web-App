@@ -287,6 +287,14 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: "/designer/setup",
+    getModule,
+    key,
+    getChild: () => import("./wizard/index"),
+    childKey: "SetupWizard"
+  }),
+  route({
+    children: true,
     $: "/designer/sensors",
     getModule,
     key,

@@ -161,21 +161,43 @@ nav {
 .nav-right {
   height: 5rem;
   overflow: hidden;
-  .connection-status-popover {
+  .setup-button,
+  .connectivity-button {
     display: inline;
-    .connectivity-button {
+    border: 1px solid $white;
+    border-radius: 5px;
+    padding: 0.8rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: $white;
+    margin-right: 0.75rem;
+    &:hover {
+      background: $medium_gray;
+    }
+  }
+  .setup-button {
+    line-height: 6rem;
+  }
+  .connectivity-button {
+    p {
       display: inline;
-      border: 1px solid $white;
-      border-radius: 5px;
-      padding: 0.8rem;
-      font-weight: bold;
       color: $white;
-      &:hover {
-        background: $medium_gray;
+      font-weight: bold;
+    }
+  }
+  @media screen and (max-width: 450px) {
+    .connectivity-button {
+      border: none;
+      p {
+        display: none;
       }
     }
+  }
+  .connection-status-popover {
+    display: inline;
     .bp3-popover-wrapper {
-      margin: 1.3rem;
+      line-height: 6rem;
+      margin-top: 0;
     }
   }
   a {

@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Collapse } from "@blueprintjs/core";
-import { Markdown } from "../ui/index";
+import { Markdown } from "../ui";
 import { TickerListProps } from "./interfaces";
 import { formatLogTime } from "../logs/index";
 import { safeNumericSetting } from "../session";
@@ -13,6 +13,7 @@ import { Link } from "../link";
 import { MessageType } from "../sequences/interfaces";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
+import { forceOnline } from "../devices/must_be_online";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -23,19 +24,18 @@ const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
   };
 
 /** Generate a fallback TaggedLog to display in the first line of the ticker. */
-const generateFallbackLog = (uuid: string, message: string): TaggedLog => {
-  return {
+const generateFallbackLog =
+  (uuid: string, message: string, type = MessageType.debug): TaggedLog => ({
     kind: "Log",
     uuid,
     specialStatus: SpecialStatus.SAVED,
     body: {
       message,
-      type: MessageType.debug,
+      type,
       verbosity: -1,
       channels: [], created_at: NaN
     }
-  };
-};
+  });
 
 /** Choose the log to display in the first line of the ticker. */
 const getFirstTickerLog = (
@@ -43,6 +43,9 @@ const getFirstTickerLog = (
   logs: TaggedLog[],
   botOnline: boolean,
 ): TaggedLog => {
+  if (forceOnline()) {
+    return generateFallbackLog("demo", t("Using a demo account"), MessageType.info);
+  }
   if (!botOnline) {
     return generateFallbackLog("bot_offline", t("FarmBot is offline"));
   }

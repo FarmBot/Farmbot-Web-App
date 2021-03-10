@@ -53,7 +53,7 @@ describe("<TestButton/>", () => {
       sequence: fakeSequence(),
       syncStatus: "synced",
       resources: buildResourceIndex().index,
-      menuOpen: false,
+      menuOpen: undefined,
       dispatch: jest.fn(),
     };
   }
@@ -108,13 +108,13 @@ describe("<TestButton/>", () => {
     expect(btn.hasClass("orange")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(mockDevice.execSequence).not.toHaveBeenCalled();
-    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(true));
+    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(props.sequence.uuid));
   });
 
   it("has open parameter assignment menu", () => {
     const props = fakeProps();
     mockHasParameters = true;
-    props.menuOpen = true;
+    props.menuOpen = props.sequence.uuid;
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button").first();
     expect(btn.hasClass("gray")).toBeTruthy();
@@ -189,6 +189,6 @@ describe("<TestButton/>", () => {
     const props = fakeProps();
     const wrapper = mount(<TestButton {...props} />);
     wrapper.unmount();
-    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(false));
+    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(undefined));
   });
 });

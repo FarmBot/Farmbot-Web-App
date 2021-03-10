@@ -13,9 +13,8 @@ import { t } from "../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader, ToolTip } from "../ui";
 import { ToolTips } from "../constants";
-import { updateFarmware } from "../farmware/farmware_info";
+import { requestFarmwareUpdate } from "../farmware/farmware_info";
 import { isBotOnline } from "../devices/must_be_online";
-import { BooleanSetting } from "../session_keys";
 import { CaptureSettings } from "./capture_settings";
 import {
   PhotoFilterSettings, FiltersEnabledWarning,
@@ -60,8 +59,6 @@ export class RawDesignerPhotos
       images: this.props.images,
       env: this.props.env,
       currentImage: this.props.currentImage,
-      highlightModified: !!this.props.getConfigValue(
-        BooleanSetting.highlight_modified_settings),
     };
     const imageCommon = {
       flags: this.imageShowFlags,
@@ -192,6 +189,6 @@ export const UpdateImagingPackage = (props: UpdateImagingPackageProps) =>
     ? <div className={"update"}>
       <p>v{props.version}</p>
       <i className={"fa fa-refresh"}
-        onClick={updateFarmware(props.farmwareName, props.botOnline)} />
+        onClick={requestFarmwareUpdate(props.farmwareName, props.botOnline)} />
     </div>
     : <div className={"update"} />;

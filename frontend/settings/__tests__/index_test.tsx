@@ -58,6 +58,7 @@ describe("<DesignerSettings />", () => {
     searchTerm: "",
     user: fakeUser(),
     farmwareEnvs: [],
+    wizardStepResults: [],
   });
 
   it("renders settings", () => {
@@ -163,6 +164,13 @@ describe("<DesignerSettings />", () => {
     p.searchTerm = "env";
     const wrapper = mount(<DesignerSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("editor");
+  });
+
+  it("renders setup settings", () => {
+    const p = fakeProps();
+    p.searchTerm = "setup";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("setup");
   });
 
   it("renders dev settings", () => {

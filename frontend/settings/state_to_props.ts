@@ -8,6 +8,7 @@ import {
 import {
   getDeviceAccountSettings, maybeGetTimeSettings, getUserAccountSettings,
   selectAllFarmwareEnvs,
+  selectAllWizardStepResults,
 } from "../resources/selectors";
 import {
   saveOrEditFarmwareEnv, getShouldDisplayFn,
@@ -33,4 +34,5 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   searchTerm: props.resources.consumers.farm_designer.settingsSearchTerm,
   user: getUserAccountSettings(props.resources.index),
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
+  wizardStepResults: selectAllWizardStepResults(props.resources.index),
 });

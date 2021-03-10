@@ -139,6 +139,7 @@ def destroy_everything!
     Primitive,
     FarmEvent,
     Release,
+    WizardStepResult,
     FarmwareEnv,
     Alert,
     Sensor,

@@ -1,15 +1,15 @@
 import React from "react";
 import { Row, Col } from "../../ui";
 import { Feature } from "../../devices/interfaces";
-import { commandErr, moveAbsolute } from "../../devices/actions";
+import {
+  findAxisLength, findHome, moveAbsolute, moveToHome, setHome,
+} from "../../devices/actions";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
 import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
-import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { LockableButton } from "../../settings/hardware_settings/lockable_button";
-import { getDevice } from "../../device";
 import { Popover, Position } from "@blueprintjs/core";
 import {
   disabledAxisMap,
@@ -18,7 +18,7 @@ import { push } from "../../history";
 import { AxisActionsProps, BotPositionRowsProps } from "./interfaces";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
-  const { locationData, getValue, arduinoBusy } = props;
+  const { locationData, getConfigValue, arduinoBusy } = props;
   const hardwareDisabled = disabledAxisMap(props.firmwareSettings);
   const commonAxisActionProps = {
     botOnline: props.botOnline,
@@ -57,12 +57,12 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       style={{ overflowWrap: "break-word" }}
       label={t("Motor Coordinates (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
-      getValue(BooleanSetting.scaled_encoders) &&
+      getConfigValue(BooleanSetting.scaled_encoders) &&
       <AxisDisplayGroup
         position={locationData.scaled_encoders}
         label={t("Scaled Encoder (mm)")} />}
     {hasEncoders(props.firmwareHardware) &&
-      getValue(BooleanSetting.raw_encoders) &&
+      getConfigValue(BooleanSetting.raw_encoders) &&
       <AxisDisplayGroup
         position={locationData.raw_encoders}
         label={t("Raw Encoder data")} />}
@@ -82,31 +82,25 @@ export const AxisActions = (props: AxisActionsProps) => {
         <LockableButton
           disabled={arduinoBusy || !botOnline}
           title={t("MOVE TO HOME")}
-          onClick={() => getDevice()
-            .home({ speed: CONFIG_DEFAULTS.speed, axis })
-            .catch(commandErr("Move to home"))}>
+          onClick={() => moveToHome(axis)}>
           {t("MOVE TO HOME")}
         </LockableButton>}
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
         title={t("FIND HOME")}
-        onClick={() => getDevice()
-          .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
-          .catch(commandErr("Find Home"))}>
+        onClick={() => findHome(axis)}>
         {t("FIND HOME")}
       </LockableButton>
       <LockableButton
         disabled={arduinoBusy || !botOnline}
         title={t("SET HOME")}
-        onClick={() => getDevice().setZero(axis)
-          .catch(commandErr("Set home"))}>
+        onClick={() => setHome(axis)}>
         {t("SET HOME")}
       </LockableButton>
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
         title={t("FIND LENGTH")}
-        onClick={() => getDevice().calibrate({ axis })
-          .catch(commandErr("Find axis length"))}>
+        onClick={() => findAxisLength(axis)}>
         {t("FIND LENGTH")}
       </LockableButton>
       <a onClick={() => push("/app/designer/settings?highlight=axes")}>

@@ -154,7 +154,9 @@ export const getLocationState = (step: Move): {
   }
   const otherOverwrites = step.body?.filter(x =>
     x.kind == "axis_overwrite"
-    && !LOCATION_NODES.includes(x.args.axis_operand.kind)) || [];
+    && !LOCATION_NODES.includes(x.args.axis_operand.kind)
+    && !(x.args.axis_operand.kind == "special_value"
+      && x.args.axis_operand.args.label == AxisSelection.disable)) || [];
   if (otherOverwrites.length > 0) {
     return { location: undefined, locationSelection: LocSelection.custom };
   }

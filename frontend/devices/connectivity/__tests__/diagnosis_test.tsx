@@ -1,43 +1,47 @@
 import React from "react";
 import {
   getDiagnosisCode, diagnosisMessage, Diagnosis, DiagnosisSaucer,
+  DiagnosisProps, DiagnosisSaucerProps,
 } from "../diagnosis";
 import { DiagnosticMessages } from "../../../constants";
 import { mount } from "enzyme";
 
 describe("<Diagnosis/>", () => {
+  const fakeProps = (): DiagnosisProps => ({
+    statusFlags: {
+      userAPI: true,
+      userMQTT: true,
+      botMQTT: true,
+      botAPI: true,
+      botFirmware: true,
+    },
+  });
+
   it("renders help text", () => {
-    const el = mount(<Diagnosis
-      userAPI={true}
-      userMQTT={true}
-      botMQTT={true}
-      botAPI={true}
-      botFirmware={true} />);
+    const el = mount(<Diagnosis {...fakeProps()} />);
     expect(el.text()).toContain(DiagnosticMessages.OK);
     expect(el.find(".saucer").hasClass("green")).toBeTruthy();
   });
 
   it("renders diagnosis error color", () => {
-    const el = mount(<Diagnosis
-      userAPI={true}
-      userMQTT={true}
-      botMQTT={true}
-      botAPI={true}
-      botFirmware={false} />);
+    const p = fakeProps();
+    p.statusFlags.botFirmware = false;
+    const el = mount(<Diagnosis {...p} />);
     expect(el.find(".saucer").hasClass("red")).toBeTruthy();
   });
 });
 
 describe("<DiagnosisSaucer />", () => {
+  const fakeProps = (): DiagnosisSaucerProps => ({
+    userAPI: true,
+    userMQTT: true,
+    botMQTT: true,
+    botAPI: true,
+    botFirmware: true,
+  });
+
   it("renders green", () => {
-    const flags = {
-      userMQTT: true,
-      userAPI: true,
-      botMQTT: true,
-      botAPI: true,
-      botFirmware: true,
-    };
-    const wrapper = mount(<DiagnosisSaucer {...flags} />);
+    const wrapper = mount(<DiagnosisSaucer {...fakeProps()} />);
     expect(wrapper.find(".saucer").hasClass("green")).toBeTruthy();
   });
 });

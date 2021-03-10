@@ -27,7 +27,7 @@ describe("<BotPositionRows />", () => {
   const mockConfig: Dictionary<boolean> = {};
 
   const fakeProps = (): BotPositionRowsProps => ({
-    getValue: jest.fn(key => mockConfig[key]),
+    getConfigValue: jest.fn(key => mockConfig[key]),
     locationData: bot.hardware.location_data,
     arduinoBusy: false,
     firmwareSettings: {},

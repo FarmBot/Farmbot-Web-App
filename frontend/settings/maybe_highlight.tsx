@@ -10,6 +10,7 @@ import { push } from "../history";
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
   DeviceSetting.name,
+  DeviceSetting.orderNumber,
   DeviceSetting.timezone,
   DeviceSetting.time_zone,
   DeviceSetting.camera,

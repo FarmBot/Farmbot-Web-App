@@ -49,4 +49,33 @@ describe("<JogButtons />", () => {
     expect(mockDevice.moveRelative)
       .toHaveBeenCalledWith({ x: 0, y: 100, z: 0 });
   });
+
+  it("highlights x axis jog button", () => {
+    mockConfig.body.xy_swap = false;
+    const p = jogButtonProps();
+    p.highlightAxis = "x";
+    const wrapper = mount(<JogButtons {...p} />);
+    expect(wrapper.find("td").at(13).props().style).toEqual({
+      border: "2px solid yellow"
+    });
+  });
+
+  it("highlights y axis jog button", () => {
+    mockConfig.body.xy_swap = false;
+    const p = jogButtonProps();
+    p.highlightAxis = "y";
+    const wrapper = mount(<JogButtons {...p} />);
+    expect(wrapper.find("td").at(4).props().style).toEqual({
+      border: "2px solid yellow"
+    });
+  });
+
+  it("highlights z axis jog button", () => {
+    const p = jogButtonProps();
+    p.highlightAxis = "z";
+    const wrapper = mount(<JogButtons {...p} />);
+    expect(wrapper.find("td").at(15).props().style).toEqual({
+      border: "2px solid yellow"
+    });
+  });
 });

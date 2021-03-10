@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { edit } from "../api/crud";
 import { FBSelect } from "../ui";
 import { pinDropdowns, getPinModes } from "../sequences/step_tiles/pin_support";
@@ -35,7 +35,7 @@ interface PinDropdownProps {
 export const PinDropdown = (props: PinDropdownProps) =>
   <FBSelect
     selectedItem={isNumber(props.value)
-      ? { label: t("Pin ") + `${props.value}`, value: props.value || "" }
+      ? { label: t("Pin ") + `${props.value}`, value: props.value }
       : { label: t("Select a pin "), value: "" }}
     onChange={d => props.dispatch(edit(props.resource, {
       pin: parseInt(d.value.toString(), 10)

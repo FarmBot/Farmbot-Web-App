@@ -6,6 +6,8 @@ import {
   browserToMQTT, browserToAPI, botToMQTT, botToAPI, botToFirmware,
 } from "./status_checks";
 import { t } from "../../i18next_wrapper";
+import { forceOnline } from "../must_be_online";
+import moment from "moment";
 
 export interface ConnectivityDataProps {
   bot: BotState;
@@ -18,13 +20,22 @@ export const connectivityData = (props: ConnectivityDataProps) => {
     .informational_settings.firmware_version;
 
   /** A record of all the things we know about connectivity right now. */
-  const data: Record<ConnectionName, StatusRowProps> = {
-    userMQTT: browserToMQTT(props.bot.connectivity.uptime["user.mqtt"]),
-    userAPI: browserToAPI(props.bot.connectivity.uptime["user.api"]),
-    botMQTT: botToMQTT(props.bot.connectivity.uptime["bot.mqtt"]),
-    botAPI: botToAPI(props.device.body.last_saw_api),
-    botFirmware: botToFirmware(fwVersion, props.apiFirmwareValue),
-  };
+  const data: Record<ConnectionName, StatusRowProps> =
+    forceOnline()
+      ? {
+        userMQTT: browserToMQTT({ state: "up", at: moment().valueOf() }),
+        userAPI: browserToAPI({ state: "up", at: moment().valueOf() }),
+        botMQTT: botToMQTT({ state: "up", at: moment().valueOf() }),
+        botAPI: botToAPI(moment().toISOString()),
+        botFirmware: botToFirmware("0.0.0.E", "express_k10"),
+      }
+      : {
+        userMQTT: browserToMQTT(props.bot.connectivity.uptime["user.mqtt"]),
+        userAPI: browserToAPI(props.bot.connectivity.uptime["user.api"]),
+        botMQTT: botToMQTT(props.bot.connectivity.uptime["bot.mqtt"]),
+        botAPI: botToAPI(props.device.body.last_saw_api),
+        botFirmware: botToFirmware(fwVersion, props.apiFirmwareValue),
+      };
 
   /** Override statuses that require higher-level connections. */
   if (!data.userMQTT.connectionStatus) {

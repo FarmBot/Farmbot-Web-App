@@ -86,7 +86,7 @@ export class Connectivity
                 hover={this.hover}
                 hoveredConnection={this.state.hoveredConnection} />)}
           <hr style={{ marginLeft: "3rem" }} />
-          <Diagnosis {...this.props.flags} />
+          <Diagnosis statusFlags={this.props.flags} />
         </Col>
       </Row>
       <Row>

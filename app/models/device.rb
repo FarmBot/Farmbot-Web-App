@@ -12,11 +12,10 @@ class Device < ApplicationRecord
   THROTTLE_OFF = "Cooldown period has ended. " \
                  "Resuming log storage."
 
-  PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
-                        images logs peripherals pin_bindings plant_templates
-                        points point_groups regimens saved_gardens
-                        sensor_readings sensors sequences token_issuances tools
-                        webcam_feeds fragments)
+  PLURAL_RESOURCES = %i(alerts farm_events farmware_envs farmware_installations
+    folders fragments images logs peripherals pin_bindings plant_templates
+    point_groups points regimens saved_gardens sensor_readings sensors sequences
+    token_issuances tools webcam_feeds wizard_step_results)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 
@@ -31,10 +30,9 @@ class Device < ApplicationRecord
     define_method(name) { super() || klass.create!(device: self) }
   end
 
-  has_many :in_use_tools
   has_many :in_use_points
+  has_many :in_use_tools
   has_many :users
-  has_many :folders
 
   validates_presence_of :name
   validates :timezone, inclusion: {
@@ -44,6 +42,7 @@ class Device < ApplicationRecord
                        }
   validates :ota_hour,
     inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
+  validates :fb_order_number, uniqueness: true, allow_nil: true
   before_validation :perform_gradual_upgrade
 
   # Give the user back the amount of logs they are allowed to view.
@@ -245,6 +244,7 @@ class Device < ApplicationRecord
         "text": [
           "`Device ID`: #{id}",
           "`Email`: #{email}",
+          "`Order Number`: #{fb_order_number}",
           "`Model`: #{firmware_kind}",
           "`Slug`: #{slug}",
           "`Message`: #{message}"

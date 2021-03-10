@@ -2,6 +2,16 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
 jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
@@ -19,6 +29,8 @@ import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
 import { Session } from "../../session";
 import { refresh } from "../../api/crud";
+import { push } from "../../history";
+import { WizardData } from "../../wizard/data";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -36,6 +48,7 @@ describe("<NavBar />", () => {
     alerts: [],
     apiFirmwareValue: undefined,
     authAud: undefined,
+    wizardStepResults: [],
   });
 
   it("has correct parent className", () => {
@@ -112,6 +125,31 @@ describe("<NavBar />", () => {
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.find(".saucer").length).toEqual(2);
     expect(wrapper.text().toLowerCase()).toContain("connectivity");
+  });
+
+  it("displays setup button", () => {
+    mockDev = true;
+    const wrapper = mount(<NavBar {...fakeProps()} />);
+    wrapper.find(".setup-button").simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/setup");
+    expect(wrapper.text().toLowerCase()).toContain("complete");
+  });
+
+  it("displays setup button: small screens", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    mockDev = true;
+    const wrapper = mount(<NavBar {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("complete");
+  });
+
+  it("doesn't display setup button when complete", () => {
+    mockDev = true;
+    WizardData.setComplete();
+    const wrapper = mount(<NavBar {...fakeProps()} />);
+    expect(wrapper.find(".setup-button").length).toEqual(0);
   });
 
   it("displays navbar visual warning for support tokens", () => {

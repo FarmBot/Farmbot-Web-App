@@ -4,16 +4,14 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
-const mockMoveAbs = jest.fn();
-jest.mock("../../device", () => ({
-  getDevice: () => ({ moveAbsolute: mockMoveAbs })
-}));
+const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditPoint as EditPoint, EditPointProps,
@@ -24,7 +22,6 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { getDevice } from "../../device";
 import { Xyz } from "farmbot";
 import { clickButton } from "../../__test_support__/helpers";
 import { destroy } from "../../api/crud";
@@ -85,7 +82,7 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(getDevice().moveAbsolute).toHaveBeenCalledWith(coords);
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith(coords);
   });
 
   it("goes back", () => {

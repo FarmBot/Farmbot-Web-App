@@ -77,8 +77,9 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
 
 export const getModifiedClassNameSpecifyModified = (modified: boolean) => {
   const getValue = getWebAppConfigValue(store.getState);
+  const authAud = store.getState().auth?.token.unencoded.aud;
   const highlightModified = getValue(BooleanSetting.highlight_modified_settings);
-  return highlightModified && modified ? "modified" : "";
+  return (highlightModified || authAud == "staff") && modified ? "modified" : "";
 };
 
 export const getModifiedClassNameSpecifyDefault =

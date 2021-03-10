@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { StatusRowProps } from "./connectivity_row";
 import { CowardlyDictionary } from "../../util";
-import { Color } from "../../ui/index";
+import { Color } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export interface ConnectivityDiagramProps {
   rowData: StatusRowProps[];
-  hover: Function;
-  hoveredConnection: string | undefined;
+  hover?(connectionName: string | undefined): () => void;
+  hoveredConnection?: string | undefined;
 }
 
 type SVGLineCoordinates = Record<"x1" | "y1" | "x2" | "y2", number>;
@@ -16,7 +16,7 @@ export interface ConnectorProps {
   connectionData: StatusRowProps;
   from: DiagramNodes;
   to: DiagramNodes;
-  hover: Function;
+  hover?(connectionName: string | undefined): () => void;
   hoveredConnection: string | undefined;
   customLineProps?: SVGLineCoordinates;
 }
@@ -124,8 +124,8 @@ export function Connector(props: ConnectorProps): JSX.Element {
     <line className="connector-hover-area"
       x1={lineProps.x1} y1={lineProps.y1} x2={lineProps.x2} y2={lineProps.y2}
       strokeWidth={40}
-      onMouseEnter={hover(connectionData.connectionName)}
-      onMouseLeave={hover(undefined)}
+      onMouseEnter={hover?.(connectionData.connectionName)}
+      onMouseLeave={hover?.(undefined)}
     />
   </g>;
 }

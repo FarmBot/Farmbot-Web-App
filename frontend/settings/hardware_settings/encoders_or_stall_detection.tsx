@@ -103,6 +103,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
         disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
+        advanced={showEncoders}
         gray={encodersDisabled} />
       {showEncoders &&
         <NumericMCUInputGroup {...commonProps}
@@ -116,6 +117,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           zScale={sourceFwConfig("movement_microsteps_z").value}
           intSize={"long"}
           disabledBy={settingRequiredLabel([DeviceSetting.enableEncoders])}
+          advanced={true}
           gray={encodersDisabled} />}
     </Collapse>
   </Highlight>;

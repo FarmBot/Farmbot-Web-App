@@ -45,6 +45,7 @@ const fakeProps = (): AppProps => ({
   alerts: [],
   apiFirmwareValue: undefined,
   authAud: undefined,
+  wizardStepResults: [],
 });
 
 describe("<App />: Controls Pop-Up", () => {

@@ -69,6 +69,7 @@ export const emptyState = (): RestResources => {
         User: {},
         WebAppConfig: {},
         WebcamFeed: {},
+        WizardStepResult: {},
       },
       byKindAndId: {},
       references: {},
@@ -166,7 +167,7 @@ export const resourceReducer =
     .add<{ id: number }>(Actions.FOLDER_TOGGLE, (s, { payload }) => {
       const { localMetaAttributes } = s.index.sequenceFolders;
       const record = localMetaAttributes[parseInt("" + payload.id)];
-      record.open = !(record.open ?? true);
+      record.open = !record.open;
       reindexFolders(s.index);
       return s;
     })

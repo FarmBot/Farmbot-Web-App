@@ -1,11 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { error } from "../../toast/toast";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
 import {
   Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
   EmptyStateGraphic,
-} from "../../ui/index";
+} from "../../ui";
 import { PeripheralsProps, PeripheralState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
@@ -13,12 +13,18 @@ import { ToolTips, Content } from "../../constants";
 import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { DIGITAL } from "farmbot";
+import { isBotOnlineFromState } from "../../devices/must_be_online";
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {
   constructor(props: PeripheralsProps) {
     super(props);
     this.state = { isEditing: false };
+  }
+
+  get disabled() {
+    return !!this.props.bot.hardware.informational_settings.busy
+      || !isBotOnlineFromState(this.props.bot);
   }
 
   toggle = () => this.setState({ isEditing: !this.state.isEditing });
@@ -38,7 +44,7 @@ export class Peripherals
   }
 
   showPins = () => {
-    const { peripherals, dispatch, bot, disabled } = this.props;
+    const { peripherals, dispatch, bot } = this.props;
 
     const pins = bot.hardware.pins;
     if (this.state.isEditing) {
@@ -48,7 +54,7 @@ export class Peripherals
       return <PeripheralList peripherals={peripherals}
         dispatch={dispatch}
         pins={pins}
-        disabled={disabled} />;
+        disabled={this.disabled} />;
     }
   }
 
