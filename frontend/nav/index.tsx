@@ -22,9 +22,7 @@ import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
-import { DevSettings } from "../settings/dev/dev_support";
 import { setupProgressString } from "../wizard/data";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -127,8 +125,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
-    return DevSettings.futureFeaturesEnabled()
-      && !device.body["setup_completed_at" as keyof DeviceAccountSettings]
+    return !device.body.setup_completed_at
       ? <a className={"setup-button"}
         onClick={() => push("/app/designer/setup")}>
         {t("Setup")}

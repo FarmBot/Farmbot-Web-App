@@ -2367,19 +2367,28 @@
         float: right;
         line-height: 1rem;
         margin-right: 1rem;
+        margin-top: 0.25rem;
       }
       .saucer {
         display: inline-block;
         float: none;
         margin-left: 1rem;
+        margin-top: 0;
+        vertical-align: top;
         i {
           margin: 0;
-          margin-top: 0.25rem;
+          margin-top: 0.2rem;
+          margin-right: 0.1rem;
+          &.fa-times {
+            margin-right: 0.2rem;
+          }
         }
       }
     }
     .saucer {
       float: right;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
       height: 1.5rem;
       width: 1.5rem;
       i {
@@ -2387,7 +2396,7 @@
         color: $white;
         vertical-align: top;
         &.fa-times {
-          padding-left: 0.25rem;
+          padding-left: 0.2rem;
         }
       }
     }
@@ -2436,6 +2445,9 @@
       padding-left: 2rem;
       padding-right: 2rem;
       background: $lighter_gray;
+      .bp3-collapse-body {
+        margin-bottom: 0;
+      }
     }
     .wizard-step-info {
       display: inline;
@@ -2545,6 +2557,20 @@
           padding-bottom: 0.5rem;
         }
       }
+      .fb-button {
+        &:hover {
+          font-size: 1.22rem;
+        }
+      }
+      .farmbot-origin {
+        margin-top: 1rem;
+      }
+      .camera-config-number-box {
+        .bp3-popover-wrapper {
+          display: inline;
+          margin-left: 1rem;
+        }
+      }
     }
     .setup-complete {
       margin-top: 2rem;
@@ -2556,6 +2582,9 @@
         font-weight: bold;
         margin-left: 1rem;
         float: none;
+      }
+      .saucer {
+        display: inline-block;
       }
     }
   }

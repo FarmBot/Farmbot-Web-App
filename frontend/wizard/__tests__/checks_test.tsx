@@ -38,6 +38,7 @@ import {
   CameraCalibrationCard,
   CameraCalibrationCheck,
   CameraCheck,
+  CameraOffset,
   ConfiguratorDocs,
   Connectivity,
   ControlsCheck,
@@ -49,6 +50,7 @@ import {
   PeripheralsCheck,
   RotateMapToggle,
   SelectMapOrigin,
+  SensorsCheck,
   SoilHeightMeasurementCheck,
   SwapJogButton,
   SwitchCameraCalibrationMethod,
@@ -67,6 +69,7 @@ import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
+import { changeBlurableInput } from "../../__test_support__/helpers";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -147,7 +150,7 @@ describe("lowVoltageProblemStatus()", () => {
 describe("<ControlsCheck />", () => {
   it("returns controls", () => {
     const Component = ControlsCheck("x");
-    const wrapper = mount(<Component />);
+    const wrapper = mount(<Component {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
   });
 });
@@ -413,9 +416,40 @@ describe("<PeripheralsCheck />", () => {
   });
 });
 
+describe("<CameraOffset />", () => {
+  it("renders camera offset inputs", () => {
+    const wrapper = mount(<CameraOffset {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("offset");
+  });
+
+  it("changes offset", () => {
+    const wrapper = mount(<CameraOffset {...fakeProps()} />);
+    changeBlurableInput(wrapper, "100", 0);
+    expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "CAMERA_CALIBRATION_camera_offset_x", value: "100"
+    });
+  });
+});
+
 describe("<ToolCheck />", () => {
   it("renders tool verification button", () => {
     const wrapper = mount(<ToolCheck {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("verify");
+  });
+});
+
+describe("<SensorsCheck />", () => {
+  it("renders sensors", () => {
+    const p = fakeProps();
+    const config = fakeFbosConfig();
+    config.body.firmware_hardware = "arduino";
+    p.resources = buildResourceIndex([config]).index;
+    const wrapper = mount(<SensorsCheck {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("sensors");
+  });
+
+  it("handles missing config", () => {
+    const wrapper = mount(<SensorsCheck {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("sensors");
   });
 });

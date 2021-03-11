@@ -2,6 +2,7 @@ class DeviceSerializer < ApplicationSerializer
   attributes :fbos_version,
              :fb_order_number,
              :last_saw_api,
+             :setup_completed_at,
              :mounted_tool_id,
              :name,
              :ota_hour,

@@ -55,10 +55,19 @@ describe("<SetupWizard />", () => {
     expect(wrapper.html()).toContain("fa-check");
   });
 
+  it("renders with negative results", () => {
+    const p = fakeProps();
+    const result = fakeWizardStepResult();
+    result.body.slug = WizardStepSlug.intro;
+    result.body.answer = false;
+    p.wizardStepResults = [result];
+    const wrapper = mount(<SetupWizard {...p} />);
+    expect(wrapper.html()).toContain("fa-times");
+  });
+
   it("renders when complete", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.device && ((p.device.body as any).setup_completed_at = "123");
+    p.device && (p.device.body.setup_completed_at = "123");
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("setup complete");
   });
@@ -123,7 +132,7 @@ describe("<SetupWizard />", () => {
     result.slug = WizardStepSlug.intro;
     result.answer = true;
     result.outcome = undefined;
-    await wrapper.instance().updateData(result)();
+    await wrapper.instance().updateData(result, undefined, true)();
     await expect(completeSetup).toHaveBeenCalled();
   });
 });

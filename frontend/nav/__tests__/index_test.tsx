@@ -2,11 +2,6 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => [],
@@ -127,7 +122,6 @@ describe("<NavBar />", () => {
   });
 
   it("displays setup button", () => {
-    mockDev = true;
     const wrapper = mount(<NavBar {...fakeProps()} />);
     wrapper.find(".setup-button").simulate("click");
     expect(push).toHaveBeenCalledWith("/app/designer/setup");
@@ -139,16 +133,13 @@ describe("<NavBar />", () => {
       value: 400,
       configurable: true
     });
-    mockDev = true;
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("complete");
   });
 
   it("doesn't display setup button when complete", () => {
-    mockDev = true;
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (p.device.body as any).setup_completed_at = "123";
+    p.device.body.setup_completed_at = "123";
     const wrapper = mount(<NavBar {...p} />);
     expect(wrapper.find(".setup-button").length).toEqual(0);
   });
