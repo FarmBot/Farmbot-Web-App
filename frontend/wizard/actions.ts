@@ -30,16 +30,20 @@ export const destroyAllWizardStepResults =
 export const completeSetup = (device: TaggedDevice | undefined) =>
   device &&
   setDeviceProperty(device, {
-    ["setup_completed_at" as keyof DeviceAccountSettings]: moment().toISOString()
+    setup_completed_at: moment().toISOString()
   });
 
 export const resetSetup = (device: TaggedDevice | undefined) =>
   device && setDeviceProperty(device, {
-    ["setup_completed_at" as keyof DeviceAccountSettings]: undefined
+    // eslint-disable-next-line no-null/no-null
+    setup_completed_at: null as unknown as undefined
   });
 
 export const setOrderNumber = (device: TaggedDevice, value: string) =>
-  setDeviceProperty(device, { fb_order_number: value });
+  setDeviceProperty(device, {
+    // eslint-disable-next-line no-null/no-null
+    fb_order_number: value ? value : null as unknown as undefined
+  });
 
 const setDeviceProperty =
   (device: TaggedDevice, update: Partial<DeviceAccountSettings>) =>

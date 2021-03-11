@@ -73,8 +73,9 @@ export class DemoIframe extends React.Component<{}, State> {
   };
 
   no = () => {
+    console.error(this.state.error);
     const message = JSON.stringify(this.state.error, undefined, 2);
-    return <pre> {message} </pre>;
+    return <pre>{message}: {"" + this.state.error}</pre>;
   }
 
   render() {

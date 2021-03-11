@@ -27,7 +27,7 @@ import {
   isExpress, isFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
-import { docLinkClick, FBSelect, ToggleButton } from "../ui";
+import { Col, docLinkClick, FBSelect, Row, ToggleButton } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
 } from "../messages/cards";
@@ -57,6 +57,12 @@ import {
 import { toggleWebAppBool } from "../config_storage/actions";
 import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
 import { OriginSelector } from "../settings/farm_designer_settings";
+import { Sensors } from "../sensors";
+import {
+  NumberBoxConfig, NumberBoxConfigProps,
+} from "../photos/camera_calibration/config";
+import { ToolTips } from "../constants";
+import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -174,9 +180,10 @@ export const lowVoltageProblemStatus = () => {
   return !["red", "yellow"].includes(voltageColor);
 };
 
-export const ControlsCheck = (axis: Xyz) => () =>
+export const ControlsCheck = (axis?: Xyz) => (props: WizardOutcomeComponentProps) =>
   <div className={"controls-check"}>
     <MoveControls {...mapStateToProps(store.getState())}
+      dispatch={props.dispatch}
       highlightAxis={axis} />
   </div>;
 
@@ -340,7 +347,52 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   </div>;
 };
 
+export const CameraOffset = (props: WizardStepComponentProps) => {
+  const helpText = t(ToolTips.CAMERA_OFFSET, {
+    defaultX: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_x"],
+    defaultY: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_y"],
+  });
+  const env = getEnv(props.resources);
+  const wDEnv = prepopulateEnv(env);
+  const common: Pick<NumberBoxConfigProps, "wdEnvGet" | "onChange"> = {
+    wdEnvGet: key => envGet(key, wDEnv),
+    onChange: (key, value) =>
+      props.dispatch(saveOrEditFarmwareEnv(props.resources)(
+        key, JSON.stringify(formatEnvKey(key, value)))),
+  };
+  return <Row>
+    <Col xs={6}>
+      <NumberBoxConfig {...common}
+        configKey={"CAMERA_CALIBRATION_camera_offset_x"}
+        label={t("Camera Offset X")}
+        helpText={helpText} />
+    </Col>
+    <Col xs={6}>
+      <NumberBoxConfig {...common}
+        configKey={"CAMERA_CALIBRATION_camera_offset_y"}
+        label={t("Camera Offset Y")}
+        helpText={helpText} />
+    </Col>
+  </Row>;
+};
+
 export const ToolCheck = (props: WizardStepComponentProps) => {
   const sensors = selectAllSensors(props.resources);
   return <ToolVerification sensors={sensors} bot={props.bot} />;
+};
+
+export const SensorsCheck = (props: WizardStepComponentProps) => {
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
+  const value = fbosConfig?.firmware_hardware;
+  const fwHardware = isFwHardwareValue(value) ? value : undefined;
+  const sensors = uniq(selectAllSensors(props.resources));
+  const botOnline = isBotOnlineFromState(props.bot);
+  return <div className={"sensors-check"}>
+    <Sensors
+      firmwareHardware={fwHardware}
+      bot={props.bot}
+      sensors={sensors}
+      disabled={!botOnline}
+      dispatch={props.dispatch} />
+  </div>;
 };

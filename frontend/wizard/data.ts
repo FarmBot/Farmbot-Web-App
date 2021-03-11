@@ -24,6 +24,8 @@ import {
   DisableStallDetection,
   RotateMapToggle,
   SelectMapOrigin,
+  SensorsCheck,
+  CameraOffset,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -99,6 +101,7 @@ export enum WizardStepSlug {
   wateringNozzle = "wateringNozzle",
   weeder = "weeder",
   soilSensor = "soilSensor",
+  soilSensorValue = "soilSensorValue",
 }
 
 export const WIZARD_STEPS = (
@@ -114,6 +117,10 @@ export const WIZARD_STEPS = (
     swap
       ? t("Did FarmBot **move away from you**?")
       : t("Did FarmBot **move to the right**?");
+  const xyMovementInstruction = (swap: boolean) =>
+    swap
+      ? t("Press the up arrow.")
+      : t("Press the right arrow.");
   return [
     {
       section: WizardSectionSlug.intro,
@@ -290,7 +297,7 @@ export const WIZARD_STEPS = (
         {
           slug: "rotated",
           description: t("The map is rotated incorrectly"),
-          tips: t("Toggle map rotation."),
+          tips: "",
           component: RotateMapToggle,
         },
       ],
@@ -315,9 +322,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.xMotor,
       title: t("X-Axis Motor"),
       prerequisites: [botOnlineReq],
-      content: xySwap
-        ? t("Press the up arrow.")
-        : t("Press the right arrow."),
+      content: xyMovementInstruction(xySwap),
       component: ControlsCheck("x"),
       question: t("Did FarmBot's x-axis move?"),
       outcomes: [
@@ -349,9 +354,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.yMotor,
       title: t("Y-Axis Motor"),
       prerequisites: [botOnlineReq],
-      content: xySwap
-        ? t("Press the right arrow.")
-        : t("Press the up arrow."),
+      content: xyMovementInstruction(!xySwap),
       component: ControlsCheck("y"),
       question: t("Did FarmBot's y-axis move?"),
       outcomes: [
@@ -428,13 +431,13 @@ export const WIZARD_STEPS = (
         {
           slug: "inverted",
           description: t("It moved the opposite direction"),
-          tips: t("Invert x-axis jog buttons"),
+          tips: "",
           component: InvertJogButton("x"),
         },
         {
           slug: "otherMovement",
           description: t("It moved in a different direction"),
-          tips: t("Swap x and y axis jog buttons"),
+          tips: "",
           component: SwapJogButton,
         },
         {
@@ -463,13 +466,13 @@ export const WIZARD_STEPS = (
         {
           slug: "inverted",
           description: t("It moved the opposite direction"),
-          tips: t("Invert y-axis jog buttons"),
+          tips: "",
           component: InvertJogButton("y"),
         },
         {
           slug: "otherMovement",
           description: t("It moved in a different direction"),
-          tips: t("Swap x and y axis jog buttons"),
+          tips: "",
           component: SwapJogButton,
         },
         {
@@ -498,7 +501,7 @@ export const WIZARD_STEPS = (
         {
           slug: "inverted",
           description: t("It moved up"),
-          tips: t("Invert z-axis jog buttons"),
+          tips: "",
           component: InvertJogButton("z"),
         },
         {
@@ -542,7 +545,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.vacuum,
       title: t("Vacuum Pump"),
       prerequisites: [botOnlineReq],
-      content: t("Press the vacuum pump ON/OFF toggle."),
+      content: t("Press the VACUUM ON/OFF toggle."),
       component: PeripheralsCheck,
       componentBorder: false,
       question: t("Is the vacuum pump running?"),
@@ -564,7 +567,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.lights,
       title: t("LED Light Strip"),
       prerequisites: [botOnlineReq],
-      content: t("Press the lighting ON/OFF toggle."),
+      content: t("Press the LIGHTING ON/OFF toggle."),
       component: PeripheralsCheck,
       componentBorder: false,
       question: t("Did the lights turn on?"),
@@ -588,7 +591,7 @@ export const WIZARD_STEPS = (
         {
           slug: "nothing",
           description: t("There is no image"),
-          tips: t("Try again."),
+          tips: t("Try again while observing the log messages."),
         },
         {
           slug: "error",
@@ -604,7 +607,7 @@ export const WIZARD_STEPS = (
         {
           slug: "black",
           description: t("The image is black"),
-          tips: t("Is it night? Is the camera lens covered?"),
+          tips: t(SetupWizardContent.BLACK_IMAGE),
           detectedProblems: [{
             status: lowVoltageProblemStatus,
             description: t(SetupWizardContent.CAMERA_VOLTAGE_LOW),
@@ -628,7 +631,7 @@ export const WIZARD_STEPS = (
         {
           slug: "missing",
           description: t("I can't find the calibration card"),
-          tips: t("Try an alternate calibration method."),
+          tips: t(SetupWizardContent.RED_DOTS),
           component: SwitchCameraCalibrationMethod,
         },
       ],
@@ -672,6 +675,7 @@ export const WIZARD_STEPS = (
           slug: "misaligned",
           description: t("It does not line up"),
           tips: t("Adjust one or both camera offset values and check again."),
+          component: CameraOffset,
         },
       ],
     },
@@ -687,7 +691,8 @@ export const WIZARD_STEPS = (
         {
           slug: "error",
           description: t("There is a surface error message"),
-          tips: t("Try a different location."),
+          tips: t("Move FarmBot to a different location and try again."),
+          component: ControlsCheck(),
         },
       ],
     },
@@ -700,7 +705,7 @@ export const WIZARD_STEPS = (
         question: t("Is the UTM cable plugged in?"),
         outcomes: [{
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("I'm not sure"),
           tips: t("Check the UTM top and Farmduino connections."),
         }],
       }]
@@ -718,7 +723,7 @@ export const WIZARD_STEPS = (
           {
             slug: "dismounted",
             description: t("The status is DISMOUNTED"),
-            tips: t("Check the UTM to tool electrical connections."),
+            tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
       }]
@@ -736,7 +741,7 @@ export const WIZARD_STEPS = (
           {
             slug: "dismounted",
             description: t("The status is DISMOUNTED"),
-            tips: t("Check the UTM to tool electrical connections."),
+            tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
       }]
@@ -754,7 +759,7 @@ export const WIZARD_STEPS = (
           {
             slug: "dismounted",
             description: t("The status is DISMOUNTED"),
-            tips: t("Check the UTM to tool electrical connections."),
+            tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
       }]
@@ -772,7 +777,26 @@ export const WIZARD_STEPS = (
           {
             slug: "dismounted",
             description: t("The status is DISMOUNTED"),
-            tips: t("Check the UTM to tool electrical connections."),
+            tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
+          },
+        ],
+      }]
+      : []),
+    ...(hasUTM(firmwareHardware)
+      ? [{
+        section: WizardSectionSlug.tools,
+        slug: WizardStepSlug.soilSensorValue,
+        title: t("Soil Sensor Reading"),
+        prerequisites: [botOnlineReq],
+        content: t(SetupWizardContent.READ_SOIL_SENSOR),
+        component: SensorsCheck,
+        componentBorder: false,
+        question: t("Did the sensor return a value?"),
+        outcomes: [
+          {
+            slug: "noValue",
+            description: t("There is no value"),
+            tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
       }]

@@ -1275,6 +1275,22 @@ export namespace SetupWizardContent {
   export const CHECK_CAMERA_CABLE =
     trim(`Check that the camera is plugged in to a Raspberry Pi USB port
     and ensure that all connectors are securely fastened.`);
+
+  export const BLACK_IMAGE =
+    trim(`Ensure that the camera lens is not covered and there is adequate
+    lighting. Try unplugging the camera and plugging it back in.`);
+
+  export const RED_DOTS =
+    trim(`Try an alternate calibration method. Two red objects spaced 100mm
+    apart can be used in place of the card.`);
+
+  export const CHECK_TOOL_CONNECTIONS =
+    trim(`Check the UTM to tool electrical connections. Ensure pin jumpers
+    are installed across the Farmduino UTM pins.`);
+
+  export const READ_SOIL_SENSOR =
+    trim(`Attach the soil sensor tool to the UTM and press the READ SENSOR
+    for the SOIL MOISTURE sensor.`);
 }
 
 export enum DeviceSetting {

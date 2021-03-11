@@ -67,7 +67,8 @@ describe("resetSetup()", () => {
     const device = fakeDevice();
     resetSetup(device)?.(jest.fn());
     expect(edit).toHaveBeenCalledWith(device, {
-      setup_completed_at: undefined,
+      // eslint-disable-next-line no-null/no-null
+      setup_completed_at: null,
     });
     expect(save).toHaveBeenCalledWith(device.uuid);
   });

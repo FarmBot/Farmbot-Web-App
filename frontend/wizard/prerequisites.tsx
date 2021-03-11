@@ -26,6 +26,7 @@ export const ProductRegistration = (props: WizardStepComponentProps) => {
   return <div className={"product-registration"}>
     <label>{t("Order number")}</label>
     <BlurableInput value={device.body.fb_order_number || ""}
+      allowEmpty={true}
       onCommit={e =>
         props.dispatch(setOrderNumber(device, e.currentTarget.value))} />
   </div>;

@@ -311,7 +311,8 @@ CREATE TABLE public.devices (
     ota_hour_utc integer,
     last_watchdog timestamp without time zone,
     last_ota_attempt_at timestamp without time zone,
-    fb_order_number character varying
+    fb_order_number character varying,
+    setup_completed_at timestamp without time zone
 );
 
 
@@ -3592,6 +3593,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210201145935'),
 ('20210210144434'),
 ('20210217010948'),
-('20210304221750');
+('20210304221750'),
+('20210308191813');
 
 
