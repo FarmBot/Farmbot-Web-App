@@ -22,7 +22,7 @@ describe("<FarmbotOsRow />", () => {
       value: bot.hardware.configuration[x], consistent: true,
     }),
     botOnline: false,
-    deviceAccount: fakeDevice(),
+    device: fakeDevice(),
     timeSettings: fakeTimeSettings(),
   });
 
@@ -57,7 +57,7 @@ describe("<FarmbotOsRow />", () => {
     const p = fakeProps();
     p.bot.osReleaseNotes = "intro\n\n# v1\n\n* note";
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
-    p.deviceAccount.body.fbos_version = "2.0.0";
+    p.device.body.fbos_version = "2.0.0";
     const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
     const notes = mount(wrapper.instance().ReleaseNotes());
     expect(notes.text().toLowerCase()).toContain("v1");
@@ -67,7 +67,7 @@ describe("<FarmbotOsRow />", () => {
     const p = fakeProps();
     p.bot.osReleaseNotes = "intro\n\n# v2\n\n* note";
     p.bot.hardware.informational_settings.controller_version = undefined;
-    p.deviceAccount.body.fbos_version = "2.0.0";
+    p.device.body.fbos_version = "2.0.0";
     const wrapper = mount<FarmbotOsRow>(<FarmbotOsRow {...p} />);
     const notes = mount(wrapper.instance().ReleaseNotes());
     expect(notes.text().toLowerCase()).toContain("v2");

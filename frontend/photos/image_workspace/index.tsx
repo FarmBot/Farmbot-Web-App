@@ -50,6 +50,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   botOnline: boolean;
   timeSettings: TimeSettings;
   namespace(key: CAMERA_CALIBRATION_KEY_PART): WDENVKey;
+  showAdvanced: boolean;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -171,54 +172,56 @@ export class ImageWorkspace
             invertHue={this.props.invertHue} />
         </Col>
       </Row>
-      <Row>
-        <Col xs={12}>
-          <ExpandableHeader
-            expanded={!!this.state.open}
-            title={t("Processing Parameters")}
-            onClick={() => this.setState({ open: !this.state.open })} />
-        </Col>
-      </Row>
-      <Collapse isOpen={this.state.open}>
+      {this.props.showAdvanced &&
         <Row>
-          <Col xs={4}>
-            <label>{t("BLUR")}</label>
-            <Help text={t(ToolTips.BLUR, {
-              defaultBlur: this.getDefault("blur")
-            })} />
-            <BlurableInput type="number"
-              wrapperClassName={this.getModifiedClass("blur")}
-              min={RANGES.BLUR.LOWEST}
-              max={RANGES.BLUR.HIGHEST}
-              onCommit={this.numericChange("blur")}
-              value={"" + this.props.blur} />
+          <Col xs={12}>
+            <ExpandableHeader
+              expanded={!!this.state.open}
+              title={t("Processing Parameters")}
+              onClick={() => this.setState({ open: !this.state.open })} />
           </Col>
-          <Col xs={4}>
-            <label>{t("MORPH")}</label>
-            <Help text={t(ToolTips.MORPH, {
-              defaultMorph: this.getDefault("morph")
-            })} />
-            <BlurableInput type="number"
-              wrapperClassName={this.getModifiedClass("morph")}
-              min={RANGES.MORPH.LOWEST}
-              max={RANGES.MORPH.HIGHEST}
-              onCommit={this.numericChange("morph")}
-              value={"" + this.props.morph} />
-          </Col>
-          <Col xs={4}>
-            <label>{t("ITERATIONS")}</label>
-            <Help text={t(ToolTips.ITERATIONS, {
-              defaultIteration: this.getDefault("iteration")
-            })} />
-            <BlurableInput type="number"
-              wrapperClassName={this.getModifiedClass("iteration")}
-              min={RANGES.ITERATION.LOWEST}
-              max={RANGES.ITERATION.HIGHEST}
-              onCommit={this.numericChange("iteration")}
-              value={"" + this.props.iteration} />
-          </Col>
-        </Row>
-      </Collapse>
+        </Row>}
+      {this.props.showAdvanced &&
+        <Collapse isOpen={this.state.open}>
+          <Row>
+            <Col xs={4}>
+              <label>{t("BLUR")}</label>
+              <Help text={t(ToolTips.BLUR, {
+                defaultBlur: this.getDefault("blur")
+              })} />
+              <BlurableInput type="number"
+                wrapperClassName={this.getModifiedClass("blur")}
+                min={RANGES.BLUR.LOWEST}
+                max={RANGES.BLUR.HIGHEST}
+                onCommit={this.numericChange("blur")}
+                value={"" + this.props.blur} />
+            </Col>
+            <Col xs={4}>
+              <label>{t("MORPH")}</label>
+              <Help text={t(ToolTips.MORPH, {
+                defaultMorph: this.getDefault("morph")
+              })} />
+              <BlurableInput type="number"
+                wrapperClassName={this.getModifiedClass("morph")}
+                min={RANGES.MORPH.LOWEST}
+                max={RANGES.MORPH.HIGHEST}
+                onCommit={this.numericChange("morph")}
+                value={"" + this.props.morph} />
+            </Col>
+            <Col xs={4}>
+              <label>{t("ITERATIONS")}</label>
+              <Help text={t(ToolTips.ITERATIONS, {
+                defaultIteration: this.getDefault("iteration")
+              })} />
+              <BlurableInput type="number"
+                wrapperClassName={this.getModifiedClass("iteration")}
+                min={RANGES.ITERATION.LOWEST}
+                max={RANGES.ITERATION.HIGHEST}
+                onCommit={this.numericChange("iteration")}
+                value={"" + this.props.iteration} />
+            </Col>
+          </Row>
+        </Collapse>}
       <Row>
         <Col xs={12}>
           <button

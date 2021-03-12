@@ -1,28 +1,20 @@
 import { uniq } from "lodash";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import {
-  WizardData, WizardStepSlug, WIZARD_SECTIONS, WIZARD_STEPS, WIZARD_STEP_SLUGS,
+  setupProgressString,
+  WizardStepSlug, WIZARD_SECTIONS, WIZARD_STEPS, WIZARD_STEP_SLUGS,
 } from "../data";
 
-describe("WizardData()", () => {
-  it("counts completed steps", () => {
+describe("setupProgressString()", () => {
+  it("returns correct progress", () => {
     const result0 = fakeWizardStepResult();
     result0.body.answer = undefined;
     const result1 = fakeWizardStepResult();
     result1.body.answer = true;
     const results = [result0, result1];
-    expect(WizardData.doneCount(results)).toEqual(1);
-  });
-
-  it("sets setup complete", () => {
-    WizardData.setComplete();
-    expect(WizardData.getComplete()).toEqual(true);
-  });
-
-  it("resets setup progress", () => {
-    WizardData.setComplete();
-    WizardData.reset();
-    expect(WizardData.getComplete()).toEqual(false);
+    const progressSting = setupProgressString(results, "arduino");
+    expect(progressSting).toContain("% complete");
+    expect(progressSting).not.toEqual("100% complete");
   });
 });
 

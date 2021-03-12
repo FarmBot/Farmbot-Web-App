@@ -1,7 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
+jest.mock("../actions", () => ({ setOrderNumber: jest.fn() }));
 
 let mockOnlineValue = true;
 jest.mock("../../devices/must_be_online", () => ({
@@ -17,7 +14,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { edit } from "../../api/crud";
+import { setOrderNumber } from "../actions";
 
 describe("<ProductRegistration />", () => {
   const fakeProps = (): WizardStepComponentProps => ({
@@ -33,9 +30,7 @@ describe("<ProductRegistration />", () => {
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "123" }
     });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      fb_order_number: "123"
-    });
+    expect(setOrderNumber).toHaveBeenCalledWith(expect.any(Object), "123");
   });
 });
 

@@ -55,7 +55,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       axisStates={locationData.axis_states}
       busy={arduinoBusy}
       style={{ overflowWrap: "break-word" }}
-      label={t("Motor Coordinates (mm)")} />
+      label={t("Current position (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
       getConfigValue(BooleanSetting.scaled_encoders) &&
       <AxisDisplayGroup

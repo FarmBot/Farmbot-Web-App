@@ -1,11 +1,11 @@
 import React from "react";
-import { edit, save } from "../api/crud";
 import { SetupWizardContent } from "../constants";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { t } from "../i18next_wrapper";
 import { store } from "../redux/store";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { BlurableInput } from "../ui";
+import { setOrderNumber } from "./actions";
 import { WizardStepComponentProps } from "./interfaces";
 
 const botOnlinePrereqStatus = () =>
@@ -26,9 +26,8 @@ export const ProductRegistration = (props: WizardStepComponentProps) => {
   return <div className={"product-registration"}>
     <label>{t("Order number")}</label>
     <BlurableInput value={device.body.fb_order_number || ""}
-      onCommit={e => {
-        props.dispatch(edit(device, { fb_order_number: e.currentTarget.value }));
-        props.dispatch(save(device.uuid));
-      }} />
+      allowEmpty={true}
+      onCommit={e =>
+        props.dispatch(setOrderNumber(device, e.currentTarget.value))} />
   </div>;
 };

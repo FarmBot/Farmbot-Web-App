@@ -32,11 +32,13 @@ describe("<DemoIframe />", () => {
   });
 
   it("renders errors", async () => {
+    console.error = jest.fn();
     mockResponse = new Error("Nope.");
     const el = shallow<DemoIframe>(<DemoIframe />);
     await el.instance().connectApi();
     expect(axios.post).toHaveBeenCalled();
     expect(el.state().error).toBe(mockResponse);
+    expect(console.error).toHaveBeenCalledWith(mockResponse);
   });
 
   it("handles MQTT messages", () => {

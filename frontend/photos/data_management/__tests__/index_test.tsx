@@ -26,7 +26,7 @@ describe("<ImagingDataManagement />", () => {
   it("doesn't render advanced", () => {
     mockDev = false;
     const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("advanced");
+    expect(wrapper.text()).not.toContain("Advanced");
   });
 
   it("toggles advanced", () => {

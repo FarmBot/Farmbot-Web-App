@@ -34,6 +34,7 @@ describe("<WeedDetector />", () => {
     images: [],
     syncStatus: "synced",
     saveFarmwareEnv: jest.fn(),
+    showAdvanced: false,
   });
 
   it("renders", () => {
@@ -42,7 +43,6 @@ describe("<WeedDetector />", () => {
       "HUE01793090",
       "SATURATION025550255",
       "VALUE025550255",
-      "Processing Parameters",
       "Scan current image",
     ].map(string =>
       expect(wrapper.text()).toContain(string));

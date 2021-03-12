@@ -131,7 +131,7 @@ const DESIGNER_SETTINGS =
     },
   ]);
 
-const OriginSelector = (props: DesignerSettingsPropsBase) => {
+export const OriginSelector = (props: DesignerSettingsPropsBase) => {
   const settingKey = NumericSetting.bot_origin_quadrant;
   const quadrant = props.getConfigValue(settingKey);
   const update = (value: number) => () =>

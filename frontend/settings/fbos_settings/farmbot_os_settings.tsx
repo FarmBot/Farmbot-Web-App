@@ -10,6 +10,7 @@ import { Highlight } from "../maybe_highlight";
 import { Header } from "../hardware_settings/header";
 import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
+import { OrderNumberRow } from "./order_number_row";
 
 export enum ColWidth {
   label = 3,
@@ -22,7 +23,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
     dispatch, device, shouldDisplay, timeSettings, sourceFbosConfig,
     botOnline,
   } = props;
-  const commonProps = { dispatch };
+  const commonProps = { dispatch, device };
   return <Highlight className={"section"}
     settingName={DeviceSetting.farmbotSettings}>
     <Header {...commonProps}
@@ -31,11 +32,11 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       dispatch={dispatch}
       expanded={props.bot.controlPanelState.farmbot_settings} />
     <Collapse isOpen={!!props.bot.controlPanelState.farmbot_settings}>
-      <NameRow {...commonProps} device={device} />
-      <TimezoneRow {...commonProps} device={device} />
+      <NameRow {...commonProps} />
+      <OrderNumberRow {...commonProps} />
+      <TimezoneRow {...commonProps} />
       <OtaTimeSelectorRow {...commonProps}
         timeSettings={timeSettings}
-        device={device}
         sourceFbosConfig={sourceFbosConfig} />
       <AutoUpdateRow {...commonProps}
         sourceFbosConfig={sourceFbosConfig} />
@@ -43,8 +44,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
         bot={props.bot}
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
-        timeSettings={timeSettings}
-        deviceAccount={device} />
+        timeSettings={timeSettings} />
       {shouldDisplay(Feature.boot_sequence) && <BootSequenceSelector />}
     </Collapse>
   </Highlight>;
