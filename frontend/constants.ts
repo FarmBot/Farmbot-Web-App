@@ -1259,6 +1259,13 @@ export namespace SetupWizardContent {
     trim(`Check motor cable connections. Try again while observing
     electronics box LED activity.`);
 
+  export const TOGGLE_PERIPHERAL =
+    trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
+    the toggle again.`);
+
+  export const CAMERA_CALIBRATION_PREPARATION =
+    trim(`To prepare for camera calibration, move the z-axis all the way up.`);
+
   export const CAMERA_CALIBRATION =
     trim(`Camera calibration allows correct photo rotation and placement
     in the Farm Designer map. Place the camera calibration card on the soil

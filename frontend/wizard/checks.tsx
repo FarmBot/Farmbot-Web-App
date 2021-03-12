@@ -37,7 +37,7 @@ import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
-import { settingToggle } from "../devices/actions";
+import { findHome, settingToggle } from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
 import { cameraBtnProps } from "../photos/capture_settings/camera_selection";
@@ -63,6 +63,9 @@ import {
 } from "../photos/camera_calibration/config";
 import { ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
+import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
+import { LockableButton } from "../settings/hardware_settings/lockable_button";
+import { disabledAxisMap } from "../settings/hardware_settings/axis_tracking_status";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -345,6 +348,46 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
       peripherals={peripherals}
       dispatch={props.dispatch} />
   </div>;
+};
+
+export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
+  const botOnline = isBotOnlineFromState(props.bot);
+  const firmwareSettings = getFirmwareConfig(props.resources);
+  const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
+    || props.bot.hardware.mcu_params);
+  return <LockableButton
+    disabled={hardwareDisabled[axis] || !botOnline}
+    title={t("FIND HOME")}
+    onClick={() => findHome(axis)}>
+    {t("FIND HOME {{ axis }}", { axis })}
+  </LockableButton>;
+};
+
+const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) =>
+  (props: WizardOutcomeComponentProps) => {
+    const sourceFwConfig = sourceFwConfigValue(
+      validFwConfig(getFirmwareConfig(props.resources)),
+      props.bot.hardware.mcu_params);
+    const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
+    const value = fbosConfig?.firmware_hardware;
+    const fwHardware = isFwHardwareValue(value) ? value : undefined;
+    return <fieldset>
+      <label>{t(setting.label)}</label>
+      <McuInputBox
+        dispatch={props.dispatch}
+        sourceFwConfig={sourceFwConfig}
+        firmwareHardware={fwHardware}
+        setting={setting.key} />
+    </fieldset>;
+  };
+
+export const MotorCurrent = (axis: Xyz) => {
+  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
+    x: { key: "movement_motor_current_x", label: t("x-axis motor current") },
+    y: { key: "movement_motor_current_y", label: t("y-axis motor current") },
+    z: { key: "movement_motor_current_z", label: t("z-axis motor current") },
+  };
+  return FirmwareSettingInput(setting[axis]);
 };
 
 export const CameraOffset = (props: WizardStepComponentProps) => {

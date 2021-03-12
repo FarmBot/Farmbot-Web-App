@@ -117,7 +117,8 @@ export class RawSetupWizard
 
   getNextStepSlug = (stepSlug: WizardStepSlug) => {
     const slugs = WIZARD_STEP_SLUGS(this.firmwareHardware)
-      .filter(slug => !this.results[slug]?.answer);
+      .filter(slug => this.props.device?.body.setup_completed_at
+        || !this.results[slug]?.answer);
     return slugs[slugs.indexOf(stepSlug) + 1];
   };
 
