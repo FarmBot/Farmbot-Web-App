@@ -83,4 +83,14 @@ describe("setOrderNumber()", () => {
     });
     expect(save).toHaveBeenCalledWith(device.uuid);
   });
+
+  it("clears order number", () => {
+    const device = fakeDevice();
+    setOrderNumber(device, "")?.(jest.fn());
+    expect(edit).toHaveBeenCalledWith(device, {
+      // eslint-disable-next-line no-null/no-null
+      fb_order_number: null,
+    });
+    expect(save).toHaveBeenCalledWith(device.uuid);
+  });
 });

@@ -2571,6 +2571,12 @@
           margin-left: 1rem;
         }
       }
+      .yellow {
+        float: none;
+        &:hover {
+          font-size: 1rem;
+        }
+      }
     }
     .setup-complete {
       margin-top: 2rem;

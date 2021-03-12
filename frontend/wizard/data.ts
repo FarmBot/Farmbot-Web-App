@@ -26,6 +26,7 @@ import {
   SelectMapOrigin,
   SensorsCheck,
   CameraOffset,
+  FindHome,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -92,6 +93,7 @@ export enum WizardStepSlug {
   vacuum = "vacuum",
   lights = "lights",
   photo = "photo",
+  cameraCalibrationPreparation = "cameraCalibrationPreparation",
   cameraCalibrationCard = "cameraCalibrationCard",
   cameraCalibration = "cameraCalibration",
   cameraOffsetAdjustment = "cameraOffsetAdjustment",
@@ -523,10 +525,10 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.valve,
       title: t("Solenoid Valve"),
       prerequisites: [botOnlineReq],
-      content: t("Press the WATER ON/OFF toggle."),
+      content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("WATER") }),
       component: PeripheralsCheck,
       componentBorder: false,
-      question: t("Is water flowing?"),
+      question: t("Did water flow?"),
       outcomes: [
         {
           slug: "nothing",
@@ -545,10 +547,10 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.vacuum,
       title: t("Vacuum Pump"),
       prerequisites: [botOnlineReq],
-      content: t("Press the VACUUM ON/OFF toggle."),
+      content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("VACUUM") }),
       component: PeripheralsCheck,
       componentBorder: false,
-      question: t("Is the vacuum pump running?"),
+      question: t("Did the vacuum pump run?"),
       outcomes: [
         {
           slug: "nothing",
@@ -567,7 +569,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.lights,
       title: t("LED Light Strip"),
       prerequisites: [botOnlineReq],
-      content: t("Press the LIGHTING ON/OFF toggle."),
+      content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("LIGHTING") }),
       component: PeripheralsCheck,
       componentBorder: false,
       question: t("Did the lights turn on?"),
@@ -617,6 +619,28 @@ export const WIZARD_STEPS = (
           slug: "rotated",
           description: t("The image is rotated"),
           tips: t("Press YES to proceed to camera calibration."),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.camera,
+      slug: WizardStepSlug.cameraCalibrationPreparation,
+      title: t("Calibration preparation"),
+      content: t(SetupWizardContent.CAMERA_CALIBRATION_PREPARATION),
+      component: ControlsCheck(),
+      question: t("Is the z-axis as high as it will go?"),
+      outcomes: [
+        {
+          slug: "motor",
+          description: t("The motor is having trouble"),
+          tips: t("Return to the"),
+          goToStep: { step: WizardStepSlug.zMotor, text: t("z-axis motor step") },
+        },
+        {
+          slug: "hardstop",
+          description: t("The z-axis did not reach the hardstop"),
+          tips: "",
+          component: FindHome("z"),
         },
       ],
     },
