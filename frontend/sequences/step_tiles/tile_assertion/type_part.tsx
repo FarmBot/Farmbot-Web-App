@@ -5,12 +5,12 @@ import { editStep } from "../../../api/crud";
 import { t } from "../../../i18next_wrapper";
 import { StepParams } from "../../interfaces";
 
-const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
+const ASSERTION_TYPES = (): Record<ALLOWED_ASSERTION_TYPES, DropDownItem> => ({
   "continue": { label: t("Continue"), value: "continue" },
   "recover": { label: t("Recover and continue"), value: "recover" },
   "abort_recover": { label: t("Abort and recover"), value: "abort_recover" },
   "abort": { label: t("Abort"), value: "abort" },
-};
+});
 
 export function TypePart(props: StepParams<Assertion>) {
   const { assertion_type } = props.currentStep.args;
@@ -18,7 +18,7 @@ export function TypePart(props: StepParams<Assertion>) {
     <label>{t("If Test Fails")}</label>
     <FBSelect
       key={JSON.stringify(props.currentStep)}
-      selectedItem={ASSERTION_TYPES[assertion_type]}
+      selectedItem={ASSERTION_TYPES()[assertion_type]}
       onChange={(ddi) => {
         props.dispatch(editStep({
           step: props.currentStep,
@@ -29,6 +29,6 @@ export function TypePart(props: StepParams<Assertion>) {
           }
         }));
       }}
-      list={Object.values(ASSERTION_TYPES)} />
+      list={Object.values(ASSERTION_TYPES())} />
   </span>;
 }

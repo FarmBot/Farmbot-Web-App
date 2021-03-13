@@ -73,6 +73,7 @@ export class RawAddToolSlot
             toolSlot={this.toolSlot}
             tools={this.props.tools}
             tool={this.tool}
+            botOnline={this.props.botOnline}
             botPosition={this.props.botPosition}
             toolTransformProps={this.props.toolTransformProps}
             isActive={this.props.isActive}

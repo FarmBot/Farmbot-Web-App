@@ -1306,7 +1306,7 @@ export enum DeviceSetting {
   // FarmBot
   farmbotSettings = `FarmBot`,
   name = `name`,
-  orderNumber = `FarmBot Order Number`,
+  orderNumber = `Order Number`,
   timezone = `timezone`,
   time_zone = `time zone`,
   camera = `camera`,

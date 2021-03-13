@@ -61,6 +61,7 @@ describe("<EditPointLocation />", () => {
   const fakeProps = (): EditPointLocationProps => ({
     updatePoint: jest.fn(),
     pointLocation: { x: 1, y: 2, z: 0 },
+    botOnline: true,
   });
 
   it("edits location", () => {

@@ -65,7 +65,9 @@ import { ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
 import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
 import { LockableButton } from "../settings/hardware_settings/lockable_button";
-import { disabledAxisMap } from "../settings/hardware_settings/axis_tracking_status";
+import {
+  disabledAxisMap,
+} from "../settings/hardware_settings/axis_tracking_status";
 
 const recentErrorLog = (
   logs: TaggedLog[],

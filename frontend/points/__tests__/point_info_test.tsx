@@ -33,6 +33,7 @@ describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
     findPoint: fakePoint,
     dispatch: jest.fn(),
+    botOnline: true,
   });
 
   it("redirects", () => {

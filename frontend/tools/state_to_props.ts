@@ -18,6 +18,7 @@ import { isActive } from "./edit_tool";
 import {
   AddEditToolSlotPropsBase, AddToolSlotProps, EditToolSlotProps, ToolsProps,
 } from "./interfaces";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 
 export const mapStateToProps = (props: Everything): ToolsProps => {
   const getWebAppConfig = getWebAppConfigValue(() => props);
@@ -53,6 +54,7 @@ export const mapStateToPropsAddEditBase = (props: Everything):
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
     toolTransformProps: { xySwap, quadrant },
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
+    botOnline: isBotOnlineFromState(props.bot),
   };
 };
 

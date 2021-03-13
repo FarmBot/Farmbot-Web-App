@@ -33,6 +33,7 @@ export const updatePoint =
 export interface EditPointPropertiesProps {
   point: TaggedGenericPointer | TaggedWeedPointer;
   updatePoint(update: PointUpdate): void;
+  botOnline: boolean;
 }
 
 export interface AdditionalWeedPropertiesProps {
@@ -59,6 +60,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
           y: props.point.body.y,
           z: props.point.body.z,
         }}
+        botOnline={props.botOnline}
         updatePoint={props.updatePoint} />
     </ListItem>
     <ListItem name={t("Size")}>
@@ -127,22 +129,12 @@ export const lookupPointSource = (createdBy: string | undefined) =>
   SOURCE_LOOKUP()[createdBy || ""] || t("unknown");
 
 export interface PointActionsProps {
-  x: number;
-  y: number;
-  z: number;
   uuid: UUID;
   dispatch: Function;
 }
 
-export const PointActions = ({ x, y, z, uuid, dispatch }: PointActionsProps) =>
+export const PointActions = ({ uuid, dispatch }: PointActionsProps) =>
   <div className={"point-actions"}>
-    <button
-      className="fb-button gray no-float"
-      type="button"
-      title={t("move to location")}
-      onClick={() => moveAbsolute({ x, y, z })}>
-      {t("Move Device to location")}
-    </button>
     <button
       className="fb-button red no-float"
       title={t("delete")}
@@ -171,6 +163,7 @@ export const EditPointName = (props: EditPointNameProps) =>
 export interface EditPointLocationProps {
   updatePoint(update: PointUpdate): void;
   pointLocation: Record<Xyz, number>;
+  botOnline: boolean;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
@@ -187,6 +180,14 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
             [axis]: round(parseIntInput(e.currentTarget.value))
           })} />
       </Col>)}
+    <button
+      className={"fb-button gray no-float move-to-button"}
+      type={"button"}
+      disabled={!props.botOnline}
+      title={t("move to location")}
+      onClick={() => moveAbsolute(props.pointLocation)}>
+      {t("Move FarmBot to location")}
+    </button>
   </Row>;
 
 export interface EditPointRadiusProps {
