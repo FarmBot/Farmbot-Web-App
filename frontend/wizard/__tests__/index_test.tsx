@@ -1,6 +1,8 @@
 jest.mock("../actions", () => ({
   addOrUpdateWizardStepResult: jest.fn(),
   destroyAllWizardStepResults: jest.fn(),
+  completeSetup: jest.fn(),
+  resetSetup: jest.fn(),
 }));
 
 import React from "react";
@@ -13,15 +15,14 @@ import {
 import { mapStateToProps, RawSetupWizard as SetupWizard } from "../index";
 import { SetupWizardProps } from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
-import {
-  WizardData, WizardSectionSlug, WizardStepSlug, WIZARD_STEPS,
-} from "../data";
+import { WizardSectionSlug, WizardStepSlug, WIZARD_STEPS } from "../data";
 import { BooleanSetting } from "../../session_keys";
 import {
   fakeWebAppConfig, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
 import {
   addOrUpdateWizardStepResult,
+  completeSetup,
   destroyAllWizardStepResults,
 } from "../actions";
 
@@ -39,6 +40,7 @@ describe("<SetupWizard />", () => {
 
   it("renders", () => {
     const p = fakeProps();
+    p.device = undefined;
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("setup");
   });
@@ -53,9 +55,19 @@ describe("<SetupWizard />", () => {
     expect(wrapper.html()).toContain("fa-check");
   });
 
-  it("renders when complete", () => {
-    WizardData.setComplete();
+  it("renders with negative results", () => {
     const p = fakeProps();
+    const result = fakeWizardStepResult();
+    result.body.slug = WizardStepSlug.intro;
+    result.body.answer = false;
+    p.wizardStepResults = [result];
+    const wrapper = mount(<SetupWizard {...p} />);
+    expect(wrapper.html()).toContain("fa-times");
+  });
+
+  it("renders when complete", () => {
+    const p = fakeProps();
+    p.device && (p.device.body.setup_completed_at = "123");
     const wrapper = mount(<SetupWizard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("setup complete");
   });
@@ -116,13 +128,12 @@ describe("<SetupWizard />", () => {
       return stepResult;
     });
     const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
-    expect(WizardData.getComplete()).toEqual(false);
     const result = fakeWizardStepResult().body;
     result.slug = WizardStepSlug.intro;
     result.answer = true;
     result.outcome = undefined;
-    await wrapper.instance().updateData(result)();
-    await expect(WizardData.getComplete()).toEqual(true);
+    await wrapper.instance().updateData(result, undefined, true)();
+    await expect(completeSetup).toHaveBeenCalled();
   });
 });
 

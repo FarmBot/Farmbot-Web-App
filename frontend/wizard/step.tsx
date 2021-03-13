@@ -10,7 +10,7 @@ import {
 import { Feedback } from "../help/support";
 import moment from "moment";
 
-const WizardStepHeader = (props: WizardStepHeaderProps) => {
+export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
   const resultDate = props.stepResult?.updated_at;
   const stepDone = props.stepResult?.answer;
@@ -29,12 +29,12 @@ const WizardStepHeader = (props: WizardStepHeaderProps) => {
       </div>
     </Saucer>
     {stepOpen && <div className={"wizard-step-info"}>
-      <p>
+      {props.showProgress && <p>
         {t("Step {{ num }} of {{ total }}", {
           num: props.section.steps.indexOf(props.step) + 1,
           total: props.section.steps.length,
         })}
-      </p>
+      </p>}
       {resultDate && <p>
         {stepDone ? t("Completed") : t("Updated")}&nbsp;
         {formatLogTime(moment(resultDate).unix(), props.timeSettings)}

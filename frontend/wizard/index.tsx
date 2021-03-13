@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { t } from "../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
-import { every, some } from "lodash";
+import { every, isUndefined, some } from "lodash";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
@@ -10,8 +10,8 @@ import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
 import { Saucer } from "../ui";
 import {
-  WIZARD_SECTIONS, WIZARD_STEP_SLUGS, WizardData,
-  WIZARD_STEPS, WizardSectionSlug, WizardStepSlug,
+  WIZARD_SECTIONS, WIZARD_STEP_SLUGS,
+  WIZARD_STEPS, WizardSectionSlug, WizardStepSlug, setupProgressString,
 } from "./data";
 import {
   SetupWizardProps, SetupWizardState, WizardHeaderProps, WizardResults,
@@ -27,7 +27,10 @@ import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_suppo
 import { getFbosConfig } from "../resources/getters";
 import { WizardStepResult } from "farmbot/dist/resources/api_resources";
 import {
-  addOrUpdateWizardStepResult, destroyAllWizardStepResults,
+  addOrUpdateWizardStepResult,
+  destroyAllWizardStepResults,
+  completeSetup,
+  resetSetup,
 } from "./actions";
 
 export const mapStateToProps = (props: Everything): SetupWizardProps => ({
@@ -82,47 +85,65 @@ export class RawSetupWizard
           stepOpen: WIZARD_STEP_SLUGS(this.firmwareHardware)[0],
           ...this.sectionsOpen(),
         });
-        WizardData.reset();
+        this.props.dispatch(resetSetup(this.props.device));
       });
+  }
+
+  get closedSections() {
+    const sectionStates: Partial<Record<WizardSectionSlug, boolean>> = {};
+    WIZARD_SECTIONS(this.firmwareHardware)
+      .map(section => { sectionStates[section.slug] = false; });
+    return sectionStates;
   }
 
   updateData = (
     stepResult: WizardStepResult,
     nextStepSlug?: WizardStepSlug,
+    last?: boolean,
   ) => () => {
     this.props.dispatch(addOrUpdateWizardStepResult(
       this.props.wizardStepResults, stepResult))
       .then(() => {
         this.setState({
-          ...this.sectionsOpen(),
-          stepOpen: nextStepSlug || this.state.stepOpen,
+          stepOpen: last ? undefined : (nextStepSlug || this.state.stepOpen),
+          ...((last || nextStepSlug) ? this.closedSections : {}),
+          ...(nextStepSlug ? { [this.stepSection(nextStepSlug)]: true } : {}),
         });
-        WizardData.doneCount(this.props.wizardStepResults)
+        this.props.wizardStepResults.filter(result => result.body.answer).length
           == WIZARD_STEPS(this.firmwareHardware).length
-          && WizardData.setComplete();
+          && this.props.dispatch(completeSetup(this.props.device));
       });
   }
 
   getNextStepSlug = (stepSlug: WizardStepSlug) => {
-    const slugs = WIZARD_STEP_SLUGS(this.firmwareHardware);
+    const slugs = WIZARD_STEP_SLUGS(this.firmwareHardware)
+      .filter(slug => this.props.device?.body.setup_completed_at
+        || !this.results[slug]?.answer);
     return slugs[slugs.indexOf(stepSlug) + 1];
   };
 
   setStepSuccess = (stepSlug: WizardStepSlug) =>
-    (success: boolean, outcome?: string) =>
-      this.updateData({
+    (success: boolean, outcome?: string) => {
+      const nextSlug = success ? this.getNextStepSlug(stepSlug) : undefined;
+      return this.updateData({
         slug: stepSlug,
         outcome: success
           ? undefined
           : (outcome || this.results[stepSlug]?.outcome),
         answer: success,
-      }, success ? this.getNextStepSlug(stepSlug) : undefined);
+      }, nextSlug, success && isUndefined(nextSlug));
+    };
 
   toggleSection = (slug: WizardSectionSlug) => () =>
     this.setState({ ...this.state, [slug]: !this.state[slug] });
 
+  stepSection = (stepSlug: WizardStepSlug): WizardSectionSlug =>
+    WIZARD_STEPS(this.firmwareHardware)
+      .filter(step => step.slug == stepSlug)[0].section;
+
   openStep = (stepSlug: WizardStepSlug) => () => this.setState({
     stepOpen: this.state.stepOpen == stepSlug ? undefined : stepSlug,
+    [this.stepSection(stepSlug)]: true,
   });
 
   render() {
@@ -158,7 +179,7 @@ export class RawSetupWizard
                     resources={this.props.resources} />)}
               </Collapse>
             </div>)}
-        {WizardData.getComplete() &&
+        {this.props.device?.body.setup_completed_at &&
           <div className={"setup-complete"}>
             <Saucer color={"green"}><i className={"fa fa-check"} /></Saucer>
             <p>{t("Setup Complete!")}</p>
@@ -172,8 +193,7 @@ const WizardHeader = (props: WizardHeaderProps) =>
   <div className={"wizard-header"}>
     <h1>{t("Setup")}</h1>
     <p className={"progress-meter"}>
-      {WizardData.progressPercent(
-        props.results, props.firmwareHardware)}% {t("complete")}
+      {setupProgressString(props.results, props.firmwareHardware)}
     </p>
     <button className={"fb-button red start-over"}
       disabled={props.results.length < 1}
@@ -190,6 +210,13 @@ const WizardSectionHeader = (props: WizardSectionHeaderProps) =>
       <Saucer color={"green"}>
         <div className={"step-icon"}>
           <i className={"fa fa-check"} />
+        </div>
+      </Saucer>}
+    {some(props.section.steps.map(step =>
+      props.results[step.slug]?.answer == false)) &&
+      <Saucer color={"red"}>
+        <div className={"step-icon"}>
+          <i className={"fa fa-times"} />
         </div>
       </Saucer>}
     <i className={

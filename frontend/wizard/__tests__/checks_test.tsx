@@ -14,7 +14,10 @@ jest.mock("../../photos/camera_calibration/actions", () => ({
   calibrate: jest.fn(),
 }));
 
-const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
+const mockDevice = {
+  execScript: jest.fn(() => Promise.resolve({})),
+  findHome: jest.fn(() => Promise.resolve({})),
+};
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../history", () => ({
@@ -38,15 +41,21 @@ import {
   CameraCalibrationCard,
   CameraCalibrationCheck,
   CameraCheck,
+  CameraOffset,
   ConfiguratorDocs,
   Connectivity,
   ControlsCheck,
   DisableStallDetection,
+  FindHome,
   FirmwareHardwareSelection,
   InvertJogButton,
   InvertMotor,
   lowVoltageProblemStatus,
+  MotorCurrent,
   PeripheralsCheck,
+  RotateMapToggle,
+  SelectMapOrigin,
+  SensorsCheck,
   SoilHeightMeasurementCheck,
   SwapJogButton,
   SwitchCameraCalibrationMethod,
@@ -65,6 +74,7 @@ import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
+import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -145,7 +155,7 @@ describe("lowVoltageProblemStatus()", () => {
 describe("<ControlsCheck />", () => {
   it("returns controls", () => {
     const Component = ControlsCheck("x");
-    const wrapper = mount(<Component />);
+    const wrapper = mount(<Component {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
   });
 });
@@ -373,6 +383,28 @@ describe("<SwapJogButton />", () => {
   });
 });
 
+describe("<RotateMapToggle />", () => {
+  const state = fakeState();
+  const config = fakeWebAppConfig();
+  config.body.xy_swap = false;
+  state.resources = buildResourceIndex([config]);
+
+  it("rotates map", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount(<RotateMapToggle {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { xy_swap: true });
+  });
+});
+
+describe("<SelectMapOrigin />", () => {
+  it("renders origin selector", () => {
+    const wrapper = mount(<SelectMapOrigin {...fakeProps()} />);
+    expect(wrapper.html()).toContain("farmbot-origin");
+  });
+});
+
 describe("<PeripheralsCheck />", () => {
   it("renders peripherals", () => {
     const p = fakeProps();
@@ -389,9 +421,93 @@ describe("<PeripheralsCheck />", () => {
   });
 });
 
+describe("<FindHome />", () => {
+  it("calls finds home", () => {
+    const Component = FindHome("x");
+    const p = fakeProps();
+    const config = fakeFirmwareConfig();
+    config.body.encoder_enabled_x = 1;
+    p.resources = buildResourceIndex([config]).index;
+    const wrapper = mount(<Component {...p} />);
+    clickButton(wrapper, 0, "find home x");
+    expect(mockDevice.findHome).toHaveBeenCalledWith({ axis: "x", speed: 100 });
+  });
+
+  it("handles missing settings", () => {
+    const Component = FindHome("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    clickButton(wrapper, 0, "find home x");
+    expect(mockDevice.findHome).toHaveBeenCalledWith({ axis: "x", speed: 100 });
+  });
+});
+
+describe("<MotorCurrent />", () => {
+  const state = fakeState();
+  const config = fakeFirmwareConfig();
+  state.resources = buildResourceIndex([config]);
+
+  it("changes motor current", () => {
+    const p = fakeProps();
+    const fwConfig = fakeFirmwareConfig();
+    fwConfig.body.movement_motor_current_x = 100;
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = "arduino";
+    p.resources = buildResourceIndex([fwConfig, fbosConfig]).index;
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const Component = MotorCurrent("x");
+    const wrapper = mount(<Component {...p} />);
+    changeBlurableInput(wrapper, "200", 0);
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      movement_motor_current_x: "200"
+    });
+  });
+
+  it("handles missing settings", () => {
+    const Component = MotorCurrent("x");
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount(<Component {...p} />);
+    changeBlurableInput(wrapper, "100", 0);
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      movement_motor_current_x: "100"
+    });
+  });
+});
+
+describe("<CameraOffset />", () => {
+  it("renders camera offset inputs", () => {
+    const wrapper = mount(<CameraOffset {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("offset");
+  });
+
+  it("changes offset", () => {
+    const wrapper = mount(<CameraOffset {...fakeProps()} />);
+    changeBlurableInput(wrapper, "100", 0);
+    expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "CAMERA_CALIBRATION_camera_offset_x", value: "100"
+    });
+  });
+});
+
 describe("<ToolCheck />", () => {
   it("renders tool verification button", () => {
     const wrapper = mount(<ToolCheck {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("verify");
+  });
+});
+
+describe("<SensorsCheck />", () => {
+  it("renders sensors", () => {
+    const p = fakeProps();
+    const config = fakeFbosConfig();
+    config.body.firmware_hardware = "arduino";
+    p.resources = buildResourceIndex([config]).index;
+    const wrapper = mount(<SensorsCheck {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("sensors");
+  });
+
+  it("handles missing config", () => {
+    const wrapper = mount(<SensorsCheck {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("sensors");
   });
 });

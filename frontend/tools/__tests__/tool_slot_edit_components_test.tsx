@@ -1,4 +1,7 @@
-import * as React from "react";
+const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
+
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   GantryMountedInput,
@@ -220,6 +223,7 @@ describe("<SlotLocationInputRow />", () => {
     gantryMounted: false,
     onChange: jest.fn(),
     botPosition: { x: undefined, y: undefined, z: undefined },
+    botOnline: true,
   });
 
   it("renders", () => {
@@ -250,6 +254,42 @@ describe("<SlotLocationInputRow />", () => {
     expect(p.onChange).toHaveBeenCalledWith({ x: 1 });
     expect(p.onChange).toHaveBeenCalledWith({ y: 2 });
     expect(p.onChange).toHaveBeenCalledWith({ z: 3 });
+  });
+
+
+  it("moves to tool slot", () => {
+    const p = fakeProps();
+    p.slotLocation.x = 1;
+    p.slotLocation.y = 2;
+    p.slotLocation.z = 3;
+    p.gantryMounted = false;
+    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    wrapper.find("button").last().simulate("click");
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+  });
+
+  it("moves to gantry-mounted tool slot", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 10, y: 20, z: 30 };
+    p.slotLocation.x = 1;
+    p.slotLocation.y = 2;
+    p.slotLocation.z = 3;
+    p.gantryMounted = true;
+    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    wrapper.find("button").last().simulate("click");
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
+  });
+
+  it("falls back to tool slot when moving to gantry-mounted tool slot", () => {
+    const p = fakeProps();
+    p.botPosition = { x: undefined, y: undefined, z: undefined };
+    p.slotLocation.x = 1;
+    p.slotLocation.y = 2;
+    p.slotLocation.z = 3;
+    p.gantryMounted = true;
+    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    wrapper.find("button").last().simulate("click");
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 });
 
@@ -285,6 +325,7 @@ describe("<SlotEditRows />", () => {
     noUTM: false,
     toolTransformProps: fakeToolTransformProps(),
     isActive: () => false,
+    botOnline: true,
   });
 
   it("handles missing tool", () => {

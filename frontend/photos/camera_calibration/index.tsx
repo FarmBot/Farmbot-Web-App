@@ -68,6 +68,7 @@ export class CameraCalibration extends
               currentImage={this.props.currentImage}
               onChange={this.change}
               timeSettings={this.props.timeSettings}
+              showAdvanced={this.props.showAdvanced}
               iteration={this.props.iteration}
               morph={this.props.morph}
               blur={this.props.blur}

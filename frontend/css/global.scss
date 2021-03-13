@@ -837,7 +837,7 @@ ul {
 
 .bot-position-rows {
   label {
-    margin-top: 0;
+    margin-top: 0 !important;
   }
   .axis-titles {
     margin-bottom: 1rem;
@@ -1513,6 +1513,7 @@ ul {
   }
   textarea {
     height: 100% !important;
+    font-family: monospace;
   }
 }
 

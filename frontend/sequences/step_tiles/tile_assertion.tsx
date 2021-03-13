@@ -10,7 +10,7 @@ import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 
 export const TileAssertion = (props: StepParams<Assertion>) => {
-  const [monaco, setMonaco] = React.useState(true);
+  const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
   return <StepWrapper
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}

@@ -88,6 +88,7 @@ export interface AddEditToolSlotPropsBase {
   firmwareHardware: FirmwareHardware | undefined;
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
+  botOnline: boolean;
 }
 
 export interface AddToolSlotProps extends AddEditToolSlotPropsBase {
@@ -138,6 +139,7 @@ export interface SlotLocationInputRowProps {
   gantryMounted: boolean;
   onChange(update: Partial<Record<Xyz, number>>): void;
   botPosition: BotPosition;
+  botOnline: boolean;
 }
 
 export interface SlotEditRowsProps {
@@ -149,6 +151,7 @@ export interface SlotEditRowsProps {
   noUTM: boolean;
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
+  botOnline: boolean;
 }
 
 export interface ToolVerificationProps {

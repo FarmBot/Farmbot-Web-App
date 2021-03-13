@@ -4,9 +4,6 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
-
 let mockPath = "/app/designer/tool-slots/1";
 jest.mock("../../history", () => ({
   push: jest.fn(),
@@ -49,6 +46,7 @@ describe("<EditToolSlot />", () => {
     firmwareHardware: undefined,
     toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
+    botOnline: true,
   });
 
   it("redirects", () => {
@@ -113,46 +111,6 @@ describe("<EditToolSlot />", () => {
     expect(edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(save).toHaveBeenCalledWith(slot.uuid);
     expect(wrapper.state().saveError).toEqual(true);
-  });
-
-  it("moves to tool slot", () => {
-    const p = fakeProps();
-    const toolSlot = fakeToolSlot();
-    toolSlot.body.x = 1;
-    toolSlot.body.y = 2;
-    toolSlot.body.z = 3;
-    p.findToolSlot = () => toolSlot;
-    const wrapper = shallow(<EditToolSlot {...p} />);
-    wrapper.find(".gray").last().simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
-  });
-
-  it("moves to gantry-mounted tool slot", () => {
-    const p = fakeProps();
-    p.botPosition = { x: 10, y: 20, z: 30 };
-    const toolSlot = fakeToolSlot();
-    toolSlot.body.gantry_mounted = true;
-    toolSlot.body.x = 1;
-    toolSlot.body.y = 2;
-    toolSlot.body.z = 3;
-    p.findToolSlot = () => toolSlot;
-    const wrapper = shallow(<EditToolSlot {...p} />);
-    wrapper.find(".gray").last().simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
-  });
-
-  it("falls back to tool slot when moving to gantry-mounted tool slot", () => {
-    const p = fakeProps();
-    p.botPosition = { x: undefined, y: undefined, z: undefined };
-    const toolSlot = fakeToolSlot();
-    toolSlot.body.gantry_mounted = true;
-    toolSlot.body.x = 1;
-    toolSlot.body.y = 2;
-    toolSlot.body.z = 3;
-    p.findToolSlot = () => toolSlot;
-    const wrapper = shallow(<EditToolSlot {...p} />);
-    wrapper.find(".gray").last().simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("removes tool slot", () => {

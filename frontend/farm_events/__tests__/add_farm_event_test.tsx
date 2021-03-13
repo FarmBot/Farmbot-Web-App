@@ -10,7 +10,9 @@ jest.mock("../../resources/actions", () => ({ destroyOK: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddFarmEvent as AddFarmEvent } from "../add_farm_event";
-import { AddEditFarmEventProps } from "../../farm_designer/interfaces";
+import {
+  AddEditFarmEventProps, TaggedExecutable,
+} from "../../farm_designer/interfaces";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen,
 } from "../../__test_support__/fake_state/resources";
@@ -79,16 +81,52 @@ describe("<AddFarmEvent />", () => {
     expect(wrapper.state().temporaryValues.repeat).toEqual("2");
   });
 
-  it("renders with no sequences", () => {
+  it("inits FarmEvent", () => {
     const p = fakeProps();
     p.sequencesById = {};
     const regimen = fakeRegimen();
     regimen.body.id = 1;
     p.regimensById = { "1": regimen };
-    const wrapper = mount(<AddFarmEvent {...p} />);
-    wrapper.mount();
+    p.findFarmEventByUuid = jest.fn();
+    p.findExecutable = () => regimen;
+    const wrapper = mount<AddFarmEvent>(<AddFarmEvent {...p} />);
+    wrapper.instance().initFarmEvent({
+      label: "", value: "1", headingId: "Regimen",
+    });
     expect(init).toHaveBeenCalledWith("FarmEvent",
       expect.objectContaining({ executable_type: "Regimen" }));
+  });
+
+  it("inits FarmEvent: sequence", () => {
+    const p = fakeProps();
+    p.sequencesById = {};
+    const sequence = fakeSequence();
+    sequence.body.id = 0;
+    p.sequencesById = { "1": sequence };
+    p.findFarmEventByUuid = jest.fn();
+    p.findExecutable = () => sequence;
+    const wrapper = mount<AddFarmEvent>(<AddFarmEvent {...p} />);
+    wrapper.instance().initFarmEvent({
+      label: "", value: "1", headingId: "Sequence",
+    });
+    expect(init).toHaveBeenCalledWith("FarmEvent",
+      expect.objectContaining({ executable_type: "Sequence" }));
+  });
+
+
+  it("doesn't init FarmEvent: missing executable", () => {
+    const p = fakeProps();
+    p.sequencesById = {};
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    p.sequencesById = { "1": sequence };
+    p.findFarmEventByUuid = jest.fn();
+    p.findExecutable = () => undefined as unknown as TaggedExecutable;
+    const wrapper = mount<AddFarmEvent>(<AddFarmEvent {...p} />);
+    wrapper.instance().initFarmEvent({
+      label: "", value: "1", headingId: "Sequence",
+    });
+    expect(init).not.toHaveBeenCalled();
   });
 
   it("cleans up when unmounting", () => {
@@ -139,5 +177,14 @@ describe("<AddFarmEvent />", () => {
     const wrapper = shallow(<AddFarmEvent {...p} />);
     wrapper.find(FarmEventForm).simulate("save");
     expect(error).toHaveBeenCalledWith(Content.MISSING_EXECUTABLE);
+  });
+
+  it("shows error on save: no selection", () => {
+    const p = fakeProps();
+    p.executableOptions = [{ label: "", value: "1" }];
+    p.findFarmEventByUuid = jest.fn();
+    const wrapper = shallow(<AddFarmEvent {...p} />);
+    wrapper.find(FarmEventForm).simulate("save");
+    expect(error).toHaveBeenCalledWith("Please select a sequence or regimen.");
   });
 });

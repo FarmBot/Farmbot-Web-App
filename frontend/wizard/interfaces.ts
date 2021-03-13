@@ -103,6 +103,7 @@ export interface WizardStepHeaderProps {
   stepOpen: WizardStepSlug | undefined;
   openStep(stepSlug: WizardStepSlug): () => void;
   timeSettings: TimeSettings;
+  showProgress?: boolean;
 }
 
 export interface WizardStepContainerProps extends WizardOutcomeComponentProps {
@@ -130,4 +131,5 @@ export interface CameraCheckBaseProps extends WizardStepComponentProps {
 export interface SetupWizardSettingsProps {
   dispatch: Function;
   wizardStepResults: TaggedWizardStepResult[];
+  device: TaggedDevice;
 }

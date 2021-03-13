@@ -1,8 +1,9 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { Row, Col } from "../ui";
-import { destroyAllWizardStepResults } from "./actions";
-import { WizardData } from "./data";
+import {
+  completeSetup, destroyAllWizardStepResults, resetSetup,
+} from "./actions";
 import { SetupWizardSettingsProps } from "./interfaces";
 
 export const SetupWizardSettings = (props: SetupWizardSettingsProps) =>
@@ -19,7 +20,7 @@ export const SetupWizardSettings = (props: SetupWizardSettingsProps) =>
         <button className={"fb-button red"} onClick={() => {
           props.dispatch(destroyAllWizardStepResults(
             props.wizardStepResults));
-          WizardData.reset();
+          props.dispatch(resetSetup(props.device));
         }}>
           {t("restart")}
         </button>
@@ -32,7 +33,8 @@ export const SetupWizardSettings = (props: SetupWizardSettingsProps) =>
         </label>
       </Col>
       <Col xs={4}>
-        <button className={"fb-button green"} onClick={WizardData.setComplete}>
+        <button className={"fb-button green"} onClick={() =>
+          props.dispatch(completeSetup(props.device))}>
           {t("complete")}
         </button>
       </Col>

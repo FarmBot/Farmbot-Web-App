@@ -27,7 +27,7 @@ export class CameraCalibrationConfig
     WD_KEY_DEFAULTS[this.namespace(key)];
 
   getLabeledDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
-    SPECIAL_VALUE_DDI[this.getDefault(key)].label;
+    SPECIAL_VALUE_DDI()[this.getDefault(key)].label;
 
   render() {
     const simple = !!this.wdEnvGet(this.namespace("easy_calibration"));
@@ -83,7 +83,7 @@ export class CameraCalibrationConfig
       </Row>
       <Row>
         <DropdownConfig {...commonProps}
-          list={ORIGIN_DROPDOWNS}
+          list={ORIGIN_DROPDOWNS()}
           configKey={this.namespace("image_bot_origin_location")}
           label={t("Origin Location in Image")}
           helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
@@ -202,6 +202,6 @@ export const DropdownConfig = (props: DropdownConfigProps) =>
           throw new Error("Weed detector got a non-numeric value");
         }
       }}
-      selectedItem={SPECIAL_VALUE_DDI[props.wdEnvGet(props.configKey)]
+      selectedItem={SPECIAL_VALUE_DDI()[props.wdEnvGet(props.configKey)]
         || NULL_CHOICE} />
   </div>;

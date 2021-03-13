@@ -8,7 +8,7 @@ import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 
 export const TileLua = (props: StepParams<Lua>) => {
-  const [monaco, setMonaco] = React.useState(true);
+  const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
   return <StepWrapper
     className={"lua-step"}
     helpText={ToolTips.LUA}

@@ -22,8 +22,7 @@ import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
-import { DevSettings } from "../settings/dev/dev_support";
-import { WizardData } from "../wizard/data";
+import { setupProgressString } from "../wizard/data";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -125,14 +124,13 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
-    const { wizardStepResults } = this.props;
-    return DevSettings.futureFeaturesEnabled() && !WizardData.getComplete()
+    const { wizardStepResults, device } = this.props;
+    return !device.body.setup_completed_at
       ? <a className={"setup-button"}
         onClick={() => push("/app/designer/setup")}>
         {t("Setup")}
         {window.innerWidth > 450 &&
-          `: ${WizardData.progressPercent(
-            wizardStepResults, firmwareHardware)}% ${t("complete")}`}
+          `: ${setupProgressString(wizardStepResults, firmwareHardware)}`}
       </a>
       : <div />;
   };

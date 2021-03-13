@@ -27,7 +27,7 @@ import {
   isExpress, isFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
-import { docLinkClick, FBSelect, ToggleButton } from "../ui";
+import { Col, docLinkClick, FBSelect, Row, ToggleButton } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
 } from "../messages/cards";
@@ -37,7 +37,7 @@ import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
-import { settingToggle } from "../devices/actions";
+import { findHome, settingToggle } from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
 import { cameraBtnProps } from "../photos/capture_settings/camera_selection";
@@ -56,6 +56,18 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { toggleWebAppBool } from "../config_storage/actions";
 import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
+import { OriginSelector } from "../settings/farm_designer_settings";
+import { Sensors } from "../sensors";
+import {
+  NumberBoxConfig, NumberBoxConfigProps,
+} from "../photos/camera_calibration/config";
+import { ToolTips } from "../constants";
+import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
+import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
+import { LockableButton } from "../settings/hardware_settings/lockable_button";
+import {
+  disabledAxisMap,
+} from "../settings/hardware_settings/axis_tracking_status";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -173,9 +185,10 @@ export const lowVoltageProblemStatus = () => {
   return !["red", "yellow"].includes(voltageColor);
 };
 
-export const ControlsCheck = (axis: Xyz) => () =>
+export const ControlsCheck = (axis?: Xyz) => (props: WizardOutcomeComponentProps) =>
   <div className={"controls-check"}>
     <MoveControls {...mapStateToProps(store.getState())}
+      dispatch={props.dispatch}
       highlightAxis={axis} />
   </div>;
 
@@ -310,6 +323,21 @@ export const SwapJogButton = (props: WizardOutcomeComponentProps) =>
       toggleValue={!!props.getConfigValue(BooleanSetting.xy_swap)} />
   </fieldset>;
 
+export const RotateMapToggle = (props: WizardOutcomeComponentProps) =>
+  <fieldset>
+    <label>
+      {t("Rotate map")}
+    </label>
+    <ToggleButton
+      toggleAction={() => props.dispatch(toggleWebAppBool(BooleanSetting.xy_swap))}
+      toggleValue={!!props.getConfigValue(BooleanSetting.xy_swap)} />
+  </fieldset>;
+
+export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
+  <OriginSelector
+    dispatch={props.dispatch}
+    getConfigValue={props.getConfigValue} />;
+
 export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
   const value = fbosConfig?.firmware_hardware;
@@ -324,7 +352,92 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   </div>;
 };
 
+export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
+  const botOnline = isBotOnlineFromState(props.bot);
+  const firmwareSettings = getFirmwareConfig(props.resources);
+  const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
+    || props.bot.hardware.mcu_params);
+  return <LockableButton
+    disabled={hardwareDisabled[axis] || !botOnline}
+    title={t("FIND HOME")}
+    onClick={() => findHome(axis)}>
+    {t("FIND HOME {{ axis }}", { axis })}
+  </LockableButton>;
+};
+
+const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) =>
+  (props: WizardOutcomeComponentProps) => {
+    const sourceFwConfig = sourceFwConfigValue(
+      validFwConfig(getFirmwareConfig(props.resources)),
+      props.bot.hardware.mcu_params);
+    const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
+    const value = fbosConfig?.firmware_hardware;
+    const fwHardware = isFwHardwareValue(value) ? value : undefined;
+    return <fieldset>
+      <label>{t(setting.label)}</label>
+      <McuInputBox
+        dispatch={props.dispatch}
+        sourceFwConfig={sourceFwConfig}
+        firmwareHardware={fwHardware}
+        setting={setting.key} />
+    </fieldset>;
+  };
+
+export const MotorCurrent = (axis: Xyz) => {
+  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
+    x: { key: "movement_motor_current_x", label: t("x-axis motor current") },
+    y: { key: "movement_motor_current_y", label: t("y-axis motor current") },
+    z: { key: "movement_motor_current_z", label: t("z-axis motor current") },
+  };
+  return FirmwareSettingInput(setting[axis]);
+};
+
+export const CameraOffset = (props: WizardStepComponentProps) => {
+  const helpText = t(ToolTips.CAMERA_OFFSET, {
+    defaultX: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_x"],
+    defaultY: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_y"],
+  });
+  const env = getEnv(props.resources);
+  const wDEnv = prepopulateEnv(env);
+  const common: Pick<NumberBoxConfigProps, "wdEnvGet" | "onChange"> = {
+    wdEnvGet: key => envGet(key, wDEnv),
+    onChange: (key, value) =>
+      props.dispatch(saveOrEditFarmwareEnv(props.resources)(
+        key, JSON.stringify(formatEnvKey(key, value)))),
+  };
+  return <Row>
+    <Col xs={6}>
+      <NumberBoxConfig {...common}
+        configKey={"CAMERA_CALIBRATION_camera_offset_x"}
+        label={t("Camera Offset X")}
+        helpText={helpText} />
+    </Col>
+    <Col xs={6}>
+      <NumberBoxConfig {...common}
+        configKey={"CAMERA_CALIBRATION_camera_offset_y"}
+        label={t("Camera Offset Y")}
+        helpText={helpText} />
+    </Col>
+  </Row>;
+};
+
 export const ToolCheck = (props: WizardStepComponentProps) => {
   const sensors = selectAllSensors(props.resources);
   return <ToolVerification sensors={sensors} bot={props.bot} />;
+};
+
+export const SensorsCheck = (props: WizardStepComponentProps) => {
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
+  const value = fbosConfig?.firmware_hardware;
+  const fwHardware = isFwHardwareValue(value) ? value : undefined;
+  const sensors = uniq(selectAllSensors(props.resources));
+  const botOnline = isBotOnlineFromState(props.bot);
+  return <div className={"sensors-check"}>
+    <Sensors
+      firmwareHardware={fwHardware}
+      bot={props.bot}
+      sensors={sensors}
+      disabled={!botOnline}
+      dispatch={props.dispatch} />
+  </div>;
 };

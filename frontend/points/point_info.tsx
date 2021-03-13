@@ -14,15 +14,18 @@ import {
   EditPointProperties, updatePoint, PointActions, lookupPointSource,
 } from "./point_edit_actions";
 import { ListItem } from "../plants/plant_panel";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 
 export interface EditPointProps {
   dispatch: Function;
   findPoint(id: number): TaggedGenericPointer | undefined;
+  botOnline: boolean;
 }
 
 export const mapStateToProps = (props: Everything): EditPointProps => ({
   dispatch: props.dispatch,
   findPoint: id => maybeFindGenericPointerById(props.resources.index, id),
+  botOnline: isBotOnlineFromState(props.bot),
 });
 
 export class RawEditPoint extends React.Component<EditPointProps, {}> {
@@ -51,6 +54,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
         {this.point
           ? <div className={"point-panel-content-wrapper"}>
             <EditPointProperties point={this.point}
+              botOnline={this.props.botOnline}
               updatePoint={updatePoint(this.point, this.props.dispatch)} />
             <ul className="meta">
               {Object.entries(this.point.body.meta).map(([key, value]) => {
@@ -73,12 +77,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
                 }
               })}
             </ul>
-            <PointActions
-              x={this.point.body.x}
-              y={this.point.body.y}
-              z={this.point.body.z}
-              uuid={this.point.uuid}
-              dispatch={this.props.dispatch} />
+            <PointActions uuid={this.point.uuid} dispatch={this.props.dispatch} />
           </div>
           : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>

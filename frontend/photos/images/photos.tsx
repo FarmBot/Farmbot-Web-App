@@ -6,12 +6,13 @@ import {
 } from "./image_flipper";
 import {
   PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
+  MoveToLocationProps,
 } from "./interfaces";
 import { timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
-import { startCase } from "lodash";
-import { MustBeOnline } from "../../devices/must_be_online";
+import { isNumber, startCase } from "lodash";
+import { isBotOnline, MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Overlay, Popover } from "@blueprintjs/core";
@@ -19,7 +20,7 @@ import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage, Xyz } from "farmbot";
 import { MarkedSlider } from "../../ui";
-import { takePhoto } from "../../devices/actions";
+import { moveAbsolute, takePhoto } from "../../devices/actions";
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -99,10 +100,15 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     <div className={"image-metadata"}>
       {image
         ? ["x", "y", "z"].map((axis: Xyz, index) =>
-          <div className={"meta-info"} key={index}>
-            <label>{startCase(axis)}:</label>
-            <span>{image.body.meta[axis] ?? "---"}</span>
-          </div>)
+          <Popover key={index}>
+            <div className={"meta-info"}>
+              <label>{startCase(axis)}:</label>
+              <span>{image.body.meta[axis] ?? "---"}</span>
+            </div>
+            <MoveToLocation
+              imageLocation={image.body.meta}
+              botOnline={props.botOnline} />
+          </Popover>)
         : <div className={"meta-info"}>
           <label>{t("Image")}:</label>
           <span>{t("No meta data.")}</span>
@@ -110,6 +116,24 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     </div>
   </div>;
 };
+
+export const MoveToLocation = (props: MoveToLocationProps) =>
+  <button
+    className={"fb-button gray no-float"}
+    type={"button"}
+    disabled={!props.botOnline}
+    title={t("move to location")}
+    onClick={() =>
+      isNumber(props.imageLocation.x) &&
+      isNumber(props.imageLocation.y) &&
+      isNumber(props.imageLocation.z) &&
+      moveAbsolute({
+        x: props.imageLocation.x,
+        y: props.imageLocation.y,
+        z: props.imageLocation.z,
+      })}>
+    {t("Move FarmBot to location")}
+  </button>;
 
 export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
   state: PhotosComponentState = {
@@ -193,6 +217,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
         flags={this.props.flags}
         size={this.props.currentImageSize}
         dispatch={this.props.dispatch}
+        botOnline={isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
         timeSettings={this.props.timeSettings} />
       {this.props.images.length > 1 &&
         <MarkedSlider

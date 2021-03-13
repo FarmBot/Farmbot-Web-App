@@ -1236,6 +1236,10 @@ export namespace SetupWizardContent {
     re-flashing the SD card via Etcher. If possible, ensure line-of-sight
     between devices when trying to connect.`);
 
+  export const FIND_MAP_ORIGIN =
+    trim(`Find the origin in the map. The origin is at the coordinate (0, 0),
+    with arrows pointing along the X and Y axes.`);
+
   export const PRESS_RIGHT_JOG_BUTTON =
     trim(`Standing from where you will normally view the FarmBot,
     **press the right arrow button**.`);
@@ -1255,6 +1259,13 @@ export namespace SetupWizardContent {
     trim(`Check motor cable connections. Try again while observing
     electronics box LED activity.`);
 
+  export const TOGGLE_PERIPHERAL =
+    trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
+    the toggle again.`);
+
+  export const CAMERA_CALIBRATION_PREPARATION =
+    trim(`To prepare for camera calibration, move the z-axis all the way up.`);
+
   export const CAMERA_CALIBRATION =
     trim(`Camera calibration allows correct photo rotation and placement
     in the Farm Designer map. Place the camera calibration card on the soil
@@ -1271,6 +1282,22 @@ export namespace SetupWizardContent {
   export const CHECK_CAMERA_CABLE =
     trim(`Check that the camera is plugged in to a Raspberry Pi USB port
     and ensure that all connectors are securely fastened.`);
+
+  export const BLACK_IMAGE =
+    trim(`Ensure that the camera lens is not covered and there is adequate
+    lighting. Try unplugging the camera and plugging it back in.`);
+
+  export const RED_DOTS =
+    trim(`Try an alternate calibration method. Two red objects spaced 100mm
+    apart can be used in place of the card.`);
+
+  export const CHECK_TOOL_CONNECTIONS =
+    trim(`Check the UTM to tool electrical connections. Ensure pin jumpers
+    are installed across the Farmduino UTM pins.`);
+
+  export const READ_SOIL_SENSOR =
+    trim(`Attach the soil sensor tool to the UTM and press the READ SENSOR
+    for the SOIL MOISTURE sensor.`);
 }
 
 export enum DeviceSetting {
@@ -1279,7 +1306,7 @@ export enum DeviceSetting {
   // FarmBot
   farmbotSettings = `FarmBot`,
   name = `name`,
-  orderNumber = `FarmBot Order Number`,
+  orderNumber = `Order Number`,
   timezone = `timezone`,
   time_zone = `time zone`,
   camera = `camera`,
