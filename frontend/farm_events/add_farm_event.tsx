@@ -86,7 +86,6 @@ export class RawAddFarmEvent
   render() {
     const farmEvent = this.props.findFarmEventByUuid(this.state.uuid);
     const panelName = "add-farm-event";
-    const executableOptions = this.props.executableOptions.filter(x => !x.heading);
     return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -112,12 +111,13 @@ export class RawAddFarmEvent
             fieldGet={this.getField}
             fieldSet={this.setField}
             timeSettings={this.props.timeSettings}
-            executableOptions={executableOptions}
+            executableOptions={this.props.executableOptions}
             executableSet={this.initFarmEvent}
             executableGet={() => undefined}
             dispatch={this.props.dispatch}
             specialStatus={SpecialStatus.DIRTY}
-            onSave={() => error(executableOptions.length < 1
+            onSave={() => error(this.props.executableOptions
+              .filter(x => !x.heading).length < 1
               ? t(Content.MISSING_EXECUTABLE)
               : t("Please select a sequence or regimen."))} />}
       </DesignerPanelContent>

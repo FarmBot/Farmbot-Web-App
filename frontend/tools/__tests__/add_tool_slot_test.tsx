@@ -7,7 +7,7 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -35,6 +35,7 @@ describe("<AddToolSlot />", () => {
     firmwareHardware: undefined,
     toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
+    botOnline: true,
   });
 
   it("renders", () => {

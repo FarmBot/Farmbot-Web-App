@@ -9,7 +9,6 @@ import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
-import { moveAbsolute } from "../devices/actions";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsEdit } from "./state_to_props";
 import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
@@ -66,6 +65,7 @@ export class RawEditToolSlot
               tools={this.props.tools}
               tool={this.tool}
               botPosition={this.props.botPosition}
+              botOnline={this.props.botOnline}
               toolTransformProps={this.props.toolTransformProps}
               isActive={this.props.isActive}
               updateToolSlot={this.updateSlot(toolSlot)} />
@@ -83,18 +83,6 @@ export class RawEditToolSlot
                 }
               })}
             </ul>
-            <button
-              className="fb-button gray no-float"
-              title={t("move to this location")}
-              onClick={() => {
-                const x = toolSlot.body.gantry_mounted
-                  ? this.props.botPosition.x ?? toolSlot.body.x
-                  : toolSlot.body.x;
-                const { y, z } = toolSlot.body;
-                moveAbsolute({ x, y, z });
-              }}>
-              {t("Move FarmBot to slot location")}
-            </button>
             <button
               className="fb-button red no-float"
               title={t("Delete")}

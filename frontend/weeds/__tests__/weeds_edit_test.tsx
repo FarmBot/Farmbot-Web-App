@@ -4,7 +4,7 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditWeed as EditWeed, EditWeedProps, mapStateToProps,
@@ -22,6 +22,7 @@ describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
     dispatch: jest.fn(),
     findPoint: () => undefined,
+    botOnline: true,
   });
 
   it("redirects", () => {

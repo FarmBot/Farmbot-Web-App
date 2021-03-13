@@ -577,6 +577,10 @@
       }
     }
   }
+  .move-to-button {
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+  }
 }
 
 .soil-height-checkbox {
@@ -1037,13 +1041,16 @@
       padding: 0;
       margin-left: -1rem;
     }
-    button {
+    button.blue {
       margin-top: 0.5rem;
       margin-right: 0.5rem;
       height: 2.5rem;
       .fa {
         font-size: 1.5rem;
       }
+    }
+    button.gray {
+      margin-top: 1rem;
     }
   }
   .tool-direction-input,

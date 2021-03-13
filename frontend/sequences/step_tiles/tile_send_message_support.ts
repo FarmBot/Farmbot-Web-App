@@ -12,14 +12,14 @@ interface ChanInfo {
   label: string;
 }
 
-export const EACH_CHANNEL: ChanInfo[] = [
+export const EACH_CHANNEL = (): ChanInfo[] => [
   { alwaysOn: true, name: "ticker", label: t("Ticker Notification") },
   { alwaysOn: false, name: "toast", label: t("Toast Pop Up") },
   { alwaysOn: false, name: "email", label: t("Email") },
   { alwaysOn: false, name: "espeak", label: t("Speak") },
 ];
 
-export const MESSAGE_STATUSES = [
+export const MESSAGE_STATUSES = () => [
   { value: MessageType.success, label: t("Success") },
   { value: MessageType.busy, label: t("Busy") },
   { value: MessageType.warn, label: t("Warning") },
@@ -27,27 +27,30 @@ export const MESSAGE_STATUSES = [
   { value: MessageType.info, label: t("Info") },
 ];
 
-export const MESSAGE_STATUSES_DDI = {
-  [MESSAGE_STATUSES[0].value]: {
-    label: MESSAGE_STATUSES[0].label,
-    value: MESSAGE_STATUSES[0].value
-  },
-  [MESSAGE_STATUSES[1].value]: {
-    label: MESSAGE_STATUSES[1].label,
-    value: MESSAGE_STATUSES[1].value
-  },
-  [MESSAGE_STATUSES[2].value]: {
-    label: MESSAGE_STATUSES[2].label,
-    value: MESSAGE_STATUSES[2].value
-  },
-  [MESSAGE_STATUSES[3].value]: {
-    label: MESSAGE_STATUSES[3].label,
-    value: MESSAGE_STATUSES[3].value
-  },
-  [MESSAGE_STATUSES[4].value]: {
-    label: MESSAGE_STATUSES[4].label,
-    value: MESSAGE_STATUSES[4].value
-  }
+export const MESSAGE_STATUSES_DDI = () => {
+  const STATUSES = MESSAGE_STATUSES();
+  return {
+    [STATUSES[0].value]: {
+      label: STATUSES[0].label,
+      value: STATUSES[0].value
+    },
+    [STATUSES[1].value]: {
+      label: STATUSES[1].label,
+      value: STATUSES[1].value
+    },
+    [STATUSES[2].value]: {
+      label: STATUSES[2].label,
+      value: STATUSES[2].value
+    },
+    [STATUSES[3].value]: {
+      label: STATUSES[3].label,
+      value: STATUSES[3].value
+    },
+    [STATUSES[4].value]: {
+      label: STATUSES[4].label,
+      value: STATUSES[4].value
+    }
+  };
 };
 
 export function channel(channel_name: ChannelName): Channel {

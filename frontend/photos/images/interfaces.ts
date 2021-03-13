@@ -1,4 +1,4 @@
-import { TaggedImage, JobProgress, SyncStatus } from "farmbot";
+import { TaggedImage, JobProgress, SyncStatus, Xyz } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { UserEnv } from "../../devices/interfaces";
@@ -111,6 +111,12 @@ export interface PhotoFooterProps {
   timeSettings: TimeSettings;
   dispatch: Function;
   flags: ImageShowFlags;
+  botOnline: boolean;
+}
+
+export interface MoveToLocationProps {
+  botOnline: boolean;
+  imageLocation: Record<Xyz, number | undefined>;
 }
 
 export interface PhotosComponentState {
