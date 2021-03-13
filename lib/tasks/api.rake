@@ -78,7 +78,7 @@ namespace :api do
     src = "node_modules/monaco-editor/min/vs"
     dst = "public/assets/monaco"
     lua = "basic-languages/lua"
-    sh "mkdir -p #{dst}"
+    sh "mkdir -p public/assets/"
     sh "cp -r #{src} #{dst}"
     sh "rm -rf #{dst}/*language*"
     sh "mkdir #{dst}/basic-languages"
