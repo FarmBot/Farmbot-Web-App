@@ -519,7 +519,7 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
     <label>
       {t("Sequence or Regimen")}
     </label>
-    {props.executableOptions.length < 1 &&
+    {props.executableOptions.filter(x => !x.heading).length < 1 &&
       <Help
         text={Content.MISSING_EXECUTABLE}
         customIcon={"exclamation-triangle"} />}

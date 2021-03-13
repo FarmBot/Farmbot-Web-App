@@ -106,7 +106,7 @@ interface MoveToPlantProps {
 }
 
 const MoveToPlant = (props: MoveToPlantProps) =>
-  <button className="fb-button gray no-float"
+  <button className={"fb-button gray no-float"}
     style={{ marginTop: "1rem" }}
     title={t("Move to this plant")}
     onClick={() =>
@@ -195,10 +195,10 @@ export function PlantPanel(props: PlantPanelProps) {
       <ListItem name={t("Location")}>
         <EditPlantLocation {...commonProps} plantLocation={{ x, y, z }} />
       </ListItem>
+      <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Size")}>
         <EditPlantRadius {...commonProps} radius={info.radius} />
       </ListItem>
-      <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Status")}>
         {(!inSavedGarden)
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />

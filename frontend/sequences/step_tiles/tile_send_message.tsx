@@ -1,5 +1,5 @@
 import React from "react";
-import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
+import { FBSelect, DropDownItem, Row, Col } from "../../ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage } from "farmbot";
 import { ChannelName, isMessageType, StepParams } from "../interfaces";
@@ -21,7 +21,7 @@ export class TileSendMessage
   state: TileSendMessageState = { message: this.props.currentStep.args.message };
 
   get currentSelection() {
-    return MESSAGE_STATUSES_DDI[this.props.currentStep.args.message_type];
+    return MESSAGE_STATUSES_DDI()[this.props.currentStep.args.message_type];
   }
 
   get channels() {
@@ -95,10 +95,10 @@ export class TileSendMessage
               <FBSelect
                 onChange={this.setMsgType}
                 selectedItem={this.currentSelection}
-                list={MESSAGE_STATUSES} />
+                list={MESSAGE_STATUSES()} />
             </div>
             <div className="channel-fields">
-              {EACH_CHANNEL.map((chan, inx) => {
+              {EACH_CHANNEL().map((chan, inx) => {
                 return <fieldset key={inx}>
                   <label htmlFor={chan.name}>
                     {chan.label}

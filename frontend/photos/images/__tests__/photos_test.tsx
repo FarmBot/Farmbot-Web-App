@@ -1,16 +1,19 @@
-const mockDevice = { takePhoto: jest.fn(() => Promise.resolve({})) };
+const mockDevice = {
+  takePhoto: jest.fn(() => Promise.resolve({})),
+  moveAbsolute: jest.fn(() => Promise.resolve({})),
+};
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { Photos, PhotoFooter } from "../photos";
+import { Photos, PhotoFooter, MoveToLocation } from "../photos";
 import { JobProgress } from "farmbot";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
-import { PhotosProps, PhotoFooterProps } from "../interfaces";
+import { PhotosProps, PhotoFooterProps, MoveToLocationProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
 import { Content, ToolTips, Actions } from "../../../constants";
@@ -20,7 +23,7 @@ import {
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
-describe("<Photos/>", () => {
+describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
     images: [],
     currentImage: undefined,
@@ -236,6 +239,7 @@ describe("<PhotoFooter />", () => {
     timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
     size: { width: 0, height: 0 },
+    botOnline: true,
   });
 
   it("highlights map image", () => {
@@ -251,5 +255,18 @@ describe("<PhotoFooter />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
+  });
+});
+
+describe("<MoveToLocation />", () => {
+  const fakeProps = (): MoveToLocationProps => ({
+    imageLocation: { x: 0, y: 0, z: 0 },
+    botOnline: true,
+  });
+
+  it("moves to location", () => {
+    const wrapper = mount(<MoveToLocation {...fakeProps()} />);
+    clickButton(wrapper, 0, "move farmbot to location");
+    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
   });
 });
