@@ -11,30 +11,30 @@ interface Timeout {
   end: number;
 }
 
-interface Complete {
+export interface PingComplete {
   kind: "complete";
   start: number;
   end: number;
 }
 
-export type Ping = Complete | Pending | Timeout;
+export type Ping = PingComplete | Pending | Timeout;
 export type PingDictionary = Record<string, Ping | undefined>;
 
 export const now = () => (new Date()).getTime();
 
 export const startPing =
-  (s: PingDictionary, id: string, start = now()): PingDictionary => {
-    return { ...s, [id]: { kind: "pending", start } };
+  (s: PingDictionary, id: string): PingDictionary => {
+    return { ...s, [id]: { kind: "pending", start: now() } };
   };
 
 export const failPing =
-  (s: PingDictionary, id: string, end = now()): PingDictionary => {
+  (s: PingDictionary, id: string): PingDictionary => {
     const failure = s[id];
     if (failure && failure.kind != "complete") {
       const nextFailure: Timeout = {
         kind: "timeout",
         start: failure.start,
-        end
+        end: now(),
       };
       return { ...s, [id]: nextFailure };
     }

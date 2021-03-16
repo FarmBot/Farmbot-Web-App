@@ -1,7 +1,7 @@
 import React from "react";
 import { StepButton } from "./step_buttons";
 import { scrollToBottom, urlFriendly } from "../util";
-import { Col, Row } from "../ui/index";
+import { Col, Row } from "../ui";
 import { TaggedSequence } from "farmbot";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
@@ -155,14 +155,6 @@ export function StepButtonCluster(props: StepButtonProps) {
       }}
       color="gray">
       {t("EXECUTE SEQUENCE")}
-    </StepButton>,
-    <StepButton {...commonStepProps}
-      step={{
-        kind: "execute_script",
-        args: { label: "" }
-      }}
-      color="pink">
-      {t("Run Farmware")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
