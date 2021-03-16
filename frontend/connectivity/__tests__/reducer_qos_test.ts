@@ -9,6 +9,7 @@ import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
 import { pingOK, pingNO } from "..";
 import { store } from "../../redux/store";
+import { cloneDeep } from "lodash";
 
 describe("connectivity reducer", () => {
   const newState = () => {
@@ -55,5 +56,16 @@ describe("connectivity reducer", () => {
     if (yep) {
       expect(yep.kind).toEqual("timeout");
     }
+  });
+
+  it("doesn't bring network state down with old pings", () => {
+    const oldState = cloneDeep(DEFAULT_STATE);
+    oldState.pings = {
+      "a": { kind: "pending", start: 50 },
+      "b": { kind: "complete", start: 100, end: 200 },
+    };
+    const action = { type: Actions.PING_NO, payload: { id: "a" } };
+    const state = connectivityReducer(oldState, action);
+    expect(state.uptime["bot.mqtt"]).toEqual(undefined);
   });
 });
