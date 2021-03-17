@@ -9,7 +9,7 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { ReduxAction } from "../redux/interfaces";
-import { connectivityReducer, PingResultPayload } from "../connectivity/reducer";
+import { connectivityReducer, PingResultPayload, recentPingOk } from "../connectivity/reducer";
 import { versionOK } from "../util";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
@@ -164,9 +164,11 @@ export const botReducer = generateReducer<BotState>(initialState())
     backOnline && unstash(s);
     return s;
   })
-  .add<PingResultPayload>(Actions.PING_NO, (s) => {
-    stash(s);
-    s.hardware.informational_settings.sync_status = undefined;
+  .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
+    if (!recentPingOk(s.connectivity.pings, payload.id)) {
+      stash(s);
+      s.hardware.informational_settings.sync_status = undefined;
+    }
     return s;
   });
 

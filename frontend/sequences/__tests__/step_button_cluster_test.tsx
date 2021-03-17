@@ -15,9 +15,10 @@ import { FarmwareName } from "../step_tiles/tile_execute_script";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<StepButtonCluster />", () => {
-  const commands = ["move", "control peripheral", "read sensor",
-    "wait", "send message", "find home", "if statement", "execute sequence",
-    "run farmware", "take photo"];
+  const COMMANDS = ["move", "control peripheral", "read sensor",
+    "control servo", "wait", "send message", "reboot", "shutdown", "e-stop",
+    "find home", "set home", "find axis length", "if statement",
+    "execute sequence", "detect weeds", "take photo", "assertion", "mark as"];
 
   const fakeProps = (): StepButtonProps => ({
     dispatch: jest.fn(),
@@ -31,7 +32,7 @@ describe("<StepButtonCluster />", () => {
 
   it("renders sequence commands", () => {
     const wrapper = mount(<StepButtonCluster {...fakeProps()} />);
-    commands.map(command =>
+    COMMANDS.map(command =>
       expect(wrapper.text().toLowerCase()).toContain(command));
     expect(wrapper.text().toLowerCase()).not.toContain("toggle peripheral");
     expect(wrapper.text().toLowerCase()).not.toContain("pinned");

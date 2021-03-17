@@ -1,10 +1,10 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
+import { ConnectionState, EdgeStatus } from "./interfaces";
 import {
-  ConnectionState,
-  EdgeStatus,
-} from "./interfaces";
-import { startPing, completePing, failPing } from "../devices/connectivity/qos";
+  startPing, completePing, failPing, PingComplete, PingDictionary,
+} from "../devices/connectivity/qos";
+import { betterCompact } from "../util";
 
 export const DEFAULT_STATE: ConnectionState = {
   uptime: {
@@ -31,8 +31,10 @@ export const connectivityReducer =
     })
     .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
       s.pings = failPing(s.pings, payload.id);
-      s.uptime["bot.mqtt"] = { state: "down", at: payload.at };
-
+      /** Only bring down network status if no more recent pings succeeded. */
+      if (!recentPingOk(s.pings, payload.id)) {
+        s.uptime["bot.mqtt"] = { state: "down", at: payload.at };
+      }
       return s;
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
@@ -43,3 +45,14 @@ export const connectivityReducer =
         return s;
       }
     });
+
+/** Check if any more recent pings have succeeded. */
+export const recentPingOk = (pings: PingDictionary, id: string): boolean => {
+  const failedPingStart = pings[id]?.start;
+  const pingValues = betterCompact(Object.values(pings));
+  return !!(pingValues.length > 0 && failedPingStart
+    && pingValues
+      .filter(ping => ping.kind == "complete")
+      .map((ping: PingComplete) => ping.start)
+      .filter(start => start > failedPingStart).length > 0);
+};

@@ -133,6 +133,19 @@ describe("botReducer", () => {
     expect(statusOf(step4)).toBe(step3.statusStash);
   });
 
+  it("doesn't stash sync status", () => {
+    const state = initialState();
+    state.hardware.informational_settings.sync_status = "synced";
+    state.connectivity.pings = {
+      "a": { kind: "pending", start: 50 },
+      "b": { kind: "complete", start: 100, end: 200 },
+    };
+    const action = { type: Actions.PING_NO, payload: { id: "a" } };
+    const nextState = botReducer(state, action);
+    expect(nextState.hardware.informational_settings.sync_status)
+      .toEqual("synced");
+  });
+
   it("handles STASH_STATUS / _RESOURCE_NO", () => {
     const step1 = initialState();
     step1.statusStash = "booting";

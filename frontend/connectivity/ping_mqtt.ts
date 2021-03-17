@@ -13,6 +13,13 @@ import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { now } from "../devices/connectivity/qos";
 
 export const PING_INTERVAL = 2000;
+/**
+ * Time to wait in milliseconds after sending a ping to manually fail it
+ * if bot.ping() doesn't resolve or reject. Setting this value lower than
+ * bot.ping()'s 10 second default promise timeout will shortcut that timeout.
+ * This value will also limit the network quality "worst ping" time.
+ */
+const PING_TIMEOUT = 5500;
 
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
 export const LAST_OUT: keyof FarmBotInternalConfig = "LAST_PING_OUT";
@@ -46,7 +53,7 @@ export function sendOutboundPing(bot: Farmbot) {
     };
 
     dispatchQosStart(id);
-    setTimeout(no, PING_INTERVAL + 150);
+    setTimeout(no, PING_TIMEOUT);
     bot.ping().then(ok, no);
   });
 }

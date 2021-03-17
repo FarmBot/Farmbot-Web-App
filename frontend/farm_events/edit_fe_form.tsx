@@ -212,6 +212,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     }
 
   LocalsList = () => <LocalsList
+    locationDropdownKey={JSON.stringify(this.bodyVariables)}
     bodyVariables={this.bodyVariables}
     variableData={this.variableData}
     sequenceUuid={this.executable.uuid}

@@ -9,6 +9,7 @@ import {
 import {
   fakePings,
 } from "../../../__test_support__/fake_state/pings";
+import { range } from "lodash";
 
 describe("QoS helpers", () => {
   it("calculates latency", () => {
@@ -24,6 +25,20 @@ describe("QoS helpers", () => {
     expect(report.worst).toEqual(312);
     expect(report.average).toEqual(253);
     expect(report.total).toEqual(4);
+  });
+
+  it("logs qos", () => {
+    const pings: PingDictionary = {};
+    range(100).map(i => {
+      pings[i] = { kind: "complete", start: 100, end: 200 };
+    });
+    window.logStore = { log: jest.fn() };
+    calculateLatency(pings);
+    expect(window.logStore.log).toHaveBeenCalledWith(
+      "FBOS Ping QoS Message",
+      { "average": 100, "best": 100, "total": 100, "worst": 100 },
+      "info",
+    );
   });
 
   it("returns 0 when latency can't be calculated", () => {

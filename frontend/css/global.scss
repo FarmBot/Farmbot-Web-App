@@ -1784,6 +1784,13 @@ ul {
       }
     }
   }
+  .documentation-card {
+    .fa-question {
+      cursor: default !important;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
+    }
+  }
 }
 
 .firmware-alerts {

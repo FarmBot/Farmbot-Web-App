@@ -38,6 +38,13 @@ describe("greaterThan() and lessThan()", () => {
     expect(comparison("movement_min_spd_x", 24, params).errorMessage)
       .toEqual(McuErrors.TOO_HIGH);
   });
+
+  it("handles missing values", () => {
+    const params = {};
+    const comparison = greaterThan("movement_min_spd_x");
+    expect(comparison("movement_max_spd_x", 25, params)).toEqual(OK);
+
+  });
 });
 
 describe("mcuParamValidator()", () => {
@@ -67,7 +74,13 @@ describe("mcuParamValidator()", () => {
     expect(no).not.toHaveBeenCalled();
   });
 
-  it("builds a validator for movement_min_spd_x", () => {
-
+  it("handles missing callback", () => {
+    const state = {
+      movement_max_spd_y: 20,
+    };
+    const validate = mcuParamValidator("movement_min_spd_y", 30, state);
+    const ok = jest.fn();
+    validate(ok);
+    expect(ok).not.toHaveBeenCalled();
   });
 });

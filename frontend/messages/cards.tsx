@@ -311,13 +311,15 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
-    <p>
+    <p className={"documentation-card"}>
       {t("Head over to")}
       &nbsp;<a href={docLink()} target="_blank" rel={"noreferrer"}
         title={t("Open documentation in a new tab")}>
         {t("software.farm.bot")}
       </a>
-      &nbsp;{t("to get started")}.
+      &nbsp;{t("to get started or click the")}
+      <i className={"fa fa-question"} />
+      {t("icon in the main navigation bar to open up the documentation in-app")}.
     </p>
     <a className="link-button fb-button green"
       href={docLink()} target="_blank" rel={"noreferrer"}
