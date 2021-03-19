@@ -1,4 +1,5 @@
 .cache
+.parcel-cache
 .env
 .idea
 .vscode
