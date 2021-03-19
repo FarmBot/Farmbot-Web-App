@@ -60,6 +60,7 @@ namespace :api do
       DashboardController::PUBLIC_OUTPUT_DIR,
       "--public-url",
       DashboardController::OUTPUT_URL,
+      cmd == "build" ? "--no-scope-hoist" : "",
     ].join(" ")
     sh [intro, opts].join(" ")
   end
