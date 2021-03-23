@@ -407,6 +407,38 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: "/designer/genesis",
+    getModule,
+    key,
+    getChild: () => import("./help/documentation"),
+    childKey: "GenesisDocsPanel"
+  }),
+  route({
+    children: true,
+    $: "/designer/express",
+    getModule,
+    key,
+    getChild: () => import("./help/documentation"),
+    childKey: "ExpressDocsPanel"
+  }),
+  route({
+    children: true,
+    $: "/designer/business",
+    getModule,
+    key,
+    getChild: () => import("./help/documentation"),
+    childKey: "MetaDocsPanel"
+  }),
+  route({
+    children: true,
+    $: "/designer/education",
+    getModule,
+    key,
+    getChild: () => import("./help/documentation"),
+    childKey: "EducationDocsPanel"
+  }),
+  route({
+    children: true,
     $: "/designer/tours",
     getModule,
     key,
