@@ -2286,6 +2286,15 @@
   button {
     margin-top: 1rem;
     float: none;
+    &:hover {
+      font-size: 1rem !important;
+    }
+  }
+  .bp3-popover-wrapper {
+    display: inline;
+    line-height: 0;
+    vertical-align: bottom;
+    margin-left: 1rem;
   }
 }
 
@@ -2556,7 +2565,7 @@
         background: $light_gray;
       }
       a {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
       }
       &.selected {
         p:first-of-type {
@@ -2566,7 +2575,7 @@
       }
       .fb-button {
         &:hover {
-          font-size: 1.22rem;
+          font-size: 1.15rem;
         }
       }
       .farmbot-origin {
@@ -2619,10 +2628,24 @@
 
 .farmbot-model-selection {
   width: 27rem;
-  height: 7rem;
   padding: 1rem;
   .fb-button {
     margin: 1rem;
+  }
+  p {
+    margin-top: 0.5rem;
+  }
+  .seed-checkbox {
+    .fb-checkbox {
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    p {
+      display: inline;
+      margin-left: 0.5rem;
+      vertical-align: bottom;
+      line-height: 3rem;
+    }
   }
 }
 

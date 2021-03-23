@@ -8,6 +8,7 @@ jest.mock("../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
   initSave: jest.fn(),
+  destroy: jest.fn(),
 }));
 
 jest.mock("../../photos/camera_calibration/actions", () => ({
@@ -25,9 +26,8 @@ jest.mock("../../history", () => ({
   getPathArray: () => [],
 }));
 
-const mockSeedAccount = jest.fn();
 jest.mock("../../messages/actions", () => ({
-  seedAccount: () => mockSeedAccount,
+  seedAccount: jest.fn(x => () => x()),
 }));
 
 import React from "react";
@@ -42,6 +42,7 @@ import {
   CameraCalibrationCheck,
   CameraCheck,
   CameraOffset,
+  CameraReplacement,
   ConfiguratorDocs,
   Connectivity,
   ControlsCheck,
@@ -67,7 +68,7 @@ import {
   fakeFarmwareEnv, fakeFarmwareInstallation, fakeFbosConfig,
   fakeFirmwareConfig, fakeImage, fakeLog, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
-import { edit, initSave } from "../../api/crud";
+import { destroy, edit, initSave } from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { calibrate } from "../../photos/camera_calibration/actions";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
@@ -273,17 +274,48 @@ describe("<FirmwareHardwareSelection />", () => {
   it("seeds account", () => {
     const p = fakeProps();
     const alert = fakeAlert();
+    alert.body.id = 1;
     alert.body.problem_tag = "api.seed_data.missing";
     p.resources = buildResourceIndex([alert]).index;
+    mockState.resources = buildResourceIndex([alert]);
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = shallow(<FirmwareHardwareSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", {
-      label: "", value: "genesis_1.2"
-    });
-    wrapper.find("button").last().simulate("click");
-    expect(mockSeedAccount).toHaveBeenCalledWith({
-      label: "", value: "genesis_1.2",
-    });
+    const wrapper = mount<FirmwareHardwareSelection>(
+      <FirmwareHardwareSelection {...p} />);
+    wrapper.instance().onChange({ label: "", value: "genesis_1.2" });
+    expect(destroy).toHaveBeenCalled();
+  });
+
+  it("doesn't seed account", () => {
+    const p = fakeProps();
+    p.resources = buildResourceIndex([]).index;
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount<FirmwareHardwareSelection>(
+      <FirmwareHardwareSelection {...p} />);
+    wrapper.instance().onChange({ label: "", value: "genesis_1.2" });
+    expect(destroy).not.toHaveBeenCalled();
+    expect(wrapper.text().toLowerCase()).not.toContain("resources");
+  });
+
+  it("renders after account seeding", () => {
+    const p = fakeProps();
+    p.resources = buildResourceIndex([]).index;
+    const wrapper = mount<FirmwareHardwareSelection>(
+      <FirmwareHardwareSelection {...p} />);
+    wrapper.setState({ autoSeed: true });
+    expect(wrapper.text().toLowerCase()).toContain("resources added");
+  });
+
+  it("toggles auto-seed", () => {
+    const p = fakeProps();
+    const alert = fakeAlert();
+    alert.body.id = 1;
+    alert.body.problem_tag = "api.seed_data.missing";
+    p.resources = buildResourceIndex([alert]).index;
+    const wrapper = shallow<FirmwareHardwareSelection>(
+      <FirmwareHardwareSelection {...p} />);
+    expect(wrapper.state().autoSeed).toEqual(true);
+    wrapper.instance().toggleAutoSeed();
+    expect(wrapper.state().autoSeed).toEqual(false);
   });
 });
 
@@ -509,5 +541,12 @@ describe("<SensorsCheck />", () => {
   it("handles missing config", () => {
     const wrapper = mount(<SensorsCheck {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("sensors");
+  });
+});
+
+describe("<CameraReplacement />", () => {
+  it("renders camera replacement text and link", () => {
+    const wrapper = mount(<CameraReplacement />);
+    expect(wrapper.text().toLowerCase()).toContain("replacement");
   });
 });

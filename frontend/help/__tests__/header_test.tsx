@@ -24,6 +24,10 @@ describe("<HelpHeader />", () => {
     ["software documentation", "/app/designer/"],
     ["software documentation", "/app/designer/help"],
     ["developer documentation", "/app/designer/developer"],
+    ["genesis documentation", "/app/designer/genesis"],
+    ["express documentation", "/app/designer/express"],
+    ["business documentation", "/app/designer/business"],
+    ["education documentation", "/app/designer/education"],
     ["take a tour", "/app/designer/tours"],
     ["get help", "/app/designer/support"],
   ])("renders %s panel", (title, path) => {

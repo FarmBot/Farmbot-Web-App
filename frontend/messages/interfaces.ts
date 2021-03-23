@@ -69,6 +69,8 @@ export interface FirmwareMissingProps extends CommonAlertCardProps {
   apiFirmwareValue: string | undefined;
 }
 
+export type SetupIncompleteProps = FirmwareMissingProps;
+
 export interface SeedDataMissingProps extends CommonAlertCardProps {
   dispatch: Function;
 }

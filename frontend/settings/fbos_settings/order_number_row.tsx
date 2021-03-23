@@ -1,24 +1,13 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row, Col, BlurableInput } from "../../ui";
 import { DeviceSetting } from "../../constants";
 import { OrderNumberRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
-import { edit, save } from "../../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
+import { setOrderNumber } from "../../wizard/actions";
 
 export class OrderNumberRow extends React.Component<OrderNumberRowProps> {
-  OrderNumberInput = () =>
-    <input name="fb_order_number"
-      className={getModifiedClassNameSpecifyDefault(
-        this.props.device.body.fb_order_number, undefined,
-      )}
-      onChange={e => this.props.dispatch(edit(this.props.device, {
-        fb_order_number: e.currentTarget.value
-      }))}
-      onBlur={() => this.props.dispatch(save(this.props.device.uuid))}
-      value={this.props.device.body.fb_order_number} />;
-
   render() {
     return <Highlight settingName={DeviceSetting.orderNumber}>
       <Row>
@@ -28,7 +17,13 @@ export class OrderNumberRow extends React.Component<OrderNumberRowProps> {
           </label>
         </Col>
         <Col xs={7}>
-          <this.OrderNumberInput />
+          <BlurableInput value={this.props.device.body.fb_order_number || ""}
+            allowEmpty={true}
+            className={getModifiedClassNameSpecifyDefault(
+              this.props.device.body.fb_order_number, undefined,
+            )}
+            onCommit={e => this.props.dispatch(setOrderNumber(
+              this.props.device, e.currentTarget.value))} />
         </Col>
       </Row>
     </Highlight>;

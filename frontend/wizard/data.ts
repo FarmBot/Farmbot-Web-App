@@ -27,6 +27,7 @@ import {
   SensorsCheck,
   CameraOffset,
   FindHome,
+  CameraReplacement,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -594,11 +595,13 @@ export const WIZARD_STEPS = (
           slug: "nothing",
           description: t("There is no image"),
           tips: t("Try again while observing the log messages."),
+          component: CameraReplacement,
         },
         {
           slug: "error",
           description: t("There is a 'camera not detected' error log"),
           tips: t(SetupWizardContent.CHECK_CAMERA_CABLE),
+          component: CameraReplacement,
         },
         {
           slug: "low_voltage",
@@ -610,6 +613,7 @@ export const WIZARD_STEPS = (
           slug: "black",
           description: t("The image is black"),
           tips: t(SetupWizardContent.BLACK_IMAGE),
+          component: CameraReplacement,
           detectedProblems: [{
             status: lowVoltageProblemStatus,
             description: t(SetupWizardContent.CAMERA_VOLTAGE_LOW),
@@ -670,9 +674,10 @@ export const WIZARD_STEPS = (
       question: t("Did calibration complete without error logs?"),
       outcomes: [
         {
-          slug: "cameraError",
+          slug: "error",
           description: t("There is a camera error log"),
-          tips: t("Make sure the camera is working properly and try again."),
+          tips: t("Return to the"),
+          goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
         },
         {
           slug: "detectionError",
@@ -682,7 +687,8 @@ export const WIZARD_STEPS = (
         {
           slug: "motorError",
           description: t("There is an axis error log"),
-          tips: t("Make sure the motors are working properly."),
+          tips: t("Make sure the motors are working properly. Return to the"),
+          goToStep: { step: WizardStepSlug.zMotor, text: t("z-axis motor step") },
         },
       ],
     },
@@ -691,7 +697,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.cameraOffsetAdjustment,
       title: t("Offset Adjustment"),
       prerequisites: [botOnlineReq],
-      content: t("Check photo alignment in the map against a known location."),
+      content: t(SetupWizardContent.CAMERA_ALIGNMENT),
       component: CameraCheck,
       question: t("Is the location in the image aligned with the map location?"),
       outcomes: [
@@ -700,6 +706,13 @@ export const WIZARD_STEPS = (
           description: t("It does not line up"),
           tips: t("Adjust one or both camera offset values and check again."),
           component: CameraOffset,
+        },
+        {
+          slug: "error",
+          description: t("There is a 'camera not detected' error log"),
+          tips: t("Return to the"),
+          goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
+          hidden: true,
         },
       ],
     },
@@ -713,10 +726,17 @@ export const WIZARD_STEPS = (
       question: t("Does the image include red and green highlighted regions?"),
       outcomes: [
         {
-          slug: "error",
+          slug: "detectionError",
           description: t("There is a surface error message"),
           tips: t("Move FarmBot to a different location and try again."),
           component: ControlsCheck(),
+        },
+        {
+          slug: "error",
+          description: t("There is a 'camera not detected' error log"),
+          tips: t("Return to the"),
+          goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
+          hidden: true,
         },
       ],
     },

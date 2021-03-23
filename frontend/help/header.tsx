@@ -23,6 +23,22 @@ const PAGES = (): Pages => ({
     title: t("Developer Documentation"),
     icon: Icon.documentation,
   },
+  genesis: {
+    title: t("Genesis Documentation"),
+    icon: Icon.documentation,
+  },
+  express: {
+    title: t("Express Documentation"),
+    icon: Icon.documentation,
+  },
+  business: {
+    title: t("Business Documentation"),
+    icon: Icon.documentation,
+  },
+  education: {
+    title: t("Education Documentation"),
+    icon: Icon.documentation,
+  },
   tours: {
     title: t("Take a Tour"),
     fa_icon: "share",

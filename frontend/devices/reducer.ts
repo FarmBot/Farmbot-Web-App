@@ -9,7 +9,9 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { ReduxAction } from "../redux/interfaces";
-import { connectivityReducer, PingResultPayload, recentPingOk } from "../connectivity/reducer";
+import {
+  connectivityReducer, PingResultPayload, recentPingOk,
+} from "../connectivity/reducer";
 import { versionOK } from "../util";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {

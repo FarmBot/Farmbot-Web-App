@@ -10,7 +10,7 @@ import { FarmBotSettings } from "./fbos_settings/farmbot_os_settings";
 import { Firmware } from "./firmware/firmware";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { PinBindings } from "./pin_bindings/pin_bindings";
-import { isFwHardwareValue } from "./firmware/firmware_hardware_support";
+import { validFirmwareHardware } from "./firmware/firmware_hardware_support";
 import {
   AxisSettings, Motors, EncodersOrStallDetection, LimitSwitches,
   ErrorHandling, PinGuard, ParameterManagement,
@@ -52,7 +52,7 @@ export class RawDesignerSettings
     const showAdvanced = !!getConfigValue(BooleanSetting.show_advanced_settings);
     const commonProps = { dispatch, controlPanelState, showAdvanced };
     const { value } = this.props.sourceFbosConfig("firmware_hardware");
-    const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
+    const firmwareHardware = validFirmwareHardware(value);
     const botOnline = isBotOnlineFromState(this.props.bot);
     const { busy } = this.props.bot.hardware.informational_settings;
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>

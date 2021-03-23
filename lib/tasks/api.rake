@@ -53,13 +53,14 @@ namespace :api do
   def parcel(cmd, opts = " ")
     intro = [
       "NODE_ENV=#{Rails.env}",
-      "node_modules/parcel-bundler/bin/cli.js",
+      "node_modules/.bin/parcel",
       cmd,
       DashboardController::PARCEL_ASSET_LIST,
-      "--out-dir",
+      "--dist-dir",
       DashboardController::PUBLIC_OUTPUT_DIR,
       "--public-url",
       DashboardController::OUTPUT_URL,
+      cmd == "build" ? "--no-scope-hoist" : "",
     ].join(" ")
     sh [intro, opts].join(" ")
   end
@@ -71,6 +72,7 @@ namespace :api do
       DashboardController::CACHE_DIR,
       DashboardController::PUBLIC_OUTPUT_DIR,
       "public/assets/monaco",
+      ".parcel-cache"
     ].join(" ") unless ENV["NO_CLEAN"]
   end
 

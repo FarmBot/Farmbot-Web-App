@@ -5,6 +5,10 @@ import {
   DocumentationPanelProps,
   SoftwareDocsPanel,
   DeveloperDocsPanel,
+  EducationDocsPanel,
+  ExpressDocsPanel,
+  GenesisDocsPanel,
+  MetaDocsPanel,
 } from "../documentation";
 
 describe("<DocumentationPanel />", () => {
@@ -40,5 +44,41 @@ describe("<DeveloperDocsPanel />", () => {
     const wrapper = mount(<DeveloperDocsPanel />);
     expect(wrapper.find("iframe").props().src)
       .toEqual("https://developer.farm.bot/docs");
+  });
+});
+
+describe("<GenesisDocsPanel />", () => {
+  it("renders genesis docs", () => {
+    location.search = "";
+    const wrapper = mount(<GenesisDocsPanel />);
+    expect(wrapper.find("iframe").props().src)
+      .toEqual("https://genesis.farm.bot/docs");
+  });
+});
+
+describe("<ExpressDocsPanel />", () => {
+  it("renders express docs", () => {
+    location.search = "";
+    const wrapper = mount(<ExpressDocsPanel />);
+    expect(wrapper.find("iframe").props().src)
+      .toEqual("https://express.farm.bot/docs");
+  });
+});
+
+describe("<MetaDocsPanel />", () => {
+  it("renders meta docs", () => {
+    location.search = "";
+    const wrapper = mount(<MetaDocsPanel />);
+    expect(wrapper.find("iframe").props().src)
+      .toEqual("https://meta.farm.bot/docs");
+  });
+});
+
+describe("<EducationDocsPanel />", () => {
+  it("renders education docs", () => {
+    location.search = "";
+    const wrapper = mount(<EducationDocsPanel />);
+    expect(wrapper.find("iframe").props().src)
+      .toEqual("https://oer.farm.bot/docs");
   });
 });
