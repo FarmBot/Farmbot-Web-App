@@ -7,10 +7,13 @@ import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { push } from "../history";
 import { t } from "../i18next_wrapper";
+import { store } from "../redux/store";
+import { maybeGetDevice } from "../resources/selectors";
 import { DevSettings } from "../settings/dev/dev_support";
 import { success } from "../toast/toast";
-import { Col, Row } from "../ui";
+import { Col, Help, Row } from "../ui";
 import { WizardStepSlug } from "../wizard/data";
 import { HelpHeader } from "./header";
 
@@ -98,6 +101,8 @@ export interface FeedbackProps {
 export const Feedback = (props: FeedbackProps) => {
   const [message, setMessage] = React.useState("");
   const [sent, setSent] = React.useState(false);
+  const orderNumber =
+    maybeGetDevice(store.getState().resources.index)?.body.fb_order_number;
   return <div className={"feedback"}>
     <textarea value={message} onChange={e => {
       setSent(false);
@@ -105,6 +110,7 @@ export const Feedback = (props: FeedbackProps) => {
     }} />
     <p>{t(Content.FEEDBACK_NOTICE)}</p>
     <button className={`fb-button ${sent ? "gray" : "green"}`}
+      disabled={!orderNumber}
       onClick={() => sent
         ? success(t("Feedback already sent."))
         : axios.post(API.current.feedbackPath, { message, slug: props.stepSlug })
@@ -114,5 +120,11 @@ export const Feedback = (props: FeedbackProps) => {
           })}>
       {sent ? t("submitted") : t("submit")}
     </button>
+    {!orderNumber && <Help text={Content.MUST_REGISTER} links={[
+      <a key={0}
+        onClick={() => push("/app/designer/settings?highlight=order_number")}>
+        &nbsp;{t("Register your ORDER NUMBER")}
+        <i className={"fa fa-external-link"} />
+      </a>]} />}
   </div>;
 };

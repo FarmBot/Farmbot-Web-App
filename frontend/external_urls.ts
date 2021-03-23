@@ -70,5 +70,7 @@ export namespace ExternalUrl {
   export namespace Store {
     export const home = FARMBOT;
     export const cameraCalibrationCard = `${PRODUCTS}/camera-calibration-card`;
+    export const cameraReplacement =
+      `${PRODUCTS}/genesis-v1-5-express-v1-0-camera-free-replacement`;
   }
 }

@@ -11,10 +11,13 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   return !!values.includes(x as FirmwareHardware);
 };
 
+export const validFirmwareHardware = (value: unknown) =>
+  isFwHardwareValue(value) ? value : undefined;
+
 export const getFwHardwareValue =
   (fbosConfig: TaggedFbosConfig | undefined) => {
     const value = fbosConfig?.body.firmware_hardware;
-    return isFwHardwareValue(value) ? value : undefined;
+    return validFirmwareHardware(value);
   };
 
 const NO_BUTTONS = ["arduino", "farmduino", "none"];

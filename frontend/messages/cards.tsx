@@ -7,6 +7,7 @@ import {
   DismissAlertProps,
   Bulletin,
   BulletinAlertComponentState,
+  SetupIncompleteProps,
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
@@ -19,12 +20,17 @@ import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
 import {
   isFwHardwareValue, FIRMWARE_CHOICES_DDI, getFirmwareChoices,
+  validFirmwareHardware,
 } from "../settings/firmware/firmware_hardware_support";
 import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { Session } from "../session";
 import { ExternalUrl } from "../external_urls";
+import { setupProgressString } from "../wizard/data";
+import { store } from "../redux/store";
+import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
+import { push } from "../history";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -36,6 +42,9 @@ export const AlertCard = (props: AlertCardProps) => {
     case "api.seed_data.missing":
       return <SeedDataMissing {...commonProps}
         dispatch={dispatch} />;
+    case "api.setup.not_completed":
+      return <SetupIncomplete {...commonProps}
+        apiFirmwareValue={props.apiFirmwareValue} />;
     case "api.tour.not_taken":
       return <TourNotTaken {...commonProps}
         dispatch={dispatch} />;
@@ -357,3 +366,28 @@ const DemoAccount = (props: CommonAlertCardProps) =>
       {t("Make a real account")}
     </a>
   </AlertCardTemplate>;
+
+const SetupIncomplete = (props: SetupIncompleteProps) => {
+  const percentComplete = setupProgressString(
+    selectAllWizardStepResults(store.getState().resources.index),
+    validFirmwareHardware(props.apiFirmwareValue));
+  const buttonText = percentComplete != "0% complete"
+    ? t("Continue setup")
+    : t("Get Started");
+  return <AlertCardTemplate
+    alert={props.alert}
+    className={"setup-alert"}
+    title={t("Finish setup")}
+    message={t(Content.SETUP_INCOMPLETE, { percentComplete })}
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    noDismiss={true}
+    findApiAlertById={props.findApiAlertById}
+    iconName={"info-circle"}>
+    <a className="link-button fb-button green"
+      onClick={() => push("/app/designer/setup")}
+      title={buttonText}>
+      {buttonText}
+    </a>
+  </AlertCardTemplate>;
+};

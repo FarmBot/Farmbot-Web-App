@@ -18,7 +18,7 @@ import {
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup, showControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { validBotLocationData, validFwConfig, validFbosConfig } from "./util";
+import { validBotLocationData, validFwConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
 import {
   getWebAppConfigValue, GetWebAppConfigValue,
@@ -35,7 +35,7 @@ import { PingDictionary } from "./devices/connectivity/qos";
 import { getEnv } from "./farmware/state_to_props";
 import { filterAlerts } from "./messages/alerts";
 import {
-  isFwHardwareValue,
+  getFwHardwareValue,
 } from "./settings/firmware/firmware_hardware_support";
 
 /** For the logger module */
@@ -67,9 +67,6 @@ export interface AppProps {
 
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
-  const fwHardware = fbosConfig?.firmware_hardware;
-  const env = getEnv(props.resources.index);
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
@@ -91,9 +88,9 @@ export function mapStateToProps(props: Everything): AppProps {
     resources: props.resources.index,
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
     alerts: getAllAlerts(props.resources),
-    apiFirmwareValue: isFwHardwareValue(fwHardware) ? fwHardware : undefined,
+    apiFirmwareValue: getFwHardwareValue(getFbosConfig(props.resources.index)),
     pings: props.bot.connectivity.pings,
-    env,
+    env: getEnv(props.resources.index),
     authAud: props.auth?.token.unencoded.aud,
     wizardStepResults: selectAllWizardStepResults(props.resources.index),
   };

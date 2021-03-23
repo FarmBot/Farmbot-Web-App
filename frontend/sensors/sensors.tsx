@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
@@ -9,11 +9,9 @@ import { BotState } from "../devices/interfaces";
 import { TaggedSensor, FirmwareHardware, TaggedSensorReading } from "farmbot";
 import { SensorState } from "./interfaces";
 import { Everything, TimeSettings } from "../interfaces";
-import { validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
-import { sourceFbosConfigValue } from "../settings/source_config_value";
 import {
-  isFwHardwareValue,
+  getFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import {
   selectAllSensors, selectAllSensorReadings, maybeGetTimeSettings,
@@ -32,18 +30,13 @@ export interface DesignerSensorsProps {
 }
 
 export const mapStateToProps = (props: Everything): DesignerSensorsProps => {
-  const { configuration } = props.bot.hardware;
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
-  const sourceFbosConfig = sourceFbosConfigValue(fbosConfig, configuration);
-  const { value } = sourceFbosConfig("firmware_hardware");
-  const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
   return {
     dispatch: props.dispatch,
     bot: props.bot,
     sensors: uniq(selectAllSensors(props.resources.index)),
     sensorReadings: selectAllSensorReadings(props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
-    firmwareHardware,
+    firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
   };
 };
 

@@ -19,6 +19,15 @@ jest.mock("../actions", () => ({
 
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
+jest.mock("../../history", () => ({ push: jest.fn() }));
+
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({
+  store: { getState: () => mockState, dispatch: jest.fn() },
+}));
+
+
 import React from "react";
 import { mount } from "enzyme";
 import { AlertCard, changeFirmwareHardware } from "../cards";
@@ -28,6 +37,9 @@ import { FBSelect } from "../../ui";
 import { destroy } from "../../api/crud";
 import { updateConfig } from "../../devices/actions";
 import { Session } from "../../session";
+import { push } from "../../history";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
@@ -86,6 +98,26 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("FarmBot");
     wrapper.find(FBSelect).simulate("change");
+  });
+
+  it("renders setup card", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "api.setup.not_completed";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("wizard");
+    wrapper.find("a").simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/setup");
+    expect(wrapper.text().toLowerCase()).toContain("get started");
+  });
+
+  it("renders setup card: partially complete", () => {
+    const stepResult = fakeWizardStepResult();
+    stepResult.body.answer = true;
+    mockState.resources = buildResourceIndex([stepResult]);
+    const p = fakeProps();
+    p.alert.problem_tag = "api.setup.not_completed";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("continue setup");
   });
 
   it("renders tour card", () => {

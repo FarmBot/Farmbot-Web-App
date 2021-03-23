@@ -688,6 +688,11 @@ export namespace Content {
     trim(`If you want to play around and keep your data, feel free to make a
     real account at`);
 
+  export const SETUP_INCOMPLETE =
+    trim(`Finish setting up your account and FarmBot using our setup wizard.
+    To open the setup wizard, click the **Setup: {{ percentComplete }}**
+    button in the main navigation bar.`);
+
   // Support
   export const PRIORITY_SUPPORT =
     trim(`Get in touch with our support staff. Only available to customers
@@ -704,6 +709,10 @@ export namespace Content {
   export const FEEDBACK_NOTICE =
     trim(`Feedback submitted through this form will be linked to your user
     account and email so that we may follow up when necessary.`);
+
+  export const MUST_REGISTER =
+    trim(`You must register your original FarmBot order number before
+    contacting support.`);
 
   // App Settings
   export const INTERNATIONALIZE_WEB_APP =
@@ -1226,6 +1235,11 @@ export namespace SetupWizardContent {
     while answering no will display a list of results that can be selected for
     specific troubleshooting tips.`);
 
+  export const SEED_DATA =
+    trim(`Once you make a selection, we'll automatically add some
+    tools, sensors, peripherals, sequences, and more to get you up
+    and running faster.`);
+
   export const OFFLINE =
     trim(`Unable to connect to FarmBot. Please reconnect FarmBot to continue.`);
 
@@ -1287,9 +1301,19 @@ export namespace SetupWizardContent {
     trim(`Ensure that the camera lens is not covered and there is adequate
     lighting. Try unplugging the camera and plugging it back in.`);
 
+  export const CAMERA_REPLACEMENT =
+    trim(`If the problem persists after performing the recommendations
+    above, you may have a defective camera. You can request a free
+    replacement`);
+
   export const RED_DOTS =
     trim(`Try an alternate calibration method. Two red objects spaced 100mm
     apart can be used in place of the card.`);
+
+  export const CAMERA_ALIGNMENT =
+    trim(`Find a detail in the image where the coordinates are known
+    (for example, a spot watered by FarmBot), and compare the known
+    coordinates against the location for the detail shown in the map.`);
 
   export const CHECK_TOOL_CONNECTIONS =
     trim(`Check the UTM to tool electrical connections. Ensure pin jumpers

@@ -26,3 +26,15 @@ export const SoftwareDocsPanel = () =>
 
 export const DeveloperDocsPanel = () =>
   <DocumentationPanel url={ExternalUrl.developerDocs} />;
+
+export const GenesisDocsPanel = () =>
+  <DocumentationPanel url={ExternalUrl.genesisDocs} />;
+
+export const ExpressDocsPanel = () =>
+  <DocumentationPanel url={ExternalUrl.expressDocs} />;
+
+export const MetaDocsPanel = () =>
+  <DocumentationPanel url={ExternalUrl.metaDocs} />;
+
+export const EducationDocsPanel = () =>
+  <DocumentationPanel url={ExternalUrl.eduDocs} />;

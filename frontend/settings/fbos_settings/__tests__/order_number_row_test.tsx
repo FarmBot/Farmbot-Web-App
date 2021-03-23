@@ -4,33 +4,29 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import { OrderNumberRow } from "../order_number_row";
 import { OrderNumberRowProps } from "../interfaces";
 import { edit, save } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<OrderNumberRow />", () => {
   const fakeProps = (): OrderNumberRowProps => ({
     device: fakeDevice(),
-    dispatch: jest.fn(),
+    dispatch: mockDispatch(),
   });
 
-  it("changes order number", () => {
+  it("sets order number", () => {
     const p = fakeProps();
     const newOrderNumber = "FB1234";
-    const osSettings = mount<OrderNumberRow>(<OrderNumberRow {...p} />);
-    shallow(osSettings.instance().OrderNumberInput())
-      .simulate("change", { currentTarget: { value: newOrderNumber } });
+    const osSettings = shallow(<OrderNumberRow {...p} />);
+    osSettings.find("BlurableInput").simulate("commit", {
+      currentTarget: { value: newOrderNumber }
+    });
     expect(edit).toHaveBeenCalledWith(p.device, {
       fb_order_number: newOrderNumber
     });
-  });
-
-  it("saves order number", () => {
-    const p = fakeProps();
-    const osSettings = mount<OrderNumberRow>(<OrderNumberRow {...p} />);
-    shallow(osSettings.instance().OrderNumberInput()).simulate("blur");
     expect(save).toHaveBeenCalledWith(p.device.uuid);
   });
 });
