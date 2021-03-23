@@ -8,14 +8,14 @@ import { restartFirmware } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { BoardType } from "./board_type";
-import { isFwHardwareValue } from "./firmware_hardware_support";
+import { validFirmwareHardware } from "./firmware_hardware_support";
 
 export function Firmware(props: FirmwareProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
   const { firmware } = props.bot.controlPanelState;
 
   const { value } = props.sourceFbosConfig("firmware_hardware");
-  const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
+  const firmwareHardware = validFirmwareHardware(value);
   return <Highlight className={"section"}
     settingName={DeviceSetting.firmwareSection}>
     <Header

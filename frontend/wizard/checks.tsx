@@ -8,6 +8,7 @@ import {
 } from "../farmware/state_to_props";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import {
+  findResourceById,
   getDeviceAccountSettings, selectAllAlerts, selectAllFarmwareEnvs,
   selectAllImages, selectAllLogs, selectAllPeripherals, selectAllSensors,
 } from "../resources/selectors";
@@ -22,12 +23,14 @@ import {
 } from "../settings/fbos_settings/fbos_details";
 import { ExternalUrl } from "../external_urls";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
-import { validFbosConfig, validFwConfig } from "../util";
+import { validFwConfig } from "../util";
 import {
-  isExpress, isFwHardwareValue,
+  getFwHardwareValue, isExpress,
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
-import { Col, docLinkClick, FBSelect, Row, ToggleButton } from "../ui";
+import {
+  Checkbox, Col, docLinkClick, DropDownItem, FBSelect, Row, ToggleButton,
+} from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
 } from "../messages/cards";
@@ -61,13 +64,14 @@ import { Sensors } from "../sensors";
 import {
   NumberBoxConfig, NumberBoxConfigProps,
 } from "../photos/camera_calibration/config";
-import { ToolTips } from "../constants";
+import { SetupWizardContent, ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
 import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
 import { LockableButton } from "../settings/hardware_settings/lockable_button";
 import {
   disabledAxisMap,
 } from "../settings/hardware_settings/axis_tracking_status";
+import { destroy } from "../api/crud";
 
 const recentErrorLog = (
   logs: TaggedLog[],
@@ -104,7 +108,9 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
       setError(false);
     }}>
     <props.component {...props} />
-    <p>{t("Images may take up to 30 seconds to appear.")}</p>
+    <p>{props.longDuration
+      ? t("Images may take up to 3 minutes to appear.")
+      : t("Images may take up to 30 seconds to appear.")}</p>
     <img src={imageUrl || PLACEHOLDER_FARMBOT} />
   </div>;
 };
@@ -172,11 +178,13 @@ const MeasureSoilHeight = (props: CameraCheckBaseProps) => {
       hideAdvanced={true}
       hideResets={true}
       dispatch={props.dispatch} />
-    : <p>{t("Missing dependency")}</p>;
+    : <button className={"fb-button"} disabled={true}>
+      {t("Missing dependency")}
+    </button>;
 };
 
 export const SoilHeightMeasurementCheck = (props: WizardStepComponentProps) =>
-  <CameraCheckBase {...props} component={MeasureSoilHeight} />;
+  <CameraCheckBase {...props} component={MeasureSoilHeight} longDuration={true} />;
 
 export const lowVoltageProblemStatus = () => {
   const { throttled } = store.getState().bot.hardware.informational_settings;
@@ -193,54 +201,86 @@ export const ControlsCheck = (axis?: Xyz) => (props: WizardOutcomeComponentProps
   </div>;
 
 export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
-  const value = fbosConfig?.firmware_hardware;
-  const fwHardware = isFwHardwareValue(value) ? value : undefined;
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
 
-  return <a href={isExpress(fwHardware)
+  return <a href={isExpress(firmwareHardware)
     ? ExternalUrl.expressAssembly
     : ExternalUrl.genesisAssembly} target={"_blank"} rel={"noreferrer"}>
     {t("Assembly documentation")}
   </a>;
 };
 
-export const FirmwareHardwareSelection = (props: WizardStepComponentProps) => {
-  const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
-    "genesis_1.2": "arduino",
-    "genesis_1.3": "farmduino",
-    "genesis_1.4": "farmduino_k14",
-    "genesis_1.5": "farmduino_k15",
-    "genesis_xl_1.4": "farmduino_k14",
-    "genesis_xl_1.5": "farmduino_k15",
-    "express_1.0": "express_k10",
-    "express_xl_1.0": "express_k10",
-    "none": "none",
+const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
+  "genesis_1.2": "arduino",
+  "genesis_1.3": "farmduino",
+  "genesis_1.4": "farmduino_k14",
+  "genesis_1.5": "farmduino_k15",
+  "genesis_xl_1.4": "farmduino_k14",
+  "genesis_xl_1.5": "farmduino_k15",
+  "express_1.0": "express_k10",
+  "express_xl_1.0": "express_k10",
+  "none": "none",
+};
+
+interface FirmwareHardwareSelectionState {
+  selection: string;
+  autoSeed: boolean;
+}
+
+export class FirmwareHardwareSelection
+  extends React.Component<WizardStepComponentProps,
+  FirmwareHardwareSelectionState> {
+  state: FirmwareHardwareSelectionState = {
+    selection: "",
+    autoSeed: this.seedAlerts.length > 0,
   };
 
-  const [selection, setSelection] = React.useState("");
-  const alerts = selectAllAlerts(props.resources);
-  const notSeeded = alerts
-    .filter(alert => alert.body.problem_tag == "api.seed_data.missing")
-    .length > 0;
-  return <div className={"farmbot-model-selection"}>
-    <FBSelect
-      key={selection}
-      list={SEED_DATA_OPTIONS()}
-      selectedItem={SEED_DATA_OPTIONS_DDI[selection]}
-      onChange={ddi => {
-        setSelection("" + ddi.value);
-        changeFirmwareHardware(props.dispatch)({
-          label: "",
-          value: FW_HARDWARE_TO_SEED_DATA_OPTION["" + ddi.value]
-        });
-      }} />
-    {notSeeded && selection &&
-      <button className={"fb-button green"}
-        onClick={() => seedAccount()({ label: "", value: selection })}>
-        {t("Add pre-made resources to account")}
-      </button>}
-  </div>;
-};
+  get seedAlerts() {
+    return selectAllAlerts(this.props.resources)
+      .filter(alert => alert.body.problem_tag == "api.seed_data.missing");
+  }
+
+  onChange = (ddi: DropDownItem) => {
+    const { dispatch, resources } = this.props;
+
+    this.setState({ selection: "" + ddi.value });
+    changeFirmwareHardware(dispatch)({
+      label: "",
+      value: FW_HARDWARE_TO_SEED_DATA_OPTION["" + ddi.value]
+    });
+
+    const seedAlertId = this.seedAlerts[0]?.body.id;
+    const dismiss = () => seedAlertId && dispatch(destroy(
+      findResourceById(resources, "Alert", seedAlertId)));
+    this.state.autoSeed && seedAccount(dismiss)({ label: "", value: ddi.value });
+  }
+
+  toggleAutoSeed = () => this.setState({ autoSeed: !this.state.autoSeed })
+
+  render() {
+    const { selection, autoSeed } = this.state;
+    const notSeeded = this.seedAlerts.length > 0;
+    return <div className={"farmbot-model-selection"}>
+      <FBSelect
+        key={selection}
+        list={SEED_DATA_OPTIONS()}
+        selectedItem={SEED_DATA_OPTIONS_DDI[selection]}
+        onChange={this.onChange} />
+      {notSeeded &&
+        <div className={"seed-checkbox"}>
+          <Checkbox
+            onChange={this.toggleAutoSeed}
+            checked={autoSeed}
+            title={t("Add pre-made resources upon selection")} />
+          <p>{t("Add pre-made resources upon selection")}</p>
+        </div>}
+      {autoSeed && notSeeded &&
+        <p>{t(SetupWizardContent.SEED_DATA)}</p>}
+      {autoSeed && !notSeeded &&
+        <p>{t("Resources added!")}</p>}
+    </div>;
+  }
+}
 
 export const ConfiguratorDocs = () => {
   return <a onClick={docLinkClick("farmbot-os")}>
@@ -249,12 +289,10 @@ export const ConfiguratorDocs = () => {
 };
 
 export const Connectivity = (props: WizardStepComponentProps) => {
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
-  const value = fbosConfig?.firmware_hardware;
   const data = connectivityData({
     bot: props.bot,
     device: getDeviceAccountSettings(props.resources),
-    apiFirmwareValue: isFwHardwareValue(value) ? value : undefined,
+    apiFirmwareValue: getFwHardwareValue(getFbosConfig(props.resources)),
   });
   return <div className={"connectivity"}>
     <ConnectivityDiagram rowData={data.rowData} />
@@ -339,13 +377,11 @@ export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
     getConfigValue={props.getConfigValue} />;
 
 export const PeripheralsCheck = (props: WizardStepComponentProps) => {
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
-  const value = fbosConfig?.firmware_hardware;
-  const fwHardware = isFwHardwareValue(value) ? value : undefined;
   const peripherals = uniq(selectAllPeripherals(props.resources));
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   return <div className={"peripherals-check"}>
     <Peripherals
-      firmwareHardware={fwHardware}
+      firmwareHardware={firmwareHardware}
       bot={props.bot}
       peripherals={peripherals}
       dispatch={props.dispatch} />
@@ -370,15 +406,13 @@ const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) 
     const sourceFwConfig = sourceFwConfigValue(
       validFwConfig(getFirmwareConfig(props.resources)),
       props.bot.hardware.mcu_params);
-    const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
-    const value = fbosConfig?.firmware_hardware;
-    const fwHardware = isFwHardwareValue(value) ? value : undefined;
+    const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
     return <fieldset>
       <label>{t(setting.label)}</label>
       <McuInputBox
         dispatch={props.dispatch}
         sourceFwConfig={sourceFwConfig}
-        firmwareHardware={fwHardware}
+        firmwareHardware={firmwareHardware}
         setting={setting.key} />
     </fieldset>;
   };
@@ -427,17 +461,27 @@ export const ToolCheck = (props: WizardStepComponentProps) => {
 };
 
 export const SensorsCheck = (props: WizardStepComponentProps) => {
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources));
-  const value = fbosConfig?.firmware_hardware;
-  const fwHardware = isFwHardwareValue(value) ? value : undefined;
   const sensors = uniq(selectAllSensors(props.resources));
   const botOnline = isBotOnlineFromState(props.bot);
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   return <div className={"sensors-check"}>
     <Sensors
-      firmwareHardware={fwHardware}
+      firmwareHardware={firmwareHardware}
       bot={props.bot}
       sensors={sensors}
       disabled={!botOnline}
       dispatch={props.dispatch} />
   </div>;
 };
+
+export const CameraReplacement = () =>
+  <div className={"camera-replacement"}>
+    <p></p>
+    <p>
+      {t(SetupWizardContent.CAMERA_REPLACEMENT)}
+      <a href={ExternalUrl.Store.cameraReplacement}
+        target="_blank" rel={"noreferrer"}>
+        {t("here")}.
+      </a>
+    </p>
+  </div>;
