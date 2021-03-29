@@ -25,7 +25,7 @@ import { svgMount } from "../../__test_support__/svg_mount";
 describe("<CustomToolGraphicsInput />", () => {
   const fakeProps = (): CustomToolGraphicsInputProps => ({
     toolName: "tool",
-    dispatch: Function,
+    dispatch: jest.fn(),
     saveFarmwareEnv: jest.fn(),
     env: {},
   });

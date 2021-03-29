@@ -50,7 +50,7 @@ export const LHSOptions = (
     ...(showPins ? pinDropdowns(n => `pin${n}`) : []),
   ];
 
-export const operatorOptions: DropDownItem[] = [
+export const operatorOptions = (): DropDownItem[] => [
   { value: "<", label: t("is less than") },
   { value: ">", label: t("is greater than") },
   { value: "is", label: t("is equal to") },

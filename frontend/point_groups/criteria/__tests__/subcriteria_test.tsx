@@ -13,7 +13,7 @@ import { CheckboxList, SubCriteriaSection } from "../subcriteria";
 
 describe("<SubCriteriaSection />", () => {
   const fakeProps = (): SubCriteriaSectionProps => ({
-    dispatch: Function,
+    dispatch: jest.fn(),
     group: fakePointGroup(),
     disabled: false,
     pointerTypes: [],

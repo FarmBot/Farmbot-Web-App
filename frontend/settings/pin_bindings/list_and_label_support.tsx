@@ -8,18 +8,18 @@ import { flattenDeep, isNumber } from "lodash";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
 import { t } from "../../i18next_wrapper";
 
-export const bindingTypeLabelLookup: { [x: string]: string } = {
+export const bindingTypeLabelLookup = (): { [x: string]: string } => ({
   [PinBindingType.standard]: t("Sequence"),
   [PinBindingType.special]: t("Action"),
   "": t("Sequence"),
-};
+});
 
 export const bindingTypeList = (): DropDownItem[] =>
-  Object.entries(bindingTypeLabelLookup)
+  Object.entries(bindingTypeLabelLookup())
     .filter(([value, _]) => !(value == ""))
     .map(([value, label]) => ({ label, value }));
 
-export const specialActionLabelLookup: { [x: string]: string } = {
+export const specialActionLabelLookup = (): { [x: string]: string } => ({
   [PinBindingSpecialAction.emergency_lock]: t("E-STOP"),
   [PinBindingSpecialAction.emergency_unlock]: t("UNLOCK"),
   [PinBindingSpecialAction.power_off]: t("Shutdown"),
@@ -28,16 +28,16 @@ export const specialActionLabelLookup: { [x: string]: string } = {
   [PinBindingSpecialAction.read_status]: t("Read Status"),
   [PinBindingSpecialAction.take_photo]: t("Take Photo"),
   "": t("None")
-};
+});
 
-export const specialActionList: DropDownItem[] =
+export const specialActionList = (): DropDownItem[] =>
   Object.values(PinBindingSpecialAction)
     .map((action: PinBindingSpecialAction) =>
-      ({ label: specialActionLabelLookup[action], value: action }));
+      ({ label: specialActionLabelLookup()[action], value: action }));
 
 export const getSpecialActionLabel =
   (action: PinBindingSpecialAction | undefined) =>
-    specialActionLabelLookup[action || ""] || "";
+    specialActionLabelLookup()[action || ""] || "";
 
 /** Pin numbers for standard buttons. */
 export enum ButtonPin {

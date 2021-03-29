@@ -9,7 +9,7 @@ describe("<MessagesPanel />", () => {
     alerts: [],
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
-    dispatch: Function,
+    dispatch: jest.fn(),
     findApiAlertById: jest.fn(),
   });
 
