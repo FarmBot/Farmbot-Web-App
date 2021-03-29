@@ -25,10 +25,10 @@ describe Device do
   end
 
   it "performs gradual upgrades of ota_hour => ota_hour_utc" do
-    d = Device.new(timezone: "Europe/Bucharest", ota_hour: 4)
+    d = Device.new(timezone: "US/Arizona", ota_hour: 4)
     expect(d.ota_hour_utc).to eq(nil)
     d.validate
-    expect(d.ota_hour_utc).to eq(6)
+    expect(d.ota_hour_utc).to eq(21)
   end
 
   it "creates a token" do
