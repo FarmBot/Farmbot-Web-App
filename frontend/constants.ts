@@ -1273,9 +1273,36 @@ export namespace SetupWizardContent {
     trim(`Check motor cable connections. Try again while observing
     electronics box LED activity.`);
 
+  export const X_HOME_PROMPT =
+    trim(`Are FarmBot's gantry wheel plates touching the hardstops at the
+    end of the tracks?`);
+
+  export const HOME_X =
+    trim(`Press the home button or move FarmBot's x-axis (with the controls
+    or manually) until the plates hit the hardstops.`);
+
+  export const Y_HOME_PROMPT =
+    trim(`Is FarmBot's cross-slide plate touching the hardstop at the end of
+    the gantry main beam?`);
+
+  export const HOME_Y =
+    trim(`Press the home button or move FarmBot's y-axis (with the controls
+      or manually) until the plate hits the hardstop.`);
+
+  export const Z_HOME_PROMPT =
+    trim(`Is FarmBot's z-axis hardstop touching the cross-slide plate?`);
+
+  export const HOME_Z =
+    trim(`Press the home button or move FarmBot's z-axis (with the controls
+      or manually) until the plate hits the hardstop.`);
+
   export const TOGGLE_PERIPHERAL =
     trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
     the toggle again.`);
+
+  export const PROBLEM_GETTING_IMAGE =
+    trim(`There is a 'camera not detected' or 'problem getting image' error
+    log`);
 
   export const CAMERA_CALIBRATION_PREPARATION =
     trim(`To prepare for camera calibration, move the z-axis all the way up.`);

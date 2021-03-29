@@ -28,6 +28,9 @@ import {
   CameraOffset,
   FindHome,
   CameraReplacement,
+  SetHome,
+  FlashFirmware,
+  CurrentPosition,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -49,6 +52,7 @@ export enum WizardSectionSlug {
   map = "map",
   motors = "motors",
   controls = "controls",
+  home = "home",
   peripherals = "peripherals",
   camera = "camera",
   tools = "tools",
@@ -62,6 +66,7 @@ export const WIZARD_TOC =
       [WizardSectionSlug.map]: { title: t("MAP"), steps: [] },
       [WizardSectionSlug.motors]: { title: t("MOTORS"), steps: [] },
       [WizardSectionSlug.controls]: { title: t("MANUAL CONTROLS"), steps: [] },
+      [WizardSectionSlug.home]: { title: t("HOME"), steps: [] },
       [WizardSectionSlug.peripherals]: { title: t("PERIPHERALS"), steps: [] },
       [WizardSectionSlug.camera]: { title: t("CAMERA"), steps: [] },
     };
@@ -90,6 +95,12 @@ export enum WizardStepSlug {
   xAxis = "xAxis",
   yAxis = "yAxis",
   zAxis = "zAxis",
+  xAxisHardwareHome = "xAxisHardwareHome",
+  xAxisSoftwareHome = "xAxisSoftwareHome",
+  yAxisHardwareHome = "yAxisHardwareHome",
+  yAxisSoftwareHome = "yAxisSoftwareHome",
+  zAxisHardwareHome = "zAxisHardwareHome",
+  zAxisSoftwareHome = "zAxisSoftwareHome",
   valve = "valve",
   vacuum = "vacuum",
   lights = "lights",
@@ -288,6 +299,12 @@ export const WIZARD_STEPS = (
             step: WizardStepSlug.configuratorNetwork,
           },
         },
+        {
+          slug: "noFirmware",
+          description: t("The firmware is missing"),
+          tips: t("Press the button to install your device's firmware."),
+          component: FlashFirmware,
+        },
       ],
     },
     {
@@ -333,6 +350,7 @@ export const WIZARD_STEPS = (
           slug: "nothing",
           description: t("Nothing"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
+          component: FlashFirmware,
         },
         {
           slug: "noMovement",
@@ -522,6 +540,102 @@ export const WIZARD_STEPS = (
       ],
     },
     {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.xAxisHardwareHome,
+      title: t("X-axis"),
+      content: t("Observe the position of the FarmBot gantry along the tracks."),
+      question: t(SetupWizardContent.X_HOME_PROMPT),
+      outcomes: [
+        {
+          slug: "notAtHome",
+          description: t("They are somewhere else"),
+          tips: t(SetupWizardContent.HOME_X),
+          component: ControlsCheck(undefined, true),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.xAxisSoftwareHome,
+      title: t("X-axis Home"),
+      prerequisites: [botOnlineReq],
+      content: t("Review FarmBot's coordinate location in the boxes below."),
+      component: CurrentPosition("x"),
+      question: t("Is the x-axis coordinate zero (0)?"),
+      outcomes: [
+        {
+          slug: "notZero",
+          description: t("It is some other value"),
+          tips: "",
+          component: SetHome("x"),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.yAxisHardwareHome,
+      title: t("Y-axis"),
+      content: t("Observe the position of the cross-slide plate on the gantry."),
+      question: t(SetupWizardContent.Y_HOME_PROMPT),
+      outcomes: [
+        {
+          slug: "notAtHome",
+          description: t("It is somewhere else"),
+          tips: t(SetupWizardContent.HOME_Y),
+          component: ControlsCheck(undefined, true),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.yAxisSoftwareHome,
+      title: t("Y-axis Home"),
+      prerequisites: [botOnlineReq],
+      content: t("Review FarmBot's coordinate location in the boxes below."),
+      component: CurrentPosition("y"),
+      question: t("Is the y-axis coordinate zero (0)?"),
+      outcomes: [
+        {
+          slug: "notZero",
+          description: t("It is some other value"),
+          tips: "",
+          component: SetHome("y"),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.zAxisHardwareHome,
+      title: t("Z-axis"),
+      content: t("Observe the position of the z-axis."),
+      question: t(SetupWizardContent.Z_HOME_PROMPT),
+      outcomes: [
+        {
+          slug: "notAtHome",
+          description: t("It is somewhere else"),
+          tips: t(SetupWizardContent.HOME_Z),
+          component: ControlsCheck(undefined, true),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.home,
+      slug: WizardStepSlug.zAxisSoftwareHome,
+      title: t("Z-axis Home"),
+      prerequisites: [botOnlineReq],
+      content: t("Review FarmBot's coordinate location in the boxes below."),
+      component: CurrentPosition("z"),
+      question: t("Is the z-axis coordinate zero (0)?"),
+      outcomes: [
+        {
+          slug: "notZero",
+          description: t("It is some other value"),
+          tips: "",
+          component: SetHome("z"),
+        },
+      ],
+    },
+    {
       section: WizardSectionSlug.peripherals,
       slug: WizardStepSlug.valve,
       title: t("Solenoid Valve"),
@@ -598,8 +712,8 @@ export const WIZARD_STEPS = (
           component: CameraReplacement,
         },
         {
-          slug: "error",
-          description: t("There is a 'camera not detected' error log"),
+          slug: "cameraError",
+          description: t(SetupWizardContent.PROBLEM_GETTING_IMAGE),
           tips: t(SetupWizardContent.CHECK_CAMERA_CABLE),
           component: CameraReplacement,
         },
@@ -630,6 +744,7 @@ export const WIZARD_STEPS = (
       section: WizardSectionSlug.camera,
       slug: WizardStepSlug.cameraCalibrationPreparation,
       title: t("Calibration preparation"),
+      prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.CAMERA_CALIBRATION_PREPARATION),
       component: ControlsCheck(),
       question: t("Is the z-axis as high as it will go?"),
@@ -674,8 +789,8 @@ export const WIZARD_STEPS = (
       question: t("Did calibration complete without error logs?"),
       outcomes: [
         {
-          slug: "error",
-          description: t("There is a camera error log"),
+          slug: "cameraError",
+          description: t(SetupWizardContent.PROBLEM_GETTING_IMAGE),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
         },
@@ -708,8 +823,8 @@ export const WIZARD_STEPS = (
           component: CameraOffset,
         },
         {
-          slug: "error",
-          description: t("There is a 'camera not detected' error log"),
+          slug: "cameraError",
+          description: t(SetupWizardContent.PROBLEM_GETTING_IMAGE),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
           hidden: true,
@@ -732,8 +847,8 @@ export const WIZARD_STEPS = (
           component: ControlsCheck(),
         },
         {
-          slug: "error",
-          description: t("There is a 'camera not detected' error log"),
+          slug: "cameraError",
+          description: t(SetupWizardContent.PROBLEM_GETTING_IMAGE),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.photo, text: t("photo step") },
           hidden: true,

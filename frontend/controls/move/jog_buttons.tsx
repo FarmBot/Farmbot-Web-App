@@ -55,7 +55,9 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td>
           <HomeButton doFindHome={false} disabled={movementDisabled} />
         </td>
-        <td>
+        <td style={props.highlightHome
+          ? { border: "2px solid yellow" }
+          : {}}>
           <HomeButton doFindHome={true} disabled={movementDisabled} />
         </td>
         <td />

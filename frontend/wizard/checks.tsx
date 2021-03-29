@@ -23,7 +23,7 @@ import {
 } from "../settings/fbos_settings/fbos_details";
 import { ExternalUrl } from "../external_urls";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
-import { validFwConfig } from "../util";
+import { validBotLocationData, validFwConfig } from "../util";
 import {
   getFwHardwareValue, isExpress,
 } from "../settings/firmware/firmware_hardware_support";
@@ -40,7 +40,7 @@ import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
-import { findHome, settingToggle } from "../devices/actions";
+import { findHome, setHome, settingToggle } from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
 import { cameraBtnProps } from "../photos/capture_settings/camera_selection";
@@ -72,16 +72,20 @@ import {
   disabledAxisMap,
 } from "../settings/hardware_settings/axis_tracking_status";
 import { destroy } from "../api/crud";
+import { FlashFirmwareBtn } from "../settings/firmware/firmware_hardware_status";
+import { AxisDisplayGroup } from "../controls/axis_display_group";
+
+const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
 const recentErrorLog = (
   logs: TaggedLog[],
   prevLogTime: number | undefined,
-  errorMessage: string,
+  errorMessages: string[],
 ) =>
   some(logs
     .filter(log => prevLogTime && (log.body.created_at || 0) > prevLogTime)
-    .map(log => log.body.message.toLowerCase()
-      .includes(errorMessage.toLowerCase())));
+    .map(log => some(errorMessages.map(errorMessage =>
+      log.body.message.toLowerCase().includes(errorMessage.toLowerCase())))));
 
 const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const images = selectAllImages(props.resources);
@@ -96,8 +100,8 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const getLastLogTimestamp = () => last(logs)?.body.created_at;
   const [prevLogTime, setPrevLogTime] = React.useState(getLastLogTimestamp());
   const [error, setError] = React.useState(false);
-  if (!error && recentErrorLog(logs, prevLogTime, "USB Camera not detected.")) {
-    props.setStepSuccess(false, "error")();
+  if (!error && recentErrorLog(logs, prevLogTime, CAMERA_ERRORS)) {
+    props.setStepSuccess(false, "cameraError")();
     setError(true);
   }
 
@@ -193,12 +197,13 @@ export const lowVoltageProblemStatus = () => {
   return !["red", "yellow"].includes(voltageColor);
 };
 
-export const ControlsCheck = (axis?: Xyz) => (props: WizardOutcomeComponentProps) =>
-  <div className={"controls-check"}>
-    <MoveControls {...mapStateToProps(store.getState())}
-      dispatch={props.dispatch}
-      highlightAxis={axis} />
-  </div>;
+export const ControlsCheck = (axis?: Xyz, home?: boolean) =>
+  (props: WizardOutcomeComponentProps) =>
+    <div className={"controls-check"}>
+      <MoveControls {...mapStateToProps(store.getState())}
+        dispatch={props.dispatch}
+        highlightAxis={axis} highlightHome={home} />
+    </div>;
 
 export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
@@ -208,6 +213,14 @@ export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
     : ExternalUrl.genesisAssembly} target={"_blank"} rel={"noreferrer"}>
     {t("Assembly documentation")}
   </a>;
+};
+
+export const FlashFirmware = (props: WizardStepComponentProps) => {
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
+  const botOnline = isBotOnlineFromState(props.bot);
+  return <FlashFirmwareBtn
+    apiFirmwareValue={firmwareHardware}
+    botOnline={botOnline} />;
 };
 
 const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
@@ -296,7 +309,7 @@ export const Connectivity = (props: WizardStepComponentProps) => {
   });
   return <div className={"connectivity"}>
     <ConnectivityDiagram rowData={data.rowData} />
-    <Diagnosis statusFlags={data.flags} hideGraphic={true} />
+    <Diagnosis statusFlags={data.flags} />
   </div>;
 };
 
@@ -399,6 +412,41 @@ export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
     onClick={() => findHome(axis)}>
     {t("FIND HOME {{ axis }}", { axis })}
   </LockableButton>;
+};
+
+export const SetHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
+  const botOnline = isBotOnlineFromState(props.bot);
+  return <LockableButton
+    disabled={!botOnline}
+    title={t("SET HOME")}
+    onClick={() => setHome(axis)}>
+    {t("SET HOME {{ axis }}", { axis })}
+  </LockableButton>;
+};
+
+export const CurrentPosition = (axis: Xyz) => (props: WizardStepComponentProps) => {
+  const locationData = validBotLocationData(props.bot.hardware.location_data);
+  const firmwareSettings = getFirmwareConfig(props.resources);
+  return <div className={"bot-position-rows"}>
+    <div className={"axis-titles"}>
+      <Row>
+        <Col xs={3}>
+          <label>{t("X AXIS")}</label>
+        </Col>
+        <Col xs={3}>
+          <label>{t("Y AXIS")}</label>
+        </Col>
+        <Col xs={3}>
+          <label>{t("Z AXIS")}</label>
+        </Col>
+      </Row>
+    </div>
+    <AxisDisplayGroup
+      position={locationData.position}
+      firmwareSettings={firmwareSettings?.body}
+      label={t("Current position (mm)")}
+      highlightAxis={axis} />
+  </div>;
 };
 
 const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) =>

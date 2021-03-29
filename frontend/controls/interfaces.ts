@@ -16,6 +16,7 @@ export interface AxisDisplayGroupProps {
   axisStates?: Record<Xyz, AxisState | undefined>;
   busy?: boolean;
   style?: React.CSSProperties;
+  highlightAxis?: Xyz;
 }
 
 export interface AxisProps {
@@ -26,6 +27,7 @@ export interface AxisProps {
   axisState: AxisState | undefined;
   busy: boolean | undefined;
   index: number;
+  highlight?: boolean;
 }
 
 export interface AxisInputBoxGroupProps {
