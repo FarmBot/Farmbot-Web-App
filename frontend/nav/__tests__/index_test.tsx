@@ -25,6 +25,7 @@ import { Link } from "../../link";
 import { Session } from "../../session";
 import { refresh } from "../../api/crud";
 import { push } from "../../history";
+import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -36,6 +37,7 @@ describe("<NavBar />", () => {
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
     tour: undefined,
+    helpState: fakeHelpState(),
     device: fakeDevice(),
     alertCount: 0,
     pings: fakePings(),

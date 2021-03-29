@@ -1167,6 +1167,78 @@ export namespace Content {
 
 export namespace TourContent {
   // Getting started
+  export const GETTING_STARTED =
+    trim(`Welcome to the FarmBot web app! In this tour you'll become
+    familiar with the overall organization of the app. To get started and
+    advance through each tour step, find and click the highlighted feature.`);
+
+  export const PLANTS_PANEL =
+    trim(`This is the plants panel. Here you can view and manage all of the
+    plants in your garden. Mousing over a plant in the list wil highlight
+    it in the map and vice versa. Clicking a plant will open up the plant
+    details panel where you can edit it.`);
+
+  export const GROUPS_PANEL =
+    trim(`This is the groups panel. Here you can view and manage all of the
+    groups in your garden. Clicking a group will open up the groups
+    details panel where you can edit it.`);
+
+
+  export const SAVED_GARDENS_PANEL =
+    trim(`This is the gardens panel. Here you can view and manage all of
+    your gardens. Clicking a garden will open up the garden details panel
+    where you can edit it.`);
+
+  export const SEQUENCES_PANEL =
+    trim(`This is the sequences panel. Here you can view and manage all of
+    your sequences. Clicking a sequence will open up the sequence editor panel
+    where you can edit it.`);
+
+  export const REGIMENS_PANEL =
+    trim(`This is the regimens panel. Here you can view and manage all of
+    your regimens. Clicking a regimen will open up the regimen editor panel
+    where you can edit it.`);
+
+  export const FARM_EVENTS_PANEL =
+    trim(`This is the events panel. Here you can view and manage all of
+    your scheduled events. Clicking a event will open up the event details
+    panel where you can edit it.`);
+
+  export const POINTS_PANEL =
+    trim(`This is the points panel. Here you can view and manage all of the
+    points in your garden. Clicking a point will open up the point details
+    panel where you can edit it.`);
+
+  export const WEEDS_PANEL =
+    trim(`This is the weeds panel. Here you can view and manage all of the
+    weeds in your garden. Clicking a weed will open up the weed details panel
+    where you can edit it.`);
+
+  export const CONTROLS_PANEL =
+    trim(`This is the controls panel. Here you can control and view
+    current status information about your FarmBot.`);
+
+  export const PHOTOS_PANEL =
+    trim(`This is the photos panel. Here you can view and manage all of the
+    photos of your garden.`);
+
+  export const TOOLS_PANEL =
+    trim(`This is the tools panel. Here you can view and manage all of the
+    tools in your garden. Clicking a tool will open up the tool details panel
+    where you can edit it.`);
+
+  export const MESSAGES_PANEL =
+    trim(`This is the messages panel. Here you can view and manage setup
+    cards and announcements.`);
+
+  export const HELP_PANEL =
+    trim(`This is the help panel. Here you can browse the documentation or
+    get support if you need it.`);
+
+  export const SETTINGS_PANEL =
+    trim(`This is the settings panel. Here you can view and manage all of
+    your FarmBot and account settings.`);
+
   export const ADD_PLANTS =
     trim(`Add plants by pressing the + button and searching for a plant,
     selecting one, and dragging it into the garden.`);
@@ -1720,6 +1792,8 @@ export enum Actions {
 
   // App
   START_TOUR = "START_TOUR",
+  SET_TOUR = "SET_TOUR",
+  SET_TOUR_STEP = "SET_TOUR_STEP",
 
   // Network
   NETWORK_EDGE_CHANGE = "NETWORK_EDGE_CHANGE",
