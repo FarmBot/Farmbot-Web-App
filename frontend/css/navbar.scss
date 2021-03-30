@@ -238,6 +238,12 @@ nav {
       color: $off_white;
       margin-bottom: 0.6rem;
     }
+    img {
+      margin-right: 0.8rem;
+      margin-left: -0.1rem;
+      margin-bottom: 0.25rem;
+      filter: invert(1);
+    }
     .app-version {
       margin: 1rem -1rem -1rem;
       background: $dark_gray;

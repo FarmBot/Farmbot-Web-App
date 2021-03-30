@@ -99,6 +99,9 @@ export enum Icon {
   support = "support",
   settings = "settings",
   shop = "shop",
+  developer = "developer",
+  logout = "logout",
+  settings_small = "settings_small",
 }
 
 export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;

@@ -2191,13 +2191,15 @@
   i {
     font-size: 2rem;
     margin-left: 0.25rem;
-    vertical-align: middle;
+    width: 2.25rem;
   }
   i,
   img {
     margin-right: 1rem;
     margin-bottom: 0.5rem;
     vertical-align: middle;
+    filter: brightness(0) opacity(0.75);
+    text-align: center;
   }
   a {
     display: block;
