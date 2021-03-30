@@ -9,11 +9,11 @@ export interface PointGroupSortSelectorProps {
 }
 
 export const sortOptionsTable = (): Record<PointGroupSortType, string> => ({
-  "random": t("Random Order"),
-  "xy_ascending": t("X/Y, Ascending"),
-  "xy_descending": t("X/Y, Descending"),
-  "yx_ascending": t("Y/X, Ascending"),
-  "yx_descending": t("Y/X, Descending"),
+  random: t("Random Order"),
+  xy_ascending: t("X/Y, Ascending"),
+  xy_descending: t("X/Y, Descending"),
+  yx_ascending: t("Y/X, Ascending"),
+  yx_descending: t("Y/X, Descending"),
 }); // Typechecker will remind us when this needs an update. Don't simplify - RC
 
 type Sorter = (p: TaggedPoint[]) => TaggedPoint[];

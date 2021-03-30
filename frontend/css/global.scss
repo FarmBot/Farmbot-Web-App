@@ -917,7 +917,7 @@ ul {
       display: none;
     }
   }
-  .fa-crosshairs {
+  img {
     position: fixed;
     bottom: 3rem;
     z-index: 3;
@@ -927,6 +927,7 @@ ul {
     padding: 18px 20px;
     font-size: 2.4rem;
     transition: all 0.25s ease-in-out;
+    filter: invert(1);
     &:hover {
       background-color: rgba(0, 0, 0, 0.2);
     }
@@ -936,7 +937,7 @@ ul {
     display: none;
   }
   &.open {
-    .fa-crosshairs {
+    img {
       transform: rotate(-135deg);
       &:hover {
         background-color: rgba(0, 0, 0, 0);
@@ -1979,6 +1980,34 @@ textarea:focus {
       position: absolute !important;
       top: 0.1rem;
     }
+  }
+}
+
+.beacon {
+  border: 4px solid $yellow;
+  border-radius: 5px;
+}
+
+.tour-toast {
+  .toast-title,
+  .toast-message {
+    color: $white !important;
+  }
+  .toast-loader {
+    display: flex;
+    width: unset;
+    height: unset;
+    transform: none;
+    .next,
+    .exit {
+      padding: 0.5rem;
+    }
+    .next {
+      margin-right: 0.5rem;
+    }
+  }
+  .toast-message {
+    margin-top: 1.5rem;
   }
 }
 

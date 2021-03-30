@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Row, Col } from "../ui/index";
+import React from "react";
+import { Row, Col } from "../ui";
 import { AxisDisplayGroupProps, AxisProps } from "./interfaces";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../i18next_wrapper";
@@ -13,7 +13,9 @@ const Axis = (props: AxisProps) => {
       <MissedStepIndicator
         missedSteps={axisState == "idle" ? 0 : missedSteps}
         axis={axis} />}
-    <input disabled name={axis} value={isNumber(val) ? val : "---"} />
+    <input disabled name={axis}
+      style={props.highlight ? { border: "2px solid yellow" } : {}}
+      value={isNumber(val) ? val : "---"} />
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
       <p>{t(axisState)}</p>}
   </Col>;
@@ -30,14 +32,17 @@ export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
     <Axis axis={"x"} val={x} busy={props.busy} index={3}
       detectionEnabled={detectionEnabled.x}
       missedSteps={props.missedSteps?.x}
+      highlight={props.highlightAxis == "x"}
       axisState={props.axisStates?.x} />
     <Axis axis={"y"} val={y} busy={props.busy} index={2}
       detectionEnabled={detectionEnabled.y}
       missedSteps={props.missedSteps?.y}
+      highlight={props.highlightAxis == "y"}
       axisState={props.axisStates?.y} />
     <Axis axis={"z"} val={z} busy={props.busy} index={1}
       detectionEnabled={detectionEnabled.z}
       missedSteps={props.missedSteps?.z}
+      highlight={props.highlightAxis == "z"}
       axisState={props.axisStates?.z} />
     <Col xs={3} className={"no-pad"}>
       <label style={props.style}>

@@ -31,13 +31,13 @@ describe("<ControlsPopup />", () => {
   it("toggles open state", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
     expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
-    wrapper.find("i").first().simulate("click");
+    wrapper.find("img").first().simulate("click");
     expect(wrapper.find(".controls-popup").hasClass("open")).toBeTruthy();
   });
 
   it("sends movement command", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    wrapper.find("i").first().simulate("click");
+    wrapper.find("img").first().simulate("click");
     const button = wrapper.find("button").at(1);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   bindingTypeLabelLookup,
   generatePinLabel, sortByNameAndPin, getSpecialActionLabel,
@@ -34,7 +34,7 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
     binding_type: PinBindingType | undefined,
     special_action: PinBindingSpecialAction | undefined,
   ) =>
-    `${t(bindingTypeLabelLookup[binding_type || ""])}: ${(sequence_id
+    `${t(bindingTypeLabelLookup()[binding_type || ""])}: ${(sequence_id
       ? findSequenceById(resources, sequence_id).body.name
       : t(getSpecialActionLabel(special_action)))}`;
 

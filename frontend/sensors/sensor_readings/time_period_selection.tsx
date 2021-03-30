@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FBSelect, Row, Col, BlurableInput } from "../../ui";
 import moment from "moment";
 import { TaggedSensorReading } from "farmbot";
@@ -8,15 +8,15 @@ import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 
 /** Look up time period label by seconds. */
-const timePeriodLookup = {
+const timePeriodLookup = () => ({
   [60 * 60 * 24]: t("Day"),
   [60 * 60 * 24 * 7]: t("Week"),
   [60 * 60 * 24 * 30]: t("Month"),
   [60 * 60 * 24 * 365]: t("Year"),
-};
+});
 
 /** For time period selection dropdown. */
-const timePeriodList = Object.entries(timePeriodLookup)
+const timePeriodList = () => Object.entries(timePeriodLookup())
   .map(([value, label]) => ({ value, label }));
 
 const blurableInputDateFormat = "YYYY-MM-DD";
@@ -60,9 +60,9 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
         <FBSelect
           key={timePeriod}
           selectedItem={
-            { label: timePeriodLookup[timePeriod], value: timePeriod }}
+            { label: timePeriodLookup()[timePeriod], value: timePeriod }}
           onChange={ddi => setPeriod(parseInt("" + ddi.value))}
-          list={timePeriodList} />
+          list={timePeriodList()} />
       </Col>
       <Col xs={ColWidth.endDate}>
         <BlurableInput

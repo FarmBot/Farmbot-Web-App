@@ -37,6 +37,8 @@ import { filterAlerts } from "./messages/alerts";
 import {
   getFwHardwareValue,
 } from "./settings/firmware/firmware_hardware_support";
+import { HelpState } from "./help/reducer";
+import { TourStepContainer } from "./help/new_tours";
 
 /** For the logger module */
 init();
@@ -55,6 +57,7 @@ export interface AppProps {
   animate: boolean;
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
+  helpState: HelpState;
   resources: ResourceIndex;
   alertCount: number;
   alerts: Alert[];
@@ -85,6 +88,7 @@ export function mapStateToProps(props: Everything): AppProps {
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
     getConfigValue: webAppConfigValue,
     tour: props.resources.consumers.help.currentTour,
+    helpState: props.resources.consumers.help,
     resources: props.resources.index,
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
     alerts: getAllAlerts(props.resources),
@@ -145,6 +149,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         logs={this.props.logs}
         getConfigValue={getConfigValue}
         tour={this.props.tour}
+        helpState={this.props.helpState}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
         alerts={this.props.alerts}
@@ -163,6 +168,9 @@ export class RawApp extends React.Component<AppProps, {}> {
           getConfigValue={getConfigValue}
           env={this.props.env}
           stepSize={bot.stepSize} />}
+      <TourStepContainer
+        dispatch={dispatch}
+        helpState={this.props.helpState} />
     </div>;
   }
 }

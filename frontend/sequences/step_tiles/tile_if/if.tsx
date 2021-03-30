@@ -12,16 +12,16 @@ import { t } from "../../../i18next_wrapper";
 import { StepParams } from "../../interfaces";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
-const label_ops: Record<ALLOWED_OPS, string> = {
+const label_ops = (): Record<ALLOWED_OPS, string> => ({
   "is_undefined": t("is unknown"),
   ">": t("is greater than"),
   "<": t("is less than"),
   "is": t("is"),
   "not": t("is not")
-};
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops).includes(x);
+const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops()).includes(x);
 
 const updateOp = (props: StepParams<If>) => (ddi: DropDownItem) => {
   const stepCopy = defensiveClone(props.currentStep);
@@ -52,9 +52,9 @@ export function If_(props: StepParams<If>) {
       <label>{t("Operator")}</label>
       <FBSelect
         key={JSON.stringify(sequence)}
-        list={operatorOptions}
+        list={operatorOptions()}
         onChange={updateOp(props)}
-        selectedItem={{ label: label_ops[op] || op, value: op }} />
+        selectedItem={{ label: label_ops()[op] || op, value: op }} />
     </Col>
     <Col xs={4} hidden={op === IS_UNDEFINED}>
       <label>{t("Value")}</label>

@@ -9,6 +9,7 @@ interface Page {
   title: string;
   icon?: Icon;
   fa_icon?: string;
+  iconPath?: string;
   onClick?(): void;
 }
 
@@ -21,23 +22,23 @@ const PAGES = (): Pages => ({
   },
   developer: {
     title: t("Developer Documentation"),
-    icon: Icon.documentation,
+    icon: Icon.developer,
   },
   genesis: {
     title: t("Genesis Documentation"),
-    icon: Icon.documentation,
+    iconPath: "/app-resources/img/favicon.png",
   },
   express: {
     title: t("Express Documentation"),
-    icon: Icon.documentation,
+    iconPath: "/app-resources/img/favicon.png",
   },
   business: {
     title: t("Business Documentation"),
-    icon: Icon.documentation,
+    icon: Icon.shop,
   },
   education: {
     title: t("Education Documentation"),
-    icon: Icon.documentation,
+    fa_icon: "graduation-cap",
   },
   tours: {
     title: t("Take a Tour"),
@@ -76,12 +77,14 @@ export const HelpHeader = () => {
   </div>;
 };
 
-const PageLink = ([slug, page]: [string, Page]) =>
-  <a key={slug}
+const PageLink = ([slug, page]: [string, Page]) => {
+  const iconSrc = page.icon ? iconFile(page.icon) : page.iconPath;
+  return <a key={slug}
     title={page.title}
     onClick={() => page.onClick ? page.onClick() : push(`/app/designer/${slug}`)}>
-    {page.icon
-      ? <img width={25} height={25} src={iconFile(page.icon)} />
-      : <i className={`fa fa-${page.fa_icon}`} />}
+    {page.fa_icon
+      ? <i className={`fa fa-${page.fa_icon}`} />
+      : <img width={25} height={25} src={iconSrc} />}
     {page.title}
   </a>;
+};

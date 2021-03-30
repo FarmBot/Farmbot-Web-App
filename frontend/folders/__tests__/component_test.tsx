@@ -94,7 +94,7 @@ describe("<Folders />", () => {
     },
     sequences: {},
     searchTerm: undefined,
-    dispatch: Function,
+    dispatch: jest.fn(),
     resourceUsage: {},
     sequenceMetas: {},
   });

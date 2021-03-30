@@ -56,6 +56,7 @@ export interface JogMovementControlsProps extends DirectionAxesProps {
   env: UserEnv;
   arduinoBusy: boolean;
   highlightAxis?: Xyz;
+  highlightHome?: boolean;
 }
 
 export interface JogControlsGroupProps extends JogMovementControlsProps {
@@ -91,4 +92,5 @@ export interface MoveControlsProps {
   shouldDisplay: ShouldDisplay;
   env: UserEnv;
   highlightAxis?: Xyz;
+  highlightHome?: boolean;
 }

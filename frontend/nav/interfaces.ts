@@ -6,6 +6,7 @@ import {
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
+import { HelpState } from "../help/reducer";
 
 export interface SyncButtonProps {
   dispatch: Function;
@@ -30,6 +31,7 @@ export interface NavBarProps {
   apiFirmwareValue: FirmwareHardware | undefined;
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
+  helpState: HelpState;
 }
 
 export interface NavBarState {
@@ -45,6 +47,7 @@ export interface MobileMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   mobileMenuOpen: boolean;
   alertCount: number;
+  helpState: HelpState;
 }
 
 export interface TickerListProps {
@@ -60,6 +63,7 @@ export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   alertCount: number;
   addMap?: boolean;
+  helpState: HelpState;
 }
 
 export interface AccountMenuProps {

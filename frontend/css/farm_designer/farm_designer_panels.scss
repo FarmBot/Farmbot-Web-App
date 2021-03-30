@@ -2191,13 +2191,15 @@
   i {
     font-size: 2rem;
     margin-left: 0.25rem;
-    vertical-align: middle;
+    width: 2.25rem;
   }
   i,
   img {
     margin-right: 1rem;
     margin-bottom: 0.5rem;
     vertical-align: middle;
+    filter: brightness(0) opacity(0.75);
+    text-align: center;
   }
   a {
     display: block;
@@ -2522,6 +2524,24 @@
           margin: 1rem;
           float: none;
         }
+      }
+      .connectivity {
+        .diagnosis-indicator {
+          position: absolute;
+          top: -3rem;
+          height: 2rem;
+          width: 2rem;
+          .fa {
+            padding-left: 0.05rem;
+          }
+        }
+        .saucer-connector {
+          display: none;
+        }
+      }
+      .flash-firmware {
+        display: block;
+        float: none;
       }
     }
     .markdown {

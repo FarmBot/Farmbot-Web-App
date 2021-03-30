@@ -1,4 +1,5 @@
 import { DesignerState } from "../farm_designer/interfaces";
+import { HelpState } from "../help/reducer";
 
 export const fakeDesignerState = (): DesignerState => ({
   selectedPoints: undefined,
@@ -35,4 +36,10 @@ export const fakeDesignerState = (): DesignerState => ({
   profilePosition: { x: undefined, y: undefined },
   profileWidth: 100,
   profileFollowBot: false,
+});
+
+export const fakeHelpState = (): HelpState => ({
+  currentTour: undefined,
+  currentNewTour: undefined,
+  currentNewTourStep: undefined,
 });

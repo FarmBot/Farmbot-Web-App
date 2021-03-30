@@ -6,6 +6,8 @@ import {
   getPanelPath, getCurrentPanel,
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
+import { HelpState } from "../help/reducer";
+import { getNextTourStep } from "../help/new_tours";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,
@@ -36,7 +38,8 @@ export const NavLinks = (props: NavLinksProps) =>
           key={PANEL_SLUG[panel]}
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
-          <NavIconAndText panel={panel} alertCount={props.alertCount} />
+          <NavIconAndText panel={panel} alertCount={props.alertCount}
+            helpState={props.helpState} />
         </Link>)}
       <a className={"shop-link"} key={"shop"}
         draggable={false} onClick={props.close("mobileMenuOpen")}
@@ -53,6 +56,7 @@ interface NavItemProps {
   panel: Panel;
   alertCount?: number;
   customMiniIcon?: React.ReactElement;
+  helpState?: HelpState;
 }
 
 const NotificationCircle = (props: NavItemProps): React.ReactElement => {
@@ -80,7 +84,11 @@ const NavText = (props: NavItemProps) =>
   </div>;
 
 const NavIconAndText = (props: NavItemProps) =>
-  <div className={"link-icon-and-text"}>
+  <div className={
+    `link-icon-and-text ${getNextTourStep(props.helpState)?.beacon
+      == PANEL_SLUG[props.panel]
+      ? "beacon"
+      : ""}`}>
     <NavIcon {...props} />
     <NavText {...props} />
   </div>;
