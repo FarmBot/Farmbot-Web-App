@@ -4,6 +4,7 @@ import { mapPanelClassName } from "./farm_designer/map/util";
 import { getPathArray } from "./history";
 import { JogButtons } from "./controls/move/jog_buttons";
 import { StepSizeSelector } from "./controls/move/step_size_selector";
+import { Icon, iconFile } from "./farm_designer/panel_header";
 
 export const ControlsPopup = (props: ControlsPopupProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -11,7 +12,8 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
   const { stepSize, arduinoBusy, botOnline } = props;
   return <div
     className={`controls-popup ${isOpenClass} ${mapPanelClassName()}`}>
-    <i className="fa fa-crosshairs" onClick={() => setIsOpen(!isOpen)} />
+    <img width={25} height={25} src={iconFile(Icon.controls)}
+      onClick={() => setIsOpen(!isOpen)} />
     <div className="controls-popup-menu-outer">
       <div className="controls-popup-menu-inner">
         <JogButtons
