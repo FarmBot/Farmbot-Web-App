@@ -18,6 +18,7 @@ jest.mock("../../photos/camera_calibration/actions", () => ({
 const mockDevice = {
   execScript: jest.fn(() => Promise.resolve({})),
   findHome: jest.fn(() => Promise.resolve({})),
+  setZero: jest.fn(() => Promise.resolve({})),
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -46,9 +47,11 @@ import {
   ConfiguratorDocs,
   Connectivity,
   ControlsCheck,
+  CurrentPosition,
   DisableStallDetection,
   FindHome,
   FirmwareHardwareSelection,
+  FlashFirmware,
   InvertJogButton,
   InvertMotor,
   lowVoltageProblemStatus,
@@ -57,6 +60,7 @@ import {
   RotateMapToggle,
   SelectMapOrigin,
   SensorsCheck,
+  SetHome,
   SoilHeightMeasurementCheck,
   SwapJogButton,
   SwitchCameraCalibrationMethod,
@@ -137,7 +141,7 @@ describe("<CameraCheck />", () => {
     log1.body.created_at = 2;
     p.resources = buildResourceIndex([log1]).index;
     wrapper.setProps(p);
-    expect(p.setStepSuccess).toHaveBeenCalledWith(false, "error");
+    expect(p.setStepSuccess).toHaveBeenCalledWith(false, "cameraError");
   });
 });
 
@@ -153,9 +157,22 @@ describe("lowVoltageProblemStatus()", () => {
   });
 });
 
+describe("<FlashFirmware />", () => {
+  it("renders button", () => {
+    const wrapper = mount(<FlashFirmware {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("flash firmware");
+  });
+});
+
 describe("<ControlsCheck />", () => {
   it("returns controls", () => {
     const Component = ControlsCheck("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
+  });
+
+  it("returns controls with home highlighted", () => {
+    const Component = ControlsCheck(undefined, true);
     const wrapper = mount(<Component {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
   });
@@ -470,6 +487,32 @@ describe("<FindHome />", () => {
     const wrapper = mount(<Component {...fakeProps()} />);
     clickButton(wrapper, 0, "find home x");
     expect(mockDevice.findHome).toHaveBeenCalledWith({ axis: "x", speed: 100 });
+  });
+});
+
+describe("<SetHome />", () => {
+  it("calls set home", () => {
+    const Component = SetHome("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    clickButton(wrapper, 0, "set home x");
+    expect(mockDevice.setZero).toHaveBeenCalledWith("x");
+  });
+});
+
+describe("<CurrentPosition />", () => {
+  it("renders current position", () => {
+    const Component = CurrentPosition("x");
+    const p = fakeProps();
+    const config = fakeFirmwareConfig();
+    p.resources = buildResourceIndex([config]).index;
+    const wrapper = mount(<Component {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("current position");
+  });
+
+  it("handles missing settings", () => {
+    const Component = CurrentPosition("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("current position");
   });
 });
 

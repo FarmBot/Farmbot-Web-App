@@ -9,8 +9,8 @@ import { StepRadio } from "../step_ui/step_radio";
 import { DevSettings } from "../../settings/dev/dev_support";
 
 const PACKAGE_CHOICES = (): Record<ALLOWED_PACKAGES, string> => ({
-  "arduino_firmware": t("Just the Arduino"),
-  "farmbot_os": t("Entire system")
+  arduino_firmware: t("Just the Arduino"),
+  farmbot_os: t("Entire system")
 });
 
 type RELEVANT_KEYS = "currentStep" | "currentSequence" | "index" | "dispatch";

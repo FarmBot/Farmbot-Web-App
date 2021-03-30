@@ -4,6 +4,8 @@ import { Actions } from "../../constants";
 describe("helpReducer", () => {
   const fakeState = (): HelpState => ({
     currentTour: undefined,
+    currentNewTour: undefined,
+    currentNewTourStep: undefined,
   });
 
   it("changes current tour", () => {
@@ -15,5 +17,27 @@ describe("helpReducer", () => {
     });
     expect(oldState.currentTour).not.toEqual(newState.currentTour);
     expect(newState.currentTour).toBeUndefined();
+  });
+
+  it("changes current new tour", () => {
+    const oldState = fakeState();
+    oldState.currentNewTour = "aTour";
+    const newState = helpReducer(oldState, {
+      type: Actions.SET_TOUR,
+      payload: undefined
+    });
+    expect(oldState.currentNewTour).not.toEqual(newState.currentNewTour);
+    expect(newState.currentNewTour).toBeUndefined();
+  });
+
+  it("changes current new tour step", () => {
+    const oldState = fakeState();
+    oldState.currentNewTourStep = "aTourStep";
+    const newState = helpReducer(oldState, {
+      type: Actions.SET_TOUR_STEP,
+      payload: undefined
+    });
+    expect(oldState.currentNewTourStep).not.toEqual(newState.currentNewTourStep);
+    expect(newState.currentNewTourStep).toBeUndefined();
   });
 });

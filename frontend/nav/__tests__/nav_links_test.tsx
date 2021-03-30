@@ -21,11 +21,13 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import {
   fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
+import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 
 describe("<NavLinks />", () => {
   const fakeProps = (): NavLinksProps => ({
     close: jest.fn(),
     alertCount: 1,
+    helpState: fakeHelpState(),
   });
 
   it("toggles the mobile nav menu", () => {
@@ -42,6 +44,14 @@ describe("<NavLinks />", () => {
   it("shows indicator", () => {
     const wrapper = mount(<NavLinks {...fakeProps()} />);
     expect(wrapper.text()).toContain("1");
+  });
+
+  it("shows beacon", () => {
+    const p = fakeProps();
+    p.helpState.currentNewTour = "gettingStarted";
+    p.helpState.currentNewTourStep = "intro";
+    const wrapper = mount(<NavLinks {...p} />);
+    expect(wrapper.html()).toContain("beacon");
   });
 
   it("shows active link", () => {

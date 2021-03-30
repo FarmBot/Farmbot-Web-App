@@ -20,6 +20,7 @@ import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
+import { fakeHelpState } from "../__test_support__/fake_designer_state";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -38,6 +39,7 @@ const fakeProps = (): AppProps => ({
   animate: false,
   getConfigValue: jest.fn(),
   tour: undefined,
+  helpState: fakeHelpState(),
   resources: buildResourceIndex().index,
   alertCount: 0,
   pings: fakePings(),

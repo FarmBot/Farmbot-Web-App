@@ -4,7 +4,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawWeeds as Weeds, WeedsProps, mapStateToProps,
@@ -121,7 +121,7 @@ describe("<WeedsSection />", () => {
     hoveredPoint: undefined,
     clickOpen: jest.fn(),
     items: [fakeWeed(), fakeWeed(), fakeWeed()],
-    dispatch: Function,
+    dispatch: jest.fn(),
   });
 
   it("approves all", () => {

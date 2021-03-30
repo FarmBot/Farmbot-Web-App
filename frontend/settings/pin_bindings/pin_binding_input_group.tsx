@@ -196,7 +196,7 @@ export const BindingTypeDropDown = (props: {
     key={"binding_type_input_" + bindingType}
     onChange={setBindingType}
     selectedItem={{
-      label: bindingTypeLabelLookup[bindingType],
+      label: bindingTypeLabelLookup()[bindingType],
       value: bindingType
     }}
     list={bindingTypeList()} />;
@@ -235,5 +235,5 @@ export const ActionTargetDropDown = (props: {
     customNullLabel={t("Select an action")}
     onChange={setSpecialAction}
     selectedItem={selectedSpecialAction}
-    list={specialActionList} />;
+    list={specialActionList()} />;
 };

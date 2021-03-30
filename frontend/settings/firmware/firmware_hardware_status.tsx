@@ -50,7 +50,7 @@ export interface FlashFirmwareBtnProps {
 
 export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
   const { apiFirmwareValue } = props;
-  return <button className="fb-button yellow"
+  return <button className={"fb-button yellow flash-firmware"}
     disabled={!apiFirmwareValue || !props.botOnline}
     title={t("flash firmware")}
     onClick={() => isFwHardwareValue(apiFirmwareValue) &&

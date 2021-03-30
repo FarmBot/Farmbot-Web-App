@@ -2523,6 +2523,24 @@
           float: none;
         }
       }
+      .connectivity {
+        .diagnosis-indicator {
+          position: absolute;
+          top: -3rem;
+          height: 2rem;
+          width: 2rem;
+          .fa {
+            padding-left: 0.05rem;
+          }
+        }
+        .saucer-connector {
+          display: none;
+        }
+      }
+      .flash-firmware {
+        display: block;
+        float: none;
+      }
     }
     .markdown {
       display: block;
