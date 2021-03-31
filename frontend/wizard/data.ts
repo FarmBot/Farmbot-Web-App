@@ -877,11 +877,11 @@ export const WIZARD_STEPS = (
         prerequisites: [botOnlineReq],
         content: t("Attach the seeder tool to the UTM and press VERIFY."),
         component: ToolCheck,
-        question: t("Is the status MOUNTED?"),
+        question: t("Is the status 'connected'?"),
         outcomes: [
           {
             slug: "dismounted",
-            description: t("The status is DISMOUNTED"),
+            description: t("The status is 'disconnected'"),
             tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
@@ -895,11 +895,11 @@ export const WIZARD_STEPS = (
         prerequisites: [botOnlineReq],
         content: t("Attach the watering nozzle tool to the UTM and press VERIFY."),
         component: ToolCheck,
-        question: t("Is the status MOUNTED?"),
+        question: t("Is the status 'connected'?"),
         outcomes: [
           {
             slug: "dismounted",
-            description: t("The status is DISMOUNTED"),
+            description: t("The status is 'disconnected'"),
             tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
@@ -913,11 +913,11 @@ export const WIZARD_STEPS = (
         prerequisites: [botOnlineReq],
         content: t("Attach the weeder tool to the UTM and press VERIFY."),
         component: ToolCheck,
-        question: t("Is the status MOUNTED?"),
+        question: t("Is the status 'connected'?"),
         outcomes: [
           {
             slug: "dismounted",
-            description: t("The status is DISMOUNTED"),
+            description: t("The status is 'disconnected'"),
             tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
@@ -931,11 +931,11 @@ export const WIZARD_STEPS = (
         prerequisites: [botOnlineReq],
         content: t("Attach the soil sensor tool to the UTM and press VERIFY."),
         component: ToolCheck,
-        question: t("Is the status MOUNTED?"),
+        question: t("Is the status 'connected'?"),
         outcomes: [
           {
             slug: "dismounted",
-            description: t("The status is DISMOUNTED"),
+            description: t("The status is 'disconnected'"),
             tips: t(SetupWizardContent.CHECK_TOOL_CONNECTIONS),
           },
         ],
