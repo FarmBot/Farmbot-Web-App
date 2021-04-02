@@ -110,6 +110,23 @@ describe("<ValueSelection />", () => {
     expect(wrapper.text()).toContain("other");
   });
 
+  it("renders plant value: date planted", () => {
+    const p = fakeProps();
+    p.resource = {
+      kind: "resource",
+      args: { resource_type: "Plant", resource_id: 1 }
+    };
+    p.field = "planted_at";
+    p.value = "{{ timeNow }}";
+    const wrapper = mount(<ValueSelection {...p} />);
+    expect(wrapper.find("FBSelect").length).toEqual(1);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.NOW,
+    ]);
+    expect(wrapper.text()).toContain("as");
+    expect(wrapper.text()).toContain("Now");
+  });
+
   it("renders known weed value", () => {
     const p = fakeProps();
     p.resource = {

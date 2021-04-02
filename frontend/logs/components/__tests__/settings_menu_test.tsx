@@ -25,6 +25,8 @@ import { edit, save } from "../../../api/crud";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<LogsSettingsMenu />", () => {
+  beforeEach(() => { mockDev = false; });
+
   const fakeConfig = fakeFbosConfig();
   const state = fakeState();
   state.resources = buildResourceIndex([fakeConfig]);
@@ -35,21 +37,20 @@ describe("<LogsSettingsMenu />", () => {
     sourceFbosConfig: () => ({ value: false, consistent: true }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
-    shouldDisplay: () => false,
   });
 
   it("renders", () => {
     const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
-    ["begin", "steps", "complete", "firmware"].map(string =>
+    ["begin", "steps", "complete"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.find("a").length).toEqual(0);
+    expect(wrapper.text().toLowerCase()).not.toContain("firmware");
   });
 
-  it("doesn't display firmware log settings", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
-    const wrapper = mount(<LogsSettingsMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("firmware");
+  it("displays firmware log settings", () => {
+    mockDev = true;
+    const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("firmware");
   });
 
   it("doesn't update", () => {
@@ -67,7 +68,8 @@ describe("<LogsSettingsMenu />", () => {
   });
 
   function testSettingToggle(setting: ConfigurationName, position: number) {
-    it("toggles setting", () => {
+    it(`toggles ${setting} setting`, () => {
+      mockDev = true;
       const p = fakeProps();
       p.sourceFbosConfig = () => ({ value: false, consistent: true });
       const wrapper = mount(<LogsSettingsMenu {...p} />);

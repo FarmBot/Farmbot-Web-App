@@ -9,7 +9,6 @@ import { MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
-import { Feature } from "../../devices/interfaces";
 import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
 
 interface LogSettingRecord {
@@ -121,7 +120,7 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
         getConfigValue={getConfigValue} />;
     };
     const { private_ip } = this.props.bot.hardware.informational_settings;
-    const firmwareLogs = !this.props.shouldDisplay(Feature.no_firmware_logs);
+    const firmwareLogs = DevSettings.futureFeaturesEnabled();
     return <div className={"logs-settings-menu"}>
       {t("Sequence logs:")}
       {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}

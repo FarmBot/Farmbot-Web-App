@@ -194,14 +194,12 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="purple">
       {t("ASSERTION")}
     </StepButton>,
-    ...(shouldDisplay(Feature.lua_step)
-      ? [<StepButton
-        {...commonStepProps}
-        step={{ kind: "lua", args: { lua: "" } }}
-        color="purple">
-        {t("LUA")}
-      </StepButton>]
-      : []),
+    <StepButton
+      {...commonStepProps}
+      step={{ kind: "lua", args: { lua: "" } }}
+      color="purple">
+      {t("LUA")}
+    </StepButton>,
     <StepButton
       {...commonStepProps}
       step={{

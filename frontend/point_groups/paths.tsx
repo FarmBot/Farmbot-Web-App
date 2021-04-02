@@ -8,6 +8,8 @@ import { edit, save } from "../api/crud";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { error } from "../toast/toast";
 import { DevSettings } from "../settings/dev/dev_support";
+import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { Feature } from "../devices/interfaces";
 
 export const xy = (point: TaggedPoint) => ({ x: point.body.x, y: point.body.y });
 
@@ -84,9 +86,9 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
   const normalizedLength = pathLength / maxLength * 100;
   const sortLabel = () => {
     switch (sortTypeKey) {
-      case "nn": return "Optimized";
-      case "xy_alternating": return "X/Y Alternating";
-      case "yx_alternating": return "Y/X Alternating";
+      case "nn": return t("Optimized");
+      case "xy_alternating": return t("X/Y Alternating");
+      case "yx_alternating": return t("Y/X Alternating");
       default: return sortOptionsTable()[sortTypeKey];
     }
   };
@@ -97,11 +99,13 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
     onMouseLeave={() =>
       dispatch({ type: Actions.TRY_SORT_TYPE, payload: undefined })}
     onClick={() => {
-      if (sortTypeKey == "nn" || sortTypeKey == "xy_alternating"
-        || sortTypeKey == "yx_alternating") {
+      if ((sortTypeKey == "nn"
+        && !shouldDisplayFeature(Feature.sort_type_optimized)) ||
+        ((sortTypeKey == "xy_alternating" || sortTypeKey == "yx_alternating")
+          && !shouldDisplayFeature(Feature.sort_type_alternating))) {
         error(t("Not supported yet."));
       } else {
-        dispatch(edit(group, { sort_type: sortTypeKey }));
+        dispatch(edit(group, { sort_type: sortTypeKey as PointGroupSortType }));
         dispatch(save(group.uuid));
       }
     }}>

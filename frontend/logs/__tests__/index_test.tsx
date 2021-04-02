@@ -28,7 +28,6 @@ describe("<Logs />", () => {
     dispatch: jest.fn(),
     sourceFbosConfig: jest.fn(),
     getConfigValue: x => mockStorj[x],
-    shouldDisplay: () => false,
     bot: bot,
   });
 

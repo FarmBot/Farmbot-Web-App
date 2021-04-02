@@ -152,6 +152,28 @@ describe("<FieldSelection />", () => {
     expect(wrapper.find(".reset-custom-field").length).toEqual(0);
   });
 
+  it("renders known plant field", () => {
+    const p = fakeProps();
+    p.resource = {
+      kind: "resource",
+      args: { resource_type: "Plant", resource_id: 3 }
+    };
+    p.field = "planted_at";
+    const wrapper = mount(<FieldSelection {...p} />);
+    expect(wrapper.find("FBSelect").length).toEqual(1);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      DDI.PLANT_STAGE,
+      DDI.X,
+      DDI.Y,
+      DDI.Z,
+      DDI.RADIUS,
+      DDI.CUSTOM_META_FIELD,
+    ]);
+    expect(wrapper.text()).toContain("property");
+    expect(wrapper.text()).toContain("Date Planted");
+    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+  });
+
   it("changes known weed field", () => {
     const p = fakeProps();
     p.resource = {

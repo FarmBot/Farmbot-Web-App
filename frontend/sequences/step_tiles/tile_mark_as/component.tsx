@@ -6,12 +6,14 @@ import { ToolTips } from "../../../constants";
 import { UpdateResource, Resource, Identifier } from "farmbot";
 import { MarkAsState, FieldAndValue } from "./interfaces";
 import { ResourceSelection } from "./resource_selection";
-import { FieldSelection } from "./field_selection";
+import { FieldSelection, UPDATE_RESOURCE_DDIS } from "./field_selection";
 import { ValueSelection } from "./value_selection";
 import { isUndefined } from "lodash";
 import { NOTHING_SELECTED } from "../../locals_list/handle_select";
 import { CustomFieldWarning } from "./field_warning";
 import { StepParams } from "../../interfaces";
+import { shouldDisplayFeature } from "../../../farmware/state_to_props";
+import { Feature } from "../../../devices/interfaces";
 
 export class MarkAs
   extends React.Component<StepParams<UpdateResource>, MarkAsState> {
@@ -67,8 +69,21 @@ export class MarkAs
       const { fieldsAndValues } = this.state;
       const old = fieldsAndValues[index];
       fieldsAndValues[index] = { ...old, ...update };
-      this.setState({ fieldsAndValues: fieldsAndValues }, callback);
-      if (isUndefined(update.value) && fieldsAndValues.length < 2) {
+      const nowValue = UPDATE_RESOURCE_DDIS().NOW.value;
+      const newFieldsAndValues =
+        (old.field == "plant_stage" && old.value == "planted"
+          && fieldsAndValues[index].value != "planted")
+          ? fieldsAndValues.filter(fieldAndValue =>
+            !(fieldAndValue.field == "planted_at"
+              && fieldAndValue.value == nowValue))
+          : fieldsAndValues;
+      if (fieldsAndValues[index].field == "plant_stage"
+        && fieldsAndValues[index].value == "planted"
+        && shouldDisplayFeature(Feature.planted_at_now)) {
+        newFieldsAndValues.push({ field: "planted_at", value: nowValue });
+      }
+      this.setState({ fieldsAndValues: newFieldsAndValues }, callback);
+      if (isUndefined(update.value) && newFieldsAndValues.length < 2) {
         this.resetStep();
       }
     };
@@ -95,12 +110,16 @@ export class MarkAs
             updateResource={this.updateResource} />
         </Col>
       </Row>
-      {this.state.fieldsAndValues.map((fieldAndValue, index) =>
-        <Row key={index}>
-          <div className={"update-resource-pair"}>
+      {this.state.fieldsAndValues.map((fieldAndValue, index) => {
+        const isPlantedAtRow = index > 0
+          && fieldAndValue.field == "planted_at"
+          && fieldAndValue.value == UPDATE_RESOURCE_DDIS().NOW.value;
+        return <Row key={index}>
+          <div className={`update-resource-pair ${index == 0 ? "first" : ""}`}>
             <Col xs={6}>
               <FieldSelection {...commonProps}
                 field={fieldAndValue.field}
+                disabled={isPlantedAtRow}
                 update={this.updateFieldOrValue(index)} />
             </Col>
             <Col xs={6}>
@@ -110,6 +129,7 @@ export class MarkAs
                 update={this.updateFieldOrValue(index)}
                 add={this.updateFieldOrValue(
                   this.state.fieldsAndValues.length)}
+                disabled={isPlantedAtRow}
                 commitSelection={this.commitSelection} />
             </Col>
             <CustomFieldWarning
@@ -117,7 +137,8 @@ export class MarkAs
               field={fieldAndValue.field}
               update={this.updateFieldOrValue(index)} />
           </div>
-        </Row>)}
+        </Row>;
+      })}
     </StepWrapper>;
   }
 }
