@@ -1107,6 +1107,16 @@ ul {
       color: $panel_brown;
     }
   }
+  &.location {
+    img {
+      filter: grayscale(1);
+    }
+    p,
+    h5,
+    a {
+      color: $dark_gray;
+    }
+  }
 }
 
 .farmware-info {

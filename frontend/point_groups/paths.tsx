@@ -11,7 +11,10 @@ import { DevSettings } from "../settings/dev/dev_support";
 
 export const xy = (point: TaggedPoint) => ({ x: point.body.x, y: point.body.y });
 
-const distance = (p1: { x: number, y: number }, p2: { x: number, y: number }) =>
+export const distance = (
+  p1: { x: number, y: number },
+  p2: { x: number, y: number },
+) =>
   Math.pow(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2), 0.5);
 
 const pathDistance = (pathPoints: TaggedPoint[]) => {
@@ -25,12 +28,12 @@ const pathDistance = (pathPoints: TaggedPoint[]) => {
   return Math.round(total);
 };
 
-const findNearest =
+export const findNearest =
   (from: { x: number, y: number }, available: TaggedPoint[]) => {
     const distances = available.map(p => ({
       point: p, distance: distance(xy(p), from)
     }));
-    return sortBy(distances, "distance")[0].point;
+    return sortBy(distances, "distance")[0]?.point;
   };
 
 export const nn = (pathPoints: TaggedPoint[]) => {
