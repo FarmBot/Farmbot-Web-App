@@ -7,10 +7,11 @@ let mockDev = false;
 jest.mock("../../settings/dev/dev_support", () => ({
   DevSettings: {
     futureFeaturesEnabled: () => mockDev,
+    overriddenFbosVersion: jest.fn(),
   }
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   PathInfoBar, nn, PathInfoBarProps, Paths, PathsProps,

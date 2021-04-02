@@ -20,7 +20,10 @@ export interface MarkAsState {
 
 export interface GetSelectedValueProps {
   resource: MaybeResourceArg;
-  field: KnownField.plant_stage | KnownField.mounted_tool_id | undefined;
+  field: KnownField.plant_stage
+  | KnownField.mounted_tool_id
+  | KnownField.planted_at
+  | undefined;
   value: UpdateResourceValue | undefined;
   resourceIndex: ResourceIndex;
 }
@@ -41,6 +44,7 @@ type UpdateFieldOrValue =
 export interface FieldSelectionProps extends SelectionPropsBase {
   field: string | undefined;
   update: UpdateFieldOrValue;
+  disabled?: boolean;
 }
 
 export interface CustomFieldSelectionProps extends SelectionPropsBase {
@@ -63,8 +67,13 @@ interface ValueSelectionPropsBase extends SelectionPropsBase {
 
 export interface ValueSelectionProps extends ValueSelectionPropsBase {
   field: string | undefined;
+  disabled?: boolean;
 }
 
 export interface KnownValueSelectionProps extends ValueSelectionPropsBase {
-  field: KnownField.plant_stage | KnownField.mounted_tool_id | undefined;
+  field: KnownField.plant_stage
+  | KnownField.mounted_tool_id
+  | KnownField.planted_at
+  | undefined;
+  disabled?: boolean;
 }

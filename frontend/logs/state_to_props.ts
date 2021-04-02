@@ -10,7 +10,6 @@ import { TaggedLog } from "farmbot";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFbosConfig } from "../resources/getters";
 import { chain } from "lodash";
-import { getShouldDisplayFn } from "../farmware/state_to_props";
 
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(
@@ -31,7 +30,6 @@ export function mapStateToProps(props: Everything): LogsProps {
     logs: takeSortedLogs(250, props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     bot: props.bot,
   };
 }

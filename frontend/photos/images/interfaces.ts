@@ -30,6 +30,8 @@ export interface FlipperImageProps {
   flipperId: string;
   env: UserEnv;
   onImageLoad(img: HTMLImageElement): void;
+  hover?(hovered: string | undefined): void;
+  target?: Record<"x" | "y", number> | undefined;
 }
 
 export interface FlipperImageState {

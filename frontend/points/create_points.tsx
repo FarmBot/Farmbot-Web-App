@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../interfaces";
 import { initSave } from "../api/crud";
-import { Row, Col, BlurableInput, ColorPicker } from "../ui/index";
+import { Row, Col, BlurableInput, ColorPicker } from "../ui";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
 import { deletePoints } from "../api/delete_points";
@@ -124,8 +124,8 @@ export class RawCreatePoints
         : Actions.SET_DRAWN_POINT_DATA,
       payload: {
         name: this.defaultName,
-        cx: DEFAULTS.cx,
-        cy: DEFAULTS.cy,
+        cx: this.attr("cx") || DEFAULTS.cx,
+        cy: this.attr("cy") || DEFAULTS.cy,
         z: DEFAULTS.z,
         r: DEFAULTS.r,
         color: this.defaultColor,

@@ -1,5 +1,5 @@
 import { OpenFarm } from "../open_farm/openfarm";
-import { DropDownItem } from "../ui/index";
+import { DropDownItem } from "../ui";
 import { CowardlyDictionary } from "../util";
 import {
   TaggedFarmEvent,
@@ -135,6 +135,8 @@ export interface DesignerState {
   hoveredPoint: string | undefined;
   hoveredPlantListItem: string | undefined;
   hoveredToolSlot: string | undefined;
+  hoveredSensorReading: string | undefined;
+  hoveredImage: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
