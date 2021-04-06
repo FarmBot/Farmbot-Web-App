@@ -1,3 +1,12 @@
+let mockPath = "/app/designer";
+jest.mock("../../../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
+jest.mock("../../layers/points/interpolation_map", () => ({
+  getInterpolationData: () => [{ x: 111, y: 112, z: 113 }],
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { getProfileX, ProfileSvg } from "../content";
@@ -375,6 +384,16 @@ describe("<ProfileSvg />", () => {
       expected.map(string =>
         expect(wrapper.html().toLowerCase()).toContain(string));
     });
+
+  it("renders interpolated soil", () => {
+    mockPath = "/app/designer/location_info";
+    const p = fakeProps();
+    p.expanded = true;
+    p.sourceFbosConfig = () => ({ value: 100, consistent: true });
+    const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#interpolated-soil-height").find("rect").length)
+      .toEqual(1);
+  });
 });
 
 describe("getProfileX()", () => {

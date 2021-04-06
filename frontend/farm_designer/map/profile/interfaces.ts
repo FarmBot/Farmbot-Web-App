@@ -157,3 +157,10 @@ export interface ProfileGridProps {
   negativeZ: boolean;
   getX: GetProfileX;
 }
+
+export interface InterpolatedSoilProps {
+  axis: "x" | "y";
+  selectionWidth: number;
+  position: AxisNumberProperty;
+  getX: GetProfileX;
+}
