@@ -2,11 +2,11 @@ import React from "react";
 import axios from "axios";
 import { error as log, success, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors, attachToRoot } from "../util";
+import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState, SetterCB } from "./interfaces";
-import { Row, Col } from "../ui/index";
+import { Row, Col } from "../ui";
 import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
@@ -18,9 +18,6 @@ import { get } from "lodash";
 import { t } from "../i18next_wrapper";
 
 export const DEFAULT_APP_PAGE = "/app/designer/controls";
-
-export const attachFrontPage =
-  () => attachToRoot(FrontPage, {});
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];

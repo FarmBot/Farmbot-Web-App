@@ -22,7 +22,7 @@ const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
   || (item.subheading && item.subheading.toLowerCase().includes(term));
 
-export class PureFarmEvents
+export class RawFarmEvents
   extends React.Component<FarmEventProps, FarmEventState> {
   state: FarmEventState = { searchTerm: "" };
   get searchTerm() { return this.state.searchTerm.toLowerCase(); }
@@ -130,4 +130,4 @@ export class PureFarmEvents
   }
 }
 
-export const FarmEvents = connect(mapStateToProps)(PureFarmEvents);
+export const FarmEvents = connect(mapStateToProps)(RawFarmEvents);

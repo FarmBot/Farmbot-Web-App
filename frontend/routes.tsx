@@ -7,9 +7,9 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
-import { UNBOUND_ROUTES } from "./route_config";
+import { UnboundRouteConfig, UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
-import { Provider } from "react-redux";
+import { ConnectedComponent, Provider } from "react-redux";
 
 interface RootComponentProps { store: Store; }
 
@@ -19,14 +19,26 @@ export const attachAppToDom = () => {
   _store.dispatch(ready() as any);
 };
 
+export type AnyConnectedComponent =
+  ConnectedComponent<React.ComponentType, unknown>;
+
 interface RootComponentState {
-  Route: React.ComponentType;
-  ChildRoute?: React.ComponentType;
+  Route: AnyConnectedComponent | React.FunctionComponent;
+  ChildRoute?: AnyConnectedComponent;
 }
+
+export type ChangeRoute = (
+  Route: AnyConnectedComponent | React.FunctionComponent,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  info?: UnboundRouteConfig<any, any> | undefined,
+  ChildRoute?: AnyConnectedComponent | undefined,
+) => void;
 
 export class RootComponent
   extends React.Component<RootComponentProps, RootComponentState> {
-  state: RootComponentState = { Route: () => <div>Loading...</div> };
+  state: RootComponentState = {
+    Route: (_: { children?: React.ReactElement }) => <div>Loading...</div>
+  };
 
   UNSAFE_componentWillMount() {
     const notLoggedIn = !Session.fetchStoredToken();
@@ -35,30 +47,25 @@ export class RootComponent
     (notLoggedIn && restrictedArea && Session.clear());
   }
 
-  changeRoute =
-    (Route: React.ComponentType, ChildRoute?: React.ComponentType) => {
-      this.setState({ Route: Route, ChildRoute });
-    };
+  changeRoute: ChangeRoute = (Route, _info, ChildRoute) => {
+    this.setState({ Route, ChildRoute });
+  }
 
   componentDidMount() {
-    const main_routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
-    new Router(main_routes).enableHtml5Routing("/app").init();
+    const mainRoutes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
+    new Router(mainRoutes).enableHtml5Routing("/app").init();
   }
 
   render() {
-    const { Route } = this.state;
-    const { ChildRoute } = this.state;
-    const props = ChildRoute ? { children: <ChildRoute /> } : {};
-    try {
-      return <ErrorBoundary>
-        <Provider store={_store}>
-          <App>
-            <Route {...props} />
-          </App>
-        </Provider>
-      </ErrorBoundary>;
-    } catch (error) {
-      return <p> Problem loading page.</p>;
-    }
+    const { Route, ChildRoute } = this.state;
+    return <ErrorBoundary>
+      <Provider store={_store}>
+        <App>
+          <Route>
+            {ChildRoute && <ChildRoute />}
+          </Route>
+        </App>
+      </Provider>
+    </ErrorBoundary>;
   }
 }
