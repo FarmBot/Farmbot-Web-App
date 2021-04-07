@@ -63,37 +63,37 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
     const { botOnline } = this.props;
     return <div className={"move-to-form"}>
       <Row>
-        <Col xs={4}>
+        <Col xs={3}>
           <label>{t("X AXIS")}</label>
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
           <label>{t("Y AXIS")}</label>
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
           <label>{t("Z AXIS")}</label>
         </Col>
       </Row>
       <Row>
-        <Col xs={4}>
+        <Col xs={3}>
           <input disabled name="x" value={isNumber(x) ? x : "---"} />
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
           <input disabled name="y" value={isNumber(y) ? y : "---"} />
         </Col>
         <AxisInputBox
           onChange={(_, val: number) => this.setState({ z: val })}
           axis={"z"}
           value={this.state.z} />
-        <Row>
+        <Col xs={3}>
           <button
             onClick={() => moveAbsolute(this.vector)}
-            className={`fb-button gray ${botOnline ? "" : "pseudo-disabled"}`}
+            className={`fb-button green ${botOnline ? "" : "pseudo-disabled"}`}
             title={botOnline
               ? t("Move to this coordinate")
               : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
-            {t("Move to this coordinate")}
+            {t("GO")}
           </button>
-        </Row>
+        </Col>
       </Row>
     </div>;
   }

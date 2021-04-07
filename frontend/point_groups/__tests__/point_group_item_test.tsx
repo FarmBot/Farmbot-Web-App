@@ -161,6 +161,19 @@ describe("<PointGroupItem/>", () => {
     expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
+  it("handles clicks with no id", () => {
+    const p = fakeProps();
+    p.point.body.id = 0;
+    p.group.body.point_ids = [0];
+    const i = new PointGroupItem(p);
+    i.click();
+    expect(i.props.dispatch).toHaveBeenCalledTimes(2);
+    const expectedGroupBody = cloneDeep(p.group.body);
+    expectedGroupBody.point_ids = [];
+    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
+  });
+
   it("errors on click", () => {
     const p = fakeProps();
     p.point.body.id = 1;

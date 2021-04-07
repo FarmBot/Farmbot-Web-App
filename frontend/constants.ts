@@ -708,7 +708,9 @@ export namespace Content {
 
   export const FEEDBACK_NOTICE =
     trim(`Feedback submitted through this form will be linked to your user
-    account and email so that we may follow up when necessary.`);
+    account and email so that we may follow up when necessary. If your
+    account email is not the best way for a support technician to reach
+    you, please include your phone number or preferred means of contact.`);
 
   export const MUST_REGISTER =
     trim(`You must register your original FarmBot order number before
@@ -1736,6 +1738,8 @@ export enum Actions {
   SET_SELECTION_POINT_TYPE = "SET_SELECTION_POINT_TYPE",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
+  HOVER_SENSOR_READING = "HOVER_SENSOR_READING",
+  HOVER_IMAGE = "HOVER_IMAGE",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
   HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",

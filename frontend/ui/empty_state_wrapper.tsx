@@ -23,7 +23,8 @@ interface EmptyStateWrapperProps {
   textElement?: JSX.Element;
   graphic: string;
   colorScheme?: "plants" | "events" | "gardens" | "points" | "tools"
-  | "groups" | "weeds" | "zones" | "farmware" | "peripherals" | "sensors";
+  | "groups" | "weeds" | "zones" | "farmware" | "peripherals" | "sensors"
+  | "location";
   children?: React.ReactNode;
 }
 

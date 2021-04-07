@@ -1,5 +1,6 @@
 import { RouteConfig } from "takeme";
 import { Apology } from "./apology";
+import { AnyConnectedComponent, ChangeRoute } from "./routes";
 
 /** 99% of route configurations will use this interface. */
 interface UnboundRouteConfigNoChild<T> {
@@ -25,6 +26,7 @@ interface UnboundRouteConfigChild<T, U> {
 /** The union of both route config types. */
 export type UnboundRouteConfig<T, U> =
   UnboundRouteConfigNoChild<T> | UnboundRouteConfigChild<T, U>;
+
 /** This is the preferred way to generate a route in the app.
  *  PROBLEM:
  *   1. We want to lazy load each route's component to shrink the bundle size.
@@ -52,7 +54,7 @@ export type UnboundRouteConfig<T, U> =
  *            DONE.
  */
 function route<T, U>(info: UnboundRouteConfig<T, U>) {
-  return (callback: Function): RouteConfig => {
+  return (changeRoute: ChangeRoute): RouteConfig => {
     const { $ } = info;
     return {
       $,
@@ -61,13 +63,15 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
           const comp = (await info.getModule())[info.key];
           if (info.children) {
             const child = (await info.getChild())[info.childKey];
-            callback(comp, child, info);
+            changeRoute(comp as unknown as AnyConnectedComponent,
+              info,
+              child as unknown as AnyConnectedComponent);
           } else {
-            callback(comp, undefined, info);
+            changeRoute(comp as unknown as AnyConnectedComponent, info);
           }
         } catch (e) {
           console.error(e);
-          callback(Apology);
+          changeRoute(Apology, info);
         }
       }
     };
@@ -164,6 +168,14 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/move_to"),
     childKey: "MoveTo"
+  }),
+  route({
+    children: true,
+    $: "/designer/location_info",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/location_info"),
+    childKey: "LocationInfo"
   }),
   route({
     children: true,

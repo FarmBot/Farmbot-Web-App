@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
@@ -14,7 +14,7 @@ enum TableColWidth {
 }
 
 /** Separated to allow frozen header row while scrolling table body. */
-const TableHeader = () =>
+export const TableHeader = () =>
   <table className="sensor-history-table-header">
     <thead>
       <tr>
@@ -48,14 +48,14 @@ const TableHeader = () =>
   </table>;
 
 /** Sensor reading. */
-const TableRow = (props: TableRowProps) => {
+export const TableRow = (props: TableRowProps) => {
   const {
-    sensorReading, timeSettings, period, sensorName, hover, hovered
+    sensorReading, timeSettings, period, sensorName, hover, hovered,
   } = props;
   const { uuid, body } = sensorReading;
   const { value, x, y, z, created_at, mode } = body;
   return <tr key={uuid}
-    className={`${period} ${hovered === uuid ? "selected" : ""}`}
+    className={`table-row ${period} ${hovered === uuid ? "selected" : ""}`}
     onMouseEnter={() => hover(uuid)}
     onMouseLeave={() => hover(undefined)}>
     <td style={{ width: `${TableColWidth.sensor}px` }}>
@@ -68,7 +68,7 @@ const TableRow = (props: TableRowProps) => {
       {mode > 0 ? t("Analog") : t("Digital")}
     </td>
     <td style={{ width: `${TableColWidth.location}px` }}>
-      {xyzTableEntry(x, y, z)}
+      {!props.hideLocation && xyzTableEntry(x, y, z)}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
       {formatLogTime(moment(created_at).unix(), timeSettings)}

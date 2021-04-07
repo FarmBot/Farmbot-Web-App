@@ -20,6 +20,8 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
+import { LocationInfoModeLink } from "../../location_info";
+import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -169,6 +171,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
         <LayerToggles {...props} />
         <MoveModeLink />
+        {DevSettings.futureFeaturesEnabled() && <LocationInfoModeLink />}
         <SelectModeLink />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />
