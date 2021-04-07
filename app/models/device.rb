@@ -243,7 +243,9 @@ class Device < ApplicationRecord
       payload = {
         "text": [
           "`Device ID`: #{id}",
+          "`FBOS Version (from API)`: v#{fbos_version}",
           "`Email`: #{email}",
+          "`Timezone`: #{timezone}",
           "`Order Number`: #{fb_order_number}",
           "`Model`: #{firmware_kind}",
           "`Slug`: #{slug}",

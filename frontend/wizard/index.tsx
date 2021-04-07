@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { t } from "../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
-import { every, isUndefined, some } from "lodash";
+import { every, isUndefined, noop, some } from "lodash";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
@@ -86,7 +86,8 @@ export class RawSetupWizard
           ...this.sectionsOpen(),
         });
         this.props.dispatch(resetSetup(this.props.device));
-      });
+      })
+      .catch(noop);
   }
 
   get closedSections() {

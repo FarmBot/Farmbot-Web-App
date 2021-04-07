@@ -1,5 +1,14 @@
-import { updatePageInfo, attachToRoot } from "../page";
+jest.mock("../stop_ie", () => ({ stopIE: jest.fn() }));
+
+jest.mock("../../i18n", () => ({
+  detectLanguage: jest.fn(() => Promise.resolve({})),
+}));
+
+import { updatePageInfo, attachToRoot, entryPoint } from "../page";
 import React from "react";
+import { detectLanguage } from "../../i18n";
+import { stopIE } from "../stop_ie";
+import I from "i18next";
 
 describe("updatePageInfo()", () => {
   it("sets page title", () => {
@@ -18,13 +27,31 @@ describe("updatePageInfo()", () => {
   });
 });
 
+class Foo extends React.Component<{ text: string }> {
+  render() { return <p>{this.props.text}</p>; }
+}
+
+const clear = () => {
+  const root = document.getElementById("root");
+  root && document.body.removeChild(root);
+};
+
 describe("attachToRoot()", () => {
-  class Foo extends React.Component<{ text: string }> {
-    render() { return <p>{this.props.text}</p>; }
-  }
   it("attaches page", () => {
+    clear();
     attachToRoot(Foo, { text: "Bar" });
     expect(document.body.innerHTML).toEqual("<div id=\"root\"><p>Bar</p></div>");
     expect(document.body.textContent).toEqual("Bar");
+  });
+});
+
+describe("entryPoint()", () => {
+  it("calls entry callbacks", async () => {
+    clear();
+    await entryPoint(Foo);
+    expect(document.body.innerHTML).toEqual("<div id=\"root\"><p></p></div>");
+    expect(detectLanguage).toHaveBeenCalled();
+    expect(I.init).toHaveBeenCalled();
+    expect(stopIE).toHaveBeenCalled();
   });
 });

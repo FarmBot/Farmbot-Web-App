@@ -1,15 +1,11 @@
-const mockFn = jest.fn();
-jest.mock("../../i18n", () => ({
-  detectLanguage: jest.fn(() => Promise.resolve(mockFn)),
-}));
+jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
 
-import { detectLanguage } from "../../i18n";
-import I from "i18next";
+import { entryPoint } from "../../util";
+import { PasswordReset } from "../password_reset";
 
-describe("password reset index", () => {
-  it("loads the app", async () => {
+describe("PasswordReset loader", () => {
+  it("calls entryPoint", async () => {
     await import("../index");
-    expect(detectLanguage).toHaveBeenCalled();
-    expect(I.init).toHaveBeenCalled();
+    expect(entryPoint).toHaveBeenCalledWith(PasswordReset);
   });
 });
