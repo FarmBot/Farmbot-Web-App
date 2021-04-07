@@ -1,14 +1,7 @@
 import React from "react";
 import {
-  WidgetBody,
-  Col,
-  Widget,
-  WidgetHeader,
-  Row,
-  BlurableInput,
-  BIProps,
-} from "../ui/index";
-
+  WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput, BIProps,
+} from "../ui";
 import { resendEmail } from "./resend_verification";
 import { success, error } from "../toast/toast";
 import { bail } from "../util";
@@ -27,7 +20,7 @@ type KeySetter = (keyName: RegKeyName, val: string) => void;
 
 type KeyGetter = (keyName: RegKeyName) => string | undefined;
 
-interface CreateAccountProps {
+export interface CreateAccountProps {
   children?: React.ReactChild
   submitRegistration(e: React.FormEvent<{}>): void;
   sent: boolean;
@@ -37,7 +30,7 @@ interface CreateAccountProps {
 
 type FieldType = BIProps["type"];
 
-interface FormFieldProps {
+export interface FormFieldProps {
   label: string;
   type: FieldType;
   value: string;

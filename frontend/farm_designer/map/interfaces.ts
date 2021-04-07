@@ -184,6 +184,7 @@ export enum Mode {
   editPlant = "editPlant",
   addPlant = "addPlant",
   moveTo = "moveTo",
+  locationInfo = "locationInfo",
   points = "points",
   weeds = "weeds",
   createPoint = "createPoint",

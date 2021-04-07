@@ -829,13 +829,77 @@
   margin-left: 1rem;
   margin-right: 1rem;
   button {
-    margin: 1rem;
-    margin-left: 2rem;
-    width: 88%;
+    margin: 0.5rem;
     float: left;
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.location-info-panel {
+  .panel-content {
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-top: 4rem;
+      margin-bottom: 0;
+    }
+    .horizontal-scroll {
+      overflow-y: hidden;
+      overflow-x: scroll;
+      white-space: nowrap;
+      .image-item {
+        display: inline-block;
+        width: 80%;
+        height: 100%;
+        p {
+          text-align: center;
+        }
+      }
+    }
+    button {
+      float: none;
+    }
+    .add-point {
+      margin-top: 2rem;
+    }
+    .point-search-item,
+    .plant-search-item,
+    .horizontal-scroll {
+      margin-left: -15px;
+      margin-right: -15px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+    .sensor-history-table {
+      margin-left: -15px;
+      margin-right: -15px;
+      .table-row {
+        height: 4rem;
+        td:first-of-type {
+          padding-left: 2rem;
+        }
+      }
+
+    }
+    .location-distance {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      .title {
+        font-weight: bold;
+      }
+      p {
+        text-align: center;
+      }
+    }
+    hr {
+      margin: 1rem;
+      margin-bottom: 0.5rem;
+    }
   }
 }
 

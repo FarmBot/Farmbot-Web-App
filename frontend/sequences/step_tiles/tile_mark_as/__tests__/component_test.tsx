@@ -1,6 +1,11 @@
 const mockEditStep = jest.fn();
 jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
+let mockShouldDisplay = false;
+jest.mock("../../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { MarkAs } from "../component";
@@ -17,6 +22,8 @@ import { NOTHING_SELECTED } from "../../../locals_list/handle_select";
 import { StepParams } from "../../../interfaces";
 
 describe("<MarkAs/>", () => {
+  beforeEach(() => { mockShouldDisplay = false; });
+
   const plant = fakePlant();
   plant.body.id = 1;
   const weed = fakeWeed();
@@ -160,6 +167,47 @@ describe("<MarkAs/>", () => {
     expect(wrapper.state().fieldsAndValues).toEqual([
       { field: "mounted_tool_id", value: 0 },
       { field: "plant_stage", value: "planted" },
+    ]);
+    expect(callback).toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("adds planted at now", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.currentStep.body = [{
+      kind: "pair", args: { label: "plant_stage", value: "planned" }
+    }];
+    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
+    expect(wrapper.state().fieldsAndValues).toEqual([
+      { field: "plant_stage", value: "planned" },
+    ]);
+    const callback = jest.fn();
+    wrapper.instance().updateFieldOrValue(0)({ value: "planted" }, callback);
+    expect(wrapper.state().fieldsAndValues).toEqual([
+      { field: "plant_stage", value: "planted" },
+      { field: "planted_at", value: "{{ timeNow }}" },
+    ]);
+    expect(callback).toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("removes planted at now", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.currentStep.body = [
+      { kind: "pair", args: { label: "plant_stage", value: "planted" } },
+      { kind: "pair", args: { label: "planted_at", value: "{{ timeNow }}" } },
+    ];
+    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
+    expect(wrapper.state().fieldsAndValues).toEqual([
+      { field: "plant_stage", value: "planted" },
+      { field: "planted_at", value: "{{ timeNow }}" },
+    ]);
+    const callback = jest.fn();
+    wrapper.instance().updateFieldOrValue(0)({ value: "planned" }, callback);
+    expect(wrapper.state().fieldsAndValues).toEqual([
+      { field: "plant_stage", value: "planned" },
     ]);
     expect(callback).toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();

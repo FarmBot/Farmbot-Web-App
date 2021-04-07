@@ -121,7 +121,7 @@ describe("<CreatePoints />", () => {
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: {
         name: "Created Point", color: "green",
-        cx: 1, cy: 1, z: 0, r: 15
+        cx: 13, cy: 22, z: 0, r: 15
       },
     });
   });

@@ -17,6 +17,7 @@ import {
 import {
   fakeDesignerState,
 } from "../../../../../__test_support__/fake_designer_state";
+import { tagAsSoilHeight } from "../../../../../points/soil_height";
 
 describe("<PointLayer/>", () => {
   const fakeProps = (): PointLayerProps => ({
@@ -76,5 +77,23 @@ describe("<PointLayer/>", () => {
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find(GardenPoint).length).toEqual(1);
+  });
+
+  it("shows empty interpolation map", () => {
+    mockPath = "/app/designer/location_info";
+    const wrapper = svgMount(<PointLayer {...fakeProps()} />);
+    const layer = wrapper.find("#point-layer");
+    expect(layer.find("#interpolation-map").length).toEqual(1);
+    expect(layer.find("rect").length).toEqual(0);
+  });
+
+  it("shows interpolation map", () => {
+    mockPath = "/app/designer/location_info";
+    const p = fakeProps();
+    tagAsSoilHeight(p.genericPoints[0]);
+    const wrapper = svgMount(<PointLayer {...p} />);
+    const layer = wrapper.find("#point-layer");
+    expect(layer.find("#interpolation-map").length).toEqual(1);
+    expect(layer.find("rect").length).toEqual(7200);
   });
 });

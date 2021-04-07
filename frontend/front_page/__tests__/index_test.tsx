@@ -1,28 +1,11 @@
-jest.mock("../../i18n", () => ({
-  detectLanguage: jest.fn(() => Promise.resolve())
-}));
+jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
 
-jest.mock("../../util/stop_ie", () => ({ stopIE: jest.fn() }));
+import { entryPoint } from "../../util";
+import { FrontPage } from "../front_page";
 
-jest.mock("../../util", () => ({
-  attachToRoot: jest.fn(),
-  trim: (s: string) => s,
-}));
-
-import { detectLanguage } from "../../i18n";
-import { stopIE } from "../../util/stop_ie";
-import { attachToRoot } from "../../util";
-import { FrontPage, attachFrontPage } from "../front_page";
-
-describe("index", () => {
-  it("Attaches to the DOM", async () => {
+describe("FrontPage loader", () => {
+  it("calls entryPoint", async () => {
     await import("../index");
-    expect(detectLanguage).toHaveBeenCalled();
-    expect(stopIE).toHaveBeenCalled();
-  });
-
-  it("attaches FrontPage to DOM specifically", () => {
-    attachFrontPage();
-    expect(attachToRoot).toHaveBeenCalledWith(FrontPage, {});
+    expect(entryPoint).toHaveBeenCalledWith(FrontPage);
   });
 });

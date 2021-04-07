@@ -67,6 +67,24 @@ describe("designer reducer", () => {
     expect(newState.hoveredPlantListItem).toEqual("plantUuid");
   });
 
+  it("sets hovered sensor reading", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_SENSOR_READING,
+      payload: "UUID"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredSensorReading).toEqual("UUID");
+  });
+
+  it("sets hovered image", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_IMAGE,
+      payload: "UUID"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredImage).toEqual("UUID");
+  });
+
   it("sets hovered point", () => {
     const action: ReduxAction<string> = {
       type: Actions.TOGGLE_HOVERED_POINT,

@@ -23,9 +23,10 @@ export const addOrUpdateWizardStepResult = (
 export const destroyAllWizardStepResults =
   (wizardStepResults: TaggedWizardStepResult[]) =>
     (dispatch: Function) =>
-      confirm(t("Are you sure you want to delete all setup progress?")) &&
-      Promise.all(wizardStepResults.map(result =>
-        dispatch(destroy(result.uuid))));
+      confirm(t("Are you sure you want to delete all setup progress?"))
+        ? Promise.all(wizardStepResults.map(result =>
+          dispatch(destroy(result.uuid))))
+        : Promise.reject("Cancelled");
 
 export const completeSetup = (device: TaggedDevice | undefined) =>
   device &&

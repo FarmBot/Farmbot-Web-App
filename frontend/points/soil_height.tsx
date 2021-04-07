@@ -15,16 +15,17 @@ export const soilHeightPoint = (point: TaggedPoint) =>
     || point.body.meta.at_soil_level == "true")
   && point.body.meta.at_soil_level != "false";
 
-export const tagAsSoilHeight = (point: TaggedGenericPointer) =>
+export const tagAsSoilHeight = (point: TaggedGenericPointer) => {
   point.body.meta.at_soil_level = "true";
+  return point;
+};
 
-export const toggleSoilHeight = (point: TaggedPoint) =>
-  ({
-    meta: {
-      ...point.body.meta,
-      at_soil_level: "" + !soilHeightPoint(point),
-    }
-  });
+export const toggleSoilHeight = (point: TaggedPoint) => ({
+  meta: {
+    ...point.body.meta,
+    at_soil_level: "" + !soilHeightPoint(point),
+  }
+});
 
 export const soilHeightQuery: Record<string, string> = {
   at_soil_level: "true",

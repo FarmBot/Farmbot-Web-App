@@ -5,8 +5,19 @@ import { MapImage } from "../../farm_designer/map/layers/images/map_image";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { isBotOriginQuadrant } from "../../farm_designer/interfaces";
 import { getCameraCalibrationData } from "../../farm_designer/state_to_props";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isUndefined } from "lodash";
 import { PLACEHOLDER_FARMBOT, PlaceholderImg } from "./image_flipper";
+import { Color } from "../../ui";
+import { MapTransformProps } from "../../farm_designer/map/interfaces";
+import { transformXY } from "../../farm_designer/map/util";
+import { Xyz } from "farmbot";
+
+interface TargetProps {
+  imageLocation: Record<Xyz, number | undefined>;
+  target: Record<"x" | "y", number> | undefined;
+  mapTransformProps: MapTransformProps;
+  offset: Record<"x" | "y", string | undefined>;
+}
 
 export class FlipperImage
   extends React.Component<FlipperImageProps, FlipperImageState> {
@@ -25,9 +36,31 @@ export class FlipperImage
     });
   }
 
+  Target = (props: TargetProps) => {
+    const { imageLocation, target, mapTransformProps, offset } = props;
+    if (isUndefined(imageLocation.x) || isUndefined(imageLocation.y) || !target) {
+      return <g id={"no-target"} />;
+    }
+    const { qx, qy } = transformXY(
+      target.x - imageLocation.x - parseInt(offset.x || "0"),
+      target.y - imageLocation.y - parseInt(offset.y || "0"),
+      mapTransformProps);
+    const x = qx + (this.state.width || 0) / 2;
+    const y = qy + (this.state.height || 0) / 2;
+    return <text x={x} y={y} fill={Color.black}
+      strokeWidth={0} stroke={Color.yellow}
+      fontSize={24} fontWeight={"bold"}
+      textAnchor={"middle"} alignmentBaseline={"middle"}>x</text>;
+  };
+
   SvgImage = () => {
     const { getConfigValue } = this.props;
     const rawQuadrant = getConfigValue(NumericSetting.bot_origin_quadrant);
+    const mapTransformProps: MapTransformProps = {
+      quadrant: isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2,
+      gridSize: { x: 0, y: 0 },
+      xySwap: !!getConfigValue(BooleanSetting.xy_swap),
+    };
     const cameraCalibrationData = getCameraCalibrationData(this.props.env);
     cameraCalibrationData.scale = "1";
     const img = cloneDeep(this.props.image);
@@ -45,11 +78,12 @@ export class FlipperImage
         cropImage={this.props.crop
           && !!getConfigValue(BooleanSetting.crop_images)}
         cameraCalibrationData={cameraCalibrationData}
-        mapTransformProps={{
-          quadrant: isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2,
-          gridSize: { x: 0, y: 0 },
-          xySwap: !!getConfigValue(BooleanSetting.xy_swap),
-        }} />
+        mapTransformProps={mapTransformProps} />
+      <this.Target
+        imageLocation={this.props.image.body.meta}
+        target={this.props.target}
+        offset={cameraCalibrationData.offset}
+        mapTransformProps={mapTransformProps} />
     </svg>;
   }
 
@@ -59,7 +93,9 @@ export class FlipperImage
       : PLACEHOLDER_FARMBOT;
     const { isLoaded } = this.state;
     const flipper = document.getElementById(this.props.flipperId);
-    return <div className={"image-jsx"}>
+    return <div className={"image-jsx"}
+      onMouseEnter={() => this.props.hover?.(this.props.image.uuid)}
+      onMouseLeave={() => this.props.hover?.(undefined)}>
       {!isLoaded && <PlaceholderImg textOverlay={t("Loading...")}
         width={flipper?.clientWidth} height={flipper?.clientHeight} />}
       <div className={"flipper-image"}

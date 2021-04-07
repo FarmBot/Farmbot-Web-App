@@ -46,7 +46,7 @@ describe("destroyAllWizardStepResults()", () => {
     destroyAllWizardStepResults([
       fakeWizardStepResult(),
       fakeWizardStepResult(),
-    ])(jest.fn());
+    ])(jest.fn()).catch(() => { });
     expect(destroy).toHaveBeenCalledTimes(0);
   });
 });

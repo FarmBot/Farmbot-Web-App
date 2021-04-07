@@ -1,15 +1,11 @@
-jest.mock("react-dom", () => ({ render: jest.fn() }));
-jest.mock("../../i18n",
-  () => ({ detectLanguage: jest.fn(() => Promise.resolve()) }));
+jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
 
-import { detectLanguage } from "../../i18n";
-import { render } from "react-dom";
+import { entryPoint } from "../../util";
+import { OsDownloadPage } from "../content";
 
-describe("index.ts", () => {
-  it("attaches the os download page to the DOM", async () => {
+describe("OsDownloadPage loader", () => {
+  it("calls entryPoint", async () => {
     await import("../index");
-    expect(detectLanguage).toHaveBeenCalled();
-    expect(document.getElementById("root")).toBeTruthy();
-    expect(render).toHaveBeenCalled();
+    expect(entryPoint).toHaveBeenCalledWith(OsDownloadPage);
   });
 });

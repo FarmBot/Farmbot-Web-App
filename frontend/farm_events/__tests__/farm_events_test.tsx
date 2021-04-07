@@ -1,5 +1,5 @@
 import React from "react";
-import { PureFarmEvents } from "../farm_events";
+import { RawFarmEvents as FarmEvents } from "../farm_events";
 import {
   calendarRows,
 } from "../../__test_support__/farm_event_calendar_support";
@@ -7,14 +7,14 @@ import { render, shallow, mount } from "enzyme";
 import { defensiveClone } from "../../util";
 import { FarmEventProps } from "../../farm_designer/interfaces";
 
-describe("<PureFarmEvents/>", () => {
+describe("<FarmEvents />", () => {
   const fakeProps = (): FarmEventProps => ({
     timezoneIsSet: true,
     calendarRows,
   });
 
   it("sorts items correctly", () => {
-    const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = mount(<FarmEvents {...fakeProps()} />);
     const times = wrapper.find(".farm-event-data-time").map(x => x.text());
     expect(times).not.toContain("");
     expect(times.length).toEqual(21);
@@ -36,20 +36,20 @@ describe("<PureFarmEvents/>", () => {
       color: "gray",
     }];
     p.calendarRows = row;
-    const results = render(<PureFarmEvents {...p} />);
+    const results = render(<FarmEvents {...p} />);
     expect(results.text()).toContain("Every 4 hours");
     expect(results.find(".farm-event-data-block").hasClass("gray")).toBeFalsy();
   });
 
   it("filters farm events: finds none", () => {
-    const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = mount(<FarmEvents {...fakeProps()} />);
     wrapper.find("input").simulate("change",
       { currentTarget: { value: "no match" } });
     expect(wrapper.text()).not.toContain("every 4 hours");
   });
 
   it("filters farm events: finds some", () => {
-    const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = mount(<FarmEvents {...fakeProps()} />);
     wrapper.find("input").simulate("change",
       { currentTarget: { value: "every 4 hours" } });
     expect(wrapper.text().toLowerCase()).toContain("every 4 hours");
@@ -60,7 +60,7 @@ describe("<PureFarmEvents/>", () => {
     Object.defineProperty(document, "querySelector", {
       value: () => ({ scrollTo: mockScrollTo }), configurable: true
     });
-    const wrapper = shallow(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = shallow(<FarmEvents {...fakeProps()} />);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const instance = wrapper.instance() as any;
     instance.setState({ searchTerm: "farm events" });
@@ -73,7 +73,7 @@ describe("<PureFarmEvents/>", () => {
     Object.defineProperty(document, "querySelector", {
       value: () => { }, configurable: true
     });
-    const wrapper = shallow(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = shallow(<FarmEvents {...fakeProps()} />);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const instance = wrapper.instance() as any;
     instance.setState({ searchTerm: "farm events" });
@@ -82,7 +82,7 @@ describe("<PureFarmEvents/>", () => {
   });
 
   it("has add new farm event link", () => {
-    const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
+    const wrapper = mount(<FarmEvents {...fakeProps()} />);
     expect(wrapper.html()).toContain("fa-plus");
     expect(wrapper.html()).toContain("/app/designer/events/add");
   });

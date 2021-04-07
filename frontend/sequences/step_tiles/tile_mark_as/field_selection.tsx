@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../../i18next_wrapper";
 import { FBSelect, DropDownItem, BlurableInput } from "../../../ui";
 import { Identifier, Point } from "farmbot";
@@ -17,7 +17,9 @@ export const FieldSelection = (props: FieldSelectionProps) =>
 
 const KnownFieldSelection = (props: FieldSelectionProps) =>
   <FBSelect
-    extraClass={props.resource.kind == "nothing" ? "disabled" : ""}
+    extraClass={(props.resource.kind == "nothing" || props.disabled)
+      ? "disabled"
+      : ""}
     list={props.resource.kind == "nothing"
       ? []
       : fieldList(props.resource)
@@ -51,6 +53,7 @@ export enum KnownField {
   z = "z",
   radius = "radius",
   "meta.color" = "meta.color",
+  planted_at = "planted_at",
 }
 
 const isKnownField = (x: string | undefined): x is KnownField =>
@@ -91,6 +94,7 @@ const COMMON_POINT_DDIS = () => {
   ];
 };
 
+// eslint-disable-next-line complexity
 const getSelectedField = (
   resource: MaybeResourceArg,
   field: KnownField | undefined,
@@ -111,6 +115,7 @@ const getSelectedField = (
       if (resourceType == "GenericPointer") { return DDI.POINT_STATUS; }
       if (resourceType == "Plant") { return DDI.PLANT_STAGE; }
       return DDI.STATUS;
+    case KnownField.planted_at: return DDI.PLANTED_AT;
   }
 };
 
@@ -131,4 +136,6 @@ export const UPDATE_RESOURCE_DDIS = (): Record<string, DropDownItem> => ({
   ACTIVE: { label: t("Active"), value: "active" },
   REMOVED: { label: t("Removed"), value: "removed" },
   PENDING: { label: t("Pending"), value: "pending" },
+  PLANTED_AT: { label: t("Date Planted"), value: "planted_at" },
+  NOW: { label: t("Now"), value: "{{ timeNow }}" },
 });

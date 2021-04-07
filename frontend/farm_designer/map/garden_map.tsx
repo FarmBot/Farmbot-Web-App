@@ -181,6 +181,7 @@ export class GardenMap extends
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
       case Mode.moveTo:
+      case Mode.locationInfo:
       case Mode.createPoint:
       case Mode.createWeed:
       case Mode.clickToAdd:
@@ -273,6 +274,7 @@ export class GardenMap extends
         this.handleDrop(e);
         break;
       case Mode.moveTo:
+      case Mode.locationInfo:
         e.preventDefault();
         chooseLocation({
           gardenCoords: this.getGardenCoordinates(e),
@@ -358,6 +360,7 @@ export class GardenMap extends
   closePanel = () => {
     switch (getMode()) {
       case Mode.moveTo:
+      case Mode.locationInfo:
       case Mode.profile:
         return () => { };
       case Mode.boxSelect:
@@ -532,6 +535,13 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps} />
   TargetCoordinate = () => <TargetCoordinate
     chosenLocation={this.props.designer.chosenLocation}
+    hoveredPlant={this.props.hoveredPlant}
+    hoveredSensorReading={this.props.sensorReadings.filter(reading =>
+      reading.uuid == this.props.designer.hoveredSensorReading)[0]}
+    hoveredImage={this.props.latestImages.filter(image =>
+      image.uuid == this.props.designer.hoveredImage)[0]}
+    hoveredPoint={this.props.allPoints.filter(point =>
+      point.uuid == this.props.designer.hoveredPoint)[0]}
     mapTransformProps={this.mapTransformProps} />
   DrawnPoint = () => <DrawnPoint
     data={this.props.designer.drawnPoint}

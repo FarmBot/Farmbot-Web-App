@@ -41,6 +41,9 @@ import { Content } from "../../constants";
 import { AuthState } from "../../auth/interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { formEvent } from "../../__test_support__/fake_html_events";
+import { changeBlurableInput } from "../../__test_support__/helpers";
+import { CreateAccount } from "../create_account";
+import { ForgotPassword } from "../forgot_password";
 
 describe("<FrontPage />", () => {
   beforeEach(() => { mockAuth = undefined; });
@@ -62,11 +65,38 @@ describe("<FrontPage />", () => {
       .map(string => expect(el.html()).toContain(string));
   });
 
+  it("doesn't show TOS and Privacy links", () => {
+    globalConfig.TOS_URL = "";
+    const wrapper = mount(<FrontPage />);
+    ["Privacy Policy", "Terms of Use"].map(string =>
+      expect(wrapper.text().toLowerCase()).not.toContain(string.toLowerCase()));
+  });
+
   it("redirects when already logged in", () => {
     mockAuth = auth;
     const el = mount(<FrontPage />);
     el.mount();
     expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
+  });
+
+  it("updates login state", () => {
+    const wrapper = mount<FrontPage>(<FrontPage />);
+    changeBlurableInput(wrapper, "email", 1);
+    expect(wrapper.state().email).toEqual("email");
+  });
+
+  it("inputs username", () => {
+    const wrapper = shallow<FrontPage>(<FrontPage />);
+    expect(wrapper.state().regName).toEqual("");
+    wrapper.find(CreateAccount).props().set("regName", "name");
+    expect(wrapper.state().regName).toEqual("name");
+  });
+
+  it("goes back to login panel", () => {
+    const wrapper = mount<FrontPage>(<FrontPage />);
+    wrapper.setState({ activePanel: "forgotPassword" });
+    wrapper.find(ForgotPassword).props().onGoBack();
+    expect(wrapper.state().activePanel).toEqual("login");
   });
 
   it("submits login: success", async () => {
@@ -91,9 +121,9 @@ describe("<FrontPage />", () => {
     expect(axios.post).toHaveBeenCalledWith(
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
-    expect(Session.replaceToken).not.toHaveBeenCalled();
-    // expect(error).toHaveBeenCalledWith("Account Not Verified");
-    // expect(instance.state.activePanel).toEqual("resendVerificationEmail");
+    await expect(Session.replaceToken).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Account Not Verified");
+    expect(el.instance().state.activePanel).toEqual("resendVerificationEmail");
   });
 
   it("submits login: TOS update", async () => {
@@ -107,6 +137,21 @@ describe("<FrontPage />", () => {
       { user: { email: "foo@bar.io", password: "password" } });
     await expect(Session.replaceToken).not.toHaveBeenCalled();
     expect(window.location.assign).toHaveBeenCalledWith("/tos_update");
+  });
+
+  it("submits login: other error", async () => {
+    mockAxiosResponse = Promise.reject({
+      response: { status: 400, data: "error" }
+    });
+    const wrapper = mount<FrontPage>(<FrontPage />);
+    wrapper.setState({ email: "foo@bar.io", loginPassword: "password" });
+    await wrapper.instance().submitLogin(fakeFormEvent);
+    expect(API.setBaseUrl).toHaveBeenCalled();
+    expect(axios.post).toHaveBeenCalledWith(
+      "://localhost:3000/api/tokens/",
+      { user: { email: "foo@bar.io", password: "password" } });
+    await expect(Session.replaceToken).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Error: error");
   });
 
   it("submits registration: success", async () => {

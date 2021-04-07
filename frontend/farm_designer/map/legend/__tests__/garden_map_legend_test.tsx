@@ -1,6 +1,7 @@
 jest.mock("../../../../history", () => ({
   history: { push: jest.fn() },
   getPathArray: () => [],
+  push: jest.fn(),
 }));
 
 let mockAtMax = false;
@@ -13,6 +14,12 @@ jest.mock("../../zoom", () => ({
 jest.mock("../../../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => jest.fn()),
   setWebAppConfigValue: jest.fn(),
+}));
+
+
+let mockDev = false;
+jest.mock("../../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
 import React from "react";
@@ -32,6 +39,7 @@ import {
 import {
   fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
+import { push } from "../../../../history";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -78,6 +86,13 @@ describe("<GardenMapLegend />", () => {
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     wrapper.find(".fb-toggle-button").last().simulate("click");
     expect(wrapper.html()).toContain("-100");
+  });
+
+  it("renders location info button", () => {
+    mockDev = true;
+    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    wrapper.find(".location-info-mode").find("button").simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/location_info");
   });
 });
 

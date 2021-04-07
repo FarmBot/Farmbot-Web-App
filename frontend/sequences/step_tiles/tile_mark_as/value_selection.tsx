@@ -24,6 +24,7 @@ export const ValueSelection = (props: ValueSelectionProps) =>
     </label>
     {isCustomMetaField(props.field) || (!isUndefined(props.field)
       && props.field !== KnownField.plant_stage
+      && props.field !== KnownField.planted_at
       && props.field !== KnownField.mounted_tool_id)
       ? <CustomMetaValue {...props} />
       : <KnownValue {...props} field={props.field} />}
@@ -31,10 +32,10 @@ export const ValueSelection = (props: ValueSelectionProps) =>
 
 const KnownValue = (props: KnownValueSelectionProps) =>
   <FBSelect
-    extraClass={isUndefined(props.field) ? "disabled" : ""}
+    extraClass={(isUndefined(props.field) || props.disabled) ? "disabled" : ""}
     list={props.resource.kind == "nothing"
       ? []
-      : valuesList(props.resource, props.resources)}
+      : valuesList(props.resource, props.resources, props.field)}
     onChange={ddi => {
       props.update({ value: ddi.value },
         props.commitSelection);
@@ -59,7 +60,9 @@ const CustomMetaValue = (props: ValueSelectionProps) =>
 
 const valuesList = (
   resource: ResourceArg,
-  resources: ResourceIndex): DropDownItem[] => {
+  resources: ResourceIndex,
+  field: KnownField | undefined,
+): DropDownItem[] => {
   const DDI = UPDATE_RESOURCE_DDIS();
   const stepResourceType =
     isIdentifier(resource) ? undefined : resource.args.resource_type;
@@ -74,7 +77,8 @@ const valuesList = (
     ];
     case "GenericPointer": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];
     case "Weed": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];
-    case "Plant": return PLANT_STAGE_LIST();
+    case "Plant":
+      return field == KnownField.planted_at ? [DDI.NOW] : PLANT_STAGE_LIST();
     default: return ALL_STAGE_LIST();
   }
 };
@@ -99,6 +103,7 @@ const getSelectedValue = (props: GetSelectedValueProps): DropDownItem => {
         : props.resource.args.resource_type;
       return getStageLookup(stepResourceType)["" + props.value]
         || { label: "" + props.value, value: "" + props.value };
+    case KnownField.planted_at: return DDI.NOW;
   }
 };
 
