@@ -13,9 +13,9 @@ class Device < ApplicationRecord
                  "Resuming log storage."
 
   PLURAL_RESOURCES = %i(alerts farm_events farmware_envs farmware_installations
-    folders fragments images logs peripherals pin_bindings plant_templates
-    point_groups points regimens saved_gardens sensor_readings sensors sequences
-    token_issuances tools webcam_feeds wizard_step_results)
+                        folders fragments images logs peripherals pin_bindings plant_templates
+                        point_groups points regimens saved_gardens sensor_readings sensors sequences
+                        token_issuances tools webcam_feeds wizard_step_results)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 
@@ -249,8 +249,12 @@ class Device < ApplicationRecord
           "`Order Number`: #{fb_order_number}",
           "`Model`: #{firmware_kind}",
           "`Slug`: #{slug}",
-          "`Message`: #{message}"
-        ].join("\n")
+          "`Message`: #{message}",
+          "`Token:`\n",
+          "```",
+          help_customer,
+          "```",
+        ].join("\n"),
       }.to_json
       Faraday.post(webhook_url,
                    payload,
