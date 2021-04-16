@@ -8,7 +8,7 @@ class SessionToken < AbstractJwtToken
   DEFAULT_MQTT_WS =
     "#{ENV["FORCE_SSL"] ? "wss://" : "ws://"}#{ENV.fetch("MQTT_HOST")}:3002/ws"
   MQTT_WS = ENV["MQTT_WS"] || DEFAULT_MQTT_WS
-  EXPIRY = 40.days
+  EXPIRY = 60.days
   VHOST = ENV.fetch("MQTT_VHOST") { "/" }
   DEFAULT_OS = "https://api.github.com/repos/farmbot/farmbot_os/releases" +
                "/latest"
