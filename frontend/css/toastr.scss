@@ -1,13 +1,16 @@
 .toast-container {
+  display: flex;
   position: fixed;
   bottom: 0px;
   z-index: 999999;
   width: 100%;
   pointer-events: none;
+  flex-direction: column-reverse;
 }
 
 .toast {
   position: relative;
+  width: 100%;
   box-shadow: 0px 1px 4px #555;
   pointer-events: all;
   padding: 1.8rem;

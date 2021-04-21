@@ -7,11 +7,11 @@ import { CreateToastOnceProps, CreateToastProps } from "./interfaces";
 export const createToast = (props: CreateToastProps) => {
 
   /**
-   * Container element for all of the messages created from init().
+   * Container element for all of the messages.
    */
   const parent = document.querySelector(".toast-container");
   /**
-   * If there's no container created from the init() function, throw an error.
+   * If there's no container, throw an error.
    */
   if (!parent) { throw new Error("toast-container is null."); }
 

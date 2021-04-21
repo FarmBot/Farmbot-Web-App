@@ -1171,8 +1171,7 @@ export namespace TourContent {
   // Getting started
   export const GETTING_STARTED =
     trim(`Welcome to the FarmBot web app! In this tour you'll become
-    familiar with the overall organization of the app. To get started and
-    advance through each tour step, find and click the highlighted feature.`);
+    familiar with the overall organization of the app.`);
 
   export const PLANTS_PANEL =
     trim(`This is the plants panel. Here you can view and manage all of the

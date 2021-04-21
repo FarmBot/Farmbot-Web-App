@@ -114,6 +114,13 @@ nav {
           transform: translateY(-3px);
         }
       }
+      &.beacon {
+        &.active {
+          &:after {
+            background: none;
+          }
+        }
+      }
       &:before {
         content: "";
         position: absolute;
