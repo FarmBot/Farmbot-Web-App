@@ -49,9 +49,9 @@ describe("<NavLinks />", () => {
   it("shows beacon", () => {
     const p = fakeProps();
     p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "intro";
+    p.helpState.currentNewTourStep = "plants";
     const wrapper = mount(<NavLinks {...p} />);
-    expect(wrapper.html()).toContain("beacon");
+    expect(wrapper.html()).toContain("beacon soft");
   });
 
   it("shows active link", () => {

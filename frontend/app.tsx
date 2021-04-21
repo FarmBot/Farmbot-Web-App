@@ -1,6 +1,6 @@
 import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
-import { init, error } from "./toast/toast";
+import { error } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
@@ -39,9 +39,6 @@ import {
 } from "./settings/firmware/firmware_hardware_support";
 import { HelpState } from "./help/reducer";
 import { TourStepContainer } from "./help/new_tours";
-
-/** For the logger module */
-init();
 
 export interface AppProps {
   dispatch: Function;
