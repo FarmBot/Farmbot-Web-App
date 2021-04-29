@@ -2,6 +2,17 @@ jest.mock("../toast_internal_support", () => ({
   createToastOnce: jest.fn(),
 }));
 
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: () => mockState,
+  }
+}));
+
+import { Actions } from "../../constants";
+import { store } from "../../redux/store";
 import { ToastOptions } from "../interfaces";
 import { createToastOnce } from "../toast_internal_support";
 
@@ -11,7 +22,6 @@ const {
   success,
   info,
   fun,
-  init,
   removeToast,
   busy,
 }: typeof import("../toast") = jest.requireActual("../toast");
@@ -111,36 +121,10 @@ describe("toasts", () => {
     expect(createToastOnce).toHaveBeenCalledWith({ message, ...customOptions });
   });
 
-  const getToastContainerCount = () =>
-    Object.values(document.querySelectorAll(".toast-container")).length;
-
-  const getToastCount = () =>
-    document.querySelector(".toast-container")?.childElementCount;
-
-  it("adds the appropriate div to the DOM", () => {
-    document.body.innerHTML = "";
-    expect(getToastContainerCount()).toEqual(0);
-    init();
-    expect(getToastContainerCount()).toEqual(1);
-  });
-
   it("removes a toast message", () => {
-    document.body.innerHTML = "";
-    init();
-    expect(getToastCount()).toEqual(0);
-    const toast = document.createElement("div");
-    toast.id = "id-prefix-123";
-    document.querySelector(".toast-container")?.appendChild(toast);
-    expect(getToastCount()).toEqual(1);
     removeToast("id-prefix");
-    expect(getToastCount()).toEqual(0);
-  });
-
-  it("doesn't remove a toast message: parent missing", () => {
-    document.body.innerHTML = "";
-    expect(getToastContainerCount()).toEqual(0);
-    console.error = jest.fn();
-    removeToast("id-prefix");
-    expect(console.error).toHaveBeenCalledWith("toast-container is null.");
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.REMOVE_TOAST, payload: "id-prefix"
+    });
   });
 });

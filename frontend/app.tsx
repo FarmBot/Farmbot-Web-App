@@ -39,6 +39,8 @@ import {
 } from "./settings/firmware/firmware_hardware_support";
 import { HelpState } from "./help/reducer";
 import { TourStepContainer } from "./help/new_tours";
+import { ToastMessages } from "./toast/interfaces";
+import { Toasts } from "./toast/fb_toast";
 
 export interface AppProps {
   dispatch: Function;
@@ -63,6 +65,7 @@ export interface AppProps {
   env: UserEnv;
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
+  toastMessages: ToastMessages;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -94,6 +97,7 @@ export function mapStateToProps(props: Everything): AppProps {
     env: getEnv(props.resources.index),
     authAud: props.auth?.token.unencoded.aud,
     wizardStepResults: selectAllWizardStepResults(props.resources.index),
+    toastMessages: props.app.toasts,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -165,9 +169,14 @@ export class RawApp extends React.Component<AppProps, {}> {
           getConfigValue={getConfigValue}
           env={this.props.env}
           stepSize={bot.stepSize} />}
-      <TourStepContainer
-        dispatch={dispatch}
-        helpState={this.props.helpState} />
+      <div className={"toast-container"}>
+        <TourStepContainer
+          dispatch={dispatch}
+          helpState={this.props.helpState} />
+        <Toasts
+          toastMessages={this.props.toastMessages}
+          dispatch={dispatch} />
+      </div>
     </div>;
   }
 }

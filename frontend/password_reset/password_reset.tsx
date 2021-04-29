@@ -1,11 +1,12 @@
 import React from "react";
 import axios from "axios";
-import { error as log, init as logInit } from "../toast/toast";
+import { error as log } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 import { Session } from "../session";
 import { t } from "../i18next_wrapper";
+import { ToastContainer } from "../toast/fb_toast";
 
 export interface State {
   password?: string;
@@ -27,7 +28,6 @@ export class PasswordReset extends React.Component<{}, State> {
   }
 
   componentDidMount() {
-    logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({
       serverURL: API.fetchHostName(),
@@ -107,6 +107,7 @@ export class PasswordReset extends React.Component<{}, State> {
           </Col>
         </Row>
       </div>
+      <ToastContainer />
     </div>;
   }
 }

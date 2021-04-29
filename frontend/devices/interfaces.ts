@@ -89,7 +89,6 @@ export interface BotState {
   /** Hardware settings auto update on blur. Tells the UI if it should load a
    * spinner or not. */
   isUpdating?: boolean;
-  controlPanelState: ControlPanelState;
   /** Have all API requests been acknowledged by external services? This flag
    * lets us know if it is safe to do data critical tasks with the bot */
   consistent: boolean;
@@ -128,6 +127,7 @@ export interface FarmbotSettingsProps {
   shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;
   botOnline: boolean;
+  controlPanelState: ControlPanelState;
 }
 
 export interface McuInputBoxProps {
