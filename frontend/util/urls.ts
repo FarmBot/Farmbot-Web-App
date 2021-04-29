@@ -12,3 +12,8 @@ export function lastUrlChunk(): string {
   const pathArray = trim(p, "/").split("/");
   return pathArray[pathArray.length - 1];
 }
+
+/** Fetch query value for the provided key. */
+export const getUrlQuery = (key: string): string | undefined =>
+  location.search
+    .split(`?${key}=`).filter(x => x).pop()?.split("?")[0].split("#")[0];

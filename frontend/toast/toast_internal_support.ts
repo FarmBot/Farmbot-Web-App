@@ -1,33 +1,19 @@
-import { FBToast } from "./fb_toast";
-import { CreateToastOnceProps, CreateToastProps } from "./interfaces";
-
-/**
- * The function responsible for attaching the messages to the container.
- */
-export const createToast = (props: CreateToastProps) => {
-
-  /**
-   * Container element for all of the messages created from init().
-   */
-  const parent = document.querySelector(".toast-container");
-  /**
-   * If there's no container created from the init() function, throw an error.
-   */
-  if (!parent) { throw new Error("toast-container is null."); }
-
-  /**
-   * Create elements.
-   */
-  const t = new FBToast(parent, props);
-  t.run();
-};
+import { uuid } from "farmbot";
+import { Actions } from "../constants";
+import { store } from "../redux/store";
+import { CreateToastOnceProps } from "./interfaces";
 
 export const createToastOnce = (props: CreateToastOnceProps) => {
   const { message, fallbackLogger } = props;
-  if (FBToast.everyMessage[message]) {
+  if (Object.values(store.getState().app.toasts)
+    .filter(toast => toast.message == message).length > 0) {
     (fallbackLogger || console.log)(message);
   } else {
-    createToast(props);
-    FBToast.everyMessage[message] = true;
+    setTimeout(() => store.dispatch({
+      type: Actions.CREATE_TOAST, payload: {
+        ...props,
+        id: `${props.idPrefix}-toast-${uuid()}`
+      }
+    }));
   }
 };

@@ -53,7 +53,7 @@ describe("<AxisSettings />", () => {
   function testAxisLengthInput(
     provided: string, expected: string | undefined) {
     const p = fakeProps();
-    p.bot.controlPanelState.axis_settings = true;
+    p.controlPanelState.axis_settings = true;
     const result = mount(<AxisSettings {...p} />);
     const e = inputEvent(provided);
     const input = result.find("input").first().props();

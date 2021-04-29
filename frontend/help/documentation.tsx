@@ -4,6 +4,7 @@ import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { getUrlQuery } from "../util";
 import { HelpHeader } from "./header";
 
 export interface DocumentationPanelProps {
@@ -11,7 +12,7 @@ export interface DocumentationPanelProps {
 }
 
 export const DocumentationPanel = (props: DocumentationPanelProps) => {
-  const page = location.search.split("?page=").pop();
+  const page = getUrlQuery("page");
   return <DesignerPanel panelName={"documentation"} panel={Panel.Help}>
     <DesignerNavTabs />
     <HelpHeader />

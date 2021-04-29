@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { fun as log, error as logError, init as logInit } from "../toast/toast";
+import { fun as log, error as logError } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
 import { prettyPrintApiErrors } from "../util";
@@ -10,6 +10,7 @@ import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { DEFAULT_APP_PAGE } from "../front_page/front_page";
+import { ToastContainer } from "../toast/fb_toast";
 
 interface State {
   email: string;
@@ -97,7 +98,6 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
   }
 
   componentDidMount() {
-    logInit();
     const body = t("Before logging in, you must agree to our latest Terms" +
       " of Service and Privacy Policy");
     log(body, { title: t("New Terms of Service") });
@@ -116,6 +116,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
           </WidgetBody>
         </Widget>
       </div>
+      <ToastContainer />
     </div>;
   }
 }

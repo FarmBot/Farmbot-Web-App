@@ -71,6 +71,15 @@ describe("<SyncButton/>", function () {
     expect(result.find(".syncing").length).toEqual(1);
   });
 
+  it("shows synced for demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.sync_status = "syncing";
+    const result = shallow(<SyncButton {...p} />);
+    expect(result.find(".synced").length).toEqual(1);
+    localStorage.setItem("myBotIs", "");
+  });
+
   const testCase = (input: SyncStatus, expected: string) => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = input;

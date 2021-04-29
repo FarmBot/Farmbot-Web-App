@@ -35,6 +35,7 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   user: TaggedUser;
   farmwareEnvs: TaggedFarmwareEnv[];
   wizardStepResults: TaggedWizardStepResult[];
+  controlPanelState: ControlPanelState;
 }
 
 export interface DesignerSettingsSectionProps {

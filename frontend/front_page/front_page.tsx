@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { error as log, success, init as logInit } from "../toast/toast";
+import { error as log, success } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
@@ -16,6 +16,7 @@ import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
 import { t } from "../i18next_wrapper";
+import { ToastContainer } from "../toast/fb_toast";
 
 export const DEFAULT_APP_PAGE = "/app/designer/controls";
 
@@ -72,7 +73,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   componentDidMount() {
     if (Session.fetchStoredToken()) { window.location.assign(DEFAULT_APP_PAGE); }
-    logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
   }
@@ -255,6 +255,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           </CreateAccount>
         </Row>
       </div>
+      <ToastContainer />
     </div>;
   }
 

@@ -5,6 +5,7 @@ import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
+import { maybeBeacon } from "../help/new_tours";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -15,11 +16,16 @@ interface DesignerPanelProps {
 
 export const DesignerPanel = (props: DesignerPanelProps) => {
   const color = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
+  const [beacon, setBeacon] = React.useState(maybeBeacon(props.panelName, "soft"));
+  beacon && setTimeout(() => setBeacon(""), 1000);
   return <div
     className={[
       "panel-container",
       `${color || PanelColor.gray}-panel`,
-      `${props.panelName}-panel`].join(" ")}>
+      `${props.panelName}-panel`,
+      "beacon-transition",
+      beacon,
+    ].join(" ")}>
     <ErrorBoundary>
       {props.children}
     </ErrorBoundary>
@@ -116,7 +122,8 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
   <div className={[
     "panel-content",
     `${props.panelName}-panel-content`,
-    props.className || ""].join(" ")}>
+    props.className || "",
+  ].join(" ")}>
     <ErrorBoundary>
       {props.children}
     </ErrorBoundary>

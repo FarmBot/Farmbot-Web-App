@@ -2,7 +2,7 @@ import React from "react";
 import { store } from "../redux/store";
 import { ControlPanelState } from "../devices/interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
-import { urlFriendly } from "../util";
+import { getUrlQuery, urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { push } from "../history";
@@ -267,7 +267,7 @@ const compareValues = (settingName: DeviceSetting) =>
     .map(s => urlFriendly(s));
 
 /** Retrieve a highlight search term. */
-export const getHighlightName = () => location.search.split("?highlight=").pop();
+export const getHighlightName = () => getUrlQuery("highlight");
 
 /** Only open panel and highlight once per app load. Exported for tests. */
 export const highlight = { opened: false, highlighted: false };

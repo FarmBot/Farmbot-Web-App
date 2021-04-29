@@ -64,6 +64,7 @@ describe("unsavedCheck", () => {
       { seqDirty: false, otherDirty: false },
       { discard_unsaved: false, discard_unsaved_sequences: false }));
     expect(window.onbeforeunload).toBe(dontStopThem);
+    expect(dontStopThem()).toBeFalsy();
   });
 
   it("stops users if they have unsaved work without config", () => {
