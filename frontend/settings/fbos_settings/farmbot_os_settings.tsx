@@ -30,8 +30,8 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       title={DeviceSetting.farmbotSettings}
       panel={"farmbot_settings"}
       dispatch={dispatch}
-      expanded={props.bot.controlPanelState.farmbot_settings} />
-    <Collapse isOpen={!!props.bot.controlPanelState.farmbot_settings}>
+      expanded={props.controlPanelState.farmbot_settings} />
+    <Collapse isOpen={!!props.controlPanelState.farmbot_settings}>
       <NameRow {...commonProps} />
       <OrderNumberRow {...commonProps} />
       <TimezoneRow {...commonProps} />

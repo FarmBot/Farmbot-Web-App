@@ -232,7 +232,7 @@ export class TourStepContainer
       return 1;
     };
 
-    return <div className={"toast-container"}>
+    return <div className={"tour-container"}>
       <div className={"tour-toast toast dark-blue active"}>
         <h4 className={"toast-title"} style={{ opacity: getOpacity() }}>
           {this.state.title || newTitle || t("Error: tour step does not exist")}

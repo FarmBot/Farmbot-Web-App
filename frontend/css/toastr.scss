@@ -48,6 +48,9 @@
     opacity: 0;
     pointer-events: none;
   }
+  &.gone {
+    display: none;
+  }
   &.yellow,
   &.blue,
   &.gray,

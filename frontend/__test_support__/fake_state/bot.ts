@@ -1,10 +1,8 @@
 import { Everything } from "../../interfaces";
-import { panelState } from "../control_panel_state";
 
 export const bot: Everything["bot"] = {
   consistent: true,
   stepSize: 100,
-  controlPanelState: panelState(),
   hardware: {
     gpio_registry: {},
     mcu_params: {

@@ -39,8 +39,9 @@ const getSetting =
   };
 
 describe("<DesignerSettings />", () => {
-  Object.keys(bot.controlPanelState).map((key: keyof ControlPanelState) =>
-    bot.controlPanelState[key] = true);
+  const fakePanelState = panelState();
+  Object.keys(fakePanelState).map((key: keyof ControlPanelState) =>
+    fakePanelState[key] = true);
 
   const fakeProps = (): DesignerSettingsProps => ({
     dispatch: jest.fn(),
@@ -59,6 +60,7 @@ describe("<DesignerSettings />", () => {
     user: fakeUser(),
     farmwareEnvs: [],
     wizardStepResults: [],
+    controlPanelState: fakePanelState,
   });
 
   it("renders settings", () => {
@@ -108,7 +110,7 @@ describe("<DesignerSettings />", () => {
 
   it("expands all", () => {
     const p = fakeProps();
-    p.bot.controlPanelState = panelState();
+    p.controlPanelState = panelState();
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -119,8 +121,8 @@ describe("<DesignerSettings />", () => {
 
   it("collapses all", () => {
     const p = fakeProps();
-    p.bot.controlPanelState = panelState();
-    p.bot.controlPanelState.motors = true;
+    p.controlPanelState = panelState();
+    p.controlPanelState.motors = true;
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -131,7 +133,7 @@ describe("<DesignerSettings />", () => {
 
   it("renders defaultOn setting", () => {
     const p = fakeProps();
-    p.bot.controlPanelState.farm_designer = true;
+    p.controlPanelState.farm_designer = true;
     p.getConfigValue = () => undefined;
     const wrapper = mount(<DesignerSettings {...p} />);
     const confirmDeletion = getSetting(wrapper, 9, "confirm plant");
@@ -140,7 +142,7 @@ describe("<DesignerSettings />", () => {
 
   it("toggles setting", () => {
     const p = fakeProps();
-    p.bot.controlPanelState.farm_designer = true;
+    p.controlPanelState.farm_designer = true;
     const wrapper = mount(<DesignerSettings {...p} />);
     const trailSetting = getSetting(wrapper, 1, "trail");
     trailSetting.find("button").simulate("click");
@@ -150,7 +152,7 @@ describe("<DesignerSettings />", () => {
 
   it("changes origin", () => {
     const p = fakeProps();
-    p.bot.controlPanelState.farm_designer = true;
+    p.controlPanelState.farm_designer = true;
     p.getConfigValue = () => 2;
     const wrapper = mount(<DesignerSettings {...p} />);
     const originSetting = getSetting(wrapper, 6, "origin");
