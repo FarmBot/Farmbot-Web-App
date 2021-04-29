@@ -12,7 +12,7 @@ import { validFirmwareHardware } from "./firmware_hardware_support";
 
 export function Firmware(props: FirmwareProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
-  const { firmware } = props.bot.controlPanelState;
+  const { firmware } = props.controlPanelState;
 
   const { value } = props.sourceFbosConfig("firmware_hardware");
   const firmwareHardware = validFirmwareHardware(value);

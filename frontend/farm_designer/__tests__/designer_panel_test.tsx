@@ -1,11 +1,22 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
+import { act } from "react-dom/test-utils";
 
 describe("<DesignerPanel />", () => {
   it("renders default panel", () => {
     const wrapper = mount(<DesignerPanel panelName={"test-panel"} />);
     expect(wrapper.find("div").first().hasClass("gray-panel")).toBeTruthy();
+  });
+
+  it("removes beacon", () => {
+    jest.useFakeTimers();
+    location.search = "?tour=gettingStarted?tourStep=plants";
+    const wrapper = mount(<DesignerPanel panelName={"plants"} />);
+    expect(wrapper.find("div").first().hasClass("beacon")).toBeTruthy();
+    act(() => { jest.runAllTimers(); });
+    wrapper.update();
+    expect(wrapper.find("div").first().hasClass("beacon")).toBeFalsy();
   });
 });
 

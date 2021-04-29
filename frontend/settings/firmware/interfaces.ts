@@ -1,4 +1,6 @@
-import { BotState, SourceFbosConfig } from "../../devices/interfaces";
+import {
+  BotState, ControlPanelState, SourceFbosConfig,
+} from "../../devices/interfaces";
 import { Alert, FirmwareHardware } from "farmbot";
 import { TimeSettings } from "../../interfaces";
 
@@ -9,6 +11,7 @@ export interface FirmwareProps {
   dispatch: Function;
   timeSettings: TimeSettings;
   sourceFbosConfig: SourceFbosConfig;
+  controlPanelState: ControlPanelState;
 }
 
 export interface FlashFirmwareRowProps {

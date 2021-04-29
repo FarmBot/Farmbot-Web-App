@@ -1,6 +1,8 @@
 import { createToastOnce } from "./toast_internal_support";
 import { t } from "../i18next_wrapper";
 import { ToastOptions } from "./interfaces";
+import { Actions } from "../constants";
+import { store } from "../redux/store";
 
 /**
  * Orange message with "Warning" as the default title.
@@ -55,22 +57,7 @@ export const fun = (message: string, options: ToastOptions = {}) =>
     ...options,
   });
 
-/**
- *  Adds a hidden container div for holding toast messages.
- */
-export const init = () => {
-  const toastContainer = document.createElement("div");
-  toastContainer.classList.add("toast-container");
-  document.body.appendChild(toastContainer);
-};
-
 /** Remove all toast messages that match the provided id prefix. */
 export const removeToast = (idPrefix: string) => {
-  const parent = document.querySelector(".toast-container");
-  const toasts = document.querySelectorAll(`[id^="${idPrefix}-"]`);
-  if (parent) {
-    Object.values(toasts).map(toast => parent.removeChild(toast));
-  } else {
-    console.error("toast-container is null.");
-  }
+  store.dispatch({ type: Actions.REMOVE_TOAST, payload: idPrefix });
 };

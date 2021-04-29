@@ -1,6 +1,5 @@
 import {
   BotState,
-  ControlPanelState,
   HardwareState,
   MinOsFeatureLookup,
   OsUpdateInfo,
@@ -22,22 +21,6 @@ const afterEach = (state: BotState, a: ReduxAction<{}>) => {
 export const initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
-  controlPanelState: {
-    farmbot_settings: false,
-    firmware: false,
-    power_and_reset: false,
-    axis_settings: false,
-    motors: false,
-    encoders_or_stall_detection: false,
-    limit_switches: false,
-    error_handling: false,
-    pin_bindings: false,
-    pin_guard: false,
-    parameter_management: false,
-    farm_designer: false,
-    account: false,
-    other_settings: false,
-  },
   hardware: {
     gpio_registry: {},
     mcu_params: {},
@@ -114,28 +97,6 @@ export const botReducer = generateReducer<BotState>(initialState())
       stepSize: a.payload
     });
   })
-  .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
-    s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
-    return s;
-  })
-  .add<boolean>(
-    Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
-      s.controlPanelState.farmbot_settings = a.payload;
-      s.controlPanelState.firmware = a.payload;
-      s.controlPanelState.power_and_reset = a.payload;
-      s.controlPanelState.axis_settings = a.payload;
-      s.controlPanelState.motors = a.payload;
-      s.controlPanelState.encoders_or_stall_detection = a.payload;
-      s.controlPanelState.limit_switches = a.payload;
-      s.controlPanelState.error_handling = a.payload;
-      s.controlPanelState.pin_bindings = a.payload;
-      s.controlPanelState.pin_guard = a.payload;
-      s.controlPanelState.parameter_management = a.payload;
-      s.controlPanelState.farm_designer = a.payload;
-      s.controlPanelState.account = a.payload;
-      s.controlPanelState.other_settings = a.payload;
-      return s;
-    })
   .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
     s.osUpdateVersion = payload.version;
     return s;
