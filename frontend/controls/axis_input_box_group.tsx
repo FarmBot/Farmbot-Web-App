@@ -1,10 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { AxisInputBox } from "./axis_input_box";
-import { Row, Col } from "../ui/index";
+import { Row, Col } from "../ui";
 import { AxisInputBoxGroupProps, AxisInputBoxGroupState } from "./interfaces";
 import { isNumber } from "lodash";
 import { Vector3 } from "farmbot";
 import { t } from "../i18next_wrapper";
+import { lockedClass } from "./locked_class";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends
@@ -58,7 +59,10 @@ export class AxisInputBoxGroup extends
           onClick={this.clicked}
           disabled={this.props.disabled || false}
           title={t("Move to chosen location")}
-          className="full-width green go fb-button">
+          className={[
+            "full-width green go fb-button",
+            lockedClass(this.props.locked),
+          ].join(" ")}>
           {t("GO")}
         </button>
       </Col>

@@ -67,7 +67,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       email: "",
       loginPassword: "",
       agreeToTerms: false,
-      activePanel: "login"
+      activePanel: "login",
     };
   }
 
@@ -76,6 +76,8 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
   }
+
+  update = () => setTimeout(() => this.forceUpdate(), 100);
 
   submitLogin = (e: React.FormEvent<{}>) => {
     e.preventDefault();
@@ -98,6 +100,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           default:
             log(prettyPrintApiErrors(error as {}));
         }
+        this.update();
         this.setState({ loginPassword: "" });
       });
   }
@@ -124,9 +127,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
       success(t(m));
+      this.update();
       this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));
+      this.update();
     });
   }
 
@@ -139,6 +144,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post(API.current.passwordResetPath, data)
       .then(() => {
         success(t("Email has been sent."), { title: t("Forgot Password") });
+        this.update();
         this.setState({ activePanel: "login" });
       }).catch(error => {
         let errorMessage = prettyPrintApiErrors(error);
@@ -147,6 +153,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             "That email address is not associated with an account.";
         }
         log(t(errorMessage));
+        this.update();
       });
   }
 
@@ -190,10 +197,12 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onGoBack={goBack}
       ok={() => {
         success(t(Content.VERIFICATION_EMAIL_RESENT));
+        this.update();
         goBack();
       }}
       no={() => {
         log(t(Content.VERIFICATION_EMAIL_RESEND_ERROR));
+        this.update();
         goBack();
       }}
       email={this.state.email || ""} />;
@@ -248,6 +257,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           <this.activePanel />
           <CreateAccount
             submitRegistration={this.submitRegistration}
+            callback={this.update}
             sent={!!this.state.registrationSent}
             get={(key) => this.state[key]}
             set={(key, val) => this.setState({ [key]: val })}>

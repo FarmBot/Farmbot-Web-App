@@ -82,3 +82,18 @@
     text-shadow: none;
   }
 }
+
+@keyframes bright-flash {
+  0% {
+    filter: none;
+  }
+  50% {
+    filter: none;
+  }
+  51% {
+    filter: brightness(0.85);
+  }
+  100% {
+    filter: brightness(0.85);
+  }
+}

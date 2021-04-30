@@ -9,7 +9,7 @@ import { Icon, iconFile } from "./farm_designer/panel_header";
 export const ControlsPopup = (props: ControlsPopupProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const isOpenClass = isOpen ? "open" : "";
-  const { stepSize, arduinoBusy, botOnline } = props;
+  const { stepSize, arduinoBusy, locked, botOnline } = props;
   return <div
     className={`controls-popup ${isOpenClass} ${mapPanelClassName()}`}>
     <img width={25} height={25} src={iconFile(Icon.controls)}
@@ -21,6 +21,7 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           botPosition={props.botPosition}
           getConfigValue={props.getConfigValue}
           arduinoBusy={arduinoBusy}
+          locked={locked}
           botOnline={isOpen && botOnline}
           env={props.env}
           firmwareSettings={props.firmwareSettings} />

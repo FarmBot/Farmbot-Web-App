@@ -26,7 +26,7 @@ export function AxisSettings(props: AxisSettingsProps) {
   } = props;
   const mcuParams = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
   const { axis_settings } = props.controlPanelState;
-  const { busy } = bot.hardware.informational_settings;
+  const { busy, locked } = bot.hardware.informational_settings;
 
   /**
    * Tells us if X/Y/Z have a means of checking their position.
@@ -71,6 +71,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         action={findHome}
         mcuParams={mcuParams}
         arduinoBusy={busy}
+        locked={locked}
         botOnline={botOnline} />
       <CalibrationRow
         type={"zero"}
@@ -124,6 +125,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         action={findAxisLength}
         mcuParams={mcuParams}
         arduinoBusy={busy}
+        locked={locked}
         botOnline={botOnline} />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.axisLength}
@@ -138,6 +140,11 @@ export function AxisSettings(props: AxisSettingsProps) {
           x: !sourceFwConfig("movement_stop_at_max_x").value,
           y: !sourceFwConfig("movement_stop_at_max_y").value,
           z: !sourceFwConfig("movement_stop_at_max_z").value,
+        }}
+        warnMin={{
+          x: 1000,
+          y: 500,
+          z: 250,
         }}
         disabledBy={settingRequiredLabel([DeviceSetting.stopAtMax])}
         intSize={"long"} />

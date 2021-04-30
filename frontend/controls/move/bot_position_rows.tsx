@@ -16,14 +16,16 @@ import {
 } from "../../settings/hardware_settings/axis_tracking_status";
 import { push } from "../../history";
 import { AxisActionsProps, BotPositionRowsProps } from "./interfaces";
+import { lockedClass } from "../locked_class";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
-  const { locationData, getConfigValue, arduinoBusy } = props;
+  const { locationData, getConfigValue, arduinoBusy, locked } = props;
   const hardwareDisabled = disabledAxisMap(props.firmwareSettings);
   const commonAxisActionProps = {
     botOnline: props.botOnline,
     shouldDisplay: props.shouldDisplay,
     arduinoBusy,
+    locked,
   };
   return <div className={"bot-position-rows"}>
     <div className={"axis-titles"}>
@@ -69,24 +71,28 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     <AxisInputBoxGroup
       position={locationData.position}
       onCommit={moveAbsolute}
+      locked={locked}
       disabled={arduinoBusy} />
   </div>;
 };
 
 export const AxisActions = (props: AxisActionsProps) => {
-  const { axis, arduinoBusy, hardwareDisabled, botOnline } = props;
+  const { axis, arduinoBusy, locked, hardwareDisabled, botOnline } = props;
+  const className = lockedClass(locked);
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
     <i className="fa fa-ellipsis-v" />
     <div className={"axis-actions"}>
       {props.shouldDisplay(Feature.home_single_axis) &&
         <LockableButton
           disabled={arduinoBusy || !botOnline}
+          className={className}
           title={t("MOVE TO HOME")}
           onClick={() => moveToHome(axis)}>
           {t("MOVE TO HOME")}
         </LockableButton>}
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
+        className={className}
         title={t("FIND HOME")}
         onClick={() => findHome(axis)}>
         {t("FIND HOME")}
@@ -99,6 +105,7 @@ export const AxisActions = (props: AxisActionsProps) => {
       </LockableButton>
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
+        className={className}
         title={t("FIND LENGTH")}
         onClick={() => findAxisLength(axis)}>
         {t("FIND LENGTH")}

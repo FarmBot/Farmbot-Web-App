@@ -35,11 +35,19 @@ jest.mock("../../settings/maybe_highlight", () => ({
 let mockGet: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
 
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({
+  store: {
+    getState: () => mockState,
+    dispatch: jest.fn(),
+  },
+}));
+
 import * as actions from "../actions";
 import {
   fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
-import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import axios from "axios";
@@ -289,6 +297,14 @@ describe("moveRelative()", () => {
     expect(mockDevice.current.moveRelative)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
     expect(success).not.toHaveBeenCalled();
+  });
+
+  it("shows lock message", () => {
+    mockState.bot.hardware.informational_settings.locked = true;
+    actions.moveRelative({ x: 1, y: 0, z: 0 });
+    expect(error).toHaveBeenCalledWith("Command not available while locked.",
+      { title: "Emergency stop active" });
+    mockState.bot.hardware.informational_settings.locked = false;
   });
 });
 

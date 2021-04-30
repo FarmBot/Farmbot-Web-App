@@ -59,6 +59,7 @@ describe("<PeripheralList/>", function () {
       peripherals,
       pins,
       disabled: false,
+      locked: false,
     };
   };
 

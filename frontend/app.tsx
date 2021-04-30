@@ -138,6 +138,7 @@ export class RawApp extends React.Component<AppProps, {}> {
     const syncLoaded = this.isLoaded;
     const { bot, dispatch, getConfigValue } = this.props;
     const { location_data, mcu_params } = bot.hardware;
+    const { busy, locked } = bot.hardware.informational_settings;
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} />
@@ -164,7 +165,8 @@ export class RawApp extends React.Component<AppProps, {}> {
           dispatch={dispatch}
           botPosition={validBotLocationData(location_data).position}
           firmwareSettings={this.props.firmwareConfig || mcu_params}
-          arduinoBusy={!!bot.hardware.informational_settings.busy}
+          arduinoBusy={busy}
+          locked={locked}
           botOnline={isBotOnlineFromState(bot)}
           getConfigValue={getConfigValue}
           env={this.props.env}

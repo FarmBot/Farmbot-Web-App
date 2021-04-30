@@ -16,6 +16,7 @@ export interface PeripheralListProps {
   peripherals: TaggedPeripheral[];
   pins: Pins;
   disabled: boolean | undefined;
+  locked: boolean;
 }
 
 export interface PeripheralsProps {

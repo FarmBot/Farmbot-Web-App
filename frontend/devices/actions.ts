@@ -27,6 +27,7 @@ import { ExternalUrl } from "../external_urls";
 import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
+import { store } from "../redux/store";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -65,6 +66,11 @@ const maybeNoop = () =>
   info(t("Sorry, that feature is unavailable in demo accounts."), {
     title: t("Unavailable")
   });
+
+const maybeAlertLocked = () =>
+  store.getState().bot.hardware.informational_settings.locked &&
+  error(t("Command not available while locked."),
+    { title: t("Emergency stop active") });
 
 /** Update FBOS. */
 export function checkControllerUpdates() {
@@ -301,6 +307,7 @@ export function settingToggle(
 
 export function moveRelative(props: MoveRelProps) {
   maybeNoop();
+  maybeAlertLocked();
   return getDevice()
     .moveRelative(props)
     .then(maybeNoop, commandErr("Relative movement"));
@@ -309,6 +316,7 @@ export function moveRelative(props: MoveRelProps) {
 export function moveAbsolute(props: MoveRelProps) {
   const noun = t("Absolute movement");
   maybeNoop();
+  maybeAlertLocked();
   return getDevice()
     .moveAbsolute(props)
     .then(maybeNoop, commandErr(noun));
@@ -317,6 +325,7 @@ export function moveAbsolute(props: MoveRelProps) {
 export function pinToggle(pin_number: number) {
   const noun = t("Setting toggle");
   maybeNoop();
+  maybeAlertLocked();
   return getDevice()
     .togglePin({ pin_number })
     .then(maybeNoop, commandErr(noun));
@@ -337,6 +346,7 @@ export function writePin(
 ) {
   const noun = t("Write pin");
   maybeNoop();
+  maybeAlertLocked();
   return getDevice()
     .writePin({ pin_number, pin_mode, pin_value })
     .then(maybeNoop, commandErr(noun));
@@ -345,6 +355,7 @@ export function writePin(
 export function moveToHome(axis: Axis) {
   const noun = t("'Move To Home' command");
   maybeNoop();
+  maybeAlertLocked();
   getDevice()
     .home({ axis, speed: CONFIG_DEFAULTS.speed })
     .catch(commandErr(noun));
@@ -353,6 +364,7 @@ export function moveToHome(axis: Axis) {
 export function findHome(axis: Axis) {
   const noun = t("'Find Home' command");
   maybeNoop();
+  maybeAlertLocked();
   getDevice()
     .findHome({ axis, speed: CONFIG_DEFAULTS.speed })
     .catch(commandErr(noun));
@@ -369,6 +381,7 @@ export function setHome(axis: Axis) {
 export function findAxisLength(axis: Axis) {
   const noun = t("'Find Axis Length' command");
   maybeNoop();
+  maybeAlertLocked();
   getDevice()
     .calibrate({ axis })
     .catch(commandErr(noun));

@@ -44,6 +44,7 @@ export const mapStateToProps = (props: Everything): LocationInfoProps => ({
     .hoveredSensorReading,
   dispatch: props.dispatch,
   botOnline: isBotOnlineFromState(props.bot),
+  locked: props.bot.hardware.informational_settings.locked,
   plants: selectAllPlantPointers(props.resources.index),
   genericPoints: selectAllGenericPointers(props.resources.index),
   sensorReadings: selectAllSensorReadings(props.resources.index),
@@ -59,6 +60,7 @@ export interface LocationInfoProps {
   currentBotLocation: BotPosition;
   hoveredSensorReading: string | undefined;
   botOnline: boolean;
+  locked: boolean;
   dispatch: Function;
   plants: TaggedPlantPointer[];
   genericPoints: TaggedGenericPointer[];
@@ -116,6 +118,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
               currentBotLocation={this.props.currentBotLocation}
               chosenLocation={this.props.chosenLocation}
               botOnline={this.props.botOnline}
+              locked={this.props.locked}
               dispatch={this.props.dispatch} />
             <h1>{t("Nearby")}</h1>
             {[
@@ -431,6 +434,7 @@ interface LocationActionsProps {
   dispatch: Function;
   currentBotLocation: Record<Xyz, number | undefined>;
   botOnline: boolean;
+  locked: boolean;
   chosenLocation: Record<Xyz, number | undefined>;
 }
 
@@ -439,6 +443,7 @@ const LocationActions = (props: LocationActionsProps) =>
     <MoveToForm
       chosenLocation={props.chosenLocation}
       currentBotLocation={props.currentBotLocation}
+      locked={props.locked}
       botOnline={props.botOnline} />
     {!isUndefined(props.currentBotLocation.x)
       && !isUndefined(props.currentBotLocation.y)
