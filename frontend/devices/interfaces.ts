@@ -144,6 +144,7 @@ export interface McuInputBoxProps {
   disabled?: boolean;
   title?: string;
   firmwareHardware: FirmwareHardware | undefined;
+  warnMin?: number;
 }
 
 export interface EStopButtonProps {

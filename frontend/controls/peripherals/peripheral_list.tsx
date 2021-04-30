@@ -2,11 +2,11 @@ import React from "react";
 import { pinToggle, writePin } from "../../devices/actions";
 import { PeripheralListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
-import { Row, Col } from "../../ui";
-import { ToggleButton } from "../../ui/toggle_button";
+import { Row, Col, ToggleButton } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
 import { ANALOG } from "farmbot";
+import { lockedClass } from "../locked_class";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list">
@@ -25,13 +25,14 @@ export const PeripheralList = (props: PeripheralListProps) =>
             ? <AnalogSlider
               initialValue={toggleValue}
               pin={peripheral.body.pin}
-              disabled={props.disabled} />
+              disabled={props.disabled || props.locked} />
             : <ToggleButton
               toggleValue={toggleValue}
               toggleAction={() =>
                 peripheral.body.pin && pinToggle(peripheral.body.pin)}
               title={t(`Toggle ${peripheral.body.label}`)}
               customText={{ textFalse: t("off"), textTrue: t("on") }}
+              className={lockedClass(props.locked)}
               disabled={!!props.disabled} />}
         </Col>
       </Row>;

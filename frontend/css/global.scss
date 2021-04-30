@@ -635,6 +635,9 @@ hr {
 
 .e-stop {
   white-space: nowrap;
+  &.yellow {
+    animation: bright-flash 1s infinite alternate;
+  }
 }
 
 a {

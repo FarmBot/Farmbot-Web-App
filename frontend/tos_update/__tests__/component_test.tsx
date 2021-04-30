@@ -8,7 +8,7 @@ jest.mock("axios", () => ({
 
 jest.mock("../../session", () => ({ Session: { replaceToken: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { TosUpdate } from "../component";
 import { shallow, mount } from "enzyme";
 import axios from "axios";
@@ -19,7 +19,7 @@ import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { TermsCheckbox } from "../../front_page/terms_checkbox";
 import { DEFAULT_APP_PAGE } from "../../front_page/front_page";
 
-describe("<TosUpdate/>", () => {
+describe("<TosUpdate />", () => {
   it("renders correctly when envs are set", () => {
     const oldTos = globalConfig.TOS_URL;
     const oldPriv = globalConfig.PRIV_URL;
@@ -58,10 +58,12 @@ describe("<TosUpdate/>", () => {
   });
 
   it("errors while submitting", async () => {
+    jest.useFakeTimers();
     mockPostResponse = Promise.reject({ response: { data: ["error"] } });
     const i = shallow<TosUpdate>(<TosUpdate />).instance();
     i.setState(fake);
     await i.submit(fakeFormEvent);
+    jest.runAllTimers();
     expect(fakeFormEvent.preventDefault).toHaveBeenCalled();
     await expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, { user: fake });
@@ -92,6 +94,14 @@ describe("<TosUpdate/>", () => {
     const tosForm = shallow(wrapper.instance().tosForm());
     tosForm.find("button").simulate("click");
     expect(error).toHaveBeenCalledWith("Please agree to the terms.");
+  });
+
+  it("updates", () => {
+    const wrapper = mount<TosUpdate>(<TosUpdate />);
+    wrapper.instance().update = jest.fn();
+    const tosForm = shallow(wrapper.instance().tosForm());
+    tosForm.find("button").simulate("click");
+    expect(wrapper.instance().update).toHaveBeenCalled();
   });
 
   it("doesn't error on click", () => {

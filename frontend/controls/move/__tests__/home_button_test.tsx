@@ -13,6 +13,7 @@ describe("<HomeButton />", () => {
   const fakeProps = (): HomeButtonProps => ({
     doFindHome: false,
     disabled: false,
+    locked: false,
   });
 
   it("call has correct args", () => {

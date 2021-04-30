@@ -48,6 +48,7 @@ export interface CalibrationRowProps {
   type: "find_home" | "calibrate" | "zero";
   mcuParams: McuParams;
   arduinoBusy: boolean;
+  locked?: boolean;
   botOnline: boolean;
   action(axis: Axis): void;
   toolTip: string;
@@ -77,6 +78,7 @@ export interface NumericMCUInputGroupProps {
   disabledBy?: string;
   advanced?: boolean;
   showAdvanced?: boolean;
+  warnMin?: Record<Xyz, number>;
 }
 
 export interface PinGuardMCUInputGroupProps {

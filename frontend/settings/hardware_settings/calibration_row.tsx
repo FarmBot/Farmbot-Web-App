@@ -5,11 +5,12 @@ import { Row, Col, Help } from "../../ui";
 import { CalibrationRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { lockedClass } from "../../controls/locked_class";
 
 export class CalibrationRow extends React.Component<CalibrationRowProps> {
   Axes = () => {
     const {
-      type, botOnline, axisTitle, mcuParams, action, arduinoBusy,
+      type, botOnline, axisTitle, mcuParams, action, arduinoBusy, locked,
     } = this.props;
     return <div className="calibration-row-axes">
       {axisTrackingStatus(mcuParams, this.props.stallUseDisabled)
@@ -20,6 +21,7 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
             className={"centered-button-div"}>
             <LockableButton
               disabled={arduinoBusy || hardwareDisabled || !botOnline}
+              className={lockedClass(locked)}
               title={t(axisTitle)}
               onClick={() => action(axis)}>
               {`${t(axisTitle)} ${axis}`}

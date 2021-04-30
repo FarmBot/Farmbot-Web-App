@@ -26,6 +26,7 @@ describe("<ControlsPopup />", () => {
     stepSize: 100,
     botOnline: true,
     env: {},
+    locked: false,
   });
 
   it("toggles open state", () => {

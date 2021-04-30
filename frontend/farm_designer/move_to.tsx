@@ -25,6 +25,7 @@ export function mapStateToProps(props: Everything): MoveToProps {
       validBotLocationData(props.bot.hardware.location_data).position,
     dispatch: props.dispatch,
     botOnline: isBotOnlineFromState(props.bot),
+    locked: props.bot.hardware.informational_settings.locked,
   };
 }
 
@@ -32,6 +33,7 @@ export interface MoveToFormProps {
   chosenLocation: BotPosition;
   currentBotLocation: BotPosition;
   botOnline: boolean;
+  locked: boolean;
 }
 
 export interface MoveToProps extends MoveToFormProps {
@@ -60,7 +62,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
 
   render() {
     const { x, y } = this.props.chosenLocation;
-    const { botOnline } = this.props;
+    const { botOnline, locked } = this.props;
     return <div className={"move-to-form"}>
       <Row>
         <Col xs={3}>
@@ -87,7 +89,9 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <Col xs={3}>
           <button
             onClick={() => moveAbsolute(this.vector)}
-            className={`fb-button green ${botOnline ? "" : "pseudo-disabled"}`}
+            className={["fb-button green",
+              (botOnline && !locked) ? "" : "pseudo-disabled",
+            ].join(" ")}
             title={botOnline
               ? t("Move to this coordinate")
               : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
@@ -124,6 +128,7 @@ export class RawMoveTo extends React.Component<MoveToProps, {}> {
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
           currentBotLocation={this.props.currentBotLocation}
+          locked={this.props.locked}
           botOnline={this.props.botOnline} />
       </DesignerPanelContent>
     </DesignerPanel>;

@@ -31,6 +31,7 @@ describe("<LocationInfo />", () => {
     sensors: [fakeSensor()],
     timeSettings: fakeTimeSettings(),
     hoveredSensorReading: undefined,
+    locked: false,
   });
 
   it("renders empty panel", () => {
