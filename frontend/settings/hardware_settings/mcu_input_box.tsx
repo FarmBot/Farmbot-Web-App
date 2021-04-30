@@ -2,7 +2,7 @@ import React from "react";
 import { warning } from "../../toast/toast";
 import { McuInputBoxProps } from "../../devices/interfaces";
 import { updateMCU } from "../../devices/actions";
-import { BlurableInput } from "../../ui/index";
+import { BlurableInput } from "../../ui";
 import {
   clampInteger, IntegerSize, getMaxInputFromIntSize,
 } from "../../util";
@@ -90,6 +90,9 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
       value={this.showValue}
       onCommit={this.commit}
       disabled={this.props.disabled}
+      error={this.props.warnMin && (parseInt(this.showValue) < this.props.warnMin)
+        ? t("Warning: low value")
+        : undefined}
       min={this.props.min || 0}
       max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />;
   }

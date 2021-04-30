@@ -99,6 +99,16 @@ describe("<FrontPage />", () => {
     expect(wrapper.state().activePanel).toEqual("login");
   });
 
+  it("updates", async () => {
+    mockAxiosResponse = Promise.reject({ response: { status: 403 } });
+    const wrapper = mount<FrontPage>(<FrontPage />);
+    wrapper.setState({ email: "foo@bar.io", loginPassword: "password" });
+    wrapper.instance().update = jest.fn();
+    await wrapper.instance().submitLogin(fakeFormEvent);
+    await expect(Session.replaceToken).not.toHaveBeenCalled();
+    expect(wrapper.instance().update).toHaveBeenCalled();
+  });
+
   it("submits login: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
     const el = mount<FrontPage>(<FrontPage />);
@@ -113,6 +123,7 @@ describe("<FrontPage />", () => {
   });
 
   it("submits login: not verified", async () => {
+    jest.useFakeTimers();
     mockAxiosResponse = Promise.reject({ response: { status: 403 } });
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
@@ -124,6 +135,7 @@ describe("<FrontPage />", () => {
     await expect(Session.replaceToken).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Account Not Verified");
     expect(el.instance().state.activePanel).toEqual("resendVerificationEmail");
+    jest.runAllTimers();
   });
 
   it("submits login: TOS update", async () => {

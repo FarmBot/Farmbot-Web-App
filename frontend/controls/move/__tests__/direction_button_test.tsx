@@ -21,7 +21,8 @@ function fakeButtonProps(): DirectionButtonProps {
       position: undefined
     },
     steps: 1000,
-    disabled: false
+    disabled: false,
+    locked: false,
   };
 }
 

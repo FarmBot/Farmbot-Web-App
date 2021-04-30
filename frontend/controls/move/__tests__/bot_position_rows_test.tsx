@@ -34,6 +34,7 @@ describe("<BotPositionRows />", () => {
     firmwareHardware: undefined,
     botOnline: true,
     shouldDisplay: () => true,
+    locked: false,
   });
 
   it("inputs axis destination", () => {

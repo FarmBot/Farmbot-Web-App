@@ -20,6 +20,7 @@ describe("<NumericMCUInputGroup />", () => {
   it("renders", () => {
     const wrapper = mount(<NumericMCUInputGroup {...fakeProps()} />);
     expect(wrapper.text()).toContain(DeviceSetting.motors);
+    expect(wrapper.find(".error").length).toEqual(0);
   });
 
   it("overrides advanced hide", () => {
@@ -31,5 +32,15 @@ describe("<NumericMCUInputGroup />", () => {
     bot.hardware.mcu_params.encoder_enabled_z = 0;
     const wrapper = shallow(<NumericMCUInputGroup {...p} />);
     expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+  });
+
+  it("shows warnings", () => {
+    const p = fakeProps();
+    bot.hardware.mcu_params.encoder_enabled_x = 1;
+    bot.hardware.mcu_params.encoder_enabled_y = 1;
+    bot.hardware.mcu_params.encoder_enabled_z = 0;
+    p.warnMin = { x: 2, y: 2, z: 0 };
+    const wrapper = mount(<NumericMCUInputGroup {...p} />);
+    expect(wrapper.find(".error").length).toEqual(2);
   });
 });

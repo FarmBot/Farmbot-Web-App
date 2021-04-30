@@ -40,14 +40,14 @@ describe("<FormField />", () => {
 
 describe("sendEmail()", () => {
   it("calls success() when things are OK", async () => {
-    await sendEmail("send@email.com");
+    await sendEmail("send@email.com", jest.fn());
     expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
     expect(resendEmail).toHaveBeenCalledWith("send@email.com");
   });
 
   it("calls error() when things are not OK", async () => {
     mockResponse = Promise.reject("");
-    await sendEmail("send@email.com");
+    await sendEmail("send@email.com", jest.fn());
     expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
     expect(resendEmail).toHaveBeenCalledWith("send@email.com");
   });
@@ -58,6 +58,7 @@ const fakeCreateAccountProps = (): CreateAccountProps => ({
   sent: false,
   get: jest.fn(),
   set: jest.fn(),
+  callback: jest.fn(),
 });
 
 describe("<DidRegister />", () => {

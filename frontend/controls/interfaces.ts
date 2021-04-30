@@ -34,6 +34,7 @@ export interface AxisInputBoxGroupProps {
   onCommit: (v: Vector3) => void;
   position: BotPosition;
   disabled: boolean | undefined;
+  locked: boolean;
 }
 
 export interface AxisInputBoxGroupState {

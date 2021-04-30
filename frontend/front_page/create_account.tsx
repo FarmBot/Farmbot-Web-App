@@ -26,6 +26,7 @@ export interface CreateAccountProps {
   sent: boolean;
   get: KeyGetter;
   set: KeySetter;
+  callback(): void;
 }
 
 type FieldType = BIProps["type"];
@@ -100,9 +101,15 @@ export function MustRegister(props: CreateAccountProps) {
 const MISSING_EMAIL = "User tried to resend to their registration email, " +
   "but none was found.";
 
-export function sendEmail(email: string) {
-  const ok = () => success(t(Content.VERIFICATION_EMAIL_RESENT));
-  const no = () => error(t(Content.VERIFICATION_EMAIL_RESEND_ERROR));
+export function sendEmail(email: string, callback: () => void) {
+  const ok = () => {
+    success(t(Content.VERIFICATION_EMAIL_RESENT));
+    callback();
+  };
+  const no = () => {
+    error(t(Content.VERIFICATION_EMAIL_RESEND_ERROR));
+    callback();
+  };
 
   return resendEmail(email).then(ok, no);
 }
@@ -110,7 +117,7 @@ export function sendEmail(email: string) {
 export function DidRegister(props: CreateAccountProps) {
   const email = props.get("regEmail");
   return email
-    ? <ResendPanelBody onClick={() => sendEmail(email)} />
+    ? <ResendPanelBody onClick={() => sendEmail(email, props.callback)} />
     : bail(MISSING_EMAIL);
 }
 
