@@ -25,6 +25,8 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
     this.state = { agree_to_terms: false };
   }
 
+  update = () => setTimeout(() => this.forceUpdate(), 100);
+
   set = (key: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
     const state: { [key: string]: State[keyof State] } = {};
     state[key] = (event.currentTarget).value;
@@ -44,6 +46,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
       })
       .catch(error => {
         logError(prettyPrintApiErrors(error));
+        this.update();
       });
   }
 
@@ -73,8 +76,10 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
               <button
                 className="green fb-button"
                 title={t("agree")}
-                onClick={() =>
-                  !agree && logError(t("Please agree to the terms."))}
+                onClick={() => {
+                  !agree && logError(t("Please agree to the terms."));
+                  this.update();
+                }}
                 type={agree ? "submit" : "button"}>
                 {t("I Agree to the Terms of Service")}
               </button>
@@ -101,6 +106,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
     const body = t("Before logging in, you must agree to our latest Terms" +
       " of Service and Privacy Policy");
     log(body, { title: t("New Terms of Service") });
+    this.update();
   }
 
   render() {

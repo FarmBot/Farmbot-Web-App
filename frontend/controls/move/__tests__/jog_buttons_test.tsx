@@ -19,6 +19,7 @@ describe("<JogButtons />", () => {
     botOnline: true,
     firmwareSettings: bot.hardware.mcu_params,
     env: {},
+    locked: false,
   });
 
   it("is disabled", () => {

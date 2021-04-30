@@ -44,8 +44,18 @@ input:not([role="combobox"]) {
   }
 }
 
+.input {
+  position: relative;
+  .bp3-popover-wrapper {
+    position: unset;
+  }
+}
+
 .input-error-wrapper {
   height: 0;
+  .bp3-popover-content {
+    min-width: 120px;
+  }
 }
 
 .input-error {

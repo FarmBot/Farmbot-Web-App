@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { BotPosition } from "../../devices/interfaces";
@@ -6,28 +6,30 @@ import { AxisInputBoxGroupProps } from "../interfaces";
 import { clickButton } from "../../__test_support__/helpers";
 
 describe("<AxisInputBoxGroup />", () => {
-  const props: AxisInputBoxGroupProps = {
+  const fakeProps = (): AxisInputBoxGroupProps => ({
     position: { x: undefined, y: undefined, z: undefined },
     onCommit: jest.fn(),
-    disabled: false
-  };
+    disabled: false,
+    locked: false,
+  });
 
   it("has 3 inputs and a button", () => {
-    const wrapper = mount(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount(<AxisInputBoxGroup {...fakeProps()} />);
     expect(wrapper.find("input").length).toEqual(3);
     expect(wrapper.find("button").length).toEqual(1);
 
   });
 
   it("button is disabled", () => {
-    props.disabled = true;
-    const wrapper = mount(<AxisInputBoxGroup {...props} />);
+    const p = fakeProps();
+    p.disabled = true;
+    const wrapper = mount(<AxisInputBoxGroup {...p} />);
     wrapper.find("button").simulate("click");
-    expect(props.onCommit).not.toHaveBeenCalled();
+    expect(p.onCommit).not.toHaveBeenCalled();
   });
 
   it("changes", () => {
-    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
+    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...fakeProps()} />);
     wrapper.instance().change("x", 10);
     expect(wrapper.state()).toEqual({ x: 10 });
   });
@@ -36,12 +38,13 @@ describe("<AxisInputBoxGroup />", () => {
     testCase: string,
     coordinates: Record<"position" | "inputs" | "expected", BotPosition>) {
     it(`Go: ${testCase}`, () => {
-      props.disabled = false;
-      props.position = coordinates.position;
-      const wrapper = mount(<AxisInputBoxGroup {...props} />);
+      const p = fakeProps();
+      p.disabled = false;
+      p.position = coordinates.position;
+      const wrapper = mount(<AxisInputBoxGroup {...p} />);
       wrapper.setState(coordinates.inputs);
       clickButton(wrapper, 0, "go");
-      expect(props.onCommit).toHaveBeenCalledWith(coordinates.expected);
+      expect(p.onCommit).toHaveBeenCalledWith(coordinates.expected);
     });
   }
   testGo("position and inputs undefined", {

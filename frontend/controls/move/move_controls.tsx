@@ -14,7 +14,7 @@ export const MoveControls = (props: MoveControlsProps) => {
   const { location_data, informational_settings } = props.bot.hardware;
   const locationData = validBotLocationData(location_data);
   const botOnline = isBotOnlineFromState(props.bot);
-  const arduinoBusy = !!props.bot.hardware.informational_settings.busy;
+  const { busy, locked } = props.bot.hardware.informational_settings;
   return <div className={"move"}>
     <Popover position={Position.LEFT_TOP} className={"move-settings"}>
       <i className="fa fa-gear" />
@@ -31,7 +31,8 @@ export const MoveControls = (props: MoveControlsProps) => {
         stepSize={props.bot.stepSize}
         botPosition={locationData.position}
         getConfigValue={props.getConfigValue}
-        arduinoBusy={arduinoBusy}
+        arduinoBusy={busy}
+        locked={locked}
         botOnline={true} // covered by MustBeOnline
         env={props.env}
         highlightAxis={props.highlightAxis}
@@ -40,7 +41,8 @@ export const MoveControls = (props: MoveControlsProps) => {
       <BotPositionRows
         locationData={locationData}
         getConfigValue={props.getConfigValue}
-        arduinoBusy={arduinoBusy}
+        arduinoBusy={busy}
+        locked={locked}
         botOnline={botOnline}
         shouldDisplay={props.shouldDisplay}
         firmwareSettings={props.firmwareSettings}

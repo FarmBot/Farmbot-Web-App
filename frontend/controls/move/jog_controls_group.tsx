@@ -15,6 +15,7 @@ export const JogControlsGroup = (props: JogControlsGroupProps) =>
       botPosition={props.botPosition}
       getConfigValue={props.getConfigValue}
       arduinoBusy={props.arduinoBusy}
+      locked={props.locked}
       botOnline={props.botOnline}
       env={props.env}
       highlightAxis={props.highlightAxis}

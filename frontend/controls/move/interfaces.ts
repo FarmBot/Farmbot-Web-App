@@ -27,6 +27,7 @@ export interface DirectionButtonProps {
   }
   steps: number;
   disabled: boolean | undefined;
+  locked: boolean;
 }
 
 export interface TakePhotoButtonProps {
@@ -37,6 +38,7 @@ export interface TakePhotoButtonProps {
 export interface HomeButtonProps {
   doFindHome: boolean;
   disabled: boolean;
+  locked: boolean;
 }
 
 export interface StepSizeSelectorProps {
@@ -55,6 +57,7 @@ export interface JogMovementControlsProps extends DirectionAxesProps {
   botOnline: boolean;
   env: UserEnv;
   arduinoBusy: boolean;
+  locked: boolean;
   highlightAxis?: Xyz;
   highlightHome?: boolean;
 }
@@ -69,6 +72,7 @@ export interface BotPositionRowsProps {
   locationData: BotLocationData;
   getConfigValue: GetWebAppConfigValue;
   arduinoBusy: boolean;
+  locked: boolean;
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
@@ -77,6 +81,7 @@ export interface BotPositionRowsProps {
 
 export interface AxisActionsProps {
   arduinoBusy: boolean;
+  locked: boolean;
   hardwareDisabled: boolean;
   botOnline: boolean;
   axis: Xyz;

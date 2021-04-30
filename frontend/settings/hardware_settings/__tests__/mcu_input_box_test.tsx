@@ -95,5 +95,14 @@ describe("McuInputBox", () => {
     const input = wrapper.find("input");
     expect(input.props().min).toEqual(-10);
     expect(input.props().max).toEqual(10);
+    expect(wrapper.find(".error").length).toEqual(0);
+  });
+
+  it("shows warning", () => {
+    const p = fakeProps();
+    p.warnMin = 10;
+    bot.hardware.mcu_params.encoder_enabled_x = 7;
+    const wrapper = mount(<McuInputBox {...p} />);
+    expect(wrapper.find(".error").length).toEqual(1);
   });
 });

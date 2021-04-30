@@ -54,7 +54,8 @@ export class Peripherals
       return <PeripheralList peripherals={peripherals}
         dispatch={dispatch}
         pins={pins}
-        disabled={this.disabled} />;
+        disabled={this.disabled}
+        locked={bot.hardware.informational_settings.locked} />;
     }
   }
 

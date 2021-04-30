@@ -15,6 +15,7 @@ describe("<JogControlsGroup />", () => {
     botOnline: true,
     firmwareSettings: {},
     env: {},
+    locked: false,
   });
 
   it("changes step size", () => {

@@ -1,8 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { moveRelative } from "../../devices/actions";
 import { DirectionButtonProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { MoveRelProps } from "../../devices/interfaces";
+import { lockedClass } from "../locked_class";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
@@ -47,13 +48,16 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
   }
 
   render() {
-    const { direction, axis, disabled } = this.props;
-    const klass = `fb-button fa fa-2x arrow-button radius fa-arrow-${direction}`;
+    const { direction, axis, disabled, locked } = this.props;
     const distance = calculateDistance(this.props);
     const title = `${t("move {{axis}} axis", { axis })} (${distance})`;
     return <button
       onClick={this.sendCommand}
-      className={klass}
+      className={[
+        "fb-button arrow-button radius",
+        `fa fa-2x fa-arrow-${direction}`,
+        lockedClass(locked),
+      ].join(" ")}
       title={title}
       disabled={disabled || directionDisabled(this.props)} />;
   }
