@@ -634,7 +634,10 @@ CREATE TABLE public.firmware_configs (
     movement_stall_sensitivity_z integer DEFAULT 63,
     movement_min_spd_z2 integer DEFAULT 50,
     movement_max_spd_z2 integer DEFAULT 400,
-    movement_steps_acc_dec_z2 integer DEFAULT 300
+    movement_steps_acc_dec_z2 integer DEFAULT 300,
+    movement_calibration_retry_x integer DEFAULT 3,
+    movement_calibration_retry_y integer DEFAULT 3,
+    movement_calibration_retry_z integer DEFAULT 3
 );
 
 
@@ -3594,6 +3597,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210210144434'),
 ('20210217010948'),
 ('20210304221750'),
-('20210308191813');
+('20210308191813'),
+('20210501195411');
 
 

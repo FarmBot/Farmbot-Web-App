@@ -127,6 +127,10 @@ export namespace ToolTips {
     Overridden by disabling STOP AT HOME.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const CALIBRATION_RETRIES =
+    trim(`Number of times to retry calibration.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
   export const AXIS_LENGTH =
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled.
@@ -1464,6 +1468,7 @@ export enum DeviceSetting {
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
   findAxisLength = `Find axis length (mm)`,
+  calibrationRetries = `Calibration retries`,
   axisLength = `Set Axis Length (mm)`,
   safeHeight = `Safe Height`,
   soilHeight = `Soil Height`,

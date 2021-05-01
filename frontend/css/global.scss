@@ -414,6 +414,16 @@ a {
   padding: 0.25rem;
 }
 
+.single-setting-row {
+  .col-xs-5 {
+    padding-left: 4.75rem;
+    padding-right: 3rem;
+    &.centered-button-div {
+      padding-left: 6rem;
+    }
+  }
+}
+
 .load-progress-bar-wrapper {
   position: relative;
   margin: 0.5rem;

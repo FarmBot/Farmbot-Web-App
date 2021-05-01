@@ -30,6 +30,7 @@ export enum Feature {
   assertion_block = "assertion_block",
   backscheduled_regimens = "backscheduled_regimens",
   boot_sequence = "boot_sequence",
+  calibration_retries = "calibration_retries",
   computed_move = "computed_move",
   change_ownership = "change_ownership",
   criteria_groups = "criteria_groups",
