@@ -89,6 +89,7 @@ const ERROR_HANDLING_PANEL = [
   DeviceSetting.errorHandling,
   DeviceSetting.timeoutAfter,
   DeviceSetting.maxRetries,
+  DeviceSetting.calibrationRetries,
   DeviceSetting.estopOnMovementError,
 ];
 const PIN_BINDINGS_PANEL = [

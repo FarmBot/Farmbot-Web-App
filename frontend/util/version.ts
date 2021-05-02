@@ -111,6 +111,7 @@ export const fallbackData: MinOsFeatureLookup = {
   [Feature.home_single_axis]: MinVersionOverride.NEVER,
   [Feature.toggle_peripheral]: MinVersionOverride.NEVER,
   [Feature.z2_firmware_params_tmc]: MinVersionOverride.NEVER,
+  [Feature.calibration_retries]: MinVersionOverride.NEVER,
   [Feature.boot_sequence]: MinVersionOverride.NEVER,
 };
 
