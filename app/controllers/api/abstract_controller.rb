@@ -91,9 +91,9 @@ module Api
     # you don't want to corrupt user data with stale records.
     def maybe_enforce_row_lock
       if stale_data?
-        current_device
-          .delay
-          .tell("Discarding stale record #{resource.class.table_name}##{resource.id} #{resource.to_json}", ["error"])
+        name = resource.class.model_name.human.downcase
+        msg = "Discarding stale #{name} record (#{resource.id})"
+        current_device.delay.tell(msg, ["error"], "warn")
         render json: { stale_record: STALE_RECORD }, status: 409
       end
     end
