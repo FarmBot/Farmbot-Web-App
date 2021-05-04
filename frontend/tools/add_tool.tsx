@@ -65,35 +65,34 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     this.state.uuid && this.props.dispatch(destroy(this.state.uuid));
 
   stockToolNames = () => {
+    const TROUGHS = [t("Seed Trough 1"), t("Seed Trough 2")];
+    const BASE_TOOLS = [t("Watering Nozzle"), t("Weeder"), t("Soil Sensor")];
+    const SEED_TOOLS = [t("Seeder"), t("Seed Bin"), t("Seed Tray")];
     switch (this.props.firmwareHardware) {
       case "arduino":
       case "farmduino":
       case "farmduino_k14":
       default:
         return [
-          t("Seeder"),
-          t("Watering Nozzle"),
-          t("Weeder"),
-          t("Soil Sensor"),
-          t("Seed Bin"),
-          t("Seed Tray"),
+          ...BASE_TOOLS,
+          ...SEED_TOOLS,
         ];
       case "farmduino_k15":
         return [
-          t("Seeder"),
-          t("Watering Nozzle"),
-          t("Weeder"),
-          t("Soil Sensor"),
-          t("Seed Bin"),
-          t("Seed Tray"),
-          t("Seed Trough 1"),
-          t("Seed Trough 2"),
+          ...BASE_TOOLS,
+          ...SEED_TOOLS,
+          ...TROUGHS,
+        ];
+      case "farmduino_k16":
+        return [
+          ...BASE_TOOLS,
+          t("Rotary Tool"),
+          ...SEED_TOOLS,
+          ...TROUGHS,
         ];
       case "express_k10":
-        return [
-          t("Seed Trough 1"),
-          t("Seed Trough 2"),
-        ];
+      case "express_k11":
+        return TROUGHS;
     }
   }
 

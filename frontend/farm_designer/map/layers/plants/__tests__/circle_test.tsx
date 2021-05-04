@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Circle, CircleProps } from "../circle";
 import { shallow } from "enzyme";
 
@@ -27,5 +27,4 @@ describe("<Circle/>", () => {
     expect(wrapper.props().cy).toEqual(20);
     expect(wrapper.props().r).toEqual(0);
   });
-
 });

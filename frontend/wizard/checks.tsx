@@ -228,10 +228,14 @@ const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
   "genesis_1.3": "farmduino",
   "genesis_1.4": "farmduino_k14",
   "genesis_1.5": "farmduino_k15",
+  "genesis_1.6": "farmduino_k16",
   "genesis_xl_1.4": "farmduino_k14",
   "genesis_xl_1.5": "farmduino_k15",
+  "genesis_xl_1.6": "farmduino_k16",
   "express_1.0": "express_k10",
+  "express_1.1": "express_k11",
   "express_xl_1.0": "express_k10",
+  "express_xl_1.1": "express_k11",
   "none": "none",
 };
 

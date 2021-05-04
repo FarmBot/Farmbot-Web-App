@@ -19,7 +19,6 @@ import {
 } from "../farm_designer/sort_options";
 import { compact, isUndefined, mean, round, sortBy, uniq } from "lodash";
 import { Collapse } from "@blueprintjs/core";
-import { ToggleButton } from "../ui/toggle_button";
 import { UUID } from "../resources/interfaces";
 import { deletePoints } from "../api/delete_points";
 import {
@@ -30,7 +29,7 @@ import { SourceFbosConfig } from "../devices/interfaces";
 import { validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
-import { Saucer } from "../ui";
+import { Saucer, ToggleButton } from "../ui";
 
 interface PointsSectionProps {
   title: string;
@@ -82,7 +81,6 @@ const PointsSection = (props: PointsSectionProps) => {
     </Collapse>
   </div>;
 };
-
 
 export interface PointsProps {
   genericPoints: TaggedGenericPointer[];

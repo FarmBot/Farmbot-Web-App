@@ -3,7 +3,7 @@ import axios from "axios";
 import { error as log } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui";
 import { Session } from "../session";
 import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
@@ -14,7 +14,6 @@ export interface State {
   serverURL?: string;
   serverPort?: string;
 }
-
 
 export class PasswordReset extends React.Component<{}, State> {
   constructor(props: {}) {

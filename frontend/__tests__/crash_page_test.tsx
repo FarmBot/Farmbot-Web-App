@@ -1,17 +1,11 @@
-jest.mock("../session", () => {
-  return {
-    Session: {
-      clear: jest.fn()
-    }
-  };
-});
+jest.mock("../session", () => ({ Session: { clear: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { crashPage } from "../crash_page";
 import { mount } from "enzyme";
 import { Session } from "../session";
 
-describe("<CrashPage/>", () => {
+describe("<CrashPage />", () => {
   it("renders error info", () => {
     const fakeError = {
       stack: [
@@ -32,6 +26,5 @@ describe("<CrashPage/>", () => {
     el.find("a").first().simulate("click");
     expect(Session.clear).toHaveBeenCalled();
     el.unmount();
-
   });
 });

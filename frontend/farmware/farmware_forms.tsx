@@ -241,7 +241,6 @@ export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
   return needsWidget;
 }
 
-
 /** Get a Farmware input value from FBOS. */
 const getValue = (env: UserEnv) =>
   (farmwareName: string, currentConfig: FarmwareConfig) =>

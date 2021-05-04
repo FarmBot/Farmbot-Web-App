@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { DragHelpers } from "../drag_helpers";
 import { shallow } from "enzyme";
 import { DragHelpersProps } from "../../interfaces";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
-import { Color } from "../../../../ui/index";
+import { Color } from "../../../../ui";
 import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
@@ -203,5 +203,4 @@ describe("<DragHelpers/>", () => {
     expect(segments.at(3).props().transform).toEqual("rotate(270, 2900, 1400)");
     expect(indicator.props().fill).toEqual(Color.red);
   });
-
 });

@@ -19,8 +19,10 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis v1.3",
       "Genesis v1.4",
       "Genesis v1.5",
+      // "Genesis v1.6",
       "Genesis XL v1.4",
       "Genesis XL v1.5",
+      // "Genesis XL v1.6",
     ],
   },
   {
@@ -29,7 +31,9 @@ const PLATFORM_DATA = (): PlatformContent[] => [
     releaseTag: globalConfig.rpi_release_tag,
     kits: [
       "Express v1.0",
+      // "Express v1.1",
       "Express XL v1.0",
+      // "Express XL v1.1",
     ],
   },
 ];

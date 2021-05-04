@@ -1,33 +1,33 @@
-jest.mock("../util", () => ({
-  attachToRoot: jest.fn(),
-  // Incidental mock. Can be removed if errors go away.
-  trim: jest.fn(x => x),
-  urlFriendly: jest.fn(),
-}));
+const util = require("../util/page");
+util.attachToRoot = jest.fn();
 
-jest.mock("../redux/store", () => {
-  return { store: { dispatch: jest.fn() } };
-});
+import { fakeState } from "../__test_support__/fake_state";
+jest.mock("../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: fakeState,
+  },
+}));
 
 jest.mock("../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => false }
+  DevSettings: {
+    futureFeaturesEnabled: () => false,
+    overriddenFbosVersion: jest.fn(),
+  }
 }));
 
-jest.mock("../config/actions", () => {
-  // Stubbing this to make testing easier.
-  return { ready: () => ({ type: "YES_IT_WAS_CALLED" }) };
-});
+jest.mock("../config/actions", () => ({ ready: jest.fn() }));
 
 import { attachAppToDom, RootComponent } from "../routes";
 import { attachToRoot } from "../util";
 import { store } from "../redux/store";
 import { ready } from "../config/actions";
 
-describe("attachAppToDom", () => {
-  it("Attaches RootComponent to the DOM", () => {
+describe("attachAppToDom()", () => {
+  it("attaches RootComponent to the DOM", () => {
     attachAppToDom();
-    const expectedArg2 = { store };
-    expect(attachToRoot).toHaveBeenCalledWith(RootComponent, expectedArg2);
+    expect(attachToRoot).toHaveBeenCalledWith(RootComponent, { store });
+    expect(ready).toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledWith(ready());
   });
 });

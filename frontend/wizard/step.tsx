@@ -18,7 +18,6 @@ export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const normalStepColor = stepDone ? "green" : "gray";
   const stepColor = stepFail ? "red" : normalStepColor;
 
-
   return <div className={`wizard-step-header ${stepOpen ? "open" : ""}`}
     onClick={props.openStep(props.step.slug)}>
     <h3>{t(props.step.title)}</h3>

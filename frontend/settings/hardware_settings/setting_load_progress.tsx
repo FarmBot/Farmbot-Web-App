@@ -1,9 +1,7 @@
 import React from "react";
 import { Color } from "../../ui";
 import { Feature, ShouldDisplay, SourceFwConfig } from "../../devices/interfaces";
-import type {
-  FirmwareConfig, NumberConfigKey,
-} from "farmbot/dist/resources/configs/firmware";
+import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { hasZ2Params, isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
@@ -22,10 +20,14 @@ const UNTRACKED_KEYS: (keyof FirmwareConfig)[] = [
 ];
 
 const TMC_KEYS: (keyof FirmwareConfig)[] = [
-  "movement_stall_sensitivity_x", "movement_stall_sensitivity_y",
-  "movement_stall_sensitivity_z", "movement_motor_current_x",
-  "movement_motor_current_y", "movement_motor_current_z",
-  "movement_microsteps_x", "movement_microsteps_y",
+  "movement_stall_sensitivity_x",
+  "movement_stall_sensitivity_y",
+  "movement_stall_sensitivity_z",
+  "movement_motor_current_x",
+  "movement_motor_current_y",
+  "movement_motor_current_z",
+  "movement_microsteps_x",
+  "movement_microsteps_y",
   "movement_microsteps_z",
 ];
 
@@ -34,9 +36,9 @@ const Z2_KEYS: (keyof FirmwareConfig)[] = [
 ];
 
 const CAL_RETRY_KEYS: (keyof FirmwareConfig)[] = [
-  "movement_calibration_retry_x" as NumberConfigKey,
-  "movement_calibration_retry_y" as NumberConfigKey,
-  "movement_calibration_retry_z" as NumberConfigKey,
+  "movement_calibration_retry_x",
+  "movement_calibration_retry_y",
+  "movement_calibration_retry_z",
 ];
 
 /** Track firmware configuration adoption by FarmBot OS. */

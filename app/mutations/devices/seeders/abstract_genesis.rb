@@ -77,6 +77,7 @@ module Devices
 
       def tool_slots_slot_7; end
       def tool_slots_slot_8; end
+      def tool_slots_slot_9; end
 
       def tools_seed_bin
         @tools_seed_bin ||=
@@ -110,6 +111,8 @@ module Devices
         @tools_weeder ||=
           add_tool(ToolNames::WEEDER)
       end
+
+      def tools_rotary; end
 
       def sequences_mount_tool
         s = SequenceSeeds::MOUNT_TOOL.deep_dup
