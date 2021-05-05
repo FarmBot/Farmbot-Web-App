@@ -31,8 +31,6 @@ describe("<RotationSetting />", () => {
   });
 
   it.each<["yes" | "no" | undefined, string | undefined, string]>([
-    [undefined, undefined, ""],
-    [undefined, undefined, "1.0.13"],
     ["yes", undefined, "1.0.14"],
     ["no", undefined, "1.0.15"],
     ["no", "1", "1.0.13"],

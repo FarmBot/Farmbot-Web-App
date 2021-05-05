@@ -67,6 +67,19 @@ export class Peripherals
   };
 
   get stockPeripherals() {
+    const BASE_PERIPHERALS = [
+      { pin: 7, label: t("Lighting") },
+      { pin: 8, label: t("Water") },
+      { pin: 9, label: t("Vacuum") },
+    ];
+    const ROTARY_TOOL = [
+      { pin: 2, label: t("Rotary Tool Forward") },
+      { pin: 3, label: t("Rotary Tool Reverse") },
+    ];
+    const EXTRA_PERIPHERALS = [
+      { pin: 10, label: t("Peripheral ") + "4" },
+      { pin: 12, label: t("Peripheral ") + "5" },
+    ];
     switch (this.props.firmwareHardware) {
       case "arduino":
         return [
@@ -76,22 +89,20 @@ export class Peripherals
       case "farmduino":
       case "farmduino_k14":
       case "farmduino_k15":
-      case "farmduino_k16":
       default:
         return [
-          { pin: 7, label: t("Lighting") },
-          { pin: 8, label: t("Water") },
-          { pin: 9, label: t("Vacuum") },
-          { pin: 10, label: t("Peripheral ") + "4" },
-          { pin: 12, label: t("Peripheral ") + "5" },
+          ...BASE_PERIPHERALS,
+          ...EXTRA_PERIPHERALS,
+        ];
+      case "farmduino_k16":
+        return [
+          ...BASE_PERIPHERALS,
+          ...ROTARY_TOOL,
+          ...EXTRA_PERIPHERALS,
         ];
       case "express_k10":
       case "express_k11":
-        return [
-          { pin: 7, label: t("Lighting") },
-          { pin: 8, label: t("Water") },
-          { pin: 9, label: t("Vacuum") },
-        ];
+        return BASE_PERIPHERALS;
     }
   }
 
