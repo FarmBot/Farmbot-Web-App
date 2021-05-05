@@ -62,6 +62,7 @@ import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
 import { OriginSelector } from "../settings/farm_designer_settings";
 import { Sensors } from "../sensors";
 import {
+  DropdownConfig,
   NumberBoxConfig, NumberBoxConfigProps,
 } from "../photos/camera_calibration/config";
 import { SetupWizardContent, ToolTips } from "../constants";
@@ -74,6 +75,7 @@ import {
 import { destroy } from "../api/crud";
 import { FlashFirmwareBtn } from "../settings/firmware/firmware_hardware_status";
 import { AxisDisplayGroup } from "../controls/axis_display_group";
+import { ORIGIN_DROPDOWNS } from "../photos/camera_calibration/constants";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -305,6 +307,10 @@ export const ConfiguratorDocs = () => {
   </a>;
 };
 
+export const EthernetPortImage = () =>
+  <img style={{ width: "100%" }}
+    src={"/app-resources/img/pi-ethernet-port.jpg"} />;
+
 export const Connectivity = (props: WizardStepComponentProps) => {
   const data = connectivityData({
     bot: props.bot,
@@ -503,6 +509,27 @@ export const CameraOffset = (props: WizardStepComponentProps) => {
         configKey={"CAMERA_CALIBRATION_camera_offset_y"}
         label={t("Camera Offset Y")}
         helpText={helpText} />
+    </Col>
+  </Row>;
+};
+
+export const CameraImageOrigin = (props: WizardStepComponentProps) => {
+  const env = getEnv(props.resources);
+  const wDEnv = prepopulateEnv(env);
+  return <Row>
+    <Col xs={12}>
+      <DropdownConfig
+        wdEnvGet={key => envGet(key, wDEnv)}
+        onChange={(key, value) =>
+          props.dispatch(saveOrEditFarmwareEnv(props.resources)(
+            key, JSON.stringify(formatEnvKey(key, value))))}
+        list={ORIGIN_DROPDOWNS()}
+        configKey={"CAMERA_CALIBRATION_image_bot_origin_location"}
+        label={t("Origin Location in Image")}
+        helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
+          defaultOrigin: WD_KEY_DEFAULTS[
+            "CAMERA_CALIBRATION_image_bot_origin_location"]
+        })} />
     </Col>
   </Row>;
 };

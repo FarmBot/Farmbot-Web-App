@@ -2665,10 +2665,17 @@
       .farmbot-origin {
         margin-top: 1rem;
       }
+      .dropdown-camera-calibration-config,
       .camera-config-number-box {
         .bp3-popover-wrapper {
           display: inline;
           margin-left: 1rem;
+        }
+      }
+      .filter-search {
+        .bp3-popover-wrapper {
+          display: unset;
+          margin-left: unset;
         }
       }
       .yellow {

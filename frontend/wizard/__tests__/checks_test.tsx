@@ -42,6 +42,7 @@ import {
   CameraCalibrationCard,
   CameraCalibrationCheck,
   CameraCheck,
+  CameraImageOrigin,
   CameraOffset,
   CameraReplacement,
   ConfiguratorDocs,
@@ -49,6 +50,7 @@ import {
   ControlsCheck,
   CurrentPosition,
   DisableStallDetection,
+  EthernetPortImage,
   FindHome,
   FirmwareHardwareSelection,
   FlashFirmware,
@@ -343,6 +345,13 @@ describe("<ConfiguratorDocs />", () => {
   });
 });
 
+describe("<EthernetPortImage />", () => {
+  it("shows image", () => {
+    const wrapper = mount(<EthernetPortImage />);
+    expect(wrapper.find("img").length).toEqual(1);
+  });
+});
+
 describe("<Connectivity />", () => {
   it("renders diagram", () => {
     const p = fakeProps();
@@ -559,6 +568,22 @@ describe("<CameraOffset />", () => {
     changeBlurableInput(wrapper, "100", 0);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_camera_offset_x", value: "100"
+    });
+  });
+});
+
+describe("<CameraImageOrigin />", () => {
+  it("renders image origin dropdown", () => {
+    const wrapper = mount(<CameraImageOrigin {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("origin");
+  });
+
+  it("changes origin", () => {
+    const wrapper = shallow(<CameraImageOrigin {...fakeProps()} />);
+    wrapper.find("DropdownConfig").simulate("change",
+      "CAMERA_CALIBRATION_image_bot_origin_location", 2);
+    expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "CAMERA_CALIBRATION_image_bot_origin_location", value: "\"TOP_LEFT\""
     });
   });
 });

@@ -1393,6 +1393,16 @@ export namespace SetupWizardContent {
     trim(`Camera voltage may be low. Try a different Raspberry Pi USB
     power cable.`);
 
+  export const ETHERNET_OPTION =
+    trim(`Most people connect their FarmBot to the internet over WiFi,
+    though you may optionally use a hardwired ethernet connection. If you
+    would like to use an ethernet connection, simply connect an ethernet
+    cable between your WiFi router and the Raspberry Pi.`);
+
+  export const ETHERNET_OPTION_QUESTION =
+    trim(`Are you planning on using WiFi or have you connected the ethernet
+    cable?`);
+
   export const CONFIGURATOR_CONNECTION_PROMPT =
     trim(`Is your phone or computer connected to the FarmBot WiFi network?`);
 
@@ -1414,8 +1424,8 @@ export namespace SetupWizardContent {
     apart can be used in place of the card.`);
 
   export const CAMERA_ALIGNMENT =
-    trim(`Find a detail in the image where the coordinates are known
-    (for example, a spot watered by FarmBot), and compare the known
+    trim(`Find a detail in the image at the soil level where the coordinates
+    are known (for example, a spot watered by FarmBot), and compare the known
     coordinates against the location for the detail shown in the map.`);
 
   export const CHECK_TOOL_CONNECTIONS =
@@ -1657,8 +1667,9 @@ export namespace DiagnosticMessages {
     and refreshing the browser. If the issue persists, something may be
     preventing FarmBot from accessing the message broker (used to communicate
     with your web browser in real-time). If you are on a company or school
-    network, a firewall may be blocking port 5672. Ensure that the blue LED
-    communications light on the FarmBot electronics box is illuminated.`);
+    network, a firewall may be blocking port 5672 or port 8883. Ensure that
+    the blue LED communications light on the FarmBot electronics box is
+    illuminated.`);
 
   export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
     but we have no recent record of FarmBot connecting to the internet.
