@@ -39,6 +39,8 @@ module Devices
                       gantry_mounted: true)
       end
 
+      def tool_slots_slot_9; end
+
       def tools_seed_trough_1
         @tools_seed_trough_1 ||=
           add_tool(ToolNames::SEED_TROUGH_1)
@@ -48,6 +50,8 @@ module Devices
         @tools_seed_trough_2 ||=
           add_tool(ToolNames::SEED_TROUGH_2)
       end
+
+      def tools_rotary; end
     end
   end
 end

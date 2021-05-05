@@ -17,7 +17,6 @@ describe("<AxisInputBoxGroup />", () => {
     const wrapper = mount(<AxisInputBoxGroup {...fakeProps()} />);
     expect(wrapper.find("input").length).toEqual(3);
     expect(wrapper.find("button").length).toEqual(1);
-
   });
 
   it("button is disabled", () => {
@@ -29,7 +28,8 @@ describe("<AxisInputBoxGroup />", () => {
   });
 
   it("changes", () => {
-    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...fakeProps()} />);
+    const wrapper = mount<AxisInputBoxGroup>(
+      <AxisInputBoxGroup {...fakeProps()} />);
     wrapper.instance().change("x", 10);
     expect(wrapper.state()).toEqual({ x: 10 });
   });

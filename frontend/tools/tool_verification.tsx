@@ -7,7 +7,6 @@ import { isBotOnlineFromState } from "../devices/must_be_online";
 import { error } from "../toast/toast";
 import { ToolVerificationProps } from "./interfaces";
 
-
 const toolStatus = (value: number | undefined): string => {
   switch (value) {
     case 1: return t("disconnected");

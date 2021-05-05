@@ -1,10 +1,10 @@
 module Devices
   module Seeders
-    class ExpressOneZero < AbstractExpress
+    class ExpressOneOne < AbstractExpress
       def settings_firmware
         device
           .fbos_config
-          .update!(firmware_hardware: FbosConfig::EXPRESS_K10)
+          .update!(firmware_hardware: FbosConfig::EXPRESS_K11)
       end
     end
   end

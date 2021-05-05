@@ -89,7 +89,9 @@ describe("<AddTool />", () => {
     ["farmduino", 6],
     ["farmduino_k14", 6],
     ["farmduino_k15", 8],
+    ["farmduino_k16", 9],
     ["express_k10", 2],
+    ["express_k11", 2],
   ])("adds peripherals: %s", (firmware, expectedAdds) => {
     const p = fakeProps();
     p.firmwareHardware = firmware;

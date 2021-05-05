@@ -263,7 +263,6 @@ describe("<AssemblyDocs />", () => {
     expect(wrapper.find("a").props().href).toEqual(ExternalUrl.expressAssembly);
   });
 
-
   it("handles missing config", () => {
     const wrapper = mount(<AssemblyDocs {...fakeProps()} />);
     expect(wrapper.find("a").props().href).toEqual(ExternalUrl.genesisAssembly);

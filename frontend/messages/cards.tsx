@@ -31,6 +31,8 @@ import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
+import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { Feature } from "../devices/interfaces";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -179,11 +181,21 @@ const FirmwareChoiceTable = () =>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k15"].label}</code></td>
       </tr>
+      {shouldDisplayFeature(Feature.farmduino_k16) && <tr>
+        <td>{"Genesis v1.6"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k16"].label}</code></td>
+      </tr>}
       <tr>
         <td>{"Express v1.0"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
       </tr>
+      {shouldDisplayFeature(Feature.express_k11) && <tr>
+        <td>{"Express v1.1"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["express_k11"].label}</code></td>
+      </tr>}
     </tbody>
   </table>;
 
@@ -211,7 +223,7 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
       <Col xs={5}>
         <FBSelect
           key={props.apiFirmwareValue}
-          list={getFirmwareChoices()}
+          list={getFirmwareChoices(shouldDisplayFeature)}
           customNullLabel={t("Select one")}
           selectedItem={props.apiFirmwareValue
             ? FIRMWARE_CHOICES_DDI[props.apiFirmwareValue]
@@ -231,10 +243,22 @@ export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.3", value: "genesis_1.3" },
   { label: "Genesis v1.4", value: "genesis_1.4" },
   { label: "Genesis v1.5", value: "genesis_1.5" },
+  ...(shouldDisplayFeature(Feature.farmduino_k16)
+    ? [{ label: "Genesis v1.6", value: "genesis_1.6" }]
+    : []),
   { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
   { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
+  ...(shouldDisplayFeature(Feature.farmduino_k16)
+    ? [{ label: "Genesis v1.6 XL", value: "genesis_xl_1.6" }]
+    : []),
   { label: "Express v1.0", value: "express_1.0" },
+  ...(shouldDisplayFeature(Feature.express_k11)
+    ? [{ label: "Express v1.1", value: "express_1.1" }]
+    : []),
   { label: "Express v1.0 XL", value: "express_xl_1.0" },
+  ...(shouldDisplayFeature(Feature.express_k11)
+    ? [{ label: "Express v1.1 XL", value: "express_xl_1.1" }]
+    : []),
   { label: "Custom Bot", value: "none" },
 ];
 

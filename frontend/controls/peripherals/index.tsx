@@ -76,6 +76,7 @@ export class Peripherals
       case "farmduino":
       case "farmduino_k14":
       case "farmduino_k15":
+      case "farmduino_k16":
       default:
         return [
           { pin: 7, label: t("Lighting") },
@@ -85,6 +86,7 @@ export class Peripherals
           { pin: 12, label: t("Peripheral ") + "5" },
         ];
       case "express_k10":
+      case "express_k11":
         return [
           { pin: 7, label: t("Lighting") },
           { pin: 8, label: t("Water") },

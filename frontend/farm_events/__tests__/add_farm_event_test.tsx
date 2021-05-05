@@ -113,7 +113,6 @@ describe("<AddFarmEvent />", () => {
       expect.objectContaining({ executable_type: "Sequence" }));
   });
 
-
   it("doesn't init FarmEvent: missing executable", () => {
     const p = fakeProps();
     p.sequencesById = {};

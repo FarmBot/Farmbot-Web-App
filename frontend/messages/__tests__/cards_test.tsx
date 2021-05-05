@@ -27,6 +27,10 @@ jest.mock("../../redux/store", () => ({
   store: { getState: () => mockState, dispatch: jest.fn() },
 }));
 
+let mockShouldDisplay = false;
+jest.mock("../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -90,14 +94,45 @@ describe("<AlertCard />", () => {
     expect(wrapper.text()).toContain("Apr");
     expect(wrapper.text()).not.toContain("Select one");
     expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
+    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+      .not.toContain("v1.6");
+  });
+
+  it("renders firmware card with new boards", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alert.created_at = 1555555555;
+    p.timeSettings.hour24 = false;
+    p.timeSettings.utcOffset = 0;
+    p.apiFirmwareValue = "arduino";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text()).toContain("Your device has no firmware");
+    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+      .toContain("v1.6");
+    mockShouldDisplay = false;
   });
 
   it("renders seed data card", () => {
+    mockShouldDisplay = false;
     const p = fakeProps();
     p.alert.problem_tag = "api.seed_data.missing";
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("FarmBot");
+    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+      .not.toContain("v1.6");
     wrapper.find(FBSelect).simulate("change");
+  });
+
+  it("renders seed data card with new models", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.alert.problem_tag = "api.seed_data.missing";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text()).toContain("FarmBot");
+    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+      .toContain("v1.6");
+    mockShouldDisplay = false;
   });
 
   it("renders setup card", () => {

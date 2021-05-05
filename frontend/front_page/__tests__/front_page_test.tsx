@@ -283,7 +283,6 @@ describe("<FrontPage />", () => {
     regName(event3);
     expect(spy).toHaveBeenCalledWith(expected3);
     jest.resetAllMocks();
-
   });
 
   it("resendVerificationPanel(): ok()", () => {

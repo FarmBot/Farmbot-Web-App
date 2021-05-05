@@ -14,7 +14,6 @@ import { t } from "../../i18next_wrapper";
 import {
   getDefaultFwConfigValue, getModifiedClassName,
 } from "./default_values";
-import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { Feature } from "../../devices/interfaces";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 
@@ -64,9 +63,9 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.calibrationRetries}
           tooltip={ToolTips.CALIBRATION_RETRIES}
-          x={"movement_calibration_retry_x" as NumberConfigKey}
-          y={"movement_calibration_retry_y" as NumberConfigKey}
-          z={"movement_calibration_retry_z" as NumberConfigKey} />}
+          x={"movement_calibration_retry_x"}
+          y={"movement_calibration_retry_y"}
+          z={"movement_calibration_retry_z"} />}
       <SingleSettingRow settingType="button"
         label={DeviceSetting.estopOnMovementError}
         tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {

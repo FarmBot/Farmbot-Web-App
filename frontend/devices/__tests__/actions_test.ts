@@ -363,7 +363,6 @@ describe("findHome()", () => {
   });
 });
 
-
 describe("isLog()", () => {
   it("knows if it is a log or not", () => {
     expect(actions.isLog({})).toBe(false);

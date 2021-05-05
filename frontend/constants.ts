@@ -1188,7 +1188,6 @@ export namespace TourContent {
     groups in your garden. Clicking a group will open up the groups
     details panel where you can edit it.`);
 
-
   export const SAVED_GARDENS_PANEL =
     trim(`This is the gardens panel. Here you can view and manage all of
     your gardens. Clicking a garden will open up the garden details panel
