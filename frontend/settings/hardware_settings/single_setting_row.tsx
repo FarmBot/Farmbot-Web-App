@@ -15,7 +15,7 @@ export interface SingleSettingRowProps {
 export const SingleSettingRow =
   ({ label, tooltip, settingType, children }: SingleSettingRowProps) => {
     return <Highlight settingName={label}>
-      <Row>
+      <Row className={"single-setting-row"}>
         <Col xs={7} className={"widget-body-tooltips"}>
           <label>{t(label)}</label>
           <Help text={tooltip} position={Position.RIGHT} />

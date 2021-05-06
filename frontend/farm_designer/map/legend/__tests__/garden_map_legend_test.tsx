@@ -16,7 +16,6 @@ jest.mock("../../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-
 let mockDev = false;
 jest.mock("../../../../settings/dev/dev_support", () => ({
   DevSettings: { futureFeaturesEnabled: () => mockDev }

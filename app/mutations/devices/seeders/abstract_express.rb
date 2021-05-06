@@ -37,12 +37,6 @@ module Devices
                                        encoder_missed_steps_decay_z: 100)
       end
 
-      def settings_firmware
-        device
-          .fbos_config
-          .update!(firmware_hardware: FbosConfig::EXPRESS_K10)
-      end
-
       def tool_slots_slot_1
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
@@ -69,6 +63,7 @@ module Devices
       def tool_slots_slot_6; end
       def tool_slots_slot_7; end
       def tool_slots_slot_8; end
+      def tool_slots_slot_9; end
       def tools_seed_bin; end
       def tools_seed_tray; end
 
@@ -86,6 +81,7 @@ module Devices
       def tools_soil_sensor; end
       def tools_watering_nozzle; end
       def tools_weeder; end
+      def tools_rotary; end
       def sequences_mount_tool; end
 
       def sequences_pick_up_seed

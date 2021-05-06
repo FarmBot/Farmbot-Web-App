@@ -2,7 +2,6 @@ import { FarmwareManifestInfo } from "./interfaces";
 import { FarmwareManifest as FarmwareManifestV2 } from "farmbot";
 import { t } from "../i18next_wrapper";
 
-
 /** Generate FarmwareManifestInfo from Farmware manifest. */
 export const manifestInfo =
   (manifest: FarmwareManifestV2): FarmwareManifestInfo => ({

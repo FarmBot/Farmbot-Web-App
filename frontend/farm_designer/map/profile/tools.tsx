@@ -170,7 +170,6 @@ export const ToolProfile = (props: ProfileToolProps) => {
   </g>;
 };
 
-
 /** Point -> tool profile with color and label (if applicable). */
 export const ToolProfilePoint =
   (props: ProfilePointProps<TaggedToolSlotPointer>) => {

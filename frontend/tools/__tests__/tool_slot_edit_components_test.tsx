@@ -256,7 +256,6 @@ describe("<SlotLocationInputRow />", () => {
     expect(p.onChange).toHaveBeenCalledWith({ z: 3 });
   });
 
-
   it("moves to tool slot", () => {
     const p = fakeProps();
     p.slotLocation.x = 1;

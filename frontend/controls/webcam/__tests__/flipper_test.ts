@@ -56,5 +56,4 @@ describe("Flipper<T>", () => {
       expect(item && item.value).toBe(2);
     });
   });
-
 });

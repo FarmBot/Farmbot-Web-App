@@ -170,7 +170,6 @@ describe("util", () => {
         .toHaveBeenCalledWith("             testing => \"fancy debug\"");
     });
   });
-
 });
 
 describe("parseIntInput()", () => {

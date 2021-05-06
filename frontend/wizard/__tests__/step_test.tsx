@@ -48,7 +48,6 @@ describe("<WizardStepContainer />", () => {
     getConfigValue: jest.fn(),
   });
 
-
   it("renders", () => {
     const p = fakeProps();
     p.results = {};

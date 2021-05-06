@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class ExpressXlOneZero < AbstractExpress
+    class ExpressXlOneOne < AbstractExpress
       def settings_device_name
         device.update!(name: "FarmBot Express XL")
       end
@@ -8,7 +8,7 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update!(firmware_hardware: FbosConfig::EXPRESS_K10)
+          .update!(firmware_hardware: FbosConfig::EXPRESS_K11)
       end
 
       def settings_default_map_size_x
