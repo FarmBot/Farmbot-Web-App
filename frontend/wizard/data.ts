@@ -31,6 +31,8 @@ import {
   SetHome,
   FlashFirmware,
   CurrentPosition,
+  EthernetPortImage,
+  CameraImageOrigin,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -82,6 +84,7 @@ export enum WizardStepSlug {
   model = "model",
   connection = "connection",
   sdCard = "sdCard",
+  ethernetOption = "ethernetOption",
   assembled = "assembled",
   power = "power",
   configuratorNetwork = "configuratorNetwork",
@@ -217,6 +220,23 @@ export const WIZARD_STEPS = (
         },
       ],
     },
+    ...(hasUTM(firmwareHardware)
+      ? [{
+        section: WizardSectionSlug.connectivity,
+        slug: WizardStepSlug.ethernetOption,
+        title: t("Ethernet connection (optional)"),
+        content: t(SetupWizardContent.ETHERNET_OPTION),
+        question: t(SetupWizardContent.ETHERNET_OPTION_QUESTION),
+        outcomes: [
+          {
+            slug: "ethernetPort",
+            description: t("I do not know where to connect the ethernet cable"),
+            tips: "",
+            component: EthernetPortImage,
+          },
+        ],
+      }]
+      : []),
     {
       section: WizardSectionSlug.connectivity,
       slug: WizardStepSlug.power,
@@ -821,6 +841,12 @@ export const WIZARD_STEPS = (
           description: t("It does not line up"),
           tips: t("Adjust one or both camera offset values and check again."),
           component: CameraOffset,
+        },
+        {
+          slug: "flipped",
+          description: t("The image appears flipped"),
+          tips: t("Change the image origin and check again."),
+          component: CameraImageOrigin,
         },
         {
           slug: "cameraError",

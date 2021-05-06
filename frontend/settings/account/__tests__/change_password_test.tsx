@@ -135,6 +135,5 @@ describe("<ChangePassword />", () => {
       expect(resp.config?.method).toEqual("patch");
       expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
     });
-
   });
 });

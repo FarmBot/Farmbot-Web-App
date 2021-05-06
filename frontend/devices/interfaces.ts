@@ -30,14 +30,17 @@ export enum Feature {
   assertion_block = "assertion_block",
   backscheduled_regimens = "backscheduled_regimens",
   boot_sequence = "boot_sequence",
+  calibration_retries = "calibration_retries",
   computed_move = "computed_move",
   change_ownership = "change_ownership",
   criteria_groups = "criteria_groups",
   endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
+  express_k11 = "express_k11",
   express_stall_detection = "express_stall_detection",
   farmduino_k14 = "farmduino_k14",
   farmduino_k15 = "farmduino_k15",
+  farmduino_k16 = "farmduino_k16",
   firmware_restart = "firmware_restart",
   flash_firmware = "flash_firmware",
   groups = "groups",
@@ -63,6 +66,7 @@ export enum Feature {
   variables = "variables",
   z2_firmware_params = "z2_firmware_params",
   z2_firmware_params_tmc = "z2_firmware_params_tmc",
+  z2_firmware_params_all = "z2_firmware_params_all",
 }
 
 /** Object fetched from ExternalUrl.featureMinVersions. */

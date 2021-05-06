@@ -50,6 +50,7 @@ module Devices
         :tools_soil_sensor,
         :tools_watering_nozzle,
         :tools_weeder,
+        :tools_rotary,
 
         # TOOL SLOTS =============================
         :tool_slots_slot_1,
@@ -60,6 +61,7 @@ module Devices
         :tool_slots_slot_6,
         :tool_slots_slot_7,
         :tool_slots_slot_8,
+        :tool_slots_slot_9,
 
         # WEBCAM FEEDS ===========================
         :webcam_feeds,
@@ -204,6 +206,7 @@ module Devices
       def tool_slots_slot_6; end
       def tool_slots_slot_7; end
       def tool_slots_slot_8; end
+      def tool_slots_slot_9; end
       def tools_seed_bin; end
       def tools_seed_tray; end
       def tools_seed_trough_1; end
@@ -212,6 +215,7 @@ module Devices
       def tools_soil_sensor; end
       def tools_watering_nozzle; end
       def tools_weeder; end
+      def tools_rotary; end
 
       private
 

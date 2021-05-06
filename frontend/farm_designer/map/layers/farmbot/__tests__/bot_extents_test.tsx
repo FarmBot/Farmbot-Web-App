@@ -139,5 +139,4 @@ describe("<VirtualFarmBot/>", () => {
     const max = wrapper.find("#max-lines").find("line");
     expect(max.length).toEqual(0);
   });
-
 });

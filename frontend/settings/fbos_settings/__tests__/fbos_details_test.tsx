@@ -304,7 +304,6 @@ describe("<MacAddress />", () => {
     const wrapper = mount(<MacAddress {...p} />);
     expect(wrapper.text()).toEqual(expected);
   });
-
 });
 
 describe("colorFromThrottle()", () => {

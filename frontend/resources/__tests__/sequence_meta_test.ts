@@ -40,7 +40,6 @@ describe("determineDropdown", () => {
     };
     const r = () => determineDropdown(baddata, buildResourceIndex([]).index);
     expect(r).toThrowError("WARNING: Unknown, possibly new data_value.kind?");
-
   });
 
   it("returns a label for `PointGroup`", () => {

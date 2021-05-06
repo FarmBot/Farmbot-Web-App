@@ -127,6 +127,10 @@ export namespace ToolTips {
     Overridden by disabling STOP AT HOME.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const CALIBRATION_RETRIES =
+    trim(`Number of times to retry calibration.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
   export const AXIS_LENGTH =
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled.
@@ -1184,7 +1188,6 @@ export namespace TourContent {
     groups in your garden. Clicking a group will open up the groups
     details panel where you can edit it.`);
 
-
   export const SAVED_GARDENS_PANEL =
     trim(`This is the gardens panel. Here you can view and manage all of
     your gardens. Clicking a garden will open up the garden details panel
@@ -1390,6 +1393,16 @@ export namespace SetupWizardContent {
     trim(`Camera voltage may be low. Try a different Raspberry Pi USB
     power cable.`);
 
+  export const ETHERNET_OPTION =
+    trim(`Most people connect their FarmBot to the internet over WiFi,
+    though you may optionally use a hardwired ethernet connection. If you
+    would like to use an ethernet connection, simply connect an ethernet
+    cable between your WiFi router and the Raspberry Pi.`);
+
+  export const ETHERNET_OPTION_QUESTION =
+    trim(`Are you planning on using WiFi or have you connected the ethernet
+    cable?`);
+
   export const CONFIGURATOR_CONNECTION_PROMPT =
     trim(`Is your phone or computer connected to the FarmBot WiFi network?`);
 
@@ -1411,8 +1424,8 @@ export namespace SetupWizardContent {
     apart can be used in place of the card.`);
 
   export const CAMERA_ALIGNMENT =
-    trim(`Find a detail in the image where the coordinates are known
-    (for example, a spot watered by FarmBot), and compare the known
+    trim(`Find a detail in the image at the soil level where the coordinates
+    are known (for example, a spot watered by FarmBot), and compare the known
     coordinates against the location for the detail shown in the map.`);
 
   export const CHECK_TOOL_CONNECTIONS =
@@ -1464,6 +1477,7 @@ export enum DeviceSetting {
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
   findAxisLength = `Find axis length (mm)`,
+  calibrationRetries = `Calibration retries`,
   axisLength = `Set Axis Length (mm)`,
   safeHeight = `Safe Height`,
   soilHeight = `Soil Height`,
@@ -1653,8 +1667,9 @@ export namespace DiagnosticMessages {
     and refreshing the browser. If the issue persists, something may be
     preventing FarmBot from accessing the message broker (used to communicate
     with your web browser in real-time). If you are on a company or school
-    network, a firewall may be blocking port 5672. Ensure that the blue LED
-    communications light on the FarmBot electronics box is illuminated.`);
+    network, a firewall may be blocking port 5672 or port 8883. Ensure that
+    the blue LED communications light on the FarmBot electronics box is
+    illuminated.`);
 
   export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
     but we have no recent record of FarmBot connecting to the internet.

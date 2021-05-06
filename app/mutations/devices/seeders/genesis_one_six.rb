@@ -1,13 +1,21 @@
 module Devices
   module Seeders
-    class GenesisOneFive < AbstractGenesis
+    class GenesisOneSix < AbstractGenesis
       def settings_firmware
         device
           .fbos_config
-          .update!(firmware_hardware: FbosConfig::FARMDUINO_K15)
+          .update!(firmware_hardware: FbosConfig::FARMDUINO_K16)
       end
 
       def tool_slots_slot_7
+        add_tool_slot(name: ToolNames::ROTARY_TOOL,
+                      x: 50,
+                      y: 800,
+                      z: -200,
+                      tool: tools_rotary)
+      end
+
+      def tool_slots_slot_8
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
                       y: 25,
@@ -17,7 +25,7 @@ module Devices
                       gantry_mounted: true)
       end
 
-      def tool_slots_slot_8
+      def tool_slots_slot_9
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
                       y: 50,
@@ -27,7 +35,10 @@ module Devices
                       gantry_mounted: true)
       end
 
-      def tool_slots_slot_9; end
+      def tools_rotary
+        @tools_rotary ||=
+          add_tool(ToolNames::ROTARY_TOOL)
+      end
 
       def tools_seed_trough_1
         @tools_seed_trough_1 ||=
@@ -38,8 +49,6 @@ module Devices
         @tools_seed_trough_2 ||=
           add_tool(ToolNames::SEED_TROUGH_2)
       end
-
-      def tools_rotary; end
     end
   end
 end

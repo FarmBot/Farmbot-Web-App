@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SelectionBox, SelectionBoxProps } from "../selection_box";
 import { shallow } from "enzyme";
 import {
@@ -44,5 +44,4 @@ describe("<SelectionBox/>", () => {
     expect(boxProps.width).toEqual(200);
     expect(boxProps.height).toEqual(100);
   });
-
 });

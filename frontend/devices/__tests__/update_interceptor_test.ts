@@ -43,7 +43,6 @@ describe("greaterThan() and lessThan()", () => {
     const params = {};
     const comparison = greaterThan("movement_min_spd_x");
     expect(comparison("movement_max_spd_x", 25, params)).toEqual(OK);
-
   });
 });
 
