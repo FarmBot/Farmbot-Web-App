@@ -97,3 +97,12 @@
     filter: brightness(0.85);
   }
 }
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

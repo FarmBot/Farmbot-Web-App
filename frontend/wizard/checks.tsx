@@ -75,7 +75,9 @@ import {
 import { destroy } from "../api/crud";
 import { FlashFirmwareBtn } from "../settings/firmware/firmware_hardware_status";
 import { AxisDisplayGroup } from "../controls/axis_display_group";
-import { ORIGIN_DROPDOWNS } from "../photos/camera_calibration/constants";
+import {
+  ORIGIN_DROPDOWNS, SPECIAL_VALUE_DDI,
+} from "../photos/camera_calibration/constants";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -357,7 +359,7 @@ const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string })
     const param = sourceFwConfig(setting.key);
     return <fieldset>
       <label>{t(setting.label)}</label>
-      <ToggleButton
+      <ToggleButton dispatch={props.dispatch}
         dim={!param.consistent}
         toggleValue={param.value}
         toggleAction={() =>
@@ -527,8 +529,8 @@ export const CameraImageOrigin = (props: WizardStepComponentProps) => {
         configKey={"CAMERA_CALIBRATION_image_bot_origin_location"}
         label={t("Origin Location in Image")}
         helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
-          defaultOrigin: WD_KEY_DEFAULTS[
-            "CAMERA_CALIBRATION_image_bot_origin_location"]
+          defaultOrigin: SPECIAL_VALUE_DDI()[WD_KEY_DEFAULTS[
+            "CAMERA_CALIBRATION_image_bot_origin_location"]].label
         })} />
     </Col>
   </Row>;

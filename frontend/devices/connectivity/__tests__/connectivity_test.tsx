@@ -10,6 +10,7 @@ import { fakePings } from "../../../__test_support__/fake_state/pings";
 import { refresh } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { ConnectionName } from "../diagnosis";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -83,5 +84,23 @@ describe("<Connectivity />", () => {
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("ip");
     expect(wrapper.text().toLowerCase()).not.toContain("mac");
+  });
+
+  it("displays fix firmware buttons", () => {
+    const p = fakeProps();
+    p.apiFirmwareValue = "arduino";
+    Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
+    p.flags.botFirmware = false;
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.find(".fix-firmware-buttons").length).toEqual(1);
+  });
+
+  it("doesn't display fix firmware buttons", () => {
+    const p = fakeProps();
+    p.apiFirmwareValue = undefined;
+    Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
+    p.flags.botFirmware = false;
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.find(".fix-firmware-buttons").length).toEqual(0);
   });
 });
