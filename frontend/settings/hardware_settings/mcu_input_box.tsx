@@ -11,7 +11,7 @@ import { t } from "../../i18next_wrapper";
 import { getModifiedClassName } from "./default_values";
 import {
   initSettingStatusState,
-  SettingStatusIndicator, SettingStatusState,
+  SettingStatusIndicator, SettingStatusState, SETTING_SYNC_TIMEOUT,
 } from "./setting_status_indicator";
 
 export class McuInputBox
@@ -92,7 +92,8 @@ export class McuInputBox
     if (!isUndefined(inconsistent) && changed) {
       this.setState({ inconsistent, syncing: true });
       this.state.timeout && clearTimeout(this.state.timeout);
-      const timeout = setTimeout(() => this.setState({ syncing: false }), 5000);
+      const timeout = setTimeout(() => this.setState({ syncing: false }),
+        SETTING_SYNC_TIMEOUT);
       this.setState({ timeout });
     }
   }

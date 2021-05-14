@@ -40,6 +40,7 @@ describe("<Logs />", () => {
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filters active");
     expect(filterBtn.hasClass("green")).toBeTruthy();
+    expect(wrapper.text().toLowerCase()).not.toContain("demo");
   });
 
   it("shows message when logs are loading", () => {
@@ -177,5 +178,13 @@ describe("<Logs />", () => {
     const wrapper = shallow<Logs>(<Logs {...p} />);
     wrapper.find(SearchField).first().simulate("change", "one");
     expect(wrapper.state().searchTerm).toEqual("one");
+  });
+
+  it("shows demo account log", () => {
+    localStorage.setItem("myBotIs", "online");
+    const p = fakeProps();
+    const wrapper = mount(<Logs {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("demo");
+    localStorage.setItem("myBotIs", "");
   });
 });
