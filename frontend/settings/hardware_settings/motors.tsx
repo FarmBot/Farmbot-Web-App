@@ -7,7 +7,7 @@ import { MotorsProps } from "./interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
-import { SourceFwConfig } from "../../devices/interfaces";
+import { Feature, SourceFwConfig } from "../../devices/interfaces";
 import { calcMicrostepsPerMm } from "../../controls/move/direction_axes_props";
 import { isTMCBoard, hasZ2Params } from "../firmware/firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
@@ -17,6 +17,7 @@ import { Col, Help, Row, ToggleButton } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { McuInputBox } from "./mcu_input_box";
 import { getDefaultFwConfigValue, getModifiedClassName } from "./default_values";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number> => {
@@ -193,6 +194,13 @@ export function Motors(props: MotorsProps) {
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"} />}
+      {shouldDisplayFeature(Feature.quiet_motors) &&
+        <BooleanMCUInputGroup {...commonProps}
+          label={DeviceSetting.quietMode}
+          tooltip={ToolTips.QUIET_MODE}
+          x={"movement_axis_stealth_x"}
+          y={"movement_axis_stealth_y"}
+          z={"movement_axis_stealth_z"} />}
       <SingleSettingRow settingType="button"
         label={DeviceSetting.enable2ndXMotor}
         tooltip={t(ToolTips.ENABLE_X2_MOTOR, {
@@ -200,7 +208,7 @@ export function Motors(props: MotorsProps) {
             ? t("enabled")
             : t("disabled")
         })}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           toggleValue={enable2ndXMotor.value}
           dim={!enable2ndXMotor.consistent}
           className={[
@@ -220,7 +228,7 @@ export function Motors(props: MotorsProps) {
             ? t("enabled")
             : t("disabled")
         })}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           grayscale={!enable2ndXMotor.value}
           toggleValue={invert2ndXMotor.value}
           dim={!invert2ndXMotor.consistent}

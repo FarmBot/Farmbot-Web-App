@@ -113,6 +113,7 @@ const UNITS: { [x: string]: string } = {
   movement_min_spd: "microsteps/s",
   movement_step_per_mm: "microsteps/mm",
   movement_steps_acc_dec: "microsteps",
+  movement_calibration_deadzone: "microsteps",
 };
 
 export const importParameters = (input: string) =>

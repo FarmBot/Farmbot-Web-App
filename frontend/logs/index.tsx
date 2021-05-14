@@ -17,6 +17,8 @@ import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { timeFormatString } from "../util";
 import { SearchField } from "../ui/search_field";
+import { forceOnline } from "../devices/must_be_online";
+import { demoAccountLog } from "../nav/ticker_list";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime =
@@ -131,7 +133,9 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
         </Col>
       </Row>
       <Row>
-        <LogsTable logs={this.props.logs}
+        <LogsTable
+          logs={this.props.logs.
+            concat(forceOnline() ? [demoAccountLog()] : [])}
           dispatch={this.props.dispatch}
           state={this.state}
           timeSettings={this.props.timeSettings} />

@@ -1,11 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { store } from "../../redux/store";
 import { MapTransformProps } from "./interfaces";
 import { isUndefined } from "lodash";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "./util";
-import { nn, alternating, xy } from "../../point_groups/paths";
+import {
+  nn, alternating, xy, ExtendedPointGroupSortType,
+} from "../../point_groups/paths";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import { zoomCompensation } from "./zoom";
 
@@ -16,6 +18,18 @@ export interface GroupOrderProps {
   mapTransformProps: MapTransformProps;
 }
 
+export const sortGroup = (
+  groupSortType: ExtendedPointGroupSortType,
+  groupPoints: TaggedPoint[],
+) => {
+  switch (groupSortType) {
+    case "xy_alternating": return alternating(groupPoints, "xy");
+    case "yx_alternating": return alternating(groupPoints, "yx");
+    case "nn": return nn(groupPoints);
+    default: return sortGroupBy(groupSortType, groupPoints);
+  }
+};
+
 const sortedPointCoordinates = (
   group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[],
 ): { x: number, y: number }[] => {
@@ -23,15 +37,8 @@ const sortedPointCoordinates = (
   const { resources } = store.getState();
   const groupSortType = resources.consumers.farm_designer.tryGroupSortType
     || group.body.sort_type;
-  const sorted = () => {
-    switch (groupSortType) {
-      case "xy_alternating": return alternating(groupPoints, "xy");
-      case "yx_alternating": return alternating(groupPoints, "yx");
-      case "nn": return nn(groupPoints);
-      default: return sortGroupBy(groupSortType, groupPoints);
-    }
-  };
-  return sorted().map(p => ({ x: p.body.x, y: p.body.y }));
+  return sortGroup(groupSortType, groupPoints)
+    .map(p => ({ x: p.body.x, y: p.body.y }));
 };
 
 export interface PointsPathLineProps {

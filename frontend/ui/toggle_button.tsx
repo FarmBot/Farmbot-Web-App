@@ -1,5 +1,10 @@
+import { isUndefined } from "lodash";
 import React from "react";
 import { t } from "../i18next_wrapper";
+import {
+  initSettingStatusState,
+  SettingStatusIndicator, SettingStatusState, SETTING_SYNC_TIMEOUT,
+} from "../settings/hardware_settings/setting_status_indicator";
 
 export interface ToggleButtonProps {
   /** Function that is executed when the toggle button is clicked */
@@ -11,9 +16,13 @@ export interface ToggleButtonProps {
   grayscale?: boolean;
   title?: string;
   className?: string;
+  dispatch?: Function;
 }
 
-export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
+export class ToggleButton
+  extends React.Component<ToggleButtonProps, SettingStatusState> {
+  state: SettingStatusState = initSettingStatusState();
+
   caption() {
     const { textTrue, textFalse } = this.props.customText
       || { textFalse: t("no"), textTrue: t("yes") };
@@ -50,11 +59,23 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
     return cssClasses[String(this.props.toggleValue)] || yellowCSS;
   }
 
+  componentDidUpdate = () => {
+    const inconsistent = this.props.dim;
+    const changed = inconsistent != this.state.inconsistent;
+    if (!isUndefined(inconsistent) && changed) {
+      this.setState({ inconsistent, syncing: true });
+      this.state.timeout && clearTimeout(this.state.timeout);
+      const timeout = setTimeout(() => this.setState({ syncing: false }),
+        SETTING_SYNC_TIMEOUT);
+      this.setState({ timeout });
+    }
+  }
+
   render() {
     const allCss = [
       this.css(),
       this.props.className,
-      this.props.dim ? "dim" : "",
+      (!this.props.dispatch && this.props.dim) ? "dim" : "",
       this.props.grayscale ? "grayscale" : "",
     ].join(" ");
     const cb = (e: React.MouseEvent) =>
@@ -65,6 +86,10 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
       title={this.props.title || ""}
       onClick={cb}>
       {t(this.caption())}
+      <SettingStatusIndicator
+        dispatch={this.props.dispatch}
+        wasSyncing={this.state.syncing}
+        isSyncing={this.props.dim} />
     </button>;
   }
 }
