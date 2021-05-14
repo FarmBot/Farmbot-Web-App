@@ -83,6 +83,7 @@ export class RawSetupWizard
       .then(() => {
         this.setState({
           stepOpen: WIZARD_STEP_SLUGS(this.firmwareHardware)[0],
+          ...this.closedSections,
           ...this.sectionsOpen(),
         });
         this.props.dispatch(resetSetup(this.props.device));

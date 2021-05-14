@@ -3,12 +3,9 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-    overriddenFbosVersion: jest.fn(),
-  }
+let mockShouldDisplay = false;
+jest.mock("../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
 }));
 
 import React from "react";
@@ -155,7 +152,7 @@ describe("<Paths />", () => {
   });
 
   it("renders new sort type", () => {
-    mockDev = true;
+    mockShouldDisplay = true;
     const p = fakeProps();
     const cases = pathTestCases();
     p.pathPoints = cases.order.xy_ascending;

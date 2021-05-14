@@ -424,6 +424,63 @@ a {
   }
 }
 
+.fb-toggle-button,
+.mcu-input-box {
+  position: relative;
+  .setting-status-indicator {
+    position: absolute;
+    top: 0.35rem;
+    z-index: 1;
+  }
+  .fa-exclamation-triangle {
+    color: $orange;
+  }
+  .fa-spinner {
+    color: $dark_gray;
+  }
+  .fa-check {
+    color: $green;
+    animation: fade-out 1s 0.4s forwards;
+  }
+  .save-error {
+    .bp3-popover-content {
+      background: $dark_gray;
+      min-width: 200px;
+      p {
+        text-transform: none;
+        color: $off_white;
+      }
+    }
+    .bp3-popover-arrow-fill {
+      fill: $dark_gray;
+    }
+  }
+}
+
+.mcu-input-box {
+  .setting-status-indicator {
+    right: 0.5rem;
+  }
+}
+
+.fb-toggle-button {
+  &.yellow {
+    .setting-status-indicator {
+      display: none;
+    }
+  }
+  &.green {
+    .setting-status-indicator {
+      right: 0.5rem;
+    }
+  }
+  &.red {
+    .setting-status-indicator {
+      left: 0.5rem;
+    }
+  }
+}
+
 .load-progress-bar-wrapper {
   position: relative;
   margin: 0.5rem;

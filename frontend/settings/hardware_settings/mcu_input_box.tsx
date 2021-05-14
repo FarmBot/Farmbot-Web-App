@@ -9,8 +9,14 @@ import {
 import { isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { getModifiedClassName } from "./default_values";
+import {
+  initSettingStatusState,
+  SettingStatusIndicator, SettingStatusState, SETTING_SYNC_TIMEOUT,
+} from "./setting_status_indicator";
 
-export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
+export class McuInputBox
+  extends React.Component<McuInputBoxProps, SettingStatusState> {
+  state: SettingStatusState = initSettingStatusState();
 
   get key() { return this.props.setting; }
 
@@ -40,9 +46,8 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
   }
 
   get className() {
-    const dim = !this.config.consistent ? "dim" : "";
     const gray = this.props.gray ? "gray" : "";
-    return [dim, gray].join(" ");
+    return [gray].join(" ");
   }
 
   clampInputAndWarn = (input: string, intSize: IntegerSize): number => {
@@ -81,19 +86,38 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     }
   }
 
+  componentDidUpdate = () => {
+    const inconsistent = !this.config.consistent;
+    const changed = inconsistent != this.state.inconsistent;
+    if (!isUndefined(inconsistent) && changed) {
+      this.setState({ inconsistent, syncing: true });
+      this.state.timeout && clearTimeout(this.state.timeout);
+      const timeout = setTimeout(() => this.setState({ syncing: false }),
+        SETTING_SYNC_TIMEOUT);
+      this.setState({ timeout });
+    }
+  }
+
   render() {
-    return <BlurableInput
-      type="number"
-      className={this.className}
-      wrapperClassName={this.wrapperClassName}
-      title={this.props.title}
-      value={this.showValue}
-      onCommit={this.commit}
-      disabled={this.props.disabled}
-      error={this.props.warnMin && (parseInt(this.showValue) < this.props.warnMin)
-        ? t("Warning: low value")
-        : undefined}
-      min={this.props.min || 0}
-      max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />;
+    return <div className={"mcu-input-box"}>
+      <BlurableInput
+        type="number"
+        className={this.className}
+        wrapperClassName={this.wrapperClassName}
+        title={this.props.title}
+        value={this.showValue}
+        onCommit={this.commit}
+        disabled={this.props.disabled}
+        error={this.props.warnMin && parseInt(this.showValue) &&
+          (parseInt(this.showValue) < this.props.warnMin)
+          ? t("Warning: low value")
+          : undefined}
+        min={this.props.min || 0}
+        max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />
+      <SettingStatusIndicator
+        dispatch={this.props.dispatch}
+        wasSyncing={this.state.syncing}
+        isSyncing={!this.config.consistent} />
+    </div>;
   }
 }

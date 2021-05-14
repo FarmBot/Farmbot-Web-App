@@ -459,15 +459,6 @@
 }
 
 .logs-layer {
-  @keyframes fade-out {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-
   @keyframes capture-animation {
     0% {
       fill: rgba(255, 255, 240, 0.7);

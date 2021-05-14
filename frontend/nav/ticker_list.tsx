@@ -37,6 +37,9 @@ const generateFallbackLog =
     }
   });
 
+export const demoAccountLog = () =>
+  generateFallbackLog("demo", t("Using a demo account"), MessageType.info);
+
 /** Choose the log to display in the first line of the ticker. */
 const getFirstTickerLog = (
   getConfigValue: GetWebAppConfigValue,
@@ -44,7 +47,7 @@ const getFirstTickerLog = (
   botOnline: boolean,
 ): TaggedLog => {
   if (forceOnline()) {
-    return generateFallbackLog("demo", t("Using a demo account"), MessageType.info);
+    return demoAccountLog();
   }
   if (!botOnline) {
     return generateFallbackLog("bot_offline", t("FarmBot is offline"));
