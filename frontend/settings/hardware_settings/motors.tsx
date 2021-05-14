@@ -200,7 +200,7 @@ export function Motors(props: MotorsProps) {
             ? t("enabled")
             : t("disabled")
         })}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           toggleValue={enable2ndXMotor.value}
           dim={!enable2ndXMotor.consistent}
           className={[
@@ -220,7 +220,7 @@ export function Motors(props: MotorsProps) {
             ? t("enabled")
             : t("disabled")
         })}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           grayscale={!enable2ndXMotor.value}
           toggleValue={invert2ndXMotor.value}
           dim={!invert2ndXMotor.consistent}

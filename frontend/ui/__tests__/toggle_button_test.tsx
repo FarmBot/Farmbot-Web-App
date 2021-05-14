@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { ToggleButton, ToggleButtonProps } from "../toggle_button";
 
-describe("<ToggleButton/>", function () {
+describe("<ToggleButton />", () => {
   const fakeProps = (): ToggleButtonProps => ({
     toggleValue: 0,
     toggleAction: jest.fn(),
@@ -55,5 +55,18 @@ describe("<ToggleButton/>", function () {
     p.dim = true;
     const toggleButton = mount(<ToggleButton {...p} />);
     expect(toggleButton.html()).toContain("dim");
+  });
+
+  it("updates status", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.dim = true;
+    const wrapper = mount<ToggleButton>(<ToggleButton {...p} />);
+    wrapper.instance().componentDidUpdate();
+    expect(wrapper.state().syncing).toEqual(true);
+    jest.runAllTimers();
+    expect(wrapper.state().syncing).toEqual(false);
+    wrapper.setState({ inconsistent: false });
+    wrapper.instance().componentDidUpdate();
   });
 });

@@ -67,7 +67,7 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
           <Help text={Content.AUTO_SOFT_RESET} />
         </Col>
         <Col xs={3}>
-          <ToggleButton
+          <ToggleButton dispatch={dispatch}
             toggleValue={!disableFactoryReset.value}
             dim={!disableFactoryReset.consistent}
             className={getModifiedClassName("disable_factory_reset",

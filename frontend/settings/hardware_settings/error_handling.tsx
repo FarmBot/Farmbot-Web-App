@@ -71,7 +71,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {
           eStopOnError: getDefault("param_e_stop_on_mov_err")
         })}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           toggleValue={eStopOnMoveError.value}
           dim={!eStopOnMoveError.consistent}
           className={getModifiedClassName(

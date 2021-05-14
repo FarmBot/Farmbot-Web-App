@@ -28,7 +28,7 @@ export class BooleanMCUInputGroup
     const width = 4;
     return <div className={"mcu-inputs"}>
       <Col xs={width} className={"centered-button-div"}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.x}
           disabled={this.props.disabled || disable?.x}
           dim={!xParam.consistent}
@@ -39,7 +39,7 @@ export class BooleanMCUInputGroup
             dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
       </Col>
       <Col xs={width} className={"centered-button-div"}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.y}
           disabled={this.props.disabled || disable?.y}
           dim={!yParam.consistent}
@@ -50,7 +50,7 @@ export class BooleanMCUInputGroup
             dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
       </Col>
       <Col xs={width} className={"centered-button-div"}>
-        <ToggleButton
+        <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.z}
           disabled={this.props.disabled || disable?.z}
           dim={!zParam.consistent}

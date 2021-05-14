@@ -70,7 +70,7 @@ const LogSetting = (props: LogSettingProps) => {
       {t(label)}
     </label>
     <Help text={t(toolTip)} position={Position.LEFT_TOP} />
-    <ToggleButton
+    <ToggleButton dispatch={props.dispatch}
       toggleValue={config.value}
       dim={!config.consistent}
       className={getModifiedClassName(setting, config.value)}

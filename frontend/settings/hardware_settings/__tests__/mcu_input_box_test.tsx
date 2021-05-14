@@ -7,6 +7,8 @@ import { McuInputBoxProps } from "../../../devices/interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../../devices/actions";
 import { warning } from "../../../toast/toast";
+import { SettingStatusIndicator } from "../setting_status_indicator";
+import { BlurableInput } from "../../../ui";
 
 describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => ({
@@ -22,7 +24,7 @@ describe("McuInputBox", () => {
     p.sourceFwConfig = x =>
       ({ value: bot.hardware.mcu_params[x], consistent: false });
     const wrapper = shallow(<McuInputBox {...p} />);
-    expect(wrapper.find("BlurableInput").hasClass("dim")).toBeTruthy();
+    expect(wrapper.find(SettingStatusIndicator).props().isSyncing).toBeTruthy();
   });
 
   it("clamps negative numbers", () => {
@@ -72,7 +74,7 @@ describe("McuInputBox", () => {
     p.scale = 10;
     bot.hardware.mcu_params.encoder_enabled_x = 7;
     const wrapper = shallow(<McuInputBox {...p} />);
-    expect(wrapper.props().value).toEqual("0.7");
+    expect(wrapper.find(BlurableInput).props().value).toEqual("0.7");
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "5.5" } });
     expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
@@ -104,5 +106,18 @@ describe("McuInputBox", () => {
     bot.hardware.mcu_params.encoder_enabled_x = 7;
     const wrapper = mount(<McuInputBox {...p} />);
     expect(wrapper.find(".error").length).toEqual(1);
+  });
+
+  it("updates status", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.sourceFwConfig = () => ({ value: 1, consistent: false });
+    const wrapper = mount<McuInputBox>(<McuInputBox {...p} />);
+    wrapper.instance().componentDidUpdate();
+    expect(wrapper.state().syncing).toEqual(true);
+    jest.runAllTimers();
+    expect(wrapper.state().syncing).toEqual(false);
+    wrapper.setState({ inconsistent: false });
+    wrapper.instance().componentDidUpdate();
   });
 });

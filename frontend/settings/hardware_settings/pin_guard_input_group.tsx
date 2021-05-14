@@ -36,7 +36,7 @@ export class PinGuardMCUInputGroup
     const inactiveState = isUndefined(activeStateValue)
       ? undefined
       : !activeStateValue;
-    return <ToggleButton
+    return <ToggleButton dispatch={dispatch}
       customText={{ textFalse: t("off"), textTrue: t("on") }}
       toggleValue={inactiveState}
       dim={!sourceFwConfig(activeStateKey).consistent}

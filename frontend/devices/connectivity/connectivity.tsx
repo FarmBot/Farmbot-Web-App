@@ -16,6 +16,8 @@ import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
+import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
+import { restartFirmware } from "../actions";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -87,6 +89,26 @@ export class Connectivity
                 hoveredConnection={this.state.hoveredConnection} />)}
           <hr style={{ marginLeft: "3rem" }} />
           <Diagnosis statusFlags={this.props.flags} />
+          {this.props.flags.userAPI && this.props.flags.userMQTT
+            && this.props.flags.botAPI && this.props.flags.botMQTT
+            && this.props.apiFirmwareValue
+            && !this.props.flags.botFirmware &&
+            <div className={"fix-firmware-buttons"}>
+              <Col xs={6}>
+                <FlashFirmwareBtn
+                  apiFirmwareValue={this.props.apiFirmwareValue}
+                  botOnline={true} />
+              </Col>
+              <Col xs={6}>
+                <button
+                  className={"fb-button yellow"}
+                  type={"button"}
+                  onClick={restartFirmware}
+                  title={t("restart firmware")}>
+                  {t("restart firmware")}
+                </button>
+              </Col>
+            </div>}
         </Col>
       </Row>
       <Row>
