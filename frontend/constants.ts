@@ -131,6 +131,12 @@ export namespace ToolTips {
     trim(`Number of times to retry calibration.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const CALIBRATION_RETRY_RESET_DISTANCE =
+    trim(`Distance in millimeters to group calibration retries. If the
+    distance travelled while detecting the axis end location exceeds this
+    value, the calibration retry counter is reset.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
   export const AXIS_LENGTH =
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled.
@@ -195,6 +201,10 @@ export namespace ToolTips {
 
   export const MOTOR_CURRENT =
     trim(`Motor current in milliamps.
+    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
+  export const QUIET_MODE =
+    trim(`Enable quiet motors.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENABLE_X2_MOTOR =
@@ -1477,7 +1487,6 @@ export enum DeviceSetting {
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
   findAxisLength = `Find axis length (mm)`,
-  calibrationRetries = `Calibration retries`,
   axisLength = `Set Axis Length (mm)`,
   safeHeight = `Safe Height`,
   soilHeight = `Soil Height`,
@@ -1496,6 +1505,7 @@ export enum DeviceSetting {
   alwaysPowerMotors = `Always Power Motors`,
   invertMotors = `Invert Motors`,
   motorCurrent = `Motor Current`,
+  quietMode = `Quiet Mode`,
   enable2ndXMotor = `Enable 2nd X Motor`,
   invert2ndXMotor = `Invert 2nd X Motor`,
 
@@ -1525,6 +1535,8 @@ export enum DeviceSetting {
   errorHandling = `Error Handling`,
   timeoutAfter = `Timeout after (seconds)`,
   maxRetries = `Max Retries`,
+  calibrationRetries = `Calibration retries`,
+  calibrationRetryResetDistance = `Calibration retry reset distance (mm)`,
   estopOnMovementError = `E-Stop on Movement Error`,
 
   // Pin Bindings

@@ -107,7 +107,8 @@ export class McuInputBox
         value={this.showValue}
         onCommit={this.commit}
         disabled={this.props.disabled}
-        error={this.props.warnMin && (parseInt(this.showValue) < this.props.warnMin)
+        error={this.props.warnMin && parseInt(this.showValue) &&
+          (parseInt(this.showValue) < this.props.warnMin)
           ? t("Warning: low value")
           : undefined}
         min={this.props.min || 0}

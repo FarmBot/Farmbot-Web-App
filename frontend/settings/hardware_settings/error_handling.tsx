@@ -16,12 +16,14 @@ import {
 } from "./default_values";
 import { Feature } from "../../devices/interfaces";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { calculateScale } from "./motors";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
 
   const { error_handling } = props.controlPanelState;
   const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
+  const scale = calculateScale(sourceFwConfig);
 
   const commonProps = {
     dispatch,
@@ -66,6 +68,16 @@ export function ErrorHandling(props: ErrorHandlingProps) {
           x={"movement_calibration_retry_x"}
           y={"movement_calibration_retry_y"}
           z={"movement_calibration_retry_z"} />}
+      {shouldDisplayFeature(Feature.calibration_retries) &&
+        <NumericMCUInputGroup {...commonProps}
+          label={DeviceSetting.calibrationRetryResetDistance}
+          tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}
+          x={"movement_calibration_deadzone_x"}
+          y={"movement_calibration_deadzone_y"}
+          z={"movement_calibration_deadzone_z"}
+          xScale={scale.x}
+          yScale={scale.y}
+          zScale={scale.z} />}
       <SingleSettingRow settingType="button"
         label={DeviceSetting.estopOnMovementError}
         tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {
