@@ -61,6 +61,7 @@ const MOTORS_PANEL = [
   DeviceSetting.alwaysPowerMotors,
   DeviceSetting.invertMotors,
   DeviceSetting.motorCurrent,
+  DeviceSetting.quietMode,
   DeviceSetting.enable2ndXMotor,
   DeviceSetting.invert2ndXMotor,
 ];
@@ -90,6 +91,7 @@ const ERROR_HANDLING_PANEL = [
   DeviceSetting.timeoutAfter,
   DeviceSetting.maxRetries,
   DeviceSetting.calibrationRetries,
+  DeviceSetting.calibrationRetryResetDistance,
   DeviceSetting.estopOnMovementError,
 ];
 const PIN_BINDINGS_PANEL = [

@@ -36,6 +36,12 @@ const Z2_KEYS: (keyof FirmwareConfig)[] = [
 ];
 
 const CAL_RETRY_KEYS: (keyof FirmwareConfig)[] = [
+  "movement_axis_stealth_x",
+  "movement_axis_stealth_y",
+  "movement_axis_stealth_z",
+  "movement_calibration_deadzone_x",
+  "movement_calibration_deadzone_y",
+  "movement_calibration_deadzone_z",
   "movement_calibration_retry_x",
   "movement_calibration_retry_y",
   "movement_calibration_retry_z",
