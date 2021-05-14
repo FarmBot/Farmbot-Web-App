@@ -3,7 +3,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import {
   initSettingStatusState,
-  SettingStatusIndicator, SettingStatusState,
+  SettingStatusIndicator, SettingStatusState, SETTING_SYNC_TIMEOUT,
 } from "../settings/hardware_settings/setting_status_indicator";
 
 export interface ToggleButtonProps {
@@ -65,7 +65,8 @@ export class ToggleButton
     if (!isUndefined(inconsistent) && changed) {
       this.setState({ inconsistent, syncing: true });
       this.state.timeout && clearTimeout(this.state.timeout);
-      const timeout = setTimeout(() => this.setState({ syncing: false }), 5000);
+      const timeout = setTimeout(() => this.setState({ syncing: false }),
+        SETTING_SYNC_TIMEOUT);
       this.setState({ timeout });
     }
   }

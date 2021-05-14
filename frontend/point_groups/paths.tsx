@@ -7,7 +7,6 @@ import { Actions } from "../constants";
 import { edit, save } from "../api/crud";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { error } from "../toast/toast";
-import { DevSettings } from "../settings/dev/dev_support";
 import { shouldDisplayFeature } from "../farmware/state_to_props";
 import { Feature } from "../devices/interfaces";
 
@@ -144,9 +143,10 @@ export class Paths extends React.Component<PathsProps, PathsState> {
   render() {
     return <div className={"group-sort-types"}>
       {SORT_TYPES
-        .concat(DevSettings.futureFeaturesEnabled()
-          ? ["xy_alternating", "yx_alternating", "nn"]
+        .concat(shouldDisplayFeature(Feature.sort_type_alternating)
+          ? ["xy_alternating", "yx_alternating"]
           : [])
+        .concat(shouldDisplayFeature(Feature.sort_type_optimized) ? ["nn"] : [])
         .map(sortType =>
           <PathInfoBar key={sortType}
             sortTypeKey={sortType}

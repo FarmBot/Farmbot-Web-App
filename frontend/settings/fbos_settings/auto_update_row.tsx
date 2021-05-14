@@ -18,7 +18,7 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
         <Help text={Content.OS_AUTO_UPDATE} />
       </Col>
       <Col xs={3}>
-        <ToggleButton dispatch={props.dispatch}
+        <ToggleButton
           toggleValue={osAutoUpdate.value}
           dim={!osAutoUpdate.consistent}
           className={getModifiedClassName("os_auto_update",

@@ -10,19 +10,18 @@ import {
   PointerType,
   PointTypeSelectionProps,
 } from "./interfaces";
-import { ToggleButton } from "../../ui/toggle_button";
 import { Popover } from "@blueprintjs/core";
 import { selectPoint } from "../../farm_designer/map/actions";
-import { FBSelect, Checkbox, Help } from "../../ui";
+import { FBSelect, Checkbox, Help, ToggleButton } from "../../ui";
 import {
   POINTER_TYPE_LIST, POINTER_TYPE_DDI_LOOKUP, isPointType, validPointTypes,
   setSelectionPointType,
 } from "../../plants/select_plants";
 import { ToolTips } from "../../constants";
 import { overwriteGroup } from "../actions";
-import { sortGroupBy } from "../point_group_sort";
 import { PointGroupItem } from "../point_group_item";
 import { TaggedPoint } from "farmbot";
+import { sortGroup } from "../../farm_designer/map/group_order_visual";
 
 export const CRITERIA_POINT_TYPE_LOOKUP =
   (): Record<PointerType, string> => ({
@@ -136,7 +135,7 @@ export const GroupPointCountBreakdown =
   (props: GroupPointCountBreakdownProps) => {
     const manuallyAddedIds = props.group.body.point_ids;
     const sortedPoints =
-      sortGroupBy(props.group.body.sort_type, props.pointsSelectedByGroup);
+      sortGroup(props.group.body.sort_type, props.pointsSelectedByGroup);
     const manualPoints = sortedPoints
       .filter(p => manuallyAddedIds.includes(p.body.id || 0));
     const criteriaPoints = sortedPoints
