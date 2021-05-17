@@ -20,7 +20,7 @@ class RabbitWorker
 
     loop do
       ThreadsWait.all_waits([
-        # thread { TelemetryService.new.go!(t.telemetry_channel) },
+        thread { TelemetryService.new.go!(t.telemetry_channel) },
         thread { LogService.new.go!(t.log_channel) },
       ])
     end
