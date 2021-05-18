@@ -584,19 +584,6 @@ export namespace ToolTips {
 
   export const SEQUENCE_LOG_END =
     trim(`Send a log message upon the end of sequence execution.`);
-
-  export const FIRMWARE_LOG_SENT =
-    trim(`Log all commands sent to firmware. Messages will disappear upon
-    refresh. Automatically disabled after 5 minutes.`);
-
-  export const FIRMWARE_LOG_RECEIVED =
-    trim(`Log all responses received from firmware. Warning: extremely
-    verbose. Messages will disappear upon refresh. Automatically disabled
-    after 5 minutes.`);
-
-  export const FIRMWARE_DEBUG_MESSAGES =
-    trim(`Log all debug messages received from firmware. Messages will
-    disappear upon refresh.`);
 }
 
 export namespace Content {
@@ -1644,12 +1631,6 @@ export enum DeviceSetting {
   enableSequenceStepLogs = `Enable sequence step logs`,
   sequenceCompleteLogs = `Complete`,
   enableSequenceCompleteLogs = `Enable sequence complete logs`,
-  firmwareSentLogs = `Sent`,
-  enableFirmwareSentLogs = `Enable firmware sent logs`,
-  firmwareReceivedLogs = `Received`,
-  enableFirmwareReceivedLogs = `Enable firmware received logs`,
-  firmwareDebugLogs = `Debug`,
-  enableFirmwareDebugLogs = `Enable firmware debug logs`,
 
   // App
   internationalizeWebApp = `Internationalize Web App`,

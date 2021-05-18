@@ -178,9 +178,6 @@ const LOG_SETTINGS = [
   DeviceSetting.enableSequenceBeginLogs,
   DeviceSetting.enableSequenceStepLogs,
   DeviceSetting.enableSequenceCompleteLogs,
-  DeviceSetting.enableFirmwareSentLogs,
-  DeviceSetting.enableFirmwareReceivedLogs,
-  DeviceSetting.enableFirmwareDebugLogs,
 ];
 const APP_SETTINGS = [
   DeviceSetting.internationalizeWebApp,
