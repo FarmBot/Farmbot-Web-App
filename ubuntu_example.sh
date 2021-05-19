@@ -57,6 +57,12 @@ sudo docker-compose run web bundle exec rails db:create db:migrate
 sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
 # Build the UI assets via ParcelJS
 sudo docker-compose run web rake assets:precompile
+# OPTIONAL- If you run the next step and see errors about
+#           insufficient file watchers (or insufficient memory
+#           despite having memory available) you may need to
+#           run the following command:
+echo fs.inotify.max_user_watches=65536 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
 # Run the server! ٩(^‿^)۶
 # NOTE: DONT TRY TO LOGIN until you see a message similar to this:
 #   "✨  Built in 44.92s"
