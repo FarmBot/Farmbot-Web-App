@@ -9,6 +9,7 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { BoardType } from "./board_type";
 import { validFirmwareHardware } from "./firmware_hardware_support";
+import { FirmwarePathRow } from "./firmware_path";
 
 export function Firmware(props: FirmwareProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
@@ -32,6 +33,10 @@ export function Firmware(props: FirmwareProps) {
         timeSettings={props.timeSettings}
         firmwareHardware={firmwareHardware}
         sourceFbosConfig={sourceFbosConfig} />
+      <FirmwarePathRow
+        dispatch={props.dispatch}
+        firmwarePath={"" + sourceFbosConfig("firmware_path").value}
+        showAdvanced={props.showAdvanced} />
       <FbosButtonRow
         botOnline={botOnline}
         label={DeviceSetting.restartFirmware}

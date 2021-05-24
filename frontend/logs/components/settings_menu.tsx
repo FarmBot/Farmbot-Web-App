@@ -35,26 +35,7 @@ const SEQUENCE_LOG_SETTINGS = (): LogSettingRecord[] => [
   },
 ];
 
-const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [
-  {
-    label: DeviceSetting.firmwareSentLogs,
-    setting: "firmware_output_log",
-    tooltip: ToolTips.FIRMWARE_LOG_SENT
-  },
-  {
-    label: DeviceSetting.firmwareReceivedLogs,
-    setting: "firmware_input_log",
-    tooltip: ToolTips.FIRMWARE_LOG_RECEIVED
-  },
-  {
-    label: DeviceSetting.firmwareDebugLogs,
-    setting: "arduino_debug_messages",
-    tooltip: ToolTips.FIRMWARE_DEBUG_MESSAGES
-  },
-];
-
-const LOG_SETTING_NAMES = SEQUENCE_LOG_SETTINGS().map(s => s.setting)
-  .concat(FIRMWARE_LOG_SETTINGS().map(s => s.setting));
+const LOG_SETTING_NAMES = SEQUENCE_LOG_SETTINGS().map(s => s.setting);
 
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, setFilterLevel, sourceFbosConfig } = props;
@@ -78,11 +59,6 @@ const LogSetting = (props: LogSettingProps) => {
         props.dispatch(updateConfig({ [setting]: !config.value }));
         if (!config.value === true) {
           switch (setting) {
-            case "firmware_output_log":
-            case "firmware_input_log":
-            case "arduino_debug_messages":
-              updateMinFilterLevel(MessageType.debug, 3);
-              break;
             case "sequence_init_log":
               updateMinFilterLevel(MessageType.busy, 2);
               break;
@@ -120,13 +96,9 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
         getConfigValue={getConfigValue} />;
     };
     const { private_ip } = this.props.bot.hardware.informational_settings;
-    const firmwareLogs = DevSettings.futureFeaturesEnabled();
     return <div className={"logs-settings-menu"}>
       {t("Sequence logs:")}
       {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
-      {firmwareLogs && t("Firmware logs:")}
-      {firmwareLogs && FIRMWARE_LOG_SETTINGS()
-        .map(p => <LogSettingRow key={p.setting} {...p} />)}
       {DevSettings.futureFeaturesEnabled() && private_ip &&
         <div className={"log-stream-link"}>
           <a href={`http://${private_ip}/logger`}
