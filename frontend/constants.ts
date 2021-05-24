@@ -1416,6 +1416,11 @@ export namespace SetupWizardContent {
     above, you may have a defective camera. You can request a free
     replacement`);
 
+  export const CALIBRATION_OBJECT_DETECTION =
+    trim(`Make sure the calibration card is fully and clearly visible to
+    the camera. The card must not be warped, bent, or obscured in the above
+    image.`);
+
   export const RED_DOTS =
     trim(`Try an alternate calibration method. Two red objects spaced 100mm
     apart can be used in place of the card.`);
@@ -1452,6 +1457,7 @@ export enum DeviceSetting {
   // Firmware
   firmwareSection = `Firmware`,
   firmware = `Firmware`,
+  firmwarePath = `Firmware path`,
   restartFirmware = `Restart Firmware`,
   flashFirmware = `Flash firmware`,
 
@@ -1683,10 +1689,11 @@ export namespace DiagnosticMessages {
     however, it could be a sign of HTTP blockage on FarmBot's local internet
     connection.`);
 
-  export const ARDUINO_DISCONNECTED = trim(`Farmduino firmware is missing or
-    is possibly unplugged. Verify FIRMWARE selection matches FarmBot kit
-    version or check the USB cable between the Raspberry Pi and the
-    Farmduino. Reboot FarmBot after a reconnection. If the issue persists,
+  export const ARDUINO_DISCONNECTED = trim(`Farmduino firmware is missing.
+    Press the yellow FLASH FIRMWARE button to flash the firmware to your
+    FarmBot. Verify FIRMWARE selection matches FarmBot kit version and
+    check the USB cable between the Raspberry Pi and the Farmduino.
+    Reboot FarmBot after a reconnection. If the issue persists,
     reconfiguration of FarmBot OS may be necessary.`);
 }
 

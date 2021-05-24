@@ -80,11 +80,9 @@ export class RawDesignerSettings
           botOnline={botOnline}
           timeSettings={this.props.timeSettings}
           device={this.props.deviceAccount} />
-        <Firmware
+        <Firmware {...commonProps}
           bot={this.props.bot}
-          controlPanelState={controlPanelState}
           alerts={this.props.alerts}
-          dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}
           botOnline={botOnline}
           timeSettings={this.props.timeSettings} />

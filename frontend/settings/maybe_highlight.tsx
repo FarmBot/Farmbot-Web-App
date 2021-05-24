@@ -23,6 +23,7 @@ const FIRMWARE_PANEL = [
   DeviceSetting.firmwareSection,
   DeviceSetting.firmware,
   DeviceSetting.flashFirmware,
+  DeviceSetting.firmwarePath,
   DeviceSetting.restartFirmware,
 ];
 const POWER_AND_RESET_PANEL = [
