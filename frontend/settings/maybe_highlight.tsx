@@ -23,6 +23,7 @@ const FIRMWARE_PANEL = [
   DeviceSetting.firmwareSection,
   DeviceSetting.firmware,
   DeviceSetting.flashFirmware,
+  DeviceSetting.firmwarePath,
   DeviceSetting.restartFirmware,
 ];
 const POWER_AND_RESET_PANEL = [
@@ -178,9 +179,6 @@ const LOG_SETTINGS = [
   DeviceSetting.enableSequenceBeginLogs,
   DeviceSetting.enableSequenceStepLogs,
   DeviceSetting.enableSequenceCompleteLogs,
-  DeviceSetting.enableFirmwareSentLogs,
-  DeviceSetting.enableFirmwareReceivedLogs,
-  DeviceSetting.enableFirmwareDebugLogs,
 ];
 const APP_SETTINGS = [
   DeviceSetting.internationalizeWebApp,

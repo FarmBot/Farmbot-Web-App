@@ -282,19 +282,4 @@ const LOG_ENABLE_SETTINGS = (): LogEnableSettingDescriptionProps[] => ([
     description: ToolTips.SEQUENCE_LOG_END,
     setting: "sequence_complete_log",
   },
-  {
-    title: DeviceSetting.enableFirmwareSentLogs,
-    description: ToolTips.FIRMWARE_LOG_SENT,
-    setting: "firmware_output_log",
-  },
-  {
-    title: DeviceSetting.enableFirmwareReceivedLogs,
-    description: ToolTips.FIRMWARE_LOG_RECEIVED,
-    setting: "firmware_input_log",
-  },
-  {
-    title: DeviceSetting.enableFirmwareDebugLogs,
-    description: ToolTips.FIRMWARE_DEBUG_MESSAGES,
-    setting: "arduino_debug_messages",
-  },
 ]);

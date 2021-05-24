@@ -47,12 +47,6 @@ describe("<LogsSettingsMenu />", () => {
     expect(wrapper.text().toLowerCase()).not.toContain("firmware");
   });
 
-  it("displays firmware log settings", () => {
-    mockDev = true;
-    const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("firmware");
-  });
-
   it("doesn't update", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: false, consistent: true });
@@ -69,7 +63,6 @@ describe("<LogsSettingsMenu />", () => {
 
   function testSettingToggle(setting: ConfigurationName, position: number) {
     it(`toggles ${setting} setting`, () => {
-      mockDev = true;
       const p = fakeProps();
       p.sourceFbosConfig = () => ({ value: false, consistent: true });
       const wrapper = mount(<LogsSettingsMenu {...p} />);
@@ -81,9 +74,6 @@ describe("<LogsSettingsMenu />", () => {
   testSettingToggle("sequence_init_log", 0);
   testSettingToggle("sequence_body_log", 1);
   testSettingToggle("sequence_complete_log", 2);
-  testSettingToggle("firmware_output_log", 3);
-  testSettingToggle("firmware_input_log", 4);
-  testSettingToggle("arduino_debug_messages", 5);
 
   it("conditionally increases filter level", () => {
     const p = fakeProps();

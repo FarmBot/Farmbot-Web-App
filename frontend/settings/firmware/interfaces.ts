@@ -12,6 +12,7 @@ export interface FirmwareProps {
   timeSettings: TimeSettings;
   sourceFbosConfig: SourceFbosConfig;
   controlPanelState: ControlPanelState;
+  showAdvanced: boolean;
 }
 
 export interface FlashFirmwareRowProps {
