@@ -1901,6 +1901,15 @@ ul {
   }
 }
 
+.firmware-path-selection {
+  .manual-selection {
+    p {
+      padding: 0rem 1.5rem 1rem;
+    }
+    margin: 1rem -15px;
+  }
+}
+
 .dynamic-column {
   display: flex;
   .location-form,

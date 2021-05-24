@@ -105,14 +105,15 @@ export enum FbosVersionFallback {
 }
 
 export const fallbackData: MinOsFeatureLookup = {
+  [Feature.z2_firmware_params_tmc]: "14.0.0",
+  [Feature.z2_firmware_params_all]: "14.0.0",
+  [Feature.calibration_retries]: "14.0.0",
+  [Feature.quiet_motors]: "14.0.0",
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
   [Feature.sort_type_optimized]: MinVersionOverride.NEVER,
   [Feature.sort_type_alternating]: MinVersionOverride.NEVER,
   [Feature.home_single_axis]: MinVersionOverride.NEVER,
   [Feature.toggle_peripheral]: MinVersionOverride.NEVER,
-  [Feature.z2_firmware_params_tmc]: MinVersionOverride.NEVER,
-  [Feature.z2_firmware_params_all]: MinVersionOverride.NEVER,
-  [Feature.calibration_retries]: MinVersionOverride.NEVER,
   [Feature.boot_sequence]: MinVersionOverride.NEVER,
 };
 

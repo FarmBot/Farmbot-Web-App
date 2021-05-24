@@ -33,6 +33,7 @@ describe("<Firmware />", () => {
     alerts: [],
     timeSettings: fakeTimeSettings(),
     controlPanelState: panelState(),
+    showAdvanced: true,
   });
 
   it("restarts firmware", () => {
@@ -41,7 +42,7 @@ describe("<Firmware />", () => {
     const wrapper = mount(<Firmware {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
-    clickButton(wrapper, 2, "restart");
+    clickButton(wrapper, 3, "restart");
     expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 

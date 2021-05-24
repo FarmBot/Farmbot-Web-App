@@ -817,7 +817,7 @@ export const WIZARD_STEPS = (
         {
           slug: "detectionError",
           description: t("There is a detection error log"),
-          tips: t("Make sure the calibration card is visible to the camera."),
+          tips: t(SetupWizardContent.CALIBRATION_OBJECT_DETECTION),
         },
         {
           slug: "motorError",
