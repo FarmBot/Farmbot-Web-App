@@ -155,11 +155,13 @@ describe("<AlertCard />", () => {
     expect(wrapper.text().toLowerCase()).toContain("continue setup");
   });
 
-  it("renders tour card", () => {
+  it("navigates to tours page", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.tour.not_taken";
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("tour");
+    wrapper.find(".link-button").first().simulate("click");
+    expect(push).toHaveBeenCalledWith("/app/designer/tours");
   });
 
   it("renders welcome card", () => {

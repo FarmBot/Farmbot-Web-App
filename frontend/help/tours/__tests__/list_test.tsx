@@ -1,6 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
-import { TourList, TourListProps } from "../tour_list";
+import { TourList } from "../list";
+import { TourListProps } from "../interfaces";
 
 describe("<TourList />", () => {
   const fakeProps = (): TourListProps => ({

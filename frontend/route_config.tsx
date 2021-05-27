@@ -454,7 +454,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/tours",
     getModule,
     key,
-    getChild: () => import("./help/tours_panel"),
+    getChild: () => import("./help/tours/panel"),
     childKey: "ToursPanel"
   }),
   route({

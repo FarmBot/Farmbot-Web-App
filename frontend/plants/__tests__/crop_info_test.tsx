@@ -14,6 +14,7 @@ jest.mock("../../farm_designer/map/actions", () => ({
 import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
+  getCropHeaderProps,
 } from "../crop_info";
 import { mount } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
@@ -25,6 +26,7 @@ import {
 import { unselectPlant } from "../../farm_designer/map/actions";
 import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Actions } from "../../constants";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -62,10 +64,27 @@ describe("<CropInfo />", () => {
 
   it("returns to crop search", () => {
     mockPath = "/app/designer/plants/crop_search/mint";
-    const wrapper = mount(<CropInfo {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount(<CropInfo {...p} />);
     wrapper.find(".back-arrow").simulate("click");
     expect(history.push).toHaveBeenCalledWith(
       "/app/designer/plants/crop_search/");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+    });
+  });
+
+  it("doesn't change search query", () => {
+    mockPath = "/app/designer/plants/crop_search/mint";
+    const p = fakeProps();
+    p.cropSearchQuery = "mint";
+    const wrapper = mount(<CropInfo {...p} />);
+    wrapper.find(".back-arrow").simulate("click");
+    expect(history.push).toHaveBeenCalledWith(
+      "/app/designer/plants/crop_search/");
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+    });
   });
 
   it("disables 'add plant @ UTM' button", () => {
@@ -126,6 +145,14 @@ describe("searchForCurrentCrop()", () => {
     searchForCurrentCrop(fakeOFSearch)(dispatch);
     expect(fakeOFSearch).toHaveBeenCalledWith("mint");
     expect(unselectPlant).toHaveBeenCalled();
+  });
+});
+
+describe("getCropHeaderProps()", () => {
+  it("handles missing crop", () => {
+    mockPath = "/app/designer/plants/crop_search/";
+    const result = getCropHeaderProps({ cropSearchResults: [] });
+    expect(result.result.crop.name).toEqual("");
   });
 });
 

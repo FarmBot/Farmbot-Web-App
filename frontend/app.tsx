@@ -38,7 +38,7 @@ import {
   getFwHardwareValue,
 } from "./settings/firmware/firmware_hardware_support";
 import { HelpState } from "./help/reducer";
-import { TourStepContainer } from "./help/new_tours";
+import { TourStepContainer } from "./help/tours";
 import { ToastMessages } from "./toast/interfaces";
 import { Toasts } from "./toast/fb_toast";
 
@@ -55,7 +55,6 @@ export interface AppProps {
   firmwareConfig: FirmwareConfig | undefined;
   animate: boolean;
   getConfigValue: GetWebAppConfigValue;
-  tour: string | undefined;
   helpState: HelpState;
   resources: ResourceIndex;
   alertCount: number;
@@ -87,7 +86,6 @@ export function mapStateToProps(props: Everything): AppProps {
     firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index)),
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
     getConfigValue: webAppConfigValue,
-    tour: props.resources.consumers.help.currentTour,
     helpState: props.resources.consumers.help,
     resources: props.resources.index,
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
@@ -150,7 +148,6 @@ export class RawApp extends React.Component<AppProps, {}> {
         dispatch={dispatch}
         logs={this.props.logs}
         getConfigValue={getConfigValue}
-        tour={this.props.tour}
         helpState={this.props.helpState}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
@@ -173,7 +170,9 @@ export class RawApp extends React.Component<AppProps, {}> {
           stepSize={bot.stepSize} />}
       <div className={"toast-container"}>
         <TourStepContainer
+          key={JSON.stringify(this.props.helpState)}
           dispatch={dispatch}
+          firmwareHardware={this.props.apiFirmwareValue}
           helpState={this.props.helpState} />
         <Toasts
           toastMessages={this.props.toastMessages}

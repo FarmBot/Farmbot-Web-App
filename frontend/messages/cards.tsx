@@ -15,7 +15,6 @@ import {
 } from "../settings/firmware/firmware_hardware_status";
 import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
-import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
 import {
@@ -311,8 +310,11 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
-    <p>{t("Choose a tour to begin")}:</p>
-    <TourList dispatch={props.dispatch} />
+    <a className="link-button fb-button green"
+      onClick={() => push("/app/designer/tours")}
+      title={t("View available tours")}>
+      {t("View available tours")}
+    </a>
   </AlertCardTemplate>;
 
 const UserNotWelcomed = (props: CommonAlertCardProps) =>

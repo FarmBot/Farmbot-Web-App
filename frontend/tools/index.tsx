@@ -95,7 +95,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <div className="tools-header">
         <label>{this.strings.tools}</label>
         <Link to={"/app/designer/tools/add"}>
-          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
+          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]} add-tool-btn`}>
             <i className="fa fa-plus" title={this.strings.titleText} />
           </div>
         </Link>
