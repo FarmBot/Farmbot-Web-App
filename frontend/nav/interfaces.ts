@@ -23,7 +23,6 @@ export interface NavBarProps {
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
-  tour: string | undefined;
   device: TaggedDevice;
   alertCount: number;
   pings: PingDictionary;

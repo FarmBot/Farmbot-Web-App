@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
 import { svgToUrl } from "../open_farm/icons";
@@ -16,18 +16,17 @@ import { getWebAppConfig } from "../resources/getters";
 import { BotPosition } from "../devices/interfaces";
 import { validBotLocationData } from "../util";
 
-export const mapStateToProps = (props: Everything): AddPlantProps =>
-  ({
-    cropSearchResults: props
-      .resources
-      .consumers
-      .farm_designer
-      .cropSearchResults,
-    xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
-    dispatch: props.dispatch,
-    openfarmSearch: OFSearch,
-    botPosition: validBotLocationData(props.bot.hardware.location_data).position,
-  });
+export const mapStateToProps = (props: Everything): AddPlantProps => ({
+  cropSearchResults: props
+    .resources
+    .consumers
+    .farm_designer
+    .cropSearchResults,
+  xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
+  dispatch: props.dispatch,
+  openfarmSearch: OFSearch,
+  botPosition: validBotLocationData(props.bot.hardware.location_data).position,
+});
 
 interface APDProps {
   svgIcon: string | undefined;
@@ -42,9 +41,11 @@ const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
       width={100}
       height={100}
       onDragStart={setDragIcon(svgIcon)} />
-    <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
-    <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
+    <div className={"drop-icon-description"}>
+      <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
+      <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
   to the map. Alternatively, you can plant a grid using the form below.`)}
+    </div>
     {children}
   </div>;
 

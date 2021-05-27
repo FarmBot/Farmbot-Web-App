@@ -1,161 +1,27 @@
-import { round } from "lodash";
 import React from "react";
-import { Actions, TourContent } from "../constants";
-import { push } from "../history";
-import { t } from "../i18next_wrapper";
-import { getUrlQuery } from "../util";
-import { HelpState } from "./reducer";
+import { t } from "../../i18next_wrapper";
+import { round } from "lodash";
+import { Actions } from "../../constants";
+import { push } from "../../history";
+import { getUrlQuery } from "../../util";
+import { HelpState } from "../reducer";
+import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
+import { TOURS } from "./data";
 
-export interface TourStepContainerProps {
-  dispatch: Function;
-  helpState: HelpState;
-}
-
-interface NewTourStep {
-  slug: string;
-  title: string;
-  content: string;
-  beacons: string[] | undefined;
-  url: string | undefined;
-  extraContent?: JSX.Element;
-}
-
-interface NewTour {
-  title: string;
-  steps: NewTourStep[];
-}
-
-const TOURS = (): Record<string, NewTour> => ({
-  gettingStarted: {
-    title: t("Getting Started"),
-    steps: [
-      {
-        slug: "intro",
-        title: t("Getting Started"),
-        content: TourContent.GETTING_STARTED,
-        extraContent: <div className={"extra-content"}>
-          {t("Click")}
-          <i className={"fa fa-forward"} />
-          {t("to get started")}
-        </div>,
-        beacons: undefined,
-        url: undefined,
-      },
-      {
-        slug: "plants",
-        title: t("Plants"),
-        content: TourContent.PLANTS_PANEL,
-        beacons: ["plants", "plant-inventory"],
-        url: "/app/designer/plants",
-      },
-      {
-        slug: "groups",
-        title: t("Groups"),
-        content: TourContent.GROUPS_PANEL,
-        beacons: ["groups"],
-        url: "/app/designer/groups",
-      },
-      {
-        slug: "sequences",
-        title: t("Sequences"),
-        content: TourContent.SEQUENCES_PANEL,
-        beacons: ["sequences", "designer-sequence-list"],
-        url: "/app/designer/sequences",
-      },
-      {
-        slug: "regimens",
-        title: t("Regimens"),
-        content: TourContent.REGIMENS_PANEL,
-        beacons: ["regimens", "designer-regimen-list"],
-        url: "/app/designer/regimens",
-      },
-      {
-        slug: "savedGardens",
-        title: t("Gardens"),
-        content: TourContent.SAVED_GARDENS_PANEL,
-        beacons: ["gardens", "saved-garden"],
-        url: "/app/designer/gardens",
-      },
-      {
-        slug: "farmEvents",
-        title: t("Events"),
-        content: TourContent.FARM_EVENTS_PANEL,
-        beacons: ["events", "farm-event"],
-        url: "/app/designer/events",
-      },
-      {
-        slug: "points",
-        title: t("Points"),
-        content: TourContent.POINTS_PANEL,
-        beacons: ["points", "point-inventory"],
-        url: "/app/designer/points",
-      },
-      {
-        slug: "weeds",
-        title: t("Weeds"),
-        content: TourContent.WEEDS_PANEL,
-        beacons: ["weeds", "weeds-inventory"],
-        url: "/app/designer/weeds",
-      },
-      {
-        slug: "controls",
-        title: t("Controls"),
-        content: TourContent.CONTROLS_PANEL,
-        beacons: ["controls"],
-        url: "/app/designer/controls",
-      },
-      {
-        slug: "photos",
-        title: t("Photos"),
-        content: TourContent.PHOTOS_PANEL,
-        beacons: ["photos"],
-        url: "/app/designer/photos",
-      },
-      {
-        slug: "tools",
-        title: t("Tools"),
-        content: TourContent.TOOLS_PANEL,
-        beacons: ["tools"],
-        url: "/app/designer/tools",
-      },
-      {
-        slug: "messages",
-        title: t("Messages"),
-        content: TourContent.MESSAGES_PANEL,
-        beacons: ["messages"],
-        url: "/app/designer/messages",
-      },
-      {
-        slug: "help",
-        title: t("Help"),
-        content: TourContent.HELP_PANEL,
-        beacons: ["help"],
-        url: "/app/designer/help",
-      },
-      {
-        slug: "settings",
-        title: t("Settings"),
-        content: TourContent.SETTINGS_PANEL,
-        beacons: ["settings"],
-        url: "/app/designer/settings",
-      },
-
-    ],
-  },
-});
-
-interface TourStepContainerState {
-  title: string;
-  message: string;
-  transitionOut: boolean;
-  transitionIn: boolean;
-}
+export const tourPath = (
+  stepUrl: string | undefined,
+  tour: string,
+  tourStep: string | undefined,
+) =>
+  `${stepUrl || location.pathname}?tour=${tour}?tourStep=${tourStep}`;
 
 export class TourStepContainer
   extends React.Component<TourStepContainerProps, TourStepContainerState> {
   state: TourStepContainerState = {
     title: "", message: "",
     transitionOut: true, transitionIn: true,
+    highlighted: false,
+    activeBeacons: [],
   };
 
   updateTourState = (
@@ -167,12 +33,9 @@ export class TourStepContainer
     dispatch({ type: Actions.SET_TOUR, payload: tour });
     dispatch({ type: Actions.SET_TOUR_STEP, payload: tourStep });
     if (tour) {
-      const currentStep = TOURS()[tour]?.steps.filter(step =>
-        step.slug == tourStep)[0];
-      const tourQuery = `?tour=${tour}?tourStep=${tourStep}`;
-      push(`${updateUrl && currentStep.url
-        ? currentStep.url
-        : location.pathname}${tourQuery}`);
+      const currentStep = TOURS(this.props.firmwareHardware)[tour]?.steps
+        .filter(step => step.slug == tourStep)[0];
+      push(tourPath(updateUrl ? currentStep.url : undefined, tour, tourStep));
     } else {
       push(location.pathname);
     }
@@ -180,8 +43,8 @@ export class TourStepContainer
 
   get tourState() {
     return {
-      stateTourSlug: this.props.helpState.currentNewTour,
-      stateTourStepSlug: this.props.helpState.currentNewTourStep,
+      stateTourSlug: this.props.helpState.currentTour,
+      stateTourStepSlug: this.props.helpState.currentTourStep,
       urlTourSlug: getUrlQuery("tour"),
       urlTourStepSlug: getUrlQuery("tourStep"),
     };
@@ -201,6 +64,9 @@ export class TourStepContainer
     }
   }
 
+  componentWillUnmount = () => this.state.activeBeacons.map(beacon =>
+    document.querySelector(`.${beacon}`)?.classList.remove("beacon"));
+
   render() {
     const { urlTourSlug, urlTourStepSlug } = this.tourState;
 
@@ -210,7 +76,7 @@ export class TourStepContainer
       return <div className={"tour-closed"} />;
     }
 
-    const tourSteps = TOURS()[urlTourSlug]?.steps;
+    const tourSteps = TOURS(this.props.firmwareHardware)[urlTourSlug]?.steps;
     const tourStepSlugs = tourSteps?.map(step => step.slug);
     const currentStep = tourSteps?.filter(step => step.slug == urlTourStepSlug)[0];
     const currentStepIndex = tourStepSlugs?.indexOf(urlTourStepSlug);
@@ -220,6 +86,21 @@ export class TourStepContainer
       ? 0
       : (currentStepIndex + 1) / tourStepSlugs?.length;
     const progressPercent = `${round(progressFloat * 100)}%`;
+
+    currentStep?.activeBeacons?.map(beacon => {
+      const element = document.querySelector(`.${beacon.class}`);
+      if (element && !this.state.highlighted) {
+        this.setState({ highlighted: true });
+        element.classList.add("beacon");
+        element.classList.add("beacon-transition");
+        element.classList.add(beacon.type);
+        (beacon.type != "hard" && !beacon.keep)
+          ? setTimeout(() => element.classList.remove("beacon"), 2000)
+          : this.setState({
+            activeBeacons: this.state.activeBeacons.concat(beacon.class),
+          });
+      }
+    });
 
     const getOpacity = () => {
       if (this.state.title != newTitle) {
@@ -304,10 +185,13 @@ export const maybeBeacon = (
     ? `beacon ${beaconType}`
     : "";
 
-export const getCurrentTourStepBeacons = (helpState?: HelpState) => {
-  const currentTourSlug = getUrlQuery("tour") || helpState?.currentNewTour;
-  const currentStepSlug = getUrlQuery("tourStep") || helpState?.currentNewTourStep;
+export const getCurrentTourStepBeacons = (
+  helpState?: HelpState,
+) => {
+  const currentTourSlug = getUrlQuery("tour") || helpState?.currentTour;
+  const currentStepSlug = getUrlQuery("tourStep") || helpState?.currentTourStep;
   if (!currentTourSlug) { return undefined; }
-  return TOURS()[currentTourSlug]?.steps
-    .filter(step => step.slug == currentStepSlug)[0]?.beacons;
+  const currentStep = TOURS()[currentTourSlug]?.steps
+    .filter(step => step.slug == currentStepSlug)[0];
+  return currentStep?.beacons;
 };

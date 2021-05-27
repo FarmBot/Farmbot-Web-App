@@ -36,7 +36,6 @@ describe("<NavBar />", () => {
     user: taggedUser,
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
-    tour: undefined,
     helpState: fakeHelpState(),
     device: fakeDevice(),
     alertCount: 0,

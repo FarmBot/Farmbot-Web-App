@@ -54,7 +54,6 @@
     "react": "16.13.1",
     "react-color": "2.19.3",
     "react-dom": "16.13.1",
-    "react-joyride": "2.2.1",
     "react-redux": "7.2.4",
     "redux": "4.1.0",
     "redux-immutable-state-invariant": "2.1.0",

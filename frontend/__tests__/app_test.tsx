@@ -38,7 +38,6 @@ const fakeProps = (): AppProps => ({
   xySwap: false,
   animate: false,
   getConfigValue: jest.fn(),
-  tour: undefined,
   helpState: fakeHelpState(),
   resources: buildResourceIndex().index,
   alertCount: 0,
