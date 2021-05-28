@@ -1,6 +1,6 @@
 import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
-import { error } from "./toast/toast";
+import { error, warning } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
@@ -41,6 +41,7 @@ import { HelpState } from "./help/reducer";
 import { TourStepContainer } from "./help/tours";
 import { ToastMessages } from "./toast/interfaces";
 import { Toasts } from "./toast/fb_toast";
+import Bowser from "bowser";
 
 export interface AppProps {
   dispatch: Function;
@@ -48,7 +49,6 @@ export interface AppProps {
   logs: TaggedLog[];
   user: TaggedUser | undefined;
   bot: BotState;
-  consistent: boolean;
   timeSettings: TimeSettings;
   axisInversion: Record<Xyz, boolean>;
   xySwap: boolean;
@@ -65,6 +65,7 @@ export interface AppProps {
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
   toastMessages: ToastMessages;
+  controlsPopupOpen: boolean;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -76,7 +77,6 @@ export function mapStateToProps(props: Everything): AppProps {
     bot: props.bot,
     logs: takeSortedLogs(250, props.resources.index),
     loaded: props.resources.loaded,
-    consistent: !!(props.bot || {}).consistent,
     axisInversion: {
       x: !!webAppConfigValue(BooleanSetting.x_axis_inverted),
       y: !!webAppConfigValue(BooleanSetting.y_axis_inverted),
@@ -96,6 +96,7 @@ export function mapStateToProps(props: Everything): AppProps {
     authAud: props.auth?.token.unencoded.aud,
     wizardStepResults: selectAllWizardStepResults(props.resources.index),
     toastMessages: props.app.toasts,
+    controlsPopupOpen: props.app.controlsPopupOpen,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -130,6 +131,9 @@ export class RawApp extends React.Component<AppProps, {}> {
         error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), { title: t("Warning") });
       }
     }, LOAD_TIME_FAILURE_MS);
+    const browser = Bowser.getParser(window.navigator.userAgent);
+    !browser.satisfies({ chrome: ">85", firefox: ">75", edge: ">85" }) &&
+      warning(t(Content.UNSUPPORTED_BROWSER));
   }
 
   render() {
@@ -142,7 +146,6 @@ export class RawApp extends React.Component<AppProps, {}> {
       <HotKeys dispatch={dispatch} />
       {syncLoaded && <NavBar
         timeSettings={this.props.timeSettings}
-        consistent={this.props.consistent}
         user={this.props.user}
         bot={bot}
         dispatch={dispatch}
@@ -160,6 +163,7 @@ export class RawApp extends React.Component<AppProps, {}> {
       {showControlsPopup() &&
         <ControlsPopup
           dispatch={dispatch}
+          isOpen={this.props.controlsPopupOpen}
           botPosition={validBotLocationData(location_data).position}
           firmwareSettings={this.props.firmwareConfig || mcu_params}
           arduinoBusy={busy}

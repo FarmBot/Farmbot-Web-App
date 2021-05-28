@@ -56,6 +56,7 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
       className={[
         "fb-button arrow-button radius",
         `fa fa-2x fa-arrow-${direction}`,
+        axis == "z" ? "z" : "",
         lockedClass(locked),
       ].join(" ")}
       title={title}

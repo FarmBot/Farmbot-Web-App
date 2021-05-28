@@ -15,6 +15,7 @@ import { ControlsPopup, showControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { ControlsPopupProps } from "../controls/move/interfaces";
+import { Actions } from "../constants";
 
 describe("<ControlsPopup />", () => {
   const fakeProps = (): ControlsPopupProps => ({
@@ -27,13 +28,17 @@ describe("<ControlsPopup />", () => {
     botOnline: true,
     env: {},
     locked: false,
+    isOpen: true,
   });
 
   it("toggles open state", () => {
-    const wrapper = mount(<ControlsPopup {...fakeProps()} />);
-    expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
-    wrapper.find("img").first().simulate("click");
+    const p = fakeProps();
+    const wrapper = mount(<ControlsPopup {...p} />);
     expect(wrapper.find(".controls-popup").hasClass("open")).toBeTruthy();
+    wrapper.find("img").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_CONTROLS_POPUP, payload: false,
+    });
   });
 
   it("sends movement command", () => {
@@ -47,7 +52,9 @@ describe("<ControlsPopup />", () => {
   });
 
   it("disabled when closed", () => {
-    const wrapper = mount(<ControlsPopup {...fakeProps()} />);
+    const p = fakeProps();
+    p.isOpen = false;
+    const wrapper = mount(<ControlsPopup {...p} />);
     expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
     [0, 1, 2, 3].map((i) => wrapper.find("button").at(i).simulate("click"));
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();

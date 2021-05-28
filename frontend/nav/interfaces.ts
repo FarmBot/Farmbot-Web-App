@@ -11,12 +11,10 @@ import { HelpState } from "../help/reducer";
 export interface SyncButtonProps {
   dispatch: Function;
   bot: BotState;
-  consistent: boolean;
   onClick?: () => void;
 }
 
 export interface NavBarProps {
-  consistent: boolean;
   logs: TaggedLog[];
   bot: BotState;
   user: TaggedUser | undefined;
