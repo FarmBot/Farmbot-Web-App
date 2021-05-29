@@ -56,10 +56,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       BooleanSetting.user_interface_read_only_mode)} />
 
   SyncButton = () =>
-    <SyncButton
-      bot={this.props.bot}
-      dispatch={this.props.dispatch}
-      consistent={this.props.consistent} />
+    <SyncButton bot={this.props.bot} dispatch={this.props.dispatch} />
 
   EstopButton = () =>
     <div className={"e-stop-btn"}>

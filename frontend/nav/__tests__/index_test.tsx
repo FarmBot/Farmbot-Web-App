@@ -30,7 +30,6 @@ import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
     timeSettings: fakeTimeSettings(),
-    consistent: true,
     logs: [],
     bot,
     user: taggedUser,

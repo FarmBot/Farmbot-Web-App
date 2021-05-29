@@ -19,12 +19,12 @@ const TEXT_MAPPING = (): Record<SyncStatus, string> => ({
 const spinner = <span className="btn-spinner sync" />;
 
 export function SyncButton(props: SyncButtonProps) {
-  const { bot, dispatch, consistent } = props;
+  const { bot, dispatch } = props;
   const { sync_status } = bot.hardware.informational_settings;
   const syncStatus = forceOnline() ? "synced" : sync_status || "unknown";
   const text = TEXT_MAPPING()[syncStatus] || syncStatus.replace("_", " ");
   const spinnerEl = (syncStatus === "syncing") ? spinner : "";
-  const className = `nav-sync fb-button ${syncStatus} ${consistent ? "c" : ""}`;
+  const className = `nav-sync fb-button ${syncStatus} ${bot.consistent ? "c" : ""}`;
 
   return <button
     className={className}

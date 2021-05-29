@@ -36,6 +36,7 @@ export class TourStepContainer
       const currentStep = TOURS(this.props.firmwareHardware)[tour]?.steps
         .filter(step => step.slug == tourStep)[0];
       push(tourPath(updateUrl ? currentStep.url : undefined, tour, tourStep));
+      currentStep?.dispatchAction && dispatch(currentStep.dispatchAction);
     } else {
       push(location.pathname);
     }

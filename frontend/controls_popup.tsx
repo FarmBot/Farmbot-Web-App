@@ -5,15 +5,16 @@ import { getPathArray } from "./history";
 import { JogButtons } from "./controls/move/jog_buttons";
 import { StepSizeSelector } from "./controls/move/step_size_selector";
 import { Icon, iconFile } from "./farm_designer/panel_header";
+import { Actions } from "./constants";
 
 export const ControlsPopup = (props: ControlsPopupProps) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { isOpen, dispatch, stepSize, arduinoBusy, locked, botOnline } = props;
   const isOpenClass = isOpen ? "open" : "";
-  const { stepSize, arduinoBusy, locked, botOnline } = props;
   return <div
     className={`controls-popup ${isOpenClass} ${mapPanelClassName()}`}>
     <img width={25} height={25} src={iconFile(Icon.controls)}
-      onClick={() => setIsOpen(!isOpen)} />
+      onClick={() =>
+        dispatch({ type: Actions.OPEN_CONTROLS_POPUP, payload: !isOpen })} />
     <div className="controls-popup-menu-outer">
       <div className="controls-popup-menu-inner">
         <JogButtons
@@ -25,7 +26,7 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           botOnline={isOpen && botOnline}
           env={props.env}
           firmwareSettings={props.firmwareSettings} />
-        <StepSizeSelector dispatch={props.dispatch} selected={stepSize} />
+        <StepSizeSelector dispatch={dispatch} selected={stepSize} />
       </div>
     </div>
   </div>;

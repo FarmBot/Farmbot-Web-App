@@ -80,10 +80,10 @@ describe("<TourStepContainer />", () => {
     Object.defineProperty(document, "querySelector", {
       value: () => element, configurable: true,
     });
-    location.search = "?tour=gettingStarted?tourStep=syncStatus";
+    location.search = "?tour=garden?tourStep=cropSearch";
     const p = fakeProps();
-    p.helpState.currentTour = "gettingStarted";
-    p.helpState.currentTourStep = "syncStatus";
+    p.helpState.currentTour = "garden";
+    p.helpState.currentTourStep = "cropSearch";
     mount(<TourStepContainer {...p} />);
     expect(element.classList).toContain("beacon");
     jest.runAllTimers();
@@ -129,6 +129,17 @@ describe("<TourStepContainer />", () => {
     p.helpState.currentTourStep = "intro";
     mount(<TourStepContainer {...p} />);
     expect(push).toHaveBeenCalledWith("?tour=gettingStarted?tourStep=intro");
+  });
+
+  it("dispatches", () => {
+    location.search = "?tour=tools?tourStep=setup";
+    const p = fakeProps();
+    p.helpState.currentTour = "tools";
+    p.helpState.currentTourStep = undefined;
+    mount(<TourStepContainer {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_CONTROLS_POPUP, payload: true
+    });
   });
 
   it("proceeds to next step", () => {

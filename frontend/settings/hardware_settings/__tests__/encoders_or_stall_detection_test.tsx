@@ -19,6 +19,7 @@ describe("<EncodersOrStallDetection />", () => {
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
     arduinoBusy: false,
+    showAdvanced: true,
   });
 
   it("shows encoder labels", () => {

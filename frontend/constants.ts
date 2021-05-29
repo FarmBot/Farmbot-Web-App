@@ -1166,6 +1166,11 @@ export namespace Content {
   export const DOWNLOAD_FBOS =
     trim(`Download the version of FarmBot OS that corresponds to your
     FarmBot kit and its internal computer.`);
+
+  export const UNSUPPORTED_BROWSER =
+    trim(`Your web browser may not work properly with the FarmBot Web App.
+    If you experience any issues, try using a recent version of Chrome,
+    Firefox, or Edge.`);
 }
 
 export namespace TourContent {
@@ -1870,29 +1875,27 @@ export enum Actions {
 
   // Auth
   REPLACE_TOKEN = "REPLACE_TOKEN",
-  LOGIN_ERROR = "LOGIN_ERR",
 
   // Config
   CHANGE_API_PORT = "CHANGE_API_PORT",
   CHANGE_API_HOST = "CHANGE_API_HOST",
   LOGOUT = "LOGOUT",
 
-  // Devices
-  SAVE_DEVICE_OK = "SAVE_DEVICE_OK",
+  // App
+  OPEN_CONTROLS_POPUP = "OPEN_CONTROLS_POPUP",
   TOGGLE_CONTROL_PANEL_OPTION = "TOGGLE_CONTROL_PANEL_OPTION",
   BULK_TOGGLE_CONTROL_PANEL = "BULK_TOGGLE_CONTROL_PANEL",
+
+  // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",
   SETTING_UPDATE_START = "SETTING_UPDATE_START",
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
   STATUS_UPDATE = "STATUS_UPDATE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
-  FETCH_OS_UPDATE_INFO_ERROR = "FETCH_OS_UPDATE_INFO_ERROR",
   FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
   FETCH_MIN_OS_FEATURE_INFO_ERROR = "FETCH_MIN_OS_FEATURE_INFO_ERROR",
   FETCH_OS_RELEASE_NOTES_OK = "FETCH_OS_RELEASE_NOTES_OK",
   FETCH_OS_RELEASE_NOTES_ERROR = "FETCH_OS_RELEASE_NOTES_ERROR",
-  INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
-  DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
 
   // Draggable

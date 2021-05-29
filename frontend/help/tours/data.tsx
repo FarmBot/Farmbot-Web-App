@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
-import { TourContent } from "../../constants";
+import { Actions, TourContent } from "../../constants";
 import { Tour, TourStep } from "./interfaces";
 import { isExpress } from "../../settings/firmware/firmware_hardware_support";
 
@@ -134,7 +134,7 @@ export const TOURS = (
         title: t("Sync Status"),
         content: TourContent.SYNC_STATUS,
         beacons: undefined,
-        activeBeacons: [{ class: "nav-sync", type: "soft" }],
+        activeBeacons: [{ class: "nav-sync", type: "soft", keep: true }],
         url: undefined,
       },
       {
@@ -142,7 +142,7 @@ export const TOURS = (
         title: t("E-STOP Button"),
         content: TourContent.ESTOP_BUTTON,
         beacons: undefined,
-        activeBeacons: [{ class: "e-stop-btn", type: "soft" }],
+        activeBeacons: [{ class: "e-stop-btn", type: "soft", keep: true }],
         url: undefined,
       },
       {
@@ -150,7 +150,7 @@ export const TOURS = (
         title: t("Account Menu"),
         content: TourContent.ACCOUNT_MENU,
         beacons: undefined,
-        activeBeacons: [{ class: "nav-name", type: "soft" }],
+        activeBeacons: [{ class: "nav-name", type: "soft", keep: true }],
         url: undefined,
       },
       {
@@ -330,8 +330,10 @@ export const TOURS = (
           : TourContent.EDIT_SLOT_COORDINATES_SETUP_GENESIS,
         beacons: undefined,
         activeBeacons: [
+          { class: "controls-popup-menu-inner", type: "hard" },
           { class: "controls-popup", type: "hard" },
         ],
+        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: true },
         url: undefined,
       },
       {
@@ -342,9 +344,10 @@ export const TOURS = (
           : TourContent.EDIT_SLOT_COORDINATES_GENESIS,
         beacons: undefined,
         activeBeacons: [
-          { class: "controls-popup", type: "hard" },
+          { class: "controls-popup-menu-inner", type: "hard" },
           { class: "fb-button.blue", type: "hard" },
         ],
+        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: true },
         url: undefined,
       },
       {
@@ -352,7 +355,8 @@ export const TOURS = (
         title: t("Minor adjustments"),
         content: TourContent.SETTING_UP_SLOTS_MINOR_ADJUSTMENTS,
         beacons: undefined,
-        activeBeacons: [{ class: "axis-inputs", type: "soft" }],
+        activeBeacons: [{ class: "axis-inputs", type: "soft", keep: true }],
+        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: false },
         url: undefined,
       },
       {
