@@ -13,6 +13,7 @@ import {
 import { t } from "./i18next_wrapper";
 import { store } from "./redux/store";
 import { save } from "./api/crud";
+import { cropSearchUrl } from "./plants/crop_catalog";
 
 export interface HotKeysProps {
   dispatch: Function;
@@ -102,7 +103,7 @@ export const hotkeysWithActions = (dispatch: Function) => {
     },
     [HotKey.addPlant]: {
       ...hotkeysBase[HotKey.addPlant],
-      onKeyDown: () => push("/app/designer/plants/crop_search"),
+      onKeyDown: () => push(cropSearchUrl()),
     },
     [HotKey.addEvent]: {
       ...hotkeysBase[HotKey.addEvent],

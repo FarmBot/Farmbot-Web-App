@@ -17,6 +17,9 @@ import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { SearchField } from "../ui/search_field";
 
+export const cropSearchUrl = (slugPlus?: string) =>
+  `/app/designer/plants/crop_search/${slugPlus || ""}`;
+
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const { cropSearchQuery, cropSearchInProgress, cropSearchResults
   } = props.resources.consumers.farm_designer;
