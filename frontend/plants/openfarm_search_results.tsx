@@ -6,6 +6,7 @@ import {
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
+import { cropSearchUrl } from "./crop_catalog";
 
 /** A stripped down version of OFSearchResult */
 interface Result {
@@ -45,7 +46,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
         return <Link
           key={resp.crop.slug}
           draggable={false}
-          to={`/app/designer/plants/crop_search/${crop.slug}`}>
+          to={cropSearchUrl(crop.slug)}>
           <div className="plant-catalog-tile col-xs-6">
             <label>
               {crop.name}
