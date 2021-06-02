@@ -48,17 +48,7 @@ export class GroupDetailActive
   render() {
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
-      <label>{t("GROUP NAME")}</label>
-      <input
-        name="name"
-        defaultValue={group.body.name}
-        onBlur={e => {
-          const newGroupName = e.currentTarget.value;
-          if (newGroupName != "" && newGroupName != this.props.group.body.name) {
-            this.props.dispatch(edit(this.props.group, { name: newGroupName }));
-            this.props.dispatch(save(this.props.group.uuid));
-          }
-        }} />
+      <GroupNameInput group={group} dispatch={dispatch} />
       <GroupSortSelection group={group} dispatch={dispatch}
         pointsSelectedByGroup={this.pointsSelectedByGroup} />
       <GroupMemberDisplay group={group} dispatch={dispatch}
@@ -82,6 +72,28 @@ export class GroupDetailActive
     </ErrorBoundary>;
   }
 }
+
+interface GroupNameInputProps {
+  group: TaggedPointGroup;
+  dispatch: Function;
+}
+
+const GroupNameInput = (props: GroupNameInputProps) => {
+  const { dispatch, group } = props;
+  return <div className={"group-name-input"}>
+    <label>{t("GROUP NAME")}</label>
+    <input
+      name="name"
+      defaultValue={group.body.name}
+      onBlur={e => {
+        const newGroupName = e.currentTarget.value;
+        if (newGroupName != "" && newGroupName != group.body.name) {
+          dispatch(edit(group, { name: newGroupName }));
+          dispatch(save(group.uuid));
+        }
+      }} />
+  </div>;
+};
 
 interface GroupSortSelectionProps {
   group: TaggedPointGroup;

@@ -707,6 +707,15 @@ hr {
   }
 }
 
+.e-stop-btn {
+  float: right;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  .e-stop {
+    margin: 1rem;
+  }
+}
+
 a {
   text-decoration: none !important;
   outline: none !important;
@@ -1056,6 +1065,7 @@ ul {
 }
 
 .controls-popup-menu-inner {
+  border-radius: 2rem;
   transition: all 0.1s 0s ease-in-out;
   opacity: 0;
 }
@@ -2081,8 +2091,7 @@ textarea:focus {
 
 .beacon {
   &.hard {
-    border: 4px solid $yellow;
-    border-radius: 5px;
+    box-shadow: 0 0 0 4px $yellow !important;
   }
   &.soft {
     background: #ffe53e52 !important;

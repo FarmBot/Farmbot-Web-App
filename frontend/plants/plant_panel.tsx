@@ -14,6 +14,7 @@ import { startCase } from "lodash";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
+import { cropSearchUrl } from "./crop_catalog";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -173,7 +174,7 @@ export function PlantPanel(props: PlantPanelProps) {
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
-          to={`/app/designer/plants/crop_search/${slug}`}>
+          to={cropSearchUrl(slug)}>
           {startCase(slug)}
         </Link>
       </ListItem>

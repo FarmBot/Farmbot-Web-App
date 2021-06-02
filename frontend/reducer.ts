@@ -6,6 +6,7 @@ import { ControlPanelState } from "./devices/interfaces";
 export interface AppState {
   controlPanelState: ControlPanelState;
   toasts: ToastMessages;
+  controlsPopupOpen: boolean;
 }
 
 export const emptyState = (): AppState => {
@@ -27,6 +28,7 @@ export const emptyState = (): AppState => {
       other_settings: false,
     },
     toasts: {},
+    controlsPopupOpen: false,
   };
 };
 
@@ -54,6 +56,10 @@ export const appReducer =
         s.controlPanelState.other_settings = a.payload;
         return s;
       })
+    .add<boolean>(Actions.OPEN_CONTROLS_POPUP, (s, { payload }) => {
+      s.controlsPopupOpen = payload;
+      return s;
+    })
     .add<ToastMessageProps>(Actions.CREATE_TOAST, (s, { payload }) => {
       s.toasts = { ...s.toasts, [payload.id]: payload };
       return s;

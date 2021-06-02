@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../interfaces";
@@ -8,12 +8,14 @@ import { TaggedPlant } from "../farm_designer/map/interfaces";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
-import { Content } from "../constants";
+import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
+import { push } from "../history";
+import { cropSearchUrl } from "./crop_catalog";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -37,12 +39,30 @@ export function mapStateToProps(props: Everything): PlantInventoryProps {
 export class RawPlants extends React.Component<PlantInventoryProps, State> {
   state: State = { searchTerm: "" };
 
+  get noResult() {
+    return <p>{`${t("Do you want to")} `}
+      <a onClick={() => {
+        this.props.dispatch({
+          type: Actions.SEARCH_QUERY_CHANGE,
+          payload: this.state.searchTerm,
+        });
+        push(cropSearchUrl());
+      }}>
+        {t("search all crops?")}
+      </a>
+    </p>;
+  }
+
   render() {
+    const filteredPlants = this.props.plants
+      .filter(p => p.body.name.toLowerCase()
+        .includes(this.state.searchTerm.toLowerCase()));
+    const noSearchResults = this.state.searchTerm && filteredPlants.length == 0;
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Plants}
-        linkTo={"/app/designer/plants/crop_search"}
+        linkTo={cropSearchUrl()}
         title={t("Add plant")}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={t("Search your plants...")}
@@ -50,15 +70,18 @@ export class RawPlants extends React.Component<PlantInventoryProps, State> {
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
         <EmptyStateWrapper
-          notEmpty={this.props.plants.length > 0}
-          graphic={EmptyStateGraphic.plants}
-          title={t("Get growing!")}
-          text={Content.NO_PLANTS}
+          notEmpty={this.props.plants.length > 0 && !noSearchResults}
+          graphic={noSearchResults
+            ? EmptyStateGraphic.no_crop_results
+            : EmptyStateGraphic.plants}
+          title={noSearchResults
+            ? t("No results in your garden")
+            : t("Get growing!")}
+          text={noSearchResults ? undefined : Content.NO_PLANTS}
+          textElement={noSearchResults ? this.noResult : undefined}
           colorScheme={"plants"}>
-          {this.props.plants
-            .filter(p => p.body.name.toLowerCase()
-              .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => <PlantInventoryItem
+          {filteredPlants.map(p =>
+            <PlantInventoryItem
               key={p.uuid}
               plant={p}
               hovered={this.props.hoveredPlantListItem === p.uuid}

@@ -87,7 +87,8 @@ describe("<GroupDetailActive/>", () => {
 
   it("changes group name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GroupDetailActive {...p} />);
+    const parentWrapper = shallow(<GroupDetailActive {...p} />);
+    const wrapper = shallow(parentWrapper.find("GroupNameInput").getElement());
     wrapper.find("input").first().simulate("blur", {
       currentTarget: { value: "new group name" }
     });
@@ -96,7 +97,8 @@ describe("<GroupDetailActive/>", () => {
 
   it("doesn't change group name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GroupDetailActive {...p} />);
+    const parentWrapper = shallow(<GroupDetailActive {...p} />);
+    const wrapper = shallow(parentWrapper.find("GroupNameInput").getElement());
     wrapper.find("input").first().simulate("blur", {
       currentTarget: { value: "" }
     });

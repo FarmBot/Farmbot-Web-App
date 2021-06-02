@@ -4,12 +4,17 @@ jest.mock("../controls_popup", () => ({
   showControlsPopup: () => mockShowPopUp,
 }));
 
+let mockSatisfies = true;
+jest.mock("bowser", () => ({
+  getParser: () => ({ satisfies: () => mockSatisfies }),
+}));
+
 import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
-  fakeUser, fakeWebAppConfig, fakeFbosConfig, fakeFarmwareEnv,
+  fakeUser, fakeWebAppConfig, fakeFarmwareEnv,
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
 import {
@@ -17,7 +22,7 @@ import {
 } from "../__test_support__/resource_index_builder";
 import { ResourceName } from "farmbot";
 import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
-import { error } from "../toast/toast";
+import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
 import { fakeHelpState } from "../__test_support__/fake_designer_state";
@@ -32,13 +37,11 @@ const fakeProps = (): AppProps => ({
   logs: [],
   user: fakeUser(),
   bot: bot,
-  consistent: true,
   axisInversion: { x: false, y: false, z: false },
   firmwareConfig: undefined,
   xySwap: false,
   animate: false,
   getConfigValue: jest.fn(),
-  tour: undefined,
   helpState: fakeHelpState(),
   resources: buildResourceIndex().index,
   alertCount: 0,
@@ -49,6 +52,7 @@ const fakeProps = (): AppProps => ({
   authAud: undefined,
   wizardStepResults: [],
   toastMessages: {},
+  controlsPopupOpen: false,
 });
 
 describe("<App />: Controls Pop-Up", () => {
@@ -107,6 +111,18 @@ describe("<App />: Loading", () => {
     expect(error).not.toHaveBeenCalled();
     wrapper.unmount();
   });
+
+  it("checks browser compatibility: ok", () => {
+    mockSatisfies = true;
+    mount(<App {...fakeProps()} />);
+    expect(warning).not.toHaveBeenCalled();
+  });
+
+  it("checks browser compatibility: no", () => {
+    mockSatisfies = false;
+    mount(<App {...fakeProps()} />);
+    expect(warning).toHaveBeenCalled();
+  });
 });
 
 describe("<App />: NavBar", () => {
@@ -162,16 +178,10 @@ describe("mapStateToProps()", () => {
     expect(result.authAud).toEqual("unknown");
   });
 
-  it("returns api props", () => {
+  it("handles missing auth", () => {
     const state = fakeState();
     state.auth = undefined;
-    const config = fakeFbosConfig();
-    const fakeEnv = fakeFarmwareEnv();
-    state.resources = buildResourceIndex([config, fakeEnv]);
-    state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
-    state.bot.hardware.informational_settings.controller_version = "8.0.0";
     const result = mapStateToProps(state);
-    expect(result.env).toEqual({ [fakeEnv.body.key]: fakeEnv.body.value });
     expect(result.authAud).toEqual(undefined);
   });
 });

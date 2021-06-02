@@ -4,7 +4,9 @@ lodash.debounce = jest.fn(x => x);
 jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 
 import React from "react";
-import { mapStateToProps, RawCropCatalog as CropCatalog } from "../crop_catalog";
+import {
+  cropSearchUrl, mapStateToProps, RawCropCatalog as CropCatalog,
+} from "../crop_catalog";
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
@@ -15,16 +17,21 @@ import {
 import { SearchField } from "../../ui/search_field";
 import { fakeState } from "../../__test_support__/fake_state";
 
+describe("cropSearchUrl()", () => {
+  it("returns url", () => {
+    expect(cropSearchUrl()).toEqual("/app/designer/plants/crop_search/");
+    expect(cropSearchUrl("mint")).toEqual("/app/designer/plants/crop_search/mint");
+  });
+});
+
 describe("<CropCatalog />", () => {
-  const fakeProps = (): CropCatalogProps => {
-    return {
-      dispatch: jest.fn(),
-      openfarmSearch: jest.fn(() => jest.fn()),
-      cropSearchResults: [],
-      cropSearchQuery: "",
-      cropSearchInProgress: false,
-    };
-  };
+  const fakeProps = (): CropCatalogProps => ({
+    dispatch: jest.fn(),
+    openfarmSearch: jest.fn(() => jest.fn()),
+    cropSearchResults: [],
+    cropSearchQuery: "",
+    cropSearchInProgress: false,
+  });
 
   it("renders", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);

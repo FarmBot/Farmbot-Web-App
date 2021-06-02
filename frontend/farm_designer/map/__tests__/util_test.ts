@@ -35,6 +35,7 @@ import {
   fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { cropSearchUrl } from "../../../plants/crop_catalog";
 
 describe("round()", () => {
   it("rounds a number", () => {
@@ -51,7 +52,7 @@ describe("mapPanelClassName()", () => {
     });
     mockPath = "/app/designer/move_to";
     expect(mapPanelClassName()).toEqual("short-panel");
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = cropSearchUrl("mint/add");
     expect(mapPanelClassName()).toEqual("short-panel");
   });
 
@@ -62,7 +63,7 @@ describe("mapPanelClassName()", () => {
     });
     mockPath = "/app/designer/move_to";
     expect(mapPanelClassName()).toEqual("panel-open");
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = cropSearchUrl("mint/add");
     expect(mapPanelClassName()).toEqual("panel-open");
   });
 });
@@ -368,7 +369,7 @@ describe("transformForQuadrant()", () => {
 
 describe("getMode()", () => {
   it("returns correct Mode", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = cropSearchUrl("mint/add");
     expect(getMode()).toEqual(Mode.clickToAdd);
     mockPath = "/app/designer/plants/1/edit";
     expect(getMode()).toEqual(Mode.editPlant);
@@ -380,7 +381,7 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/plants/select";
     expect(getMode()).toEqual(Mode.boxSelect);
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockPath = cropSearchUrl("mint");
     expect(getMode()).toEqual(Mode.addPlant);
     mockPath = "/app/designer/move_to";
     expect(getMode()).toEqual(Mode.moveTo);
@@ -460,7 +461,7 @@ describe("allowInteraction()", () => {
   });
 
   it("disallows interaction", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = cropSearchUrl("mint/add");
     expect(allowInteraction()).toBeFalsy();
     mockPath = "/app/designer/move_to";
     expect(allowInteraction()).toBeFalsy();

@@ -5,7 +5,7 @@ import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
-import { maybeBeacon } from "../help/new_tours";
+import { maybeBeacon } from "../help/tours";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -127,4 +127,5 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
     <ErrorBoundary>
       {props.children}
     </ErrorBoundary>
+    <div className={"padding"}></div>
   </div>;
