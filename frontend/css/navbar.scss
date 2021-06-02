@@ -178,6 +178,7 @@ nav {
     font-size: 1.1rem;
     color: $white;
     margin-right: 0.75rem;
+    margin-left: 0.5rem;
     &:hover {
       background: $medium_gray;
     }
@@ -218,13 +219,18 @@ nav {
       margin-right: 0.8rem;
     }
   }
-  .nav-name:after{
-    content: attr(data-title);
-    display: block;
-    font-weight: bold;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+  .nav-name {
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-top: -1rem;
+    &:after{
+      content: attr(data-title);
+      display: block;
+      font-weight: bold;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
   }
 }
 

@@ -14,6 +14,7 @@ jest.mock("../../farm_designer/map/actions", () => ({
 import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
+  getCropHeaderProps,
 } from "../crop_info";
 import { mount } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
@@ -25,6 +26,8 @@ import {
 import { unselectPlant } from "../../farm_designer/map/actions";
 import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Actions } from "../../constants";
+import { cropSearchUrl } from "../crop_catalog";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -43,7 +46,7 @@ describe("<CropInfo />", () => {
   };
 
   it("renders", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockPath = cropSearchUrl("mint");
     const wrapper = mount(<CropInfo {...fakeProps()} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Drag and drop into map");
@@ -53,19 +56,33 @@ describe("<CropInfo />", () => {
   });
 
   it("navigates to /add", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockPath = cropSearchUrl("mint");
     const wrapper = mount(<CropInfo {...fakeProps()} />);
     wrapper.find(".right-button").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/plants/crop_search/mint/add");
+    expect(history.push).toHaveBeenCalledWith(cropSearchUrl("mint/add"));
   });
 
   it("returns to crop search", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
-    const wrapper = mount(<CropInfo {...fakeProps()} />);
+    mockPath = cropSearchUrl("mint");
+    const p = fakeProps();
+    const wrapper = mount(<CropInfo {...p} />);
     wrapper.find(".back-arrow").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/plants/crop_search/");
+    expect(history.push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+    });
+  });
+
+  it("doesn't change search query", () => {
+    mockPath = cropSearchUrl("mint");
+    const p = fakeProps();
+    p.cropSearchQuery = "mint";
+    const wrapper = mount(<CropInfo {...p} />);
+    wrapper.find(".back-arrow").simulate("click");
+    expect(history.push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+    });
   });
 
   it("disables 'add plant @ UTM' button", () => {
@@ -120,12 +137,20 @@ describe("<CropInfo />", () => {
 
 describe("searchForCurrentCrop()", () => {
   it("searches", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockPath = cropSearchUrl("mint");
     const dispatch = jest.fn();
     const fakeOFSearch = jest.fn((_) => jest.fn());
     searchForCurrentCrop(fakeOFSearch)(dispatch);
     expect(fakeOFSearch).toHaveBeenCalledWith("mint");
     expect(unselectPlant).toHaveBeenCalled();
+  });
+});
+
+describe("getCropHeaderProps()", () => {
+  it("handles missing crop", () => {
+    mockPath = cropSearchUrl();
+    const result = getCropHeaderProps({ cropSearchResults: [] });
+    expect(result.result.crop.name).toEqual("");
   });
 });
 

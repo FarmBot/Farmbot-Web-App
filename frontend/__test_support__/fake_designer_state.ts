@@ -42,6 +42,5 @@ export const fakeDesignerState = (): DesignerState => ({
 
 export const fakeHelpState = (): HelpState => ({
   currentTour: undefined,
-  currentNewTour: undefined,
-  currentNewTourStep: undefined,
+  currentTourStep: undefined,
 });

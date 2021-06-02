@@ -10,6 +10,7 @@ export const HomeButton = (props: HomeButtonProps) => {
     className={[
       "home-button arrow-button fb-button",
       lockedClass(props.locked),
+      props.doFindHome ? "find-home-btn" : "move-home-btn",
     ].join(" ")}
     title={props.doFindHome ? t("find home") : t("move to home")}
     onClick={() => (props.doFindHome ? findHome : moveToHome)("all")}

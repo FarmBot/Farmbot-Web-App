@@ -4,6 +4,7 @@ import { uuid } from "farmbot";
 import axios from "axios";
 import { ExternalUrl } from "../external_urls";
 import { t } from "../i18next_wrapper";
+import { tourPath } from "../help/tours";
 
 interface State {
   error: Error | undefined;
@@ -50,7 +51,7 @@ export class DemoIframe extends React.Component<{}, State> {
   handleMessage =
     (_chan: string, _buffer: Buffer) => {
       localStorage.setItem("session", _buffer.toString());
-      location.assign("/app/designer/plants");
+      location.assign(tourPath("/app/designer/plants", "gettingStarted", "intro"));
     }
 
   requestAccount = () => {

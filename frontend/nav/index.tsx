@@ -12,7 +12,6 @@ import { AdditionalMenu } from "./additional_menu";
 import { MobileMenu } from "./mobile_menu";
 import { Popover, Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
-import { RunTour } from "../help/tour";
 import { t } from "../i18next_wrapper";
 import { Connectivity } from "../devices/connectivity/connectivity";
 import { connectivityData } from "../devices/connectivity/generate_data";
@@ -57,16 +56,15 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       BooleanSetting.user_interface_read_only_mode)} />
 
   SyncButton = () =>
-    <SyncButton
-      bot={this.props.bot}
-      dispatch={this.props.dispatch}
-      consistent={this.props.consistent} />
+    <SyncButton bot={this.props.bot} dispatch={this.props.dispatch} />
 
   EstopButton = () =>
-    <EStopButton
-      bot={this.props.bot}
-      forceUnlock={!!this.props.getConfigValue(
-        BooleanSetting.disable_emergency_unlock_confirmation)} />
+    <div className={"e-stop-btn"}>
+      <EStopButton
+        bot={this.props.bot}
+        forceUnlock={!!this.props.getConfigValue(
+          BooleanSetting.disable_emergency_unlock_confirmation)} />
+    </div>
 
   AccountMenu = () => {
     const hasName = this.props.user?.body.name;
@@ -185,7 +183,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       <this.SyncButton />
                       <this.ConnectionStatus />
                       <this.SetupButton />
-                      <RunTour currentTour={this.props.tour} />
                     </ErrorBoundary>
                   </div>
                 </div>

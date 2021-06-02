@@ -25,6 +25,7 @@ import { startCase, isArray, chain, isNumber } from "lodash";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
+import { cropSearchUrl } from "./crop_catalog";
 
 interface InfoFieldProps {
   title: string;
@@ -198,7 +199,7 @@ export const getCropHeaderProps = (props: {
 }) => {
   const crop = getPathArray()[5];
   const result = findBySlug(props.cropSearchResults, crop || "");
-  const basePath = "/app/designer/plants/crop_search/";
+  const basePath = cropSearchUrl();
   const backgroundURL = `linear-gradient(
     rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
   return { crop, result, basePath, backgroundURL };

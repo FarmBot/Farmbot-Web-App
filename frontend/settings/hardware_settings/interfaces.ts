@@ -118,6 +118,7 @@ export interface EncodersOrStallDetectionProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
+  showAdvanced: boolean;
 }
 
 export interface LimitSwitchesProps {

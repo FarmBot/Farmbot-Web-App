@@ -30,13 +30,11 @@ import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
     timeSettings: fakeTimeSettings(),
-    consistent: true,
     logs: [],
     bot,
     user: taggedUser,
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
-    tour: undefined,
     helpState: fakeHelpState(),
     device: fakeDevice(),
     alertCount: 0,

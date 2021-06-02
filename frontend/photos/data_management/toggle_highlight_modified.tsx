@@ -11,7 +11,7 @@ export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) => 
   const { getConfigValue, dispatch } = props;
   const value = !!getConfigValue(BooleanSetting.highlight_modified_settings);
   return <div className={"highlight-modified-toggle"}>
-    <label>{t(DeviceSetting.highlightSettingsModifiedFromDefault)}</label>
+    <label>{t(DeviceSetting.highlightModifiedSettings)}</label>
     <ToggleButton
       className={getModifiedClassName(BooleanSetting.highlight_modified_settings)}
       toggleValue={value}

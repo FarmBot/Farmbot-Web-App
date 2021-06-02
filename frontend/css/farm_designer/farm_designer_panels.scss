@@ -37,6 +37,13 @@
   }
 }
 
+.controls-panel,
+.photos-panel {
+  .panel-content {
+    max-height: calc(100vh - 9rem);
+  }
+}
+
 .controls-panel {
   .panel-content {
     padding-top: 0;
@@ -916,6 +923,8 @@
     .tool-slot-search-item {
       margin-left: -15px;
       margin-right: -15px;
+      width: calc(100% + 25px);
+      padding-right: 3.5rem;
       .filter-search {
         .bp3-button {
           min-height: 2.5rem;
@@ -1409,8 +1418,13 @@
         padding: 0.5em 0em;
       }
     }
+    .group-name-input,
     .group-member-display,
     .group-sort-section {
+      margin-top: 1rem;
+      label {
+        margin-top: 0;
+      }
       .bp3-popover-wrapper {
         display: inline;
         margin-left: 1rem;

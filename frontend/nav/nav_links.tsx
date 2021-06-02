@@ -6,7 +6,7 @@ import {
   getPanelPath, getCurrentPanel,
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
-import { maybeBeacon } from "../help/new_tours";
+import { maybeBeacon } from "../help/tours";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,

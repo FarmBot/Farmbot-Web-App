@@ -25,6 +25,7 @@ import {
   showHotkeysDialog,
 } from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
 import { save } from "../api/crud";
+import { cropSearchUrl } from "../plants/crop_catalog";
 
 describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
@@ -53,7 +54,7 @@ describe("hotkeysWithActions()", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/settings");
 
     hotkeys[HotKey.addPlant].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/crop_search");
+    expect(push).toHaveBeenCalledWith(cropSearchUrl());
 
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/events/add");
