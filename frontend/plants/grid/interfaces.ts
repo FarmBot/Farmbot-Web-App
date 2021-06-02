@@ -27,6 +27,7 @@ export interface PlantGridProps {
   color?: string;
   radius?: number;
   close?: () => void;
+  z?: number;
 }
 
 export interface PlantGridInitOption {
@@ -37,6 +38,7 @@ export interface PlantGridInitOption {
   itemName: string;
   color?: string;
   radius?: number;
+  z?: number;
 }
 
 interface GridInputPropsBase {

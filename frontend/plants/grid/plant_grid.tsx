@@ -12,7 +12,7 @@ import { error, success } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
 import { GridInput } from "./grid_input";
 import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
-import { ToggleButton } from "../../ui/toggle_button";
+import { ToggleButton } from "../../ui";
 import { Actions } from "../../constants";
 import { round } from "lodash";
 
@@ -74,6 +74,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       offsetPacking: this.state.offsetPacking,
       color: this.props.color,
       radius: this.props.radius,
+      z: this.props.z,
     });
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
