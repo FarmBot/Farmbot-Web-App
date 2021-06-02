@@ -66,7 +66,9 @@ export interface JogControlsGroupProps extends JogMovementControlsProps {
   dispatch: Function;
 }
 
-export type ControlsPopupProps = JogControlsGroupProps;
+export interface ControlsPopupProps extends JogControlsGroupProps {
+  isOpen: boolean;
+}
 
 export interface BotPositionRowsProps {
   locationData: BotLocationData;

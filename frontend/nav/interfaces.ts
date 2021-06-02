@@ -11,19 +11,16 @@ import { HelpState } from "../help/reducer";
 export interface SyncButtonProps {
   dispatch: Function;
   bot: BotState;
-  consistent: boolean;
   onClick?: () => void;
 }
 
 export interface NavBarProps {
-  consistent: boolean;
   logs: TaggedLog[];
   bot: BotState;
   user: TaggedUser | undefined;
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
-  tour: string | undefined;
   device: TaggedDevice;
   alertCount: number;
   pings: PingDictionary;

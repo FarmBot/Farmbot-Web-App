@@ -115,7 +115,7 @@ const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.resetHardwareParams,
   DeviceSetting.exportParameters,
   DeviceSetting.importParameters,
-  DeviceSetting.highlightSettingsModifiedFromDefault,
+  DeviceSetting.highlightModifiedSettings,
   DeviceSetting.showAdvancedSettings,
   DeviceSetting.resetHardwareParams,
 ];

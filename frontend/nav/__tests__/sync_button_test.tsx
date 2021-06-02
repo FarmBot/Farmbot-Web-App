@@ -9,12 +9,11 @@ describe("<SyncButton/>", function () {
   const fakeProps = (): SyncButtonProps => ({
     dispatch: jest.fn(),
     bot: bot,
-    consistent: true,
   });
 
   it("is inconsistent", () => {
     const p = fakeProps();
-    p.consistent = false;
+    p.bot.consistent = false;
     p.bot.hardware.informational_settings.sync_status = "sync_now";
     const result = shallow(<SyncButton {...p} />);
     expect(result.hasClass("c")).toBeFalsy();
@@ -22,7 +21,7 @@ describe("<SyncButton/>", function () {
 
   it("is disconnected", () => {
     const p = fakeProps();
-    p.consistent = true;
+    p.bot.consistent = true;
     p.bot.hardware.informational_settings.sync_status = "unknown";
     const result = shallow(<SyncButton {...p} />);
     expect(result.hasClass("c")).toBeTruthy();

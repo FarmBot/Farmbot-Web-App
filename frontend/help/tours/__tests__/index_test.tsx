@@ -1,19 +1,20 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
+jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import React from "react";
 import { mount } from "enzyme";
 import {
-  getCurrentTourStepBeacons,
-  maybeBeacon, TourStepContainer, TourStepContainerProps,
-} from "../new_tours";
-import { fakeHelpState } from "../../__test_support__/fake_designer_state";
-import { Actions } from "../../constants";
-import { push } from "../../history";
+  getCurrentTourStepBeacons, maybeBeacon, TourStepContainer,
+} from "../index";
+import { fakeHelpState } from "../../../__test_support__/fake_designer_state";
+import { Actions } from "../../../constants";
+import { push } from "../../../history";
+import { TourStepContainerProps } from "../interfaces";
 
 describe("<TourStepContainer />", () => {
   const fakeProps = (): TourStepContainerProps => ({
     dispatch: jest.fn(),
     helpState: fakeHelpState(),
+    firmwareHardware: undefined,
   });
 
   const expectStateUpdate = (
@@ -33,8 +34,8 @@ describe("<TourStepContainer />", () => {
     jest.useFakeTimers();
     location.search = "?tour=gettingStarted?tourStep=intro";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "intro";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "intro";
     const wrapper = mount(<TourStepContainer {...p} />);
     jest.runAllTimers();
     expect(wrapper.text().toLowerCase()).toContain("getting started");
@@ -42,24 +43,59 @@ describe("<TourStepContainer />", () => {
 
   it("renders second tour step", () => {
     Object.defineProperty(document, "querySelector", {
-      value: () => ({ scrollHeight: 1 }),
+      value: () => ({ scrollHeight: 1 }), configurable: true,
     });
     location.search = "?tour=gettingStarted?tourStep=plants";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "plants";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "plants";
     const wrapper = mount(<TourStepContainer {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("plants");
     expect(wrapper.find(".message-contents").first().props().style?.height)
       .toEqual(1);
   });
 
+  it("doesn't remove beacon", () => {
+    jest.useFakeTimers();
+    console.error = jest.fn();
+    const element = document.createElement("div");
+    element.classList.add("connectivity-button");
+    Object.defineProperty(document, "querySelector", {
+      value: () => element, configurable: true,
+    });
+    location.search = "?tour=gettingStarted?tourStep=connectivityPopup";
+    const p = fakeProps();
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "connectivityPopup";
+    mount(<TourStepContainer {...p} />);
+    expect(element.classList).toContain("beacon");
+    jest.runAllTimers();
+    expect(element.classList).toContain("beacon");
+  });
+
+  it("removes beacon", () => {
+    jest.useFakeTimers();
+    const element = document.createElement("div");
+    element.classList.add("nav-sync");
+    Object.defineProperty(document, "querySelector", {
+      value: () => element, configurable: true,
+    });
+    location.search = "?tour=garden?tourStep=cropSearch";
+    const p = fakeProps();
+    p.helpState.currentTour = "garden";
+    p.helpState.currentTourStep = "cropSearch";
+    mount(<TourStepContainer {...p} />);
+    expect(element.classList).toContain("beacon");
+    jest.runAllTimers();
+    expect(element.classList).not.toContain("beacon");
+  });
+
   it("handles unknown tour", () => {
     jest.useFakeTimers();
     location.search = "?tour=unknown?tourStep=plants";
     const p = fakeProps();
-    p.helpState.currentNewTour = "unknown";
-    p.helpState.currentNewTourStep = "plants";
+    p.helpState.currentTour = "unknown";
+    p.helpState.currentTourStep = "plants";
     const wrapper = mount(<TourStepContainer {...p} />);
     jest.runAllTimers();
     expect(wrapper.text().toLowerCase())
@@ -69,8 +105,8 @@ describe("<TourStepContainer />", () => {
   it("handles unknown step", () => {
     location.search = "?tour=unknown?tourStep=unknown";
     const p = fakeProps();
-    p.helpState.currentNewTour = "unknown";
-    p.helpState.currentNewTourStep = undefined;
+    p.helpState.currentTour = "unknown";
+    p.helpState.currentTourStep = undefined;
     const wrapper = mount(<TourStepContainer {...p} />);
     expect(wrapper.text().toLowerCase())
       .toEqual("error: tour step does not exist");
@@ -79,8 +115,8 @@ describe("<TourStepContainer />", () => {
   it("updates tour state from url", () => {
     location.search = "?tour=gettingStarted?tourStep=intro";
     const p = fakeProps();
-    p.helpState.currentNewTour = undefined;
-    p.helpState.currentNewTourStep = undefined;
+    p.helpState.currentTour = undefined;
+    p.helpState.currentTourStep = undefined;
     const wrapper = mount(<TourStepContainer {...p} />);
     expectStateUpdate(p.dispatch, "gettingStarted", "intro");
     expect(wrapper.text().toLowerCase()).toContain("getting started");
@@ -89,17 +125,28 @@ describe("<TourStepContainer />", () => {
   it("updates url from tour state", () => {
     location.search = "";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "intro";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "intro";
     mount(<TourStepContainer {...p} />);
     expect(push).toHaveBeenCalledWith("?tour=gettingStarted?tourStep=intro");
+  });
+
+  it("dispatches", () => {
+    location.search = "?tour=tools?tourStep=setup";
+    const p = fakeProps();
+    p.helpState.currentTour = "tools";
+    p.helpState.currentTourStep = undefined;
+    mount(<TourStepContainer {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_CONTROLS_POPUP, payload: true
+    });
   });
 
   it("proceeds to next step", () => {
     location.search = "?tour=gettingStarted?tourStep=intro";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "intro";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "intro";
     const wrapper = mount(<TourStepContainer {...p} />);
     wrapper.find(".fa-forward.next").simulate("click");
     expectStateUpdate(p.dispatch, "gettingStarted", "plants");
@@ -108,22 +155,53 @@ describe("<TourStepContainer />", () => {
   it("returns to previous step", () => {
     location.search = "?tour=gettingStarted?tourStep=plants";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "plants";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "plants";
     const wrapper = mount(<TourStepContainer {...p} />);
     wrapper.find(".fa-backward.previous").simulate("click");
     expectStateUpdate(p.dispatch, "gettingStarted", "intro");
   });
 
   it("exits tour", () => {
-    location.search = "?tour=gettingStarted?tourStep=settings";
+    location.search = "?tour=gettingStarted?tourStep=end";
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "settings";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "end";
     const wrapper = mount(<TourStepContainer {...p} />);
     wrapper.find(".fa-times").simulate("click");
     expectStateUpdate(p.dispatch, undefined, undefined);
     expect(wrapper.find(".fa-forward.next").hasClass("disabled")).toBeTruthy();
+  });
+
+  it("unmounts", () => {
+    const element = document.createElement("div");
+    element.classList.add("class");
+    element.classList.add("beacon");
+    Object.defineProperty(document, "querySelector", {
+      value: () => element, configurable: true,
+    });
+    location.search = "?tour=gettingStarted?tourStep=end";
+    const p = fakeProps();
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "end";
+    const wrapper = mount(<TourStepContainer {...p} />);
+    expect(element.classList).toContain("beacon");
+    wrapper.setState({ activeBeacons: ["class"] });
+    wrapper.unmount();
+    expect(element.classList).not.toContain("beacon");
+  });
+
+  it("doesn't find element during unmount", () => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => undefined, configurable: true,
+    });
+    location.search = "?tour=gettingStarted?tourStep=end";
+    const p = fakeProps();
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "end";
+    const wrapper = mount(<TourStepContainer {...p} />);
+    wrapper.setState({ activeBeacons: ["class"] });
+    wrapper.unmount();
   });
 });
 
@@ -131,16 +209,16 @@ describe("tourStepBeacon()", () => {
   it("returns className", () => {
     location.search = "?tour=gettingStarted?tourStep=plants";
     const state = fakeHelpState();
-    state.currentNewTour = "gettingStarted";
-    state.currentNewTourStep = "plants";
+    state.currentTour = "gettingStarted";
+    state.currentTourStep = "plants";
     expect(maybeBeacon("plants", "soft", state)).toEqual("beacon soft");
   });
 
   it("doesn't return className", () => {
     location.search = "";
     const state = fakeHelpState();
-    state.currentNewTour = undefined;
-    state.currentNewTourStep = undefined;
+    state.currentTour = undefined;
+    state.currentTourStep = undefined;
     expect(maybeBeacon("plants", "soft", state)).toEqual("");
   });
 });

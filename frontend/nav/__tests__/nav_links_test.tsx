@@ -7,6 +7,7 @@ let mockHasSensors = false;
 jest.mock("../../settings/firmware/firmware_hardware_support", () => ({
   hasSensors: () => mockHasSensors,
   getFwHardwareValue: jest.fn(),
+  isExpress: jest.fn(),
 }));
 
 import { fakeState } from "../../__test_support__/fake_state";
@@ -48,8 +49,8 @@ describe("<NavLinks />", () => {
 
   it("shows beacon", () => {
     const p = fakeProps();
-    p.helpState.currentNewTour = "gettingStarted";
-    p.helpState.currentNewTourStep = "plants";
+    p.helpState.currentTour = "gettingStarted";
+    p.helpState.currentTourStep = "plants";
     const wrapper = mount(<NavLinks {...p} />);
     expect(wrapper.html()).toContain("beacon soft");
   });

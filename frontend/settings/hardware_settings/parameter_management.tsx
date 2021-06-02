@@ -82,7 +82,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
         </Row>
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
-      <Highlight settingName={DeviceSetting.highlightSettingsModifiedFromDefault}
+      <Highlight settingName={DeviceSetting.highlightModifiedSettings}
         hidden={!(!!getConfigValue(BooleanSetting.show_advanced_settings)
           || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
         className={"advanced"}>

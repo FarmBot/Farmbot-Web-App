@@ -26,6 +26,14 @@ describe("resource reducer", () => {
     });
   });
 
+  it("sets controls popup state", () => {
+    const newState = appReducer(app, {
+      type: Actions.OPEN_CONTROLS_POPUP,
+      payload: true,
+    });
+    expect(newState.controlsPopupOpen).toEqual(true);
+  });
+
   it("adds toast", () => {
     const newState = appReducer(app, {
       type: Actions.CREATE_TOAST,

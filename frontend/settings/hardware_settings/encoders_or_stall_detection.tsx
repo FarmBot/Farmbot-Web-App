@@ -15,7 +15,9 @@ import { DevSettings } from "../dev/dev_support";
 export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
 
   const { encoders_or_stall_detection } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, firmwareHardware, arduinoBusy } = props;
+  const {
+    dispatch, sourceFwConfig, firmwareHardware, arduinoBusy, showAdvanced,
+  } = props;
 
   const encodersDisabled = {
     x: !sourceFwConfig("encoder_enabled_x").value,
@@ -29,6 +31,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
     sourceFwConfig,
     disabled: arduinoBusy,
     firmwareHardware,
+    showAdvanced,
   };
 
   return <Highlight className={"section"}

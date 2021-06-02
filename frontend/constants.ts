@@ -1166,6 +1166,11 @@ export namespace Content {
   export const DOWNLOAD_FBOS =
     trim(`Download the version of FarmBot OS that corresponds to your
     FarmBot kit and its internal computer.`);
+
+  export const UNSUPPORTED_BROWSER =
+    trim(`Your web browser may not work properly with the FarmBot Web App.
+    If you experience any issues, try using a recent version of Chrome,
+    Firefox, or Edge.`);
 }
 
 export namespace TourContent {
@@ -1176,109 +1181,266 @@ export namespace TourContent {
 
   export const PLANTS_PANEL =
     trim(`This is the plants panel. Here you can view and manage all of the
-    plants in your garden. Mousing over a plant in the list wil highlight
+    plants in your garden. Mousing over a plant in the list will highlight
     it in the map and vice versa. Clicking a plant will open up the plant
-    details panel where you can edit it.`);
+    details panel where you can edit it. Pressing the + button will allow
+    you to search for and add new crops to your garden.`);
 
   export const GROUPS_PANEL =
-    trim(`This is the groups panel. Here you can view and manage all of the
-    groups in your garden. Clicking a group will open up the groups
-    details panel where you can edit it.`);
+    trim(`This is the groups panel. Here you can create and manage groups
+    of plants, weeds, points, and more based on any criteria. Clicking a
+    group will open up the group details panel where you can make edits.
+    Pressing the + button will create a new group.`);
 
   export const SAVED_GARDENS_PANEL =
     trim(`This is the gardens panel. Here you can view and manage all of
-    your gardens. Clicking a garden will open up the garden details panel
-    where you can edit it.`);
+    your saved gardens for quickly replanting season after season. Clicking
+    a garden will open up the garden details panel where you can view and
+    edit it. Pressing the + button will allow to snapshot the current
+    garden or add a new one from scratch.`);
 
   export const SEQUENCES_PANEL =
     trim(`This is the sequences panel. Here you can view and manage all of
-    your sequences. Clicking a sequence will open up the sequence editor panel
-    where you can edit it.`);
+    your sequences. Clicking a sequence will open up the sequence editor
+    panel where you can edit it. Pressing the + button will create a new
+    sequence.`);
 
   export const REGIMENS_PANEL =
     trim(`This is the regimens panel. Here you can view and manage all of
-    your regimens. Clicking a regimen will open up the regimen editor panel
-    where you can edit it.`);
+    your regimens which allow you to bulk schedule sequences based on the
+    age of a plant. Clicking a regimen will open up the regimen editor
+    panel where you can edit it. Pressing the + button will create a new
+    regimen.`);
 
   export const FARM_EVENTS_PANEL =
     trim(`This is the events panel. Here you can view and manage all of
-    your scheduled events. Clicking a event will open up the event details
-    panel where you can edit it.`);
+    your scheduled sequences and regimens. Clicking an event will open up
+    the event details panel where you can edit it. Pressing the + button
+    will create a new event.`);
 
   export const POINTS_PANEL =
     trim(`This is the points panel. Here you can view and manage all of the
-    points in your garden. Clicking a point will open up the point details
-    panel where you can edit it.`);
+    points in your garden, including measured soil height points. Mousing
+    over a point in the list will highlight it in the map and vice versa.
+    Clicking a point will open up the point details panel where you can
+    edit it. Pressing the + button will allow you to add a point or a grid
+    of points to the map.`);
 
   export const WEEDS_PANEL =
     trim(`This is the weeds panel. Here you can view and manage all of the
-    weeds in your garden. Clicking a weed will open up the weed details panel
-    where you can edit it.`);
+    weeds in your garden. Mousing over a weed in the list will highlight
+    it in the map and vice versa. Newly detected weeds will appear in the
+    PENDING category, which you must periodically approve to be listed
+    in the ACTIVE category. Once a weed has been dealt with by FarmBot, it
+    can be moved to the REMOVED category with a Mark As sequence command.
+    Clicking a weed will open up the weed details panel where you can
+    manually edit it.`);
 
   export const CONTROLS_PANEL =
-    trim(`This is the controls panel. Here you can control and view
-    current status information about your FarmBot.`);
+    trim(`This is the controls panel. Here you can control your FarmBot in
+    realtime by pressing the movement arrow buttons, toggling peripherals,
+    and executing pinned sequences. You can also view current status
+    information about your FarmBot including its position and an optional
+    webcam stream.`);
 
   export const PHOTOS_PANEL =
     trim(`This is the photos panel. Here you can view and manage all of the
-    photos of your garden.`);
+    photos of your garden. Additionally, here is where you can calibrate
+    FarmBot's camera and weed detection settings to fine tune the
+    performance for your lighting conditions and soil type.`);
 
   export const TOOLS_PANEL =
     trim(`This is the tools panel. Here you can view and manage all of the
-    tools in your garden. Clicking a tool will open up the tool details panel
-    where you can edit it.`);
+    tools, seed containers, and slots in your garden. Clicking an item will
+    open up the details panel where you can edit it. Pressing the + buttons
+    will allow you to add new items.`);
 
   export const MESSAGES_PANEL =
-    trim(`This is the messages panel. Here you can view and manage setup
-    cards and announcements.`);
+    trim(`This is the message center. Here you can view and manage setup
+    cards and announcements. Dismiss items you are finished with by
+    pressing the X in the top right of a card. Check back often for new
+    feature announcements and important information about your FarmBot.`);
 
   export const HELP_PANEL =
     trim(`This is the help panel. Here you can browse the documentation or
-    get support if you need it.`);
+    get support if you need it. Switch between documentation hubs and the
+    other help resources using the dropdown at the top of the panel.`);
 
   export const SETTINGS_PANEL =
     trim(`This is the settings panel. Here you can view and manage all of
-    your FarmBot and account settings.`);
+    your FarmBot and account settings. Refer to the tooltips and
+    documentation for information about each setting.`);
 
-  export const ADD_PLANTS =
-    trim(`Add plants by pressing the + button and searching for a plant,
-    selecting one, and dragging it into the garden.`);
+  export const CONNECTIVITY_POPUP =
+    trim(`This is the connectivity popup. Click it to view information
+    about the connection between your web browser, your FarmBot, and the
+    FarmBot web app servers. Whenever your FarmBot is online and ready for
+    action, you will see a green checkmark.`);
 
-  export const ADD_TOOLS =
-    trim(`Press the + button to add tools and seed containers.`);
+  export const SYNC_STATUS =
+    trim(`This is the sync status indicator. Whenever you edit a resource
+    in the web app such as a plant, sequence, or event, your FarmBot will
+    download (sync) this information. Syncing may take up to 10 seconds
+    depending on your internet connection, and longer when FarmBot first
+    boots up.`);
 
-  export const ADD_SEED_CONTAINERS =
-    trim(`Press the + button to add seed containers.`);
+  export const ESTOP_BUTTON =
+    trim(`This is the E-STOP button, allowing you to emergency stop any
+    movements and turn off all of FarmBot's peripherals in case something
+    is going wrong. After E-STOPPING FarmBot, you will need to click the
+    same button to UNLOCK the device before resuming execution of any
+    commands.`);
 
-  export const ADD_TOOLS_AND_SLOTS =
-    trim(`Press the + button to add tools and seed containers. Then create
-    slots for them to by pressing the slot + button.`);
+  export const ACCOUNT_MENU =
+    trim(`This is the account menu, providing you with links to other pages
+    in the app, and for logging out.`);
 
-  export const ADD_SEED_CONTAINERS_AND_SLOTS =
-    trim(`Press the + button to add seed containers. Then create
-    slots for them to by pressing the slot + button.`);
+  export const GETTING_STARTED_END =
+    trim(`Thanks for taking the Getting Started Tour! You're now ready to
+    dive into the details of each panel and begin planting your first
+    garden with FarmBot. Check out our other tours for practical
+    step-by-step help, and refer to our in-depth documentation in case you
+    get stuck on anything.`);
 
-  export const ADD_TOOLS_SLOTS =
-    trim(`Add the newly created tools and seed containers to the
-    corresponding slots on FarmBot:
-    press the + button to create a slot.`);
+  // Planting a garden
+  export const PLANTING_A_GARDEN =
+    trim(`In this tour you'll learn how to add plants to your garden,
+    create filter-based groups of those plants, and snapshot your garden
+    layout for future growing seasons. Let's get started!`);
 
-  export const ADD_PERIPHERALS =
-    trim(`Press edit and then the + button to add peripherals.`);
+  export const PLANT_INVENTORY =
+    trim(`This is the plants panel. Once you add plants to your garden,
+    they will be listed here for you to view and manage. To add a plant to
+    your garden, press the + button and then advance the tour.`);
 
-  export const ADD_SEQUENCES =
-    trim(`Press the + button to add a new sequence. You will need
-    to create sequences to mount tools, move to the plant locations you
-    created in the Farm Designer, and seed/water them.`);
+  export const CROP_SEARCH =
+    trim(`This is the crop search panel. Type in a crop name to the search
+    field, for example "Spinach". We recommend trying generic crop names
+    rather than specific varietals. Select the best search result and then
+    advance the tour.`);
 
-  export const ADD_REGIMENS =
-    trim(`Press the + button and add your newly created sequences to a
-    regimen via the scheduler. The regimen should include all actions
-    needed to take care of a plant over its life.`);
+  export const ADD_PLANTS_TO_MAP =
+    trim(`This is the crop details panel. Here you can view factual
+    information about the chosen crop such as the expected spread and
+    height at maturity. Click ADD TO MAP and then advance the tour.`);
 
-  export const ADD_FARM_EVENTS =
-    trim(`Add an event via the + button to schedule a sequence or
-    regimen in the calendar.`);
+  export const CLICK_TO_ADD =
+    trim(`Click anywhere in the map to add an individual plant. If you are
+    on a desktop or laptop computer, you may also drag and drop the crop
+    icon into the map. If you want to make any location adjustments or
+    delete plants, you can do that in a few steps from now. Ready to add a
+    lot of plants at once? Go to the next step of the tour!`);
+
+  export const GRID_AND_ROW_PLANTING =
+    trim(`To add a grid or row of plants, enter values into the grid and
+    row planting fields and click PREVIEW. The previewed plants will show
+    in the map in grayscale. Make adjustments as necessary and when you are
+    happy with the preview, click SAVE. Then advance the tour.`);
+
+  export const FILLED_PLANT_INVENTORY =
+    trim(`All of the plants you added to your garden are listed here in the
+    plants panel. Mousing over a plant will highlight it in the map and
+    vice versa. Go ahead and click a plant and then advance the tour.`);
+
+  export const PLANT_DETAILS =
+    trim(`This is the plant details panel. Here you can view and edit a
+    plant's coordinates and status, or delete it entirely.`);
+
+  export const ADD_MORE_PLANTS =
+    trim(`Go ahead and add more plants to your garden. Once you have added
+    at least two crop types, advance the tour.`);
+
+  export const GARDEN_PRE_GROUPS_PANEL =
+    trim(`Now that you have a garden with a few crops in it. Let's create
+    groups of plants, where each group contains all of the plants of one
+    crop type. Advance the tour when you're ready.`);
+
+  export const GARDEN_GROUPS_PANEL =
+    trim(`This is the groups panel. Once you create some groups, they will
+    be listed here for you to view and manage. To make your first group,
+    press the + button and then advance the tour.`);
+
+  export const GROUP_FILTERS =
+    trim(`This is the edit group panel. To make a group of all plants of
+    one crop type, first Select All Plants. Then select the crop type you
+    would like to include. Check that the correct plants are listed in the
+    Group Members section, then advance the tour.`);
+
+  export const SORT_BY =
+    trim(`When you program your FarmBot to perform an operation on a group
+    of plants, you may want to control the ordering at which FarmBot visits
+    each plant in the group. To do this, select one of the available Sort
+    By methods. Once you have chosen a method, advance the tour.`);
+
+  export const FINISH_CREATING_THE_GROUP =
+    trim(`Give your group a descriptive name such as "All Spinach Plants".
+    When you are finished editing your group press the back button and
+    advance the tour.`);
+
+  export const ADD_MORE_GROUPS =
+    trim(`Go ahead and add more groups. It is best to have a group for
+    every set of plants where you wish to perform the same operation (such
+    as watering) on each member of the group. Once you have added
+    additional groups, you are finished with this tour!`);
+
+  // Setting up slots
+  export const SETTING_UP_SLOTS_TOOLS_PANEL =
+    trim(`This is the tools panel. Here you can add, edit, and view your
+    FarmBot's tools and seed containers as well the slots they are loaded
+    into. Mousing over a slot will highlight it in the map and vice versa.
+    We've already added all of the items included with your FarmBot kit.
+    Your job now is to input the exact location of the slots corresponding
+    to where you installed them in real life. Click the first slot in the
+    list and then advance the tour.`);
+
+  export const EDIT_SLOT_PANEL =
+    trim(`This is the edit slot panel where you will let FarmBot know the
+    exact X, Y, and Z coordinates it must travel to when mounting and
+    dismounting tools or picking up seeds from a seed container. Advance
+    the tour to figure out the coordinates for this first slot.`);
+
+  export const EDIT_SLOT_COORDINATES_SETUP_GENESIS =
+    trim(`In real life, load one of FarmBot's tools (such as the watering
+    nozzle) into a toolbay slot. Then, using the controls popup, instruct
+    FarmBot to find the home position.`);
+
+  export const EDIT_SLOT_COORDINATES_SETUP_EXPRESS =
+    trim(`Insert a luer lock needle into the 3-in-1 tool head and place a
+    seed trough into the gantry-mounted seed trough holder. Then, using the
+    controls popup, instruct FarmBot to find the home position.`);
+
+  export const EDIT_SLOT_COORDINATES_GENESIS =
+    trim(`Using the manual controls, instruct FarmBot to move towards the
+    tool and slot. As you get closer, change the MOVE AMOUNT to a smaller
+    value for finer movements. Your goal is to position the UTM just above
+    the tool and then descend down onto it (mounting it). Once the UTM has
+    mounted the tool, click the blue button next to the slot's X, Y, and Z
+    fields to save FarmBot's current position to the slot.`);
+
+  export const EDIT_SLOT_COORDINATES_EXPRESS =
+    trim(`Using the manual controls, instruct FarmBot to move towards the
+    seed trough. As you get closer, change the MOVE AMOUNT to a smaller
+    value for finer movements. Your goal is to position the needle just
+    above the trough and then descend down into it until the tip of the
+    needle is 3 to 5mm from the bottom of the trough. Click the blue button
+    next to the slot's X, Y, and Z fields to save FarmBot's current
+    position to the slot.`);
+
+  export const SETTING_UP_SLOTS_MINOR_ADJUSTMENTS =
+    trim(`Over time you may need to make minor adjustments to the
+    coordinates of your slots. At any time you can come back to the edit
+    slot panel and manually adjust the X, Y, and Z input fields.`);
+
+  export const LOADING_SLOTS =
+    trim(`Once you have input the coordinate locations for every slot,
+    choose which tool or seed container is loaded into each slot. Remember:
+    the virtual configuration must always match your real-life
+    configuration.`);
+
+  export const SETTING_UP_SLOTS_CUSTOM_TOOLS =
+    trim(`If you ever purchase new tools or make your own, add them to the
+    app by clicking the + tool button. Once the tool has been added, load
+    it into an available slot to begin using it in your sequences!`);
 
   // Monitoring
   export const LOCATION_GRID =
@@ -1293,10 +1455,6 @@ export namespace TourContent {
 
   export const PHOTOS =
     trim(`View photos your FarmBot has taken here.`);
-
-  // Fun stuff
-  export const APP_SETTINGS =
-    trim(`Toggle various settings to customize your web app experience.`);
 }
 
 export namespace SetupWizardContent {
@@ -1552,7 +1710,7 @@ export enum DeviceSetting {
   paramResend = `Resend parameters`,
   exportParameters = `Export parameters`,
   importParameters = `Import parameters`,
-  highlightSettingsModifiedFromDefault = `Highlight settings modified from default`,
+  highlightModifiedSettings = `Highlight modified settings`,
   showAdvancedSettings = `Show advanced settings`,
   resetHardwareParams = `Reset hardware parameters`,
 
@@ -1717,29 +1875,27 @@ export enum Actions {
 
   // Auth
   REPLACE_TOKEN = "REPLACE_TOKEN",
-  LOGIN_ERROR = "LOGIN_ERR",
 
   // Config
   CHANGE_API_PORT = "CHANGE_API_PORT",
   CHANGE_API_HOST = "CHANGE_API_HOST",
   LOGOUT = "LOGOUT",
 
-  // Devices
-  SAVE_DEVICE_OK = "SAVE_DEVICE_OK",
+  // App
+  OPEN_CONTROLS_POPUP = "OPEN_CONTROLS_POPUP",
   TOGGLE_CONTROL_PANEL_OPTION = "TOGGLE_CONTROL_PANEL_OPTION",
   BULK_TOGGLE_CONTROL_PANEL = "BULK_TOGGLE_CONTROL_PANEL",
+
+  // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",
   SETTING_UPDATE_START = "SETTING_UPDATE_START",
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
   STATUS_UPDATE = "STATUS_UPDATE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
-  FETCH_OS_UPDATE_INFO_ERROR = "FETCH_OS_UPDATE_INFO_ERROR",
   FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
   FETCH_MIN_OS_FEATURE_INFO_ERROR = "FETCH_MIN_OS_FEATURE_INFO_ERROR",
   FETCH_OS_RELEASE_NOTES_OK = "FETCH_OS_RELEASE_NOTES_OK",
   FETCH_OS_RELEASE_NOTES_ERROR = "FETCH_OS_RELEASE_NOTES_ERROR",
-  INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
-  DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
 
   // Draggable
@@ -1809,7 +1965,6 @@ export enum Actions {
   SET_FARMWARE_INFO_STATE = "SET_FARMWARE_INFO_STATE",
 
   // App
-  START_TOUR = "START_TOUR",
   SET_TOUR = "SET_TOUR",
   SET_TOUR_STEP = "SET_TOUR_STEP",
   CREATE_TOAST = "CREATE_TOAST",
