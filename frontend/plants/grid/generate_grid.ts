@@ -52,6 +52,7 @@ const createPlantGridMapper =
 const createPointGridMapper = (
   color: string | undefined,
   radius: number | undefined,
+  z: number | undefined,
   pointName: string,
   gridId: string,
 ) =>
@@ -60,7 +61,7 @@ const createPointGridMapper = (
     return {
       name: pointName,
       radius: radius || 25,
-      z: 0,
+      z: z || 0,
       x,
       y,
       pointer_type: "GenericPointer",
@@ -72,7 +73,7 @@ export const initPlantGrid =
   (p: PlantGridInitOption): (GenericPointer | PlantPointer)[] => {
     const mapper: (vec: [number, number]) => GenericPointer | PlantPointer =
       !p.openfarm_slug
-        ? createPointGridMapper(p.color, p.radius, p.itemName, p.gridId)
+        ? createPointGridMapper(p.color, p.radius, p.z, p.itemName, p.gridId)
         : createPlantGridMapper(p.openfarm_slug, p.itemName, p.gridId);
     return vectorGrid(p.grid, p.offsetPacking).map(mapper);
   };

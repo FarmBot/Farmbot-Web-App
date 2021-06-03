@@ -30,13 +30,10 @@ import { BotPosition } from "../devices/interfaces";
 import { round } from "lodash";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
-  const { position } = props.bot.hardware.location_data;
   const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
   return {
     dispatch: props.dispatch,
     drawnPoint: drawnPoint || drawnWeed,
-    deviceX: position.x || 0,
-    deviceY: position.y || 0,
     xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   };
@@ -45,8 +42,6 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
 export interface CreatePointsProps {
   dispatch: Function;
   drawnPoint: DrawnPointPayl | undefined;
-  deviceX: number;
-  deviceY: number;
   xySwap: boolean;
   botPosition: BotPosition;
 }
@@ -247,7 +242,7 @@ export class RawCreatePoints
               name="cx"
               type="number"
               onCommit={this.updateValue("cx")}
-              value={this.attr("cx", this.props.deviceX)} />
+              value={this.attr("cx", this.props.botPosition.x)} />
           </Col>
           <Col xs={4}>
             <label>{t("Y (mm)")}</label>
@@ -255,7 +250,7 @@ export class RawCreatePoints
               name="cy"
               type="number"
               onCommit={this.updateValue("cy")}
-              value={this.attr("cy", this.props.deviceY)} />
+              value={this.attr("cy", this.props.botPosition.y)} />
           </Col>
           <Col xs={4}>
             <label>{t("Z (mm)")}</label>
@@ -263,7 +258,7 @@ export class RawCreatePoints
               name="z"
               type="number"
               onCommit={this.updateValue("z")}
-              value={this.attr("z", this.props.deviceY)} />
+              value={this.attr("z", this.props.botPosition.z)} />
           </Col>
         </Row>
       </ListItem>
@@ -375,7 +370,8 @@ export class RawCreatePoints
             color={point.color}
             radius={point.r}
             dispatch={this.props.dispatch}
-            botPosition={{ x: this.props.deviceX, y: this.props.deviceY, z: 0 }}
+            botPosition={this.props.botPosition}
+            z={this.attr("z", this.props.botPosition.z)}
             close={this.closePanel} />}
         <hr />
         {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
