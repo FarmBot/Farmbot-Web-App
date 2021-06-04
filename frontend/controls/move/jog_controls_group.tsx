@@ -19,6 +19,7 @@ export const JogControlsGroup = (props: JogControlsGroupProps) =>
       botOnline={props.botOnline}
       env={props.env}
       highlightAxis={props.highlightAxis}
+      highlightDirection={props.highlightDirection}
       highlightHome={props.highlightHome}
       firmwareSettings={props.firmwareSettings} />
   </div>;

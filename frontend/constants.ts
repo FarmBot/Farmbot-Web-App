@@ -1481,6 +1481,11 @@ export namespace SetupWizardContent {
     re-flashing the SD card via Etcher. If possible, ensure line-of-sight
     between devices when trying to connect.`);
 
+  export const MAP_ORIENTATION =
+    trim(`Watch the video below showing how to match the virtual FarmBot
+    map to your real life FarmBot. The relevant controls are available
+    below the video for your convenience.`);
+
   export const FIND_MAP_ORIGIN =
     trim(`Find the origin in the map. The origin is at the coordinate (0, 0),
     with arrows pointing along the X and Y axes.`);
@@ -1504,6 +1509,11 @@ export namespace SetupWizardContent {
     trim(`Check motor cable connections. Try again while observing
     electronics box LED activity.`);
 
+  export const CONTROLS_VIDEO =
+    trim(`Watch the video below showing how to match the manual controls to
+    your real life FarmBot. Once you have finished watching, proceed to the
+    next setup steps to test and set the controls for each axis.`);
+
   export const X_HOME_PROMPT =
     trim(`Are FarmBot's gantry wheel plates touching the hardstops at the
     end of the tracks?`);
@@ -1526,6 +1536,51 @@ export namespace SetupWizardContent {
   export const HOME_Z =
     trim(`Press the home button or move FarmBot's z-axis (with the controls
       or manually) until the plate hits the hardstop.`);
+
+  export const MOVEMENTS_VIDEO =
+    trim(`Watch the video below demonstrating movements along the full
+    length of the axes. Once you have finished watching, proceed to the
+    next setup steps to test movements along the full length of each axis.`);
+
+  export const X_AXIS_MOVEMENTS =
+    trim(`Use the manual controls to move FarmBot along the full length of
+    the X-axis in both directions.`);
+
+  export const X_AXIS_MOVEMENTS_QUESTION =
+    trim(`Is the FarmBot able to move reliably along the full length of the
+    X-axis in both directions?`);
+
+  export const Y_AXIS_MOVEMENTS =
+    trim(`Use the manual controls to move FarmBot along the full length of
+    the Y-axis in both directions.`);
+
+  export const Y_AXIS_MOVEMENTS_QUESTION =
+    trim(`Is the FarmBot able to move reliably along the full length of the
+    Y-axis in both directions?`);
+
+  export const Z_AXIS_MOVEMENTS =
+    trim(`Use the manual controls to move FarmBot along the full length of
+    the Z-axis in both directions.`);
+
+  export const Z_AXIS_MOVEMENTS_QUESTION =
+    trim(`Is the FarmBot able to move reliably along the full length of the
+    Z-axis in both directions?`);
+
+  export const MOVEMENT_STALLS =
+    trim(`Inspect the wood raised bed (Express kits) or track extrusions
+    (Genesis kits) for bumps. Use sand paper to smooth out imperfections.`);
+
+  export const MOVEMENT_ALL =
+    trim(`"Break in" the cable carrier, double check belt tension, and
+    double check the eccentric spacers (Genesis kits only).`);
+
+  export const MOVEMENT_SETTINGS_DESCRIPTION =
+    trim(`It seems like it is trying to move too fast, or doesn't have
+    enough torque`);
+
+  export const MOVEMENT_SETTINGS =
+    trim(`Watch the video below and make small adjustments to the motor
+    speed and current settings.`);
 
   export const TOGGLE_PERIPHERAL =
     trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
