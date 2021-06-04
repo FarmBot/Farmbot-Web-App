@@ -50,6 +50,7 @@ export enum Feature {
   lua_step = "lua_step",
   mark_as_step = "mark_as_step",
   named_pins = "named_pins",
+  no_auto_reset = "no_auto_reset",
   no_firmware_logs = "no_firmware_logs",
   none_firmware = "none_firmware",
   ota_update_hour = "ota_update_hour",
