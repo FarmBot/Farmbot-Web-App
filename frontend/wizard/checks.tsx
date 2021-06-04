@@ -65,7 +65,7 @@ import {
   DropdownConfig,
   NumberBoxConfig, NumberBoxConfigProps,
 } from "../photos/camera_calibration/config";
-import { SetupWizardContent, ToolTips } from "../constants";
+import { Actions, SetupWizardContent, ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
 import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
 import { LockableButton } from "../settings/hardware_settings/lockable_button";
@@ -78,6 +78,9 @@ import { AxisDisplayGroup } from "../controls/axis_display_group";
 import {
   ORIGIN_DROPDOWNS, SPECIAL_VALUE_DDI,
 } from "../photos/camera_calibration/constants";
+import { tourPath } from "../help/tours";
+import { TOURS } from "../help/tours/data";
+import { push } from "../history";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -201,12 +204,20 @@ export const lowVoltageProblemStatus = () => {
   return !["red", "yellow"].includes(voltageColor);
 };
 
-export const ControlsCheck = (axis?: Xyz, home?: boolean) =>
+export interface ControlsCheckOptions {
+  axis?: Xyz;
+  home?: boolean;
+  both?: boolean;
+}
+
+export const ControlsCheck = (options?: ControlsCheckOptions) =>
   (props: WizardOutcomeComponentProps) =>
     <div className={"controls-check"}>
       <MoveControls {...mapStateToProps(store.getState())}
         dispatch={props.dispatch}
-        highlightAxis={axis} highlightHome={home} />
+        highlightAxis={options?.axis}
+        highlightDirection={options?.both ? "both" : undefined}
+        highlightHome={options?.home} />
     </div>;
 
 export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
@@ -397,9 +408,21 @@ export const RotateMapToggle = (props: WizardOutcomeComponentProps) =>
   </fieldset>;
 
 export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
-  <OriginSelector
-    dispatch={props.dispatch}
-    getConfigValue={props.getConfigValue} />;
+  <fieldset>
+    <label>
+      {t("Origin")}
+    </label>
+    <OriginSelector
+      dispatch={props.dispatch}
+      getConfigValue={props.getConfigValue} />
+  </fieldset>;
+
+export const MapOrientation = (props: WizardOutcomeComponentProps) =>
+  <div className={"map-orientation"}>
+    {Video(ExternalUrl.Video.mapOrientation)()}
+    <RotateMapToggle {...props} />
+    <SelectMapOrigin {...props} />
+  </div>;
 
 export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   const peripherals = uniq(selectAllPeripherals(props.resources));
@@ -477,6 +500,33 @@ const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) 
     </fieldset>;
   };
 
+export const MotorMinSpeed = (axis: Xyz) => {
+  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
+    x: { key: "movement_min_spd_x", label: t("x-axis minimum speed") },
+    y: { key: "movement_min_spd_y", label: t("y-axis minimum speed") },
+    z: { key: "movement_min_spd_z", label: t("z-axis minimum speed") },
+  };
+  return FirmwareSettingInput(setting[axis]);
+};
+
+export const MotorMaxSpeed = (axis: Xyz) => {
+  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
+    x: { key: "movement_max_spd_x", label: t("x-axis maximum speed") },
+    y: { key: "movement_max_spd_y", label: t("y-axis maximum speed") },
+    z: { key: "movement_max_spd_z", label: t("z-axis maximum speed") },
+  };
+  return FirmwareSettingInput(setting[axis]);
+};
+
+export const MotorAcceleration = (axis: Xyz) => {
+  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
+    x: { key: "movement_steps_acc_dec_x", label: t("x-axis acceleration") },
+    y: { key: "movement_steps_acc_dec_y", label: t("y-axis acceleration") },
+    z: { key: "movement_steps_acc_dec_z", label: t("z-axis acceleration") },
+  };
+  return FirmwareSettingInput(setting[axis]);
+};
+
 export const MotorCurrent = (axis: Xyz) => {
   const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
     x: { key: "movement_motor_current_x", label: t("x-axis motor current") },
@@ -485,6 +535,16 @@ export const MotorCurrent = (axis: Xyz) => {
   };
   return FirmwareSettingInput(setting[axis]);
 };
+
+export const MotorSettings = (axis: Xyz) =>
+  (props: WizardOutcomeComponentProps) =>
+    <div className={"motor-settings"}>
+      {Video(ExternalUrl.Video.motorTuning)()}
+      {MotorMinSpeed(axis)(props)}
+      {MotorMaxSpeed(axis)(props)}
+      {MotorAcceleration(axis)(props)}
+      {MotorCurrent(axis)(props)}
+    </div>;
 
 export const CameraOffset = (props: WizardStepComponentProps) => {
   const helpText = t(ToolTips.CAMERA_OFFSET, {
@@ -566,3 +626,19 @@ export const CameraReplacement = () =>
       </a>
     </p>
   </div>;
+
+export const Video = (url: string) => () =>
+  <iframe src={url} frameBorder={0} width={"100%"} allowFullScreen={true} />;
+
+export const Tour = (tourSlug: string) =>
+  (props: WizardStepComponentProps) =>
+    <button className={"fb-button green"}
+      title={t("Start tour")}
+      onClick={() => {
+        const firstStep = TOURS()[tourSlug].steps[0];
+        props.dispatch({ type: Actions.SET_TOUR, payload: tourSlug });
+        props.dispatch({ type: Actions.SET_TOUR_STEP, payload: firstStep.slug });
+        push(tourPath(firstStep.url, tourSlug, firstStep.slug));
+      }}>
+      {t("Start tour")}
+    </button>;

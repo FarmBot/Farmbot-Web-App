@@ -36,6 +36,7 @@ export const MoveControls = (props: MoveControlsProps) => {
         botOnline={true} // covered by MustBeOnline
         env={props.env}
         highlightAxis={props.highlightAxis}
+        highlightDirection={props.highlightDirection}
         highlightHome={props.highlightHome}
         firmwareSettings={props.firmwareSettings} />
       <BotPositionRows

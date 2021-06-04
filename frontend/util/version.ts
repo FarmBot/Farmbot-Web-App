@@ -109,6 +109,7 @@ export const fallbackData: MinOsFeatureLookup = {
   [Feature.z2_firmware_params_all]: "14.0.0",
   [Feature.calibration_retries]: "14.0.0",
   [Feature.quiet_motors]: "14.0.0",
+  [Feature.no_auto_reset]: "14.1.0",
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
   [Feature.sort_type_optimized]: MinVersionOverride.NEVER,
   [Feature.sort_type_alternating]: MinVersionOverride.NEVER,
