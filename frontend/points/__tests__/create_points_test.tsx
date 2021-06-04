@@ -56,10 +56,8 @@ describe("<CreatePoints />", () => {
   const fakeProps = (): CreatePointsProps => ({
     dispatch: jest.fn(),
     drawnPoint: undefined,
-    deviceY: 1.23,
-    deviceX: 3.21,
+    botPosition: { x: 1.23, y: 3.21, z: 1 },
     xySwap: false,
-    botPosition: { x: undefined, y: undefined, z: undefined },
   });
 
   it("renders for points", () => {

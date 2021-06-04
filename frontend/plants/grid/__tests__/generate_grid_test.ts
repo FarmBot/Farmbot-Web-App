@@ -49,6 +49,7 @@ describe("initPlantGrid", () => {
       itemName: "beets",
       gridId: "123",
       offsetPacking: false,
+      z: 0,
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("Plant");
@@ -63,6 +64,7 @@ describe("initPlantGrid", () => {
       gridId: "123",
       offsetPacking: false,
       radius: 100,
+      z: 0,
       color: "green",
     });
     expect(result.length).toEqual(expectedGrid.length);
@@ -77,6 +79,7 @@ describe("initPlantGrid", () => {
       itemName: "grid point",
       gridId: "123",
       offsetPacking: false,
+      z: 0,
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("GenericPointer");
