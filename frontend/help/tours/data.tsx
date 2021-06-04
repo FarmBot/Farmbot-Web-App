@@ -126,7 +126,10 @@ export const TOURS = (
         title: t("Connectivity"),
         content: TourContent.CONNECTIVITY_POPUP,
         beacons: undefined,
-        activeBeacons: [{ class: "connectivity-button", type: "hard" }],
+        activeBeacons: [
+          { class: "connectivity-button", type: "hard" },
+          { class: "connectivity-icon", type: "hard" },
+        ],
         url: undefined,
       },
       {

@@ -16,17 +16,16 @@ import { PlantGridProps } from "../interfaces";
 import { init } from "../../../api/crud";
 import { Actions } from "../../../constants";
 
-describe("PlantGrid", () => {
-  function fakeProps(): PlantGridProps {
-    return {
-      xy_swap: true,
-      openfarm_slug: "beets",
-      itemName: "Beets",
-      dispatch: jest.fn(() => Promise.resolve({})),
-      botPosition: { x: undefined, y: undefined, z: undefined },
-      spread: undefined,
-    };
-  }
+describe("<PlantGrid />", () => {
+  const fakeProps = (): PlantGridProps => ({
+    xy_swap: true,
+    openfarm_slug: "beets",
+    itemName: "Beets",
+    dispatch: jest.fn(() => Promise.resolve({})),
+    botPosition: { x: undefined, y: undefined, z: undefined },
+    spread: undefined,
+    z: 0,
+  });
 
   it("renders", () => {
     const p = fakeProps();

@@ -98,7 +98,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           portalClassName={"connectivity-popover-portal"}
           popoverClassName="connectivity-popover">
           {window.innerWidth <= 450
-            ? <DiagnosisSaucer {...data.flags} className={"nav"} />
+            ? <DiagnosisSaucer {...data.flags}
+              className={"nav connectivity-icon"} />
             : <div className={"connectivity-button"}>
               <p>{t("Connectivity")}</p>
               <DiagnosisSaucer {...data.flags} className={"nav"} />
