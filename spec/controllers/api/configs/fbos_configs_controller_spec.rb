@@ -49,15 +49,25 @@ describe Api::FbosConfigsController do
 
     it "handles update requests" do
       sign_in user
-      body = { disable_factory_reset: false }
+      body = { firmware_path: "null" }
       body.to_a.map { |key, val| expect(device.fbos_config.send(key)).not_to eq(val) }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       device.reload
-      body.to_a.map do |key, val|
+      body.except(:disable_factory_reset).to_a.map do |key, val|
         expect(device.fbos_config.send(key)).to eq(val)
         expect(json[key]).to eq(val)
       end
+    end
+
+    it "deprecates disable_factory_reset" do
+      sign_in user
+      body = { disable_factory_reset: false }
+      body.to_a.map { |key, val| expect(device.fbos_config.send(key)).not_to eq(val) }
+      put :update, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      assert json.fetch(:disable_factory_reset)
+      refute device.reload.fbos_config.disable_factory_reset
     end
 
     it "does not enforce row locking if there is only one column change" do

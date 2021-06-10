@@ -8,6 +8,8 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { getModifiedClassName, modifiedFromDefault } from "./default_values";
 import { ConfigurationName } from "farmbot";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { Feature } from "../../devices/interfaces";
 
 export function FactoryResetRows(props: FactoryResetRowsProps) {
   const { dispatch, sourceFbosConfig, botOnline, showAdvanced } = props;
@@ -55,49 +57,51 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
         </Col>
       </Row>
     </Highlight>
-    <Highlight settingName={DeviceSetting.autoSoftReset}
-      hidden={!(showAdvanced ||
-        modifiedFromDefault("disable_factory_reset", disableFactoryReset.value))}
-      className={"advanced"}>
-      <Row>
-        <Col xs={9}>
-          <label>
-            {t(DeviceSetting.autoSoftReset)}
-          </label>
-          <Help text={Content.AUTO_SOFT_RESET} />
-        </Col>
-        <Col xs={3}>
-          <ToggleButton
-            toggleValue={!disableFactoryReset.value}
-            dim={!disableFactoryReset.consistent}
-            className={getModifiedClassName("disable_factory_reset",
-              !!disableFactoryReset.value)}
-            toggleAction={() => {
-              dispatch(updateConfig({
-                disable_factory_reset: !disableFactoryReset.value
-              }));
-            }} />
-        </Col>
-      </Row>
-    </Highlight>
-    <Highlight settingName={DeviceSetting.connectionAttemptPeriod}
-      hidden={!(showAdvanced || isModified("network_not_found_timer"))}
-      className={"advanced"}>
-      <Row>
-        <Col xs={12}>
-          <label style={maybeDisableTimer}>
-            {t(DeviceSetting.connectionAttemptPeriod)}
-          </label>
-          <Help text={Content.AUTO_SOFT_RESET_PERIOD} />
-        </Col>
-        <Col xs={12}>
-          <BotConfigInputBox
-            setting="network_not_found_timer"
-            dispatch={dispatch}
-            disabled={!!disableFactoryReset.value}
-            sourceFbosConfig={sourceFbosConfig} />
-        </Col>
-      </Row>
-    </Highlight>
+    {!shouldDisplayFeature(Feature.no_auto_reset) &&
+      <Highlight settingName={DeviceSetting.autoSoftReset}
+        hidden={!(showAdvanced ||
+          modifiedFromDefault("disable_factory_reset", disableFactoryReset.value))}
+        className={"advanced"}>
+        <Row>
+          <Col xs={9}>
+            <label>
+              {t(DeviceSetting.autoSoftReset)}
+            </label>
+            <Help text={Content.AUTO_SOFT_RESET} />
+          </Col>
+          <Col xs={3}>
+            <ToggleButton
+              toggleValue={!disableFactoryReset.value}
+              dim={!disableFactoryReset.consistent}
+              className={getModifiedClassName("disable_factory_reset",
+                !!disableFactoryReset.value)}
+              toggleAction={() => {
+                dispatch(updateConfig({
+                  disable_factory_reset: !disableFactoryReset.value
+                }));
+              }} />
+          </Col>
+        </Row>
+      </Highlight>}
+    {!shouldDisplayFeature(Feature.no_auto_reset) &&
+      <Highlight settingName={DeviceSetting.connectionAttemptPeriod}
+        hidden={!(showAdvanced || isModified("network_not_found_timer"))}
+        className={"advanced"}>
+        <Row>
+          <Col xs={12}>
+            <label style={maybeDisableTimer}>
+              {t(DeviceSetting.connectionAttemptPeriod)}
+            </label>
+            <Help text={Content.AUTO_SOFT_RESET_PERIOD} />
+          </Col>
+          <Col xs={12}>
+            <BotConfigInputBox
+              setting="network_not_found_timer"
+              dispatch={dispatch}
+              disabled={!!disableFactoryReset.value}
+              sourceFbosConfig={sourceFbosConfig} />
+          </Col>
+        </Row>
+      </Highlight>}
   </div>;
 }

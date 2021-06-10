@@ -57,7 +57,12 @@ import {
   InvertJogButton,
   InvertMotor,
   lowVoltageProblemStatus,
+  MapOrientation,
+  MotorAcceleration,
   MotorCurrent,
+  MotorMaxSpeed,
+  MotorMinSpeed,
+  MotorSettings,
   PeripheralsCheck,
   RotateMapToggle,
   SelectMapOrigin,
@@ -67,6 +72,8 @@ import {
   SwapJogButton,
   SwitchCameraCalibrationMethod,
   ToolCheck,
+  Tour,
+  Video,
 } from "../checks";
 import { WizardStepComponentProps } from "../interfaces";
 import {
@@ -82,6 +89,8 @@ import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
+import { Actions } from "../../constants";
+import { tourPath } from "../../help/tours";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -168,15 +177,27 @@ describe("<FlashFirmware />", () => {
 
 describe("<ControlsCheck />", () => {
   it("returns controls", () => {
-    const Component = ControlsCheck("x");
+    const Component = ControlsCheck();
     const wrapper = mount(<Component {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
   });
 
-  it("returns controls with home highlighted", () => {
-    const Component = ControlsCheck(undefined, true);
+  it("returns highlighted controls", () => {
+    const Component = ControlsCheck({ axis: "x" });
     const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
+    expect(wrapper.html()).toContain("solid yellow");
+  });
+
+  it("returns both controls directions highlighted", () => {
+    const Component = ControlsCheck({ axis: "x", both: true });
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.html()).toContain("solid yellow");
+  });
+
+  it("returns controls with home highlighted", () => {
+    const Component = ControlsCheck({ home: true });
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.html()).toContain("solid yellow");
   });
 });
 
@@ -462,6 +483,13 @@ describe("<SelectMapOrigin />", () => {
   });
 });
 
+describe("<MapOrientation />", () => {
+  it("renders map settings", () => {
+    const wrapper = mount(<MapOrientation {...fakeProps()} />);
+    expect(wrapper.html()).toContain("map-orientation");
+  });
+});
+
 describe("<PeripheralsCheck />", () => {
   it("renders peripherals", () => {
     const p = fakeProps();
@@ -524,6 +552,30 @@ describe("<CurrentPosition />", () => {
   });
 });
 
+describe("<MotorMinSpeed />", () => {
+  it("renders min speed", () => {
+    const Component = MotorMinSpeed("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("x-axis min");
+  });
+});
+
+describe("<MotorMaxSpeed />", () => {
+  it("renders min speed", () => {
+    const Component = MotorMaxSpeed("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("x-axis max");
+  });
+});
+
+describe("<MotorAcceleration />", () => {
+  it("renders acceleration", () => {
+    const Component = MotorAcceleration("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("x-axis acceleration");
+  });
+});
+
 describe("<MotorCurrent />", () => {
   const state = fakeState();
   const config = fakeFirmwareConfig();
@@ -554,6 +606,16 @@ describe("<MotorCurrent />", () => {
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       movement_motor_current_x: "100"
     });
+  });
+});
+
+describe("<MotorSettings />", () => {
+  it("renders all motor settings", () => {
+    const Component = MotorSettings("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("x-axis min");
+    expect(wrapper.text().toLowerCase()).toContain("x-axis max");
+    expect(wrapper.text().toLowerCase()).toContain("x-axis motor");
   });
 });
 
@@ -615,5 +677,26 @@ describe("<CameraReplacement />", () => {
   it("renders camera replacement text and link", () => {
     const wrapper = mount(<CameraReplacement />);
     expect(wrapper.text().toLowerCase()).toContain("replacement");
+  });
+});
+
+describe("<Video />", () => {
+  it("renders video", () => {
+    const Component = Video("url");
+    const wrapper = mount(<Component />);
+    expect(wrapper.html()).toContain("url");
+  });
+});
+
+describe("<Tour />", () => {
+  it("starts tour", () => {
+    const p = fakeProps();
+    const Component = Tour("gettingStarted");
+    const wrapper = mount(<Component {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_TOUR, payload: "gettingStarted",
+    });
+    expect(push).toHaveBeenCalledWith(tourPath("", "gettingStarted", "intro"));
   });
 });

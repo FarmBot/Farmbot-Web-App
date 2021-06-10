@@ -33,11 +33,16 @@ import {
   CurrentPosition,
   EthernetPortImage,
   CameraImageOrigin,
+  MapOrientation,
+  MotorSettings,
+  Video,
+  Tour,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { ExternalUrl } from "../external_urls";
 
 export const setupProgressString = (
   results: TaggedWizardStepResult[],
@@ -55,9 +60,11 @@ export enum WizardSectionSlug {
   motors = "motors",
   controls = "controls",
   home = "home",
+  movements = "movements",
   peripherals = "peripherals",
   camera = "camera",
   tools = "tools",
+  tours = "tours",
 }
 
 export const WIZARD_TOC =
@@ -68,9 +75,11 @@ export const WIZARD_TOC =
       [WizardSectionSlug.map]: { title: t("MAP"), steps: [] },
       [WizardSectionSlug.motors]: { title: t("MOTORS"), steps: [] },
       [WizardSectionSlug.controls]: { title: t("MANUAL CONTROLS"), steps: [] },
-      [WizardSectionSlug.home]: { title: t("HOME"), steps: [] },
+      [WizardSectionSlug.home]: { title: t("HOME POSITION"), steps: [] },
+      [WizardSectionSlug.movements]: { title: t("MOVEMENTS"), steps: [] },
       [WizardSectionSlug.peripherals]: { title: t("PERIPHERALS"), steps: [] },
       [WizardSectionSlug.camera]: { title: t("CAMERA"), steps: [] },
+      [WizardSectionSlug.tours]: { title: t("TOURS"), steps: [] },
     };
     if (hasUTM(firmwareHardware)) {
       toc[WizardSectionSlug.tools] = { title: t("UTM and TOOLS"), steps: [] };
@@ -82,19 +91,19 @@ export enum WizardStepSlug {
   intro = "intro",
   orderInfo = "orderInfo",
   model = "model",
-  connection = "connection",
   sdCard = "sdCard",
-  ethernetOption = "ethernetOption",
   assembled = "assembled",
+  ethernetOption = "ethernetOption",
   power = "power",
   configuratorNetwork = "configuratorNetwork",
   configuratorBrowser = "configuratorBrowser",
   configuratorSteps = "configuratorSteps",
-  xySwap = "xySwap",
-  mapOrigin = "mapOrigin",
+  connection = "connection",
+  mapOrientation = "mapOrientation",
   xMotor = "xMotor",
   yMotor = "yMotor",
   zMotor = "zMotor",
+  controlsVideo = "controlsVideo",
   xAxis = "xAxis",
   yAxis = "yAxis",
   zAxis = "zAxis",
@@ -104,6 +113,10 @@ export enum WizardStepSlug {
   yAxisSoftwareHome = "yAxisSoftwareHome",
   zAxisHardwareHome = "zAxisHardwareHome",
   zAxisSoftwareHome = "zAxisSoftwareHome",
+  movementsVideo = "movementsVideo",
+  xAxisMovement = "xAxisMovement",
+  yAxisMovement = "yAxisMovement",
+  zAxisMovement = "zAxisMovement",
   valve = "valve",
   vacuum = "vacuum",
   lights = "lights",
@@ -119,6 +132,9 @@ export enum WizardStepSlug {
   weeder = "weeder",
   soilSensor = "soilSensor",
   soilSensorValue = "soilSensorValue",
+  appTour = "appTour",
+  gardenTour = "gardenTour",
+  toolsTour = "toolsTour",
 }
 
 export const WIZARD_STEPS = (
@@ -329,10 +345,11 @@ export const WIZARD_STEPS = (
     },
     {
       section: WizardSectionSlug.map,
-      slug: WizardStepSlug.xySwap,
-      title: t("Rotate Map"),
-      content: t("Observe the orientation of the virtual FarmBot in the map."),
-      question: t("Does the map rotation match FarmBot as you normally view it?"),
+      slug: WizardStepSlug.mapOrientation,
+      title: t("Map Orientation"),
+      content: t(SetupWizardContent.MAP_ORIENTATION),
+      component: MapOrientation,
+      question: t("Does the virtual FarmBot match your real life FarmBot?"),
       outcomes: [
         {
           slug: "rotated",
@@ -340,15 +357,6 @@ export const WIZARD_STEPS = (
           tips: "",
           component: RotateMapToggle,
         },
-      ],
-    },
-    {
-      section: WizardSectionSlug.map,
-      slug: WizardStepSlug.mapOrigin,
-      title: t("Map Origin"),
-      content: t(SetupWizardContent.FIND_MAP_ORIGIN),
-      question: t("Does the map origin match your real FarmBot's origin?"),
-      outcomes: [
         {
           slug: "incorrectOrigin",
           description: t("The map origin is in a different corner"),
@@ -363,7 +371,7 @@ export const WIZARD_STEPS = (
       title: t("X-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(xySwap),
-      component: ControlsCheck("x"),
+      component: ControlsCheck({ axis: "x" }),
       question: t("Did FarmBot's x-axis move?"),
       outcomes: [
         {
@@ -396,7 +404,7 @@ export const WIZARD_STEPS = (
       title: t("Y-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(!xySwap),
-      component: ControlsCheck("y"),
+      component: ControlsCheck({ axis: "y" }),
       question: t("Did FarmBot's y-axis move?"),
       outcomes: [
         {
@@ -428,7 +436,7 @@ export const WIZARD_STEPS = (
       title: t("Z-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: t("Press the down arrow."),
-      component: ControlsCheck("z"),
+      component: ControlsCheck({ axis: "z" }),
       question: t("Did FarmBot's z-axis move?"),
       outcomes: [
         {
@@ -456,11 +464,20 @@ export const WIZARD_STEPS = (
     },
     {
       section: WizardSectionSlug.controls,
+      slug: WizardStepSlug.controlsVideo,
+      title: t("Manual controls video"),
+      content: t(SetupWizardContent.CONTROLS_VIDEO),
+      component: Video(ExternalUrl.Video.manualControls),
+      question: t("Did you watch the video?"),
+      outcomes: [],
+    },
+    {
+      section: WizardSectionSlug.controls,
       slug: WizardStepSlug.xAxis,
       title: t("X-axis"),
       prerequisites: [botOnlineReq],
       content: positiveMovementInstruction(xySwap),
-      component: ControlsCheck("x"),
+      component: ControlsCheck({ axis: "x" }),
       question: positiveMovementQuestion(xySwap),
       outcomes: [
         {
@@ -495,7 +512,7 @@ export const WIZARD_STEPS = (
       title: t("Y-axis"),
       prerequisites: [botOnlineReq],
       content: positiveMovementInstruction(!xySwap),
-      component: ControlsCheck("y"),
+      component: ControlsCheck({ axis: "y" }),
       question: positiveMovementQuestion(!xySwap),
       outcomes: [
         {
@@ -530,7 +547,7 @@ export const WIZARD_STEPS = (
       title: t("Z-axis"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.PRESS_DOWN_JOG_BUTTON),
-      component: ControlsCheck("z"),
+      component: ControlsCheck({ axis: "z" }),
       question: t("Did FarmBot **move down**?"),
       outcomes: [
         {
@@ -570,7 +587,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("They are somewhere else"),
           tips: t(SetupWizardContent.HOME_X),
-          component: ControlsCheck(undefined, true),
+          component: ControlsCheck({ home: true }),
         },
       ],
     },
@@ -602,7 +619,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("It is somewhere else"),
           tips: t(SetupWizardContent.HOME_Y),
-          component: ControlsCheck(undefined, true),
+          component: ControlsCheck({ home: true }),
         },
       ],
     },
@@ -634,7 +651,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("It is somewhere else"),
           tips: t(SetupWizardContent.HOME_Z),
-          component: ControlsCheck(undefined, true),
+          component: ControlsCheck({ home: true }),
         },
       ],
     },
@@ -652,6 +669,93 @@ export const WIZARD_STEPS = (
           description: t("It is some other value"),
           tips: "",
           component: SetHome("z"),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.movements,
+      slug: WizardStepSlug.movementsVideo,
+      title: t("Movements video"),
+      content: t(SetupWizardContent.MOVEMENTS_VIDEO),
+      component: Video(ExternalUrl.Video.movements),
+      question: t("Did you watch the video?"),
+      outcomes: [],
+    },
+    {
+      section: WizardSectionSlug.movements,
+      slug: WizardStepSlug.xAxisMovement,
+      title: t("X-axis movements"),
+      content: t(SetupWizardContent.X_AXIS_MOVEMENTS),
+      component: ControlsCheck({ axis: "x", both: true }),
+      question: t(SetupWizardContent.X_AXIS_MOVEMENTS_QUESTION),
+      outcomes: [
+        {
+          slug: "stalls",
+          description: t("It stalls or has trouble at certain locations"),
+          tips: t(SetupWizardContent.MOVEMENT_STALLS),
+        },
+        {
+          slug: "struggles",
+          description: t("It struggles to move along the whole length of the axis"),
+          tips: t(SetupWizardContent.MOVEMENT_ALL),
+        },
+        {
+          slug: "untuned",
+          description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
+          tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
+          component: MotorSettings("x"),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.movements,
+      slug: WizardStepSlug.yAxisMovement,
+      title: t("Y-axis movements"),
+      content: t(SetupWizardContent.Y_AXIS_MOVEMENTS),
+      component: ControlsCheck({ axis: "y", both: true }),
+      question: t(SetupWizardContent.Y_AXIS_MOVEMENTS_QUESTION),
+      outcomes: [
+        {
+          slug: "stalls",
+          description: t("It stalls or has trouble at certain locations"),
+          tips: t(SetupWizardContent.MOVEMENT_STALLS),
+        },
+        {
+          slug: "struggles",
+          description: t("It struggles to move along the whole length of the axis"),
+          tips: t(SetupWizardContent.MOVEMENT_ALL),
+        },
+        {
+          slug: "untuned",
+          description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
+          tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
+          component: MotorSettings("y"),
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.movements,
+      slug: WizardStepSlug.zAxisMovement,
+      title: t("Z-axis movements"),
+      content: t(SetupWizardContent.Z_AXIS_MOVEMENTS),
+      component: ControlsCheck({ axis: "z", both: true }),
+      question: t(SetupWizardContent.Z_AXIS_MOVEMENTS_QUESTION),
+      outcomes: [
+        {
+          slug: "stalls",
+          description: t("It stalls or has trouble at certain locations"),
+          tips: t(SetupWizardContent.MOVEMENT_STALLS),
+        },
+        {
+          slug: "struggles",
+          description: t("It struggles to move along the whole length of the axis"),
+          tips: t(SetupWizardContent.MOVEMENT_ALL),
+        },
+        {
+          slug: "untuned",
+          description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
+          tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
+          component: MotorSettings("z"),
         },
       ],
     },
@@ -986,6 +1090,33 @@ export const WIZARD_STEPS = (
         ],
       }]
       : []),
+    {
+      section: WizardSectionSlug.tours,
+      slug: WizardStepSlug.appTour,
+      title: t("Getting started"),
+      content: t("Click the button below to start the tour"),
+      component: Tour("gettingStarted"),
+      question: t("Did you finish the tour?"),
+      outcomes: [],
+    },
+    {
+      section: WizardSectionSlug.tours,
+      slug: WizardStepSlug.gardenTour,
+      title: t("Planting a garden"),
+      content: t("Click the button below to start the tour"),
+      component: Tour("garden"),
+      question: t("Did you finish the tour?"),
+      outcomes: [],
+    },
+    {
+      section: WizardSectionSlug.tours,
+      slug: WizardStepSlug.toolsTour,
+      title: t("Setting up slots"),
+      content: t("Click the button below to start the tour"),
+      component: Tour("tools"),
+      question: t("Did you finish the tour?"),
+      outcomes: [],
+    },
   ];
 };
 
