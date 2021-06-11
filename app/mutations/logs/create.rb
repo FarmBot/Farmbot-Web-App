@@ -24,6 +24,7 @@ module Logs
       integer :verbosity, default: 1
       integer :major_version
       integer :minor_version
+      integer :patch_version
       integer :created_at
     end
 

@@ -8,13 +8,28 @@ import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
 import { Markdown } from "../../ui";
+import { semverCompare, SemverResult } from "../../util";
+import { Log } from "farmbot/dist/resources/api_resources";
 
 interface LogsRowProps {
   tlog: TaggedLog;
   dispatch: Function;
   markdown: boolean;
   timeSettings: TimeSettings;
+  fbosVersion: string | undefined;
 }
+
+export const logVersionMatch =
+  (log: TaggedLog, fbosVersion: string | undefined) => {
+    const { major_version, minor_version } = log.body;
+    const logVersionString = [
+      major_version,
+      minor_version,
+      log.body["patch_version" as keyof Log],
+    ].join(".");
+    return semverCompare(logVersionString, (fbosVersion || "").split("-")[0])
+      == SemverResult.EQUAL;
+  };
 
 export const xyzTableEntry =
   (x: number | undefined, y: number | undefined, z: number | undefined) =>
@@ -39,7 +54,8 @@ const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
   </div>;
 
 /** A log is displayed in a single row of the logs table. */
-const LogsRow = ({ tlog, timeSettings, dispatch, markdown }: LogsRowProps) => {
+const LogsRow = (props: LogsRowProps) => {
+  const { tlog, timeSettings, dispatch, markdown } = props;
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message, id } = tlog.body;
   const time = formatLogTime(created_at || NaN, timeSettings);
@@ -57,6 +73,10 @@ const LogsRow = ({ tlog, timeSettings, dispatch, markdown }: LogsRowProps) => {
     </td>
     <td>
       {time}
+      {logVersionMatch(tlog, props.fbosVersion) &&
+        <i className={"fa fa-check"}
+          style={{ color: "gray", marginLeft: "0.5rem" }}
+          title={t("Log sent by current version of FarmBot OS.")} />}
     </td>
   </tr>;
 };
@@ -88,6 +108,7 @@ export const LogsTable = (props: LogsTableProps) => {
               tlog={log}
               dispatch={props.dispatch}
               markdown={props.state.markdown}
+              fbosVersion={props.fbosVersion}
               timeSettings={props.timeSettings} />)}
       </tbody>
     </table>

@@ -2590,6 +2590,14 @@
         width: 100%;
         padding: 0;
       }
+      &.no-background {
+        border: none;
+        width: max-content;
+        padding: 0;
+      }
+      &.full-width {
+        width: 100%;
+      }
       &:empty {
         display: none;
       }
@@ -2620,6 +2628,12 @@
       .flash-firmware {
         display: block;
         float: none;
+      }
+      .tour-start {
+        display: block;
+        margin: auto;
+        float: none;
+        padding: 1rem;
       }
     }
     .markdown {
@@ -2679,6 +2693,11 @@
       .farmbot-origin {
         margin-top: 1rem;
       }
+      .motor-settings {
+        .row {
+          margin-top: 1rem;
+        }
+      }
       .dropdown-camera-calibration-config,
       .camera-config-number-box {
         .bp3-popover-wrapper {
@@ -2697,6 +2716,9 @@
         &:hover {
           font-size: 1rem;
         }
+      }
+      iframe {
+        margin-top: 1rem;
       }
     }
     .setup-complete {

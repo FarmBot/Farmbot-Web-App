@@ -1570,9 +1570,13 @@ export namespace SetupWizardContent {
     trim(`Inspect the wood raised bed (Express kits) or track extrusions
     (Genesis kits) for bumps. Use sand paper to smooth out imperfections.`);
 
-  export const MOVEMENT_ALL =
+  export const MOVEMENT_ALL_X =
     trim(`"Break in" the cable carrier, double check belt tension, and
     double check the eccentric spacers (Genesis kits only).`);
+
+  export const MOVEMENT_ALL_Y_AND_Z =
+    trim(`"Break in" the cable carrier, double check belt tension, and
+    double check the eccentric spacers.`);
 
   export const MOVEMENT_SETTINGS_DESCRIPTION =
     trim(`It seems like it is trying to move too fast, or doesn't have
@@ -1630,9 +1634,15 @@ export namespace SetupWizardContent {
     replacement`);
 
   export const CALIBRATION_OBJECT_DETECTION =
-    trim(`Make sure the calibration card is fully and clearly visible to
-    the camera. The card must not be warped, bent, or obscured in the above
-    image.`);
+    trim(`Make sure the calibration card has been placed flat on the soil
+    surface and is fully and clearly visible to the camera.
+    The card must not be warped, bent, overexposed, or obscured in the
+    above image. Lighting may be improved by shading the card from direct
+    sunlight, trying a different time of day, or using FarmBot's lights in
+    the evening or at night. There must be good contrast between the white
+    dots and black calibration card background for calibration to
+    complete successfully. Trying calibration in a different location with
+    fewer distractions in the area surrounding the card may also help.`);
 
   export const RED_DOTS =
     trim(`Try an alternate calibration method. Two red objects spaced 100mm
@@ -1645,7 +1655,11 @@ export namespace SetupWizardContent {
 
   export const CHECK_TOOL_CONNECTIONS =
     trim(`Check the UTM to tool electrical connections. Ensure pin jumpers
-    are installed across the Farmduino UTM pins.`);
+    are installed across the Farmduino UTM pins. Brush the top of the tool
+    electrical connection screws and UTM pogo pins with a cloth to clean
+    the surface and ensure good electrical conductivity. If a connection
+    still cannot be made, try loosening and tightening the tool electrical
+    connection M3 screws.`);
 
   export const READ_SOIL_SENSOR =
     trim(`Attach the soil sensor tool to the UTM and press the READ SENSOR
@@ -1680,8 +1694,6 @@ export enum DeviceSetting {
   shutdownFarmbot = `Shutdown Farmbot`,
   softReset = `Soft Reset`,
   hardReset = `Hard Reset`,
-  autoSoftReset = `Automatic Soft Reset`,
-  connectionAttemptPeriod = `Connection Attempt Period`,
   changeOwnership = `Change Ownership`,
 
   // Axes
