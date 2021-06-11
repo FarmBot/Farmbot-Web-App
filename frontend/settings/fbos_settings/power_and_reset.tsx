@@ -10,7 +10,7 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 
 export function PowerAndReset(props: PowerAndResetProps) {
-  const { dispatch, sourceFbosConfig, botOnline, showAdvanced } = props;
+  const { dispatch, botOnline } = props;
   const { power_and_reset } = props.controlPanelState;
   return <Highlight className={"section"}
     settingName={DeviceSetting.powerAndReset}>
@@ -34,11 +34,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      <FactoryResetRows
-        dispatch={dispatch}
-        showAdvanced={showAdvanced}
-        sourceFbosConfig={sourceFbosConfig}
-        botOnline={botOnline} />
+      <FactoryResetRows botOnline={botOnline} />
     </Collapse>
   </Highlight>;
 }

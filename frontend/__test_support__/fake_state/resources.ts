@@ -277,13 +277,13 @@ export function fakeFbosConfig(): TaggedFbosConfig {
     device_id: idCounter++,
     created_at: "",
     updated_at: "",
-    disable_factory_reset: false,
+    disable_factory_reset: false, // to be removed
     firmware_input_log: false,
     firmware_output_log: false,
     sequence_body_log: false,
     sequence_complete_log: false,
     sequence_init_log: false,
-    network_not_found_timer: 0,
+    network_not_found_timer: 0, // to be removed
     firmware_hardware: "arduino",
     os_auto_update: false,
     arduino_debug_messages: false

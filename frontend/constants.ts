@@ -1694,8 +1694,6 @@ export enum DeviceSetting {
   shutdownFarmbot = `Shutdown Farmbot`,
   softReset = `Soft Reset`,
   hardReset = `Hard Reset`,
-  autoSoftReset = `Automatic Soft Reset`,
-  connectionAttemptPeriod = `Connection Attempt Period`,
   changeOwnership = `Change Ownership`,
 
   // Axes
