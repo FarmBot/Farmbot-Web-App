@@ -65,10 +65,10 @@ export namespace ExternalUrl {
     export const desktop =
       `${SHOPIFY_CDN}/Farm_Designer_Loop.mp4?9552037556691879018`;
     export const mobile = `${SHOPIFY_CDN}/Controls.png?9668345515035078097`;
-    export const match = `${YOUTUBE}koIVQTDEgXM`;
+    const match = `${YOUTUBE}koIVQTDEgXM`;
     export const mapOrientation = `${match}?end=64`;
     export const manualControls = `${match}?start=64`;
-    export const motorMovement = `${YOUTUBE}HGuoD23s30A`;
+    const motorMovement = `${YOUTUBE}HGuoD23s30A`;
     export const movements = `${motorMovement}?end=107`;
     export const motorTuning = `${motorMovement}?start=107`;
   }

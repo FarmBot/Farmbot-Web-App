@@ -99,6 +99,7 @@ export function fakeLog(): TaggedLog {
     verbosity: 1,
     major_version: 5,
     minor_version: 1,
+    // patch_version: 1,
     channels: ["toast"],
     created_at: 1501703421
   });

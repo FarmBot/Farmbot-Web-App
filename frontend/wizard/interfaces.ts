@@ -20,6 +20,7 @@ export interface WizardStepOutcome {
   hidden?: boolean;
   detectedProblems?: WizardOutcomeDetectedProblem[];
   component?: React.ComponentType<WizardOutcomeComponentProps>;
+  video?: string;
   goToStep?: GoToStep;
 }
 
@@ -49,14 +50,21 @@ export interface WizardStepComponentProps extends WizardOutcomeComponentProps {
   setStepSuccess(success: boolean, outcome?: string): () => void;
 }
 
+interface ComponentOptions {
+  border?: boolean;
+  fullWidth?: boolean;
+  background?: boolean;
+}
+
 export interface WizardStep {
   section: WizardSectionSlug;
   slug: WizardStepSlug;
   title: string;
   prerequisites?: WizardStepPrerequisite[];
   content: string;
+  video?: string;
   component?: React.ComponentType<WizardStepComponentProps>;
-  componentBorder?: boolean;
+  componentOptions?: ComponentOptions;
   question: string;
   outcomes: WizardStepOutcome[];
 }

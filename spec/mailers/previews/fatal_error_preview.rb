@@ -14,7 +14,8 @@ class FatalErrorPreview < ActionMailer::Preview
           z:             0,
           verbosity:     0,
           major_version: 0,
-          minor_version: 0
+          minor_version: 0,
+          patch_version: 0
         }
       })
     log.save!

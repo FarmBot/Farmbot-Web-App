@@ -73,7 +73,6 @@ import {
   SwitchCameraCalibrationMethod,
   ToolCheck,
   Tour,
-  Video,
 } from "../checks";
 import { WizardStepComponentProps } from "../interfaces";
 import {
@@ -677,14 +676,6 @@ describe("<CameraReplacement />", () => {
   it("renders camera replacement text and link", () => {
     const wrapper = mount(<CameraReplacement />);
     expect(wrapper.text().toLowerCase()).toContain("replacement");
-  });
-});
-
-describe("<Video />", () => {
-  it("renders video", () => {
-    const Component = Video("url");
-    const wrapper = mount(<Component />);
-    expect(wrapper.html()).toContain("url");
   });
 });
 

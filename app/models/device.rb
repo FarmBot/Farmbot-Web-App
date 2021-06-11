@@ -131,6 +131,7 @@ class Device < ApplicationRecord
                     channels: channels,
                     major_version: 99,
                     minor_version: 99,
+                    patch_version: 99,
                     meta: {},
                     type: type })
     json = LogSerializer.new(log).as_json.to_json
