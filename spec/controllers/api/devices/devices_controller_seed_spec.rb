@@ -263,7 +263,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to eq(9)
       expect(pin_bindings_button_1?(device)).to_not be
       expect(pin_bindings_button_2?(device)).to_not be
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to be_kind_of(Sensor)
       expect(sensors_tool_verification?(device)).to be_kind_of(Sensor)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
@@ -305,9 +305,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -326,7 +326,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device)).to_not be
       expect(pin_bindings_button_2?(device)).to_not be
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
@@ -368,9 +368,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -389,7 +389,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
@@ -431,9 +431,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -452,7 +452,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
@@ -496,9 +496,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -517,7 +517,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
@@ -562,9 +562,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -583,7 +583,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
@@ -625,9 +625,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -646,7 +646,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
@@ -690,9 +690,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -711,7 +711,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
@@ -756,9 +756,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -777,7 +777,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express")
@@ -815,9 +815,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -836,7 +836,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express")
@@ -874,9 +874,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -895,7 +895,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express XL")
@@ -933,9 +933,9 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
@@ -954,7 +954,7 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
-      expect(plants?(device)).to be true
+      expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express XL")
@@ -992,15 +992,30 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
-      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
       expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
+    end
+
+    it "seeds accounts with demo account data" do
+      start_tests "demo_account"
+
+      expect(plants?(device)).to be true
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+    end
+
+    it "does not seed accounts" do
+      start_tests "none"
+
+      expect(sequences_plant_seed?(device)).to_not be
     end
   end
 end

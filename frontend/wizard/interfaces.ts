@@ -1,5 +1,6 @@
 import { FirmwareHardware, TaggedDevice, TaggedWizardStepResult } from "farmbot";
 import { WizardStepResult } from "farmbot/dist/resources/api_resources";
+import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BotState } from "../devices/interfaces";
 import { TimeSettings } from "../interfaces";
@@ -21,6 +22,7 @@ export interface WizardStepOutcome {
   detectedProblems?: WizardOutcomeDetectedProblem[];
   component?: React.ComponentType<WizardOutcomeComponentProps>;
   video?: string;
+  firmwareNumberSettings?: { key: NumberConfigKey, label: string }[];
   goToStep?: GoToStep;
 }
 
@@ -141,4 +143,11 @@ export interface SetupWizardSettingsProps {
   dispatch: Function;
   wizardStepResults: TaggedWizardStepResult[];
   device: TaggedDevice;
+}
+
+export interface FirmwareNumberSettingsProps {
+  firmwareNumberSettings?: { key: NumberConfigKey, label: string }[];
+  dispatch: Function;
+  bot: BotState;
+  resources: ResourceIndex;
 }
