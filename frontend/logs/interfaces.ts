@@ -25,6 +25,7 @@ export interface LogsTableProps {
   dispatch: Function;
   state: LogsState;
   timeSettings: TimeSettings;
+  fbosVersion: string | undefined;
 }
 
 type ToggleEventHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;

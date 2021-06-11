@@ -20,8 +20,5 @@ describe("getModifiedClassName()", () => {
   it("returns class name", () => {
     expect(getModifiedClassName("soil_height", 0)).toEqual("");
     expect(getModifiedClassName("soil_height", 1)).toEqual("modified");
-    expect(getModifiedClassName("network_not_found_timer", undefined)).toEqual("");
-    expect(getModifiedClassName("network_not_found_timer", 20)).toEqual("");
-    expect(getModifiedClassName("network_not_found_timer", 0)).toEqual("modified");
   });
 });

@@ -44,16 +44,11 @@ export interface OtaTimeSelectorRowProps {
 export interface PowerAndResetProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
-  showAdvanced: boolean;
 }
 
 export interface FactoryResetRowsProps {
-  dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
-  showAdvanced: boolean;
 }
 
 export interface FarmbotOsRowProps {
