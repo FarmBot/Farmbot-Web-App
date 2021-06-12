@@ -81,6 +81,8 @@ describe("<WizardStepContainer />", () => {
     ];
     p.step.outcomes[0].component = () => <p>component</p>;
     p.step.outcomes[0].video = "url";
+    p.step.outcomes[0].firmwareNumberSettings =
+      [{ key: "encoder_scaling_x", label: "" }];
     p.step.outcomes.push({
       slug: "hidden", description: "Hidden", tips: "Hidden.", hidden: true,
     });

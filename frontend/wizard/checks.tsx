@@ -257,6 +257,7 @@ const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
 interface FirmwareHardwareSelectionState {
   selection: string;
   autoSeed: boolean;
+  seeded: boolean;
 }
 
 export class FirmwareHardwareSelection
@@ -265,6 +266,7 @@ export class FirmwareHardwareSelection
   state: FirmwareHardwareSelectionState = {
     selection: "",
     autoSeed: this.seedAlerts.length > 0,
+    seeded: false,
   };
 
   get seedAlerts() {
@@ -284,7 +286,10 @@ export class FirmwareHardwareSelection
     const seedAlertId = this.seedAlerts[0]?.body.id;
     const dismiss = () => seedAlertId && dispatch(destroy(
       findResourceById(resources, "Alert", seedAlertId)));
-    this.state.autoSeed && seedAccount(dismiss)({ label: "", value: ddi.value });
+    if (this.state.autoSeed && !this.state.seeded) {
+      this.setState({ seeded: true });
+      seedAccount(dismiss)({ label: "", value: ddi.value });
+    }
   }
 
   toggleAutoSeed = () => this.setState({ autoSeed: !this.state.autoSeed })
