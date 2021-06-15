@@ -9,6 +9,7 @@ import {
 } from "./interfaces";
 import { Feedback } from "../help/support";
 import moment from "moment";
+import { FirmwareNumberSettings, Video } from "./step_components";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -148,6 +149,11 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
             dispatch={props.dispatch}
             getConfigValue={props.getConfigValue}
             resources={props.resources} />}
+        {selected &&
+          <FirmwareNumberSettings bot={props.bot}
+            dispatch={props.dispatch}
+            firmwareNumberSettings={outcome.firmwareNumberSettings}
+            resources={props.resources} />}
       </div>;
     })}
     <div className={`troubleshooting-tip ${otherSelected ? "selected" : ""}`}
@@ -158,12 +164,3 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
     </div>
   </div>;
 };
-
-class Video extends React.Component<{ url: string }> {
-  shouldComponentUpdate = () => false;
-  render() {
-    const { url } = this.props;
-    return <iframe key={url} src={url + "&=cc_load_policy=1"}
-      frameBorder={0} width={"100%"} allowFullScreen={true} />;
-  }
-}

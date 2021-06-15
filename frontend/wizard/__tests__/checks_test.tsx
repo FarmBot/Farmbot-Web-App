@@ -323,6 +323,21 @@ describe("<FirmwareHardwareSelection />", () => {
     expect(destroy).toHaveBeenCalled();
   });
 
+  it("doesn't seed account twice", () => {
+    const p = fakeProps();
+    const alert = fakeAlert();
+    alert.body.id = 1;
+    alert.body.problem_tag = "api.seed_data.missing";
+    p.resources = buildResourceIndex([alert]).index;
+    mockState.resources = buildResourceIndex([alert]);
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount<FirmwareHardwareSelection>(
+      <FirmwareHardwareSelection {...p} />);
+    wrapper.setState({ seeded: true });
+    wrapper.instance().onChange({ label: "", value: "genesis_1.2" });
+    expect(destroy).not.toHaveBeenCalled();
+  });
+
   it("doesn't seed account", () => {
     const p = fakeProps();
     p.resources = buildResourceIndex([]).index;

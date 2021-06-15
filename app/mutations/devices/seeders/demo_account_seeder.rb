@@ -20,6 +20,22 @@ module Devices
         end
       end
 
+      def plants
+        PLANTS.map { |x| Points::Create.run!(x, device: device) }
+      end
+
+      def point_groups_spinach
+        add_point_group(name: "Spinach plants", openfarm_slug: "spinach")
+      end
+
+      def point_groups_broccoli
+        add_point_group(name: "Broccoli plants", openfarm_slug: "broccoli")
+      end
+
+      def point_groups_beet
+        add_point_group(name: "Beet plants", openfarm_slug: "beet")
+      end
+
       MARKETING_BULLETIN = GlobalBulletin.find_or_create_by(slug: "buy-a-farmbot") do |gb|
         gb.href = "https://farm.bot"
         gb.href_label = "Visit our website"

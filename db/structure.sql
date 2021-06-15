@@ -980,7 +980,8 @@ CREATE TABLE public.logs (
     x double precision,
     y double precision,
     z double precision,
-    sent_at timestamp without time zone
+    sent_at timestamp without time zone,
+    patch_version integer
 );
 
 
@@ -3605,6 +3606,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210304221750'),
 ('20210308191813'),
 ('20210501195411'),
-('20210514010354');
+('20210514010354'),
+('20210607193347');
 
 
