@@ -9,6 +9,7 @@ import {
 } from "./interfaces";
 import { Feedback } from "../help/support";
 import moment from "moment";
+import { FirmwareNumberSettings, Video } from "./step_components";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -65,9 +66,13 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             !prerequisite.status() && <prerequisite.indicator key={index} />)}
         </div>}
       <Markdown>{step.content}</Markdown>
-      <div className={`wizard-components ${step.componentBorder ?? true
-        ? ""
-        : "no-border"}`}>
+      {step.video && <Video url={step.video} />}
+      <div className={[
+        "wizard-components",
+        step.componentOptions?.border ?? true ? "" : "no-border",
+        step.componentOptions?.fullWidth ? "full-width" : "",
+        step.componentOptions?.background ?? true ? "" : "no-background",
+      ].join(" ")}>
         {step.component &&
           <step.component setStepSuccess={setSuccess}
             bot={props.bot}
@@ -137,11 +142,17 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
           <p key={problem.description}>
             {t(problem.description)}
           </p>)}
+        {selected && outcome.video && <Video url={outcome.video} />}
         {selected && outcome.component &&
           <outcome.component
             bot={props.bot}
             dispatch={props.dispatch}
             getConfigValue={props.getConfigValue}
+            resources={props.resources} />}
+        {selected &&
+          <FirmwareNumberSettings bot={props.bot}
+            dispatch={props.dispatch}
+            firmwareNumberSettings={outcome.firmwareNumberSettings}
             resources={props.resources} />}
       </div>;
     })}

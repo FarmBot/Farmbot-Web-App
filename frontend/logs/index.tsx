@@ -85,6 +85,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
   }
 
   render() {
+    const { dispatch, bot } = this.props;
     const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs-page">
       <Row>
@@ -99,9 +100,9 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
               <i className="fa fa-gear" />
               <LogsSettingsMenu
                 setFilterLevel={this.setFilterLevel}
-                dispatch={this.props.dispatch}
+                dispatch={dispatch}
                 sourceFbosConfig={this.props.sourceFbosConfig}
-                bot={this.props.bot}
+                bot={bot}
                 getConfigValue={this.props.getConfigValue} />
             </Popover>
           </div>
@@ -136,8 +137,9 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
         <LogsTable
           logs={this.props.logs.
             concat(forceOnline() ? [demoAccountLog()] : [])}
-          dispatch={this.props.dispatch}
+          dispatch={dispatch}
           state={this.state}
+          fbosVersion={bot.hardware.informational_settings.controller_version}
           timeSettings={this.props.timeSettings} />
       </Row>
     </Page>;

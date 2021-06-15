@@ -80,6 +80,9 @@ describe("<WizardStepContainer />", () => {
       { status: () => false, description: "problem" },
     ];
     p.step.outcomes[0].component = () => <p>component</p>;
+    p.step.outcomes[0].video = "url";
+    p.step.outcomes[0].firmwareNumberSettings =
+      [{ key: "encoder_scaling_x", label: "" }];
     p.step.outcomes.push({
       slug: "hidden", description: "Hidden", tips: "Hidden.", hidden: true,
     });
@@ -134,9 +137,33 @@ describe("<WizardStepContainer />", () => {
   it("renders component without border", () => {
     const p = fakeProps();
     p.step.component = () => <p>component</p>;
-    p.step.componentBorder = false;
+    p.step.componentOptions = { border: false };
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.html()).toContain("no-border");
+  });
+
+  it("renders component full width", () => {
+    const p = fakeProps();
+    p.step.component = () => <p>component</p>;
+    p.step.componentOptions = { fullWidth: true };
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.html()).toContain("full-width");
+  });
+
+  it("renders component with no background", () => {
+    const p = fakeProps();
+    p.step.component = () => <p>component</p>;
+    p.step.componentOptions = { background: false };
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.html()).toContain("no-background");
+  });
+
+  it("renders video", () => {
+    const p = fakeProps();
+    p.step.video = "url";
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.html()).toContain("iframe");
+    wrapper.setProps(p);
   });
 });
 

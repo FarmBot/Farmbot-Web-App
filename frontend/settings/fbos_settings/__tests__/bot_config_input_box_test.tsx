@@ -19,7 +19,7 @@ describe("<BotConfigInputBox />", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): BotConfigInputBoxProps => ({
-    setting: "network_not_found_timer",
+    setting: "safe_height",
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: 1, consistent: true })
   });
@@ -46,7 +46,7 @@ describe("<BotConfigInputBox />", () => {
     const wrapper = shallow(<BotConfigInputBox {...p} />);
     wrapper.find("BlurableInput")
       .simulate("commit", { currentTarget: { value: "10" } });
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { network_not_found_timer: 10 });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { safe_height: 10 });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 

@@ -32,8 +32,6 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.shutdownFarmbot,
   DeviceSetting.softReset,
   DeviceSetting.hardReset,
-  DeviceSetting.autoSoftReset,
-  DeviceSetting.connectionAttemptPeriod,
 ];
 const AXES_PANEL = [
   DeviceSetting.axisSettings,

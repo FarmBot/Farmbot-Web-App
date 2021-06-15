@@ -34,8 +34,6 @@ import {
   EthernetPortImage,
   CameraImageOrigin,
   MapOrientation,
-  MotorSettings,
-  Video,
   Tour,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
@@ -79,11 +77,11 @@ export const WIZARD_TOC =
       [WizardSectionSlug.movements]: { title: t("MOVEMENTS"), steps: [] },
       [WizardSectionSlug.peripherals]: { title: t("PERIPHERALS"), steps: [] },
       [WizardSectionSlug.camera]: { title: t("CAMERA"), steps: [] },
-      [WizardSectionSlug.tours]: { title: t("TOURS"), steps: [] },
     };
     if (hasUTM(firmwareHardware)) {
       toc[WizardSectionSlug.tools] = { title: t("UTM and TOOLS"), steps: [] };
     }
+    toc[WizardSectionSlug.tours] = { title: t("TOURS"), steps: [] };
     return toc;
   };
 
@@ -348,6 +346,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.mapOrientation,
       title: t("Map Orientation"),
       content: t(SetupWizardContent.MAP_ORIENTATION),
+      video: ExternalUrl.Video.mapOrientation,
       component: MapOrientation,
       question: t("Does the virtual FarmBot match your real life FarmBot?"),
       outcomes: [
@@ -467,7 +466,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.controlsVideo,
       title: t("Manual controls video"),
       content: t(SetupWizardContent.CONTROLS_VIDEO),
-      component: Video(ExternalUrl.Video.manualControls),
+      video: ExternalUrl.Video.manualControls,
       question: t("Did you watch the video?"),
       outcomes: [],
     },
@@ -677,7 +676,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.movementsVideo,
       title: t("Movements video"),
       content: t(SetupWizardContent.MOVEMENTS_VIDEO),
-      component: Video(ExternalUrl.Video.movements),
+      video: ExternalUrl.Video.movements,
       question: t("Did you watch the video?"),
       outcomes: [],
     },
@@ -697,13 +696,19 @@ export const WIZARD_STEPS = (
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
-          tips: t(SetupWizardContent.MOVEMENT_ALL),
+          tips: t(SetupWizardContent.MOVEMENT_ALL_X),
         },
         {
           slug: "untuned",
           description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
           tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
-          component: MotorSettings("x"),
+          video: ExternalUrl.Video.motorTuning,
+          firmwareNumberSettings: [
+            { key: "movement_min_spd_x", label: t("x-axis minimum speed") },
+            { key: "movement_max_spd_x", label: t("x-axis maximum speed") },
+            { key: "movement_steps_acc_dec_x", label: t("x-axis acceleration") },
+            { key: "movement_motor_current_x", label: t("x-axis motor current") },
+          ],
         },
       ],
     },
@@ -723,13 +728,19 @@ export const WIZARD_STEPS = (
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
-          tips: t(SetupWizardContent.MOVEMENT_ALL),
+          tips: t(SetupWizardContent.MOVEMENT_ALL_Y_AND_Z),
         },
         {
           slug: "untuned",
           description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
           tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
-          component: MotorSettings("y"),
+          video: ExternalUrl.Video.motorTuning,
+          firmwareNumberSettings: [
+            { key: "movement_min_spd_y", label: t("y-axis minimum speed") },
+            { key: "movement_max_spd_y", label: t("y-axis maximum speed") },
+            { key: "movement_steps_acc_dec_y", label: t("y-axis acceleration") },
+            { key: "movement_motor_current_y", label: t("y-axis motor current") },
+          ],
         },
       ],
     },
@@ -749,13 +760,19 @@ export const WIZARD_STEPS = (
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
-          tips: t(SetupWizardContent.MOVEMENT_ALL),
+          tips: t(SetupWizardContent.MOVEMENT_ALL_Y_AND_Z),
         },
         {
           slug: "untuned",
           description: t(SetupWizardContent.MOVEMENT_SETTINGS_DESCRIPTION),
           tips: t(SetupWizardContent.MOVEMENT_SETTINGS),
-          component: MotorSettings("z"),
+          video: ExternalUrl.Video.motorTuning,
+          firmwareNumberSettings: [
+            { key: "movement_min_spd_z", label: t("z-axis minimum speed") },
+            { key: "movement_max_spd_z", label: t("z-axis maximum speed") },
+            { key: "movement_steps_acc_dec_z", label: t("z-axis acceleration") },
+            { key: "movement_motor_current_z", label: t("z-axis motor current") },
+          ],
         },
       ],
     },
@@ -766,7 +783,7 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("WATER") }),
       component: PeripheralsCheck,
-      componentBorder: false,
+      componentOptions: { border: false },
       question: t("Did water flow?"),
       outcomes: [
         {
@@ -788,7 +805,7 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("VACUUM") }),
       component: PeripheralsCheck,
-      componentBorder: false,
+      componentOptions: { border: false },
       question: t("Did the vacuum pump run?"),
       outcomes: [
         {
@@ -810,7 +827,7 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("LIGHTING") }),
       component: PeripheralsCheck,
-      componentBorder: false,
+      componentOptions: { border: false },
       question: t("Did the lights turn on?"),
       outcomes: [
         {
@@ -1079,7 +1096,7 @@ export const WIZARD_STEPS = (
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.READ_SOIL_SENSOR),
         component: SensorsCheck,
-        componentBorder: false,
+        componentOptions: { border: false },
         question: t("Did the sensor return a value?"),
         outcomes: [
           {
@@ -1096,6 +1113,7 @@ export const WIZARD_STEPS = (
       title: t("Getting started"),
       content: t("Click the button below to start the tour"),
       component: Tour("gettingStarted"),
+      componentOptions: { background: false },
       question: t("Did you finish the tour?"),
       outcomes: [],
     },
@@ -1105,6 +1123,7 @@ export const WIZARD_STEPS = (
       title: t("Planting a garden"),
       content: t("Click the button below to start the tour"),
       component: Tour("garden"),
+      componentOptions: { background: false },
       question: t("Did you finish the tour?"),
       outcomes: [],
     },
@@ -1114,6 +1133,7 @@ export const WIZARD_STEPS = (
       title: t("Setting up slots"),
       content: t("Click the button below to start the tour"),
       component: Tour("tools"),
+      componentOptions: { background: false },
       question: t("Did you finish the tour?"),
       outcomes: [],
     },

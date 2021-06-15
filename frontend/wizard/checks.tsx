@@ -257,6 +257,7 @@ const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
 interface FirmwareHardwareSelectionState {
   selection: string;
   autoSeed: boolean;
+  seeded: boolean;
 }
 
 export class FirmwareHardwareSelection
@@ -265,6 +266,7 @@ export class FirmwareHardwareSelection
   state: FirmwareHardwareSelectionState = {
     selection: "",
     autoSeed: this.seedAlerts.length > 0,
+    seeded: false,
   };
 
   get seedAlerts() {
@@ -284,7 +286,10 @@ export class FirmwareHardwareSelection
     const seedAlertId = this.seedAlerts[0]?.body.id;
     const dismiss = () => seedAlertId && dispatch(destroy(
       findResourceById(resources, "Alert", seedAlertId)));
-    this.state.autoSeed && seedAccount(dismiss)({ label: "", value: ddi.value });
+    if (this.state.autoSeed && !this.state.seeded) {
+      this.setState({ seeded: true });
+      seedAccount(dismiss)({ label: "", value: ddi.value });
+    }
   }
 
   toggleAutoSeed = () => this.setState({ autoSeed: !this.state.autoSeed })
@@ -419,7 +424,6 @@ export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
 
 export const MapOrientation = (props: WizardOutcomeComponentProps) =>
   <div className={"map-orientation"}>
-    {Video(ExternalUrl.Video.mapOrientation)()}
     <RotateMapToggle {...props} />
     <SelectMapOrigin {...props} />
   </div>;
@@ -490,14 +494,18 @@ const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) 
       validFwConfig(getFirmwareConfig(props.resources)),
       props.bot.hardware.mcu_params);
     const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
-    return <fieldset>
-      <label>{t(setting.label)}</label>
-      <McuInputBox
-        dispatch={props.dispatch}
-        sourceFwConfig={sourceFwConfig}
-        firmwareHardware={firmwareHardware}
-        setting={setting.key} />
-    </fieldset>;
+    return <Row>
+      <Col xs={6}>
+        <label>{t(setting.label)}</label>
+      </Col>
+      <Col xs={6}>
+        <McuInputBox
+          dispatch={props.dispatch}
+          sourceFwConfig={sourceFwConfig}
+          firmwareHardware={firmwareHardware}
+          setting={setting.key} />
+      </Col>
+    </Row>;
   };
 
 export const MotorMinSpeed = (axis: Xyz) => {
@@ -539,7 +547,6 @@ export const MotorCurrent = (axis: Xyz) => {
 export const MotorSettings = (axis: Xyz) =>
   (props: WizardOutcomeComponentProps) =>
     <div className={"motor-settings"}>
-      {Video(ExternalUrl.Video.motorTuning)()}
       {MotorMinSpeed(axis)(props)}
       {MotorMaxSpeed(axis)(props)}
       {MotorAcceleration(axis)(props)}
@@ -627,12 +634,9 @@ export const CameraReplacement = () =>
     </p>
   </div>;
 
-export const Video = (url: string) => () =>
-  <iframe src={url} frameBorder={0} width={"100%"} allowFullScreen={true} />;
-
 export const Tour = (tourSlug: string) =>
   (props: WizardStepComponentProps) =>
-    <button className={"fb-button green"}
+    <button className={"fb-button green tour-start"}
       title={t("Start tour")}
       onClick={() => {
         const firstStep = TOURS()[tourSlug].steps[0];

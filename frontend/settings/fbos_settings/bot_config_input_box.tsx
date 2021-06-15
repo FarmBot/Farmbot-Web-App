@@ -14,9 +14,6 @@ export interface BotConfigInputBoxProps {
   sourceFbosConfig: SourceFbosConfig;
 }
 
-/**
- * Currently only used for `network_not_found_timer` and `steps_per_mm_?`.
- */
 export class BotConfigInputBox
   extends React.Component<BotConfigInputBoxProps, {}> {
 

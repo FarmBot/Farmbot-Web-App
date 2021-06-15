@@ -1,5 +1,5 @@
 class LogSerializer < ApplicationSerializer
-  attributes :channels, :message, :meta, :major_version, :minor_version, :type,
+  attributes :channels, :message, :meta, :major_version, :minor_version, :patch_version, :type,
              :verbosity, :x, :y, :z
 
   def created_at

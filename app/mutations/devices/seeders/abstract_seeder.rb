@@ -88,9 +88,7 @@ module Devices
         device.web_app_config.update!(hide_sensors: false)
       end
 
-      def plants
-        PLANTS.map { |x| Points::Create.run!(x, device: device) }
-      end
+      def plants; end
 
       def peripherals_lighting
         add_peripheral(7, ToolNames::LIGHTING)
@@ -154,17 +152,11 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
-      def point_groups_spinach
-        add_point_group(name: "Spinach plants", openfarm_slug: "spinach")
-      end
+      def point_groups_spinach; end
 
-      def point_groups_broccoli
-        add_point_group(name: "Broccoli plants", openfarm_slug: "broccoli")
-      end
+      def point_groups_broccoli; end
 
-      def point_groups_beet
-        add_point_group(name: "Beet plants", openfarm_slug: "beet")
-      end
+      def point_groups_beet; end
 
       def point_groups_all_plants
         add_point_group(name: "All plants")

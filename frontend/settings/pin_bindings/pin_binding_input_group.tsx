@@ -24,6 +24,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { DeviceSetting } from "../../constants";
+import { BoxTopGpioDiagram } from "./box_top_gpio_diagram";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -166,7 +167,16 @@ export const PinNumberInputGroup = (props: {
     }
     : undefined;
   return <Row>
-    <Col xs={2}>
+    <Col xs={1}>
+      <Popover position={Position.TOP}>
+        <i className="fa fa-circle-o-notch" />
+        <BoxTopGpioDiagram
+          boundPins={boundPins}
+          setSelectedPin={setSelectedPin}
+          selectedPin={pinNumberInput} />
+      </Popover>
+    </Col>
+    <Col xs={1}>
       <Popover position={Position.TOP}>
         <i className="fa fa-th-large" />
         <RpiGpioDiagram

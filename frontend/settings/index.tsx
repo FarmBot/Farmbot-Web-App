@@ -87,7 +87,6 @@ export class RawDesignerSettings
           botOnline={botOnline}
           timeSettings={this.props.timeSettings} />
         <PowerAndReset {...commonProps}
-          sourceFbosConfig={sourceFbosConfig}
           botOnline={botOnline} />
         {botOnline && showAdvanced && <ChangeOwnershipForm />}
         <AxisSettings {...commonProps}
