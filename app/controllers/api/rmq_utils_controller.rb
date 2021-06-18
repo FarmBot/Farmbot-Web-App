@@ -305,7 +305,7 @@ module Api
     end
 
     def maybe_alert_user(reason)
-      msg = "MQTT ACCESS DENIED #{reason}"
+      msg = "MQTT ACCESS DENIED #{reason} #{username_param || "unknown"}"
       puts msg unless Rails.env.test?
       if device_id_in_username > 0
         dev = Device.find_by(id: device_id_in_username)
