@@ -32,7 +32,7 @@ class TelemetryService < AbstractServiceRunner
 
   def get_version(device_key)
     id = device_key.gsub("device_", "").to_i
-    dev = Device.select(:fbos_version).limit(1).find_by(id: id)
-    dev ? dev.fbos_version : NO_VERSION
+    ver = Device.select(:fbos_version).limit(1).find_by(id: id)&.fbos_version
+    ver || NO_VERSION
   end
 end
