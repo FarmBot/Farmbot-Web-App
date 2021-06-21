@@ -94,6 +94,6 @@ describe("<PointLayer/>", () => {
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(7200);
+    expect(layer.find("rect").length).toEqual(450);
   });
 });
