@@ -35,6 +35,9 @@ import { unselectPlant } from "./map/actions";
 import { Col, EmptyStateGraphic, EmptyStateWrapper, Row } from "../ui";
 import { formatLogTime } from "../logs";
 import moment from "moment";
+import {
+  fetchInterpolationOptions, interpolatedZ,
+} from "./map/layers/points/interpolation_map";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -240,7 +243,9 @@ function ItemListWrapper(props: ItemListWrapperProps) {
                 dispatch={props.dispatch} />
               : <SoilHeightListItem
                 key={key}
+                chosenXY={props.chosenXY}
                 soilHeightPoints={data as ItemData<TaggedGenericPointer>}
+                allSoilHeightPoints={props.items as TaggedGenericPointer[]}
                 getColorOverride={props.getColorOverride}
                 dispatch={props.dispatch} />;
           case "SensorReading":
@@ -325,23 +330,35 @@ const PlantListItem = (props: PlantListItemProps) =>
 
 interface SoilHeightListItemProps {
   soilHeightPoints: ItemData<TaggedGenericPointer>;
+  allSoilHeightPoints: TaggedGenericPointer[];
   dispatch: Function;
   getColorOverride: Function;
+  chosenXY: Record<"x" | "y", number> | undefined;
 }
 
-const SoilHeightListItem = (props: SoilHeightListItemProps) =>
-  <div className={"soil-height-items"}>
+const SoilHeightListItem = (props: SoilHeightListItemProps) => {
+  const { xy, items, distance } = props.soilHeightPoints;
+  const options = fetchInterpolationOptions();
+  return <div className={"soil-height-items"}>
+    {props.chosenXY &&
+      <div className={"interpolated-soil-height"}>
+        <p className={"title"}>
+          {t("Interpolated Soil Z at")} ({props.chosenXY.x}, {props.chosenXY.y}):
+        </p>
+        <p>{interpolatedZ(props.chosenXY, props.allSoilHeightPoints, options)}mm</p>
+      </div>}
     <LocationDistance
-      xy={props.soilHeightPoints.xy}
-      soilZ={props.soilHeightPoints.items[0].body.z}
-      distance={props.soilHeightPoints.distance} />
-    {props.soilHeightPoints.items.map(p =>
+      xy={xy}
+      soilZ={items[0].body.z}
+      distance={distance} />
+    {items.map(p =>
       <PointInventoryItem
         key={p.uuid}
         tpp={p}
         hovered={false}
         colorOverride={props.getColorOverride(p.body.z)}
         dispatch={props.dispatch} />)}</div>;
+};
 
 interface ReadingsListItemProps {
   sensorReadings: ItemData<TaggedSensorReading>,

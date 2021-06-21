@@ -29,21 +29,23 @@ const pathDistance = (pathPoints: TaggedPoint[]) => {
   return Math.round(total);
 };
 
-export const findNearest =
-  (from: { x: number, y: number }, available: TaggedPoint[]) => {
-    const distances = available.map(p => ({
-      point: p, distance: distance(xy(p), from)
-    }));
-    return sortBy(distances, "distance")[0]?.point;
-  };
+export const findNearest = (
+  from: { x: number, y: number },
+  available: TaggedPoint[],
+): TaggedPoint | undefined => {
+  const distances = available.map(p => ({
+    point: p, distance: distance(xy(p), from)
+  }));
+  return sortBy(distances, "distance")[0]?.point;
+};
 
 export const nn = (pathPoints: TaggedPoint[]) => {
   let available = pathPoints.slice(0);
   const ordered: TaggedPoint[] = [];
   let from = { x: 0, y: 0 };
   pathPoints.map(() => {
-    if (available.length < 1) { return; }
     const nearest = findNearest(from, available);
+    if (!nearest) { return; }
     ordered.push(nearest);
     from = { x: nearest.body.x, y: nearest.body.y };
     available = available.filter(p => p.uuid !== nearest.uuid);

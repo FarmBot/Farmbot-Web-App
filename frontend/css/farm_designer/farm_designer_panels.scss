@@ -893,6 +893,16 @@
       }
 
     }
+    .interpolated-soil-height {
+      .title {
+        display: inline;
+        font-weight: bold;
+      }
+      p {
+        display: inline;
+        margin-left: 1rem;
+      }
+    }
     .location-distance {
       margin-top: 1rem;
       margin-bottom: 1rem;
