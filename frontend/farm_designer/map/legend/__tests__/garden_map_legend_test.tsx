@@ -91,7 +91,7 @@ describe("<GardenMapLegend />", () => {
     mockDev = true;
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     wrapper.find(".location-info-mode").find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/location_info");
+    expect(push).toHaveBeenCalledWith("/app/designer/location");
   });
 });
 

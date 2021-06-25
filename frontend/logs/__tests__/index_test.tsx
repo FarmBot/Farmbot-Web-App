@@ -44,6 +44,21 @@ describe("<Logs />", () => {
     expect(wrapper.text().toLowerCase()).not.toContain("demo");
   });
 
+  it("handles unknown log type", () => {
+    const p = fakeProps();
+    p.logs = fakeLogs();
+    p.logs[0].body.type = "unknown" as MessageType;
+    const wrapper = mount(<Logs {...p} />);
+    ["Logs", "Type", "Message", "Time", "unknown",
+      "Fake log message 1", "Success", "Fake log message 2"]
+      .map(string =>
+        expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
+    expect(filterBtn.hasClass("green")).toBeTruthy();
+    expect(wrapper.text().toLowerCase()).not.toContain("demo");
+  });
+
   it("shows message when logs are loading", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";

@@ -8,12 +8,14 @@ import { Mode } from "../farm_designer/map/interfaces";
 import { mapPointClickAction } from "../farm_designer/map/actions";
 import { DevSettings } from "../settings/dev/dev_support";
 import { destroy } from "../api/crud";
+import { isUndefined, round } from "lodash";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
   dispatch: Function;
   hovered: boolean;
   colorOverride?: string;
+  distance?: number;
 }
 
 // The individual points that show up in the farm designer sub nav.
@@ -65,6 +67,8 @@ export class PointInventoryItem extends
         <i>{colorOverride
           ? `(${point.x}, ${point.y}) z${point.z}`
           : `(${point.x}, ${point.y}) r${point.radius}`}</i>
+        {!isUndefined(this.props.distance) &&
+          <i>{` ${round(this.props.distance)}mm ${t("away")}`}</i>}
       </p>
     </div>;
   }

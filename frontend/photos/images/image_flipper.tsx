@@ -81,6 +81,8 @@ export class ImageFlipper extends
           getConfigValue={this.props.getConfigValue}
           flipperId={this.props.id}
           env={this.props.env}
+          target={this.props.target}
+          hover={this.props.hover}
           onImageLoad={this.onImageLoad}
           image={currentImage} />
         : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET} />}

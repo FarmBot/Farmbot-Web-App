@@ -48,14 +48,17 @@ export const generateData = (props: GenerateInterpolationMapDataProps) => {
   const soilHeightPoints = sortBy(groupItemsByLocation(props.genericPoints
     .filter(p => p.body.meta.at_soil_level), undefined), "points.body.created_at")
     .map(data => data.items[0]);
-  const gridX = props.mapTransformProps.gridSize.x;
-  const gridY = props.mapTransformProps.gridSize.y;
-  const step = props.options.stepSize;
-  const hash = [JSON.stringify(soilHeightPoints), gridX, gridY, step].join("");
+  const { gridSize } = props.mapTransformProps;
+  const { stepSize } = props.options;
+  const hash = [
+    JSON.stringify(soilHeightPoints),
+    JSON.stringify(gridSize),
+    JSON.stringify(props.options),
+  ].join("");
   if (localStorage.getItem(InterpolationKey.hash) == hash) { return; }
   const data: InterpolationData = [];
-  range(0, gridX, step).map(x =>
-    range(0, gridY, step).map(y => {
+  range(0, gridSize.x, stepSize).map(x =>
+    range(0, gridSize.y, stepSize).map(y => {
       const z = interpolatedZ({ x, y }, soilHeightPoints, props.options);
       if (!isUndefined(z)) { data.push({ x, y, z }); }
     }));
@@ -105,7 +108,7 @@ export const InterpolationMap = (props: InterpolationMapProps) => {
       const { qx, qy } = transformXY(x, y, props.mapTransformProps);
       return <rect key={`${x}-${y}`}
         x={qx} y={qy} width={step} height={step}
-        fill={props.getColor(z)} fillOpacity={0.85} />;
+        fill={props.getColor(z)} fillOpacity={0.75} />;
     })}
   </g>;
 };
