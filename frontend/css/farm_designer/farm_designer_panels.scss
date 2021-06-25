@@ -846,7 +846,7 @@
 
 .location-info-panel {
   .panel-content {
-    max-height: calc(100vh - 19rem);
+    max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
     h1 {
@@ -855,18 +855,13 @@
       margin-top: 4rem;
       margin-bottom: 0;
     }
-    .horizontal-scroll {
-      overflow-y: hidden;
-      overflow-x: scroll;
-      white-space: nowrap;
-      .image-item {
-        display: inline-block;
-        width: 80%;
-        height: 100%;
-        p {
-          text-align: center;
-        }
-      }
+    .expandable-header {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    label {
+      margin-top: 0;
     }
     button {
       float: none;
@@ -875,8 +870,7 @@
       margin-top: 2rem;
     }
     .point-search-item,
-    .plant-search-item,
-    .horizontal-scroll {
+    .plant-search-item{
       margin-left: -15px;
       margin-right: -15px;
       padding-left: 2rem;
@@ -903,14 +897,10 @@
         margin-left: 1rem;
       }
     }
-    .location-distance {
+    .photos-footer {
       margin-top: 1rem;
-      margin-bottom: 1rem;
-      .title {
-        font-weight: bold;
-      }
-      p {
-        text-align: center;
+      .bp3-popover-wrapper {
+        margin-top: 3px;
       }
     }
     hr {

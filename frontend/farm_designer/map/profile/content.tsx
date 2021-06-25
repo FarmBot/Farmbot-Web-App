@@ -52,7 +52,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     preserveAspectRatio={expanded ? undefined : "none"}>
     {expanded && <Grid
       getX={getX} height={height} width={width} negativeZ={props.negativeZ} />}
-    {expanded && getPathArray()[3] === "location_info" &&
+    {expanded && getPathArray()[3] === "location" &&
       <InterpolatedSoil axis={lineAxis} getX={getX}
         position={position} selectionWidth={props.selectionWidth} />}
     <LabeledHorizontalLine id={"soil-height"} label={t("soil")}

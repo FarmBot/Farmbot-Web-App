@@ -87,4 +87,26 @@ describe("<FlipperImage />", () => {
     expect(p.onImageLoad).toHaveBeenCalledWith(fakeImg);
     expect(wrapper.state()).toEqual({ isLoaded: true, width: 1, height: 2 });
   });
+
+  it("hovers image", () => {
+    const p = fakeProps();
+    p.hover = jest.fn();
+    const wrapper = mount(<FlipperImage {...p} />);
+    wrapper.find(".image-jsx").simulate("mouseEnter");
+    expect(p.hover).toHaveBeenCalledWith(p.image.uuid);
+  });
+
+  it("unhovers image", () => {
+    const p = fakeProps();
+    p.hover = jest.fn();
+    const wrapper = mount(<FlipperImage {...p} />);
+    wrapper.find(".image-jsx").simulate("mouseLeave");
+    expect(p.hover).toHaveBeenCalledWith(undefined);
+  });
+
+  it("handles missing hover function", () => {
+    const wrapper = mount(<FlipperImage {...fakeProps()} />);
+    wrapper.find(".image-jsx").simulate("mouseEnter");
+    wrapper.find(".image-jsx").simulate("mouseLeave");
+  });
 });

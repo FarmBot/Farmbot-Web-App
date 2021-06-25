@@ -8,6 +8,7 @@ import { getMode } from "../../util";
 import {
   fetchInterpolationOptions, generateData, InterpolationMap,
 } from "./interpolation_map";
+import { getPathArray } from "../../../../history";
 
 export interface PointLayerProps {
   visible: boolean;
@@ -29,7 +30,8 @@ export function PointLayer(props: PointLayerProps) {
   const options = fetchInterpolationOptions();
   generateData({ genericPoints, mapTransformProps, getColor, options });
   return <g id={"point-layer"} style={style}>
-    {visible && getMode() == Mode.locationInfo &&
+    {visible && (getMode() == Mode.locationInfo ||
+      getPathArray()[3] == "location") &&
       <InterpolationMap
         genericPoints={genericPoints}
         getColor={getColor}

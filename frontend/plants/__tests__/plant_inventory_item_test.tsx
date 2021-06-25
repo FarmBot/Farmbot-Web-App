@@ -14,7 +14,7 @@ jest.mock("../../farm_designer/map/actions", () => ({
   selectPoint: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   PlantInventoryItem, PlantInventoryItemProps,
 } from "../plant_inventory_item";
@@ -38,6 +38,14 @@ describe("<PlantInventoryItem />", () => {
   it("renders", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Strawberry Plant 11 days old");
+    expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
+  });
+
+  it("handles missing plant name", () => {
+    const p = fakeProps();
+    p.plant.body.name = "";
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
+    expect(wrapper.text()).toEqual("Unknown plant1 days old");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
   });
 
@@ -69,6 +77,15 @@ describe("<PlantInventoryItem />", () => {
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(selectPoint).toBeCalledWith([p.plant.uuid]);
     expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.plant.body.id);
+  });
+
+  it("handles missing plant id", () => {
+    const p = fakeProps();
+    p.plant.body.id = 0;
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(selectPoint).toBeCalledWith([p.plant.uuid]);
+    expect(push).toHaveBeenCalledWith("/app/designer/plants/ERR_NO_PLANT_ID");
   });
 
   it("removes item in box select mode", () => {

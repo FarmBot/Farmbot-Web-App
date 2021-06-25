@@ -80,7 +80,7 @@ describe("<PointLayer/>", () => {
   });
 
   it("shows empty interpolation map", () => {
-    mockPath = "/app/designer/location_info";
+    mockPath = "/app/designer/location";
     const wrapper = svgMount(<PointLayer {...fakeProps()} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
@@ -88,7 +88,7 @@ describe("<PointLayer/>", () => {
   });
 
   it("shows interpolation map", () => {
-    mockPath = "/app/designer/location_info";
+    mockPath = "/app/designer/location";
     const p = fakeProps();
     tagAsSoilHeight(p.genericPoints[0]);
     const wrapper = svgMount(<PointLayer {...p} />);

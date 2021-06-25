@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { push } from "../history";
 import { TaggedPlant, Mode } from "../farm_designer/map/interfaces";
@@ -10,11 +10,13 @@ import {
 } from "../farm_designer/map/actions";
 import { plantAge } from "./map_state_to_props";
 import { getMode } from "../farm_designer/map/util";
+import { isUndefined, round } from "lodash";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
   dispatch: Function;
   hovered: boolean;
+  distance?: number;
 }
 
 interface PlantInventoryItemState {
@@ -74,7 +76,10 @@ export class PlantInventoryItem extends
         {label}
       </span>
       <i className="plant-search-item-age">
-        {plantAge(plant)} {t("days old")}
+        {!isUndefined(this.props.distance)
+          ? `(${plant.body.x}, ${plant.body.y})
+             ${round(this.props.distance)}mm ${t("away")}`
+          : `${plantAge(plant)} ${t("days old")}`}
       </i>
     </div>;
   }

@@ -4,6 +4,7 @@ import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
 import moment from "moment";
 import { t } from "../../i18next_wrapper";
+import { isUndefined, round } from "lodash";
 
 enum TableColWidth {
   sensor = 125,
@@ -69,6 +70,7 @@ export const TableRow = (props: TableRowProps) => {
     </td>
     <td style={{ width: `${TableColWidth.location}px` }}>
       {!props.hideLocation && xyzTableEntry(x, y, z)}
+      {!isUndefined(props.distance) && ` ${round(props.distance)}mm ${t("away")}`}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
       {formatLogTime(moment(created_at).unix(), timeSettings)}

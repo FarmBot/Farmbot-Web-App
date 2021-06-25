@@ -34,7 +34,7 @@ export const logVersionMatch =
 export const xyzTableEntry =
   (x: number | undefined, y: number | undefined, z: number | undefined) =>
     (isNumber(x) && isNumber(y) && isNumber(z))
-      ? `${x}, ${y}, ${z}`
+      ? `(${x}, ${y}, ${z})`
       : t("Unknown");
 
 interface LogVerbositySaucerProps {
