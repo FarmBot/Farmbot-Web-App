@@ -232,8 +232,8 @@ interface ItemListWrapperProps {
 }
 
 function ItemListWrapper(props: ItemListWrapperProps) {
-  const items = sortBy(groupItemsByLocation(props.items, props.chosenXY),
-    SORT_KEYS);
+  const { chosenXY } = props;
+  const items = sortBy(groupItemsByLocation(props.items, chosenXY), SORT_KEYS);
   const [expanded, setExpanded] = React.useState(false);
   if (items.length < 1) { return <label>{`${props.title} (0)`}</label>; }
   const hide = (distance: number | undefined) => isUndefined(distance) ||
@@ -249,12 +249,12 @@ function ItemListWrapper(props: ItemListWrapperProps) {
       <div className={"location-items"}>
         {firstItem.kind == "Point" &&
           firstItem.body.pointer_type == "GenericPointer" &&
-          props.chosenXY &&
+          chosenXY &&
           <div className={"interpolated-soil-height"}>
             <p className={"title"}>
-              {t("Interpolated Soil Z at")} ({props.chosenXY.x}, {props.chosenXY.y}):
+              {t("Interpolated Soil Z at")} ({chosenXY.x}, {chosenXY.y}):
             </p>
-            <p>{interpolatedZ(props.chosenXY, props.items as TaggedGenericPointer[],
+            <p>{interpolatedZ(chosenXY, props.items as TaggedGenericPointer[],
               options)}mm</p>
           </div>}
         {items.map(data => {
@@ -271,7 +271,7 @@ function ItemListWrapper(props: ItemListWrapperProps) {
                   dispatch={props.dispatch} />
                 : <SoilHeightListItem
                   key={key}
-                  chosenXY={props.chosenXY}
+                  chosenXY={chosenXY}
                   soilHeightPoints={data as ItemData<TaggedGenericPointer>}
                   allSoilHeightPoints={props.items as TaggedGenericPointer[]}
                   getColorOverride={props.getColorOverride}
@@ -290,7 +290,7 @@ function ItemListWrapper(props: ItemListWrapperProps) {
                 images={data as ItemData<TaggedImage>}
                 dispatch={props.dispatch}
                 getConfigValue={props.getConfigValue}
-                chosenXY={props.chosenXY}
+                chosenXY={chosenXY}
                 timeSettings={props.timeSettings}
                 env={props.env} />;
           }

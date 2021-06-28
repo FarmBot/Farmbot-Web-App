@@ -106,8 +106,13 @@ export const InterpolationMap = (props: InterpolationMapProps) => {
     {getInterpolationData().map(p => {
       const { x, y, z } = p;
       const { qx, qy } = transformXY(x, y, props.mapTransformProps);
+      const { quadrant } = props.mapTransformProps;
+      const xOffset = [1, 4].includes(quadrant);
+      const yOffset = [3, 4].includes(quadrant);
       return <rect key={`${x}-${y}`}
-        x={qx} y={qy} width={step} height={step}
+        x={qx - (xOffset ? step : 0)}
+        y={qy - (yOffset ? step : 0)}
+        width={step} height={step}
         fill={props.getColor(z)} fillOpacity={0.75} />;
     })}
   </g>;

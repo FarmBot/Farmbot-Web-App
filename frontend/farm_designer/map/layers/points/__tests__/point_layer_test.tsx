@@ -96,4 +96,15 @@ describe("<PointLayer/>", () => {
     expect(layer.find("#interpolation-map").length).toEqual(1);
     expect(layer.find("rect").length).toEqual(450);
   });
+
+  it("shows interpolation map in quadrant 4", () => {
+    mockPath = "/app/designer/location";
+    const p = fakeProps();
+    p.mapTransformProps.quadrant = 4;
+    tagAsSoilHeight(p.genericPoints[0]);
+    const wrapper = svgMount(<PointLayer {...p} />);
+    const layer = wrapper.find("#point-layer");
+    expect(layer.find("#interpolation-map").length).toEqual(1);
+    expect(layer.find("rect").length).toEqual(450);
+  });
 });

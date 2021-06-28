@@ -849,6 +849,11 @@
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
+    .location-actions {
+      p {
+        margin-top: 1rem;
+      }
+    }
     h1 {
       text-align: center;
       font-size: 2rem;
