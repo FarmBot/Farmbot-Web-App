@@ -30,6 +30,7 @@ describe("<Logs />", () => {
     sourceFbosConfig: jest.fn(),
     getConfigValue: x => mockStorj[x],
     bot: bot,
+    fbosVersion: undefined,
   });
 
   it("renders", () => {
@@ -164,6 +165,13 @@ describe("<Logs />", () => {
     expect(wrapper.instance().state.warn).toEqual(1);
   });
 
+  it("toggles setting", () => {
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
+    expect(wrapper.state().currentFbosOnly).toEqual(false);
+    wrapper.instance().toggleCurrentFbosOnly();
+    expect(wrapper.state().currentFbosOnly).toEqual(true);
+  });
+
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
@@ -212,5 +220,20 @@ describe("<Logs />", () => {
     p.logs[0].body["patch_version" as keyof Log] = 3 as never;
     const wrapper = mount(<Logs {...p} />);
     expect(wrapper.html()).toContain("fa-check");
+    expect(wrapper.text()).toContain("message 1");
+    expect(wrapper.text()).toContain("message 2");
+  });
+
+  it("shows only current logs", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.controller_version = "1.2.3";
+    p.logs[0].body.major_version = 1;
+    p.logs[0].body.minor_version = 2;
+    p.logs[0].body["patch_version" as keyof Log] = 3 as never;
+    const wrapper = mount(<Logs {...p} />);
+    wrapper.setState({ currentFbosOnly: true });
+    expect(wrapper.html()).toContain("fa-check");
+    expect(wrapper.text()).toContain("message 1");
+    expect(wrapper.text()).not.toContain("message 2");
   });
 });

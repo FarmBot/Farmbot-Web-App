@@ -23,6 +23,8 @@ module Devices
         :peripherals_lighting,
         :peripherals_peripheral_4,
         :peripherals_peripheral_5,
+        :peripherals_rotary_tool,
+        :peripherals_rotary_tool_reverse,
 
         # PIN BINDINGS ===========================
         :pin_bindings_button_1,
@@ -104,6 +106,8 @@ module Devices
 
       def peripherals_vacuum; end
       def peripherals_water; end
+      def peripherals_rotary_tool; end
+      def peripherals_rotary_tool_reverse; end
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end

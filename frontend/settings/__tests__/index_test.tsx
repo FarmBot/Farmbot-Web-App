@@ -175,6 +175,13 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("setup");
   });
 
+  it("renders extra setting", () => {
+    const p = fakeProps();
+    p.searchTerm = "re-seed";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("re-seed");
+  });
+
   it("renders dev settings", () => {
     const p = fakeProps();
     p.searchTerm = "developer";

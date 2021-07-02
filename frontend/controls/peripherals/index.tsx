@@ -73,7 +73,7 @@ export class Peripherals
       { pin: 9, label: t("Vacuum") },
     ];
     const ROTARY_TOOL = [
-      { pin: 2, label: t("Rotary Tool Forward") },
+      { pin: 2, label: t("Rotary Tool") },
       { pin: 3, label: t("Rotary Tool Reverse") },
     ];
     const EXTRA_PERIPHERALS = [

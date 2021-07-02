@@ -102,6 +102,8 @@ export const LogsTable = (props: LogsTableProps) => {
       <tbody>
         {filterByVerbosity(getFilterLevel(props.state), props.logs)
           .filter(bySearchTerm(props.state.searchTerm, props.timeSettings))
+          .filter(log => !props.state.currentFbosOnly || !props.fbosVersion ||
+            logVersionMatch(log, props.fbosVersion))
           .map((log: TaggedLog) =>
             <LogsRow
               key={log.uuid}

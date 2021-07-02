@@ -29,6 +29,7 @@ module Devices
         WATERING_NOZZLE = "Watering Nozzle"
         WEEDER = "Weeder"
         ROTARY_TOOL = "Rotary Tool"
+        ROTARY_TOOL_REVERSE = "Rotary Tool Reverse"
         LIGHTING = "Lighting"
         SEED_TROUGH_1 = "Seed Trough 1"
         SEED_TROUGH_2 = "Seed Trough 2"
