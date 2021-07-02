@@ -44,7 +44,7 @@ const AXES_PANEL = [
   DeviceSetting.findAxisLength,
   DeviceSetting.axisLength,
   DeviceSetting.safeHeight,
-  DeviceSetting.soilHeight,
+  DeviceSetting.fallbackSoilHeight,
 ];
 const MOTORS_PANEL = [
   DeviceSetting.motors,

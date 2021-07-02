@@ -12,9 +12,10 @@ const fakeBulletin: Bulletin = {
 };
 
 let mockData: Bulletin | undefined = fakeBulletin;
+const mockSeedAccount = jest.fn();
 jest.mock("../actions", () => ({
   fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
-  seedAccount: jest.fn(),
+  seedAccount: () => mockSeedAccount,
 }));
 
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
@@ -33,8 +34,8 @@ jest.mock("../../farmware/state_to_props", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
-import { AlertCard, changeFirmwareHardware } from "../cards";
+import { mount, shallow } from "enzyme";
+import { AlertCard, changeFirmwareHardware, ReSeedAccount } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
@@ -253,5 +254,15 @@ describe("changeFirmwareHardware()", () => {
   it("doesn't change firmware hardware value: no dispatch", () => {
     changeFirmwareHardware(undefined)({ label: "Arduino", value: "arduino" });
     expect(updateConfig).not.toHaveBeenCalled();
+  });
+});
+
+describe("<ReSeedAccount />", () => {
+  it("changes selection", () => {
+    window.confirm = () => true;
+    const wrapper = shallow(<ReSeedAccount />);
+    wrapper.find(FBSelect).simulate("change", { label: "", value: "selection" });
+    wrapper.find("button").last().simulate("click");
+    expect(mockSeedAccount).toHaveBeenCalledWith({ label: "", value: "selection" });
   });
 });

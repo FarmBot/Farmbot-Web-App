@@ -37,6 +37,14 @@ describe Api::DevicesController do
       device.peripherals.find_by(label: "Water")
     end
 
+    def peripherals_rotary_tool?(device)
+      device.peripherals.find_by(label: "Rotary Tool")
+    end
+
+    def peripherals_rotary_tool_reverse?(device)
+      device.peripherals.find_by(label: "Rotary Tool Reverse")
+    end
+
     def pin_bindings_button_1?(device)
       device.pin_bindings.find_by(pin_num: 16)
     end
@@ -261,6 +269,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to eq(10)
       expect(peripherals_water?(device).pin).to eq(9)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device)).to_not be
       expect(pin_bindings_button_2?(device)).to_not be
       expect(plants?(device)).to be false
@@ -324,6 +334,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device)).to_not be
       expect(pin_bindings_button_2?(device)).to_not be
       expect(plants?(device)).to be false
@@ -387,6 +399,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -450,6 +464,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -515,6 +531,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device).pin).to eq(2)
+      expect(peripherals_rotary_tool_reverse?(device).pin).to eq(3)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -581,6 +599,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -644,6 +664,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -709,6 +731,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device).pin).to eq(12)
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device).pin).to eq(2)
+      expect(peripherals_rotary_tool_reverse?(device).pin).to eq(3)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -775,6 +799,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -834,6 +860,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -893,6 +921,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false
@@ -952,6 +982,8 @@ describe Api::DevicesController do
       expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device)).to_not be
+      expect(peripherals_rotary_tool_reverse?(device)).to_not be
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plants?(device)).to be false

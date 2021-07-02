@@ -17,7 +17,7 @@ import { Pins } from "farmbot/dist";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
 
-describe("<PeripheralList/>", function () {
+describe("<PeripheralList />", () => {
   const fakeProps = (): PeripheralListProps => {
     const peripherals: TaggedPeripheral[] = [
       {
@@ -136,5 +136,14 @@ describe("<AnalogSlider />", () => {
     const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
     wrapper.find(Slider).simulate("release", 128);
     expect(mockDevice.writePin).not.toHaveBeenCalled();
+  });
+
+  it("renders read value", () => {
+    const p = fakeProps();
+    p.initialValue = 1000;
+    const wrapper = shallow(<AnalogSlider {...p} />);
+    expect(wrapper.find(Slider).props().value).toEqual(249);
+    wrapper.find(Slider).simulate("change", 128);
+    expect(wrapper.find(Slider).props().value).toEqual(128);
   });
 });

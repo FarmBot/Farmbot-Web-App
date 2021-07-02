@@ -148,8 +148,13 @@ export namespace ToolTips {
     which the z axis is all of the way up to provide as much clearance as
     possible. (default: 0)`);
 
-  export const SOIL_HEIGHT =
-    trim(`Z axis coordinate (millimeters) of soil level. (default: 0)`);
+  export const FALLBACK_SOIL_HEIGHT =
+    trim(`Z axis coordinate (millimeters) of soil level. This value will
+    only be used if there are no soil height measurements available. To add
+    soil height measurements, run a sequence with the MEASURE SOIL HEIGHT
+    command in a grid over your garden. Alternatively, use a ruler to
+    manually measure the height at various locations in the garden and add
+    corresponding soil height points from the points panel. (default: 0)`);
 
   // Hardware Settings: Motors
   export const MAX_SPEED =
@@ -643,6 +648,10 @@ export namespace Content {
     tools, sensors, peripherals, sequences, and more to get you up and running
     faster. If you want to start completely from scratch, feel free to select
     "Custom bot" and we won't change a thing.`);
+
+  export const RE_SEED_ACCOUNT =
+    trim(`Seeding your account without resetting it first may result in
+    duplicate resources. Continue?`);
 
   export const TAKE_A_TOUR =
     trim(`Since you're new around here, we recommend taking our guided tours
@@ -1707,7 +1716,7 @@ export enum DeviceSetting {
   findAxisLength = `Find axis length (mm)`,
   axisLength = `Set Axis Length (mm)`,
   safeHeight = `Safe Height`,
-  soilHeight = `Soil Height`,
+  fallbackSoilHeight = `Fallback Soil Height`,
 
   // Motors
   motors = `Motors`,

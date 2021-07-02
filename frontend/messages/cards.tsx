@@ -300,6 +300,26 @@ class SeedDataMissing
   }
 }
 
+export const ReSeedAccount = () => {
+  const [selection, setSelection] = React.useState("");
+  return <Row className={"re-seed"}>
+    <Col xs={6}>
+      <FBSelect
+        key={selection}
+        list={SEED_DATA_OPTIONS()}
+        selectedItem={SEED_DATA_OPTIONS_DDI[selection]}
+        onChange={ddi => setSelection("" + ddi.value)} />
+    </Col>
+    <Col xs={6}>
+      <button className={"fb-button green"}
+        onClick={() => selection && confirm(t(Content.RE_SEED_ACCOUNT)) &&
+          seedAccount()({ label: "", value: selection })}>
+        {t("re-seed account")}
+      </button>
+    </Col>
+  </Row>;
+};
+
 const TourNotTaken = (props: TourNotTakenProps) =>
   <AlertCardTemplate
     alert={props.alert}

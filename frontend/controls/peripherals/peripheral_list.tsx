@@ -7,6 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
 import { ANALOG } from "farmbot";
 import { lockedClass } from "../locked_class";
+import { round } from "lodash";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list">
@@ -47,21 +48,23 @@ export interface AnalogSliderProps {
 
 interface AnalogSliderState {
   value: number;
+  controlled: boolean;
 }
 
 export class AnalogSlider
   extends React.Component<AnalogSliderProps, AnalogSliderState> {
-  state: AnalogSliderState = { value: 0 };
+  state: AnalogSliderState = { value: 0, controlled: false };
   render() {
     const { pin } = this.props;
+    const readValue = round((this.props.initialValue || 0) / 1024 * 255);
     return <div className={"slider-container"}>
       <Slider
         disabled={!!this.props.disabled}
         min={0}
         max={255}
         labelStepSize={255}
-        value={this.state.value}
-        onChange={value => this.setState({ value })}
+        value={this.state.controlled ? this.state.value : readValue}
+        onChange={value => this.setState({ value, controlled: true })}
         onRelease={value => pin && writePin(pin, value, ANALOG)} />
     </div>;
   }

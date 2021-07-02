@@ -31,6 +31,7 @@ import { EnvEditor } from "../photos/data_management/env_editor";
 import { BooleanSetting } from "../session_keys";
 import { ChangeOwnershipForm } from "./transfer_ownership/change_ownership_form";
 import { SetupWizardSettings } from "../wizard/settings";
+import { ReSeedAccount } from "../messages/cards";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -148,6 +149,8 @@ export class RawDesignerSettings
             dispatch={this.props.dispatch}
             device={this.props.deviceAccount}
             wizardStepResults={this.props.wizardStepResults} />}
+        {this.props.searchTerm.toLowerCase() == "re-seed" &&
+          <ReSeedAccount />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}

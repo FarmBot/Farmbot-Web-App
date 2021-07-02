@@ -53,6 +53,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
     assertion: this.initialize(NumericSetting.assertion_log, 1),
     searchTerm: "",
     markdown: true,
+    currentFbosOnly: false,
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
@@ -75,13 +76,16 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
     };
   };
 
+  toggleCurrentFbosOnly = () =>
+    this.setState({ currentFbosOnly: !this.state.currentFbosOnly })
+
   /** Determine if log type filters are active. */
   get filterActive() {
     const filterKeys = filterStateKeys(this.state);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
-    return !filterValues.every(x => x == 3);
+    return !filterValues.every(x => x == 3) || this.state.currentFbosOnly;
   }
 
   render() {
@@ -114,6 +118,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
               </button>
               <LogsFilterMenu
                 toggle={this.toggle} state={this.state}
+                toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
                 setFilterLevel={this.setFilterLevel} />
             </Popover>
           </div>
@@ -139,7 +144,8 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
             concat(forceOnline() ? [demoAccountLog()] : [])}
           dispatch={dispatch}
           state={this.state}
-          fbosVersion={bot.hardware.informational_settings.controller_version}
+          fbosVersion={bot.hardware.informational_settings.controller_version
+            || this.props.fbosVersion}
           timeSettings={this.props.timeSettings} />
       </Row>
     </Page>;
