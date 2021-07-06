@@ -14,6 +14,9 @@ describe Api::DevicesController do
     it "resets a bot" do
       sign_in user
       device = user.device
+      f1 = Folder.create!(device: device, name: "f1", parent_id: nil, color: "red")
+      f2 = Folder.create!(device: device, name: "f2", parent_id: f1.id, color: "red")
+      f3 = Folder.create!(device: device, name: "f3", parent_id: f2.id, color: "red")
       resources.map do |resource|
         FactoryBot.create(resource.to_sym, device: device)
       end

@@ -21,6 +21,7 @@ module Devices
     def run_it
       ActiveRecord::Base.transaction do
         device.update!(name: "FarmBot", mounted_tool_id: nil)
+        device.folders.update_all(parent_id: nil)
         Device::SINGULAR_RESOURCES.keys.map do |resource|
           device.send(resource).destroy!
         end
