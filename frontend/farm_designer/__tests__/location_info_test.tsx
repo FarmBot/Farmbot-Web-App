@@ -39,6 +39,23 @@ describe("<LocationInfo />", () => {
     expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
   });
 
+  it("handles missing sensor pin", () => {
+    const p = fakeProps();
+    p.sensors[0].body.pin = undefined;
+    const wrapper = mount(<LocationInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
+  });
+
+  it("updates query", () => {
+    location.search = "?x=123?y=456";
+    const p = fakeProps();
+    mount(<LocationInfo {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: 123, y: 456, z: 0 },
+    });
+  });
+
   it("renders items", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 0, y: 0, z: 0 };
@@ -60,10 +77,8 @@ describe("<LocationInfo />", () => {
     tagAsSoilHeight(point1);
     p.genericPoints = [point0, point1];
     const wrapper = mount(<LocationInfo {...p} />);
-    ["sensor", "height"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    ["plant", "image"].map(string =>
-      expect(wrapper.text().toLowerCase()).not.toContain(string));
+    ["readings (1)", "measurements (1)", "plants (0)", "images (0)"]
+      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("unmounts", () => {
@@ -97,6 +112,7 @@ describe("<LocationInfo />", () => {
     image.uuid = "imageUuid";
     p.images = [image];
     const wrapper = mount(<LocationInfo {...p} />);
+    wrapper.find(".expandable-header").map(x => x.simulate("click"));
     jest.clearAllMocks();
     wrapper.find(".plant-search-item").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({

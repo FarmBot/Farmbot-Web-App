@@ -12,7 +12,6 @@ type Value = string | number | boolean | undefined;
 const DEFAULT_FBOS_CONFIG_VALUES: Record<Key, Value> = {
   id: 0,
   device_id: 0,
-  disable_factory_reset: true, // to be removed
   firmware_input_log: false,
   firmware_output_log: false,
   sequence_body_log: false,
@@ -22,7 +21,6 @@ const DEFAULT_FBOS_CONFIG_VALUES: Record<Key, Value> = {
   fw_auto_update: true,
   arduino_debug_messages: false,
   firmware_debug_log: false,
-  network_not_found_timer: undefined, // to be removed
   firmware_hardware: undefined,
   firmware_path: undefined,
   update_channel: "stable",

@@ -300,7 +300,7 @@ export const getMode = (): Mode => {
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[3] === "move_to") { return Mode.moveTo; }
-    if (pathArray[3] === "location_info") { return Mode.locationInfo; }
+    if (pathArray[3] === "location") { return Mode.locationInfo; }
     if (pathArray[3] === "points") {
       if (pathArray[4] === "add") { return Mode.createPoint; }
       return Mode.points;

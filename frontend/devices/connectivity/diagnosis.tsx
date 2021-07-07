@@ -63,11 +63,11 @@ export function Diagnosis(props: DiagnosisProps) {
         </p>
         <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
           <i className="fa fa-external-link" />
-          {t("Click here to learn more about error codes.")}
+          {t("Click here to learn more about connectivity codes.")}
         </a>
         <a onClick={docLinkClick("for-it-security-professionals")}>
           <i className="fa fa-external-link" />
-          {t("Click here for IT security professionals info.")}
+          {t("Click here for document to show to your IT department.")}
         </a>
       </Col>
     </Row>

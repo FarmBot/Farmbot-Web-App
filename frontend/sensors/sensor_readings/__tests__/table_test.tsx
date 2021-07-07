@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { SensorReadingsTable } from "../table";
 import { SensorReadingsTableProps } from "../interfaces";
@@ -8,21 +8,32 @@ import {
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadingsTable />", () => {
-  function fakeProps(sr = fakeSensorReading()): SensorReadingsTableProps {
-    return {
-      readingsForPeriod: () => [sr],
-      sensors: [fakeSensor()],
-      timeSettings: fakeTimeSettings(),
-      hover: jest.fn(),
-      hovered: undefined,
-    };
-  }
+  const fakeProps = (sr = fakeSensorReading()): SensorReadingsTableProps => ({
+    readingsForPeriod: () => [sr],
+    sensors: [fakeSensor()],
+    timeSettings: fakeTimeSettings(),
+    hover: jest.fn(),
+    hovered: undefined,
+  });
 
   it("renders", () => {
     const wrapper = mount(<SensorReadingsTable {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
     ["sensor", "value", "mode", "(x, y, z)", "time",
       "(pin 1)", "10, 20, 30", "digital"]
+      .map(string => expect(txt).toContain(string));
+  });
+
+  it("handles missing pin", () => {
+    const p = fakeProps();
+    p.sensors[0].body.pin = undefined;
+    const sr = fakeSensorReading();
+    sr.body.pin = 0;
+    p.readingsForPeriod = () => [sr];
+    const wrapper = mount(<SensorReadingsTable {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    ["sensor", "value", "mode", "(x, y, z)", "time",
+      "(pin 0)", "10, 20, 30", "digital"]
       .map(string => expect(txt).toContain(string));
   });
 

@@ -11,7 +11,7 @@ import {
 import { timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
-import { isNumber, startCase } from "lodash";
+import { isNumber, isUndefined, round, startCase } from "lodash";
 import { isBotOnline, MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
@@ -88,11 +88,12 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     : "";
   const imageShowMenuProps = { dispatch, flags, image, size };
   return <div className="photos-footer">
-    <Popover className={"image-show-menu-target"}
-      popoverClassName={"image-show-menu-popover"}>
-      <ImageShowMenuTarget {...imageShowMenuProps} />
-      <ImageShowMenu {...imageShowMenuProps} />
-    </Popover>
+    {flags &&
+      <Popover className={"image-show-menu-target"}
+        popoverClassName={"image-show-menu-popover"}>
+        <ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />
+        <ImageShowMenu {...imageShowMenuProps} flags={flags} />
+      </Popover>}
     {image &&
       <div className={"image-created-at"}>
         <span>{created_at}</span>
@@ -112,6 +113,11 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
         : <div className={"meta-info"}>
           <label>{t("Image")}:</label>
           <span>{t("No meta data.")}</span>
+        </div>}
+      {!isUndefined(props.distance) &&
+        <div className={"meta-info"}>
+          <label>{t("Distance")}:</label>
+          <span>{round(props.distance)}</span>
         </div>}
     </div>
   </div>;

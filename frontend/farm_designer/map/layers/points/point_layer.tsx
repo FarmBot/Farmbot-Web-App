@@ -6,8 +6,9 @@ import { CameraCalibrationData, DesignerState } from "../../../interfaces";
 import { getSoilHeightColor } from "../../../../points/soil_height";
 import { getMode } from "../../util";
 import {
-  generateData, InterpolationKey, InterpolationMap,
+  fetchInterpolationOptions, generateData, InterpolationMap,
 } from "./interpolation_map";
+import { getPathArray } from "../../../../history";
 
 export interface PointLayerProps {
   visible: boolean;
@@ -26,15 +27,16 @@ export function PointLayer(props: PointLayerProps) {
   const getColor = getSoilHeightColor(genericPoints);
   const style: React.CSSProperties =
     props.interactions ? {} : { pointerEvents: "none" };
-  const stepSize = parseInt(localStorage.getItem(InterpolationKey.step) || "25");
-  generateData({ genericPoints, mapTransformProps, getColor, stepSize });
+  const options = fetchInterpolationOptions();
+  generateData({ genericPoints, mapTransformProps, getColor, options });
   return <g id={"point-layer"} style={style}>
-    {visible && getMode() == Mode.locationInfo &&
+    {visible && (getMode() == Mode.locationInfo ||
+      getPathArray()[3] == "location") &&
       <InterpolationMap
         genericPoints={genericPoints}
         getColor={getColor}
         mapTransformProps={mapTransformProps}
-        stepSize={stepSize} />}
+        options={options} />}
     {visible &&
       genericPoints.filter(p => !p.body.meta.gridId
         || gridIds.length == 0

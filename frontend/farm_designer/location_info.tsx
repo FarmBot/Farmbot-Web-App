@@ -2,7 +2,7 @@ import React from "react";
 import { Everything, TimeSettings } from "../interfaces";
 import { BotPosition, UserEnv } from "../devices/interfaces";
 import { connect } from "react-redux";
-import { validBotLocationData } from "../util/util";
+import { getUrlQuery, validBotLocationData } from "../util/util";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "./designer_panel";
@@ -22,19 +22,22 @@ import { MoveToForm } from "./move_to";
 import { Actions } from "../constants";
 import { push } from "../history";
 import { distance } from "../point_groups/paths";
-import { isUndefined, noop, round, sortBy } from "lodash";
+import { isUndefined, round, sortBy } from "lodash";
 import { PlantInventoryItem } from "../plants/plant_inventory_item";
 import { PointInventoryItem } from "../points/point_inventory_item";
-import { FlipperImage } from "../photos/images/flipper_image";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
 import { getEnv } from "../farmware/state_to_props";
 import { TableRow } from "../sensors/sensor_readings/table";
 import { unselectPlant } from "./map/actions";
-import { Col, EmptyStateGraphic, EmptyStateWrapper, Row } from "../ui";
-import { formatLogTime } from "../logs";
-import moment from "moment";
+import { EmptyStateGraphic, EmptyStateWrapper, ExpandableHeader } from "../ui";
+import {
+  fetchInterpolationOptions, interpolatedZ,
+} from "./map/layers/points/interpolation_map";
+import { Collapse } from "@blueprintjs/core";
+import { ImageFlipper } from "../photos/images/image_flipper";
+import { PhotoFooter } from "../photos/images/photos";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -76,8 +79,22 @@ export const SORT_KEYS = ["points.body.created_at", "distance"];
 
 export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 
+  get chosenXY() {
+    return !isUndefined(this.props.chosenLocation.x)
+      && !isUndefined(this.props.chosenLocation.y)
+      ? { x: this.props.chosenLocation.x, y: this.props.chosenLocation.y }
+      : undefined;
+  }
+
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
+    const x = getUrlQuery("x");
+    const y = getUrlQuery("y");
+    !this.chosenXY && !isUndefined(x) && !isUndefined(y) &&
+      this.props.dispatch({
+        type: Actions.CHOOSE_LOCATION,
+        payload: { x: parseFloat(x), y: parseFloat(y), z: 0 }
+      });
   }
 
   componentWillUnmount() {
@@ -88,10 +105,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
   }
 
   render() {
-    const chosenXY = !isUndefined(this.props.chosenLocation.x)
-      && !isUndefined(this.props.chosenLocation.y)
-      ? { x: this.props.chosenLocation.x, y: this.props.chosenLocation.y }
-      : undefined;
+    const { chosenXY } = this;
     const allSoilHeightPoints = this.props.genericPoints
       .filter(p => soilHeightPoint(p));
     const getColorOverride = getSoilHeightColor(allSoilHeightPoints);
@@ -105,7 +119,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
       <DesignerPanelHeader
         panelName={"location-info"}
         panelColor={PanelColor.gray}
-        title={t("Location info")} />
+        title={chosenXY ? `(${chosenXY.x}, ${chosenXY.y})` : t("Location info")} />
       <DesignerPanelContent panelName={"location-info"}>
         <EmptyStateWrapper
           notEmpty={!isUndefined(this.props.chosenLocation.x)}
@@ -218,94 +232,73 @@ interface ItemListWrapperProps {
 }
 
 function ItemListWrapper(props: ItemListWrapperProps) {
-  const items = sortBy(groupItemsByLocation(props.items, props.chosenXY),
-    SORT_KEYS);
-  if (items.length < 1) { return <div className={"no-items"} />; }
+  const { chosenXY } = props;
+  const items = sortBy(groupItemsByLocation(props.items, chosenXY), SORT_KEYS);
+  const [expanded, setExpanded] = React.useState(false);
+  if (items.length < 1) { return <label>{`${props.title} (0)`}</label>; }
+  const hide = (distance: number | undefined) => isUndefined(distance) ||
+    (!isUndefined(items[0].distance) && distance > items[0].distance);
+  const title = `${props.title} (${items.filter(data =>
+    !hide(data.distance)).length})`;
+  const firstItem = items[0].items[0];
+  const options = fetchInterpolationOptions();
   return <div className={"location-items-wrapper"}>
-    <label>{props.title}</label>
-    <div className={"location-items"}>
-      {items.map(data => {
-        const key = JSON.stringify(data.xy);
-        if (isUndefined(data.distance)
-          || (items[0].distance && data.distance > items[0].distance)) {
-          return <div key={key} className={"no-items"} />;
-        }
-        const item = items[0].items[0];
-        switch (item.kind) {
-          case "Point":
-            return (item as TaggedPoint).body.pointer_type == "Plant"
-              ? <PlantListItem
+    <ExpandableHeader title={title} expanded={expanded}
+      onClick={() => setExpanded(!expanded)} />
+    <Collapse isOpen={expanded}>
+      <div className={"location-items"}>
+        {firstItem.kind == "Point" &&
+          firstItem.body.pointer_type == "GenericPointer" &&
+          chosenXY &&
+          <div className={"interpolated-soil-height"}>
+            <p className={"title"}>
+              {t("Interpolated Soil Z at")} ({chosenXY.x}, {chosenXY.y}):
+            </p>
+            <p>{interpolatedZ(chosenXY, props.items as TaggedGenericPointer[],
+              options)}mm</p>
+          </div>}
+        {items.map(data => {
+          const key = JSON.stringify(data.xy);
+          if (hide(data.distance)) {
+            return <div key={key} className={"no-items"} />;
+          }
+          switch (firstItem.kind) {
+            case "Point":
+              return (firstItem as TaggedPoint).body.pointer_type == "Plant"
+                ? <PlantListItem
+                  key={key}
+                  plants={data as ItemData<TaggedPlantPointer>}
+                  dispatch={props.dispatch} />
+                : <SoilHeightListItem
+                  key={key}
+                  chosenXY={chosenXY}
+                  soilHeightPoints={data as ItemData<TaggedGenericPointer>}
+                  allSoilHeightPoints={props.items as TaggedGenericPointer[]}
+                  getColorOverride={props.getColorOverride}
+                  dispatch={props.dispatch} />;
+            case "SensorReading":
+              return <ReadingsListItem
                 key={key}
-                plants={data as ItemData<TaggedPlantPointer>}
-                dispatch={props.dispatch} />
-              : <SoilHeightListItem
+                sensorReadings={data as ItemData<TaggedSensorReading>}
+                dispatch={props.dispatch}
+                timeSettings={props.timeSettings}
+                hoveredSensorReading={props.hoveredSensorReading}
+                sensorNameByPinLookup={props.sensorNameByPinLookup} />;
+            case "Image":
+              return <ImageListItem
                 key={key}
-                soilHeightPoints={data as ItemData<TaggedGenericPointer>}
-                getColorOverride={props.getColorOverride}
-                dispatch={props.dispatch} />;
-          case "SensorReading":
-            return <ReadingsListItem
-              key={key}
-              sensorReadings={data as ItemData<TaggedSensorReading>}
-              dispatch={props.dispatch}
-              timeSettings={props.timeSettings}
-              hoveredSensorReading={props.hoveredSensorReading}
-              sensorNameByPinLookup={props.sensorNameByPinLookup} />;
-          case "Image":
-            return <ImageListItem
-              key={key}
-              images={data as ItemData<TaggedImage>}
-              dispatch={props.dispatch}
-              getConfigValue={props.getConfigValue}
-              chosenXY={props.chosenXY}
-              timeSettings={props.timeSettings}
-              env={props.env} />;
-        }
-      })}
-    </div>
+                images={data as ItemData<TaggedImage>}
+                dispatch={props.dispatch}
+                getConfigValue={props.getConfigValue}
+                chosenXY={chosenXY}
+                timeSettings={props.timeSettings}
+                env={props.env} />;
+          }
+        })}
+      </div>
+    </Collapse>
   </div>;
 }
-
-interface LocationDistanceProps {
-  xy: Record<"x" | "y", number>;
-  distance: number | undefined;
-  soilZ?: number;
-}
-
-const LocationDistance = (props: LocationDistanceProps) =>
-  <div className={"location-distance"}>
-    <Row>
-      <Col xs={3}>
-        <p className={"title"}>{t("X axis")}</p>
-      </Col>
-      <Col xs={3}>
-        <p className={"title"}>{t("Y axis")}</p>
-      </Col>
-      <Col xs={3}>
-        <p className={"title"}>{t("Distance")}</p>
-      </Col>
-      {!isUndefined(props.soilZ) &&
-        <Col xs={3}>
-          <p className={"title"}>{t("Soil Z")}</p>
-        </Col>}
-    </Row>
-    <Row>
-      <Col xs={3}>
-        <p>{props.xy.x}</p>
-      </Col>
-      <Col xs={3}>
-        <p>{props.xy.y}</p>
-      </Col>
-      <Col xs={3}>
-        <p>{round(props.distance || 0)}mm</p>
-      </Col>
-      {!isUndefined(props.soilZ) &&
-        <Col xs={3}>
-          <p>{!isUndefined(props.distance) && props.soilZ}mm</p>
-        </Col>}
-    </Row>
-    <hr />
-  </div>;
 
 interface PlantListItemProps {
   plants: ItemData<TaggedPlantPointer>;
@@ -314,34 +307,36 @@ interface PlantListItemProps {
 
 const PlantListItem = (props: PlantListItemProps) =>
   <div className={"plant-items"}>
-    <LocationDistance xy={props.plants.xy} distance={props.plants.distance} />
     {props.plants.items.map(p =>
       <PlantInventoryItem
         key={p.uuid}
         plant={p}
         hovered={false}
+        distance={props.plants.distance}
         dispatch={props.dispatch} />)}
   </div>;
 
 interface SoilHeightListItemProps {
   soilHeightPoints: ItemData<TaggedGenericPointer>;
+  allSoilHeightPoints: TaggedGenericPointer[];
   dispatch: Function;
   getColorOverride: Function;
+  chosenXY: Record<"x" | "y", number> | undefined;
 }
 
-const SoilHeightListItem = (props: SoilHeightListItemProps) =>
-  <div className={"soil-height-items"}>
-    <LocationDistance
-      xy={props.soilHeightPoints.xy}
-      soilZ={props.soilHeightPoints.items[0].body.z}
-      distance={props.soilHeightPoints.distance} />
-    {props.soilHeightPoints.items.map(p =>
+const SoilHeightListItem = (props: SoilHeightListItemProps) => {
+  const { items, distance } = props.soilHeightPoints;
+  return <div className={"soil-height-items"}>
+    {items.map(p =>
       <PointInventoryItem
         key={p.uuid}
         tpp={p}
         hovered={false}
         colorOverride={props.getColorOverride(p.body.z)}
-        dispatch={props.dispatch} />)}</div>;
+        distance={distance}
+        dispatch={props.dispatch} />)}
+  </div>;
+};
 
 interface ReadingsListItemProps {
   sensorReadings: ItemData<TaggedSensorReading>,
@@ -353,9 +348,6 @@ interface ReadingsListItemProps {
 
 const ReadingsListItem = (props: ReadingsListItemProps) =>
   <div className={"sensor-reading-items"}>
-    <LocationDistance
-      xy={props.sensorReadings.xy}
-      distance={props.sensorReadings.distance} />
     <div className="sensor-history-table">
       <table className="sensor-history-table-contents">
         <tbody>
@@ -368,7 +360,7 @@ const ReadingsListItem = (props: ReadingsListItemProps) =>
               sensorReading={item}
               timeSettings={props.timeSettings}
               period={"current"}
-              hideLocation={true}
+              distance={props.sensorReadings.distance}
               hover={hovered => props.dispatch({
                 type: Actions.HOVER_SENSOR_READING,
                 payload: hovered,
@@ -389,43 +381,40 @@ interface ImageListItemProps {
   timeSettings: TimeSettings;
 }
 
-const ImageListItem = (props: ImageListItemProps) =>
-  <div className={"image-items"}>
-    <LocationDistance
-      xy={props.images.xy}
-      distance={props.images.distance} />
-    <div className={"horizontal-scroll"}>
-      {sortBy(props.images.items, "body.created_at").reverse().map(image =>
-        <div className={"image-item"}
-          key={image.body.attachment_url}>
-          <FlipperImage
-            crop={true}
-            transformImage={true}
-            dispatch={props.dispatch}
-            getConfigValue={props.getConfigValue}
-            flipperId={image.uuid}
-            env={props.env}
-            onImageLoad={noop}
-            hover={hovered => props.dispatch({
-              type: Actions.HOVER_IMAGE,
-              payload: hovered,
-            })}
-            target={props.chosenXY}
-            image={image} />
-          <p>
-            {formatLogTime(moment(image.body.created_at).unix(),
-              props.timeSettings)}
-          </p>
-        </div>)}
-    </div>
+const ImageListItem = (props: ImageListItemProps) => {
+  const images = sortBy(props.images.items, "body.created_at").reverse();
+  return <div className={"image-items"}>
+    <ImageFlipper id={"image-items"}
+      currentImage={images[0]}
+      dispatch={props.dispatch}
+      currentImageSize={{ width: undefined, height: undefined }}
+      transformImage={true}
+      getConfigValue={props.getConfigValue}
+      env={props.env}
+      crop={true}
+      hover={hovered => props.dispatch({
+        type: Actions.HOVER_IMAGE,
+        payload: hovered,
+      })}
+      target={props.chosenXY}
+      images={images} />
+    <PhotoFooter
+      image={images[0]}
+      flags={undefined}
+      size={{ width: undefined, height: undefined }}
+      dispatch={props.dispatch}
+      botOnline={false}
+      distance={props.images.distance}
+      timeSettings={props.timeSettings} />
   </div>;
+};
 
 export const LocationInfoModeLink = () =>
   <div className={"location-info-mode"}>
     <button
       className={"fb-button gray"}
       title={t("open location info panel")}
-      onClick={() => push("/app/designer/location_info")}>
+      onClick={() => push("/app/designer/location")}>
       {t("location info")}
     </button>
   </div>;

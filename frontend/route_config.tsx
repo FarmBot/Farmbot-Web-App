@@ -171,7 +171,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/location_info",
+    $: "/designer/location",
     getModule,
     key,
     getChild: () => import("./farm_designer/location_info"),

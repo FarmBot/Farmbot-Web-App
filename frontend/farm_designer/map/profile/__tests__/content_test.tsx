@@ -386,7 +386,7 @@ describe("<ProfileSvg />", () => {
     });
 
   it("renders interpolated soil", () => {
-    mockPath = "/app/designer/location_info";
+    mockPath = "/app/designer/location";
     const p = fakeProps();
     p.expanded = true;
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });

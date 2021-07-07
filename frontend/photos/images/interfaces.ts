@@ -14,6 +14,8 @@ export interface ImageFlipperProps {
   env: UserEnv;
   crop: boolean;
   transformImage: boolean;
+  hover?(hovered: string | undefined): void;
+  target?: Record<"x" | "y", number> | undefined;
 }
 
 export interface ImageFlipperState {
@@ -112,8 +114,9 @@ export interface PhotoFooterProps {
   size: Record<"width" | "height", number | undefined>;
   timeSettings: TimeSettings;
   dispatch: Function;
-  flags: ImageShowFlags;
+  flags: ImageShowFlags | undefined;
   botOnline: boolean;
+  distance?: number;
 }
 
 export interface MoveToLocationProps {

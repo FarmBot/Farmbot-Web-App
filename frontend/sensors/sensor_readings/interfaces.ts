@@ -42,6 +42,7 @@ export interface TableRowProps {
   hovered: string | undefined;
   hover: (hovered: string | undefined) => void;
   hideLocation?: boolean;
+  distance?: number;
 }
 
 export interface SensorSelectionProps {

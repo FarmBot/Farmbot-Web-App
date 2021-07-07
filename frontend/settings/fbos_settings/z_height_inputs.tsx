@@ -25,13 +25,13 @@ export const SafeHeight = (props: ZHeightInputProps) =>
   </Highlight>;
 
 export const SoilHeight = (props: ZHeightInputProps) =>
-  <Highlight settingName={DeviceSetting.soilHeight}>
+  <Highlight settingName={DeviceSetting.fallbackSoilHeight}>
     <Row>
       <Col xs={8}>
         <label>
-          {t(DeviceSetting.soilHeight)}
+          {t(DeviceSetting.fallbackSoilHeight)}
         </label>
-        <Help text={ToolTips.SOIL_HEIGHT} />
+        <Help text={ToolTips.FALLBACK_SOIL_HEIGHT} />
       </Col>
       <Col xs={4} className={"z-height-input"}>
         <BotConfigInputBox

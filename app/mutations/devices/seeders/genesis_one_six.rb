@@ -7,6 +7,14 @@ module Devices
           .update!(firmware_hardware: FbosConfig::FARMDUINO_K16)
       end
 
+      def peripherals_rotary_tool
+        add_peripheral(2, ToolNames::ROTARY_TOOL)
+      end
+
+      def peripherals_rotary_tool_reverse
+        add_peripheral(3, ToolNames::ROTARY_TOOL_REVERSE)
+      end
+
       def tool_slots_slot_7
         add_tool_slot(name: ToolNames::ROTARY_TOOL,
                       x: 50,

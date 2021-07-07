@@ -1,5 +1,7 @@
 import { Everything } from "../interfaces";
-import { selectAllLogs, maybeGetTimeSettings } from "../resources/selectors";
+import {
+  selectAllLogs, maybeGetTimeSettings, getDeviceAccountSettings,
+} from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue,
@@ -31,5 +33,6 @@ export function mapStateToProps(props: Everything): LogsProps {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
     bot: props.bot,
+    fbosVersion: getDeviceAccountSettings(props.resources.index).body.fbos_version,
   };
 }

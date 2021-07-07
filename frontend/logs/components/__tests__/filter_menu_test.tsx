@@ -1,6 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
-import { LogsFilterMenu } from "../filter_menu";
+import { LogsFilterMenu, NON_FILTER_SETTINGS } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
 import { MESSAGE_TYPES, MessageType } from "../../../sequences/interfaces";
@@ -9,7 +9,7 @@ const logTypes = MESSAGE_TYPES;
 
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
-    autoscroll: true, markdown: false, searchTerm: "",
+    autoscroll: true, markdown: false, searchTerm: "", currentFbosOnly: false,
     success: 1, busy: 1, warn: 1,
     error: 1, info: 1, fun: 1, debug: 1, assertion: 1,
   };
@@ -18,13 +18,14 @@ describe("<LogsFilterMenu />", () => {
     toggle: jest.fn(),
     setFilterLevel: jest.fn(),
     state: fakeState,
+    toggleCurrentFbosOnly: jest.fn(),
   });
 
   it("renders", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
     logTypes.filter(x => x !== "assertion").map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    ["autoscroll", "markdown", "searchTerm"].map(string =>
+    NON_FILTER_SETTINGS.map(string =>
       expect(wrapper.text().toLowerCase()).not.toContain(string));
   });
 
@@ -33,8 +34,16 @@ describe("<LogsFilterMenu />", () => {
     const wrapper = mount(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    ["autoscroll", "markdown", "searchTerm"].map(string =>
+    NON_FILTER_SETTINGS.map(string =>
       expect(wrapper.text().toLowerCase()).not.toContain(string));
+  });
+
+  it("renders setting on", () => {
+    const p = fakeProps();
+    p.state.currentFbosOnly = true;
+    const wrapper = mount(<LogsFilterMenu {...p} />);
+    expect(wrapper.find(".fb-toggle-button").first().hasClass("green"))
+      .toBeTruthy();
   });
 
   it("filters logs", () => {

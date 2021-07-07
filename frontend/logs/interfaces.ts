@@ -10,6 +10,7 @@ export interface LogsProps {
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
   bot: BotState;
+  fbosVersion: string | undefined;
 }
 
 export type Filters = Record<ALLOWED_MESSAGE_TYPES, number>;
@@ -18,6 +19,7 @@ export interface LogsState extends Filters {
   autoscroll: boolean;
   searchTerm: string;
   markdown: boolean;
+  currentFbosOnly: boolean;
 }
 
 export interface LogsTableProps {
@@ -35,6 +37,7 @@ export interface LogsFilterMenuProps {
   toggle: (property: keyof LogsState) => ToggleEventHandler;
   state: LogsState;
   setFilterLevel: SetNumSetting;
+  toggleCurrentFbosOnly(): void;
 }
 
 export interface LogSettingProps {
