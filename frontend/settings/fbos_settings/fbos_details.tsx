@@ -139,7 +139,7 @@ export interface MacAddressProps {
 }
 
 export const MacAddress = ({ wifi, nodeName, target }: MacAddressProps) =>
-  isString(nodeName) && !nodeName.includes("---")
+  isString(nodeName) && !nodeName.includes("---") && nodeName
     ? <p className={"mac-address"}>
       <b>{t("MAC address")}: </b>{calcMac(nodeName, target, wifi)}
     </p>

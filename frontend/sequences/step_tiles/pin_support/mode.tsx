@@ -52,7 +52,7 @@ export function currentModeSelection(currentStep: ReadPin | WritePin) {
   return { label: modes[pinMode], value: pinMode };
 }
 
-enum PinMode {
+export enum PinMode {
   digital = 0,
   analog = 1,
 }

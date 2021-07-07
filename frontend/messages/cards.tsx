@@ -261,8 +261,11 @@ export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Custom Bot", value: "none" },
 ];
 
-export const SEED_DATA_OPTIONS_DDI: Record<string, DropDownItem> = {};
-SEED_DATA_OPTIONS().map(ddi => SEED_DATA_OPTIONS_DDI[ddi.value] = ddi);
+export const SEED_DATA_OPTIONS_DDI = (): Record<string, DropDownItem> => {
+  const options: Record<string, DropDownItem> = {};
+  SEED_DATA_OPTIONS().map(ddi => options[ddi.value] = ddi);
+  return options;
+};
 
 class SeedDataMissing
   extends React.Component<SeedDataMissingProps, SeedDataMissingState> {
@@ -292,7 +295,7 @@ class SeedDataMissing
           <FBSelect
             key={this.state.selection}
             list={SEED_DATA_OPTIONS()}
-            selectedItem={SEED_DATA_OPTIONS_DDI[this.state.selection]}
+            selectedItem={SEED_DATA_OPTIONS_DDI()[this.state.selection]}
             onChange={seedAccount(this.dismiss)} />
         </Col>
       </Row>
@@ -303,14 +306,15 @@ class SeedDataMissing
 export const ReSeedAccount = () => {
   const [selection, setSelection] = React.useState("");
   return <Row className={"re-seed"}>
-    <Col xs={6}>
+    <Col xs={7}>
       <FBSelect
         key={selection}
-        list={SEED_DATA_OPTIONS()}
-        selectedItem={SEED_DATA_OPTIONS_DDI[selection]}
+        list={SEED_DATA_OPTIONS().filter(x => x.value != "none")}
+        customNullLabel={t("Select a model")}
+        selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
         onChange={ddi => setSelection("" + ddi.value)} />
     </Col>
-    <Col xs={6}>
+    <Col xs={5}>
       <button className={"fb-button green"}
         onClick={() => selection && confirm(t(Content.RE_SEED_ACCOUNT)) &&
           seedAccount()({ label: "", value: selection })}>

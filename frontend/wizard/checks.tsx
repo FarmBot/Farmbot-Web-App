@@ -301,7 +301,7 @@ export class FirmwareHardwareSelection
       <FBSelect
         key={selection}
         list={SEED_DATA_OPTIONS()}
-        selectedItem={SEED_DATA_OPTIONS_DDI[selection]}
+        selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
         onChange={this.onChange} />
       {notSeeded &&
         <div className={"seed-checkbox"}>

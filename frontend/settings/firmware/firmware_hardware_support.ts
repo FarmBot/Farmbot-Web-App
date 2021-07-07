@@ -59,7 +59,7 @@ export const getBoardIdentifier =
 
 export const isKnownBoard = (firmwareVersion: string | undefined): boolean => {
   const boardIdentifier = getBoardIdentifier(firmwareVersion);
-  return ["R", "F", "G", "H", "E"].includes(boardIdentifier);
+  return Object.keys(FIRMWARE_LOOKUP).includes(boardIdentifier);
 };
 
 export const getBoardCategory =
@@ -84,25 +84,18 @@ export const boardType =
   (firmwareVersion: string | undefined): FirmwareHardware | "unknown" => {
     if (firmwareVersion === "none") { return "none"; }
     const boardIdentifier = getBoardIdentifier(firmwareVersion);
-    switch (boardIdentifier) {
-      case "R":
-        return "arduino";
-      case "F":
-        return "farmduino";
-      case "G":
-        return "farmduino_k14";
-      case "H":
-        return "farmduino_k15";
-      case "I":
-        return "farmduino_k16";
-      case "E":
-        return "express_k10";
-      case "D":
-        return "express_k11";
-      default:
-        return "unknown";
-    }
+    return FIRMWARE_LOOKUP[boardIdentifier] || "unknown";
   };
+
+const FIRMWARE_LOOKUP: { [id: string]: FirmwareHardware } = {
+  R: "arduino",
+  F: "farmduino",
+  G: "farmduino_k14",
+  H: "farmduino_k15",
+  I: "farmduino_k16",
+  E: "express_k10",
+  D: "express_k11",
+};
 
 enum BoardLabels {
   arduino = "Arduino/RAMPS (Genesis v1.2)",
