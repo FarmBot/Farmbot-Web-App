@@ -1,4 +1,5 @@
 module.exports = {
+  "testEnvironment": "jsdom",
   "clearMocks": true,
   "logHeapUsage": true,
   "globals": {

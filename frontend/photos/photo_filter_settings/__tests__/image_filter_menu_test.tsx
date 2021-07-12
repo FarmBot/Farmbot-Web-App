@@ -52,7 +52,7 @@ describe("<ImageFilterMenu />", () => {
   ]>([
     ["beginDate", StringSetting.photo_filter_begin, 0],
     ["endDate", StringSetting.photo_filter_end, 2],
-  ])("sets filter: %s", (filter, key, i) => {
+  ])("sets date filter: %s", (filter, key, i) => {
     const p = fakeProps();
     const state = fakeState();
     const config = fakeWebAppConfig();
@@ -74,7 +74,7 @@ describe("<ImageFilterMenu />", () => {
   ]>([
     ["beginTime", StringSetting.photo_filter_begin, 1],
     ["endTime", StringSetting.photo_filter_end, 3],
-  ])("sets filter: %s", (filter, key, i) => {
+  ])("sets time filter: %s", (filter, key, i) => {
     const p = fakeProps();
     const state = fakeState();
     const config = fakeWebAppConfig();

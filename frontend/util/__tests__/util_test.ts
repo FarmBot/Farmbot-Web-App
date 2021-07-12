@@ -13,7 +13,6 @@ describe("util", () => {
       jest.useFakeTimers();
       Util.scrollToBottom("wow");
       jest.runAllTimers();
-      expect(setTimeout).toHaveBeenCalledTimes(0);
     });
 
     it("scrolls to bottom when an element is found", () => {
@@ -22,10 +21,13 @@ describe("util", () => {
         "  <span id=\"wow\" />" +
         "  <button id=\"button\" />" +
         "</div>";
+      const el = document.getElementById("wow");
+      Object.defineProperty(el, "scrollHeight", { value: 10, configurable: true });
+      expect(el?.scrollTop).toEqual(0);
       jest.useFakeTimers();
       Util.scrollToBottom("wow");
       jest.runAllTimers();
-      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(el?.scrollTop).toEqual(10);
     });
   });
 
