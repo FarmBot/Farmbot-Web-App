@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API } from "../api";
 import { Actions } from "../constants";
-import { TaggedResource as TR, SpecialStatus, TaggedResource } from "farmbot";
+import { TaggedResource as TR, SpecialStatus } from "farmbot";
 import { Session } from "../session";
 import { arrayWrap, generateUuid } from "../resources/util";
 
@@ -28,10 +28,10 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
   const arr = arrayWrap(bodies);
   return arr.map((body: T["body"]): T => {
     return {
-      kind: kind as TaggedResource["kind"],
-      body: body as TaggedResource["body"],
+      kind,
+      body,
       uuid: generateUuid(body?.id, kind),
-      specialStatus
+      specialStatus,
     } as T;
   });
 };

@@ -247,7 +247,7 @@ describe("removeEqCriteriaValue()", () => {
   it("removes value", () => {
     const group = fakePointGroup();
     group.body.criteria.string_eq = { plant_stage: ["planted", "planned"] };
-    removeEqCriteriaValue(group, group.body.criteria.string_eq,
+    removeEqCriteriaValue<string>(group, group.body.criteria.string_eq,
       "string_eq", "plant_stage", "planned")(dispatch);
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { plant_stage: ["planted"] };

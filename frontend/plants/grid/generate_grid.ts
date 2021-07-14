@@ -32,29 +32,31 @@ export function vectorGrid(params: PlantGridData, offsetPacking: boolean):
   return results;
 }
 
-const createPlantGridMapper =
-  (openfarm_slug: string, cropName: string, gridId: string) =>
-    (vec: [number, number]): PlantPointer => {
-      const [x, y] = vec;
-      return {
-        name: cropName,
-        radius: 25,
-        z: 0,
-        x,
-        y,
-        openfarm_slug,
-        pointer_type: "Plant",
-        plant_stage: "planted",
-        meta: { gridId }
-      };
+const createPlantGridMapper = (
+  openfarm_slug: string,
+  cropName: string,
+  meta: Record<string, string | undefined>,
+) =>
+  (vec: [number, number]): PlantPointer => {
+    const [x, y] = vec;
+    return {
+      name: cropName,
+      radius: 25,
+      z: 0,
+      x,
+      y,
+      openfarm_slug,
+      pointer_type: "Plant",
+      plant_stage: "planted",
+      meta,
     };
+  };
 
 const createPointGridMapper = (
-  color: string | undefined,
   radius: number | undefined,
   z: number | undefined,
   pointName: string,
-  gridId: string,
+  meta: Record<string, string | undefined>,
 ) =>
   (vec: [number, number]): GenericPointer => {
     const [x, y] = vec;
@@ -65,15 +67,16 @@ const createPointGridMapper = (
       x,
       y,
       pointer_type: "GenericPointer",
-      meta: { gridId, color }
+      meta,
     };
   };
 
 export const initPlantGrid =
   (p: PlantGridInitOption): (GenericPointer | PlantPointer)[] => {
+    const meta: Record<string, string> = { gridId: p.gridId, ...p.meta };
     const mapper: (vec: [number, number]) => GenericPointer | PlantPointer =
       !p.openfarm_slug
-        ? createPointGridMapper(p.color, p.radius, p.z, p.itemName, p.gridId)
-        : createPlantGridMapper(p.openfarm_slug, p.itemName, p.gridId);
+        ? createPointGridMapper(p.radius, p.z, p.itemName, meta)
+        : createPlantGridMapper(p.openfarm_slug, p.itemName, meta);
     return vectorGrid(p.grid, p.offsetPacking).map(mapper);
   };

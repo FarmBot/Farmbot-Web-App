@@ -23,6 +23,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     status: "clean",
     offsetPacking: false,
     cameraView: false,
+    previous: "",
   };
 
   get initGridState() {
@@ -52,6 +53,20 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     this.setState({ grid }, this.performPreview);
   };
 
+  getKey = () => JSON.stringify({
+    itemName: this.props.itemName,
+    offsetPacking: this.state.offsetPacking,
+    radius: this.props.radius,
+    z: this.props.z,
+    meta: this.props.meta,
+  });
+
+  componentDidUpdate = () => {
+    if (this.state.status === "dirty" && this.getKey() != this.state.previous) {
+      this.performPreview();
+    }
+  };
+
   componentWillUnmount() {
     (this.state.status === "dirty") &&
       this.props.dispatch(stashGrid(this.state.gridId));
@@ -72,12 +87,12 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       itemName: this.props.itemName,
       gridId: this.state.gridId,
       offsetPacking: this.state.offsetPacking,
-      color: this.props.color,
       radius: this.props.radius,
       z: this.props.z,
+      meta: this.props.meta,
     });
     plants.map(p => this.props.dispatch(init("Point", p)));
-    this.setState({ status: "dirty" });
+    this.setState({ status: "dirty", previous: this.getKey() });
   }
 
   revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>

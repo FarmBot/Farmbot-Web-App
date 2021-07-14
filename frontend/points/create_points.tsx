@@ -136,21 +136,21 @@ export class RawCreatePoints
     this.cancel();
   }
 
-  updateAttr = (key: keyof CreatePointsState, value: string) => {
+  updateAttr = (key: keyof CreatePointsState, value: string | boolean) => {
     if (this.props.drawnPoint) {
       const point = this.getPointData();
       switch (key) {
         case "name":
         case "color":
           this.setState({ [key]: value });
-          point[key] = value;
+          point[key] = "" + value;
           break;
         case "at_soil_level":
           this.setState({ [key]: !!value });
           point[key] = !!value;
           break;
         default:
-          const intValue = parseIntInput(value);
+          const intValue = parseIntInput("" + value);
           this.setState({ [key]: intValue });
           point[key] = intValue;
       }
@@ -301,9 +301,9 @@ export class RawCreatePoints
               <input
                 name="at_soil_level"
                 type="checkbox"
-                onChange={e => this.updateAttr("at_soil_level",
-                  "" + e.currentTarget.checked)}
-                checked={this.attr("at_soil_level")} />
+                onChange={e =>
+                  this.updateAttr("at_soil_level", e.currentTarget.checked)}
+                checked={!!this.attr("at_soil_level")} />
             </Col>
           </Row>
         </ListItem>}
@@ -353,6 +353,8 @@ export class RawCreatePoints
       ? Content.CREATE_WEEDS_DESCRIPTION
       : Content.CREATE_POINTS_DESCRIPTION;
     const point = this.getPointData();
+    const meta: Record<string, string | undefined> = { color: point.color };
+    point.at_soil_level && (meta.at_soil_level = "" + point.at_soil_level);
     return <DesignerPanel panelName={"point-creation"} panel={panelType}>
       <DesignerPanelHeader
         panelName={"point-creation"}
@@ -367,11 +369,11 @@ export class RawCreatePoints
           <PlantGrid
             xy_swap={this.props.xySwap}
             itemName={point.name || t("Grid point")}
-            color={point.color}
             radius={point.r}
             dispatch={this.props.dispatch}
             botPosition={this.props.botPosition}
             z={this.attr("z", this.props.botPosition.z)}
+            meta={meta}
             close={this.closePanel} />}
         <hr />
         {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
