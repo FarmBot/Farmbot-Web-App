@@ -15,6 +15,7 @@ export interface PlantGridState {
   gridId: string;
   offsetPacking: boolean;
   cameraView: boolean;
+  previous: string;
 }
 
 export interface PlantGridProps {
@@ -24,10 +25,10 @@ export interface PlantGridProps {
   dispatch: Function;
   botPosition: BotPosition;
   spread?: number | undefined;
-  color?: string;
   radius?: number;
   close?: () => void;
   z?: number;
+  meta?: Record<string, string | undefined>;
 }
 
 export interface PlantGridInitOption {
@@ -36,9 +37,9 @@ export interface PlantGridInitOption {
   offsetPacking: boolean;
   openfarm_slug?: string;
   itemName: string;
-  color?: string;
   radius?: number;
   z?: number;
+  meta?: Record<string, string | undefined>;
 }
 
 interface GridInputPropsBase {

@@ -46,7 +46,7 @@ interface GenerateInterpolationMapDataProps {
 
 export const generateData = (props: GenerateInterpolationMapDataProps) => {
   const soilHeightPoints = sortBy(groupItemsByLocation(props.genericPoints
-    .filter(p => p.body.meta.at_soil_level), undefined), "points.body.created_at")
+    .filter(p => p.body.meta.at_soil_level), undefined), "points.body.updated_at")
     .map(data => data.items[0]);
   const { gridSize } = props.mapTransformProps;
   const { stepSize } = props.options;
