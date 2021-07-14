@@ -65,7 +65,7 @@ describe("initPlantGrid", () => {
       offsetPacking: false,
       radius: 100,
       z: 0,
-      color: "green",
+      meta: { color: "green" },
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("GenericPointer");
