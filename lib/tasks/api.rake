@@ -72,7 +72,7 @@ namespace :api do
       DashboardController::CACHE_DIR,
       DashboardController::PUBLIC_OUTPUT_DIR,
       "public/assets/monaco",
-      ".parcel-cache"
+      ".parcel-cache",
     ].join(" ") unless ENV["NO_CLEAN"]
   end
 
@@ -102,10 +102,13 @@ namespace :api do
 
   desc "Clean out old demo accounts"
   task clean_demo_accounts: :environment do
-    User
+    users = User
       .where("email ILIKE '%@farmbot.guest%'")
       .where("updated_at < ?", 1.hour.ago)
-      .destroy_all
+    Device
+      .where(id: users.pluck(:device_id))
+      .update_all(mounted_tool_id: nil)
+    users.destroy_all
   end
 
   desc "Reset _everything_, including your database"
