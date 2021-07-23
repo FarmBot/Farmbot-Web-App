@@ -46,6 +46,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.timeoutAfter}
         tooltip={ToolTips.TIMEOUT_AFTER}
+        advanced={true}
         x={"movement_timeout_x"}
         y={"movement_timeout_y"}
         z={"movement_timeout_z"} />
@@ -72,6 +73,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         <NumericMCUInputGroup {...commonProps}
           label={DeviceSetting.calibrationRetryResetDistance}
           tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}
+          advanced={true}
           x={"movement_calibration_deadzone_x"}
           y={"movement_calibration_deadzone_y"}
           z={"movement_calibration_deadzone_z"}

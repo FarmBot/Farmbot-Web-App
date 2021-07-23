@@ -561,9 +561,9 @@ CREATE TABLE public.firmware_configs (
     movement_home_at_boot_x integer DEFAULT 0,
     movement_home_at_boot_y integer DEFAULT 0,
     movement_home_at_boot_z integer DEFAULT 0,
-    movement_home_spd_x integer DEFAULT 50,
-    movement_home_spd_y integer DEFAULT 50,
-    movement_home_spd_z integer DEFAULT 50,
+    movement_home_spd_x integer DEFAULT 400,
+    movement_home_spd_y integer DEFAULT 400,
+    movement_home_spd_z integer DEFAULT 400,
     movement_home_up_x integer DEFAULT 0,
     movement_home_up_y integer DEFAULT 0,
     movement_home_up_z integer DEFAULT 1,
@@ -626,24 +626,24 @@ CREATE TABLE public.firmware_configs (
     movement_microsteps_x integer DEFAULT 1,
     movement_microsteps_y integer DEFAULT 1,
     movement_microsteps_z integer DEFAULT 1,
-    movement_motor_current_x integer DEFAULT 600,
-    movement_motor_current_y integer DEFAULT 600,
-    movement_motor_current_z integer DEFAULT 600,
+    movement_motor_current_x integer DEFAULT 1000,
+    movement_motor_current_y integer DEFAULT 1000,
+    movement_motor_current_z integer DEFAULT 1000,
     movement_stall_sensitivity_x integer DEFAULT 63,
     movement_stall_sensitivity_y integer DEFAULT 63,
     movement_stall_sensitivity_z integer DEFAULT 63,
     movement_min_spd_z2 integer DEFAULT 50,
     movement_max_spd_z2 integer DEFAULT 400,
     movement_steps_acc_dec_z2 integer DEFAULT 300,
-    movement_calibration_retry_x integer DEFAULT 3,
-    movement_calibration_retry_y integer DEFAULT 3,
-    movement_calibration_retry_z integer DEFAULT 3,
+    movement_calibration_retry_x integer DEFAULT 1,
+    movement_calibration_retry_y integer DEFAULT 1,
+    movement_calibration_retry_z integer DEFAULT 1,
     movement_calibration_deadzone_x integer DEFAULT 50,
     movement_calibration_deadzone_y integer DEFAULT 50,
     movement_calibration_deadzone_z integer DEFAULT 250,
-    movement_axis_stealth_x integer DEFAULT 0,
-    movement_axis_stealth_y integer DEFAULT 0,
-    movement_axis_stealth_z integer DEFAULT 0
+    movement_axis_stealth_x integer DEFAULT 1,
+    movement_axis_stealth_y integer DEFAULT 1,
+    movement_axis_stealth_z integer DEFAULT 1
 );
 
 
@@ -3607,6 +3607,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210308191813'),
 ('20210501195411'),
 ('20210514010354'),
-('20210607193347');
+('20210607193347'),
+('20210720155040'),
+('20210723175109');
 
 

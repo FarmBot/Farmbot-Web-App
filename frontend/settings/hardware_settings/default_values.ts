@@ -36,18 +36,18 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
   movement_calibration_deadzone_x: 50,
   movement_calibration_deadzone_y: 50,
   movement_calibration_deadzone_z: 250,
-  movement_calibration_retry_x: 3,
-  movement_calibration_retry_y: 3,
-  movement_calibration_retry_z: 3,
+  movement_calibration_retry_x: 1,
+  movement_calibration_retry_y: 1,
+  movement_calibration_retry_z: 1,
   movement_enable_endpoints_x: 0,
   movement_enable_endpoints_y: 0,
   movement_enable_endpoints_z: 0,
   movement_home_at_boot_x: 0,
   movement_home_at_boot_y: 0,
   movement_home_at_boot_z: 0,
-  movement_home_spd_x: 50,
-  movement_home_spd_y: 50,
-  movement_home_spd_z: 50,
+  movement_home_spd_x: 400,
+  movement_home_spd_y: 400,
+  movement_home_spd_z: 400,
   movement_home_up_x: 0,
   movement_home_up_y: 0,
   movement_home_up_z: 1,
@@ -113,9 +113,9 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
   movement_microsteps_x: 1,
   movement_microsteps_y: 1,
   movement_microsteps_z: 1,
-  movement_motor_current_x: 600,
-  movement_motor_current_y: 600,
-  movement_motor_current_z: 600,
+  movement_motor_current_x: 1000,
+  movement_motor_current_y: 1000,
+  movement_motor_current_z: 1000,
   movement_stall_sensitivity_x: 63,
   movement_stall_sensitivity_y: 63,
   movement_stall_sensitivity_z: 63,
@@ -140,6 +140,7 @@ DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_z = 75;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_steps_acc_dec_z2 = 75;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_motor_current_x = 800;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_motor_current_y = 800;
+DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_motor_current_z = 600;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_x = 60;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_y = 60;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_max_z = 70;
