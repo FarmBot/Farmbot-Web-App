@@ -1,5 +1,7 @@
 import React from "react";
-import { SelectionBox, SelectionBoxProps } from "../selection_box";
+import {
+  getSelectionBoxArea, SelectionBox, SelectionBoxProps,
+} from "../selection_box";
 import { shallow } from "enzyme";
 import {
   fakeMapTransformProps,
@@ -43,5 +45,14 @@ describe("<SelectionBox/>", () => {
     expect(boxProps.y).toEqual(1370);
     expect(boxProps.width).toEqual(200);
     expect(boxProps.height).toEqual(100);
+  });
+});
+
+describe("getSelectionBoxArea()", () => {
+  it("returns correct area", () => {
+    expect(getSelectionBoxArea(undefined)).toEqual(0);
+    expect(getSelectionBoxArea({ x0: 1, y0: 1, x1: undefined, y1: undefined }))
+      .toEqual(0);
+    expect(getSelectionBoxArea({ x0: 0, y0: 0, x1: 10, y1: 10 })).toEqual(100);
   });
 });

@@ -133,6 +133,13 @@ describe("<CropInfo />", () => {
     expect(wrapper.text().toLowerCase()).toContain("spacingnot available");
     expect(wrapper.text().toLowerCase()).toContain("common namesnot available");
   });
+
+  it("handles string of names", () => {
+    const p = fakeProps();
+    p.cropSearchResults[0].crop.common_names = "names" as unknown as string[];
+    const wrapper = mount(<CropInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("common namesnames");
+  });
 });
 
 describe("searchForCurrentCrop()", () => {

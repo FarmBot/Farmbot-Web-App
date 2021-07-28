@@ -50,7 +50,7 @@ describe("mapPanelClassName()", () => {
       value: 400,
       configurable: true
     });
-    mockPath = "/app/designer/move_to";
+    mockPath = "/app/designer/location";
     expect(mapPanelClassName()).toEqual("short-panel");
     mockPath = cropSearchUrl("mint/add");
     expect(mapPanelClassName()).toEqual("short-panel");
@@ -61,7 +61,7 @@ describe("mapPanelClassName()", () => {
       value: 500,
       configurable: true
     });
-    mockPath = "/app/designer/move_to";
+    mockPath = "/app/designer/location";
     expect(mapPanelClassName()).toEqual("panel-open");
     mockPath = cropSearchUrl("mint/add");
     expect(mapPanelClassName()).toEqual("panel-open");
@@ -383,8 +383,8 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.boxSelect);
     mockPath = cropSearchUrl("mint");
     expect(getMode()).toEqual(Mode.addPlant);
-    mockPath = "/app/designer/move_to";
-    expect(getMode()).toEqual(Mode.moveTo);
+    mockPath = "/app/designer/location";
+    expect(getMode()).toEqual(Mode.locationInfo);
     mockPath = "/app/designer/points";
     expect(getMode()).toEqual(Mode.points);
     mockPath = "/app/designer/points/add";
@@ -463,7 +463,7 @@ describe("allowInteraction()", () => {
   it("disallows interaction", () => {
     mockPath = cropSearchUrl("mint/add");
     expect(allowInteraction()).toBeFalsy();
-    mockPath = "/app/designer/move_to";
+    mockPath = "/app/designer/location";
     expect(allowInteraction()).toBeFalsy();
     mockPath = "/app/designer/points/add";
     expect(allowInteraction()).toBeFalsy();
@@ -481,7 +481,7 @@ describe("allowGroupAreaInteraction()", () => {
   it("disallows interaction", () => {
     mockPath = "/app/designer/plants/select";
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = "/app/designer/move_to";
+    mockPath = "/app/designer/location";
     expect(allowGroupAreaInteraction()).toBeFalsy();
     mockPath = "/app/designer/groups/1";
     expect(allowGroupAreaInteraction()).toBeFalsy();

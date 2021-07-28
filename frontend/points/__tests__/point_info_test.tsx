@@ -4,9 +4,6 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
-const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
@@ -28,6 +25,7 @@ import { destroy } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { locationUrl } from "../../farm_designer/move_to";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -83,7 +81,7 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith(coords);
+    expect(push).toHaveBeenCalledWith(locationUrl(coords));
   });
 
   it("goes back", () => {

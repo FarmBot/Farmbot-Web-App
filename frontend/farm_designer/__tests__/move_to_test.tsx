@@ -1,59 +1,20 @@
-const mockDevice = { moveAbsolute: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
+jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
 
-let mockPath = "";
+const mockPath = "";
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawMoveTo as MoveTo, MoveToProps, MoveToForm, MoveToFormProps,
-  MoveModeLink, chooseLocation, mapStateToProps,
+  MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation, locationUrl,
 } from "../move_to";
-import { history } from "../../history";
+import { push } from "../../history";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { fakeState } from "../../__test_support__/fake_state";
-
-describe("<MoveTo />", () => {
-  beforeEach(function () {
-    mockPath = "/app/designer/move_to";
-  });
-
-  const fakeProps = (): MoveToProps => ({
-    chosenLocation: { x: 1, y: 2, z: 3 },
-    currentBotLocation: { x: 10, y: 20, z: 30 },
-    dispatch: jest.fn(),
-    botOnline: true,
-    locked: false,
-  });
-
-  it("moves to location: bot's current z value", () => {
-    const wrapper = mount(<MoveTo {...fakeProps()} />);
-    wrapper.find("button").simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
-  });
-
-  it("goes back", () => {
-    const wrapper = mount(<MoveTo {...fakeProps()} />);
-    wrapper.find("i").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
-  });
-
-  it("unmounts", () => {
-    const p = fakeProps();
-    const wrapper = mount(<MoveTo {...p} />);
-    jest.clearAllMocks();
-    wrapper.unmount();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: undefined, y: undefined, z: undefined }
-    });
-  });
-});
+import { move } from "../../devices/actions";
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -67,13 +28,30 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...fakeProps()} />);
     wrapper.setState({ z: 50 });
     wrapper.find("button").simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 50 });
+    expect(move).toHaveBeenCalledWith({
+      x: 1, y: 2, z: 50, speed: 100, safeZ: false,
+    });
   });
 
-  it("changes value", () => {
+  it("changes z value", () => {
     const wrapper = shallow<MoveToForm>(<MoveToForm {...fakeProps()} />);
-    wrapper.findWhere(n => "onChange" in n.props()).simulate("change", "", 10);
+    wrapper.findWhere(n => "onChange" in n.props()).first()
+      .simulate("change", "", 10);
     expect(wrapper.state().z).toEqual(10);
+  });
+
+  it("changes speed value", () => {
+    const wrapper = shallow<MoveToForm>(<MoveToForm {...fakeProps()} />);
+    wrapper.findWhere(n => "onChange" in n.props()).at(1)
+      .simulate("change", 10);
+    expect(wrapper.state().speed).toEqual(10);
+  });
+
+  it("changes safe z value", () => {
+    const wrapper = shallow<MoveToForm>(<MoveToForm {...fakeProps()} />);
+    wrapper.findWhere(n => "onChange" in n.props()).at(2)
+      .simulate("change");
+    expect(wrapper.state().safeZ).toEqual(true);
   });
 
   it("fills in some missing values", () => {
@@ -82,7 +60,9 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...p} />);
     expect(wrapper.find("input").at(1).props().value).toEqual("---");
     wrapper.find("button").simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 20, z: 30 });
+    expect(move).toHaveBeenCalledWith({
+      x: 1, y: 20, z: 30, speed: 100, safeZ: false,
+    });
   });
 
   it("fills in all missing values", () => {
@@ -92,7 +72,9 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...p} />);
     expect(wrapper.find("input").at(1).props().value).toEqual("---");
     wrapper.find("button").simulate("click");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+    expect(move).toHaveBeenCalledWith({
+      x: 0, y: 0, z: 0, speed: 100, safeZ: false,
+    });
   });
 
   it("is disabled when bot is offline", () => {
@@ -107,7 +89,7 @@ describe("<MoveModeLink />", () => {
   it("enters 'move to' mode", () => {
     const wrapper = shallow(<MoveModeLink />);
     clickButton(wrapper, 0, "move mode");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/move_to");
+    expect(push).toHaveBeenCalledWith("/app/designer/location");
   });
 });
 
@@ -128,11 +110,9 @@ describe("chooseLocation()", () => {
   });
 });
 
-describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    state.resources.consumers.farm_designer.chosenLocation = { x: 1, y: 2, z: 3 };
-    const props = mapStateToProps(state);
-    expect(props.chosenLocation).toEqual({ x: 1, y: 2, z: 3 });
+describe("locationUrl()", () => {
+  it("returns url without z", () => {
+    expect(locationUrl({ x: 10, y: 20 }))
+      .toEqual("/app/designer/location?x=10?y=20");
   });
 });

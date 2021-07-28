@@ -16,11 +16,6 @@ jest.mock("../../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -38,7 +33,6 @@ import {
 import {
   fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
-import { push } from "../../../../history";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -86,13 +80,6 @@ describe("<GardenMapLegend />", () => {
     wrapper.find(".fb-toggle-button").last().simulate("click");
     expect(wrapper.html()).toContain("-100");
   });
-
-  it("renders location info button", () => {
-    mockDev = true;
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    wrapper.find(".location-info-mode").find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/location");
-  });
 });
 
 describe("<ZoomControls />", () => {
@@ -127,7 +114,7 @@ describe("<PointsSubMenu />", () => {
     const wrapper = mount(<PointsSubMenu
       dispatch={jest.fn()}
       getConfigValue={() => true} />);
-    const toggleBtn = wrapper.find("button");
+    const toggleBtn = wrapper.find("button").first();
     expect(toggleBtn.text()).toEqual("yes");
     toggleBtn.simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(

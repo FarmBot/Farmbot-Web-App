@@ -93,6 +93,13 @@ describe("<Motors />", () => {
       .toContain("disabled");
   });
 
+  it("shows microstep warning", () => {
+    const p = fakeProps();
+    p.sourceFwConfig = () => ({ value: 2, consistent: true });
+    const wrapper = shallow(<Motors {...p} />);
+    expect(wrapper.html()).toContain("input-error");
+  });
+
   const testParamToggle = (
     description: string, parameter: McuParamName, position: number) => {
     it(`${description}`, () => {

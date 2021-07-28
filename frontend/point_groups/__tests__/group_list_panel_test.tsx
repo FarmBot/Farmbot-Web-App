@@ -63,15 +63,26 @@ describe("<GroupListPanel />", () => {
   it("renders relevant group data as a list", () => {
     const p = fakeProps();
     const wrapper = mount(<GroupListPanel {...p} />);
-    wrapper.find(".group-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/9");
-
     ["3 items",
       "0 items",
       p.groups[0].body.name,
       p.groups[1].body.name]
       .map(string =>
         expect(wrapper.text()).toContain(string));
+  });
+
+  it("navigates to group", () => {
+    const wrapper = mount(<GroupListPanel {...fakeProps()} />);
+    wrapper.find(".group-search-item").first().simulate("click");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/9");
+  });
+
+  it("navigates to group: handles missing id", () => {
+    const p = fakeProps();
+    p.groups[0].body.id = undefined;
+    const wrapper = mount(<GroupListPanel {...p} />);
+    wrapper.find(".group-search-item").first().simulate("click");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/0");
   });
 
   it("renders no groups", () => {

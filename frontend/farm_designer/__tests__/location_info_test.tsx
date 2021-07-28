@@ -32,6 +32,7 @@ describe("<LocationInfo />", () => {
     timeSettings: fakeTimeSettings(),
     hoveredSensorReading: undefined,
     locked: false,
+    farmwareEnvs: [],
   });
 
   it("renders empty panel", () => {
@@ -77,7 +78,7 @@ describe("<LocationInfo />", () => {
     tagAsSoilHeight(point1);
     p.genericPoints = [point0, point1];
     const wrapper = mount(<LocationInfo {...p} />);
-    ["readings (1)", "measurements (1)", "plants (0)", "images (0)"]
+    ["readings (1)", "measurements (2)", "plants (0)", "images (0)"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

@@ -22,6 +22,7 @@ import { tagAsSoilHeight } from "../../../../../points/soil_height";
 describe("<PointLayer/>", () => {
   const fakeProps = (): PointLayerProps => ({
     visible: true,
+    overlayVisible: true,
     genericPoints: [fakePoint()],
     mapTransformProps: fakeMapTransformProps(),
     designer: fakeDesignerState(),
@@ -29,6 +30,7 @@ describe("<PointLayer/>", () => {
     interactions: true,
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
+    farmwareEnvs: [],
   });
 
   it("shows points", () => {

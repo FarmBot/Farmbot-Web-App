@@ -1,6 +1,6 @@
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../history", () => ({ push: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import {
   PlantPanel, PlantPanelProps,
   EditDatePlantedProps, EditDatePlanted, EditPlantLocationProps,
@@ -10,11 +10,11 @@ import {
 } from "../plant_panel";
 import { shallow, mount } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
-import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { history } from "../../history";
+import { push } from "../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { locationUrl } from "../../farm_designer/move_to";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -38,6 +38,8 @@ describe("<PlantPanel/>", () => {
     dispatch: jest.fn(),
     inSavedGarden: false,
     timeSettings: fakeTimeSettings(),
+    farmwareEnvs: [],
+    soilHeightPoints: [],
   });
 
   it("renders: editing", () => {
@@ -83,20 +85,13 @@ describe("<PlantPanel/>", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 3, "Delete multiple");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
+    expect(push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
-  it("navigates to 'move to' mode", async () => {
-    const p = fakeProps();
-    const innerDispatch = jest.fn();
-    p.dispatch = jest.fn(x => x(innerDispatch));
-    const wrapper = mount(<PlantPanel {...p} />);
-    await clickButton(wrapper, 0, "Move FarmBot to this plant");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/move_to");
-    expect(innerDispatch).toHaveBeenLastCalledWith({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: 12, y: 34, z: 0 }
-    });
+  it("navigates to 'move to' mode", () => {
+    const wrapper = mount(<PlantPanel {...fakeProps()} />);
+    clickButton(wrapper, 0, "Move FarmBot to this plant");
+    expect(push).toHaveBeenCalledWith(locationUrl({ x: 12, y: 34, z: 0 }));
   });
 });
 
@@ -125,6 +120,8 @@ describe("<EditPlantLocation />", () => {
     uuid: "Plant.0.0",
     plantLocation: { x: 1, y: 2, z: 0 },
     updatePlant: jest.fn(),
+    farmwareEnvs: [],
+    soilHeightPoints: [],
   });
 
   it("changes location", () => {

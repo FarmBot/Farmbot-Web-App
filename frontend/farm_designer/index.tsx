@@ -228,6 +228,7 @@ export class RawFarmDesigner
           deviceTarget={this.props.deviceTarget}
           mountedToolInfo={this.props.mountedToolInfo}
           visualizedSequenceBody={this.props.visualizedSequenceBody}
+          farmwareEnvs={this.props.farmwareEnvs}
           dispatch={this.props.dispatch} />
       </div>
 

@@ -19,6 +19,7 @@ import {
   maybeGetSequence,
   selectAllLogs,
   selectAllTools,
+  selectAllFarmwareEnvs,
 } from "../resources/selectors";
 import {
   validBotLocationData, validFwConfig, unpackUUID, validFbosConfig,
@@ -155,6 +156,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     visualizedSequenceBody,
     logs: selectAllLogs(props.resources.index),
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
+    farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   };
 }
 

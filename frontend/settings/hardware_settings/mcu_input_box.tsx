@@ -111,7 +111,7 @@ export class McuInputBox
         error={this.props.warnMin && parseInt(this.showValue) &&
           (parseInt(this.showValue) < this.props.warnMin)
           ? t("Warning: low value")
-          : undefined}
+          : this.props.warning}
         min={this.props.min || 0}
         max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />
       <SettingStatusIndicator

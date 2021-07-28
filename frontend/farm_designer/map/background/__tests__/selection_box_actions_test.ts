@@ -190,6 +190,15 @@ describe("maybeUpdateGroup()", () => {
     expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
+  it("doesn't update group", () => {
+    const p = fakeProps();
+    p.editGroupAreaInMap = false;
+    p.boxSelected = undefined;
+    maybeUpdateGroup(p);
+    expect(editGtLtCriteria).not.toHaveBeenCalled();
+    expect(overwriteGroup).not.toHaveBeenCalled();
+  });
+
   it("updates criteria", () => {
     const p = fakeProps();
     p.editGroupAreaInMap = true;

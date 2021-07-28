@@ -10,7 +10,7 @@ jest.mock("../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { RawPlantInfo as PlantInfo } from "../plant_info";
 import { mount } from "enzyme";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
@@ -27,6 +27,8 @@ describe("<PlantInfo />", () => {
     openedSavedGarden: undefined,
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
+    farmwareEnvs: [],
+    soilHeightPoints: [],
   });
 
   it("renders", () => {

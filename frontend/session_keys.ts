@@ -4,7 +4,9 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
+  | "show_soil_interpolation_map"
+  | "show_moisture_interpolation_map";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -29,11 +31,13 @@ export const BooleanSetting: BooleanSettings = {
   show_points: "show_points",
   show_weeds: "show_weeds",
   show_historic_points: "show_historic_points",
+  show_soil_interpolation_map: "show_soil_interpolation_map" as WebAppBooleanConfigKey,
   show_spread: "show_spread",
   show_farmbot: "show_farmbot",
   show_images: "show_images",
   show_zones: "show_zones",
   show_sensor_readings: "show_sensor_readings",
+  show_moisture_interpolation_map: "show_moisture_interpolation_map" as WebAppBooleanConfigKey,
   show_camera_view_area: "show_camera_view_area",
   disable_animations: "disable_animations",
   display_map_missed_steps: "display_map_missed_steps",

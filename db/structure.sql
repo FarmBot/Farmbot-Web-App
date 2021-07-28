@@ -1818,7 +1818,9 @@ CREATE TABLE public.web_app_configs (
     show_camera_view_area boolean DEFAULT false,
     view_celery_script boolean DEFAULT false,
     highlight_modified_settings boolean DEFAULT true,
-    show_advanced_settings boolean DEFAULT false
+    show_advanced_settings boolean DEFAULT false,
+    show_soil_interpolation_map boolean DEFAULT false,
+    show_moisture_interpolation_map boolean DEFAULT false
 );
 
 
@@ -3609,6 +3611,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210514010354'),
 ('20210607193347'),
 ('20210720155040'),
+('20210720183535'),
 ('20210723175109');
 
 

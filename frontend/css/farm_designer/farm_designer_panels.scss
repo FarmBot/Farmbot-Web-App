@@ -751,13 +751,19 @@
       margin-bottom: 0.5rem !important;
     }
   }
+  .plant-info-field-data {
+    .bp3-popover-wrapper {
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+  }
   input {
     background: $white;
   }
 }
 
 .add-plant-panel,
-.move-to-panel {
+.location-info-panel {
   padding-bottom: 0 !important;
 }
 
@@ -831,16 +837,14 @@
   }
 }
 
-.move-to-panel-content {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  button {
-    margin: 0.5rem;
-    float: left;
+.move-to-form {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
   }
-  input {
-    min-width: 7rem;
+  .speed {
+    margin: 2rem;
+    margin-left: -15px;
   }
 }
 

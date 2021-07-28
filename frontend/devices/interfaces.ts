@@ -115,6 +115,14 @@ export interface MoveRelProps {
   speed?: number | undefined;
 }
 
+export interface MoveProps {
+  x: number;
+  y: number;
+  z: number;
+  safeZ?: boolean;
+  speed?: number;
+}
+
 export type Axis = Xyz | "all";
 
 export type BotPosition = Record<Xyz, number | undefined>;
@@ -151,6 +159,7 @@ export interface McuInputBoxProps {
   title?: string;
   firmwareHardware: FirmwareHardware | undefined;
   warnMin?: number;
+  warning?: string;
 }
 
 export interface EStopButtonProps {

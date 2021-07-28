@@ -182,6 +182,13 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("re-seed");
   });
 
+  it("renders interpolation settings", () => {
+    const p = fakeProps();
+    p.searchTerm = "interpolation";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("interpolation");
+  });
+
   it("renders dev settings", () => {
     const p = fakeProps();
     p.searchTerm = "developer";

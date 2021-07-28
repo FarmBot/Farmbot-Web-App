@@ -13,6 +13,7 @@ import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
 import { getPathArray, push } from "../history";
+import { getUrlQuery } from "../util";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -132,6 +133,8 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
     s.chosenLocation = payload;
     !isUndefined(payload.x) && getPathArray()[3] === "location" &&
+      parseFloat("" + getUrlQuery("x")) != payload.x &&
+      parseFloat("" + getUrlQuery("y")) != payload.y &&
       push(`/app/designer/location?x=${payload.x}?y=${payload.y}`);
     return s;
   })
