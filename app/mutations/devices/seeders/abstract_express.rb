@@ -29,6 +29,7 @@ module Devices
                                        movement_steps_acc_dec_z2: 75,
                                        movement_motor_current_x: 800,
                                        movement_motor_current_y: 800,
+                                       movement_motor_current_z: 600,
                                        encoder_missed_steps_max_x: 60,
                                        encoder_missed_steps_max_y: 60,
                                        encoder_missed_steps_max_z: 70,

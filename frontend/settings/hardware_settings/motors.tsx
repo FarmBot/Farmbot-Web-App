@@ -95,6 +95,7 @@ export function Motors(props: MotorsProps) {
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.homingSpeed}
         tooltip={ToolTips.HOME_SPEED}
+        advanced={true}
         x={"movement_home_spd_x"}
         y={"movement_home_spd_y"}
         z={"movement_home_spd_z"}
@@ -195,14 +196,20 @@ export function Motors(props: MotorsProps) {
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"} />}
       {shouldDisplayFeature(Feature.quiet_motors) &&
+        isTMCBoard(firmwareHardware) &&
         <BooleanMCUInputGroup {...commonProps}
           label={DeviceSetting.quietMode}
           tooltip={ToolTips.QUIET_MODE}
+          advanced={true}
           x={"movement_axis_stealth_x"}
           y={"movement_axis_stealth_y"}
           z={"movement_axis_stealth_z"} />}
       <SingleSettingRow settingType="button"
         label={DeviceSetting.enable2ndXMotor}
+        advanced={true}
+        showAdvanced={showAdvanced}
+        modified={
+          getDefault("movement_secondary_motor_x") != enable2ndXMotor.value}
         tooltip={t(ToolTips.ENABLE_X2_MOTOR, {
           x2Motor: getDefault("movement_secondary_motor_x")
             ? t("enabled")
@@ -223,6 +230,10 @@ export function Motors(props: MotorsProps) {
       </SingleSettingRow>
       <SingleSettingRow settingType="button"
         label={DeviceSetting.invert2ndXMotor}
+        advanced={true}
+        showAdvanced={showAdvanced}
+        modified={
+          getDefault("movement_secondary_motor_invert_x") != invert2ndXMotor.value}
         tooltip={t(ToolTips.INVERT_X2_MOTOR, {
           x: getDefault("movement_secondary_motor_invert_x")
             ? t("enabled")
