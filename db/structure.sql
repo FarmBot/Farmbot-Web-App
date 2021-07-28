@@ -641,9 +641,9 @@ CREATE TABLE public.firmware_configs (
     movement_calibration_deadzone_x integer DEFAULT 50,
     movement_calibration_deadzone_y integer DEFAULT 50,
     movement_calibration_deadzone_z integer DEFAULT 250,
-    movement_axis_stealth_x integer DEFAULT 0,
-    movement_axis_stealth_y integer DEFAULT 0,
-    movement_axis_stealth_z integer DEFAULT 0
+    movement_axis_stealth_x integer DEFAULT 1,
+    movement_axis_stealth_y integer DEFAULT 1,
+    movement_axis_stealth_z integer DEFAULT 1
 );
 
 
@@ -3607,6 +3607,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210308191813'),
 ('20210501195411'),
 ('20210514010354'),
-('20210607193347');
+('20210607193347'),
+('20210720155040');
 
 
