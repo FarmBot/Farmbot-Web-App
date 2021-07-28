@@ -21,6 +21,7 @@ const HIDDEN_PREFIXES = [
   "WEED_DETECTOR",
   "CAMERA_CALIBRATION",
   "measure_soil_height",
+  "interpolation_",
 ];
 
 export const EnvEditor = (props: EnvEditorProps) => {

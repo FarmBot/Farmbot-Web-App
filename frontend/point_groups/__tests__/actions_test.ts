@@ -27,7 +27,7 @@ import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { cloneDeep } from "lodash";
 import { fakeState } from "../../__test_support__/fake_state";
 
-describe("group action creators and thunks", () => {
+describe("createGroup()", () => {
   it("creates group", async () => {
     const fakePoints = [fakePoint(), fakePlant(), fakeToolSlot()];
     const resources = buildResourceIndex(fakePoints);
@@ -56,6 +56,7 @@ describe("group action creators and thunks", () => {
     const fakePoints = [point, fakePlant(), fakeToolSlot()];
     state.resources = buildResourceIndex(fakePoints);
     const pointUuids = fakePoints.map(x => x.uuid);
+    pointUuids.push("missingFakeUuid");
     const thunk = createGroup({ pointUuids });
     await thunk(jest.fn(() => Promise.resolve()), () => state);
     expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({

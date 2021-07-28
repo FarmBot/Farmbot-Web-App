@@ -10,8 +10,7 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Setting } from "./farm_designer_settings";
-import { Row, Col } from "../ui";
-import { ToggleButton } from "../ui/toggle_button";
+import { Row, Col, ToggleButton } from "../ui";
 import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
@@ -117,6 +116,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.show_historic_points,
   },
   {
+    title: DeviceSetting.showSoilInterpolationMapLayer,
+    description: "",
+    setting: BooleanSetting.show_soil_interpolation_map,
+  },
+  {
     title: DeviceSetting.showSpreadMapLayer,
     description: "",
     setting: BooleanSetting.show_spread,
@@ -140,6 +144,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     title: DeviceSetting.showReadingsMapLayer,
     description: "",
     setting: BooleanSetting.show_sensor_readings,
+  },
+  {
+    title: DeviceSetting.showMoistureInterpolationMapLayer,
+    description: "",
+    setting: BooleanSetting.show_moisture_interpolation_map,
   },
   {
     title: DeviceSetting.invertXAxisJogButton,

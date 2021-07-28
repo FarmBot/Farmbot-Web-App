@@ -147,7 +147,7 @@ export interface MapBackgroundProps {
 export interface GridProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
-  onClick(): void;
+  onClick(e: React.MouseEvent<SVGElement>): void;
   onMouseDown(e: React.MouseEvent<SVGElement>): void;
 }
 
@@ -183,7 +183,6 @@ export enum Mode {
   clickToAdd = "clickToAdd",
   editPlant = "editPlant",
   addPlant = "addPlant",
-  moveTo = "moveTo",
   locationInfo = "locationInfo",
   points = "points",
   weeds = "weeds",

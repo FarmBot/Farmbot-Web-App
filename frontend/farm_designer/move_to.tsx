@@ -1,33 +1,15 @@
 import React from "react";
 import { Row, Col } from "../ui";
-import { Everything } from "../interfaces";
 import { BotPosition } from "../devices/interfaces";
-import { connect } from "react-redux";
-import { moveAbsolute } from "../devices/actions";
-import { history } from "../history";
+import { move } from "../devices/actions";
+import { push } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
-import { isNumber } from "lodash";
+import { isNumber, isUndefined } from "lodash";
 import { Actions, Content } from "../constants";
-import { validBotLocationData } from "../util/util";
-import { unselectPlant } from "./map/actions";
 import { AxisNumberProperty } from "./map/interfaces";
-import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
-} from "./designer_panel";
 import { t } from "../i18next_wrapper";
-import { isBotOnlineFromState } from "../devices/must_be_online";
-import { PanelColor } from "./panel_header";
-
-export function mapStateToProps(props: Everything): MoveToProps {
-  return {
-    chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
-    currentBotLocation:
-      validBotLocationData(props.bot.hardware.location_data).position,
-    dispatch: props.dispatch,
-    botOnline: isBotOnlineFromState(props.bot),
-    locked: props.bot.hardware.informational_settings.locked,
-  };
-}
+import { SafeZCheckbox } from "../sequences/step_tiles/tile_computed_move/safe_z";
+import { Slider } from "@blueprintjs/core";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -36,16 +18,14 @@ export interface MoveToFormProps {
   locked: boolean;
 }
 
-export interface MoveToProps extends MoveToFormProps {
-  dispatch: Function;
-}
-
 interface MoveToFormState {
   z: number | undefined;
+  safeZ: boolean;
+  speed: number;
 }
 
 export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState> {
-  state = { z: this.props.chosenLocation.z };
+  state = { z: this.props.chosenLocation.z, safeZ: false, speed: 100 };
 
   get vector(): { x: number, y: number, z: number } {
     const { chosenLocation } = this.props;
@@ -88,7 +68,11 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
           value={this.state.z} />
         <Col xs={3}>
           <button
-            onClick={() => moveAbsolute(this.vector)}
+            onClick={() => move({
+              ...this.vector,
+              speed: this.state.speed,
+              safeZ: this.state.safeZ,
+            })}
             className={["fb-button green",
               (botOnline && !locked) ? "" : "pseudo-disabled",
             ].join(" ")}
@@ -99,39 +83,20 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
           </button>
         </Col>
       </Row>
+      <Row className={"speed"}>
+        <Col xs={3}>
+          <label>{t("Speed")}</label>
+        </Col>
+        <Col xs={9}>
+          <Slider min={1} max={100} labelValues={[1, 50, 100]}
+            labelRenderer={value => `${value}%`}
+            value={this.state.speed}
+            onChange={speed => this.setState({ speed })} />
+        </Col>
+      </Row>
+      <SafeZCheckbox checked={this.state.safeZ}
+        onChange={() => this.setState({ safeZ: !this.state.safeZ })} />
     </div>;
-  }
-}
-
-export class RawMoveTo extends React.Component<MoveToProps, {}> {
-
-  componentDidMount() {
-    unselectPlant(this.props.dispatch)();
-  }
-
-  componentWillUnmount() {
-    this.props.dispatch({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: undefined, y: undefined, z: undefined }
-    });
-  }
-
-  render() {
-    return <DesignerPanel panelName={"move-to"} panelColor={PanelColor.gray}>
-      <DesignerPanelHeader
-        panelName={"move-to"}
-        panelColor={PanelColor.gray}
-        title={t("Move to location")}
-        backTo={"/app/designer/plants"}
-        description={Content.MOVE_MODE_DESCRIPTION} />
-      <DesignerPanelContent panelName={"move-to"}>
-        <MoveToForm
-          chosenLocation={this.props.chosenLocation}
-          currentBotLocation={this.props.currentBotLocation}
-          locked={this.props.locked}
-          botOnline={this.props.botOnline} />
-      </DesignerPanelContent>
-    </DesignerPanel>;
   }
 }
 
@@ -140,7 +105,7 @@ export const MoveModeLink = () =>
     <button
       className="fb-button gray"
       title={t("open move mode panel")}
-      onClick={() => history.push("/app/designer/move_to")}>
+      onClick={() => push("/app/designer/location")}>
       {t("move mode")}
     </button>
   </div>;
@@ -158,4 +123,7 @@ export const chooseLocation = (props: {
   }
 };
 
-export const MoveTo = connect(mapStateToProps)(RawMoveTo);
+export const locationUrl = ({ x, y, z }: { x: number, y: number, z?: number }) =>
+  isUndefined(z)
+    ? `/app/designer/location?x=${x}?y=${y}`
+    : `/app/designer/location?x=${x}?y=${y}?z=${z}`;

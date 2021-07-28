@@ -183,7 +183,7 @@ const PointGraphic = (props: ProfilePointProps) => {
 /** Draw interpolated soil height profile. */
 const InterpolatedSoil = (props: InterpolatedSoilProps) =>
   <g id={"interpolated-soil-height"}>
-    {getInterpolationData()
+    {getInterpolationData("Point")
       .filter(p =>
         withinProfileRange({
           axis: props.axis,

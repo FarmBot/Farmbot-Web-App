@@ -20,7 +20,9 @@ import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage, Xyz } from "farmbot";
 import { MarkedSlider } from "../../ui";
-import { moveAbsolute, takePhoto } from "../../devices/actions";
+import { takePhoto } from "../../devices/actions";
+import { push } from "../../history";
+import { locationUrl } from "../../farm_designer/move_to";
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -127,17 +129,15 @@ export const MoveToLocation = (props: MoveToLocationProps) =>
   <button
     className={"fb-button gray no-float"}
     type={"button"}
-    disabled={!props.botOnline}
     title={t("move to location")}
     onClick={() =>
       isNumber(props.imageLocation.x) &&
       isNumber(props.imageLocation.y) &&
-      isNumber(props.imageLocation.z) &&
-      moveAbsolute({
+      push(locationUrl({
         x: props.imageLocation.x,
         y: props.imageLocation.y,
         z: props.imageLocation.z,
-      })}>
+      }))}>
     {t("Move FarmBot to location")}
   </button>;
 

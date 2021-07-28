@@ -12,6 +12,7 @@ import {
   Grid, MapBackground,
   TargetCoordinate,
   SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroup,
+  getSelectionBoxArea,
 } from "./background";
 import {
   PlantLayer,
@@ -32,9 +33,9 @@ import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
   dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
 } from "./layers/plants/plant_actions";
-import { chooseLocation } from "../move_to";
+import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
-import { history } from "../../history";
+import { getPathArray, history } from "../../history";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -109,7 +110,8 @@ export class GardenMap extends
       isDragging: false, qPageX: 0, qPageY: 0,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
       activeDragSpread: undefined,
-      selectionBox: undefined
+      selectionBox: undefined,
+      previousSelectionBoxArea: getSelectionBoxArea(this.state.selectionBox),
     });
   }, 400);
 
@@ -180,7 +182,6 @@ export class GardenMap extends
   /** Map background drag start actions. */
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
-      case Mode.moveTo:
       case Mode.locationInfo:
       case Mode.createPoint:
       case Mode.createWeed:
@@ -205,7 +206,24 @@ export class GardenMap extends
         });
         break;
       default:
-        history.push("/app/designer/plants");
+        const openLocationInfo = (e: React.MouseEvent<SVGElement>) => {
+          const xyLocation = this.getGardenCoordinates(e);
+          const { selectedPoints,
+            hoveredPlant, hoveredPoint, hoveredToolSlot,
+          } = this.props.designer;
+          const selectionActive = (selectedPoints && selectedPoints.length > 0)
+            || getPathArray().join("/") != "/app/designer/plants" ||
+            (hoveredPlant.plantUUID || hoveredPoint || hoveredToolSlot);
+          if (!selectionActive && xyLocation) {
+            this.setState({
+              toLocation: { x: xyLocation.x, y: xyLocation.y, z: 0 },
+            });
+            return false;
+          } else {
+            return true;
+          }
+        };
+        openLocationInfo(e) && history.push("/app/designer/plants");
         startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
@@ -273,7 +291,6 @@ export class GardenMap extends
         // Create a new plant in the map
         this.handleDrop(e);
         break;
-      case Mode.moveTo:
       case Mode.locationInfo:
         e.preventDefault();
         chooseLocation({
@@ -359,7 +376,6 @@ export class GardenMap extends
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
     switch (getMode()) {
-      case Mode.moveTo:
       case Mode.locationInfo:
       case Mode.profile:
         return () => { };
@@ -368,7 +384,17 @@ export class GardenMap extends
           ? () => { }
           : closePlantInfo(this.props.dispatch);
       default:
-        return closePlantInfo(this.props.dispatch);
+        return () => {
+          const area = this.state.previousSelectionBoxArea;
+          const box = area && area > 10;
+          if (this.state.toLocation && getMode() == Mode.none) {
+            !box && history.push(locationUrl(this.state.toLocation));
+          }
+          this.setState({
+            toLocation: undefined, previousSelectionBoxArea: undefined,
+          });
+          closePlantInfo(this.props.dispatch)();
+        };
     }
   }
 
@@ -436,9 +462,12 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
+    overlayVisible={getPathArray()[3] == "sensors" ||
+      !!this.props.getConfigValue(BooleanSetting.show_moisture_interpolation_map)}
     sensorReadings={this.props.sensorReadings}
     mapTransformProps={this.mapTransformProps}
     timeSettings={this.props.timeSettings}
+    farmwareEnvs={this.props.farmwareEnvs}
     sensors={this.props.sensors} />
   SpreadLayer = () => <SpreadLayer
     mapTransformProps={this.mapTransformProps}
@@ -461,9 +490,13 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     designer={this.props.designer}
     visible={!!this.props.showPoints}
+    overlayVisible={getMode() == Mode.locationInfo ||
+      getPathArray()[3] == "location" ||
+      !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     interactions={this.interactions("GenericPointer")}
+    farmwareEnvs={this.props.farmwareEnvs}
     genericPoints={this.props.genericPoints} />
   WeedLayer = () => <WeedLayer
     mapTransformProps={this.mapTransformProps}

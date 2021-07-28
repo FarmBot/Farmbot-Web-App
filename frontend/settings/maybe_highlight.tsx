@@ -142,11 +142,13 @@ const MAP_SETTINGS = [
   DeviceSetting.showPointsMapLayer,
   DeviceSetting.showWeedsMapLayer,
   DeviceSetting.showRemovedWeedsMapLayer,
+  DeviceSetting.showSoilInterpolationMapLayer,
   DeviceSetting.showSpreadMapLayer,
   DeviceSetting.showFarmbotMapLayer,
   DeviceSetting.showPhotosMapLayer,
   DeviceSetting.showAreasMapLayer,
   DeviceSetting.showReadingsMapLayer,
+  DeviceSetting.showMoistureInterpolationMapLayer,
 ];
 const CONTROLS_SETTINGS = [
   DeviceSetting.invertXAxisJogButton,

@@ -12,7 +12,7 @@ export class NumericMCUInputGroup
 
   Inputs = () => {
     const {
-      sourceFwConfig, dispatch, intSize, gray, float, firmwareHardware,
+      sourceFwConfig, dispatch, intSize, gray, float, firmwareHardware, warning,
       x, y, z, xScale, yScale, zScale, min, max, disabled, disabledBy, warnMin,
     } = this.props;
     const commonProps = {
@@ -32,6 +32,7 @@ export class NumericMCUInputGroup
           scale={xScale}
           title={gray?.x ? disabledBy : undefined}
           warnMin={warnMin?.x}
+          warning={warning?.x}
           gray={gray?.x} />
       </Col>
       <Col xs={4}>
@@ -40,6 +41,7 @@ export class NumericMCUInputGroup
           scale={yScale}
           title={gray?.y ? disabledBy : undefined}
           warnMin={warnMin?.y}
+          warning={warning?.y}
           gray={gray?.y} />
       </Col>
       <Col xs={4}>
@@ -48,6 +50,7 @@ export class NumericMCUInputGroup
           scale={zScale}
           title={gray?.z ? disabledBy : undefined}
           warnMin={warnMin?.z}
+          warning={warning?.z}
           gray={gray?.z} />
       </Col>
     </div>;

@@ -18,6 +18,8 @@ import {
   TaggedCrop,
   TaggedLog,
   TaggedTool,
+  Vector3,
+  TaggedFarmwareEnv,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -104,6 +106,7 @@ export interface FarmDesignerProps {
   logs: TaggedLog[];
   deviceTarget: string;
   sourceFbosConfig: SourceFbosConfig;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface MovePlantProps {
@@ -258,6 +261,7 @@ export interface GardenMapProps {
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
   deviceTarget: string;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface GardenMapState {
@@ -268,6 +272,8 @@ export interface GardenMapState {
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   selectionBox: SelectionBoxData | undefined;
+  previousSelectionBoxArea: number | undefined;
+  toLocation: Vector3 | undefined;
 }
 
 export type PlantOptions = Partial<PlantPointer>;
@@ -279,6 +285,8 @@ export interface EditPlantInfoProps {
   openedSavedGarden: string | undefined;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
+  soilHeightPoints: TaggedGenericPointer[];
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface DraggableEvent {

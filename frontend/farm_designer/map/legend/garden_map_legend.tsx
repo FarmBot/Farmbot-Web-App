@@ -20,8 +20,6 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
-import { LocationInfoModeLink } from "../../location_info";
-import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -106,7 +104,15 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       settingName={BooleanSetting.show_points}
       value={props.showPoints}
       label={DeviceSetting.showPoints}
-      onClick={toggle(BooleanSetting.show_points)} />
+      onClick={toggle(BooleanSetting.show_points)}
+      submenuTitle={t("extras")}
+      popover={<div className="map-points-submenu">
+        <NonLayerToggle
+          setting={BooleanSetting.show_soil_interpolation_map}
+          label={DeviceSetting.showSoilInterpolationMap}
+          getConfigValue={getConfigValue}
+          dispatch={dispatch} />
+      </div>} />
     <LayerToggle
       settingName={BooleanSetting.show_weeds}
       value={props.showWeeds}
@@ -151,7 +157,15 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         settingName={BooleanSetting.show_sensor_readings}
         value={props.showSensorReadings}
         label={DeviceSetting.showReadings}
-        onClick={toggle(BooleanSetting.show_sensor_readings)} />}
+        onClick={toggle(BooleanSetting.show_sensor_readings)}
+        submenuTitle={t("overlays")}
+        popover={<div className="overlay-submenu">
+          <NonLayerToggle
+            setting={BooleanSetting.show_moisture_interpolation_map}
+            label={DeviceSetting.showMoistureInterpolationMap}
+            getConfigValue={getConfigValue}
+            dispatch={dispatch} />
+        </div>} />}
   </div>;
 };
 
@@ -171,7 +185,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
         <LayerToggles {...props} />
         <MoveModeLink />
-        {DevSettings.futureFeaturesEnabled() && <LocationInfoModeLink />}
         <SelectModeLink />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />

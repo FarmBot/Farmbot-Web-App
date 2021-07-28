@@ -10,11 +10,13 @@ import { t } from "../i18next_wrapper";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { PanelColor } from "./panel_header";
 import {
-  maybeGetTimeSettings, selectAllGenericPointers, selectAllImages,
+  maybeGetTimeSettings, selectAllFarmwareEnvs, selectAllGenericPointers,
+  selectAllImages,
   selectAllPlantPointers, selectAllSensorReadings, selectAllSensors,
 } from "../resources/selectors";
 import { getSoilHeightColor, soilHeightPoint } from "../points/soil_height";
 import {
+  TaggedFarmwareEnv,
   TaggedGenericPointer, TaggedImage, TaggedPlantPointer, TaggedPoint,
   TaggedSensor, TaggedSensorReading, Xyz,
 } from "farmbot";
@@ -22,7 +24,7 @@ import { MoveToForm } from "./move_to";
 import { Actions } from "../constants";
 import { push } from "../history";
 import { distance } from "../point_groups/paths";
-import { isUndefined, round, sortBy } from "lodash";
+import { isUndefined, round, sortBy, sum } from "lodash";
 import { PlantInventoryItem } from "../plants/plant_inventory_item";
 import { PointInventoryItem } from "../points/point_inventory_item";
 import {
@@ -54,6 +56,7 @@ export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   images: selectAllImages(props.resources.index),
   getConfigValue: getWebAppConfigValue(() => props),
   env: getEnv(props.resources.index),
+  farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   sensors: selectAllSensors(props.resources.index),
   timeSettings: maybeGetTimeSettings(props.resources.index),
 });
@@ -73,9 +76,8 @@ export interface LocationInfoProps {
   env: UserEnv;
   sensors: TaggedSensor[];
   timeSettings: TimeSettings;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
-
-export const SORT_KEYS = ["points.body.created_at", "distance"];
 
 export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 
@@ -90,10 +92,11 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
     unselectPlant(this.props.dispatch)();
     const x = getUrlQuery("x");
     const y = getUrlQuery("y");
+    const z = getUrlQuery("z") || "0";
     !this.chosenXY && !isUndefined(x) && !isUndefined(y) &&
       this.props.dispatch({
         type: Actions.CHOOSE_LOCATION,
-        payload: { x: parseFloat(x), y: parseFloat(y), z: 0 }
+        payload: { x: parseFloat(x), y: parseFloat(y), z: parseFloat(z) }
       });
   }
 
@@ -106,8 +109,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 
   render() {
     const { chosenXY } = this;
-    const allSoilHeightPoints = this.props.genericPoints
-      .filter(p => soilHeightPoint(p));
+    const allSoilHeightPoints = this.props.genericPoints.filter(soilHeightPoint);
     const getColorOverride = getSoilHeightColor(allSoilHeightPoints);
     const sensorReadings = this.props.sensorReadings
       .filter(p => p.body.pin != 63);
@@ -119,6 +121,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
       <DesignerPanelHeader
         panelName={"location-info"}
         panelColor={PanelColor.gray}
+        backTo={"/app/designer/plants"}
         title={chosenXY ? `(${chosenXY.x}, ${chosenXY.y})` : t("Location info")} />
       <DesignerPanelContent panelName={"location-info"}>
         <EmptyStateWrapper
@@ -163,6 +166,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
                 hoveredSensorReading={this.props.hoveredSensorReading}
                 getConfigValue={this.props.getConfigValue}
                 env={this.props.env}
+                farmwareEnvs={this.props.farmwareEnvs}
                 getColorOverride={getColorOverride}
                 chosenXY={chosenXY} />)}
           </div>
@@ -217,6 +221,12 @@ export function groupItemsByLocation<T extends Item>(
   return byLocation;
 }
 
+export function selectMostRecentPoints
+  <T extends (TaggedGenericPointer | TaggedSensorReading)>(points: T[]) {
+  return Object.values(groupItemsByLocation(points, undefined))
+    .map(data => sortBy(data.items, "body.updated_at").reverse()[0]);
+}
+
 interface ItemListWrapperProps {
   items: Item[];
   dispatch: Function;
@@ -229,19 +239,22 @@ interface ItemListWrapperProps {
   env: UserEnv,
   chosenXY: Record<"x" | "y", number> | undefined;
   hoveredSensorReading: string | undefined;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 function ItemListWrapper(props: ItemListWrapperProps) {
   const { chosenXY } = props;
-  const items = sortBy(groupItemsByLocation(props.items, chosenXY), SORT_KEYS);
+  const items = sortBy(groupItemsByLocation(props.items, chosenXY), "distance");
   const [expanded, setExpanded] = React.useState(false);
   if (items.length < 1) { return <label>{`${props.title} (0)`}</label>; }
   const hide = (distance: number | undefined) => isUndefined(distance) ||
     (!isUndefined(items[0].distance) && distance > items[0].distance);
-  const title = `${props.title} (${items.filter(data =>
-    !hide(data.distance)).length})`;
+  const title = `${props.title} (${sum(items.filter(data =>
+    !hide(data.distance)).map(item => item.items.length))})`;
   const firstItem = items[0].items[0];
-  const options = fetchInterpolationOptions();
+  const options = fetchInterpolationOptions(props.farmwareEnvs);
+  const interpolationPoints =
+    selectMostRecentPoints(props.items as TaggedGenericPointer[]);
   return <div className={"location-items-wrapper"}>
     <ExpandableHeader title={title} expanded={expanded}
       onClick={() => setExpanded(!expanded)} />
@@ -254,8 +267,7 @@ function ItemListWrapper(props: ItemListWrapperProps) {
             <p className={"title"}>
               {t("Interpolated Soil Z at")} ({chosenXY.x}, {chosenXY.y}):
             </p>
-            <p>{interpolatedZ(chosenXY, props.items as TaggedGenericPointer[],
-              options)}mm</p>
+            <p>{interpolatedZ(chosenXY, interpolationPoints, options)}mm</p>
           </div>}
         {items.map(data => {
           const key = JSON.stringify(data.xy);
@@ -409,16 +421,6 @@ const ImageListItem = (props: ImageListItemProps) => {
   </div>;
 };
 
-export const LocationInfoModeLink = () =>
-  <div className={"location-info-mode"}>
-    <button
-      className={"fb-button gray"}
-      title={t("open location info panel")}
-      onClick={() => push("/app/designer/location")}>
-      {t("location info")}
-    </button>
-  </div>;
-
 interface LocationActionsProps {
   dispatch: Function;
   currentBotLocation: Record<Xyz, number | undefined>;
@@ -442,9 +444,9 @@ const LocationActions = (props: LocationActionsProps) =>
         { x: props.currentBotLocation.x, y: props.currentBotLocation.y },
         { x: props.chosenLocation.y, y: props.chosenLocation.y },
       ))}mm {t("from")} {t("FarmBot's current position")}
-      &nbsp;({props.currentBotLocation.x}
-      &nbsp;{props.currentBotLocation.y}
-      &nbsp;{props.currentBotLocation.z})</p>}
+        &nbsp;({props.currentBotLocation.x}
+        &nbsp;{props.currentBotLocation.y}
+        &nbsp;{props.currentBotLocation.z})</p>}
     <button className={"fb-button gray add-point"}
       onClick={() => {
         props.dispatch({

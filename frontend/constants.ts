@@ -196,6 +196,10 @@ export namespace ToolTips {
     trim(`The number of microsteps required to move the motor one step.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const MICROSTEP_WARNING =
+    trim(`A microstep value of 1 is recommended for best performance when
+    quiet motor mode is enabled.`);
+
   export const ALWAYS_POWER_MOTORS =
     trim(`Keep power applied to motors. Prevents slipping from gravity in
     certain situations. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
@@ -1823,6 +1827,8 @@ export enum DeviceSetting {
   showWeedsMapLayer = `Show Weeds Map Layer`,
   showRemovedWeeds = `Show removed`,
   showRemovedWeedsMapLayer = `Show Removed Weeds Map Layer`,
+  showSoilInterpolationMap = `Show Soil Interpolation Map`,
+  showSoilInterpolationMapLayer = `Show Soil Interpolation Map Layer`,
   showSpread = `Spread`,
   showSpreadMapLayer = `Show Spread Map Layer`,
   showFarmbot = `FarmBot`,
@@ -1833,6 +1839,8 @@ export enum DeviceSetting {
   showAreasMapLayer = `Show Areas Map Layer`,
   showReadings = `Readings`,
   showReadingsMapLayer = `Show Readings Map Layer`,
+  showMoistureInterpolationMap = `Show Moisture Interpolation Map`,
+  showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
 
   // Controls
   invertJogButtonXAxis = `X Axis`,

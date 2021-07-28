@@ -1,12 +1,11 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../farm_designer/map/util";
-import { history } from "../history";
+import { push } from "../history";
 import { BlurableInput, Row, Col } from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
-import { PlantStage, Xyz } from "farmbot";
+import { PlantStage, TaggedFarmwareEnv, TaggedGenericPointer, Xyz } from "farmbot";
 import moment, { Moment } from "moment";
-import { Actions } from "../constants";
 import { Link } from "../link";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
 import { parseIntInput } from "../util";
@@ -15,6 +14,11 @@ import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
 import { cropSearchUrl } from "./crop_catalog";
+import { locationUrl } from "../farm_designer/move_to";
+import {
+  fetchInterpolationOptions, interpolatedZ,
+} from "../farm_designer/map/layers/points/interpolation_map";
+import { Popover } from "@blueprintjs/core";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -23,6 +27,8 @@ export interface PlantPanelProps {
   inSavedGarden: boolean;
   dispatch: Function;
   timeSettings?: TimeSettings;
+  soilHeightPoints: TaggedGenericPointer[];
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 interface EditPlantProperty {
@@ -52,14 +58,24 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
 
 export interface EditPlantLocationProps extends EditPlantProperty {
   plantLocation: Record<Xyz, number>;
+  soilHeightPoints: TaggedGenericPointer[];
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export const EditPlantLocation = (props: EditPlantLocationProps) => {
   const { plantLocation, updatePlant, uuid } = props;
+  const soilZ = interpolatedZ({ x: plantLocation.x, y: plantLocation.y },
+    props.soilHeightPoints,
+    fetchInterpolationOptions(props.farmwareEnvs));
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
       <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
+        {axis == "z" &&
+          <Popover>
+            <i className={"fa fa-question-circle"} />
+            <p>{`${t("soil height at plant location")}: ${soilZ}mm`}</p>
+          </Popover>}
         <BlurableInput
           type="number"
           value={plantLocation[axis]}
@@ -90,15 +106,6 @@ export const EditPlantRadius = (props: EditPlantRadiusProps) =>
     </Col>
   </Row>;
 
-const chooseLocation = (to: Record<Xyz, number | undefined>) =>
-  (dispatch: Function): Promise<void> => {
-    dispatch({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: to.x, y: to.y, z: to.z }
-    });
-    return Promise.resolve();
-  };
-
 interface MoveToPlantProps {
   x: number;
   y: number;
@@ -110,9 +117,7 @@ const MoveToPlant = (props: MoveToPlantProps) =>
   <button className={"fb-button gray no-float"}
     style={{ marginTop: "1rem" }}
     title={t("Move to this plant")}
-    onClick={() =>
-      props.dispatch(chooseLocation({ x: props.x, y: props.y, z: props.z }))
-        .then(() => history.push("/app/designer/move_to"))}>
+    onClick={() => push(locationUrl({ x: props.x, y: props.y, z: props.z }))}>
     {t("Move FarmBot to this plant")}
   </button>;
 
@@ -137,7 +142,7 @@ const DeleteButtons = (props: DeleteButtonsProps) =>
       className="fb-button gray no-float"
       style={{ marginRight: "10px" }}
       title={t("Delete multiple")}
-      onClick={() => history.push("/app/designer/plants/select")}>
+      onClick={() => push("/app/designer/plants/select")}>
       {t("Delete multiple")}
     </button>
   </div>;
@@ -194,7 +199,10 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
         </Row>}
       <ListItem name={t("Location")}>
-        <EditPlantLocation {...commonProps} plantLocation={{ x, y, z }} />
+        <EditPlantLocation {...commonProps}
+          plantLocation={{ x, y, z }}
+          soilHeightPoints={props.soilHeightPoints}
+          farmwareEnvs={props.farmwareEnvs} />
       </ListItem>
       <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
       <ListItem name={t("Size")}>

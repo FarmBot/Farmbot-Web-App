@@ -172,6 +172,7 @@ export function Motors(props: MotorsProps) {
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.microstepsPerStep}
         tooltip={ToolTips.MICROSTEPS_PER_STEP}
+        warning={microstepWarning(sourceFwConfig)}
         x={"movement_microsteps_x"}
         y={"movement_microsteps_y"}
         z={"movement_microsteps_z"}
@@ -256,3 +257,18 @@ export function Motors(props: MotorsProps) {
     </Collapse>
   </Highlight>;
 }
+
+const microstepWarning = (sourceFwConfig: SourceFwConfig) => ({
+  x: !!sourceFwConfig("movement_axis_stealth_x").value &&
+    sourceFwConfig("movement_microsteps_x").value != 1
+    ? t(ToolTips.MICROSTEP_WARNING)
+    : undefined,
+  y: !!sourceFwConfig("movement_axis_stealth_y").value &&
+    sourceFwConfig("movement_microsteps_y").value != 1
+    ? t(ToolTips.MICROSTEP_WARNING)
+    : undefined,
+  z: !!sourceFwConfig("movement_axis_stealth_z").value &&
+    sourceFwConfig("movement_microsteps_z").value != 1
+    ? t(ToolTips.MICROSTEP_WARNING)
+    : undefined,
+});

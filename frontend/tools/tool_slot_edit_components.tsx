@@ -15,7 +15,8 @@ import {
   EditToolSlotMetaProps,
 } from "./interfaces";
 import { betterMerge } from "../util";
-import { moveAbsolute } from "../devices/actions";
+import { locationUrl } from "../farm_designer/move_to";
+import { push } from "../history";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
@@ -128,14 +129,13 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
     </Row>
     <button
       className={"fb-button gray no-float"}
-      disabled={!props.botOnline}
       title={t("move to this location")}
       onClick={() => {
         const x = props.gantryMounted
           ? props.botPosition.x ?? props.slotLocation.x
           : props.slotLocation.x;
         const { y, z } = props.slotLocation;
-        moveAbsolute({ x, y, z });
+        push(locationUrl({ x, y, z }));
       }}>
       {t("Move FarmBot to slot location")}
     </button>

@@ -32,6 +32,9 @@ import { BooleanSetting } from "../session_keys";
 import { ChangeOwnershipForm } from "./transfer_ownership/change_ownership_form";
 import { SetupWizardSettings } from "../wizard/settings";
 import { ReSeedAccount } from "../messages/cards";
+import {
+  InterpolationSettings,
+} from "../farm_designer/map/layers/points/interpolation_map";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -151,6 +154,11 @@ export class RawDesignerSettings
             wizardStepResults={this.props.wizardStepResults} />}
         {this.props.searchTerm.toLowerCase() == "re-seed" &&
           <ReSeedAccount />}
+        {this.props.searchTerm == "interpolation" &&
+          <InterpolationSettings
+            dispatch={this.props.dispatch}
+            farmwareEnvs={this.props.farmwareEnvs}
+            saveFarmwareEnv={this.props.saveFarmwareEnv} />}
         {this.props.searchTerm == "developer" &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}

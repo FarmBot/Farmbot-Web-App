@@ -10,7 +10,7 @@ let mockInteractionAllow = true;
 jest.mock("../util", () => ({
   getMode: () => mockMode,
   getMapSize: () => ({ h: 100, w: 100 }),
-  getGardenCoordinates: jest.fn(),
+  getGardenCoordinates: jest.fn(() => ({ x: 100, y: 200 })),
   transformXY: jest.fn(() => ({ qx: 0, qy: 0 })),
   transformForQuadrant: jest.fn(),
   round: jest.fn(),
@@ -38,20 +38,24 @@ jest.mock("../background/selection_box_actions", () => ({
   maybeUpdateGroup: jest.fn(),
 }));
 
-jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
+jest.mock("../../move_to", () => ({
+  chooseLocation: jest.fn(),
+  locationUrl: jest.fn(() => "/app/designer/location"),
+}));
 
 jest.mock("../profile", () => ({
   chooseProfile: jest.fn(),
   ProfileLine: () => <g />,
 }));
 
+let mockPath = "/app/designer/plants";
 jest.mock("../../../history", () => ({
   history: {
     push: jest.fn(),
-    getPathArray: () => [],
+    getPathArray: () => mockPath.split("/"),
   },
   push: jest.fn(),
-  getPathArray: () => [],
+  getPathArray: () => mockPath.split("/"),
 }));
 
 let mockGroup: TaggedPointGroup | undefined = undefined;
@@ -72,13 +76,13 @@ import {
   startNewSelectionBox, resizeBox, maybeUpdateGroup,
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
-import { chooseLocation } from "../../move_to";
+import { chooseLocation, locationUrl } from "../../move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
   fakeDesignerState,
 } from "../../../__test_support__/fake_designer_state";
 import {
-  fakePlant, fakePointGroup, fakePoint,
+  fakePlant, fakePointGroup, fakePoint, fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";
@@ -127,7 +131,7 @@ const fakeProps = (): GardenMapProps => ({
   latestImages: [],
   cameraCalibrationData: fakeCameraCalibrationData(),
   getConfigValue: jest.fn(),
-  sensorReadings: [],
+  sensorReadings: [fakeSensorReading()],
   sensors: [],
   timeSettings: fakeTimeSettings(),
   groups: [],
@@ -135,6 +139,7 @@ const fakeProps = (): GardenMapProps => ({
   visualizedSequenceBody: [],
   logs: [],
   deviceTarget: "",
+  farmwareEnvs: [],
 });
 
 describe("<GardenMap/>", () => {
@@ -180,7 +185,9 @@ describe("<GardenMap/>", () => {
   });
 
   it("starts drag on background: selecting", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const p = fakeProps();
+    p.designer.selectedPoints = ["fakePointUuid"];
+    const wrapper = mount(<GardenMap {...p} />);
     mockMode = Mode.addPlant;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
@@ -213,7 +220,7 @@ describe("<GardenMap/>", () => {
 
   it("starts drag on background: does nothing when in move mode", () => {
     const wrapper = mount(<GardenMap {...fakeProps()} />);
-    mockMode = Mode.moveTo;
+    mockMode = Mode.locationInfo;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
@@ -257,6 +264,25 @@ describe("<GardenMap/>", () => {
       expect.objectContaining(e));
   });
 
+  it("starts drag on background: opening location info", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    p.designer.selectedPoints = [];
+    p.designer.hoveredPlant = { icon: "", plantUUID: undefined };
+    p.designer.hoveredPoint = undefined;
+    p.designer.hoveredToolSlot = undefined;
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    mockMode = Mode.none;
+    const e = { pageX: 1000, pageY: 2000 } as React.DragEvent<SVGElement>;
+    wrapper.instance().startDragOnBackground(e);
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
+    wrapper.update();
+    expect(wrapper.state().toLocation).toEqual({ x: 100, y: 200, z: 0 });
+  });
+
   it("starts drag: click-to-add mode", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     mockMode = Mode.clickToAdd;
@@ -291,7 +317,7 @@ describe("<GardenMap/>", () => {
 
   it("selects location", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    mockMode = Mode.moveTo;
+    mockMode = Mode.locationInfo;
     wrapper.find(".drop-area-svg").simulate("click", {
       pageX: 1000, pageY: 2000, preventDefault: jest.fn()
     });
@@ -432,7 +458,7 @@ describe("<GardenMap/>", () => {
   });
 
   it("doesn't close panel: move mode", () => {
-    mockMode = Mode.moveTo;
+    mockMode = Mode.locationInfo;
     const p = fakeProps();
     p.designer.selectedPoints = [fakePlant().uuid];
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
@@ -449,6 +475,36 @@ describe("<GardenMap/>", () => {
     expect(closePlantInfo).not.toHaveBeenCalled();
   });
 
+  it("closes panel: location active", () => {
+    mockMode = Mode.none;
+    const p = fakeProps();
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.setState({
+      toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 0,
+    });
+    wrapper.instance().closePanel()();
+    expect(locationUrl).toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith(
+      expect.stringContaining("/app/designer/location"));
+    expect(closePlantInfo).toHaveBeenCalled();
+    expect(wrapper.state().toLocation).toEqual(undefined);
+  });
+
+  it("closes panel: location and selection box active", () => {
+    mockMode = Mode.none;
+    const p = fakeProps();
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.setState({
+      toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 1000,
+    });
+    wrapper.instance().closePanel()();
+    expect(locationUrl).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalledWith(
+      expect.stringContaining("/app/designer/location"));
+    expect(closePlantInfo).toHaveBeenCalled();
+    expect(wrapper.state().toLocation).toEqual(undefined);
+  });
+
   it("calls unselectPlant on unmount", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     wrapper.unmount();
@@ -457,7 +513,7 @@ describe("<GardenMap/>", () => {
 
   it("doesn't return plant in wrong mode", () => {
     const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
-    mockMode = Mode.moveTo;
+    mockMode = Mode.locationInfo;
     expect(wrapper.instance().getPlant()).toEqual(undefined);
     mockMode = Mode.boxSelect;
     expect(wrapper.instance().getPlant()).toEqual(undefined);
