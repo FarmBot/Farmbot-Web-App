@@ -2,14 +2,14 @@ import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../farm_designer/map/util";
 import { push } from "../history";
-import { BlurableInput, Row, Col } from "../ui";
+import { BlurableInput, Row, Col, Help } from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
 import { PlantStage, TaggedFarmwareEnv, TaggedGenericPointer, Xyz } from "farmbot";
 import moment, { Moment } from "moment";
 import { Link } from "../link";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
 import { parseIntInput } from "../util";
-import { startCase } from "lodash";
+import { isUndefined, startCase } from "lodash";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
@@ -18,7 +18,6 @@ import { locationUrl } from "../farm_designer/move_to";
 import {
   fetchInterpolationOptions, interpolatedZ,
 } from "../farm_designer/map/layers/points/interpolation_map";
-import { Popover } from "@blueprintjs/core";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -71,11 +70,8 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
     {["x", "y", "z"].map((axis: Xyz) =>
       <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
-        {axis == "z" &&
-          <Popover>
-            <i className={"fa fa-question-circle"} />
-            <p>{`${t("soil height at plant location")}: ${soilZ}mm`}</p>
-          </Popover>}
+        {axis == "z" && !isUndefined(soilZ) &&
+          <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
         <BlurableInput
           type="number"
           value={plantLocation[axis]}

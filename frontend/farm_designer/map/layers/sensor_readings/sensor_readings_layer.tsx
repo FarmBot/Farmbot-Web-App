@@ -38,7 +38,7 @@ export function SensorReadingsLayer(props: SensorReadingsLayerProps) {
     options,
   });
   return <g id="sensor-readings-layer">
-    {visible && mostRecentSensorReading && props.overlayVisible &&
+    {mostRecentSensorReading && props.overlayVisible &&
       <InterpolationMap
         kind={"SensorReading"}
         points={moistureReadings}

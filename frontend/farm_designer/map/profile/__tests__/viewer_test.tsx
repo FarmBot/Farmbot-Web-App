@@ -25,6 +25,7 @@ describe("<ProfileViewer />", () => {
     tools: [],
     mapTransformProps: fakeMapTransformProps(),
     getConfigValue: () => true,
+    farmwareEnvs: [],
   });
 
   it("renders when closed", () => {

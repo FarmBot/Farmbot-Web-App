@@ -59,12 +59,14 @@ export interface State extends TypeCheckerHint {
   legend_menu_open: boolean;
   show_plants: boolean;
   show_points: boolean;
+  show_soil_interpolation_map: boolean;
   show_weeds: boolean;
   show_spread: boolean;
   show_farmbot: boolean;
   show_images: boolean;
   show_zones: boolean;
   show_sensor_readings: boolean;
+  show_moisture_interpolation_map: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }
@@ -151,7 +153,6 @@ export interface DesignerState {
   editGroupAreaInMap: boolean;
   visualizedSequence: UUID | undefined;
   hoveredSequenceStep: string | undefined;
-  settingsSearchTerm: string;
   hiddenImages: number[];
   shownImages: number[];
   hideUnShownImages: boolean;

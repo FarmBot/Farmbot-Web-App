@@ -24,7 +24,6 @@ export const fakeDesignerState = (): DesignerState => ({
   editGroupAreaInMap: false,
   visualizedSequence: undefined,
   hoveredSequenceStep: undefined,
-  settingsSearchTerm: "",
   hiddenImages: [],
   shownImages: [],
   hideUnShownImages: false,

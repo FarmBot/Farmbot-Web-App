@@ -276,6 +276,10 @@ export const highlight = { opened: false, highlighted: false };
 /** Open a panel if a setting in that panel is highlighted. */
 export const maybeOpenPanel = () =>
   (dispatch: Function) => {
+    if (getUrlQuery("only") || getUrlQuery("search")) {
+      dispatch(bulkToggleControlPanel(true));
+      return;
+    }
     if (highlight.opened) { return; }
     const urlFriendlySettingName = urlFriendly(getHighlightName() || "");
     if (!urlFriendlySettingName) { return; }
@@ -326,8 +330,8 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 
   get searchTerm() {
-    const { resources } = store.getState();
-    return resources.consumers.farm_designer.settingsSearchTerm;
+    const { app } = store.getState();
+    return app.settingsSearchTerm;
   }
 
   toggleHover = (hovered: boolean) => () => this.setState({ hovered });
@@ -352,13 +356,22 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 
   get hidden() {
+    const isolateName = getUrlQuery("only");
+    if (isolateName) {
+      const inSection = this.isSectionHeader && this.inContent(isolateName, true);
+      const settingMatch =
+        compareValues(this.props.settingName).includes(isolateName);
+      return !(inSection || settingMatch);
+    }
     const highlightName = getHighlightName();
     if (!highlightName) { return !!this.props.hidden; }
+    const highlightMatch =
+      compareValues(this.props.settingName).includes(highlightName);
     const highlightInSection = this.isSectionHeader
-      && this.inContent(highlightName, true);
+      && this.inContent(highlightName, true) || highlightMatch;
     const notHighlighted =
       SETTING_PANEL_LOOKUP[this.props.settingName] == "other_settings" &&
-      !compareValues(this.props.settingName).includes(highlightName);
+      !highlightMatch;
     return this.props.hidden ? !highlightInSection : notHighlighted;
   }
 

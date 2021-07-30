@@ -24,16 +24,18 @@ describe("<TargetCoordinate/>", () => {
     hoveredPoint: undefined,
     hoveredSensorReading: undefined,
     hoveredImage: undefined,
+    plantAreaOffset: { x: 100, y: 100 },
+    zoomLvl: 1,
   });
 
   it("renders target", () => {
     const wrapper = shallow(<TargetCoordinate {...fakeProps()} />);
-    const boxProps = wrapper.find("rect").props();
-    expect(boxProps.x).toEqual(90);
-    expect(boxProps.y).toEqual(198);
-    expect(boxProps.width).toEqual(10);
-    expect(boxProps.height).toEqual(4);
-    expect(wrapper.find("use").length).toEqual(4);
+    const boxProps = wrapper.find("rect").first().props();
+    expect(boxProps.x).toEqual(78);
+    expect(boxProps.y).toEqual(195.6);
+    expect(boxProps.width).toEqual(22);
+    expect(boxProps.height).toEqual(8.8);
+    expect(wrapper.find("use").length).toEqual(8);
   });
 
   it("doesn't render target", () => {
@@ -60,13 +62,13 @@ describe("<TargetCoordinate/>", () => {
     p.hoveredSensorReading = sensorReading;
     p.hoveredImage = image;
     const wrapper = svgMount(<TargetCoordinate {...p} />);
-    expect(wrapper.find("use").length).toEqual(4);
+    expect(wrapper.find("use").length).toEqual(8);
     expect(wrapper.find("line").length).toEqual(1);
   });
 
   it("doesn't render target line", () => {
     const wrapper = svgMount(<TargetCoordinate {...fakeProps()} />);
-    expect(wrapper.find("use").length).toEqual(4);
+    expect(wrapper.find("use").length).toEqual(8);
     expect(wrapper.find("line").length).toEqual(0);
   });
 });

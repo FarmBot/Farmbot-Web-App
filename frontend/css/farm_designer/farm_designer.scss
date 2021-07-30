@@ -770,6 +770,12 @@
       padding-top: 2rem;
     }
   }
+  .move-to-mode {
+    display: none;
+    @media screen and (max-width: 450px) {
+      display: block;
+    }
+  }
   .menu-pullout {
     position: absolute;
     left: -4.5rem;

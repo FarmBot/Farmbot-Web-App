@@ -42,7 +42,7 @@ interface InterpolationOptions {
 }
 
 export const DEFAULT_INTERPOLATION_OPTIONS: InterpolationOptions = {
-  stepSize: 100,
+  stepSize: 50,
   useNearest: false,
   power: 4,
 };
@@ -149,19 +149,27 @@ interface InterpolationMapProps {
 
 export const InterpolationMap = (props: InterpolationMapProps) => {
   const step = props.options.stepSize;
+  const { gridSize, xySwap } = props.mapTransformProps;
   return <g id={"interpolation-map"} style={{ pointerEvents: "none" }}>
-    {getInterpolationData(props.kind).map(p => {
-      const { x, y, z } = p;
-      const { qx, qy } = transformXY(x, y, props.mapTransformProps);
-      const { quadrant } = props.mapTransformProps;
-      const xOffset = [1, 4].includes(quadrant);
-      const yOffset = [3, 4].includes(quadrant);
-      return <rect key={`${x}-${y}`}
-        x={qx - (xOffset ? step : 0)}
-        y={qy - (yOffset ? step : 0)}
-        width={step} height={step}
-        fill={props.getColor(z)} fillOpacity={0.75} />;
-    })}
+    <clipPath id={"interpolation-map-clip-path"}>
+      <rect x={0} y={0}
+        width={xySwap ? gridSize.y : gridSize.x}
+        height={xySwap ? gridSize.x : gridSize.y} />
+    </clipPath>
+    <g id={"map-tiles"} clipPath={"url(#interpolation-map-clip-path)"}>
+      {getInterpolationData(props.kind).map(p => {
+        const { x, y, z } = p;
+        const { qx, qy } = transformXY(x, y, props.mapTransformProps);
+        const { quadrant } = props.mapTransformProps;
+        const xOffset = [1, 4].includes(quadrant);
+        const yOffset = [3, 4].includes(quadrant);
+        return <rect key={`${x}-${y}`}
+          x={qx - (xOffset ? step : 0)}
+          y={qy - (yOffset ? step : 0)}
+          width={step} height={step}
+          fill={props.getColor(z)} fillOpacity={0.75} />;
+      })}
+    </g>
   </g>;
 };
 
@@ -185,14 +193,14 @@ export const InterpolationSettings = (props: InterpolationSettingsProps) => {
       label={t("Interpolation step size")}
       optKey={InterpolationOption.stepSize}
       min={25}
-      max={250}
-      defaultValue={100} />
+      max={500}
+      defaultValue={DEFAULT_INTERPOLATION_OPTIONS.stepSize} />
     <InterpolationSetting {...common}
       label={t("Interpolation weight")}
       optKey={InterpolationOption.power}
       min={2}
       max={32}
-      defaultValue={4} />
+      defaultValue={DEFAULT_INTERPOLATION_OPTIONS.power} />
     <InterpolationSetting {...common}
       boolean={true}
       label={t("Interpolation use nearest")}
@@ -229,6 +237,7 @@ export const InterpolationSetting = (props: InterpolationSettingProps) => {
     </label>
     {props.boolean
       ? <ToggleButton
+        className={getModifiedClassNameSpecifyDefault(value, props.defaultValue)}
         toggleValue={value}
         toggleAction={() => props.dispatch(props.saveFarmwareEnv(
           props.optKey, value == 1 ? "0" : "1"))} />

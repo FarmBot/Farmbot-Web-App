@@ -38,7 +38,6 @@ export const initialState: DesignerState = {
   editGroupAreaInMap: false,
   visualizedSequence: undefined,
   hoveredSequenceStep: undefined,
-  settingsSearchTerm: "",
   hiddenImages: [],
   shownImages: [],
   hideUnShownImages: false,
@@ -144,10 +143,6 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<PointGroupSortType | undefined>(Actions.TRY_SORT_TYPE, (s, { payload }) => {
     s.tryGroupSortType = payload;
-    return s;
-  })
-  .add<string>(Actions.SET_SETTINGS_SEARCH_TERM, (s, { payload }) => {
-    s.settingsSearchTerm = payload;
     return s;
   })
   .add<boolean>(Actions.EDIT_GROUP_AREA_IN_MAP, (s, { payload }) => {

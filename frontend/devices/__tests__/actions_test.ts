@@ -331,10 +331,24 @@ describe("move()", () => {
           body: [{
             kind: "axis_overwrite",
             args: {
-              axis: "all",
+              axis: "x",
               axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
             }
-          }]
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          }],
         }],
       });
     expect(success).not.toHaveBeenCalled();
@@ -352,17 +366,46 @@ describe("move()", () => {
           body: [{
             kind: "axis_overwrite",
             args: {
-              axis: "all",
+              axis: "x",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
               axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
             }
           },
           {
             kind: "speed_overwrite",
             args: {
-              axis: "all",
+              axis: "x",
               speed_setting: { kind: "numeric", args: { number: 50 } },
-            },
-          }]
+            }
+          },
+          {
+            kind: "speed_overwrite",
+            args: {
+              axis: "y",
+              speed_setting: { kind: "numeric", args: { number: 50 } },
+            }
+          },
+          {
+            kind: "speed_overwrite",
+            args: {
+              axis: "z",
+              speed_setting: { kind: "numeric", args: { number: 50 } },
+            }
+          },
+          ],
         }],
       });
     expect(success).not.toHaveBeenCalled();
@@ -380,7 +423,21 @@ describe("move()", () => {
           body: [{
             kind: "axis_overwrite",
             args: {
-              axis: "all",
+              axis: "x",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
               axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
             }
           },

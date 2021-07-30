@@ -16,6 +16,7 @@ export interface ImageFlipperProps {
   transformImage: boolean;
   hover?(hovered: string | undefined): void;
   target?: Record<"x" | "y", number> | undefined;
+  flipActionOverride?(nextIndex: number): void;
 }
 
 export interface ImageFlipperState {

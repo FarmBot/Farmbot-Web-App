@@ -4,6 +4,7 @@ import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import { ControlPanelState } from "./devices/interfaces";
 
 export interface AppState {
+  settingsSearchTerm: string;
   controlPanelState: ControlPanelState;
   toasts: ToastMessages;
   controlsPopupOpen: boolean;
@@ -11,6 +12,7 @@ export interface AppState {
 
 export const emptyState = (): AppState => {
   return {
+    settingsSearchTerm: "",
     controlPanelState: {
       farmbot_settings: false,
       firmware: false,
@@ -34,6 +36,10 @@ export const emptyState = (): AppState => {
 
 export const appReducer =
   generateReducer<AppState>(emptyState())
+    .add<string>(Actions.SET_SETTINGS_SEARCH_TERM, (s, { payload }) => {
+      s.settingsSearchTerm = payload;
+      return s;
+    })
     .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
       s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
       return s;

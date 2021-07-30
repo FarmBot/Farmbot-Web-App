@@ -18,8 +18,9 @@ import { TaggedPlant } from "../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { BooleanSetting } from "../../../session_keys";
 import { PlantPoint, WeedPoint } from "./plants_and_weeds";
-import { getInterpolationData } from "../layers/points/interpolation_map";
-import { getPathArray } from "../../../history";
+import {
+  fetchInterpolationOptions, getInterpolationData,
+} from "../layers/points/interpolation_map";
 
 /** Profile lines drawn through points of the same color in the selected region. */
 export const ProfileSvg = (props: ProfileSvgProps) => {
@@ -52,8 +53,9 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     preserveAspectRatio={expanded ? undefined : "none"}>
     {expanded && <Grid
       getX={getX} height={height} width={width} negativeZ={props.negativeZ} />}
-    {expanded && getPathArray()[3] === "location" &&
+    {expanded && props.getConfigValue(BooleanSetting.show_soil_interpolation_map) &&
       <InterpolatedSoil axis={lineAxis} getX={getX}
+        farmwareEnvs={props.farmwareEnvs}
         position={position} selectionWidth={props.selectionWidth} />}
     <LabeledHorizontalLine id={"soil-height"} label={t("soil")}
       profileHeight={height} color={Color.gridSoil}
@@ -181,8 +183,9 @@ const PointGraphic = (props: ProfilePointProps) => {
 };
 
 /** Draw interpolated soil height profile. */
-const InterpolatedSoil = (props: InterpolatedSoilProps) =>
-  <g id={"interpolated-soil-height"}>
+const InterpolatedSoil = (props: InterpolatedSoilProps) => {
+  const { stepSize } = fetchInterpolationOptions(props.farmwareEnvs);
+  return <g id={"interpolated-soil-height"}>
     {getInterpolationData("Point")
       .filter(p =>
         withinProfileRange({
@@ -193,9 +196,10 @@ const InterpolatedSoil = (props: InterpolatedSoilProps) =>
         }))
       .map(p =>
         <rect key={`${p.x}-${p.y}`}
-          x={props.getX(p) - 12.5} y={Math.abs(p.z)} width={25} height={1}
+          x={props.getX(p)} y={Math.abs(p.z)} width={stepSize} height={1}
           fillOpacity={0.85} />)}
   </g>;
+};
 
 /** Profile grid lines and labels. */
 const Grid = (props: ProfileGridProps) => {

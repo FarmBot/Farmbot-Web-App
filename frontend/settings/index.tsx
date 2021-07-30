@@ -35,6 +35,8 @@ import { ReSeedAccount } from "../messages/cards";
 import {
   InterpolationSettings,
 } from "../farm_designer/map/layers/points/interpolation_map";
+import { getUrlQuery } from "../util";
+import { push } from "../history";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -58,6 +60,11 @@ export class RawDesignerSettings
     const firmwareHardware = validFirmwareHardware(value);
     const botOnline = isBotOnlineFromState(this.props.bot);
     const { busy } = this.props.bot.hardware.informational_settings;
+    const urlSearchTerm = (getUrlQuery("search") || "").replace("_", " ");
+    urlSearchTerm && this.props.searchTerm != urlSearchTerm && dispatch({
+      type: Actions.SET_SETTINGS_SEARCH_TERM,
+      payload: urlSearchTerm,
+    });
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Settings} withButton={true}>
@@ -65,15 +72,24 @@ export class RawDesignerSettings
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {
+            getUrlQuery("search") && push(location.pathname);
             dispatch(bulkToggleControlPanel(searchTerm != ""));
             dispatch({
               type: Actions.SET_SETTINGS_SEARCH_TERM,
-              payload: searchTerm
+              payload: searchTerm,
             });
           }} />
         <ToggleSettingsOpen dispatch={dispatch} panels={controlPanelState} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>
+        {getUrlQuery("only") && !this.props.searchTerm &&
+          <div className={"settings-warning-banner"}>
+            <p>{t("showing single setting")}</p>
+            <button className={"fb-button red"}
+              onClick={() => location.assign(location.pathname)}>
+              {t("cancel")}
+            </button>
+          </div>}
         <FarmBotSettings
           bot={this.props.bot}
           controlPanelState={controlPanelState}
@@ -143,28 +159,31 @@ export class RawDesignerSettings
           searchTerm={this.props.searchTerm}
           getConfigValue={getConfigValue}
           sourceFbosConfig={sourceFbosConfig} />
-        {this.props.searchTerm.toLowerCase() == "env" &&
+        {showByTerm("env", this.props.searchTerm) &&
           <EnvEditor
             dispatch={this.props.dispatch}
             farmwareEnvs={this.props.farmwareEnvs} />}
-        {this.props.searchTerm.toLowerCase() == "setup" &&
+        {showByTerm("setup", this.props.searchTerm) &&
           <SetupWizardSettings
             dispatch={this.props.dispatch}
             device={this.props.deviceAccount}
             wizardStepResults={this.props.wizardStepResults} />}
-        {this.props.searchTerm.toLowerCase() == "re-seed" &&
+        {showByTerm("re-seed", this.props.searchTerm) &&
           <ReSeedAccount />}
-        {this.props.searchTerm == "interpolation" &&
+        {showByTerm("interpolation", this.props.searchTerm) &&
           <InterpolationSettings
             dispatch={this.props.dispatch}
             farmwareEnvs={this.props.farmwareEnvs}
             saveFarmwareEnv={this.props.saveFarmwareEnv} />}
-        {this.props.searchTerm == "developer" &&
+        {showByTerm("developer", this.props.searchTerm) &&
           <DevSettingsRows />}
         {ExtraSettings(this.props.searchTerm)}
       </DesignerPanelContent>
     </DesignerPanel>;
   }
 }
+
+const showByTerm = (term: string, searchTerm: string) =>
+  getUrlQuery("only") == term || searchTerm.toLowerCase() == term.toLowerCase();
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);

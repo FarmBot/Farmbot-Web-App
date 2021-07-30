@@ -9,7 +9,6 @@ import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
 import { Markdown } from "../../ui";
 import { semverCompare, SemverResult } from "../../util";
-import { Log } from "farmbot/dist/resources/api_resources";
 
 interface LogsRowProps {
   tlog: TaggedLog;
@@ -21,11 +20,11 @@ interface LogsRowProps {
 
 export const logVersionMatch =
   (log: TaggedLog, fbosVersion: string | undefined) => {
-    const { major_version, minor_version } = log.body;
+    const { major_version, minor_version, patch_version } = log.body;
     const logVersionString = [
       major_version,
       minor_version,
-      log.body["patch_version" as keyof Log],
+      patch_version,
     ].join(".");
     return semverCompare(logVersionString, (fbosVersion || "").split("-")[0])
       == SemverResult.EQUAL;
