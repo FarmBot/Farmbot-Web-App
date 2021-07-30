@@ -35,7 +35,7 @@ export function PointLayer(props: PointLayerProps) {
     kind: "Point", points: soilHeightPoints, mapTransformProps, getColor, options,
   });
   return <g id={"point-layer"} style={style}>
-    {visible && props.overlayVisible &&
+    {props.overlayVisible &&
       <InterpolationMap
         kind={"Point"}
         points={soilHeightPoints}

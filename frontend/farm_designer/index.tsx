@@ -75,12 +75,16 @@ export class RawFarmDesigner
       legend_menu_open: init(BooleanSetting.legend_menu_open, false),
       show_plants: init(BooleanSetting.show_plants, true),
       show_points: init(BooleanSetting.show_points, true),
+      show_soil_interpolation_map:
+        init(BooleanSetting.show_soil_interpolation_map, false),
       show_weeds: init(BooleanSetting.show_weeds, true),
       show_spread: init(BooleanSetting.show_spread, false),
       show_farmbot: init(BooleanSetting.show_farmbot, true),
       show_images: init(BooleanSetting.show_images, false),
       show_zones: init(BooleanSetting.show_zones, false),
       show_sensor_readings: init(BooleanSetting.show_sensor_readings, false),
+      show_moisture_interpolation_map:
+        init(BooleanSetting.show_moisture_interpolation_map, false),
       bot_origin_quadrant: this.getBotOriginQuadrant(),
       zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue)),
     };
@@ -136,12 +140,14 @@ export class RawFarmDesigner
       legend_menu_open,
       show_plants,
       show_points,
+      show_soil_interpolation_map,
       show_weeds,
       show_spread,
       show_farmbot,
       show_images,
       show_zones,
       show_sensor_readings,
+      show_moisture_interpolation_map,
       zoom_level
     } = this.state;
 
@@ -162,12 +168,14 @@ export class RawFarmDesigner
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
         showPoints={show_points}
+        showSoilInterpolationMap={show_soil_interpolation_map}
         showWeeds={show_weeds}
         showSpread={show_spread}
         showFarmbot={show_farmbot}
         showImages={show_images}
         showZones={show_zones}
         showSensorReadings={show_sensor_readings}
+        showMoistureInterpolationMap={show_moisture_interpolation_map}
         hasSensorReadings={this.props.sensorReadings.length > 0}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
@@ -245,6 +253,7 @@ export class RawFarmDesigner
         sourceFbosConfig={this.props.sourceFbosConfig}
         mountedToolInfo={this.props.mountedToolInfo}
         tools={this.props.tools}
+        farmwareEnvs={this.props.farmwareEnvs}
         mapTransformProps={this.mapTransformProps}
         allPoints={this.props.allPoints} />
     </div>;

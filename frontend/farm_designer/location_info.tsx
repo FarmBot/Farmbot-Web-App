@@ -246,7 +246,11 @@ function ItemListWrapper(props: ItemListWrapperProps) {
   const { chosenXY } = props;
   const items = sortBy(groupItemsByLocation(props.items, chosenXY), "distance");
   const [expanded, setExpanded] = React.useState(false);
-  if (items.length < 1) { return <label>{`${props.title} (0)`}</label>; }
+  if (items.length < 1) {
+    return <label className={"no-items"}>
+      {`${props.title} (0)`}
+    </label>;
+  }
   const hide = (distance: number | undefined) => isUndefined(distance) ||
     (!isUndefined(items[0].distance) && distance > items[0].distance);
   const title = `${props.title} (${sum(items.filter(data =>
@@ -384,7 +388,7 @@ const ReadingsListItem = (props: ReadingsListItemProps) =>
     </div>
   </div>;
 
-interface ImageListItemProps {
+export interface ImageListItemProps {
   images: ItemData<TaggedImage>;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
@@ -393,12 +397,14 @@ interface ImageListItemProps {
   timeSettings: TimeSettings;
 }
 
-const ImageListItem = (props: ImageListItemProps) => {
+export const ImageListItem = (props: ImageListItemProps) => {
   const images = sortBy(props.images.items, "body.created_at").reverse();
+  const [currentImage, setCurrentImage] = React.useState(images[0]);
   return <div className={"image-items"}>
     <ImageFlipper id={"image-items"}
-      currentImage={images[0]}
+      currentImage={currentImage}
       dispatch={props.dispatch}
+      flipActionOverride={nextIndex => setCurrentImage(images[nextIndex])}
       currentImageSize={{ width: undefined, height: undefined }}
       transformImage={true}
       getConfigValue={props.getConfigValue}
@@ -453,7 +459,7 @@ const LocationActions = (props: LocationActionsProps) =>
           type: Actions.SET_DRAWN_POINT_DATA,
           payload: {
             cx: props.chosenLocation.x,
-            cy: props.chosenLocation.x,
+            cy: props.chosenLocation.y,
           }
         });
         push("/app/designer/points/add");

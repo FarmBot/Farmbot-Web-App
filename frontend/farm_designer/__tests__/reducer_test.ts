@@ -250,16 +250,6 @@ describe("designer reducer", () => {
     expect(newState.tryGroupSortType).toEqual("random");
   });
 
-  it("sets settings search term", () => {
-    const state = oldState();
-    state.settingsSearchTerm = "";
-    const action: ReduxAction<string> = {
-      type: Actions.SET_SETTINGS_SEARCH_TERM, payload: "random"
-    };
-    const newState = designer(state, action);
-    expect(newState.settingsSearchTerm).toEqual("random");
-  });
-
   it("enables edit group area in map mode", () => {
     const state = oldState();
     state.editGroupAreaInMap = false;

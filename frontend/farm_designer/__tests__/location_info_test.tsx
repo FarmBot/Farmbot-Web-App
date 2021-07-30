@@ -1,9 +1,10 @@
 jest.mock("../../history", () => ({ push: jest.fn() }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
+  ImageListItem, ImageListItemProps,
 } from "../location_info";
 import { fakeState } from "../../__test_support__/fake_state";
 import { BooleanSetting } from "../../session_keys";
@@ -15,6 +16,7 @@ import {
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { ImageFlipper } from "../../photos/images/image_flipper";
 
 describe("<LocationInfo />", () => {
   const fakeProps = (): LocationInfoProps => ({
@@ -159,5 +161,32 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([fakeWebAppConfig()]);
     const props = mapStateToProps(state);
     expect(props.getConfigValue(BooleanSetting.xy_swap)).toEqual(false);
+  });
+});
+
+describe("<ImageListItem />", () => {
+  const fakeProps = (): ImageListItemProps => {
+    const image0 = fakeImage();
+    image0.uuid = "0";
+    const image1 = fakeImage();
+    image1.uuid = "1";
+    return {
+      images: { xy: { x: 0, y: 0 }, distance: 0, items: [image0, image1] },
+      dispatch: jest.fn(),
+      getConfigValue: jest.fn(),
+      env: {},
+      chosenXY: undefined,
+      timeSettings: fakeTimeSettings(),
+    };
+  };
+
+  it("flips images", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ImageListItem {...p} />);
+    expect(wrapper.find(ImageFlipper).props().currentImage)
+      .toEqual(p.images.items[1]);
+    wrapper.find(ImageFlipper).props().flipActionOverride?.(1);
+    expect(wrapper.find(ImageFlipper).props().currentImage)
+      .toEqual(p.images.items[0]);
   });
 });

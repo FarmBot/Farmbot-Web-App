@@ -462,7 +462,7 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
-    overlayVisible={getPathArray()[3] == "sensors" ||
+    overlayVisible={
       !!this.props.getConfigValue(BooleanSetting.show_moisture_interpolation_map)}
     sensorReadings={this.props.sensorReadings}
     mapTransformProps={this.mapTransformProps}
@@ -490,8 +490,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     designer={this.props.designer}
     visible={!!this.props.showPoints}
-    overlayVisible={getMode() == Mode.locationInfo ||
-      getPathArray()[3] == "location" ||
+    overlayVisible={
       !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
@@ -575,6 +574,8 @@ export class GardenMap extends
       image.uuid == this.props.designer.hoveredImage)[0]}
     hoveredPoint={this.props.allPoints.filter(point =>
       point.uuid == this.props.designer.hoveredPoint)[0]}
+    plantAreaOffset={this.props.gridOffset}
+    zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />
   DrawnPoint = () => <DrawnPoint
     data={this.props.designer.drawnPoint}

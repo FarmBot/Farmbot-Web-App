@@ -15,6 +15,8 @@ import {
   SafeZ,
   MoveBodyItem,
   SpeedOverwrite,
+  Xyz,
+  AxisOverwrite,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
@@ -331,30 +333,35 @@ export function move(props: MoveProps) {
   maybeNoop();
   maybeAlertLocked();
   const safeZ: SafeZ = { kind: "safe_z", args: {} };
-  const speedOverwrite: SpeedOverwrite = {
+  const speedOverwrite = (axis: Xyz, speed: number): SpeedOverwrite => ({
     kind: "speed_overwrite",
     args: {
-      axis: "all",
+      axis,
       speed_setting: {
-        kind: "numeric", args: { number: props.speed || 100 }
+        kind: "numeric", args: { number: speed }
       }
     },
-  };
+  });
+  const positionOverwrite = (axis: Xyz): AxisOverwrite => ({
+    kind: "axis_overwrite",
+    args: {
+      axis,
+      axis_operand: {
+        kind: "coordinate", args: {
+          x: props.x,
+          y: props.y,
+          z: props.z,
+        }
+      },
+    }
+  });
   const body: MoveBodyItem[] = [
-    {
-      kind: "axis_overwrite",
-      args: {
-        axis: "all",
-        axis_operand: {
-          kind: "coordinate", args: {
-            x: props.x,
-            y: props.y,
-            z: props.z,
-          }
-        },
-      }
-    },
-    ...(props.speed ? [speedOverwrite] : []),
+    positionOverwrite("x"),
+    positionOverwrite("y"),
+    positionOverwrite("z"),
+    ...(props.speed ? [speedOverwrite("x", props.speed)] : []),
+    ...(props.speed ? [speedOverwrite("y", props.speed)] : []),
+    ...(props.speed ? [speedOverwrite("z", props.speed)] : []),
     ...(props.safeZ ? [safeZ] : []),
   ];
   return getDevice()

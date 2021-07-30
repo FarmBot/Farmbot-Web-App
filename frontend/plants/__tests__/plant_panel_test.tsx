@@ -1,5 +1,9 @@
 jest.mock("../../history", () => ({ push: jest.fn() }));
 
+jest.mock("../../ui/help", () => ({
+  Help: ({ text }: { text: string }) => <p>{text}</p>,
+}));
+
 import React from "react";
 import {
   PlantPanel, PlantPanelProps,
@@ -15,6 +19,8 @@ import { push } from "../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { locationUrl } from "../../farm_designer/move_to";
+import { fakePoint } from "../../__test_support__/fake_state/resources";
+import { tagAsSoilHeight } from "../../points/soil_height";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -133,6 +139,16 @@ describe("<EditPlantLocation />", () => {
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
       x: 100
     });
+  });
+
+  it("renders soil height", () => {
+    const p = fakeProps();
+    const soilHeightPoint = fakePoint();
+    tagAsSoilHeight(soilHeightPoint);
+    p.soilHeightPoints = [soilHeightPoint];
+    const wrapper = mount(<EditPlantLocation {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("soil height at plant location: 0mm");
   });
 });
 

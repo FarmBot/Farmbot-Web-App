@@ -1823,12 +1823,12 @@ export enum DeviceSetting {
   showPlantsMapLayer = `Show Plants Map Layer`,
   showPoints = `Points`,
   showPointsMapLayer = `Show Points Map Layer`,
+  showSoil = `Soil`,
+  showSoilInterpolationMapLayer = `Show Soil Interpolation Map Layer`,
   showWeeds = `Weeds`,
   showWeedsMapLayer = `Show Weeds Map Layer`,
   showRemovedWeeds = `Show removed`,
   showRemovedWeedsMapLayer = `Show Removed Weeds Map Layer`,
-  showSoilInterpolationMap = `Show Soil Interpolation Map`,
-  showSoilInterpolationMapLayer = `Show Soil Interpolation Map Layer`,
   showSpread = `Spread`,
   showSpreadMapLayer = `Show Spread Map Layer`,
   showFarmbot = `FarmBot`,
@@ -1839,7 +1839,7 @@ export enum DeviceSetting {
   showAreasMapLayer = `Show Areas Map Layer`,
   showReadings = `Readings`,
   showReadingsMapLayer = `Show Readings Map Layer`,
-  showMoistureInterpolationMap = `Show Moisture Interpolation Map`,
+  showMoisture = `Moisture`,
   showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
 
   // Controls

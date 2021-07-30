@@ -3,8 +3,19 @@ import { appReducer } from "../reducer";
 import { ControlPanelState } from "../devices/interfaces";
 import { app } from "../__test_support__/fake_state/app";
 import { fakeToast, fakeToasts } from "../__test_support__/fake_toasts";
+import { ReduxAction } from "../redux/interfaces";
 
 describe("resource reducer", () => {
+  it("sets settings search term", () => {
+    const state = app;
+    state.settingsSearchTerm = "";
+    const action: ReduxAction<string> = {
+      type: Actions.SET_SETTINGS_SEARCH_TERM, payload: "random"
+    };
+    const newState = appReducer(state, action);
+    expect(newState.settingsSearchTerm).toEqual("random");
+  });
+
   it("toggles control panel options", () => {
     const payload: keyof ControlPanelState = "parameter_management";
     const state = app;

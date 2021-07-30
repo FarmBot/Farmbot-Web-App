@@ -42,12 +42,14 @@ export interface GardenMapLegendProps {
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
+  showSoilInterpolationMap: boolean;
   showWeeds: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
   showImages: boolean;
   showZones: boolean;
   showSensorReadings: boolean;
+  showMoistureInterpolationMap: boolean;
   hasSensorReadings: boolean;
   dispatch: Function;
   timeSettings: TimeSettings;

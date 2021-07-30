@@ -89,10 +89,7 @@ describe("fetchInterpolationOptions()", () => {
   });
 
   it("fetches default options", () => {
-    const options = fetchInterpolationOptions([]);
-    expect(options.stepSize).toEqual(100);
-    expect(options.useNearest).toEqual(false);
-    expect(options.power).toEqual(4);
+    expect(fetchInterpolationOptions([])).toEqual(DEFAULT_INTERPOLATION_OPTIONS);
   });
 });
 

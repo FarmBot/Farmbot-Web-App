@@ -1,7 +1,6 @@
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { bySearchTerm, logVersionMatch } from "../logs_table";
 import { fakeLog } from "../../../__test_support__/fake_state/resources";
-import { Log } from "farmbot/dist/resources/api_resources";
 
 describe("bySearchTerm()", () => {
   it("includes log", () => {
@@ -25,7 +24,7 @@ describe("logVersionMatch()", () => {
     const log = fakeLog();
     log.body.major_version = 1;
     log.body.minor_version = 2;
-    log.body["patch_version" as keyof Log] = 3 as never;
+    log.body.patch_version = 3;
     expect(logVersionMatch(log, "1.2.3")).toBeTruthy();
   });
 

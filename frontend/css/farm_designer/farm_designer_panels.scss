@@ -120,6 +120,11 @@
   }
   &.short-panel {
     height: 24rem;
+    .location-info-panel {
+      .panel-content {
+        max-height: calc(100vh - 47rem);
+      }
+    }
   }
   .panel-container {
     width: 100%;
@@ -605,6 +610,9 @@
 }
 
 .crop-catalog-panel {
+  .panel-top {
+    margin-top: 0;
+  }
   .panel-content {
     padding: 1rem 1rem 6rem;
     padding-bottom: inherit;
@@ -871,6 +879,9 @@
     }
     label {
       margin-top: 0;
+      &.no-items {
+        display: block;
+      }
     }
     button {
       float: none;
@@ -1247,6 +1258,13 @@
       margin-left: 0.5rem;
     }
   }
+  .settings-warning-banner {
+    margin-bottom: 1rem !important;
+    p {
+      display: inline;
+    }
+  }
+  .settings-warning-banner,
   .stall-detection-note,
   .limit-switch-warning {
     margin: 1rem -15px -1rem -15px;
@@ -1421,7 +1439,6 @@
       i[class*=fa-caret-] {
         float: right;
         font-size: 2rem;
-        margin-top: 1.5rem;
       }
       .groups-list-wrapper {
         padding: 0.5em 0em;

@@ -31,7 +31,7 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   timeSettings: maybeGetTimeSettings(props.resources.index),
   alerts: getAllAlerts(props.resources),
   bot: props.bot,
-  searchTerm: props.resources.consumers.farm_designer.settingsSearchTerm,
+  searchTerm: props.app.settingsSearchTerm,
   user: getUserAccountSettings(props.resources.index),
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   wizardStepResults: selectAllWizardStepResults(props.resources.index),

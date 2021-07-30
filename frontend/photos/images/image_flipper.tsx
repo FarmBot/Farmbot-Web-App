@@ -60,7 +60,9 @@ export class ImageFlipper extends
     const tooHigh = (index: number): boolean => index > this.uuids.length - 1;
     const tooLow = (index: number): boolean => index < 0;
     if (!tooHigh(nextIndex) && !tooLow(nextIndex)) {
-      this.props.dispatch(selectNextImage(this.props.images, nextIndex));
+      this.props.flipActionOverride
+        ? this.props.flipActionOverride(nextIndex)
+        : this.props.dispatch(selectNextImage(this.props.images, nextIndex));
     }
     this.setState({
       disableNext: tooLow(indexAfterNext),

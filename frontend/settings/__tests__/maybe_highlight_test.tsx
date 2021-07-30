@@ -37,33 +37,33 @@ describe("<Highlight />", () => {
   });
 
   it("doesn't hide: no search term", () => {
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    mockState.app.settingsSearchTerm = "";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
   it("doesn't hide: no search term, highlight doesn't match", () => {
     location.search = "?highlight=encoders";
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    mockState.app.settingsSearchTerm = "";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
   it("doesn't hide: matches search term", () => {
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "motor";
+    mockState.app.settingsSearchTerm = "motor";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
   it("doesn't hide: content matches search term", () => {
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "speed";
+    mockState.app.settingsSearchTerm = "speed";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 
   it("doesn't hide: content matches highlight", () => {
     location.search = "?highlight=show_pins";
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    mockState.app.settingsSearchTerm = "";
     const p = fakeProps();
     p.hidden = true;
     p.settingName = DeviceSetting.otherSettings;
@@ -73,7 +73,7 @@ describe("<Highlight />", () => {
 
   it("doesn't hide: matches highlight", () => {
     location.search = "?highlight=show_pins";
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    mockState.app.settingsSearchTerm = "";
     const p = fakeProps();
     p.className = undefined;
     p.settingName = DeviceSetting.showPins;
@@ -82,7 +82,7 @@ describe("<Highlight />", () => {
   });
 
   it("hides: not section header", () => {
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "speed";
+    mockState.app.settingsSearchTerm = "speed";
     const p = fakeProps();
     p.className = undefined;
     const wrapper = mount(<Highlight {...p} />);
@@ -90,14 +90,14 @@ describe("<Highlight />", () => {
   });
 
   it("hides: doesn't match search term", () => {
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "encoder";
+    mockState.app.settingsSearchTerm = "encoder";
     const wrapper = mount(<Highlight {...fakeProps()} />);
     expect(wrapper.find("div").first().props().hidden).toEqual(true);
   });
 
   it("hides: no match", () => {
     location.search = "?highlight=motors";
-    mockState.resources.consumers.farm_designer.settingsSearchTerm = "";
+    mockState.app.settingsSearchTerm = "";
     const p = fakeProps();
     p.settingName = DeviceSetting.showPins;
     const wrapper = mount(<Highlight {...p} />);
@@ -133,6 +133,15 @@ describe("<Highlight />", () => {
     p.settingName = DeviceSetting.axisHeadingLabels;
     const wrapper = mount(<Highlight {...p} />);
     expect(wrapper.html()).not.toContain("anchor");
+  });
+
+  it("isolates setting", () => {
+    location.search = "?only=show_pins";
+    mockState.app.settingsSearchTerm = "";
+    const p = fakeProps();
+    p.settingName = DeviceSetting.showPins;
+    const wrapper = mount(<Highlight {...p} />);
+    expect(wrapper.find("div").first().props().hidden).toEqual(false);
   });
 });
 
@@ -185,6 +194,13 @@ describe("maybeOpenPanel()", () => {
     maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).toHaveBeenCalledWith("motors");
     expect(bulkToggleControlPanel).toHaveBeenCalledWith(false);
+  });
+
+  it("opens all panels", () => {
+    location.search = "?search=motors";
+    maybeOpenPanel()(jest.fn());
+    expect(toggleControlPanel).not.toHaveBeenCalled();
+    expect(bulkToggleControlPanel).toHaveBeenCalledWith(true);
   });
 });
 

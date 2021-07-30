@@ -104,15 +104,12 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       settingName={BooleanSetting.show_points}
       value={props.showPoints}
       label={DeviceSetting.showPoints}
-      onClick={toggle(BooleanSetting.show_points)}
-      submenuTitle={t("extras")}
-      popover={<div className="map-points-submenu">
-        <NonLayerToggle
-          setting={BooleanSetting.show_soil_interpolation_map}
-          label={DeviceSetting.showSoilInterpolationMap}
-          getConfigValue={getConfigValue}
-          dispatch={dispatch} />
-      </div>} />
+      onClick={toggle(BooleanSetting.show_points)} />
+    <LayerToggle
+      settingName={BooleanSetting.show_soil_interpolation_map}
+      value={props.showSoilInterpolationMap}
+      label={DeviceSetting.showSoil}
+      onClick={toggle(BooleanSetting.show_soil_interpolation_map)} />
     <LayerToggle
       settingName={BooleanSetting.show_weeds}
       value={props.showWeeds}
@@ -157,15 +154,13 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         settingName={BooleanSetting.show_sensor_readings}
         value={props.showSensorReadings}
         label={DeviceSetting.showReadings}
-        onClick={toggle(BooleanSetting.show_sensor_readings)}
-        submenuTitle={t("overlays")}
-        popover={<div className="overlay-submenu">
-          <NonLayerToggle
-            setting={BooleanSetting.show_moisture_interpolation_map}
-            label={DeviceSetting.showMoistureInterpolationMap}
-            getConfigValue={getConfigValue}
-            dispatch={dispatch} />
-        </div>} />}
+        onClick={toggle(BooleanSetting.show_sensor_readings)} />}
+    {props.hasSensorReadings &&
+      <LayerToggle
+        settingName={BooleanSetting.show_moisture_interpolation_map}
+        value={props.showMoistureInterpolationMap}
+        label={DeviceSetting.showMoisture}
+        onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />}
   </div>;
 };
 
