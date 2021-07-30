@@ -9,6 +9,11 @@ jest.mock("../../settings/maybe_highlight", () => ({
   getHighlightName: jest.fn(),
 }));
 
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
 import React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import { RawDesignerSettings as DesignerSettings } from "../index";
@@ -29,6 +34,7 @@ import { ControlPanelState } from "../../devices/interfaces";
 import { panelState } from "../../__test_support__/control_panel_state";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { API } from "../../api";
+import { push } from "../../history";
 
 const getSetting =
   (wrapper: ReactWrapper, position: number, containsString: string) => {
@@ -87,7 +93,19 @@ describe("<DesignerSettings />", () => {
     });
   });
 
+  it("sets search term", () => {
+    location.search = "?search=search";
+    const p = fakeProps();
+    mount(<DesignerSettings {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SETTINGS_SEARCH_TERM,
+      payload: "search",
+    });
+  });
+
   it("changes search term", () => {
+    location.search = "?search=search";
+    location.pathname = "path";
     const p = fakeProps();
     const wrapper = shallow(<DesignerSettings {...p} />);
     wrapper.find(SearchField).simulate("change", "setting");
@@ -99,6 +117,7 @@ describe("<DesignerSettings />", () => {
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: "setting",
     });
+    expect(push).toHaveBeenCalledWith("path");
   });
 
   it("fetches firmware_hardware", () => {
@@ -182,11 +201,29 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("re-seed");
   });
 
+  it("renders interpolation settings", () => {
+    const p = fakeProps();
+    p.searchTerm = "interpolation";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("interpolation");
+  });
+
   it("renders dev settings", () => {
     const p = fakeProps();
     p.searchTerm = "developer";
     const wrapper = mount(<DesignerSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("unstable fe");
+  });
+
+  it("cancels setting isolation", () => {
+    location.search = "?only=setting";
+    location.assign = jest.fn();
+    location.pathname = "path";
+    const p = fakeProps();
+    p.searchTerm = "";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    clickButton(wrapper, 1, "cancel");
+    expect(location.assign).toHaveBeenCalledWith("path");
   });
 
   it("renders change ownership form", () => {

@@ -1,17 +1,18 @@
 import React from "react";
-import { TaggedGenericPointer } from "farmbot";
+import { TaggedFarmwareEnv, TaggedGenericPointer } from "farmbot";
 import { GardenPoint } from "./garden_point";
-import { MapTransformProps, Mode } from "../../interfaces";
+import { MapTransformProps } from "../../interfaces";
 import { CameraCalibrationData, DesignerState } from "../../../interfaces";
-import { getSoilHeightColor } from "../../../../points/soil_height";
-import { getMode } from "../../util";
+import {
+  getSoilHeightColor, soilHeightPoint,
+} from "../../../../points/soil_height";
 import {
   fetchInterpolationOptions, generateData, InterpolationMap,
 } from "./interpolation_map";
-import { getPathArray } from "../../../../history";
 
 export interface PointLayerProps {
   visible: boolean;
+  overlayVisible: boolean;
   genericPoints: TaggedGenericPointer[];
   mapTransformProps: MapTransformProps;
   dispatch: Function;
@@ -19,21 +20,25 @@ export interface PointLayerProps {
   cameraCalibrationData: CameraCalibrationData;
   cropPhotos: boolean;
   designer: DesignerState;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export function PointLayer(props: PointLayerProps) {
   const { visible, genericPoints, mapTransformProps, designer } = props;
   const { cameraViewGridId, hoveredPoint, gridIds, soilHeightLabels } = designer;
-  const getColor = getSoilHeightColor(genericPoints);
+  const soilHeightPoints = genericPoints.filter(soilHeightPoint);
+  const getColor = getSoilHeightColor(soilHeightPoints);
   const style: React.CSSProperties =
     props.interactions ? {} : { pointerEvents: "none" };
-  const options = fetchInterpolationOptions();
-  generateData({ genericPoints, mapTransformProps, getColor, options });
+  const options = fetchInterpolationOptions(props.farmwareEnvs);
+  generateData({
+    kind: "Point", points: soilHeightPoints, mapTransformProps, getColor, options,
+  });
   return <g id={"point-layer"} style={style}>
-    {visible && (getMode() == Mode.locationInfo ||
-      getPathArray()[3] == "location") &&
+    {props.overlayVisible &&
       <InterpolationMap
-        genericPoints={genericPoints}
+        kind={"Point"}
+        points={soilHeightPoints}
         getColor={getColor}
         mapTransformProps={mapTransformProps}
         options={options} />}

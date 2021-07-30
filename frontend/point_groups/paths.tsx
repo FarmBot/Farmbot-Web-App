@@ -1,16 +1,21 @@
 import React from "react";
 import { sortGroupBy, sortOptionsTable } from "./point_group_sort";
-import { sortBy, uniq } from "lodash";
+import { isUndefined, sortBy, uniq } from "lodash";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { t } from "../i18next_wrapper";
 import { Actions } from "../constants";
 import { edit, save } from "../api/crud";
-import { TaggedPointGroup, TaggedPoint } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, TaggedSensorReading } from "farmbot";
 import { error } from "../toast/toast";
 import { shouldDisplayFeature } from "../farmware/state_to_props";
 import { Feature } from "../devices/interfaces";
 
-export const xy = (point: TaggedPoint) => ({ x: point.body.x, y: point.body.y });
+export const convertToXY =
+  (points: (TaggedPoint | TaggedSensorReading)[]): { x: number, y: number }[] =>
+    points
+      .map(p => ({ x: p.body.x, y: p.body.y }))
+      .filter(p => !isUndefined(p.x) && !isUndefined(p.y))
+      .map(p => p as { x: number, y: number });
 
 export const distance = (
   p1: { x: number, y: number },
@@ -18,10 +23,10 @@ export const distance = (
 ) =>
   Math.pow(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2), 0.5);
 
-const pathDistance = (pathPoints: TaggedPoint[]) => {
+const pathDistance = (pathPoints: (TaggedPoint | TaggedSensorReading)[]) => {
   let total = 0;
   let prev: { x: number, y: number } | undefined = undefined;
-  pathPoints.map(xy)
+  convertToXY(pathPoints)
     .map(p => {
       prev ? total += distance(p, prev) : 0;
       prev = p;
@@ -31,21 +36,26 @@ const pathDistance = (pathPoints: TaggedPoint[]) => {
 
 export const findNearest = (
   from: { x: number, y: number },
-  available: TaggedPoint[],
-): TaggedPoint | undefined => {
-  const distances = available.map(p => ({
-    point: p, distance: distance(xy(p), from)
-  }));
+  available: (TaggedPoint | TaggedSensorReading)[],
+): TaggedPoint | TaggedSensorReading | undefined => {
+  const distances = available
+    .filter(p => !isUndefined(p.body.x) && !isUndefined(p.body.y))
+    .map(p => ({
+      point: p,
+      distance: distance({ x: p.body.x as number, y: p.body.y as number }, from)
+    }));
   return sortBy(distances, "distance")[0]?.point;
 };
 
 export const nn = (pathPoints: TaggedPoint[]) => {
   let available = pathPoints.slice(0);
-  const ordered: TaggedPoint[] = [];
+  const ordered: (TaggedPoint | TaggedSensorReading)[] = [];
   let from = { x: 0, y: 0 };
   pathPoints.map(() => {
     const nearest = findNearest(from, available);
-    if (!nearest) { return; }
+    if (!nearest || isUndefined(nearest.body.x) || isUndefined(nearest.body.y)) {
+      return;
+    }
     ordered.push(nearest);
     from = { x: nearest.body.x, y: nearest.body.y };
     available = available.filter(p => p.uuid !== nearest.uuid);

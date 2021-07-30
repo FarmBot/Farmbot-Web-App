@@ -1,4 +1,4 @@
-import { TaggedPoint, TaggedTool, Xyz } from "farmbot";
+import { TaggedFarmwareEnv, TaggedPoint, TaggedTool, Xyz } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BotPosition, SourceFbosConfig } from "../../../devices/interfaces";
@@ -18,6 +18,7 @@ export interface ProfileViewerProps {
   mountedToolInfo: MountedToolInfo;
   tools: TaggedTool[];
   mapTransformProps: MapTransformProps;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface HandleProps {
@@ -56,6 +57,7 @@ export interface ProfileSvgProps {
   tools: TaggedTool[];
   mapTransformProps: MapTransformProps;
   getConfigValue: GetWebAppConfigValue;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface LabeledHorizontalLineProps {
@@ -163,4 +165,5 @@ export interface InterpolatedSoilProps {
   selectionWidth: number;
   position: AxisNumberProperty;
   getX: GetProfileX;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }

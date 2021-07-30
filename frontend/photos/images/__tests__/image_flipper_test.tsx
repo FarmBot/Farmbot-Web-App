@@ -65,6 +65,16 @@ describe("<ImageFlipper/>", () => {
     expectFlip(p.images[0].uuid);
   });
 
+  it("flips down: alternative action", () => {
+    const p = fakeProps();
+    p.flipActionOverride = jest.fn();
+    p.currentImage = p.images[1];
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const down = flipper.instance().go(-1);
+    down();
+    expect(p.flipActionOverride).toHaveBeenCalledWith(0);
+  });
+
   it("stops at upper end", () => {
     const p = fakeProps();
     p.currentImage = p.images[2];

@@ -17,6 +17,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   home: jest.fn(() => Promise.resolve()),
   findHome: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
+  send: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve())
 };
 
@@ -313,6 +314,136 @@ describe("moveAbsolute()", () => {
     await actions.moveAbsolute({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveAbsolute)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
+    expect(success).not.toHaveBeenCalled();
+  });
+});
+
+describe("move()", () => {
+  it("calls move", async () => {
+    await actions.move({ x: 1, y: 0, z: 0 });
+    expect(mockDevice.current.send)
+      .toHaveBeenCalledWith({
+        kind: "rpc_request",
+        args: { label: expect.any(String), priority: expect.any(Number) },
+        body: [{
+          kind: "move",
+          args: {},
+          body: [{
+            kind: "axis_overwrite",
+            args: {
+              axis: "x",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          }],
+        }],
+      });
+    expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls move with speed", async () => {
+    await actions.move({ x: 1, y: 0, z: 0, speed: 50 });
+    expect(mockDevice.current.send)
+      .toHaveBeenCalledWith({
+        kind: "rpc_request",
+        args: { label: expect.any(String), priority: expect.any(Number) },
+        body: [{
+          kind: "move",
+          args: {},
+          body: [{
+            kind: "axis_overwrite",
+            args: {
+              axis: "x",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "speed_overwrite",
+            args: {
+              axis: "x",
+              speed_setting: { kind: "numeric", args: { number: 50 } },
+            }
+          },
+          {
+            kind: "speed_overwrite",
+            args: {
+              axis: "y",
+              speed_setting: { kind: "numeric", args: { number: 50 } },
+            }
+          },
+          {
+            kind: "speed_overwrite",
+            args: {
+              axis: "z",
+              speed_setting: { kind: "numeric", args: { number: 50 } },
+            }
+          },
+          ],
+        }],
+      });
+    expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls move with safe z", async () => {
+    await actions.move({ x: 1, y: 0, z: 0, safeZ: true });
+    expect(mockDevice.current.send)
+      .toHaveBeenCalledWith({
+        kind: "rpc_request",
+        args: { label: expect.any(String), priority: expect.any(Number) },
+        body: [{
+          kind: "move",
+          args: {},
+          body: [{
+            kind: "axis_overwrite",
+            args: {
+              axis: "x",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "y",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          {
+            kind: "axis_overwrite",
+            args: {
+              axis: "z",
+              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+            }
+          },
+          { kind: "safe_z", args: {} }]
+        }],
+      });
     expect(success).not.toHaveBeenCalled();
   });
 });

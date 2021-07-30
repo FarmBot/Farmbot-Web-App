@@ -20,8 +20,6 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
-import { LocationInfoModeLink } from "../../location_info";
-import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -108,6 +106,11 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       label={DeviceSetting.showPoints}
       onClick={toggle(BooleanSetting.show_points)} />
     <LayerToggle
+      settingName={BooleanSetting.show_soil_interpolation_map}
+      value={props.showSoilInterpolationMap}
+      label={DeviceSetting.showSoil}
+      onClick={toggle(BooleanSetting.show_soil_interpolation_map)} />
+    <LayerToggle
       settingName={BooleanSetting.show_weeds}
       value={props.showWeeds}
       label={DeviceSetting.showWeeds}
@@ -152,6 +155,12 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         value={props.showSensorReadings}
         label={DeviceSetting.showReadings}
         onClick={toggle(BooleanSetting.show_sensor_readings)} />}
+    {props.hasSensorReadings &&
+      <LayerToggle
+        settingName={BooleanSetting.show_moisture_interpolation_map}
+        value={props.showMoistureInterpolationMap}
+        label={DeviceSetting.showMoisture}
+        onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />}
   </div>;
 };
 
@@ -171,7 +180,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
         <LayerToggles {...props} />
         <MoveModeLink />
-        {DevSettings.futureFeaturesEnabled() && <LocationInfoModeLink />}
         <SelectModeLink />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />

@@ -79,6 +79,7 @@ export interface NumericMCUInputGroupProps {
   advanced?: boolean;
   showAdvanced?: boolean;
   warnMin?: Record<Xyz, number>;
+  warning?: Record<Xyz, string | undefined>;
 }
 
 export interface PinGuardMCUInputGroupProps {

@@ -1082,7 +1082,9 @@ CREATE VIEW public.resource_update_steps AS WITH resource_type AS (
     public.edge_nodes
   WHERE
     (
-      ((edge_nodes.kind) :: text = 'resource_type' :: text)
+      (
+        (edge_nodes.kind) :: text = 'resource_type' :: text
+      )
       AND (
         (edge_nodes.value) :: text = ANY (
           ARRAY [('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text]
@@ -1099,7 +1101,9 @@ resource_id AS (
   FROM
     public.edge_nodes
   WHERE
-    ((edge_nodes.kind) :: text = 'resource_id' :: text)
+    (
+      (edge_nodes.kind) :: text = 'resource_id' :: text
+    )
 ),
 user_sequence AS (
   SELECT
@@ -1211,7 +1215,9 @@ SELECT
       public.edge_nodes
     WHERE
       (
-        ((edge_nodes.kind) :: text = 'sequence_id' :: text)
+        (
+          (edge_nodes.kind) :: text = 'sequence_id' :: text
+        )
         AND ((edge_nodes.value) :: integer = sequences.id)
       )
   ) AS edge_node_count,
@@ -1405,7 +1411,9 @@ CREATE TABLE public.web_app_configs (
   show_camera_view_area boolean DEFAULT false,
   view_celery_script boolean DEFAULT false,
   highlight_modified_settings boolean DEFAULT true,
-  show_advanced_settings boolean DEFAULT false
+  show_advanced_settings boolean DEFAULT false,
+  show_soil_interpolation_map boolean DEFAULT false,
+  show_moisture_interpolation_map boolean DEFAULT false
 );
 
 --
@@ -1585,7 +1593,9 @@ ALTER TABLE
 ALTER COLUMN
   id
 SET
-  DEFAULT nextval('public.farmware_installations_id_seq' :: regclass);
+  DEFAULT nextval(
+    'public.farmware_installations_id_seq' :: regclass
+  );
 
 --
 -- Name: fbos_configs id; Type: DEFAULT; Schema: public; Owner: -
@@ -3138,4 +3148,5 @@ VALUES
   ('20210514010354'),
   ('20210607193347'),
   ('20210720155040'),
+  ('20210720183535'),
   ('20210723175109');

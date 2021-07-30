@@ -13,6 +13,7 @@ import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
 import { getPathArray, push } from "../history";
+import { getUrlQuery } from "../util";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -37,7 +38,6 @@ export const initialState: DesignerState = {
   editGroupAreaInMap: false,
   visualizedSequence: undefined,
   hoveredSequenceStep: undefined,
-  settingsSearchTerm: "",
   hiddenImages: [],
   shownImages: [],
   hideUnShownImages: false,
@@ -132,6 +132,8 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
     s.chosenLocation = payload;
     !isUndefined(payload.x) && getPathArray()[3] === "location" &&
+      parseFloat("" + getUrlQuery("x")) != payload.x &&
+      parseFloat("" + getUrlQuery("y")) != payload.y &&
       push(`/app/designer/location?x=${payload.x}?y=${payload.y}`);
     return s;
   })
@@ -141,10 +143,6 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<PointGroupSortType | undefined>(Actions.TRY_SORT_TYPE, (s, { payload }) => {
     s.tryGroupSortType = payload;
-    return s;
-  })
-  .add<string>(Actions.SET_SETTINGS_SEARCH_TERM, (s, { payload }) => {
-    s.settingsSearchTerm = payload;
     return s;
   })
   .add<boolean>(Actions.EDIT_GROUP_AREA_IN_MAP, (s, { payload }) => {
