@@ -5,84 +5,125 @@ import { fakeResourceIndex } from "../test_helpers";
 import {
   fakeToolSlot, fakeTool, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
-    const pg = fakePointGroup();
-    pg.body.id = 1;
-    const items = locationFormList(fakeResourceIndex([pg]), [], true);
-    const coordinate = items[0];
-    expect(coordinate).toEqual({
-      headingId: "Coordinate",
-      label: "Custom Coordinates",
-      value: "",
-    });
-    const toolHeading = items[1];
-    expect(toolHeading).toEqual({
-      headingId: "Tool",
-      label: "Tools and Seed Containers",
-      value: 0,
-      heading: true,
-    });
-    const tool = items[2];
-    expect(tool).toEqual({
-      headingId: "Tool",
-      label: "Generic tool (100, 200, 300)",
-      value: "1",
-    });
-    const groupHeading = items[3];
-    expect(groupHeading).toEqual({
-      headingId: "PointGroup",
-      label: "Groups",
-      value: 0,
-      heading: true,
-    });
-    const group = items[4];
-    expect(group).toEqual({
-      headingId: "PointGroup",
-      label: "Fake",
-      value: "1"
-    });
-    const plantHeading = items[5];
-    expect(plantHeading).toEqual({
-      headingId: "Plant",
-      label: "Plants",
-      value: 0,
-      heading: true,
-    });
-    const plant = items[6];
-    expect(plant).toEqual({
-      headingId: "Plant",
-      label: "Plant 1 (1, 2, 3)",
-      value: "1"
-    });
-    const pointHeading = items[8];
-    expect(pointHeading).toEqual({
-      headingId: "GenericPointer",
-      label: "Map Points",
-      value: 0,
-      heading: true,
-    });
-    const point = items[9];
-    expect(point).toEqual({
-      headingId: "GenericPointer",
-      label: "Point 1 (10, 20, 30)",
-      value: "2"
-    });
-    const weedHeading = items[10];
-    expect(weedHeading).toEqual({
-      headingId: "Weed",
-      label: "Weeds",
-      value: 0,
-      heading: true,
-    });
-    const weed = items[11];
-    expect(weed).toEqual({
-      headingId: "Weed",
-      label: "Weed 1 (15, 25, 35)",
-      value: "5"
-    });
+    const pointGroup = fakePointGroup();
+    pointGroup.body.id = 1;
+    const resources = fakeResourceIndex([pointGroup]);
+    expect(locationFormList(resources, [], [], true))
+      .toEqual([
+        {
+          headingId: "Coordinate",
+          label: "Custom Coordinates",
+          value: "",
+        },
+        {
+          headingId: "Variable",
+          label: "Variables",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Tool",
+          label: "Tools and Seed Containers",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Tool",
+          label: "Generic tool (100, 200, 300)",
+          value: "1",
+        },
+        {
+          headingId: "PointGroup",
+          label: "Groups",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "PointGroup",
+          label: "Fake",
+          value: "1"
+        },
+        {
+          headingId: "Plant",
+          label: "Plants",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Plant",
+          label: "Plant 1 (1, 2, 3)",
+          value: "1"
+        },
+        {
+          headingId: "Plant",
+          label: "Dandelion (100, 200, 300)",
+          value: "4"
+        },
+        {
+          headingId: "GenericPointer",
+          label: "Map Points",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "GenericPointer",
+          label: "Point 1 (10, 20, 30)",
+          value: "2"
+        },
+        {
+          headingId: "Weed",
+          label: "Weeds",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Weed",
+          label: "Weed 1 (15, 25, 35)",
+          value: "5"
+        },
+      ]);
+  });
+
+  it("returns empty dropdown list", () => {
+    const resources = buildResourceIndex([]).index;
+    expect(locationFormList(resources, []))
+      .toEqual([
+        {
+          headingId: "Coordinate",
+          label: "Custom Coordinates",
+          value: "",
+        },
+        {
+          headingId: "Tool",
+          label: "Tools and Seed Containers",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Plant",
+          label: "Plants",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "GenericPointer",
+          label: "Map Points",
+          value: 0,
+          heading: true,
+        },
+        {
+          headingId: "Weed",
+          label: "Weeds",
+          value: 0,
+          heading: true,
+        },
+      ]);
   });
 });
 

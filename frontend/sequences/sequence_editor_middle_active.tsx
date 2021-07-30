@@ -16,7 +16,9 @@ import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
-import { LocalsList, localListCallback } from "./locals_list/locals_list";
+import {
+  LocalsList, localListCallback, removeVariable,
+} from "./locals_list/locals_list";
 import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
@@ -212,6 +214,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
         sequenceUuid={sequence.uuid}
         resources={props.resources}
         onChange={localListCallback(props)(declarations)}
+        removeVariable={removeVariable(props)}
         locationDropdownKey={JSON.stringify(sequence)}
         allowedVariableNodes={AllowedVariableNodes.parameter}
         collapsible={true}
