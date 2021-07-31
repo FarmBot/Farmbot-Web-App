@@ -40,6 +40,7 @@ interface CommonProps {
   resources: ResourceIndex;
   /** Update stored data based on the variable provided. */
   onChange: OnChange;
+  removeVariable?(label: string): void;
   /** Use when a local set of variables exists; i.e., execute step body. */
   bodyVariables?: VariableNode[];
   /** Used to control updates to the LocationForm dropdown and onChange func. */
@@ -67,11 +68,6 @@ export interface LocationFormProps extends CommonProps {
   variable: SequenceMeta;
   /** Coordinate input box width. */
   width?: number;
-  /**
-   * Set to false to show the variable name along with its type.
-   * Useful for disambiguation when dealing with multiple variables.
-   */
-  hideVariableLabel?: boolean;
   /** Set to true to hide the variable node type label. */
   hideTypeLabel?: boolean;
   /** Set to true to hide the form header and label. */
@@ -79,4 +75,4 @@ export interface LocationFormProps extends CommonProps {
 }
 
 export const PARENT = (label: string) =>
-  ({ value: "parent", label, headingId: "parameter" });
+  ({ value: "parent", label, headingId: "Variable" });

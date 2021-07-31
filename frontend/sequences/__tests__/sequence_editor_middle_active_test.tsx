@@ -32,6 +32,7 @@ jest.mock("../locals_list/locals_list", () => ({
   LocalsList: () => <div />,
   localListCallback: jest.fn(() => jest.fn()),
   isParameterDeclaration: jest.fn(),
+  removeVariable: jest.fn(),
 }));
 
 jest.mock("../../config_storage/actions", () => ({

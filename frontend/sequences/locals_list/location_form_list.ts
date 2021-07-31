@@ -30,10 +30,14 @@ type DropdownHeadingId =
   | PointerTypeName
   | "Tool"
   | "PointGroup"
+  | "Variable"
+  | "Identifier"
   | "Other";
 
 /** Location selection menu section names. */
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
+  "Variable": "Variables",
+  "Identifier": "Variables",
   "GenericPointer": "Map Points",
   "Plant": "Plants",
   "ToolSlot": "Slots",
@@ -65,8 +69,12 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
 };
 
 /** Location selection menu items. */
-export function locationFormList(resources: ResourceIndex,
-  additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
+export function locationFormList(
+  resources: ResourceIndex,
+  additionalItems: DropDownItem[],
+  variableItems?: DropDownItem[],
+  displayGroups?: boolean,
+): DropDownItem[] {
   const allPoints = selectAllActivePoints(resources);
   const plantDDI = points2ddi(allPoints, "Plant");
   const genericPointerDDI = points2ddi(allPoints, "GenericPointer");
@@ -74,6 +82,10 @@ export function locationFormList(resources: ResourceIndex,
   const toolDDI = activeToolDDIs(resources);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
+    .concat(variableItems
+      ? heading((variableItems[0]?.headingId as DropdownHeadingId) || "Variable")
+      : [])
+    .concat(variableItems || [])
     .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(displayGroups ? heading("PointGroup") : [])

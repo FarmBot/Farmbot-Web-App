@@ -125,7 +125,7 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: parameter_declaration", () => {
     const dropdown = ({
-      headingId: "parameter", label: "Parent0", value: "parent0"
+      headingId: "Variable", label: "Parent0", value: "parent0"
     });
     const variable = convertDDItoVariable({
       identifierLabel: "parent",
@@ -143,7 +143,7 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: identifier", () => {
     const dropdown = ({
-      headingId: "parameter", label: "Parent0", value: "parent0"
+      headingId: "Variable", label: "Parent0", value: "parent0"
     });
     const variable = convertDDItoVariable({
       identifierLabel: "parent",

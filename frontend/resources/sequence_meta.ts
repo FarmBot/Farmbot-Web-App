@@ -90,7 +90,7 @@ export const determineVarDDILabel =
       }
       return withPrefix(variable.dropdown.label);
     }
-    return withPrefix(t("Add new"));
+    return t("Add new");
   };
 
 /** Given a CeleryScript parameter application and a resource index
