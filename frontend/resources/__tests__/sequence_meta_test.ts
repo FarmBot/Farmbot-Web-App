@@ -234,7 +234,7 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "variable", resources: ri, uuid: undefined
     });
-    expect(label).toEqual("Location Variable - Add new");
+    expect(label).toEqual("Add new");
   });
 
   it("returns 'select location' variable label", () => {

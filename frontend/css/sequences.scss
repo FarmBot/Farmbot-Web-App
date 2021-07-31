@@ -66,12 +66,6 @@
   @media screen and (max-width: 767px) {
     margin-right: 10px;
   }
-  .locals-list {
-    margin-top: 1rem;
-    max-height: 25rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
   .fa-thumb-tack {
     color: $placeholder_gray;
     line-height: 3rem;
@@ -84,11 +78,15 @@
 }
 
 .locals-list {
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: auto;
   >.location-form {
-    margin: auto;
-    margin-top: 1rem;
+    margin: 1rem;
     width: 100%;
-    max-width: 40rem;
+    height: 100%;
+    min-width: 30rem;
+    max-width: 30rem;
     background: $off_white;
     label {
       margin-top: 0;
@@ -97,6 +95,10 @@
       width: 100%;
       background: darken($off_white, 5%);
       padding: 1rem;
+      .fa-trash {
+        margin-left: 1rem;
+        color: $darkest_red;
+      }
       .fa-caret-down,
       .fa-caret-up {
         float: right;
@@ -111,6 +113,26 @@
     }
     >.location-form-content {
       padding: 1rem;
+    }
+  }
+  .add-variable {
+    margin: 1rem;
+    cursor: pointer;
+    width: 100%;
+    min-width: 30rem;
+    max-width: 30rem;
+    padding: 1rem;
+    background: $off_white;
+    &:hover {
+      background: darken($off_white, 5%);
+    }
+    text-align: left;
+    p {
+      margin: auto;
+      padding: 1rem;
+      font-size: 1.2rem;
+      color: $placeholder_gray;
+      font-weight: bold;
     }
   }
 }

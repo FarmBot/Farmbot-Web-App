@@ -35,7 +35,7 @@ import {
 } from "./layers/plants/plant_actions";
 import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
-import { getPathArray, history } from "../../history";
+import { history } from "../../history";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -208,12 +208,11 @@ export class GardenMap extends
       default:
         const openLocationInfo = (e: React.MouseEvent<SVGElement>) => {
           const xyLocation = this.getGardenCoordinates(e);
-          const { selectedPoints,
-            hoveredPlant, hoveredPoint, hoveredToolSlot,
+          const {
+            selectedPoints, hoveredPlant, hoveredPoint, hoveredToolSlot,
           } = this.props.designer;
           const selectionActive = (selectedPoints && selectedPoints.length > 0)
-            || getPathArray().join("/") != "/app/designer/plants" ||
-            (hoveredPlant.plantUUID || hoveredPoint || hoveredToolSlot);
+            || (hoveredPlant.plantUUID || hoveredPoint || hoveredToolSlot);
           if (!selectionActive && xyLocation) {
             this.setState({
               toLocation: { x: xyLocation.x, y: xyLocation.y, z: 0 },
@@ -387,7 +386,8 @@ export class GardenMap extends
         return () => {
           const area = this.state.previousSelectionBoxArea;
           const box = area && area > 10;
-          if (this.state.toLocation && getMode() == Mode.none) {
+          if (this.state.toLocation &&
+            [Mode.none, Mode.points, Mode.weeds].includes(getMode())) {
             !box && history.push(locationUrl(this.state.toLocation));
           }
           this.setState({

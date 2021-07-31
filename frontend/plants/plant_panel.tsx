@@ -1,6 +1,5 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
-import { round } from "../farm_designer/map/util";
 import { push } from "../history";
 import { BlurableInput, Row, Col, Help } from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
@@ -77,7 +76,7 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
           value={plantLocation[axis]}
           min={axis == "z" ? undefined : 0}
           onCommit={e => updatePlant(uuid, {
-            [axis]: round(parseIntInput(e.currentTarget.value))
+            [axis]: parseIntInput(e.currentTarget.value)
           })} />
       </Col>)}
   </Row>;

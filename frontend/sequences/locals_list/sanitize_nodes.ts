@@ -74,32 +74,45 @@ interface SanitizationResult {
 /* 1. Recursively tag all CeleryScript nodes with a `uuid` property to
  *    prevent subtle React issues. SEE: Explanation in `sequence_tagging.ts`
  * 2. Add unbound variables to `locals` declaration (prevent NPEs).
- * 3. Remove unused variables from `locals` declaration. */
+ */
 export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
-  // Collect all *declared* variables. Required for fixing unbound vars.
+  // Collect all *declared* variables.
   const declared: Dictionary<ScopeDeclarationBodyItem> = {};
-  (thisSequence.args.locals.body || []).map(var_ => declared[var_.args.label] = var_);
+  (thisSequence.args.locals.body || []).map(variable =>
+    declared[variable.args.label] = variable);
+  // Collect all *referenced* variables.
   const { id } = thisSequence;
-  // Collect all *referenced* variables. Required for removing unused vars.
   const used: Dictionary<Identifier> = {};
-  const collectUniqVariables = (_id: Identifier) => used[_id.args.label] = _id;
+  const collectUniqVariables = (identifier: Identifier) =>
+    used[identifier.args.label] = identifier;
   const idList: number[] = [];
   climb(thisSequence, node => {
     maybeTagStep(node);
     isIdentifier(node) && collectUniqVariables(node);
+    // Collect "in_use" sequences.
     if (isExecute(node)) {
       const { sequence_id } = node.args;
       // Recursion does not qualify as "in_use"
       (sequence_id != id) && idList.push(sequence_id);
     }
   });
-  // Add unbound variables to locals array. Unused variables magically disappear
+  // Collect all unused variables.
+  const unused: ScopeDeclarationBodyItem[] = Object.values(declared)
+    .filter(var_ => !Object.keys(used).includes(var_.args.label));
+  // Add unbound variables to locals array.
   thisSequence.args.locals.body = Object.values(used)
     .map(({ args }) => declared[args.label] || newVar(args.label))
+    .concat(unused)
     .map(node => {
       maybeTagStep(node);
       return node;
     });
 
   return { thisSequence, callsTheseSequences: uniq(idList) };
+};
+
+export const variableIsInUse = (sequence: Sequence, label: string) => {
+  const usedLabels: string[] = [];
+  climb(sequence, node => isIdentifier(node) && usedLabels.push(node.args.label));
+  return usedLabels.includes(label);
 };

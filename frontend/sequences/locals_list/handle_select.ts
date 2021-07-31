@@ -46,18 +46,16 @@ const createVariableNode = (allowedNodes: AllowedVariableNodes):
     : createParameterApplication;
 
 const createParameterApplication =
-  (label: string, data_value: DataValue): ParameterApplication =>
-    ({
-      kind: "parameter_application",
-      args: { label, data_value }
-    });
+  (label: string, data_value: DataValue): ParameterApplication => ({
+    kind: "parameter_application",
+    args: { label, data_value }
+  });
 
 const createVariableDeclaration =
-  (label: string, data_value: DataValue): VariableDeclaration =>
-    ({
-      kind: "variable_declaration",
-      args: { label, data_value }
-    });
+  (label: string, data_value: DataValue): VariableDeclaration => ({
+    kind: "variable_declaration",
+    args: { label, data_value }
+  });
 
 interface NewVarProps {
   identifierLabel: string;
@@ -140,7 +138,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Weed":
       return pointVar(ddi.headingId, ddi.value)(props);
     case "Tool": return toolVar(ddi.value)(props);
-    case "parameter": return newParameter(props);
+    case "Variable": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup": return groupVar(ddi.value)(props);
   }
@@ -150,7 +148,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
 /** Convert a drop down selection to a variable. */
 export const convertDDItoVariable =
   (p: NewVarProps) => {
-    if (p.dropdown.headingId === "parameter") {
+    if (p.dropdown.headingId === "Variable") {
       return createNewVariable({
         ...p,
         newVarLabel: "" + p.dropdown.value

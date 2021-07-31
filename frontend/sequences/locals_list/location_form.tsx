@@ -3,7 +3,7 @@ import { Row, Col, FBSelect, Help } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, PARENT, AllowedVariableNodes, VariableNode,
+  LocationFormProps, AllowedVariableNodes, VariableNode,
 } from "../locals_list/locals_list_support";
 import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
@@ -13,6 +13,7 @@ import { DefaultValueForm } from "./default_value_form";
 import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
 import { ToolTips } from "../../constants";
+import { generateNewVariableLabel } from "./locals_list";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -49,13 +50,32 @@ export const LocationForm =
     });
     const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
     const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+    const newVarLabel = generateNewVariableLabel(bodyVariables || []);
     const variableListItems = displayVariables
-      ? [PARENT(determineVarDDILabel({
-        label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
-      }))]
+      ? (bodyVariables?.map(variable_ => ({
+        value: variable_.args.label,
+        label: determineVarDDILabel({
+          label: variable_.args.label,
+          resources,
+          uuid: sequenceUuid,
+          forceExternal: headerForm,
+        }),
+        headingId: "Variable",
+      })) || [])
+        .concat([{
+          value: newVarLabel,
+          label: determineVarDDILabel({
+            label: newVarLabel,
+            resources,
+            uuid: sequenceUuid,
+            forceExternal: headerForm,
+          }),
+          headingId: "Variable",
+        }])
       : [];
     const displayGroups = !hideGroups;
-    const unfiltered = locationFormList(resources, variableListItems, displayGroups);
+    const unfiltered = locationFormList(resources, [], variableListItems,
+      displayGroups);
     const list = props.customFilterRule
       ? unfiltered.filter(props.customFilterRule)
       : unfiltered;
@@ -66,14 +86,14 @@ export const LocationForm =
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
     }
-    const formTitleWithType = props.hideVariableLabel
-      ? t("Location variable")
-      : `${label} (${t("Location variable")})`;
-    const formTitle = props.hideTypeLabel ? label : formTitleWithType;
+    const cleanLabel = label == "parent" ? t("Location variable") : label;
+    const formTitle = props.hideTypeLabel ? label : cleanLabel;
     return <div className="location-form">
       {!props.hideHeader &&
         <div className="location-form-header">
           <label>{formTitle}</label>
+          <i className={"fa fa-trash"}
+            onClick={() => props.removeVariable?.(label)} />
           {isDefault &&
             <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
               customIcon={"exclamation-triangle"} onHover={true} />}

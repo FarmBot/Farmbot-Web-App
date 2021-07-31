@@ -9,12 +9,14 @@ import {
   findPointerByTypeAndId, findSlotByToolId, findToolById,
 } from "../../../resources/selectors";
 import {
+  determineVarDDILabel,
   maybeFindVariable, SequenceMeta,
 } from "../../../resources/sequence_meta";
 import {
   formatPoint, locationFormList, formatTool, COORDINATE_DDI,
 } from "../../locals_list/location_form_list";
 import { Move, Xyz } from "farmbot";
+import { generateNewVariableLabel } from "../../locals_list/locals_list";
 
 export const LocationSelection = (props: LocationSelectionProps) =>
   <FBSelect
@@ -80,12 +82,27 @@ const prepareLocation = (ddi: DropDownItem): {
 
 const locationList =
   (resources: ResourceIndex, sequenceUuid: UUID): DropDownItem[] => {
-    const varLabel = resourceVariableLabel(maybeFindVariable(
-      "parent", resources, sequenceUuid));
-    return locationFormList(resources, [
-      { headingId: "Offset", label: t("Offset from current location"), value: "" },
-      { headingId: "Identifier", label: varLabel, value: "parent" },
-    ]);
+    const vars = Object.values(resources.sequenceMetas[sequenceUuid] || {});
+    const newVarLabel = generateNewVariableLabel(vars.map(v => v?.celeryNode));
+    return locationFormList(
+      resources,
+      [{
+        headingId: "Offset",
+        label: t("Offset from current location"),
+        value: "",
+      }],
+      vars.map(variable => ({
+        headingId: "Identifier", label: resourceVariableLabel(variable),
+        value: variable?.celeryNode.args.label || "unknown",
+      })).concat([{
+        value: newVarLabel,
+        label: determineVarDDILabel({
+          label: newVarLabel,
+          resources,
+          uuid: sequenceUuid,
+        }),
+        headingId: "Identifier",
+      }]));
   };
 
 const getSelectedLocation = (
@@ -120,8 +137,13 @@ const getSelectedLocation = (
   }
 };
 
-const resourceVariableLabel = (variable: SequenceMeta | undefined) =>
-  `${t("Variable")} - ${variable?.dropdown.label || t("Add new")}`;
+const resourceVariableLabel = (variable: SequenceMeta | undefined) => {
+  const label = variable?.celeryNode.args.label;
+  const varLabel = label == "parent" ? undefined : label;
+  const ddiLabel = variable?.dropdown.label;
+  const infoLabel = ddiLabel == "parent" ? "variable" : ddiLabel;
+  return `${varLabel || t("Location Variable")} - ${infoLabel || t("Add new")}`;
+};
 
 export const LOCATION_NODES = ["point", "tool", "identifier"];
 
