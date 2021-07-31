@@ -102,7 +102,12 @@ describe Api::FirmwareConfigsController do
         pin_guard_5_active_state: 1,
         pin_guard_5_pin_nr: 0,
         pin_guard_5_time_out: 60,
-      }.to_a.map { |key, value| expect(json[key]).to eq(value) }
+      }.to_a.map do |key, value|
+        tpl = "%s = %f"
+        l = tpl % [key, json[key]]
+        r = tpl % [key, value]
+        expect(l).to eq(r)
+      end
 
       { created_at: String, updated_at: String }
         .to_a.map { |key, value| expect(json[key]).to be_kind_of(value) }
