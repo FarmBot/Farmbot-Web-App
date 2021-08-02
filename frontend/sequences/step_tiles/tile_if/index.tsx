@@ -90,6 +90,8 @@ export class InnerIf extends React.Component<StepParams<If>> {
       <If_ {...this.props} />
       <Row>
         <ThenElse thenElseKey={"_then"} {...this.props} />
+      </Row>
+      <Row>
         <ThenElse thenElseKey={"_else"} {...this.props} />
       </Row>
     </StepWrapper>;

@@ -14,6 +14,8 @@ import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
 import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { Feature } from "../../devices/interfaces";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -48,31 +50,9 @@ export const LocationForm =
     const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
-    const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
-    const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-    const newVarLabel = generateNewVariableLabel(bodyVariables || []);
-    const variableListItems = displayVariables
-      ? (bodyVariables?.map(variable_ => ({
-        value: variable_.args.label,
-        label: determineVarDDILabel({
-          label: variable_.args.label,
-          resources,
-          uuid: sequenceUuid,
-          forceExternal: headerForm,
-        }),
-        headingId: "Variable",
-      })) || [])
-        .concat([{
-          value: newVarLabel,
-          label: determineVarDDILabel({
-            label: newVarLabel,
-            resources,
-            uuid: sequenceUuid,
-            forceExternal: headerForm,
-          }),
-          headingId: "Variable",
-        }])
-      : [];
+    const variableListItems = generateVariableListItems({
+      allowedVariableNodes, bodyVariables, resources, sequenceUuid,
+    });
     const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, [], variableListItems,
       displayGroups);
@@ -92,14 +72,15 @@ export const LocationForm =
       {!props.hideHeader &&
         <div className="location-form-header">
           <label>{formTitle}</label>
-          <i className={"fa fa-trash"}
-            onClick={() => props.removeVariable?.(label)} />
           {isDefault &&
             <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
               customIcon={"exclamation-triangle"} onHover={true} />}
           {props.collapsible &&
             <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
               onClick={props.toggleVarShow} />}
+          {props.collapsible &&
+            <i className={"fa fa-trash"}
+              onClick={() => props.removeVariable?.(label)} />}
         </div>}
       {!props.collapsed &&
         <div className="location-form-content">
@@ -132,3 +113,42 @@ export const LocationForm =
         </div>}
     </div>;
   };
+
+interface GenerateVariableListItemsProps {
+  allowedVariableNodes: AllowedVariableNodes;
+  bodyVariables: VariableNode[] | undefined;
+  resources: ResourceIndex;
+  sequenceUuid: UUID;
+}
+
+const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
+  const { allowedVariableNodes, bodyVariables, resources, sequenceUuid } = props;
+  const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
+  const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+  const newVarLabel = generateNewVariableLabel(bodyVariables || []);
+  if (!displayVariables) { return []; }
+  const oldVariables = bodyVariables?.map(variable_ => ({
+    value: variable_.args.label,
+    label: determineVarDDILabel({
+      label: variable_.args.label,
+      resources,
+      uuid: sequenceUuid,
+      forceExternal: headerForm,
+    }),
+    headingId: "Variable",
+  })) || [];
+  const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
+    || !bodyVariables || bodyVariables.length < 1)
+    ? [{
+      value: newVarLabel,
+      label: determineVarDDILabel({
+        label: newVarLabel,
+        resources,
+        uuid: sequenceUuid,
+        forceExternal: headerForm,
+      }),
+      headingId: "Variable",
+    }]
+    : [];
+  return oldVariables.concat(newVariable);
+};

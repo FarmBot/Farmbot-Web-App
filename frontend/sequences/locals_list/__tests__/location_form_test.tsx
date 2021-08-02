@@ -15,7 +15,7 @@ import { difference } from "lodash";
 import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
-describe("<LocationForm/>", () => {
+describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
     variable: {
       celeryNode: {
@@ -33,6 +33,7 @@ describe("<LocationForm/>", () => {
     resources: buildResourceIndex().index,
     onChange: jest.fn(),
     allowedVariableNodes: AllowedVariableNodes.parameter,
+    collapsible: true,
   });
 
   it("renders correct UI components", () => {
@@ -115,7 +116,7 @@ describe("<LocationForm/>", () => {
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",
-      label: "Custom Coordinates",
+      label: "Custom coordinates",
       value: ""
     });
   });
@@ -154,7 +155,7 @@ describe("<LocationForm/>", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
     const wrapper = shallow(<LocationForm {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
+    wrapper.find(".fa-trash").simulate("click");
     expect(p.removeVariable).toHaveBeenCalledWith("label");
   });
 
@@ -162,6 +163,6 @@ describe("<LocationForm/>", () => {
     const p = fakeProps();
     p.removeVariable = undefined;
     const wrapper = shallow(<LocationForm {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
+    wrapper.find(".fa-trash").simulate("click");
   });
 });

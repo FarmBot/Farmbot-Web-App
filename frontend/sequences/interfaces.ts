@@ -38,33 +38,30 @@ export interface MoveAbsoluteWarningProps {
   hardwareFlags: HardwareFlags | undefined;
 }
 
-export interface SequencesProps {
+interface SequencePropsBase {
   dispatch: Function;
+  syncStatus: SyncStatus;
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  visualized?: boolean;
+}
+
+export interface SequencesProps extends SequencePropsBase {
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
-  resources: ResourceIndex;
-  syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
   shouldDisplay: ShouldDisplay;
-  getWebAppConfigValue: GetWebAppConfigValue;
-  menuOpen: UUID | undefined;
   stepIndex: number | undefined;
   folderData: Folders["props"];
-  visualized?: boolean;
   hoveredStep?: string | undefined;
 }
 
-export interface SequenceEditorMiddleProps {
-  dispatch: Function;
+export interface SequenceEditorMiddleProps extends SequencePropsBase {
   sequence: TaggedSequence | undefined;
-  resources: ResourceIndex;
-  syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
-  getWebAppConfigValue: GetWebAppConfigValue;
-  menuOpen: UUID | undefined;
-  visualized?: boolean;
   hoveredStep?: string | undefined;
 }
 
@@ -77,28 +74,16 @@ export interface ActiveMiddleState {
   viewSequenceCeleryScript: boolean;
 }
 
-export interface SequenceHeaderProps {
-  dispatch: Function;
+export interface SequenceHeaderProps extends SequencePropsBase {
   sequence: TaggedSequence;
-  syncStatus: SyncStatus;
-  resources: ResourceIndex;
-  menuOpen: UUID | undefined;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
   toggleViewSequenceCeleryScript: () => void;
-  getWebAppConfigValue: GetWebAppConfigValue;
-  visualized?: boolean;
 }
 
-export interface SequenceBtnGroupProps {
-  dispatch: Function;
+export interface SequenceBtnGroupProps extends SequencePropsBase {
   sequence: TaggedSequence;
-  syncStatus: SyncStatus;
-  resources: ResourceIndex;
-  menuOpen: UUID | undefined;
-  getWebAppConfigValue: GetWebAppConfigValue;
   toggleViewSequenceCeleryScript(): void;
-  visualized?: boolean;
 }
 
 export interface SequenceSettingsMenuProps {

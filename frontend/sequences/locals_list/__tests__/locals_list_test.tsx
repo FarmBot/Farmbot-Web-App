@@ -2,6 +2,11 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
+let mockShouldDisplay = false;
+jest.mock("../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import {
   generateNewVariableLabel,
@@ -77,6 +82,7 @@ describe("<LocalsList/>", () => {
   });
 
   it("adds new variable", () => {
+    mockShouldDisplay = true;
     const p = fakeProps();
     p.variableData = variableData;
     variableData["other"] = undefined;
@@ -169,8 +175,8 @@ describe("removeVariable()", () => {
 
   it("removes variable", () => {
     const p = fakeProps();
-    removeVariable(p)("label");
     p.sequence.body.args.locals.body = undefined;
+    removeVariable(p)("label");
     const newSequenceBody = cloneDeep(p.sequence.body);
     newSequenceBody.args.locals.body = [];
     expect(overwrite).toHaveBeenCalledWith(p.sequence, newSequenceBody);

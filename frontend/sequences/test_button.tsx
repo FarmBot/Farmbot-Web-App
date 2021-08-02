@@ -149,7 +149,7 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
   render() {
     const { menuOpen, sequence } = this.props;
     const isOpen = menuOpen == sequence.uuid;
-    return <Popover className={"fb-button-popover-wrapper"} isOpen={isOpen}
+    return <Popover className={"fb-button-popover-wrapper run-btn"} isOpen={isOpen}
       popoverClassName="parameter-assignment-menu-popover">
       <Test canTest={this.canTest} onClick={this.onClick} menuIsOpen={isOpen} />
       {isParameterized(this.props.sequence.body) &&

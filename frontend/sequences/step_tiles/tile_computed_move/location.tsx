@@ -17,6 +17,8 @@ import {
 } from "../../locals_list/location_form_list";
 import { Move, Xyz } from "farmbot";
 import { generateNewVariableLabel } from "../../locals_list/locals_list";
+import { shouldDisplayFeature } from "../../../farmware/state_to_props";
+import { Feature } from "../../../devices/interfaces";
 
 export const LocationSelection = (props: LocationSelectionProps) =>
   <FBSelect
@@ -84,6 +86,18 @@ const locationList =
   (resources: ResourceIndex, sequenceUuid: UUID): DropDownItem[] => {
     const vars = Object.values(resources.sequenceMetas[sequenceUuid] || {});
     const newVarLabel = generateNewVariableLabel(vars.map(v => v?.celeryNode));
+    const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
+      || vars.length < 1)
+      ? [{
+        value: newVarLabel,
+        label: determineVarDDILabel({
+          label: newVarLabel,
+          resources,
+          uuid: sequenceUuid,
+        }),
+        headingId: "Identifier",
+      }]
+      : [];
     return locationFormList(
       resources,
       [{
@@ -94,15 +108,7 @@ const locationList =
       vars.map(variable => ({
         headingId: "Identifier", label: resourceVariableLabel(variable),
         value: variable?.celeryNode.args.label || "unknown",
-      })).concat([{
-        value: newVarLabel,
-        label: determineVarDDILabel({
-          label: newVarLabel,
-          resources,
-          uuid: sequenceUuid,
-        }),
-        headingId: "Identifier",
-      }]));
+      })).concat(newVariable));
   };
 
 const getSelectedLocation = (
@@ -142,7 +148,7 @@ const resourceVariableLabel = (variable: SequenceMeta | undefined) => {
   const varLabel = label == "parent" ? undefined : label;
   const ddiLabel = variable?.dropdown.label;
   const infoLabel = ddiLabel == "parent" ? "variable" : ddiLabel;
-  return `${varLabel || t("Location Variable")} - ${infoLabel || t("Add new")}`;
+  return `${varLabel || t("Location variable")} - ${infoLabel || t("Add new")}`;
 };
 
 export const LOCATION_NODES = ["point", "tool", "identifier"];

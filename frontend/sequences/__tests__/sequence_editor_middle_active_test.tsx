@@ -42,14 +42,16 @@ jest.mock("../../config_storage/actions", () => ({
 
 import React from "react";
 import {
-  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
+  SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
   SequenceSettingsMenu,
   SequenceSetting,
   SequenceHeader,
+  SequenceBtnGroup,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import {
-  ActiveMiddleProps, SequenceSettingProps, SequenceSettingsMenuProps,
+  ActiveMiddleProps, SequenceBtnGroupProps, SequenceSettingProps,
+  SequenceSettingsMenuProps,
 } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex,
@@ -139,7 +141,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.getWebAppConfigValue = () => undefined;
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 2, "", { icon: "fa-trash" });
+    wrapper.find(".fa-trash").simulate("click");
     expect(destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), false);
   });
@@ -149,14 +151,14 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.getWebAppConfigValue = () => false;
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 2, "", { icon: "fa-trash" });
+    wrapper.find(".fa-trash").simulate("click");
     expect(destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), true);
   });
 
   it("copies", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    clickButton(wrapper, 3, "", { icon: "fa-copy" });
+    wrapper.find(".fa-copy").simulate("click");
     expect(copySequence).toHaveBeenCalledWith(expect.objectContaining({
       uuid: expect.stringContaining("Sequence")
     }));
@@ -242,7 +244,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     mockPath = "/app/designer/sequences/1";
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.orange").simulate("click");
+    wrapper.find(".fa-eye-slash").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.VISUALIZE_SEQUENCE,
       payload: p.sequence.uuid,
@@ -254,7 +256,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.visualized = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fb-button.gray").at(0).simulate("click");
+    wrapper.find(".fa-eye").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.VISUALIZE_SEQUENCE,
       payload: undefined,
@@ -277,6 +279,28 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".fa-thumb-tack").simulate("click");
     expect(pinSequenceToggle).toHaveBeenCalledWith(p.sequence);
+  });
+});
+
+describe("<SequenceBtnGroup />", () => {
+  const fakeProps = (): SequenceBtnGroupProps => ({
+    dispatch: jest.fn(),
+    sequence: fakeSequence(),
+    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    syncStatus: "synced",
+    getWebAppConfigValue: jest.fn(),
+    toggleViewSequenceCeleryScript: jest.fn(),
+    menuOpen: undefined,
+  });
+
+  it("edits color", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<SequenceBtnGroup {...p} />);
+    wrapper.find("ColorPicker").simulate("change", "red");
+    expect(editCurrentSequence).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.objectContaining({ uuid: p.sequence.uuid }),
+      { color: "red" });
   });
 });
 
@@ -319,7 +343,7 @@ describe("onDrop()", () => {
   });
 });
 
-describe("<SequenceNameAndColor />", () => {
+describe("<SequenceName />", () => {
   const fakeProps = () => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
@@ -327,23 +351,13 @@ describe("<SequenceNameAndColor />", () => {
 
   it("edits name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SequenceNameAndColor {...p} />);
+    const wrapper = shallow(<SequenceName {...p} />);
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "new name" }
     });
     expect(edit).toHaveBeenCalledWith(
       expect.objectContaining({ uuid: p.sequence.uuid }),
       { name: "new name" });
-  });
-
-  it("edits color", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<SequenceNameAndColor {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(editCurrentSequence).toHaveBeenCalledWith(
-      expect.any(Function),
-      expect.objectContaining({ uuid: p.sequence.uuid }),
-      { color: "red" });
   });
 });
 

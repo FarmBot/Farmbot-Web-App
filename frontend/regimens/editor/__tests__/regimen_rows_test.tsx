@@ -70,7 +70,7 @@ describe("<RegimenRows />", () => {
     p.calendar[0].items[0].variable = testVariable.args.label;
     const wrapper = mount(<RegimenRows {...p} />);
     expect(wrapper.find(".regimen-event-variable").text())
-      .toEqual("Location Variable - Coordinate (1, 2, 3)");
+      .toEqual("Location variable - Coordinate (1, 2, 3)");
   });
 
   it("doesn't show location variable label", () => {

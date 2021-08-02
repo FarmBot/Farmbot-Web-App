@@ -1,3 +1,8 @@
+let mockShouldDisplay = false;
+jest.mock("../../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import {
@@ -90,7 +95,7 @@ describe("<LocationSelection />", () => {
     [
       LocSelection.identifier,
       { kind: "identifier", args: { label: "variable" } },
-      { label: "Location Variable - Add new", value: "variable" },
+      { label: "Location variable - Add new", value: "variable" },
     ],
     [
       LocSelection.tool,
@@ -124,6 +129,7 @@ describe("<LocationSelection />", () => {
   });
 
   it("shows location list", () => {
+    mockShouldDisplay = true;
     const p = fakeProps();
     p.locationNode = { kind: "identifier", args: { label: "parent" } };
     p.locationSelection = LocSelection.identifier;
@@ -135,7 +141,7 @@ describe("<LocationSelection />", () => {
     expect(wrapper.props().list).toEqual([
       {
         headingId: "Coordinate",
-        label: "Custom Coordinates",
+        label: "Custom coordinates",
         value: "",
       },
       {
@@ -151,12 +157,12 @@ describe("<LocationSelection />", () => {
       },
       {
         headingId: "Identifier",
-        label: "Location Variable - variable",
+        label: "Location variable - variable",
         value: "parent",
       },
       {
         headingId: "Identifier",
-        label: "Location Variable - Add new",
+        label: "Location variable - Add new",
         value: "unknown",
       },
       {

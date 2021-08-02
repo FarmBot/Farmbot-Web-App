@@ -142,7 +142,7 @@ export function dropDownName(name: string, v?: Record<Xyz, number | undefined>,
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   label: vector
     ? `${t("Coordinate")} (${vector.x}, ${vector.y}, ${vector.z})`
-    : t("Custom Coordinates"),
+    : t("Custom coordinates"),
   value: vector ? JSON.stringify(vector) : "",
   headingId: "Coordinate"
 });

@@ -49,6 +49,7 @@ export enum Feature {
   long_scaling_factor = "long_scaling_factor",
   lua_step = "lua_step",
   mark_as_step = "mark_as_step",
+  multiple_variables = "multiple_variables",
   named_pins = "named_pins",
   no_auto_reset = "no_auto_reset",
   no_firmware_logs = "no_firmware_logs",

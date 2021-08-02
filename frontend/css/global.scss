@@ -18,14 +18,6 @@ body {
   margin-bottom: 1rem;
 }
 
-.color-picker-col {
-  padding: 0;
-  .bp3-popover-target {
-    float: left;
-    margin-top: 0.5rem;
-  }
-}
-
 .colorpicker-menu {
   padding: 0;
   .bp3-popover-arrow-fill {
@@ -806,13 +798,44 @@ ul {
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
+  .run-btn,
+  .save-btn {
+    margin-top: 0;
+  }
   .settings-menu-button {
     margin-right: 1rem;
+    margin-top: 0.15rem;
+    line-height: 2.75rem;
+  }
+  .fa {
+    margin: 0 0.5rem;
   }
   .fa-code {
     margin-right: 1rem;
     font-weight: bold;
     line-height: 0.9rem;
+  }
+  .fa-trash {
+    color: $dark_red;
+  }
+  .fa-clone,
+  .fa-copy {
+    color: $yellow;
+  }
+  .fa-eye {
+    color: $orange;
+  }
+  .fa-eye-slash {
+    color: $gray;
+  }
+  .color-picker {
+    display: inline-block;
+    margin: 0 0.5rem;
+    vertical-align: middle;
+    .saucer {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
   }
 }
 
