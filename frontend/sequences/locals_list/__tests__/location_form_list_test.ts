@@ -18,7 +18,7 @@ describe("locationFormList()", () => {
       .toEqual([
         {
           headingId: "Coordinate",
-          label: "Custom Coordinates",
+          label: "Custom coordinates",
           value: "",
         },
         {
@@ -96,7 +96,7 @@ describe("locationFormList()", () => {
       .toEqual([
         {
           headingId: "Coordinate",
-          label: "Custom Coordinates",
+          label: "Custom coordinates",
           value: "",
         },
         {

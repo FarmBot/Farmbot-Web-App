@@ -60,7 +60,7 @@ describe("<RegimenButtonGroup />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<RegimenButtonGroup {...p} />);
-    clickButton(wrapper, 2, "");
+    wrapper.find(".fa-trash").simulate("click");
     const expectedUuid = p.regimen.uuid;
     expect(destroy).toHaveBeenCalledWith(expectedUuid);
   });

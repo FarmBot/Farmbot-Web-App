@@ -122,6 +122,22 @@ describe("<TestButton/>", () => {
     expect(result.html()).toContain("locals-list");
   });
 
+  it("closes parameter assignment menu", () => {
+    const p = fakeProps();
+    p.menuOpen = p.sequence.uuid;
+    p.syncStatus = "synced";
+    p.sequence.specialStatus = SpecialStatus.SAVED;
+    p.sequence.body.id = 1;
+    mockHasParameters = true;
+    const result = mount(<TestButton {...p} />);
+    const btn = result.find("button").first();
+    btn.simulate("click");
+    expect(btn.hasClass("gray")).toBeTruthy();
+    expect(warning).not.toHaveBeenCalled();
+    expect(mockDevice.execSequence).not.toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalledWith(setMenuOpen(undefined));
+  });
+
   it("edits body variables", () => {
     const variable: ParameterApplication = {
       kind: "parameter_application",

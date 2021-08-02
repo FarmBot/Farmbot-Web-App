@@ -93,6 +93,11 @@
 .open-bulk-scheduler-btn-wrapper {
   margin: auto;
   width: fit-content;
+  text-align: center;
+  button {
+    float: none;
+    margin-bottom: 1rem;
+  }
   .open-bulk-scheduler-btn {
     display: none;
     @media screen and (max-width: 768px) {

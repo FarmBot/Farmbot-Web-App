@@ -57,6 +57,7 @@
   hr {
     margin-right: 15px;
     margin-bottom: 0;
+    margin-top: 0.5rem;
   }
 }
 
@@ -75,6 +76,9 @@
       color: $dark_gray;
     }
   }
+  hr {
+    margin: 0.5rem 0;
+  }
 }
 
 .locals-list {
@@ -88,14 +92,24 @@
     min-width: 30rem;
     max-width: 30rem;
     background: $off_white;
+    border-radius: 3px;
+    box-shadow: 0px 0px 10px #ccc;
     label {
       margin-top: 0;
     }
     >.location-form-header {
       width: 100%;
+      height: 3.5rem;
       background: darken($off_white, 5%);
       padding: 1rem;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      label {
+        font-size: 1.2rem;
+        vertical-align: top;
+      }
       .fa-trash {
+        float: right;
         margin-left: 1rem;
         color: $darkest_red;
       }
@@ -104,6 +118,7 @@
         float: right;
         font-size: 2rem;
         color: $dark_gray;
+        margin-top: -0.25rem;
       }
       .bp3-popover-wrapper {
         display: inline;

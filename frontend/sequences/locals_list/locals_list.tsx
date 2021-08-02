@@ -21,6 +21,8 @@ import {
 import { ResourceIndex } from "../../resources/interfaces";
 import { error } from "../../toast/toast";
 import { variableIsInUse } from "./sanitize_nodes";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { Feature } from "../../devices/interfaces";
 
 export interface LocalListCbProps {
   dispatch: Function;
@@ -84,7 +86,8 @@ export const LocalsList = (props: LocalsListProps) => {
         hideGroups={props.hideGroups}
         customFilterRule={props.customFilterRule} />)}
     {props.allowedVariableNodes == AllowedVariableNodes.parameter &&
-      props.hideGroups &&
+      props.hideGroups && (shouldDisplayFeature(Feature.multiple_variables)
+        || variableData.length < 1) &&
       <div className={"add-variable visible"} onClick={() =>
         props.onChange({
           kind: "variable_declaration",

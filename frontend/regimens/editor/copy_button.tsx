@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { CopyButtonProps } from "./interfaces";
 import { init } from "../../api/crud";
 import { TaggedRegimen } from "farmbot";
@@ -8,12 +8,9 @@ import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { t } from "../../i18next_wrapper";
 
 export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
-  <button
-    className="fb-button yellow"
+  <i className={"fa fa-clone"}
     title={t("copy")}
-    onClick={() => dispatch(copyRegimen(regimen))}>
-    <i className={"fa fa-clone"} />
-  </button>;
+    onClick={() => dispatch(copyRegimen(regimen))} />;
 
 let count = 1;
 

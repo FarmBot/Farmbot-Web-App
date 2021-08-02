@@ -861,6 +861,7 @@
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 1rem;
     .location-actions {
       p {
         margin-top: 1rem;
@@ -2195,9 +2196,6 @@
     }
     @media screen and (max-width: 767px) {
       padding: 0;
-    }
-    .fa-thumb-tack {
-      margin-left: -0.75rem;
     }
   }
 }
