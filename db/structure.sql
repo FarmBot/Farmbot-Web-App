@@ -347,7 +347,7 @@ CREATE TABLE public.edge_nodes (
     sequence_id bigint NOT NULL,
     primary_node_id bigint NOT NULL,
     kind character varying(50),
-    value character varying(1500)
+    value character varying(3000)
 );
 
 
@@ -1444,7 +1444,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -3612,6 +3612,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210607193347'),
 ('20210720155040'),
 ('20210720183535'),
-('20210723175109');
+('20210723175109'),
+('20210803205352');
 
 
