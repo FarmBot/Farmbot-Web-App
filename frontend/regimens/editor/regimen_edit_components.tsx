@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { RegimenProps } from "../interfaces";
-import { Row, Col, ColorPicker, SaveBtn } from "../../ui/index";
+import { Row, Col, ColorPicker, SaveBtn } from "../../ui";
 import { editRegimen } from "../actions";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
@@ -15,7 +15,7 @@ import { push } from "../../history";
 
 export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
   return <Row>
-    <Col xs={11}>
+    <Col xs={12}>
       <input
         placeholder={t("Regimen Name")}
         type="text"
@@ -23,9 +23,6 @@ export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
         onChange={e =>
           dispatch(editRegimen(regimen, { name: e.currentTarget.value }))}
         value={regimen.body.name || ""} />
-    </Col>
-    <Col xs={1} className="color-picker-col">
-      <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
     </Col>
   </Row>;
 }
@@ -43,19 +40,20 @@ export const editRegimenVariables = (props: RegimenProps) =>
       props.dispatch(overwrite(props.regimen, copy.body));
     };
 
-export const RegimenButtonGroup = (props: RegimenProps) =>
-  <div className="button-group">
+export const RegimenButtonGroup = (props: RegimenProps) => {
+  const { regimen, dispatch } = props;
+  return <div className="button-group">
     <SaveBtn
-      status={props.regimen.specialStatus}
-      onClick={() => props.dispatch(save(props.regimen.uuid))} />
-    <CopyButton regimen={props.regimen} dispatch={props.dispatch} />
-    <button className="fb-button red"
+      status={regimen.specialStatus}
+      onClick={() => dispatch(save(regimen.uuid))} />
+    <CopyButton regimen={regimen} dispatch={dispatch} />
+    <i className={"fa fa-trash"}
       title={t("delete regimen")}
-      onClick={() => props.dispatch(destroy(props.regimen.uuid))
-        .then(() => push("/app/designer/regimens/"))}>
-      <i className={"fa fa-trash"} />
-    </button>
+      onClick={() => dispatch(destroy(regimen.uuid))
+        .then(() => push("/app/designer/regimens/"))} />
+    <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
   </div>;
+};
 
 export const OpenSchedulerButton = () =>
   <div className={"open-bulk-scheduler-btn-wrapper"}>

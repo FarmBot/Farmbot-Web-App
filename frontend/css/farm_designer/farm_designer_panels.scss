@@ -120,6 +120,11 @@
   }
   &.short-panel {
     height: 24rem;
+    .location-info-panel {
+      .panel-content {
+        max-height: calc(100vh - 47rem);
+      }
+    }
   }
   .panel-container {
     width: 100%;
@@ -605,6 +610,9 @@
 }
 
 .crop-catalog-panel {
+  .panel-top {
+    margin-top: 0;
+  }
   .panel-content {
     padding: 1rem 1rem 6rem;
     padding-bottom: inherit;
@@ -751,13 +759,19 @@
       margin-bottom: 0.5rem !important;
     }
   }
+  .plant-info-field-data {
+    .bp3-popover-wrapper {
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+  }
   input {
     background: $white;
   }
 }
 
 .add-plant-panel,
-.move-to-panel {
+.location-info-panel {
   padding-bottom: 0 !important;
 }
 
@@ -831,16 +845,14 @@
   }
 }
 
-.move-to-panel-content {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  button {
-    margin: 0.5rem;
-    float: left;
+.move-to-form {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
   }
-  input {
-    min-width: 7rem;
+  .speed {
+    margin: 2rem;
+    margin-left: -15px;
   }
 }
 
@@ -849,6 +861,7 @@
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 1rem;
     .location-actions {
       p {
         margin-top: 1rem;
@@ -867,6 +880,9 @@
     }
     label {
       margin-top: 0;
+      &.no-items {
+        display: block;
+      }
     }
     button {
       float: none;
@@ -1243,6 +1259,13 @@
       margin-left: 0.5rem;
     }
   }
+  .settings-warning-banner {
+    margin-bottom: 1rem !important;
+    p {
+      display: inline;
+    }
+  }
+  .settings-warning-banner,
   .stall-detection-note,
   .limit-switch-warning {
     margin: 1rem -15px -1rem -15px;
@@ -1417,7 +1440,6 @@
       i[class*=fa-caret-] {
         float: right;
         font-size: 2rem;
-        margin-top: 1.5rem;
       }
       .groups-list-wrapper {
         padding: 0.5em 0em;
@@ -2158,9 +2180,6 @@
 
 .designer-sequence-editor-panel {
   .panel-content {
-    .locals-list {
-      max-height: 26rem;
-    }
     .add-command-button-container {
       display: block;
       margin: 1rem;
@@ -2177,9 +2196,6 @@
     }
     @media screen and (max-width: 767px) {
       padding: 0;
-    }
-    .fa-thumb-tack {
-      margin-left: -0.75rem;
     }
   }
 }

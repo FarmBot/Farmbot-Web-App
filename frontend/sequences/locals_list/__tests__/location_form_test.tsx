@@ -7,7 +7,7 @@ import { shallow, mount } from "enzyme";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { FBSelect, BlurableInput } from "../../../ui/index";
+import { FBSelect, BlurableInput } from "../../../ui";
 import {
   LocationFormProps, PARENT, AllowedVariableNodes,
 } from "../locals_list_support";
@@ -15,7 +15,7 @@ import { difference } from "lodash";
 import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
-describe("<LocationForm/>", () => {
+describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
     variable: {
       celeryNode: {
@@ -33,6 +33,7 @@ describe("<LocationForm/>", () => {
     resources: buildResourceIndex().index,
     onChange: jest.fn(),
     allowedVariableNodes: AllowedVariableNodes.parameter,
+    collapsible: true,
   });
 
   it("renders correct UI components", () => {
@@ -44,7 +45,7 @@ describe("<LocationForm/>", () => {
     expect(selects.length).toBe(1);
     const select = selects.first().props();
     const choices = locationFormList(
-      p.resources, [PARENT("Externally defined")], true);
+      p.resources, [], [PARENT("Externally defined")], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -72,8 +73,7 @@ describe("<LocationForm/>", () => {
       }
     }];
     const wrapper = mount(<LocationForm {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toContain("location variable - add new");
+    expect(wrapper.text().toLowerCase()).toContain("add new");
   });
 
   it("shows parent in dropdown", () => {
@@ -81,7 +81,7 @@ describe("<LocationForm/>", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
+      .toEqual(expect.arrayContaining([PARENT("Add new")]));
   });
 
   it("doesn't show parent in dropdown", () => {
@@ -108,7 +108,7 @@ describe("<LocationForm/>", () => {
     p.variable.dropdown.isNull = true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
+      .toEqual(expect.arrayContaining([PARENT("Add new")]));
   });
 
   it("shows groups in dropdown", () => {
@@ -116,7 +116,7 @@ describe("<LocationForm/>", () => {
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",
-      label: "Custom Coordinates",
+      label: "Custom coordinates",
       value: ""
     });
   });
@@ -149,5 +149,20 @@ describe("<LocationForm/>", () => {
     p.variable.isDefault = true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.html()).toContain("fa-exclamation-triangle");
+  });
+
+  it("removes variable", () => {
+    const p = fakeProps();
+    p.removeVariable = jest.fn();
+    const wrapper = shallow(<LocationForm {...p} />);
+    wrapper.find(".fa-trash").simulate("click");
+    expect(p.removeVariable).toHaveBeenCalledWith("label");
+  });
+
+  it("doesn't remove variable", () => {
+    const p = fakeProps();
+    p.removeVariable = undefined;
+    const wrapper = shallow(<LocationForm {...p} />);
+    wrapper.find(".fa-trash").simulate("click");
   });
 });

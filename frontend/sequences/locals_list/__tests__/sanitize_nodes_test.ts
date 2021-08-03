@@ -1,6 +1,6 @@
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute } from "farmbot";
-import { sanitizeNodes } from "../sanitize_nodes";
+import { sanitizeNodes, variableIsInUse } from "../sanitize_nodes";
 import { get } from "lodash";
 
 describe("performAllIndexesOnSequence", () => {
@@ -13,7 +13,7 @@ describe("performAllIndexesOnSequence", () => {
     }
   };
 
-  it("removes unused variables", () => {
+  it("doesn't remove unused variables", () => {
     const unusedVar = fakeSequence().body;
     expect(unusedVar.args.locals.body).toBeUndefined();
     unusedVar.body = [];
@@ -33,8 +33,8 @@ describe("performAllIndexesOnSequence", () => {
     };
     const result = sanitizeNodes(unusedVar);
     const locals = result.thisSequence.args.locals.body;
-    expect(locals).toEqual([]);
-    expect(locals?.[0]).not.toBeDefined();
+    expect(locals).toEqual(unusedVar.args.locals.body);
+    expect(locals?.[0]).toBeDefined();
   });
 
   it("handles missing parameters / variables", () => {
@@ -51,5 +51,30 @@ describe("performAllIndexesOnSequence", () => {
     expect(locals?.[0]).toBeDefined();
     expect(get(locals?.[0], "uuid")).toBeDefined();
     expect(locals?.[0].args.label).toEqual("parent");
+  });
+});
+
+describe("variableIsInUse()", () => {
+  it("returns status: in use", () => {
+    const sequence = fakeSequence();
+    sequence.body.body = [{
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "x",
+            axis_operand: { kind: "identifier", args: { label: "label" } },
+          },
+        }],
+    }];
+    expect(variableIsInUse(sequence.body, "label")).toEqual(true);
+  });
+
+  it("returns status: not in use", () => {
+    const sequence = fakeSequence();
+    sequence.body.body = [];
+    expect(variableIsInUse(sequence.body, "label")).toEqual(false);
   });
 });

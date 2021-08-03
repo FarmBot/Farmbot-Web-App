@@ -71,6 +71,7 @@ describe("<FarmDesigner />", () => {
     logs: [],
     deviceTarget: "",
     sourceFbosConfig: jest.fn(),
+    farmwareEnvs: [],
   });
 
   it("loads default map settings", () => {

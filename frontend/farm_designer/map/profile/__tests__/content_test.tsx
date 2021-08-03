@@ -5,6 +5,7 @@ jest.mock("../../../../history", () => ({
 
 jest.mock("../../layers/points/interpolation_map", () => ({
   getInterpolationData: () => [{ x: 111, y: 112, z: 113 }],
+  fetchInterpolationOptions: () => ({ stepSize: 100 }),
 }));
 
 import React from "react";
@@ -42,6 +43,7 @@ describe("<ProfileSvg />", () => {
     tools: [],
     mapTransformProps: fakeMapTransformProps(),
     getConfigValue: () => true,
+    farmwareEnvs: [],
   });
 
   it("renders without points", () => {

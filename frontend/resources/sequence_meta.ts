@@ -65,9 +65,9 @@ export const maybeFindVariable = (
 ): SequenceMeta | undefined =>
   uuid ? findVariableByName(resources, uuid, label) : undefined;
 
-/** Add "Location Variable - " prefix to string. */
+/** Add "Location variable - " prefix to string. */
 export const withPrefix = (label: string) =>
-  `${t("Location Variable")} - ${label}`;
+  `${t("Location variable")} - ${label}`;
 
 interface DetermineVarDDILabelProps {
   label: string;
@@ -90,7 +90,7 @@ export const determineVarDDILabel =
       }
       return withPrefix(variable.dropdown.label);
     }
-    return withPrefix(t("Add new"));
+    return t("Add new");
   };
 
 /** Given a CeleryScript parameter application and a resource index

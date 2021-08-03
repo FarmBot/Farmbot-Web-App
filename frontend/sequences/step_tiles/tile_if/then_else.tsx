@@ -10,7 +10,7 @@ export function ThenElse(props: ThenElseParams) {
     onChange, selectedItem, calledSequenceVariableData, assignVariable
   } = IfBlockDropDownHandler(props);
   const { body } = props.currentStep.args[props.thenElseKey];
-  return <Col xs={12} lg={6}>
+  return <Col xs={12}>
     <div className="execute-row">
       <label>{props.thenElseKey === "_then" ? t("Then Execute") : t("Else Execute")}
       </label>

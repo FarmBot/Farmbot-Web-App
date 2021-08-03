@@ -3,7 +3,7 @@ import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
-  MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
+  MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis, MoveProps,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
@@ -11,6 +11,12 @@ import {
   ALLOWED_PIN_MODES,
   FirmwareHardware,
   Pair,
+  rpcRequest,
+  SafeZ,
+  MoveBodyItem,
+  SpeedOverwrite,
+  Xyz,
+  AxisOverwrite,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
@@ -319,6 +325,47 @@ export function moveAbsolute(props: MoveRelProps) {
   maybeAlertLocked();
   return getDevice()
     .moveAbsolute(props)
+    .then(maybeNoop, commandErr(noun));
+}
+
+export function move(props: MoveProps) {
+  const noun = t("Movement");
+  maybeNoop();
+  maybeAlertLocked();
+  const safeZ: SafeZ = { kind: "safe_z", args: {} };
+  const speedOverwrite = (axis: Xyz, speed: number): SpeedOverwrite => ({
+    kind: "speed_overwrite",
+    args: {
+      axis,
+      speed_setting: {
+        kind: "numeric", args: { number: speed }
+      }
+    },
+  });
+  const positionOverwrite = (axis: Xyz): AxisOverwrite => ({
+    kind: "axis_overwrite",
+    args: {
+      axis,
+      axis_operand: {
+        kind: "coordinate", args: {
+          x: props.x,
+          y: props.y,
+          z: props.z,
+        }
+      },
+    }
+  });
+  const body: MoveBodyItem[] = [
+    positionOverwrite("x"),
+    positionOverwrite("y"),
+    positionOverwrite("z"),
+    ...(props.speed ? [speedOverwrite("x", props.speed)] : []),
+    ...(props.speed ? [speedOverwrite("y", props.speed)] : []),
+    ...(props.speed ? [speedOverwrite("z", props.speed)] : []),
+    ...(props.safeZ ? [safeZ] : []),
+  ];
+  return getDevice()
+    .send(rpcRequest([{ kind: "move", args: {}, body }]))
     .then(maybeNoop, commandErr(noun));
 }
 

@@ -18,6 +18,8 @@ import {
   TaggedCrop,
   TaggedLog,
   TaggedTool,
+  Vector3,
+  TaggedFarmwareEnv,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -57,12 +59,14 @@ export interface State extends TypeCheckerHint {
   legend_menu_open: boolean;
   show_plants: boolean;
   show_points: boolean;
+  show_soil_interpolation_map: boolean;
   show_weeds: boolean;
   show_spread: boolean;
   show_farmbot: boolean;
   show_images: boolean;
   show_zones: boolean;
   show_sensor_readings: boolean;
+  show_moisture_interpolation_map: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }
@@ -104,6 +108,7 @@ export interface FarmDesignerProps {
   logs: TaggedLog[];
   deviceTarget: string;
   sourceFbosConfig: SourceFbosConfig;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface MovePlantProps {
@@ -148,7 +153,6 @@ export interface DesignerState {
   editGroupAreaInMap: boolean;
   visualizedSequence: UUID | undefined;
   hoveredSequenceStep: string | undefined;
-  settingsSearchTerm: string;
   hiddenImages: number[];
   shownImages: number[];
   hideUnShownImages: boolean;
@@ -258,6 +262,7 @@ export interface GardenMapProps {
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];
   deviceTarget: string;
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface GardenMapState {
@@ -268,6 +273,8 @@ export interface GardenMapState {
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   selectionBox: SelectionBoxData | undefined;
+  previousSelectionBoxArea: number | undefined;
+  toLocation: Vector3 | undefined;
 }
 
 export type PlantOptions = Partial<PlantPointer>;
@@ -279,6 +286,8 @@ export interface EditPlantInfoProps {
   openedSavedGarden: string | undefined;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
+  soilHeightPoints: TaggedGenericPointer[];
+  farmwareEnvs: TaggedFarmwareEnv[];
 }
 
 export interface DraggableEvent {

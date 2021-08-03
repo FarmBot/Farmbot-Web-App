@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { MapTransformProps } from "../interfaces";
 import { transformXY, round } from "../util";
 import { isNumber } from "lodash";
@@ -39,3 +39,13 @@ export function SelectionBox(props: SelectionBoxProps) {
     return <g id={ID} />;
   }
 }
+
+export const getSelectionBoxArea = (selectionBox: SelectionBoxData | undefined) => {
+  if (!selectionBox) { return 0; }
+  const { x0, y0, x1, y1 } = selectionBox;
+  if (!(isNumber(x0) && isNumber(y0) && isNumber(x1) && isNumber(y1))) {
+    return 0;
+  }
+  const area = Math.abs(x1 - x0) * Math.abs(y1 - y0);
+  return area;
+};

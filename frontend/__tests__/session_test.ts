@@ -16,6 +16,18 @@ describe("fetchStoredToken", () => {
     localStorage.setItem("session", JSON.stringify(auth));
     expect(Session.fetchStoredToken()).toEqual(auth);
   });
+
+  it("handles non-token", () => {
+    localStorage.setItem("session", "0");
+    expect(Session.fetchStoredToken()).toEqual(undefined);
+  });
+});
+
+describe("replaceToken()", () => {
+  it("replaces token", () => {
+    Session.replaceToken(auth);
+    expect(localStorage.getItem("session")).toEqual(JSON.stringify(auth));
+  });
 });
 
 describe("isNumericSetting", () => {

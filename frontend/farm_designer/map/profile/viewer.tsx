@@ -50,6 +50,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
             sourceFbosConfig={props.sourceFbosConfig}
             mountedToolInfo={props.mountedToolInfo}
             tools={props.tools}
+            farmwareEnvs={props.farmwareEnvs}
             getConfigValue={props.getConfigValue}
             mapTransformProps={props.mapTransformProps}
             botSize={props.botSize} />

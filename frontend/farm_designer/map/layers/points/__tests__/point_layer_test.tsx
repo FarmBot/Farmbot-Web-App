@@ -22,6 +22,7 @@ import { tagAsSoilHeight } from "../../../../../points/soil_height";
 describe("<PointLayer/>", () => {
   const fakeProps = (): PointLayerProps => ({
     visible: true,
+    overlayVisible: false,
     genericPoints: [fakePoint()],
     mapTransformProps: fakeMapTransformProps(),
     designer: fakeDesignerState(),
@@ -29,6 +30,7 @@ describe("<PointLayer/>", () => {
     interactions: true,
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
+    farmwareEnvs: [],
   });
 
   it("shows points", () => {
@@ -80,31 +82,33 @@ describe("<PointLayer/>", () => {
   });
 
   it("shows empty interpolation map", () => {
-    mockPath = "/app/designer/location";
-    const wrapper = svgMount(<PointLayer {...fakeProps()} />);
+    const p = fakeProps();
+    p.overlayVisible = true;
+    const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(0);
+    expect(layer.find("rect").length).toEqual(1);
   });
 
   it("shows interpolation map", () => {
-    mockPath = "/app/designer/location";
     const p = fakeProps();
+    p.overlayVisible = true;
+    p.mapTransformProps.xySwap = true;
     tagAsSoilHeight(p.genericPoints[0]);
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(450);
+    expect(layer.find("rect").length).toEqual(1801);
   });
 
   it("shows interpolation map in quadrant 4", () => {
-    mockPath = "/app/designer/location";
     const p = fakeProps();
+    p.overlayVisible = true;
     p.mapTransformProps.quadrant = 4;
     tagAsSoilHeight(p.genericPoints[0]);
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(450);
+    expect(layer.find("rect").length).toEqual(1801);
   });
 });

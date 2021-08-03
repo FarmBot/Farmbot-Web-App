@@ -16,7 +16,9 @@ import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
-import { LocalsList, localListCallback } from "./locals_list/locals_list";
+import {
+  LocalsList, localListCallback, removeVariable,
+} from "./locals_list/locals_list";
 import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
@@ -103,7 +105,7 @@ export const SequenceSettingsMenu =
     </div>;
   };
 
-const SequenceBtnGroup = ({
+export const SequenceBtnGroup = ({
   dispatch,
   sequence,
   syncStatus,
@@ -123,8 +125,7 @@ const SequenceBtnGroup = ({
       resources={resources}
       menuOpen={menuOpen}
       dispatch={dispatch} />
-    <button
-      className="fb-button red"
+    <i className={"fa fa-trash"}
       title={t("delete sequence")}
       onClick={() => {
         const confirm = getWebAppConfigValue(
@@ -132,23 +133,15 @@ const SequenceBtnGroup = ({
         const force = !(confirm ?? true);
         dispatch(destroy(sequence.uuid, force))
           .then(() => push(sequencesUrlBase()));
-      }}>
-      <i className={"fa fa-trash"} />
-    </button>
-    <button
-      className="fb-button yellow"
+      }} />
+    <i className={"fa fa-copy"}
       title={t("copy sequence")}
-      onClick={() => dispatch(copySequence(sequence))}>
-      <i className={"fa fa-copy"} />
-    </button>
+      onClick={() => dispatch(copySequence(sequence))} />
     {inDesigner() &&
-      <button
-        className={`fb-button ${visualized ? "gray" : "orange"}`}
-        title={t("toggle map visualization")}
+      <i className={`fa fa-eye${visualized ? "" : "-slash"}`}
+        title={visualized ? t("unvisualize") : t("visualize")}
         onClick={() =>
-          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))}>
-        {visualized ? t("unvisualize") : t("visualize")}
-      </button>}
+          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
     <div className={"settings-menu-button"}>
       <Popover position={Position.BOTTOM_RIGHT}>
         <i className="fa fa-gear" />
@@ -158,34 +151,31 @@ const SequenceBtnGroup = ({
       </Popover>
     </div>
     {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
-      <i className="fa fa-code step-control"
+      <i className={"fa fa-code step-control"}
+        title={t("toggle celery script view")}
         onClick={toggleViewSequenceCeleryScript} />}
+    <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
+      className={[
+        "fa",
+        "fa-thumb-tack",
+        sequence.body.pinned ? "pinned" : "",
+      ].join(" ")}
+      onClick={() => dispatch(pinSequenceToggle(sequence))} />
+    <ColorPicker
+      current={sequence.body.color}
+      onChange={color =>
+        editCurrentSequence(dispatch, sequence, { color })} />
   </div>;
 
-export const SequenceNameAndColor = ({ dispatch, sequence }: {
+export const SequenceName = ({ dispatch, sequence }: {
   dispatch: Function, sequence: TaggedSequence
 }) =>
   <Row>
-    <Col xs={10}>
+    <Col xs={12}>
       <BlurableInput value={sequence.body.name}
         placeholder={t("Sequence Name")}
         onCommit={e =>
           dispatch(edit(sequence, { name: e.currentTarget.value }))} />
-    </Col>
-    <Col xs={1} className="pinned-col">
-      <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
-        className={[
-          "fa",
-          "fa-thumb-tack",
-          sequence.body.pinned ? "pinned" : "",
-        ].join(" ")}
-        onClick={() => dispatch(pinSequenceToggle(sequence))} />
-    </Col>
-    <Col xs={1} className="color-picker-col">
-      <ColorPicker
-        current={sequence.body.color}
-        onChange={color =>
-          editCurrentSequence(dispatch, sequence, { color })} />
     </Col>
   </Row>;
 
@@ -205,13 +195,14 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       visualized={props.visualized}
       menuOpen={props.menuOpen} />
-    <SequenceNameAndColor {...sequenceAndDispatch} />
+    <SequenceName {...sequenceAndDispatch} />
     <ErrorBoundary>
       <LocalsList
         variableData={variableData}
         sequenceUuid={sequence.uuid}
         resources={props.resources}
         onChange={localListCallback(props)(declarations)}
+        removeVariable={removeVariable(props)}
         locationDropdownKey={JSON.stringify(sequence)}
         allowedVariableNodes={AllowedVariableNodes.parameter}
         collapsible={true}

@@ -1,3 +1,8 @@
+let mockShouldDisplay = false;
+jest.mock("../../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import {
@@ -90,7 +95,7 @@ describe("<LocationSelection />", () => {
     [
       LocSelection.identifier,
       { kind: "identifier", args: { label: "variable" } },
-      { label: "Variable - Add new", value: "variable" },
+      { label: "Location variable - Add new", value: "variable" },
     ],
     [
       LocSelection.tool,
@@ -119,8 +124,77 @@ describe("<LocationSelection />", () => {
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = shallow(<LocationSelection {...p} />);
     expect(wrapper.props().selectedItem).toEqual({
-      label: "Variable - variable", value: "variable",
+      label: "variable - variable", value: "variable",
     });
+  });
+
+  it("shows location list", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.locationNode = { kind: "identifier", args: { label: "parent" } };
+    p.locationSelection = LocSelection.identifier;
+    const variables = fakeVariableNameSet("parent", { x: 10, y: 20, z: 30 });
+    p.resources = buildResourceIndex([]).index;
+    variables["other"] = undefined;
+    p.resources.sequenceMetas["uuid"] = variables;
+    const wrapper = shallow(<LocationSelection {...p} />);
+    expect(wrapper.props().list).toEqual([
+      {
+        headingId: "Coordinate",
+        label: "Custom coordinates",
+        value: "",
+      },
+      {
+        headingId: "Offset",
+        label: "Offset from current location",
+        value: "",
+      },
+      {
+        headingId: "Identifier",
+        label: "Variables",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Identifier",
+        label: "Location variable - variable",
+        value: "parent",
+      },
+      {
+        headingId: "Identifier",
+        label: "Location variable - Add new",
+        value: "unknown",
+      },
+      {
+        headingId: "Identifier",
+        label: "Add new",
+        value: "Location variable 1",
+      },
+      {
+        headingId: "Tool",
+        label: "Tools and Seed Containers",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Plant",
+        label: "Plants",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "GenericPointer",
+        label: "Map Points",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Weed",
+        label: "Weeds",
+        value: 0,
+        heading: true,
+      },
+    ]);
   });
 });
 
@@ -167,6 +241,24 @@ describe("getLocationState()", () => {
     expect(getLocationState(step)).toEqual({
       location: { kind: "tool", args: { tool_id: 1 } },
       locationSelection: LocSelection.tool,
+    });
+  });
+
+  it("returns undefined", () => {
+    const step: Move = {
+      kind: "move", args: {}, body: [{
+        kind: "axis_overwrite", args: {
+          axis: "x",
+          axis_operand: {
+            kind: "special_value",
+            args: { label: AxisSelection.disable },
+          }
+        }
+      }]
+    };
+    expect(getLocationState(step)).toEqual({
+      location: undefined,
+      locationSelection: undefined,
     });
   });
 });

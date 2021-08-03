@@ -11,7 +11,6 @@ import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { Log } from "farmbot/dist/resources/api_resources";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -217,7 +216,7 @@ describe("<Logs />", () => {
     p.bot.hardware.informational_settings.controller_version = "1.2.3";
     p.logs[0].body.major_version = 1;
     p.logs[0].body.minor_version = 2;
-    p.logs[0].body["patch_version" as keyof Log] = 3 as never;
+    p.logs[0].body.patch_version = 3;
     const wrapper = mount(<Logs {...p} />);
     expect(wrapper.html()).toContain("fa-check");
     expect(wrapper.text()).toContain("message 1");
@@ -229,7 +228,7 @@ describe("<Logs />", () => {
     p.bot.hardware.informational_settings.controller_version = "1.2.3";
     p.logs[0].body.major_version = 1;
     p.logs[0].body.minor_version = 2;
-    p.logs[0].body["patch_version" as keyof Log] = 3 as never;
+    p.logs[0].body.patch_version = 3;
     const wrapper = mount(<Logs {...p} />);
     wrapper.setState({ currentFbosOnly: true });
     expect(wrapper.html()).toContain("fa-check");

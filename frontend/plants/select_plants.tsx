@@ -38,7 +38,7 @@ import {
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { isBotOriginQuadrant } from "../farm_designer/interfaces";
 import { isActive } from "../tools/edit_tool";
-import { uniq } from "lodash";
+import { noop, uniq } from "lodash";
 import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { WeedInventoryItem } from "../weeds/weed_inventory_item";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
@@ -138,7 +138,7 @@ export class RawSelectPlants
         { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
         this.props.dispatch(destroy(uuid, true))
-          .then(() => { }, () => { });
+          .then(noop, noop);
       });
       history.push("/app/designer/plants");
     }

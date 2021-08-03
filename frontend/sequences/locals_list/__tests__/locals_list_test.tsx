@@ -1,5 +1,17 @@
+jest.mock("../../../api/crud", () => ({
+  overwrite: jest.fn(),
+}));
+
+let mockShouldDisplay = false;
+jest.mock("../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
-import { localListCallback, LocalsList } from "../locals_list";
+import {
+  generateNewVariableLabel,
+  localListCallback, LocalListCbProps, LocalsList, removeVariable,
+} from "../locals_list";
 import {
   ParameterApplication, Coordinate, ParameterDeclaration, VariableDeclaration,
 } from "farmbot";
@@ -13,6 +25,11 @@ import {
 import { LocalsListProps, AllowedVariableNodes } from "../locals_list_support";
 import { VariableNameSet } from "../../../resources/interfaces";
 import { LocationForm } from "../location_form";
+import { error } from "../../../toast/toast";
+import { overwrite } from "../../../api/crud";
+import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
+import { NOTHING_SELECTED } from "../handle_select";
+import { cloneDeep } from "lodash";
 
 describe("<LocalsList/>", () => {
   const coordinate: Coordinate = {
@@ -63,6 +80,23 @@ describe("<LocalsList/>", () => {
     const wrapper = shallow(<LocalsList {...p} />);
     expect(wrapper.find(LocationForm).length).toBe(0);
   });
+
+  it("adds new variable", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps();
+    p.variableData = variableData;
+    variableData["other"] = undefined;
+    p.hideGroups = true;
+    const wrapper = shallow(<LocalsList {...p} />);
+    wrapper.find(".add-variable").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "Location variable 1",
+        data_value: NOTHING_SELECTED,
+      }
+    });
+  });
 });
 
 describe("localListCallback()", () => {
@@ -92,12 +126,98 @@ describe("localListCallback()", () => {
         data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
       }
     });
-    const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
-    expect(dispatch)
-      .toHaveBeenCalledWith(action);
-    expect(dispatch)
-      .toHaveBeenCalledWith(expect.objectContaining({
-        payload: expect.objectContaining({ uuid: sequence.uuid })
-      }));
+    const newSequenceBody = cloneDeep(sequence.body);
+    newSequenceBody.args.locals.body = [
+      {
+        kind: "parameter_declaration",
+        args: {
+          label: "parent", default_value: {
+            kind: "coordinate", args: { x: 1, y: 2, z: 3 }
+          }
+        }
+      },
+      {
+        kind: "variable_declaration",
+        args: {
+          label: "foo",
+          data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+        }
+      },
+    ];
+    expect(overwrite).toHaveBeenCalledWith(sequence, newSequenceBody);
+  });
+});
+
+describe("removeVariable()", () => {
+  const fakeProps = (): LocalListCbProps => {
+    const sequence = fakeSequence();
+    sequence.body.args.locals = {
+      kind: "scope_declaration",
+      args: {},
+      body: [
+        {
+          kind: "parameter_declaration",
+          args: {
+            label: "label",
+            default_value: {
+              kind: "coordinate",
+              args: { x: 0, y: 0, z: 0 },
+            },
+          }
+        },
+      ]
+    };
+    return {
+      dispatch: jest.fn(),
+      sequence,
+    };
+  };
+
+  it("removes variable", () => {
+    const p = fakeProps();
+    p.sequence.body.args.locals.body = undefined;
+    removeVariable(p)("label");
+    const newSequenceBody = cloneDeep(p.sequence.body);
+    newSequenceBody.args.locals.body = [];
+    expect(overwrite).toHaveBeenCalledWith(p.sequence, newSequenceBody);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("doesn't remove variable", () => {
+    const p = fakeProps();
+    p.sequence.body.body = [{
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "x",
+            axis_operand: { kind: "identifier", args: { label: "label" } },
+          },
+        }],
+    }];
+    removeVariable(p)("label");
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "cannot be deleted"));
+    expect(overwrite).not.toHaveBeenCalled();
+  });
+});
+
+describe("generateNewVariableLabel()", () => {
+  it("generates new first label", () => {
+    expect(generateNewVariableLabel([])).toEqual("parent");
+  });
+
+  it("generates new label", () => {
+    const variables = Object.values(fakeVariableNameSet()).map(v => v?.celeryNode);
+    expect(generateNewVariableLabel(variables)).toEqual("Location variable 1");
+  });
+
+  it("generates new unique label", () => {
+    const variables = Object.values(fakeVariableNameSet()).map(v => v?.celeryNode);
+    variables.push(cloneDeep(variables[0]));
+    variables[1] && (variables[1].args.label = "Location variable 1");
+    expect(generateNewVariableLabel(variables)).toEqual("Location variable 2");
   });
 });

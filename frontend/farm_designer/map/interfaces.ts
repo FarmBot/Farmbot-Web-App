@@ -42,12 +42,14 @@ export interface GardenMapLegendProps {
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
+  showSoilInterpolationMap: boolean;
   showWeeds: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
   showImages: boolean;
   showZones: boolean;
   showSensorReadings: boolean;
+  showMoistureInterpolationMap: boolean;
   hasSensorReadings: boolean;
   dispatch: Function;
   timeSettings: TimeSettings;
@@ -147,7 +149,7 @@ export interface MapBackgroundProps {
 export interface GridProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
-  onClick(): void;
+  onClick(e: React.MouseEvent<SVGElement>): void;
   onMouseDown(e: React.MouseEvent<SVGElement>): void;
 }
 
@@ -183,7 +185,6 @@ export enum Mode {
   clickToAdd = "clickToAdd",
   editPlant = "editPlant",
   addPlant = "addPlant",
-  moveTo = "moveTo",
   locationInfo = "locationInfo",
   points = "points",
   weeds = "weeds",
