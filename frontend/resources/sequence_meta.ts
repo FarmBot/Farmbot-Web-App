@@ -66,8 +66,8 @@ export const maybeFindVariable = (
   uuid ? findVariableByName(resources, uuid, label) : undefined;
 
 /** Add "Location variable - " prefix to string. */
-export const withPrefix = (label: string) =>
-  `${t("Location variable")} - ${label}`;
+export const withPrefix = (label: string, info: string) =>
+  `${label == "parent" ? t("Location variable") : label} - ${info}`;
 
 interface DetermineVarDDILabelProps {
   label: string;
@@ -83,12 +83,12 @@ export const determineVarDDILabel =
     const variable = maybeFindVariable(label, resources, uuid);
     if (variable) {
       if (variable.celeryNode.kind === "parameter_declaration") {
-        return withPrefix(t("Externally defined"));
+        return withPrefix(label, t("Externally defined"));
       }
       if (variable.celeryNode.kind !== "variable_declaration") {
-        return withPrefix(t("Select a location"));
+        return withPrefix(label, t("Select a location"));
       }
-      return withPrefix(variable.dropdown.label);
+      return withPrefix(label, variable.dropdown.label);
     }
     return t("Add new");
   };

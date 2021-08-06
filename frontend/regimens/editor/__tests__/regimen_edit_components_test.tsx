@@ -15,7 +15,7 @@ jest.mock("../../../history", () => ({
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  RegimenNameInput, RegimenButtonGroup, OpenSchedulerButton,
+  RegimenButtonGroup, OpenSchedulerButton,
   editRegimenVariables,
   RegimenColorPicker,
 } from "../regimen_edit_components";
@@ -31,18 +31,6 @@ import { cloneDeep } from "lodash";
 const fakeProps = (): RegimenProps => ({
   regimen: fakeRegimen(),
   dispatch: jest.fn(),
-});
-
-describe("<RegimenNameInput />", () => {
-  it("calls dispatch", () => {
-    const p = fakeProps();
-    p.regimen.body.name = "";
-    const wrapper = shallow(<RegimenNameInput {...p} />);
-    wrapper.find("input").simulate("change", {
-      currentTarget: { value: "foo" }
-    });
-    expect(editRegimen).toHaveBeenCalledWith(p.regimen, { name: "foo" });
-  });
 });
 
 describe("<RegimenColorPicker />", () => {

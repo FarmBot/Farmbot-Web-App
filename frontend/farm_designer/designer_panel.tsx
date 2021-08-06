@@ -37,6 +37,7 @@ interface DesignerPanelHeaderProps {
   panel?: Panel;
   panelColor?: PanelColor;
   title?: string;
+  titleElement?: JSX.Element;
   blackText?: boolean;
   description?: string;
   descriptionElement?: JSX.Element;
@@ -68,6 +69,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
         <span className={`title ${textColor}-text`}>
           {t(props.title)}
         </span>}
+      {props.titleElement}
       {props.children}
     </div>
 

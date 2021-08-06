@@ -14,6 +14,7 @@ import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
 import { isTaggedRegimen } from "../../resources/tagged_resources";
 import { Content } from "../../constants";
 import { ActiveEditor } from "./active_editor";
+import { ResourceTitle } from "../../sequences/panel/editor";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -29,7 +30,10 @@ export class RawDesignerRegimenEditor
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Regimens}
-        title={this.props.current?.body.name || t("No Regimen selected")}
+        titleElement={<ResourceTitle
+          key={regimen?.body.name}
+          resource={regimen}
+          dispatch={this.props.dispatch} />}
         backTo={"/app/designer/regimens"} />
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper

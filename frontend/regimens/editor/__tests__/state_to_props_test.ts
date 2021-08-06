@@ -92,7 +92,7 @@ describe("mapStateToProps()", () => {
       day: "1",
       items: [expect.objectContaining({
         item: reg.body.regimen_items[0],
-        sortKey: 1000, variable: "variable"
+        sortKey: 1000, variables: ["variable"],
       })]
     }]);
   });

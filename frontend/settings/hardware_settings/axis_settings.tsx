@@ -97,6 +97,7 @@ export function AxisSettings(props: AxisSettingsProps) {
       <BooleanMCUInputGroup {...commonProps}
         label={DeviceSetting.stopAtHome}
         tooltip={ToolTips.STOP_AT_HOME}
+        advanced={true}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
         z={"movement_stop_at_home_z"} />
@@ -105,6 +106,7 @@ export function AxisSettings(props: AxisSettingsProps) {
         tooltip={ToolTips.STOP_AT_MAX}
         grayscale={axisLengthDisabled}
         disabledBy={settingRequiredLabel([DeviceSetting.axisLength])}
+        advanced={true}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
         z={"movement_stop_at_max_z"} />

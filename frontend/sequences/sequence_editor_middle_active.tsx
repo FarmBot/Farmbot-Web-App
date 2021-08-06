@@ -113,6 +113,7 @@ export const SequenceBtnGroup = ({
   menuOpen,
   getWebAppConfigValue,
   toggleViewSequenceCeleryScript,
+  viewCeleryScript,
   visualized,
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
@@ -125,6 +126,37 @@ export const SequenceBtnGroup = ({
       resources={resources}
       menuOpen={menuOpen}
       dispatch={dispatch} />
+    <div className={"settings-menu-button"}>
+      <Popover position={Position.BOTTOM_RIGHT}>
+        <i className="fa fa-gear" title={t("settings")} />
+        <SequenceSettingsMenu
+          dispatch={dispatch}
+          getWebAppConfigValue={getWebAppConfigValue} />
+      </Popover>
+    </div>
+    {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
+      <i className={`fa fa-code ${viewCeleryScript ? "enabled" : ""} step-control`}
+        title={t("toggle celery script view")}
+        onClick={toggleViewSequenceCeleryScript} />}
+    <ColorPicker
+      current={sequence.body.color}
+      onChange={color =>
+        editCurrentSequence(dispatch, sequence, { color })} />
+    <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
+      className={[
+        "fa",
+        "fa-thumb-tack",
+        sequence.body.pinned ? "pinned" : "",
+      ].join(" ")}
+      onClick={() => dispatch(pinSequenceToggle(sequence))} />
+    {inDesigner() &&
+      <i className={`fa fa-eye${visualized ? "" : "-slash"}`}
+        title={visualized ? t("unvisualize") : t("visualize")}
+        onClick={() =>
+          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
+    <i className={"fa fa-copy"}
+      title={t("copy sequence")}
+      onClick={() => dispatch(copySequence(sequence))} />
     <i className={"fa fa-trash"}
       title={t("delete sequence")}
       onClick={() => {
@@ -134,37 +166,6 @@ export const SequenceBtnGroup = ({
         dispatch(destroy(sequence.uuid, force))
           .then(() => push(sequencesUrlBase()));
       }} />
-    <i className={"fa fa-copy"}
-      title={t("copy sequence")}
-      onClick={() => dispatch(copySequence(sequence))} />
-    {inDesigner() &&
-      <i className={`fa fa-eye${visualized ? "" : "-slash"}`}
-        title={visualized ? t("unvisualize") : t("visualize")}
-        onClick={() =>
-          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
-    <div className={"settings-menu-button"}>
-      <Popover position={Position.BOTTOM_RIGHT}>
-        <i className="fa fa-gear" />
-        <SequenceSettingsMenu
-          dispatch={dispatch}
-          getWebAppConfigValue={getWebAppConfigValue} />
-      </Popover>
-    </div>
-    {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
-      <i className={"fa fa-code step-control"}
-        title={t("toggle celery script view")}
-        onClick={toggleViewSequenceCeleryScript} />}
-    <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
-      className={[
-        "fa",
-        "fa-thumb-tack",
-        sequence.body.pinned ? "pinned" : "",
-      ].join(" ")}
-      onClick={() => dispatch(pinSequenceToggle(sequence))} />
-    <ColorPicker
-      current={sequence.body.color}
-      onChange={color =>
-        editCurrentSequence(dispatch, sequence, { color })} />
   </div>;
 
 export const SequenceName = ({ dispatch, sequence }: {
@@ -193,9 +194,11 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       getWebAppConfigValue={props.getWebAppConfigValue}
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
+      viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
       menuOpen={props.menuOpen} />
-    <SequenceName {...sequenceAndDispatch} />
+    {props.showName &&
+      <SequenceName {...sequenceAndDispatch} />}
     <ErrorBoundary>
       <LocalsList
         variableData={variableData}
@@ -253,6 +256,7 @@ export class SequenceEditorMiddleActive extends
     const { dispatch, sequence } = this.props;
     return <div className="sequence-editor-content">
       <SequenceHeader
+        showName={this.props.showName}
         dispatch={this.props.dispatch}
         sequence={sequence}
         resources={this.props.resources}
@@ -263,6 +267,7 @@ export class SequenceEditorMiddleActive extends
         toggleViewSequenceCeleryScript={() => this.setState({
           viewSequenceCeleryScript: !this.state.viewSequenceCeleryScript
         })}
+        viewCeleryScript={this.state.viewSequenceCeleryScript}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         visualized={this.props.visualized}
         menuOpen={this.props.menuOpen} />

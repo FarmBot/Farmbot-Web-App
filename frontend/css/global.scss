@@ -793,30 +793,33 @@ ul {
 }
 
 .button-group {
-  margin: 1rem 0 1rem;
-  float: right;
+  display: inline-block;
+  margin: 1rem 0 -1rem;
+  width: 100%;
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
-  .run-btn,
   .save-btn {
-    margin-top: 0;
+    margin-left: 1rem;
   }
   .settings-menu-button {
     margin-right: 1rem;
     margin-top: 0.15rem;
-    line-height: 2.75rem;
   }
   .fa {
-    margin: 0 0.5rem;
+    margin: 0 1rem;
+    line-height: 2rem;
+    float: right;
   }
   .fa-code {
-    margin-right: 1rem;
     font-weight: bold;
-    line-height: 0.9rem;
+    color: $gray;
+    &.enabled {
+      color: $dark_gray;
+    }
   }
   .fa-trash {
-    color: $dark_red;
+    color: $darkest_red;
   }
   .fa-clone,
   .fa-copy {
@@ -829,8 +832,8 @@ ul {
     color: $gray;
   }
   .color-picker {
-    display: inline-block;
     margin: 0 0.5rem;
+    float: right;
     vertical-align: middle;
     .saucer {
       height: 1.5rem;

@@ -18,6 +18,7 @@ export class SequenceEditorMiddle
       title={t("No Sequence selected.")}
       text={Content.NO_SEQUENCE_SELECTED}>
       {sequence && <SequenceEditorMiddleActive
+        showName={true}
         dispatch={this.props.dispatch}
         sequence={sequence}
         resources={this.props.resources}

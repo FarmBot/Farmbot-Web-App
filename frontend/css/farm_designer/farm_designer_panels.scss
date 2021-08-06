@@ -2179,6 +2179,12 @@
 }
 
 .designer-sequence-editor-panel {
+  .panel-header {
+    input {
+      margin: 1rem;
+      width: 84%;
+    }
+  }
   .panel-content {
     .add-command-button-container {
       display: block;
@@ -2220,6 +2226,12 @@
 }
 
 .designer-regimen-editor-panel {
+  .panel-header {
+    input {
+      margin: 1rem;
+      width: 84%;
+    }
+  }
   .title {
     width: 45%;
   }
