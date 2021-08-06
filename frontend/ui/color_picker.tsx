@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Popover, Position } from "@blueprintjs/core";
-import { Saucer } from "../ui/index";
+import { Saucer } from "../ui";
 import { ResourceColor } from "../interfaces";
 import { colors } from "../util";
 import { t } from "../i18next_wrapper";
@@ -47,13 +47,17 @@ export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
 export class ColorPicker extends React.Component<ColorPickerProps, {}> {
 
   public render() {
+    const classes = [
+      "icon-saucer fa",
+      this.props.saucerIcon,
+      this.props.current,
+    ];
     return <Popover className="color-picker"
       position={this.props.position || Position.BOTTOM}
       popoverClassName="colorpicker-menu gray">
       {this.props.saucerIcon
-        ? <i className={`icon-saucer fa ${this.props.saucerIcon} ${
-          this.props.current}`} />
-        : <Saucer color={this.props.current} />}
+        ? <i className={classes.join(" ")} title={t("select color")} />
+        : <Saucer color={this.props.current} title={t("select color")} />}
       <ColorPickerCluster
         onChange={this.props.onChange}
         current={this.props.current}

@@ -39,4 +39,9 @@ describe("submitOwnershipChange()", () => {
     });
     expect(error).toHaveBeenCalledWith("Bad username or password");
   });
+
+  it("pops a toast when things go wrong: missing fields", () => {
+    submitOwnershipChange({ email: "", password: "", open: true });
+    expect(error).toHaveBeenCalledWith("Bad username or password");
+  });
 });

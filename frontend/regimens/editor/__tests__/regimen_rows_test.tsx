@@ -38,7 +38,7 @@ describe("<RegimenRows />", () => {
           item: {
             sequence_id: 0, time_offset: 1000
           },
-          variable: undefined,
+          variables: [undefined],
         }]
       }],
       dispatch: jest.fn(),
@@ -67,16 +67,16 @@ describe("<RegimenRows />", () => {
   it("shows location variable label: coordinate", () => {
     const p = fakeProps();
     p.calendar[0].items[0].regimen.body.body = [testVariable];
-    p.calendar[0].items[0].variable = testVariable.args.label;
+    p.calendar[0].items[0].variables = [testVariable.args.label];
     const wrapper = mount(<RegimenRows {...p} />);
     expect(wrapper.find(".regimen-event-variable").text())
-      .toEqual("Location variable - Coordinate (1, 2, 3)");
+      .toEqual("variable - Coordinate (1, 2, 3)");
   });
 
   it("doesn't show location variable label", () => {
     const p = fakeProps();
     p.calendar[0].items[0].regimen.body.body = [];
-    p.calendar[0].items[0].variable = "variable";
+    p.calendar[0].items[0].variables = ["variable"];
     const wrapper = mount(<RegimenRows {...p} />);
     expect(wrapper.find(".regimen-event-variable").length).toEqual(0);
   });

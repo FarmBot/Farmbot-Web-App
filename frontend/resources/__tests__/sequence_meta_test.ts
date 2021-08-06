@@ -94,7 +94,7 @@ describe("determineDropdown", () => {
         data_value: { kind: "identifier", args: { label: "variable" } }
       }
     }, ri, "sequence uuid");
-    expect(r.label).toBe("Location variable - Select a location");
+    expect(r.label).toBe("variable - Select a location");
     expect(r.value).toBe("?");
   });
 
@@ -259,13 +259,13 @@ describe("determineVarDDILabel()", () => {
   });
 
   it("returns 'select location' variable label", () => {
-    const varData = fakeVariableNameSet("variable");
+    const varData = fakeVariableNameSet("parent");
     const data = Object.values(varData)[0];
     data && (data.celeryNode = NOTHING_SELECTED);
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
     const label = determineVarDDILabel({
-      label: "variable", resources: ri, uuid: "sequence uuid"
+      label: "parent", resources: ri, uuid: "sequence uuid"
     });
     expect(label).toEqual("Location variable - Select a location");
   });
@@ -286,7 +286,7 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "variable", resources: ri, uuid: "sequence uuid"
     });
-    expect(label).toEqual("Location variable - Externally defined");
+    expect(label).toEqual("variable - Externally defined");
   });
 
   it("returns variable label", () => {
@@ -298,6 +298,6 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "variable", resources: ri, uuid: "sequence uuid"
     });
-    expect(label).toEqual("Location variable - variable");
+    expect(label).toEqual("variable - variable");
   });
 });

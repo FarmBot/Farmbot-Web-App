@@ -22,7 +22,7 @@ describe("<InputLengthIndicator />", () => {
     p.field = "url";
     p.value = "url";
     const wrapper = mount(<InputLengthIndicator {...p} />);
-    expect(wrapper.text()).toContain("5/1500");
+    expect(wrapper.text()).toContain("5/3000");
     expect(wrapper.find("span").hasClass("over")).toBeFalsy();
   });
 

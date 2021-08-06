@@ -87,6 +87,7 @@ describe("<SequenceEditorMiddleActive />", () => {
       farmwareData: fakeFarmwareData(),
       getWebAppConfigValue: jest.fn(),
       menuOpen: undefined,
+      showName: true,
     };
   };
 
@@ -291,6 +292,7 @@ describe("<SequenceBtnGroup />", () => {
     getWebAppConfigValue: jest.fn(),
     toggleViewSequenceCeleryScript: jest.fn(),
     menuOpen: undefined,
+    viewCeleryScript: true,
   });
 
   it("edits color", () => {

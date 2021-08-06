@@ -6,7 +6,7 @@ export interface InputLengthIndicatorProps {
   value: string;
 }
 
-const DEFAULT_LENGTH_LIMIT = 1500;
+const DEFAULT_LENGTH_LIMIT = 3000;
 
 const FIELD_LENGTH_LIMIT_LOOKUP: Partial<Record<LegalArgString, number>> = {
   lua: DEFAULT_LENGTH_LIMIT,

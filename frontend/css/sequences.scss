@@ -69,7 +69,7 @@
   }
   .fa-thumb-tack {
     color: $placeholder_gray;
-    line-height: 3rem;
+    line-height: 2rem;
     transform: rotate(45deg);
     &.pinned {
       transform: rotate(0deg);
@@ -111,6 +111,7 @@
       .fa-trash {
         float: right;
         margin-left: 1rem;
+        margin-right: 1.75rem;
         color: $darkest_red;
       }
       .fa-caret-down,
@@ -138,16 +139,25 @@
     max-width: 30rem;
     padding: 1rem;
     background: $off_white;
+    transition: 0.2s ease;
+    p {
+      transition: 0.2s ease;
+    }
     &:hover {
       background: darken($off_white, 5%);
+      p {
+        color: $placeholder_gray;
+      }
+      border-color: $medium_light_gray;
     }
     text-align: left;
     p {
       margin: auto;
       padding: 1rem;
       font-size: 1.2rem;
-      color: $placeholder_gray;
+      color: $gray;
       font-weight: bold;
+      text-transform: uppercase;
     }
   }
 }

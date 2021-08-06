@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { AdditionalMenu } from "../additional_menu";
 
@@ -35,6 +35,6 @@ describe("AdditionalMenu", () => {
     const wrapper = shallow(<AdditionalMenu
       logout={jest.fn()}
       close={jest.fn()} />);
-    wrapper.find("Link").at(2).simulate("click");
+    wrapper.find("Link").at(3).simulate("click");
   });
 });

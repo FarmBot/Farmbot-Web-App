@@ -21,10 +21,18 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Logs")}
       </Link>
     </div>
-    <Link to="/app/designer/help" onClick={props.close("accountMenuOpen")}>
-      <i className="fa fa-question-circle" />
-      {t("Help")}
-    </Link>
+    <div className={"setup-link"}>
+      <Link to="/app/designer/setup" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-magic" />
+        {t("Setup")}
+      </Link>
+    </div>
+    <div className={"help-link"}>
+      <Link to="/app/designer/help" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-question-circle" />
+        {t("Help")}
+      </Link>
+    </div>
     <div className={"logout-link"}>
       <a onClick={props.logout} title={t("logout")}>
         <img width={12} height={12} src={iconFile(Icon.logout)} />

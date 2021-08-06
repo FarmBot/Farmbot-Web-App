@@ -10,7 +10,8 @@ jest.mock("../../../history", () => ({
 import React from "react";
 import { mount } from "enzyme";
 import {
-  RawDesignerSequenceEditor as DesignerSequenceEditor,
+  RawDesignerSequenceEditor as DesignerSequenceEditor, ResourceTitle,
+  ResourceTitleProps,
 } from "../editor";
 import { SequencesProps } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
@@ -65,5 +66,20 @@ describe("<DesignerSequenceEditor />", () => {
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     wrapper.find("a").first().simulate("click");
     expect(push).toHaveBeenCalledWith("/app/sequences/fake");
+  });
+});
+
+describe("<ResourceTitle />", () => {
+  const fakeProps = (): ResourceTitleProps => ({
+    dispatch: jest.fn(),
+    resource: fakeSequence(),
+  });
+
+  it("changes name", () => {
+    const wrapper = mount(<ResourceTitle {...fakeProps()} />);
+    wrapper.find("span").first().simulate("click");
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "abc" } });
+    wrapper.find("input").first().simulate("blur");
   });
 });

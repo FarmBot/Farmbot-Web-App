@@ -18,6 +18,8 @@ import {
 } from "../set_active_sequence_by_name";
 import { push } from "../../history";
 import { urlFriendly } from "../../util";
+import { edit } from "../../api/crud";
+import { TaggedRegimen, TaggedSequence } from "farmbot";
 
 export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 
@@ -32,7 +34,10 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Sequences}
-        title={this.props.sequence?.body.name || t("No Sequence selected")}
+        titleElement={<ResourceTitle
+          key={this.props.sequence?.body.name}
+          resource={this.props.sequence}
+          dispatch={this.props.dispatch} />}
         backTo={"/app/designer/sequences"}>
         {sequence && window.innerWidth > 450 &&
           <a className={"right-button"}
@@ -49,6 +54,7 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
           title={t("No Sequence selected.")}
           text={Content.NO_SEQUENCE_SELECTED}>
           {this.props.sequence && <SequenceEditorMiddleActive
+            showName={false}
             dispatch={this.props.dispatch}
             sequence={this.props.sequence}
             resources={this.props.resources}
@@ -64,6 +70,32 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
     </DesignerPanel>;
   }
 }
+
+export interface ResourceTitleProps {
+  dispatch: Function;
+  resource: TaggedSequence | TaggedRegimen | undefined;
+}
+
+export const ResourceTitle = (props: ResourceTitleProps) => {
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [nameValue, setNameValue] = React.useState(props.resource?.body.name);
+  return isEditing
+    ? <input
+      value={nameValue}
+      autoFocus={true}
+      onBlur={() => {
+        setIsEditing(false);
+        props.resource && props.dispatch(edit(props.resource, { name: nameValue }));
+      }}
+      onChange={e => {
+        setNameValue(e.currentTarget.value);
+      }} />
+    : <span className={"title white-text"}
+      title={t("click to edit")}
+      onClick={() => setIsEditing(true)}>
+      {props.resource?.body.name || t("No Sequence selected")}
+    </span>;
+};
 
 export const DesignerSequenceEditor =
   connect(mapStateToProps)(RawDesignerSequenceEditor);

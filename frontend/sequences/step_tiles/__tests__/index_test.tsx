@@ -241,7 +241,7 @@ describe("renderCeleryNode()", () => {
           lua: "lua",
         }
       },
-      expected: "Lua5/1500If test failsRecover and continue"
+      expected: "Lua5/3000if test failsRecover and continue"
         + "Recovery sequenceSelect a sequence",
     },
     {

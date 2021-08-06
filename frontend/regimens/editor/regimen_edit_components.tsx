@@ -1,6 +1,6 @@
 import React from "react";
 import { RegimenProps } from "../interfaces";
-import { Row, Col, ColorPicker, SaveBtn } from "../../ui";
+import { ColorPicker, SaveBtn } from "../../ui";
 import { editRegimen } from "../actions";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
@@ -12,20 +12,6 @@ import {
 import { overwrite, save, destroy } from "../../api/crud";
 import { CopyButton } from "./copy_button";
 import { push } from "../../history";
-
-export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
-  return <Row>
-    <Col xs={12}>
-      <input
-        placeholder={t("Regimen Name")}
-        type="text"
-        name="name"
-        onChange={e =>
-          dispatch(editRegimen(regimen, { name: e.currentTarget.value }))}
-        value={regimen.body.name || ""} />
-    </Col>
-  </Row>;
-}
 
 export const RegimenColorPicker = ({ regimen, dispatch }: RegimenProps) =>
   <ColorPicker
@@ -46,12 +32,12 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
     <SaveBtn
       status={regimen.specialStatus}
       onClick={() => dispatch(save(regimen.uuid))} />
+    <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
     <CopyButton regimen={regimen} dispatch={dispatch} />
     <i className={"fa fa-trash"}
       title={t("delete regimen")}
       onClick={() => dispatch(destroy(regimen.uuid))
         .then(() => push("/app/designer/regimens/"))} />
-    <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
   </div>;
 };
 

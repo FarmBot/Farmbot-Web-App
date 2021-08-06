@@ -175,6 +175,15 @@ describe("removeVariable()", () => {
 
   it("removes variable", () => {
     const p = fakeProps();
+    removeVariable(p)("label");
+    const newSequenceBody = cloneDeep(p.sequence.body);
+    newSequenceBody.args.locals.body = [];
+    expect(overwrite).toHaveBeenCalledWith(p.sequence, newSequenceBody);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("no variables to remove", () => {
+    const p = fakeProps();
     p.sequence.body.args.locals.body = undefined;
     removeVariable(p)("label");
     const newSequenceBody = cloneDeep(p.sequence.body);

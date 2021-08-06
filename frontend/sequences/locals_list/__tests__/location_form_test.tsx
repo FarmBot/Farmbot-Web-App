@@ -99,7 +99,11 @@ describe("<LocationForm />", () => {
       label: "Externally defined", value: 0
     });
     expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT("Externally defined")]));
+      .toEqual(expect.arrayContaining([{
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      }]));
   });
 
   it("shows add new variable option", () => {

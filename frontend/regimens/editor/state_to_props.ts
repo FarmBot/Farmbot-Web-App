@@ -80,7 +80,7 @@ const createRows = (
   (item: RegimenItem): RegimenItemCalendarRow => {
     const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
-    const variable = getParameterLabel(sequence);
+    const variables = getParameterLabels(sequence);
     const { time_offset } = item;
     const d = moment.duration(time_offset);
     const { name } = sequence.body;
@@ -89,12 +89,12 @@ const createRows = (
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;
     return {
-      name, hhmm, color, day, dispatch, regimen, item, variable,
+      name, hhmm, color, day, dispatch, regimen, item, variables,
       sortKey: time_offset
     };
   };
 
-const getParameterLabel = (sequence: TaggedSequence): string | undefined =>
+const getParameterLabels = (sequence: TaggedSequence): (string | undefined)[] =>
   (sequence.body.args.locals.body || [])
     .filter(variable => variable.kind === "parameter_declaration")
-    .map(variable => variable.args.label)[0];
+    .map(variable => variable.args.label);
