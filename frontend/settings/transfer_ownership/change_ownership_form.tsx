@@ -21,9 +21,10 @@ interface ChangeOwnershipFormState {
 
 export function submitOwnershipChange(input: ChangeOwnershipFormState) {
   const { email, password } = input;
-  const p = { email, password, device: getDevice() };
   const ok = () => success(t("Received change of ownership."));
   const no = () => error(t("Bad username or password"));
+  if (!email || !password) { return no(); }
+  const p = { email, password, device: getDevice() };
   return transferOwnership(p).then(ok, no);
 }
 
@@ -40,7 +41,7 @@ export class ChangeOwnershipForm
         title={t(DeviceSetting.changeOwnership)}
         onClick={() => this.setState({ open: !this.state.open })} />
       <Collapse isOpen={!!this.state.open}>
-        <div className={"change-ownership-form"}>
+        <form className={"change-ownership-form"}>
           <Row />
           <Row />
           <Row>
@@ -110,7 +111,7 @@ export class ChangeOwnershipForm
               {t("submit")}
             </button>
           </Row>
-        </div>
+        </form>
       </Collapse>
     </Highlight>;
   }

@@ -67,6 +67,7 @@ export interface SequenceEditorMiddleProps extends SequencePropsBase {
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
+  showName: boolean;
 }
 
 export interface ActiveMiddleState {
@@ -79,11 +80,14 @@ export interface SequenceHeaderProps extends SequencePropsBase {
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
   toggleViewSequenceCeleryScript: () => void;
+  viewCeleryScript: boolean;
+  showName: boolean;
 }
 
 export interface SequenceBtnGroupProps extends SequencePropsBase {
   sequence: TaggedSequence;
   toggleViewSequenceCeleryScript(): void;
+  viewCeleryScript: boolean;
 }
 
 export interface SequenceSettingsMenuProps {

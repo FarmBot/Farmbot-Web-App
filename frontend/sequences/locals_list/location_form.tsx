@@ -52,6 +52,7 @@ export const LocationForm =
     });
     const variableListItems = generateVariableListItems({
       allowedVariableNodes, bodyVariables, resources, sequenceUuid,
+      variable: variable.celeryNode,
     });
     const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, [], variableListItems,
@@ -119,12 +120,25 @@ interface GenerateVariableListItemsProps {
   bodyVariables: VariableNode[] | undefined;
   resources: ResourceIndex;
   sequenceUuid: UUID;
+  variable: VariableNode;
 }
 
 const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
   const { allowedVariableNodes, bodyVariables, resources, sequenceUuid } = props;
   const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+  if (headerForm) {
+    return [{
+      value: props.variable.args.label,
+      label: determineVarDDILabel({
+        label: props.variable.args.label,
+        resources,
+        uuid: sequenceUuid,
+        forceExternal: headerForm,
+      }),
+      headingId: "Variable",
+    }];
+  }
   const newVarLabel = generateNewVariableLabel(bodyVariables || []);
   if (!displayVariables) { return []; }
   const oldVariables = bodyVariables?.map(variable_ => ({
@@ -133,7 +147,6 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
       label: variable_.args.label,
       resources,
       uuid: sequenceUuid,
-      forceExternal: headerForm,
     }),
     headingId: "Variable",
   })) || [];
@@ -145,7 +158,6 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
         label: newVarLabel,
         resources,
         uuid: sequenceUuid,
-        forceExternal: headerForm,
       }),
       headingId: "Variable",
     }]

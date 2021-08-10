@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   RegimenItem, CalendarRow, RegimenItemCalendarRow,
 } from "../interfaces";
@@ -57,14 +57,20 @@ const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {
 };
 
 const DisplayVarValue = (props: DisplayVarValueProps) => {
-  const { variable, regimen } = props.row;
-  if (variable) {
-    const variableNode = reduceVariables(regimen.body.body)[variable];
-    if (variableNode) {
-      return <span className="regimen-event-variable">
-        {withPrefix(determineDropdown(variableNode, props.resources).label)}
-      </span>;
-    }
-  }
-  return <span />;
+  const { variables, regimen } = props.row;
+  return <div className={"regimen-item-variables"}>
+    {variables.map(variable => {
+      if (variable) {
+        const variableNode = reduceVariables(regimen.body.body)[variable];
+        if (variableNode) {
+          return <span key={variable}
+            className="regimen-event-variable">
+            {withPrefix(variable,
+              determineDropdown(variableNode, props.resources).label)}
+          </span>;
+        }
+      }
+      return <span key={"no-variable"} className={"no-regimen-variable"} />;
+    })}
+  </div>;
 };

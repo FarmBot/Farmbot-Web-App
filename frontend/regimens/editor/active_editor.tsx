@@ -1,7 +1,6 @@
 import React from "react";
 import {
-  RegimenNameInput, editRegimenVariables, RegimenButtonGroup,
-  OpenSchedulerButton,
+  editRegimenVariables, RegimenButtonGroup, OpenSchedulerButton,
 } from "./regimen_edit_components";
 import { ActiveEditorProps, ActiveEditorState } from "./interfaces";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
@@ -45,7 +44,6 @@ export class ActiveEditor
     return <div className="regimen-editor-content">
       <div id="regimen-editor-tools" className="regimen-editor-tools">
         <RegimenButtonGroup {...this.regimenProps} />
-        <RegimenNameInput {...this.regimenProps} />
         <ErrorBoundary>
           <this.LocalsList />
         </ErrorBoundary>

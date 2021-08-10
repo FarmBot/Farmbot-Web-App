@@ -30,12 +30,12 @@ describe("<ChangeOwnershipForm/>", () => {
 
   it("submits", () => {
     const wrapper = mount(<ChangeOwnershipForm />);
-    wrapper.setState({ open: true });
+    wrapper.setState({ open: true, email: "email", password: "password" });
     wrapper.find("button").simulate("click");
     expect(transferOwnership).toHaveBeenCalledWith({
       device: mockDevice,
-      email: "",
-      password: ""
+      email: "email",
+      password: "password",
     });
   });
 
