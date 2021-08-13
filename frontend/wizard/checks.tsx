@@ -29,7 +29,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
 import {
-  Checkbox, Col, docLinkClick, DropDownItem, FBSelect, Row, ToggleButton,
+  Checkbox, Col, docLink, docLinkClick, DropDownItem, FBSelect, Row, ToggleButton,
 } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
@@ -229,6 +229,12 @@ export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
     {t("Assembly documentation")}
   </a>;
 };
+
+export const NetworkRequirementsLink = () =>
+  <a href={docLink("for-it-security-professionals")}
+    target={"_blank"} rel={"noreferrer"}>
+    {t("FarmBot Network Requirements")}
+  </a>;
 
 export const FlashFirmware = (props: WizardStepComponentProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));

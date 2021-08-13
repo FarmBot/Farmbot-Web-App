@@ -35,6 +35,7 @@ import {
   CameraImageOrigin,
   MapOrientation,
   Tour,
+  NetworkRequirementsLink,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -91,6 +92,7 @@ export enum WizardStepSlug {
   model = "model",
   sdCard = "sdCard",
   assembled = "assembled",
+  networkPorts = "networkPorts",
   ethernetOption = "ethernetOption",
   power = "power",
   configuratorNetwork = "configuratorNetwork",
@@ -233,6 +235,15 @@ export const WIZARD_STEPS = (
           component: AssemblyDocs,
         },
       ],
+    },
+    {
+      section: WizardSectionSlug.connectivity,
+      slug: WizardStepSlug.networkPorts,
+      title: t("Open network ports"),
+      content: t(SetupWizardContent.NETWORK_PORTS),
+      component: NetworkRequirementsLink,
+      question: t(SetupWizardContent.NETWORK_PORTS_QUESTION),
+      outcomes: [],
     },
     ...(hasUTM(firmwareHardware)
       ? [{
