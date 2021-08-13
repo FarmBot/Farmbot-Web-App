@@ -2,11 +2,10 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { Xyz } from "farmbot";
 import {
-  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem,
+  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem, Popover,
 } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { Popover } from "@blueprintjs/core";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { isNumber } from "lodash";
 import {
@@ -148,13 +147,12 @@ export interface UseCurrentLocationProps {
 
 export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
   <Col xs={1} className="use-current-location">
-    <Popover>
-      <i className="fa fa-question-circle help-icon" />
-      <div className="current-location-info">
+    <Popover
+      target={<i className="fa fa-question-circle help-icon" />}
+      content={<div className="current-location-info">
         <label>{t("Use current location")}</label>
         <p>{positionButtonTitle(props.botPosition)}</p>
-      </div>
-    </Popover>
+      </div>} />
     <button
       className="blue fb-button"
       title={positionButtonTitle(props.botPosition)}

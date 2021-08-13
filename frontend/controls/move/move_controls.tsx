@@ -1,5 +1,5 @@
 import React from "react";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { getStatus } from "../../connectivity/reducer_support";
 import { isBotOnlineFromState, MustBeOnline } from "../../devices/must_be_online";
 import { BooleanSetting } from "../../session_keys";
@@ -9,6 +9,7 @@ import { BotPositionRows } from "./bot_position_rows";
 import { JogControlsGroup } from "./jog_controls_group";
 import { MotorPositionPlot } from "./motor_position_plot";
 import { MoveWidgetSettingsMenu } from "./settings_menu";
+import { Popover } from "../../ui";
 
 export const MoveControls = (props: MoveControlsProps) => {
   const { location_data, informational_settings } = props.bot.hardware;
@@ -16,13 +17,12 @@ export const MoveControls = (props: MoveControlsProps) => {
   const botOnline = isBotOnlineFromState(props.bot);
   const { busy, locked } = props.bot.hardware.informational_settings;
   return <div className={"move"}>
-    <Popover position={Position.LEFT_TOP} className={"move-settings"}>
-      <i className="fa fa-gear" />
-      <MoveWidgetSettingsMenu
+    <Popover position={Position.LEFT_TOP} className={"move-settings"}
+      target={<i className="fa fa-gear" />}
+      content={<MoveWidgetSettingsMenu
         dispatch={props.dispatch}
         getConfigValue={props.getConfigValue}
-        firmwareHardware={props.firmwareHardware} />
-    </Popover>
+        firmwareHardware={props.firmwareHardware} />} />
     <MustBeOnline
       networkState={getStatus(props.bot.connectivity.uptime["bot.mqtt"])}
       syncStatus={informational_settings.sync_status}>

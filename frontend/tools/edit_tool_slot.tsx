@@ -13,7 +13,7 @@ import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsEdit } from "./state_to_props";
 import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
 import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphics";
-import { Popover } from "@blueprintjs/core";
+import { Popover } from "../ui";
 
 export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {
@@ -50,11 +50,10 @@ export class RawEditToolSlot
         panel={Panel.Tools}>
         {toolSlot?.specialStatus == SpecialStatus.DIRTY &&
           this.state.saveError &&
-          <Popover className={"save-error"}>
-            <i className={"fa fa-exclamation-triangle"}
-              title={t("Unable to save changes.")} />
-            <p>{t("Unable to save changes.")}</p>
-          </Popover>}
+          <Popover className={"save-error"}
+            target={<i className={"fa fa-exclamation-triangle"}
+              title={t("Unable to save changes.")} />}
+            content={<p>{t("Unable to save changes.")}</p>} />}
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         {toolSlot

@@ -20,13 +20,17 @@ jest.mock("../../history", () => ({
 }));
 
 jest.mock("@blueprintjs/core", () => ({
-  Popover: jest.fn(p => <div>{p.children}</div>),
   Position: jest.fn(),
   PopoverInteractionKind: jest.fn(),
   Button: jest.fn(p => <button>{p.text}</button>),
   Classes: jest.fn(),
   MenuItem: jest.fn(),
   Alignment: jest.fn(),
+}));
+
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
 }));
 
 jest.mock("@blueprintjs/select", () => ({
@@ -474,10 +478,10 @@ describe("<FolderNameEditor />", () => {
 
   it("closes settings menu", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FolderNameEditor {...p} />);
+    const wrapper = mount(<FolderNameEditor {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(FolderButtonCluster).props().close();
+    wrapper.find(".fb-button.gray").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });

@@ -4,7 +4,7 @@ baseConfig.rootDir = "..";
 baseConfig.reporters.push([
   "jest-junit",
   {
-    outputDirectory: "test-results/jest"
+    outputDirectory: "/tmp/test-results/jest"
   }
 ]);
 

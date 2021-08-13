@@ -2,7 +2,7 @@ import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
-import { Row, Col } from "../ui";
+import { Row, Col, Popover } from "../ui";
 import { getPathArray, push } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
@@ -10,7 +10,7 @@ import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
 import { AdditionalMenu } from "./additional_menu";
 import { MobileMenu } from "./mobile_menu";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
 import { t } from "../i18next_wrapper";
 import { Connectivity } from "../devices/connectivity/connectivity";
@@ -76,13 +76,12 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         popoverClassName={"menu-popover"}
         position={Position.BOTTOM_RIGHT}
         isOpen={this.state.accountMenuOpen}
-        onClose={this.close("accountMenuOpen")}>
-        <div className="nav-name" data-title={firstName}
+        onClose={this.close("accountMenuOpen")}
+        target={<div className="nav-name" data-title={firstName}
           onClick={this.toggle("accountMenuOpen")}>
           {firstName}
-        </div>
-        <AdditionalMenu logout={this.logout} close={this.close} />
-      </Popover>
+        </div>}
+        content={<AdditionalMenu logout={this.logout} close={this.close} />} />
     </div>;
   }
 
@@ -96,15 +95,15 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       <ErrorBoundary>
         <Popover position={Position.BOTTOM_RIGHT}
           portalClassName={"connectivity-popover-portal"}
-          popoverClassName="connectivity-popover">
-          {window.innerWidth <= 450
+          popoverClassName="connectivity-popover"
+          target={window.innerWidth <= 450
             ? <DiagnosisSaucer {...data.flags}
               className={"nav connectivity-icon"} />
             : <div className={"connectivity-button"}>
               <p>{t("Connectivity")}</p>
               <DiagnosisSaucer {...data.flags} className={"nav"} />
             </div>}
-          <ErrorBoundary>
+          content={<ErrorBoundary>
             <Connectivity
               bot={this.props.bot}
               rowData={data.rowData}
@@ -115,8 +114,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
               alerts={this.props.alerts}
               apiFirmwareValue={this.props.apiFirmwareValue}
               timeSettings={this.props.timeSettings} />
-          </ErrorBoundary>
-        </Popover>
+          </ErrorBoundary>} />
       </ErrorBoundary>
     </div>;
   }

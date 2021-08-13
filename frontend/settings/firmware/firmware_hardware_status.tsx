@@ -1,5 +1,5 @@
 import React from "react";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import {
   FIRMWARE_CHOICES_DDI, isFwHardwareValue, boardType,
 } from "./firmware_hardware_support";
@@ -9,7 +9,7 @@ import { BotState } from "../../devices/interfaces";
 import { FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { Alert } from "farmbot";
-import { Help } from "../../ui";
+import { Help, Popover } from "../../ui";
 import { ToolTips } from "../../constants";
 
 export interface FirmwareHardwareStatusIconProps {
@@ -93,17 +93,16 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
   const { firmware_hardware } = props.bot.hardware.configuration;
   const status = props.apiFirmwareValue == firmware_hardware &&
     props.apiFirmwareValue == boardType(firmware_version);
-  return <Popover position={Position.TOP}>
-    <FirmwareHardwareStatusIcon
+  return <Popover position={Position.TOP}
+    target={<FirmwareHardwareStatusIcon
       firmwareHardware={firmware_hardware}
-      status={status} />
-    <FirmwareHardwareStatusDetails
+      status={status} />}
+    content={<FirmwareHardwareStatusDetails
       alerts={props.alerts}
       botOnline={props.botOnline}
       apiFirmwareValue={props.apiFirmwareValue}
       botFirmwareValue={firmware_hardware}
       mcuFirmwareValue={boardType(firmware_version)}
       timeSettings={props.timeSettings}
-      dispatch={props.dispatch} />
-  </Popover>;
+      dispatch={props.dispatch} />} />;
 };

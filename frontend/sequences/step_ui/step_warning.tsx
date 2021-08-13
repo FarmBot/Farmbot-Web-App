@@ -1,7 +1,8 @@
 import React from "react";
-import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
+import { Position, PopoverInteractionKind } from "@blueprintjs/core";
 import { Xyz } from "farmbot";
 import { t } from "../../i18next_wrapper";
+import { Popover } from "../../ui";
 
 interface StepWarningProps {
   warning: string;
@@ -30,14 +31,13 @@ export function StepWarning(props: StepWarningProps) {
     <Popover
       position={Position.RIGHT_TOP}
       interactionKind={PopoverInteractionKind.CLICK}
-      popoverClassName={"help"}>
-      <i className="fa fa-exclamation-triangle" />
-      <div className={"step-warning-text"}>
+      popoverClassName={"help"}
+      target={<i className="fa fa-exclamation-triangle" />}
+      content={<div className={"step-warning-text"}>
         {warningTitle()}
         <br />
         <br />
         {warning}
-      </div>
-    </Popover>
+      </div>} />
   </div>;
 }

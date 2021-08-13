@@ -1,6 +1,6 @@
 import React from "react";
 import { Help } from "../../ui/help";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { splice, remove, move } from "../step_tiles";
 import { push } from "../../history";
@@ -8,6 +8,7 @@ import { sequencesUrlBase } from "../../folders/component";
 import { urlFriendly } from "../../util";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { t } from "../../i18next_wrapper";
+import { Popover } from "../../ui";
 
 export interface StepIconBarProps {
   index: number;
@@ -24,13 +25,12 @@ export interface StepIconBarProps {
 
 export function StepUpDownButtonPopover(
   { onMove }: { onMove: (d: number) => () => void }) {
-  return <Popover position={Position.TOP} usePortal={false}>
-    <i title={t("move step")} className="fa fa-arrows-v" />
-    <div className={"step-up-down-arrows"}>
+  return <Popover position={Position.TOP} usePortal={false}
+    target={<i title={t("move step")} className="fa fa-arrows-v" />}
+    content={<div className={"step-up-down-arrows"}>
       <i className="fa fa-arrow-circle-up" onClick={onMove(-1)} />
       <i className="fa fa-arrow-circle-down" onClick={onMove(2)} />
-    </div>
-  </Popover>;
+    </div>} />;
 }
 
 export function StepIconGroup(props: StepIconBarProps) {

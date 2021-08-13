@@ -3,7 +3,6 @@ import { SyncStatus, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
 import { execSequence } from "../devices/actions";
-import { Popover } from "@blueprintjs/core";
 import { LocalsList } from "./locals_list/locals_list";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import {
@@ -14,6 +13,7 @@ import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
 import { warning } from "../toast/toast";
 import { forceOnline } from "../devices/must_be_online";
+import { Popover } from "../ui";
 
 /** Can't test without saving and syncing sequence. */
 const saveAndSyncWarning = () =>
@@ -150,9 +150,12 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
     const { menuOpen, sequence } = this.props;
     const isOpen = menuOpen == sequence.uuid;
     return <Popover className={"fb-button-popover-wrapper run-btn"} isOpen={isOpen}
-      popoverClassName="parameter-assignment-menu-popover">
-      <Test canTest={this.canTest} onClick={this.onClick} menuIsOpen={isOpen} />
-      {isParameterized(this.props.sequence.body) &&
+      popoverClassName="parameter-assignment-menu-popover"
+      target={<Test
+        canTest={this.canTest}
+        onClick={this.onClick}
+        menuIsOpen={isOpen} />}
+      content={isParameterized(this.props.sequence.body) ?
         <ParameterAssignmentMenu
           dispatch={this.props.dispatch}
           canTest={this.canTest}
@@ -160,7 +163,7 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
           varData={this.varData}
           editBodyVariables={this.editBodyVariables}
           bodyVariables={this.state.bodyVariables}
-          sequence={this.props.sequence} />}
-    </Popover>;
+          sequence={this.props.sequence} />
+        : undefined} />;
   }
 }

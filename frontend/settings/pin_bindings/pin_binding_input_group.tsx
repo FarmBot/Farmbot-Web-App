@@ -1,6 +1,6 @@
 import React from "react";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui";
-import { Popover, Position } from "@blueprintjs/core";
+import { Row, Col, FBSelect, DropDownItem, Popover } from "../../ui";
+import { Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
   PinBindingInputGroupProps,
@@ -168,22 +168,20 @@ export const PinNumberInputGroup = (props: {
     : undefined;
   return <Row>
     <Col xs={1}>
-      <Popover position={Position.TOP}>
-        <i className="fa fa-circle-o-notch" />
-        <BoxTopGpioDiagram
+      <Popover position={Position.TOP}
+        target={<i className="fa fa-circle-o-notch" />}
+        content={<BoxTopGpioDiagram
           boundPins={boundPins}
           setSelectedPin={setSelectedPin}
-          selectedPin={pinNumberInput} />
-      </Popover>
+          selectedPin={pinNumberInput} />} />
     </Col>
     <Col xs={1}>
-      <Popover position={Position.TOP}>
-        <i className="fa fa-th-large" />
-        <RpiGpioDiagram
+      <Popover position={Position.TOP}
+        target={<i className="fa fa-th-large" />}
+        content={<RpiGpioDiagram
           boundPins={boundPins}
           setSelectedPin={setSelectedPin}
-          selectedPin={pinNumberInput} />
-      </Popover>
+          selectedPin={pinNumberInput} />} />
     </Col>
     <Col xs={10}>
       <FBSelect

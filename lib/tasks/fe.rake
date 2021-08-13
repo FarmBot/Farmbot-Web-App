@@ -1,7 +1,10 @@
 PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
-EXCLUDE           = []
+EXCLUDE = [
+  "react", "react-dom", "react-test-renderer", # enzyme
+  "parcel", # @parcel/transformer-sass, @parcel/transformer-typescript-tsc
+]
 
 # Load package.json as JSON.
 def load_package_json()
