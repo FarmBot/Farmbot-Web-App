@@ -50,7 +50,7 @@ commands:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker-compose run web rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec/rspec.xml
+            sudo docker-compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
   jest-commands:
     steps:
       - run:
@@ -111,7 +111,7 @@ jobs:
       - lint-commands
       - jest-commands
       - store_test_results:
-          path: test-results
+          path: /tmp/test-results
       - coverage-commands
   test-api:
     executor: build-executor
@@ -119,7 +119,7 @@ jobs:
       - build-commands
       - rspec-commands
       - store_test_results:
-          path: test-results
+          path: /tmp/test-results
   run-linters:
     executor: build-executor
     steps:
@@ -136,4 +136,4 @@ jobs:
             circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
             sudo docker-compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js $(cat /tmp/tests-to-run)
       - store_test_results:
-          path: test-results
+          path: /tmp/test-results
