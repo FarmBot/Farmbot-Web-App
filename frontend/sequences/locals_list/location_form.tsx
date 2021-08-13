@@ -16,6 +16,7 @@ import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { Feature } from "../../devices/interfaces";
+import { betterCompact } from "../../util";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -51,7 +52,7 @@ export const LocationForm =
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
     const variableListItems = generateVariableListItems({
-      allowedVariableNodes, bodyVariables, resources, sequenceUuid,
+      allowedVariableNodes, resources, sequenceUuid,
       variable: variable.celeryNode,
     });
     const displayGroups = !hideGroups;
@@ -117,15 +118,17 @@ export const LocationForm =
 
 interface GenerateVariableListItemsProps {
   allowedVariableNodes: AllowedVariableNodes;
-  bodyVariables: VariableNode[] | undefined;
   resources: ResourceIndex;
   sequenceUuid: UUID;
   variable: VariableNode;
 }
 
 const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
-  const { allowedVariableNodes, bodyVariables, resources, sequenceUuid } = props;
+  const { allowedVariableNodes, resources, sequenceUuid } = props;
+  const variables = betterCompact(Object.values(
+    resources.sequenceMetas[sequenceUuid] || []).map(v => v?.celeryNode));
   const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
+  if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
   if (headerForm) {
     return [{
@@ -139,9 +142,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
       headingId: "Variable",
     }];
   }
-  const newVarLabel = generateNewVariableLabel(bodyVariables || []);
-  if (!displayVariables) { return []; }
-  const oldVariables = bodyVariables?.map(variable_ => ({
+  const oldVariables = variables.map(variable_ => ({
     value: variable_.args.label,
     label: determineVarDDILabel({
       label: variable_.args.label,
@@ -149,9 +150,10 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
       uuid: sequenceUuid,
     }),
     headingId: "Variable",
-  })) || [];
+  }));
+  const newVarLabel = generateNewVariableLabel(variables);
   const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
-    || !bodyVariables || bodyVariables.length < 1)
+    || variables.length < 1)
     ? [{
       value: newVarLabel,
       label: determineVarDDILabel({
