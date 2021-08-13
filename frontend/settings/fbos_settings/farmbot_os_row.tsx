@@ -1,7 +1,7 @@
 import React from "react";
-import { Row, Col, Markdown } from "../../ui";
+import { Row, Col, Markdown, Popover } from "../../ui";
 import { fetchOsUpdateVersion, OsUpdateButton } from "./os_update_button";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { FarmbotOsRowProps, FarmbotOsRowState } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../i18next_wrapper";
@@ -65,11 +65,11 @@ export class FarmbotOsRow
   Version = () => {
     const { controller_version } = this.props.bot.hardware.informational_settings;
     const version = controller_version || t("unknown (offline)");
-    return <Popover position={Position.BOTTOM_LEFT}>
-      <p>
+    return <Popover position={Position.BOTTOM_LEFT}
+      target={<p>
         {t("Version {{ version }}", { version })}
-      </p>
-      <ErrorBoundary>
+      </p>}
+      content={<ErrorBoundary>
         <FbosDetails
           botInfoSettings={this.props.bot.hardware.informational_settings}
           dispatch={this.props.dispatch}
@@ -77,8 +77,7 @@ export class FarmbotOsRow
           botToMqttLastSeen={getLastSeenNumber(this.props.bot)}
           timeSettings={this.props.timeSettings}
           deviceAccount={this.props.device} />
-      </ErrorBoundary>
-    </Popover>;
+      </ErrorBoundary>} />;
   }
 
   ReleaseNotes = () => {
@@ -113,13 +112,12 @@ export class FarmbotOsRow
       <Row>
         <Col xs={7} className="no-pad"><this.Version /></Col>
         <Col xs={5} className="no-pad">
-          <Popover position={Position.BOTTOM} className="release-notes-wrapper">
-            <p className="release-notes-button">
+          <Popover position={Position.BOTTOM} className="release-notes-wrapper"
+            target={<p className="release-notes-button">
               {t("Release Notes")}&nbsp;
               <i className="fa fa-caret-down" />
-            </p>
-            <this.ReleaseNotes />
-          </Popover>
+            </p>}
+            content={<this.ReleaseNotes />} />
         </Col>
       </Row>
     </Highlight>;

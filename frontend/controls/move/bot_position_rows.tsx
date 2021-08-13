@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row, Col, Popover } from "../../ui";
 import { Feature } from "../../devices/interfaces";
 import {
   findAxisLength, findHome, moveAbsolute, moveToHome, setHome,
@@ -10,7 +10,7 @@ import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
 import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
 import { LockableButton } from "../../settings/hardware_settings/lockable_button";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
@@ -79,9 +79,9 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
 export const AxisActions = (props: AxisActionsProps) => {
   const { axis, arduinoBusy, locked, hardwareDisabled, botOnline } = props;
   const className = lockedClass(locked);
-  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
-    <i className="fa fa-ellipsis-v" />
-    <div className={"axis-actions"}>
+  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
+    target={<i className="fa fa-ellipsis-v" />}
+    content={<div className={"axis-actions"}>
       {props.shouldDisplay(Feature.home_single_axis) &&
         <LockableButton
           disabled={arduinoBusy || !botOnline}
@@ -114,6 +114,5 @@ export const AxisActions = (props: AxisActionsProps) => {
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>
-    </div>
-  </Popover>;
+    </div>} />;
 };

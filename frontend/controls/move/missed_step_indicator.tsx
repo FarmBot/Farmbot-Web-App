@@ -1,8 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { mean, isUndefined, last } from "lodash";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { Xyz } from "farmbot";
+import { Popover } from "../../ui";
 
 export const MISSED_STEP_HISTORY_LENGTH = 10;
 
@@ -60,10 +61,10 @@ export class MissedStepIndicator
     const { missedSteps } = this.props;
     return <div className={"missed-step-indicator-wrapper"}
       onClick={() => this.setState({ open: !this.state.open })}>
-      <Popover position={Position.TOP} usePortal={false} isOpen={this.state.open}>
-        <Indicator instant={missedSteps || 0} peak={this.max} />
-        <Details instant={missedSteps || 0} peak={this.max} average={this.avg} />
-      </Popover>
+      <Popover position={Position.TOP} usePortal={false} isOpen={this.state.open}
+        target={<Indicator instant={missedSteps || 0} peak={this.max} />}
+        content={<Details instant={missedSteps || 0}
+          peak={this.max} average={this.avg} />} />
     </div>;
   }
 }

@@ -1,9 +1,10 @@
 import React from "react";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { DeviceSetting } from "../../../constants";
 import { getModifiedClassName } from "../../../settings/default_values";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { Popover } from "../../../ui";
 
 export interface LayerToggleProps {
   settingName: BooleanConfigKey;
@@ -30,12 +31,10 @@ export function LayerToggle(props: LayerToggleProps) {
         {t(label)}
         {popover &&
           <Popover
-            targetClassName={"caret-menu-button"}
             position={Position.BOTTOM_RIGHT}
-            className={"caret-menu-button"}>
-            <i className="fa fa-caret-down" title={t(title)} />
-            {popover}
-          </Popover>}
+            className={"caret-menu-button"}
+            target={<i className="fa fa-caret-down" title={t(title)} />}
+            content={popover} />}
       </span>
     </label>
     <button className={classNames} onClick={onClick}

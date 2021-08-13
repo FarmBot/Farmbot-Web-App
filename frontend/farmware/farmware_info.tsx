@@ -5,11 +5,11 @@ import { Content } from "../constants";
 import { destroy } from "../api/crud";
 import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
-import { Popover } from "@blueprintjs/core";
 import { retryFetchPackageName } from "./actions";
 import { push } from "../history";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
+import { Popover } from "../ui";
 
 export interface FarmwareInfoProps {
   dispatch: Function;
@@ -81,10 +81,9 @@ interface FarmwareManagementSectionProps {
 const FarmwareManagementSection =
   ({ farmware, remove, botOnline }: FarmwareManagementSectionProps) =>
     <div className={"farmware-management-section"}>
-      <Popover usePortal={false}>
-        <label>{t("Manage")}</label>
-        <div className="farmware-url">{farmware.url}</div>
-      </Popover>
+      <Popover usePortal={false}
+        target={<label>{t("Manage")}</label>}
+        content={<div className="farmware-url">{farmware.url}</div>} />
       <div className={"farmware-management-buttons"}>
         <button
           className="fb-button yellow no-float"

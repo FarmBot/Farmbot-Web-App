@@ -10,9 +10,8 @@ import {
   PointerType,
   PointTypeSelectionProps,
 } from "./interfaces";
-import { Popover } from "@blueprintjs/core";
 import { selectPoint } from "../../farm_designer/map/actions";
-import { FBSelect, Checkbox, Help, ToggleButton } from "../../ui";
+import { FBSelect, Checkbox, Help, ToggleButton, Popover } from "../../ui";
 import {
   POINTER_TYPE_LIST, POINTER_TYPE_DDI_LOOKUP, isPointType, validPointTypes,
   setSelectionPointType,
@@ -67,10 +66,9 @@ export class GroupCriteria extends
     const pointTypes = validPointTypes(criteria.string_eq.pointer_type) || [];
     return <div className="group-criteria">
       <label className="criteria-heading">{t("filters")}</label>
-      <Popover>
-        <i className="fa fa-gear dark" />
-        <this.AdvancedToggleMenu />
-      </Popover>
+      <Popover
+        target={<i className="fa fa-gear dark" />}
+        content={<this.AdvancedToggleMenu />} />
       {!this.state.advanced
         ? <div className={"basic"}>
           <PointTypeSelection {...commonProps} pointTypes={pointTypes} />

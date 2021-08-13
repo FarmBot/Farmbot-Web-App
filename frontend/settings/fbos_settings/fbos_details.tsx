@@ -1,5 +1,5 @@
 import React from "react";
-import { Saucer, FBSelect, Help } from "../../ui";
+import { Saucer, FBSelect, Help, Popover } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { last, isNumber, isString } from "lodash";
 import { Content, ToolTips } from "../../constants";
@@ -7,7 +7,6 @@ import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
-import { Popover } from "@blueprintjs/core";
 import moment from "moment";
 import { timeFormatString } from "../../util";
 import { TimeSettings } from "../../interfaces";
@@ -231,13 +230,11 @@ export const VoltageDisplay = ({ chip, throttleData }: VoltageDisplayProps) => {
     <p><b>{chip && chip.toUpperCase()} {t("Voltage")}</b></p>
     <Help text={ToolTips.VOLTAGE_STATUS} />
     <p>:&nbsp;{VOLTAGE_COLOR_KEY()[voltageColor]}</p>
-    <Popover usePortal={false}>
-      <ThrottleIndicator
+    <Popover usePortal={false}
+      target={<ThrottleIndicator
         throttleDataString={throttleData}
-        throttleType={ThrottleType.UnderVoltage} />
-      {ThrottleDisplay(throttleData)}
-    </Popover>
-
+        throttleType={ThrottleType.UnderVoltage} />}
+      content={ThrottleDisplay(throttleData)} />
   </div>;
 };
 

@@ -1,5 +1,10 @@
-import * as React from "react";
-import { shallow } from "enzyme";
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
+import React from "react";
+import { mount } from "enzyme";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
 import {
   PointSortMenu, orderedPoints, PointSortMenuProps,
@@ -30,7 +35,7 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: default", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     wrapper.find("i.fa-sort").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: undefined, reverse: false
@@ -39,7 +44,7 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by age", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     wrapper.find("i.fa-calendar").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "created_at", reverse: false
@@ -48,7 +53,7 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     wrapper.find("i.fa-font").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "name", reverse: false
@@ -57,7 +62,7 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by size", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     wrapper.find("i.fa-sort-amount-desc").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "radius", reverse: true
@@ -66,7 +71,7 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by z", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     wrapper.find("i.z").simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "z", reverse: true
@@ -76,7 +81,7 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: default", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: undefined, reverse: false };
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeTruthy();
     expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
       .toBeFalsy();
@@ -85,7 +90,7 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: age", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "created_at", reverse: false };
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
     expect(wrapper.find("i.fa-calendar").hasClass("selected")).toBeTruthy();
   });
@@ -93,7 +98,7 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: name", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "name", reverse: false };
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
     expect(wrapper.find("i.fa-font").hasClass("selected")).toBeTruthy();
   });
@@ -101,7 +106,7 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: size", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "radius", reverse: true };
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
     expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
       .toBeTruthy();
@@ -110,7 +115,7 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: z", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "z", reverse: true };
-    const wrapper = shallow(<PointSortMenu {...p} />);
+    const wrapper = mount(<PointSortMenu {...p} />);
     expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
     expect(wrapper.find("i.z").hasClass("selected")).toBeTruthy();
   });

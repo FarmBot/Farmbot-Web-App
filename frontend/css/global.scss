@@ -767,6 +767,7 @@ ul {
 }
 
 .unavailable {
+  display: inline-block;
   position: relative;
   z-index: 10;
   opacity: 0.40;

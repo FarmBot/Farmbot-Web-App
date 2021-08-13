@@ -10,6 +10,7 @@ import { Router } from "takeme";
 import { UnboundRouteConfig, UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
 import { ConnectedComponent, Provider } from "react-redux";
+import { HotkeysProvider } from "@blueprintjs/core";
 
 interface RootComponentProps { store: Store; }
 
@@ -60,11 +61,13 @@ export class RootComponent
     const { Route, ChildRoute } = this.state;
     return <ErrorBoundary>
       <Provider store={_store}>
-        <App>
-          <Route>
-            {ChildRoute && <ChildRoute />}
-          </Route>
-        </App>
+        <HotkeysProvider>
+          <App>
+            <Route>
+              {ChildRoute && <ChildRoute />}
+            </Route>
+          </App>
+        </HotkeysProvider>
       </Provider>
     </ErrorBoundary>;
   }
