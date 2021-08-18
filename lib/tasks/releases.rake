@@ -54,6 +54,15 @@ namespace :releases do
       release
     end
 
+    def self.print_all_existing_releases
+      puts ""
+      Release.all.map do |r|
+        puts "#{r.id.to_s.ljust(6)} #{r.channel.ljust(8)}" +
+             "#{r.platform.ljust(6)} #{r.version.ljust(14)} #{r.created_at}"
+      end
+      puts ""
+    end
+
     def self.create_releases(metadata, channel)
       output = Releases::Parse.run!(metadata)
         .map { |params| Releases::Create.run!(params.merge(channel: channel)) }
@@ -86,6 +95,7 @@ namespace :releases do
 
   desc "Publish the latest release found on farmbot/farmbot_os github org"
   task publish: :environment do
+    ReleaseTask.print_all_existing_releases
     choices = ReleaseTask.get_release_list
     version = ReleaseTask.select_version(choices)
     chan = ReleaseTask.get_channel
@@ -100,5 +110,6 @@ namespace :releases do
       puts "Destroying old release ##{release.id}"
       release.destroy!
     end
+    ReleaseTask.print_all_existing_releases
   end
 end
