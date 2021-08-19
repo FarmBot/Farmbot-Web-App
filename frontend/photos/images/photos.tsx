@@ -15,11 +15,11 @@ import { isNumber, isUndefined, round, startCase } from "lodash";
 import { isBotOnline, MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
-import { Overlay, Popover } from "@blueprintjs/core";
+import { Overlay } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage, Xyz } from "farmbot";
-import { MarkedSlider } from "../../ui";
+import { MarkedSlider, Popover } from "../../ui";
 import { takePhoto } from "../../devices/actions";
 import { push } from "../../history";
 import { locationUrl } from "../../farm_designer/move_to";
@@ -92,10 +92,9 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
   return <div className="photos-footer">
     {flags &&
       <Popover className={"image-show-menu-target"}
-        popoverClassName={"image-show-menu-popover"}>
-        <ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />
-        <ImageShowMenu {...imageShowMenuProps} flags={flags} />
-      </Popover>}
+        popoverClassName={"image-show-menu-popover"}
+        target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
+        content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
     {image &&
       <div className={"image-created-at"}>
         <span>{created_at}</span>
@@ -103,15 +102,14 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     <div className={"image-metadata"}>
       {image
         ? ["x", "y", "z"].map((axis: Xyz, index) =>
-          <Popover key={index}>
-            <div className={"meta-info"}>
+          <Popover key={index}
+            target={<div className={"meta-info"}>
               <label>{startCase(axis)}:</label>
               <span>{image.body.meta[axis] ?? "---"}</span>
-            </div>
-            <MoveToLocation
+            </div>}
+            content={<MoveToLocation
               imageLocation={image.body.meta}
-              botOnline={props.botOnline} />
-          </Popover>)
+              botOnline={props.botOnline} />} />)
         : <div className={"meta-info"}>
           <label>{t("Image")}:</label>
           <span>{t("No meta data.")}</span>

@@ -4,6 +4,7 @@ import {
   EmptyStateWrapper,
   EmptyStateGraphic,
   ColorPicker,
+  Popover,
 } from "../ui";
 import {
   FolderUnion,
@@ -39,7 +40,6 @@ import { urlFriendly, lastUrlChunk } from "../util";
 import {
   setActiveSequenceByName,
 } from "../sequences/set_active_sequence_by_name";
-import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
@@ -181,11 +181,11 @@ export const FolderNameEditor = (props: FolderNodeProps) => {
         : <p>{node.name}</p>}
     </div>
     <Popover className="folder-settings-icon" usePortal={false}
-      isOpen={settingsOpen}>
-      <i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
-        onClick={() => setSettingsOpen(!settingsOpen)} />
-      <FolderButtonCluster {...props} close={() => setSettingsOpen(false)} />
-    </Popover>
+      isOpen={settingsOpen}
+      target={<i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
+        onClick={() => setSettingsOpen(!settingsOpen)} />}
+      content={<FolderButtonCluster {...props}
+        close={() => setSettingsOpen(false)} />} />
   </div>;
 };
 

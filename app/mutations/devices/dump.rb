@@ -1,9 +1,10 @@
 module Devices
   class Dump < Mutations::Command
     RESOURCES = [:farmware_envs, :farm_events, :farmware_installations,
-                 :images, :logs, :peripherals, :pin_bindings, :plant_templates,
-                 :regimens, :saved_gardens, :sensor_readings, :sensors, :sequences,
-                 :token_issuances, :users, :webcam_feeds]
+                 :folders, :images, :logs, :peripherals, :pin_bindings,
+                 :plant_templates, :point_groups, :regimens, :saved_gardens,
+                 :sensor_readings, :sensors, :sequences, :token_issuances,
+                 :users, :webcam_feeds, :wizard_step_results]
 
     required { model :device, class: Device }
 

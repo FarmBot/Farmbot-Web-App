@@ -1,4 +1,5 @@
 $offset: 187;
+$quarterOffset: 46.75;
 $duration: 1.3s;
 .spinner-container {
   display: flex;
@@ -53,7 +54,7 @@ $duration: 1.3s;
     stroke-dashoffset: $offset;
   }
   50% {
-    stroke-dashoffset: $offset / 4;
+    stroke-dashoffset: $quarterOffset;
     transform: rotate(135deg);
   }
   100% {

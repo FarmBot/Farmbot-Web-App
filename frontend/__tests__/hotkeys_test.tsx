@@ -17,7 +17,9 @@ jest.mock("../api/crud", () => ({ save: jest.fn() }));
 
 import React from "react";
 import { shallow } from "enzyme";
-import { HotKey, HotKeys, HotKeysProps, hotkeysWithActions } from "../hotkeys";
+import {
+  HotKey, HotKeys, HotKeysProps, hotkeysWithActions, openHotkeyHelpOverlay,
+} from "../hotkeys";
 import { push } from "../history";
 import { sync } from "../devices/actions";
 import { unselectPlant } from "../farm_designer/map/actions";
@@ -29,19 +31,19 @@ import { cropSearchUrl } from "../plants/crop_catalog";
 
 describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
-    mockPath = "/app/designer/nope";
     const dispatch = jest.fn();
-    const hotkeys = hotkeysWithActions(dispatch);
-    expect(Object.values(hotkeys).length).toBe(9);
+    const hotkeys = hotkeysWithActions(dispatch, "");
+    expect(Object.values(hotkeys).length).toBe(8);
     const e = {} as KeyboardEvent;
 
     hotkeys[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
     mockState.resources.consumers.sequences.current = "uuid";
-    hotkeys[HotKey.save].onKeyDown?.(e);
+    const hotkeysSettingsPath = hotkeysWithActions(dispatch, "settings");
+    hotkeysSettingsPath[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
-    mockPath = "/app/designer/sequences/1";
-    hotkeys[HotKey.save].onKeyDown?.(e);
+    const hotkeysSequencesPath = hotkeysWithActions(dispatch, "sequences");
+    hotkeysSequencesPath[HotKey.save].onKeyDown?.(e);
     expect(save).toHaveBeenCalledWith("uuid");
 
     hotkeys[HotKey.sync].onKeyDown?.(e);
@@ -62,8 +64,12 @@ describe("hotkeysWithActions()", () => {
     hotkeys[HotKey.backToPlantOverview].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants");
     expect(unselectPlant).toHaveBeenCalled();
+  });
+});
 
-    hotkeys[HotKey.openGuide].onKeyDown?.(e);
+describe("openHotkeyHelpOverlay()", () => {
+  it("opens overlay", () => {
+    openHotkeyHelpOverlay();
     expect(showHotkeysDialog).toHaveBeenCalled();
   });
 });
@@ -74,6 +80,7 @@ describe("<HotKeys />", () => {
   });
 
   it("renders", () => {
+    mockPath = "/app/designer/nope";
     const wrapper = shallow(<HotKeys {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   MissedStepIndicator, MissedStepIndicatorProps, MISSED_STEP_HISTORY_LENGTH,
@@ -78,7 +78,7 @@ describe("<MissedStepIndicator />", () => {
     p.missedSteps = missedSteps;
     const wrapper = mount(<MissedStepIndicator {...p} />);
     wrapper.setState({ history });
-    wrapper.find(".bp3-popover-target").simulate("click");
+    wrapper.find(".bp-popover-target").simulate("click");
     ["motor load", latest, max, average].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });

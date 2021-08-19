@@ -1620,6 +1620,18 @@ export namespace SetupWizardContent {
     trim(`Camera voltage may be low. Try a different Raspberry Pi USB
     power cable.`);
 
+  export const NETWORK_PORTS =
+    trim(`If you are installing FarmBot at a school or enterprise where the
+    internet network is managed by an IT department, you must ensure that
+    certain ports are opened to allow FarmBot to fully connect to the web
+    app. If you are installing FarmBot in one of these locations, have your
+    IT department review the following help page to ensure FarmBot will be
+    able to fully connect once configured.`);
+
+  export const NETWORK_PORTS_QUESTION =
+    trim(`Has your IT department confirmed that the necessary ports are
+    opened or are you installing FarmBot at home?`);
+
   export const ETHERNET_OPTION =
     trim(`Most people connect their FarmBot to the internet over WiFi,
     though you may optionally use a hardwired ethernet connection. If you

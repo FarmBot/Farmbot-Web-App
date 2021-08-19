@@ -1,8 +1,9 @@
 import React from "react";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { t } from "../i18next_wrapper";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { sortBy } from "lodash";
+import { Popover } from "../ui";
 
 export interface SortOptions {
   sortBy?: keyof TaggedGenericPointer["body"];
@@ -21,9 +22,9 @@ export const PointSortMenu = (props: PointSortMenuProps) => {
   const byNameSelected = sortTerm == "name" ? "selected" : "";
   const bySizeSelected = sortTerm == "radius" ? "selected" : "";
   const zSelected = sortTerm == "z" ? "selected" : "";
-  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
-    <i className="fa fa-search" />
-    <div className="point-sort-menu">
+  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
+    target={<i className="fa fa-search" />}
+    content={<div className="point-sort-menu">
       <label>{t("sort by")}</label>
       <div>
         <i className={`fa fa-sort ${defaultSelected}`}
@@ -45,8 +46,7 @@ export const PointSortMenu = (props: PointSortMenuProps) => {
         <i className={`z ${zSelected}`} title={t("z")} onClick={() =>
           props.onChange({ sortBy: "z", reverse: true })}>z</i>
       </div>
-    </div>
-  </Popover>;
+    </div>} />;
 };
 
 /** Sort and order points according to selected options. */

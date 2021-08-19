@@ -1,9 +1,9 @@
 import React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-import { Col, Row, Page } from "../ui";
+import { Col, Row, Page, Popover } from "../ui";
 import { mapStateToProps } from "./state_to_props";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { LogsSettingsMenu } from "./components/settings_menu";
 import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
@@ -100,27 +100,25 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
         </Col>
         <Col xs={6}>
           <div className={"settings-menu-button"}>
-            <Popover position={Position.TOP_RIGHT}>
-              <i className="fa fa-gear" />
-              <LogsSettingsMenu
+            <Popover position={Position.TOP_RIGHT}
+              target={<i className="fa fa-gear" />}
+              content={<LogsSettingsMenu
                 setFilterLevel={this.setFilterLevel}
                 dispatch={dispatch}
                 sourceFbosConfig={this.props.sourceFbosConfig}
                 bot={bot}
-                getConfigValue={this.props.getConfigValue} />
-            </Popover>
+                getConfigValue={this.props.getConfigValue} />} />
           </div>
           <div className={"settings-menu-button"}>
-            <Popover position={Position.TOP_RIGHT}>
-              <button className={`fb-button ${filterBtnColor}`}
+            <Popover position={Position.TOP_RIGHT}
+              target={<button className={`fb-button ${filterBtnColor}`}
                 title={t("edit filter settings")}>
                 {this.filterActive ? t("Filters active") : t("filter")}
-              </button>
-              <LogsFilterMenu
+              </button>}
+              content={<LogsFilterMenu
                 toggle={this.toggle} state={this.state}
                 toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
-                setFilterLevel={this.setFilterLevel} />
-            </Popover>
+                setFilterLevel={this.setFilterLevel} />} />
           </div>
           <div className="fa-stack fa-2x"
             title={this.state.markdown ? t("display raw") : t("display markdown")}
