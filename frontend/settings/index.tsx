@@ -96,7 +96,6 @@ export class RawDesignerSettings
           alerts={this.props.alerts}
           dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}
-          shouldDisplay={this.props.shouldDisplay}
           botOnline={botOnline}
           timeSettings={this.props.timeSettings}
           device={this.props.deviceAccount} />
@@ -119,7 +118,6 @@ export class RawDesignerSettings
         <Motors {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}
-          shouldDisplay={this.props.shouldDisplay}
           firmwareHardware={firmwareHardware} />
         <EncodersOrStallDetection {...commonProps}
           arduinoBusy={busy}
@@ -147,7 +145,6 @@ export class RawDesignerSettings
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
           getConfigValue={getConfigValue}
-          shouldDisplay={this.props.shouldDisplay}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
         <Designer {...commonProps}

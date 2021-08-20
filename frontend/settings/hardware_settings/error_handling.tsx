@@ -14,8 +14,6 @@ import { t } from "../../i18next_wrapper";
 import {
   getDefaultFwConfigValue, getModifiedClassName,
 } from "./default_values";
-import { Feature } from "../../devices/interfaces";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { calculateScale } from "./motors";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
@@ -62,24 +60,22 @@ export function ErrorHandling(props: ErrorHandlingProps) {
           disabled={arduinoBusy}
           dispatch={dispatch} />
       </SingleSettingRow>
-      {shouldDisplayFeature(Feature.calibration_retries) &&
-        <NumericMCUInputGroup {...commonProps}
-          label={DeviceSetting.calibrationRetries}
-          tooltip={ToolTips.CALIBRATION_RETRIES}
-          x={"movement_calibration_retry_x"}
-          y={"movement_calibration_retry_y"}
-          z={"movement_calibration_retry_z"} />}
-      {shouldDisplayFeature(Feature.calibration_retries) &&
-        <NumericMCUInputGroup {...commonProps}
-          label={DeviceSetting.calibrationRetryResetDistance}
-          tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}
-          advanced={true}
-          x={"movement_calibration_deadzone_x"}
-          y={"movement_calibration_deadzone_y"}
-          z={"movement_calibration_deadzone_z"}
-          xScale={scale.x}
-          yScale={scale.y}
-          zScale={scale.z} />}
+      <NumericMCUInputGroup {...commonProps}
+        label={DeviceSetting.calibrationRetries}
+        tooltip={ToolTips.CALIBRATION_RETRIES}
+        x={"movement_calibration_retry_x"}
+        y={"movement_calibration_retry_y"}
+        z={"movement_calibration_retry_z"} />
+      <NumericMCUInputGroup {...commonProps}
+        label={DeviceSetting.calibrationRetryResetDistance}
+        tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}
+        advanced={true}
+        x={"movement_calibration_deadzone_x"}
+        y={"movement_calibration_deadzone_y"}
+        z={"movement_calibration_deadzone_z"}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z} />
       <SingleSettingRow settingType="button"
         label={DeviceSetting.estopOnMovementError}
         tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {

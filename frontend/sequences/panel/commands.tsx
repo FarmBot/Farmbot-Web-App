@@ -11,7 +11,6 @@ import {
 import { urlFriendly } from "../../util";
 import { Everything } from "../../interfaces";
 import { findSequence, selectAllSequences } from "../../resources/selectors";
-import { getShouldDisplayFn } from "../../farmware/state_to_props";
 import { getFarmwareData } from "../state_to_props";
 
 export const mapStateToProps = (props: Everything): StepButtonProps => {
@@ -20,7 +19,6 @@ export const mapStateToProps = (props: Everything): StepButtonProps => {
   return {
     dispatch: props.dispatch,
     current,
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     stepIndex: props.resources.consumers.sequences.stepIndex,
     farmwareData: getFarmwareData(props),
     sequences: selectAllSequences(props.resources.index),
@@ -43,7 +41,6 @@ export class RawDesignerSequenceCommands
         <StepButtonCluster
           current={this.props.current}
           dispatch={this.props.dispatch}
-          shouldDisplay={this.props.shouldDisplay}
           farmwareData={this.props.farmwareData}
           sequences={this.props.sequences}
           resources={this.props.resources}

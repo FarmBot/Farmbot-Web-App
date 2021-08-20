@@ -45,7 +45,6 @@ export const MoveControls = (props: MoveControlsProps) => {
         arduinoBusy={busy}
         locked={locked}
         botOnline={botOnline}
-        shouldDisplay={props.shouldDisplay}
         firmwareSettings={props.firmwareSettings}
         firmwareHardware={props.firmwareHardware} />
     </MustBeOnline>
