@@ -18,7 +18,6 @@ describe("<DesignerSequenceCommands />", () => {
   const fakeProps = (): StepButtonProps => ({
     dispatch: jest.fn(),
     current: undefined,
-    shouldDisplay: () => false,
     stepIndex: undefined,
     sequences: [],
     resources: buildResourceIndex().index,

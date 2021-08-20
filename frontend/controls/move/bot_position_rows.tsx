@@ -1,6 +1,5 @@
 import React from "react";
 import { Row, Col, Popover } from "../../ui";
-import { Feature } from "../../devices/interfaces";
 import {
   findAxisLength, findHome, moveAbsolute, moveToHome, setHome,
 } from "../../devices/actions";
@@ -23,7 +22,6 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
   const hardwareDisabled = disabledAxisMap(props.firmwareSettings);
   const commonAxisActionProps = {
     botOnline: props.botOnline,
-    shouldDisplay: props.shouldDisplay,
     arduinoBusy,
     locked,
   };
@@ -82,14 +80,13 @@ export const AxisActions = (props: AxisActionsProps) => {
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
     target={<i className="fa fa-ellipsis-v" />}
     content={<div className={"axis-actions"}>
-      {props.shouldDisplay(Feature.home_single_axis) &&
-        <LockableButton
-          disabled={arduinoBusy || !botOnline}
-          className={className}
-          title={t("MOVE TO HOME")}
-          onClick={() => moveToHome(axis)}>
-          {t("MOVE TO HOME")}
-        </LockableButton>}
+      <LockableButton
+        disabled={arduinoBusy || !botOnline}
+        className={className}
+        title={t("MOVE TO HOME")}
+        onClick={() => moveToHome(axis)}>
+        {t("MOVE TO HOME")}
+      </LockableButton>
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
         className={className}
