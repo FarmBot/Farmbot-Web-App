@@ -9,9 +9,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { mapStateToFolderProps } from "../folders/map_state_to_props";
-import {
-  generateFarmwareDictionary, getEnv, getShouldDisplayFn,
-} from "../farmware/state_to_props";
+import { generateFarmwareDictionary, getEnv } from "../farmware/state_to_props";
 import {
   cameraDisabled, cameraCalibrated,
 } from "../photos/capture_settings/camera_selection";
@@ -46,7 +44,6 @@ export function mapStateToProps(props: Everything): SequencesProps {
     };
   };
   const getConfig = getWebAppConfigValue(() => props);
-  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -59,7 +56,6 @@ export function mapStateToProps(props: Everything): SequencesProps {
       .sync_status || "unknown"),
     hardwareFlags: hardwareFlags(),
     farmwareData: getFarmwareData(props),
-    shouldDisplay,
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,

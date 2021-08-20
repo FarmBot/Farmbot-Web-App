@@ -12,9 +12,16 @@ module Sequences
                   scope_declaration send_message sequence set_servo_angle
                   special_value speed_overwrite take_photo variable_declaration
                   wait zero)
+
+    AUTHORIZATION_REQUIRED = "For security reasons, we can't publish" \
+                             " sequences that contain the following content: "
     required do
       model :device, class: Device
       model :sequence, class: Sequence
+    end
+
+    optional do
+      string :description
     end
 
     def validate
@@ -24,22 +31,25 @@ module Sequences
 
     def execute
       SequencePublication.transaction do
-        sv = SequenceVersion.create!(sequence_publication: publication)
+        publication.update!(published: true)
+        sv = SequenceVersion.create!(sequence_publication: publication,
+                                     name: sequence.name,
+                                     color: sequence.color,
+                                     description: description)
         celery = CeleryScript::FetchCelery.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
         flat_ast = Fragments::Preprocessor.run!(**params)
-        Fragments::Create.run!(device: device, flat_ast: flat_ast, owner: sv)
-        binding.pry
-        # wrap_fragment_with(FarmEvent.create!(clean_params))
-        raise "WIP"
+        Fragments::Create.run!(flat_ast: flat_ast, owner: sv)
+        publication
       end
     end
 
     private
 
     def enforce_allow_list
-      illegal_content.map do |content|
-        raise "ILLEGAL CONTENT: #{content}"
+      problems = illegal_content.uniq.sort.join(", ")
+      if problems.present?
+        add_error :sequence, :illegal, AUTHORIZATION_REQUIRED + problems
       end
     end
 

@@ -26,23 +26,38 @@ module Api
       mutate Sequences::Destroy.run(sequence: sequence, device: current_device)
     end
 
+    # Share your sequence with other people
+    # POST /sequences/:id/publish
     def publish
-      mutate Sequences::Publish.run(sequence: sequence, device: current_device)
+      mutate Sequences::Publish.run(raw_json, sequence: sequence, device: current_device)
     end
 
+    # Unlist your sequence.
+    # POST /sequences/:id/unpublish
     def unpublish
-      raise "WIP"
+      mutate Sequences::Unpublish.run(sequence: sequence, device: current_device)
     end
 
+    # Upgrade someone elses sequence.
+    # post /sequences/:sequence_version_id/install
+    def install
+      mutate Sequences::Install.run(sequence_version: sequence_version,
+                                    device: current_device)
+    end
+
+    # Upgrade a sequence that already uses a sequence version.
+    # post /sequences/:sequence_id/:sequence_version_id/install
     def upgrade
-      raise "WIP"
-    end
-
-    def fork
-      raise "WIP"
+      mutate Sequences::Upgrade.run(sequence_version: sequence_version,
+                                    sequence: sequence,
+                                    device: current_device)
     end
 
     private
+
+    def sequence_version
+      @sequence_version ||= SequenceVersion.find(params[:id])
+    end
 
     def sequence_params
       @sequence_params ||= raw_json[:sequence] || raw_json || {}

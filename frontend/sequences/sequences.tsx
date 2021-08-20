@@ -73,7 +73,6 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
           <StepButtonCluster
             current={this.props.sequence}
             dispatch={this.props.dispatch}
-            shouldDisplay={this.props.shouldDisplay}
             farmwareData={this.props.farmwareData}
             sequences={this.props.sequences}
             resources={this.props.resources}

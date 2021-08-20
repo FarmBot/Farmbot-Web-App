@@ -37,7 +37,6 @@ describe("<DesignerSequenceEditor />", () => {
     syncStatus: "synced",
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),
-    shouldDisplay: jest.fn(),
     getWebAppConfigValue: jest.fn(),
     menuOpen: undefined,
     stepIndex: undefined,

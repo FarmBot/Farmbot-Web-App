@@ -11,7 +11,6 @@ describe("<MoveControls />", () => {
     getConfigValue: jest.fn(),
     firmwareSettings: bot.hardware.mcu_params,
     firmwareHardware: undefined,
-    shouldDisplay: jest.fn(),
     env: {},
   });
 

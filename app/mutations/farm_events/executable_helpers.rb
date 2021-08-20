@@ -22,7 +22,7 @@ module FarmEvents
     end
 
     def executable
-      @executable ||= klass.where(id: executable_id).first
+      @executable ||= klass.find_by(id: executable_id, device_id: device.id)
     end
 
     def klass

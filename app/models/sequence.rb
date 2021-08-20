@@ -36,7 +36,6 @@ class Sequence < ApplicationRecord
 
   def set_defaults
     self.color ||= "gray"
-    self.kind ||= "sequence"
   end
 
   def delete_nodes_too
@@ -87,4 +86,6 @@ class Sequence < ApplicationRecord
   def self.parameterized?(id)
     PrimaryNode.where(kind: "parameter_declaration", sequence_id: id).exists?
   end
+
+  def kind; "sequnece" end
 end

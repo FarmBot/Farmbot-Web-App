@@ -2,7 +2,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { Everything } from "../interfaces";
 import { validFwConfig } from "../util";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
-import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
+import { getEnv } from "../farmware/state_to_props";
 import {
   getFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
@@ -27,6 +27,5 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     getConfigValue: getWebAppConfigValue(() => props),
     env: getEnv(props.resources.index),
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
 };

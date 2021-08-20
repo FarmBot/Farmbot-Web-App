@@ -14,6 +14,7 @@ module Sequences
       args
       integer :folder_id
       boolean :pinned
+      string :description
     end
 
     def validate

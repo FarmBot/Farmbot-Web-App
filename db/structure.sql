@@ -874,11 +874,13 @@ CREATE TABLE public.sequences (
     device_id integer,
     name character varying NOT NULL,
     color character varying,
-    kind character varying(280) DEFAULT 'sequence'::character varying,
     updated_at timestamp without time zone,
     created_at timestamp without time zone,
     folder_id bigint,
-    pinned boolean DEFAULT false
+    pinned boolean DEFAULT false,
+    description text,
+    forked boolean DEFAULT false,
+    sequence_version_id bigint
 );
 
 
@@ -1444,7 +1446,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1588,6 +1590,7 @@ CREATE TABLE public.sequence_publications (
     cached_author_email character varying NOT NULL,
     author_device_id integer NOT NULL,
     author_sequence_id integer NOT NULL,
+    published boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -1637,6 +1640,9 @@ CREATE VIEW public.sequence_usage_reports AS
 CREATE TABLE public.sequence_versions (
     id bigint NOT NULL,
     sequence_publication_id bigint NOT NULL,
+    description text,
+    name character varying NOT NULL,
+    color character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -3183,6 +3189,13 @@ CREATE INDEX index_sequences_on_device_id ON public.sequences USING btree (devic
 --
 
 CREATE INDEX index_sequences_on_folder_id ON public.sequences USING btree (folder_id);
+
+
+--
+-- Name: index_sequences_on_sequence_version_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sequences_on_sequence_version_id ON public.sequences USING btree (sequence_version_id);
 
 
 --

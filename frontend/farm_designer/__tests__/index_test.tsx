@@ -65,7 +65,6 @@ describe("<FarmDesigner />", () => {
     sensorReadings: [],
     sensors: [],
     groups: [],
-    shouldDisplay: () => false,
     mountedToolInfo: fakeMountedToolInfo(),
     visualizedSequenceBody: [],
     logs: [],

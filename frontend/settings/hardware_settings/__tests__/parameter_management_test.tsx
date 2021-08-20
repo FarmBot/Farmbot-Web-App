@@ -32,7 +32,6 @@ describe("<ParameterManagement />", () => {
     firmwareHardware: undefined,
     arduinoBusy: false,
     getConfigValue: jest.fn(),
-    shouldDisplay: () => false,
   });
 
   it("renders", () => {

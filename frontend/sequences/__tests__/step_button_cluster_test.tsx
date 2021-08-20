@@ -4,6 +4,11 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
+let mockShouldDisplay = false;
+jest.mock("../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
@@ -23,7 +28,6 @@ describe("<StepButtonCluster />", () => {
   const fakeProps = (): StepButtonProps => ({
     dispatch: jest.fn(),
     current: undefined,
-    shouldDisplay: () => false,
     stepIndex: undefined,
     sequences: [],
     resources: buildResourceIndex().index,
@@ -40,7 +44,7 @@ describe("<StepButtonCluster />", () => {
 
   it("renders future commands", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
+    mockShouldDisplay = true;
     p.farmwareData.farmwareNames = [FarmwareName.MeasureSoilHeight];
     const wrapper = mount(<StepButtonCluster {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("toggle peripheral");
