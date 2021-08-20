@@ -10,9 +10,7 @@ import {
   selectAllFarmwareEnvs,
   selectAllWizardStepResults,
 } from "../resources/selectors";
-import {
-  saveOrEditFarmwareEnv, getShouldDisplayFn,
-} from "../farmware/state_to_props";
+import { saveOrEditFarmwareEnv } from "../farmware/state_to_props";
 import { getAllAlerts } from "../messages/state_to_props";
 import { DesignerSettingsProps } from "./interfaces";
 
@@ -26,7 +24,6 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
     props.resources.index)), props.bot.hardware.configuration),
   resources: props.resources.index,
   deviceAccount: getDeviceAccountSettings(props.resources.index),
-  shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
   timeSettings: maybeGetTimeSettings(props.resources.index),
   alerts: getAllAlerts(props.resources),

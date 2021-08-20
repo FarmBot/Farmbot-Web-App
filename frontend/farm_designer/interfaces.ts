@@ -23,7 +23,7 @@ import {
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
-  BotPosition, BotLocationData, ShouldDisplay, SourceFbosConfig,
+  BotPosition, BotLocationData, SourceFbosConfig,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import {
@@ -102,7 +102,6 @@ export interface FarmDesignerProps {
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
   groups: TaggedPointGroup[];
-  shouldDisplay: ShouldDisplay;
   mountedToolInfo: MountedToolInfo;
   visualizedSequenceBody: SequenceBodyItem[];
   logs: TaggedLog[];

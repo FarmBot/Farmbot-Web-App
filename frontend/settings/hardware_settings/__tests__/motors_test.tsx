@@ -3,11 +3,6 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../../farmware/state_to_props", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 let mockDefaultValue = 1;
 jest.mock("../default_values", () => ({
   getDefaultFwConfigValue: jest.fn(() => () => mockDefaultValue),
@@ -44,7 +39,6 @@ describe("<Motors />", () => {
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
       arduinoBusy: false,
-      shouldDisplay: () => false,
       showAdvanced: true,
     };
   };
@@ -69,14 +63,6 @@ describe("<Motors />", () => {
     p.firmwareHardware = "farmduino";
     const wrapper = render(<Motors {...p} />);
     expect(wrapper.text()).not.toContain("Motor Current");
-  });
-
-  it("shows Z2 parameters", () => {
-    const p = fakeProps();
-    p.firmwareHardware = "express_k10";
-    p.shouldDisplay = () => true;
-    const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).toContain("toward");
   });
 
   it("shows default value", () => {
@@ -112,23 +98,6 @@ describe("<Motors />", () => {
       expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
     });
   };
-  testParamToggle("toggles enable X2", "movement_secondary_motor_x", 6);
-  testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 7);
-
-  it("doesn't show new parameters", () => {
-    mockShouldDisplay = false;
-    const p = fakeProps();
-    p.controlPanelState.motors = true;
-    const wrapper = mount(<Motors {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("quiet");
-  });
-
-  it("shows new parameters", () => {
-    mockShouldDisplay = true;
-    const p = fakeProps();
-    p.controlPanelState.motors = true;
-    const wrapper = mount(<Motors {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("quiet");
-    mockShouldDisplay = false;
-  });
+  testParamToggle("toggles enable X2", "movement_secondary_motor_x", 9);
+  testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 10);
 });

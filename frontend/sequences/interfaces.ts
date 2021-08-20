@@ -13,7 +13,6 @@ import {
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
-import { ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Folders } from "../folders/component";
 import { DeviceSetting } from "../constants";
@@ -52,7 +51,6 @@ export interface SequencesProps extends SequencePropsBase {
   sequence: TaggedSequence | undefined;
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
-  shouldDisplay: ShouldDisplay;
   stepIndex: number | undefined;
   folderData: Folders["props"];
   hoveredStep?: string | undefined;

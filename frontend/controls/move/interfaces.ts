@@ -1,5 +1,5 @@
 import {
-  BotLocationData, BotPosition, BotState, ShouldDisplay, UserEnv,
+  BotLocationData, BotPosition, BotState, UserEnv,
 } from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
@@ -79,7 +79,6 @@ export interface BotPositionRowsProps {
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface AxisActionsProps {
@@ -88,7 +87,6 @@ export interface AxisActionsProps {
   hardwareDisabled: boolean;
   botOnline: boolean;
   axis: Xyz;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface MoveControlsProps {
@@ -97,7 +95,6 @@ export interface MoveControlsProps {
   getConfigValue: GetWebAppConfigValue;
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
-  shouldDisplay: ShouldDisplay;
   env: UserEnv;
   highlightAxis?: Xyz;
   highlightDirection?: "both" | undefined;

@@ -105,13 +105,9 @@ export enum FbosVersionFallback {
 }
 
 export const fallbackData: MinOsFeatureLookup = {
-  [Feature.z2_firmware_params_tmc]: "14.0.0",
-  [Feature.z2_firmware_params_all]: "14.0.0",
-  [Feature.calibration_retries]: "14.0.0",
-  [Feature.quiet_motors]: "14.0.0",
-  [Feature.home_single_axis]: "14.0.0",
-  [Feature.no_auto_reset]: "14.1.0",
   [Feature.multiple_variables]: "14.3.0",
+  [Feature.farmduino_k16]: MinVersionOverride.NEVER,
+  [Feature.express_k11]: MinVersionOverride.NEVER,
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
   [Feature.sort_type_optimized]: MinVersionOverride.NEVER,
   [Feature.sort_type_alternating]: MinVersionOverride.NEVER,
