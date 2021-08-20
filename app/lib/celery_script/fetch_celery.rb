@@ -25,7 +25,18 @@ module CeleryScript
     # the node where (kind == "sequence") in a tree of nodes. We start recursion
     # here and move down.
     def entry_node
-      @entry_node ||= primary_nodes.by.kind["sequence"].try(:first)
+      @entry_node ||= local_entry || remote_changes
+    end
+
+    # USE CASES:
+    #  * The sequence is unpublished.
+    #  * The sequence is a derivitive work of a published sequence.
+    def local_entry
+      primary_nodes.by.kind["sequence"].try(:first)
+    end
+
+    def remote_changes
+      raise "TODO - pull remote changes from sequence's 'rental' object"
     end
 
     # Create a hash and attach all the EdgeNodes to it. Creates a partial "args"

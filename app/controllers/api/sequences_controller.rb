@@ -26,6 +26,22 @@ module Api
       mutate Sequences::Destroy.run(sequence: sequence, device: current_device)
     end
 
+    def publish
+      mutate Sequences::Publish.run(sequence: sequence, device: current_device)
+    end
+
+    def unpublish
+      raise "WIP"
+    end
+
+    def upgrade
+      raise "WIP"
+    end
+
+    def fork
+      raise "WIP"
+    end
+
     private
 
     def sequence_params

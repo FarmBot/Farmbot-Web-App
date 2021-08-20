@@ -1,0 +1,81 @@
+module Sequences
+  class Publish < Mutations::Command
+    NOT_YOURS = "Can't publish sequences you didn't create."
+    OK_KINDS = %w(axis channel_name is_outdated label message message_type
+                  milliseconds number op package pin_mode pin_number pin_type
+                  pin_value pointer_type rhs speed value variance version x y z
+                  axis_addition axis_overwrite calibrate channel coordinate
+                  emergency_lock execute_script execute find_home identifier
+                  move_absolute move_relative move nothing numeric pair
+                  parameter_application parameter_declaration point power_off
+                  random read_pin reboot resource_update safe_z
+                  scope_declaration send_message sequence set_servo_angle
+                  special_value speed_overwrite take_photo variable_declaration
+                  wait zero)
+    required do
+      model :device, class: Device
+      model :sequence, class: Sequence
+    end
+
+    def validate
+      validate_ownership
+      enforce_allow_list
+    end
+
+    def execute
+      SequencePublication.transaction do
+        sv = SequenceVersion.create!(sequence_publication: publication)
+        celery = CeleryScript::FetchCelery.run!(sequence: sequence)
+        params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
+        flat_ast = Fragments::Preprocessor.run!(**params)
+        Fragments::Create.run!(device: device, flat_ast: flat_ast, owner: sv)
+        binding.pry
+        # wrap_fragment_with(FarmEvent.create!(clean_params))
+        raise "WIP"
+      end
+    end
+
+    private
+
+    def enforce_allow_list
+      illegal_content.map do |content|
+        raise "ILLEGAL CONTENT: #{content}"
+      end
+    end
+
+    def validate_ownership
+      if sequence.device_id != device.id
+        raise Errors::Forbidden, NOT_YOURS
+      end
+    end
+
+    def illegal_content
+      illegal(EdgeNode) + illegal(PrimaryNode)
+    end
+
+    def illegal(klass)
+      klass
+        .where(sequence_id: sequence.id)
+        .where
+        .not(kind: OK_KINDS)
+        .pluck(:kind)
+        .uniq
+        .sort
+    end
+
+    def publication
+      @publish ||= existing_publication || new_publication
+    end
+
+    def existing_publication
+      SequencePublication.find_by(author_sequence_id: sequence.id)
+    end
+
+    def new_publication
+      author = device.users.first
+      SequencePublication.create!(cached_author_email: author.email,
+                                  author_device_id: device.id,
+                                  author_sequence_id: sequence.id)
+    end
+  end
+end

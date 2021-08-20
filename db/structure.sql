@@ -1444,7 +1444,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1580,6 +1580,39 @@ ALTER SEQUENCE public.sensors_id_seq OWNED BY public.sensors.id;
 
 
 --
+-- Name: sequence_publications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sequence_publications (
+    id bigint NOT NULL,
+    cached_author_email character varying NOT NULL,
+    author_device_id integer NOT NULL,
+    author_sequence_id integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: sequence_publications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sequence_publications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sequence_publications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sequence_publications_id_seq OWNED BY public.sequence_publications.id;
+
+
+--
 -- Name: sequence_usage_reports; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -1595,6 +1628,37 @@ CREATE VIEW public.sequence_usage_reports AS
            FROM public.regimen_items
           WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
    FROM public.sequences;
+
+
+--
+-- Name: sequence_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sequence_versions (
+    id bigint NOT NULL,
+    sequence_publication_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: sequence_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sequence_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sequence_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sequence_versions_id_seq OWNED BY public.sequence_versions.id;
 
 
 --
@@ -2170,6 +2234,20 @@ ALTER TABLE ONLY public.sensors ALTER COLUMN id SET DEFAULT nextval('public.sens
 
 
 --
+-- Name: sequence_publications id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_publications ALTER COLUMN id SET DEFAULT nextval('public.sequence_publications_id_seq'::regclass);
+
+
+--
+-- Name: sequence_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_versions ALTER COLUMN id SET DEFAULT nextval('public.sequence_versions_id_seq'::regclass);
+
+
+--
 -- Name: sequences id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2535,6 +2613,22 @@ ALTER TABLE ONLY public.sensor_readings
 
 ALTER TABLE ONLY public.sensors
     ADD CONSTRAINT sensors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sequence_publications sequence_publications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_publications
+    ADD CONSTRAINT sequence_publications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sequence_versions sequence_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_versions
+    ADD CONSTRAINT sequence_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3061,6 +3155,13 @@ CREATE INDEX index_sensor_readings_on_device_id ON public.sensor_readings USING 
 --
 
 CREATE INDEX index_sensors_on_device_id ON public.sensors USING btree (device_id);
+
+
+--
+-- Name: index_sequence_versions_on_sequence_publication_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sequence_versions_on_sequence_publication_id ON public.sequence_versions USING btree (sequence_publication_id);
 
 
 --
@@ -3613,6 +3714,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210720155040'),
 ('20210720183535'),
 ('20210723175109'),
-('20210803205352');
+('20210803205352'),
+('20210820134844');
 
 
