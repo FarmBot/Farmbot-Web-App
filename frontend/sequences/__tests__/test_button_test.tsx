@@ -10,8 +10,9 @@ jest.mock("../../ui/filter_search", () => ({
   FilterSearch: () => <div />
 }));
 
-jest.mock("@blueprintjs/core", () => ({
-  Popover: (props: { children: JSX.Element }) => <div>{props.children}</div>,
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
 }));
 
 import React from "react";

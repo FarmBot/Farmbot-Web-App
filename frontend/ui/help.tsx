@@ -1,8 +1,9 @@
 import React from "react";
 import {
-  Popover, PopoverInteractionKind, PopoverPosition, Position,
+  PopoverInteractionKind, PopoverPosition, Position,
 } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
+import { Popover } from "../ui";
 
 interface HelpProps {
   text: string;
@@ -21,12 +22,12 @@ export function Help(props: HelpProps) {
       ? PopoverInteractionKind.HOVER
       : PopoverInteractionKind.CLICK}
     className={props.customClass}
-    popoverClassName={"help"}>
-    <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`}
-      title={props.title} />
-    <div className={"help-text-content"}>
+    popoverClassName={"help"}
+    target={
+      <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`}
+        title={props.title} />}
+    content={<div className={"help-text-content"}>
       {t(props.text)}
       {props.links}
-    </div>
-  </Popover>;
+    </div>} />;
 }

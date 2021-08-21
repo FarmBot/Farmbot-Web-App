@@ -1,8 +1,7 @@
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import {
-  SourceFwConfig, SourceFbosConfig, ShouldDisplay,
-  BotState, ControlPanelState,
+  SourceFwConfig, SourceFbosConfig, BotState, ControlPanelState,
 } from "../devices/interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import {
@@ -27,7 +26,6 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   resources: ResourceIndex;
   deviceAccount: TaggedDevice;
   alerts: Alert[];
-  shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   bot: BotState;

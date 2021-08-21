@@ -8,7 +8,7 @@ import { editCurrentSequence, copySequence, pinSequenceToggle } from "./actions"
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import {
-  BlurableInput, Row, Col, SaveBtn, ColorPicker, Help, ToggleButton,
+  BlurableInput, Row, Col, SaveBtn, ColorPicker, Help, ToggleButton, Popover,
 } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
@@ -23,7 +23,7 @@ import { betterCompact, urlFriendly } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { Content, Actions, DeviceSetting } from "../constants";
-import { Popover, Position } from "@blueprintjs/core";
+import { Position } from "@blueprintjs/core";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { isUndefined } from "lodash";
@@ -127,12 +127,11 @@ export const SequenceBtnGroup = ({
       menuOpen={menuOpen}
       dispatch={dispatch} />
     <div className={"settings-menu-button"}>
-      <Popover position={Position.BOTTOM_RIGHT}>
-        <i className="fa fa-gear" title={t("settings")} />
-        <SequenceSettingsMenu
+      <Popover position={Position.BOTTOM_RIGHT}
+        target={<i className="fa fa-gear" title={t("settings")} />}
+        content={<SequenceSettingsMenu
           dispatch={dispatch}
-          getWebAppConfigValue={getWebAppConfigValue} />
-      </Popover>
+          getWebAppConfigValue={getWebAppConfigValue} />} />
     </div>
     {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
       <i className={`fa fa-code ${viewCeleryScript ? "enabled" : ""} step-control`}

@@ -33,7 +33,6 @@ describe("<BotPositionRows />", () => {
     firmwareSettings: {},
     firmwareHardware: undefined,
     botOnline: true,
-    shouldDisplay: () => true,
     locked: false,
   });
 

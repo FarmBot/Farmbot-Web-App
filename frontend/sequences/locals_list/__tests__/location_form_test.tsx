@@ -14,6 +14,7 @@ import {
 import { difference } from "lodash";
 import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
+import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 
 describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
@@ -111,8 +112,27 @@ describe("<LocationForm />", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.variable.dropdown.isNull = true;
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT("Add new")]));
+    const list = wrapper.find(FBSelect).first().props().list;
+    const vars = list.filter(item =>
+      item.headingId == "Variable" && !item.heading);
+    expect(vars.length).toEqual(1);
+    expect(vars[0].value).toEqual("parent");
+    expect(vars[0].label).toEqual("Add new");
+    expect(list).toEqual(expect.arrayContaining([PARENT("Add new")]));
+  });
+
+  it("doesn't show add new variable option", () => {
+    const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    const variableNameSet = fakeVariableNameSet("foo");
+    variableNameSet["bar"] = undefined;
+    p.resources.sequenceMetas[p.sequenceUuid] = variableNameSet;
+    const wrapper = shallow(<LocationForm {...p} />);
+    const list = wrapper.find(FBSelect).first().props().list;
+    const vars = list.filter(item =>
+      item.headingId == "Variable" && !item.heading);
+    expect(vars.length).toEqual(1);
+    expect(vars[0].value).toEqual("foo");
   });
 
   it("shows groups in dropdown", () => {

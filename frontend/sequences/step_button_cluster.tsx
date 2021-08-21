@@ -3,7 +3,7 @@ import { StepButton } from "./step_buttons";
 import { scrollToBottom, urlFriendly } from "../util";
 import { Col, Row } from "../ui";
 import { TaggedSequence } from "farmbot";
-import { ShouldDisplay, Feature } from "../devices/interfaces";
+import { Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { NOTHING_SELECTED } from "./locals_list/handle_select";
@@ -12,11 +12,11 @@ import { inDesigner } from "../folders/component";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
+import { shouldDisplayFeature } from "../farmware/state_to_props";
 
 export interface StepButtonProps {
   dispatch: Function;
   current: TaggedSequence | undefined;
-  shouldDisplay: ShouldDisplay;
   stepIndex: number | undefined;
   farmwareData: FarmwareData;
   sequences: TaggedSequence[];
@@ -24,7 +24,7 @@ export interface StepButtonProps {
 }
 
 export function StepButtonCluster(props: StepButtonProps) {
-  const { dispatch, current, shouldDisplay, stepIndex } = props;
+  const { dispatch, current, stepIndex } = props;
   const commonStepProps = { dispatch, current, index: stepIndex };
   const ALL_THE_BUTTONS = [
     <StepButton {...commonStepProps}
@@ -40,7 +40,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="orange">
       {t("CONTROL PERIPHERAL")}
     </StepButton>,
-    ...(shouldDisplay(Feature.toggle_peripheral)
+    ...(shouldDisplayFeature(Feature.toggle_peripheral)
       ? [<StepButton {...commonStepProps}
         step={{
           kind: "toggle_pin",

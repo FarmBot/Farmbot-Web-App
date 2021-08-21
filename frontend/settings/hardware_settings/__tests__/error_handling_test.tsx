@@ -3,11 +3,6 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../../farmware/state_to_props", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { ErrorHandling } from "../error_handling";
@@ -50,22 +45,5 @@ describe("<ErrorHandling />", () => {
     wrapper.find("button").at(0).simulate("click");
     expect(edit).toHaveBeenCalledWith(fakeConfig, { param_e_stop_on_mov_err: 0 });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
-  });
-
-  it("doesn't show new parameters", () => {
-    mockShouldDisplay = false;
-    const p = fakeProps();
-    p.controlPanelState.error_handling = true;
-    const wrapper = mount(<ErrorHandling {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("calibration retries");
-  });
-
-  it("shows new parameters", () => {
-    mockShouldDisplay = true;
-    const p = fakeProps();
-    p.controlPanelState.error_handling = true;
-    const wrapper = mount(<ErrorHandling {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("calibration retries");
-    mockShouldDisplay = false;
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Help } from "../../ui";
+import { Row, Help, Popover } from "../../ui";
 import { ToolTips, DeviceSetting } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
 import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
@@ -9,7 +9,7 @@ import {
   StockPinBindingsButton, sysBtnBindingData,
 } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
-import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
+import { Position, PopoverInteractionKind } from "@blueprintjs/core";
 import {
   PinBindingSpecialAction,
   PinBindingType,
@@ -59,12 +59,11 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
           position={Position.TOP_RIGHT}
           interactionKind={PopoverInteractionKind.HOVER}
           portalClassName={"bindings-warning-icon"}
-          popoverClassName={"help"}>
-          <i className="fa fa-exclamation-triangle" />
-          <div className={"pin-binding-warning"}>
+          popoverClassName={"help"}
+          target={<i className="fa fa-exclamation-triangle" />}
+          content={<div className={"pin-binding-warning"}>
             {t(ToolTips.PIN_BINDING_WARNING)}
-          </div>
-        </Popover>
+          </div>} />
       </Row>
     </Highlight>
     <div className={"pin-bindings-list-and-input"}>

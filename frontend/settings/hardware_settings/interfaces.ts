@@ -1,6 +1,6 @@
 import {
   BotState, SourceFwConfig,
-  ControlPanelState, Axis, ShouldDisplay, SourceFbosConfig,
+  ControlPanelState, Axis, SourceFbosConfig,
 } from "../../devices/interfaces";
 import { McuParamName, McuParams, FirmwareHardware, Xyz } from "farmbot";
 import { IntegerSize } from "../../util";
@@ -109,7 +109,6 @@ export interface MotorsProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
-  shouldDisplay: ShouldDisplay;
   showAdvanced: boolean;
 }
 
@@ -149,7 +148,6 @@ export interface ParameterManagementProps {
   getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;
   arduinoBusy: boolean;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface ShowAdvancedToggleProps {

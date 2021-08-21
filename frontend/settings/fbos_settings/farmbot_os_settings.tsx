@@ -11,6 +11,7 @@ import { Header } from "../hardware_settings/header";
 import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
 import { OrderNumberRow } from "./order_number_row";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
 
 export enum ColWidth {
   label = 3,
@@ -20,8 +21,7 @@ export enum ColWidth {
 
 export const FarmBotSettings = (props: FarmbotSettingsProps) => {
   const {
-    dispatch, device, shouldDisplay, timeSettings, sourceFbosConfig,
-    botOnline,
+    dispatch, device, timeSettings, sourceFbosConfig, botOnline,
   } = props;
   const commonProps = { dispatch, device };
   return <Highlight className={"section"}
@@ -45,7 +45,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
         timeSettings={timeSettings} />
-      {shouldDisplay(Feature.boot_sequence) && <BootSequenceSelector />}
+      {shouldDisplayFeature(Feature.boot_sequence) && <BootSequenceSelector />}
     </Collapse>
   </Highlight>;
 };

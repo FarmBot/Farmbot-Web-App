@@ -33,14 +33,6 @@ export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
 export const isExpress = (firmwareHardware: FirmwareHardware | undefined) =>
   !!(firmwareHardware && EXPRESS_BOARDS.includes(firmwareHardware));
 
-export const hasZ2Params = (
-  firmwareHardware: FirmwareHardware | undefined,
-  shouldDisplay: ShouldDisplay,
-) =>
-  shouldDisplay(Feature.z2_firmware_params_all) ||
-  (isTMCBoard(firmwareHardware) && shouldDisplay(Feature.z2_firmware_params_tmc)) ||
-  isExpress(firmwareHardware);
-
 export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);
 

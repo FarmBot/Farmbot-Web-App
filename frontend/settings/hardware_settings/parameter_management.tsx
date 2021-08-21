@@ -1,8 +1,8 @@
 import React from "react";
 import { ParameterManagementProps, ShowAdvancedToggleProps } from "./interfaces";
-import { Row, Col, BlurableInput, Help, ToggleButton } from "../../ui";
+import { Row, Col, BlurableInput, Help, ToggleButton, Popover } from "../../ui";
 import { Header } from "./header";
-import { Collapse, Popover, Position } from "@blueprintjs/core";
+import { Collapse, Position } from "@blueprintjs/core";
 import { Content, DeviceSetting, ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
@@ -43,8 +43,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
             <SettingLoadProgress botOnline={botOnline}
               firmwareHardware={firmwareHardware}
               firmwareConfig={props.firmwareConfig}
-              sourceFwConfig={props.sourceFwConfig}
-              shouldDisplay={props.shouldDisplay} />
+              sourceFwConfig={props.sourceFwConfig} />
           </Col>
         </Row>
       </Highlight>
@@ -74,10 +73,10 @@ export function ParameterManagement(props: ParameterManagementProps) {
             </label>
           </Col>
           <Col xs={4} className={"centered-button-div"}>
-            <Popover position={Position.BOTTOM_RIGHT}>
-              <i className="fa fa-download" />
-              <FwParamExportMenu firmwareConfig={props.firmwareConfig} />
-            </Popover>
+            <Popover position={Position.BOTTOM_RIGHT}
+              target={<i className="fa fa-download" />}
+              content={
+                <FwParamExportMenu firmwareConfig={props.firmwareConfig} />} />
           </Col>
         </Row>
       </Highlight>
