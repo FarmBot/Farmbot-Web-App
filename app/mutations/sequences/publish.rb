@@ -36,7 +36,7 @@ module Sequences
                                      name: sequence.name,
                                      color: sequence.color,
                                      description: description)
-        celery = CeleryScript::FetchCelery.run!(sequence: sequence)
+        celery = Sequences::Show.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
         flat_ast = Fragments::Preprocessor.run!(**params)
         Fragments::Create.run!(flat_ast: flat_ast, owner: sv)

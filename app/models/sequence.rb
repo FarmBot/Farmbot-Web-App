@@ -76,7 +76,7 @@ class Sequence < ApplicationRecord
   # is ready to broadcast as soon as it is created. It isn't. It needs to get
   # "linked" with sequence nodes before it can be broadcasted.
   def body_as_json
-    return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
+    return destroyed? ? nil : Sequences::Show.run!(sequence: self)
   end
 
   def fancy_name

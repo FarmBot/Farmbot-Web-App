@@ -19,7 +19,7 @@ module Sequences
         update_sequence
         unfork
       end
-      sequence
+      Sequences::Show.run!(sequence: sequence)
     end
 
     private
@@ -58,7 +58,7 @@ module Sequences
         # use the new value.
         sequence_version[val]
       else
-        # The downstream value was modifeid by the end user;
+        # The downstream value was modified by the end user;
         # Only the end user can change the value moving
         # forward.
         current_attr

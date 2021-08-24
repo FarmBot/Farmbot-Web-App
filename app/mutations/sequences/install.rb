@@ -14,11 +14,12 @@ module Sequences
     end
 
     def execute
-      Sequence.create!(forked: false,
-                       name: sequence_version.name,
-                       color: sequence_version.color,
-                       device: device,
-                       sequence_version_id: sequence_version.id)
+      s = Sequence.create!(forked: false,
+                           name: sequence_version.name,
+                           color: sequence_version.color,
+                           device: device,
+                           sequence_version_id: sequence_version.id)
+      Sequences::Show.run!(sequence: s)
     end
 
     private

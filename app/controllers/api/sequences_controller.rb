@@ -5,11 +5,11 @@ module Api
     def index
       render json: sequences
                .to_a
-               .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
+               .map { |s| Sequences::Show.run!(sequence: s) }
     end
 
     def show
-      render json: CeleryScript::FetchCelery.run!(sequence: sequence)
+      render json: Sequences::Show.run!(sequence: sequence)
     end
 
     def create
@@ -29,7 +29,7 @@ module Api
     # Share your sequence with other people
     # POST /sequences/:id/publish
     def publish
-      mutate Sequences::Publish.run(raw_json, sequence: sequence, device: current_device)
+      mutate Sequences::Publish.run(sequence: sequence, device: current_device)
     end
 
     # Unlist your sequence.
@@ -46,7 +46,7 @@ module Api
     end
 
     # Upgrade a sequence that already uses a sequence version.
-    # post /sequences/:sequence_id/:sequence_version_id/install
+    # post /sequences/:id/upgrade/:sequence_version_id
     def upgrade
       mutate Sequences::Upgrade.run(sequence_version: sequence_version,
                                     sequence: sequence,
@@ -56,7 +56,7 @@ module Api
     private
 
     def sequence_version
-      @sequence_version ||= SequenceVersion.find(params[:id])
+      @sequence_version ||= SequenceVersion.find(params[:sequence_version_id])
     end
 
     def sequence_params

@@ -19,23 +19,23 @@ describe Sequences::Upgrade do
   let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
   let(:other_device) { FactoryBot.create(:user).device }
-  let(:sequence) { fake_sequence(device: device, body: body) }
+  let(:sequence) { FakeSequence.with_parameters(device: device, body: body) }
 
-  it "installs a specific sequence version" do
+  it "upgrades to a specific sequence version" do
     # Create a shared sequence
-    pub_seq = fake_sequence(device: other_device,
-                            color: "red",
-                            name: "upstream")
+    pub_seq = FakeSequence.with_parameters(device: other_device,
+                                           color: "red",
+                                           name: "upstream")
     sv = Sequences::Publish
       .run!(device: other_device, sequence: pub_seq)
       .sequence_versions
       .first
     # Create a sequence owned by someone else
     body = [{ kind: "wait", args: { milliseconds: 3000 } }]
-    priv_seq = fake_sequence(device: device,
-                             body: body,
-                             color: "red",
-                             name: "forked")
+    priv_seq = FakeSequence.with_parameters(device: device,
+                                            body: body,
+                                            color: "red",
+                                            name: "forked")
     # Upgrade to thepub_seq of someone elses account
     Sequences::Upgrade.run!(device: device,
                             sequence: priv_seq,
@@ -47,12 +47,19 @@ describe Sequences::Upgrade do
     expect(priv_seq.device).to eq(device)
     expect(priv_seq.forked).to eq(false)
     expect(priv_seq.sequence_version_id).to eq(sv.id)
+    # After upgrading once, the `name` and `color` attrs
+    # should keep downstream changes
+    priv_seq.update!(name: "changed by end user", color: "blue")
+    Sequences::Upgrade.run!(device: device, sequence: priv_seq, sequence_version: sv)
+    priv_seq.reload
+    expect(priv_seq.color).to eq("blue")
+    expect(priv_seq.name).to eq("changed by end user")
   end
 
   it "does not let you upgrade other peoples sequences" do
-    pub_seq = fake_sequence(device: other_device,
-                            color: "red",
-                            name: "upstream")
+    pub_seq = FakeSequence.with_parameters(device: other_device,
+                                           color: "red",
+                                           name: "upstream")
     sv = Sequences::Publish
       .run!(device: other_device, sequence: pub_seq)
       .sequence_versions
@@ -66,18 +73,14 @@ describe Sequences::Upgrade do
   end
 
   it "does not allow upgrade of unpublished sequeces" do
-    pub_seq = fake_sequence(device: other_device, color: "red", name: "---")
+    pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
     Sequences::Publish.run!(device: other_device, sequence: pub_seq)
     publication = Sequences::Unpublish.run!(device: other_device, sequence: pub_seq)
     sv = publication.sequence_versions.sample
     mut = Sequences::Upgrade.run(device: device,
                                  sequence_version: sv,
-                                 sequence: fake_sequence(device: device))
+                                 sequence: FakeSequence.with_parameters(device: device))
     msg = "Can't install unpublished sequences"
     expect(mut.errors["sequence_version"].message).to eq(msg)
-  end
-
-  def fake_sequence(input)
-    FakeSequence.with_parameters(input)
   end
 end

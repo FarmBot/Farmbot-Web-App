@@ -2,27 +2,22 @@ require "spec_helper"
 
 describe Api::SequencesController do
   include Devise::Test::ControllerHelpers
+  describe "#unpublish" do
+    let(:user) { FactoryBot.create(:user) }
+    let(:device) { user.device }
+    let(:sequence) { FakeSequence.create(device: user.device) }
 
-  let(:user) { FactoryBot.create(:user) }
-  let(:device) { user.device }
-  let(:sequence) { fake_sequence(device: device) }
-  let(:other_device) { FactoryBot.create(:user).device }
+    before :each do
+      request.headers["accept"] = "application/json"
+      sign_in user
+    end
 
-  it "unpublishes a sequence" do
-    publication = Sequences::Publish.run!(sequence: sequence, device: device)
-    expect(publication.published).to be(true)
-    Sequences::Unpublish.run!(device: device, sequence: sequence)
-    expect(publication.reload.published).to be(false)
-  end
-
-  it "prevents unpublishing other users sequences" do
-    expect do
-      Sequences::Unpublish.run!(sequence: fake_sequence(device: other_device),
-                                device: device)
-    end.to raise_error(Errors::Forbidden)
-  end
-
-  def fake_sequence(input)
-    FakeSequence.with_parameters(input)
+    it "unpublishes a shared sequence via #unpublish" do
+      sp = Sequences::Publish.run!(sequence: sequence, device: device)
+      expect(sp.published).to be(true)
+      post :unpublish, params: { format: :json, id: sequence.id }
+      expect(response.ok?).to be(true)
+      expect(sp.reload.published).to be(false)
+    end
   end
 end

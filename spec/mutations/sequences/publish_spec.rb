@@ -14,19 +14,19 @@ describe Sequences::Publish do
   let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
   let(:other_device) { FactoryBot.create(:user).device }
-  let(:sequence) { fake_sequence(device: device, body: body) }
+  let(:sequence) { FakeSequence.with_parameters(device: device, body: body) }
 
   it "allows override by admins"
 
   it "disallows denied nodes and args" do
-    bad = fake_sequence(device: device, body: [
-                          {
-                            kind: "lua",
-                            args: {
-                              lua: "os.cmd('cat /etc/password')",
-                            },
-                          },
-                        ])
+    bad = FakeSequence.with_parameters(device: device, body: [
+                                         {
+                                           kind: "lua",
+                                           args: {
+                                             lua: "os.cmd('cat /etc/password')",
+                                           },
+                                         },
+                                       ])
     problems = Sequences::Publish.run(sequence: bad, device: device)
     expected = "For security reasons, we can't publish sequences " \
                "that contain the following content: lua"
@@ -86,19 +86,15 @@ describe Sequences::Publish do
 
   it "disallows publishing other people's stuff" do
     expect do
-      Sequences::Publish.run!(sequence: fake_sequence(device: other_device),
+      Sequences::Publish.run!(sequence: FakeSequence.with_parameters(device: other_device),
                               device: device)
     end.to raise_error(Errors::Forbidden)
   end
 
   it "publishes an empty sequence" do
-    sequence = fake_sequence(device: device)
+    sequence = FakeSequence.with_parameters(device: device)
     expect(sequence.device_id).to eq(device.id)
     sp = Sequences::Publish.run!(sequence: sequence, device: device)
     expect(sp.published).to be(true)
-  end
-
-  def fake_sequence(input)
-    FakeSequence.with_parameters(input)
   end
 end
