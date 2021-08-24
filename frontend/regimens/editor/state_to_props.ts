@@ -10,7 +10,7 @@ import {
 import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces";
-import { randomColor, timeFormatString } from "../../util";
+import { timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
 import { RegimenEditorProps } from "./interfaces";
 
@@ -84,7 +84,7 @@ const createRows = (
     const { time_offset } = item;
     const d = moment.duration(time_offset);
     const { name } = sequence.body;
-    const color = sequence.body.color || randomColor();
+    const color = sequence.body.color;
     const FORMAT = timeFormatString(timeSettings);
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;

@@ -21,6 +21,7 @@ export const TileLua = (props: StepParams<Lua>) => {
     currentStep={props.currentStep}
     dispatch={props.dispatch}
     index={props.index}
+    monacoEditor={monaco}
     toggleMonacoEditor={() => setMonaco(!monaco)}
     resources={props.resources}>
     <Row>

@@ -13,6 +13,13 @@ describe("<StepHeader />", () => {
     index: 0,
     executeSequence: undefined,
     pinnedSequence: undefined,
+    pinnedView: undefined,
+    togglePinnedView: undefined,
+    viewRaw: undefined,
+    toggleViewRaw: undefined,
+    monacoEditor: undefined,
+    toggleMonacoEditor: undefined,
+    links: undefined,
     children: "child",
     confirmStepDeletion: false,
   });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "./step_icon_group";
@@ -16,10 +16,14 @@ export interface StepHeaderProps {
   index: number;
   executeSequence: SequenceResource | undefined;
   pinnedSequence: SequenceResource | undefined;
+  pinnedView: boolean | undefined;
+  togglePinnedView: (() => void) | undefined;
   confirmStepDeletion: boolean;
-  toggleViewRaw?: () => void;
-  toggleMonacoEditor?(): void;
-  links?: React.ReactElement[];
+  viewRaw: boolean | undefined;
+  toggleViewRaw: (() => void) | undefined;
+  monacoEditor: boolean | undefined;
+  toggleMonacoEditor: (() => void) | undefined;
+  links: React.ReactElement[] | undefined;
 }
 
 interface StepHeaderState {
@@ -60,9 +64,13 @@ export class StepHeader
             step={currentStep}
             sequence={currentSequence}
             executeSequenceName={this.props.executeSequence?.name}
+            pinnedView={this.props.pinnedView}
+            togglePinnedView={this.props.togglePinnedView}
             helpText={t(helpText)}
             links={this.props.links}
+            viewRaw={this.props.viewRaw}
             toggleViewRaw={this.props.toggleViewRaw}
+            monacoEditor={this.props.monacoEditor}
             toggleMonacoEditor={this.props.toggleMonacoEditor}
             confirmStepDeletion={confirmStepDeletion} />
         </div>
