@@ -1,6 +1,6 @@
 import React from "react";
 import { StepParams } from "../interfaces";
-import { Row, Col, DropDownItem } from "../../ui/index";
+import { Row, Col, DropDownItem } from "../../ui";
 import { Execute, ParameterApplication } from "farmbot/dist";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
@@ -30,7 +30,13 @@ const assignVariable = (props: StepParams<Execute>) =>
       }));
     };
 
-export class TileExecute extends React.Component<StepParams<Execute>> {
+interface ExecuteStepState {
+  pinnedView: boolean;
+}
+
+export class TileExecute
+  extends React.Component<StepParams<Execute>, ExecuteStepState> {
+  state: ExecuteStepState = { pinnedView: true };
 
   /**
    * Replace `sequence_id` with the new selection and fill the execute step
@@ -52,6 +58,9 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
       }
     }));
   }
+
+  get pinnedView() { return this.state.pinnedView; }
+  togglePinnedView = () => this.setState({ pinnedView: !this.pinnedView });
 
   render() {
     const { dispatch, currentStep, index, currentSequence, resources
@@ -80,8 +89,10 @@ export class TileExecute extends React.Component<StepParams<Execute>> {
       currentStep={currentStep}
       dispatch={dispatch}
       index={index}
+      pinnedView={this.pinnedView}
+      togglePinnedView={this.togglePinnedView}
       resources={resources}>
-      {!pinned &&
+      {(!pinned || !this.pinnedView) &&
         <Row>
           <Col>
             <SequenceSelectBox

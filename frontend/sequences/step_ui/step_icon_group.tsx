@@ -18,9 +18,13 @@ export interface StepIconBarProps {
   executeSequenceName: string | undefined;
   helpText: string;
   confirmStepDeletion: boolean;
-  toggleViewRaw?: () => void;
-  toggleMonacoEditor?(): void;
-  links?: React.ReactElement[];
+  viewRaw: boolean | undefined;
+  toggleViewRaw: (() => void) | undefined;
+  monacoEditor: boolean | undefined;
+  toggleMonacoEditor: (() => void) | undefined;
+  links: React.ReactElement[] | undefined;
+  pinnedView: boolean | undefined;
+  togglePinnedView: (() => void) | undefined;
 }
 
 export function StepUpDownButtonPopover(
@@ -55,12 +59,16 @@ export function StepIconGroup(props: StepIconBarProps) {
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
+    {props.togglePinnedView &&
+      <i className={`fa fa-thumb-tack ${props.pinnedView ? "enabled" : ""}`}
+        title={t("toggle pinned view")}
+        onClick={props.togglePinnedView} />}
     {props.toggleMonacoEditor &&
-      <i className={"fa fa-font"}
+      <i className={`fa fa-font ${props.monacoEditor ? "enabled" : ""}`}
         title={t("toggle fancy editor")}
         onClick={props.toggleMonacoEditor} />}
     {props.toggleViewRaw &&
-      <i className={"fa fa-code"}
+      <i className={`fa fa-code ${props.viewRaw ? "enabled" : ""}`}
         title={t("toggle code view")}
         onClick={props.toggleViewRaw} />}
     <Help text={helpText} position={Position.TOP} title={t("help")}

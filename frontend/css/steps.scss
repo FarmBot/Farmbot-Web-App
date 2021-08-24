@@ -242,6 +242,14 @@
   &.fa-code {
     font-weight: bold;
   }
+  &.fa-thumb-tack,
+  &.fa-font,
+  &.fa-code {
+    color: $placeholder_gray;
+    &.enabled {
+      color: $dark_gray;
+    }
+  }
 }
 
 .step-content {
@@ -299,11 +307,12 @@
     .row {
       margin: 0;
     }
-    &.pinned {
+    &.pinned-view {
       .location-form {
         background: none;
         margin-top: 0;
         max-width: unset;
+        box-shadow: none;
         .location-form-header {
           background: none;
           padding: 0;
