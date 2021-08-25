@@ -1,7 +1,7 @@
 require "spec_helper"
 require_relative "./flat_ir_helpers"
 
-describe CeleryScript::FetchCelery do
+describe Sequences::Show do
   let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
 
@@ -16,7 +16,7 @@ describe CeleryScript::FetchCelery do
     params = CeleryScript::FlatIrHelpers.typical_sequence
     params[:device] = device
     hash = Sequences::Create.run!(params)
-    actual = CeleryScript::FetchCelery
+    actual = Sequences::Show
       .run!(sequence: Sequence.find(hash[:id]))
     expected = hash.without(:device_id)
     expect(actual[:body]).to be_kind_of(Array)

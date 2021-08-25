@@ -156,7 +156,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:args][:foo]).to eq(nil)
-      generated_result = CeleryScript::FetchCelery
+      generated_result = Sequences::Show
         .run!(sequence: Sequence.find(json[:id]))
         .deep_symbolize_keys
       expect(generated_result.dig(:args, :foo)).to eq(nil)
@@ -290,7 +290,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       dig_path = [:args, :locals, :body, 0, :args, :label]
-      generated_result = CeleryScript::FetchCelery
+      generated_result = Sequences::Show
         .run!(sequence: Sequence.find(json[:id]))
         .deep_symbolize_keys
       expect(generated_result.dig(*dig_path)).to eq("parent")

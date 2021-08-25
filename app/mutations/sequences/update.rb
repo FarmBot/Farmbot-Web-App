@@ -34,12 +34,11 @@ module Sequences
       color
       integer :folder_id
       boolean :pinned
+      string :description
     end
 
     def validate
       validate_sequence
-      # regimens_cant_have_parameters
-      # farm_events_cant_have_parameters
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
@@ -53,7 +52,7 @@ module Sequences
         end
         sequence
       end
-      CeleryScript::FetchCelery.run!(sequence: sequence, args: args, body: body)
+      Sequences::Show.run!(sequence: sequence, args: args, body: body)
     end
 
     def folder_stuff
