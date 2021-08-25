@@ -8,6 +8,9 @@ import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { t } from "../i18next_wrapper";
 import { isNumber } from "lodash";
 import { sequencesUrlBase } from "../folders/component";
+import { error, success } from "../toast/toast";
+import { API } from "../api";
+import axios from "axios";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -58,3 +61,16 @@ export const closeCommandMenu = () => ({
   type: Actions.SET_SEQUENCE_STEP_POSITION,
   payload: undefined,
 });
+
+export const publishSequence = (id: number | undefined) =>
+  axios.post(`${API.current.sequencesPath}${id}/publish`)
+    .then(() => success(t("Sequence published.")),
+      () => error(t("Publish error.")));
+
+export const upgradeSequence = (
+  id: number | undefined,
+  sequenceVersionId: number | undefined,
+) =>
+  axios.post(`${API.current.sequencesPath}${id}/upgrade/${sequenceVersionId}`)
+    .then(() => success(t("Sequence upgraded.")),
+      () => error(t("Upgrade error.")));

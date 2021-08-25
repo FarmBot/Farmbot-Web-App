@@ -34,6 +34,7 @@ module Sequences
       color
       integer :folder_id
       boolean :pinned
+      boolean :forked
       string :description
     end
 

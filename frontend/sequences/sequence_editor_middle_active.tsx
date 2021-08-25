@@ -4,7 +4,10 @@ import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
 } from "./interfaces";
-import { editCurrentSequence, copySequence, pinSequenceToggle } from "./actions";
+import {
+  editCurrentSequence, copySequence, pinSequenceToggle, publishSequence,
+  upgradeSequence,
+} from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import {
@@ -31,6 +34,8 @@ import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 import { getModifiedClassName } from "../settings/default_values";
+import { DevSettings } from "../settings/dev/dev_support";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -165,6 +170,15 @@ export const SequenceBtnGroup = ({
         dispatch(destroy(sequence.uuid, force))
           .then(() => push(sequencesUrlBase()));
       }} />
+    {DevSettings.futureFeaturesEnabled() &&
+      <i className={"fa fa-share"}
+        title={t("share sequence")}
+        onClick={() => publishSequence(sequence.body.id)} />}
+    {sequence.body["forked" as keyof SequenceResource] &&
+      <i className={"fa fa-code-fork"}
+        title={t("un-fork sequence")}
+        onClick={() => upgradeSequence(sequence.body.id, sequence.body[
+          "sequence_version_id" as keyof SequenceResource] as number)} />}
   </div>;
 
 export const SequenceName = ({ dispatch, sequence }: {
