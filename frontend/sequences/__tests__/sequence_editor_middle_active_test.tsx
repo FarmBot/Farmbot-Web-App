@@ -304,6 +304,14 @@ describe("<SequenceBtnGroup />", () => {
       expect.objectContaining({ uuid: p.sequence.uuid }),
       { color: "red" });
   });
+
+  it("shows view celery script enabled", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => true;
+    p.viewCeleryScript = true;
+    const wrapper = shallow(<SequenceBtnGroup {...p} />);
+    expect(wrapper.find(".fa-code").hasClass("enabled")).toBeTruthy();
+  });
 });
 
 describe("onDrop()", () => {

@@ -20,8 +20,11 @@ export interface StepWrapperProps {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  monacoEditor?: boolean;
   toggleMonacoEditor?(): void;
   links?: React.ReactElement[];
+  pinnedView?: boolean;
+  togglePinnedView?(): void;
 }
 
 export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
@@ -64,7 +67,11 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         index={this.props.index}
         executeSequence={executeSequence}
         pinnedSequence={pinnedSequence}
+        pinnedView={this.props.pinnedView}
+        togglePinnedView={this.props.togglePinnedView}
+        viewRaw={!!this.viewRaw}
         toggleViewRaw={this.toggleViewRaw}
+        monacoEditor={this.props.monacoEditor}
         toggleMonacoEditor={this.props.toggleMonacoEditor}
         confirmStepDeletion={confirmStepDeletion}>
         {this.props.warning}

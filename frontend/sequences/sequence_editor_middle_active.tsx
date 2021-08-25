@@ -204,7 +204,11 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
         sequenceUuid={sequence.uuid}
         resources={props.resources}
         onChange={localListCallback(props)(declarations)}
-        removeVariable={removeVariable(props)}
+        removeVariable={removeVariable({
+          dispatch,
+          resource: sequence,
+          variableData: {},
+        })}
         locationDropdownKey={JSON.stringify(sequence)}
         allowedVariableNodes={AllowedVariableNodes.parameter}
         collapsible={true}
