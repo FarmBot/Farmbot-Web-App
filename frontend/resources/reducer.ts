@@ -27,6 +27,7 @@ import { initialState as alertState } from "../messages/reducer";
 import { ingest } from "../folders/data_transfer";
 import { searchFolderTree } from "../folders/search_folder_tree";
 import { photosState } from "../photos/reducer";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 export const emptyState = (): RestResources => {
   return {
@@ -118,6 +119,11 @@ export const resourceReducer =
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
+      if (original.kind == "Sequence"
+        && original.body["sequence_version_id" as keyof SequenceResource]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (update as any).forked = true;
+      }
       original.body = update;
       indexUpsert(s.index, [original], "ongoing");
       mutateSpecialStatus(uuid, s.index, specialStatus);

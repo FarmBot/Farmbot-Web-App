@@ -15,6 +15,8 @@ jest.mock("../actions", () => ({
   copySequence: jest.fn(),
   editCurrentSequence: jest.fn(),
   pinSequenceToggle: jest.fn(),
+  publishSequence: jest.fn(),
+  upgradeSequence: jest.fn(),
 }));
 
 jest.mock("../step_tiles/index", () => ({
@@ -40,6 +42,11 @@ jest.mock("../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => jest.fn()),
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
@@ -63,7 +70,9 @@ import {
 } from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus, ParameterDeclaration } from "farmbot";
 import { move, splice, stringifySequenceData } from "../step_tiles";
-import { copySequence, editCurrentSequence, pinSequenceToggle } from "../actions";
+import {
+  copySequence, editCurrentSequence, pinSequenceToggle, publishSequence, upgradeSequence,
+} from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
@@ -73,6 +82,7 @@ import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -96,6 +106,19 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.html()).not.toContain("fa-code");
     expect(wrapper.text()).not.toContain("locals");
+    expect(wrapper.html()).not.toContain("fa-code-fork");
+  });
+
+  it("un-forks sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    p.sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
+    p.sequence.body["forked" as keyof SequenceResource] = true as never;
+    p.getWebAppConfigValue = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.html()).toContain("fa-code-fork");
+    wrapper.find(".fa-code-fork").simulate("click");
+    expect(upgradeSequence).toHaveBeenCalledWith(123, 1);
   });
 
   it("renders celery script view control", () => {
@@ -311,6 +334,15 @@ describe("<SequenceBtnGroup />", () => {
     p.viewCeleryScript = true;
     const wrapper = shallow(<SequenceBtnGroup {...p} />);
     expect(wrapper.find(".fa-code").hasClass("enabled")).toBeTruthy();
+  });
+
+  it("publishes sequence", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    const wrapper = shallow(<SequenceBtnGroup {...p} />);
+    wrapper.find(".fa-share").simulate("click");
+    expect(publishSequence).toHaveBeenCalledWith(123);
   });
 });
 

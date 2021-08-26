@@ -28,7 +28,7 @@ const fakeProps = (): StepParams<Execute> => ({
   resources: emptyState().index,
 });
 
-describe("<ExecuteBlock />", () => {
+describe("<TileExecute />", () => {
   it("renders inputs", () => {
     const block = mount(<TileExecute {...fakeProps()} />);
     const inputs = block.find("input");
@@ -52,9 +52,11 @@ describe("<ExecuteBlock />", () => {
     p.currentStep.args.sequence_id = mockSequence.body.id;
     mockSequence.body.pinned = true;
     mockSequence.body.name = "Pinned Sequence";
-    const block = mount(<TileExecute {...p} />);
+    const block = mount<TileExecute>(<TileExecute {...p} />);
     expect(block.html().toLowerCase()).toContain("placeholder=\"pinned sequence");
     expect(block.html().toLowerCase()).not.toContain("filter-search");
+    block.instance().togglePinnedView();
+    expect(block.html().toLowerCase()).toContain("filter-search");
   });
 
   it("selects sequence", () => {
