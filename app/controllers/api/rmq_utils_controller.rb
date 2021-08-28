@@ -186,7 +186,6 @@ module Api
     end
 
     def deny(reason)
-      puts "=== DENIED: #{reason}"
       maybe_alert_user(reason)
       render json: "deny", status: 403
     end
