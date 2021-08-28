@@ -261,7 +261,7 @@ module Api
           bot.last_saw_api = Time.now
           # Do _not_ set the FBOS version to 0.0.0 if the UA header is missing.
           if v > NULL && v < NOT_FBOS
-            bot.fbos_version = v.to_s
+            bot.fbos_version = (v.to_s || "").first(14)
             bot.save!
           end
         end
