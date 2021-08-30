@@ -3,13 +3,11 @@ import {
   DefaultFarmwareStep, FarmwareName, TileExecuteScript,
 } from "../tile_execute_script";
 import { mount, shallow } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ExecuteScript } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
-import { emptyState } from "../../../resources/reducer";
 import {
-  fakeFarmwareData,
+  fakeFarmwareData, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileExecuteScript />", () => {
@@ -19,14 +17,10 @@ describe("<TileExecuteScript />", () => {
     farmwareData.firstPartyFarmwareNames = ["one"];
     farmwareData.farmwareConfigs = { "farmware-to-execute": [] };
     return {
-      currentSequence: fakeSequence(),
-      currentStep: {
+      ...fakeStepParams({
         kind: "execute_script",
         args: { label: "farmware-to-execute" }
-      },
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
+      }),
       farmwareData,
     };
   };

@@ -18,6 +18,7 @@ export interface StepWrapperProps {
   currentSequence: TaggedSequence;
   currentStep: SequenceBodyItem;
   dispatch: Function;
+  readOnly: boolean;
   index: number;
   resources: ResourceIndex;
   monacoEditor?: boolean;
@@ -64,6 +65,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         currentSequence={this.props.currentSequence}
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}
+        readOnly={this.props.readOnly}
         index={this.props.index}
         executeSequence={executeSequence}
         pinnedSequence={pinnedSequence}

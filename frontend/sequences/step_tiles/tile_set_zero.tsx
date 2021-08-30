@@ -7,14 +7,9 @@ import { AxisStepRadio } from "../step_ui/step_radio";
 import { Zero } from "farmbot";
 
 export const TileSetZero = (props: StepParams<Zero>) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"set-zero-step"}
-    helpText={ToolTips.SET_HOME_POSITION}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={ToolTips.SET_HOME_POSITION}>
     <AxisStepRadio
       currentSequence={props.currentSequence}
       currentStep={props.currentStep}

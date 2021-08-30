@@ -52,6 +52,7 @@ export class StepTitleBar extends React.Component<StepTitleBarProps, {}> {
       && step.args.label == FarmwareName.MeasureSoilHeight
       && t("MEASURE SOIL HEIGHT");
     return <div className={"step-comment"}
+      style={this.props.readOnly ? { pointerEvents: "none" } : {}}
       onMouseEnter={this.props.toggleDraggable("enter")}
       onMouseLeave={this.props.toggleDraggable("leave")}>
       <BlurableInput className="step-label"

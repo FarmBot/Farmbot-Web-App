@@ -16,6 +16,7 @@ jest.mock("../actions", () => ({
   editCurrentSequence: jest.fn(),
   pinSequenceToggle: jest.fn(),
   publishSequence: jest.fn(),
+  unpublishSequence: jest.fn(),
   upgradeSequence: jest.fn(),
 }));
 
@@ -54,11 +55,13 @@ import {
   SequenceSetting,
   SequenceHeader,
   SequenceBtnGroup,
+  SequenceShareMenu,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import {
   ActiveMiddleProps, SequenceBtnGroupProps, SequenceSettingProps,
   SequenceSettingsMenuProps,
+  SequenceShareMenuProps,
 } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex,
@@ -71,7 +74,8 @@ import {
 import { SpecialStatus, ParameterDeclaration } from "farmbot";
 import { move, splice, stringifySequenceData } from "../step_tiles";
 import {
-  copySequence, editCurrentSequence, pinSequenceToggle, publishSequence, upgradeSequence,
+  copySequence, editCurrentSequence, pinSequenceToggle, publishSequence,
+  upgradeSequence,
 } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
@@ -109,15 +113,27 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.html()).not.toContain("fa-code-fork");
   });
 
-  it("un-forks sequence", () => {
+  it("upgrades sequence", () => {
     const p = fakeProps();
     p.sequence.body.id = 123;
     p.sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
+    p.sequence.body["sequence_versions" as keyof SequenceResource] = [2] as never;
     p.sequence.body["forked" as keyof SequenceResource] = true as never;
     p.getWebAppConfigValue = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.html()).toContain("fa-code-fork");
-    wrapper.find(".fa-code-fork").simulate("click");
+    wrapper.find(".transparent-button").simulate("click");
+    expect(upgradeSequence).toHaveBeenCalledWith(123, 2);
+  });
+
+  it("resets forked sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    p.sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
+    p.sequence.body["sequence_versions" as keyof SequenceResource] = [1] as never;
+    p.sequence.body["forked" as keyof SequenceResource] = true as never;
+    p.getWebAppConfigValue = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".transparent-button").simulate("click");
     expect(upgradeSequence).toHaveBeenCalledWith(123, 1);
   });
 
@@ -336,13 +352,10 @@ describe("<SequenceBtnGroup />", () => {
     expect(wrapper.find(".fa-code").hasClass("enabled")).toBeTruthy();
   });
 
-  it("publishes sequence", () => {
+  it("shows publish menu", () => {
     mockDev = true;
-    const p = fakeProps();
-    p.sequence.body.id = 123;
-    const wrapper = shallow(<SequenceBtnGroup {...p} />);
-    wrapper.find(".fa-share").simulate("click");
-    expect(publishSequence).toHaveBeenCalledWith(123);
+    const wrapper = shallow(<SequenceBtnGroup {...fakeProps()} />);
+    expect(wrapper.find(".publish-button").length).toEqual(1);
   });
 });
 
@@ -439,6 +452,20 @@ describe("<SequenceSettingsMenu />", () => {
     wrapper.find("button").at(2).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
+  });
+});
+
+describe("<SequenceShareMenu />", () => {
+  const fakeProps = (): SequenceShareMenuProps => ({
+    sequence: fakeSequence(),
+  });
+
+  it("publishes sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    const wrapper = mount(<SequenceShareMenu {...p} />);
+    clickButton(wrapper, 0, "publish");
+    expect(publishSequence).toHaveBeenCalledWith(123);
   });
 });
 

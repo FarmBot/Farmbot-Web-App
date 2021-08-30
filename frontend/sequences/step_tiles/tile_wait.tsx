@@ -3,18 +3,13 @@ import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export const TileWait = (props: StepParams) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"wait-step"}
-    helpText={ToolTips.WAIT}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={ToolTips.WAIT}>
     <Row>
       <Col xs={6}>
         <label>{t("Time in milliseconds")}</label>

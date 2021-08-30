@@ -25,6 +25,7 @@ export interface StepIconBarProps {
   links: React.ReactElement[] | undefined;
   pinnedView: boolean | undefined;
   togglePinnedView: (() => void) | undefined;
+  readOnly: boolean;
 }
 
 export function StepUpDownButtonPopover(
@@ -39,7 +40,7 @@ export function StepUpDownButtonPopover(
 
 export function StepIconGroup(props: StepIconBarProps) {
   const {
-    index, dispatch, step, sequence, helpText, confirmStepDeletion
+    index, dispatch, step, sequence, helpText, confirmStepDeletion, readOnly,
   } = props;
 
   const onClone = () => dispatch(splice({ step, index, sequence }));
@@ -73,12 +74,12 @@ export function StepIconGroup(props: StepIconBarProps) {
         onClick={props.toggleViewRaw} />}
     <Help text={helpText} position={Position.TOP} title={t("help")}
       links={props.links} />
-    <i className={"fa fa-trash"}
+    {!readOnly && <i className={"fa fa-trash"}
       title={t("delete step")}
-      onClick={onTrash} />
-    <i className={"fa fa-clone"}
+      onClick={onTrash} />}
+    {!readOnly && <i className={"fa fa-clone"}
       title={t("duplicate step")}
-      onClick={onClone} />
-    <StepUpDownButtonPopover onMove={onMove} />
+      onClick={onClone} />}
+    {!readOnly && <StepUpDownButtonPopover onMove={onMove} />}
   </span>;
 }

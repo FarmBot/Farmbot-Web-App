@@ -9,7 +9,7 @@ import { LuaTextArea } from "./tile_lua_support";
 
 export const TileLua = (props: StepParams<Lua>) => {
   const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"lua-step"}
     helpText={ToolTips.LUA}
     links={[
@@ -17,13 +17,8 @@ export const TileLua = (props: StepParams<Lua>) => {
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
     monacoEditor={monaco}
-    toggleMonacoEditor={() => setMonaco(!monaco)}
-    resources={props.resources}>
+    toggleMonacoEditor={() => setMonaco(!monaco)}>
     <Row>
       <Col xs={12}>
         <LuaTextArea<Lua> {...props} useMonacoEditor={monaco} />

@@ -1,18 +1,13 @@
 import React from "react";
 import { mount } from "enzyme";
 import { TileSetZero } from "../tile_set_zero";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Zero } from "farmbot";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileSetZero/>", () => {
   const fakeProps = (): StepParams<Zero> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "zero", args: { axis: "all" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "zero", args: { axis: "all" } }),
   });
 
   it("renders inputs", () => {

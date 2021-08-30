@@ -5,13 +5,8 @@ import { StepWrapper } from "../step_ui";
 import { t } from "../../i18next_wrapper";
 
 export const TileShutdown = (props: StepParams) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"shutdown-step"}
-    helpText={Content.SHUTDOWN_FARMBOT}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={Content.SHUTDOWN_FARMBOT}>
     <p>{t(Content.SHUTDOWN_STEP)}</p>
   </StepWrapper>;

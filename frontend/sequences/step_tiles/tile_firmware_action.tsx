@@ -7,14 +7,9 @@ import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export const TileFirmwareAction = (props: StepParams) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"firmware-action-step"}
-    helpText={ToolTips.FIRMWARE_ACTION}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={ToolTips.FIRMWARE_ACTION}>
     <Row>
       <Col xs={12}>
         <label>{t("System")}</label>

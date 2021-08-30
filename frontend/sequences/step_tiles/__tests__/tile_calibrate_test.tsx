@@ -1,21 +1,15 @@
 import React from "react";
-import { TileCalibrate } from "../tile_calibrate";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
+import { TileCalibrate } from "../tile_calibrate";
 import { HardwareFlags, StepParams } from "../../interfaces";
 import {
-  fakeHardwareFlags,
+  fakeHardwareFlags, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { Calibrate } from "farmbot";
 
 describe("<TileCalibrate/>", () => {
   const fakeProps = (): StepParams<Calibrate> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "calibrate", args: { axis: "all" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "calibrate", args: { axis: "all" } }),
     hardwareFlags: fakeHardwareFlags(),
   });
 

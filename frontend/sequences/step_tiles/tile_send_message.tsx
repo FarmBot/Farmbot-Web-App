@@ -70,14 +70,9 @@ export class TileSendMessage
 
   render() {
     const { dispatch, index, currentStep, currentSequence } = this.props;
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={"send-message-step"}
-      helpText={t(ToolTips.SEND_MESSAGE)}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      resources={this.props.resources}>
+      helpText={t(ToolTips.SEND_MESSAGE)}>
       <Row>
         <Col xs={12}>
           <label>{t("Message")}</label>

@@ -8,6 +8,7 @@ export const TileIf = (props: StepParams<If>) =>
     currentSequence={props.currentSequence}
     currentStep={props.currentStep}
     dispatch={props.dispatch}
+    readOnly={props.readOnly}
     index={props.index}
     resources={props.resources}
     showPins={props.showPins} />;
