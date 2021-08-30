@@ -1,18 +1,13 @@
 import React from "react";
-import { TileMoveHome } from "../tile_move_home";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { TileMoveHome } from "../tile_move_home";
 import { Home } from "farmbot";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileMoveHome/>", () => {
   const fakeProps = (): StepParams<Home> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "home", args: { axis: "all", speed: 100 } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "home", args: { axis: "all", speed: 100 } }),
   });
 
   it("renders inputs", () => {

@@ -3,19 +3,14 @@ import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export const TileMoveRelative = (props: StepParams) => {
   const { dispatch, currentStep, index, currentSequence } = props;
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"move-relative-step"}
-    helpText={ToolTips.MOVE_RELATIVE}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}>
+    helpText={ToolTips.MOVE_RELATIVE}>
     <Row>
       <Col xs={6} md={3}>
         <label>{t("X (mm)")}</label>

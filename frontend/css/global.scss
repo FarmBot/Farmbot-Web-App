@@ -1263,6 +1263,10 @@ ul {
   }
 }
 
+.publish-button {
+  float: right;
+}
+
 .sequence-settings-menu {
   .bp3-popover-wrapper {
     display: inline;
@@ -1271,6 +1275,20 @@ ul {
   }
   .fb-button {
     margin-top: 0;
+  }
+}
+
+.sequence-share-menu {
+  text-align: center;
+  max-width: 300px;
+  a {
+    display: block;
+  }
+  button {
+    display: block;
+    margin: auto;
+    float: none;
+    margin-top: 1rem;
   }
 }
 

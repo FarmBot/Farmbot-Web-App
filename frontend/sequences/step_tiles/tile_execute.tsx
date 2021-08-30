@@ -63,7 +63,7 @@ export class TileExecute
   togglePinnedView = () => this.setState({ pinnedView: !this.pinnedView });
 
   render() {
-    const { dispatch, currentStep, index, currentSequence, resources
+    const { currentStep, currentSequence, resources,
     } = this.props;
     const { sequence_id } = currentStep.args;
     const calleeUuid = sequence_id
@@ -78,20 +78,15 @@ export class TileExecute
     const hasVariables = Object.values(calledSequenceVariableData || {})
       .filter(v => v && isParameterDeclaration(v.celeryNode))
       .length > 0;
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={[
         "execute-step",
         pinned ? "pinned" : "",
         hasVariables ? "" : "no-inputs",
       ].join(" ")}
       helpText={ToolTips.EXECUTE_SEQUENCE}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
       pinnedView={this.pinnedView}
-      togglePinnedView={this.togglePinnedView}
-      resources={resources}>
+      togglePinnedView={this.togglePinnedView}>
       {(!pinned || !this.pinnedView) &&
         <Row>
           <Col>

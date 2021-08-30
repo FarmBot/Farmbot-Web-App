@@ -135,14 +135,9 @@ export class TileMoveAbsolute
     </Row>
 
   render() {
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={"move-absolute-step"}
       helpText={ToolTips.MOVE_ABSOLUTE}
-      currentSequence={this.props.currentSequence}
-      currentStep={this.props.currentStep}
-      dispatch={this.props.dispatch}
-      index={this.props.index}
-      resources={this.props.resources}
       warning={<MoveAbsoluteWarning
         coordinate={getPositionSum(this.vector, this.args.offset.args)}
         hardwareFlags={this.props.hardwareFlags} />}>

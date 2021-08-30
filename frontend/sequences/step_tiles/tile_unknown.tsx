@@ -2,20 +2,15 @@ import React from "react";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
-import { Col, Row } from "../../ui/index";
+import { Col, Row } from "../../ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import { LegalArgString } from "farmbot";
 import { t } from "../../i18next_wrapper";
 
 export const TileUnknown = (props: StepParams) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"unknown-step"}
-    helpText={ToolTips.UNKNOWN_STEP}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={ToolTips.UNKNOWN_STEP}>
     <Row>
       <Col xs={12}>
         <p>{t(ToolTips.UNKNOWN_STEP)}</p>

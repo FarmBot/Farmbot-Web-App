@@ -13,6 +13,7 @@ export interface StepHeaderProps {
   currentSequence: TaggedSequence;
   currentStep: SequenceBodyItem;
   dispatch: Function;
+  readOnly: boolean;
   index: number;
   executeSequence: SequenceResource | undefined;
   pinnedSequence: SequenceResource | undefined;
@@ -38,12 +39,11 @@ export class StepHeader
   render() {
     const {
       className,
-      helpText,
       currentSequence,
       currentStep,
       dispatch,
+      readOnly,
       index,
-      confirmStepDeletion,
       pinnedSequence,
     } = this.props;
     return <Row>
@@ -53,6 +53,7 @@ export class StepHeader
           <StepTitleBar
             index={index}
             dispatch={dispatch}
+            readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
             pinnedSequenceName={this.props.pinnedSequence?.name}
@@ -61,18 +62,19 @@ export class StepHeader
           <StepIconGroup
             index={index}
             dispatch={dispatch}
+            readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
             executeSequenceName={this.props.executeSequence?.name}
             pinnedView={this.props.pinnedView}
             togglePinnedView={this.props.togglePinnedView}
-            helpText={t(helpText)}
+            helpText={t(this.props.helpText)}
             links={this.props.links}
             viewRaw={this.props.viewRaw}
             toggleViewRaw={this.props.toggleViewRaw}
             monacoEditor={this.props.monacoEditor}
             toggleMonacoEditor={this.props.toggleMonacoEditor}
-            confirmStepDeletion={confirmStepDeletion} />
+            confirmStepDeletion={this.props.confirmStepDeletion} />
         </div>
       </Col>
     </Row>;

@@ -74,6 +74,7 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 export interface ResourceTitleProps {
   dispatch: Function;
   resource: TaggedSequence | TaggedRegimen | undefined;
+  readOnly?: boolean;
 }
 
 export const ResourceTitle = (props: ResourceTitleProps) => {
@@ -91,6 +92,7 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
         setNameValue(e.currentTarget.value);
       }} />
     : <span className={"title white-text"}
+      style={props.readOnly ? { pointerEvents: "none" } : {}}
       title={t("click to edit")}
       onClick={() => setIsEditing(true)}>
       {props.resource?.body.name || t("No Sequence selected")}

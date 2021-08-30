@@ -10,6 +10,7 @@ describe("<StepHeader />", () => {
     currentSequence: fakeSequence(),
     currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
+    readOnly: false,
     index: 0,
     executeSequence: undefined,
     pinnedSequence: undefined,

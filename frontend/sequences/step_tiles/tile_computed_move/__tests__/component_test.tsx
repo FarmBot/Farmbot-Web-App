@@ -5,10 +5,8 @@ import React from "react";
 import { mount, shallow } from "enzyme";
 import { ComputedMove } from "../component";
 import { Move, SpecialValue } from "farmbot";
-import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../../resources/reducer";
 import {
-  fakeHardwareFlags,
+  fakeHardwareFlags, fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 import { editStep } from "../../../../api/crud";
 import { LocSelection, AxisSelection } from "../interfaces";
@@ -23,11 +21,7 @@ describe("<ComputedMove />", () => {
   const fakeProps = (): StepParams<Move> => {
     const currentStep: Move = { kind: "move", args: {} };
     return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
+      ...fakeStepParams(currentStep),
       hardwareFlags: fakeHardwareFlags(),
       expandStepOptions: false,
     };

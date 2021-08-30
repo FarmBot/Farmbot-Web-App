@@ -1,18 +1,14 @@
 import React from "react";
 import { mount } from "enzyme";
 import { TileShutdown } from "../tile_shutdown";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 import { Content } from "../../../constants";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import { PowerOff } from "farmbot";
 
 describe("<TileShutdown />", () => {
-  const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "power_off", args: {} },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+  const fakeProps = (): StepParams<PowerOff> => ({
+    ...fakeStepParams({ kind: "power_off", args: {} }),
   });
 
   it("renders step", () => {

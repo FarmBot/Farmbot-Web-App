@@ -13,19 +13,15 @@ import React from "react";
 import { TileExecute } from "../tile_execute";
 import { mount, shallow } from "enzyme";
 import { Execute, ParameterApplication, Coordinate } from "farmbot";
-import { emptyState } from "../../../resources/reducer";
 import { LocalsList } from "../../locals_list/locals_list";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
   ({ kind: "coordinate", args: { x, y, z } });
 
 const fakeProps = (): StepParams<Execute> => ({
-  currentSequence: fakeSequence(),
-  currentStep: { kind: "execute", args: { sequence_id: 0 } },
-  dispatch: jest.fn(),
-  index: 0,
-  resources: emptyState().index,
+  ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
 });
 
 describe("<TileExecute />", () => {

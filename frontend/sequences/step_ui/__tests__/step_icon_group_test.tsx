@@ -21,6 +21,7 @@ describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({
     index: 0,
     dispatch: jest.fn(),
+    readOnly: false,
     step: { kind: "wait", args: { milliseconds: 100 } },
     sequence: fakeSequence(),
     executeSequenceName: undefined,

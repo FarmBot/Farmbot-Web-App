@@ -8,5 +8,6 @@ export const TileMarkAs = (props: StepParams<UpdateResource>) =>
     currentSequence={props.currentSequence}
     currentStep={props.currentStep}
     dispatch={props.dispatch}
+    readOnly={props.readOnly}
     index={props.index}
     resources={props.resources} />;

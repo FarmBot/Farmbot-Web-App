@@ -6,12 +6,11 @@ jest.mock("../../../api/crud", () => ({
 import React from "react";
 import { mount } from "enzyme";
 import { TileOldMarkAs } from "../tile_old_mark_as";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { SequenceBodyItem } from "farmbot";
 import { cloneDeep } from "lodash";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileOldMarkAs />", () => {
   const currentStep = {
@@ -25,11 +24,7 @@ describe("<TileOldMarkAs />", () => {
   } as unknown as SequenceBodyItem;
 
   const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: currentStep,
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams(currentStep),
   });
 
   it("renders deprecation notice and convert button", () => {

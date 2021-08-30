@@ -1,21 +1,15 @@
 import React from "react";
 import { TileFindHome } from "../tile_find_home";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
-  fakeHardwareFlags,
+  fakeHardwareFlags, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { StepParams } from "../../interfaces";
-import { emptyState } from "../../../resources/reducer";
 import { FindHome } from "farmbot";
 
 describe("<TileFindHome/>", () => {
   const fakeProps = (): StepParams<FindHome> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "find_home", args: { speed: 100, axis: "all" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "find_home", args: { speed: 100, axis: "all" } }),
     hardwareFlags: fakeHardwareFlags(),
   });
 

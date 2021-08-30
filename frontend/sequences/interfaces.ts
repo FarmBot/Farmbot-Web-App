@@ -93,6 +93,10 @@ export interface SequenceSettingsMenuProps {
   getWebAppConfigValue: GetWebAppConfigValue;
 }
 
+export interface SequenceShareMenuProps {
+  sequence: TaggedSequence;
+}
+
 export interface SequenceSettingProps {
   label: DeviceSetting;
   description: string;
@@ -210,6 +214,7 @@ export interface StepTitleBarProps {
   step: SequenceBodyItem;
   index: number;
   dispatch: Function;
+  readOnly: boolean;
   sequence: TaggedSequence;
   pinnedSequenceName: string | undefined;
   toggleDraggable(action: "enter" | "leave"): () => void;
@@ -239,6 +244,7 @@ export interface StepParams<T = SequenceBodyItem> {
   currentSequence: TaggedSequence;
   currentStep: T;
   dispatch: Function;
+  readOnly: boolean;
   index: number;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;

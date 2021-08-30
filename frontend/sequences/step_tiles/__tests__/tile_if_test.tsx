@@ -1,10 +1,9 @@
 import React from "react";
 import { TileIf } from "../tile_if";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileIf />", () => {
   const fakeProps = (): StepParams<If> => {
@@ -19,11 +18,7 @@ describe("<TileIf />", () => {
       }
     };
     return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
+      ...fakeStepParams(currentStep),
       showPins: true,
     };
   };

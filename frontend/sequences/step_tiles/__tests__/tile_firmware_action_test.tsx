@@ -1,17 +1,12 @@
 import React from "react";
-import { TileFirmwareAction } from "../tile_firmware_action";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
+import { TileFirmwareAction } from "../tile_firmware_action";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileFirmwareAction/>", () => {
   const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "reboot", args: { package: "farmbot_os" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "reboot", args: { package: "farmbot_os" } }),
   });
 
   it("renders inputs", () => {

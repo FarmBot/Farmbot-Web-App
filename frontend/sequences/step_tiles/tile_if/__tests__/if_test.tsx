@@ -3,12 +3,13 @@ jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { If_ } from "../if";
-import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { emptyState } from "../../../../resources/reducer";
 import { FBSelect } from "../../../../ui";
 import { overwrite } from "../../../../api/crud";
 import { StepParams } from "../../../interfaces";
+import {
+  fakeStepParams,
+} from "../../../../__test_support__/fake_sequence_step_data";
 
 describe("<If_/>", () => {
   function fakeProps(): StepParams<If> {
@@ -23,11 +24,7 @@ describe("<If_/>", () => {
       }
     };
     return {
-      currentSequence: fakeSequence(),
-      currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
+      ...fakeStepParams(currentStep),
       showPins: true,
     };
   }

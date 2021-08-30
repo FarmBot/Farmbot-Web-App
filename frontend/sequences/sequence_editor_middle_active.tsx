@@ -3,10 +3,12 @@ import { t } from "../i18next_wrapper";
 import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
+  SequenceShareMenuProps,
 } from "./interfaces";
 import {
   editCurrentSequence, copySequence, pinSequenceToggle, publishSequence,
   upgradeSequence,
+  unpublishSequence,
 } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
@@ -18,7 +20,7 @@ import { stepGet } from "../draggable/actions";
 import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
-import { AllSteps } from "./all_steps";
+import { AllSteps, AllStepsProps } from "./all_steps";
 import {
   LocalsList, localListCallback, removeVariable,
 } from "./locals_list/locals_list";
@@ -29,7 +31,7 @@ import { Content, Actions, DeviceSetting } from "../constants";
 import { Position } from "@blueprintjs/core";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
-import { isUndefined } from "lodash";
+import { isUndefined, last } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
@@ -110,6 +112,20 @@ export const SequenceSettingsMenu =
     </div>;
   };
 
+export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
+  return <div className={"sequence-share-menu"}>
+    <p>{t(Content.PUBLISH_SEQUENCE)}</p>
+    <button className={"fb-button green"}
+      onClick={publishSequence(props.sequence.body.id)}>
+      {t("publish")}
+    </button>
+    <button className={"fb-button red"}
+      onClick={unpublishSequence(props.sequence.body.id)}>
+      {t("unpublish")}
+    </button>
+  </div>;
+};
+
 export const SequenceBtnGroup = ({
   dispatch,
   sequence,
@@ -171,14 +187,11 @@ export const SequenceBtnGroup = ({
           .then(() => push(sequencesUrlBase()));
       }} />
     {DevSettings.futureFeaturesEnabled() &&
-      <i className={"fa fa-share"}
-        title={t("share sequence")}
-        onClick={() => publishSequence(sequence.body.id)} />}
-    {sequence.body["forked" as keyof SequenceResource] &&
-      <i className={"fa fa-code-fork"}
-        title={t("un-fork sequence")}
-        onClick={() => upgradeSequence(sequence.body.id, sequence.body[
-          "sequence_version_id" as keyof SequenceResource] as number)} />}
+      <div className={"publish-button"}>
+        <Popover position={Position.BOTTOM_RIGHT}
+          target={<i className={"fa fa-share"} title={t("share sequence")} />}
+          content={<SequenceShareMenu sequence={sequence} />} />
+      </div>}
   </div>;
 
 export const SequenceName = ({ dispatch, sequence }: {
@@ -212,24 +225,25 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       menuOpen={props.menuOpen} />
     {props.showName &&
       <SequenceName {...sequenceAndDispatch} />}
-    <ErrorBoundary>
-      <LocalsList
-        variableData={variableData}
-        sequenceUuid={sequence.uuid}
-        resources={props.resources}
-        onChange={localListCallback(props)(declarations)}
-        removeVariable={removeVariable({
-          dispatch,
-          resource: sequence,
-          variableData: {},
-        })}
-        locationDropdownKey={JSON.stringify(sequence)}
-        allowedVariableNodes={AllowedVariableNodes.parameter}
-        collapsible={true}
-        collapsed={props.variablesCollapsed}
-        toggleVarShow={props.toggleVarShow}
-        hideGroups={true} />
-    </ErrorBoundary>
+    {!props.viewCeleryScript &&
+      <ErrorBoundary>
+        <LocalsList
+          variableData={variableData}
+          sequenceUuid={sequence.uuid}
+          resources={props.resources}
+          onChange={localListCallback(props)(declarations)}
+          removeVariable={removeVariable({
+            dispatch,
+            resource: sequence,
+            variableData: {},
+          })}
+          locationDropdownKey={JSON.stringify(sequence)}
+          allowedVariableNodes={AllowedVariableNodes.parameter}
+          collapsible={true}
+          collapsed={props.variablesCollapsed}
+          toggleVarShow={props.toggleVarShow}
+          hideGroups={true} />
+      </ErrorBoundary>}
   </div>;
 };
 
@@ -253,12 +267,13 @@ export class SequenceEditorMiddleActive extends
     return `calc(100vh - ${subHeight}px)`;
   }
 
-  get stepProps() {
+  get stepProps(): AllStepsProps {
     const getConfig = this.props.getWebAppConfigValue;
     return {
       sequence: this.props.sequence,
       onDrop: onDrop(this.props.dispatch, this.props.sequence),
       dispatch: this.props.dispatch,
+      readOnly: false,
       resources: this.props.resources,
       hardwareFlags: this.props.hardwareFlags,
       farmwareData: this.props.farmwareData,
@@ -271,7 +286,23 @@ export class SequenceEditorMiddleActive extends
 
   render() {
     const { dispatch, sequence } = this.props;
+    const { viewSequenceCeleryScript } = this.state;
+    const versionId = sequence.body[
+      "sequence_version_id" as keyof SequenceResource] as unknown as number;
+    const latestId = last(sequence.body[
+      "sequence_versions" as keyof SequenceResource] as unknown as number[]);
+    const forked = !!sequence.body["forked" as keyof SequenceResource];
     return <div className="sequence-editor-content">
+      {versionId &&
+        <div className={"imported-banner"}>
+          <label>{t("this sequence was imported")}</label>
+          <Help text={Content.IMPORTED_SEQUENCE} />
+          {((versionId != latestId) || forked) &&
+            <button className={"transparent-button"}
+              onClick={upgradeSequence(sequence.body.id, latestId)}>
+              {t("upgrade to latest")}
+            </button>}
+        </div>}
       <SequenceHeader
         showName={this.props.showName}
         dispatch={this.props.dispatch}
@@ -282,16 +313,20 @@ export class SequenceEditorMiddleActive extends
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
         toggleViewSequenceCeleryScript={() => this.setState({
-          viewSequenceCeleryScript: !this.state.viewSequenceCeleryScript
+          viewSequenceCeleryScript: !viewSequenceCeleryScript
         })}
-        viewCeleryScript={this.state.viewSequenceCeleryScript}
+        viewCeleryScript={viewSequenceCeleryScript}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         visualized={this.props.visualized}
         menuOpen={this.props.menuOpen} />
-      <hr />
+      {!viewSequenceCeleryScript && <hr />}
       <div className="sequence" id="sequenceDiv"
-        style={{ height: this.stepSectionHeight }}>
-        {this.state.viewSequenceCeleryScript
+        style={{
+          height: viewSequenceCeleryScript
+            ? "calc(100vh - 17rem)"
+            : this.stepSectionHeight
+        }}>
+        {viewSequenceCeleryScript
           ? <pre>{stringifySequenceData(this.props.sequence.body)}</pre>
           : <div className={"sequence-step-components"}>
             <ErrorBoundary>
