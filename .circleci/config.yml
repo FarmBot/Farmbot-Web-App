@@ -3,6 +3,7 @@ version: 2.1
 executors:
   build-executor:
     machine: true
+    resource_class: large
     working_directory: /home/circleci/project
 
 commands:
@@ -35,16 +36,17 @@ commands:
       - run:
           name: After cache update
           command: |
+            mkdir -p /tmp/test-results
             git clean -xdn
             ls docker_cache
             #sudo docker images
             #if [ ! -f docker_cache/images.tar.gz ]; then sudo docker save $(sudo docker images ruby -q) | gzip > docker_cache/images.tar.gz; fi
-      - save_cache:
-          key: cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-          paths:
-            - docker_volumes
-            - node_modules
-            - docker_cache
+      # - save_cache:
+      #     key: cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+      #     paths:
+      #       - docker_volumes
+      #       - node_modules
+      #       - docker_cache
   rspec-commands:
     steps:
       - run:
@@ -56,7 +58,7 @@ commands:
       - run:
           name: Run JS tests
           command: |
-            sudo docker-compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js
+            sudo docker-compose run web npm run test-slow -- -c .circleci/jest-ci.config.js
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
