@@ -23,7 +23,7 @@ module Sequences
                forked: sequence.forked,
                name: sequence.name,
                pinned: sequence.pinned,
-               sequence_versions: available_version_ids || [],
+               sequence_versions: available_version_ids,
                sequence_version_id: sequence.sequence_version_id,
              }
     end
@@ -53,14 +53,23 @@ module Sequences
     end
 
     def available_version_ids
+      results = []
+
       svid = sequence.sequence_version_id
       if svid
-        SequenceVersion
+        results.push(*SequenceVersion
           .find(svid)
           .sequence_publication
           .sequence_versions
-          .pluck(:id)
+          .pluck(:id))
       end
+
+      sp = SequencePublication.find_by(author_sequence_id: sequence.id)
+      if sp
+        results.push(*sp.sequence_versions.pluck(:id))
+      end
+
+      return results
     end
   end
 end
