@@ -119,21 +119,20 @@ export const resourceReducer =
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
-      if (original.kind == "Sequence"
-        && original.body["sequence_version_id" as keyof SequenceResource]) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (update as any).forked = true;
+      if (original.kind == "Sequence" && original.body.sequence_version_id) {
+        (update as SequenceResource).forked = true;
       }
       original.body = update;
       indexUpsert(s.index, [original], "ongoing");
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
-    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      indexUpsert(s.index, payload.body, "initial");
-      return s;
-    })
+    .add<SyncBodyContents<TaggedResource>>(
+      Actions.RESOURCE_READY, (s, { payload }) => {
+        !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+        indexUpsert(s.index, payload.body, "initial");
+        return s;
+      })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index);

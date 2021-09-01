@@ -81,6 +81,7 @@
   }
   &.preview {
     .filter-search,
+    .input,
     input {
       pointer-events: none;
     }
@@ -197,6 +198,7 @@
       .bp3-control,
       .filter-search,
       textarea,
+      .input,
       input {
         pointer-events: none;
       }
