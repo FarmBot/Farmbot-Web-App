@@ -38,7 +38,7 @@ module Api
       mutate Sequences::Unpublish.run(sequence: sequence, device: current_device)
     end
 
-    # Upgrade someone elses sequence.
+    # Install someone elses sequence.
     # post /sequences/:sequence_version_id/install
     def install
       mutate Sequences::Install.run(sequence_version: sequence_version,
