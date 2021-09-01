@@ -17,7 +17,7 @@ import {
 } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
-import { TaggedSequence } from "farmbot";
+import { SpecialStatus, TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps, AllStepsProps } from "./all_steps";
@@ -31,13 +31,15 @@ import { Content, Actions, DeviceSetting } from "../constants";
 import { Position } from "@blueprintjs/core";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
-import { isUndefined, last } from "lodash";
+import { clone, isUndefined, last } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 import { getModifiedClassName } from "../settings/default_values";
 import { DevSettings } from "../settings/dev/dev_support";
-import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { error } from "../toast/toast";
+import { Link } from "../link";
+import { API } from "../api";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -112,16 +114,51 @@ export const SequenceSettingsMenu =
     </div>;
   };
 
-export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
+export const SequencePublishMenu = (props: SequenceShareMenuProps) => {
+  const disabled = props.sequence.specialStatus !== SpecialStatus.SAVED;
   return <div className={"sequence-share-menu"}>
     <p>{t(Content.PUBLISH_SEQUENCE)}</p>
-    <button className={"fb-button green"}
-      onClick={publishSequence(props.sequence.body.id)}>
+    <button className={`fb-button green ${disabled ? "pseudo-disabled" : ""}`}
+      onClick={() => disabled
+        ? error(t("Save sequence first."))
+        : publishSequence(props.sequence.body.id)()}>
       {t("publish")}
     </button>
-    <button className={"fb-button red"}
+  </div>;
+};
+
+export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
+  const disabled = props.sequence.specialStatus !== SpecialStatus.SAVED;
+  const ids = props.sequence.body.sequence_versions || [];
+  return <div className={"sequence-share-menu"}>
+    <p>{t("This sequence is published at the following link")}</p>
+    <Link to={`/app/designer/sequence_versions/${last(ids)}`}>
+      {`${API.current.baseUrl}/app/designer/sequence_versions/${last(ids)}`}
+    </Link>
+    <div className={"versions-table"}>
+      <label>{t("versions")}</label>
+      <Help text={Content.SEQUENCE_VERSIONS} />
+      <button className={`fb-button gray ${disabled ? "pseudo-disabled" : ""}`}
+        onClick={() => disabled
+          ? error(t("Save sequence first."))
+          : publishSequence(props.sequence.body.id)()}>
+        <i className={"fa fa-plus"} />
+      </button>
+      {clone(ids).reverse().map((id, index) =>
+        <Row key={index}>
+          <Col xs={6}>
+            <p>{`V${ids.length - index}${index == 0 ? " (latest)" : ""}`}</p>
+          </Col>
+          <Col xs={6}>
+            <Link to={`/app/designer/sequence_versions/${id}`}>
+              <i className={"fa fa-link"} />
+            </Link>
+          </Col>
+        </Row>)}
+    </div>
+    <button className={"fb-button white"}
       onClick={unpublishSequence(props.sequence.body.id)}>
-      {t("unpublish")}
+      {t("Unpublish this sequence")}
     </button>
   </div>;
 };
@@ -190,7 +227,9 @@ export const SequenceBtnGroup = ({
       <div className={"publish-button"}>
         <Popover position={Position.BOTTOM_RIGHT}
           target={<i className={"fa fa-share"} title={t("share sequence")} />}
-          content={<SequenceShareMenu sequence={sequence} />} />
+          content={sequence.body.sequence_versions?.length
+            ? <SequenceShareMenu sequence={sequence} />
+            : <SequencePublishMenu sequence={sequence} />} />
       </div>}
   </div>;
 
@@ -287,11 +326,9 @@ export class SequenceEditorMiddleActive extends
   render() {
     const { dispatch, sequence } = this.props;
     const { viewSequenceCeleryScript } = this.state;
-    const versionId = sequence.body[
-      "sequence_version_id" as keyof SequenceResource] as unknown as number;
-    const latestId = last(sequence.body[
-      "sequence_versions" as keyof SequenceResource] as unknown as number[]);
-    const forked = !!sequence.body["forked" as keyof SequenceResource];
+    const versionId = sequence.body.sequence_version_id;
+    const latestId = last(sequence.body.sequence_versions);
+    const forked = !!sequence.body.forked;
     return <div className="sequence-editor-content">
       {versionId &&
         <div className={"imported-banner"}>
