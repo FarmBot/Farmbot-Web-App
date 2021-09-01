@@ -47,7 +47,7 @@ describe("<DesignerSequencePreview />", () => {
 
   it("renders", () => {
     const wrapper = mount(<DesignerSequencePreview {...fakeProps()} />);
-    ["import", "loading"].map(string =>
+    ["viewing a publicly shared sequence", "loading"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.find(".fa-code").length).toEqual(0);
   });
@@ -69,10 +69,21 @@ describe("<DesignerSequencePreview />", () => {
     sequence.body.body = undefined;
     mockGet = Promise.resolve({ data: sequence.body });
     const wrapper = await mount(<DesignerSequencePreview {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("import");
     expect(wrapper.text().toLowerCase()).not.toContain("loading");
+    expect(wrapper.text().toLowerCase()).not.toContain("error");
+  });
+
+  it("errors while loading sequence", async () => {
+    mockGet = Promise.reject("Error");
+    const wrapper = await mount(<DesignerSequencePreview {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("import");
+    expect(wrapper.text().toLowerCase()).not.toContain("loading");
+    expect(wrapper.text().toLowerCase()).toContain("error");
   });
 
   it("views as celery script", async () => {
+    mockGet = Promise.resolve({ data: fakeSequence().body });
     const p = fakeProps();
     p.getWebAppConfigValue = () => true;
     const wrapper = await mount<DesignerSequencePreview>(

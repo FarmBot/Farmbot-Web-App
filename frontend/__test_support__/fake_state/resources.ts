@@ -49,6 +49,8 @@ export const fakeSequence =
       color: "red",
       folder_id: undefined,
       name: "fake",
+      description: "description",
+      forked: false,
       kind: "sequence",
       pinned: false,
       body: [],

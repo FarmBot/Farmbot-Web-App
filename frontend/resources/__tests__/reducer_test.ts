@@ -15,8 +15,9 @@ import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
-import { fakeFolder } from "../../__test_support__/fake_state/resources";
-import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import {
+  fakeFolder, fakeSequence,
+} from "../../__test_support__/fake_state/resources";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -26,18 +27,12 @@ describe("resource reducer", () => {
     expect(sequence).toBeTruthy();
 
     expect(sequence.kind).toBe("Sequence");
-    const next = resourceReducer(state, overwrite(sequence, {
-      kind: "sequence",
-      name: "wow",
-      folder_id: undefined,
-      pinned: false,
-      args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
-      body: [],
-      color: "red"
-    }));
+    const sequenceBodyUpdate = fakeSequence().body;
+    sequenceBodyUpdate.forked = false;
+    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
-    expect(seq2.body["forked" as keyof SequenceResource]).toBeFalsy();
+    expect(seq2.body.forked).toBeFalsy();
   });
 
   it("updates fork status when reducing OVERWRITE_RESOURCE", () => {
@@ -47,19 +42,13 @@ describe("resource reducer", () => {
     expect(sequence).toBeTruthy();
 
     expect(sequence.kind).toBe("Sequence");
-    sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
-    const next = resourceReducer(state, overwrite(sequence, {
-      kind: "sequence",
-      name: "wow",
-      folder_id: undefined,
-      pinned: false,
-      args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
-      body: [],
-      color: "red",
-    }));
+    sequence.body.sequence_version_id = 1;
+    const sequenceBodyUpdate = fakeSequence().body;
+    sequenceBodyUpdate.forked = false;
+    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
-    expect(seq2.body["forked" as keyof SequenceResource]).toEqual(true);
+    expect(seq2.body.forked).toEqual(true);
   });
 
   it("marks resources as SAVING when reducing REFRESH_RESOURCE_START", () => {

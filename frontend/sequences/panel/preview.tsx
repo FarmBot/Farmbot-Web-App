@@ -46,6 +46,7 @@ export function mapStateToProps(props: Everything): SequencePreviewProps {
 interface SequencePreviewState {
   sequence: TaggedSequence | undefined;
   viewSequenceCeleryScript: boolean;
+  error: boolean;
 }
 
 export class RawDesignerSequencePreview
@@ -53,6 +54,7 @@ export class RawDesignerSequencePreview
   state: SequencePreviewState = {
     sequence: undefined,
     viewSequenceCeleryScript: false,
+    error: false,
   };
 
   componentDidMount = () => {
@@ -68,7 +70,9 @@ export class RawDesignerSequencePreview
         sequence.body.name = `Shared Sequence ${id}`;
         sequence.body.body?.map(step => maybeTagStep(step));
         this.setState({ sequence });
-      }, noop);
+      }, () => {
+        this.setState({ error: true });
+      });
   }
 
   toggleViewRaw = () => this.setState({
@@ -86,21 +90,23 @@ export class RawDesignerSequencePreview
           key={sequence?.body.name}
           readOnly={true}
           resource={sequence}
+          fallback={this.state.error ? t("Sequence not found") : t("Loading...")}
           dispatch={this.props.dispatch} />}
         backTo={"/app/designer/sequences"} />
       <DesignerPanelContent panelName={panelName}>
         <div className={"import-banner"}>
           <label>{t("viewing a publicly shared sequence")}</label>
           <Help text={Content.IMPORT_SEQUENCE} />
-          <button className={"transparent-button"}
-            onClick={installSequence(sequence?.body.id)}>
-            {t("import")}
-          </button>
+          {sequence &&
+            <button className={"transparent-button"}
+              onClick={installSequence(sequence.body.id)}>
+              {t("import")}
+            </button>}
         </div>
         <EmptyStateWrapper
           notEmpty={sequence && isTaggedSequence(sequence)}
           graphic={EmptyStateGraphic.sequences}
-          title={t("Loading...")}>
+          title={this.state.error ? t("Sequence load error") : t("Loading...")}>
           {sequence &&
             <div className={"sequence-editor-content"}>
               <div className={"sequence-editor-tools preview"}>
