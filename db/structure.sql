@@ -312,7 +312,10 @@ CREATE TABLE public.devices (
     last_watchdog timestamp without time zone,
     last_ota_attempt_at timestamp without time zone,
     fb_order_number character varying,
-    setup_completed_at timestamp without time zone
+    setup_completed_at timestamp without time zone,
+    lat numeric,
+    lng numeric,
+    indoor boolean DEFAULT false
 );
 
 
@@ -3728,6 +3731,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210720183535'),
 ('20210723175109'),
 ('20210803205352'),
-('20210820134844');
+('20210820134844'),
+('20210901215214');
 
 
