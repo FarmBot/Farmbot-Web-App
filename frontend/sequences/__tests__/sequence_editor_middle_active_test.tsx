@@ -15,9 +15,9 @@ jest.mock("../actions", () => ({
   copySequence: jest.fn(),
   editCurrentSequence: jest.fn(),
   pinSequenceToggle: jest.fn(),
-  publishSequence: jest.fn(),
-  unpublishSequence: jest.fn(),
-  upgradeSequence: jest.fn(),
+  publishSequence: jest.fn(() => jest.fn()),
+  unpublishSequence: jest.fn(() => jest.fn()),
+  upgradeSequence: jest.fn(() => jest.fn()),
 }));
 
 jest.mock("../step_tiles/index", () => ({
@@ -56,6 +56,7 @@ import {
   SequenceHeader,
   SequenceBtnGroup,
   SequenceShareMenu,
+  SequencePublishMenu,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import {
@@ -86,7 +87,8 @@ import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
-import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { error } from "../../toast/toast";
+import { API } from "../../api";
 
 describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -116,9 +118,9 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("upgrades sequence", () => {
     const p = fakeProps();
     p.sequence.body.id = 123;
-    p.sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
-    p.sequence.body["sequence_versions" as keyof SequenceResource] = [2] as never;
-    p.sequence.body["forked" as keyof SequenceResource] = true as never;
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.sequence_versions = [2];
+    p.sequence.body.forked = true;
     p.getWebAppConfigValue = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".transparent-button").simulate("click");
@@ -128,9 +130,9 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("resets forked sequence", () => {
     const p = fakeProps();
     p.sequence.body.id = 123;
-    p.sequence.body["sequence_version_id" as keyof SequenceResource] = 1 as never;
-    p.sequence.body["sequence_versions" as keyof SequenceResource] = [1] as never;
-    p.sequence.body["forked" as keyof SequenceResource] = true as never;
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.sequence_versions = [1];
+    p.sequence.body.forked = true;
     p.getWebAppConfigValue = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".transparent-button").simulate("click");
@@ -357,6 +359,14 @@ describe("<SequenceBtnGroup />", () => {
     const wrapper = shallow(<SequenceBtnGroup {...fakeProps()} />);
     expect(wrapper.find(".publish-button").length).toEqual(1);
   });
+
+  it("shows share menu", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.sequence.body.sequence_versions = [1, 2, 3];
+    const wrapper = shallow(<SequenceBtnGroup {...p} />);
+    expect(wrapper.find(".publish-button").length).toEqual(1);
+  });
 });
 
 describe("onDrop()", () => {
@@ -455,7 +465,9 @@ describe("<SequenceSettingsMenu />", () => {
   });
 });
 
-describe("<SequenceShareMenu />", () => {
+describe("<SequencePublishMenu />", () => {
+  API.setBaseUrl("");
+
   const fakeProps = (): SequenceShareMenuProps => ({
     sequence: fakeSequence(),
   });
@@ -463,9 +475,52 @@ describe("<SequenceShareMenu />", () => {
   it("publishes sequence", () => {
     const p = fakeProps();
     p.sequence.body.id = 123;
-    const wrapper = mount(<SequenceShareMenu {...p} />);
+    const wrapper = mount(<SequencePublishMenu {...p} />);
     clickButton(wrapper, 0, "publish");
     expect(publishSequence).toHaveBeenCalledWith(123);
+  });
+
+  it("doesn't publish sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    p.sequence.specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<SequencePublishMenu {...p} />);
+    clickButton(wrapper, 0, "publish");
+    expect(publishSequence).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Save sequence first.");
+  });
+});
+
+describe("<SequenceShareMenu />", () => {
+  API.setBaseUrl("");
+
+  const fakeProps = (): SequenceShareMenuProps => ({
+    sequence: fakeSequence(),
+  });
+
+  it("renders versions", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_versions = [20, 21, 22];
+    const wrapper = mount(<SequenceShareMenu {...p} />);
+    expect(wrapper.text()).toContain("V1");
+  });
+
+  it("publishes sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    const wrapper = mount(<SequenceShareMenu {...p} />);
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
+    expect(publishSequence).toHaveBeenCalledWith(123);
+  });
+
+  it("doesn't publish sequence", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    p.sequence.specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<SequenceShareMenu {...p} />);
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
+    expect(publishSequence).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 });
 

@@ -33,6 +33,7 @@ export class RawDesignerRegimenEditor
         titleElement={<ResourceTitle
           key={regimen?.body.name}
           resource={regimen}
+          fallback={t("No Regimen selected")}
           dispatch={this.props.dispatch} />}
         backTo={"/app/designer/regimens"} />
       <DesignerPanelContent panelName={panelName}>

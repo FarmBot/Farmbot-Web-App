@@ -17,11 +17,13 @@ describe("<BulkScheduler />", () => {
   function fakeProps(): BulkEditorProps {
     const sequence = fakeSequence();
     sequence.body.name = "Fake Sequence";
+    const sequenceWithoutId = fakeSequence();
+    sequenceWithoutId.body.id = undefined;
     return {
       selectedSequence: sequence,
       dailyOffsetMs: 3600000,
       weeks,
-      sequences: [fakeSequence(), fakeSequence()],
+      sequences: [fakeSequence(), fakeSequence(), sequenceWithoutId],
       resources: buildResourceIndex([]).index,
       dispatch: jest.fn(),
     };

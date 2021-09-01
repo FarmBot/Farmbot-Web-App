@@ -1047,6 +1047,10 @@ export namespace Content {
     owned by other user accounts. By publishing this sequence, you will be
     releasing it under the MIT License.`);
 
+  export const SEQUENCE_VERSIONS =
+    trim(`When you publish a new version, other users of the sequence may
+    optionally upgrade to the latest version.`);
+
   export const IMPORT_SEQUENCE =
     trim(`Importing this sequence will allow you to use it with your
     FarmBot and make changes. If the original author of the sequence
