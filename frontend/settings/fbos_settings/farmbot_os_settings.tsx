@@ -12,6 +12,7 @@ import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
 import { OrderNumberRow } from "./order_number_row";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { GardenLocationRow } from "./garden_location_row";
 
 export enum ColWidth {
   label = 3,
@@ -35,6 +36,8 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       <NameRow {...commonProps} />
       <OrderNumberRow {...commonProps} />
       <TimezoneRow {...commonProps} />
+      <GardenLocationRow {...commonProps}
+        sourceFbosConfig={sourceFbosConfig} />
       <OtaTimeSelectorRow {...commonProps}
         timeSettings={timeSettings}
         sourceFbosConfig={sourceFbosConfig} />

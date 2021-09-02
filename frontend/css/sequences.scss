@@ -438,21 +438,19 @@
       display: flex;
       position: absolute;
       right: 0;
-      .fa-hdd-o {
-        margin-right: 3rem;
-        &.two {
-          margin-right: 0;
-          width: 1.5rem;
-        }
-      }
       .fa-exclamation-triangle {
-        margin-right: 3rem;
-        width: 2rem;
         color: $orange;
       }
-      .fa-thumb-tack {
+      .fa-hdd-o,
+      .fa-exclamation-triangle,
+      .fa-thumb-tack,
+      .fa-chain-broken,
+      .fa-link,
+      .fa-globe {
+        width: 1.5rem;
+      }
+      .icon-spacer {
         margin-right: 3rem;
-        width: 2rem;
       }
     }
     button {

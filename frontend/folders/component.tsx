@@ -53,7 +53,7 @@ export const sequencesUrlBase = () =>
   `/app${inDesigner() ? "/designer" : ""}/sequences/`;
 
 export const FolderListItem = (props: FolderItemProps) => {
-  const { sequence, movedSequenceUuid } = props;
+  const { sequence, movedSequenceUuid, inUse } = props;
   const seqName = sequence.body.name;
   const url = sequencesUrlBase() + urlFriendly(seqName || "");
   const moveSource = movedSequenceUuid === sequence.uuid ? "move-source" : "";
@@ -61,7 +61,11 @@ export const FolderListItem = (props: FolderItemProps) => {
   const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
   const deprecatedSteps = JSON.stringify(props.sequence.body.body)
     .includes("resource_update");
-  const two = props.sequence.body.pinned || deprecatedSteps;
+  const {
+    pinned, forked, sequence_version_id, sequence_versions,
+  } = props.sequence.body;
+  const imported = sequence_version_id && !forked;
+  const published = !imported && !!sequence_versions?.length;
   return <StepDragger
     dispatch={props.dispatch}
     step={{
@@ -75,20 +79,32 @@ export const FolderListItem = (props: FolderItemProps) => {
     <li className={`sequence-list-item ${active} ${moveSource}`}
       draggable={true}>
       <ColorPicker
-        current={sequence.body.color || "gray"}
+        current={sequence.body.color}
         onChange={color => sequenceEditMaybeSave(sequence, { color })} />
       <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
         <p>{nameWithSaveIndicator}</p>
       </Link>
-      <div className="sequence-list-item-icons">
-        {props.inUse &&
-          <i className={`in-use fa fa-hdd-o ${two ? "two" : ""}`}
+      <div className={"sequence-list-item-icons"}>
+        {deprecatedSteps &&
+          <i className={"fa fa-exclamation-triangle"}
+            title={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
+        {inUse &&
+          <i className={"in-use fa fa-hdd-o"}
             title={t(Content.IN_USE)} />}
-        {deprecatedSteps && <i className="fa fa-exclamation-triangle"
-          title={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
-        {props.sequence.body.pinned &&
-          <i className={"fa fa-thumb-tack"} title={t(Content.IS_PINNED)} />}
-        <i className="fa fa-arrows-v"
+        {pinned &&
+          <i className={"fa fa-thumb-tack"}
+            title={t(Content.IS_PINNED)} />}
+        {forked &&
+          <i className={"fa fa-chain-broken"}
+            title={t("Imported and edited publicly shared sequence.")} />}
+        {imported &&
+          <i className={"fa fa-link"}
+            title={t("Imported publicly shared sequence.")} />}
+        {published &&
+          <i className={"fa fa-globe"}
+            title={t("Published as a publicly shared sequence.")} />}
+        <div className={"icon-spacer"} />
+        <i className={"fa fa-arrows-v"}
           onMouseDown={() => props.startSequenceMove(sequence.uuid)}
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
       </div>
