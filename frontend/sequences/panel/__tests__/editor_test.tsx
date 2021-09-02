@@ -37,7 +37,6 @@ describe("<DesignerSequenceEditor />", () => {
     syncStatus: "synced",
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),
-    shouldDisplay: jest.fn(),
     getWebAppConfigValue: jest.fn(),
     menuOpen: undefined,
     stepIndex: undefined,
@@ -73,6 +72,7 @@ describe("<ResourceTitle />", () => {
   const fakeProps = (): ResourceTitleProps => ({
     dispatch: jest.fn(),
     resource: fakeSequence(),
+    fallback: "string",
   });
 
   it("changes name", () => {

@@ -1,18 +1,13 @@
 import React from "react";
-import { TileTogglePin } from "../tile_toggle_pin";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
+import { TileTogglePin } from "../tile_toggle_pin";
 import { StepParams } from "../../interfaces";
 import { TogglePin } from "farmbot";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileTogglePin/>", () => {
   const fakeProps = (): StepParams<TogglePin> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "toggle_pin", args: { pin_number: 13 } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams({ kind: "toggle_pin", args: { pin_number: 13 } }),
   });
 
   it("renders inputs", () => {

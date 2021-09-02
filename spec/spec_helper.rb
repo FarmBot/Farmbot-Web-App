@@ -24,6 +24,7 @@ require "pry"
 
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
+
 # This is a stub for BunnyRB because we don't want the test suite to connect to
 # AMQP for real.
 class FakeTransport < Transport

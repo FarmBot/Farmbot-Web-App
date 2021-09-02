@@ -8,19 +8,12 @@ import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
 import Editor from "@monaco-editor/react";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<LuaTextArea />", () => {
   const fakeProps = (): LuaTextAreaProps<Lua> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "lua", args: { lua: "lua" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: buildResourceIndex([]).index,
+    ...fakeStepParams({ kind: "lua", args: { lua: "lua" } }),
     useMonacoEditor: true,
   });
 

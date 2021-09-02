@@ -1,11 +1,10 @@
 import React from "react";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../interfaces";
-import { emptyState } from "../../../resources/reducer";
 import { TileUnknown } from "../tile_unknown";
 import { SequenceBodyItem } from "farmbot";
 import { ToolTips } from "../../../constants";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileUnknown/>", () => {
   const currentStep = {
@@ -14,11 +13,7 @@ describe("<TileUnknown/>", () => {
   };
 
   const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: currentStep as SequenceBodyItem,
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    ...fakeStepParams(currentStep as SequenceBodyItem),
   });
 
   it("renders step", () => {

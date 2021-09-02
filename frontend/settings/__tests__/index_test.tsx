@@ -58,7 +58,6 @@ describe("<DesignerSettings />", () => {
     resources: buildResourceIndex().index,
     deviceAccount: fakeDevice(),
     alerts: [],
-    shouldDisplay: jest.fn(),
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
     bot: bot,

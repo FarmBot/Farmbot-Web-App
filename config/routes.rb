@@ -11,6 +11,7 @@ FarmBot::Application.routes.draw do
       farm_events: [:create, :destroy, :index, :show, :update],
       farmware_envs: [:create, :destroy, :index, :show, :update],
       first_party_farmwares: [:show, :index],
+      folders: [:create, :destroy, :index, :show, :update],
       global_bulletins: [:show],
       images: [:create, :destroy, :index, :show],
       password_resets: [:create, :update],
@@ -22,9 +23,9 @@ FarmBot::Application.routes.draw do
       sensor_readings: [:create, :destroy, :index, :show],
       sensors: [:create, :destroy, :index, :show, :update],
       sequences: [:create, :destroy, :index, :show, :update],
+      sequence_versions: [:show],
       tools: [:create, :destroy, :index, :show, :update],
       webcam_feeds: [:create, :destroy, :index, :show, :update],
-      folders: [:create, :destroy, :index, :show, :update],
       wizard_step_results: [:create, :destroy, :index, :update],
     }.to_a.map { |(name, only)| resources name, only: only }
 
@@ -43,6 +44,12 @@ FarmBot::Application.routes.draw do
     get "/releases" => "releases#show", as: :releases
 
     resources(:points, except: []) { post :search, on: :collection }
+
+    # Sequence sharing endpoints:
+    post "/sequences/:id/publish" => "sequences#publish", as: :sequence_publish
+    post "/sequences/:id/unpublish" => "sequences#unpublish", as: :sequence_unpublish
+    post "/sequences/:sequence_version_id/install" => "sequences#install", as: :sequence_install
+    post "/sequences/:id/upgrade/:sequence_version_id" => "sequences#upgrade", as: :sequence_upgrade
 
     resources :farmware_installations, except: [:update] do
       post :refresh, on: :member

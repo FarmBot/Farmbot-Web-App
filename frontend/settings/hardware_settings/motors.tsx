@@ -7,9 +7,9 @@ import { MotorsProps } from "./interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
-import { Feature, SourceFwConfig } from "../../devices/interfaces";
+import { SourceFwConfig } from "../../devices/interfaces";
 import { calcMicrostepsPerMm } from "../../controls/move/direction_axes_props";
-import { isTMCBoard, hasZ2Params } from "../firmware/firmware_hardware_support";
+import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
 import { SpacePanelHeader } from "./space_panel_header";
@@ -17,7 +17,6 @@ import { Col, Help, Row, ToggleButton } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { McuInputBox } from "./mcu_input_box";
 import { getDefaultFwConfigValue, getModifiedClassName } from "./default_values";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number> => {
@@ -50,7 +49,6 @@ export function Motors(props: MotorsProps) {
   };
 
   const getDefault = getDefaultFwConfigValue(props.firmwareHardware);
-  const z2Params = hasZ2Params(firmwareHardware, props.shouldDisplay);
 
   return <Highlight className={"section"}
     settingName={DeviceSetting.motors}>
@@ -73,25 +71,24 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {z2Params &&
-        <Highlight settingName={DeviceSetting.maxSpeedTowardHome}>
-          <Row>
-            <Col xs={8} className={"z-param-label"}>
-              <label>
-                {t(DeviceSetting.maxSpeedTowardHome)}
-              </label>
-              <Help
-                text={t(ToolTips.MAX_SPEED_Z_TOWARD_HOME, {
-                  z: getDefault("movement_max_spd_z2") / scale.z
-                })} />
-            </Col>
-            <Col xs={4} className={"z-param-input"}>
-              <McuInputBox {...commonProps}
-                setting={"movement_max_spd_z2"}
-                scale={scale.z} />
-            </Col>
-          </Row>
-        </Highlight>}
+      <Highlight settingName={DeviceSetting.maxSpeedTowardHome}>
+        <Row>
+          <Col xs={8} className={"z-param-label"}>
+            <label>
+              {t(DeviceSetting.maxSpeedTowardHome)}
+            </label>
+            <Help
+              text={t(ToolTips.MAX_SPEED_Z_TOWARD_HOME, {
+                z: getDefault("movement_max_spd_z2") / scale.z
+              })} />
+          </Col>
+          <Col xs={4} className={"z-param-input"}>
+            <McuInputBox {...commonProps}
+              setting={"movement_max_spd_z2"}
+              scale={scale.z} />
+          </Col>
+        </Row>
+      </Highlight>
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.homingSpeed}
         tooltip={ToolTips.HOME_SPEED}
@@ -111,25 +108,24 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {z2Params &&
-        <Highlight settingName={DeviceSetting.minimumSpeedTowardHome}>
-          <Row>
-            <Col xs={8} className={"z-param-label"}>
-              <label>
-                {t(DeviceSetting.minimumSpeedTowardHome)}
-              </label>
-              <Help
-                text={t(ToolTips.MIN_SPEED_Z_TOWARD_HOME, {
-                  z: getDefault("movement_min_spd_z2") / scale.z
-                })} />
-            </Col>
-            <Col xs={4} className={"z-param-input"}>
-              <McuInputBox {...commonProps}
-                setting={"movement_min_spd_z2"}
-                scale={scale.z} />
-            </Col>
-          </Row>
-        </Highlight>}
+      <Highlight settingName={DeviceSetting.minimumSpeedTowardHome}>
+        <Row>
+          <Col xs={8} className={"z-param-label"}>
+            <label>
+              {t(DeviceSetting.minimumSpeedTowardHome)}
+            </label>
+            <Help
+              text={t(ToolTips.MIN_SPEED_Z_TOWARD_HOME, {
+                z: getDefault("movement_min_spd_z2") / scale.z
+              })} />
+          </Col>
+          <Col xs={4} className={"z-param-input"}>
+            <McuInputBox {...commonProps}
+              setting={"movement_min_spd_z2"}
+              scale={scale.z} />
+          </Col>
+        </Row>
+      </Highlight>
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.accelerateFor}
         tooltip={ToolTips.ACCELERATE_FOR}
@@ -139,25 +135,24 @@ export function Motors(props: MotorsProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      {z2Params &&
-        <Highlight settingName={DeviceSetting.accelerateForTowardHome}>
-          <Row>
-            <Col xs={8} className={"z-param-label"}>
-              <label>
-                {t(DeviceSetting.accelerateForTowardHome)}
-              </label>
-              <Help
-                text={t(ToolTips.ACCELERATE_FOR_Z_TOWARD_HOME, {
-                  z: getDefault("movement_steps_acc_dec_z2") / scale.z
-                })} />
-            </Col>
-            <Col xs={4} className={"z-param-input"}>
-              <McuInputBox {...commonProps}
-                setting={"movement_steps_acc_dec_z2"}
-                scale={scale.z} />
-            </Col>
-          </Row>
-        </Highlight>}
+      <Highlight settingName={DeviceSetting.accelerateForTowardHome}>
+        <Row>
+          <Col xs={8} className={"z-param-label"}>
+            <label>
+              {t(DeviceSetting.accelerateForTowardHome)}
+            </label>
+            <Help
+              text={t(ToolTips.ACCELERATE_FOR_Z_TOWARD_HOME, {
+                z: getDefault("movement_steps_acc_dec_z2") / scale.z
+              })} />
+          </Col>
+          <Col xs={4} className={"z-param-input"}>
+            <McuInputBox {...commonProps}
+              setting={"movement_steps_acc_dec_z2"}
+              scale={scale.z} />
+          </Col>
+        </Row>
+      </Highlight>
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.stepsPerMm}
         tooltip={ToolTips.STEPS_PER_MM}
@@ -196,8 +191,7 @@ export function Motors(props: MotorsProps) {
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"} />}
-      {shouldDisplayFeature(Feature.quiet_motors) &&
-        isTMCBoard(firmwareHardware) &&
+      {isTMCBoard(firmwareHardware) &&
         <BooleanMCUInputGroup {...commonProps}
           label={DeviceSetting.quietMode}
           tooltip={ToolTips.QUIET_MODE}

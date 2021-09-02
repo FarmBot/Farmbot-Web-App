@@ -10,14 +10,9 @@ import { some } from "lodash";
 export const TileCalibrate = (props: StepParams<Calibrate>) => {
   const { dispatch, currentStep, index, currentSequence } = props;
   const conflicts = settingConflicts(currentStep, props.hardwareFlags);
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"calibrate-step"}
     helpText={ToolTips.CALIBRATE}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}
     warning={some(conflicts) &&
       <StepWarning
         warning={Content.END_DETECTION_DISABLED + conflictsString(conflicts)}

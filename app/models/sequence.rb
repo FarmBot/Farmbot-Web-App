@@ -36,7 +36,6 @@ class Sequence < ApplicationRecord
 
   def set_defaults
     self.color ||= "gray"
-    self.kind ||= "sequence"
   end
 
   def delete_nodes_too
@@ -77,7 +76,7 @@ class Sequence < ApplicationRecord
   # is ready to broadcast as soon as it is created. It isn't. It needs to get
   # "linked" with sequence nodes before it can be broadcasted.
   def body_as_json
-    return destroyed? ? nil : CeleryScript::FetchCelery.run!(sequence: self)
+    return destroyed? ? nil : Sequences::Show.run!(sequence: self)
   end
 
   def fancy_name
@@ -87,4 +86,6 @@ class Sequence < ApplicationRecord
   def self.parameterized?(id)
     PrimaryNode.where(kind: "parameter_declaration", sequence_id: id).exists?
   end
+
+  def kind; "sequnece" end
 end

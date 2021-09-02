@@ -3,18 +3,11 @@ import { mount } from "enzyme";
 import { TileLua } from "../tile_lua";
 import { StepParams } from "../../interfaces";
 import { Lua } from "farmbot";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileLua />", () => {
   const fakeProps = (): StepParams<Lua> => ({
-    currentSequence: fakeSequence(),
-    currentStep: { kind: "lua", args: { lua: "lua" } },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: buildResourceIndex([]).index,
+    ...fakeStepParams({ kind: "lua", args: { lua: "lua" } }),
   });
 
   it("renders with textarea", () => {

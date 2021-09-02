@@ -11,6 +11,7 @@ describe("<AllSteps/>", () => {
     sequence: fakeSequence(),
     onDrop: jest.fn(),
     dispatch: jest.fn(),
+    readOnly: false,
     resources: fakeResourceIndex(),
   });
 
@@ -32,6 +33,19 @@ describe("<AllSteps/>", () => {
     const wrapper = shallow(<AllSteps {...p} />);
     ["move-relative-step", "read-pin-step", "write-pin-step"]
       .map(stepClass => expect(wrapper.html()).toContain(stepClass));
+  });
+
+  it("renders read-only steps", () => {
+    const p = fakeProps();
+    p.readOnly = true;
+    p.sequence.body.body = [
+      { kind: "move_relative", args: { x: 0, y: 0, z: 0, speed: 100 } },
+      { kind: "read_pin", args: { pin_number: 0, pin_mode: 0, label: "---" } },
+      { kind: "write_pin", args: { pin_number: 0, pin_value: 0, pin_mode: 0 } },
+    ];
+    p.sequence.body.body.map(step => maybeTagStep(step));
+    const wrapper = shallow(<AllSteps {...p} />);
+    expect(wrapper.find(".read-only").length).toEqual(3);
   });
 
   it("calls onDrop", () => {

@@ -3,7 +3,9 @@ import {
   editRegimenVariables, RegimenButtonGroup, OpenSchedulerButton,
 } from "./regimen_edit_components";
 import { ActiveEditorProps, ActiveEditorState } from "./interfaces";
-import { LocalsList } from "../../sequences/locals_list/locals_list";
+import {
+  LocalsList, removeVariable,
+} from "../../sequences/locals_list/locals_list";
 import {
   AllowedVariableNodes,
 } from "../../sequences/locals_list/locals_list_support";
@@ -34,6 +36,11 @@ export class ActiveEditor
       sequenceUuid={regimen.uuid}
       resources={this.props.resources}
       onChange={editRegimenVariables(this.regimenProps)(regimen.body.body)}
+      removeVariable={removeVariable({
+        dispatch: this.props.dispatch,
+        resource: regimen,
+        variableData: this.props.variableData,
+      })}
       collapsible={true}
       collapsed={this.state.variablesCollapsed}
       toggleVarShow={this.toggleVarShow}

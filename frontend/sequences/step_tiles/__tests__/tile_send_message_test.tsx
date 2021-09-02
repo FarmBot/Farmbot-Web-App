@@ -6,11 +6,10 @@ jest.mock("../../../api/crud", () => ({
 import React from "react";
 import { TileSendMessage } from "../tile_send_message";
 import { mount, shallow } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
 import { channel } from "../tile_send_message_support";
-import { emptyState } from "../../../resources/reducer";
 import { MessageType, StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileSendMessage/>", () => {
   const fakeProps = (): StepParams<SendMessage> => {
@@ -29,11 +28,7 @@ describe("<TileSendMessage/>", () => {
     };
 
     return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
+      ...fakeStepParams(currentStep),
     };
   };
 

@@ -9,26 +9,19 @@ import React from "react";
 import { render } from "enzyme";
 import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
 import { editStep } from "../../../api/crud";
 import { Reboot } from "farmbot";
 import { Content } from "../../../constants";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileReboot />", () => {
   const fakeProps = (): StepParams<Reboot> => ({
-    currentSequence: fakeSequence(),
-    currentStep: {
+    ...fakeStepParams({
       kind: "reboot",
       args: {
         package: "farmbot_os"
       }
-    },
-    dispatch: jest.fn(),
-    index: 1,
-    resources: buildResourceIndex().index,
+    }),
   });
 
   it("renders", () => {

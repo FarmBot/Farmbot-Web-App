@@ -30,7 +30,7 @@ import { TaggedPlant, BotSize } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString, uniq, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
-import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
+import { getEnv } from "../farmware/state_to_props";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { calcMicrostepsPerMm } from "../controls/move/direction_axes_props";
 import { getBotSize } from "./map/util";
@@ -151,7 +151,6 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     sensorReadings,
     sensors: selectAllSensors(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
-    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     mountedToolInfo,
     visualizedSequenceBody,
     logs: selectAllLogs(props.resources.index),

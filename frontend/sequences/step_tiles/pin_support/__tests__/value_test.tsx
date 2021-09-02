@@ -3,7 +3,7 @@ jest.mock("../../../../api/crud", () => ({
   editStep: mockEditStep
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import { WritePin } from "farmbot";
 import {
@@ -24,8 +24,7 @@ describe("<PinValueField />", () => {
       args: { pin_number: 3, pin_value: 2, pin_mode: 1 }
     };
     return {
-      ...fakeStepParams(),
-      currentStep: step,
+      ...fakeStepParams(step),
     };
   };
 
@@ -76,12 +75,11 @@ describe("currentValueSelection()", () => {
 
 describe("setPinValue()", () => {
   it("sets pin value", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 5, pin_mode: 0 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinValue(1, p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_value).toEqual(1);
@@ -90,19 +88,22 @@ describe("setPinValue()", () => {
 
 describe("setPinValueFromDdi()", () => {
   it("sets pin value", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 5, pin_mode: 0 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinValueFromDdi(PIN_VALUES()[0], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_value).toEqual(1);
   });
 
   it("rejects typos", () => {
-    const p = fakeStepParams();
+    const step: WritePin = {
+      kind: "write_pin",
+      args: { pin_number: 3, pin_value: 5, pin_mode: 0 }
+    };
+    const p = fakeStepParams(step);
     const action = () => setPinValueFromDdi({ label: "", value: "bad" }, p);
     expect(action).toThrow("Numbers only in pin_value.");
   });

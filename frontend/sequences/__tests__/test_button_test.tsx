@@ -18,8 +18,7 @@ jest.mock("../../ui/popover", () => ({
 import React from "react";
 import { TestButton, TestBtnProps, setMenuOpen } from "../test_button";
 import {
-  TaggedSequence, SpecialStatus, ParameterApplication, ParameterDeclaration,
-  Coordinate,
+  SpecialStatus, ParameterApplication, ParameterDeclaration, Coordinate,
 } from "farmbot";
 import { mount } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -27,37 +26,17 @@ import { warning } from "../../toast/toast";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { clickButton } from "../../__test_support__/helpers";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
 
 describe("<TestButton/>", () => {
-  function fakeSequence(): TaggedSequence {
-    return {
-      "kind": "Sequence",
-      "specialStatus": SpecialStatus.SAVED,
-      "body": {
-        "name": "Goto 0, 0, 0",
-        "color": "gray",
-        "pinned": false,
-        "folder_id": undefined,
-        "body": [],
-        "args": {
-          "version": 4,
-          "locals": { kind: "scope_declaration", args: {} },
-        },
-        "kind": "sequence"
-      },
-      "uuid": "Sequence.23.47"
-    };
-  }
 
-  function fakeProps(): TestBtnProps {
-    return {
-      sequence: fakeSequence(),
-      syncStatus: "synced",
-      resources: buildResourceIndex().index,
-      menuOpen: undefined,
-      dispatch: jest.fn(),
-    };
-  }
+  const fakeProps = (): TestBtnProps => ({
+    sequence: fakeSequence(),
+    syncStatus: "synced",
+    resources: buildResourceIndex().index,
+    menuOpen: undefined,
+    dispatch: jest.fn(),
+  });
 
   it("doesn't fire if unsaved", () => {
     const props = fakeProps();

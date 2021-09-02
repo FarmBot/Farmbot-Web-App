@@ -8,6 +8,9 @@ module Devices
       string :timezone
       string :name
       string :webcam_url
+      float :lat
+      float :lng
+      boolean :indoor
     end
 
     def execute

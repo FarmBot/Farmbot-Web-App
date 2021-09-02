@@ -9,14 +9,9 @@ import { t } from "../../i18next_wrapper";
 import { Home } from "farmbot";
 
 export const TileMoveHome = (props: StepParams<Home>) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"move-home-step"}
-    helpText={ToolTips.MOVE_TO_HOME}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={ToolTips.MOVE_TO_HOME}>
     <AxisStepRadio
       currentSequence={props.currentSequence}
       currentStep={props.currentStep}

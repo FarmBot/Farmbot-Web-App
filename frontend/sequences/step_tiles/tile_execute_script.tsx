@@ -3,7 +3,7 @@ import { StepParams, FarmwareData } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepWrapper, StepWarning } from "../step_ui";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
@@ -16,20 +16,12 @@ export enum FarmwareName {
 }
 
 export const TileExecuteScript = (props: StepParams<ExecuteScript>) => {
-  const {
-    dispatch, currentStep, index, currentSequence, farmwareData,
-  } = props;
   const farmwareName = props.currentStep.args.label;
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"execute-script-step"}
     helpText={getHelpText(farmwareName)}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}
     warning={<CameraRequiredStepWarnings farmwareName={farmwareName}
-      farmwareData={farmwareData} />}>
+      farmwareData={props.farmwareData} />}>
     <Row>
       <FarmwareStepContents {...props} />
     </Row>

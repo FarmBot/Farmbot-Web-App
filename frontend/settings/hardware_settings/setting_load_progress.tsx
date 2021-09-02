@@ -1,9 +1,9 @@
 import React from "react";
 import { Color } from "../../ui";
-import { Feature, ShouldDisplay, SourceFwConfig } from "../../devices/interfaces";
+import { SourceFwConfig } from "../../devices/interfaces";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
-import { hasZ2Params, isTMCBoard } from "../firmware/firmware_hardware_support";
+import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
 
 export interface SettingLoadProgressProps {
@@ -11,7 +11,6 @@ export interface SettingLoadProgressProps {
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   firmwareHardware: FirmwareHardware | undefined;
-  shouldDisplay: ShouldDisplay;
 }
 
 const UNTRACKED_KEYS: (keyof FirmwareConfig)[] = [
@@ -29,32 +28,17 @@ const TMC_KEYS: (keyof FirmwareConfig)[] = [
   "movement_microsteps_x",
   "movement_microsteps_y",
   "movement_microsteps_z",
-];
-
-const Z2_KEYS: (keyof FirmwareConfig)[] = [
-  "movement_min_spd_z2", "movement_max_spd_z2", "movement_steps_acc_dec_z2",
-];
-
-const CAL_RETRY_KEYS: (keyof FirmwareConfig)[] = [
   "movement_axis_stealth_x",
   "movement_axis_stealth_y",
   "movement_axis_stealth_z",
-  "movement_calibration_deadzone_x",
-  "movement_calibration_deadzone_y",
-  "movement_calibration_deadzone_z",
-  "movement_calibration_retry_x",
-  "movement_calibration_retry_y",
-  "movement_calibration_retry_z",
 ];
 
 /** Track firmware configuration adoption by FarmBot OS. */
 export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
-  const { firmwareHardware, shouldDisplay } = props;
+  const { firmwareHardware } = props;
   const keys = Object.keys(props.firmwareConfig || {})
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
-      .concat(hasZ2Params(firmwareHardware, shouldDisplay) ? [] : Z2_KEYS)
-      .concat(shouldDisplay(Feature.calibration_retries) ? [] : CAL_RETRY_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>
     props.sourceFwConfig(key).consistent);

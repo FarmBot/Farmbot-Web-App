@@ -2,19 +2,14 @@ import React from "react";
 import { StepParams } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepWrapper, StepWarning } from "../step_ui";
-import { Col, Row } from "../../ui/index";
+import { Col, Row } from "../../ui";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
 
 export const TileTakePhoto = (props: StepParams) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"take-photo-step"}
     helpText={ToolTips.TAKE_PHOTO}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}
     warning={props.farmwareData &&
       props.farmwareData.cameraDisabled &&
       <StepWarning

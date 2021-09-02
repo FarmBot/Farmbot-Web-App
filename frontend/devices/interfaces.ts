@@ -139,7 +139,6 @@ export interface FarmbotSettingsProps {
   device: TaggedDevice;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;
   botOnline: boolean;
   controlPanelState: ControlPanelState;

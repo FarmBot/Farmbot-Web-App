@@ -95,14 +95,9 @@ export class MarkAs
       resource: this.state.resource,
       resources: this.props.resources,
     };
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={"update-resource-step"}
-      helpText={ToolTips.MARK_AS}
-      currentSequence={this.props.currentSequence}
-      currentStep={this.step}
-      dispatch={this.props.dispatch}
-      index={this.props.index}
-      resources={this.props.resources}>
+      helpText={ToolTips.MARK_AS}>
       <Row>
         <Col>
           <ResourceSelection {...commonProps}

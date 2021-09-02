@@ -22,7 +22,6 @@ export class RawDesignerControls
           bot={this.props.bot}
           getConfigValue={this.props.getConfigValue}
           env={this.props.env}
-          shouldDisplay={this.props.shouldDisplay}
           firmwareSettings={this.props.firmwareSettings}
           firmwareHardware={this.props.firmwareHardware}
           dispatch={this.props.dispatch} />

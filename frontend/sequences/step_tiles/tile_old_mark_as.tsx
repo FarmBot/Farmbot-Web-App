@@ -30,14 +30,9 @@ const convertOldMarkAs = (oldStep: SequenceBodyItem) =>
 export const TileOldMarkAs = (props: StepParams) => {
   const { dispatch, currentStep, index, currentSequence } = props;
   const oldStepArgs = currentStep.args as Record<LegalArgString, string>;
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"update-resource-step"}
-    helpText={ToolTips.MARK_AS}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}>
+    helpText={ToolTips.MARK_AS}>
     <p>{trim(`Mark ${oldStepArgs.resource_type} ${oldStepArgs.resource_id}
           ${oldStepArgs.label} as ${oldStepArgs.value}`)}</p>
     <hr />

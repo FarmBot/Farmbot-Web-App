@@ -18,9 +18,14 @@ export interface StepIconBarProps {
   executeSequenceName: string | undefined;
   helpText: string;
   confirmStepDeletion: boolean;
-  toggleViewRaw?: () => void;
-  toggleMonacoEditor?(): void;
-  links?: React.ReactElement[];
+  viewRaw: boolean | undefined;
+  toggleViewRaw: (() => void) | undefined;
+  monacoEditor: boolean | undefined;
+  toggleMonacoEditor: (() => void) | undefined;
+  links: React.ReactElement[] | undefined;
+  pinnedView: boolean | undefined;
+  togglePinnedView: (() => void) | undefined;
+  readOnly: boolean;
 }
 
 export function StepUpDownButtonPopover(
@@ -35,7 +40,7 @@ export function StepUpDownButtonPopover(
 
 export function StepIconGroup(props: StepIconBarProps) {
   const {
-    index, dispatch, step, sequence, helpText, confirmStepDeletion
+    index, dispatch, step, sequence, helpText, confirmStepDeletion, readOnly,
   } = props;
 
   const onClone = () => dispatch(splice({ step, index, sequence }));
@@ -55,22 +60,26 @@ export function StepIconGroup(props: StepIconBarProps) {
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
+    {props.togglePinnedView &&
+      <i className={`fa fa-thumb-tack ${props.pinnedView ? "enabled" : ""}`}
+        title={t("toggle pinned view")}
+        onClick={props.togglePinnedView} />}
     {props.toggleMonacoEditor &&
-      <i className={"fa fa-font"}
+      <i className={`fa fa-font ${props.monacoEditor ? "enabled" : ""}`}
         title={t("toggle fancy editor")}
         onClick={props.toggleMonacoEditor} />}
     {props.toggleViewRaw &&
-      <i className={"fa fa-code"}
+      <i className={`fa fa-code ${props.viewRaw ? "enabled" : ""}`}
         title={t("toggle code view")}
         onClick={props.toggleViewRaw} />}
     <Help text={helpText} position={Position.TOP} title={t("help")}
       links={props.links} />
-    <i className={"fa fa-trash"}
+    {!readOnly && <i className={"fa fa-trash"}
       title={t("delete step")}
-      onClick={onTrash} />
-    <i className={"fa fa-clone"}
+      onClick={onTrash} />}
+    {!readOnly && <i className={"fa fa-clone"}
       title={t("duplicate step")}
-      onClick={onClone} />
-    <StepUpDownButtonPopover onMove={onMove} />
+      onClick={onClone} />}
+    {!readOnly && <StepUpDownButtonPopover onMove={onMove} />}
   </span>;
 }

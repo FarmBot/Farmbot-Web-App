@@ -1033,6 +1033,36 @@ export namespace Content {
   export const IS_PINNED =
     trim(`This sequence is pinned.`);
 
+  export const PUBLISH_SEQUENCE =
+    trim(`Publishing this sequence will create a public version released
+    under the MIT License. Once published, anyone may find and use the
+    sequence free of charge for tasks including but not limited to:
+    importing the sequence into their FarmBot account to view and use it as
+    they deem fit, upgrading their copy to other published versions, making
+    changes to their copy, publishing, distributing, and even selling their
+    copy. You can publish new versions of this sequence at any time, which
+    other users may choose to upgrade to. You may also unpublish the
+    sequence and/or delete it from your account at any time to disable the
+    share link. However, these actions will not affect existing imports
+    owned by other user accounts. By publishing this sequence, you will be
+    releasing it under the MIT License.`);
+
+  export const SEQUENCE_VERSIONS =
+    trim(`When you publish a new version, other users of the sequence may
+    optionally upgrade to the latest version.`);
+
+  export const IMPORT_SEQUENCE =
+    trim(`Importing this sequence will allow you to use it with your
+    FarmBot and make changes. If the original author of the sequence
+    publishes a new version, you will have the option to upgrade your copy.`);
+
+  export const IMPORTED_SEQUENCE =
+    trim(`This sequence was imported from a publicly shared sequence. If
+    the original author publishes a new version, you may upgrade your copy.
+    Upgrading will overwrite your copy with the contents of the new version.
+    It is recommended you check your FarmBot continues operating as expected
+    after any upgrades.`);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`Click one in the Regimens panel to edit, or click "+" to create

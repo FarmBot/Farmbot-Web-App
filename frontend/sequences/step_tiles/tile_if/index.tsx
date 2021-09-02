@@ -75,14 +75,9 @@ export class InnerIf extends React.Component<StepParams<If>> {
   render() {
     const { currentStep, currentSequence } = this.props;
     const recursive = isRecursive(currentStep, currentSequence);
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={"if-step"}
       helpText={ToolTips.IF}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={this.props.dispatch}
-      index={this.props.index}
-      resources={this.props.resources}
       warning={recursive &&
         <StepWarning
           titleBase={t("Recursive condition.")}

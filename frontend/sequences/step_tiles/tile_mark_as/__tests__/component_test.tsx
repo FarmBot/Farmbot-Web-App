@@ -12,7 +12,7 @@ import { MarkAs } from "../component";
 import { UpdateResourceValue } from "../interfaces";
 import { UpdateResource, Identifier, Resource, resource_type } from "farmbot";
 import {
-  fakeSequence, fakePlant, fakeWeed,
+  fakePlant, fakeWeed,
 } from "../../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
@@ -20,6 +20,9 @@ import {
 import { editStep } from "../../../../api/crud";
 import { NOTHING_SELECTED } from "../../../locals_list/handle_select";
 import { StepParams } from "../../../interfaces";
+import {
+  fakeStepParams,
+} from "../../../../__test_support__/fake_sequence_step_data";
 
 describe("<MarkAs/>", () => {
   beforeEach(() => { mockShouldDisplay = false; });
@@ -30,10 +33,8 @@ describe("<MarkAs/>", () => {
   weed.body.id = 2;
 
   const fakeProps = (): StepParams<UpdateResource> => ({
-    currentSequence: fakeSequence(),
-    dispatch: jest.fn(),
-    index: 0,
-    currentStep: ResourceUpdateResourceStep("Device", 1, "mounted_tool_id", 0),
+    ...fakeStepParams(
+      ResourceUpdateResourceStep("Device", 1, "mounted_tool_id", 0)),
     resources: buildResourceIndex([plant, weed]).index,
   });
 

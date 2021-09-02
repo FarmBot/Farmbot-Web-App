@@ -7,7 +7,7 @@ describe Api::FarmEventsController do
     start_time = (Time.now + 1.hour).to_json.gsub("\"", "")
 
     let(:user) { FactoryBot.create(:user) }
-    let(:sequence) { FakeSequence.create() }
+    let(:sequence) { FakeSequence.create(device: user.device) }
     let(:regimen) { FactoryBot.create(:regimen, device: user.device) }
     let(:tool) { FactoryBot.create(:tool, device: user.device) }
     let(:generic_fe) do
@@ -162,7 +162,7 @@ describe Api::FarmEventsController do
 
     it "allows use of parameterized sequences" do
       sign_in user
-      s = FakeSequence.with_parameters
+      s = FakeSequence.with_parameters(device: user.device)
       input = { "end_time": Time.now.as_json,
                 "time_unit": "never",
                 "executable_id": s.id,

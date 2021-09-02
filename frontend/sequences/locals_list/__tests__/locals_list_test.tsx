@@ -10,12 +10,13 @@ jest.mock("../../../farmware/state_to_props", () => ({
 import React from "react";
 import {
   generateNewVariableLabel,
-  localListCallback, LocalListCbProps, LocalsList, removeVariable,
+  localListCallback, LocalsList, removeVariable, RemoveVariableProps,
 } from "../locals_list";
 import {
   ParameterApplication, Coordinate, ParameterDeclaration, VariableDeclaration,
 } from "farmbot";
 import {
+  fakeRegimen,
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { shallow } from "enzyme";
@@ -149,7 +150,7 @@ describe("localListCallback()", () => {
 });
 
 describe("removeVariable()", () => {
-  const fakeProps = (): LocalListCbProps => {
+  const fakeProps = (): RemoveVariableProps => {
     const sequence = fakeSequence();
     sequence.body.args.locals = {
       kind: "scope_declaration",
@@ -169,32 +170,57 @@ describe("removeVariable()", () => {
     };
     return {
       dispatch: jest.fn(),
-      sequence,
+      resource: sequence,
+      variableData: {},
     };
   };
 
   it("removes variable", () => {
     const p = fakeProps();
     removeVariable(p)("label");
-    const newSequenceBody = cloneDeep(p.sequence.body);
-    newSequenceBody.args.locals.body = [];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, newSequenceBody);
+    const newSequence = cloneDeep(p.resource);
+    newSequence.kind == "Sequence" && (newSequence.body.args.locals.body = []);
+    expect(overwrite).toHaveBeenCalledWith(p.resource, newSequence.body);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("removes variable: regimen", () => {
+    const p = fakeProps();
+    p.resource = fakeRegimen();
+    p.resource.body.body = [
+      {
+        kind: "parameter_declaration",
+        args: {
+          label: "label",
+          default_value: {
+            kind: "coordinate",
+            args: { x: 0, y: 0, z: 0 },
+          },
+        }
+      },
+    ];
+    removeVariable(p)("label");
+    const updatedRegimen = cloneDeep(p.resource);
+    updatedRegimen.kind == "Regimen" && (updatedRegimen.body.body = []);
+    expect(overwrite).toHaveBeenCalledWith(p.resource, updatedRegimen.body);
     expect(error).not.toHaveBeenCalled();
   });
 
   it("no variables to remove", () => {
     const p = fakeProps();
-    p.sequence.body.args.locals.body = undefined;
+    p.resource.kind == "Sequence" &&
+      (p.resource.body.args.locals.body = undefined);
     removeVariable(p)("label");
-    const newSequenceBody = cloneDeep(p.sequence.body);
-    newSequenceBody.args.locals.body = [];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, newSequenceBody);
+    const updatedSequence = cloneDeep(p.resource);
+    updatedSequence.kind == "Sequence" &&
+      (updatedSequence.body.args.locals.body = []);
+    expect(overwrite).toHaveBeenCalledWith(p.resource, updatedSequence.body);
     expect(error).not.toHaveBeenCalled();
   });
 
   it("doesn't remove variable", () => {
     const p = fakeProps();
-    p.sequence.body.body = [{
+    p.resource.body.body = [{
       kind: "move",
       args: {},
       body: [

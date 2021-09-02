@@ -1,7 +1,7 @@
 import {
   HardwareFlags, FarmwareData, StepParams,
 } from "../sequences/interfaces";
-import { WritePin } from "farmbot";
+import { SequenceBodyItem } from "farmbot";
 import { fakeSequence } from "./fake_state/resources";
 import { emptyState } from "../resources/reducer";
 
@@ -22,16 +22,14 @@ export const fakeFarmwareData = (): FarmwareData => ({
   cameraCalibrated: true,
 });
 
-export const fakeStepParams = (): StepParams => {
-  const step: WritePin = {
-    kind: "write_pin",
-    args: { pin_number: 3, pin_value: 2, pin_mode: 1 }
+export const fakeStepParams =
+  <T extends SequenceBodyItem>(step: T): StepParams<T> => {
+    return {
+      currentSequence: fakeSequence(),
+      currentStep: step,
+      dispatch: jest.fn(),
+      readOnly: false,
+      index: 0,
+      resources: emptyState().index,
+    };
   };
-  return {
-    currentSequence: fakeSequence(),
-    currentStep: step,
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
-  };
-};

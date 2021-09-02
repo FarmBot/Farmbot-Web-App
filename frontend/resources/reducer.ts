@@ -27,6 +27,7 @@ import { initialState as alertState } from "../messages/reducer";
 import { ingest } from "../folders/data_transfer";
 import { searchFolderTree } from "../folders/search_folder_tree";
 import { photosState } from "../photos/reducer";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 export const emptyState = (): RestResources => {
   return {
@@ -118,16 +119,20 @@ export const resourceReducer =
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
+      if (original.kind == "Sequence" && original.body.sequence_version_id) {
+        (update as SequenceResource).forked = true;
+      }
       original.body = update;
       indexUpsert(s.index, [original], "ongoing");
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
-    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      indexUpsert(s.index, payload.body, "initial");
-      return s;
-    })
+    .add<SyncBodyContents<TaggedResource>>(
+      Actions.RESOURCE_READY, (s, { payload }) => {
+        !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+        indexUpsert(s.index, payload.body, "initial");
+        return s;
+      })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index);

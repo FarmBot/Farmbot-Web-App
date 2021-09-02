@@ -38,6 +38,8 @@ const tr0: TaggedResource = {
   "body": {
     "id": 23,
     "name": "Goto 0, 0, 0",
+    "description": "description",
+    "forked": false,
     "color": "gray",
     "pinned": false,
     "folder_id": undefined,
@@ -424,6 +426,8 @@ const blankSeq: TaggedSequence = {
   "body": {
     "id": undefined,
     "name": "Repair sequence",
+    "description": "description",
+    "forked": false,
     "pinned": false,
     "folder_id": undefined,
     "color": "gray",
