@@ -7,11 +7,13 @@ jest.mock("axios", () => ({
 }));
 
 import { refresh, updateViaAjax } from "../crud";
-import { TaggedDevice, SpecialStatus } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { get } from "lodash";
 import { Actions } from "../../constants";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
 import { fakePeripheral } from "../../__test_support__/fake_state/resources";
 
 describe("refresh()", () => {
@@ -19,21 +21,8 @@ describe("refresh()", () => {
 
   // 1. Enters the `catch` block.
   it("rejects malformed API data", async () => {
-    const device1: TaggedDevice = {
-      "uuid": "Device.6.1",
-      "kind": "Device",
-      "specialStatus": "" as SpecialStatus,
-      "body": {
-        "id": 6,
-        "name": "summer-pond-726",
-        "timezone": "America/Chicago",
-        "last_saw_api": "2017-08-30T20:42:35.854Z",
-        "tz_offset_hrs": 0,
-        "ota_hour": 3
-      },
-    };
-
-    const thunk = refresh(device1);
+    const device = fakeDevice();
+    const thunk = refresh(device);
     const dispatch = jest.fn();
     const { mock } = dispatch;
     console.error = jest.fn();
@@ -44,7 +33,7 @@ describe("refresh()", () => {
     const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
     expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);
     const dispatchPayload1 = get(firstCall, "payload", "NO TYPE FOUND");
-    expect(dispatchPayload1).toBe(device1.uuid);
+    expect(dispatchPayload1).toBe(device.uuid);
     const secondCall = mock.calls[1][0];
     const dispatchAction2 = get(secondCall, "type", "NO TYPE FOUND");
     expect(dispatchAction2).toEqual(Actions.REFRESH_RESOURCE_NO);
