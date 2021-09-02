@@ -103,8 +103,7 @@
     "Always": "Siempre",
     "always highlight current photo in map": "siempre destacar foto actual en mapa",
     "Always Power Motors": "Mantener los motores siempre encendidos",
-    "Amount of time to wait for a command to execute before stopping. (default: x: {{ x }}, y: {{ y }}, z: {{ z }} seconds)": "Cantidad de tiempo a esperar a que una orden se ejecute antes de cancelarlo
-    a. (por defecto: x: {{ x }}, y: {{ y }}, z: {{ z }} segundos)",
+    "Amount of time to wait for a command to execute before stopping. (default: x: {{ x }}, y: {{ y }}, z: {{ z }} seconds)": "Cantidad de tiempo a esperar a que una orden se ejecute antes de cancelarlo a. (por defecto: x: {{ x }}, y: {{ y }}, z: {{ z }} segundos)",
     "An error occurred during configuration.": "Ha ocurrido un error durante la configuración.",
     "analog": "analógico",
     "Analog": "Analógico",
