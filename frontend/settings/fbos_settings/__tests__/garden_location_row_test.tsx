@@ -14,7 +14,6 @@ describe("<GardenLocationRow />", () => {
   const fakeProps = (): GardenLocationRowProps => ({
     device: fakeDevice(),
     dispatch: jest.fn(),
-    sourceFbosConfig: () => ({ value: 1, consistent: true }),
   });
 
   it("doesn't have use location button", () => {
@@ -67,5 +66,13 @@ describe("<GardenLocationRow />", () => {
     wrapper.find("button").last().simulate("click");
     expect(edit).toHaveBeenCalledWith(p.device, { indoor: true });
     expect(save).toHaveBeenCalledWith(p.device.uuid);
+  });
+
+  it("shows map link", () => {
+    const p = fakeProps();
+    p.device.body.lat = 100;
+    p.device.body.lng = 50;
+    const wrapper = mount(<GardenLocationRow {...p} />);
+    expect(wrapper.html()).toContain("fa-map");
   });
 });

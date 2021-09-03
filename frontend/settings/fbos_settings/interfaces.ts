@@ -25,7 +25,6 @@ export interface TimezoneRowProps {
 export interface GardenLocationRowProps {
   dispatch: Function;
   device: TaggedDevice;
-  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface AutoUpdateRowProps {

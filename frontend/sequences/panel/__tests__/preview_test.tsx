@@ -83,7 +83,9 @@ describe("<DesignerSequencePreview />", () => {
   });
 
   it("views as celery script", async () => {
-    mockGet = Promise.resolve({ data: fakeSequence().body });
+    const sequence = fakeSequence();
+    sequence.body.name = "";
+    mockGet = Promise.resolve({ data: sequence.body });
     const p = fakeProps();
     p.getWebAppConfigValue = () => true;
     const wrapper = await mount<DesignerSequencePreview>(

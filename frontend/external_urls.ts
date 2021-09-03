@@ -30,6 +30,10 @@ export namespace ExternalUrl {
   const YOUTUBE = "https://www.youtube.com/embed/";
   const FARMBOT = "https://farm.bot";
   const MY_FARMBOT_WEB_APP = "https://my.farm.bot";
+  const OPEN_STREET_MAP = "https://www.openstreetmap.org";
+
+  export const openStreetMap = (latitude: number, longitude: number) =>
+    `${OPEN_STREET_MAP}/?mlat=${latitude}&mlon=${longitude}&zoom=10`;
 
   export const myFarmBot = MY_FARMBOT_WEB_APP;
 

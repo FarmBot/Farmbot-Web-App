@@ -47,6 +47,7 @@ import { variableList } from "../sequences/locals_list/variable_support";
 import { UUID } from "../resources/interfaces";
 import { SearchField } from "../ui/search_field";
 import { getPathArray } from "../history";
+import { isSequencePublished } from "../sequences/sequence_editor_middle_active";
 
 export const inDesigner = () => getPathArray()[2] == "designer";
 export const sequencesUrlBase = () =>
@@ -61,11 +62,9 @@ export const FolderListItem = (props: FolderItemProps) => {
   const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
   const deprecatedSteps = JSON.stringify(props.sequence.body.body)
     .includes("resource_update");
-  const {
-    pinned, forked, sequence_version_id, sequence_versions,
-  } = props.sequence.body;
+  const { pinned, forked, sequence_version_id } = props.sequence.body;
   const imported = sequence_version_id && !forked;
-  const published = !imported && !!sequence_versions?.length;
+  const published = isSequencePublished(sequence);
   return <StepDragger
     dispatch={props.dispatch}
     step={{
