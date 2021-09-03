@@ -44,14 +44,14 @@ module Sequences
       end
     end
 
-    private
-
     def enforce_allow_list
       problems = illegal_content.uniq.sort.join(", ")
       if problems.present?
         add_error :sequence, :illegal, AUTHORIZATION_REQUIRED + problems
       end
     end
+
+    private
 
     def validate_ownership
       if sequence.device_id != device.id
