@@ -39,6 +39,12 @@ module Sequences
         celery = Sequences::Show.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
         flat_ast = Fragments::Preprocessor.run!(**params)
+        puts({
+          sv: sv,
+          celery: celery,
+          params: params,
+          flat_ast: flat_ast,
+        })
         Fragments::Create.run!(flat_ast: flat_ast, owner: sv)
         publication
       end
