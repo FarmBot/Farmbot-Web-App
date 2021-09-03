@@ -57,6 +57,7 @@ import {
   SequenceBtnGroup,
   SequenceShareMenu,
   SequencePublishMenu,
+  isSequencePublished,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import {
@@ -521,6 +522,16 @@ describe("<SequenceShareMenu />", () => {
     clickButton(wrapper, 0, "", { icon: "fa-plus" });
     expect(publishSequence).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
+  });
+});
+
+describe("isSequencePublished()", () => {
+  it("returns status", () => {
+    const sequence = fakeSequence();
+    sequence.body.sequence_version_id = undefined;
+    sequence.body.forked = false;
+    sequence.body.sequence_versions = [1];
+    expect(isSequencePublished(sequence)).toEqual(true);
   });
 });
 

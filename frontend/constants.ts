@@ -1730,6 +1730,8 @@ export enum DeviceSetting {
   orderNumber = `Order Number`,
   timezone = `timezone`,
   time_zone = `time zone`,
+  farmbotLocation = `Location`,
+  indoor = `indoor`,
   camera = `camera`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,

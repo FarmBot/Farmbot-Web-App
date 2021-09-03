@@ -227,11 +227,16 @@ export const SequenceBtnGroup = ({
       <div className={"publish-button"}>
         <Popover position={Position.BOTTOM_RIGHT}
           target={<i className={"fa fa-share"} title={t("share sequence")} />}
-          content={sequence.body.sequence_versions?.length
+          content={isSequencePublished(sequence)
             ? <SequenceShareMenu sequence={sequence} />
             : <SequencePublishMenu sequence={sequence} />} />
       </div>}
   </div>;
+
+export const isSequencePublished = (sequence: TaggedSequence) =>
+  !sequence.body.sequence_version_id
+  && !sequence.body.forked
+  && !!sequence.body.sequence_versions?.length;
 
 export const SequenceName = ({ dispatch, sequence }: {
   dispatch: Function, sequence: TaggedSequence

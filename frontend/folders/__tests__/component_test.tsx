@@ -302,7 +302,6 @@ describe("<FolderListItem />", () => {
     ];
     const wrapper = mount(<FolderListItem {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
-    expect(wrapper.find(".in-use").hasClass("two")).toBeTruthy();
     expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
   });
 
@@ -312,8 +311,34 @@ describe("<FolderListItem />", () => {
     p.sequence.body.pinned = true;
     const wrapper = mount(<FolderListItem {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
-    expect(wrapper.find(".in-use").hasClass("two")).toBeTruthy();
     expect(wrapper.find(".fa-thumb-tack").length).toEqual(1);
+  });
+
+  it("renders: imported", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.forked = false;
+    p.sequence.body.sequence_versions = [1];
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".fa-link").length).toEqual(1);
+  });
+
+  it("renders: forked", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.forked = true;
+    p.sequence.body.sequence_versions = [1];
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".fa-chain-broken").length).toEqual(1);
+  });
+
+  it("renders: published", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = undefined;
+    p.sequence.body.forked = false;
+    p.sequence.body.sequence_versions = [1];
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".fa-globe").length).toEqual(1);
   });
 
   it("changes color", () => {

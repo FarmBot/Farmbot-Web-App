@@ -35,5 +35,7 @@ describe("ExternalUrl", () => {
       .toEqual("https://my.farm.bot");
     expect(ExternalUrl.Store.cameraCalibrationCard)
       .toEqual("https://farm.bot/products/camera-calibration-card");
+    expect(ExternalUrl.openStreetMap(1, 2))
+      .toEqual("https://www.openstreetmap.org/?mlat=1&mlon=2&zoom=10");
   });
 });

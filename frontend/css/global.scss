@@ -330,6 +330,21 @@ fieldset {
   }
 }
 
+.garden-location {
+  .fa-map {
+    margin: 0.5rem;
+    float: right;
+    margin-bottom: 0;
+    color: $medium_gray;
+  }
+  .latitude {
+    padding-right: 0;
+  }
+  .longitude {
+    padding-left: 0;
+  }
+}
+
 .all-content-wrapper {
   margin: 0 auto;
   padding: 11rem 3rem 0;
@@ -1259,6 +1274,7 @@ ul {
 .settings-menu-button {
   float: right;
   .fa-gear {
+    margin-top: -0.25rem;
     color: $dark_gray;
   }
 }
