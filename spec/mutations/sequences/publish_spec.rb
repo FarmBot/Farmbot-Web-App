@@ -16,7 +16,34 @@ describe Sequences::Publish do
   let(:other_device) { FactoryBot.create(:user).device }
   let(:sequence) { FakeSequence.with_parameters(device: device, body: body) }
 
-  it "allows override by admins"
+  it "allows override by admins" do
+    sequence_id = Sequences::Create.run!(
+      name: "first party sequence",
+      kind: "sequence",
+      args: {
+        version: 20180209,
+        loals: {
+          kind: "scope_declaration",
+          args: {},
+          body: [
+            {
+              kind: "parameter_declaration",
+              args: {
+                label: "parent",
+                default_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+              },
+            },
+          ],
+        },
+      },
+      body: [{ kind: "lua", args: { lua: "print(\"Hello, world!\")" } }],
+      device: device,
+    )[:id]
+    s = Sequence.find(sequence_id)
+    d = s.device
+    result = Sequences::PublishUnsafe.run!(sequence: s, device: d)
+    expect(result.author_device_id).to eq(d.id)
+  end
 
   it "disallows denied nodes and args" do
     bad = FakeSequence.with_parameters(device: device, body: [

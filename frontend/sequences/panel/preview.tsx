@@ -67,7 +67,7 @@ export class RawDesignerSequencePreview
           specialStatus: SpecialStatus.SAVED,
           body: response.data,
         };
-        sequence.body.name = `Shared Sequence ${id}`;
+        sequence.body.name = sequence.body.name || `Shared Sequence ${id}`;
         sequence.body.body?.map(step => maybeTagStep(step));
         this.setState({ sequence });
       }, () => {

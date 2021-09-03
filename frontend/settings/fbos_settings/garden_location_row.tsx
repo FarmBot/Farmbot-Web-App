@@ -7,7 +7,8 @@ import { GardenLocationRowProps } from "./interfaces";
 import { edit, save } from "../../api/crud";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
-import { round } from "lodash";
+import { isUndefined, round } from "lodash";
+import { ExternalUrl } from "../../external_urls";
 
 export const GardenLocationRow = (props: GardenLocationRowProps) => {
   const { dispatch, device } = props;
@@ -16,7 +17,7 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
   const longitudeKey: keyof DeviceAccountSettings = "lng";
   const longitude = device.body[longitudeKey];
   const { indoor } = device.body;
-  return <div>
+  return <div className={"garden-location"}>
     <Highlight settingName={DeviceSetting.farmbotLocation}>
       <Row>
         <Col xs={5}>
@@ -38,6 +39,12 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
               }}>
               <i className="fa fa-crosshairs" />
             </button>}
+          {!isUndefined(latitude) && !isUndefined(longitude) &&
+            <a href={`${ExternalUrl.openStreetMap(latitude, longitude)}`}
+              title={t("view in map (opens in new tab)")}
+              target={"_blank"} rel={"noreferrer"}>
+              <i className={"fa fa-map"} />
+            </a>}
         </Col>
         <Col xs={3} className={"latitude"}>
           <input name={"latitude"}
@@ -49,7 +56,7 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
               [latitudeKey]: parseFloat(e.currentTarget.value),
             }))}
             onBlur={() => dispatch(save(device.uuid))}
-            value={device.body[latitudeKey] || ""} />
+            value={latitude || ""} />
         </Col>
         <Col xs={3} xsOffset={1} className={"longitude"}>
           <input name={"longitude"}
@@ -61,7 +68,7 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
               [longitudeKey]: parseFloat(e.currentTarget.value),
             }))}
             onBlur={() => dispatch(save(device.uuid))}
-            value={device.body[longitudeKey] || ""} />
+            value={longitude || ""} />
         </Col>
       </Row>
     </Highlight>
