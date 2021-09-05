@@ -1,7 +1,7 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class Primitive < ApplicationRecord
   PRIMITIVES = [FalseClass, TrueClass, Float, Integer, String, Symbol]
-  LENGTH_LIMIT = 300
+  LENGTH_LIMIT = 3000
   PRIMITIVE_ONLY = "Expected primitive class. Got: %s"
   BAD_LENGTH = "Primitives must be shorter than" \
                " #{LENGTH_LIMIT} chars in length"

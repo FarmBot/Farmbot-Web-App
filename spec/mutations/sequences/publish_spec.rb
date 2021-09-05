@@ -17,7 +17,7 @@ describe Sequences::Publish do
   let(:sequence) { FakeSequence.with_parameters(device: device, body: body) }
 
   it "allows override by admins" do
-    sequence_id = Sequences::Create.run!(
+    json = Sequences::Create.run!(
       name: "first party sequence",
       kind: "sequence",
       args: {
@@ -38,11 +38,12 @@ describe Sequences::Publish do
       },
       body: [{ kind: "lua", args: { lua: "print(\"Hello, world!\")" } }],
       device: device,
-    )[:id]
-    s = Sequence.find(sequence_id)
+    )
+    s = Sequence.find(json[:id])
     d = s.device
     result = Sequences::PublishUnsafe.run!(sequence: s, device: d)
     expect(result.author_device_id).to eq(d.id)
+    Fragments::Show.run!(owner: result.sequence_versions.first)
   end
 
   it "disallows denied nodes and args" do
