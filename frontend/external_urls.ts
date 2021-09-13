@@ -1,3 +1,5 @@
+import { isNumber } from "lodash";
+
 enum Org {
   FarmBot = "FarmBot",
   FarmBotLabs = "FarmBot-Labs",
@@ -32,8 +34,11 @@ export namespace ExternalUrl {
   const MY_FARMBOT_WEB_APP = "https://my.farm.bot";
   const OPEN_STREET_MAP = "https://www.openstreetmap.org";
 
-  export const openStreetMap = (latitude: number, longitude: number) =>
-    `${OPEN_STREET_MAP}/?mlat=${latitude}&mlon=${longitude}&zoom=10`;
+  export const openStreetMap =
+    (latitude: number | undefined, longitude: number | undefined) =>
+      isNumber(latitude) && isNumber(longitude)
+        ? `${OPEN_STREET_MAP}/?mlat=${latitude}&mlon=${longitude}&zoom=10`
+        : OPEN_STREET_MAP;
 
   export const myFarmBot = MY_FARMBOT_WEB_APP;
 

@@ -7,7 +7,7 @@ import { GardenLocationRowProps } from "./interfaces";
 import { edit, save } from "../../api/crud";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
-import { isUndefined, round } from "lodash";
+import { round } from "lodash";
 import { ExternalUrl } from "../../external_urls";
 
 export const GardenLocationRow = (props: GardenLocationRowProps) => {
@@ -39,12 +39,11 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
               }}>
               <i className="fa fa-crosshairs" />
             </button>}
-          {!isUndefined(latitude) && !isUndefined(longitude) &&
-            <a href={`${ExternalUrl.openStreetMap(latitude, longitude)}`}
-              title={t("view in map (opens in new tab)")}
-              target={"_blank"} rel={"noreferrer"}>
-              <i className={"fa fa-map"} />
-            </a>}
+          <a href={`${ExternalUrl.openStreetMap(latitude, longitude)}`}
+            title={t("view in map (opens in new tab)")}
+            target={"_blank"} rel={"noreferrer"}>
+            <i className={"fa fa-map"} />
+          </a>
         </Col>
         <Col xs={3} className={"latitude"}>
           <input name={"latitude"}

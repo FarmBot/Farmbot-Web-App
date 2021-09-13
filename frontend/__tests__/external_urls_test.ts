@@ -37,5 +37,10 @@ describe("ExternalUrl", () => {
       .toEqual("https://farm.bot/products/camera-calibration-card");
     expect(ExternalUrl.openStreetMap(1, 2))
       .toEqual("https://www.openstreetmap.org/?mlat=1&mlon=2&zoom=10");
+    // eslint-disable-next-line no-null/no-null
+    expect(ExternalUrl.openStreetMap(null as unknown as undefined,
+      // eslint-disable-next-line no-null/no-null
+      null as unknown as undefined))
+      .toEqual("https://www.openstreetmap.org");
   });
 });
