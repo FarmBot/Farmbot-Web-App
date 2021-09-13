@@ -6,6 +6,7 @@ import { toggleHideImage } from "../photo_filter_settings/actions";
 import {
   FlagDisplayRowProps, ImageFilterProps, ImageShowProps,
 } from "./interfaces";
+import { getImageTypeLabel } from "../photo_filter_settings/util";
 
 export const ImageShowMenuTarget = (props: ImageFilterProps) => {
   const shownInMap = every(Object.values(props.flags));
@@ -41,9 +42,11 @@ const ShownInMapDetails = (props: ImageShowProps) => {
       labelOk={t("Map photo layer on")}
       labelNo={t("Map photo layer off")} />
     <FlagDisplayRow flag={flags.inRange}
+      title={image?.body.created_at}
       labelOk={t("Within filter range")}
       labelNo={t("Outside of filter range")} />
     <FlagDisplayRow flag={flags.zMatch}
+      title={"" + image?.body.meta.z}
       labelOk={t("Z height matches calibration")}
       labelNo={t("Z doesn't match calibration")} />
     <FlagDisplayRow flag={flags.sizeMatch}
@@ -51,8 +54,13 @@ const ShownInMapDetails = (props: ImageShowProps) => {
       labelOk={t("Size matches camera calibration")}
       labelNo={t("Size doesn't match calibration")} />
     <FlagDisplayRow flag={flags.notHidden}
+      title={"" + image?.body.id}
       labelOk={t("Not hidden")}
       labelNo={t("Temporarily hidden")} />
+    <FlagDisplayRow flag={flags.typeShown}
+      title={`${getImageTypeLabel(image)}: ${image?.body.meta.name}`}
+      labelOk={t("Type not filtered")}
+      labelNo={t("Type filtered")} />
   </div>;
 };
 

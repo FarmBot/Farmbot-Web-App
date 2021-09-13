@@ -53,9 +53,6 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
 
   const currentImageUuid = props.resources.consumers.photos.currentImage;
   const { currentImageSize } = props.resources.consumers.photos;
-  const {
-    hiddenImages, shownImages, hideUnShownImages, alwaysHighlightImage,
-  } = props.resources.consumers.farm_designer;
 
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -72,10 +69,7 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     imageJobs: getImageJobs(props.bot.hardware.jobs),
     versions,
-    hiddenImages,
-    shownImages,
-    hideUnShownImages,
-    alwaysHighlightImage,
+    designer: props.resources.consumers.farm_designer,
     getConfigValue: getWebAppConfigValue(() => props),
     farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
   };

@@ -156,6 +156,9 @@ export interface DesignerState {
   shownImages: number[];
   hideUnShownImages: boolean;
   alwaysHighlightImage: boolean;
+  showCalibrationImages: boolean;
+  showDetectionImages: boolean;
+  showHeightImages: boolean;
   hoveredMapImage: number | undefined;
   cameraViewGridId: string | undefined;
   gridIds: string[];
@@ -168,7 +171,8 @@ export interface DesignerState {
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
-export type ExecutableQuery = (kind: ExecutableType, id: number) => TaggedExecutable;
+export type ExecutableQuery =
+  (kind: ExecutableType, id: number) => TaggedExecutable;
 export interface AddEditFarmEventProps {
   deviceTimezone: string | undefined;
   executableOptions: DropDownItem[];

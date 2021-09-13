@@ -5,6 +5,7 @@ import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Farmwares, SaveFarmwareEnv } from "../farmware/interfaces";
 import { WD_ENV } from "./remote_env/interfaces";
+import { DesignerState } from "../farm_designer/interfaces";
 
 export interface DesignerPhotosProps {
   dispatch: Function;
@@ -19,10 +20,7 @@ export interface DesignerPhotosProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   imageJobs: JobProgress[];
   versions: Record<string, string>;
-  hiddenImages: number[];
-  shownImages: number[];
-  hideUnShownImages: boolean;
-  alwaysHighlightImage: boolean;
+  designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
   farmwares: Farmwares;
   userEnv: UserEnv;

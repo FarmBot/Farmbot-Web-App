@@ -42,6 +42,9 @@ export const initialState: DesignerState = {
   shownImages: [],
   hideUnShownImages: false,
   alwaysHighlightImage: false,
+  showCalibrationImages: true,
+  showDetectionImages: true,
+  showHeightImages: true,
   hoveredMapImage: undefined,
   cameraViewGridId: undefined,
   gridIds: [],
@@ -175,6 +178,18 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_SHOWN_IMAGES_ONLY, (s) => {
     s.hideUnShownImages = !s.hideUnShownImages;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SHOW_CALIBRATION_IMAGES, (s) => {
+    s.showCalibrationImages = !s.showCalibrationImages;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SHOW_DETECTION_IMAGES, (s) => {
+    s.showDetectionImages = !s.showDetectionImages;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SHOW_HEIGHT_IMAGES, (s) => {
+    s.showHeightImages = !s.showHeightImages;
     return s;
   })
   .add<boolean>(Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, (s) => {
