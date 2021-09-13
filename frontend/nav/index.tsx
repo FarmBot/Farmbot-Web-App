@@ -22,6 +22,7 @@ import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { setupProgressString } from "../wizard/data";
+import { lastSeenNumber } from "../settings/fbos_settings/last_seen_row";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -154,6 +155,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       toggle={this.toggle}
       timeSettings={this.props.timeSettings}
       getConfigValue={this.props.getConfigValue}
+      lastSeen={lastSeenNumber({ bot: this.props.bot, device: this.props.device })}
       botOnline={isBotOnlineFromState(this.props.bot)} />
 
   render() {

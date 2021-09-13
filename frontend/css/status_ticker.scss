@@ -80,6 +80,7 @@
   .status-ticker-created-at {
     font-size: 1.2rem;
     font-weight: 600;
+    text-transform: none;
   }
   .status-ticker-wrapper {
     &:hover {
@@ -102,6 +103,13 @@
   span {
     -webkit-animation: flash 1.5s ease-in;
     animation: flash 1.5s ease-in;
+  }
+  &.prefix {
+    .markdown {
+      p {
+        width: calc(100% - 21rem);
+      }
+    }
   }
 }
 

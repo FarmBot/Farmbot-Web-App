@@ -55,6 +55,10 @@ module Devices
         Alert::BULLETIN.merge(slug: "buy-a-farmbot", priority: 9999),
       ]
 
+      DEMO_LOGS = [
+        {message: "Your FarmBot says hi!", type: "fun", verbosity: 3},
+      ]
+
       # Note: At the time of publish, FBOS v8.0.0
       # was the latest release. We are setting
       # demo accounts to v100 because:
@@ -70,6 +74,9 @@ module Devices
         DEMO_ALERTS
           .map { |p| p.merge(device: device) }
           .map { |p| Alerts::Create.run!(p) }
+        DEMO_LOGS
+          .map { |p| p.merge(device: device) }
+          .map { |p| Logs::Create.run!(p) }
         device
           .update!(fbos_version: READ_COMMENT_ABOVE)
         device
