@@ -33,6 +33,21 @@ export const toggleHideImage =
     payload: imageId,
   });
 
+export const toggleShowCalibrationImages = (dispatch: Function) => () =>
+  dispatch({
+    type: Actions.TOGGLE_SHOW_CALIBRATION_IMAGES, payload: undefined,
+  });
+
+export const toggleShowDetectionImages = (dispatch: Function) => () =>
+  dispatch({
+    type: Actions.TOGGLE_SHOW_DETECTION_IMAGES, payload: undefined,
+  });
+
+export const toggleShowHeightImages = (dispatch: Function) => () =>
+  dispatch({
+    type: Actions.TOGGLE_SHOW_HEIGHT_IMAGES, payload: undefined,
+  });
+
 export const setWebAppConfigValues = (update: StringValueUpdate) =>
   (dispatch: Function, getState: GetState) => {
     const webAppConfig = getWebAppConfig(getState().resources.index);

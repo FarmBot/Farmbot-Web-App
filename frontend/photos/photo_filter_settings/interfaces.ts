@@ -3,6 +3,7 @@ import { TimeSettings } from "../../interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TaggedImage } from "farmbot";
 import { ImageShowFlags } from "../images/interfaces";
+import { DesignerState } from "../../farm_designer/interfaces";
 
 export interface PhotoFilterSettingsProps {
   dispatch: Function;
@@ -10,8 +11,7 @@ export interface PhotoFilterSettingsProps {
   currentImage: TaggedImage | undefined;
   timeSettings: TimeSettings;
   flags: ImageShowFlags;
-  hideUnShownImages: boolean;
-  alwaysHighlightImage: boolean;
+  designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
 }
 

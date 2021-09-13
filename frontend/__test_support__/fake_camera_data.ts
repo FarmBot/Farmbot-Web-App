@@ -25,4 +25,5 @@ export const fakeImageShowFlags = (): ImageShowFlags => ({
   notHidden: true,
   zMatch: true,
   sizeMatch: true,
+  typeShown: true,
 });

@@ -14,6 +14,8 @@ import {
 import {
   cameraZCheck, imageSizeCheck,
 } from "../../farm_designer/map/layers/images/map_image";
+import { DesignerState } from "../../farm_designer/interfaces";
+import { t } from "../../i18next_wrapper";
 
 export const IMAGE_LAYER_CONFIG_KEYS: (BooleanConfigKey | StringConfigKey)[] = [
   StringSetting.photo_filter_begin,
@@ -71,9 +73,46 @@ export const getCalibratedImageCenter = (env: UserEnv) => ({
   y: env["CAMERA_CALIBRATION_center_pixel_location_y"],
 });
 
+enum ImageType {
+  calibration = "calibration",
+  detection = "detection",
+  height = "height",
+  none = "none",
+}
+
+/** For internal filtering. */
+export const getImageType = (image: TaggedImage | undefined): ImageType => {
+  const imageName = image?.body.meta.name || "";
+  if (imageName.includes("calibration")) { return ImageType.calibration; }
+  if (imageName.includes("marked")) { return ImageType.detection; }
+  if (imageName.includes("map")) { return ImageType.height; }
+  return ImageType.none;
+};
+
+/** For UI display. */
+export const getImageTypeLabel = (image: TaggedImage | undefined): string => {
+  switch (getImageType(image)) {
+    case ImageType.calibration: return t("Calibration");
+    case ImageType.detection: return t("Weed Detector");
+    case ImageType.height: return t("Soil Height");
+    case ImageType.none: return t("Photo");
+  }
+};
+
+export const filterImagesByType = (designer: DesignerState) =>
+  (img: TaggedImage | undefined) => {
+    const {
+      showCalibrationImages, showDetectionImages, showHeightImages,
+    } = designer;
+    return (showCalibrationImages || !(getImageType(img) == ImageType.calibration))
+      && (showDetectionImages || !(getImageType(img) == ImageType.detection))
+      && (showHeightImages || !(getImageType(img) == ImageType.height));
+  };
+
 export const getImageShownStatusFlags =
   (props: GetImageShownStatusFlagsProps): ImageShowFlags => {
-    const { image, hiddenImages, getConfigValue, env, size } = props;
+    const { image, designer, getConfigValue, env, size } = props;
+    const { hiddenImages } = designer;
     const getFilterValue = parseFilterSetting(getConfigValue);
     return {
       layerOn: !!getConfigValue(BooleanSetting.show_images),
@@ -84,6 +123,7 @@ export const getImageShownStatusFlags =
       zMatch: cameraZCheck(image?.body.meta.z,
         env["CAMERA_CALIBRATION_camera_z"]),
       sizeMatch: imageSizeCheck(size,
-        getCalibratedImageCenter(env))
+        getCalibratedImageCenter(env)),
+      typeShown: filterImagesByType(designer)(image),
     };
   };

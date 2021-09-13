@@ -3,6 +3,7 @@ import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { UserEnv } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { DesignerState } from "../../farm_designer/interfaces";
 
 export interface ImageFlipperProps {
   id: string;
@@ -60,10 +61,7 @@ export interface PhotosProps {
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
   env: UserEnv;
-  hiddenImages: number[];
-  shownImages: number[];
-  hideUnShownImages: boolean;
-  alwaysHighlightImage: boolean;
+  designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
 }
 
@@ -99,12 +97,13 @@ export interface FlagDisplayRowProps {
   title?: string;
 }
 
-type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch";
+type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch"
+  | "typeShown";
 export type ImageShowFlags = Record<FlagKey, boolean>;
 
 export interface GetImageShownStatusFlagsProps {
   image: TaggedImage | undefined;
-  hiddenImages: number[];
+  designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
   env: UserEnv;
   size: Record<"width" | "height", number | undefined>;

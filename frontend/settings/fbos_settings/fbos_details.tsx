@@ -338,7 +338,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
     wifi_level_percent, cpu_usage, private_ip,
-  } = props.botInfoSettings;
+  } = props.bot.hardware.informational_settings;
   const { fbos_version } = props.deviceAccount.body;
   const last_ota = props.deviceAccount.body[
     "last_ota" as keyof DeviceAccountSettings] as string | undefined;
@@ -350,7 +350,7 @@ export function FbosDetails(props: FbosDetailsProps) {
   return <div className={"farmbot-os-details"}>
     <LastSeen
       dispatch={props.dispatch}
-      botToMqttLastSeen={props.botToMqttLastSeen}
+      bot={props.bot}
       timeSettings={props.timeSettings}
       device={props.deviceAccount} />
     <p><b>{t("Version last seen")}: </b>{fbos_version}</p>

@@ -17,33 +17,32 @@ import {
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../devices/actions";
 
-describe("<FbosDetails/>", () => {
+describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
   const state = fakeState();
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): FbosDetailsProps => ({
-    botInfoSettings: bot.hardware.informational_settings,
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
-    botToMqttLastSeen: 0,
+    bot: bot,
     deviceAccount: fakeDevice(),
     timeSettings: fakeTimeSettings(),
   });
 
   it("renders", () => {
     const p = fakeProps();
-    p.botInfoSettings.env = "fakeEnv";
-    p.botInfoSettings.commit = "fakeCommit";
-    p.botInfoSettings.target = "fakeTarget";
-    p.botInfoSettings.node_name = "fakeName";
-    p.botInfoSettings.firmware_version = "0.0.0.R.ramps";
-    p.botInfoSettings.firmware_commit = "fakeFwCommit";
-    p.botInfoSettings.soc_temp = 48.3;
-    p.botInfoSettings.wifi_level = -49;
-    p.botInfoSettings.uptime = 0;
-    p.botInfoSettings.memory_usage = 0;
-    p.botInfoSettings.disk_usage = 0;
+    p.bot.hardware.informational_settings.env = "fakeEnv";
+    p.bot.hardware.informational_settings.commit = "fakeCommit";
+    p.bot.hardware.informational_settings.target = "fakeTarget";
+    p.bot.hardware.informational_settings.node_name = "fakeName";
+    p.bot.hardware.informational_settings.firmware_version = "0.0.0.R.ramps";
+    p.bot.hardware.informational_settings.firmware_commit = "fakeFwCommit";
+    p.bot.hardware.informational_settings.soc_temp = 48.3;
+    p.bot.hardware.informational_settings.wifi_level = -49;
+    p.bot.hardware.informational_settings.uptime = 0;
+    p.bot.hardware.informational_settings.memory_usage = 0;
+    p.bot.hardware.informational_settings.disk_usage = 0;
     p.deviceAccount.body.id = 12345;
     p.deviceAccount.body.fbos_version = "1.0.0";
     p.sourceFbosConfig = () => ({ value: "ttyACM0", consistent: true });
@@ -71,7 +70,7 @@ describe("<FbosDetails/>", () => {
 
   it("simplifies node name", () => {
     const p = fakeProps();
-    p.botInfoSettings.node_name = "name@nodeName";
+    p.bot.hardware.informational_settings.node_name = "name@nodeName";
     const wrapper = shallow(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("nodeName");
     expect(wrapper.text()).not.toContain("name@");
@@ -80,16 +79,16 @@ describe("<FbosDetails/>", () => {
   it("handles missing data", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: undefined, consistent: true });
-    p.botInfoSettings.firmware_version = undefined;
-    p.botInfoSettings.node_name = "";
-    p.botInfoSettings.commit = "";
+    p.bot.hardware.informational_settings.firmware_version = undefined;
+    p.bot.hardware.informational_settings.node_name = "";
+    p.bot.hardware.informational_settings.commit = "";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("---");
   });
 
   it("handles unknown firmware version", () => {
     const p = fakeProps();
-    p.botInfoSettings.firmware_version = "0.0.0.S.S";
+    p.bot.hardware.informational_settings.firmware_version = "0.0.0.S.S";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("0.0.0");
   });
@@ -97,8 +96,8 @@ describe("<FbosDetails/>", () => {
   it("displays firmware commit link from firmware_commit", () => {
     const p = fakeProps();
     const commit = "abcdefgh";
-    p.botInfoSettings.firmware_commit = commit;
-    p.botInfoSettings.firmware_version = "1.0.0";
+    p.bot.hardware.informational_settings.firmware_commit = commit;
+    p.bot.hardware.informational_settings.firmware_version = "1.0.0";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").last().text()).toEqual(commit);
     expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
@@ -108,7 +107,7 @@ describe("<FbosDetails/>", () => {
   it("displays firmware commit link from version", () => {
     const p = fakeProps();
     const commit = "abcdefgh";
-    p.botInfoSettings.firmware_version = `1.2.3.R.x-${commit}+`;
+    p.bot.hardware.informational_settings.firmware_version = `1.2.3.R.x-${commit}+`;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").last().text()).toEqual(commit);
     expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
@@ -117,24 +116,24 @@ describe("<FbosDetails/>", () => {
 
   it("displays commit link", () => {
     const p = fakeProps();
-    p.botInfoSettings.commit = "abcdefgh";
-    p.botInfoSettings.firmware_commit = "abcdefgh";
+    p.bot.hardware.informational_settings.commit = "abcdefgh";
+    p.bot.hardware.informational_settings.firmware_commit = "abcdefgh";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").length).toEqual(2);
   });
 
   it("doesn't display link without commit", () => {
     const p = fakeProps();
-    p.botInfoSettings.firmware_version = undefined;
-    p.botInfoSettings.commit = "---";
-    p.botInfoSettings.firmware_commit = "---";
+    p.bot.hardware.informational_settings.firmware_version = undefined;
+    p.bot.hardware.informational_settings.commit = "---";
+    p.bot.hardware.informational_settings.firmware_commit = "---";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").length).toEqual(0);
   });
 
   it("displays N/A when wifi strength value is undefined", () => {
     const p = fakeProps();
-    p.botInfoSettings.wifi_level = undefined;
+    p.bot.hardware.informational_settings.wifi_level = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("WiFi strength: N/A");
     expect(wrapper.text()).not.toContain("dBm");
@@ -148,14 +147,14 @@ describe("<FbosDetails/>", () => {
   ])("displays correct wifi signal strength indicator color: %s %s",
     (percent, color) => {
       const p = fakeProps();
-      p.botInfoSettings.wifi_level_percent = percent;
+      p.bot.hardware.informational_settings.wifi_level_percent = percent;
       const wrapper = mount(<FbosDetails {...p} />);
       expect(wrapper.find(".percent-bar-fill").hasClass(color)).toBeTruthy();
     });
 
   it("displays unknown when cpu temp value is undefined", () => {
     const p = fakeProps();
-    p.botInfoSettings.soc_temp = undefined;
+    p.bot.hardware.informational_settings.soc_temp = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("CPU temperature: unknown");
     expect(wrapper.text()).not.toContain("&deg;C");
@@ -163,9 +162,9 @@ describe("<FbosDetails/>", () => {
 
   it("doesn't display extra metrics when bot is offline", () => {
     const p = fakeProps();
-    p.botInfoSettings.uptime = undefined;
-    p.botInfoSettings.memory_usage = undefined;
-    p.botInfoSettings.disk_usage = undefined;
+    p.bot.hardware.informational_settings.uptime = undefined;
+    p.bot.hardware.informational_settings.memory_usage = undefined;
+    p.bot.hardware.informational_settings.disk_usage = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     ["uptime", "usage"].map(metric =>
       expect(wrapper.text().toLowerCase()).not.toContain(metric));
@@ -173,49 +172,49 @@ describe("<FbosDetails/>", () => {
 
   it("displays uptime in minutes", () => {
     const p = fakeProps();
-    p.botInfoSettings.uptime = 120;
+    p.bot.hardware.informational_settings.uptime = 120;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 minutes");
   });
 
   it("displays uptime in hours", () => {
     const p = fakeProps();
-    p.botInfoSettings.uptime = 7200;
+    p.bot.hardware.informational_settings.uptime = 7200;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 hours");
   });
 
   it("displays uptime in days", () => {
     const p = fakeProps();
-    p.botInfoSettings.uptime = 172800;
+    p.bot.hardware.informational_settings.uptime = 172800;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 days");
   });
 
   it("doesn't display when throttled value is undefined", () => {
     const p = fakeProps();
-    p.botInfoSettings.throttled = undefined;
+    p.bot.hardware.informational_settings.throttled = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("voltage");
   });
 
   it("displays voltage indicator", () => {
     const p = fakeProps();
-    p.botInfoSettings.throttled = "0x0";
+    p.bot.hardware.informational_settings.throttled = "0x0";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("voltage");
   });
 
   it("displays cpu usage", () => {
     const p = fakeProps();
-    p.botInfoSettings.cpu_usage = 10;
+    p.bot.hardware.informational_settings.cpu_usage = 10;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("cpu usage: 10%");
   });
 
   it("displays ip address", () => {
     const p = fakeProps();
-    p.botInfoSettings.private_ip = "192.168.0.100";
+    p.bot.hardware.informational_settings.private_ip = "192.168.0.100";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("local ip");
   });

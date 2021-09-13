@@ -3,7 +3,7 @@ import {
   ControlPanelState,
   SourceFbosConfig,
 } from "../../devices/interfaces";
-import { InformationalSettings, TaggedDevice } from "farmbot";
+import { TaggedDevice } from "farmbot";
 import { TimeSettings } from "../../interfaces";
 
 export interface NameRowProps {
@@ -71,10 +71,9 @@ export interface FarmbotOsRowState {
 }
 
 export interface FbosDetailsProps {
-  botInfoSettings: InformationalSettings;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  botToMqttLastSeen: number;
+  bot: BotState;
   timeSettings: TimeSettings;
   deviceAccount: TaggedDevice;
 }

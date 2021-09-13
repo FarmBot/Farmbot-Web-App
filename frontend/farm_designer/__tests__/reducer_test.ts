@@ -340,6 +340,36 @@ describe("designer reducer", () => {
     expect(newState.alwaysHighlightImage).toEqual(true);
   });
 
+  it("sets show calibration images", () => {
+    const state = oldState();
+    state.showCalibrationImages = true;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SHOW_CALIBRATION_IMAGES, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.showCalibrationImages).toEqual(false);
+  });
+
+  it("sets show detection images", () => {
+    const state = oldState();
+    state.showDetectionImages = true;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SHOW_DETECTION_IMAGES, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.showDetectionImages).toEqual(false);
+  });
+
+  it("sets show height images", () => {
+    const state = oldState();
+    state.showHeightImages = true;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SHOW_HEIGHT_IMAGES, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.showHeightImages).toEqual(false);
+  });
+
   it("sets hovered map image", () => {
     const state = oldState();
     state.hoveredMapImage = undefined;

@@ -47,7 +47,7 @@ const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
   <div className="log-verbosity-saucer">
     <div className={`saucer ${props.type}`}>
       <p>
-        {props.verbosity}
+        {(props.verbosity || 0) < 1 ? "" : props.verbosity}
       </p>
     </div>
   </div>;
@@ -71,7 +71,7 @@ const LogsRow = (props: LogsRowProps) => {
       {xyzTableEntry(x, y, z)}
     </td>
     <td>
-      {time}
+      {time.toLowerCase().includes("invalid") ? t("Unknown") : time}
       {logVersionMatch(tlog, props.fbosVersion) &&
         <i className={"fa fa-check"}
           style={{ color: "gray", marginLeft: "0.5rem" }}

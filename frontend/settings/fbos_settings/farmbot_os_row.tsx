@@ -8,7 +8,6 @@ import { t } from "../../i18next_wrapper";
 import { ErrorBoundary } from "../../error_boundary";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
-import { getLastSeenNumber } from "./last_seen_row";
 import { removeToast } from "../../toast/toast";
 
 export const getOsReleaseNotesForVersion = (
@@ -71,10 +70,9 @@ export class FarmbotOsRow
       </p>}
       content={<ErrorBoundary>
         <FbosDetails
-          botInfoSettings={this.props.bot.hardware.informational_settings}
           dispatch={this.props.dispatch}
           sourceFbosConfig={this.props.sourceFbosConfig}
-          botToMqttLastSeen={getLastSeenNumber(this.props.bot)}
+          bot={this.props.bot}
           timeSettings={this.props.timeSettings}
           deviceAccount={this.props.device} />
       </ErrorBoundary>} />;

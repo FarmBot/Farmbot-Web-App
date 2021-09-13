@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ImageLayer, ImageLayerProps } from "../image_layer";
 import { shallow } from "enzyme";
 import {
@@ -10,6 +10,9 @@ import {
 import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
+import {
+  fakeDesignerState,
+} from "../../../../../__test_support__/fake_designer_state";
 
 describe("<ImageLayer/>", () => {
   const mockConfig = fakeWebAppConfig();
@@ -26,11 +29,7 @@ describe("<ImageLayer/>", () => {
       mapTransformProps: fakeMapTransformProps(),
       cameraCalibrationData: fakeCameraCalibrationData(),
       getConfigValue: key => mockConfig.body[key],
-      hiddenImages: [],
-      shownImages: [],
-      hideUnShownImages: false,
-      alwaysHighlightImage: false,
-      hoveredMapImage: undefined,
+      designer: fakeDesignerState(),
     };
   }
 
@@ -44,9 +43,9 @@ describe("<ImageLayer/>", () => {
   it("handles missing id", () => {
     const p = fakeProps();
     p.images[0].body.id = undefined;
-    p.hoveredMapImage = 1;
-    p.alwaysHighlightImage = true;
-    p.shownImages = [1];
+    p.designer.hoveredMapImage = 1;
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [1];
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(1);
@@ -55,8 +54,8 @@ describe("<ImageLayer/>", () => {
   it("shows hovered image", () => {
     const p = fakeProps();
     p.images[0].body.id = 1;
-    p.alwaysHighlightImage = true;
-    p.shownImages = [1];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [1];
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(2);

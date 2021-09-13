@@ -7,6 +7,9 @@ jest.mock("../actions", () => ({
   setWebAppConfigValues: jest.fn(),
   toggleAlwaysHighlightImage: jest.fn(),
   toggleSingleImageMode: jest.fn(),
+  toggleShowCalibrationImages: jest.fn(),
+  toggleShowDetectionImages: jest.fn(),
+  toggleShowHeightImages: jest.fn(),
 }));
 
 import React from "react";
@@ -26,6 +29,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   PhotoFilterSettingsProps, FiltersEnabledWarningProps,
 } from "../interfaces";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("<PhotoFilterSettings />", () => {
   const fakeProps = (): PhotoFilterSettingsProps => ({
@@ -34,8 +38,7 @@ describe("<PhotoFilterSettings />", () => {
     currentImage: fakeImage(),
     timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
-    hideUnShownImages: false,
-    alwaysHighlightImage: false,
+    designer: fakeDesignerState(),
     getConfigValue: jest.fn(),
   });
 
@@ -65,7 +68,7 @@ describe("<PhotoFilterSettings />", () => {
 
   it("displays single image mode", () => {
     const p = fakeProps();
-    p.hideUnShownImages = true;
+    p.designer.hideUnShownImages = true;
     const wrapper = mount(<PhotoFilterSettings {...p} />);
     expect(wrapper.find(".filter-controls").hasClass("single-image-mode"))
       .toBeTruthy();

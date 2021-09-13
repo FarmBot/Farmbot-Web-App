@@ -427,11 +427,7 @@ export class GardenMap extends
   });
   ImageLayer = () => <ImageLayer
     images={this.props.latestImages}
-    hiddenImages={this.props.designer.hiddenImages}
-    shownImages={this.props.designer.shownImages}
-    hideUnShownImages={this.props.designer.hideUnShownImages}
-    alwaysHighlightImage={this.props.designer.alwaysHighlightImage}
-    hoveredMapImage={this.props.designer.hoveredMapImage}
+    designer={this.props.designer}
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
