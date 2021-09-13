@@ -1020,7 +1020,8 @@ CREATE TABLE public.nodes (
     kind_id bigint NOT NULL,
     body_id integer,
     next_id integer,
-    parent_id integer
+    parent_id integer,
+    comment character varying
 );
 
 
@@ -3732,6 +3733,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210723175109'),
 ('20210803205352'),
 ('20210820134844'),
-('20210901215214');
+('20210901215214'),
+('20210913175949');
 
 
