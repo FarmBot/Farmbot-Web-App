@@ -44,6 +44,7 @@ describe Api::SequenceVersionsController do
       expect(json[:id]).to eq(sv.id)
       expect(json[:body].first[:kind]).to eq("send_message")
       expect(json[:description]).to eq(description)
+      expect(json[:name]).to eq(sequence.name)
       expect(json.dig(:body, 0, :comment)).to eq(comment)
     end
   end
