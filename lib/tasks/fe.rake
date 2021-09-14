@@ -3,7 +3,7 @@ DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
   "react", "react-dom", "react-test-renderer", # enzyme
-  "parcel", # @parcel/transformer-sass, @parcel/transformer-typescript-tsc
+  "typescript", "parcel", # @parcel/transformer-sass, @parcel/transformer-typescript-tsc
 ]
 
 # Load package.json as JSON.
