@@ -9,6 +9,7 @@ module Fragments
     NAME = "name"
     NEXT = "__next"
     NOTHING = "nothing"
+    COMMENT = "__COMMENT__"
     PARENT = "__parent"
     US = "__"
     H = CeleryScript::HeapAddress
@@ -38,6 +39,7 @@ module Fragments
             when PARENT then nodes.fetch(index).parent = nodes.fetch(v.value)
             when NEXT then nodes.fetch(index).next = nodes.fetch(v.value)
             when BODY then nodes.fetch(index).body = nodes.fetch(v.value)
+            when COMMENT then node.comment = flat_node.fetch(COMMENT)
             else
               arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
               new_standard_pair(fragment: fragment,
