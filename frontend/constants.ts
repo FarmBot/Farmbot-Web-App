@@ -131,6 +131,10 @@ export namespace ToolTips {
     trim(`Number of times to retry calibration.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const CALIBRATION_TOTAL_RETRIES =
+    trim(`Total number of times to retry calibration.
+      (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
   export const CALIBRATION_RETRY_RESET_DISTANCE =
     trim(`Distance in millimeters to group calibration retries. If the
     distance travelled while detecting the axis end location exceeds this
@@ -1811,6 +1815,7 @@ export enum DeviceSetting {
   timeoutAfter = `Timeout after (seconds)`,
   maxRetries = `Max Retries`,
   calibrationRetries = `Calibration retries`,
+  calibrationTotalRetries = `Calibration total retries`,
   calibrationRetryResetDistance = `Calibration retry reset distance (mm)`,
   estopOnMovementError = `E-Stop on Movement Error`,
 
