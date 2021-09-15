@@ -19,7 +19,7 @@ import { getModifiedClassName } from "./default_values";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
-  if (!temp) {
+  if (!isNumber(temp)) {
     return "gray";
   }
   if (temp < 0) {
@@ -47,11 +47,37 @@ export function ChipTemperatureDisplay(
   return <div className="chip-temp-display">
     <p>
       <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
-      {temperature ? <span>{temperature}&deg;C</span> : t("unknown")}
+      {isNumber(temperature) ? <span>{temperature}&deg;C</span> : t("unknown")}
     </p>
     <Saucer color={colorFromTemp(temperature)} className={"small-inline"} />
   </div>;
 }
+
+/** Return an indicator color for the given memory usage (MB). */
+export const colorFromMemoryUsage = (usage: number | undefined) => {
+  if (!isNumber(usage)) { return "gray"; }
+  if (usage > 340) {
+    return "red";
+  } else if (usage < 170) {
+    return "green";
+  } else {
+    return "yellow";
+  }
+};
+
+interface MemoryUsageDisplayProps {
+  usage: number | undefined;
+}
+
+/** Memory usage display row: label, memory usage, indicator. */
+export const MemoryUsageDisplay = ({ usage }: MemoryUsageDisplayProps) =>
+  <div className={"memory-usage-display"}>
+    <p>
+      <b>{t("Memory usage")}: </b>
+      {isNumber(usage) ? <span>{usage}MB</span> : t("unknown")}
+    </p>
+    <Saucer color={colorFromMemoryUsage(usage)} className={"small-inline"} />
+  </div>;
 
 /** Return an indicator color for the given WiFi signal strength (%). */
 export const colorFromSignalStrength = (percent: number) => {
@@ -369,8 +395,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <p><b>{t("Firmware code")}: </b>{firmware_version}</p>
     <p><b>{t("Firmware path")}: </b>{firmware_path}</p>
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
-    {isNumber(memory_usage) &&
-      <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}
+    <MemoryUsageDisplay usage={memory_usage} />
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     {isNumber(cpu_usage) && <p><b>{t("CPU usage")}: </b>{cpu_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
