@@ -17,6 +17,7 @@ module Api
         id: sequence_version.id,
         created_at: sequence_version.created_at,
         description: sequence_version.description,
+        name: sequence_version.name,
       }
     end
 
