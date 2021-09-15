@@ -1,10 +1,11 @@
 import React from "react";
 import { Color } from "../../ui";
-import { SourceFwConfig } from "../../devices/interfaces";
+import { Feature, SourceFwConfig } from "../../devices/interfaces";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
 
 export interface SettingLoadProgressProps {
   botOnline: boolean;
@@ -33,12 +34,19 @@ const TMC_KEYS: (keyof FirmwareConfig)[] = [
   "movement_axis_stealth_z",
 ];
 
+const T_KEYS: (keyof FirmwareConfig)[] = [
+  "movement_calibration_retry_total_x",
+  "movement_calibration_retry_total_y",
+  "movement_calibration_retry_total_z",
+];
+
 /** Track firmware configuration adoption by FarmBot OS. */
 export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
   const { firmwareHardware } = props;
   const keys = Object.keys(props.firmwareConfig || {})
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
+      .concat(shouldDisplayFeature(Feature.calibration_total_retries) ? [] : T_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>
     props.sourceFwConfig(key).consistent);
