@@ -42,7 +42,7 @@ module Sequences
         flat_ast = Fragments::Preprocessor.run!(**params)
         Fragments::Create.run!(flat_ast: flat_ast, owner: sv)
         publication
-      end
+      end.tap { sequence.broadcast!(SecureRandom.uuid) }
     end
 
     def enforce_allow_list
@@ -94,7 +94,8 @@ module Sequences
       author = device.users.first
       SequencePublication.create!(cached_author_email: author.email,
                                   author_device_id: device.id,
-                                  author_sequence_id: sequence.id)
+                                  author_sequence_id: sequence.id,
+                                  published: true)
     end
   end
 end
