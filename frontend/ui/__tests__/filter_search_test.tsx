@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { FilterSearch } from "../filter_search";
 import { DropDownItem } from "../fb_select";
@@ -20,6 +20,13 @@ describe("<FilterSearch />", () => {
     const item = fakeItem();
     wrapper.simulate("ItemSelect", item);
     expect(p.onChange).toHaveBeenCalledWith(item);
+  });
+
+  it("doesn't select item", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<FilterSearch {...p} />);
+    wrapper.simulate("ItemSelect", undefined);
+    expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("doesn't select header", () => {

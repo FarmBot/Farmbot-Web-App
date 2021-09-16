@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Col, ToolTip, DocSlug } from ".";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 
-interface CenterProps {
+export interface CenterPanelProps {
   children?: React.ReactNode;
   className: string;
   title: string;
@@ -13,7 +13,7 @@ interface CenterProps {
   backButton?: React.ReactNode;
 }
 
-export function CenterPanel(props: CenterProps) {
+export function CenterPanel(props: CenterPanelProps) {
   return <Col sm={props.width || 6} lg={6}>
     <div className={props.className}>
       {props.backButton}

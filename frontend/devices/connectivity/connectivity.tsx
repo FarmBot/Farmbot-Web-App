@@ -7,6 +7,7 @@ import { ConnectivityDiagram } from "./diagram";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
   reformatFwVersion, reformatFbosVersion, LocalIpAddress, MacAddress, isWifi,
+  MemoryUsageDisplay,
 } from "../../settings/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
@@ -48,7 +49,7 @@ export class Connectivity
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
-      firmware_version, private_ip, node_name, target,
+      firmware_version, private_ip, node_name, target, memory_usage,
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
@@ -69,6 +70,7 @@ export class Connectivity
             <p><b>{t("Model")}: </b>{getKitName(this.props.apiFirmwareValue)}</p>
             <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
             <ChipTemperatureDisplay temperature={soc_temp} />
+            <MemoryUsageDisplay usage={memory_usage} />
             <WiFiStrengthDisplay wifiStrength={wifi_level}
               wifiStrengthPercent={wifi_level_percent} />
             <MacAddress nodeName={node_name} target={target}

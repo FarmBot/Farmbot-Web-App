@@ -1,3 +1,8 @@
+let mockShouldDisplay = false;
+jest.mock("../../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -11,28 +16,35 @@ import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { Color } from "../../../ui";
 
 describe("<SettingLoadProgress />", () => {
-  const fakeProps = (): SettingLoadProgressProps => {
-    type ConsistencyLookup = Record<keyof FirmwareConfig, boolean>;
-    const consistent: Partial<ConsistencyLookup> = ({
-      id: false, movement_motor_current_x: true, encoder_enabled_x: true,
-      encoder_enabled_y: false,
-    });
-    const consistencyLookup = consistent as ConsistencyLookup;
-    const fakeConfig: Partial<FirmwareConfig> = ({
-      id: 0, movement_motor_current_x: 1, encoder_enabled_x: 0,
-      encoder_enabled_y: 0,
-    });
-    const firmwareConfig = fakeConfig as FirmwareConfig;
-    const sourceFwConfig = ((x: keyof FirmwareConfig) => ({
-      value: firmwareConfig?.[x], consistent: consistencyLookup[x]
-    })) as SourceFwConfig;
-    return {
-      botOnline: true,
-      sourceFwConfig,
-      firmwareConfig,
-      firmwareHardware: undefined,
+  beforeEach(() => {
+    mockShouldDisplay = false;
+  });
+
+  const fakeProps =
+    (extraConfig?: keyof FirmwareConfig): SettingLoadProgressProps => {
+      type ConsistencyLookup = Record<keyof FirmwareConfig, boolean>;
+      const consistent: Partial<ConsistencyLookup> = ({
+        id: false, movement_motor_current_x: true, encoder_enabled_x: true,
+        encoder_enabled_y: false,
+      });
+      extraConfig && (consistent[extraConfig] = false);
+      const consistencyLookup = consistent as ConsistencyLookup;
+      const fakeConfig: Partial<FirmwareConfig> = ({
+        id: 0, movement_motor_current_x: 1, encoder_enabled_x: 0,
+        encoder_enabled_y: 0,
+      });
+      extraConfig && (fakeConfig[extraConfig] = 0 as unknown as undefined);
+      const firmwareConfig = fakeConfig as FirmwareConfig;
+      const sourceFwConfig = ((x: keyof FirmwareConfig) => ({
+        value: firmwareConfig?.[x], consistent: consistencyLookup[x]
+      })) as SourceFwConfig;
+      return {
+        botOnline: true,
+        sourceFwConfig,
+        firmwareConfig,
+        firmwareHardware: undefined,
+      };
     };
-  };
 
   it("shows setting load progress: 50%", () => {
     const p = fakeProps();
@@ -45,6 +57,26 @@ describe("<SettingLoadProgress />", () => {
 
   it("shows setting load progress: 67%", () => {
     const p = fakeProps();
+    p.firmwareHardware = "farmduino_k15";
+    const wrapper = mount(<SettingLoadProgress {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.width).toEqual("67%");
+    expect(barStyle?.background).toEqual(Color.white);
+  });
+
+  it("shows setting load progress: 50% (new parameters)", () => {
+    mockShouldDisplay = true;
+    const p = fakeProps("movement_calibration_retry_total_x");
+    p.firmwareHardware = "farmduino_k15";
+    const wrapper = mount(<SettingLoadProgress {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.width).toEqual("50%");
+    expect(barStyle?.background).toEqual(Color.white);
+  });
+
+  it("shows setting load progress: 67% (new parameters)", () => {
+    mockShouldDisplay = false;
+    const p = fakeProps("movement_calibration_retry_total_x");
     p.firmwareHardware = "farmduino_k15";
     const wrapper = mount(<SettingLoadProgress {...p} />);
     const barStyle = wrapper.find(".load-progress-bar").props().style;

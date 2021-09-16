@@ -1,5 +1,5 @@
-import { fakeTool } from "../../__test_support__/fake_state/resources";
-import { getArrayStatus, sanityCheck } from "../tagged_resources";
+import { fakeLog, fakeTool } from "../../__test_support__/fake_state/resources";
+import { getArrayStatus, isTaggedPoint, sanityCheck } from "../tagged_resources";
 import { SpecialStatus } from "farmbot";
 
 describe("getArrayStatus()", () => {
@@ -34,5 +34,11 @@ describe("sanityCheck", () => {
     console.error = jest.fn();
     expect(() => sanityCheck({})).toThrow("Bad kind, uuid, or body: {}");
     expect(console.error).toHaveBeenCalledWith("{}");
+  });
+});
+
+describe("isTaggedPoint()", () => {
+  it("throws error", () => {
+    expect(() => isTaggedPoint(fakeLog())).toThrowError("Possible bad index");
   });
 });

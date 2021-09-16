@@ -5,7 +5,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { Popover } from "../ui";
 
-interface HelpProps {
+export interface HelpProps {
   text: string;
   onHover?: boolean;
   position?: PopoverPosition;

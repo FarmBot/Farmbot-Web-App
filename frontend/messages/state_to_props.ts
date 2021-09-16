@@ -3,7 +3,7 @@ import { MessagesProps, AlertReducerState } from "./interfaces";
 import { betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import {
-  selectAllAlerts, maybeGetTimeSettings, findResourceById, maybeGetDevice,
+  selectAllAlerts, maybeGetTimeSettings, maybeGetDevice, findUuid,
 } from "../resources/selectors";
 import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import { ResourceIndex } from "../resources/interfaces";
@@ -15,7 +15,7 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
     apiFirmwareValue: getFwHardwareValue(getFbosConfig(props.resources.index)),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
-    findApiAlertById: id => findResourceById(props.resources.index, "Alert", id),
+    findApiAlertById: id => findUuid(props.resources.index, "Alert", id),
   };
 };
 

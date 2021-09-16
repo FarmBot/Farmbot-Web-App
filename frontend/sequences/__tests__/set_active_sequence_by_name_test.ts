@@ -13,6 +13,7 @@ jest.mock("../actions", () => ({ selectSequence: jest.fn() }));
 
 jest.mock("../../resources/selectors", () => ({
   selectAllSequences: jest.fn(() => mockData.fakeSequences || []),
+  findUuid: jest.fn(),
 }));
 
 jest.mock("../../redux/store", () => ({

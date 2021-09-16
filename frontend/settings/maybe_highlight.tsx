@@ -92,6 +92,7 @@ const ERROR_HANDLING_PANEL = [
   DeviceSetting.timeoutAfter,
   DeviceSetting.maxRetries,
   DeviceSetting.calibrationRetries,
+  DeviceSetting.calibrationTotalRetries,
   DeviceSetting.calibrationRetryResetDistance,
   DeviceSetting.estopOnMovementError,
 ];

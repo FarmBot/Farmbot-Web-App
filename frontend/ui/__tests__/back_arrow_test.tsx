@@ -1,13 +1,12 @@
-import * as React from "react";
-import { BackArrow } from "../back_arrow";
+import React from "react";
 import { shallow } from "enzyme";
+import { BackArrow } from "../back_arrow";
 
 describe("<BackArrow />", () => {
   it("renders", () => {
-    const element = shallow(BackArrow({}));
-    expect(element).toBeTruthy();
-    expect(element.hasClass("back-arrow")).toBeTruthy();
-    expect(element.find("i").at(0).hasClass("fa-arrow-left"))
+    const wrapper = shallow(<BackArrow />);
+    expect(wrapper.hasClass("back-arrow")).toBeTruthy();
+    expect(wrapper.find("i").at(0).hasClass("fa-arrow-left"))
       .toBeTruthy();
   });
 
@@ -16,5 +15,12 @@ describe("<BackArrow />", () => {
     const element = shallow(<BackArrow onClick={cb} />);
     element.simulate("click");
     expect(cb).toHaveBeenCalled();
+  });
+
+  it("doesn't trigger callback", () => {
+    history.back = jest.fn();
+    const element = shallow(<BackArrow />);
+    element.simulate("click");
+    expect(history.back).toHaveBeenCalled();
   });
 });

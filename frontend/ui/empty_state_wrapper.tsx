@@ -16,7 +16,7 @@ export enum EmptyStateGraphic {
   zones = "zones",
 }
 
-interface EmptyStateWrapperProps {
+export interface EmptyStateWrapperProps {
   notEmpty: unknown;
   title?: string;
   text?: string;

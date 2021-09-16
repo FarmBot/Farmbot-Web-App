@@ -4,7 +4,7 @@ import React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
   OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
-  reformatFbosVersion, MacAddress, MacAddressProps,
+  reformatFbosVersion, MacAddress, MacAddressProps, colorFromMemoryUsage,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -166,7 +166,7 @@ describe("<FbosDetails />", () => {
     p.bot.hardware.informational_settings.memory_usage = undefined;
     p.bot.hardware.informational_settings.disk_usage = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
-    ["uptime", "usage"].map(metric =>
+    ["uptime"].map(metric =>
       expect(wrapper.text().toLowerCase()).not.toContain(metric));
   });
 
@@ -279,6 +279,24 @@ describe("colorFromTemp()", () => {
   it("temperature is cold", () => {
     expect(colorFromTemp(9)).toEqual("blue");
     expect(colorFromTemp(-1)).toEqual("lightblue");
+  });
+});
+
+describe("colorFromMemoryUsage()", () => {
+  it("memory usage is missing", () => {
+    expect(colorFromMemoryUsage(undefined)).toEqual("gray");
+  });
+
+  it("memory usage is low", () => {
+    expect(colorFromMemoryUsage(30)).toEqual("green");
+  });
+
+  it("memory usage is medium", () => {
+    expect(colorFromMemoryUsage(200)).toEqual("yellow");
+  });
+
+  it("memory usage is high", () => {
+    expect(colorFromMemoryUsage(400)).toEqual("red");
   });
 });
 

@@ -4,31 +4,24 @@ const mockData = {
   fakeRegimens: [fakeRegimen()]
 };
 
-jest.mock("../../util/urls", () => {
-  return {
-    urlFriendly: jest.fn(x => x),
-    lastUrlChunk: jest.fn(() => mockData.lastUrlChunk)
-  };
-});
+jest.mock("../../util/urls", () => ({
+  urlFriendly: jest.fn(x => x),
+  lastUrlChunk: jest.fn(() => mockData.lastUrlChunk)
+}));
 
 jest.mock("../actions", () => ({ selectRegimen: jest.fn() }));
 
-jest.mock("../../resources/selectors", () => {
-  return {
-    selectAllRegimens: jest.fn(() => {
-      return mockData.fakeRegimens || [];
-    })
-  };
-});
+jest.mock("../../resources/selectors", () => ({
+  selectAllRegimens: jest.fn(() => mockData.fakeRegimens || []),
+  findUuid: jest.fn(),
+}));
 
-jest.mock("../../redux/store", () => {
-  return {
-    store: {
-      dispatch: jest.fn(),
-      getState: jest.fn(() => ({ resources: { index: {} } }))
-    }
-  };
-});
+jest.mock("../../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: jest.fn(() => ({ resources: { index: {} } }))
+  }
+}));
 
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { selectRegimen } from "../actions";
