@@ -125,4 +125,17 @@ describe Sequences::Publish do
     sp = Sequences::Publish.run!(sequence: sequence, device: device)
     expect(sp.published).to be(true)
   end
+
+  it "does not allow guests to publish" do
+    run_jobs_now do
+      Users::CreateDemo.run!(secret: SecureRandom.hex)
+    end
+    guest = User.find_by!("email LIKE '%@farmbot.guest'")
+    device = guest.device
+    sequence = FakeSequence.with_parameters(device: device)
+    expect(sequence.device_id).to eq(device.id)
+    result = Sequences::Publish.run(sequence: sequence, device: device)
+    errors = result.errors.message_list
+    expect(errors).to include(Sequences::Publish::NO_GUESTS)
+  end
 end
