@@ -2,7 +2,7 @@ import React from "react";
 import { SpecialStatus } from "farmbot";
 import { t } from "../i18next_wrapper";
 
-interface SaveBtnProps {
+export interface SaveBtnProps {
   /** Callback */
   onClick?: (e: React.MouseEvent<{}>) => void;
   status: SpecialStatus;

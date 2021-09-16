@@ -23,8 +23,8 @@ describe("displayLhs()", () => {
     },
     resources: buildResourceIndex([]).index,
     lhsOptions: [
-      { value: "uuid0", label: "label", headingId: "headingId" },
-      { value: "uuid1", label: "label", headingId: "headingId" },
+      { value: "Peripheral.uuid", label: "label", headingId: "headingId" },
+      { value: "Sensor.uuid", label: "label", headingId: "headingId" },
     ],
   });
 
@@ -32,7 +32,7 @@ describe("displayLhs()", () => {
     const p = fakeProps();
     const peripheral = fakePeripheral();
     peripheral.body.id = 1;
-    peripheral.uuid = "uuid0";
+    peripheral.uuid = "Peripheral.uuid";
     p.resources = buildResourceIndex([peripheral]).index;
     expect(displayLhs(p)).toEqual(p.lhsOptions[0]);
   });
@@ -45,7 +45,7 @@ describe("displayLhs()", () => {
     };
     const sensor = fakeSensor();
     sensor.body.id = 1;
-    sensor.uuid = "uuid1";
+    sensor.uuid = "Sensor.uuid";
     p.resources = buildResourceIndex([sensor]).index;
     expect(displayLhs(p)).toEqual(p.lhsOptions[1]);
   });

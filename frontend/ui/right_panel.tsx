@@ -1,15 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { Col, ToolTip, DocSlug } from ".";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 
-interface RightPanelProps {
+export interface RightPanelProps {
   children?: React.ReactNode;
   className: string;
   title: string;
   helpText: string;
   docPage?: DocSlug;
-  show: Boolean | undefined;
+  show: boolean | undefined;
   width?: number;
   backButton?: React.ReactNode;
 }

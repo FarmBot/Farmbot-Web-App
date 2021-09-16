@@ -21,7 +21,9 @@ import { Feature } from "../../devices/interfaces";
 export function ErrorHandling(props: ErrorHandlingProps) {
 
   const { error_handling } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
+  const {
+    dispatch, sourceFwConfig, arduinoBusy, firmwareHardware, showAdvanced,
+  } = props;
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
 
@@ -30,6 +32,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
     sourceFwConfig,
     disabled: arduinoBusy,
     firmwareHardware,
+    showAdvanced,
   };
 
   const getDefault = getDefaultFwConfigValue(firmwareHardware);

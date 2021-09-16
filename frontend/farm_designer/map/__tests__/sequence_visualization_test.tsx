@@ -8,8 +8,9 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
 jest.mock("../../../resources/selectors", () => ({
-  findPointerByTypeAndId: fakePoint,
+  findPointerByTypeAndId: () => fakePoint(),
   findSlotByToolId: () => mockToolSlot,
+  findUuid: jest.fn(),
 }));
 
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
@@ -19,7 +20,7 @@ jest.mock("../../../resources/sequence_meta", () => ({
   createSequenceMeta: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import {
   SequenceVisualization, SequenceVisualizationProps, hoverSequenceStep,
 } from "../../../farm_designer/map/sequence_visualization";

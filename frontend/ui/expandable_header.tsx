@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 
-interface ExpandableHeaderProps {
+export interface ExpandableHeaderProps {
   onClick(): void;
   title: string;
   expanded: boolean;

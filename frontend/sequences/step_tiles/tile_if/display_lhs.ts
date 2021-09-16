@@ -1,7 +1,7 @@
 import { If } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { findByKindAndId } from "../../../resources/selectors";
+import { findUuid } from "../../../resources/selectors";
 import { isString } from "lodash";
 
 export interface DisplayLhsProps {
@@ -19,7 +19,7 @@ export function displayLhs(props: DisplayLhsProps): DropDownItem | undefined {
     switch (pin_type) {
       case "Sensor":
       case "Peripheral":
-        const { uuid } = findByKindAndId(props.resources, pin_type, pin_id);
+        const uuid = findUuid(props.resources, pin_type, pin_id);
         return props.lhsOptions.filter(ddi => ddi.value === uuid)[0];
     }
 

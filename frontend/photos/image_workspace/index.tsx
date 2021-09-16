@@ -9,9 +9,7 @@ import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { ToolTips } from "../../constants";
 import { WDENVKey } from "../remote_env/interfaces";
-import {
-  CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS,
-} from "../remote_env/constants";
+import { WD_KEY_DEFAULTS } from "../remote_env/constants";
 import { Collapse } from "@blueprintjs/core";
 import {
   getModifiedClassNameDefaultFalse, getModifiedClassNameSpecifyModified,
@@ -49,7 +47,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   invertHue?: boolean;
   botOnline: boolean;
   timeSettings: TimeSettings;
-  namespace(key: CAMERA_CALIBRATION_KEY_PART): WDENVKey;
+  namespace(key: NumericKeyName): WDENVKey;
   showAdvanced: boolean;
 }
 
@@ -93,12 +91,17 @@ export class ImageWorkspace
       });
     };
 
-  getDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
+  getDefault = (key: NumericKeyName) =>
     WD_KEY_DEFAULTS[this.props.namespace(key)];
 
-  getModifiedClass =
-    (key: CAMERA_CALIBRATION_KEY_PART & keyof ImageWorkspaceProps) =>
-      getModifiedClassNameSpecifyModified(this.getDefault(key) != this.props[key]);
+  getModifiedClass = (key: NumericKeyName) =>
+    getModifiedClassNameSpecifyModified(this.getDefault(key) != this.props[key]);
+
+  get anyAdvancedModified() {
+    return !!["blur", "morph", "iteration"]
+      .map((key: NumericKeyName) => this.getModifiedClass(key))
+      .join("");
+  }
 
   render() {
     const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
@@ -172,7 +175,7 @@ export class ImageWorkspace
             invertHue={this.props.invertHue} />
         </Col>
       </Row>
-      {this.props.showAdvanced &&
+      {(this.props.showAdvanced || this.anyAdvancedModified) &&
         <Row>
           <Col xs={12}>
             <ExpandableHeader
@@ -181,7 +184,7 @@ export class ImageWorkspace
               onClick={() => this.setState({ open: !this.state.open })} />
           </Col>
         </Row>}
-      {this.props.showAdvanced &&
+      {(this.props.showAdvanced || this.anyAdvancedModified) &&
         <Collapse isOpen={this.state.open}>
           <Row>
             <Col xs={4}>

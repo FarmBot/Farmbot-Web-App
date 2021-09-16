@@ -29,7 +29,7 @@ interface MapperFn<T extends TaggedResource> { (item: T): T | undefined; }
 *        that contains TaggedResource of kind T
 *          that uses the resource's id as the dictionary key.
 * */
-export const buildIndexer =
+const buildIndexer =
   <T extends TaggedResource>(kind: T["kind"], mapper?: MapperFn<T>): Indexer<T> => {
     return function (index: ResourceIndex) {
       const noop: MapperFn<T> = (i) => i;

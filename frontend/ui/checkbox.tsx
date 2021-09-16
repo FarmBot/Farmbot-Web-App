@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 
-interface CheckboxProps {
+export interface CheckboxProps {
   onChange(): void;
   checked: boolean;
   title: string;

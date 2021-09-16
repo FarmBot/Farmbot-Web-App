@@ -2,7 +2,7 @@ import { Everything, TimeSettings } from "../../interfaces";
 import { RegimenItem, RegimenItemCalendarRow, CalendarRow } from "../interfaces";
 import {
   maybeGetRegimen,
-  findId,
+  findUuid,
   findSequence,
   findSequenceById,
   maybeGetTimeSettings,
@@ -78,7 +78,7 @@ const createRows = (
   timeSettings: TimeSettings,
 ) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
-    const uuid = findId(index, "Sequence", item.sequence_id);
+    const uuid = findUuid(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
     const variables = getParameterLabels(sequence);
     const { time_offset } = item;
