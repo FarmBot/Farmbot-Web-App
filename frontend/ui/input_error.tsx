@@ -2,7 +2,7 @@ import React from "react";
 import { PopoverInteractionKind, Position } from "@blueprintjs/core";
 import { Popover } from "./popover";
 
-interface InputErrorProps {
+export interface InputErrorProps {
   error?: string;
 }
 

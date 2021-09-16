@@ -92,15 +92,15 @@ describe("selectAllLogs", () => {
   });
 });
 
-describe("findResourceById()", () => {
+describe("findUuid()", () => {
   it("returns UUID", () => {
-    const uuid = Selector.findResourceById(fakeIndex, "Sequence", 23);
+    const uuid = Selector.findUuid(fakeIndex, "Sequence", 23);
     expect(uuid).toContain("Sequence.23");
   });
 
   it("throws error", () => {
     const findUuid = () =>
-      Selector.findResourceById(fakeIndex, "Sequence", NaN);
+      Selector.findUuid(fakeIndex, "Sequence", NaN);
     expect(findUuid).toThrow("UUID not found for id NaN");
   });
 });
