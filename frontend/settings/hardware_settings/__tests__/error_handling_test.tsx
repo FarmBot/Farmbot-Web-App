@@ -34,6 +34,7 @@ describe("<ErrorHandling />", () => {
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
     arduinoBusy: false,
+    showAdvanced: false,
   });
 
   it("shows error handling labels", () => {

@@ -136,6 +136,7 @@ export interface ErrorHandlingProps {
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
+  showAdvanced: boolean;
 }
 
 export interface ParameterManagementProps {
