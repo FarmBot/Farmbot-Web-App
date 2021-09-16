@@ -13,6 +13,7 @@ module Sequences
 
     def execute
       publication.update!(published: false)
+      sequence.broadcast!(SecureRandom.uuid)
       publication
     end
 

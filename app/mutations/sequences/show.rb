@@ -24,6 +24,7 @@ module Sequences
                name: sequence.name,
                pinned: sequence.pinned,
                sequence_versions: available_version_ids,
+               # This is the parent sequence that this sequence was forked from.
                sequence_version_id: sequence.sequence_version_id,
              }
     end
@@ -57,14 +58,14 @@ module Sequences
 
       svid = sequence.sequence_version_id
       if svid
-        results.push(*SequenceVersion
-          .find(svid)
-          .sequence_publication
-          .sequence_versions
-          .pluck(:id))
+        their_sp = SequenceVersion.find(svid).sequence_publication
+        if their_sp.published
+          results.push(*their_sp.sequence_versions.pluck(:id))
+        end
       end
 
-      sp = SequencePublication.find_by(author_sequence_id: sequence.id)
+      sp = SequencePublication.find_by(author_sequence_id: sequence.id,
+                                       published: true)
       if sp
         results.push(*sp.sequence_versions.pluck(:id))
       end
