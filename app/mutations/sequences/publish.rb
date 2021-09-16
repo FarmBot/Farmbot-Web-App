@@ -25,6 +25,7 @@ module Sequences
     end
 
     def validate
+      real_accounts_only
       validate_ownership
       enforce_allow_list
     end
@@ -52,6 +53,14 @@ module Sequences
     end
 
     private
+
+    NO_GUESTS = "Guests cannot publish sequences. Please register first."
+
+    def real_accounts_only
+      if device.users.where("email LIKE '%@farmbot.guest'").any?
+        add_error :guest_account, :guest_account, NO_GUESTS
+      end
+    end
 
     def validate_ownership
       if sequence.device_id != device.id
