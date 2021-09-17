@@ -8,6 +8,11 @@ class SequenceVersion < ApplicationRecord
   # it is OK to provide a `nil` device.
   def device; nil end
 
+  def broadcast?
+    false
+  end
+
   def fragment_owner?
+    true
   end
 end
