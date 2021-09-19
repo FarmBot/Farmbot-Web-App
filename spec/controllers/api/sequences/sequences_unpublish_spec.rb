@@ -13,7 +13,9 @@ describe Api::SequencesController do
     end
 
     it "unpublishes a shared sequence via #unpublish" do
-      sp = Sequences::Publish.run!(sequence: sequence, device: device)
+      sp = Sequences::Publish.run!(sequence: sequence,
+                                   device: device,
+                                   copyright: "FarmBot, Inc. 2021")
       expect(sp.published).to be(true)
       post :unpublish, params: { format: :json, id: sequence.id }
       expect(response.ok?).to be(true)

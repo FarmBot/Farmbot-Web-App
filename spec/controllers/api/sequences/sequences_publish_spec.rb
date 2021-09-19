@@ -13,7 +13,13 @@ describe Api::SequencesController do
     end
 
     it "authors a shared sequence via #publish" do
-      post :publish, params: { format: :json, id: sequence.id }
+      post :publish, params: {
+                  format: :json,
+                  id: sequence.id,
+                  body: {
+                    copyright: "FarmBot, Inc. 2021",
+                  }.to_json,
+                }
       expect(response.ok?).to be(true)
       expect(json[:cached_author_email]).to eq(user.email)
       expect(json[:author_device_id]).to eq(device.id)

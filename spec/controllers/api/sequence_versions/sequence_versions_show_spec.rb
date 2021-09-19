@@ -37,8 +37,10 @@ describe Api::SequenceVersionsController do
       description = "An SV with comments"
       sp = Sequences::Publish.run!(sequence: sequence,
                                    description: description,
-                                   device: author_device)
+                                   device: author_device,
+                                   copyright: "FarmBot, Inc. 2021")
       sv = sp.sequence_versions.last
+      expect(sv.fragment_owner?).to be(true)
       get :show, params: { format: :json, id: sv.id }
       expect(response.ok?).to be(true)
       expect(json[:id]).to eq(sv.id)

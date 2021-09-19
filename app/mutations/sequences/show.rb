@@ -23,6 +23,7 @@ module Sequences
                forked: sequence.forked,
                name: sequence.name,
                pinned: sequence.pinned,
+               copyright: copyright,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
                sequence_version_id: sequence.sequence_version_id,
@@ -34,9 +35,8 @@ module Sequences
     end
 
     def execute
-      sv_id = sequence.sequence_version_id
-      if !sequence.forked && sv_id
-        celery = Fragments::Show.run!(owner: SequenceVersion.find(sv_id))
+      if is_forked?
+        celery = Fragments::Show.run!(owner: sequence_version)
       else
         celery = LegacyRenderer.new(sequence).run
       end
@@ -53,12 +53,23 @@ module Sequences
       return s
     end
 
+    def sequence_version
+      @sequence_version ||= SequenceVersion.find_by(id: sequence.sequence_version_id)
+    end
+
+    def is_forked?
+      !sequence.forked && sequence_version && sequence_version.id
+    end
+
+    def copyright
+      sequence_version&.copyright || ""
+    end
+
     def available_version_ids
       results = []
 
-      svid = sequence.sequence_version_id
-      if svid
-        their_sp = SequenceVersion.find(svid).sequence_publication
+      if sequence_version
+        their_sp = sequence_version.sequence_publication
         if their_sp.published
           results.push(*their_sp.sequence_versions.pluck(:id))
         end

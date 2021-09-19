@@ -646,7 +646,10 @@ CREATE TABLE public.firmware_configs (
     movement_calibration_deadzone_z integer DEFAULT 250,
     movement_axis_stealth_x integer DEFAULT 1,
     movement_axis_stealth_y integer DEFAULT 1,
-    movement_axis_stealth_z integer DEFAULT 1
+    movement_axis_stealth_z integer DEFAULT 1,
+    movement_calibration_retry_total_x integer DEFAULT 10,
+    movement_calibration_retry_total_y integer DEFAULT 10,
+    movement_calibration_retry_total_z integer DEFAULT 10
 );
 
 
@@ -1648,7 +1651,8 @@ CREATE TABLE public.sequence_versions (
     name character varying NOT NULL,
     color character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    copyright character varying(1500)
 );
 
 
@@ -3734,6 +3738,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210803205352'),
 ('20210820134844'),
 ('20210901215214'),
-('20210913175949');
+('20210913175949'),
+('20210914194342'),
+('20210917165755');
 
 

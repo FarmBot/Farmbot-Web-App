@@ -15,7 +15,9 @@ describe Api::SequencesController do
     end
 
     it "installs a shared sequence via #install" do
-      sp = Sequences::Publish.run!(sequence: sequence, device: author_device)
+      sp = Sequences::Publish.run!(sequence: sequence,
+                                   device: author_device,
+                                   copyright: "FarmBot, Inc. 2021")
       sv = sp.sequence_versions.last
       post :install, params: { format: :json, sequence_version_id: sv.id }
       expect(response.ok?).to be(true)

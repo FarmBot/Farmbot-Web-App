@@ -15,7 +15,9 @@ describe Api::SequencesController do
     end
 
     it "installs a shared sequence via #install" do
-      sp = Sequences::Publish.run!(sequence: sequence, device: author_device)
+      sp = Sequences::Publish.run!(sequence: sequence,
+                                   device: author_device,
+                                   copyright: "Farmbot, Inc 2021")
       sv = sp.sequence_versions.last
       json = Sequences::Install.run!(device: device, sequence_version: sv)
       downstream_sequence = Sequence.find(json[:id])

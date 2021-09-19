@@ -9,7 +9,7 @@ describe Sequences::Install do
   it "installs a specific sequence version" do
     pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
     sv = Sequences::Publish
-      .run!(device: other_device, sequence: pub_seq)
+      .run!(device: other_device, sequence: pub_seq, copyright: "FarmBot, Inc.")
       .sequence_versions
       .first
     priv_seq = Sequences::Install.run!(device: device, sequence_version: sv)
@@ -21,7 +21,9 @@ describe Sequences::Install do
 
   it "does not allow installation of unpublished sequeces" do
     pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
-    Sequences::Publish.run!(device: other_device, sequence: pub_seq)
+    Sequences::Publish.run!(device: other_device,
+                            sequence: pub_seq,
+                            copyright: "FarmBot, Inc. 2021")
     publication = Sequences::Unpublish.run!(device: other_device, sequence: pub_seq)
     sv = publication.sequence_versions.sample
     priv_seq = Sequences::Install.run(device: device, sequence_version: sv)

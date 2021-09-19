@@ -29,7 +29,9 @@ module Api
     # Share your sequence with other people
     # POST /sequences/:id/publish
     def publish
-      mutate Sequences::Publish.run(sequence: sequence, device: current_device)
+      mutate Sequences::Publish.run(sequence: sequence,
+                                    device: current_device,
+                                    copyright: "FarmBot, Inc.")
     end
 
     # Unlist your sequence.
