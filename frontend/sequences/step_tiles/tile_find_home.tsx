@@ -5,7 +5,6 @@ import { ToolTips, Content } from "../../constants";
 import { StepWrapper, StepWarning, conflictsString } from "../step_ui";
 import { some } from "lodash";
 import { AxisStepRadio } from "../step_ui/step_radio";
-import { t } from "../../i18next_wrapper";
 import { settingConflicts } from "./tile_calibrate";
 
 export const TileFindHome = (props: StepParams<FindHome>) => {
@@ -22,7 +21,6 @@ export const TileFindHome = (props: StepParams<FindHome>) => {
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index}
-      label={t("Find")} />
+      index={index} />
   </StepWrapper>;
 };

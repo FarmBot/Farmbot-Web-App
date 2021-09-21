@@ -27,7 +27,7 @@ describe Sequences::Upgrade do
                                            color: "red",
                                            name: "upstream")
     sv = Sequences::Publish
-      .run!(device: other_device, sequence: pub_seq)
+      .run!(device: other_device, sequence: pub_seq, copyright: "FarmBot, inc.")
       .sequence_versions
       .first
     # Create a sequence owned by someone else
@@ -61,7 +61,7 @@ describe Sequences::Upgrade do
                                            color: "red",
                                            name: "upstream")
     sv = Sequences::Publish
-      .run!(device: other_device, sequence: pub_seq)
+      .run!(device: other_device, sequence: pub_seq, copyright: "FarmBot, Inc.")
       .sequence_versions
       .first
     err = "Can't upgrade sequences you didn't create."
@@ -74,7 +74,9 @@ describe Sequences::Upgrade do
 
   it "does not allow upgrade of unpublished sequeces" do
     pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
-    Sequences::Publish.run!(device: other_device, sequence: pub_seq)
+    Sequences::Publish.run!(device: other_device,
+                            sequence: pub_seq,
+                            copyright: "FarmBot, Inc 2021")
     publication = Sequences::Unpublish.run!(device: other_device, sequence: pub_seq)
     sv = publication.sequence_versions.sample
     mut = Sequences::Upgrade.run(device: device,

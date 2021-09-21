@@ -7,7 +7,9 @@ describe Sequences::Unpublish do
   let(:other_device) { FactoryBot.create(:user).device }
 
   it "unpublishes a sequence" do
-    publication = Sequences::Publish.run!(sequence: sequence, device: device)
+    publication = Sequences::Publish.run!(sequence: sequence,
+                                          device: device,
+                                          copyright: "Farmbot, Inc 2021")
     expect(publication.published).to be(true)
     Sequences::Unpublish.run!(device: device, sequence: sequence)
     expect(publication.reload.published).to be(false)

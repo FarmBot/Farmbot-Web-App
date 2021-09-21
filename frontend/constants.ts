@@ -268,7 +268,7 @@ export namespace ToolTips {
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENCODER_SCALING =
-    trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
+    trim(`encoder scaling factor = 10000 * (motor resolution)
     / (encoder resolution).
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))`);
 

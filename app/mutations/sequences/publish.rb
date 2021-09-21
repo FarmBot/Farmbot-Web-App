@@ -18,6 +18,7 @@ module Sequences
     required do
       model :device, class: Device
       model :sequence, class: Sequence
+      string :copyright
     end
 
     optional do
@@ -36,7 +37,8 @@ module Sequences
         sv = SequenceVersion.create!(sequence_publication: publication,
                                      name: sequence.name,
                                      color: sequence.color,
-                                     description: description)
+                                     description: description,
+                                     copyright: copyright)
         celery = Sequences::Show.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
         flat_ast = Fragments::Preprocessor.run!(**params)

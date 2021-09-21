@@ -113,6 +113,22 @@ describe("resource reducer", () => {
     expect(tool.specialStatus).toBe(SpecialStatus.DIRTY);
   });
 
+  it("handles unknown resource kinds", () => {
+    const startingState = fakeState().resources;
+    const uuid = Object.keys(startingState.index.byKind.Tool)[0];
+    const action = {
+      type: Actions.INIT_RESOURCE,
+      payload: {
+        uuid, kind: "Unknown",
+        body: { id: 0 }, SpecialStatus: SpecialStatus.DIRTY
+      }
+    };
+    console.error = jest.fn();
+    resourceReducer(startingState, action);
+    expect(console.error).toHaveBeenCalledWith(
+      "Unknown is not an indexed resource.");
+  });
+
   it("covers destroy resource branches", () => {
     const testResourceDestroy = (kind: ResourceName) => {
 

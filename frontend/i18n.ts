@@ -32,8 +32,8 @@ export function generateI18nConfig(lang: string): Promise<InitOptions> {
     .then(response => {
       const translation = parseTranslationData(response.data);
       return {
-        nsSeparator: "",
-        keySeparator: "",
+        nsSeparator: false,
+        keySeparator: false,
         lng: lang,
         resources: { [lang]: { translation } }
       };

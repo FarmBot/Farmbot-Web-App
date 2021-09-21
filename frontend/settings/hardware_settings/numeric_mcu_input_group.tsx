@@ -1,5 +1,5 @@
 import React from "react";
-import { McuInputBox } from "./mcu_input_box";
+import { McuInputBox, microstepScaledConfig } from "./mcu_input_box";
 import { NumericMCUInputGroupProps } from "./interfaces";
 import { Row, Col, Help } from "../../ui";
 import { Highlight } from "../maybe_highlight";
@@ -60,9 +60,9 @@ export class NumericMCUInputGroup
 
   get tooltip() {
     const scale = {
-      x: this.props.x.includes("step_per_mm") ? 1 : this.props.xScale || 1,
-      y: this.props.y.includes("step_per_mm") ? 1 : this.props.yScale || 1,
-      z: this.props.z.includes("step_per_mm") ? 1 : this.props.zScale || 1,
+      x: microstepScaledConfig(this.props.x) ? 1 : this.props.xScale || 1,
+      y: microstepScaledConfig(this.props.y) ? 1 : this.props.yScale || 1,
+      z: microstepScaledConfig(this.props.z) ? 1 : this.props.zScale || 1,
     };
     return t(this.props.tooltip, {
       x: this.getDefault(this.props.x) / scale.x,
@@ -72,11 +72,15 @@ export class NumericMCUInputGroup
   }
 
   get anyModified() {
-    const modified = (setting: McuParamName) =>
-      this.getDefault(setting) != this.props.sourceFwConfig(setting).value;
-    return modified(this.props.x)
-      || modified(this.props.y)
-      || modified(this.props.z);
+    const modified = (setting: McuParamName, scale: number | undefined) => {
+      const value = microstepScaledConfig(setting)
+        ? (this.props.sourceFwConfig(setting).value || 1) / (scale || 1)
+        : this.props.sourceFwConfig(setting).value;
+      return this.getDefault(setting) != value;
+    };
+    return modified(this.props.x, this.props.xScale)
+      || modified(this.props.y, this.props.yScale)
+      || modified(this.props.z, this.props.zScale);
   }
 
   render() {

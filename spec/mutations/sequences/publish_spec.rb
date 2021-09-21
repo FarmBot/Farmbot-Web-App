@@ -41,7 +41,9 @@ describe Sequences::Publish do
     )
     s = Sequence.find(json[:id])
     d = s.device
-    result = Sequences::PublishUnsafe.run!(sequence: s, device: d)
+    result = Sequences::PublishUnsafe.run!(sequence: s,
+                                           device: d,
+                                           copyright: "FarmBot, Inc.")
     expect(result.author_device_id).to eq(d.id)
     Fragments::Show.run!(owner: result.sequence_versions.first)
   end
@@ -55,7 +57,9 @@ describe Sequences::Publish do
                                            },
                                          },
                                        ])
-    problems = Sequences::Publish.run(sequence: bad, device: device)
+    problems = Sequences::Publish.run(sequence: bad,
+                                      device: device,
+                                      copyright: "FarmBot, Inc. 2021")
     expected = "For security reasons, we can't publish sequences " \
                "that contain the following content: lua"
     actual = problems.errors["sequence"].message
@@ -69,7 +73,8 @@ describe Sequences::Publish do
     # ==== Publish it.
     pub1 = Sequences::Publish.run!(sequence: sequence,
                                    device: device,
-                                   description: d1)
+                                   description: d1,
+                                   copyright: "FarmBot, Inc. 2021")
     expect(pub1.sequence_versions.count).to eq(1)
     current_version = pub1.sequence_versions.first
     expect(pub1.cached_author_email).to eq(user.email)
@@ -93,7 +98,8 @@ describe Sequences::Publish do
     d2 = "descr. 2"
     pub2 = Sequences::Publish.run!(sequence: sequence2,
                                    device: device,
-                                   description: d2)
+                                   description: d2,
+                                   copyright: "FarmBot, Inc. 2021")
     expect(pub2.sequence_versions.count).to eq(2)
     current_version = pub2.sequence_versions.last
     expect(pub2.cached_author_email).to eq(user.email)
@@ -105,7 +111,8 @@ describe Sequences::Publish do
     description = "This is a description"
     publication = Sequences::Publish.run!(sequence: sequence,
                                           device: device,
-                                          description: description)
+                                          description: description,
+                                          copyright: "FarmBot, Inc. 2021")
     expect(publication.sequence_versions.count).to eq(1)
     current_version = publication.sequence_versions.first
     expect(publication.cached_author_email).to eq(user.email)
@@ -115,14 +122,17 @@ describe Sequences::Publish do
   it "disallows publishing other people's stuff" do
     expect do
       Sequences::Publish.run!(sequence: FakeSequence.with_parameters(device: other_device),
-                              device: device)
+                              device: device,
+                              copyright: "FarmBot Inc 2021")
     end.to raise_error(Errors::Forbidden)
   end
 
   it "publishes an empty sequence" do
     sequence = FakeSequence.with_parameters(device: device)
     expect(sequence.device_id).to eq(device.id)
-    sp = Sequences::Publish.run!(sequence: sequence, device: device)
+    sp = Sequences::Publish.run!(sequence: sequence,
+                                 device: device,
+                                 copyright: "FarmBot, Inc. 2021")
     expect(sp.published).to be(true)
   end
 
@@ -134,7 +144,9 @@ describe Sequences::Publish do
     device = guest.device
     sequence = FakeSequence.with_parameters(device: device)
     expect(sequence.device_id).to eq(device.id)
-    result = Sequences::Publish.run(sequence: sequence, device: device)
+    result = Sequences::Publish.run(sequence: sequence,
+                                    device: device,
+                                    copyright: "A guest.")
     errors = result.errors.message_list
     expect(errors).to include(Sequences::Publish::NO_GUESTS)
   end

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import {
   TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero,
@@ -40,7 +40,6 @@ export interface AxisStepRadioProps {
   currentStep: AxisStep;
   dispatch: Function;
   index: number;
-  label: string;
 }
 
 export const AxisStepRadio = (props: AxisStepRadioProps) => {
