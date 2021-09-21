@@ -146,7 +146,11 @@ const ALL: Indexer = {
 };
 
 const BY_KIND: Indexer = {
-  up(r, i) { i.byKind[r.kind][r.uuid] = r.uuid; },
+  up(r, i) {
+    i.byKind[r.kind]
+      ? i.byKind[r.kind][r.uuid] = r.uuid
+      : console.error(`${r.kind} is not an indexed resource.`);
+  },
   down(r, i) { delete i.byKind[r.kind][r.uuid]; },
 };
 

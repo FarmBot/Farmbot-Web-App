@@ -16,8 +16,7 @@ export const TileMoveHome = (props: StepParams<Home>) =>
       currentSequence={props.currentSequence}
       currentStep={props.currentStep}
       dispatch={props.dispatch}
-      index={props.index}
-      label={t("Home")} />
+      index={props.index} />
     <Row>
       <Col xs={12}>
         <label>{t("Speed")}</label>

@@ -43,4 +43,15 @@ describe("<NumericMCUInputGroup />", () => {
     const wrapper = mount(<NumericMCUInputGroup {...p} />);
     expect(wrapper.find(".error").length).toEqual(2);
   });
+
+  it("handles undefined values", () => {
+    const p = fakeProps();
+    p.x = "movement_step_per_mm_x";
+    p.sourceFwConfig = () => ({ value: undefined, consistent: true });
+    p.xScale = undefined;
+    p.advanced = true;
+    p.showAdvanced = false;
+    const wrapper = shallow(<NumericMCUInputGroup {...p} />);
+    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+  });
 });

@@ -60,7 +60,7 @@ export class RawDesignerSettings
     const firmwareHardware = validFirmwareHardware(value);
     const botOnline = isBotOnlineFromState(this.props.bot);
     const { busy } = this.props.bot.hardware.informational_settings;
-    const urlSearchTerm = (getUrlQuery("search") || "").replace("_", " ");
+    const urlSearchTerm = (getUrlQuery("search") || "").replace(/_/g, " ");
     urlSearchTerm && this.props.searchTerm != urlSearchTerm && dispatch({
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: urlSearchTerm,
