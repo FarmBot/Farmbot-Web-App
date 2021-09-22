@@ -35,9 +35,9 @@ export * from "./selectors_by_id";
 export * from "./selectors_by_kind";
 export * from "./selectors_for_indexing";
 
-/** Similar to findId(), but does not throw exceptions. Do NOT use this method
+/** Similar to findUuid(), but does not throw exceptions. Do NOT use this method
  * unless there is actually a reason for the resource to not have a UUID.
- * `findId()` is more appropriate 99% of the time because it can spot
+ * `findUuid()` is more appropriate 99% of the time because it can spot
  * referential integrity issues. */
 export const maybeDetermineUuid =
   (index: ResourceIndex, kind: ResourceName, id: number) => {
@@ -49,14 +49,15 @@ export const maybeDetermineUuid =
     }
   };
 
-export const findId = (index: ResourceIndex, kind: ResourceName, id: number): UUID => {
-  const uuid = maybeDetermineUuid(index, kind, id);
-  if (uuid) {
-    return uuid;
-  } else {
-    throw new Error("UUID not found for id " + id);
-  }
-};
+export const findUuid =
+  (index: ResourceIndex, kind: ResourceName, id: number): UUID => {
+    const uuid = maybeDetermineUuid(index, kind, id);
+    if (uuid) {
+      return uuid;
+    } else {
+      throw new Error("UUID not found for id " + id);
+    }
+  };
 
 export const isKind = (resourceName: ResourceName) => (tr: TaggedResource) =>
   tr.kind === resourceName;

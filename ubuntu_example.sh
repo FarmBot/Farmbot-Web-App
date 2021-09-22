@@ -1,4 +1,4 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 21.04 Machine
+# How to install FarmBot Web API on a Fresh Ubuntu 20.04 Machine
 
 # IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
 # longterm support to self-hosted users. If you have never administered a
@@ -25,6 +25,7 @@ sudo docker run hello-world # Should run!
 # Install docker-compose
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+sudo docker-compose --version # test installation
 
 # Install FarmBot Web App
 # ⚠ SKIP THIS STEP IF UPGRADING!

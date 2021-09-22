@@ -7,9 +7,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import {
-  TaggedResource, TaggedSequence, TaggedRegimen, Coordinate,
-} from "farmbot";
+import { TaggedResource, Coordinate } from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
@@ -19,32 +17,26 @@ import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error, warning } from "../../../toast/toast";
 import { newWeek } from "../../reducer";
+import {
+  fakeRegimen, fakeSequence,
+} from "../../../__test_support__/fake_state/resources";
 
 const sequence_id = 23;
 const regimen_id = 32;
 describe("commitBulkEditor()", () => {
   function newFakeState() {
     const state = fakeState();
-    const regBody: TaggedRegimen["body"] = {
-      id: regimen_id,
-      name: "Test Regimen",
-      color: "gray",
-      regimen_items: [
-        { regimen_id, sequence_id, time_offset: 1000 },
-      ],
-      body: [],
-    };
+    const regBody = fakeRegimen().body;
+    regBody.id = regimen_id;
+    regBody.name = "Test Regimen";
+    regBody.regimen_items = [
+      { regimen_id, sequence_id, time_offset: 1000 },
+    ];
     const reg = newTaggedResource("Regimen", regBody)[0];
-    const seqBody: TaggedSequence["body"] = {
-      id: sequence_id,
-      name: "Test Sequence",
-      pinned: false,
-      color: "gray",
-      folder_id: undefined,
-      body: [{ kind: "wait", args: { milliseconds: 100 } }],
-      args: { "locals": { kind: "scope_declaration", args: {} }, "version": 4 },
-      kind: "sequence"
-    };
+    const seqBody = fakeSequence().body;
+    seqBody.id = sequence_id;
+    seqBody.name = "Test Sequence";
+    seqBody.body = [{ kind: "wait", args: { milliseconds: 100 } }];
     const seq = arrayUnwrap(newTaggedResource("Sequence", seqBody));
     const regimenUuid = reg.uuid;
     const sequenceUuid = seq.uuid;
@@ -171,6 +163,14 @@ describe("setSequence()", () => {
     const action = setSequence("Sequence");
     expect(action).toEqual({
       payload: "Sequence",
+      type: Actions.SET_SEQUENCE
+    });
+  });
+
+  it("handles empty uuid", () => {
+    const action = setSequence("");
+    expect(action).toEqual({
+      payload: "",
       type: Actions.SET_SEQUENCE
     });
   });

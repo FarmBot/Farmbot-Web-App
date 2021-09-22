@@ -100,11 +100,19 @@ describe("<Logs />", () => {
     expect(wrapper.text()).toContain("0, 1, 2");
   });
 
-  it("shows verbosity", () => {
+  it("doesn't show negative verbosity", () => {
     const p = fakeProps();
     p.logs[0].body.verbosity = -999;
     const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.text()).toContain("-999");
+    expect(wrapper.text()).not.toContain("-999");
+  });
+
+  it("doesn't show invalid time", () => {
+    const p = fakeProps();
+    p.logs[0].body.created_at = undefined;
+    const wrapper = mount(<Logs {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("unknown");
+    expect(wrapper.text().toLowerCase()).not.toContain("invalid");
   });
 
   it("loads filter setting", () => {

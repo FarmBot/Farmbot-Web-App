@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { MapTransformProps } from "../../interfaces";
-import { CameraCalibrationData } from "../../../interfaces";
+import { CameraCalibrationData, DesignerState } from "../../../interfaces";
 import { TaggedImage } from "farmbot";
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep, some } from "lodash";
@@ -9,6 +9,7 @@ import { BooleanSetting, StringSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import {
   parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, imageIsHidden,
+  filterImagesByType,
 } from "../../../../photos/photo_filter_settings/util";
 
 export interface ImageLayerProps {
@@ -17,11 +18,7 @@ export interface ImageLayerProps {
   mapTransformProps: MapTransformProps;
   cameraCalibrationData: CameraCalibrationData;
   getConfigValue: GetWebAppConfigValue;
-  hiddenImages: number[];
-  shownImages: number[];
-  hideUnShownImages: boolean;
-  alwaysHighlightImage: boolean;
-  hoveredMapImage: number | undefined;
+  designer: DesignerState;
 }
 
 export class ImageLayer extends React.Component<ImageLayerProps> {
@@ -35,9 +32,11 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
   render() {
     const {
       visible, images, mapTransformProps, cameraCalibrationData,
-      hiddenImages, shownImages, getConfigValue,
-      hideUnShownImages, alwaysHighlightImage, hoveredMapImage,
+      getConfigValue,
     } = this.props;
+    const { hiddenImages, shownImages,
+      hideUnShownImages, alwaysHighlightImage, hoveredMapImage,
+    } = this.props.designer;
     const cropImages = !!getConfigValue(BooleanSetting.crop_images);
     const getFilterValue = parseFilterSetting(getConfigValue);
     const imageFilterBegin = getFilterValue(StringSetting.photo_filter_begin);
@@ -54,6 +53,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
             || imageInRange(img, imageFilterBegin, imageFilterEnd))
           .filter(img => !imageIsHidden(
             hiddenImages, shownImages, hideUnShownImages, img.body.id))
+          .filter(filterImagesByType(this.props.designer))
           .map(img =>
             <MapImage
               image={img}

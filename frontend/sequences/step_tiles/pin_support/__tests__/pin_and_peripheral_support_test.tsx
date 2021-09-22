@@ -247,12 +247,11 @@ describe("dropDown2CeleryArg()", () => {
 
 describe("setArgsDotPinNumber()", () => {
   it("sets pin_number to a pin number", () => {
-    const p = fakeStepParams();
     const step: ReadPin = {
       kind: "read_pin",
       args: { pin_mode: 1, label: "example", pin_number: 1 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     PinSupport.setArgsDotPinNumber(p)({ label: "", value: 0 });
     expect(mockEditStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(step);
@@ -261,15 +260,14 @@ describe("setArgsDotPinNumber()", () => {
   });
 
   it("sets pin_number to a named pin", () => {
-    const p = fakeStepParams();
-    const peripheral = fakePeripheral();
-    peripheral.body.id = 1;
-    p.resources = buildResourceIndex([peripheral]).index;
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_mode: 1, pin_value: 1, pin_number: 1 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
+    const peripheral = fakePeripheral();
+    peripheral.body.id = 1;
+    p.resources = buildResourceIndex([peripheral]).index;
     PinSupport.setArgsDotPinNumber(p)({ label: "", value: peripheral.uuid });
     expect(mockEditStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(step);
@@ -281,12 +279,11 @@ describe("setArgsDotPinNumber()", () => {
   });
 
   it("sets pin_number to a BoxLed named pin", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_mode: 1, pin_value: 1, pin_number: 1 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     PinSupport.setArgsDotPinNumber(p)({ label: "", value: "BoxLed3" });
     expect(mockEditStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(step);

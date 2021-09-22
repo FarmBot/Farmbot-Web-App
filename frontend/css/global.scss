@@ -218,6 +218,7 @@ fieldset {
   }
 }
 
+.memory-usage-display,
 .chip-temp-display {
   position: relative;
   .saucer {
@@ -327,6 +328,21 @@ fieldset {
     button {
       margin: 0;
     }
+  }
+}
+
+.garden-location {
+  .fa-map {
+    margin: 0.5rem;
+    float: right;
+    margin-bottom: 0;
+    color: $medium_gray;
+  }
+  .latitude {
+    padding-right: 0;
+  }
+  .longitude {
+    padding-left: 0;
   }
 }
 
@@ -800,15 +816,15 @@ ul {
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
-  .save-btn {
-    margin-left: 1rem;
+  .run-btn {
+    margin-right: 0.5rem;
   }
   .settings-menu-button {
     margin-right: 1rem;
     margin-top: 0.15rem;
   }
   .fa {
-    margin: 0 1rem;
+    margin: 0 0.75rem;
     line-height: 2rem;
     float: right;
   }
@@ -1259,8 +1275,13 @@ ul {
 .settings-menu-button {
   float: right;
   .fa-gear {
+    margin-top: -0.25rem;
     color: $dark_gray;
   }
+}
+
+.publish-button {
+  float: right;
 }
 
 .sequence-settings-menu {
@@ -1271,6 +1292,55 @@ ul {
   }
   .fb-button {
     margin-top: 0;
+  }
+}
+
+.sequence-share-menu {
+  text-align: center;
+  max-width: 300px;
+  a {
+    display: block;
+  }
+  button {
+    display: block;
+    margin: auto;
+    float: none;
+    margin-top: 1rem;
+  }
+  .versions-table {
+    margin-top: 2rem;
+    text-align: left;
+    .bp3-popover-wrapper {
+      display: inline-block;
+      margin-left: 1rem;
+    }
+    .fb-button.gray {
+      margin: 0;
+      float: right;
+    }
+    .row {
+      margin-top: 0.5rem;
+    }
+    p {
+      width: max-content;
+      padding: 5px;
+      border-radius: 3px;
+      color: $white;
+      background: $panel_blue;
+    }
+    .fa-link {
+      float: right;
+      margin-top: 0.75rem;
+    }
+  }
+  .fb-button.white {
+    color: $darkest_red;
+    text-transform: none;
+    font-weight: normal;
+    background: $white;
+    &:hover {
+      background: $off_white;
+    }
   }
 }
 

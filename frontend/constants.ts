@@ -131,6 +131,10 @@ export namespace ToolTips {
     trim(`Number of times to retry calibration.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
+  export const CALIBRATION_TOTAL_RETRIES =
+    trim(`Total number of times to retry calibration.
+      (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+
   export const CALIBRATION_RETRY_RESET_DISTANCE =
     trim(`Distance in millimeters to group calibration retries. If the
     distance travelled while detecting the axis end location exceeds this
@@ -264,7 +268,7 @@ export namespace ToolTips {
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENCODER_SCALING =
-    trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
+    trim(`encoder scaling factor = 10000 * (motor resolution)
     / (encoder resolution).
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))`);
 
@@ -1033,6 +1037,36 @@ export namespace Content {
   export const IS_PINNED =
     trim(`This sequence is pinned.`);
 
+  export const PUBLISH_SEQUENCE =
+    trim(`Publishing this sequence will create a public version released
+    under the MIT License. Once published, anyone may find and use the
+    sequence free of charge for tasks including but not limited to:
+    importing the sequence into their FarmBot account to view and use it as
+    they deem fit, upgrading their copy to other published versions, making
+    changes to their copy, publishing, distributing, and even selling their
+    copy. You can publish new versions of this sequence at any time, which
+    other users may choose to upgrade to. You may also unpublish the
+    sequence and/or delete it from your account at any time to disable the
+    share link. However, these actions will not affect existing imports
+    owned by other user accounts. By publishing this sequence, you will be
+    releasing it under the MIT License.`);
+
+  export const SEQUENCE_VERSIONS =
+    trim(`When you publish a new version, other users of the sequence may
+    optionally upgrade to the latest version.`);
+
+  export const IMPORT_SEQUENCE =
+    trim(`Importing this sequence will allow you to use it with your
+    FarmBot and make changes. If the original author of the sequence
+    publishes a new version, you will have the option to upgrade your copy.`);
+
+  export const IMPORTED_SEQUENCE =
+    trim(`This sequence was imported from a publicly shared sequence. If
+    the original author publishes a new version, you may upgrade your copy.
+    Upgrading will overwrite your copy with the contents of the new version.
+    It is recommended you check your FarmBot continues operating as expected
+    after any upgrades.`);
+
   // Regimens
   export const NO_REGIMEN_SELECTED =
     trim(`Click one in the Regimens panel to edit, or click "+" to create
@@ -1700,6 +1734,8 @@ export enum DeviceSetting {
   orderNumber = `Order Number`,
   timezone = `timezone`,
   time_zone = `time zone`,
+  farmbotLocation = `Location`,
+  indoor = `indoor`,
   camera = `camera`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
@@ -1779,6 +1815,7 @@ export enum DeviceSetting {
   timeoutAfter = `Timeout after (seconds)`,
   maxRetries = `Max Retries`,
   calibrationRetries = `Calibration retries`,
+  calibrationTotalRetries = `Calibration total retries`,
   calibrationRetryResetDistance = `Calibration retry reset distance (mm)`,
   estopOnMovementError = `E-Stop on Movement Error`,
 
@@ -2025,6 +2062,9 @@ export enum Actions {
   SET_SHOWN_MAP_IMAGES = "SET_SHOWN_MAP_IMAGES",
   TOGGLE_SHOWN_IMAGES_ONLY = "TOGGLE_SHOWN_IMAGES_ONLY",
   TOGGLE_ALWAYS_HIGHLIGHT_IMAGE = "TOGGLE_ALWAYS_HIGHLIGHT_IMAGE",
+  TOGGLE_SHOW_CALIBRATION_IMAGES = "TOGGLE_SHOW_CALIBRATION_IMAGES",
+  TOGGLE_SHOW_DETECTION_IMAGES = "TOGGLE_SHOW_DETECTION_IMAGES",
+  TOGGLE_SHOW_HEIGHT_IMAGES = "TOGGLE_SHOW_HEIGHT_IMAGES",
   HIGHLIGHT_MAP_IMAGE = "HIGHLIGHT_MAP_IMAGE",
   SHOW_CAMERA_VIEW_POINTS = "SHOW_CAMERA_VIEW_POINTS",
   TOGGLE_GRID_ID = "TOGGLE_GRID_ID",

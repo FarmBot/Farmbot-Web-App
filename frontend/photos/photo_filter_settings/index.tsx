@@ -5,6 +5,9 @@ import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
   toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
+  toggleShowCalibrationImages,
+  toggleShowDetectionImages,
+  toggleShowHeightImages,
 } from "./actions";
 import {
   IMAGE_LAYER_CONFIG_KEYS, calculateImageAgeInfo, parseFilterSetting,
@@ -20,7 +23,11 @@ import {
 } from "../../settings/default_values";
 
 export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
-  const { dispatch, flags, alwaysHighlightImage, hideUnShownImages } = props;
+  const { dispatch, flags } = props;
+  const {
+    alwaysHighlightImage, hideUnShownImages,
+    showCalibrationImages, showDetectionImages, showHeightImages,
+  } = props.designer;
   const layerOff = !flags.layerOn;
   const image = props.currentImage;
   const commonProps = { dispatch, image, flags };
@@ -73,6 +80,27 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       className={getModifiedClassNameDefaultFalse(hideUnShownImages)}
       toggleValue={hideUnShownImages}
       toggleAction={() => dispatch(toggleSingleImageMode(image))} />
+    <label className={"toggle-label"}>
+      {t("show calibration images")}
+    </label>
+    <ToggleButton disabled={layerOff}
+      className={getModifiedClassNameDefaultFalse(!showCalibrationImages)}
+      toggleValue={showCalibrationImages}
+      toggleAction={toggleShowCalibrationImages(dispatch)} />
+    <label className={"toggle-label"}>
+      {t("show weed detector images")}
+    </label>
+    <ToggleButton disabled={layerOff}
+      className={getModifiedClassNameDefaultFalse(!showDetectionImages)}
+      toggleValue={showDetectionImages}
+      toggleAction={toggleShowDetectionImages(dispatch)} />
+    <label className={"toggle-label"}>
+      {t("show soil height images")}
+    </label>
+    <ToggleButton disabled={layerOff}
+      className={getModifiedClassNameDefaultFalse(!showHeightImages)}
+      toggleValue={showHeightImages}
+      toggleAction={toggleShowHeightImages(dispatch)} />
   </div>;
 };
 

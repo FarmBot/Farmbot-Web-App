@@ -16,6 +16,7 @@ export interface AllStepsProps {
   sequence: TaggedSequence;
   onDrop(index: number, key: string): void;
   dispatch: Function;
+  readOnly: boolean;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
   farmwareData?: FarmwareData;
@@ -41,6 +42,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           currentStep,
           index,
           dispatch,
+          readOnly: this.props.readOnly,
           currentSequence: sequence,
           resources: this.props.resources,
           hardwareFlags: this.props.hardwareFlags,
@@ -53,14 +55,20 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           : "";
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
-          <AddCommandButton dispatch={dispatch} index={index} />
+          {!this.props.readOnly &&
+            <AddCommandButton dispatch={dispatch} index={index} />}
           <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}
             step={currentStep}
             intent="step_move"
             draggerId={index}>
-            <div className={`sequence-step ${hovered}`}
+            <div
+              className={[
+                "sequence-step",
+                hovered,
+                this.props.readOnly ? "read-only" : "",
+              ].join(" ")}
               onMouseEnter={dispatch(hoverSequenceStep(tag))}
               onMouseLeave={dispatch(hoverSequenceStep(undefined))}>
               <ErrorBoundary fallback={<TileUnknown {...stepProps} />}>

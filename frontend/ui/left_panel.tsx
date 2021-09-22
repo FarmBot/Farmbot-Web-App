@@ -3,7 +3,7 @@ import { Col } from ".";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 
-interface LeftPanelProps {
+export interface LeftPanelProps {
   children?: React.ReactNode;
   className: string;
   title: string;

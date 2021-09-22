@@ -25,10 +25,14 @@ module Fragments
         acc[key] = node2cs(value)
         acc
       end
-      result = { kind: cache.kind(node).value,
-                 args: cache.get_primitive_pairs(node).merge(standard),
-                 body: recurse_into_body(cache.get_body(node)) }
+      result = {
+        comment: node.comment,
+        kind: cache.kind(node).value,
+        args: cache.get_primitive_pairs(node).merge(standard),
+        body: recurse_into_body(cache.get_body(node)),
+      }
       result.delete(:body) if result[:body].length == 0
+      result.delete(:comment) unless result[:comment].present?
       result
     end
 

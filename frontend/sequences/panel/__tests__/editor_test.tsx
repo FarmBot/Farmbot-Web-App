@@ -72,6 +72,7 @@ describe("<ResourceTitle />", () => {
   const fakeProps = (): ResourceTitleProps => ({
     dispatch: jest.fn(),
     resource: fakeSequence(),
+    fallback: "string",
   });
 
   it("changes name", () => {

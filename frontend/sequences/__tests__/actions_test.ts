@@ -10,8 +10,17 @@ jest.mock("../set_active_sequence_by_name", () => ({
   setActiveSequenceByName: jest.fn()
 }));
 
+let mockPost = Promise.resolve();
+jest.mock("axios", () => ({
+  post: jest.fn(() => mockPost),
+}));
+
 import {
   copySequence, editCurrentSequence, selectSequence, pushStep, pinSequenceToggle,
+  publishSequence,
+  upgradeSequence,
+  installSequence,
+  unpublishSequence,
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { init, edit, overwrite } from "../../api/crud";
@@ -19,6 +28,9 @@ import { push } from "../../history";
 import { Actions } from "../../constants";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { TakePhoto, Wait } from "farmbot";
+import axios from "axios";
+import { API } from "../../api";
+import { error, success } from "../../toast/toast";
 
 describe("copySequence()", () => {
   it("copies sequence", () => {
@@ -115,5 +127,91 @@ describe("pinSequenceToggle()", () => {
     sequence.body.pinned = false;
     pinSequenceToggle(sequence)(jest.fn());
     expect(edit).toHaveBeenCalledWith(sequence, { pinned: true });
+  });
+});
+
+describe("publishSequence()", () => {
+  API.setBaseUrl("");
+
+  it("publishes sequence", async () => {
+    mockPost = Promise.resolve();
+    await publishSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/publish");
+    expect(success).toHaveBeenCalledWith("Sequence published.");
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("errors while publishing sequence", async () => {
+    mockPost = Promise.reject();
+    await publishSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/publish");
+    expect(success).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Publish error.");
+  });
+});
+
+describe("unpublishSequence()", () => {
+  API.setBaseUrl("");
+
+  it("unpublishes sequence", async () => {
+    mockPost = Promise.resolve();
+    await unpublishSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/unpublish");
+    expect(success).toHaveBeenCalledWith("Sequence unpublished.");
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("errors while unpublishing sequence", async () => {
+    mockPost = Promise.reject();
+    await unpublishSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/unpublish");
+    expect(success).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Unpublish error.");
+  });
+});
+
+describe("installSequence()", () => {
+  it("installs sequence", async () => {
+    mockPost = Promise.resolve();
+    await installSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/install");
+    expect(success).toHaveBeenCalledWith("Sequence installed.");
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("errors while installing sequence", async () => {
+    mockPost = Promise.reject();
+    await installSequence(123)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/install");
+    expect(success).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Install error.");
+  });
+});
+
+describe("upgradeSequence()", () => {
+  API.setBaseUrl("");
+
+  it("upgrades sequence", async () => {
+    mockPost = Promise.resolve();
+    await upgradeSequence(123, 1)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/upgrade/1");
+    expect(success).toHaveBeenCalledWith("Sequence upgraded.");
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("errors while publishing sequence", async () => {
+    mockPost = Promise.reject();
+    await upgradeSequence(123, 1)();
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost/api/sequences/123/upgrade/1");
+    expect(success).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Upgrade error.");
   });
 });

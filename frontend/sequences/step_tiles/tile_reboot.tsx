@@ -33,14 +33,9 @@ export const editTheRebootStep =
   };
 
 export const TileReboot = (props: StepParams<Reboot>) =>
-  <StepWrapper
+  <StepWrapper {...props}
     className={"reboot-step"}
-    helpText={Content.RESTART_FARMBOT}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    resources={props.resources}>
+    helpText={Content.RESTART_FARMBOT}>
     <p>
       {t(Content.REBOOT_STEP)}
     </p>

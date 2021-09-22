@@ -3,19 +3,16 @@ import { mount } from "enzyme";
 import { TileTakePhoto } from "../tile_take_photo";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../interfaces";
-import { emptyState } from "../../../resources/reducer";
 import {
-  fakeFarmwareData,
+  fakeFarmwareData, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { Content } from "../../../constants";
+import { TakePhoto } from "farmbot";
 
 describe("<TileTakePhoto/>", () => {
-  const fakeProps = (): StepParams => ({
+  const fakeProps = (): StepParams<TakePhoto> => ({
+    ...fakeStepParams({ kind: "take_photo", args: {} }),
     currentSequence: fakeSequence(),
-    currentStep: { kind: "take_photo", args: {} },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
     farmwareData: fakeFarmwareData(),
   });
 

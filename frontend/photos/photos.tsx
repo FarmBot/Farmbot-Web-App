@@ -43,7 +43,7 @@ export class RawDesignerPhotos
       getConfigValue: this.props.getConfigValue,
       env: this.props.env,
       image: this.props.currentImage,
-      hiddenImages: this.props.hiddenImages,
+      designer: this.props.designer,
       size: this.props.currentImageSize,
     });
   }
@@ -63,8 +63,7 @@ export class RawDesignerPhotos
     };
     const imageCommon = {
       flags: this.imageShowFlags,
-      hideUnShownImages: this.props.hideUnShownImages,
-      alwaysHighlightImage: this.props.alwaysHighlightImage,
+      designer: this.props.designer,
       getConfigValue: this.props.getConfigValue,
     };
     const farmwareNames = Object.keys(this.props.farmwares);
@@ -73,8 +72,6 @@ export class RawDesignerPhotos
       <DesignerPanelContent panelName={"photos"}>
         <label>{t("Photos")}</label>
         <Photos {...common} {...imageCommon}
-          hiddenImages={this.props.hiddenImages}
-          shownImages={this.props.shownImages}
           currentImageSize={this.props.currentImageSize}
           imageJobs={this.props.imageJobs} />
         <ExpandableHeader
@@ -82,7 +79,7 @@ export class RawDesignerPhotos
           title={t("Filter map photos")}
           onClick={this.toggle("filter")}>
           <FiltersEnabledWarning
-            hideUnShownImages={this.props.hideUnShownImages}
+            hideUnShownImages={this.props.designer.hideUnShownImages}
             getConfigValue={this.props.getConfigValue} />
         </ExpandableHeader>
         <Collapse isOpen={this.state.filter}>

@@ -12,6 +12,8 @@ const FARMBOT_PANEL = [
   DeviceSetting.name,
   DeviceSetting.orderNumber,
   DeviceSetting.timezone,
+  DeviceSetting.farmbotLocation,
+  DeviceSetting.indoor,
   DeviceSetting.time_zone,
   DeviceSetting.camera,
   DeviceSetting.osUpdateTime,
@@ -90,6 +92,7 @@ const ERROR_HANDLING_PANEL = [
   DeviceSetting.timeoutAfter,
   DeviceSetting.maxRetries,
   DeviceSetting.calibrationRetries,
+  DeviceSetting.calibrationTotalRetries,
   DeviceSetting.calibrationRetryResetDistance,
   DeviceSetting.estopOnMovementError,
 ];

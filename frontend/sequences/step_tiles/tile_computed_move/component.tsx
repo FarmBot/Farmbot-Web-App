@@ -315,21 +315,15 @@ export class ComputedMove
       : <div className={"safe-z-checkbox-hidden"} />;
 
   render() {
-    const { currentStep, dispatch, index, currentSequence } = this.props;
-    return <StepWrapper
+    return <StepWrapper {...this.props}
       className={"computed-move-step"}
       helpText={ToolTips.COMPUTED_MOVE}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      resources={this.props.resources}
       warning={<MoveAbsoluteWarning
         coordinate={computeCoordinate({
           step: this.step,
           botPosition: { x: undefined, y: undefined, z: undefined },
           resourceIndex: this.props.resources,
-          sequenceUuid: currentSequence.uuid,
+          sequenceUuid: this.props.currentSequence.uuid,
         })}
         hardwareFlags={this.props.hardwareFlags} />}>
       <this.LocationInputRow />

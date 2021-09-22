@@ -23,7 +23,6 @@ describe("<StepRadio />", () => {
     currentStep: findHomeStep,
     dispatch: jest.fn(),
     index: 0,
-    label: "Find",
   });
 
   it("renders", () => {

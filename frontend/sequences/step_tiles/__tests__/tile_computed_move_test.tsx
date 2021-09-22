@@ -1,14 +1,13 @@
 import React from "react";
 import { TileComputedMove } from "../tile_computed_move";
 import { mount } from "enzyme";
-import {
-  fakeSequence, fakePlant,
-} from "../../../__test_support__/fake_state/resources";
+import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Move } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileComputedMove />", () => {
   const fakeProps = (): StepParams<Move> => {
@@ -28,10 +27,7 @@ describe("<TileComputedMove />", () => {
     const plant = fakePlant();
     plant.body.id = 1;
     return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
+      ...fakeStepParams(currentStep),
       resources: buildResourceIndex([plant]).index,
     };
   };

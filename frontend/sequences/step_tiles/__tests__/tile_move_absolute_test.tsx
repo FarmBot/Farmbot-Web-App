@@ -10,9 +10,8 @@ import {
   Coordinate, Identifier, MoveAbsolute, Point, PointGroup, Tool,
 } from "farmbot";
 import {
-  fakeHardwareFlags,
+  fakeHardwareFlags, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
-import { emptyState } from "../../../resources/reducer";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { StepParams } from "../../interfaces";
 import {
@@ -33,11 +32,8 @@ describe("<TileMoveAbsolute />", () => {
     };
     const sequence = fakeSequence({ body: [step] });
     return {
+      ...fakeStepParams(step),
       currentSequence: sequence,
-      currentStep: step,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
       hardwareFlags: fakeHardwareFlags(),
     };
   };

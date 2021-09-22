@@ -1,4 +1,3 @@
-import { findId } from "./selectors";
 import {
   isTaggedFarmEvent,
   isTaggedPlantPointer,
@@ -14,7 +13,6 @@ import {
   isTaggedWeedPointer,
 } from "./tagged_resources";
 import {
-  ResourceName,
   TaggedResource,
   TaggedTool,
   TaggedToolSlotPointer,
@@ -28,7 +26,7 @@ import { findAll } from "./find_all";
 export const findAllById =
   <T extends TaggedResource>(i: ResourceIndex, _ids: number[], k: T["kind"]) => {
     const output: TaggedResource[] = [];
-    findAll<T>(i, k).map(x => x.kind === k ? output.push(x) : "");
+    findAll<T>(i, k).map(x => x.kind === k && output.push(x));
     return output;
   };
 
@@ -157,8 +155,3 @@ export const findFolderById = (ri: ResourceIndex, folder_id: number) => {
     throw new Error("Bad folder id: " + folder_id);
   }
 };
-
-export function findResourceById(index: ResourceIndex, kind: ResourceName,
-  id: number) {
-  return findId(index, kind, id);
-}

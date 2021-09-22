@@ -5,26 +5,22 @@ import { mount } from "enzyme";
 import {
   TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection,
 } from "../tile_set_servo_angle";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SetServoAngle } from "farmbot";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileSetServoAngle/>", () => {
   const fakeProps = (): StepParams<SetServoAngle> => ({
-    currentSequence: fakeSequence(),
-    currentStep: {
+    ...fakeStepParams({
       kind: "set_servo_angle",
       args: {
         pin_number: 4,
         pin_value: 90,
       }
-    },
+    }),
     dispatch: mockDispatch(),
-    index: 0,
-    resources: emptyState().index,
   });
 
   it("renders inputs", () => {

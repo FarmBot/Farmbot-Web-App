@@ -312,7 +312,10 @@ CREATE TABLE public.devices (
     last_watchdog timestamp without time zone,
     last_ota_attempt_at timestamp without time zone,
     fb_order_number character varying,
-    setup_completed_at timestamp without time zone
+    setup_completed_at timestamp without time zone,
+    lat numeric,
+    lng numeric,
+    indoor boolean DEFAULT false
 );
 
 
@@ -643,7 +646,10 @@ CREATE TABLE public.firmware_configs (
     movement_calibration_deadzone_z integer DEFAULT 250,
     movement_axis_stealth_x integer DEFAULT 1,
     movement_axis_stealth_y integer DEFAULT 1,
-    movement_axis_stealth_z integer DEFAULT 1
+    movement_axis_stealth_z integer DEFAULT 1,
+    movement_calibration_retry_total_x integer DEFAULT 10,
+    movement_calibration_retry_total_y integer DEFAULT 10,
+    movement_calibration_retry_total_z integer DEFAULT 10
 );
 
 
@@ -874,11 +880,13 @@ CREATE TABLE public.sequences (
     device_id integer,
     name character varying NOT NULL,
     color character varying,
-    kind character varying(280) DEFAULT 'sequence'::character varying,
     updated_at timestamp without time zone,
     created_at timestamp without time zone,
     folder_id bigint,
-    pinned boolean DEFAULT false
+    pinned boolean DEFAULT false,
+    description text,
+    forked boolean DEFAULT false,
+    sequence_version_id bigint
 );
 
 
@@ -1015,7 +1023,8 @@ CREATE TABLE public.nodes (
     kind_id bigint NOT NULL,
     body_id integer,
     next_id integer,
-    parent_id integer
+    parent_id integer,
+    comment character varying
 );
 
 
@@ -1580,6 +1589,40 @@ ALTER SEQUENCE public.sensors_id_seq OWNED BY public.sensors.id;
 
 
 --
+-- Name: sequence_publications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sequence_publications (
+    id bigint NOT NULL,
+    cached_author_email character varying NOT NULL,
+    author_device_id integer NOT NULL,
+    author_sequence_id integer NOT NULL,
+    published boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: sequence_publications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sequence_publications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sequence_publications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sequence_publications_id_seq OWNED BY public.sequence_publications.id;
+
+
+--
 -- Name: sequence_usage_reports; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -1595,6 +1638,41 @@ CREATE VIEW public.sequence_usage_reports AS
            FROM public.regimen_items
           WHERE (regimen_items.sequence_id = sequences.id)) AS regimen_items_count
    FROM public.sequences;
+
+
+--
+-- Name: sequence_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sequence_versions (
+    id bigint NOT NULL,
+    sequence_publication_id bigint NOT NULL,
+    description text,
+    name character varying NOT NULL,
+    color character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    copyright character varying(1500)
+);
+
+
+--
+-- Name: sequence_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sequence_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sequence_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sequence_versions_id_seq OWNED BY public.sequence_versions.id;
 
 
 --
@@ -2170,6 +2248,20 @@ ALTER TABLE ONLY public.sensors ALTER COLUMN id SET DEFAULT nextval('public.sens
 
 
 --
+-- Name: sequence_publications id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_publications ALTER COLUMN id SET DEFAULT nextval('public.sequence_publications_id_seq'::regclass);
+
+
+--
+-- Name: sequence_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_versions ALTER COLUMN id SET DEFAULT nextval('public.sequence_versions_id_seq'::regclass);
+
+
+--
 -- Name: sequences id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2535,6 +2627,22 @@ ALTER TABLE ONLY public.sensor_readings
 
 ALTER TABLE ONLY public.sensors
     ADD CONSTRAINT sensors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sequence_publications sequence_publications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_publications
+    ADD CONSTRAINT sequence_publications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sequence_versions sequence_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sequence_versions
+    ADD CONSTRAINT sequence_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3064,6 +3172,13 @@ CREATE INDEX index_sensors_on_device_id ON public.sensors USING btree (device_id
 
 
 --
+-- Name: index_sequence_versions_on_sequence_publication_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sequence_versions_on_sequence_publication_id ON public.sequence_versions USING btree (sequence_publication_id);
+
+
+--
 -- Name: index_sequences_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3082,6 +3197,13 @@ CREATE INDEX index_sequences_on_device_id ON public.sequences USING btree (devic
 --
 
 CREATE INDEX index_sequences_on_folder_id ON public.sequences USING btree (folder_id);
+
+
+--
+-- Name: index_sequences_on_sequence_version_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sequences_on_sequence_version_id ON public.sequences USING btree (sequence_version_id);
 
 
 --
@@ -3613,6 +3735,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210720155040'),
 ('20210720183535'),
 ('20210723175109'),
-('20210803205352');
+('20210803205352'),
+('20210820134844'),
+('20210901215214'),
+('20210913175949'),
+('20210914194342'),
+('20210917165755');
 
 

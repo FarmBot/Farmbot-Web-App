@@ -15,6 +15,7 @@ describe("<StepWrapper />", () => {
     currentSequence: fakeSequence(),
     currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
+    readOnly: false,
     index: 0,
     children: "child",
     resources: buildResourceIndex([]).index,

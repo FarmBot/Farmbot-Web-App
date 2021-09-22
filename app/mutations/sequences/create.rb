@@ -14,6 +14,7 @@ module Sequences
       args
       integer :folder_id
       boolean :pinned
+      string :description
     end
 
     def validate
@@ -31,7 +32,7 @@ module Sequences
           x = CeleryScript::FirstPass.run!(sequence: seq,
                                            args: args || {},
                                            body: body || [])
-          scope_hoist[:result] = CeleryScript::FetchCelery.run!(sequence: seq)
+          scope_hoist[:result] = Sequences::Show.run!(sequence: seq)
           seq
         end
       end

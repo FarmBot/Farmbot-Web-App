@@ -12,17 +12,18 @@ import {
   ParameterDeclaration,
   ScopeDeclarationBodyItem,
   ParameterApplication,
+  TaggedRegimen,
 } from "farmbot";
 import { overwrite } from "../../api/crud";
 import { LocationForm } from "./location_form";
 import {
   SequenceMeta, determineDropdown, determineVector,
 } from "../../resources/sequence_meta";
-import { ResourceIndex } from "../../resources/interfaces";
+import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
 import { error } from "../../toast/toast";
-import { variableIsInUse } from "./sanitize_nodes";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { Feature } from "../../devices/interfaces";
+import { variableIsInUse } from "./sanitize_nodes";
 
 export interface LocalListCbProps {
   dispatch: Function;
@@ -39,17 +40,33 @@ export const localListCallback =
         dispatch(overwrite(sequence, clone));
       };
 
-export const removeVariable = ({ dispatch, sequence }: LocalListCbProps) =>
-  (label: string) => {
-    if (variableIsInUse(sequence.body, label)) {
-      error(t("This variable is currently being used and cannot be deleted."));
-    } else {
-      const updatedSequence = defensiveClone(sequence.body);
-      updatedSequence.args.locals.body =
-        updatedSequence.args.locals.body?.filter(item => item.args.label != label);
-      dispatch(overwrite(sequence, updatedSequence));
-    }
-  };
+export interface RemoveVariableProps {
+  dispatch: Function;
+  resource: TaggedSequence | TaggedRegimen;
+  variableData: VariableNameSet;
+}
+
+export const removeVariable =
+  ({ dispatch, resource, variableData }: RemoveVariableProps) =>
+    (label: string) => {
+      const isInUse = (label: string) =>
+        resource.kind == "Regimen"
+          ? Object.keys(variableData).includes(label)
+          : variableIsInUse(resource.body, label);
+      if (isInUse(label)) {
+        error(t("This variable is currently being used and cannot be deleted."));
+      } else {
+        const updated = defensiveClone(resource);
+        if (updated.kind == "Regimen") {
+          updated.body.body =
+            updated.body.body.filter(item => item.args.label != label);
+        } else {
+          updated.body.args.locals.body = updated.body.args
+            .locals.body?.filter(item => item.args.label != label);
+        }
+        dispatch(overwrite(resource, updated.body));
+      }
+    };
 
 export const isParameterDeclaration =
   (x: VariableNode): x is ParameterDeclaration =>

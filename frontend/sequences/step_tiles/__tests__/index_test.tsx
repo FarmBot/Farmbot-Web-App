@@ -21,6 +21,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { cloneDeep } from "lodash";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("move()", () => {
   const sequence = fakeSequence();
@@ -190,6 +191,7 @@ describe("updateStepTitle()", () => {
     index: 0,
     pinnedSequenceName: undefined,
     toggleDraggable: jest.fn(),
+    readOnly: false,
   });
 
   it("adds title", () => {
@@ -219,10 +221,7 @@ describe("renderCeleryNode()", () => {
   plant.body.id = 23;
 
   const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: currentStep,
-    dispatch: jest.fn(),
-    index: 0,
+    ...fakeStepParams(currentStep),
     resources: buildResourceIndex([plant]).index,
   });
 

@@ -1,14 +1,12 @@
 import React from "react";
 import { TileMoveRelative } from "../tile_move_relative";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileMoveRelative/>", () => {
   const fakeProps = (): StepParams => ({
-    currentSequence: fakeSequence(),
-    currentStep: {
+    ...fakeStepParams({
       kind: "move_relative",
       args: {
         x: 1.1,
@@ -16,10 +14,7 @@ describe("<TileMoveRelative/>", () => {
         z: 3,
         speed: 100
       }
-    },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    }),
   });
 
   it("renders inputs", () => {

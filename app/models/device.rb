@@ -240,22 +240,51 @@ class Device < ApplicationRecord
     webhook_url = ENV["FEEDBACK_WEBHOOK_URL"]
     if webhook_url
       email = self.users.pluck(:email).join(" ")
+      name = self.users.first.name
+      since = self.users.first.created_at.to_s
       firmware_kind = fbos_config.firmware_hardware
+      osm_url = "https://www.openstreetmap.org"
+      location_url = "[#{lat},#{lng}](#{osm_url}/?mlat=#{lat}&mlon=#{lng}&zoom=10)"
+      version = fbos_version.nil? ? "unknown" : "v#{fbos_version}"
+      info = [
+        "`Device ID`: #{id}",
+        "`FBOS Version (from API)`: #{version}",
+        "`Email`: #{email}",
+        "`Name`: #{name}",
+        "`User since`: #{since}",
+        "`Timezone`: #{timezone}",
+        "`Location`: #{(!lat.nil? && !lng.nil?) ? location_url : "unknown"}",
+        "`Order Number`: #{fb_order_number}",
+        "`Model`: #{firmware_kind}",
+        "`Slug`: #{slug}",
+        "`Message`: #{message}",
+        "`Token:`",
+      ].join("\n")
       payload = {
-        "text": [
-          "`Device ID`: #{id}",
-          "`FBOS Version (from API)`: v#{fbos_version}",
-          "`Email`: #{email}",
-          "`Timezone`: #{timezone}",
-          "`Order Number`: #{fb_order_number}",
-          "`Model`: #{firmware_kind}",
-          "`Slug`: #{slug}",
-          "`Message`: #{message}",
-          "`Token:`\n",
-          "```",
-          help_customer,
-          "```",
-        ].join("\n"),
+        "mrkdwn": true,
+        "text": info,
+        "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": info,
+            }
+          }
+        ],
+        "attachments": [
+          {
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "```" + help_customer + "```",
+                },
+              },
+            ],
+          },
+        ],
       }.to_json
       Faraday.post(webhook_url,
                    payload,

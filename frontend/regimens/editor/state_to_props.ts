@@ -2,7 +2,7 @@ import { Everything, TimeSettings } from "../../interfaces";
 import { RegimenItem, RegimenItemCalendarRow, CalendarRow } from "../interfaces";
 import {
   maybeGetRegimen,
-  findId,
+  findUuid,
   findSequence,
   findSequenceById,
   maybeGetTimeSettings,
@@ -10,7 +10,7 @@ import {
 import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces";
-import { randomColor, timeFormatString } from "../../util";
+import { timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
 import { RegimenEditorProps } from "./interfaces";
 
@@ -78,13 +78,13 @@ const createRows = (
   timeSettings: TimeSettings,
 ) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
-    const uuid = findId(index, "Sequence", item.sequence_id);
+    const uuid = findUuid(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
     const variables = getParameterLabels(sequence);
     const { time_offset } = item;
     const d = moment.duration(time_offset);
     const { name } = sequence.body;
-    const color = sequence.body.color || randomColor();
+    const color = sequence.body.color;
     const FORMAT = timeFormatString(timeSettings);
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;

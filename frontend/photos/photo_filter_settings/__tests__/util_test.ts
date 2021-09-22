@@ -1,6 +1,8 @@
 import {
   parseFilterSetting, imageInRange, imageIsHidden, getImageShownStatusFlags,
   calculateImageAgeInfo,
+  filterImagesByType,
+  getImageTypeLabel,
 } from "../util";
 import {
   fakeImage, fakeWebAppConfig,
@@ -10,6 +12,7 @@ import {
 } from "../../images/interfaces";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { StringSetting } from "../../../session_keys";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("parseFilterSetting()", () => {
   it("returns set image filter setting", () => {
@@ -92,7 +95,7 @@ describe("getImageShownStatusFlags()", () => {
 
   const fakeProps = (): GetImageShownStatusFlagsProps => ({
     image: undefined,
-    hiddenImages: [],
+    designer: fakeDesignerState(),
     getConfigValue: key => mockConfig.body[key],
     env: {},
     size: { width: undefined, height: undefined },
@@ -137,12 +140,47 @@ describe("getImageShownStatusFlags()", () => {
     p.image.body.id = 1;
     p.image.body.created_at = "2018-03-22T05:00:00.000Z";
     p.image.body.meta.z = 0;
-    p.hiddenImages = [p.image.body.id];
+    p.image.body.meta.name = "calibration";
+    p.designer.hiddenImages = [p.image.body.id];
+    p.designer.showCalibrationImages = false;
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
     Object.keys(expectedFlags).map((key: keyof ImageShowFlags) => {
       expectedFlags[key] = false;
     });
     expect(flags).toEqual(expectedFlags);
+  });
+});
+
+describe("getImageTypeLabel()", () => {
+  it.each<[string, string]>([
+    ["calibration", "calibration"],
+    ["weed detector", "marked"],
+    ["soil height", "map"],
+    ["photo", "0"],
+  ])("returns label for %s images", (expected, imageName) => {
+    const image = fakeImage();
+    image.body.meta.name = imageName;
+    expect(getImageTypeLabel(image).toLowerCase()).toEqual(expected);
+  });
+});
+
+describe("filterImagesByType()", () => {
+  it.each<[string, string, boolean]>([
+    ["out calibration", "calibration", false],
+    ["out detection", "marked", false],
+    ["out height", "map", false],
+    ["calibration", "calibration", true],
+    ["detection", "marked", true],
+    ["height", "map", true],
+    ["photo", "0", true],
+  ])("filters %s images", (_type, imageName, expected) => {
+    const designer = fakeDesignerState();
+    designer.showCalibrationImages = expected;
+    designer.showDetectionImages = expected;
+    designer.showHeightImages = expected;
+    const image = fakeImage();
+    image.body.meta.name = imageName;
+    expect(filterImagesByType(designer)(image)).toEqual(expected);
   });
 });

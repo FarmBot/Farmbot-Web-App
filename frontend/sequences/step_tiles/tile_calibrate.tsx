@@ -3,21 +3,15 @@ import { StepParams, HardwareFlags } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepWrapper, conflictsString, StepWarning } from "../step_ui";
 import { AxisStepRadio } from "../step_ui/step_radio";
-import { t } from "../../i18next_wrapper";
 import { Xyz, Calibrate, FindHome } from "farmbot";
 import { some } from "lodash";
 
 export const TileCalibrate = (props: StepParams<Calibrate>) => {
   const { dispatch, currentStep, index, currentSequence } = props;
   const conflicts = settingConflicts(currentStep, props.hardwareFlags);
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"calibrate-step"}
     helpText={ToolTips.CALIBRATE}
-    currentSequence={currentSequence}
-    currentStep={currentStep}
-    dispatch={dispatch}
-    index={index}
-    resources={props.resources}
     warning={some(conflicts) &&
       <StepWarning
         warning={Content.END_DETECTION_DISABLED + conflictsString(conflicts)}
@@ -26,8 +20,7 @@ export const TileCalibrate = (props: StepParams<Calibrate>) => {
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index}
-      label={t("Find length")} />
+      index={index} />
   </StepWrapper>;
 };
 

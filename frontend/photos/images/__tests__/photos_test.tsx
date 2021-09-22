@@ -23,6 +23,7 @@ import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { push } from "../../../history";
 import { locationUrl } from "../../../farm_designer/move_to";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -36,10 +37,7 @@ describe("<Photos />", () => {
     botToMqttStatus: "up",
     syncStatus: "synced",
     env: {},
-    hiddenImages: [],
-    shownImages: [],
-    hideUnShownImages: false,
-    alwaysHighlightImage: false,
+    designer: fakeDesignerState(),
     getConfigValue: jest.fn(),
   });
 

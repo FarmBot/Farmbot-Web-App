@@ -34,9 +34,7 @@ describe("mapStateToProps()", () => {
         name: "Test Sequence",
         color: "gray",
         body: [{ kind: "wait", args: { milliseconds: 100 } }],
-        args: {
-          "version": 4, "locals": { "kind": "scope_declaration", "args": {} },
-        },
+        args: { version: 4, locals: { kind: "scope_declaration", args: {} } },
         kind: "sequence"
       }),
     ];
@@ -62,6 +60,20 @@ describe("mapStateToProps()", () => {
     state.resources.index.sequenceMetas[seq.uuid] = varData;
     const props = mapStateToProps(state);
     expect(props.variableData).toEqual(varData);
+  });
+
+  it("doesn't return variableData", () => {
+    const reg = fakeRegimen();
+    const seq = fakeSequence();
+    reg.body.regimen_items = [{
+      sequence_id: seq.body.id || 0, time_offset: 1000
+    }];
+    const state = fakeState();
+    state.resources = buildResourceIndex([reg, seq]);
+    state.resources.consumers.regimens.currentRegimen = reg.uuid;
+    state.resources.index.sequenceMetas[seq.uuid] = undefined;
+    const props = mapStateToProps(state);
+    expect(props.variableData).toEqual({});
   });
 
   it("returns calendar rows", () => {
@@ -95,5 +107,36 @@ describe("mapStateToProps()", () => {
         sortKey: 1000, variables: ["variable"],
       })]
     }]);
+  });
+
+  it("returns calendar rows: no variables, multiple days", () => {
+    const reg = fakeRegimen();
+    const seq = fakeSequence();
+    seq.body.body = [{ kind: "wait", args: { milliseconds: 100 } }];
+    seq.body.args.locals.body = undefined;
+    reg.body.regimen_items = [
+      { sequence_id: seq.body.id || 0, time_offset: 1000 },
+      { sequence_id: seq.body.id || 0, time_offset: 100000000 },
+    ];
+    const state = fakeState();
+    state.resources = buildResourceIndex([reg, seq]);
+    state.resources.consumers.regimens.currentRegimen = reg.uuid;
+    const props = mapStateToProps(state);
+    expect(props.calendar).toEqual([
+      {
+        day: "1",
+        items: [expect.objectContaining({
+          item: reg.body.regimen_items[0],
+          sortKey: 1000, variables: [],
+        })]
+      },
+      {
+        day: "2",
+        items: [expect.objectContaining({
+          item: reg.body.regimen_items[1],
+          sortKey: 100000000, variables: [],
+        })]
+      },
+    ]);
   });
 });

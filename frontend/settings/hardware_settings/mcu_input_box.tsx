@@ -6,13 +6,14 @@ import { BlurableInput } from "../../ui";
 import {
   clampInteger, IntegerSize, getMaxInputFromIntSize,
 } from "../../util";
-import { isUndefined } from "lodash";
+import { isUndefined, some } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { getModifiedClassName } from "./default_values";
 import {
   initSettingStatusState,
   SettingStatusIndicator, SettingStatusState, SETTING_SYNC_TIMEOUT,
 } from "./setting_status_indicator";
+import { McuParamName } from "farmbot";
 
 export class McuInputBox
   extends React.Component<McuInputBoxProps, SettingStatusState> {
@@ -33,7 +34,7 @@ export class McuInputBox
 
   get wrapperClassName() {
     const { firmwareHardware } = this.props;
-    const value = this.key.includes("step_per_mm")
+    const value = microstepScaledConfig(this.key)
       ? (this.config.value || 1) / (this.props.scale || 1)
       : this.config.value;
     return getModifiedClassName(this.key, value, firmwareHardware);
@@ -121,3 +122,6 @@ export class McuInputBox
     </div>;
   }
 }
+
+export const microstepScaledConfig = (key: McuParamName) =>
+  some(["step_per_mm", "encoder_scaling"].map(part => key.includes(part)));

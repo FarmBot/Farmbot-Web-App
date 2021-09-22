@@ -11,6 +11,7 @@ const mockConfig = fakeWebAppConfig();
 jest.mock("../../../resources/selectors", () => ({
   getWebAppConfig: () => mockConfig,
   assertUuid: jest.fn(),
+  findUuid: jest.fn(),
 }));
 
 import React from "react";

@@ -1,5 +1,6 @@
 import {
   toggleAlwaysHighlightImage, toggleSingleImageMode, toggleHideImage,
+  toggleShowCalibrationImages, toggleShowDetectionImages, toggleShowHeightImages,
 } from "../actions";
 import { Actions } from "../../../constants";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
@@ -97,5 +98,38 @@ describe("toggleHideImage()", () => {
     const result = toggleHideImage(notHidden, payload);
     expect(result.type).toEqual(Actions.UN_HIDE_MAP_IMAGE);
     expect(result.payload).toEqual(payload);
+  });
+});
+
+describe("toggleShowCalibrationImages()", () => {
+  it("toggles show images", () => {
+    const dispatch = jest.fn();
+    toggleShowCalibrationImages(dispatch)();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_SHOW_CALIBRATION_IMAGES,
+      payload: undefined,
+    });
+  });
+});
+
+describe("toggleShowDetectionImages()", () => {
+  it("toggles show images", () => {
+    const dispatch = jest.fn();
+    toggleShowDetectionImages(dispatch)();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_SHOW_DETECTION_IMAGES,
+      payload: undefined,
+    });
+  });
+});
+
+describe("toggleShowHeightImages()", () => {
+  it("toggles show images", () => {
+    const dispatch = jest.fn();
+    toggleShowHeightImages(dispatch)();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_SHOW_HEIGHT_IMAGES,
+      payload: undefined,
+    });
   });
 });

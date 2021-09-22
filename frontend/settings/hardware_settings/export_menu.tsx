@@ -32,6 +32,16 @@ const getSubKeyName = (key: string) => {
   }
 };
 
+const getSupKeyName = (key: string) => {
+  if (isAxisKey(key)) {
+    return getAxisSupKey(key);
+  } else if (isPinGuardKey(key)) {
+    return key.slice(0, 11);
+  } else {
+    return key;
+  }
+};
+
 export const FwParamExportMenu =
   ({ firmwareConfig }: { firmwareConfig: FirmwareConfig | undefined }) => {
     /** Filter out unnecessary parameters. */
@@ -68,9 +78,10 @@ export const FwParamExportMenu =
 export const condenseFwConfig =
   (fwConfig: Partial<FirmwareConfig>): CondensedFwConfig => {
     /** Set of parameter keys without suffixes such as `_<x|y|z>`. */
-    const reducedParamKeys = new Set(Object.keys(fwConfig).sort()
-      .map(key => isAxisKey(key) ? getAxisSupKey(key) : key)
-      .map(key => isPinGuardKey(key) ? key.slice(0, 11) : key));
+    const reducedParamKeys = new Set(
+      Object.keys(fwConfig)
+        .sort()
+        .map(getSupKeyName));
 
     const condensedFwConfig: CondensedFwConfig = {};
 
@@ -80,7 +91,7 @@ export const condenseFwConfig =
     /** Add subkeys and values. */
     Object.entries(fwConfig).map(([fwConfigKey, value]) => {
       Array.from(reducedParamKeys).map(key => {
-        if (fwConfigKey.startsWith(key)) {
+        if (key == getSupKeyName(fwConfigKey)) {
           UNITS[key] && (condensedFwConfig[key]["units"] =
             JSON.stringify(UNITS[key]));
           const subKey = getSubKeyName(fwConfigKey);

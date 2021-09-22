@@ -12,10 +12,10 @@ jest.mock("axios", () => ({
 }));
 
 import { refresh, initSaveGetId } from "../crud";
-import { TaggedDevice, SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { Actions } from "../../constants";
 import { get } from "lodash";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("successful refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -24,21 +24,9 @@ describe("successful refresh()", () => {
   // 2. call to refreshOK
   // 3. Actually replaces resource.
   it("re-downloads an existing resource", async () => {
-    const device1: TaggedDevice = {
-      "uuid": "Device.6.1",
-      "kind": "Device",
-      "specialStatus": SpecialStatus.SAVED,
-      "body": {
-        "id": 6,
-        "name": "summer-pond-726",
-        "ota_hour": 3,
-        "timezone": "America/Chicago",
-        "last_saw_api": "2017-08-30T20:42:35.854Z",
-        "tz_offset_hrs": 0
-      },
-    };
+    const device = fakeDevice();
 
-    const thunk = refresh(device1);
+    const thunk = refresh(device);
     const dispatch = jest.fn();
     await thunk(dispatch);
 
@@ -50,7 +38,7 @@ describe("successful refresh()", () => {
     expect(get(first, "type", "TYPE WAS UNDEFINED"))
       .toEqual(Actions.REFRESH_RESOURCE_START);
     expect(get(first, "payload", "NO PAYLOAD!"))
-      .toEqual(device1.uuid);
+      .toEqual(device.uuid);
 
     const second = calls[1][0];
     expect(second).toBeInstanceOf(Object);

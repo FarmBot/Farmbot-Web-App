@@ -8,7 +8,7 @@ import {
 } from "../farmware/state_to_props";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import {
-  findResourceById,
+  findUuid,
   getDeviceAccountSettings, selectAllAlerts, selectAllFarmwareEnvs,
   selectAllImages, selectAllLogs, selectAllPeripherals, selectAllSensors,
 } from "../resources/selectors";
@@ -291,7 +291,7 @@ export class FirmwareHardwareSelection
 
     const seedAlertId = this.seedAlerts[0]?.body.id;
     const dismiss = () => seedAlertId && dispatch(destroy(
-      findResourceById(resources, "Alert", seedAlertId)));
+      findUuid(resources, "Alert", seedAlertId)));
     if (this.state.autoSeed && !this.state.seeded) {
       this.setState({ seeded: true });
       seedAccount(dismiss)({ label: "", value: ddi.value });

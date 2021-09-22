@@ -17,12 +17,12 @@ import {
 import {
   selectAllFarmEvents,
   selectAllPinBindings,
-  findByKindAndId,
   selectAllLogs,
   selectAllRegimens,
   selectAllFolders,
   selectAllSequences,
 } from "./selectors_by_kind";
+import { findUuid } from "./selectors";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
 import { createSequenceMeta } from "./sequence_meta";
@@ -146,7 +146,11 @@ const ALL: Indexer = {
 };
 
 const BY_KIND: Indexer = {
-  up(r, i) { i.byKind[r.kind][r.uuid] = r.uuid; },
+  up(r, i) {
+    i.byKind[r.kind]
+      ? i.byKind[r.kind][r.uuid] = r.uuid
+      : console.error(`${r.kind} is not an indexed resource.`);
+  },
   down(r, i) { delete i.byKind[r.kind][r.uuid]; },
 };
 
@@ -212,7 +216,7 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
   betterCompact(selectAllFarmEvents(i)
     .map(fe => {
       const { executable_type, executable_id } = fe.body;
-      const { uuid } = findByKindAndId(i, executable_type, executable_id);
+      const uuid = findUuid(i, executable_type, executable_id);
       return { exe_type: executable_type, exe_uuid: uuid, fe_uuid: fe.uuid };
     }))
     .map(({ exe_type, exe_uuid, fe_uuid }) => {
@@ -329,9 +333,9 @@ const AFTER_HOOKS: IndexerHook = {
     selectAllRegimens(i)
       .map(reg => {
         reg.body.regimen_items.map(ri => {
-          const sequence = findByKindAndId(i, "Sequence", ri.sequence_id);
-          tracker[sequence.uuid] = tracker[sequence.uuid] || {};
-          tracker[sequence.uuid][reg.uuid] = true;
+          const sequenceUuid = findUuid(i, "Sequence", ri.sequence_id);
+          tracker[sequenceUuid] = tracker[sequenceUuid] || {};
+          tracker[sequenceUuid][reg.uuid] = true;
         });
       });
   }

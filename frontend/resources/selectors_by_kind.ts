@@ -28,10 +28,8 @@ import {
   isTaggedResource,
   sanityCheck,
 } from "./tagged_resources";
-import { bail } from "../util";
 import { error } from "../toast/toast";
 import { assertUuid } from "./util";
-import { joinKindAndId } from "./reducer_support";
 import { findAll } from "./find_all";
 
 const isSaved = <T extends TaggedResource>(t: T) =>
@@ -41,7 +39,7 @@ const isSaved = <T extends TaggedResource>(t: T) =>
  * Pass in a `ResourceName` and it will add all the relevant checks.
  * WARNING: WILL THROW ERRORS IF RESOURCE NOT FOUND!
  */
-const uuidFinder = <T extends TaggedResource>(r: T["kind"]) =>
+const resourceFinder = <T extends TaggedResource>(r: T["kind"]) =>
   function findResource(i: ResourceIndex, u: string): T {
     assertUuid(r, u);
     const result = i.references[u];
@@ -54,13 +52,13 @@ const uuidFinder = <T extends TaggedResource>(r: T["kind"]) =>
     }
   };
 
-export const findTool = uuidFinder<TaggedTool>("Tool");
-export const findSequence = uuidFinder<TaggedSequence>("Sequence");
-export const findRegimen = uuidFinder<TaggedRegimen>("Regimen");
-export const findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
-export const findPoints = uuidFinder<TaggedPoint>("Point");
-export const findPointGroup = uuidFinder<TaggedPoint>("Point");
-export const findSavedGarden = uuidFinder<TaggedSavedGarden>("SavedGarden");
+export const findTool = resourceFinder<TaggedTool>("Tool");
+export const findSequence = resourceFinder<TaggedSequence>("Sequence");
+export const findRegimen = resourceFinder<TaggedRegimen>("Regimen");
+export const findFarmEvent = resourceFinder<TaggedFarmEvent>("FarmEvent");
+export const findPoints = resourceFinder<TaggedPoint>("Point");
+export const findPointGroup = resourceFinder<TaggedPoint>("Point");
+export const findSavedGarden = resourceFinder<TaggedSavedGarden>("SavedGarden");
 
 export const selectAllCrops =
   (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");
@@ -110,15 +108,3 @@ export const selectAllAlerts =
   (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
 export const selectAllFolders =
   (i: ResourceIndex) => findAll<TaggedFolder>(i, "Folder");
-
-export const findByKindAndId = <T extends TaggedResource>(
-  i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {
-  const kni = joinKindAndId(kind, id);
-  const uuid = i.byKindAndId[kni] || bail("Not found: " + kni);
-  const resource = i.references[uuid] || bail("Not found uuid: " + uuid);
-  if (resource.kind === kind) {
-    return resource as T; // Why `as T`?
-  } else {
-    return bail("Impossible! " + uuid);
-  }
-};

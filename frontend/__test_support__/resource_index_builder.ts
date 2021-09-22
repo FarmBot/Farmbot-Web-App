@@ -15,10 +15,13 @@ import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
 
 const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
-  "id": 415,
-  "name": "wispy-firefly-846",
-  "tz_offset_hrs": 0,
-  "ota_hour": 3
+  id: 415,
+  name: "wispy-firefly-846",
+  tz_offset_hrs: 0,
+  ota_hour: 3,
+  lat: undefined,
+  lng: undefined,
+  indoor: false,
 };
 
 export function fakeDevice(body: Partial<TaggedDevice["body"]> = {}):
@@ -38,6 +41,8 @@ const tr0: TaggedResource = {
   "body": {
     "id": 23,
     "name": "Goto 0, 0, 0",
+    "description": "description",
+    "forked": false,
     "color": "gray",
     "pinned": false,
     "folder_id": undefined,
@@ -424,6 +429,8 @@ const blankSeq: TaggedSequence = {
   "body": {
     "id": undefined,
     "name": "Repair sequence",
+    "description": "description",
+    "forked": false,
     "pinned": false,
     "folder_id": undefined,
     "color": "gray",

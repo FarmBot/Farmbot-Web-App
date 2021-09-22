@@ -15,11 +15,15 @@ import {
   getDefaultFwConfigValue, getModifiedClassName,
 } from "./default_values";
 import { calculateScale } from "./motors";
+import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { Feature } from "../../devices/interfaces";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
 
   const { error_handling } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
+  const {
+    dispatch, sourceFwConfig, arduinoBusy, firmwareHardware, showAdvanced,
+  } = props;
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
 
@@ -28,6 +32,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
     sourceFwConfig,
     disabled: arduinoBusy,
     firmwareHardware,
+    showAdvanced,
   };
 
   const getDefault = getDefaultFwConfigValue(firmwareHardware);
@@ -66,6 +71,14 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         x={"movement_calibration_retry_x"}
         y={"movement_calibration_retry_y"}
         z={"movement_calibration_retry_z"} />
+      {shouldDisplayFeature(Feature.calibration_total_retries) &&
+        <NumericMCUInputGroup {...commonProps}
+          label={DeviceSetting.calibrationTotalRetries}
+          tooltip={ToolTips.CALIBRATION_TOTAL_RETRIES}
+          advanced={true}
+          x={"movement_calibration_retry_total_x"}
+          y={"movement_calibration_retry_total_y"}
+          z={"movement_calibration_retry_total_z"} />}
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.calibrationRetryResetDistance}
         tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}

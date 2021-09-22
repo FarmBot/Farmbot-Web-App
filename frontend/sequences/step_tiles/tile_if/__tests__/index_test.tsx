@@ -17,6 +17,9 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../../interfaces";
 import { cloneDeep } from "lodash";
+import {
+  fakeStepParams,
+} from "../../../../__test_support__/fake_sequence_step_data";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex
@@ -37,10 +40,8 @@ function fakeProps(): StepParams<If> {
     }
   };
   return {
+    ...fakeStepParams(currentStep),
     currentSequence: fakeTaggedSequence,
-    currentStep,
-    dispatch: jest.fn(),
-    index: 0,
     resources: fakeResourceIndex,
     showPins: true,
   };

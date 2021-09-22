@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "./step_icon_group";
@@ -13,13 +13,18 @@ export interface StepHeaderProps {
   currentSequence: TaggedSequence;
   currentStep: SequenceBodyItem;
   dispatch: Function;
+  readOnly: boolean;
   index: number;
   executeSequence: SequenceResource | undefined;
   pinnedSequence: SequenceResource | undefined;
+  pinnedView: boolean | undefined;
+  togglePinnedView: (() => void) | undefined;
   confirmStepDeletion: boolean;
-  toggleViewRaw?: () => void;
-  toggleMonacoEditor?(): void;
-  links?: React.ReactElement[];
+  viewRaw: boolean | undefined;
+  toggleViewRaw: (() => void) | undefined;
+  monacoEditor: boolean | undefined;
+  toggleMonacoEditor: (() => void) | undefined;
+  links: React.ReactElement[] | undefined;
 }
 
 interface StepHeaderState {
@@ -34,12 +39,11 @@ export class StepHeader
   render() {
     const {
       className,
-      helpText,
       currentSequence,
       currentStep,
       dispatch,
+      readOnly,
       index,
-      confirmStepDeletion,
       pinnedSequence,
     } = this.props;
     return <Row>
@@ -49,6 +53,7 @@ export class StepHeader
           <StepTitleBar
             index={index}
             dispatch={dispatch}
+            readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
             pinnedSequenceName={this.props.pinnedSequence?.name}
@@ -57,14 +62,19 @@ export class StepHeader
           <StepIconGroup
             index={index}
             dispatch={dispatch}
+            readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
             executeSequenceName={this.props.executeSequence?.name}
-            helpText={t(helpText)}
+            pinnedView={this.props.pinnedView}
+            togglePinnedView={this.props.togglePinnedView}
+            helpText={t(this.props.helpText)}
             links={this.props.links}
+            viewRaw={this.props.viewRaw}
             toggleViewRaw={this.props.toggleViewRaw}
+            monacoEditor={this.props.monacoEditor}
             toggleMonacoEditor={this.props.toggleMonacoEditor}
-            confirmStepDeletion={confirmStepDeletion} />
+            confirmStepDeletion={this.props.confirmStepDeletion} />
         </div>
       </Col>
     </Row>;

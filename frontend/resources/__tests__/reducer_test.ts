@@ -15,7 +15,9 @@ import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
-import { fakeFolder } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFolder, fakeSequence,
+} from "../../__test_support__/fake_state/resources";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -25,17 +27,28 @@ describe("resource reducer", () => {
     expect(sequence).toBeTruthy();
 
     expect(sequence.kind).toBe("Sequence");
-    const next = resourceReducer(state, overwrite(sequence, {
-      kind: "sequence",
-      name: "wow",
-      folder_id: undefined,
-      pinned: false,
-      args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
-      body: [],
-      color: "red"
-    }));
+    const sequenceBodyUpdate = fakeSequence().body;
+    sequenceBodyUpdate.forked = false;
+    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
+    expect(seq2.body.forked).toBeFalsy();
+  });
+
+  it("updates fork status when reducing OVERWRITE_RESOURCE", () => {
+    const state = fakeState().resources;
+    const uuid = Object.keys(state.index.byKind.Sequence)[0];
+    const sequence = state.index.references[uuid] as TaggedSequence;
+    expect(sequence).toBeTruthy();
+
+    expect(sequence.kind).toBe("Sequence");
+    sequence.body.sequence_version_id = 1;
+    const sequenceBodyUpdate = fakeSequence().body;
+    sequenceBodyUpdate.forked = false;
+    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
+    const seq2 = next.index.references[uuid] as TaggedSequence;
+    expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
+    expect(seq2.body.forked).toEqual(true);
   });
 
   it("marks resources as SAVING when reducing REFRESH_RESOURCE_START", () => {
@@ -98,6 +111,22 @@ describe("resource reducer", () => {
     const newState = resourceReducer(startingState, action);
     const tool = newState.index.references[uuid] as TaggedTool;
     expect(tool.specialStatus).toBe(SpecialStatus.DIRTY);
+  });
+
+  it("handles unknown resource kinds", () => {
+    const startingState = fakeState().resources;
+    const uuid = Object.keys(startingState.index.byKind.Tool)[0];
+    const action = {
+      type: Actions.INIT_RESOURCE,
+      payload: {
+        uuid, kind: "Unknown",
+        body: { id: 0 }, SpecialStatus: SpecialStatus.DIRTY
+      }
+    };
+    console.error = jest.fn();
+    resourceReducer(startingState, action);
+    expect(console.error).toHaveBeenCalledWith(
+      "Unknown is not an indexed resource.");
   });
 
   it("covers destroy resource branches", () => {

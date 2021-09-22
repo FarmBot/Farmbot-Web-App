@@ -11,7 +11,7 @@ import { LuaTextArea } from "./tile_lua_support";
 
 export const TileAssertion = (props: StepParams<Assertion>) => {
   const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
-  return <StepWrapper
+  return <StepWrapper {...props}
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}
     links={[
@@ -19,12 +19,8 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}
-    currentSequence={props.currentSequence}
-    currentStep={props.currentStep}
-    dispatch={props.dispatch}
-    index={props.index}
-    toggleMonacoEditor={() => setMonaco(!monaco)}
-    resources={props.resources}>
+    monacoEditor={monaco}
+    toggleMonacoEditor={() => setMonaco(!monaco)}>
     <Row>
       <Col xs={12}>
         <LuaTextArea<Assertion> {...props} useMonacoEditor={monaco} />

@@ -17,12 +17,11 @@ import {
 
 describe("setPinMode()", () => {
   it("sets pin mode", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinMode(getPinModes()[0], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(1);
@@ -30,12 +29,11 @@ describe("setPinMode()", () => {
   });
 
   it("adjusts value for mode: digital", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 128, pin_mode: 1 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinMode(getPinModes()[1], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(0);
@@ -43,12 +41,11 @@ describe("setPinMode()", () => {
   });
 
   it("doesn't adjust value for mode: digital", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 0, pin_mode: 1 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinMode(getPinModes()[1], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(0);
@@ -56,12 +53,11 @@ describe("setPinMode()", () => {
   });
 
   it("adjusts value for mode: analog", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 1, pin_mode: 0 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinMode(getPinModes()[0], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(1);
@@ -69,12 +65,11 @@ describe("setPinMode()", () => {
   });
 
   it("doesn't adjust value for mode: analog", () => {
-    const p = fakeStepParams();
     const step: ReadPin = {
       kind: "read_pin",
       args: { pin_number: 3, label: "", pin_mode: 0 }
     };
-    p.currentStep = step;
+    const p = fakeStepParams(step);
     setPinMode(getPinModes()[0], p);
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(1);
@@ -82,12 +77,15 @@ describe("setPinMode()", () => {
   });
 
   it("rejects typos", () => {
-    const p = fakeStepParams();
+    const step: ReadPin = {
+      kind: "read_pin",
+      args: { pin_number: 3, label: "", pin_mode: 0 }
+    };
+    const p = fakeStepParams(step);
     setPinMode({
       label: "",
       value: "bad" as unknown as ALLOWED_PIN_MODES
     }, p);
-    const step = p.currentStep;
     const action = () => mockEditStep.mock.calls[0][0].executor(step);
     expect(action).toThrow("pin_mode must be one of ALLOWED_PIN_MODES.");
   });
@@ -128,12 +126,12 @@ describe("getPinModes()", () => {
 
 describe("<PinModeDropdown />", () => {
   it("sets pin mode", () => {
-    const p = fakeStepParams();
     const step: WritePin = {
       kind: "write_pin",
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
-    const wrapper = shallow(<PinModeDropdown {...p} currentStep={step} />);
+    const p = fakeStepParams(step);
+    const wrapper = shallow(<PinModeDropdown {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: 0 });
     expect(editStep).toHaveBeenCalled();
   });

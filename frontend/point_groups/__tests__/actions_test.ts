@@ -9,7 +9,8 @@ jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 let mockPointGroup = { body: { id: 323232332 } };
 jest.mock("../../resources/selectors", () => ({
   findPointGroup: jest.fn(() => mockPointGroup),
-  selectAllRegimens: jest.fn()
+  selectAllRegimens: jest.fn(),
+  findUuid: jest.fn(),
 }));
 
 import { createGroup, overwriteGroup } from "../actions";

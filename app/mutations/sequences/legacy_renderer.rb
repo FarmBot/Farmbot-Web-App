@@ -1,24 +1,32 @@
-require_relative "./cs_heap"
+module Sequences
+  # My goal is to eventually deprecate the EdgeNode/PrimaryNode tables
+  # and instead use the `Fragment` model.
+  # The class below attempts to keep the legacy code in one clean,
+  # easy-to-delete location.
+  # Try not to expand use o this class, OK?
+  # -RC
+  class LegacyRenderer
+    attr_reader :sequence
 
-# Service object that:
-# 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
-# 2. Stitches the nodes back together in their "canonical" (nested) AST
-#    representation
-# THIS IS BASICALLY A SERIALIZER FOR COMPLEX DATA THAT RAILS CAN'T HANDLE BY
-# DEFAULT.
-module CeleryScript
-  class FetchCelery < Mutations::Command
-    private  # = = = = = = =
+    def initialize(sequence)
+      @sequence = sequence
+    end
+
+    def run
+      recurse_into_node(entry_node)
+    end
+
+    # = = = = = = =
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
     def edge_nodes
-      @edge_nodes ||= Indexer.new(sequence.edge_nodes)
+      @edge_nodes ||= CeleryScript::Indexer.new(sequence.edge_nodes)
     end
 
     # See docs for #edge_nodes()
     def primary_nodes
-      @primary_nodes ||= Indexer.new(sequence.primary_nodes)
+      @primary_nodes ||= CeleryScript::Indexer.new(sequence.primary_nodes)
     end
 
     # The topmost node is always `NOTHING`. The term "root node" refers to
@@ -81,50 +89,6 @@ module CeleryScript
       end
       out[:comment] = node.comment if node.comment
       return out
-    end
-
-    # Generates a hash that has all the other fields that API users expect,
-    # Eg: color, id, etc.
-    def misc_fields
-      return {
-               id: sequence.id,
-               created_at: sequence.created_at,
-               updated_at: sequence.updated_at,
-               folder_id: sequence.folder_id,
-               args: Sequence::DEFAULT_ARGS,
-               color: sequence.color,
-               name: sequence.name,
-               pinned: sequence.pinned,
-             }
-    end
-
-    public # = = = = = = =
-
-    NO_SEQUENCE = "You must have a root node `sequence` at a minimum."
-
-    required do
-      model :sequence, class: Sequence
-    end
-
-    def validate
-      # A sequence lacking a `sequence` node is a syntax error.
-      # This should never show up in the frontend, but *is* helpful for devs
-      # when debugging (and has caught quite a few bugs as well).
-      add_error :bad_sequence, :bad, NO_SEQUENCE unless entry_node
-    end
-
-    def execute
-      canonical_form = misc_fields.merge!(recurse_into_node(entry_node))
-      s = canonical_form.with_indifferent_access
-      # HISTORICAL NOTE:
-      #   When I prototyped the variables declaration stuff, a few (failed)
-      #   iterations snuck into the DB. Gradually migrating is easier than
-      #   running a full blow table wide migration.
-      # - RC 3-April-18
-      has_scope = s.dig(:args, :locals, :kind) == "scope_declaration"
-      s[:args][:locals] = Sequence::SCOPE_DECLARATION unless has_scope
-
-      return s
     end
   end
 end

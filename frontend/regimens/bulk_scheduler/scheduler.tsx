@@ -45,7 +45,7 @@ export class RawDesignerRegimenScheduler
         title={t("Scheduler")}
         backTo={`/app/designer/regimens/${urlFriendly(regimenName)}`}>
         <AddButton
-          active={!!(this.props.sequences?.length)}
+          active={!!this.props.sequences.length}
           onClick={() => this.props.dispatch(commitBulkEditor())} />
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>

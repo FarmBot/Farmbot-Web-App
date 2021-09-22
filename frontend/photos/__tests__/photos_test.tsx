@@ -23,6 +23,7 @@ import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
 import { requestFarmwareUpdate } from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
+import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -40,10 +41,7 @@ describe("<DesignerPhotos />", () => {
     saveFarmwareEnv: jest.fn(),
     imageJobs: [],
     versions: {},
-    hiddenImages: [],
-    shownImages: [],
-    hideUnShownImages: false,
-    alwaysHighlightImage: false,
+    designer: fakeDesignerState(),
     getConfigValue: jest.fn(),
     farmwares: {},
   });

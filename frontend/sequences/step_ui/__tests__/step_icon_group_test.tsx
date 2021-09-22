@@ -21,9 +21,17 @@ describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({
     index: 0,
     dispatch: jest.fn(),
+    readOnly: false,
     step: { kind: "wait", args: { milliseconds: 100 } },
     sequence: fakeSequence(),
     executeSequenceName: undefined,
+    pinnedView: undefined,
+    togglePinnedView: undefined,
+    viewRaw: undefined,
+    toggleViewRaw: undefined,
+    monacoEditor: undefined,
+    toggleMonacoEditor: undefined,
+    links: undefined,
     helpText: "helpful text",
     confirmStepDeletion: false,
   });
@@ -31,6 +39,54 @@ describe("<StepIconGroup />", () => {
   it("renders", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
     expect(wrapper.find("i").length).toEqual(4);
+  });
+
+  it("renders monaco editor enabled", () => {
+    const p = fakeProps();
+    p.monacoEditor = true;
+    p.toggleMonacoEditor = () => false;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-font").hasClass("enabled")).toEqual(true);
+  });
+
+  it("renders monaco editor disabled", () => {
+    const p = fakeProps();
+    p.monacoEditor = false;
+    p.toggleMonacoEditor = () => true;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-font").hasClass("enabled")).toEqual(false);
+  });
+
+  it("renders pinned view enabled", () => {
+    const p = fakeProps();
+    p.pinnedView = true;
+    p.togglePinnedView = () => false;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-thumb-tack").hasClass("enabled")).toEqual(true);
+  });
+
+  it("renders pinned view disabled", () => {
+    const p = fakeProps();
+    p.pinnedView = false;
+    p.togglePinnedView = () => true;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-thumb-tack").hasClass("enabled")).toEqual(false);
+  });
+
+  it("renders celery script view enabled", () => {
+    const p = fakeProps();
+    p.viewRaw = true;
+    p.toggleViewRaw = () => false;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-code").hasClass("enabled")).toEqual(true);
+  });
+
+  it("renders celery script view disabled", () => {
+    const p = fakeProps();
+    p.viewRaw = false;
+    p.toggleViewRaw = () => true;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-code").hasClass("enabled")).toEqual(false);
   });
 
   it("deletes step", () => {

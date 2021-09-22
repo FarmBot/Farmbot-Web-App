@@ -2,22 +2,17 @@ const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
-import { TileWritePin } from "../tile_write_pin";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { TileWritePin } from "../tile_write_pin";
 import { WritePin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 const fakeProps = (): StepParams<WritePin> => ({
-  currentSequence: fakeSequence(),
-  currentStep: {
+  ...fakeStepParams({
     kind: "write_pin",
     args: { pin_number: 3, pin_value: 2, pin_mode: 1 },
-  },
-  dispatch: jest.fn(),
-  index: 0,
-  resources: emptyState().index,
+  }),
   showPins: false,
 });
 

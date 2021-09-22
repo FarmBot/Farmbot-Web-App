@@ -5,11 +5,11 @@ module Api
     def index
       render json: sequences
                .to_a
-               .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
+               .map { |s| Sequences::Show.run!(sequence: s) }
     end
 
     def show
-      render json: CeleryScript::FetchCelery.run!(sequence: sequence)
+      render json: Sequences::Show.run!(sequence: sequence)
     end
 
     def create
@@ -26,7 +26,40 @@ module Api
       mutate Sequences::Destroy.run(sequence: sequence, device: current_device)
     end
 
+    # Share your sequence with other people
+    # POST /sequences/:id/publish
+    def publish
+      mutate Sequences::Publish.run(sequence: sequence,
+                                    device: current_device,
+                                    copyright: "FarmBot, Inc.")
+    end
+
+    # Unlist your sequence.
+    # POST /sequences/:id/unpublish
+    def unpublish
+      mutate Sequences::Unpublish.run(sequence: sequence, device: current_device)
+    end
+
+    # Install someone elses sequence.
+    # post /sequences/:sequence_version_id/install
+    def install
+      mutate Sequences::Install.run(sequence_version: sequence_version,
+                                    device: current_device)
+    end
+
+    # Upgrade a sequence that already uses a sequence version.
+    # post /sequences/:id/upgrade/:sequence_version_id
+    def upgrade
+      mutate Sequences::Upgrade.run(sequence_version: sequence_version,
+                                    sequence: sequence,
+                                    device: current_device)
+    end
+
     private
+
+    def sequence_version
+      @sequence_version ||= SequenceVersion.find(params[:sequence_version_id])
+    end
 
     def sequence_params
       @sequence_params ||= raw_json[:sequence] || raw_json || {}

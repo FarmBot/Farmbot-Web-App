@@ -1,25 +1,20 @@
 import React from "react";
-import { TileReadPin } from "../tile_read_pin";
 import { mount } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { TileReadPin } from "../tile_read_pin";
 import { ReadPin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
+import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileReadPin />", () => {
   const fakeProps = (): StepParams<ReadPin> => ({
-    currentSequence: fakeSequence(),
-    currentStep: {
+    ...fakeStepParams({
       kind: "read_pin",
       args: {
         pin_number: 3,
         label: "pinlabel",
         pin_mode: 1
       }
-    },
-    dispatch: jest.fn(),
-    index: 0,
-    resources: emptyState().index,
+    }),
   });
 
   it("renders inputs", () => {
