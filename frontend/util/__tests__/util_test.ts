@@ -60,6 +60,8 @@ describe("util", () => {
 
     it("fetches boolean", () => {
       expect(Util.safeStringFetch(data, "boolean")).toEqual("false");
+      data.boolean = true;
+      expect(Util.safeStringFetch(data, "boolean")).toEqual("true");
     });
 
     it("handles others with exception", () => {
@@ -170,6 +172,9 @@ describe("util", () => {
       expect(result).toBe(test);
       expect(console.log)
         .toHaveBeenCalledWith("             testing => \"fancy debug\"");
+      Util.fancyDebug({ testing: undefined });
+      expect(console.log)
+        .toHaveBeenCalledWith("             testing => Nothing");
     });
   });
 });
@@ -201,5 +206,9 @@ describe("timeFormatString()", () => {
     expect(Util.timeFormatString(timeSettings)).toEqual("H:mm");
     timeSettings.seconds = true;
     expect(Util.timeFormatString(timeSettings)).toEqual("H:mm:ss");
+  });
+
+  it("handles undefined time settings", () => {
+    expect(Util.timeFormatString(undefined)).toEqual("h:mma");
   });
 });

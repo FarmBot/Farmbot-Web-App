@@ -1952,9 +1952,6 @@
       margin-top: 0.5rem !important;
     }
     .photo-filter-settings {
-      label {
-        line-height: 3rem;
-      }
       .filter-controls {
         .banner {
           display: none;
@@ -2424,12 +2421,17 @@
       padding: 1rem;
     }
     .job-name {
-      max-width: 20rem;
+      max-width: 10rem;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     tr {
       transform: scale(1);
+    }
+    th,
+    td {
+      white-space: nowrap;
+      font-size: 1.2rem;
     }
     .progress {
       position: absolute;

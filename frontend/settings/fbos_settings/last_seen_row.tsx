@@ -4,7 +4,7 @@ import { TaggedDevice } from "farmbot";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
-import { timeFormatString } from "../../util";
+import { formatTime } from "../../util";
 import { refresh } from "../../api/crud";
 import { BotState } from "../../devices/interfaces";
 
@@ -35,11 +35,6 @@ export const lastSeenNumber = (props: LastSeenNumberProps) => {
   return botToMqttLastSeen;
 };
 
-export const lastSeenTime = (lastSeen: number, timeSettings: TimeSettings) =>
-  moment(lastSeen)
-    .utcOffset(timeSettings.utcOffset)
-    .format(`MMMM D, YYYY ${timeFormatString(timeSettings)}`);
-
 export interface LastSeenProps {
   dispatch: Function;
   bot: BotState;
@@ -56,8 +51,9 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     }
 
     if (this.lastSeen) {
+      const { timeSettings } = this.props;
       return t("FarmBot was last seen {{ lastSeen }}", {
-        lastSeen: lastSeenTime(this.lastSeen, this.props.timeSettings)
+        lastSeen: formatTime(moment(this.lastSeen), timeSettings, "MMMM D, YYYY")
       });
     } else {
       return t(Content.DEVICE_NEVER_SEEN);

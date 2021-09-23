@@ -1,6 +1,7 @@
+import moment from "moment";
+import { t } from "../i18next_wrapper";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { Everything, TimeSettings } from "../interfaces";
-import moment from "moment";
 import { history, getPathArray } from "../history";
 import {
   selectAllFarmEvents,
@@ -20,17 +21,16 @@ import {
   TaggedSequence,
   TaggedRegimen,
 } from "farmbot";
-import { DropDownItem } from "../ui/index";
+import { DropDownItem } from "../ui";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
-import { t } from "../i18next_wrapper";
 
-export const formatTime = (input: string, timeSettings: TimeSettings) => {
+export const formatTimeField = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
   return moment(iso).utcOffset(timeSettings.utcOffset).format("HH:mm");
 };
 
-export const formatDate = (input: string, timeSettings: TimeSettings) => {
+export const formatDateField = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
   return moment(iso).utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD");
 };

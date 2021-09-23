@@ -25,6 +25,9 @@ import { cloneDeep } from "lodash";
 import { push } from "../../../history";
 import { checkControllerUpdates } from "../../../devices/actions";
 import { toggleControlPanel } from "../../toggle_section";
+import {
+  fakeBytesJob, fakePercentJob,
+} from "../../../__test_support__/fake_bot_data";
 
 describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -215,7 +218,7 @@ describe("<OsUpdateButton />", () => {
     ["3MB", 3e6],
   ])("shows bytes update progress: %s", (expected, progress) => {
     bot.hardware.jobs = {
-      "FBOS_OTA": { status: "working", bytes: progress, unit: "bytes" }
+      "FBOS_OTA": fakeBytesJob({ bytes: progress }),
     };
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();
@@ -224,7 +227,7 @@ describe("<OsUpdateButton />", () => {
 
   it("shows percent update progress: 10%", () => {
     bot.hardware.jobs = {
-      "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
+      "FBOS_OTA": fakePercentJob({ percent: 10 }),
     };
     const testProps = defaultTestProps();
     testProps.installedVersion = "12.0.0";
@@ -236,14 +239,14 @@ describe("<OsUpdateButton />", () => {
 
   it("update success", () => {
     bot.hardware.jobs = {
-      "FBOS_OTA": { status: "complete", percent: 100, unit: "percent" }
+      "FBOS_OTA": fakePercentJob({ status: "complete", percent: 100 }),
     };
     testButtonState(defaultTestProps(), upToDate(undefined));
   });
 
   it("update failed", () => {
     bot.hardware.jobs = {
-      "FBOS_OTA": { status: "error", percent: 10, unit: "percent" }
+      "FBOS_OTA": fakePercentJob({ status: "error", percent: 10 }),
     };
     const testProps = defaultTestProps();
     testProps.installedVersion = "12.0.0";
@@ -253,7 +256,7 @@ describe("<OsUpdateButton />", () => {
 
   it("is disabled", () => {
     bot.hardware.jobs = {
-      "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
+      "FBOS_OTA": fakePercentJob({ percent: 10 }),
     };
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();

@@ -1,5 +1,4 @@
 import React from "react";
-import moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page, Popover } from "../ui";
 import { mapStateToProps } from "./state_to_props";
@@ -14,18 +13,9 @@ import { NumericSetting } from "../session_keys";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
-import { TimeSettings } from "../interfaces";
-import { timeFormatString } from "../util";
 import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
-
-/** Format log date and time for display in the app. */
-export const formatLogTime =
-  (created_at: number, timeSettings: TimeSettings) =>
-    moment.unix(created_at)
-      .utcOffset(timeSettings.utcOffset)
-      .format(`MMM D, ${timeFormatString(timeSettings)}`);
 
 export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 

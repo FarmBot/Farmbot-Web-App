@@ -1,9 +1,9 @@
 import React from "react";
-import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
-import { xyzTableEntry } from "../../logs/components/logs_table";
-import { formatLogTime } from "../../logs";
 import moment from "moment";
 import { t } from "../../i18next_wrapper";
+import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
+import { xyzTableEntry } from "../../logs/components/logs_table";
+import { formatTime } from "../../util";
 import { isUndefined, round } from "lodash";
 
 enum TableColWidth {
@@ -73,7 +73,7 @@ export const TableRow = (props: TableRowProps) => {
       {!isUndefined(props.distance) && ` ${round(props.distance)}mm ${t("away")}`}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
-      {formatLogTime(moment(created_at).unix(), timeSettings)}
+      {formatTime(moment(created_at), timeSettings, "MMM D")}
     </td>
   </tr>;
 };
