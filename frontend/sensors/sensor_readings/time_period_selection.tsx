@@ -84,17 +84,17 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
 };
 
 /** Format date for widget footer display. */
-const formatDate = (unix: number, timeSettings: TimeSettings) =>
+const formatFooterDate = (unix: number, timeSettings: TimeSettings) =>
   moment.unix(unix).utcOffset(timeSettings.utcOffset).format("MMMM D");
 
 /** Display sensor reading date filter settings. */
 export const DateDisplay = (props: DateDisplayProps) => {
   const { endDate, timeSettings, timePeriod, showPreviousPeriod } = props;
   const dateRange = (end: number) => {
-    const begin = formatDate(end - timePeriod, timeSettings);
+    const begin = formatFooterDate(end - timePeriod, timeSettings);
     return timePeriod > 60 * 60 * 24
-      ? `${begin}–${formatDate(end, timeSettings)}`
-      : formatDate(end, timeSettings);
+      ? `${begin}–${formatFooterDate(end, timeSettings)}`
+      : formatFooterDate(end, timeSettings);
   };
   return <div className="date">
     <label>{t("Date")}:</label>

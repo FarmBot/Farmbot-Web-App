@@ -4,16 +4,21 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
-import { Everything } from "../interfaces";
+import { Everything, TimeSettings } from "../interfaces";
 import { Dictionary, JobProgress } from "farmbot";
 import { t } from "../i18next_wrapper";
+import { maybeGetTimeSettings } from "../resources/selectors";
+import moment from "moment";
+import { formatTime } from "../util";
 
 export interface JobsPanelProps {
   jobs: Dictionary<JobProgress | undefined>;
+  timeSettings: TimeSettings;
 }
 
 export const mapStateToProps = (props: Everything): JobsPanelProps => ({
   jobs: props.bot.hardware.jobs,
+  timeSettings: maybeGetTimeSettings(props.resources.index),
 });
 
 export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
@@ -27,9 +32,12 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
           <thead>
             <tr>
               <th>{t("Job name")}</th>
+              <th>{t("Type")}</th>
+              <th>{t("File type")}</th>
               <th>{t("Progress")}</th>
               <th>{t("Unit")}</th>
               <th>{t("Status")}</th>
+              <th>{t("Time")}</th>
             </tr>
           </thead>
           <tbody>
@@ -38,6 +46,8 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
               const percent = job.unit == "percent" && job.percent;
               return <tr key={title}>
                 <td className={"job-name"} title={title}>{title}</td>
+                <td>{job.type}</td>
+                <td>{job.file_type}</td>
                 <td>
                   {job.unit == "percent" ? job[job.unit] : job[job.unit]}
                   <div className={"progress"}
@@ -45,6 +55,9 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
                 </td>
                 <td>{job.unit}</td>
                 <td>{job.status}</td>
+                <td>{job.time
+                  ? formatTime(moment(job.time), this.props.timeSettings)
+                  : ""}</td>
               </tr>;
             })}
           </tbody>

@@ -20,4 +20,10 @@ describe("Progress", () => {
     expect(cb).toHaveBeenCalled();
     expect(counter.isDone).toBeTruthy();
   });
+
+  it("inits completed", () => {
+    const cb = jest.fn();
+    const counter = new Progress(3, cb, 3);
+    expect(counter.isDone).toBeTruthy();
+  });
 });

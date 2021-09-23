@@ -264,7 +264,7 @@ export namespace ToolTips {
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MISSED_STEP_DECAY_STALL_DETECTION =
-    trim(`Number of steps for stall detection to ignore during acceleration.
+    trim(`Travel in millimeters for stall detection to ignore during acceleration.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const ENCODER_SCALING =

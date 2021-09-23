@@ -490,6 +490,15 @@ a {
   }
 }
 
+.toggle-group {
+  display: inline-block;
+  width: 100%;
+  label {
+    padding-top: 0.5rem;
+    max-width: 75%;
+  }
+}
+
 .load-progress-bar-wrapper {
   position: relative;
   margin: 0.5rem;
@@ -1300,6 +1309,12 @@ ul {
   max-width: 300px;
   a {
     display: block;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
   button {
     display: block;
