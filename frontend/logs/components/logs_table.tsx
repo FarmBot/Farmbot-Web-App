@@ -1,14 +1,14 @@
 import React from "react";
+import moment from "moment";
+import { t } from "../../i18next_wrapper";
 import { TaggedLog, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
-import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";
 import { isNumber, startCase, some } from "lodash";
-import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
 import { Markdown } from "../../ui";
-import { semverCompare, SemverResult } from "../../util";
+import { semverCompare, SemverResult, formatTime } from "../../util";
 
 interface LogsRowProps {
   tlog: TaggedLog;
@@ -57,7 +57,7 @@ const LogsRow = (props: LogsRowProps) => {
   const { tlog, timeSettings, dispatch, markdown } = props;
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message, id } = tlog.body;
-  const time = formatLogTime(created_at || NaN, timeSettings);
+  const time = formatTime(moment.unix(created_at || NaN), timeSettings, "MMM D");
   return <tr key={uuid} id={"" + id}>
     <td>
       <LogVerbositySaucer
@@ -142,7 +142,8 @@ export const bySearchTerm =
   (searchTerm: string, timeSettings: TimeSettings) =>
     (log: TaggedLog) => {
       const { x, y, z, created_at, message, type } = log.body;
-      const displayedTime = formatLogTime(created_at || NaN, timeSettings);
+      const displayedTime =
+        formatTime(moment.unix(created_at || NaN), timeSettings, "MMM D");
       const displayedPosition = xyzTableEntry(x, y, z);
       const lowerSearchTerm = searchTerm.toLowerCase();
       return some([message, type]

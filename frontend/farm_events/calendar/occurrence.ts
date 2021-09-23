@@ -3,7 +3,7 @@ import { CalendarOccurrence } from "../../farm_designer/interfaces";
 import { FarmEventWithExecutable } from "./interfaces";
 import { Calendar } from "./index";
 import { TimeSettings } from "../../interfaces";
-import { timeFormatString } from "../../util";
+import { formatTime } from "../../util";
 
 /** An occurrence is a single event on the calendar, usually rendered as a
  * little white square on the farm event UI. This is the data representation for
@@ -28,7 +28,7 @@ export function occurrence(
   return {
     mmddyy: m.utcOffset(utcOffset).format(Calendar.DATE_FORMAT),
     sortKey: m.unix(),
-    timeStr: m.clone().utcOffset(utcOffset).format(timeFormatString(timeSettings)),
+    timeStr: formatTime(m.clone(), timeSettings),
     heading: heading(),
     executableId: fe.executable_id || 0,
     id: fe.id || 0,

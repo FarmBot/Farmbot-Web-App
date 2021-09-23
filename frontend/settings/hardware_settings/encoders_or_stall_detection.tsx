@@ -105,6 +105,9 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
         z={"encoder_missed_steps_decay_z"}
+        xScale={!showEncoders ? sourceFwConfig("movement_step_per_mm_x").value : 0}
+        yScale={!showEncoders ? sourceFwConfig("movement_step_per_mm_y").value : 0}
+        zScale={!showEncoders ? sourceFwConfig("movement_step_per_mm_z").value : 0}
         disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
         advanced={showEncoders}
         gray={encodersDisabled} />

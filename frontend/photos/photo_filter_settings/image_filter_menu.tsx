@@ -3,7 +3,7 @@ import { BlurableInput, MarkedSlider } from "../../ui";
 import { offsetTime } from "../../farm_events/edit_fe_form";
 import moment from "moment";
 import {
-  formatDate, formatTime,
+  formatDateField, formatTimeField,
 } from "../../farm_events/map_state_to_props_add_edit";
 import { t } from "../../i18next_wrapper";
 import { setWebAppConfigValues } from "./actions";
@@ -37,16 +37,16 @@ export class ImageFilterMenu
         case StringSetting.photo_filter_begin:
           value
             ? this.setState({
-              beginDate: formatDate(value, this.props.timeSettings),
-              beginTime: formatTime(value, this.props.timeSettings),
+              beginDate: formatDateField(value, this.props.timeSettings),
+              beginTime: formatTimeField(value, this.props.timeSettings),
             })
             : this.setState({ beginDate: undefined, beginTime: undefined });
           break;
         case StringSetting.photo_filter_end:
           value
             ? this.setState({
-              endDate: formatDate(value, this.props.timeSettings),
-              endTime: formatTime(value, this.props.timeSettings),
+              endDate: formatDateField(value, this.props.timeSettings),
+              endTime: formatTimeField(value, this.props.timeSettings),
             })
             : this.setState({ endDate: undefined, endTime: undefined });
           break;
@@ -61,16 +61,16 @@ export class ImageFilterMenu
     const endDatetime = getConfigValue(StringSetting.photo_filter_end);
     this.setState({
       beginDate: beginDatetime
-        ? formatDate(beginDatetime.toString(), timeSettings)
+        ? formatDateField(beginDatetime.toString(), timeSettings)
         : undefined,
       beginTime: beginDatetime
-        ? formatTime(beginDatetime.toString(), timeSettings)
+        ? formatTimeField(beginDatetime.toString(), timeSettings)
         : undefined,
       endDate: endDatetime
-        ? formatDate(endDatetime.toString(), timeSettings)
+        ? formatDateField(endDatetime.toString(), timeSettings)
         : undefined,
       endTime: endDatetime
-        ? formatTime(endDatetime.toString(), timeSettings)
+        ? formatTimeField(endDatetime.toString(), timeSettings)
         : undefined,
     });
   }

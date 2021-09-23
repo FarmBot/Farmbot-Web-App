@@ -2,7 +2,6 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { every, some } from "lodash";
-import { formatLogTime } from "../logs";
 import { Saucer, Markdown } from "../ui";
 import {
   TroubleshootingTipsProps, WizardStepContainerProps, WizardStepHeaderProps,
@@ -10,6 +9,7 @@ import {
 import { Feedback } from "../help/support";
 import moment from "moment";
 import { FirmwareNumberSettings, Video } from "./step_components";
+import { formatTime } from "../util";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -37,7 +37,7 @@ export const WizardStepHeader = (props: WizardStepHeaderProps) => {
       </p>}
       {resultDate && <p>
         {stepDone ? t("Completed") : t("Updated")}&nbsp;
-        {formatLogTime(moment(resultDate).unix(), props.timeSettings)}
+        {formatTime(moment(resultDate), props.timeSettings, "MMM D")}
       </p>}
     </div>}
   </div>;

@@ -6,7 +6,7 @@ import {
   ParameterApplication,
 } from "farmbot";
 import { ExecutableQuery } from "../farm_designer/interfaces";
-import { formatTime, formatDate } from "./map_state_to_props_add_edit";
+import { formatTimeField, formatDateField } from "./map_state_to_props_add_edit";
 import {
   BlurableInput,
   Col, Row,
@@ -68,13 +68,14 @@ export type FarmEventViewModelKey = keyof FarmEventViewModel;
  *                   a single "start_time" FarmEvent field. */
 export function destructureFarmEvent(
   fe: TaggedFarmEvent, timeSettings: TimeSettings): FarmEventViewModel {
-
+  const startTime = fe.body.start_time;
+  const endTime = fe.body.end_time || new Date();
   return {
     id: fe.body.id,
-    startDate: formatDate((fe.body.start_time).toString(), timeSettings),
-    startTime: formatTime((fe.body.start_time).toString(), timeSettings),
-    endDate: formatDate((fe.body.end_time || new Date()).toString(), timeSettings),
-    endTime: formatTime((fe.body.end_time || new Date()).toString(), timeSettings),
+    startDate: formatDateField(startTime.toString(), timeSettings),
+    startTime: formatTimeField(startTime.toString(), timeSettings),
+    endDate: formatDateField(endTime.toString(), timeSettings),
+    endTime: formatTimeField(endTime.toString(), timeSettings),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,

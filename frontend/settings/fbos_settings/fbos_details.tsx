@@ -8,8 +8,7 @@ import { SourceFbosConfig } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
 import moment from "moment";
-import { timeFormatString } from "../../util";
-import { TimeSettings } from "../../interfaces";
+import { formatTime } from "../../util";
 import {
   boardType, FIRMWARE_CHOICES_DDI,
 } from "../firmware/firmware_hardware_support";
@@ -339,12 +338,6 @@ export const OSReleaseChannelSelection = (
   </fieldset>;
 };
 
-/** Format datetime string for display. */
-const reformatDatetime = (datetime: string, timeSettings: TimeSettings) =>
-  moment(datetime)
-    .utcOffset(timeSettings.utcOffset)
-    .format(`MMMM D, ${timeFormatString(timeSettings)}`);
-
 export const reformatFwVersion =
   (firmwareVersion: string | undefined): string => {
     const version = firmwareVersion
@@ -405,6 +398,6 @@ export function FbosDetails(props: FbosDetailsProps) {
     <OSReleaseChannelSelection
       dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
     {last_ota && <p><b>{t("Last updated")}: </b>
-      {reformatDatetime(last_ota, props.timeSettings)}</p>}
+      {formatTime(moment(last_ota), props.timeSettings, "MMMM D")}</p>}
   </div>;
 }

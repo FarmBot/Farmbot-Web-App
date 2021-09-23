@@ -31,7 +31,7 @@ import { Content, Actions, DeviceSetting } from "../constants";
 import { Position } from "@blueprintjs/core";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
-import { clone, isUndefined, last } from "lodash";
+import { clone, isUndefined, last, sortBy } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
@@ -129,7 +129,7 @@ export const SequencePublishMenu = (props: SequenceShareMenuProps) => {
 
 export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
   const disabled = props.sequence.specialStatus !== SpecialStatus.SAVED;
-  const ids = props.sequence.body.sequence_versions || [];
+  const ids = sortBy(props.sequence.body.sequence_versions || []);
   return <div className={"sequence-share-menu"}>
     <p>{t("This sequence is published at the following link")}</p>
     <Link to={`/app/designer/sequence_versions/${last(ids)}`}>
@@ -332,7 +332,7 @@ export class SequenceEditorMiddleActive extends
     const { dispatch, sequence } = this.props;
     const { viewSequenceCeleryScript } = this.state;
     const versionId = sequence.body.sequence_version_id;
-    const latestId = last(sequence.body.sequence_versions);
+    const latestId = last(sortBy(sequence.body.sequence_versions));
     const forked = !!sequence.body.forked;
     return <div className="sequence-editor-content">
       {versionId &&

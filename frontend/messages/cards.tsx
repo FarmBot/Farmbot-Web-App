@@ -9,7 +9,7 @@ import {
   BulletinAlertComponentState,
   SetupIncompleteProps,
 } from "./interfaces";
-import { formatLogTime } from "../logs";
+import { formatTime } from "../util";
 import {
   FlashFirmwareBtn,
 } from "../settings/firmware/firmware_hardware_status";
@@ -32,6 +32,7 @@ import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
 import { shouldDisplayFeature } from "../farmware/state_to_props";
 import { Feature } from "../devices/interfaces";
+import moment from "moment";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -68,14 +69,16 @@ const dismissAlert = (props: DismissAlertProps) => () =>
 const timeOk = (timestamp: number) => timestamp > 1550000000;
 
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
-  const { alert, findApiAlertById, dispatch } = props;
+  const { alert, findApiAlertById, dispatch, timeSettings } = props;
   return <div className={
     `problem-alert ${props.className} priority-${props.alert.priority}`}>
     <div className="problem-alert-title">
       <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
-        <p> {formatLogTime(alert.created_at, props.timeSettings)}</p>}
+        <p>
+          {formatTime(moment.unix(alert.created_at), timeSettings, "MMM D")}
+        </p>}
     </div>
     {alert.id && !props.noDismiss && <i className="fa fa-times"
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}

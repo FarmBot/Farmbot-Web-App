@@ -60,47 +60,59 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       <FilterNearTime {...commonProps} />
       <FilterOlderOrNewer {...commonProps} />
     </div>
-    <label className={"toggle-label"}>{t("show photos in map")}</label>
-    <ToggleButton toggleValue={!layerOff}
-      className={getModifiedClassName(BooleanSetting.show_images)}
-      toggleAction={() =>
-        dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
-    <label className={"toggle-label"}>
-      {t("always highlight current photo in map")}
-    </label>
-    <ToggleButton disabled={layerOff}
-      className={getModifiedClassNameDefaultFalse(alwaysHighlightImage)}
-      toggleValue={alwaysHighlightImage}
-      toggleAction={() =>
-        dispatch(toggleAlwaysHighlightImage(alwaysHighlightImage, image))} />
-    <label className="toggle-label">
-      {t("only show current photo in map")}
-    </label>
-    <ToggleButton disabled={layerOff}
-      className={getModifiedClassNameDefaultFalse(hideUnShownImages)}
-      toggleValue={hideUnShownImages}
-      toggleAction={() => dispatch(toggleSingleImageMode(image))} />
-    <label className={"toggle-label"}>
-      {t("show calibration images")}
-    </label>
-    <ToggleButton disabled={layerOff}
-      className={getModifiedClassNameDefaultFalse(!showCalibrationImages)}
-      toggleValue={showCalibrationImages}
-      toggleAction={toggleShowCalibrationImages(dispatch)} />
-    <label className={"toggle-label"}>
-      {t("show weed detector images")}
-    </label>
-    <ToggleButton disabled={layerOff}
-      className={getModifiedClassNameDefaultFalse(!showDetectionImages)}
-      toggleValue={showDetectionImages}
-      toggleAction={toggleShowDetectionImages(dispatch)} />
-    <label className={"toggle-label"}>
-      {t("show soil height images")}
-    </label>
-    <ToggleButton disabled={layerOff}
-      className={getModifiedClassNameDefaultFalse(!showHeightImages)}
-      toggleValue={showHeightImages}
-      toggleAction={toggleShowHeightImages(dispatch)} />
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>{t("show photos in map")}</label>
+      <ToggleButton toggleValue={!layerOff}
+        className={getModifiedClassName(BooleanSetting.show_images)}
+        toggleAction={() =>
+          dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
+        {t("always highlight current photo in map")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(alwaysHighlightImage)}
+        toggleValue={alwaysHighlightImage}
+        toggleAction={() =>
+          dispatch(toggleAlwaysHighlightImage(alwaysHighlightImage, image))} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className="toggle-label">
+        {t("only show current photo in map")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(hideUnShownImages)}
+        toggleValue={hideUnShownImages}
+        toggleAction={() => dispatch(toggleSingleImageMode(image))} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
+        {t("show calibration images")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(!showCalibrationImages)}
+        toggleValue={showCalibrationImages}
+        toggleAction={toggleShowCalibrationImages(dispatch)} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
+        {t("show weed detector images")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(!showDetectionImages)}
+        toggleValue={showDetectionImages}
+        toggleAction={toggleShowDetectionImages(dispatch)} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
+        {t("show soil height images")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(!showHeightImages)}
+        toggleValue={showHeightImages}
+        toggleAction={toggleShowHeightImages(dispatch)} />
+    </div>
   </div>;
 };
 

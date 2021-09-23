@@ -8,7 +8,7 @@ import {
   PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
   MoveToLocationProps,
 } from "./interfaces";
-import { timeFormatString } from "../../util";
+import { formatTime } from "../../util";
 import { destroy } from "../../api/crud";
 import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
 import { isNumber, isUndefined, round, startCase } from "lodash";
@@ -84,9 +84,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
 export const PhotoFooter = (props: PhotoFooterProps) => {
   const { image, timeSettings, dispatch, flags, size } = props;
   const created_at = image
-    ? moment(image.body.created_at)
-      .utcOffset(timeSettings.utcOffset)
-      .format(`MMMM Do, YYYY ${timeFormatString(timeSettings)}`)
+    ? formatTime(moment(image.body.created_at), timeSettings, "MMMM Do, YYYY")
     : "";
   const imageShowMenuProps = { dispatch, flags, image, size };
   return <div className="photos-footer">

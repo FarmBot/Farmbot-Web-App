@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import moment from "moment";
 import { transformXY } from "../../util";
 import { TaggedSensorReading } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { isNumber } from "lodash";
-import { formatLogTime } from "../../../../logs";
 import { Color } from "../../../../ui";
 import { t } from "../../../../i18next_wrapper";
 import { TimeSettings } from "../../../../interfaces";
+import { formatTime } from "../../../../util";
 
 const VISIBLE_PERIOD_SECONDS = 24 * 60 * 60.;
 
@@ -64,7 +64,7 @@ export class GardenSensorReading
             {`${t("value")} ${value} (${modeText})`}
           </tspan>
           <tspan x={textX} dy={"1.2em"}>
-            {formatLogTime(moment(created_at).unix(), timeSettings)}
+            {formatTime(moment(created_at), timeSettings, "MMM D")}
           </tspan>
         </text>
       </g>;
