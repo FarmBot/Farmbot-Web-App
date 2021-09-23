@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
 import {
-  mapStateToPropsAddEdit, formatDate, formatTime,
+  mapStateToPropsAddEdit, formatDateField, formatTimeField,
 } from "./map_state_to_props_add_edit";
 import { init, destroy } from "../api/crud";
 import {
@@ -35,10 +35,10 @@ export class RawAddFarmEvent
     const later = new Date(now.getTime() + 180000);
     const muchLater = new Date(now.getTime() + 3780000);
     return {
-      startDate: formatDate(later.toString(), this.props.timeSettings),
-      startTime: formatTime(later.toString(), this.props.timeSettings),
-      endDate: formatDate(later.toString(), this.props.timeSettings),
-      endTime: formatTime(muchLater.toString(), this.props.timeSettings),
+      startDate: formatDateField(later.toString(), this.props.timeSettings),
+      startTime: formatTimeField(later.toString(), this.props.timeSettings),
+      endDate: formatDateField(later.toString(), this.props.timeSettings),
+      endTime: formatTimeField(muchLater.toString(), this.props.timeSettings),
       repeat: "1",
       timeUnit: NEVER,
     };

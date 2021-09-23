@@ -3,7 +3,6 @@ import moment from "moment";
 import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui";
 import { TickerListProps } from "./interfaces";
-import { formatLogTime } from "../logs/index";
 import { safeNumericSetting } from "../session";
 import { ErrorBoundary } from "../error_boundary";
 import { ALLOWED_MESSAGE_TYPES, TaggedLog, SpecialStatus } from "farmbot";
@@ -15,6 +14,7 @@ import { MessageType } from "../sequences/interfaces";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { forceOnline } from "../devices/must_be_online";
+import { formatTime } from "../util";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -77,17 +77,20 @@ interface TickerLogProps {
 
 /** Format a single log for display in the ticker. */
 const TickerLog = (props: TickerLogProps) => {
+  const { prefix, timeSettings } = props;
   const { message, type, created_at } = props.log.body;
-  const time = created_at ? formatLogTime(created_at, props.timeSettings) : "";
+  const time = created_at
+    ? formatTime(moment.unix(created_at), timeSettings, "MMM D")
+    : "";
   return <div className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
-    <label className={`status-ticker-message ${props.prefix ? "prefix" : ""}`}>
+    <label className={`status-ticker-message ${prefix ? "prefix" : ""}`}>
       <Markdown>
         {message.replace(/\s+/g, " ") || t("Loading")}
       </Markdown>
     </label>
     <label className="status-ticker-created-at">
-      {(props.prefix || "") + t(time).toUpperCase()}
+      {(prefix || "") + t(time).toUpperCase()}
     </label>
   </div>;
 };

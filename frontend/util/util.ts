@@ -16,6 +16,7 @@ import {
   isNumber,
 } from "lodash";
 import { t } from "../i18next_wrapper";
+import moment from "moment";
 
 export const colors: Array<ResourceColor> = [
   "blue",
@@ -224,4 +225,17 @@ export const timeFormatString =
   (timeSettings: TimeSettings | undefined): string => {
     const subHour = timeSettings?.seconds ? "mm:ss" : "mm";
     return timeSettings?.hour24 ? `H:${subHour}` : `h:${subHour}a`;
+  };
+
+export const formatTime =
+  (momentTime: moment.Moment,
+    timeSettings: TimeSettings,
+    dateFormat = "",
+  ) => {
+    const datetimeSeparator = dateFormat ? ", " : "";
+    const separator = dateFormat.includes("Y") ? " " : datetimeSeparator;
+    const timeFormat = timeFormatString(timeSettings);
+    return momentTime
+      .utcOffset(timeSettings.utcOffset)
+      .format(`${dateFormat}${separator}${timeFormat}`);
   };
