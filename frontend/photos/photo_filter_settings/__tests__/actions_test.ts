@@ -1,6 +1,7 @@
 import {
   toggleAlwaysHighlightImage, toggleSingleImageMode, toggleHideImage,
   toggleShowCalibrationImages, toggleShowDetectionImages, toggleShowHeightImages,
+  toggleShowPhotoImages,
 } from "../actions";
 import { Actions } from "../../../constants";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
@@ -98,6 +99,17 @@ describe("toggleHideImage()", () => {
     const result = toggleHideImage(notHidden, payload);
     expect(result.type).toEqual(Actions.UN_HIDE_MAP_IMAGE);
     expect(result.payload).toEqual(payload);
+  });
+});
+
+describe("toggleShowPhotoImages()", () => {
+  it("toggles show images", () => {
+    const dispatch = jest.fn();
+    toggleShowPhotoImages(dispatch)();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_SHOW_PHOTO_IMAGES,
+      payload: undefined,
+    });
   });
 });
 

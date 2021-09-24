@@ -28,6 +28,7 @@ export const fakeDesignerState = (): DesignerState => ({
   shownImages: [],
   hideUnShownImages: false,
   alwaysHighlightImage: false,
+  showPhotoImages: true,
   showCalibrationImages: true,
   showDetectionImages: true,
   showHeightImages: true,

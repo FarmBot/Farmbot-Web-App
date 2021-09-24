@@ -167,15 +167,17 @@ describe("getImageTypeLabel()", () => {
 
 describe("filterImagesByType()", () => {
   it.each<[string, string, boolean]>([
+    ["out photo", "0", false],
     ["out calibration", "calibration", false],
     ["out detection", "marked", false],
     ["out height", "map", false],
+    ["photo", "0", true],
     ["calibration", "calibration", true],
     ["detection", "marked", true],
     ["height", "map", true],
-    ["photo", "0", true],
   ])("filters %s images", (_type, imageName, expected) => {
     const designer = fakeDesignerState();
+    designer.showPhotoImages = expected;
     designer.showCalibrationImages = expected;
     designer.showDetectionImages = expected;
     designer.showHeightImages = expected;

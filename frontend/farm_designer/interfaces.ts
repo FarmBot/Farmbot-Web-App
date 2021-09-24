@@ -156,6 +156,7 @@ export interface DesignerState {
   shownImages: number[];
   hideUnShownImages: boolean;
   alwaysHighlightImage: boolean;
+  showPhotoImages: boolean;
   showCalibrationImages: boolean;
   showDetectionImages: boolean;
   showHeightImages: boolean;

@@ -16,7 +16,7 @@ export interface PhotoFilterSettingsProps {
 }
 
 export interface FiltersEnabledWarningProps {
-  hideUnShownImages: boolean;
+  designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
 }
 

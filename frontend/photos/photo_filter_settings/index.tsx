@@ -5,6 +5,7 @@ import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
   toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
+  toggleShowPhotoImages,
   toggleShowCalibrationImages,
   toggleShowDetectionImages,
   toggleShowHeightImages,
@@ -27,6 +28,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const {
     alwaysHighlightImage, hideUnShownImages,
     showCalibrationImages, showDetectionImages, showHeightImages,
+    showPhotoImages,
   } = props.designer;
   const layerOff = !flags.layerOn;
   const image = props.currentImage;
@@ -88,6 +90,15 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     </div>
     <div className={"toggle-group"}>
       <label className={"toggle-label"}>
+        {t("show take photo images")}
+      </label>
+      <ToggleButton disabled={layerOff}
+        className={getModifiedClassNameDefaultFalse(!showPhotoImages)}
+        toggleValue={showPhotoImages}
+        toggleAction={toggleShowPhotoImages(dispatch)} />
+    </div>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
         {t("show calibration images")}
       </label>
       <ToggleButton disabled={layerOff}
@@ -117,11 +128,18 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
 };
 
 export const FiltersEnabledWarning = (props: FiltersEnabledWarningProps) => {
+  const { getConfigValue } = props;
+  const {
+    hideUnShownImages,
+    showPhotoImages, showCalibrationImages, showDetectionImages, showHeightImages,
+  } = props.designer;
   const filtersEnabled =
-    !!parseFilterSetting(props.getConfigValue)(StringSetting.photo_filter_begin)
-    || !!parseFilterSetting(props.getConfigValue)(StringSetting.photo_filter_end)
-    || props.hideUnShownImages
-    || !props.getConfigValue(BooleanSetting.show_images);
+    !!parseFilterSetting(getConfigValue)(StringSetting.photo_filter_begin)
+    || !!parseFilterSetting(getConfigValue)(StringSetting.photo_filter_end)
+    || hideUnShownImages
+    || !showPhotoImages
+    || !showCalibrationImages || !showDetectionImages || !showHeightImages
+    || !getConfigValue(BooleanSetting.show_images);
   return filtersEnabled
     ? <div className={"filters-enabled-warning"}
       title={t("Map filters enabled.")}
