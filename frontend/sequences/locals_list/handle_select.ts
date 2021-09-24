@@ -169,12 +169,13 @@ export const isScopeDeclarationBodyItem =
 export const addOrEditBodyVariables = (
   bodyVariables: VariableNode[],
   updatedItem: ScopeDeclarationBodyItem,
+  variableKey: string,
 ): ScopeDeclarationBodyItem[] => {
   const filteredVariables: ScopeDeclarationBodyItem[] =
     betterCompact(bodyVariables.map(v =>
       isScopeDeclarationBodyItem(v) ? v : undefined));
   const items = reduceScopeDeclaration(filteredVariables);
-  items[updatedItem.args.label] = updatedItem;
+  items[variableKey] = updatedItem;
   return Object.values(items);
 };
 
@@ -183,8 +184,10 @@ export const addOrEditBodyVariables = (
 export const addOrEditDeclarationLocals = (
   declarations: ScopeDeclarationBodyItem[],
   updatedItem: ScopeDeclarationBodyItem,
+  variableKey: string,
 ): ScopeDeclaration => {
-  const updatedDeclarations = addOrEditBodyVariables(declarations, updatedItem);
+  const updatedDeclarations = addOrEditBodyVariables(declarations,
+    updatedItem, variableKey);
   const newLocals: ScopeDeclaration = {
     kind: "scope_declaration",
     args: {},

@@ -96,7 +96,7 @@ describe("<LocalsList/>", () => {
         label: "Location variable 1",
         data_value: NOTHING_SELECTED,
       }
-    });
+    }, "Location variable 1");
   });
 });
 
@@ -126,7 +126,7 @@ describe("localListCallback()", () => {
         label: "foo",
         data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
       }
-    });
+    }, "foo");
     const newSequenceBody = cloneDeep(sequence.body);
     newSequenceBody.args.locals.body = [
       {
@@ -206,15 +206,35 @@ describe("removeVariable()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
+  it("removes variable: regimen with missing data", () => {
+    const p = fakeProps();
+    p.resource = fakeRegimen();
+    p.resource.body.body = [
+      {
+        kind: "parameter_declaration",
+        args: {
+          label: "label",
+          default_value: {
+            kind: "coordinate",
+            args: { x: 0, y: 0, z: 0 },
+          },
+        }
+      },
+    ];
+    p.variableData = undefined as unknown as VariableNameSet;
+    removeVariable(p)("label");
+    const updatedRegimen = cloneDeep(p.resource);
+    updatedRegimen.kind == "Regimen" && (updatedRegimen.body.body = []);
+    expect(overwrite).toHaveBeenCalledWith(p.resource, updatedRegimen.body);
+    expect(error).not.toHaveBeenCalled();
+  });
+
   it("no variables to remove", () => {
     const p = fakeProps();
     p.resource.kind == "Sequence" &&
       (p.resource.body.args.locals.body = undefined);
     removeVariable(p)("label");
-    const updatedSequence = cloneDeep(p.resource);
-    updatedSequence.kind == "Sequence" &&
-      (updatedSequence.body.args.locals.body = []);
-    expect(overwrite).toHaveBeenCalledWith(p.resource, updatedSequence.body);
+    expect(overwrite).toHaveBeenCalledWith(p.resource, p.resource.body);
     expect(error).not.toHaveBeenCalled();
   });
 

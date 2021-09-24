@@ -59,6 +59,162 @@
     margin-bottom: 0;
     margin-top: 0.5rem;
   }
+  .import-banners {
+    margin-bottom: 1rem;
+  }
+  .public-copy-toolbar {
+    margin: 1rem;
+    text-align: right;
+    p {
+      float: left;
+      max-width: 50%;
+      line-height: 2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    a {
+      vertical-align: middle;
+      margin-left: 1rem;
+    }
+    button {
+      float: none;
+      vertical-align: top;
+    }
+    .fa-code {
+      float: none;
+      margin-right: 1rem;
+    }
+  }
+  .upgrade-compare-banner {
+    display: flex;
+    margin-left: -15px;
+    box-shadow: 0 5px 10px -5px $translucent;
+    .copy-item {
+      width: 100%;
+      height: 3.5rem;
+      padding: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      &:hover {
+        background: $light_gray;
+      }
+      label {
+        cursor: pointer;
+      }
+      .bp3-popover-wrapper {
+        display: inline;
+      }
+      p {
+        display: inline-block;
+        width: max-content;
+        height: 2rem;
+        margin-left: 0.5rem;
+        padding: 5px;
+        padding-top: 3px;
+        border-radius: 3px;
+        color: $white;
+        background: $panel_blue;
+        font-weight: bold;
+        font-size: 1rem;
+      }
+      .filter-search {
+        display: inline-block;
+        button {
+          min-height: 0;
+          height: 2rem !important;
+          margin-left: 0.5rem;
+          background: $panel_blue !important;
+          border-radius: 3px;
+          color: $white !important;
+          font-weight: bold;
+          font-size: 1rem !important;
+        }
+        .fa-caret-down {
+          color: $white;
+        }
+      }
+      &.selected {
+        border-bottom: 3px solid $dark_gray;
+      }
+    }
+  }
+  .padding {
+    height: 12rem;
+  }
+}
+
+.sequence-editor-sections {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 17.5rem);
+  pre {
+    margin-top: 2rem;
+  }
+  .sequence-section-header {
+    line-height: 3rem;
+    .fa-caret-up,
+    .fa-caret-down {
+      float: right;
+      line-height: 3rem;
+      font-size: 2rem;
+      margin-right: 2rem;
+      margin-top: 0.5rem;
+      color: $dark_gray;
+    }
+  }
+  .sequence-description {
+    position: relative;
+    width: 100%;
+    padding-right: 2rem;
+    margin-left: -15px;
+    textarea {
+      margin-left: 2rem;
+      height: 100%;
+      box-shadow: 0px 0px 10px $gray;
+      padding-bottom: 2rem;
+    }
+    .markdown {
+      display: block;
+      min-height: 10rem;
+      max-height: 20rem;
+      overflow-y: auto;
+      border: 2px solid $gray;
+      padding: 0.5rem;
+      margin-left: 1.5rem;
+      margin-right: -1.5rem;
+      p {
+        display: revert;
+        margin: revert;
+        color: $dark_gray;
+        overflow: revert;
+        white-space: revert;
+        text-transform: revert;
+      }
+      ul {
+        list-style-type: revert !important;
+        padding: revert;
+        font-size: 1.1rem;
+      }
+      :first-child {
+        margin-top: 0;
+      }
+    }
+    .description-editor-tools {
+      position: absolute;
+      bottom: 0;
+      right: 2rem;
+      .char-limit {
+        font-size: 1rem;
+        line-height: 1.75rem;
+        margin-left: 1rem;
+        color: $medium_gray;
+        &.over {
+          color: $darkest_red;
+        }
+      }
+    }
+  }
 }
 
 .sequence-editor-tools,
@@ -79,12 +235,21 @@
   hr {
     margin: 0.5rem 0;
   }
+  input {
+    margin-top: 1rem;
+  }
   &.preview {
     .filter-search,
     .input,
     input {
       pointer-events: none;
     }
+  }
+}
+
+.regimen-editor-tools {
+  .button-group {
+    margin-bottom: 1rem;
   }
 }
 
@@ -114,11 +279,14 @@
       label {
         font-size: 1.2rem;
         vertical-align: top;
+        max-width: 90%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .fa-trash {
         float: right;
         margin-left: 1rem;
-        margin-right: 1.75rem;
+        margin-right: 0;
         color: $darkest_red;
       }
       .fa-caret-down,
@@ -127,6 +295,7 @@
         font-size: 2rem;
         color: $dark_gray;
         margin-top: -0.25rem;
+        margin-left: 1rem;
       }
       .bp3-popover-wrapper {
         display: inline;
@@ -169,7 +338,6 @@
   }
 }
 
-.sequence,
 .regimen {
   width: 100%;
   height: calc(100vh - 25rem);
@@ -177,11 +345,11 @@
   overflow-x: hidden;
 }
 
-.sequence {
-  &.preview {
-    .padding {
-      height: 25rem;
-    }
+.license {
+  p {
+    padding-bottom: 1rem;
+    line-height: 1.5rem;
+    margin-right: 1rem;
   }
 }
 
@@ -589,7 +757,7 @@
 
 .imported-banner,
 .import-banner {
-  margin: 0 -15px 1rem -15px;
+  margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
   background: transparentize($orange, 0.4);
   button {
@@ -602,6 +770,10 @@
     display: inline-block;
     margin-left: 1rem;
   }
+}
+
+.import-banner {
+  margin-bottom: 1rem;
 }
 
 .imported-banner {

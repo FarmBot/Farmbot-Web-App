@@ -33,6 +33,11 @@ export const toggleHideImage =
     payload: imageId,
   });
 
+export const toggleShowPhotoImages = (dispatch: Function) => () =>
+  dispatch({
+    type: Actions.TOGGLE_SHOW_PHOTO_IMAGES, payload: undefined,
+  });
+
 export const toggleShowCalibrationImages = (dispatch: Function) => () =>
   dispatch({
     type: Actions.TOGGLE_SHOW_CALIBRATION_IMAGES, payload: undefined,

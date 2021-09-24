@@ -79,7 +79,7 @@ export class RawDesignerPhotos
           title={t("Filter map photos")}
           onClick={this.toggle("filter")}>
           <FiltersEnabledWarning
-            hideUnShownImages={this.props.designer.hideUnShownImages}
+            designer={this.props.designer}
             getConfigValue={this.props.getConfigValue} />
         </ExpandableHeader>
         <Collapse isOpen={this.state.filter}>

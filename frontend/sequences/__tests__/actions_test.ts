@@ -135,18 +135,18 @@ describe("publishSequence()", () => {
 
   it("publishes sequence", async () => {
     mockPost = Promise.resolve();
-    await publishSequence(123)();
+    await publishSequence(123, "")();
     expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost/api/sequences/123/publish");
+      "http://localhost/api/sequences/123/publish", { copyright: "" });
     expect(success).toHaveBeenCalledWith("Sequence published.");
     expect(error).not.toHaveBeenCalled();
   });
 
   it("errors while publishing sequence", async () => {
     mockPost = Promise.reject();
-    await publishSequence(123)();
+    await publishSequence(123, "")();
     expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost/api/sequences/123/publish");
+      "http://localhost/api/sequences/123/publish", { copyright: "" });
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Publish error.");
   });

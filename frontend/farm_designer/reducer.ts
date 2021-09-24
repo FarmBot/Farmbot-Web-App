@@ -42,6 +42,7 @@ export const initialState: DesignerState = {
   shownImages: [],
   hideUnShownImages: false,
   alwaysHighlightImage: false,
+  showPhotoImages: true,
   showCalibrationImages: true,
   showDetectionImages: true,
   showHeightImages: true,
@@ -178,6 +179,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_SHOWN_IMAGES_ONLY, (s) => {
     s.hideUnShownImages = !s.hideUnShownImages;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_SHOW_PHOTO_IMAGES, (s) => {
+    s.showPhotoImages = !s.showPhotoImages;
     return s;
   })
   .add<boolean>(Actions.TOGGLE_SHOW_CALIBRATION_IMAGES, (s) => {
