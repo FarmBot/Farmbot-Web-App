@@ -11,9 +11,15 @@ jest.mock("axios", () => ({
   get: jest.fn(() => mockGet),
 }));
 
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+}));
+
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
+  License,
+  LicenseProps,
   mapStateToProps,
   RawDesignerSequencePreview as DesignerSequencePreview,
   SequencePreviewProps,
@@ -24,6 +30,7 @@ import {
 import { API } from "../../../api";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { BooleanSetting } from "../../../session_keys";
+import { edit } from "../../../api/crud";
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
@@ -67,6 +74,7 @@ describe("<DesignerSequencePreview />", () => {
   it("loads sequence without body", async () => {
     const sequence = fakeSequence();
     sequence.body.body = undefined;
+    sequence.body.description = undefined as unknown as string;
     mockGet = Promise.resolve({ data: sequence.body });
     const wrapper = await mount(<DesignerSequencePreview {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("import");
@@ -90,8 +98,27 @@ describe("<DesignerSequencePreview />", () => {
     p.getWebAppConfigValue = () => true;
     const wrapper = await mount<DesignerSequencePreview>(
       <DesignerSequencePreview {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("kind");
-    wrapper.instance().toggleViewRaw();
-    expect(wrapper.text().toLowerCase()).toContain("kind");
+    expect(wrapper.text().toLowerCase()).not.toContain("scope_declaration");
+    wrapper.instance().toggleSection("viewSequenceCeleryScript")();
+    expect(wrapper.text().toLowerCase()).toContain("scope_declaration");
+  });
+});
+
+describe("<License />", () => {
+  const fakeProps = (): LicenseProps => ({
+    collapsed: false,
+    toggle: jest.fn(),
+    sequence: fakeSequence(),
+    dispatch: jest.fn(),
+  });
+
+  it("changes input", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = undefined;
+    p.sequence.body.forked = false;
+    p.sequence.body.sequence_versions = [1];
+    const wrapper = shallow(<License {...p} />);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "c" } });
+    expect(edit).toHaveBeenCalledWith(p.sequence, { copyright: "c" });
   });
 });

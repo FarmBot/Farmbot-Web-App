@@ -63,8 +63,8 @@ export const closeCommandMenu = () => ({
   payload: undefined,
 });
 
-export const publishSequence = (id: number | undefined) => () =>
-  axios.post(`${API.current.sequencesPath}${id}/publish`)
+export const publishSequence = (id: number | undefined, copyright: string) => () =>
+  axios.post(`${API.current.sequencesPath}${id}/publish`, { copyright })
     .then(() => success(t("Sequence published.")),
       () => error(t("Publish error.")));
 

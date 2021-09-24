@@ -363,7 +363,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/sequence_versions/:sequence_version_id",
+    $: "/shared/sequence/:sequence_version_id",
     getModule,
     key,
     getChild: () => import("./sequences/panel/preview"),

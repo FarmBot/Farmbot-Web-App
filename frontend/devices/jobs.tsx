@@ -10,6 +10,7 @@ import { t } from "../i18next_wrapper";
 import { maybeGetTimeSettings } from "../resources/selectors";
 import moment from "moment";
 import { formatTime } from "../util";
+import { Color } from "../ui";
 
 export interface JobsPanelProps {
   jobs: Dictionary<JobProgress | undefined>;
@@ -44,6 +45,7 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
             {Object.entries(this.props.jobs).map(([title, job]) => {
               if (!job) { return; }
               const percent = job.unit == "percent" && job.percent;
+              const color = percent == 100 ? Color.green : Color.yellow;
               return <tr key={title}>
                 <td className={"job-name"} title={title}>{title}</td>
                 <td>{job.type}</td>
@@ -51,11 +53,13 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
                 <td>
                   {job.unit == "percent" ? job[job.unit] : job[job.unit]}
                   <div className={"progress"}
-                    style={percent ? { width: `${percent}%` } : {}} />
+                    style={percent
+                      ? { width: `${percent}%`, background: color }
+                      : {}} />
                 </td>
                 <td>{job.unit}</td>
                 <td>{job.status}</td>
-                <td>{job.time
+                <td title={job.time}>{job.time
                   ? formatTime(moment(job.time), this.props.timeSettings)
                   : ""}</td>
               </tr>;

@@ -7,7 +7,7 @@ import { shallow, mount } from "enzyme";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { FBSelect, BlurableInput } from "../../../ui";
+import { FBSelect, BlurableInput, Color } from "../../../ui";
 import {
   LocationFormProps, PARENT, AllowedVariableNodes,
 } from "../locals_list_support";
@@ -15,6 +15,7 @@ import { difference } from "lodash";
 import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
+import { error } from "../../../toast/toast";
 
 describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
@@ -58,7 +59,7 @@ describe("<LocationForm />", () => {
         identifierLabel: "label",
         allowedVariableNodes: p.allowedVariableNodes,
         dropdown
-      }));
+      }), "label");
     expect(inputs.length).toBe(0);
     expect(el.html()).not.toContain("fa-exclamation-triangle");
   });
@@ -175,6 +176,25 @@ describe("<LocationForm />", () => {
     expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 
+  it("changes label", () => {
+    const p = fakeProps();
+    const wrapper = mount(<LocationForm {...p} />);
+    wrapper.find("label").first().simulate("click");
+    expect(error).not.toHaveBeenCalled();
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "new label" } });
+    wrapper.find("input").first().simulate("blur");
+    expect(p.onChange).toHaveBeenCalledWith(p.variable.celeryNode, "label");
+  });
+
+  it("doesn't change label", () => {
+    const p = fakeProps();
+    p.inUse = true;
+    const wrapper = mount(<LocationForm {...p} />);
+    wrapper.find("label").first().simulate("click");
+    expect(error).toHaveBeenCalledWith("Can't edit variable name while in use.");
+  });
+
   it("removes variable", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
@@ -183,10 +203,18 @@ describe("<LocationForm />", () => {
     expect(p.removeVariable).toHaveBeenCalledWith("label");
   });
 
+  it("renders variable removal button as disabled", () => {
+    const p = fakeProps();
+    p.removeVariable = jest.fn();
+    p.inUse = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(".fa-trash").props().style).toEqual({ color: Color.gray });
+  });
+
   it("doesn't remove variable", () => {
     const p = fakeProps();
     p.removeVariable = undefined;
     const wrapper = shallow(<LocationForm {...p} />);
-    wrapper.find(".fa-trash").simulate("click");
+    expect(wrapper.find(".fa-trash").length).toEqual(0);
   });
 });

@@ -33,6 +33,9 @@ export namespace ExternalUrl {
   const FARMBOT = "https://farm.bot";
   const MY_FARMBOT_WEB_APP = "https://my.farm.bot";
   const OPEN_STREET_MAP = "https://www.openstreetmap.org";
+  const LICENSES = "https://choosealicense.com/licenses";
+
+  export const mitLicense = `${LICENSES}/mit`;
 
   export const openStreetMap =
     (latitude: number | undefined, longitude: number | undefined) =>
