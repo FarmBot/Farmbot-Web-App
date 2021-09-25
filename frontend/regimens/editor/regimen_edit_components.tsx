@@ -22,7 +22,8 @@ export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
     (variable: ScopeDeclarationBodyItem) => {
       const copy = defensiveClone(props.regimen);
-      copy.body.body = addOrEditBodyVariables(bodyVariables, variable);
+      copy.body.body = addOrEditBodyVariables(
+        bodyVariables, variable, variable.args.label);
       props.dispatch(overwrite(props.regimen, copy.body));
     };
 

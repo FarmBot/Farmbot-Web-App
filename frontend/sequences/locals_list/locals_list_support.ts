@@ -12,7 +12,7 @@ import { DropDownItem } from "../../ui";
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
 
-type OnChange = (sd: VariableNode | undefined) => void;
+export type OnChange = (sd: VariableNode | undefined, variableKey: string) => void;
 
 /**
  * ParameterApplications (or VariableDeclarations in ScopeDeclarations)
@@ -72,6 +72,8 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
   /** Set to true to hide the form header and label. */
   hideHeader?: boolean;
+  /** Is the variable being used? */
+  inUse?: boolean;
 }
 
 export const PARENT = (label: string) =>

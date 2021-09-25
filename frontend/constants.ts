@@ -1037,23 +1037,30 @@ export namespace Content {
   export const IS_PINNED =
     trim(`This sequence is pinned.`);
 
-  export const PUBLISH_SEQUENCE =
-    trim(`Publishing this sequence will create a public version released
-    under the MIT License. Once published, anyone may find and use the
-    sequence free of charge for tasks including but not limited to:
-    importing the sequence into their FarmBot account to view and use it as
-    they deem fit, upgrading their copy to other published versions, making
-    changes to their copy, publishing, distributing, and even selling their
-    copy. You can publish new versions of this sequence at any time, which
-    other users may choose to upgrade to. You may also unpublish the
-    sequence and/or delete it from your account at any time to disable the
-    share link. However, these actions will not affect existing imports
-    owned by other user accounts. By publishing this sequence, you will be
-    releasing it under the MIT License.`);
+  export const PUBLISH_SEQUENCE_ONCE_PUBLISHED =
+    trim(`Once published, anyone may find and use the sequence free of
+    charge for tasks including but not limited to:`);
+
+  export const PUBLISH_SEQUENCE_MAY_IMPORT =
+    trim(`Importing the sequence into their FarmBot account to view and use
+    it as they deem fit`);
+
+  export const PUBLISH_SEQUENCE_NEW_VERSIONS =
+    trim(`You can publish new versions of this sequence at any time, which
+    other users may choose to upgrade to.`);
+
+  export const PUBLISH_SEQUENCE_UNPUBLISH =
+    trim(`You may also unpublish the sequence and/or delete it from your
+    account at any time to disable the share link. However, these actions
+    will not affect existing imports owned by other user accounts.`);
 
   export const SEQUENCE_VERSIONS =
     trim(`When you publish a new version, other users of the sequence may
     optionally upgrade to the latest version.`);
+
+  export const SAVE_SEQUENCE_BEFORE_PUBLISHING =
+    trim(`You must save changes to the sequence before publishing a new
+    version.`);
 
   export const IMPORT_SEQUENCE =
     trim(`Importing this sequence will allow you to use it with your
@@ -1066,6 +1073,11 @@ export namespace Content {
     Upgrading will overwrite your copy with the contents of the new version.
     It is recommended you check your FarmBot continues operating as expected
     after any upgrades.`);
+
+  export const SEQUENCE_FORKED =
+    trim(`You have made custom modifications to this imported sequence.
+    Upgrading will overwrite all modifications, replacing your copy with
+    the chosen public version.`);
 
   // Regimens
   export const NO_REGIMEN_SELECTED =
@@ -1218,6 +1230,30 @@ export namespace Content {
     trim(`Your web browser may not work properly with the FarmBot Web App.
     If you experience any issues, try using a recent version of Chrome,
     Firefox, or Edge.`);
+
+  export const MIT_LICENSE_PART_1 =
+    trim(`
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:`);
+
+  export const MIT_LICENSE_PART_2 =
+    trim(`
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.`);
+
+  export const MIT_LICENSE_PART_3 =
+    trim(`
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.`);
 }
 
 export namespace TourContent {
@@ -2062,6 +2098,7 @@ export enum Actions {
   SET_SHOWN_MAP_IMAGES = "SET_SHOWN_MAP_IMAGES",
   TOGGLE_SHOWN_IMAGES_ONLY = "TOGGLE_SHOWN_IMAGES_ONLY",
   TOGGLE_ALWAYS_HIGHLIGHT_IMAGE = "TOGGLE_ALWAYS_HIGHLIGHT_IMAGE",
+  TOGGLE_SHOW_PHOTO_IMAGES = "TOGGLE_SHOW_PHOTO_IMAGES",
   TOGGLE_SHOW_CALIBRATION_IMAGES = "TOGGLE_SHOW_CALIBRATION_IMAGES",
   TOGGLE_SHOW_DETECTION_IMAGES = "TOGGLE_SHOW_DETECTION_IMAGES",
   TOGGLE_SHOW_HEIGHT_IMAGES = "TOGGLE_SHOW_HEIGHT_IMAGES",

@@ -40,7 +40,7 @@ describe("<DefaultValueForm />", () => {
     const p = fakeProps();
     const wrapper = mount(<DefaultValueForm {...p} />);
     changeBlurableInput(wrapper, "1", 0);
-    expect(p.onChange).toHaveBeenCalledWith(p.variableNode);
+    expect(p.onChange).toHaveBeenCalledWith(p.variableNode, "label");
   });
 
   it("updates with coordinate", () => {
@@ -54,7 +54,7 @@ describe("<DefaultValueForm />", () => {
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: { label: "label", default_value: COORDINATE }
-    });
+    }, "label");
   });
 
   it("doesn't update with point_groups", () => {

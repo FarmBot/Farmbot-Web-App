@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../resources/selectors";
-import { FBSelect, DropDownItem } from "../ui/index";
+import { FBSelect, DropDownItem } from "../ui";
 import { t } from "../i18next_wrapper";
 
 export interface SequenceSelectBoxProps {
@@ -30,9 +30,7 @@ export function SequenceSelectBox(props: SequenceSelectBoxProps) {
     const { resources, sequenceId } = props;
     if (sequenceId) {
       const { id, name } = findSequenceById(resources, sequenceId).body;
-      if (isNumber(id)) {
-        return { label: name, value: id };
-      }
+      return { label: name, value: id as number };
     } else {
       return undefined;
     }

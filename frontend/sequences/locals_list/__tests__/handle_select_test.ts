@@ -1,4 +1,6 @@
-import { convertDDItoVariable, NOTHING_SELECTED } from "../handle_select";
+import {
+  addOrEditBodyVariables, convertDDItoVariable, NOTHING_SELECTED,
+} from "../handle_select";
 import { Point, Tool, Coordinate } from "farmbot";
 import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../location_form_list";
 import { VariableNode, AllowedVariableNodes } from "../locals_list_support";
@@ -163,5 +165,22 @@ describe("convertDDItoDeclaration()", () => {
       }
     };
     expect(variable).toEqual(expected);
+  });
+});
+
+describe("addOrEditBodyVariables()", () => {
+  it("filters variables", () => {
+    const parameterDeclaration: VariableNode = {
+      kind: "parameter_declaration",
+      args: { label: "parent", default_value: NOTHING_SELECTED },
+    };
+    const parameterApplication: VariableNode = {
+      kind: "parameter_application",
+      args: { label: "parent", data_value: NOTHING_SELECTED },
+    };
+    const variables = [parameterDeclaration, parameterApplication];
+    const item = parameterDeclaration;
+    expect(addOrEditBodyVariables(variables, item, "parent"))
+      .toEqual([parameterDeclaration]);
   });
 });

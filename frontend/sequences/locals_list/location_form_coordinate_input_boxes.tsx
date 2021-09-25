@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { Row, Col, BlurableInput } from "../../ui";
-import { VariableNode } from "../locals_list/locals_list_support";
+import { OnChange, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone } from "../../util/util";
 import { Xyz, Vector3 } from "farmbot";
 import { determineEditable } from "../../resources/sequence_meta";
@@ -8,7 +8,7 @@ import { t } from "../../i18next_wrapper";
 
 export interface AxisEditProps {
   axis: Xyz;
-  onChange: (sd: VariableNode) => void;
+  onChange: OnChange;
   editableVariable: VariableNode;
 }
 
@@ -20,7 +20,7 @@ export const manuallyEditAxis = (props: AxisEditProps) =>
     if (editableVariable.kind !== "parameter_declaration" &&
       editableVariable.args.data_value.kind === "coordinate") {
       editableVariable.args.data_value.args[axis] = num;
-      !isNaN(num) && onChange(editableVariable);
+      !isNaN(num) && onChange(editableVariable, editableVariable.args.label);
     }
   };
 
@@ -29,7 +29,7 @@ interface CoordinateInputBoxesProps {
   vector: Vector3 | undefined;
   variableNode: VariableNode;
   width: number | undefined;
-  onChange: (sd: VariableNode | undefined) => void;
+  onChange: OnChange;
 }
 
 /** LocationForm coordinate input boxes.  */

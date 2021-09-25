@@ -102,9 +102,10 @@ export const getImageTypeLabel = (image: TaggedImage | undefined): string => {
 export const filterImagesByType = (designer: DesignerState) =>
   (img: TaggedImage | undefined) => {
     const {
-      showCalibrationImages, showDetectionImages, showHeightImages,
+      showPhotoImages, showCalibrationImages, showDetectionImages, showHeightImages,
     } = designer;
-    return (showCalibrationImages || !(getImageType(img) == ImageType.calibration))
+    return (showPhotoImages || !(getImageType(img) == ImageType.none))
+      && (showCalibrationImages || !(getImageType(img) == ImageType.calibration))
       && (showDetectionImages || !(getImageType(img) == ImageType.detection))
       && (showHeightImages || !(getImageType(img) == ImageType.height));
   };

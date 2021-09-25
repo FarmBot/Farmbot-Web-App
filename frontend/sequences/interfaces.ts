@@ -70,13 +70,19 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
 
 export interface ActiveMiddleState {
   variablesCollapsed: boolean;
+  descriptionCollapsed: boolean;
+  stepsCollapsed: boolean;
+  licenseCollapsed: boolean;
+  editingDescription: boolean;
+  description: string;
   viewSequenceCeleryScript: boolean;
+  sequencePreview: TaggedSequence | undefined;
+  error: boolean;
+  view: "local" | "public";
 }
 
 export interface SequenceHeaderProps extends SequencePropsBase {
   sequence: TaggedSequence;
-  variablesCollapsed: boolean;
-  toggleVarShow: () => void;
   toggleViewSequenceCeleryScript: () => void;
   viewCeleryScript: boolean;
   showName: boolean;

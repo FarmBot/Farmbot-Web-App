@@ -1,4 +1,4 @@
-import { get, uniq } from "lodash";
+import { cloneDeep, get, uniq } from "lodash";
 import {
   Dictionary,
   Identifier,
@@ -111,8 +111,9 @@ export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
   return { thisSequence, callsTheseSequences: uniq(idList) };
 };
 
-export const variableIsInUse = (sequence: Sequence, label: string) => {
+export const variableIsInUse = (sequence: Sequence | undefined, label: string) => {
   const usedLabels: string[] = [];
-  climb(sequence, node => isIdentifier(node) && usedLabels.push(node.args.label));
+  climb(cloneDeep(sequence),
+    node => isIdentifier(node) && usedLabels.push(node.args.label));
   return usedLabels.includes(label);
 };

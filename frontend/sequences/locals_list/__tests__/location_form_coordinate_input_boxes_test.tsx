@@ -30,7 +30,7 @@ describe("manuallyEditAxis()", () => {
     }
     const p = fakeProps();
     manuallyEditAxis(p)(inputEvent("1.23"));
-    expect(p.onChange).toHaveBeenCalledWith(expected.editableVariable);
+    expect(p.onChange).toHaveBeenCalledWith(expected.editableVariable, "parent");
   });
 
   it("can't edit when not a coordinate (inputs also disabled)", () => {
