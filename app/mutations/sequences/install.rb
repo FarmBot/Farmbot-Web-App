@@ -19,6 +19,7 @@ module Sequences
                            color: sequence_version.color,
                            device: device,
                            sequence_version_id: sequence_version.id)
+      sequence.broadcast!(SecureRandom.uuid)
       Sequences::Show.run!(sequence: s)
     end
 
