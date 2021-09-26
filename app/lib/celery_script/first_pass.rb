@@ -34,7 +34,7 @@ module CeleryScript
     end
 
     def execute
-      Sequence.transaction do
+      ActiveRecord::Base.transaction do
         flat_ir
           .each do |node|
           # Step 1- instantiate records.

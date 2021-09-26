@@ -25,6 +25,7 @@ gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "thwait"
+gem "lograge" # Used to filter repetitive RabbitMQ logs.
 
 group :development, :test do
   gem "codecov", require: false
@@ -42,6 +43,4 @@ group :development, :test do
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
 end
 
-group :production do
-  gem "passenger"
-end
+gem "passenger"

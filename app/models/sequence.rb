@@ -40,9 +40,13 @@ class Sequence < ApplicationRecord
 
   def delete_nodes_too
     Sequence.transaction do
-      PrimaryNode.where(sequence_id: self.id).destroy_all
-      EdgeNode.where(sequence_id: self.id).destroy_all
-      yield
+      PrimaryNode.transaction do
+        EdgeNode.transaction do
+          PrimaryNode.where(sequence_id: self.id).destroy_all
+          EdgeNode.where(sequence_id: self.id).destroy_all
+          yield
+        end
+      end
     end
   end
 

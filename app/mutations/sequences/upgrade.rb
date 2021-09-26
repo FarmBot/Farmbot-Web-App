@@ -19,6 +19,7 @@ module Sequences
         update_sequence
         unfork
       end
+      sequence.broadcast!(SecureRandom.uuid)
       Sequences::Show.run!(sequence: sequence)
     end
 

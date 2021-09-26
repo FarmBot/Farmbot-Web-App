@@ -14,12 +14,16 @@ module Sequences
     end
 
     def execute
-      s = Sequence.create!(forked: false,
-                           name: sequence_version.name,
-                           color: sequence_version.color,
-                           device: device,
-                           sequence_version_id: sequence_version.id)
-      Sequences::Show.run!(sequence: s)
+      Sequence.transaction do
+        s = Sequence.find_or_create_by!(
+          name: sequence_version.name,
+          device: device,
+          sequence_version_id: sequence_version.id,
+        )
+        s.update!(forked: false, color: sequence_version.color)
+        s.broadcast!(SecureRandom.uuid)
+        Sequences::Show.run!(sequence: s)
+      end
     end
 
     private
