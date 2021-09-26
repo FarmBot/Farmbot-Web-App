@@ -29,7 +29,7 @@ module Api
     # Share your sequence with other people
     # POST /sequences/:id/publish
     def publish
-      mutate Sequences::Publish.run(copyright: raw_json[:copyright],
+      mutate Sequences::Publish.run(copyright: params[:copyright],
                                     sequence: sequence,
                                     device: current_device)
     end

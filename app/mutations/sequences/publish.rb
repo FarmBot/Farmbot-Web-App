@@ -32,7 +32,7 @@ module Sequences
     end
 
     def execute
-      SequencePublication.transaction do
+      ActiveRecord::Base.transaction do
         publication.update!(published: true)
         sv = SequenceVersion.create!(sequence_publication: publication,
                                      name: sequence.name,

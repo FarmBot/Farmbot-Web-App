@@ -196,6 +196,11 @@ GEM
       activerecord
       kaminari-core (= 1.2.1)
     kaminari-core (1.2.1)
+    lograge (0.11.2)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      railties (>= 4)
+      request_store (~> 1.0)
     loofah (2.12.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -374,6 +379,7 @@ DEPENDENCIES
   hashdiff
   jwt
   kaminari
+  lograge
   mutations
   passenger
   pg

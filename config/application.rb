@@ -14,6 +14,13 @@ module FarmBot
     REDIS_URL = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
     gcs_enabled =
       %w[ GOOGLE_CLOUD_KEYFILE_JSON GCS_PROJECT GCS_BUCKET ].all? { |s| ENV.key? s }
+    config.lograge.enabled = true
+    config.lograge.ignore_actions = [
+      "Api::RmqUtilsController#user_action",
+      "Api::RmqUtilsController#vhost_action",
+      "Api::RmqUtilsController#resource_action",
+      "Api::RmqUtilsController#topic_action",
+    ]
     config.load_defaults 6.0
     config.active_storage.service = gcs_enabled ?
       :google : :local

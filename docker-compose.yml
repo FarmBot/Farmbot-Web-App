@@ -41,7 +41,6 @@ services:
     image: postgres:13
     restart: always
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
-    # ports: ["5432:5432"]
 
   web:
     env_file: ".env"
@@ -53,8 +52,7 @@ services:
     build:
       context: "."
       dockerfile: docker_configs/api.Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development
-      -p ${API_PORT} -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec passenger start"
     ports: ["${API_PORT}:${API_PORT}"]
 
   mqtt:
