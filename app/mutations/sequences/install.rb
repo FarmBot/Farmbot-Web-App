@@ -20,7 +20,9 @@ module Sequences
           device: device,
           sequence_version_id: sequence_version.id,
         )
-        s.update!(forked: false, color: sequence_version.color)
+        s.update!(forked: false,
+                  color: sequence_version.color,
+                  description: nil)
         s.broadcast!(SecureRandom.uuid)
         Sequences::Show.run!(sequence: s)
       end

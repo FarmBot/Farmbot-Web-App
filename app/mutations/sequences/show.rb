@@ -24,6 +24,7 @@ module Sequences
                name: sequence.name,
                pinned: sequence.pinned,
                copyright: copyright,
+               description: description,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
                sequence_version_id: sequence.sequence_version_id,
@@ -51,6 +52,10 @@ module Sequences
       s[:args][:locals] = Sequence::SCOPE_DECLARATION unless has_scope
 
       return s
+    end
+
+    def description
+      sequence.description || sequence_version&.description
     end
 
     def sequence_version

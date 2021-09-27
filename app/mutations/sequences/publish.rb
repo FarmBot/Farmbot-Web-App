@@ -33,11 +33,12 @@ module Sequences
 
     def execute
       ActiveRecord::Base.transaction do
+        desc = description || sequence.description
         publication.update!(published: true)
         sv = SequenceVersion.create!(sequence_publication: publication,
                                      name: sequence.name,
                                      color: sequence.color,
-                                     description: description,
+                                     description: desc,
                                      copyright: copyright)
         celery = Sequences::Show.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
