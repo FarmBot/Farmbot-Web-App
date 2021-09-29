@@ -34,12 +34,13 @@ module Sequences
     def execute
       ActiveRecord::Base.transaction do
         desc = description || sequence.description
+        cr = copyright || sequence.copyright
         publication.update!(published: true)
         sv = SequenceVersion.create!(sequence_publication: publication,
                                      name: sequence.name,
                                      color: sequence.color,
                                      description: desc,
-                                     copyright: copyright)
+                                     copyright: cr)
         celery = Sequences::Show.run!(sequence: sequence)
         params = celery.deep_symbolize_keys.slice(:kind, :body, :args).merge(device: device)
         flat_ast = Fragments::Preprocessor.run!(**params)
