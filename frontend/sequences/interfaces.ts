@@ -1,6 +1,4 @@
-import { ResourceColor } from "../interfaces";
 import {
-  Sequence as CeleryScriptSequence,
   SequenceBodyItem,
   LegalArgString,
   SyncStatus,
@@ -138,12 +136,6 @@ export const MESSAGE_TYPES = Object.keys(MessageType);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
   MESSAGE_TYPES.includes(x);
-
-export interface Sequence extends CeleryScriptSequence {
-  id?: number;
-  color: ResourceColor;
-  name: string;
-}
 
 export interface SequenceReducerState {
   current: string | undefined;

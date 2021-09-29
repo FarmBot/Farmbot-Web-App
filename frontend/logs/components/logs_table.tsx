@@ -72,10 +72,10 @@ const LogsRow = (props: LogsRowProps) => {
     </td>
     <td>
       {time.toLowerCase().includes("invalid") ? t("Unknown") : time}
-      {logVersionMatch(tlog, props.fbosVersion) &&
-        <i className={"fa fa-check"}
+      {!logVersionMatch(tlog, props.fbosVersion) &&
+        <i className={"fa fa-exclamation-triangle"}
           style={{ color: "gray", marginLeft: "0.5rem" }}
-          title={t("Log sent by current version of FarmBot OS.")} />}
+          title={t("Log not sent by current version of FarmBot OS.")} />}
     </td>
   </tr>;
 };

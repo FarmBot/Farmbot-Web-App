@@ -45,6 +45,17 @@
 
 .farm-event-data {
   flex: 5;
+  max-width: 83%;
+}
+
+.farm-event-variable {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 125%;
+  font-size: 1rem;
+  line-height: 1rem;
 }
 
 .farm-event-data-block {
@@ -66,6 +77,7 @@
     overflow-wrap: anywhere;
     p {
       margin-top: 0.2rem;
+      margin-bottom: 0.75rem !important;
     }
   }
   &:hover {

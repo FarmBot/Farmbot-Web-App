@@ -1,6 +1,8 @@
 import React from "react";
 import { Row, Col, FBSelect, Help, Color } from "../../ui";
-import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
+import {
+  locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+} from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
   LocationFormProps, AllowedVariableNodes, VariableNode, OnChange,
@@ -16,7 +18,6 @@ import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { Feature } from "../../devices/interfaces";
-import { betterCompact } from "../../util";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
 
@@ -74,7 +75,7 @@ export const LocationForm =
       {!props.hideHeader &&
         <div className="location-form-header">
           <Label label={label} inUse={props.inUse} variable={variable}
-            onChange={onChange} hideTypeLabel={!!props.hideTypeLabel} />
+            onChange={onChange} />
           {isDefault &&
             <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
               customIcon={"exclamation-triangle"} onHover={true} />}
@@ -121,7 +122,6 @@ export const LocationForm =
 interface LabelProps {
   label: string;
   inUse: boolean | undefined;
-  hideTypeLabel: boolean;
   variable: SequenceMeta;
   onChange: OnChange;
 }
@@ -130,10 +130,10 @@ const Label = (props: LabelProps) => {
   const { label, inUse } = props;
   const [isEditingLabel, setIsEditingLabel] = React.useState(false);
   const [labelValue, setLabelValue] = React.useState(label);
-  const cleanLabel = labelValue == "parent" ? t("Location variable") : labelValue;
-  const formTitle = props.hideTypeLabel ? labelValue : cleanLabel;
+  const formTitle = labelValue == "parent" ? t("Location variable") : labelValue;
   return isEditingLabel
     ? <input value={labelValue}
+      autoFocus={true}
       onBlur={() => {
         setIsEditingLabel(false);
         const editableVariable = cloneDeep(props.variable.celeryNode);
@@ -152,21 +152,23 @@ const Label = (props: LabelProps) => {
     </label>;
 };
 
-interface GenerateVariableListItemsProps {
+export interface GenerateVariableListProps {
   allowedVariableNodes: AllowedVariableNodes;
   resources: ResourceIndex;
   sequenceUuid: UUID;
-  variable: VariableNode;
+  variable?: VariableNode;
+  headingId?: string;
 }
 
-const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
+export const generateVariableListItems = (props: GenerateVariableListProps) => {
   const { allowedVariableNodes, resources, sequenceUuid } = props;
-  const variables = betterCompact(Object.values(
-    resources.sequenceMetas[sequenceUuid] || []).map(v => v?.celeryNode));
+  const headingId = props.headingId || "Variable";
+  const variables = sortVariables(Object.values(
+    resources.sequenceMetas[sequenceUuid] || [])).map(v => v.celeryNode);
   const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
   if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-  if (headerForm) {
+  if (headerForm && props.variable) {
     return [{
       value: props.variable.args.label,
       label: determineVarDDILabel({
@@ -175,7 +177,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
         uuid: sequenceUuid,
         forceExternal: headerForm,
       }),
-      headingId: "Variable",
+      headingId,
     }];
   }
   const oldVariables = variables.map(variable_ => ({
@@ -185,7 +187,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
       resources,
       uuid: sequenceUuid,
     }),
-    headingId: "Variable",
+    headingId,
   }));
   const newVarLabel = generateNewVariableLabel(variables);
   const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
@@ -197,7 +199,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
         resources,
         uuid: sequenceUuid,
       }),
-      headingId: "Variable",
+      headingId,
     }]
     : [];
   return oldVariables.concat(newVariable);

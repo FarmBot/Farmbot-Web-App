@@ -1,5 +1,5 @@
 import { Everything, TimeSettings } from "../../interfaces";
-import { RegimenItem, RegimenItemCalendarRow, CalendarRow } from "../interfaces";
+import { RegimenItemCalendarRow, CalendarRow } from "../interfaces";
 import {
   maybeGetRegimen,
   findUuid,
@@ -13,6 +13,7 @@ import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces
 import { timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
 import { RegimenEditorProps } from "./interfaces";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 
 export const mapStateToProps = (props: Everything): RegimenEditorProps => {
   const { dispatch } = props;

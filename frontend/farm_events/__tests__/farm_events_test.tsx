@@ -32,6 +32,7 @@ describe("<FarmEvents />", () => {
       heading: "Every 4 hours",
       executableId: 25,
       subheading: "",
+      variables: ["variable 1", "variable 2"],
       id: 79,
       color: "gray",
     }];
@@ -39,6 +40,7 @@ describe("<FarmEvents />", () => {
     const results = render(<FarmEvents {...p} />);
     expect(results.text()).toContain("Every 4 hours");
     expect(results.find(".farm-event-data-block").hasClass("gray")).toBeFalsy();
+    expect(results.find(".farm-event-variable").length).toEqual(2);
   });
 
   it("filters farm events: finds none", () => {

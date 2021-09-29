@@ -25,6 +25,7 @@ import { error } from "../../toast/toast";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { Feature } from "../../devices/interfaces";
 import { variableIsInUse } from "./sanitize_nodes";
+import { sortVariables } from "./location_form_list";
 
 export interface LocalListCbProps {
   dispatch: Function;
@@ -93,7 +94,7 @@ export const LocalsList = (props: LocalsListProps) => {
   const variableData = Object.values(props.variableData || {});
   const { bodyVariables } = props;
   return <div className="locals-list">
-    {betterCompact(variableData
+    {sortVariables(variableData
       // Show variables if in Sequence header or not already defined
       .filter(v => v && (!bodyVariables || isParameterDeclaration(v.celeryNode)))
       // Show default values for parameters as a fallback if not in Sequence header
@@ -137,7 +138,6 @@ export const generateNewVariableLabel =
   (variableData: (VariableNode | undefined)[]) => {
     const existingLabels = betterCompact(variableData)
       .map(variable => variable.args.label);
-    if (!existingLabels.includes("parent")) { return "parent"; }
     const newLabel = (num: number) => t("Location variable {{ num }}", { num });
     let i = 1;
     while (existingLabels.includes(newLabel(i))) { i++; }

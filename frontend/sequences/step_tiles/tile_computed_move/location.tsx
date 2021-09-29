@@ -8,22 +8,30 @@ import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import {
   findPointerByTypeAndId, findSlotByToolId, findToolById,
 } from "../../../resources/selectors";
-import {
-  determineVarDDILabel,
-  maybeFindVariable, SequenceMeta,
-} from "../../../resources/sequence_meta";
+import { maybeFindVariable, SequenceMeta } from "../../../resources/sequence_meta";
 import {
   formatPoint, locationFormList, formatTool, COORDINATE_DDI,
 } from "../../locals_list/location_form_list";
 import { Move, Xyz } from "farmbot";
-import { generateNewVariableLabel } from "../../locals_list/locals_list";
-import { shouldDisplayFeature } from "../../../farmware/state_to_props";
-import { Feature } from "../../../devices/interfaces";
+import { generateVariableListItems } from "../../locals_list/location_form";
+import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
 
-export const LocationSelection = (props: LocationSelectionProps) =>
-  <FBSelect
+export const LocationSelection = (props: LocationSelectionProps) => {
+  const { resources, sequenceUuid } = props;
+  return <FBSelect
     key={JSON.stringify(props.sequence)}
-    list={locationList(props.resources, props.sequenceUuid)}
+    list={locationFormList(
+      resources,
+      [{
+        headingId: "Offset",
+        label: t("Offset from current location"),
+        value: "",
+      }],
+      generateVariableListItems({
+        allowedVariableNodes: AllowedVariableNodes.identifier,
+        resources, sequenceUuid, headingId: "Identifier",
+      }),
+    )}
     customNullLabel={t("Choose location")}
     onChange={ddi => props.onChange(prepareLocation(ddi))}
     selectedItem={getSelectedLocation(
@@ -32,6 +40,7 @@ export const LocationSelection = (props: LocationSelectionProps) =>
       props.resources,
       props.sequenceUuid,
     )} />;
+};
 
 const prepareLocation = (ddi: DropDownItem): {
   locationNode: LocationNode | undefined,
@@ -82,35 +91,6 @@ const prepareLocation = (ddi: DropDownItem): {
   };
 };
 
-const locationList =
-  (resources: ResourceIndex, sequenceUuid: UUID): DropDownItem[] => {
-    const vars = Object.values(resources.sequenceMetas[sequenceUuid] || {});
-    const newVarLabel = generateNewVariableLabel(vars.map(v => v?.celeryNode));
-    const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
-      || vars.length < 1)
-      ? [{
-        value: newVarLabel,
-        label: determineVarDDILabel({
-          label: newVarLabel,
-          resources,
-          uuid: sequenceUuid,
-        }),
-        headingId: "Identifier",
-      }]
-      : [];
-    return locationFormList(
-      resources,
-      [{
-        headingId: "Offset",
-        label: t("Offset from current location"),
-        value: "",
-      }],
-      vars.map(variable => ({
-        headingId: "Identifier", label: resourceVariableLabel(variable),
-        value: variable?.celeryNode.args.label || "unknown",
-      })).concat(newVariable));
-  };
-
 const getSelectedLocation = (
   locationNode: LocationNode | undefined,
   locationSelection: LocSelection | undefined,
@@ -146,8 +126,7 @@ const getSelectedLocation = (
 const resourceVariableLabel = (variable: SequenceMeta | undefined) => {
   const label = variable?.celeryNode.args.label;
   const varLabel = label == "parent" ? undefined : label;
-  const ddiLabel = variable?.dropdown.label;
-  const infoLabel = ddiLabel == "parent" ? "variable" : ddiLabel;
+  const infoLabel = variable?.dropdown.label;
   return `${varLabel || t("Location variable")} - ${infoLabel || t("Add new")}`;
 };
 

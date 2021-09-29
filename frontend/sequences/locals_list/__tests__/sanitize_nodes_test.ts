@@ -7,7 +7,7 @@ describe("performAllIndexesOnSequence", () => {
   const move_abs: MoveAbsolute = {
     kind: "move_absolute",
     args: {
-      location: { kind: "identifier", args: { label: "parent" } },
+      location: { kind: "identifier", args: { label: "label" } },
       offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       speed: 800
     }
@@ -26,7 +26,7 @@ describe("performAllIndexesOnSequence", () => {
           args: {
             default_value: {
               kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-            }, label: "parent"
+            }, label: "label"
           }
         },
       ]
@@ -50,7 +50,7 @@ describe("performAllIndexesOnSequence", () => {
     const locals = missing_declaration.args.locals.body;
     expect(locals?.[0]).toBeDefined();
     expect(get(locals?.[0], "uuid")).toBeDefined();
-    expect(locals?.[0].args.label).toEqual("parent");
+    expect(locals?.[0].args.label).toEqual("label");
   });
 });
 

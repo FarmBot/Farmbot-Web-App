@@ -118,17 +118,17 @@ describe("<TileExecute />", () => {
     p.currentStep.args.sequence_id = mockSequence.body.id;
     p.currentStep.body = [{
       kind: "parameter_application", args: {
-        label: "parent", data_value: coordinate(10, 20, 30)
+        label: "label", data_value: coordinate(10, 20, 30)
       }
     }];
     p.resources.sequenceMetas[mockSequence.uuid] = {
-      parent: {
+      "label": {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent", default_value: coordinate()
+            label: "label", default_value: coordinate()
           }
         },
-        dropdown: { label: "Parent", value: "parent" },
+        dropdown: { label: "Label", value: "label" },
         vector: undefined,
       }
     };
@@ -147,13 +147,13 @@ describe("<TileExecute />", () => {
     };
     p.currentStep.body = [existingVariable];
     p.resources.sequenceMetas[mockSequence.uuid] = {
-      parent: {
+      "label": {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent", default_value: coordinate()
+            label: "label", default_value: coordinate()
           }
         },
-        dropdown: { label: "Parent", value: "parent" },
+        dropdown: { label: "Label", value: "label" },
         vector: undefined,
       }
     };

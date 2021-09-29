@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 const emoji = require("markdown-it-emoji");
 const md = require("markdown-it")({
   /** Enable HTML tags in source */
@@ -11,8 +11,26 @@ const md = require("markdown-it")({
   typographer: true,
 });
 
-md.disable("heading");
 md.use(emoji);
+
+const defaultRenderer = md.renderer.rules.link_open ||
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ((tokens: any, index: any, options: any, _env: any, self: any) =>
+    self.renderToken(tokens, index, options));
+
+md.renderer.rules.link_open =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (tokens: any, index: any, options: any, env: any, self: any) => {
+    const attributeIndex = tokens[index].attrIndex("target");
+    if (attributeIndex < 0) {
+      tokens[index].attrPush(["target", "_blank"]);
+    } else {
+      tokens[index].attrs[attributeIndex][1] = "_blank";
+    }
+    return defaultRenderer(tokens, index, options, env, self);
+  };
+
+export const md_for_tests = md;
 
 interface MarkdownProps {
   children?: React.ReactNode;

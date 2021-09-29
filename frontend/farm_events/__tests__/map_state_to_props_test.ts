@@ -6,7 +6,7 @@ import {
   fakeFarmEvent,
 } from "../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex,
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import moment from "moment";
 import { countBy } from "lodash";
@@ -61,7 +61,8 @@ describe("mapStateToProps()", () => {
             color: "red",
             mmddyy: "022222",
             sortKey: 7956842400,
-            timeStr: "2:00am"
+            timeStr: "2:00am",
+            variables: [],
           }],
         month: "Feb",
         sortKey: 7956842400,
@@ -78,7 +79,8 @@ describe("mapStateToProps()", () => {
             mmddyy: "022322",
             sortKey: 7956928800,
             subheading: "",
-            timeStr: "2:00am"
+            timeStr: "2:00am",
+            variables: [],
           },
           {
             executableId: 1,
@@ -88,12 +90,21 @@ describe("mapStateToProps()", () => {
             mmddyy: "022322",
             sortKey: 7956950400,
             subheading: "fake",
-            timeStr: "8:00am"
+            timeStr: "8:00am",
+            variables: [],
           }],
         month: "Feb",
         sortKey: 7956928800,
         year: 22
       }]);
+  });
+
+  it("returns timezone status", () => {
+    const state = testState();
+    const device = fakeDevice();
+    device.body.timezone = "fake timezone";
+    state.resources = buildResourceIndex([device]);
+    expect(mapStateToProps(state).timezoneIsSet).toBeTruthy();
   });
 });
 
@@ -129,7 +140,8 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
       color: "red",
       mmddyy: expect.stringContaining("17"),
       sortKey: expect.any(Number),
-      timeStr: expect.stringContaining("02")
+      timeStr: expect.stringContaining("02"),
+      variables: [],
     }],
     month: "Dec",
     sortKey: expect.any(Number),
@@ -211,7 +223,8 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("02")
+        timeStr: expect.stringContaining("02"),
+        variables: [],
       },
     ],
     month: "Dec",
@@ -229,7 +242,8 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("11")
+        timeStr: expect.stringContaining("11"),
+        variables: [],
       },
     ],
     month: "Dec",

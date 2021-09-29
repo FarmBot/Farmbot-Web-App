@@ -31,7 +31,7 @@ export interface ResourceIndex {
    *
    * USE CASE:
    *  * You have a sequence `Sequence.0.1`
-   *  * It has 2 variables: `parent` and `parent1`.
+   *  * It has 2 variables: `variable` and `variable1`.
    *
    * SOLUTION:
    *  * Create an index entry, indexed by UUID, for every variable declared in
@@ -42,8 +42,8 @@ export interface ResourceIndex {
    *   ...
    *   "Sequence.0.1": {
    *     ...
-   *     "parent": { label: "parent" },
-   *     "parent1": { label: "parent1" },
+   *     "variable": { label: "variable" },
+   *     "variable1": { label: "variable1" },
    *   }
    *   ...
    * }

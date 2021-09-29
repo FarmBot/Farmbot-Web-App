@@ -135,6 +135,16 @@ describe("<EditFEForm />", () => {
     expect(history.push).toHaveBeenCalledWith("/app/designer/events");
   });
 
+  it("handles empty dropdown value", () => {
+    const p = fakeProps();
+    p.farmEvent.body.id = 1;
+    p.farmEvent.body.executable_type = "Regimen";
+    const i = instance(p);
+    i.executableSet({ value: "", label: "hey", headingId: "Sequence" });
+    expect(error).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+  });
+
   it("gets executable info", () => {
     const p = fakeProps();
     const i = instance(p);
@@ -459,7 +469,7 @@ describe("recombine()", () => {
       startTime: "08:35",
       endDate: "2017-08-01",
       endTime: "08:33",
-      repeat: "1",
+      repeat: "0",
       timeUnit: "daily",
       executable_type: "Regimen",
       executable_id: "1",

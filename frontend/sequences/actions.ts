@@ -1,7 +1,7 @@
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { SelectSequence } from "./interfaces";
 import { edit, init, overwrite } from "../api/crud";
-import { defensiveClone, urlFriendly } from "../util";
+import { defensiveClone, prettyPrintApiErrors, urlFriendly } from "../util";
 import { push } from "../history";
 import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
@@ -65,18 +65,18 @@ export const closeCommandMenu = () => ({
 
 export const publishSequence = (id: number | undefined, copyright: string) => () =>
   axios.post(`${API.current.sequencesPath}${id}/publish`, { copyright })
-    .then(() => success(t("Sequence published.")),
-      () => error(t("Publish error.")));
+    .then(() => setTimeout(() => success(t("Sequence published.")), 5000),
+      err => error(prettyPrintApiErrors(err), { title: t("Publish error.") }));
 
 export const unpublishSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/unpublish`)
     .then(() => success(t("Sequence unpublished.")),
-      () => error(t("Unpublish error.")));
+      err => error(prettyPrintApiErrors(err), { title: t("Unpublish error.") }));
 
 export const installSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/install`)
     .then(() => success(t("Sequence installed.")),
-      () => error(t("Install error.")));
+      err => error(prettyPrintApiErrors(err), { title: t("Install error.") }));
 
 export const upgradeSequence = (
   id: number | undefined,
@@ -85,4 +85,4 @@ export const upgradeSequence = (
   () =>
     axios.post(`${API.current.sequencesPath}${id}/upgrade/${sequenceVersionId}`)
       .then(() => success(t("Sequence upgraded.")),
-        () => error(t("Upgrade error.")));
+        err => error(prettyPrintApiErrors(err), { title: t("Upgrade error.") }));

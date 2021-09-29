@@ -239,7 +239,7 @@ export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
         unpublishSequence(sequence.body.id)();
         publishAction(setUnpublishing);
       }}>
-      {unpublishing ? t("unpublishing") : t("Unpublish this sequence")}
+      {unpublishing ? t("Unpublishing") : t("Unpublish this sequence")}
       {unpublishing && <i className={"fa fa-spinner fa-pulse"} />}
     </button>
   </div>;
@@ -261,6 +261,7 @@ export const SequenceBtnGroup = ({
       onClick={() => dispatch(save(sequence.uuid)).then(() =>
         push(sequencesUrlBase() + urlFriendly(sequence.body.name)))} />
     <TestButton
+      key={JSON.stringify(sequence)}
       syncStatus={syncStatus}
       sequence={sequence}
       resources={resources}
@@ -357,9 +358,9 @@ export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, ActiveMiddleState> {
   state: ActiveMiddleState = {
     variablesCollapsed: false,
-    descriptionCollapsed: false,
+    descriptionCollapsed: !this.props.sequence.body.description,
     stepsCollapsed: false,
-    licenseCollapsed: false,
+    licenseCollapsed: true,
     editingDescription: false,
     description: this.props.sequence.body.description || "",
     viewSequenceCeleryScript: false,
@@ -412,6 +413,7 @@ export class SequenceEditorMiddleActive extends
       .map(v => v && isScopeDeclarationBodyItem(v.celeryNode)
         ? v.celeryNode
         : undefined));
+    const stepCount = (sequence.body.body || []).length;
     return <div className="sequence-editor-content">
       <ImportedBanner
         sequence={sequence}
@@ -484,7 +486,7 @@ export class SequenceEditorMiddleActive extends
             <pre>{stringifySequenceData(this.props.sequence.body)}</pre>}
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("sequence steps")}
-              count={(sequence.body.body || []).length}
+              count={stepCount}
               collapsed={this.state.stepsCollapsed}
               toggle={this.toggleSection("stepsCollapsed")} />}
           {!viewSequenceCeleryScript &&
@@ -493,6 +495,9 @@ export class SequenceEditorMiddleActive extends
                 <div className={"sequence-step-components"}>
                   <ErrorBoundary>
                     <AllSteps {...this.stepProps} />
+                    <AddCommandButton dispatch={dispatch}
+                      stepCount={stepCount}
+                      index={Infinity} />
                   </ErrorBoundary>
                   <Row>
                     <Col xs={12}>
@@ -500,7 +505,6 @@ export class SequenceEditorMiddleActive extends
                         callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
                         {t("DRAG COMMAND HERE")}
                       </DropArea>
-                      <AddCommandButton dispatch={dispatch} index={99999999} />
                     </Col>
                   </Row>
                 </div>
@@ -547,7 +551,7 @@ const Description = (props: DescriptionProps) =>
             description: props.description,
           }))} />
       </div>
-      : <Markdown>{props.sequence.body.description || ""}</Markdown>}
+      : <Markdown>{props.description}</Markdown>}
     <div className={"description-editor-tools"}>
       <i className={`fa fa-${props.editing ? "eye" : "pencil"}`}
         title={t("toggle editor view")}
@@ -576,6 +580,10 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
   const currentVersionItem = selectVersion(versionId);
   const forked = !!props.sequence.body.forked;
   const upgradeAvailable = ((versionId != latestId) || forked);
+  const currentVersionLabel = <p>
+    {currentVersionItem?.label}
+    <i className={`fa fa-${forked ? "chain-broken" : "link"}`} />
+  </p>;
   return versionId
     ? <div className={"import-banners"}>
       <div className={"imported-banner"}>
@@ -597,11 +605,11 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
                 position={Position.TOP_RIGHT}
                 interactionKind={PopoverInteractionKind.CLICK}
                 popoverClassName={"help"}
-                target={<p>{currentVersionItem?.label}{"*"}</p>}
+                target={currentVersionLabel}
                 content={<div className={"help-text-content"}>
-                  {"* " + t(Content.SEQUENCE_FORKED)}
+                  {t(Content.SEQUENCE_FORKED)}
                 </div>} />
-              : <p>{currentVersionItem?.label}</p>}
+              : currentVersionLabel}
           </div>
           <div className={`copy-item ${props.view == "local" ? "" : "selected"}`}
             onClick={props.selectView("public")}>
@@ -651,21 +659,38 @@ const PublicCopyToolbar = (props: PublicCopyToolbarProps) => {
 export const sequenceVersionPath = (id: string | number | undefined) =>
   `/app/shared/sequence/${id}`;
 
-export const AddCommandButton = (props: { dispatch: Function, index: number }) =>
-  <div className="add-command-button-container">
+export interface AddCommandButtonProps {
+  dispatch: Function;
+  index: number;
+  stepCount: number;
+}
+
+export const AddCommandButton = (props: AddCommandButtonProps) => {
+  const { index, dispatch, stepCount } = props;
+  const getPositionClass = () => {
+    switch (index) {
+      case 0: return "first";
+      case Infinity: return stepCount == 0 ? "only" : "last";
+      default: return "middle";
+    }
+  };
+  return <div className={`add-command-button-container ${getPositionClass()}`}>
     <button
       className="add-command fb-button gray"
       title={t("add sequence step")}
       onClick={() => {
-        props.dispatch({
+        dispatch({
           type: Actions.SET_SEQUENCE_STEP_POSITION,
-          payload: props.index,
+          payload: index,
         });
         inDesigner() && push("/app/designer/sequences/commands");
       }}>
-      {t("Add command")}
+      {stepCount == 0
+        ? t("add command")
+        : <i className={"fa fa-plus"} />}
     </button>
   </div>;
+};
 
 export interface SectionHeaderProps {
   title: string;
@@ -675,10 +700,9 @@ export interface SectionHeaderProps {
 }
 
 export const SectionHeader = (props: SectionHeaderProps) =>
-  <div className={"sequence-section-header"}>
+  <div className={"sequence-section-header"} onClick={props.toggle}>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
       : t(props.title)}</label>
-    <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
-      onClick={props.toggle} />
+    <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
   </div>;

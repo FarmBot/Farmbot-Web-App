@@ -87,7 +87,7 @@ export class RawDesignerSequencePreview
     variablesCollapsed: false,
     descriptionCollapsed: false,
     stepsCollapsed: false,
-    licenseCollapsed: false,
+    licenseCollapsed: true,
     error: false,
   };
 

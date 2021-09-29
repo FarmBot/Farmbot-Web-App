@@ -42,14 +42,41 @@
   .sequence-editor-content {
     margin-right: -15px;
   }
+  .copy-item {
+    &:hover {
+      background: $lighter_gray !important;
+    }
+  }
+  .sequence-section-header {
+    &:hover {
+      background: $lighter_gray !important;
+    }
+  }
 }
 
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -10px;
+  margin-left: -10px;
+  .regimen {
+    padding-left: 1rem;
+  }
+  .sequence {
+    margin-bottom: 1rem;
+  }
   @media screen and (max-width: 767px) {
-    margin-left: 15px;
+    margin-left: 5px;
     margin-right: 0;
+    padding-right: 2rem;
+    .regimen {
+      padding-left: 0;
+    }
+  }
+}
+
+.regimen-editor-content {
+  @media screen and (max-width: 767px) {
+    padding-right: 0;
   }
 }
 
@@ -58,6 +85,7 @@
     margin-right: 15px;
     margin-bottom: 0;
     margin-top: 0.5rem;
+    margin-left: 15px;
   }
   .import-banners {
     margin-bottom: 1rem;
@@ -117,6 +145,9 @@
         background: $panel_blue;
         font-weight: bold;
         font-size: 1rem;
+        i {
+          margin-left: 0.5rem;
+        }
       }
       .filter-search {
         display: inline-block;
@@ -153,6 +184,14 @@
   }
   .sequence-section-header {
     line-height: 3rem;
+    cursor: pointer;
+    padding-left: 1.5rem;
+    &:hover {
+      background: $off_white;
+    }
+    label {
+      cursor: pointer;
+    }
     .fa-caret-up,
     .fa-caret-down {
       float: right;
@@ -167,7 +206,6 @@
     position: relative;
     width: 100%;
     padding-right: 2rem;
-    margin-left: -15px;
     textarea {
       margin-left: 2rem;
       height: 100%;
@@ -204,6 +242,9 @@
       position: absolute;
       bottom: 0;
       right: 2rem;
+      .fa-pencil {
+        margin-bottom: 1rem;
+      }
       .char-limit {
         font-size: 1rem;
         line-height: 1.75rem;
@@ -213,6 +254,14 @@
           color: $darkest_red;
         }
       }
+    }
+  }
+}
+
+.preview-description {
+  .sequence-description {
+    .markdown {
+      border: none;
     }
   }
 }
@@ -276,12 +325,23 @@
       padding: 1rem;
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;
-      label {
-        font-size: 1.2rem;
+      label,
+      input {
         vertical-align: top;
-        max-width: 90%;
+        max-width: 80%;
+      }
+      label {
+        width: 100%;
+        font-size: 1.2rem;
         overflow: hidden;
         text-overflow: ellipsis;
+        cursor: text;
+      }
+      input {
+        height: 1.5rem;
+        text-transform: uppercase;
+        font-weight: bold;
+        padding-left: 0;
       }
       .fa-trash {
         float: right;
@@ -350,12 +410,14 @@
     padding-bottom: 1rem;
     line-height: 1.5rem;
     margin-right: 1rem;
+    margin-left: 1.5rem;
   }
 }
 
 .sequence-steps {
   margin-right: 25px;
   margin-left: 10px;
+  margin-top: 10px;
   .sequence-step {
     &.hovered {
       box-shadow: 0px 0px 15px #ff7700;
@@ -743,14 +805,59 @@
 
 .add-command-button-container {
   display: none;
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  height: 0;
+  &.first,
+  &.middle,
+  &.last {
+    .add-command {
+      padding: 0.25rem;
+      border-radius: 2rem;
+      box-shadow: none !important;
+      background: $dark_gray !important;
+    }
+  }
+  &.middle {
+    .add-command {
+      rotate: -45deg;
+      margin-top: -1.5rem;
+      margin-right: 1.5rem;
+      border-top-left-radius: 0;
+      i {
+        rotate: 45deg;
+      }
+    }
+  }
+  &.first {
+    .add-command {
+      margin-top: -0.25rem;
+      margin-right: 1.5rem;
+      border-top-left-radius: 0;
+    }
+  }
+  &.last {
+    .add-command {
+      margin-top: -1.75rem;
+      border-radius: 2rem;
+      margin-right: 0.5rem;
+      border-bottom-left-radius: 0;
+    }
+  }
+  &.only {
+    position: relative;
+    margin: auto;
+    text-align: center;
+    height: 3rem;
+    .add-command {
+      float: none;
+    }
+  }
   @media screen and (max-width: 767px) {
     display: block;
     .add-command {
       display: block;
-      margin: auto;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      float: none !important;
     }
   }
 }
