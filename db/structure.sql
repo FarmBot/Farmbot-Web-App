@@ -886,7 +886,8 @@ CREATE TABLE public.sequences (
     pinned boolean DEFAULT false,
     description text,
     forked boolean DEFAULT false,
-    sequence_version_id bigint
+    sequence_version_id bigint,
+    copyright character varying(1500)
 );
 
 
@@ -3740,6 +3741,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210901215214'),
 ('20210913175949'),
 ('20210914194342'),
-('20210917165755');
+('20210917165755'),
+('20210929220719');
 
 

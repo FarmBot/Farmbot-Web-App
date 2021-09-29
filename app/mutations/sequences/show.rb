@@ -67,7 +67,7 @@ module Sequences
     end
 
     def copyright
-      sequence_version&.copyright || ""
+      sequence.copyright || sequence_version&.copyright
     end
 
     def available_version_ids
