@@ -3,6 +3,7 @@ import {
   FarmEventWithExecutable,
 } from "../farm_events/calendar/interfaces";
 import { CalendarDay } from "../farm_designer/interfaces";
+import { fakeSequence } from "./fake_state/resources";
 
 export const TIME = {
   MONDAY: moment("2017-06-19T06:30:00.000-05:00"),
@@ -21,12 +22,7 @@ export const fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
     time_unit: "daily",
     executable_id: 23,
     executable_type: "Sequence",
-    executable: {
-      color: "red",
-      name: "faker",
-      kind: "sequence",
-      args: { version: 0, locals: { kind: "scope_declaration", args: {} } }
-    }
+    executable: fakeSequence().body,
   };
 };
 
@@ -45,6 +41,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072417",
@@ -54,6 +51,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072417",
@@ -63,6 +61,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072417",
@@ -72,6 +71,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072417",
@@ -81,6 +81,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
     ]
   },
@@ -97,7 +98,8 @@ export const calendarRows: CalendarDay[] = [
         "heading": "Every 4 hours",
         "executableId": 25,
         "subheading": "25",
-        "id": 79
+        "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -107,6 +109,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -116,6 +119,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -125,6 +129,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -134,6 +139,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -143,6 +149,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -152,6 +159,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072517",
@@ -161,6 +169,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
     ]
   },
@@ -177,7 +186,8 @@ export const calendarRows: CalendarDay[] = [
         "heading": "Every 4 hours",
         "executableId": 25,
         "subheading": "25",
-        "id": 79
+        "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -187,6 +197,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -196,6 +207,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -205,6 +217,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -214,6 +227,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -223,6 +237,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -232,6 +247,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
       {
         "mmddyy": "072617",
@@ -241,6 +257,7 @@ export const calendarRows: CalendarDay[] = [
         "executableId": 25,
         "subheading": "25",
         "id": 79,
+        "variables": [],
       },
     ]
   },

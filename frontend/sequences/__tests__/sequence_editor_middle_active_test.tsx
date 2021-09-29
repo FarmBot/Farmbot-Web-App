@@ -65,6 +65,7 @@ import {
   SequencePublishMenu,
   isSequencePublished,
   ImportedBanner,
+  AddCommandButtonProps,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import {
@@ -422,7 +423,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("edits description", () => {
     mockPath = "/app/designer/sequences/1";
     const p = fakeProps();
-    p.sequence.body.description = "";
+    p.sequence.body.description = "description";
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
     wrapper.setState({ editingDescription: true });
@@ -432,6 +433,16 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.state().description).toEqual("edit");
     wrapper.find("textarea").simulate("blur");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { description: "edit" });
+  });
+
+  it("handles empty description", () => {
+    mockPath = "/app/designer/sequences/1";
+    const p = fakeProps();
+    p.sequence.body.description = "";
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...p} />);
+    wrapper.setState({ editingDescription: true });
+    expect(wrapper.find("textarea").length).toEqual(0);
   });
 });
 
@@ -538,12 +549,18 @@ describe("<SequenceName />", () => {
 });
 
 describe("<AddCommandButton />", () => {
+  const fakeProps = (): AddCommandButtonProps => ({
+    dispatch: jest.fn(),
+    index: 1,
+    stepCount: 0,
+  });
+
   it("dispatches new step position", () => {
     mockPath = "";
-    const dispatch = jest.fn();
-    const wrapper = shallow(<AddCommandButton dispatch={dispatch} index={1} />);
+    const p = fakeProps();
+    const wrapper = shallow(<AddCommandButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(dispatch).toHaveBeenCalledWith({
+    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SEQUENCE_STEP_POSITION,
       payload: 1,
     });
@@ -552,8 +569,9 @@ describe("<AddCommandButton />", () => {
 
   it("navigates", () => {
     mockPath = "/app/designer/sequences/1";
-    const dispatch = jest.fn();
-    const wrapper = shallow(<AddCommandButton dispatch={dispatch} index={1} />);
+    const p = fakeProps();
+    p.stepCount = 1;
+    const wrapper = shallow(<AddCommandButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(push).toHaveBeenCalledWith("/app/designer/sequences/commands");
   });

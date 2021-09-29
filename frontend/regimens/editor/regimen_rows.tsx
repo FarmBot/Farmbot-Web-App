@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  RegimenItem, CalendarRow, RegimenItemCalendarRow,
-} from "../interfaces";
+import { CalendarRow, RegimenItemCalendarRow } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
@@ -10,6 +8,7 @@ import { reduceVariables } from "../../sequences/locals_list/variable_support";
 import { determineDropdown, withPrefix } from "../../resources/sequence_meta";
 import { ResourceIndex } from "../../resources/interfaces";
 import { RegimenRowsProps, DisplayVarValueProps } from "./interfaces";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 
 /** Make room for the regimen header variable form when necessary. */
 const regimenSectionHeight =

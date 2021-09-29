@@ -1,5 +1,5 @@
-import { RegimenItem } from "../interfaces";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 
 export interface RegimenSchedulerProps {

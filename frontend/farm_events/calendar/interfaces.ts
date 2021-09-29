@@ -1,6 +1,6 @@
-import { Regimen } from "../../regimens/interfaces";
-import { Sequence } from "../../sequences/interfaces";
-import { FarmEvent } from "farmbot/dist/resources/api_resources";
+import {
+  FarmEvent, Regimen, SequenceResource,
+} from "farmbot/dist/resources/api_resources";
 
 /** Make a fully formed farm event: join regimen, sequence, etc. */
 
@@ -13,7 +13,7 @@ export type FarmEventWithExecutable =
 /** Takes a farm event and merges it with its sequence object. */
 export interface FarmEventWithSequence extends FarmEvent {
   executable_type: "Sequence";
-  executable: Sequence;
+  executable: SequenceResource;
 }
 
 /** Takes a farm event and merges it with its regimen object. */

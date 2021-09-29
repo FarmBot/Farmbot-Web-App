@@ -46,6 +46,12 @@ export class RawFarmEvents
         const subHeading = occur.subheading
           ? <p style={{ color: "gray" }}> {occur.heading} </p>
           : <p />;
+        const variables = occur.variables.map(variable =>
+          <span key={variable}
+            className={"farm-event-variable"}
+            style={{ color: "gray" }}>
+            {variable}
+          </span>);
 
         return <div
           className={
@@ -57,6 +63,7 @@ export class RawFarmEvents
           <div className="farm-event-data-executable">
             {heading}
             {subHeading}
+            {variables}
           </div>
           <Link to={url}>
             <i className="fa fa-pencil-square-o edit-icon" />

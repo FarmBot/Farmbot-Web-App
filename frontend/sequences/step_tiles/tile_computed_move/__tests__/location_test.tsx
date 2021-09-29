@@ -22,7 +22,7 @@ import {
   fakeSequence, fakeToolSlot, fakeTool,
 } from "../../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../../ui";
-import { Move } from "farmbot";
+import { Move, VariableDeclaration } from "farmbot";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
 import { COORDINATE_DDI } from "../../../locals_list/location_form_list";
 
@@ -124,7 +124,7 @@ describe("<LocationSelection />", () => {
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = shallow(<LocationSelection {...p} />);
     expect(wrapper.props().selectedItem).toEqual({
-      label: "variable - variable", value: "variable",
+      label: "variable - fake variable info label", value: "variable",
     });
   });
 
@@ -133,7 +133,16 @@ describe("<LocationSelection />", () => {
     const p = fakeProps();
     p.locationNode = { kind: "identifier", args: { label: "parent" } };
     p.locationSelection = LocSelection.identifier;
-    const variables = fakeVariableNameSet("parent", { x: 10, y: 20, z: 30 });
+    const vector = { x: 10, y: 20, z: 30 };
+    const node: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "parent", data_value: {
+          kind: "coordinate", args: vector
+        }
+      }
+    };
+    const variables = fakeVariableNameSet("parent", vector, node);
     p.resources = buildResourceIndex([]).index;
     variables["other"] = undefined;
     p.resources.sequenceMetas["uuid"] = variables;
@@ -157,13 +166,8 @@ describe("<LocationSelection />", () => {
       },
       {
         headingId: "Identifier",
-        label: "Location variable - variable",
+        label: "Location variable - fake variable info label",
         value: "parent",
-      },
-      {
-        headingId: "Identifier",
-        label: "Location variable - Add new",
-        value: "unknown",
       },
       {
         headingId: "Identifier",

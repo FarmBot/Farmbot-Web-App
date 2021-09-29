@@ -40,12 +40,12 @@ describe("<LocalsList/>", () => {
   const mrGoodVar: ParameterApplication = {
     // https://en.wikipedia.org/wiki/Mr._Goodbar
     kind: "parameter_application",
-    args: { label: "parent", data_value: coordinate }
+    args: { label: "label", data_value: coordinate }
   };
   const variableData: VariableNameSet = {
-    parent: {
+    "label": {
       celeryNode: mrGoodVar,
-      dropdown: { value: "parent", label: "parent" },
+      dropdown: { value: "label", label: "label" },
       vector: coordinate.args,
     }
   };
@@ -108,7 +108,7 @@ describe("localListCallback()", () => {
     const parameterDeclaration: ParameterDeclaration = {
       kind: "parameter_declaration",
       args: {
-        label: "parent", default_value: {
+        label: "label", default_value: {
           kind: "coordinate", args: { x: 1, y: 2, z: 3 }
         }
       }
@@ -132,7 +132,7 @@ describe("localListCallback()", () => {
       {
         kind: "parameter_declaration",
         args: {
-          label: "parent", default_value: {
+          label: "label", default_value: {
             kind: "coordinate", args: { x: 1, y: 2, z: 3 }
           }
         }
@@ -261,7 +261,7 @@ describe("removeVariable()", () => {
 
 describe("generateNewVariableLabel()", () => {
   it("generates new first label", () => {
-    expect(generateNewVariableLabel([])).toEqual("parent");
+    expect(generateNewVariableLabel([])).toEqual("Location variable 1");
   });
 
   it("generates new label", () => {

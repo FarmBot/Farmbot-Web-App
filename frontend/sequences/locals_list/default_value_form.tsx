@@ -32,7 +32,6 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         sequenceUuid={""}
         resources={props.resources}
         allowedVariableNodes={AllowedVariableNodes.variable}
-        hideTypeLabel={true}
         hideGroups={true}
         onChange={change(props.onChange, props.variableNode)} />
     </div>;

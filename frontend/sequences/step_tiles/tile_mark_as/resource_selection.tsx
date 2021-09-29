@@ -12,23 +12,28 @@ import {
 } from "../../../resources/selectors";
 import { formatPoint } from "../../locals_list/location_form_list";
 import {
-  maybeFindVariable, SequenceMeta,
+  determineVarDDILabel, maybeFindVariable,
 } from "../../../resources/sequence_meta";
 import { UPDATE_RESOURCE_DDIS } from "./field_selection";
 import {
   getFwHardwareValue, hasUTM,
 } from "../../../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../../../resources/getters";
+import { generateVariableListItems } from "../../locals_list/location_form";
+import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
 
-export const ResourceSelection = (props: ResourceSelectionProps) =>
-  <div className={"update-resource-step-resource"}>
+export const ResourceSelection = (props: ResourceSelectionProps) => {
+  const selected = getSelectedResource(
+    props.resource, props.resources, props.sequenceUuid);
+  return <div className={"update-resource-step-resource"}>
     <label>{t("Mark")}</label>
     <FBSelect
+      key={selected.value}
       list={resourceList(props.resources, props.sequenceUuid)}
       onChange={ddi => props.updateResource(prepareResource(ddi))}
-      selectedItem={getSelectedResource(
-        props.resource, props.resources, props.sequenceUuid)} />
+      selectedItem={selected} />
   </div>;
+};
 
 const prepareResource = (ddi: DropDownItem): Resource | Identifier => {
   switch (ddi.headingId) {
@@ -53,12 +58,14 @@ const resourceList =
     const weeds = points.filter(p => p.body.pointer_type == "Weed");
     const plants = points.filter(p => p.body.pointer_type == "Plant");
     const headingCommon = { heading: true, value: 0 };
-    const varLabel = resourceVariableLabel(maybeFindVariable(
-      "parent", resources, sequenceUuid));
     const firmwareHardware = getFwHardwareValue(getFbosConfig(resources));
     const utm = hasUTM(firmwareHardware);
     return [
-      { headingId: "Identifier", label: varLabel, value: "parent" },
+      { headingId: "Identifier", label: t("Variables"), ...headingCommon },
+      ...generateVariableListItems({
+        allowedVariableNodes: AllowedVariableNodes.identifier,
+        resources, sequenceUuid, headingId: "Identifier",
+      }),
       { headingId: "Device", label: t("Device"), ...headingCommon },
       ...(utm
         ? [{ headingId: "Device", label: t("Tool Mount"), value: deviceId }]
@@ -93,12 +100,13 @@ const getSelectedResource = (
       const variable =
         maybeFindVariable(resource.args.label, resources, sequenceUuid);
       return {
-        label: resourceVariableLabel(variable),
+        label: determineVarDDILabel({
+          label: variable?.celeryNode.args.label || "",
+          resources,
+          uuid: sequenceUuid,
+        }),
         value: resource.args.label,
       };
     case "nothing": return UPDATE_RESOURCE_DDIS().SELECT_ONE;
   }
 };
-
-const resourceVariableLabel = (variable: SequenceMeta | undefined) =>
-  `${t("Variable")} - ${variable?.dropdown.label || t("Add new")}`;

@@ -202,6 +202,7 @@ export interface CalendarOccurrence {
   timeStr: string;
   heading: string;
   subheading?: string | undefined;
+  variables: string[];
   executableId: number;
   id: number;
   color?: string;
