@@ -27,7 +27,7 @@ module Sequences
                description: description,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
-               sequence_version_id: sequence_version_id,
+               sequence_version_id: sequence_publication ? nil : sequence_version_id,
              }
     end
 
@@ -77,9 +77,8 @@ module Sequences
       #   See if the this sequence "owns" is a published upstream publication.
       #   If it is not published, don't show anything to the author.
       #   If it IS published, show the versions to the author.
-      my_sp = SequencePublication.find_by(author_sequence_id: sequence.id)
-      if my_sp&.published
-        return my_sp.sequence_versions.pluck(:id)
+      if sequence_publication&.published
+        return sequence_publication.sequence_versions.pluck(:id)
       end
 
       # Second attempt:
@@ -89,10 +88,16 @@ module Sequences
       if upstream_sp&.published
         return upstream_sp.sequence_versions.pluck(:id)
       end
+
+      return []
     end
 
     def sequence_version_id
       sequence.sequence_version_id
+    end
+
+    def sequence_publication
+      @sequence_publication ||= SequencePublication.find_by(author_sequence_id: sequence.id)
     end
   end
 end
