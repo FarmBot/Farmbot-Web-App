@@ -28,7 +28,7 @@ describe("<RegimenRows />", () => {
       calendar: [{
         day: "1",
         items: [{
-          name: "Item 0",
+          sequenceName: "Item 0",
           color: "red",
           hhmm: "10:00",
           sortKey: 0,

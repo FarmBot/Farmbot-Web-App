@@ -134,13 +134,11 @@ describe("publishSequence()", () => {
   API.setBaseUrl("");
 
   it("publishes sequence", async () => {
-    jest.useFakeTimers();
     mockPost = Promise.resolve();
     await publishSequence(123, "")();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost/api/sequences/123/publish", { copyright: "" });
-    jest.runAllTimers();
-    expect(success).toHaveBeenCalledWith("Sequence published.");
+    expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
