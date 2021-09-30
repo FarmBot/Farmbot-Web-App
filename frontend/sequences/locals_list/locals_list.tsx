@@ -145,9 +145,9 @@ export const generateNewVariableLabel =
   };
 
 /** Show a parameter_declaration as its default value in the location form. */
-const convertFormVariable =
+export const convertFormVariable =
   (variable: ParameterDeclaration, resources: ResourceIndex):
-    SequenceMeta | undefined => {
+    SequenceMeta => {
     const converted: ParameterApplication = {
       kind: "parameter_application", args: {
         label: variable.args.label,

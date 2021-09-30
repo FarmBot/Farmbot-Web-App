@@ -65,7 +65,7 @@ export const closeCommandMenu = () => ({
 
 export const publishSequence = (id: number | undefined, copyright: string) => () =>
   axios.post(`${API.current.sequencesPath}${id}/publish`, { copyright })
-    .then(() => setTimeout(() => success(t("Sequence published.")), 5000),
+    .then(() => { },
       err => error(prettyPrintApiErrors(err), { title: t("Publish error.") }));
 
 export const unpublishSequence = (id: number | undefined) => () =>

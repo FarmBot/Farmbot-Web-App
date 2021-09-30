@@ -9,7 +9,7 @@ export interface CalendarRow {
 export interface RegimenItemCalendarRow {
   regimen: TaggedRegimen;
   item: RegimenItem;
-  name: string;
+  sequenceName: string;
   hhmm: string;
   color: string;
   /** Numeric field that can be used for sorting purposes. */

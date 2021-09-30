@@ -204,6 +204,7 @@ export interface CalendarOccurrence {
   subheading?: string | undefined;
   variables: string[];
   executableId: number;
+  executableType: ExecutableType;
   id: number;
   color?: string;
 }

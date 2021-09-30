@@ -168,6 +168,7 @@ describe("<LocationForm />", () => {
 
   it("uses custom filter for dropdown", () => {
     const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.customFilterRule = () => false;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toEqual([]);

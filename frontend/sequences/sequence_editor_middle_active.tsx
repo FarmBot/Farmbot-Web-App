@@ -595,32 +595,31 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
             {t("upgrade to latest")}
           </button>}
       </div>
-      {upgradeAvailable &&
-        <div className={"upgrade-compare-banner"}>
-          <div className={`copy-item ${props.view == "local" ? "selected" : ""}`}
-            onClick={props.selectView("local")}>
-            <label>{t("your copy")}</label>
-            {forked
-              ? <Popover
-                position={Position.TOP_RIGHT}
-                interactionKind={PopoverInteractionKind.CLICK}
-                popoverClassName={"help"}
-                target={currentVersionLabel}
-                content={<div className={"help-text-content"}>
-                  {t(Content.SEQUENCE_FORKED)}
-                </div>} />
-              : currentVersionLabel}
-          </div>
-          <div className={`copy-item ${props.view == "local" ? "" : "selected"}`}
-            onClick={props.selectView("public")}>
-            <label>{t("public copy")}</label>
-            <FBSelect
-              key={props.selectedVersionId}
-              selectedItem={selectVersion(props.selectedVersionId || latestId)}
-              onChange={props.selectVersionId}
-              list={versionList} />
-          </div>
-        </div>}
+      <div className={"upgrade-compare-banner"}>
+        <div className={`copy-item ${props.view == "local" ? "selected" : ""}`}
+          onClick={props.selectView("local")}>
+          <label>{t("your copy")}</label>
+          {forked
+            ? <Popover
+              position={Position.TOP_RIGHT}
+              interactionKind={PopoverInteractionKind.CLICK}
+              popoverClassName={"help"}
+              target={currentVersionLabel}
+              content={<div className={"help-text-content"}>
+                {t(Content.SEQUENCE_FORKED)}
+              </div>} />
+            : currentVersionLabel}
+        </div>
+        <div className={`copy-item ${props.view == "local" ? "" : "selected"}`}
+          onClick={props.selectView("public")}>
+          <label>{t("public copy")}</label>
+          <FBSelect
+            key={props.selectedVersionId}
+            selectedItem={selectVersion(props.selectedVersionId || latestId)}
+            onChange={props.selectVersionId}
+            list={versionList} />
+        </div>
+      </div>
     </div>
     : <div />;
 };

@@ -28,7 +28,7 @@ describe("occurrence", () => {
       kind: "parameter_application",
       args: {
         label: "label",
-        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+        data_value: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } }
       }
     }];
     const parameterDeclation: ParameterDeclaration = {
@@ -42,7 +42,7 @@ describe("occurrence", () => {
       (fe.executable.args.locals.body = [parameterDeclation]);
     const t = occurrence(TIME.MONDAY, fe, fakeTimeSettings(),
       buildResourceIndex([]).index);
-    expect(t.variables).toEqual(["label - Coordinate (0, 0, 0)"]);
+    expect(t.variables).toEqual(["label - Coordinate (1, 0, 0)"]);
   });
 
   it("can't find variable", () => {
@@ -59,7 +59,7 @@ describe("occurrence", () => {
       (fe.executable.args.locals.body = [parameterDeclation]);
     const t = occurrence(TIME.MONDAY, fe, fakeTimeSettings(),
       buildResourceIndex([]).index);
-    expect(t.variables).toEqual([]);
+    expect(t.variables).toEqual(["label - Coordinate (0, 0, 0)"]);
   });
 
   it("builds entry with modified heading: hidden items", () => {
