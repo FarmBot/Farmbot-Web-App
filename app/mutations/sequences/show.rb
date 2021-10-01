@@ -27,7 +27,7 @@ module Sequences
                description: description,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
-               sequence_version_id: sequence_publication ? nil : sequence_version_id,
+               sequence_version_id: sequence_version_id,
              }
     end
 
