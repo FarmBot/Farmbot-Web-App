@@ -56,6 +56,7 @@ describe("mapStateToProps()", () => {
         items: [
           {
             executableId: 1,
+            executableType: "Sequence",
             heading: "fake",
             id: 1,
             color: "red",
@@ -73,6 +74,7 @@ describe("mapStateToProps()", () => {
         items: [
           {
             executableId: 1,
+            executableType: "Regimen",
             heading: "Foo",
             id: 2,
             color: "red",
@@ -84,6 +86,7 @@ describe("mapStateToProps()", () => {
           },
           {
             executableId: 1,
+            executableType: "Regimen",
             heading: "Foo",
             id: 2,
             color: "red",
@@ -135,6 +138,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     day: expect.any(Number),
     items: [{
       executableId: 1,
+      executableType: "Sequence",
       heading: "fake",
       id: 1,
       color: "red",
@@ -217,6 +221,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     items: [
       {
         executableId: 1,
+        executableType: "Regimen",
         heading: "Foo",
         subheading: "",
         id: 2,
@@ -236,6 +241,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     items: [
       {
         executableId: 1,
+        executableType: "Regimen",
         heading: "Foo",
         subheading: "fake",
         id: 2,

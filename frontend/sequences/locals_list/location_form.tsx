@@ -56,7 +56,6 @@ export const LocationForm =
     });
     const variableListItems = generateVariableListItems({
       allowedVariableNodes, resources, sequenceUuid,
-      variable: variable.celeryNode,
     });
     const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, [], variableListItems,
@@ -66,6 +65,16 @@ export const LocationForm =
       : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
+    const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+    if (headerForm) {
+      list.unshift({
+        value: label,
+        label: determineVarDDILabel({
+          label, resources, uuid: sequenceUuid, forceExternal: true,
+        }),
+        headingId: "Variable",
+      });
+    }
     if (variable.isDefault) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
@@ -156,7 +165,6 @@ export interface GenerateVariableListProps {
   allowedVariableNodes: AllowedVariableNodes;
   resources: ResourceIndex;
   sequenceUuid: UUID;
-  variable?: VariableNode;
   headingId?: string;
 }
 
@@ -168,18 +176,7 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
   const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
   if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-  if (headerForm && props.variable) {
-    return [{
-      value: props.variable.args.label,
-      label: determineVarDDILabel({
-        label: props.variable.args.label,
-        resources,
-        uuid: sequenceUuid,
-        forceExternal: headerForm,
-      }),
-      headingId,
-    }];
-  }
+  if (headerForm) { return []; }
   const oldVariables = variables.map(variable_ => ({
     value: variable_.args.label,
     label: determineVarDDILabel({

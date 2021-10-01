@@ -2101,6 +2101,7 @@
   }
 }
 
+.sequence-editor-sections,
 .settings-panel-content,
 .setup-panel,
 .photos-panel {
@@ -2118,6 +2119,10 @@
     width: 0px !important;
     background-color: transparent !important;
   }
+}
+
+.bp3-collapse {
+  overflow: hidden;
 }
 
 .farmware-env-editor {
