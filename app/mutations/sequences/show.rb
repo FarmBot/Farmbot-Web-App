@@ -36,7 +36,7 @@ module Sequences
     end
 
     def execute
-      if is_forked?
+      if use_upstream_version?
         celery = Fragments::Show.run!(owner: sequence_version)
       else
         celery = LegacyRenderer.new(sequence).run
@@ -54,6 +54,18 @@ module Sequences
       return s
     end
 
+    def sequence_version_id
+      sequence.sequence_version_id
+    end
+
+    def copyright
+      sequence.copyright || sequence_version&.copyright
+    end
+
+    def sequence_publication
+      @sequence_publication ||= SequencePublication.find_by(author_sequence_id: sequence.id)
+    end
+
     def description
       sequence.description || sequence_version&.description
     end
@@ -62,12 +74,8 @@ module Sequences
       @sequence_version ||= SequenceVersion.find_by(id: sequence_version_id)
     end
 
-    def is_forked?
+    def use_upstream_version?
       !sequence.forked && sequence_version && sequence_version.id
-    end
-
-    def copyright
-      sequence.copyright || sequence_version&.copyright
     end
 
     # Heuristic for determining available sequence version.
@@ -89,15 +97,8 @@ module Sequences
         return upstream_sp.sequence_versions.pluck(:id)
       end
 
+      # All other cases: Render nothing.
       return []
-    end
-
-    def sequence_version_id
-      sequence.sequence_version_id
-    end
-
-    def sequence_publication
-      @sequence_publication ||= SequencePublication.find_by(author_sequence_id: sequence.id)
     end
   end
 end
