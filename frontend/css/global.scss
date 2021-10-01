@@ -1341,6 +1341,20 @@ ul {
     input {
       width: 50%;
     }
+    .republish-warning {
+      display: flex;
+      margin: 0.75rem -10px 1rem -10px;
+      padding: 1rem 1rem 0 1rem;
+      background: transparentize($orange, 0.6);
+      i {
+        margin-right: 1rem;
+        margin-top: 0.25rem;
+      }
+      p {
+        font-weight: bold;
+        padding-bottom: 0.5rem;
+      }
+    }
   }
   button {
     margin: 0;

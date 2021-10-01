@@ -39,7 +39,6 @@ import { ErrorBoundary } from "../error_boundary";
 import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 import { getModifiedClassName } from "../settings/default_values";
-import { DevSettings } from "../settings/dev/dev_support";
 import { error } from "../toast/toast";
 import { Link } from "../link";
 import { API } from "../api";
@@ -163,16 +162,17 @@ export const SequencePublishMenu = (props: SequenceShareMenuProps) => {
       <p>
         {t(Content.PUBLISH_SEQUENCE_NEW_VERSIONS)}
       </p>
-      <p>
-        {t(Content.PUBLISH_SEQUENCE_UNPUBLISH)}
-      </p>
       <p style={{ paddingBottom: 0 }}>
-        {`${t("By publishing this sequence, you will be releasing it under the")} `}
-        <MitLicenseLink />.
+        {t(Content.PUBLISH_SEQUENCE_UNPUBLISH)}
       </p>
       <label>{t("copyright holders")}:</label>
       <input defaultValue={copyright}
         onChange={e => setCopyright(e.currentTarget.value)} />
+      {isSequenceImportedOrPublished(sequence) &&
+        <div className={"republish-warning"}>
+          <i className={"fa fa-exclamation-triangle"} />
+          <p>{t(Content.REPUBLISH_WARNING)}</p>
+        </div>}
     </div>
     <button className={`fb-button gray ${disabled ? "pseudo-disabled" : ""}`}
       onClick={() => {
@@ -306,20 +306,22 @@ export const SequenceBtnGroup = ({
         dispatch(destroy(sequence.uuid, force))
           .then(() => push(sequencesUrlBase()));
       }} />
-    {DevSettings.futureFeaturesEnabled() &&
-      <div className={"publish-button"}>
-        <Popover position={Position.BOTTOM_RIGHT}
-          target={<i className={"fa fa-share"} title={t("share sequence")} />}
-          content={isSequencePublished(sequence)
-            ? <SequenceShareMenu sequence={sequence} />
-            : <SequencePublishMenu sequence={sequence} />} />
-      </div>}
+    <div className={"publish-button"}>
+      <Popover position={Position.BOTTOM_RIGHT}
+        target={<i className={"fa fa-share"} title={t("share sequence")} />}
+        content={isSequencePublished(sequence)
+          ? <SequenceShareMenu sequence={sequence} />
+          : <SequencePublishMenu sequence={sequence} />} />
+    </div>
   </div>;
 
 export const isSequencePublished = (sequence: TaggedSequence) =>
   !sequence.body.sequence_version_id
   && !sequence.body.forked
   && !!sequence.body.sequence_versions?.length;
+
+const isSequenceImportedOrPublished = (sequence: TaggedSequence) =>
+  sequence.body.sequence_version_id || !!sequence.body.sequence_versions?.length;
 
 interface SequenceNameProps {
   dispatch: Function;
@@ -510,8 +512,7 @@ export class SequenceEditorMiddleActive extends
                 </div>
               </div>
             </Collapse>}
-          {(sequence.body.sequence_version_id
-            || !!sequence.body.sequence_versions?.length) &&
+          {isSequenceImportedOrPublished(sequence) &&
             <License
               collapsed={this.state.licenseCollapsed}
               sequence={sequence}
