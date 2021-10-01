@@ -1045,6 +1045,10 @@ export namespace Content {
     trim(`Importing the sequence into their FarmBot account to view and use
     it as they deem fit`);
 
+  export const REPUBLISH_WARNING =
+    trim(`Republishing this sequence will prevent you from viewing public
+    copies and upgrading to versions from the current import source.`);
+
   export const PUBLISH_SEQUENCE_NEW_VERSIONS =
     trim(`You can publish new versions of this sequence at any time, which
     other users may choose to upgrade to.`);

@@ -43,11 +43,6 @@ jest.mock("../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => jest.fn()),
 }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 jest.mock("../panel/preview", () => ({
   License: () => <div />,
   loadSequenceVersion: jest.fn(),
@@ -477,13 +472,11 @@ describe("<SequenceBtnGroup />", () => {
   });
 
   it("shows publish menu", () => {
-    mockDev = true;
     const wrapper = shallow(<SequenceBtnGroup {...fakeProps()} />);
     expect(wrapper.find(".publish-button").length).toEqual(1);
   });
 
   it("shows share menu", () => {
-    mockDev = true;
     const p = fakeProps();
     p.sequence.body.sequence_versions = [1, 2, 3];
     const wrapper = shallow(<SequenceBtnGroup {...p} />);
@@ -620,6 +613,14 @@ describe("<SequencePublishMenu />", () => {
     clickButton(wrapper, 0, "publish");
     expect(publishSequence).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
+  });
+
+  it("shows republish warning", () => {
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.sequence_versions = [1];
+    const wrapper = mount(<SequencePublishMenu {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("republishing");
   });
 });
 
