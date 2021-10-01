@@ -27,7 +27,7 @@ module Sequences
                description: description,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
-               sequence_version_id: sequence_version_id,
+               sequence_version_id: is_owner? ? nil : sequence_version_id,
              }
     end
 
@@ -78,6 +78,10 @@ module Sequences
       !sequence.forked && sequence_version && sequence_version.id
     end
 
+    def is_owner?
+      !!sequence_publication&.published
+    end
+
     # Heuristic for determining available sequence version.
     #
     def available_version_ids
@@ -85,7 +89,7 @@ module Sequences
       #   See if the this sequence "owns" is a published upstream publication.
       #   If it is not published, don't show anything to the author.
       #   If it IS published, show the versions to the author.
-      if sequence_publication&.published
+      if is_owner?
         return sequence_publication.sequence_versions.pluck(:id)
       end
 
