@@ -27,7 +27,7 @@ module Sequences
                description: description,
                sequence_versions: available_version_ids,
                # This is the parent sequence that this sequence was forked from.
-               sequence_version_id: sequence.sequence_version_id,
+               sequence_version_id: sequence_version_id,
              }
     end
 
@@ -36,7 +36,7 @@ module Sequences
     end
 
     def execute
-      if is_forked?
+      if use_upstream_version?
         celery = Fragments::Show.run!(owner: sequence_version)
       else
         celery = LegacyRenderer.new(sequence).run
@@ -54,39 +54,51 @@ module Sequences
       return s
     end
 
-    def description
-      sequence.description || sequence_version&.description
-    end
-
-    def sequence_version
-      @sequence_version ||= SequenceVersion.find_by(id: sequence.sequence_version_id)
-    end
-
-    def is_forked?
-      !sequence.forked && sequence_version && sequence_version.id
+    def sequence_version_id
+      sequence.sequence_version_id
     end
 
     def copyright
       sequence.copyright || sequence_version&.copyright
     end
 
+    def sequence_publication
+      @sequence_publication ||= SequencePublication.find_by(author_sequence_id: sequence.id)
+    end
+
+    def description
+      sequence.description || sequence_version&.description
+    end
+
+    def sequence_version
+      @sequence_version ||= SequenceVersion.find_by(id: sequence_version_id)
+    end
+
+    def use_upstream_version?
+      !sequence.forked && sequence_version && sequence_version.id
+    end
+
+    # Heuristic for determining available sequence version.
+    #
     def available_version_ids
-      results = []
-
-      if sequence_version
-        their_sp = sequence_version.sequence_publication
-        if their_sp.published
-          results.push(*their_sp.sequence_versions.pluck(:id))
-        end
+      # First attempt:
+      #   See if the this sequence "owns" is a published upstream publication.
+      #   If it is not published, don't show anything to the author.
+      #   If it IS published, show the versions to the author.
+      if sequence_publication&.published
+        return sequence_publication.sequence_versions.pluck(:id)
       end
 
-      sp = SequencePublication.find_by(author_sequence_id: sequence.id,
-                                       published: true)
-      if sp
-        results.push(*sp.sequence_versions.pluck(:id))
+      # Second attempt:
+      # The consumer is not the author.
+      # The sequence has an upstream sequence_version
+      upstream_sp = sequence_version&.sequence_publication
+      if upstream_sp&.published
+        return upstream_sp.sequence_versions.pluck(:id)
       end
 
-      return results
+      # All other cases: Render nothing.
+      return []
     end
   end
 end
