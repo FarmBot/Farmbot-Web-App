@@ -9,10 +9,19 @@ import {
 let mockGet = Promise.resolve({ data: fakeSequence().body });
 jest.mock("axios", () => ({
   get: jest.fn(() => mockGet),
+  post: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock("../../actions", () => ({
+  installSequence: jest.fn(() => () => Promise.resolve()),
 }));
 
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
+}));
+
+jest.mock("../../set_active_sequence_by_name", () => ({
+  setActiveSequenceByName: jest.fn(),
 }));
 
 import React from "react";
@@ -31,6 +40,9 @@ import { API } from "../../../api";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { BooleanSetting } from "../../../session_keys";
 import { edit } from "../../../api/crud";
+import { push } from "../../../history";
+import { setActiveSequenceByName } from "../../set_active_sequence_by_name";
+import { installSequence } from "../../actions";
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
@@ -57,6 +69,19 @@ describe("<DesignerSequencePreview />", () => {
     ["viewing a publicly shared sequence", "loading"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.find(".fa-code").length).toEqual(0);
+  });
+
+  it("imports sequence", async () => {
+    const wrapper = mount<DesignerSequencePreview>(
+      <DesignerSequencePreview {...fakeProps()} />);
+    const sequence = fakeSequence();
+    wrapper.setState({ sequence });
+    const importBtn = wrapper.find(".transparent-button").first();
+    expect(importBtn.text()).toEqual("import");
+    await importBtn.simulate("click");
+    expect(installSequence).toHaveBeenCalledWith(sequence.body.id);
+    expect(setActiveSequenceByName).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith("/app/designer/sequences/fake");
   });
 
   it("loads sequence", async () => {

@@ -70,12 +70,12 @@ export const publishSequence = (id: number | undefined, copyright: string) => ()
 
 export const unpublishSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/unpublish`)
-    .then(() => success(t("Sequence unpublished.")),
+    .then(() => { },
       err => error(prettyPrintApiErrors(err), { title: t("Unpublish error.") }));
 
 export const installSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/install`)
-    .then(() => success(t("Sequence installed.")),
+    .then(() => { },
       err => error(prettyPrintApiErrors(err), { title: t("Install error.") }));
 
 export const upgradeSequence = (
