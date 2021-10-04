@@ -199,6 +199,7 @@ describe("<LocationForm />", () => {
 
   it("changes label", () => {
     const p = fakeProps();
+    p.removeVariable = jest.fn();
     const wrapper = mount(<LocationForm {...p} />);
     wrapper.find("label").first().simulate("click");
     expect(error).not.toHaveBeenCalled();

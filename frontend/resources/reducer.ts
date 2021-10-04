@@ -119,7 +119,8 @@ export const resourceReducer =
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
-      if (original.kind == "Sequence" && original.body.sequence_version_id) {
+      if (original.kind == "Sequence" && original.body.sequence_version_id
+        && specialStatus != SpecialStatus.SAVED) {
         (update as SequenceResource).forked = true;
       }
       original.body = update;
