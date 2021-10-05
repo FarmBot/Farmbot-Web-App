@@ -126,7 +126,7 @@ const MitLicenseLink = () =>
     {t("MIT License")}
   </a>;
 
-const publishAction = (setState: (state: boolean) => void) => {
+export const publishAction = (setState: (state: boolean) => void) => {
   setState(true);
   setTimeout(() => setState(false), 5000);
 };

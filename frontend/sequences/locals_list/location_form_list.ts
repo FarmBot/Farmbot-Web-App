@@ -83,8 +83,8 @@ export function locationFormList(
   const toolDDI = activeToolDDIs(resources);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
-    .concat(variableItems
-      ? heading((variableItems[0]?.headingId as DropdownHeadingId) || "Variable")
+    .concat((variableItems && variableItems.length > 0)
+      ? heading((variableItems[0].headingId as DropdownHeadingId) || "Variable")
       : [])
     .concat(variableItems || [])
     .concat(heading("Tool"))

@@ -161,7 +161,7 @@ describe("unpublishSequence()", () => {
     await unpublishSequence(123)();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost/api/sequences/123/unpublish");
-    expect(success).toHaveBeenCalledWith("Sequence unpublished.");
+    expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -182,7 +182,7 @@ describe("installSequence()", () => {
     await installSequence(123)();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost/api/sequences/123/install");
-    expect(success).toHaveBeenCalledWith("Sequence installed.");
+    expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 

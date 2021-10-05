@@ -83,8 +83,8 @@ export const LocationForm =
     return <div className="location-form">
       {!props.hideHeader &&
         <div className="location-form-header">
-          <Label label={label} inUse={props.inUse} variable={variable}
-            onChange={onChange} />
+          <Label label={label} inUse={props.inUse || !removeVariable}
+            variable={variable} onChange={onChange} />
           {isDefault &&
             <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
               customIcon={"exclamation-triangle"} onHover={true} />}

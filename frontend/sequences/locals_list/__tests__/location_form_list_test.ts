@@ -22,12 +22,6 @@ describe("locationFormList()", () => {
           value: "",
         },
         {
-          headingId: "Variable",
-          label: "Variables",
-          value: 0,
-          heading: true,
-        },
-        {
           headingId: "Tool",
           label: "Tools and Seed Containers",
           value: 0,

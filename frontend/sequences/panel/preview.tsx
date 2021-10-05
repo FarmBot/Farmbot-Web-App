@@ -12,7 +12,7 @@ import { Everything } from "../../interfaces";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import axios from "axios";
 import { API } from "../../api";
-import { getPathArray } from "../../history";
+import { getPathArray, push } from "../../history";
 import { noop } from "lodash";
 import { ErrorBoundary } from "../../error_boundary";
 import { AllSteps } from "../all_steps";
@@ -30,10 +30,12 @@ import { stringifySequenceData } from "../step_tiles";
 import { installSequence } from "../actions";
 import { Collapse } from "@blueprintjs/core";
 import {
-  isSequencePublished, SectionHeader, sequenceVersionPath,
+  isSequencePublished, publishAction, SectionHeader, sequenceVersionPath,
 } from "../sequence_editor_middle_active";
 import moment from "moment";
 import { edit } from "../../api/crud";
+import { urlFriendly } from "../../util";
+import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 
 interface LoadSequenceVersionProps {
   id: string;
@@ -200,16 +202,27 @@ interface ImportBannerProps {
   sequence: TaggedSequence | undefined;
 }
 
-const ImportBanner = (props: ImportBannerProps) =>
-  <div className={"import-banner"}>
+const ImportBanner = (props: ImportBannerProps) => {
+  const [importing, setImporting] = React.useState(false);
+  const { sequence } = props;
+  return <div className={"import-banner"}>
     <label>{t("viewing a publicly shared sequence")}</label>
     <Help text={Content.IMPORT_SEQUENCE} />
-    {props.sequence &&
+    {sequence &&
       <button className={"transparent-button"}
-        onClick={installSequence(props.sequence.body.id)}>
-        {t("import")}
+        onClick={() => {
+          installSequence(sequence.body.id)()
+            .then(() => {
+              push(`/app/designer/sequences/${urlFriendly(sequence.body.name)}`);
+              setActiveSequenceByName();
+            });
+          publishAction(setImporting);
+        }}>
+        {importing ? t("importing") : t("import")}
+        {importing && <i className={"fa fa-spinner fa-pulse"} />}
       </button>}
   </div>;
+};
 
 interface PreviewToolbarProps {
   viewSequenceCeleryScript: boolean;
