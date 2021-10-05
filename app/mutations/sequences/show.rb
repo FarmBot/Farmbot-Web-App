@@ -20,7 +20,7 @@ module Sequences
                args: Sequence::DEFAULT_ARGS,
                color: sequence.color,
                folder_id: sequence.folder_id,
-               forked: sequence.forked,
+               forked: is_owner? ? false : sequence.forked,
                name: sequence.name,
                pinned: sequence.pinned,
                copyright: copyright,
