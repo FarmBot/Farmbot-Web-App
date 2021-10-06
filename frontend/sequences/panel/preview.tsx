@@ -34,8 +34,6 @@ import {
 } from "../sequence_editor_middle_active";
 import moment from "moment";
 import { edit } from "../../api/crud";
-import { urlFriendly } from "../../util";
-import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 
 interface LoadSequenceVersionProps {
   id: string;
@@ -212,10 +210,7 @@ const ImportBanner = (props: ImportBannerProps) => {
       <button className={"transparent-button"}
         onClick={() => {
           installSequence(sequence.body.id)()
-            .then(() => {
-              push(`/app/designer/sequences/${urlFriendly(sequence.body.name)}`);
-              setActiveSequenceByName();
-            });
+            .then(() => push("/app/designer/sequences"));
           publishAction(setImporting);
         }}>
         {importing ? t("importing") : t("import")}

@@ -149,7 +149,7 @@ describe("publishSequence()", () => {
       "http://localhost/api/sequences/123/publish", { copyright: "" });
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
-      "Error: error", { title: "Publish error." });
+      "Error: error", { title: "Publish error" });
   });
 });
 
@@ -172,7 +172,7 @@ describe("unpublishSequence()", () => {
       "http://localhost/api/sequences/123/unpublish");
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
-      "Error: error", { title: "Unpublish error." });
+      "Error: error", { title: "Unpublish error" });
   });
 });
 
@@ -193,7 +193,7 @@ describe("installSequence()", () => {
       "http://localhost/api/sequences/123/install");
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
-      "Error: error", { title: "Install error." });
+      "Error: error", { title: "Install error" });
   });
 });
 
@@ -209,13 +209,13 @@ describe("upgradeSequence()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
-  it("errors while publishing sequence", async () => {
+  it("errors while upgrading sequence", async () => {
     mockPost = Promise.reject({ response: { data: "error" } });
     await upgradeSequence(123, 1)();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost/api/sequences/123/upgrade/1");
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
-      "Error: error", { title: "Upgrade error." });
+      "Error: error", { title: "Upgrade error" });
   });
 });
