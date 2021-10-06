@@ -35,6 +35,7 @@ module Sequences
       ActiveRecord::Base.transaction do
         desc = description || sequence.description
         cr = copyright || sequence.copyright
+        sequence.update!(copyright: cr)
         publication.update!(published: true)
         sv = SequenceVersion.create!(sequence_publication: publication,
                                      name: sequence.name,
