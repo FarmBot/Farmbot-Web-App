@@ -21,6 +21,7 @@ export class LuaTextArea<Step extends Lua | Assertion>
   state: LuaTextAreaState = { lua: this.props.currentStep.args.lua };
 
   updateStep = debounce((newLua: string) => {
+    if (this.props.readOnly) { return; }
     this.props.dispatch(editStep({
       step: this.props.currentStep,
       index: this.props.index,
@@ -34,7 +35,7 @@ export class LuaTextArea<Step extends Lua | Assertion>
     this.updateStep(this.state.lua);
   };
 
-  setLua = (value: string) => this.setState({ lua: value });
+  setLua = (value: string) => !this.props.readOnly && this.setState({ lua: value });
 
   FallbackEditor = ({ loading }: { loading?: boolean }) =>
     <textarea className={loading ? "" : "fallback-lua-editor"}

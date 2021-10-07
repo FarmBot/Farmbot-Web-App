@@ -46,4 +46,16 @@ describe("<LuaTextArea />", () => {
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
   });
+
+  it("doesn't make changes when read-only", () => {
+    const p = fakeProps();
+    p.readOnly = true;
+    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const fallback = shallow(wrapper.instance().FallbackEditor({}));
+    fallback.find("textarea").simulate("change", {
+      currentTarget: { value: "123" }
+    });
+    fallback.find("textarea").simulate("blur");
+    expect(mockEditStep).not.toHaveBeenCalled();
+  });
 });

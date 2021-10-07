@@ -244,7 +244,7 @@ class Device < ApplicationRecord
       since = self.users.first.created_at.to_s
       firmware_kind = fbos_config.firmware_hardware
       osm_url = "https://www.openstreetmap.org"
-      location_url = "[#{lat},#{lng}](#{osm_url}/?mlat=#{lat}&mlon=#{lng}&zoom=10)"
+      location_url = "<#{osm_url}/?mlat=#{lat}&mlon=#{lng}&zoom=10|#{lat},#{lng}>"
       version = fbos_version.nil? ? "unknown" : "v#{fbos_version}"
       info = [
         "`Device ID`: #{id}",

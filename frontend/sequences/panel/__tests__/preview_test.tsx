@@ -20,10 +20,6 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
-jest.mock("../../set_active_sequence_by_name", () => ({
-  setActiveSequenceByName: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -41,7 +37,6 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { BooleanSetting } from "../../../session_keys";
 import { edit } from "../../../api/crud";
 import { push } from "../../../history";
-import { setActiveSequenceByName } from "../../set_active_sequence_by_name";
 import { installSequence } from "../../actions";
 
 describe("mapStateToProps()", () => {
@@ -80,8 +75,7 @@ describe("<DesignerSequencePreview />", () => {
     expect(importBtn.text()).toEqual("import");
     await importBtn.simulate("click");
     expect(installSequence).toHaveBeenCalledWith(sequence.body.id);
-    expect(setActiveSequenceByName).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/sequences/fake");
+    expect(push).toHaveBeenCalledWith("/app/designer/sequences");
   });
 
   it("loads sequence", async () => {
