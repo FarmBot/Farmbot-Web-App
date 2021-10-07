@@ -87,3 +87,14 @@
     color: $white;
   }
 }
+
+.bp3-collapse {
+  scrollbar-width: none;
+}
+
+.bp3-collapse::-webkit-scrollbar,
+.bp3-collapse-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  background-color: transparent !important;
+}

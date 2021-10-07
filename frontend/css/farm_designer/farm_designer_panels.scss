@@ -2101,30 +2101,6 @@
   }
 }
 
-.sequence-editor-sections,
-.settings-panel-content,
-.setup-panel,
-.photos-panel {
-  .bp3-collapse::-webkit-scrollbar {
-    display: none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-  }
-  .disable_scrollbar::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-  }
-  .bp3-collapse-body::-webkit-scrollbar {
-    display: none !important;
-    width: 0px !important;
-    background-color: transparent !important;
-  }
-}
-
-.bp3-collapse {
-  overflow: hidden;
-}
-
 .farmware-env-editor {
   .row {
     margin-bottom: 1rem;
