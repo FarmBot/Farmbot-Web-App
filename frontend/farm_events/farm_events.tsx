@@ -17,10 +17,27 @@ import {
 import { some, uniq, map, sortBy } from "lodash";
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
+import { urlFriendly } from "../util";
+import { setActiveRegimenByName } from "../regimens/set_active_regimen_by_name";
+import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
   || (item.subheading && item.subheading.toLowerCase().includes(term));
+
+const resourceLink =
+  (resourceKind: ExecutableType, resourceName: string) => {
+    const resourcePathSlug =
+      resourceKind == "Regimen" ? "regimens" : "sequences";
+    return <Link
+      to={`/app/designer/${resourcePathSlug}/${urlFriendly(resourceName)}`}
+      onClick={resourceKind == "Regimen"
+        ? setActiveRegimenByName
+        : setActiveSequenceByName}>
+      <i className="fa fa-external-link" />
+    </Link>;
+  };
 
 export class RawFarmEvents
   extends React.Component<FarmEventProps, FarmEventState> {
@@ -40,12 +57,18 @@ export class RawFarmEvents
       .map((occur, index) => {
         const url = "/app/designer/events/"
           + (occur.id || "UNSAVED_EVENT").toString();
+        const headingResource =
+          (occur.executableType == "Regimen" && !occur.subheading)
+            ? "Regimen"
+            : "Sequence";
         const heading = occur.subheading
           ? occur.subheading
           : occur.heading;
         const subHeading = occur.subheading
-          ? <p style={{ color: "gray" }}> {occur.heading} </p>
+          ? <p>{occur.heading}{resourceLink("Regimen", occur.heading)}</p>
           : <p />;
+        const variables = occur.variables.map(variable =>
+          <span key={variable} className={"farm-event-variable"}>{variable}</span>);
 
         return <div
           className={
@@ -55,10 +78,11 @@ export class RawFarmEvents
             {occur.timeStr}
           </div>
           <div className="farm-event-data-executable">
-            {heading}
+            {heading}{resourceLink(headingResource, heading)}
             {subHeading}
+            {variables}
           </div>
-          <Link to={url}>
+          <Link className={"edit-link"} to={url}>
             <i className="fa fa-pencil-square-o edit-icon" />
           </Link>
         </div>;

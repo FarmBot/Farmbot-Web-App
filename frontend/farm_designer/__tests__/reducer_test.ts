@@ -340,6 +340,16 @@ describe("designer reducer", () => {
     expect(newState.alwaysHighlightImage).toEqual(true);
   });
 
+  it("sets show photo images", () => {
+    const state = oldState();
+    state.showPhotoImages = true;
+    const action: ReduxAction<undefined> = {
+      type: Actions.TOGGLE_SHOW_PHOTO_IMAGES, payload: undefined,
+    };
+    const newState = designer(state, action);
+    expect(newState.showPhotoImages).toEqual(false);
+  });
+
   it("sets show calibration images", () => {
     const state = oldState();
     state.showCalibrationImages = true;

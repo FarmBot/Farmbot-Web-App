@@ -1,5 +1,7 @@
 import React from "react";
-import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
+import {
+  VariableNode, AllowedVariableNodes, OnChange,
+} from "./locals_list_support";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterDeclaration, ParameterApplication } from "farmbot";
 import { LocationForm } from "./location_form";
@@ -14,7 +16,7 @@ import { Position } from "@blueprintjs/core";
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
   resources: ResourceIndex;
-  onChange: (v: ParameterDeclaration) => void;
+  onChange: OnChange;
 }
 
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
@@ -30,7 +32,6 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         sequenceUuid={""}
         resources={props.resources}
         allowedVariableNodes={AllowedVariableNodes.variable}
-        hideTypeLabel={true}
         hideGroups={true}
         onChange={change(props.onChange, props.variableNode)} />
     </div>;
@@ -40,7 +41,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
 };
 
 const change =
-  (onChange: (v: ParameterDeclaration) => void, variable: VariableNode) =>
+  (onChange: OnChange, variable: VariableNode) =>
     (formResponse: ParameterApplication) => {
       const { data_value } = formResponse.args;
       if (data_value.kind !== "point_group") {
@@ -50,7 +51,7 @@ const change =
             label: variable.args.label,
             default_value: data_value
           }
-        });
+        }, variable.args.label);
       }
     };
 

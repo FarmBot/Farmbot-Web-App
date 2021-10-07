@@ -1,9 +1,9 @@
 import React from "react";
+import { shallow, mount } from "enzyme";
 import { RawFarmEvents as FarmEvents } from "../farm_events";
 import {
   calendarRows,
 } from "../../__test_support__/farm_event_calendar_support";
-import { render, shallow, mount } from "enzyme";
 import { defensiveClone } from "../../util";
 import { FarmEventProps } from "../../farm_designer/interfaces";
 
@@ -22,7 +22,7 @@ describe("<FarmEvents />", () => {
     expect(times[2]).toEqual("02:00pm");
   });
 
-  it("renders FarmEvent lacking a subheading", () => {
+  it("renders sequence FarmEvent lacking a subheading", () => {
     const p = fakeProps();
     const row = [defensiveClone(calendarRows[0])];
     row[0].items = [{
@@ -31,14 +31,45 @@ describe("<FarmEvents />", () => {
       timeStr: "12:05pm",
       heading: "Every 4 hours",
       executableId: 25,
+      executableType: "Sequence",
       subheading: "",
+      variables: ["variable 1", "variable 2"],
       id: 79,
       color: "gray",
     }];
     p.calendarRows = row;
-    const results = render(<FarmEvents {...p} />);
-    expect(results.text()).toContain("Every 4 hours");
-    expect(results.find(".farm-event-data-block").hasClass("gray")).toBeFalsy();
+    const wrapper = mount(<FarmEvents {...p} />);
+    expect(wrapper.text()).toContain("Every 4 hours");
+    const item = wrapper.find(".farm-event-data-block");
+    expect(item.hasClass("gray")).toBeFalsy();
+    expect(item.find(".farm-event-variable").length).toEqual(2);
+    expect(item.find("a").first().props().href)
+      .toEqual("/app/designer/sequences/every_4_hours");
+  });
+
+  it("renders regimen FarmEvent lacking a subheading", () => {
+    const p = fakeProps();
+    const row = [defensiveClone(calendarRows[0])];
+    row[0].items = [{
+      mmddyy: "072417",
+      sortKey: 1500915900,
+      timeStr: "12:05pm",
+      heading: "Every 4 hours",
+      executableId: 25,
+      executableType: "Regimen",
+      subheading: "",
+      variables: ["variable 1", "variable 2"],
+      id: 79,
+      color: "gray",
+    }];
+    p.calendarRows = row;
+    const wrapper = mount(<FarmEvents {...p} />);
+    expect(wrapper.text()).toContain("Every 4 hours");
+    const item = wrapper.find(".farm-event-data-block");
+    expect(item.hasClass("gray")).toBeFalsy();
+    expect(item.find(".farm-event-variable").length).toEqual(2);
+    expect(item.find("a").first().props().href)
+      .toEqual("/app/designer/regimens/every_4_hours");
   });
 
   it("filters farm events: finds none", () => {

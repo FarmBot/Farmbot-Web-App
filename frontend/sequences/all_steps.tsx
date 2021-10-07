@@ -56,7 +56,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
           {!this.props.readOnly &&
-            <AddCommandButton dispatch={dispatch} index={index} />}
+            <AddCommandButton dispatch={dispatch} index={index} stepCount={1} />}
           <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}

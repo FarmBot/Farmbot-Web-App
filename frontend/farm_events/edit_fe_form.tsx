@@ -236,7 +236,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
         const update: EditFEFormState = {
           fe: {
             executable_type: next_executable_type,
-            executable_id: (ddi.value || "").toString(),
+            executable_id: ddi.value.toString(),
           },
           specialStatusLocal: SpecialStatus.DIRTY
         };

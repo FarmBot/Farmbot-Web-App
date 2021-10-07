@@ -1,15 +1,18 @@
 import React from "react";
-import {
-  RegimenItem, CalendarRow, RegimenItemCalendarRow,
-} from "../interfaces";
+import { CalendarRow, RegimenItemCalendarRow } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
-import { defensiveClone } from "../../util";
+import { defensiveClone, urlFriendly } from "../../util";
 import { overwrite } from "../../api/crud";
 import { t } from "../../i18next_wrapper";
 import { reduceVariables } from "../../sequences/locals_list/variable_support";
 import { determineDropdown, withPrefix } from "../../resources/sequence_meta";
 import { ResourceIndex } from "../../resources/interfaces";
 import { RegimenRowsProps, DisplayVarValueProps } from "./interfaces";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
+import { Link } from "../../link";
+import {
+  setActiveSequenceByName,
+} from "../../sequences/set_active_sequence_by_name";
 
 /** Make room for the regimen header variable form when necessary. */
 const regimenSectionHeight =
@@ -43,7 +46,13 @@ const regimenItemRow = (
   (row: RegimenItemCalendarRow, itemIndex: number) =>
     <div className={`${row.color} regimen-event`}
       key={`${dayIndex}.${itemIndex}`}>
-      <span className="regimen-event-title">{row.name}</span>
+      <span className="regimen-event-title">
+        {row.sequenceName}
+        <Link to={`/app/designer/sequences/${urlFriendly(row.sequenceName)}`}
+          onClick={setActiveSequenceByName}>
+          <i className="fa fa-external-link" />
+        </Link>
+      </span>
       <span className="regimen-event-time">{row.hhmm}</span>
       <DisplayVarValue row={row} resources={resources} />
       <i className="fa fa-trash regimen-control" onClick={() =>

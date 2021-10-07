@@ -36,6 +36,7 @@ module Sequences
       boolean :pinned
       boolean :forked
       string :description
+      string :copyright
     end
 
     def validate

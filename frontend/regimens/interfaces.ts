@@ -1,5 +1,5 @@
-import { ResourceColor } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 
 export interface CalendarRow {
   day: string;
@@ -9,7 +9,7 @@ export interface CalendarRow {
 export interface RegimenItemCalendarRow {
   regimen: TaggedRegimen;
   item: RegimenItem;
-  name: string;
+  sequenceName: string;
   hhmm: string;
   color: string;
   /** Numeric field that can be used for sorting purposes. */
@@ -26,26 +26,8 @@ export interface RegimenProps {
   dispatch: Function;
 }
 
-/** A list of "Sequence" scheduled after a starting point (epoch). */
-export interface Regimen {
-  id?: number;
-  /** Friendly identifier for humans to easily identify regimens. */
-  name: string;
-  color: ResourceColor;
-  regimen_items: RegimenItem[];
-}
-
 export interface RegimenListItemProps {
   regimen: TaggedRegimen;
   dispatch: Function;
   inUse: boolean;
-}
-
-/** Individual step that a regimen will execute at a point in time. */
-export interface RegimenItem {
-  id?: number;
-  sequence_id: number;
-  regimen_id?: number;
-  /** Time (in milliseconds) to wait before executing the sequence */
-  time_offset: number;
 }

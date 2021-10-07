@@ -1,5 +1,5 @@
 import { Everything, TimeSettings } from "../../interfaces";
-import { RegimenItem, RegimenItemCalendarRow, CalendarRow } from "../interfaces";
+import { RegimenItemCalendarRow, CalendarRow } from "../interfaces";
 import {
   maybeGetRegimen,
   findUuid,
@@ -13,6 +13,7 @@ import { ResourceIndex, UUID, VariableNameSet } from "../../resources/interfaces
 import { timeFormatString } from "../../util";
 import { groupBy, chain, sortBy } from "lodash";
 import { RegimenEditorProps } from "./interfaces";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 
 export const mapStateToProps = (props: Everything): RegimenEditorProps => {
   const { dispatch } = props;
@@ -83,13 +84,13 @@ const createRows = (
     const variables = getParameterLabels(sequence);
     const { time_offset } = item;
     const d = moment.duration(time_offset);
-    const { name } = sequence.body;
+    const sequenceName = sequence.body.name;
     const color = sequence.body.color;
     const FORMAT = timeFormatString(timeSettings);
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;
     return {
-      name, hhmm, color, day, dispatch, regimen, item, variables,
+      sequenceName, hhmm, color, day, dispatch, regimen, item, variables,
       sortKey: time_offset
     };
   };

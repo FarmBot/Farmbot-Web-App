@@ -211,14 +211,14 @@ describe("<TileMoveAbsolute />", () => {
         kind: "point",
         args: { pointer_type: "GenericPointer", pointer_id: 1 }
       }],
-      ["identifier", { kind: "identifier", args: { label: "parent" } }],
+      ["identifier", { kind: "identifier", args: { label: "label" } }],
       ["point_group", { kind: "point_group", args: { point_group_id: 1 } }],
     ])("handles %s selection", (_kind, location) => {
       const block = new TileMoveAbsolute(fakeProps());
       block.updateArgs = jest.fn();
       block.updateLocation({
         kind: "parameter_application",
-        args: { label: "parent", data_value: location },
+        args: { label: "label", data_value: location },
       });
       location.kind == "point_group"
         ? expect(block.updateArgs).not.toHaveBeenCalled()
@@ -232,15 +232,15 @@ describe("<TileMoveAbsolute />", () => {
       wrapper.props().onChange({
         kind: "parameter_application",
         args: {
-          label: "parent", data_value: {
-            kind: "identifier", args: { label: "parent" }
+          label: "label", data_value: {
+            kind: "identifier", args: { label: "label" }
           }
         }
       });
       const expected = cloneDeep(p.currentSequence.body);
       p.currentStep.args.location = {
         kind: "identifier",
-        args: { label: "parent" },
+        args: { label: "label" },
       };
       expected.body = [p.currentStep];
       expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);

@@ -10,9 +10,10 @@ import {
   TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { capitalize, isNumber } from "lodash";
+import { capitalize, isNumber, sortBy } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
+import { SequenceMeta } from "../../resources/sequence_meta";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -82,8 +83,8 @@ export function locationFormList(
   const toolDDI = activeToolDDIs(resources);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
-    .concat(variableItems
-      ? heading((variableItems[0]?.headingId as DropdownHeadingId) || "Variable")
+    .concat((variableItems && variableItems.length > 0)
+      ? heading((variableItems[0].headingId as DropdownHeadingId) || "Variable")
       : [])
     .concat(variableItems || [])
     .concat(heading("Tool"))
@@ -149,3 +150,9 @@ export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });
+
+export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
+  sortBy(betterCompact(variables),
+    v => v.celeryNode.args.label == "parent"
+      ? t("Location variable")
+      : v.celeryNode.args.label);

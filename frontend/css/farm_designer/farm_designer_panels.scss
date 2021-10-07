@@ -2101,6 +2101,7 @@
   }
 }
 
+.sequence-editor-sections,
 .settings-panel-content,
 .setup-panel,
 .photos-panel {
@@ -2118,6 +2119,10 @@
     width: 0px !important;
     background-color: transparent !important;
   }
+}
+
+.bp3-collapse {
+  overflow: hidden;
 }
 
 .farmware-env-editor {
@@ -2166,12 +2171,6 @@
       margin-left: -1rem;
       margin-right: -1rem;
     }
-    .add-command-button-container {
-      display: block;
-      .add-command {
-        float: none;
-      }
-    }
   }
 }
 
@@ -2190,13 +2189,14 @@
 
 .designer-sequence-editor-panel {
   .panel-content {
+    .sequence-editor-content {
+      @media screen and (max-width: 767px) {
+        margin-left: 5px;
+        padding-right: 0;
+      }
+    }
     .add-command-button-container {
       display: block;
-      margin: 1rem;
-      text-align: center;
-      .add-command {
-        float: none;
-      }
     }
     .drag-drop-area {
       display: none;
@@ -2438,7 +2438,6 @@
       top: 0;
       left: 0;
       height: 99%;
-      background: $green;
       opacity: 0.5;
       border-radius: 0;
       pointer-events: none;

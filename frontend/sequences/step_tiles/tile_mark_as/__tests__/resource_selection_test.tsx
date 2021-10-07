@@ -38,7 +38,8 @@ describe("<ResourceSelection />", () => {
     p.resources = buildResourceIndex([fbosConfig]).index;
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { headingId: "Identifier", label: "Variable - Add new", value: "parent" },
+      { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
+      { headingId: "Identifier", label: "Add new", value: "Location variable 1" },
       { headingId: "Device", label: "Device", heading: true, value: 0 },
       { headingId: "Device", label: "Tool Mount", value: 0 },
       { headingId: "Plant", label: "Plants", heading: true, value: 0 },
@@ -54,7 +55,8 @@ describe("<ResourceSelection />", () => {
     p.resources = buildResourceIndex([fbosConfig]).index;
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
-      { headingId: "Identifier", label: "Variable - Add new", value: "parent" },
+      { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
+      { headingId: "Identifier", label: "Add new", value: "Location variable 1" },
       { headingId: "Device", label: "Device", heading: true, value: 0 },
       { headingId: "Plant", label: "Plants", heading: true, value: 0 },
       { headingId: "GenericPointer", label: "Points", heading: true, value: 0 },
@@ -92,32 +94,32 @@ describe("<ResourceSelection />", () => {
     };
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.text()).toContain("Mark");
-    expect(wrapper.text()).toContain("Variable - Add new");
+    expect(wrapper.text()).toContain("Add new");
   });
 
   it("renders identifier with label", () => {
     const p = fakeProps();
     p.resources.sequenceMetas["fake uuid"] = {
-      parent: {
+      "label": {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent", default_value: {
+            label: "label", default_value: {
               kind: "coordinate", args: { x: 0, y: 0, z: 0 }
             }
           }
         },
-        dropdown: { label: "Parent", value: "parent" },
+        dropdown: { label: "Label", value: "label" },
         vector: undefined,
       }
     };
     p.sequenceUuid = "fake uuid";
     p.resource = {
       kind: "identifier",
-      args: { label: "parent" }
+      args: { label: "label" }
     };
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.text()).toContain("Mark");
-    expect(wrapper.text()).toContain("Variable - Parent");
+    expect(wrapper.text()).toContain("label - Externally defined");
   });
 
   it("changes resource", () => {
@@ -136,11 +138,11 @@ describe("<ResourceSelection />", () => {
     const p = fakeProps();
     const wrapper = shallow(<ResourceSelection {...p} />);
     wrapper.find("FBSelect").simulate("change", {
-      label: "Variable", value: "parent", headingId: "Identifier",
+      label: "Variable", value: "label", headingId: "Identifier",
     });
     expect(p.updateResource).toHaveBeenCalledWith({
       kind: "identifier",
-      args: { label: "parent" }
+      args: { label: "label" }
     });
   });
 });

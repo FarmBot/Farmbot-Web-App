@@ -15,7 +15,7 @@ import {
 } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { last } from "lodash";
-import { RegimenItem } from "../regimens/interfaces";
+import { RegimenItem } from "farmbot/dist/resources/api_resources";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
@@ -23,8 +23,7 @@ export function mapStateToProps(state: Everything): FarmEventProps {
   const calendar =
     mapResourcesToCalendar(state.resources.index, timeSettings, moment());
   const calendarRows = calendar.getAll();
-  const dev = maybeGetDevice(state.resources.index);
-  const timezoneIsSet = !!(dev && (dev.body.timezone));
+  const timezoneIsSet = !!maybeGetDevice(state.resources.index)?.body.timezone;
   return { calendarRows, timezoneIsSet };
 }
 
@@ -38,7 +37,7 @@ export function mapResourcesToCalendar(
     switch (fe.executable_type) {
       case "Regimen": return addRegimenToCalendar(fe, calendar, now);
       case "Sequence":
-        return addSequenceToCalendar(fe, calendar, timeSettings, now);
+        return addSequenceToCalendar(fe, calendar, timeSettings, ri, now);
     }
   });
 
@@ -74,7 +73,7 @@ export const regimenCalendarAdder = (
     const lastRITime = lastRI &&
       fromEpoch(lastRI.time_offset, f.start_time, timeSettings);
     if (lastRITime && lastRITime.isSameOrAfter(gracePeriod)) {
-      const o = occurrence(moment(f.start_time), f, timeSettings);
+      const o = occurrence(moment(f.start_time), f, timeSettings, index);
       o.heading = f.executable.name;
       o.subheading = "";
       c.insert(o);
@@ -83,7 +82,7 @@ export const regimenCalendarAdder = (
       const time = fromEpoch(ri.time_offset, f.start_time, timeSettings);
       if (time.isSameOrAfter(gracePeriod)
         && time.isSameOrAfter(moment(f.start_time))) {
-        const oo = occurrence(time, f, timeSettings);
+        const oo = occurrence(time, f, timeSettings, index);
         const seq = findSequenceById(index, ri.sequence_id);
         oo.heading = f.executable.name;
         oo.subheading = seq.body.name;
@@ -92,28 +91,31 @@ export const regimenCalendarAdder = (
     });
     // Display empty regimens in UI so that they can be edited or deleted.
     if (f.end_time && Object.keys(c.value).length === 0) {
-      c.insert(occurrence(moment(f.end_time), f, timeSettings, { empty: true }));
+      c.insert(occurrence(moment(f.end_time), f, timeSettings, index,
+        { empty: true }));
     }
   };
 
 export const addSequenceToCalendar =
   (f: FarmEventWithSequence, c: Calendar, timeSettings: TimeSettings,
+    ri: ResourceIndex,
     now = moment()) => {
     const schedule = scheduleForFarmEvent(f, now);
     // Display empty calendars in UI so that they can be edited or deleted.
     if (f.end_time && schedule.items.length === 0) {
-      c.insert(occurrence(moment(f.end_time), f, timeSettings, { empty: true }));
+      c.insert(occurrence(moment(f.end_time), f, timeSettings, ri,
+        { empty: true }));
     }
     // Separate the last item from the calendar.
     const lastItem = schedule.items.pop();
     // Add all other items.
-    schedule.items.map(m => c.insert(occurrence(m, f, timeSettings)));
+    schedule.items.map(m => c.insert(occurrence(m, f, timeSettings, ri)));
     if (schedule.shortenedBy > 0) {
       // Indicate that not all items are displayed in the final item.
       lastItem && c.insert(occurrence(
-        lastItem, f, timeSettings, { numHidden: schedule.shortenedBy }));
+        lastItem, f, timeSettings, ri, { numHidden: schedule.shortenedBy }));
     } else {
       // Add the final item. All items are displayed.
-      lastItem && c.insert(occurrence(lastItem, f, timeSettings));
+      lastItem && c.insert(occurrence(lastItem, f, timeSettings, ri));
     }
   };

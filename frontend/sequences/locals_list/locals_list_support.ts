@@ -12,7 +12,7 @@ import { DropDownItem } from "../../ui";
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
 
-type OnChange = (sd: VariableNode | undefined) => void;
+export type OnChange = (sd: VariableNode | undefined, variableKey: string) => void;
 
 /**
  * ParameterApplications (or VariableDeclarations in ScopeDeclarations)
@@ -68,11 +68,8 @@ export interface LocationFormProps extends CommonProps {
   variable: SequenceMeta;
   /** Coordinate input box width. */
   width?: number;
-  /** Set to true to hide the variable node type label. */
-  hideTypeLabel?: boolean;
   /** Set to true to hide the form header and label. */
   hideHeader?: boolean;
+  /** Is the variable being used? */
+  inUse?: boolean;
 }
-
-export const PARENT = (label: string) =>
-  ({ value: "parent", label, headingId: "Variable" });

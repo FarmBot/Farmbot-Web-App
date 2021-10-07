@@ -1,6 +1,4 @@
-import { ResourceColor } from "../interfaces";
 import {
-  Sequence as CeleryScriptSequence,
   SequenceBodyItem,
   LegalArgString,
   SyncStatus,
@@ -70,13 +68,19 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
 
 export interface ActiveMiddleState {
   variablesCollapsed: boolean;
+  descriptionCollapsed: boolean;
+  stepsCollapsed: boolean;
+  licenseCollapsed: boolean;
+  editingDescription: boolean;
+  description: string;
   viewSequenceCeleryScript: boolean;
+  sequencePreview: TaggedSequence | undefined;
+  error: boolean;
+  view: "local" | "public";
 }
 
 export interface SequenceHeaderProps extends SequencePropsBase {
   sequence: TaggedSequence;
-  variablesCollapsed: boolean;
-  toggleVarShow: () => void;
   toggleViewSequenceCeleryScript: () => void;
   viewCeleryScript: boolean;
   showName: boolean;
@@ -132,12 +136,6 @@ export const MESSAGE_TYPES = Object.keys(MessageType);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
   MESSAGE_TYPES.includes(x);
-
-export interface Sequence extends CeleryScriptSequence {
-  id?: number;
-  color: ResourceColor;
-  name: string;
-}
 
 export interface SequenceReducerState {
   current: string | undefined;

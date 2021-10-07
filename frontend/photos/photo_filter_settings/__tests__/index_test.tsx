@@ -7,6 +7,7 @@ jest.mock("../actions", () => ({
   setWebAppConfigValues: jest.fn(),
   toggleAlwaysHighlightImage: jest.fn(),
   toggleSingleImageMode: jest.fn(),
+  toggleShowPhotoImages: jest.fn(),
   toggleShowCalibrationImages: jest.fn(),
   toggleShowDetectionImages: jest.fn(),
   toggleShowHeightImages: jest.fn(),
@@ -123,7 +124,7 @@ describe("<FiltersEnabledWarning />", () => {
   config.body.show_images = true;
 
   const fakeProps = (): FiltersEnabledWarningProps => ({
-    hideUnShownImages: false,
+    designer: fakeDesignerState(),
     getConfigValue: jest.fn(x => config.body[x]),
   });
 
@@ -134,7 +135,7 @@ describe("<FiltersEnabledWarning />", () => {
 
   it("renders when filters are enabled", () => {
     const p = fakeProps();
-    p.hideUnShownImages = true;
+    p.designer.hideUnShownImages = true;
     const wrapper = mount(<FiltersEnabledWarning {...p} />);
     expect(wrapper.html()).toContain("fa-exclamation-triangle");
     const e = { stopPropagation: jest.fn() };

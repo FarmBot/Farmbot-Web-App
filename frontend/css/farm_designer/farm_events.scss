@@ -45,6 +45,17 @@
 
 .farm-event-data {
   flex: 5;
+  max-width: 83%;
+}
+
+.farm-event-variable {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 125%;
+  font-size: 1rem;
+  line-height: 1.25rem;
 }
 
 .farm-event-data-block {
@@ -55,6 +66,10 @@
   align-items: center;
   background: $white;
   border-bottom: 1px solid $gray;
+  p,
+  span {
+    color: $medium_gray;
+  }
   .farm-event-data-time {
     z-index: 1;
     width: 6rem;
@@ -66,6 +81,7 @@
     overflow-wrap: anywhere;
     p {
       margin-top: 0.2rem;
+      margin-bottom: 0.75rem !important;
     }
   }
   &:hover {
@@ -73,9 +89,12 @@
       opacity: 1;
     }
   }
-  a {
+  .edit-link {
     position: absolute;
     right: 0.8rem;
+  }
+  .fa-external-link {
+    margin-left: 0.5rem;
   }
   i {
     opacity: 0;

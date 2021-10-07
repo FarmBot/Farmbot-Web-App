@@ -156,6 +156,7 @@ export interface DesignerState {
   shownImages: number[];
   hideUnShownImages: boolean;
   alwaysHighlightImage: boolean;
+  showPhotoImages: boolean;
   showCalibrationImages: boolean;
   showDetectionImages: boolean;
   showHeightImages: boolean;
@@ -201,7 +202,9 @@ export interface CalendarOccurrence {
   timeStr: string;
   heading: string;
   subheading?: string | undefined;
+  variables: string[];
   executableId: number;
+  executableType: ExecutableType;
   id: number;
   color?: string;
 }

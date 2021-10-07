@@ -1,24 +1,22 @@
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { TaggedSequence } from "farmbot";
 import { isParameterized } from "../is_parameterized";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
-type Sequence = TaggedSequence["body"];
-type Locals = Sequence["args"]["locals"]["body"];
+type Locals = SequenceResource["args"]["locals"]["body"];
 
 describe("isParameterized()", () => {
-
-  function sequence(decl: Locals): Sequence {
+  const sequence = (decl: Locals): SequenceResource => {
     const { body } = fakeSequence();
     body.args.locals.body = decl;
     return body;
-  }
+  };
 
   it("returns true when there are parameters", () => {
     const hasParent = sequence([
       {
         kind: "parameter_declaration",
         args: {
-          label: "parent",
+          label: "label",
           default_value: {
             kind: "coordinate", args: { x: 0, y: 0, z: 0 }
           }

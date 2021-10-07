@@ -6,7 +6,7 @@ import {
   fakeFarmEvent,
 } from "../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex,
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import moment from "moment";
 import { countBy } from "lodash";
@@ -56,12 +56,14 @@ describe("mapStateToProps()", () => {
         items: [
           {
             executableId: 1,
+            executableType: "Sequence",
             heading: "fake",
             id: 1,
             color: "red",
             mmddyy: "022222",
             sortKey: 7956842400,
-            timeStr: "2:00am"
+            timeStr: "2:00am",
+            variables: [],
           }],
         month: "Feb",
         sortKey: 7956842400,
@@ -72,28 +74,40 @@ describe("mapStateToProps()", () => {
         items: [
           {
             executableId: 1,
+            executableType: "Regimen",
             heading: "Foo",
             id: 2,
             color: "red",
             mmddyy: "022322",
             sortKey: 7956928800,
             subheading: "",
-            timeStr: "2:00am"
+            timeStr: "2:00am",
+            variables: [],
           },
           {
             executableId: 1,
+            executableType: "Regimen",
             heading: "Foo",
             id: 2,
             color: "red",
             mmddyy: "022322",
             sortKey: 7956950400,
             subheading: "fake",
-            timeStr: "8:00am"
+            timeStr: "8:00am",
+            variables: [],
           }],
         month: "Feb",
         sortKey: 7956928800,
         year: 22
       }]);
+  });
+
+  it("returns timezone status", () => {
+    const state = testState();
+    const device = fakeDevice();
+    device.body.timezone = "fake timezone";
+    state.resources = buildResourceIndex([device]);
+    expect(mapStateToProps(state).timezoneIsSet).toBeTruthy();
   });
 });
 
@@ -124,12 +138,14 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     day: expect.any(Number),
     items: [{
       executableId: 1,
+      executableType: "Sequence",
       heading: "fake",
       id: 1,
       color: "red",
       mmddyy: expect.stringContaining("17"),
       sortKey: expect.any(Number),
-      timeStr: expect.stringContaining("02")
+      timeStr: expect.stringContaining("02"),
+      variables: [],
     }],
     month: "Dec",
     sortKey: expect.any(Number),
@@ -205,13 +221,15 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     items: [
       {
         executableId: 1,
+        executableType: "Regimen",
         heading: "Foo",
         subheading: "",
         id: 2,
         color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("02")
+        timeStr: expect.stringContaining("02"),
+        variables: [],
       },
     ],
     month: "Dec",
@@ -223,13 +241,15 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     items: [
       {
         executableId: 1,
+        executableType: "Regimen",
         heading: "Foo",
         subheading: "fake",
         id: 2,
         color: "red",
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("11")
+        timeStr: expect.stringContaining("11"),
+        variables: [],
       },
     ],
     month: "Dec",

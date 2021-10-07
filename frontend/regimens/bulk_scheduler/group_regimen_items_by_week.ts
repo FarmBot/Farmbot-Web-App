@@ -1,11 +1,12 @@
 import { Week, DAYS } from "./interfaces";
-import { Sequence } from "../../sequences/interfaces";
-import { RegimenItem } from "../../regimens/interfaces";
+import {
+  RegimenItem, SequenceResource,
+} from "farmbot/dist/resources/api_resources";
 
 /** Calculates correct time_offset for a group of RegimenItem[]s based on a
  * set of weeks and a desired offset. */
 export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
-  seq: Sequence) {
+  seq: SequenceResource) {
   const ONE_WEEK = 604800000;
   const ONE_DAY = 86400000;
 

@@ -226,7 +226,7 @@ describe("<Logs />", () => {
     p.logs[0].body.minor_version = 2;
     p.logs[0].body.patch_version = 3;
     const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.html()).toContain("fa-check");
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
     expect(wrapper.text()).toContain("message 1");
     expect(wrapper.text()).toContain("message 2");
   });
@@ -239,7 +239,7 @@ describe("<Logs />", () => {
     p.logs[0].body.patch_version = 3;
     const wrapper = mount(<Logs {...p} />);
     wrapper.setState({ currentFbosOnly: true });
-    expect(wrapper.html()).toContain("fa-check");
+    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
     expect(wrapper.text()).toContain("message 1");
     expect(wrapper.text()).not.toContain("message 2");
   });

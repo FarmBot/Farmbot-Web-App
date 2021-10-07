@@ -16,7 +16,7 @@ describe("manuallyEditAxis()", () => {
     editableVariable: {
       kind: "parameter_application",
       args: {
-        label: "parent",
+        label: "label",
         data_value: { kind: "coordinate", args: { x: 10, y: 20, z: 30 } }
       }
     },
@@ -30,7 +30,7 @@ describe("manuallyEditAxis()", () => {
     }
     const p = fakeProps();
     manuallyEditAxis(p)(inputEvent("1.23"));
-    expect(p.onChange).toHaveBeenCalledWith(expected.editableVariable);
+    expect(p.onChange).toHaveBeenCalledWith(expected.editableVariable, "label");
   });
 
   it("can't edit when not a coordinate (inputs also disabled)", () => {

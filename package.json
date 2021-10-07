@@ -25,8 +25,8 @@
   "license": "MIT",
   "dependencies": {
     "@blueprintjs/core": "3.50.1",
-    "@blueprintjs/select": "3.18.3",
     "@blueprintjs/popover2": "0.12.1",
+    "@blueprintjs/select": "3.18.3",
     "@monaco-editor/react": "4.2.2",
     "@parcel/transformer-sass": "2.0.0-beta.2",
     "@parcel/transformer-typescript-tsc": "2.0.0-beta.2",
@@ -43,7 +43,7 @@
     "bowser": "2.11.0",
     "boxed_value": "1.0.0",
     "browser-speech": "1.1.1",
-    "farmbot": "14.3.0",
+    "farmbot": "14.4.0",
     "i18next": "21.0.0",
     "lodash": "4.17.21",
     "markdown-it": "12.2.0",

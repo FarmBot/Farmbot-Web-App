@@ -1,9 +1,11 @@
 import React from "react";
-import { Row, Col, FBSelect, Help } from "../../ui";
-import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
+import { Row, Col, FBSelect, Help, Color } from "../../ui";
+import {
+  locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+} from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, AllowedVariableNodes, VariableNode,
+  LocationFormProps, AllowedVariableNodes, VariableNode, OnChange,
 } from "../locals_list/locals_list_support";
 import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
@@ -16,7 +18,8 @@ import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { shouldDisplayFeature } from "../../farmware/state_to_props";
 import { Feature } from "../../devices/interfaces";
-import { betterCompact } from "../../util";
+import { error } from "../../toast/toast";
+import { cloneDeep } from "lodash";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -47,13 +50,12 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
 export const LocationForm =
   (props: LocationFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable,
-      allowedVariableNodes, hideGroups } = props;
+      allowedVariableNodes, hideGroups, removeVariable, onChange } = props;
     const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
     const variableListItems = generateVariableListItems({
       allowedVariableNodes, resources, sequenceUuid,
-      variable: variable.celeryNode,
     });
     const displayGroups = !hideGroups;
     const unfiltered = locationFormList(resources, [], variableListItems,
@@ -63,26 +65,36 @@ export const LocationForm =
       : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
+    const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+    if (headerForm) {
+      list.unshift({
+        value: label,
+        label: determineVarDDILabel({
+          label, resources, uuid: sequenceUuid, forceExternal: true,
+        }),
+        headingId: "Variable",
+      });
+    }
     if (variable.isDefault) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
     }
-    const cleanLabel = label == "parent" ? t("Location variable") : label;
-    const formTitle = props.hideTypeLabel ? label : cleanLabel;
     return <div className="location-form">
       {!props.hideHeader &&
         <div className="location-form-header">
-          <label>{formTitle}</label>
+          <Label label={label} inUse={props.inUse || !removeVariable}
+            variable={variable} onChange={onChange} />
           {isDefault &&
             <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
               customIcon={"exclamation-triangle"} onHover={true} />}
           {props.collapsible &&
             <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
               onClick={props.toggleVarShow} />}
-          {props.collapsible &&
+          {removeVariable &&
             <i className={"fa fa-trash"}
-              onClick={() => props.removeVariable?.(label)} />}
+              style={props.inUse ? { color: Color.gray } : {}}
+              onClick={() => removeVariable(label)} />}
         </div>}
       {!props.collapsed &&
         <div className="location-form-content">
@@ -94,11 +106,11 @@ export const LocationForm =
                 selectedItem={dropdown}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
                 onChange={ddi => {
-                  props.onChange(convertDDItoVariable({
+                  onChange(convertDDItoVariable({
                     identifierLabel: label,
                     allowedVariableNodes,
                     dropdown: ddi
-                  }));
+                  }), label);
                 }} />
             </Col>
           </Row>
@@ -106,42 +118,65 @@ export const LocationForm =
             variableNode={celeryNode}
             vector={vector}
             width={props.width}
-            onChange={props.onChange} />
+            onChange={onChange} />
           <DefaultValueForm
             key={props.locationDropdownKey}
             variableNode={celeryNode}
             resources={resources}
-            onChange={props.onChange} />
+            onChange={onChange} />
         </div>}
     </div>;
   };
 
-interface GenerateVariableListItemsProps {
+interface LabelProps {
+  label: string;
+  inUse: boolean | undefined;
+  variable: SequenceMeta;
+  onChange: OnChange;
+}
+
+const Label = (props: LabelProps) => {
+  const { label, inUse } = props;
+  const [isEditingLabel, setIsEditingLabel] = React.useState(false);
+  const [labelValue, setLabelValue] = React.useState(label);
+  const formTitle = labelValue == "parent" ? t("Location variable") : labelValue;
+  return isEditingLabel
+    ? <input value={labelValue}
+      autoFocus={true}
+      onBlur={() => {
+        setIsEditingLabel(false);
+        const editableVariable = cloneDeep(props.variable.celeryNode);
+        editableVariable.args.label = labelValue;
+        props.onChange(editableVariable, label);
+      }}
+      onChange={e => {
+        setLabelValue(e.currentTarget.value);
+      }} />
+    : <label
+      title={inUse ? "" : t("click to edit")}
+      onClick={() => inUse
+        ? error(t("Can't edit variable name while in use."))
+        : setIsEditingLabel(true)}>
+      {formTitle}
+    </label>;
+};
+
+export interface GenerateVariableListProps {
   allowedVariableNodes: AllowedVariableNodes;
   resources: ResourceIndex;
   sequenceUuid: UUID;
-  variable: VariableNode;
+  headingId?: string;
 }
 
-const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
+export const generateVariableListItems = (props: GenerateVariableListProps) => {
   const { allowedVariableNodes, resources, sequenceUuid } = props;
-  const variables = betterCompact(Object.values(
-    resources.sequenceMetas[sequenceUuid] || []).map(v => v?.celeryNode));
+  const headingId = props.headingId || "Variable";
+  const variables = sortVariables(Object.values(
+    resources.sequenceMetas[sequenceUuid] || [])).map(v => v.celeryNode);
   const displayVariables = allowedVariableNodes !== AllowedVariableNodes.variable;
   if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-  if (headerForm) {
-    return [{
-      value: props.variable.args.label,
-      label: determineVarDDILabel({
-        label: props.variable.args.label,
-        resources,
-        uuid: sequenceUuid,
-        forceExternal: headerForm,
-      }),
-      headingId: "Variable",
-    }];
-  }
+  if (headerForm) { return []; }
   const oldVariables = variables.map(variable_ => ({
     value: variable_.args.label,
     label: determineVarDDILabel({
@@ -149,7 +184,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
       resources,
       uuid: sequenceUuid,
     }),
-    headingId: "Variable",
+    headingId,
   }));
   const newVarLabel = generateNewVariableLabel(variables);
   const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
@@ -161,7 +196,7 @@ const generateVariableListItems = (props: GenerateVariableListItemsProps) => {
         resources,
         uuid: sequenceUuid,
       }),
-      headingId: "Variable",
+      headingId,
     }]
     : [];
   return oldVariables.concat(newVariable);

@@ -1,9 +1,11 @@
-import { convertDDItoVariable, NOTHING_SELECTED } from "../handle_select";
+import {
+  addOrEditBodyVariables, convertDDItoVariable, NOTHING_SELECTED,
+} from "../handle_select";
 import { Point, Tool, Coordinate } from "farmbot";
 import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../location_form_list";
 import { VariableNode, AllowedVariableNodes } from "../locals_list_support";
 
-const label = "parent";
+const label = "label";
 const allowedVariableNodes = AllowedVariableNodes.variable;
 const expectedVariable = (data_value: Point | Tool | Coordinate) =>
   ({ kind: "parameter_application", args: { label, data_value } });
@@ -128,14 +130,14 @@ describe("convertDDItoDeclaration()", () => {
       headingId: "Variable", label: "Parent0", value: "parent0"
     });
     const variable = convertDDItoVariable({
-      identifierLabel: "parent",
+      identifierLabel: "label",
       allowedVariableNodes,
       dropdown
     });
     const expected: VariableNode = {
       kind: "parameter_declaration",
       args: {
-        label: "parent", default_value: NOTHING_SELECTED
+        label: "label", default_value: NOTHING_SELECTED
       }
     };
     expect(variable).toEqual(expected);
@@ -146,14 +148,14 @@ describe("convertDDItoDeclaration()", () => {
       headingId: "Variable", label: "Parent0", value: "parent0"
     });
     const variable = convertDDItoVariable({
-      identifierLabel: "parent",
+      identifierLabel: "label",
       allowedVariableNodes: AllowedVariableNodes.identifier,
       dropdown
     });
     const expected: VariableNode = {
       kind: "parameter_application",
       args: {
-        label: "parent",
+        label: "label",
         data_value: {
           kind: "identifier",
           args: {
@@ -163,5 +165,22 @@ describe("convertDDItoDeclaration()", () => {
       }
     };
     expect(variable).toEqual(expected);
+  });
+});
+
+describe("addOrEditBodyVariables()", () => {
+  it("filters variables", () => {
+    const parameterDeclaration: VariableNode = {
+      kind: "parameter_declaration",
+      args: { label: "label", default_value: NOTHING_SELECTED },
+    };
+    const parameterApplication: VariableNode = {
+      kind: "parameter_application",
+      args: { label: "label", data_value: NOTHING_SELECTED },
+    };
+    const variables = [parameterDeclaration, parameterApplication];
+    const item = parameterDeclaration;
+    expect(addOrEditBodyVariables(variables, item, "label"))
+      .toEqual([parameterDeclaration]);
   });
 });

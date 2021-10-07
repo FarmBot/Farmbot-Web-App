@@ -218,7 +218,7 @@ describe("createSequenceMeta", () => {
   s.body.body = [{ // <= Add var. reference
     kind: "move_absolute",
     args: {
-      location: { kind: "identifier", args: { label: "parent" } },
+      location: { kind: "identifier", args: { label: "label" } },
       offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       speed: 0
     }
@@ -227,15 +227,15 @@ describe("createSequenceMeta", () => {
   const ri = buildResourceIndex([s]);
 
   it("indexes relevant meta-data relating to variables", () => {
-    const result = createSequenceMeta(ri.index, s);
-    const { parent } = result;
-    const extracted = findVariableByName(ri.index, s.uuid, "parent");
-    expect(parent).toBeTruthy();
-    if (parent && extracted) {
-      expect(parent.celeryNode.args.label).toEqual("parent");
-      expect(parent.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
-      expect(parent.vector).toEqual(undefined);
-      expect(extracted.celeryNode.args.label).toEqual("parent");
+    const variables = createSequenceMeta(ri.index, s);
+    const variable = variables["label"];
+    const extracted = findVariableByName(ri.index, s.uuid, "label");
+    expect(variable).toBeTruthy();
+    if (variable && extracted) {
+      expect(variable.celeryNode.args.label).toEqual("label");
+      expect(variable.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
+      expect(variable.vector).toEqual(undefined);
+      expect(extracted.celeryNode.args.label).toEqual("label");
       expect(extracted.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
       expect(extracted.vector).toEqual(undefined);
     }
@@ -298,6 +298,6 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "variable", resources: ri, uuid: "sequence uuid"
     });
-    expect(label).toEqual("variable - variable");
+    expect(label).toEqual("variable - fake variable info label");
   });
 });
