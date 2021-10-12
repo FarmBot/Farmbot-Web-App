@@ -2,11 +2,6 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../../farmware/state_to_props", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import {
   generateNewVariableLabel,
@@ -83,7 +78,6 @@ describe("<LocalsList/>", () => {
   });
 
   it("adds new variable", () => {
-    mockShouldDisplay = true;
     const p = fakeProps();
     p.variableData = variableData;
     variableData["other"] = undefined;
