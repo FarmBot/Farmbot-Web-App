@@ -22,8 +22,6 @@ import {
 } from "../../resources/sequence_meta";
 import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
 import { error } from "../../toast/toast";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
-import { Feature } from "../../devices/interfaces";
 import { variableIsInUse } from "./sanitize_nodes";
 import { sortVariables } from "./location_form_list";
 
@@ -119,8 +117,7 @@ export const LocalsList = (props: LocalsListProps) => {
         hideGroups={props.hideGroups}
         customFilterRule={props.customFilterRule} />)}
     {props.allowedVariableNodes == AllowedVariableNodes.parameter &&
-      props.hideGroups && (shouldDisplayFeature(Feature.multiple_variables)
-        || variableData.length < 1) &&
+      props.hideGroups &&
       <div className={"add-variable visible"} onClick={() => {
         const label = generateNewVariableLabel(
           variableData.map(data => data?.celeryNode));

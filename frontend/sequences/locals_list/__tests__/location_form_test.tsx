@@ -142,20 +142,6 @@ describe("<LocationForm />", () => {
     }]));
   });
 
-  it("doesn't show add new variable option", () => {
-    const p = fakeProps();
-    p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    const variableNameSet = fakeVariableNameSet("foo");
-    variableNameSet["bar"] = undefined;
-    p.resources.sequenceMetas[p.sequenceUuid] = variableNameSet;
-    const wrapper = shallow(<LocationForm {...p} />);
-    const list = wrapper.find(FBSelect).first().props().list;
-    const vars = list.filter(item =>
-      item.headingId == "Variable" && !item.heading);
-    expect(vars.length).toEqual(1);
-    expect(vars[0].value).toEqual("foo");
-  });
-
   it("shows groups in dropdown", () => {
     const p = fakeProps();
     const wrapper = shallow(<LocationForm {...p} />);

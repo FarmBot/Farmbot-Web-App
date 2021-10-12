@@ -165,6 +165,23 @@ describe("<RotatedTool/>", () => {
     expect(props.fill).toEqual(Color.darkGray);
   });
 
+  it("renders special tool styling: rotary tool", () => {
+    const p = fakeProps();
+    p.tool = ToolName.rotaryTool;
+    const wrapper = svgMount(<RotatedTool {...p} />);
+    const elements = wrapper.find("#rotary-tool").find("rect");
+    expect(elements.length).toEqual(1);
+  });
+
+  it("renders rotary tool hover styling", () => {
+    const p = fakeProps();
+    p.tool = ToolName.rotaryTool;
+    p.toolProps.hovered = true;
+    const wrapper = svgMount(<RotatedTool {...p} />);
+    expect(wrapper.find("#rotary-tool").find("circle").last()
+      .props().fillOpacity).toEqual(0.1);
+  });
+
   it("renders special tool styling: weeder", () => {
     const p = fakeProps();
     p.tool = ToolName.weeder;

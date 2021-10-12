@@ -16,8 +16,6 @@ import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
 import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
-import { Feature } from "../../devices/interfaces";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
 
@@ -187,17 +185,14 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
     headingId,
   }));
   const newVarLabel = generateNewVariableLabel(variables);
-  const newVariable = (shouldDisplayFeature(Feature.multiple_variables)
-    || variables.length < 1)
-    ? [{
-      value: newVarLabel,
-      label: determineVarDDILabel({
-        label: newVarLabel,
-        resources,
-        uuid: sequenceUuid,
-      }),
-      headingId,
-    }]
-    : [];
+  const newVariable = [{
+    value: newVarLabel,
+    label: determineVarDDILabel({
+      label: newVarLabel,
+      resources,
+      uuid: sequenceUuid,
+    }),
+    headingId,
+  }];
   return oldVariables.concat(newVariable);
 };
