@@ -33,7 +33,7 @@ export class RawEditToolSlot
       this.props.dispatch(save(toolSlot.uuid))
         .then(() => this.setState({ saveError: false }))
         .catch(() => this.setState({ saveError: true }));
-    }
+    };
 
   render() {
     const { toolSlot } = this;

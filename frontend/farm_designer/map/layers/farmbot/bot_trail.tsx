@@ -20,8 +20,8 @@ export enum VirtualTrail {
 
 function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[] {
   const key = VirtualTrail.records; // sessionStorage location
-  const trailLength = get(sessionStorage, VirtualTrail.length, 100);
-  const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]"));
+  const trailLength: number = get(sessionStorage, VirtualTrail.length, 100);
+  const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]") as string);
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
   if (update?.coord &&

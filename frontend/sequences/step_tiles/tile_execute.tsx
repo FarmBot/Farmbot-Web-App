@@ -1,7 +1,7 @@
 import React from "react";
 import { StepParams } from "../interfaces";
 import { Row, Col, DropDownItem } from "../../ui";
-import { Execute, ParameterApplication } from "farmbot/dist";
+import { Execute, ParameterApplication } from "farmbot";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
@@ -57,7 +57,7 @@ export class TileExecute
         }
       }
     }));
-  }
+  };
 
   get pinnedView() { return this.state.pinnedView; }
   togglePinnedView = () => this.setState({ pinnedView: !this.pinnedView });

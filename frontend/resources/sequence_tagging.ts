@@ -1,5 +1,5 @@
 import { get, set } from "lodash";
-import { SequenceBodyItem, uuid } from "farmbot/dist";
+import { SequenceBodyItem, uuid } from "farmbot";
 import {
   Traversable,
 } from "../sequences/locals_list/sanitize_nodes";

@@ -1,7 +1,6 @@
 import React from "react";
 import { DropDownItem, NULL_CHOICE, Row } from "../../../ui";
-import { ParameterApplication } from "farmbot";
-import { If, Execute, Nothing } from "farmbot/dist";
+import { ParameterApplication, If, Execute, Nothing } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
   selectAllSequences, findSequenceById,

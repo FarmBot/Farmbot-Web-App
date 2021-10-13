@@ -6,7 +6,7 @@ import {
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { JobProgress } from "farmbot";
+import { Dictionary, JobProgress } from "farmbot";
 import { StringSetting } from "../../session_keys";
 import { fakeFarmwareManifestV2 } from "../../__test_support__/fake_farmwares";
 
@@ -49,8 +49,7 @@ describe("getImageJobs()", () => {
   });
 
   it("handles undefined jobs", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const jobs = undefined as any;
+    const jobs = undefined as unknown as Dictionary<JobProgress | undefined>;
     const imageJobs = getImageJobs(jobs);
     expect(imageJobs).toEqual([]);
   });

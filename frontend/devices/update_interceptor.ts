@@ -1,5 +1,5 @@
 import { ConfigKey } from "./actions";
-import { McuParams } from "farmbot/dist";
+import { McuParams } from "farmbot";
 
 /** HISTORICAL CONTEXT: I hope to eventually delete this file entirely.
  *   The best way to handle these validations would be by storing it

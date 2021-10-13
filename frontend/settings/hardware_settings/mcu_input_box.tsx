@@ -71,7 +71,7 @@ export class McuInputBox
         throw new Error("Bad input in mcu_input_box. Impossible?");
     }
     return result.result;
-  }
+  };
 
   commit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -85,7 +85,7 @@ export class McuInputBox
         : this.clampInputAndWarn(scaledValue, this.props.intSize);
       this.props.dispatch(updateMCU(this.key, result.toString()));
     }
-  }
+  };
 
   componentDidUpdate = () => {
     const inconsistent = !this.config.consistent;
@@ -97,7 +97,7 @@ export class McuInputBox
         SETTING_SYNC_TIMEOUT);
       this.setState({ timeout });
     }
-  }
+  };
 
   render() {
     return <div className={"mcu-input-box"}>

@@ -16,8 +16,7 @@ describe("isSafeError", () => {
 describe("inferUpdateId", () => {
   it("handles failure by returning `*`", () => {
     expect(inferUpdateId("foo/123/456")).toBe("*");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(inferUpdateId((true as any))).toBe("*");
+    expect(inferUpdateId(true as unknown as string)).toBe("*");
   });
 
   it("handles normal URLs", () => {

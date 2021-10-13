@@ -8,14 +8,14 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-  }
+  };
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFER);
     this.props.callback(key);
     this.toggle();
-  }
+  };
 
   toggle = () => {
     this.setState({ isHovered: !this.state.isHovered });

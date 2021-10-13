@@ -1,7 +1,7 @@
 import React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./interfaces";
-import { Color } from "../../ui/index";
+import { Color } from "../../ui";
 import { noop } from "lodash";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
@@ -58,7 +58,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       width: "100%",
       paddingBottom: "4rem",
     };
-  }
+  };
 
   saturationCSS = (): React.CSSProperties => {
     return {
@@ -67,7 +67,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       paddingBottom: "12rem",
       overflow: "hidden"
     };
-  }
+  };
 
   saturationboxCSS = (): React.CSSProperties => {
     const MAX = 255;
@@ -82,7 +82,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
     const [width, height, left, top] = [w, h, l, t].map(x => `${x}%`);
 
     return { ...selectedCSS, width, height, top, left };
-  }
+  };
 
   customPointer = () => <div className={"no-custom-pointer"} />;
 

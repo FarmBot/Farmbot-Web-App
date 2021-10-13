@@ -9,7 +9,7 @@ import {
 } from "../version";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
-import { Feature } from "../../devices/interfaces";
+import { Feature, MinOsFeatureLookup } from "../../devices/interfaces";
 
 describe("semver compare", () => {
   it("knows when RIGHT_IS_GREATER: numeric", () => {
@@ -139,20 +139,16 @@ describe("shouldDisplay()", () => {
       Feature.jest_feature)).toBeFalsy();
     expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeFalsy();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const unknown_feature = "unknown_feature" as any;
+    const unknown_feature = "unknown_feature" as Feature;
     expect(createShouldDisplayFn("1.0.0", fakeMinOsData, undefined)(
       unknown_feature)).toBeFalsy();
     expect(createShouldDisplayFn("1.0.0", undefined, undefined)(
       unknown_feature)).toBeFalsy();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(createShouldDisplayFn("1.0.0", "" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", "" as MinOsFeatureLookup, undefined)(
       unknown_feature)).toBeFalsy();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(createShouldDisplayFn("1.0.0", "{}" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", "{}" as MinOsFeatureLookup, undefined)(
       unknown_feature)).toBeFalsy();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(createShouldDisplayFn("1.0.0", "bad" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", "bad" as MinOsFeatureLookup, undefined)(
       unknown_feature)).toBeFalsy();
   });
 });

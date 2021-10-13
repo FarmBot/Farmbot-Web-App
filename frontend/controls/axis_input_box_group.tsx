@@ -17,7 +17,7 @@ export class AxisInputBoxGroup extends
 
   change = (axis: keyof Vector3, val: number) => {
     this.setState({ [axis]: val });
-  }
+  };
 
   get vector() {
     const { x, y, z } = this.state;
@@ -36,7 +36,7 @@ export class AxisInputBoxGroup extends
   clicked = () => {
     this.props.onCommit(this.vector);
     this.setState({ x: undefined, y: undefined, z: undefined });
-  }
+  };
 
   render() {
     const { x, y, z } = this.state;

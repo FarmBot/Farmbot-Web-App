@@ -7,6 +7,8 @@ import { revertToEnglish } from "../../revert_to_english";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { arrayUnwrap } from "../../resources/util";
+import { Store } from "redux";
+import { Everything } from "../../interfaces";
 
 describe("revertToEnglishMiddleware", () => {
   it("calls `revertToEnglish` when appropriate", () => {
@@ -15,8 +17,7 @@ describe("revertToEnglishMiddleware", () => {
     const tr = arrayUnwrap(newTaggedResource("WebAppConfig", data));
     const action = resourceReady("WebAppConfig", tr);
     expect(revertToEnglish).not.toHaveBeenCalled();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    revertToEnglishMiddleware.fn({} as any)(dispatch)(action);
+    revertToEnglishMiddleware.fn({} as Store<Everything>)(dispatch)(action);
     expect(revertToEnglish).toHaveBeenCalled();
     expect(revertToEnglishMiddleware.env).toBe("*");
   });

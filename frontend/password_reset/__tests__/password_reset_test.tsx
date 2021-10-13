@@ -45,7 +45,7 @@ describe("<PasswordReset/>", () => {
     const resp = await respondWith({ status: 200, response: {} });
     expect(resp.config?.url).toContain("api/password_resets");
     expect(resp.config?.method).toEqual("put");
-    const json: State = JSON.parse(resp.config?.data);
+    const json: State = JSON.parse("" + resp.config?.data);
     expect(Object.keys(json)).toContain("password");
     expect(Object.keys(json)).toContain("password_confirmation");
     expect(json.password).toEqual("knocknock");

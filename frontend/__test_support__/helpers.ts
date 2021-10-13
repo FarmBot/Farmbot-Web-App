@@ -29,7 +29,8 @@ export function allButtonText(wrapper: ReactWrapper | ShallowWrapper): string {
 
 /** Simulate BlurableInput commit (when not using shallow). */
 export function changeBlurableInput(
-  wrapper: ReactWrapper,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  wrapper: ReactWrapper<any>,
   value: string,
   position = 0,
 ) {

@@ -4,7 +4,7 @@ jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 import React from "react";
 import { mount } from "enzyme";
 import { TileWritePin } from "../tile_write_pin";
-import { WritePin } from "farmbot/dist";
+import { WritePin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 

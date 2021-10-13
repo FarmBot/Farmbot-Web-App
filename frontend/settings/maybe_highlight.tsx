@@ -330,7 +330,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       /** Slowly fades highlight. */
       this.setState({ className: "unhighlight" });
     }
-  }
+  };
 
   get searchTerm() {
     const { app } = store.getState();
@@ -347,7 +347,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       const compareTerm = urlCompare ? compareValues(s)[0] : s;
       return compareTerm.toLowerCase().includes(term.toLowerCase());
     }));
-  }
+  };
 
   get searchMatch() {
     return this.searchTerm &&

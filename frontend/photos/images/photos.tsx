@@ -156,7 +156,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
         })
         .catch(() => error(t("Could not delete image.")));
     }
-  }
+  };
 
   toggleCrop = () => this.setState({ crop: !this.state.crop });
   toggleRotation = () => this.setState({ rotate: !this.state.rotate });
@@ -176,7 +176,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       getConfigValue={this.props.getConfigValue}
       env={this.props.env}
       crop={this.state.crop}
-      images={this.props.images} />
+      images={this.props.images} />;
 
   get highestIndex() { return this.props.images.length - 1; }
 
@@ -187,12 +187,12 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
     if (value == this.highestIndex) { return t("newest"); }
     if (value == 0) { return t("oldest"); }
     return "";
-  }
+  };
 
   onSliderChange = (index: number) =>
     this.props.dispatch(selectNextImage(
       this.props.images,
-      this.highestIndex - Math.min(index, this.highestIndex)))
+      this.highestIndex - Math.min(index, this.highestIndex)));
 
   render() {
     return <div className="photos">

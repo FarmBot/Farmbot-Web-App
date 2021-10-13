@@ -12,8 +12,8 @@ import {
 import {
   TaggedPeripheral,
   SpecialStatus,
+  Pins,
 } from "farmbot";
-import { Pins } from "farmbot/dist";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
 import { PinMode } from "../../../sequences/step_tiles/pin_support";

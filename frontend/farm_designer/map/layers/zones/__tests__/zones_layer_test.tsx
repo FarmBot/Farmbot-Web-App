@@ -7,7 +7,7 @@ import {
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { ReactWrapper } from "enzyme";
+import { HTMLAttributes, ReactWrapper } from "enzyme";
 
 describe("<ZonesLayer />", () => {
   const fakeProps = (): ZonesLayerProps => ({
@@ -28,7 +28,8 @@ describe("<ZonesLayer />", () => {
     expect(wrapper.find(".zones-layer").length).toEqual(1);
   });
 
-  const expectSolid = (zone2D: ReactWrapper) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const expectSolid = (zone2D: ReactWrapper<HTMLAttributes, any>) => {
     const zoneProps = zone2D.find("rect").props();
     expect(zoneProps.fill).toEqual(undefined);
     expect(zoneProps.stroke).toEqual(undefined);
@@ -36,7 +37,8 @@ describe("<ZonesLayer />", () => {
     expect(zoneProps.strokeWidth).toEqual(undefined);
   };
 
-  const expectOutline = (zone2D: ReactWrapper) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const expectOutline = (zone2D: ReactWrapper<HTMLAttributes, any>) => {
     const zoneProps = zone2D.find("rect").props();
     expect(zoneProps.fill).toEqual("none");
     expect(zoneProps.stroke).toEqual("white");
@@ -44,7 +46,8 @@ describe("<ZonesLayer />", () => {
     expect(zoneProps.strokeWidth).toEqual(4);
   };
 
-  const expectNone = (zone2D: ReactWrapper) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const expectNone = (zone2D: ReactWrapper<HTMLAttributes, any>) => {
     expect(zone2D.html()).toEqual(
       "<g id=\"zones-2D-1\" class=\"current\"></g>");
   };

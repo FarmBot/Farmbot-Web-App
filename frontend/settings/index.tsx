@@ -48,7 +48,7 @@ export class RawDesignerSettings
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: ""
     });
-  }
+  };
 
   render() {
     const { getConfigValue, dispatch, firmwareConfig,

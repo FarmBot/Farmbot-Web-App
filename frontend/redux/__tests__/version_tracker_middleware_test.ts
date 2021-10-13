@@ -5,7 +5,7 @@ import { versionChangeMiddleware } from "../version_tracker_middleware";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { MiddlewareAPI } from "redux";
+import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 
 describe("version tracker middleware", () => {
   it("Calls Rollbar.configure", () => {
@@ -14,7 +14,7 @@ describe("version tracker middleware", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakeDevice()]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    type Mw = MiddlewareAPI<any>;
+    type Mw = MiddlewareAPI<Dispatch<AnyAction>, any>;
     const fakeStore: Partial<Mw> = {
       getState: () => state
     };

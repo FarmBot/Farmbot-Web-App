@@ -56,7 +56,7 @@ export class RawAddToolSlot
   save = () => {
     this.state.uuid && this.props.dispatch(save(this.state.uuid));
     history.push("/app/designer/tools");
-  }
+  };
 
   render() {
     const panelName = "add-tool-slot";

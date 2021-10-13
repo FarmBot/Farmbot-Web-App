@@ -1,7 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
 import { ThenElse } from "../then_else";
-import { If } from "farmbot/dist";
+import { If } from "farmbot";
 import { ThenElseParams } from "../index";
 import {
   fakeStepParams,

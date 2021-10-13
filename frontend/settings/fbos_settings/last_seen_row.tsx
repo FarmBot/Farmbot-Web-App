@@ -58,7 +58,7 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     } else {
       return t(Content.DEVICE_NEVER_SEEN);
     }
-  }
+  };
 
   click = () => this.props.dispatch(refresh(this.props.device));
 

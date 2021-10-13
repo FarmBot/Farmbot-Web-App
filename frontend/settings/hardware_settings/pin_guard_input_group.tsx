@@ -19,7 +19,7 @@ export class PinGuardMCUInputGroup
       dispatch={this.props.dispatch}
       resources={this.props.resources}
       disabled={this.props.disabled}
-      sourceFwConfig={this.props.sourceFwConfig} />
+      sourceFwConfig={this.props.sourceFwConfig} />;
 
   Timeout = () =>
     <McuInputBox
@@ -28,7 +28,7 @@ export class PinGuardMCUInputGroup
       firmwareHardware={this.props.firmwareHardware}
       dispatch={this.props.dispatch}
       disabled={this.props.disabled}
-      filter={32000} />
+      filter={32000} />;
 
   State = () => {
     const { sourceFwConfig, dispatch, activeStateKey } = this.props;
@@ -47,7 +47,7 @@ export class PinGuardMCUInputGroup
       disabled={this.props.disabled}
       toggleAction={() =>
         dispatch(settingToggle(activeStateKey, sourceFwConfig))} />;
-  }
+  };
 
   render() {
     const { label } = this.props;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Xyz, LocationName, Dictionary } from "farmbot";
 import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
@@ -34,7 +34,7 @@ type Entry = {
 type Paths = Record<LocationName, Record<Xyz, string>>;
 
 const getArray = (): Entry[] =>
-  JSON.parse(get(sessionStorage, MotorPositionHistory.array, "[]"));
+  JSON.parse(get(sessionStorage, MotorPositionHistory.array, "[]") as string);
 
 const getReversedArray = (): Entry[] => cloneDeep(getArray()).reverse();
 

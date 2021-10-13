@@ -73,7 +73,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     }
     this.setState({ error: undefined });
     return true;
-  }
+  };
 
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -81,7 +81,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     const shouldPassToParent = bufferOk && this.withinLimits({ toasts: true });
     shouldPassToParent && this.props.onCommit(e);
     this.setState({ isEditing: false, buffer: "", error: undefined });
-  }
+  };
 
   focus = (e: React.FocusEvent<HTMLInputElement>) => {
     const { value } = this.props;
@@ -92,20 +92,20 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       buffer: "" + (value || ""),
       error: undefined
     });
-  }
+  };
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
     this.setState({ buffer: e.currentTarget.value }, this.withinLimits);
-  }
+  };
 
   keyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     this.props.keyCallback?.(e.key, this.state.buffer);
-  }
+  };
 
   clear = () => {
     this.setState({ buffer: "" }, this.withinLimits);
     this.props.keyCallback?.("", "");
-  }
+  };
 
   usualProps = () => {
     const value = this.state.isEditing
@@ -130,7 +130,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       placeholder: this.props.placeholder,
       autoFocus: this.props.autoFocus,
     };
-  }
+  };
 
   shouldComponentUpdate(nextProps: BIProps, nextState: Partial<BIState>) {
     return !equals(this.props, nextProps) || !equals(this.state, nextState);

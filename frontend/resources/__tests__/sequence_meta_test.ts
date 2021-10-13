@@ -24,6 +24,7 @@ import {
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
+import { VariableNode } from "../../sequences/locals_list/locals_list_support";
 
 describe("determineDropdown", () => {
   it("crashes on unknown DDIs", () => {
@@ -38,7 +39,8 @@ describe("determineDropdown", () => {
         }
       }
     };
-    const r = () => determineDropdown(baddata, buildResourceIndex([]).index);
+    const r = () =>
+      determineDropdown(baddata as VariableNode, buildResourceIndex([]).index);
     expect(r).toThrowError("WARNING: Unknown, possibly new data_value.kind?");
   });
 

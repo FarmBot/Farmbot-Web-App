@@ -1,4 +1,4 @@
-import { DataChangeType, Dictionary } from "farmbot/dist";
+import { DataChangeType, Dictionary } from "farmbot";
 import { box } from "boxed_value";
 import { isNumber, isNaN } from "lodash";
 

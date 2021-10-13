@@ -216,7 +216,7 @@ export class ComputedMove
         overwrite: setOverwriteFromLocation(locationSelection, overwrite),
         offset: setOffsetFromLocation(locationSelection, offset),
       }, this.update);
-    }
+    };
 
   setAxisOverwriteState = (axis: Xyz, value: AxisSelection) =>
     this.setState({

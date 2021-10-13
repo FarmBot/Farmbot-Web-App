@@ -10,7 +10,7 @@ export class Progress {
 
   bump = (force = false) => {
     if (force || !this.isDone) { this.cb(this); }
-  }
+  };
 
   inc = () => { this.completed++; this.bump(); };
 

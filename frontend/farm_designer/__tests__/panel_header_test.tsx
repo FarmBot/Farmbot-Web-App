@@ -22,13 +22,16 @@ import {
   fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 
-const expectOnlyOneActiveIcon = (wrapper: ReactWrapper) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const expectOnlyOneActiveIcon = (wrapper: ReactWrapper<any>) =>
   expect(wrapper.html().match(/active/)?.length).toEqual(1);
 
-const expectColor = (wrapper: ReactWrapper, color: string) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const expectColor = (wrapper: ReactWrapper<any>, color: string) =>
   expect(wrapper.find(".panel-nav").hasClass(`${color}-panel`)).toBeTruthy();
 
-const expectActive = (wrapper: ReactWrapper, slug: string) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
   expect(wrapper.find(`#${slug}`).first().hasClass("active")).toBeTruthy();
 
 describe("<DesignerNavTabs />", () => {

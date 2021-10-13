@@ -296,9 +296,9 @@ export class FirmwareHardwareSelection
       this.setState({ seeded: true });
       seedAccount(dismiss)({ label: "", value: ddi.value });
     }
-  }
+  };
 
-  toggleAutoSeed = () => this.setState({ autoSeed: !this.state.autoSeed })
+  toggleAutoSeed = () => this.setState({ autoSeed: !this.state.autoSeed });
 
   render() {
     const { selection, autoSeed } = this.state;

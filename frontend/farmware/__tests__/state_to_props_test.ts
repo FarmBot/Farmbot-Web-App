@@ -38,8 +38,7 @@ describe("getShouldDisplayFn()", () => {
     state.bot.hardware.informational_settings.controller_version = "2.0.0";
     state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
     const shouldDisplay = getShouldDisplayFn(state.resources.index, state.bot);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(shouldDisplay("some_feature" as any)).toBeFalsy();
+    expect(shouldDisplay("some_feature" as Feature)).toBeFalsy();
     expect(shouldDisplay(Feature.jest_feature)).toBeTruthy();
   });
 });

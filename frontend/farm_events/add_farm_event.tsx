@@ -42,7 +42,7 @@ export class RawAddFarmEvent
       repeat: "1",
       timeUnit: NEVER,
     };
-  }
+  };
 
   state: State = { uuid: "", temporaryValues: this.temporaryValueDefaults() };
 
@@ -67,7 +67,7 @@ export class RawAddFarmEvent
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });
     }
-  }
+  };
 
   componentWillUnmount() {
     const { uuid } = this.state;
@@ -81,7 +81,7 @@ export class RawAddFarmEvent
   setField = (field: keyof State["temporaryValues"], value: string) =>
     this.setState(betterMerge(this.state, {
       temporaryValues: { [field]: value }
-    }))
+    }));
 
   render() {
     const farmEvent = this.props.findFarmEventByUuid(this.state.uuid);

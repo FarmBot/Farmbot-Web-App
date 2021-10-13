@@ -43,7 +43,7 @@ export class FarmbotOsRow
     const { dispatch } = this.props;
     const { target } = this.props.bot.hardware.informational_settings;
     dispatch(fetchOsUpdateVersion(target));
-  }
+  };
 
   componentDidUpdate = () => {
     const { dispatch, bot, sourceFbosConfig } = this.props;
@@ -76,7 +76,7 @@ export class FarmbotOsRow
           timeSettings={this.props.timeSettings}
           deviceAccount={this.props.device} />
       </ErrorBoundary>} />;
-  }
+  };
 
   ReleaseNotes = () => {
     const { osReleaseNotes, hardware } = this.props.bot;
@@ -90,7 +90,7 @@ export class FarmbotOsRow
         {releaseNotes.notes}
       </Markdown>
     </div>;
-  }
+  };
 
   render() {
     return <Highlight settingName={DeviceSetting.farmbotOS}>

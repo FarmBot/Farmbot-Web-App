@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { AxisInputBox } from "../axis_input_box";
 import { mount, shallow } from "enzyme";
-import { Xyz } from "farmbot/dist";
+import { Xyz } from "farmbot";
 
 describe("<AxisInputBox/>", () => {
   function inputBoxWithValue(value: number | undefined) {

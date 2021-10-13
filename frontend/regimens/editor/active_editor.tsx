@@ -45,7 +45,7 @@ export class ActiveEditor
       collapsed={this.state.variablesCollapsed}
       toggleVarShow={this.toggleVarShow}
       allowedVariableNodes={AllowedVariableNodes.parameter} />;
-  }
+  };
 
   render() {
     return <div className="regimen-editor-content">

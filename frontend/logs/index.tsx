@@ -67,7 +67,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
   };
 
   toggleCurrentFbosOnly = () =>
-    this.setState({ currentFbosOnly: !this.state.currentFbosOnly })
+    this.setState({ currentFbosOnly: !this.state.currentFbosOnly });
 
   /** Determine if log type filters are active. */
   get filterActive() {

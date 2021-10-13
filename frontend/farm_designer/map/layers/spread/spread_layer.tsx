@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { round, transformXY, defaultSpreadCmDia } from "../../util";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
@@ -67,7 +67,7 @@ export class SpreadCircle extends
   componentDidMount = () => {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread, loaded: true }));
-  }
+  };
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;

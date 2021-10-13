@@ -69,7 +69,7 @@ export class ToggleButton
         SETTING_SYNC_TIMEOUT);
       this.setState({ timeout });
     }
-  }
+  };
 
   render() {
     const allCss = [

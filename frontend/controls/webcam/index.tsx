@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Show } from "./show";
 import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
@@ -35,18 +35,18 @@ export class WebcamPanel extends React.Component<P, S> {
   state: S = { activeMenu: "show" };
 
   init = () =>
-    this.props.dispatch(init("WebcamFeed", { url: HTTP, name: "" }))
+    this.props.dispatch(init("WebcamFeed", { url: HTTP, name: "" }));
 
   edit = (tr: TaggedWebcamFeed, update: Partial<WebcamFeed>) =>
-    this.props.dispatch(edit(tr, update))
+    this.props.dispatch(edit(tr, update));
 
   save = (tr: TaggedWebcamFeed) =>
     tr.body.url != HTTP
       ? this.props.dispatch(save(tr.uuid))
-      : error(t("Please enter a URL."))
+      : error(t("Please enter a URL."));
 
   destroy = (tr: TaggedWebcamFeed) =>
-    this.props.dispatch(destroy(tr.uuid))
+    this.props.dispatch(destroy(tr.uuid));
 
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
 
@@ -63,7 +63,7 @@ export class WebcamPanel extends React.Component<P, S> {
       save: this.save,
       destroy: this.destroy,
     };
-  }
+  };
 
   render() {
     if (this.state.activeMenu === "show") {

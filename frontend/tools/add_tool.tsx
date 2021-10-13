@@ -59,7 +59,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         this.setState({ uuid: undefined });
         history.push("/app/designer/tools");
       }).catch(() => { });
-  }
+  };
 
   componentWillUnmount = () =>
     this.state.uuid && this.props.dispatch(destroy(this.state.uuid));
@@ -94,7 +94,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       case "express_k11":
         return TROUGHS;
     }
-  }
+  };
 
   StockToolCheckbox = ({ toolName }: { toolName: string }) => {
     const alreadyAdded = !this.filterExisting(toolName);
@@ -108,7 +108,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           ? this.remove(toolName)
           : this.add(toolName)} />
     </div>;
-  }
+  };
 
   AddStockTools = () => {
     const add = this.state.toAdd.filter(this.filterExisting);
@@ -133,7 +133,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         {t("selected")}
       </button>
     </div>;
-  }
+  };
 
   render() {
     const { toolName, uuid } = this.state;

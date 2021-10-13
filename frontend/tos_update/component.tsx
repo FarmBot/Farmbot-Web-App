@@ -3,7 +3,7 @@ import axios from "axios";
 import { fun as log, error as logError } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
-import { prettyPrintApiErrors } from "../util";
+import { AxiosErrorResponse, prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
@@ -44,7 +44,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
         Session.replaceToken(resp.data);
         window.location.assign(DEFAULT_APP_PAGE);
       })
-      .catch(error => {
+      .catch((error: AxiosErrorResponse) => {
         logError(prettyPrintApiErrors(error));
         this.update();
       });

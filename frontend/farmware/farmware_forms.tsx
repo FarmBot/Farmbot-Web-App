@@ -171,7 +171,7 @@ export class FarmwareForm
       farmwareEnvs={farmwareEnvs}
       saveFarmwareEnv={saveFarmwareEnv}
       dispatch={dispatch} />;
-  }
+  };
 
   ClearConfigsButton = ({ label, prefix, dispatch }: ClearConfigsButtonProps) => {
     const { env } = this.props;
@@ -185,7 +185,7 @@ export class FarmwareForm
           dispatch(destroy(this.farmwareEnvUuidLookup[key])))}>
       {label}
     </button>;
-  }
+  };
 
   render() {
     const { farmware, env, dispatch, botOnline } = this.props;
