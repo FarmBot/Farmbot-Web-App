@@ -39,7 +39,11 @@ describe("<TileMoveAbsolute />", () => {
   };
 
   function checkField(
-    block: ReactWrapper, position: number, label: string, value: string | number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    block: ReactWrapper<any>,
+    position: number,
+    label: string,
+    value: string | number,
   ) {
     expect(block.find("label").at(position).text().toLowerCase())
       .toEqual(label);

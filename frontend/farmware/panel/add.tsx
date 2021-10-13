@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -39,7 +39,7 @@ export class RawDesignerFarmwareAdd
     } else {
       error(t("Please enter a URL"));
     }
-  }
+  };
 
   render() {
     const panelName = "farmware-add";

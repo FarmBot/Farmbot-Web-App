@@ -1,4 +1,4 @@
-import { Dictionary } from "farmbot/dist";
+import { Dictionary } from "farmbot";
 import { CalendarOccurrence, CalendarDay } from "../../farm_designer/interfaces";
 import moment from "moment";
 import { sortBy } from "lodash";
@@ -56,5 +56,5 @@ export class Calendar {
 
   fmtDate = (m: moment.Moment) => {
     return m.format(Calendar.DATE_FORMAT);
-  }
+  };
 }

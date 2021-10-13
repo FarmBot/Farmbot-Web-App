@@ -45,7 +45,8 @@ import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { ToolTransformProps } from "../tools/interfaces";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isPointType = (x: any): x is PointType => POINTER_TYPES.includes(x);
+export const isPointType = (x: any): x is PointType =>
+  POINTER_TYPES.includes(x as PointType);
 
 export const validPointTypes =
   (pointerTypes: unknown[] | undefined): PointType[] | undefined => {
@@ -142,7 +143,7 @@ export class RawSelectPlants
       });
       history.push("/app/designer/plants");
     }
-  }
+  };
 
   get selectionPointType() {
     const selectionPointTypes = this.props.selectionPointType || ["Plant"];
@@ -176,7 +177,7 @@ export class RawSelectPlants
     this.props.dispatch(setSelectionPointType(
       pointerTypes || pointTypes || POINTER_TYPES));
     this.props.dispatch(selectPoint(pointUuids));
-  }
+  };
 
   ActionButtons = () =>
     <div className={["panel-action-buttons",

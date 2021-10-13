@@ -58,7 +58,7 @@ export class RawBootSequenceSelector
     const payload = { boot_sequence_id: _selected.value as number | undefined };
     this.props.dispatch(edit(this.props.config, payload));
     this.props.dispatch(save(this.props.config.uuid));
-  }
+  };
 
   SelectionInput = () =>
     <FBSelect
@@ -67,7 +67,7 @@ export class RawBootSequenceSelector
       allowEmpty={true}
       list={this.props.list}
       selectedItem={this.props.selectedItem}
-      onChange={this.onChange} />
+      onChange={this.onChange} />;
 
   render() {
     return <Highlight settingName={DeviceSetting.bootSequence}>

@@ -1,5 +1,4 @@
-import { TaggedPeripheral, FirmwareHardware } from "farmbot";
-import { Pins } from "farmbot/dist";
+import { Pins, TaggedPeripheral, FirmwareHardware } from "farmbot";
 import { BotState } from "../../devices/interfaces";
 
 export interface PeripheralState {

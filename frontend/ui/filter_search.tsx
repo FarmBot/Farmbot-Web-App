@@ -69,7 +69,7 @@ export class FilterSearch
         key={index + (i.label || "")}
         onClick={handleClick}
         text={`${i.label}`} />;
-    }
+    };
 
   private filter = (items: DropDownItem[]) =>
     (query: string, item: DropDownItem): boolean => {
@@ -77,14 +77,14 @@ export class FilterSearch
       return item.heading
         ? sectionHasItems(item.headingId, matchedItems)
         : isMatch(item, query);
-    }
+    };
 
   private handleValueChange = (item: DropDownItem | undefined) => {
     if (item && !item.heading) {
       this.props.onChange(item);
       this.setState({ item });
     }
-  }
+  };
 
 }
 

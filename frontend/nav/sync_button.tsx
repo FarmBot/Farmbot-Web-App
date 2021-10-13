@@ -1,5 +1,5 @@
 import React from "react";
-import { SyncStatus } from "farmbot/dist";
+import { SyncStatus } from "farmbot";
 import { SyncButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
 import { t } from "../i18next_wrapper";

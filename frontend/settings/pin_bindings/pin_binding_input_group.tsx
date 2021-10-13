@@ -50,7 +50,7 @@ export class PinBindingInputGroup
     } else {
       error(t("Raspberry Pi GPIO pin already bound or in use."));
     }
-  }
+  };
 
   /** Generate a list of unavailable pin numbers. */
   get boundPins(): number[] {
@@ -89,17 +89,17 @@ export class PinBindingInputGroup
     } else {
       error(t("Pin number cannot be blank."));
     }
-  }
+  };
 
   setBindingType = (ddi: { label: string, value: PinBindingType }) =>
     this.setState({
       bindingType: ddi.value,
       sequenceIdInput: undefined,
       specialActionInput: undefined
-    })
+    });
 
   setSequenceIdInput = (ddi: DropDownItem) =>
-    this.setState({ sequenceIdInput: parseInt("" + ddi.value) })
+    this.setState({ sequenceIdInput: parseInt("" + ddi.value) });
 
   setSpecialAction =
     (ddi: { label: string, value: PinBindingSpecialAction }) =>
@@ -109,12 +109,12 @@ export class PinBindingInputGroup
     <PinNumberInputGroup
       pinNumberInput={this.state.pinNumberInput}
       boundPins={this.boundPins}
-      setSelectedPin={this.setSelectedPin} />
+      setSelectedPin={this.setSelectedPin} />;
 
   Type = () =>
     <BindingTypeDropDown
       bindingType={this.state.bindingType}
-      setBindingType={this.setBindingType} />
+      setBindingType={this.setBindingType} />;
 
   Action = () =>
     this.state.bindingType == PinBindingType.special
@@ -124,7 +124,7 @@ export class PinBindingInputGroup
       : <SequenceTargetDropDown
         sequenceIdInput={this.state.sequenceIdInput}
         resources={this.props.resources}
-        setSequenceIdInput={this.setSequenceIdInput} />
+        setSequenceIdInput={this.setSequenceIdInput} />;
 
   render() {
     return <div className="pin-binding-input-rows">

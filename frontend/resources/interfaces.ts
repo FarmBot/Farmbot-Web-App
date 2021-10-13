@@ -1,8 +1,8 @@
-import { Dictionary } from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
 import { CowardlyDictionary } from "../util";
 import {
+  Dictionary,
   TaggedResource,
   ResourceName,
   TaggedToolSlotPointer,

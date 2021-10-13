@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { JobProgress } from "farmbot/dist";
+import { JobProgress } from "farmbot";
 import { SemverResult, semverCompare } from "../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../devices/actions";

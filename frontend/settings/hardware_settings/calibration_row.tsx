@@ -29,7 +29,7 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
           </Col>;
         })}
     </div>;
-  }
+  };
 
   render() {
     return <Highlight settingName={this.props.title}>

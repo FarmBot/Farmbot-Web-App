@@ -17,7 +17,7 @@ import { SearchField } from "../ui/search_field";
 import {
   SortOptions, PointSortMenu, orderedPoints,
 } from "../farm_designer/sort_options";
-import { ToggleButton } from "../ui/toggle_button";
+import { ToggleButton } from "../ui";
 import {
   setWebAppConfigValue, GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
@@ -127,7 +127,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     open={this.state.pending}
     hoveredPoint={this.props.hoveredPoint}
     clickOpen={this.toggleOpen("pending")}
-    dispatch={this.props.dispatch} />
+    dispatch={this.props.dispatch} />;
 
   ActiveWeeds = () => <WeedsSection
     category={"active"}
@@ -140,7 +140,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     clickOpen={this.toggleOpen("active")}
     layerSetting={BooleanSetting.show_weeds}
     layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
-    dispatch={this.props.dispatch} />
+    dispatch={this.props.dispatch} />;
 
   RemovedWeeds = () => <WeedsSection
     category={"removed"}
@@ -153,7 +153,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     layerSetting={BooleanSetting.show_historic_points}
     layerValue={!!this.props.getConfigValue(BooleanSetting.show_historic_points)}
     layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
-    dispatch={this.props.dispatch} />
+    dispatch={this.props.dispatch} />;
 
   render() {
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>

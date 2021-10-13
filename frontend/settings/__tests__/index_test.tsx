@@ -37,7 +37,8 @@ import { API } from "../../api";
 import { push } from "../../history";
 
 const getSetting =
-  (wrapper: ReactWrapper, position: number, containsString: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (wrapper: ReactWrapper<any>, position: number, containsString: string) => {
     const setting = wrapper.find(".designer-setting").at(position);
     expect(setting.text().toLowerCase())
       .toContain(containsString.toLowerCase());

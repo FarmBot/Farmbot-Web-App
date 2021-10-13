@@ -135,7 +135,7 @@ export const MESSAGE_TYPES = Object.keys(MessageType);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
-  MESSAGE_TYPES.includes(x);
+  MESSAGE_TYPES.includes(x as string);
 
 export interface SequenceReducerState {
   current: string | undefined;

@@ -29,7 +29,7 @@ describe("<CropCatalog />", () => {
     dispatch: jest.fn(),
     openfarmSearch: jest.fn(() => jest.fn()),
     cropSearchResults: [],
-    cropSearchQuery: "",
+    cropSearchQuery: undefined,
     cropSearchInProgress: false,
   });
 

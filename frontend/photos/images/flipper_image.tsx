@@ -34,7 +34,7 @@ export class FlipperImage
       width: img.naturalWidth,
       height: img.naturalHeight,
     });
-  }
+  };
 
   Target = (props: TargetProps) => {
     const { imageLocation, target, mapTransformProps, offset } = props;
@@ -85,7 +85,7 @@ export class FlipperImage
         offset={cameraCalibrationData.offset}
         mapTransformProps={mapTransformProps} />
     </svg>;
-  }
+  };
 
   render() {
     const url = this.props.image.body.attachment_processed_at

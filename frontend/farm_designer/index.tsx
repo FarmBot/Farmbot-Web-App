@@ -62,12 +62,12 @@ export class RawFarmDesigner
       } else {
         return !!currentValue;
       }
-    }
+    };
 
   getBotOriginQuadrant = (): BotOriginQuadrant => {
     const value = this.props.getConfigValue(NumericSetting.bot_origin_quadrant);
     return isBotOriginQuadrant(value) ? value : 2;
-  }
+  };
 
   getState(): State {
     const init = this.initializeSetting;
@@ -101,7 +101,7 @@ export class RawFarmDesigner
     const newValue = !this.state[key];
     this.props.dispatch(setWebAppConfigValue(key, newValue));
     this.setState({ [key]: newValue });
-  }
+  };
 
   componentDidUpdate() {
     const filterZoom = (_val: unknown, key: keyof State) => key != "zoom_level";
@@ -116,13 +116,13 @@ export class RawFarmDesigner
     this.setState({ bot_origin_quadrant: payload });
     this.props.dispatch(setWebAppConfigValue(
       NumericSetting.bot_origin_quadrant, payload));
-  }
+  };
 
   updateZoomLevel = (zoomIncrement: number) => () => {
     const newIndex = getZoomLevelIndex(this.props.getConfigValue) + zoomIncrement;
     this.setState({ zoom_level: calcZoomLevel(newIndex) });
     saveZoomLevelIndex(this.props.dispatch, newIndex);
-  }
+  };
 
   /** Assemble the props needed for placement of items in the map. */
   get mapTransformProps(): MapTransformProps {

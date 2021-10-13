@@ -91,11 +91,11 @@ describe("convertDDItoDeclaration()", () => {
       allowedVariableNodes,
       dropdown: NO_VALUE_SELECTED_DDI()
     });
-    expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
+    expect(variable).toEqual(expectedVariable(NOTHING_SELECTED as Coordinate));
   });
 
   it("returns variable declaration: default", () => {
-    const expected = expectedVariable(NOTHING_SELECTED);
+    const expected = expectedVariable(NOTHING_SELECTED as Coordinate);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
       identifierLabel: label,

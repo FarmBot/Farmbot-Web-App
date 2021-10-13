@@ -2,7 +2,7 @@ import React from "react";
 import { TileComputedMove } from "../tile_computed_move";
 import { mount } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { Move } from "farmbot/dist";
+import { Move } from "farmbot";
 import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,

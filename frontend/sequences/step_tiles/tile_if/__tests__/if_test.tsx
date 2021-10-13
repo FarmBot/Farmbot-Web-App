@@ -3,7 +3,7 @@ jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { If_ } from "../if";
-import { If } from "farmbot/dist";
+import { If } from "farmbot";
 import { FBSelect } from "../../../../ui";
 import { overwrite } from "../../../../api/crud";
 import { StepParams } from "../../../interfaces";

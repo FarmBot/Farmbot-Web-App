@@ -35,14 +35,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   componentDidMount = () => {
     const { device } = this.props;
     device && maybeSetTimezone(this.props.dispatch, device);
-  }
+  };
 
   componentDidUpdate = () => {
     if (this.state.documentTitle != document.title) {
       this.props.dispatch(refresh(this.props.device));
       this.setState({ documentTitle: document.title });
     }
-  }
+  };
 
   logout = () => Session.clear();
 
@@ -54,10 +54,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   ReadOnlyStatus = () =>
     <ReadOnlyIcon locked={!!this.props.getConfigValue(
-      BooleanSetting.user_interface_read_only_mode)} />
+      BooleanSetting.user_interface_read_only_mode)} />;
 
   SyncButton = () =>
-    <SyncButton bot={this.props.bot} dispatch={this.props.dispatch} />
+    <SyncButton bot={this.props.bot} dispatch={this.props.dispatch} />;
 
   EstopButton = () =>
     <div className={"e-stop-btn"}>
@@ -65,7 +65,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         bot={this.props.bot}
         forceUnlock={!!this.props.getConfigValue(
           BooleanSetting.disable_emergency_unlock_confirmation)} />
-    </div>
+    </div>;
 
   AccountMenu = () => {
     const hasName = this.props.user?.body.name;
@@ -84,7 +84,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         </div>}
         content={<AdditionalMenu logout={this.logout} close={this.close} />} />
     </div>;
-  }
+  };
 
   ConnectionStatus = () => {
     const data = connectivityData({
@@ -118,7 +118,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           </ErrorBoundary>} />
       </ErrorBoundary>
     </div>;
-  }
+  };
 
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
@@ -156,7 +156,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       timeSettings={this.props.timeSettings}
       getConfigValue={this.props.getConfigValue}
       lastSeen={lastSeenNumber({ bot: this.props.bot, device: this.props.device })}
-      botOnline={isBotOnlineFromState(this.props.bot)} />
+      botOnline={isBotOnlineFromState(this.props.bot)} />;
 
   render() {
     /** Change document meta title on every route change. */

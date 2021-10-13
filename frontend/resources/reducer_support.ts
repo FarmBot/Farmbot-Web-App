@@ -1,7 +1,7 @@
 import {
   ResourceName, SpecialStatus, TaggedResource, TaggedSequence,
 } from "farmbot";
-import { combineReducers } from "redux";
+import { combineReducers, ReducersMapObject } from "redux";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
 import { photosReducer as photos } from "../photos/reducer";
@@ -254,7 +254,7 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   help,
   alerts
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any);
+} as ReducersMapObject<RestResources["consumers"], any>);
 
 /** The resource reducer must have the first say when a resource-related action
  * fires off. Afterwards, sub-reducers are allowed to make sense of data
@@ -393,7 +393,7 @@ export const beforeEach = (state: RestResources,
   const fail = (place: string) => {
     warning(`(${place}) Can't modify account data when in read-only mode.`);
   };
-  const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z"));
+  const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z") as string);
 
   switch (action.type) {
     case Actions.EDIT_RESOURCE:

@@ -94,7 +94,7 @@ export class RawCreatePoints
       color: this.attr("color") || this.defaultColor,
       at_soil_level: this.attr("at_soil_level"),
     };
-  }
+  };
 
   cancel = () => {
     this.props.dispatch({
@@ -110,7 +110,7 @@ export class RawCreatePoints
       r: undefined,
       color: undefined
     });
-  }
+  };
 
   loadDefaultPoint = () => {
     this.props.dispatch({
@@ -126,7 +126,7 @@ export class RawCreatePoints
         color: this.defaultColor,
       } as DrawnPointPayl
     });
-  }
+  };
 
   componentDidMount() {
     this.loadDefaultPoint();
@@ -161,7 +161,7 @@ export class RawCreatePoints
         payload: point
       });
     }
-  }
+  };
 
   /** Update fields. */
   updateValue = (key: keyof CreatePointsState) => {
@@ -169,7 +169,7 @@ export class RawCreatePoints
       const { value } = e.currentTarget;
       this.updateAttr(key, value);
     };
-  }
+  };
 
   changeColor = (color: ResourceColor) => {
     this.setState({ color });
@@ -181,7 +181,7 @@ export class RawCreatePoints
         : Actions.SET_DRAWN_POINT_DATA,
       payload: point
     });
-  }
+  };
 
   get panel() { return getPathArray()[3] || "points"; }
 
@@ -207,7 +207,7 @@ export class RawCreatePoints
       : t("Point created."));
     this.cancel();
     this.closePanel();
-  }
+  };
 
   closePanel = () => push(`/app/designer/${this.panel}`);
 
@@ -307,7 +307,7 @@ export class RawCreatePoints
             </Col>
           </Row>
         </ListItem>}
-    </ul>
+    </ul>;
 
   PointActions = () =>
     <Row>
@@ -316,7 +316,7 @@ export class RawCreatePoints
         onClick={this.createPoint}>
         {t("Save")}
       </button>
-    </Row>
+    </Row>;
 
   DeleteAllPoints = (type: "point" | "weed") => {
     const meta = { created_by: "farm-designer" };

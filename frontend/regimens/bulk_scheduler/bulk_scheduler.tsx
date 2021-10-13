@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { BulkEditorProps } from "./interfaces";
 import { WeekGrid } from "./week_grid";
 import { setTimeOffset, setSequence } from "./actions";
 import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE,
-} from "../../ui/index";
+} from "../../ui";
 import moment from "moment";
 import { isString } from "lodash";
 import { betterCompact, bail } from "../../util";
@@ -31,12 +31,12 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
 
   commitChange = (uuid: string) => {
     this.props.dispatch(setSequence(uuid));
-  }
+  };
 
   onChange = (event: DropDownItem) => {
     const uuid = event.value;
     isString(uuid) ? this.commitChange(uuid) : bail(BAD_UUID);
-  }
+  };
 
   SequenceSelectBox = () =>
     <Col xs={6}>
@@ -46,7 +46,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
           selectedItem={this.selected()}
           list={this.all()} />
       </div>
-    </Col>
+    </Col>;
 
   TimeSelection = () =>
     <Col xs={6}>
@@ -61,7 +61,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
             this.props.dispatch(setTimeOffset(timeToMs(currentTarget.value)));
           }} />
       </div>
-    </Col>
+    </Col>;
 
   render() {
     const { dispatch, weeks } = this.props;

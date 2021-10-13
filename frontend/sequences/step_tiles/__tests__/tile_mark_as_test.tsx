@@ -2,7 +2,7 @@ import React from "react";
 import { TileMarkAs } from "../tile_mark_as";
 import { mount } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { UpdateResource } from "farmbot/dist";
+import { UpdateResource } from "farmbot";
 import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,

@@ -20,13 +20,13 @@ export class CameraCalibration extends
 
   change = (key: NumericKeyName, value: number) => {
     this.saveEnvVar(this.namespace(key), value);
-  }
+  };
 
   namespace = namespace<CAMERA_CALIBRATION_KEY_PART>("CAMERA_CALIBRATION_");
 
   saveEnvVar = (key: WDENVKey, value: number) =>
     this.props.dispatch(this.props.saveFarmwareEnv(
-      key, JSON.stringify(formatEnvKey(key, value))))
+      key, JSON.stringify(formatEnvKey(key, value))));
 
   wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
 

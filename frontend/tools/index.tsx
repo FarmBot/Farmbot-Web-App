@@ -65,7 +65,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         filterSelectedTool={true}
         filterActiveTools={false} />
       <ToolVerification sensors={this.props.sensors} bot={this.props.bot} />
-    </div>
+    </div>;
 
   ToolSlots = () =>
     <div className="tool-slots">
@@ -88,7 +88,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             isActive={this.props.isActive}
             tools={this.props.tools}
             toolTransformProps={this.props.toolTransformProps} />)}
-    </div>
+    </div>;
 
   Tools = () =>
     <div className="tools">
@@ -111,7 +111,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             active={this.props.isActive(tool.body.id)}
             mounted={this.mountedTool?.uuid == tool.uuid}
             toolName={tool.body.name || t("Unnamed")} />)}
-    </div>
+    </div>;
 
   get strings() {
     return {

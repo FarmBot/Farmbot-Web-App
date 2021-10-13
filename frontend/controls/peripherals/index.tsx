@@ -41,7 +41,7 @@ export class Peripherals
       return error(t("Pin numbers must be unique."));
     }
     this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
-  }
+  };
 
   showPins = () => {
     const { peripherals, dispatch, bot } = this.props;
@@ -57,7 +57,7 @@ export class Peripherals
         disabled={this.disabled}
         locked={bot.hardware.informational_settings.locked} />;
     }
-  }
+  };
 
   newPeripheral = (
     pin: number | undefined = undefined,

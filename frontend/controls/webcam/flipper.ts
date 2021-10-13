@@ -6,7 +6,7 @@ export class Flipper<T> {
     (cb: (next: T | undefined, index: number) => void) => {
       this.inc(n);
       cb(this.current, this.index);
-    }
+    };
 
   private inc = (num: number) => {
     const i = this.index;
@@ -20,7 +20,7 @@ export class Flipper<T> {
       this.index = newIndex;
     }
     return this.index;
-  }
+  };
   /** Retrieve the currently viewed item. Returns a fallback when unable to find
    * an element. */
   get current(): T { return this.list[this.index] || this.fallback; }

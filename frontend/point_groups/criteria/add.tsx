@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../i18next_wrapper";
 import { cloneDeep, uniq } from "lodash";
 import { Row, Col } from "../../ui";
@@ -25,7 +25,7 @@ export class AddEqCriteria<T extends string | number>
     tempEqCriteria[this.state.key] = uniq(tempValues);
     dispatch(editCriteria(group, { [criteriaKey]: tempEqCriteria }));
     this.setState({ key: "", value: "" });
-  }
+  };
 
   render() {
     return <div className={`add-${this.props.type}-eq-criteria`}>
@@ -68,13 +68,13 @@ export class AddNumberCriteria
     tempNumberCriteria[this.state.key] = this.state.value;
     dispatch(editCriteria(group, { [criteriaKey]: tempNumberCriteria }));
     this.setState({ key: "", value: 0 });
-  }
+  };
 
   changeKey = (e: React.FormEvent<HTMLInputElement>) =>
-    this.setState({ key: e.currentTarget.value })
+    this.setState({ key: e.currentTarget.value });
 
   changeValue = (e: React.FormEvent<HTMLInputElement>) =>
-    this.setState({ value: parseInt(e.currentTarget.value) })
+    this.setState({ value: parseInt(e.currentTarget.value) });
 
   render() {
     return <div className="add-number-criteria">

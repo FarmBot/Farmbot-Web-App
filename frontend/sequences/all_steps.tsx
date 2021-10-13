@@ -1,6 +1,5 @@
 import React from "react";
-import { TaggedSequence } from "farmbot";
-import { SequenceBodyItem } from "farmbot/dist";
+import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { DropArea } from "../draggable/drop_area";
 import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";

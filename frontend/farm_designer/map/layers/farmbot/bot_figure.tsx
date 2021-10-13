@@ -2,7 +2,7 @@ import React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
-import { Color } from "../../../../ui/index";
+import { Color } from "../../../../ui";
 import { botPositionLabel } from "./bot_position_label";
 import { RotatedTool } from "../tool_slots/tool_graphics";
 import { ToolGraphicProps } from "../../tool_graphics/interfaces";
@@ -82,7 +82,7 @@ export class BotFigure extends
         strokeWidth={6}
         opacity={0.8}
         fill={"none"} />
-    </g>
+    </g>;
 
   UTM = () =>
     !this.props.mountedToolInfo?.noUTM
@@ -97,7 +97,7 @@ export class BotFigure extends
         y={this.positionQ.qy}
         toolTransformProps={this.props.mapTransformProps}
         pulloutDirection={ToolPulloutDirection.POSITIVE_X}
-        color={this.color} />
+        color={this.color} />;
 
   render() {
     const { figureName, position, plantAreaOffset, mapTransformProps,

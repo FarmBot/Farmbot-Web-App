@@ -63,8 +63,8 @@ export interface FormattedPlantInfo {
 
 /** Get date planted or fallback to creation date. */
 const plantDate = (plant: TaggedPlant | TaggedPoint): moment.Moment => {
-  const plantedAt = get(plant, "body.planted_at");
-  const createdAt = get(plant, "body.created_at", moment());
+  const plantedAt = get(plant, "body.planted_at") as moment.MomentInput;
+  const createdAt = get(plant, "body.created_at", moment()) as moment.MomentInput;
   return plantedAt ? moment(plantedAt) : moment(createdAt);
 };
 

@@ -4,7 +4,7 @@ import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import { Col, Row, FBSelect, DropDownItem } from "../../../ui";
-import { ALLOWED_OPS, If } from "farmbot/dist";
+import { ALLOWED_OPS, If } from "farmbot";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
 import { isString } from "lodash";
@@ -21,7 +21,8 @@ const label_ops = (): Record<ALLOWED_OPS, string> => ({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops()).includes(x);
+const isOp = (x: any): x is ALLOWED_OPS =>
+  Object.keys(label_ops()).includes(x as string);
 
 const updateOp = (props: StepParams<If>) => (ddi: DropDownItem) => {
   const stepCopy = defensiveClone(props.currentStep);

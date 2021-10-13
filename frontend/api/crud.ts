@@ -3,6 +3,7 @@ import {
   SpecialStatus,
   ResourceName,
   TaggedSequence,
+  SequenceBodyItem,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -21,7 +22,6 @@ import { UnsafeError } from "../interfaces";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
-import { SequenceBodyItem } from "farmbot/dist";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { newTaggedResource } from "../sync/actions";

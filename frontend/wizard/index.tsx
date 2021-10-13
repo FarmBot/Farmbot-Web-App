@@ -69,7 +69,7 @@ export class RawSetupWizard
       }
     });
     return open as WizardSectionsOpen;
-  }
+  };
 
   state: SetupWizardState = {
     ...this.sectionsOpen(),
@@ -89,7 +89,7 @@ export class RawSetupWizard
         this.props.dispatch(resetSetup(this.props.device));
       })
       .catch(noop);
-  }
+  };
 
   get closedSections() {
     const sectionStates: Partial<Record<WizardSectionSlug, boolean>> = {};
@@ -115,7 +115,7 @@ export class RawSetupWizard
           == WIZARD_STEPS(this.firmwareHardware).length
           && this.props.dispatch(completeSetup(this.props.device));
       });
-  }
+  };
 
   getNextStepSlug = (stepSlug: WizardStepSlug) => {
     const slugs = WIZARD_STEP_SLUGS(this.firmwareHardware)

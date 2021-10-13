@@ -73,7 +73,7 @@ export class ImageFilterMenu
         ? formatTimeField(endDatetime.toString(), timeSettings)
         : undefined,
     });
-  }
+  };
 
   setDatetime = (datetime: keyof ImageFilterMenuState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -132,7 +132,7 @@ export class ImageFilterMenu
       .toISOString();
     const begin = offsetTime(day, "00:00", this.props.timeSettings);
     this.setSingleDay(begin);
-  }
+  };
 
   setSingleDay = (date: string | undefined) => {
     const day = moment(date).toISOString();
@@ -140,24 +140,24 @@ export class ImageFilterMenu
     const nextDay = moment(day).add(1, "days").toISOString();
     const end = offsetTime(nextDay, "00:00", this.props.timeSettings);
     this.setValues({ photo_filter_begin: begin, photo_filter_end: end });
-  }
+  };
 
   dateStep = (direction: 1 | -1) => () => {
     const day = moment(this.state.beginDate).add(direction, "days")
       .toISOString();
     this.setSingleDay(day);
-  }
+  };
 
   oldest = () => {
     const { newestDate, toOldest } = this.props.imageAgeInfo;
     const oldest = moment(newestDate).subtract(toOldest + 1, "days")
       .toISOString();
     this.setSingleDay(oldest);
-  }
+  };
 
   newest = () => {
     this.setSingleDay(this.props.imageAgeInfo.newestDate);
-  }
+  };
 
   renderLabel = (day: number) => {
     const { newestDate, toOldest } = this.imageAgeInfo;
@@ -165,7 +165,7 @@ export class ImageFilterMenu
       .utcOffset(this.props.timeSettings.utcOffset)
       .subtract(toOldest - day, "days")
       .format("MMM-D");
-  }
+  };
 
   get labelStepSize() {
     return Math.max(Math.round(this.imageAgeInfo.toOldest / 5), 1);
@@ -174,7 +174,7 @@ export class ImageFilterMenu
   getImageOffset = (image: TaggedImage) =>
     this.imageAgeInfo.toOldest -
     Math.abs(moment(image.body.created_at)
-      .diff(moment(this.imageAgeInfo.newestDate), "days"))
+      .diff(moment(this.imageAgeInfo.newestDate), "days"));
 
   render() {
     const { beginDate, beginTime, endDate, endTime } = this.state;

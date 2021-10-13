@@ -9,7 +9,7 @@ import { t } from "../../../../i18next_wrapper";
 import { TimeSettings } from "../../../../interfaces";
 import { formatTime } from "../../../../util";
 
-const VISIBLE_PERIOD_SECONDS = 24 * 60 * 60.;
+const VISIBLE_PERIOD_SECONDS = 24 * 60 * 60;
 
 export interface GardenSensorReadingProps {
   sensorReading: TaggedSensorReading;

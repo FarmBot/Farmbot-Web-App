@@ -34,7 +34,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
       this.props.dispatch(updateConfig({ firmware_hardware }));
       this.forceUpdate();
     }
-  }
+  };
 
   FirmwareSelection = () =>
     <FBSelect
@@ -45,7 +45,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
       ].join(" ")}
       list={getFirmwareChoices(shouldDisplayFeature)}
       selectedItem={this.selectedBoard}
-      onChange={this.sendOffConfig} />
+      onChange={this.sendOffConfig} />;
 
   render() {
     return <Highlight settingName={DeviceSetting.firmware}>

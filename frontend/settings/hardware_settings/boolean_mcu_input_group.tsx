@@ -15,7 +15,7 @@ export class BooleanMCUInputGroup
   wrapperClassName = (key: McuParamName, value: number | undefined) => {
     const { firmwareHardware } = this.props;
     return getModifiedClassName(key, value, firmwareHardware);
-  }
+  };
 
   Toggles = () => {
     const {
@@ -61,7 +61,7 @@ export class BooleanMCUInputGroup
             dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />
       </Col>
     </div>;
-  }
+  };
 
   get getDefault() { return getDefaultFwConfigValue(this.props.firmwareHardware); }
 

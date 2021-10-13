@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   FarmEventRepeatFormProps, FarmEventRepeatForm,
 } from "../farm_event_repeat_form";
@@ -24,11 +24,15 @@ enum Selectors {
   TIME_UNIT = "FBSelect"
 }
 
-function formVal(el: ShallowWrapper<{}, {}>, query: string) {
+type Props = FarmEventRepeatFormProps;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function formVal(el: ShallowWrapper<Props, any>, query: string) {
   return getProp(el, query, "value");
 }
 
-function getProp(el: ShallowWrapper<{}, {}>, query: string, prop: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getProp(el: ShallowWrapper<Props, any>, query: string, prop: string) {
   return get(el.find(query).props(), prop, "NOT_FOUND");
 }
 
@@ -46,7 +50,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("defaults to `daily` when a bad input it passed", () => {
     const p = fakeProps();
     p.timeUnit = "never";
-    const el = shallow(<FarmEventRepeatForm {...p} />);
+    const el = shallow<FarmEventRepeatFormProps>(<FarmEventRepeatForm {...p} />);
     expect(formVal(el, Selectors.REPEAT)).toEqual(p.repeat);
     expect(getProp(el, "FBSelect", "selectedItem.value")).toEqual("daily");
   });
@@ -54,7 +58,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("disables all inputs via the `disabled` prop", () => {
     const p = fakeProps();
     p.disabled = true;
-    const el = shallow(<FarmEventRepeatForm {...p} />);
+    const el = shallow<FarmEventRepeatFormProps>(<FarmEventRepeatForm {...p} />);
     expect(getProp(el, Selectors.END_DATE, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.END_TIME, "disabled")).toBeTruthy();
     expect(getProp(el, Selectors.REPEAT, "disabled")).toBeTruthy();

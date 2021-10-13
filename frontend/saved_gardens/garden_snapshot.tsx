@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "./actions";
 import { TaggedPlantTemplate, TaggedSavedGarden } from "farmbot";
 import { t } from "../i18next_wrapper";
@@ -28,7 +28,7 @@ export class GardenSnapshot
         plantTemplates
       }));
     this.setState({ gardenName: "" });
-  }
+  };
 
   new = () => {
     this.props.dispatch(newSavedGarden(this.state.gardenName));

@@ -1,11 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { error } from "../toast/toast";
 import { SensorList } from "./sensor_list";
 import { SensorForm } from "./sensor_form";
 import {
   Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
   EmptyStateGraphic,
-} from "../ui/index";
+} from "../ui";
 import { SensorsProps, SensorState } from "./interfaces";
 import { getArrayStatus } from "../resources/tagged_resources";
 import { saveAll, init } from "../api/crud";
@@ -21,7 +21,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
 
   toggle = () => {
     this.setState({ isEditing: !this.state.isEditing });
-  }
+  };
 
   maybeSave = () => {
     const pinNums = this.props.sensors.map(x => x.body.pin);
@@ -31,7 +31,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
     } else {
       error(t("Pin numbers must be unique."));
     }
-  }
+  };
 
   showPins = () => {
     const { sensors, dispatch, bot, disabled } = this.props;
@@ -46,7 +46,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
         pins={pins}
         disabled={disabled} />;
     }
-  }
+  };
 
   newSensor = (pin = 0, label = t("New Sensor"), mode: 0 | 1 = 0) => {
     this.props.dispatch(init("Sensor", { pin, label, mode: mode || 0 }));
@@ -55,7 +55,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
   stockSensors = () => {
     this.newSensor(63, t("Tool Verification"), 0);
     this.newSensor(59, t("Soil Moisture"), 1);
-  }
+  };
 
   render() {
     const { isEditing } = this.state;
