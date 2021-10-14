@@ -973,10 +973,12 @@
 }
 
 .image-options {
+  .image-filter-menu {
+    margin-bottom: 1rem;
+  }
   .non-layer-config-toggle {
-    width: 80%;
-    margin-top: 1rem;
-    text-align: center;
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
   .bp3-popover-wrapper {
     display: inline;

@@ -155,7 +155,7 @@ describe("<DesignerSettings />", () => {
     p.controlPanelState.farm_designer = true;
     p.getConfigValue = () => undefined;
     const wrapper = mount(<DesignerSettings {...p} />);
-    const confirmDeletion = getSetting(wrapper, 9, "confirm plant");
+    const confirmDeletion = getSetting(wrapper, 10, "confirm plant");
     expect(confirmDeletion.find("button").text()).toEqual("on");
   });
 

@@ -38,6 +38,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
       hideUnShownImages, alwaysHighlightImage, hoveredMapImage,
     } = this.props.designer;
     const cropImages = !!getConfigValue(BooleanSetting.crop_images);
+    const clipImageLayer = !!getConfigValue(BooleanSetting.clip_image_layer);
     const getFilterValue = parseFilterSetting(getConfigValue);
     const imageFilterBegin = getFilterValue(StringSetting.photo_filter_begin);
     const imageFilterEnd = getFilterValue(StringSetting.photo_filter_end);
@@ -45,7 +46,8 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
       images.filter(img => img.body.id == hoveredMapImage
         || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];
     const rangeOverride = alwaysHighlightImage || hideUnShownImages;
-    return <g id="image-layer">
+    return <g id="image-layer"
+      clipPath={clipImageLayer ? "url(#map-grid-clip-path)" : undefined}>
       {visible &&
         reverse(cloneDeep(images))
           .filter(img =>

@@ -21,6 +21,7 @@ export const IMAGE_LAYER_CONFIG_KEYS: (BooleanConfigKey | StringConfigKey)[] = [
   StringSetting.photo_filter_begin,
   StringSetting.photo_filter_end,
   BooleanSetting.crop_images,
+  BooleanSetting.clip_image_layer,
   BooleanSetting.show_images,
 ];
 
