@@ -38,7 +38,7 @@ describe("<SensorReadingsLayer />", () => {
     const wrapper = svgMount(<SensorReadingsLayer {...p} />);
     const layer = wrapper.find("#sensor-readings-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(1);
+    expect(layer.find("rect").length).toEqual(0);
   });
 
   it("shows moisture map", () => {
@@ -55,6 +55,6 @@ describe("<SensorReadingsLayer />", () => {
     const wrapper = svgMount(<SensorReadingsLayer {...p} />);
     const layer = wrapper.find("#sensor-readings-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(1801);
+    expect(layer.find("rect").length).toEqual(1800);
   });
 });

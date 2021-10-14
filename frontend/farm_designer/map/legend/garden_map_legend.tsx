@@ -143,6 +143,10 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           setting={BooleanSetting.crop_images}
           label={DeviceSetting.cropMapImages}
           helpText={Content.CROP_MAP_IMAGES} />
+        <NonLayerToggle {...subMenuProps}
+          setting={BooleanSetting.clip_image_layer}
+          label={DeviceSetting.clipPhotosOutOfBounds}
+          helpText={Content.CLIP_PHOTOS_OUT_OF_BOUNDS} />
       </div>} />
     <LayerToggle
       settingName={BooleanSetting.show_zones}

@@ -87,7 +87,7 @@ describe("<PointLayer/>", () => {
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(1);
+    expect(layer.find("rect").length).toEqual(0);
   });
 
   it("shows interpolation map", () => {
@@ -98,7 +98,7 @@ describe("<PointLayer/>", () => {
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(1801);
+    expect(layer.find("rect").length).toEqual(1800);
   });
 
   it("shows interpolation map in quadrant 4", () => {
@@ -109,6 +109,6 @@ describe("<PointLayer/>", () => {
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
     expect(layer.find("#interpolation-map").length).toEqual(1);
-    expect(layer.find("rect").length).toEqual(1801);
+    expect(layer.find("rect").length).toEqual(1800);
   });
 });

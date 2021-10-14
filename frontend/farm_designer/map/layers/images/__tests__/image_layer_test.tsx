@@ -13,6 +13,7 @@ import {
 import {
   fakeDesignerState,
 } from "../../../../../__test_support__/fake_designer_state";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("<ImageLayer/>", () => {
   const mockConfig = fakeWebAppConfig();
@@ -38,6 +39,7 @@ describe("<ImageLayer/>", () => {
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(1);
+    expect(layer.props().clipPath).toEqual(undefined);
   });
 
   it("handles missing id", () => {
@@ -85,5 +87,13 @@ describe("<ImageLayer/>", () => {
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(0);
+  });
+
+  it("clips layer", () => {
+    const p = fakeProps();
+    mockConfig.body["clip_image_layer" as keyof WebAppConfig] = true as never;
+    const wrapper = shallow(<ImageLayer {...p} />);
+    const layer = wrapper.find("#image-layer");
+    expect(layer.props().clipPath).toEqual("url(#map-grid-clip-path)");
   });
 });

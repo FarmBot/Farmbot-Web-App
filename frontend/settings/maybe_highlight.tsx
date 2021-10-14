@@ -129,6 +129,9 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
   DeviceSetting.mapOrigin,
+  DeviceSetting.cropMapImages,
+  DeviceSetting.clipPhotosOutOfBounds,
+  DeviceSetting.showCameraViewAreaInMap,
   DeviceSetting.confirmPlantDeletion,
 ];
 const ACCOUNT_PANEL = [

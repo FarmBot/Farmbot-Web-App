@@ -946,6 +946,10 @@ export namespace Content {
     trim(`Crop images displayed in the garden map to remove black borders
     from image rotation. Crop amount determined by CAMERA ROTATION value.`);
 
+  export const CLIP_PHOTOS_OUT_OF_BOUNDS =
+    trim(`Remove portions of images that extend beyond the garden map
+    boundaries.`);
+
   export const SHOW_CAMERA_VIEW_AREA =
     trim(`Show the camera's field of view in the garden map.`);
 
@@ -1893,6 +1897,7 @@ export enum DeviceSetting {
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
   cropMapImages = `Crop map images`,
+  clipPhotosOutOfBounds = `Clip photos out of bounds`,
   showCameraViewAreaInMap = `Show camera view area in map`,
   confirmPlantDeletion = `Confirm plant deletion`,
 

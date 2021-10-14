@@ -149,14 +149,8 @@ interface InterpolationMapProps {
 
 export const InterpolationMap = (props: InterpolationMapProps) => {
   const step = props.options.stepSize;
-  const { gridSize, xySwap } = props.mapTransformProps;
   return <g id={"interpolation-map"} style={{ pointerEvents: "none" }}>
-    <clipPath id={"interpolation-map-clip-path"}>
-      <rect x={0} y={0}
-        width={xySwap ? gridSize.y : gridSize.x}
-        height={xySwap ? gridSize.x : gridSize.y} />
-    </clipPath>
-    <g id={"map-tiles"} clipPath={"url(#interpolation-map-clip-path)"}>
+    <g id={"map-tiles"} clipPath={"url(#map-grid-clip-path)"}>
       {getInterpolationData(props.kind).map(p => {
         const { x, y, z } = p;
         const { qx, qy } = transformXY(x, y, props.mapTransformProps);
