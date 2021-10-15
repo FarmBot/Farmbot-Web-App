@@ -3,7 +3,7 @@ import { SaveBtn, Row } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import axios from "axios";
 import { API } from "../../api/index";
-import { prettyPrintApiErrors, equals, trim } from "../../util";
+import { prettyPrintApiErrors, equals, trim, AxiosErrorResponse } from "../../util";
 import { Content, DeviceSetting } from "../../constants";
 import { uniq } from "lodash";
 import { BlurablePassword } from "../../ui/blurable_password";
@@ -50,7 +50,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
       .then(() => {
         success(t("Your password is changed."));
         this.clearForm();
-      }, (e) => {
+      }, (e: AxiosErrorResponse) => {
         error(e ? prettyPrintApiErrors(e) : t("Password change failed."));
         this.clearForm();
       });
@@ -78,7 +78,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         throw new Error(trim(`Password change form error:
           ${numUniqueValues} unique values provided.`));
     }
-  }
+  };
 
   render() {
     return <Row className={"change-password zero-side-margins"}>

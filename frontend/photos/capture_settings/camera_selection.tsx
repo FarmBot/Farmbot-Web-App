@@ -72,7 +72,7 @@ export class CameraSelection
   };
 
   selectedCamera = (): DropDownItem =>
-    CAMERA_CHOICES_DDI()[parseCameraSelection(this.props.env)]
+    CAMERA_CHOICES_DDI()[parseCameraSelection(this.props.env)];
 
   render() {
     return <Highlight settingName={DeviceSetting.camera}>

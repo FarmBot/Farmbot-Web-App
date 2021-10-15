@@ -70,6 +70,8 @@ export class GardenMap extends
     return getMapSize(this.mapTransformProps, this.props.gridOffset);
   }
   get xySwap() { return this.mapTransformProps.xySwap; }
+  get gridWidth() { return this.xySwap ? this.gridSize.y : this.gridSize.x; }
+  get gridHeight() { return this.xySwap ? this.gridSize.x : this.gridSize.y; }
 
   /** Currently editing a plant? */
   get isEditing(): boolean { return getMode() === Mode.editPlant; }
@@ -177,7 +179,7 @@ export class GardenMap extends
       case Mode.clickToAdd:
         break;
     }
-  }
+  };
 
   /** Map background drag start actions. */
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
@@ -231,7 +233,7 @@ export class GardenMap extends
         });
         break;
     }
-  }
+  };
 
   interactions = (pointerType: PointType): boolean => {
     if (allowInteraction()) {
@@ -250,7 +252,7 @@ export class GardenMap extends
     return allowInteraction()
       ? this.props.selectedPlant
       : undefined;
-  }
+  };
 
   get currentPoint(): UUID | undefined {
     return this.props.designer.selectedPoints?.[0];
@@ -263,14 +265,14 @@ export class GardenMap extends
         e.preventDefault(); // Allows dragged-in plants to be placed in the map
         e.dataTransfer.dropEffect = "move";
     }
-  }
+  };
 
   handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
     switch (getMode()) {
       case Mode.addPlant:
         e.preventDefault();
     }
-  }
+  };
 
   handleDrop =
     (e: React.DragEvent<HTMLElement> | React.MouseEvent<SVGElement>) => {
@@ -306,7 +308,7 @@ export class GardenMap extends
         });
         break;
     }
-  }
+  };
 
   /** Map drag actions. */
   drag = (e: React.MouseEvent<SVGElement>) => {
@@ -370,7 +372,7 @@ export class GardenMap extends
         });
         break;
     }
-  }
+  };
 
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
@@ -396,7 +398,7 @@ export class GardenMap extends
           closePlantInfo(this.props.dispatch)();
         };
     }
-  }
+  };
 
   mapDropAreaProps = () => ({
     onDrop: this.handleDrop,
@@ -414,48 +416,51 @@ export class GardenMap extends
   MapBackground = () => <MapBackground
     templateView={!!this.props.designer.openedSavedGarden}
     mapTransformProps={this.mapTransformProps}
-    plantAreaOffset={this.props.gridOffset} />
+    plantAreaOffset={this.props.gridOffset} />;
   svgDropAreaProps = () => ({
     x: this.props.gridOffset.x,
     y: this.props.gridOffset.y,
-    width: this.xySwap ? this.gridSize.y : this.gridSize.x,
-    height: this.xySwap ? this.gridSize.x : this.gridSize.y,
+    width: this.gridWidth,
+    height: this.gridHeight,
     onMouseUp: this.endDrag,
     onMouseDown: this.startDrag,
     onMouseMove: this.drag,
     onClick: this.click,
   });
+  ClipPath = () => <clipPath id={"map-grid-clip-path"}>
+    <rect x={0} y={0} width={this.gridWidth} height={this.gridHeight} />
+  </clipPath>;
   ImageLayer = () => <ImageLayer
     images={this.props.latestImages}
     designer={this.props.designer}
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
-    getConfigValue={this.props.getConfigValue} />
+    getConfigValue={this.props.getConfigValue} />;
   LogsLayer = () => <LogsLayer
     logs={this.props.logs}
     cameraCalibrationData={this.props.cameraCalibrationData}
     deviceTarget={this.props.deviceTarget}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
-    getConfigValue={this.props.getConfigValue} />
+    getConfigValue={this.props.getConfigValue} />;
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}
     mapTransformProps={this.mapTransformProps}
-    zoomLvl={this.props.zoomLvl} />
+    zoomLvl={this.props.zoomLvl} />;
   ZonesLayer = () => <ZonesLayer
     visible={!!this.props.showZones}
     botSize={this.props.botSize}
     mapTransformProps={this.mapTransformProps}
     groups={this.props.groups}
     startDrag={this.startDragOnBackground}
-    currentGroup={this.group?.uuid} />
+    currentGroup={this.group?.uuid} />;
   ProfileLine = () => <ProfileLine
     designer={this.props.designer}
     botPosition={this.props.botLocationData.position}
     plantAreaOffset={this.props.gridOffset}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
     overlayVisible={
@@ -464,7 +469,7 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps}
     timeSettings={this.props.timeSettings}
     farmwareEnvs={this.props.farmwareEnvs}
-    sensors={this.props.sensors} />
+    sensors={this.props.sensors} />;
   SpreadLayer = () => <SpreadLayer
     mapTransformProps={this.mapTransformProps}
     plants={this.props.plants}
@@ -475,12 +480,12 @@ export class GardenMap extends
     activeDragXY={this.state.activeDragXY}
     activeDragSpread={this.state.activeDragSpread}
     editing={this.isEditing}
-    animate={this.animate} />
+    animate={this.animate} />;
   PlantRadiusLayer = () => <PlantRadiusLayer
     visible={!!this.props.showPlants}
     mapTransformProps={this.mapTransformProps}
     plants={this.props.plants}
-    animate={this.animate} />
+    animate={this.animate} />;
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -492,7 +497,7 @@ export class GardenMap extends
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     interactions={this.interactions("GenericPointer")}
     farmwareEnvs={this.props.farmwareEnvs}
-    genericPoints={this.props.genericPoints} />
+    genericPoints={this.props.genericPoints} />;
   WeedLayer = () => <WeedLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -504,7 +509,7 @@ export class GardenMap extends
     groupSelected={this.groupSelected}
     interactions={this.interactions("Weed")}
     weeds={this.props.weeds}
-    animate={this.animate} />
+    animate={this.animate} />;
   PlantLayer = () => <PlantLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -519,7 +524,7 @@ export class GardenMap extends
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
     interactions={this.interactions("Plant")}
-    animate={this.animate} />
+    animate={this.animate} />;
   ToolSlotLayer = () => <ToolSlotLayer
     mapTransformProps={this.mapTransformProps}
     visible={!!this.props.showFarmbot}
@@ -527,7 +532,7 @@ export class GardenMap extends
     hoveredToolSlot={this.props.designer.hoveredToolSlot}
     botPositionX={this.props.botLocationData.position.x}
     interactions={this.interactions("ToolSlot")}
-    slots={this.props.toolSlots} />
+    slots={this.props.toolSlots} />;
   FarmBotLayer = () => <FarmBotLayer
     mapTransformProps={this.mapTransformProps}
     visible={!!this.props.showFarmbot}
@@ -539,7 +544,7 @@ export class GardenMap extends
     eStopStatus={this.props.eStopStatus}
     mountedToolInfo={this.props.mountedToolInfo}
     cameraCalibrationData={this.props.cameraCalibrationData}
-    getConfigValue={this.props.getConfigValue} />
+    getConfigValue={this.props.getConfigValue} />;
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}
     spreadLayerVisible={!!this.props.showSpread}
@@ -549,7 +554,7 @@ export class GardenMap extends
     designer={this.props.designer}
     hoveredPlant={this.props.hoveredPlant}
     dragging={!!this.state.isDragging}
-    animate={this.animate} />
+    animate={this.animate} />;
   DragHelper = () => <ActivePlantDragHelper
     mapTransformProps={this.mapTransformProps}
     currentPlant={this.getPlant()}
@@ -557,10 +562,10 @@ export class GardenMap extends
     editing={this.isEditing}
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
-    plantAreaOffset={this.props.gridOffset} />
+    plantAreaOffset={this.props.gridOffset} />;
   SelectionBox = () => <SelectionBox
     selectionBox={this.state.selectionBox}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   TargetCoordinate = () => <TargetCoordinate
     chosenLocation={this.props.designer.chosenLocation}
     hoveredPlant={this.props.hoveredPlant}
@@ -572,18 +577,18 @@ export class GardenMap extends
       point.uuid == this.props.designer.hoveredPoint)[0]}
     plantAreaOffset={this.props.gridOffset}
     zoomLvl={this.props.zoomLvl}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   DrawnPoint = () => <DrawnPoint
     data={this.props.designer.drawnPoint}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   DrawnWeed = () => <DrawnWeed
     data={this.props.designer.drawnWeed}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   GroupOrder = () => <GroupOrder
     group={this.group}
     groupPoints={this.pointsSelectedByGroup}
     zoomLvl={this.props.zoomLvl}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   SequenceVisualization = () => <SequenceVisualization
     botPosition={this.props.botLocationData.position}
     zoomLvl={this.props.zoomLvl}
@@ -591,13 +596,13 @@ export class GardenMap extends
     visualizedSequenceBody={this.props.visualizedSequenceBody}
     hoveredSequenceStep={this.props.designer.hoveredSequenceStep}
     dispatch={this.props.dispatch}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   NNPath = () => <NNPath pathPoints={this.props.allPoints}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps} />;
   Bugs = () => showBugs()
     ? <Bugs mapTransformProps={this.mapTransformProps}
       botSize={this.props.botSize} />
-    : <g />
+    : <g />;
 
   /** Render layers in order from back to front. */
   render() {
@@ -606,6 +611,7 @@ export class GardenMap extends
         <svg id={"map-background-svg"}>
           <this.MapBackground />
           <svg className={"drop-area-svg"} {...this.svgDropAreaProps()}>
+            <this.ClipPath />
             <this.ImageLayer />
             <this.LogsLayer />
             <this.Grid />

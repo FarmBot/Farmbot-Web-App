@@ -36,7 +36,7 @@ export class DemoIframe extends React.Component<{}, State> {
       client.subscribe(MQTT_CHAN, this.setError);
       client.on("connect", resolve);
     });
-  }
+  };
 
   connectApi = () => {
     const is51 = (Math.round(Math.random() * 100) == 51);
@@ -46,13 +46,13 @@ export class DemoIframe extends React.Component<{}, State> {
       .post<string>(HTTP_URL, { secret: SECRET })
       .then(() => this.setState({ stage: WAITING_ON_API }))
       .catch(this.setError);
-  }
+  };
 
   handleMessage =
     (_chan: string, _buffer: Buffer) => {
       localStorage.setItem("session", _buffer.toString());
       location.assign(tourPath("/app/designer/plants", "gettingStarted", "intro"));
-    }
+    };
 
   requestAccount = () => {
     return this.connectMqtt().then(this.connectApi);
@@ -77,7 +77,7 @@ export class DemoIframe extends React.Component<{}, State> {
     console.error(this.state.error);
     const message = JSON.stringify(this.state.error, undefined, 2);
     return <pre>{message}: {"" + this.state.error}</pre>;
-  }
+  };
 
   render() {
     return this.state.error ? this.no() : this.ok();

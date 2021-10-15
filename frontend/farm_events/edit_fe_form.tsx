@@ -203,14 +203,14 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     const state = this.state;
     state.fe.body = newBody;
     this.setState(state);
-  }
+  };
 
   editBodyVariables = (bodyVariables: ParameterApplication[]) =>
     (variable: ParameterApplication) => {
       const body = addOrEditParamApps(bodyVariables, variable);
       this.overwriteStateFEBody(body);
       this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
-    }
+    };
 
   LocalsList = () => <LocalsList
     locationDropdownKey={JSON.stringify(this.bodyVariables)}
@@ -219,7 +219,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     sequenceUuid={this.executable.uuid}
     resources={this.props.resources}
     onChange={this.editBodyVariables(this.bodyVariables)}
-    allowedVariableNodes={AllowedVariableNodes.variable} />
+    allowedVariableNodes={AllowedVariableNodes.variable} />;
 
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {
@@ -244,7 +244,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
         this.setState(betterMerge(this.state, update));
       }
     }
-  }
+  };
 
   executableGet = (): DropDownItem => {
     const headingId: ExecutableType =
@@ -254,17 +254,17 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       label: this.executable.body.name,
       headingId
     };
-  }
+  };
 
   fieldSet = (key: FarmEventViewModelKey, value: string) =>
     // A merge is required to not overwrite `fe`.
     this.setState(betterMerge(this.state, {
       fe: { [key]: value },
       specialStatusLocal: SpecialStatus.DIRTY
-    }))
+    }));
 
   fieldGet = (key: FarmEventViewModelKey): string =>
-    (this.state.fe[key] || this.viewModel[key] || "").toString()
+    (this.state.fe[key] || this.viewModel[key] || "").toString();
 
   nextItemTime = (fe: FarmEvent, now: moment.Moment,
   ): moment.Moment | undefined => {
@@ -288,7 +288,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       default:
         throw new Error(`${kind} is not a valid executable_type`);
     }
-  }
+  };
 
   /** Rejects save of Farm Event if: */
   maybeRejectStartTime = (f: FarmEvent, now = moment()) => {
@@ -299,7 +299,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     /** is a sequence event */
     const sequenceEvent = !this.isReg;
     return newEvent && (inThePast && sequenceEvent);
-  }
+  };
 
   /** Merge and recombine FarmEvent form updates into and updated FarmEvent. */
   get updatedFarmEvent() {
@@ -343,7 +343,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
         error(t("Unable to save event."));
         this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
       });
-  }
+  };
 
   render() {
     const { farmEvent } = this.props;

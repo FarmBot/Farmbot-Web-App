@@ -3,7 +3,7 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";
 import {
   fakeToolSlot, fakeTool,
@@ -67,6 +67,13 @@ describe("<ToolSlotPoint/>", () => {
   it("doesn't display tool name", () => {
     const wrapper = svgMount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
+  });
+
+  it("renders rotary tool", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "rotary tool"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#rotary-tool").length).toEqual(1);
   });
 
   it("renders weeder", () => {

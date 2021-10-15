@@ -21,7 +21,8 @@ describe("<EnvEditor />", () => {
   });
 
   const inputChange = (
-    wrapper: ReactWrapper,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    wrapper: ReactWrapper<any>,
     position: number,
     value: string,
     event: "onChange" | "onBlur" = "onChange",

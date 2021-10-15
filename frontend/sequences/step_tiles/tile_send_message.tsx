@@ -30,16 +30,16 @@ export class TileSendMessage
 
   hasChannel = (channelName: ChannelName) => {
     return this.channels.includes(channelName);
-  }
+  };
 
   add = (channelName: ChannelName) => (s: SendMessage) => {
     s.body = s.body || [];
     s.body.push(channel(channelName));
-  }
+  };
 
   remove = (channelName: ChannelName) => (s: SendMessage) => {
     s.body = (s.body || []).filter(x => x.args.channel_name !== channelName);
-  }
+  };
 
   toggle = (n: ChannelName) => () => {
     this.props.dispatch(editStep({
@@ -48,7 +48,7 @@ export class TileSendMessage
       index: this.props.index,
       executor: this.hasChannel(n) ? this.remove(n) : this.add(n)
     }));
-  }
+  };
 
   setMsgType = (x: DropDownItem) => {
     this.props.dispatch(editStep({

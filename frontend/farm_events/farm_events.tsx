@@ -48,7 +48,7 @@ export class RawFarmEvents
     this.setState({ searchTerm: "" });
     const panel = document.querySelector(".farm-events");
     if (panel) { panel.scrollTo(0, 0); }
-  }
+  };
 
   innerRows = (items: CalendarOccurrence[]) => {
 
@@ -87,7 +87,7 @@ export class RawFarmEvents
           </Link>
         </div>;
       });
-  }
+  };
 
   renderCalendarRowsInYear(year: number) {
     return this.props.calendarRows.filter((day) => {

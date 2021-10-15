@@ -34,14 +34,14 @@ export class TerminalSession {
       });
       resolve("");
     });
-  }
+  };
 
   erase = (n: number) => {
     times(Math.max(0, n), () => {
       this.terminal.write(`${BACKSPACE} ${BACKSPACE}`);
       this.buffer = this.buffer.slice(0, -1);
     });
-  }
+  };
 
   clearBuffer = () => {
     this.erase(this.buffer.length);
@@ -52,7 +52,7 @@ export class TerminalSession {
     if (m.includes("terminal_output")) {
       this.terminal.write(payload);
     }
-  }
+  };
 
   terminalKeyboardHandler = ({ key: key }: { key: string }) => {
     switch (key) {
@@ -70,5 +70,5 @@ export class TerminalSession {
         this.buffer += key;
         this.terminal.write(key);
     }
-  }
+  };
 }

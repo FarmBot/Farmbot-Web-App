@@ -197,8 +197,8 @@ const AddToMapButton =
 export const getCropHeaderProps = (props: {
   cropSearchResults: CropLiveSearchResult[]
 }) => {
-  const crop = getPathArray()[5];
-  const result = findBySlug(props.cropSearchResults, crop || "");
+  const crop = getPathArray()[5] || "";
+  const result = findBySlug(props.cropSearchResults, crop);
   const basePath = cropSearchUrl();
   const backgroundURL = `linear-gradient(
     rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;

@@ -289,26 +289,26 @@ export class Folders extends React.Component<FolderProps, FolderState> {
           sequences={this.props.sequences} />;
       })}
     </div>;
-  }
+  };
 
   toggleAll = () => {
     toggleAll(this.state.toggleDirection);
     this.setState({ toggleDirection: !this.state.toggleDirection });
-  }
+  };
 
   startSequenceMove = (seqUuid: UUID) => this.setState({
     movedSequenceUuid: seqUuid,
     stashedUuid: this.state.movedSequenceUuid,
-  })
+  });
 
   toggleSequenceMove = (seqUuid?: UUID) => this.setState({
     movedSequenceUuid: this.state.stashedUuid ? undefined : seqUuid,
-  })
+  });
 
   endSequenceMove = (folderId: number) => {
     moveSequence(this.state.movedSequenceUuid || "", folderId);
     this.setState({ movedSequenceUuid: undefined });
-  }
+  };
 
   rootSequences = () => this.props.rootFolder.noFolder.map(seqUuid =>
     <FolderListItem

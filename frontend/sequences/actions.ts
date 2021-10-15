@@ -1,7 +1,9 @@
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { SelectSequence } from "./interfaces";
 import { edit, init, overwrite } from "../api/crud";
-import { defensiveClone, prettyPrintApiErrors, urlFriendly } from "../util";
+import {
+  AxiosErrorResponse, defensiveClone, prettyPrintApiErrors, urlFriendly,
+} from "../util";
 import { push } from "../history";
 import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
@@ -66,17 +68,20 @@ export const closeCommandMenu = () => ({
 export const publishSequence = (id: number | undefined, copyright: string) => () =>
   axios.post(`${API.current.sequencesPath}${id}/publish`, { copyright })
     .then(() => { },
-      err => error(prettyPrintApiErrors(err), { title: t("Publish error") }));
+      (err: AxiosErrorResponse) =>
+        error(prettyPrintApiErrors(err), { title: t("Publish error") }));
 
 export const unpublishSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/unpublish`)
     .then(() => { },
-      err => error(prettyPrintApiErrors(err), { title: t("Unpublish error") }));
+      (err: AxiosErrorResponse) =>
+        error(prettyPrintApiErrors(err), { title: t("Unpublish error") }));
 
 export const installSequence = (id: number | undefined) => () =>
   axios.post(`${API.current.sequencesPath}${id}/install`)
     .then(() => { },
-      err => error(prettyPrintApiErrors(err), { title: t("Install error") }));
+      (err: AxiosErrorResponse) =>
+        error(prettyPrintApiErrors(err), { title: t("Install error") }));
 
 export const upgradeSequence = (
   id: number | undefined,
@@ -85,4 +90,5 @@ export const upgradeSequence = (
   () =>
     axios.post(`${API.current.sequencesPath}${id}/upgrade/${sequenceVersionId}`)
       .then(() => success(t("Sequence upgraded.")),
-        err => error(prettyPrintApiErrors(err), { title: t("Upgrade error") }));
+        (err: AxiosErrorResponse) =>
+          error(prettyPrintApiErrors(err), { title: t("Upgrade error") }));

@@ -93,7 +93,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     });
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty", previous: this.getKey() });
-  }
+  };
 
   revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>
     this.props.dispatch(stashGrid(this.state.gridId))
@@ -138,7 +138,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
           </a>
         </div>;
     }
-  }
+  };
 
   render() {
     return <div className={"grid-and-row-planting"}>

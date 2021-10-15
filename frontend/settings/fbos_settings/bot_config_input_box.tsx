@@ -1,7 +1,7 @@
 import React from "react";
 import { BlurableInput } from "../../ui";
 import { SourceFbosConfig } from "../../devices/interfaces";
-import { ConfigurationName } from "farmbot/dist";
+import { ConfigurationName } from "farmbot";
 import { updateConfig } from "../../devices/actions";
 import { parseIntInput } from "../../util";
 import { isNumber, isBoolean, isNaN } from "lodash";
@@ -29,7 +29,7 @@ export class BotConfigInputBox
         dispatch(updateConfig({ [key]: next }));
       }
     };
-  }
+  };
 
   render() {
     const current = this.config.value;

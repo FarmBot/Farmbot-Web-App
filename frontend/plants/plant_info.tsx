@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantPanel } from "./plant_panel";
@@ -27,14 +27,14 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 
   destroy = (plantUUID: string) => {
     this.props.dispatch(destroy(plantUUID, !this.confirmDelete));
-  }
+  };
 
   updatePlant = (plantUUID: string, update: PlantOptions) => {
     if (this.plant) {
       this.props.dispatch(edit(this.plant, update));
       this.props.dispatch(save(plantUUID));
     }
-  }
+  };
 
   fallback = () => {
     const plantsPath = "/app/designer/plants";
@@ -53,7 +53,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         <span>{t("Redirecting")}...</span>
       </DesignerPanelContent>
     </DesignerPanel>;
-  }
+  };
 
   default = (plant_info: TaggedPlant) => {
     const info = formatPlantInfo(plant_info);
@@ -74,7 +74,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         farmwareEnvs={this.props.farmwareEnvs}
         inSavedGarden={!!this.props.openedSavedGarden} />
     </DesignerPanel>;
-  }
+  };
 
   render() {
     const plant_info = this.plant;

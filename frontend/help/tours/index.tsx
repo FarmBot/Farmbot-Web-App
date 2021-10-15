@@ -63,7 +63,7 @@ export class TourStepContainer
       && (!stateTourSlug || !stateTourStepSlug)) {
       this.updateTourState(urlTourSlug, urlTourStepSlug, false);
     }
-  }
+  };
 
   componentWillUnmount = () => this.state.activeBeacons.map(beacon =>
     document.querySelector(`.${beacon}`)?.classList.remove("beacon"));

@@ -50,7 +50,7 @@ export class GroupCriteria extends
         customText={{ textTrue: t("on"), textFalse: t("off") }}
         toggleAction={() =>
           this.setState({ advanced: !this.state.advanced })} />
-    </div>
+    </div>;
 
   changeDay = (state: boolean) => this.setState({ dayChanged: state });
 

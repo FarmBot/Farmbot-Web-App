@@ -1,6 +1,5 @@
 import React from "react";
-import { SyncStatus, ParameterApplication } from "farmbot/dist";
-import { TaggedSequence } from "farmbot";
+import { SyncStatus, ParameterApplication, TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
 import { execSequence } from "../devices/actions";
 import { LocalsList } from "./locals_list/locals_list";
@@ -128,7 +127,7 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
   editBodyVariables = (variable: ParameterApplication) =>
     this.setState({
       bodyVariables: addOrEditParamApps(this.state.bodyVariables, variable)
-    })
+    });
 
   /** Click actions for test button. */
   onClick = () => {

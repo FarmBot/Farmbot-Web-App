@@ -129,7 +129,7 @@ export function getSpecialValue(key: string | number):
   SPECIAL_VALUES {
 
   const k = snakeCase(("" + key).toUpperCase()).toUpperCase();
-  const v = get(SPECIAL_VALUES, k, NaN);
+  const v = get(SPECIAL_VALUES, k, NaN) as number | undefined;
 
   if (isUndefined(v) || isNaN(v)) {
     throw new Error("Not a SPECIAL_VALUE: " + k);

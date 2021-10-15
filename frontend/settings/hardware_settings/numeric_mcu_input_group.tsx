@@ -54,7 +54,7 @@ export class NumericMCUInputGroup
           gray={gray?.z} />
       </Col>
     </div>;
-  }
+  };
 
   get getDefault() { return getDefaultFwConfigValue(this.props.firmwareHardware); }
 

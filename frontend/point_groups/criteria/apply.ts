@@ -22,7 +22,7 @@ const checkCriteria =
         case "number_eq":
           return every(Object.entries(criteria[criteriaKey])
             .map(([k, values]: [string, (string | number)[]]) =>
-              values?.includes(get(point.body, k))))
+              values?.includes(get(point.body, k) as string | number)))
             || eqCriteriaEmpty(criteria[criteriaKey]);
         case "number_gt":
         case "number_lt":

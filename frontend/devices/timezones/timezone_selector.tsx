@@ -24,13 +24,13 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   selectedItem = (): DropDownItem => {
     const tz = inferTimezone(this.props.currentTimezone);
     return { label: tz, value: tz };
-  }
+  };
 
   itemSelected = (d: DropDownItem): void => {
     if (isString(d.value)) {
       this.props.onUpdate(d.value);
     }
-  }
+  };
 
   render() {
     return <FBSelect

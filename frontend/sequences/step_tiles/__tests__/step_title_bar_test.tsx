@@ -2,7 +2,7 @@ import React from "react";
 import { StepTitleBar } from "../step_title_bar";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot/dist";
+import { Wait } from "farmbot";
 import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 

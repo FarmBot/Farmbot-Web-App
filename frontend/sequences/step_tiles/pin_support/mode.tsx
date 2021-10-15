@@ -59,7 +59,7 @@ export enum PinMode {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isPinMode = (x: any): x is ALLOWED_PIN_MODES =>
-  Object.values(PinMode).includes(x);
+  Object.values(PinMode).includes(x as PinMode);
 
 export const getPinModes = (step?: SequenceBodyItem) => [
   ...(step && isBoxLed(step)

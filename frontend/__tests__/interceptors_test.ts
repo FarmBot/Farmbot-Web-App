@@ -140,7 +140,7 @@ describe("requestFulfilled", () => {
     API.setBaseUrl("http://localhost:3000");
     const config = requestFulfilled(auth)({ url: "http://localhost:3000/api" });
     expect(config.url).toEqual("http://localhost:3000/api");
-    expect(config.headers.Authorization).toEqual(auth.token.encoded);
-    expect(config.headers["X-Farmbot-Rpc-Id"]).toEqual("abc");
+    expect(config.headers?.Authorization).toEqual(auth.token.encoded);
+    expect(config.headers?.["X-Farmbot-Rpc-Id"]).toEqual("abc");
   });
 });

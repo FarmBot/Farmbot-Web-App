@@ -20,7 +20,7 @@ export class BatchQueue {
   maybeWork = () => {
     const { length } = this.queue;
     length && this.work();
-  }
+  };
 
   work = () => {
     const dev = maybeGetDevice(store.getState().resources.index);
@@ -29,11 +29,11 @@ export class BatchQueue {
     }
     this.clear();
     bothUp();
-  }
+  };
 
   push = (resource: TaggedLog) => {
     this.queue.push(resource);
-  }
+  };
 
   clear = () => this.queue = [];
 }

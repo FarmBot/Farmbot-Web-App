@@ -119,6 +119,11 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.crop_images,
     },
     {
+      title: DeviceSetting.clipPhotosOutOfBounds,
+      description: Content.CLIP_PHOTOS_OUT_OF_BOUNDS,
+      setting: BooleanSetting.clip_image_layer,
+    },
+    {
       title: DeviceSetting.showCameraViewAreaInMap,
       description: Content.SHOW_CAMERA_VIEW_AREA,
       setting: BooleanSetting.show_camera_view_area,

@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import { error as log, success } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors } from "../util";
+import { AxiosErrorResponse, prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState, SetterCB } from "./interfaces";
@@ -103,7 +103,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         this.update();
         this.setState({ loginPassword: "" });
       });
-  }
+  };
 
   submitRegistration = (e: React.FormEvent<{}>) => {
     e.preventDefault();
@@ -129,11 +129,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       success(t(m));
       this.update();
       this.setState({ registrationSent: true });
-    }).catch(error => {
+    }).catch((error: AxiosErrorResponse) => {
       log(prettyPrintApiErrors(error));
       this.update();
     });
-  }
+  };
 
   toggleForgotPassword = () => this.setState({ activePanel: "forgotPassword" });
 
@@ -146,7 +146,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         success(t("Email has been sent."), { title: t("Forgot Password") });
         this.update();
         this.setState({ activePanel: "login" });
-      }).catch(error => {
+      }).catch((error: AxiosErrorResponse) => {
         let errorMessage = prettyPrintApiErrors(error);
         if (errorMessage.toLowerCase().includes("not found")) {
           errorMessage =
@@ -155,7 +155,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         log(t(errorMessage));
         this.update();
       });
-  }
+  };
 
   handleFormUpdate: SetterCB = (state) => this.setState(state);
 
@@ -167,7 +167,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         onChange={setField("agreeToTerms", this.handleFormUpdate)}
         agree={this.state.agreeToTerms} />;
     }
-  }
+  };
 
   loginPanel = () => {
     const props: LoginProps = {
@@ -178,7 +178,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onSubmit: this.submitLogin,
     };
     return <Login {...props} />;
-  }
+  };
 
   forgotPasswordPanel = () => {
     const goBack = () => this.setState({ activePanel: "login" });
@@ -189,7 +189,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       onEmailChange: setField("email", this.handleFormUpdate),
     };
     return <ForgotPassword {...props} />;
-  }
+  };
 
   resendVerificationPanel = () => {
     const goBack = () => this.setState({ activePanel: "login" });
@@ -206,7 +206,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         goBack();
       }}
       email={this.state.email || ""} />;
-  }
+  };
 
   activePanel = () => {
     switch (this.state.activePanel) {
@@ -216,7 +216,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
       default:
         return this.loginPanel();
     }
-  }
+  };
 
   defaultContent() {
     return <div className="static-page">

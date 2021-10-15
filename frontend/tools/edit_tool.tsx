@@ -53,7 +53,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
     return <this.PanelWrapper>
       <span>{t("Redirecting")}...</span>
     </this.PanelWrapper>;
-  }
+  };
 
   default = (tool: TaggedTool) => {
     const { dispatch } = this.props;
@@ -100,7 +100,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         {t("Delete")}
       </button>
     </this.PanelWrapper>;
-  }
+  };
 
   PanelWrapper = (props: { children: React.ReactChild | React.ReactChild[] }) => {
     const panelName = "edit-tool";
@@ -114,7 +114,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         {props.children}
       </DesignerPanelContent>
     </DesignerPanel>;
-  }
+  };
 
   render() {
     return this.tool ? this.default(this.tool) : this.fallback();

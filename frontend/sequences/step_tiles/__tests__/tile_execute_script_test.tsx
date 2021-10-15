@@ -3,7 +3,7 @@ import {
   DefaultFarmwareStep, FarmwareName, TileExecuteScript,
 } from "../tile_execute_script";
 import { mount, shallow } from "enzyme";
-import { ExecuteScript } from "farmbot/dist";
+import { ExecuteScript } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
 import {

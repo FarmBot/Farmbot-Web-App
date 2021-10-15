@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DEFAULT_ICON, svgToUrl } from "../open_farm/icons";
 import { maybeGetCachedPlantIcon } from "../open_farm/cached_crop";
 import { setHoveredPlant } from "../farm_designer/map/actions";
@@ -78,7 +78,7 @@ export class PointGroupItem
     this.props.dispatch(
       removePoint(this.props.group, this.props.point.body.id || 0));
     this.leave();
-  }
+  };
 
   setIconState = (icon: string) => this.setState({ icon });
 

@@ -26,7 +26,7 @@ export class WebcamImg
         ? <iframe src={splitSrc[1]} {...common} />
         : <img src={this.props.src} {...common} />}
     </div>;
-  }
+  };
 
   render() {
     return this.state.needsFallback

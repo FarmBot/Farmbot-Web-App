@@ -311,7 +311,7 @@ export interface HoveredPlantPayl {
 export type OpenfarmSearch = (query: string) => (dispatch: Function) => void;
 
 export interface CropCatalogProps {
-  cropSearchQuery: string;
+  cropSearchQuery: string | undefined;
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
   openfarmSearch: OpenfarmSearch;

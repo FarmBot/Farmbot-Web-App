@@ -11,7 +11,7 @@ export const attachTerminal = () => {
 };
 
 export const getCredentials = () => {
-  const storedSession = localStorage["session"] || "false";
+  const storedSession: string = localStorage["session"] || "false";
   const session: AuthState | false = JSON.parse(storedSession);
   if (session) {
     const { token } = session;

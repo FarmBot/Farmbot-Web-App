@@ -41,15 +41,17 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
   handleChange = (value: string) => {
     this.props.dispatch({ type: Actions.SEARCH_QUERY_CHANGE, payload: value });
     this.debouncedOFSearch(value);
-  }
+  };
+
+  get cropSearchQuery() { return this.props.cropSearchQuery || ""; }
 
   get tooShort() {
-    const termLength = this.props.cropSearchQuery.length;
+    const termLength = this.cropSearchQuery.length;
     return !this.props.cropSearchInProgress && termLength > 0 && termLength < 3;
   }
 
   get validSearchTerm() {
-    return this.props.cropSearchQuery.length > 2;
+    return this.cropSearchQuery.length > 2;
   }
 
   get showResultChangeSpinner() {
@@ -59,7 +61,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
   }
 
   componentDidMount() {
-    this.props.openfarmSearch(this.props.cropSearchQuery)(this.props.dispatch);
+    this.props.openfarmSearch(this.cropSearchQuery)(this.props.dispatch);
   }
 
   render() {
@@ -71,7 +73,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
         backTo={"/app/designer/plants"} />
       <DesignerPanelTop panel={Panel.Plants}>
         <SearchField
-          searchTerm={this.props.cropSearchQuery}
+          searchTerm={this.cropSearchQuery}
           placeholder={t("Search OpenFarm...")}
           onChange={this.handleChange}
           onKeyPress={this.handleChange}

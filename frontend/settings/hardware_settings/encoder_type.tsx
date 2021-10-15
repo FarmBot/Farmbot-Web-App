@@ -1,6 +1,6 @@
-import * as React from "react";
-import { McuParams, Encoder, McuParamName } from "farmbot/dist";
-import { FBSelect, DropDownItem } from "../../ui/index";
+import React from "react";
+import { McuParams, Encoder, McuParamName } from "farmbot";
+import { FBSelect, DropDownItem } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export interface EncoderTypeProps {

@@ -50,7 +50,7 @@ export class RootComponent
 
   changeRoute: ChangeRoute = (Route, _info, ChildRoute) => {
     this.setState({ Route, ChildRoute });
-  }
+  };
 
   componentDidMount() {
     const mainRoutes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));

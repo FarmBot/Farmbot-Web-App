@@ -56,6 +56,9 @@ input:not([role="combobox"]) {
   .bp3-popover-content {
     min-width: 120px;
   }
+  .bp3-overlay {
+    display: inline-block;
+  }
 }
 
 .input-error {

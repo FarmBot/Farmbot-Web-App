@@ -129,6 +129,9 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
   DeviceSetting.mapOrigin,
+  DeviceSetting.cropMapImages,
+  DeviceSetting.clipPhotosOutOfBounds,
+  DeviceSetting.showCameraViewAreaInMap,
   DeviceSetting.confirmPlantDeletion,
 ];
 const ACCOUNT_PANEL = [
@@ -330,7 +333,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       /** Slowly fades highlight. */
       this.setState({ className: "unhighlight" });
     }
-  }
+  };
 
   get searchTerm() {
     const { app } = store.getState();
@@ -347,7 +350,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       const compareTerm = urlCompare ? compareValues(s)[0] : s;
       return compareTerm.toLowerCase().includes(term.toLowerCase());
     }));
-  }
+  };
 
   get searchMatch() {
     return this.searchTerm &&

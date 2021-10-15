@@ -1,9 +1,10 @@
-import { createStore } from "redux";
+import { createStore, PreloadedState } from "redux";
 import { Store } from "./interfaces";
 import { rootReducer } from "./root_reducer";
 import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
 import { set } from "lodash";
+import { Everything } from "../interfaces";
 
 function dev(): Store {
   return createStore(rootReducer,
@@ -12,8 +13,9 @@ function dev(): Store {
 }
 
 function prod(): Store {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return createStore(rootReducer, ({} as any), getMiddleware("production"));
+  return createStore(rootReducer,
+    {} as PreloadedState<Everything>,
+    getMiddleware("production"));
 }
 
 export function configureStore() {
@@ -29,10 +31,10 @@ export const store = configureStore();
 
 /** Tries to fetch previous state from `sessionStorage`.
  * Returns {} if nothing is found. Used mostly for hot reloading. */
-function maybeFetchOldState() {
+function maybeFetchOldState(): PreloadedState<Everything> {
   try {
     return JSON.parse(sessionStorage.getItem("lastState") || "{}");
   } catch (e) {
-    return {};
+    return {} as Everything;
   }
 }

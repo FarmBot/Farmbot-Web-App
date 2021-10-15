@@ -1,7 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
 import { TileReadPin } from "../tile_read_pin";
-import { ReadPin } from "farmbot/dist";
+import { ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 

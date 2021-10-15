@@ -29,16 +29,16 @@ export class WeedDetector
     this.props.dispatch(deletePoints(t("weeds"),
       { meta: { created_by: "plant-detection" } }, progress));
     this.setState({ deletionProgress: t("Deleting...") });
-  }
+  };
 
   namespace = namespace<WEED_DETECTOR_KEY_PART>("WEED_DETECTOR_");
 
   change = (key: NumericKeyName, value: number) => {
     this.saveEnvVar(this.namespace(key), value);
-  }
+  };
 
   saveEnvVar = (key: WDENVKey, value: number) =>
-    this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
+    this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value));
 
   render() {
     const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);

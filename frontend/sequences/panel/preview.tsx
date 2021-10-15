@@ -34,6 +34,7 @@ import {
 } from "../sequence_editor_middle_active";
 import moment from "moment";
 import { edit } from "../../api/crud";
+import { SequenceResource } from "farmbot/dist/resources/api_resources";
 
 interface LoadSequenceVersionProps {
   id: string;
@@ -42,7 +43,7 @@ interface LoadSequenceVersionProps {
 }
 
 export const loadSequenceVersion = (props: LoadSequenceVersionProps) =>
-  axios.get(API.current.sequenceVersionsPath + props.id)
+  axios.get<SequenceResource>(API.current.sequenceVersionsPath + props.id)
     .then(response => {
       const sequence: TaggedSequence = {
         kind: "Sequence",
@@ -97,7 +98,7 @@ export class RawDesignerSequencePreview
       onSuccess: sequence => this.setState({ sequence }),
       onError: () => this.setState({ error: true }),
     });
-  }
+  };
 
   toggleSection = (key: keyof SequencePreviewState) => () =>
     this.setState({ ...this.state, [key]: !this.state[key] });

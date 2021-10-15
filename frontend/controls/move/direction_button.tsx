@@ -45,7 +45,7 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
     const payload: MoveRelProps = { x: 0, y: 0, z: 0 };
     payload[this.props.axis] = calculateDistance(this.props);
     moveRelative(payload);
-  }
+  };
 
   render() {
     const { direction, axis, disabled, locked } = this.props;

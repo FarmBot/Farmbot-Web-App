@@ -375,7 +375,7 @@ export class SequenceEditorMiddleActive extends
     const versionIds = sortBy(this.props.sequence.body.sequence_versions);
     const latestVersionId = last(versionIds);
     latestVersionId && this.loadSequenceVersion("" + latestVersionId);
-  }
+  };
 
   get stepProps(): AllStepsProps {
     const getConfig = this.props.getWebAppConfigValue;
@@ -405,7 +405,7 @@ export class SequenceEditorMiddleActive extends
     id,
     onSuccess: this.setSequencePreview,
     onError: this.setError,
-  })
+  });
 
   render() {
     const { dispatch, sequence } = this.props;

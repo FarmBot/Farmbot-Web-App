@@ -11,7 +11,7 @@ export class Toast extends React.Component<ToastProps, ToastState> {
     detached: false,
     dismissed: false,
     intervalId: undefined,
-  }
+  };
 
   get timed() { return !this.props.noTimer && !this.props.noDismiss; }
 
@@ -28,7 +28,7 @@ export class Toast extends React.Component<ToastProps, ToastState> {
     this.setState({ detached: true });
     setTimeout(() =>
       this.props.dispatch({ type: Actions.REMOVE_TOAST, payload: this.props.id }));
-  }
+  };
 
   advanceTimer = () => {
     if (this.state.isHovered || !this.timed || this.state.detached) {
@@ -37,13 +37,13 @@ export class Toast extends React.Component<ToastProps, ToastState> {
     if (this.state.timeout <= 0.800) { this.dismiss(); }
     this.setState({ timeout: this.state.timeout - 0.100 });
     if (this.state.timeout <= 0) { this.detach(); }
-  }
+  };
 
   dismiss = () => {
     if (this.props.noDismiss) { return; }
     this.setState({ dismissed: true });
     this.detach();
-  }
+  };
 
   render() {
     const { color } = this.props;

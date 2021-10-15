@@ -44,7 +44,7 @@ export class TileMoveAbsolute
       step.args = betterMerge(step.args, update);
       this.props.dispatch(overwrite(this.props.currentSequence, copy));
     }
-  }
+  };
 
   /** Update offset value. */
   updateInputValue = (axis: Xyz, place: "location" | "offset") =>
@@ -52,7 +52,7 @@ export class TileMoveAbsolute
       const num = parseFloat(e.currentTarget.value);
       const update = { [place]: { args: { [axis]: num } } };
       this.updateArgs(merge({}, this.args, update));
-    }
+    };
 
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
@@ -60,7 +60,7 @@ export class TileMoveAbsolute
     if (location.kind !== "point_group") {
       return this.updateArgs({ location });
     }
-  }
+  };
 
   /** Prepare step.args.location data for LocationForm. */
   get celeryNode(): VariableNode {
@@ -101,7 +101,7 @@ export class TileMoveAbsolute
       hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      width={3} />
+      width={3} />;
 
   SpeedInput = () =>
     <Col xs={3}>
@@ -114,7 +114,7 @@ export class TileMoveAbsolute
         index={this.props.index}
         dispatch={this.props.dispatch}
         sequence={this.props.currentSequence} />
-    </Col>
+    </Col>;
 
   OffsetInput = (axis: Xyz) =>
     <Col xs={3} key={axis}>
@@ -126,13 +126,13 @@ export class TileMoveAbsolute
         onCommit={this.updateInputValue(axis, "offset")}
         name={`offset-${axis}`}
         value={(this.args.offset.args[axis] || 0).toString()} />
-    </Col>
+    </Col>;
 
   OptionsForm = () =>
     <Row>
       {["x", "y", "z"].map(this.OffsetInput)}
       <this.SpeedInput />
-    </Row>
+    </Row>;
 
   render() {
     return <StepWrapper {...this.props}

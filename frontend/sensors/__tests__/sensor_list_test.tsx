@@ -4,7 +4,7 @@ jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 import React from "react";
 import { mount } from "enzyme";
 import { SensorList } from "../sensor_list";
-import { Pins } from "farmbot/dist";
+import { Pins } from "farmbot";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { SensorListProps } from "../interfaces";
 

@@ -67,7 +67,7 @@ interface NewVarProps {
 const nothingVar = ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
-  createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED);
+  createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED as DataValue);
 
 const toolVar = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes

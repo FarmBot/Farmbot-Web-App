@@ -34,6 +34,7 @@ import {
   ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -301,6 +302,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     confirm_step_deletion: false,
     confirm_sequence_deletion: true,
     crop_images: false,
+    ["clip_image_layer" as keyof WebAppConfig]: false,
     disable_animations: false,
     disable_i18n: false,
     display_map_missed_steps: false,

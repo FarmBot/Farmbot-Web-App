@@ -49,7 +49,7 @@ export class ImageFlipper extends
       type: Actions.SET_IMAGE_SIZE,
       payload: { width: img.naturalWidth, height: img.naturalHeight }
     });
-  }
+  };
 
   get uuids() { return this.props.images.map(x => x.uuid); }
 
@@ -68,7 +68,7 @@ export class ImageFlipper extends
       disableNext: tooLow(indexAfterNext),
       disablePrev: tooHigh(indexAfterNext),
     });
-  }
+  };
 
   render() {
     const { images, currentImage } = this.props;

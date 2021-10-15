@@ -238,6 +238,9 @@ describe("<ProfileSvg />", () => {
   const toolGraphicsProps = () => {
     const p = fakeProps();
     p.expanded = true;
+    const rotaryTool = fakeTool();
+    rotaryTool.body.name = "rotary tool";
+    rotaryTool.body.id = 5;
     const weeder = fakeTool();
     weeder.body.name = "weeder";
     weeder.body.id = 1;
@@ -250,7 +253,13 @@ describe("<ProfileSvg />", () => {
     const soilSensor = fakeTool();
     soilSensor.body.name = "soil sensor";
     soilSensor.body.id = 4;
-    p.tools = [weeder, seeder, seedBin, soilSensor];
+    p.tools = [rotaryTool, weeder, seeder, seedBin, soilSensor];
+    const rotarySlot = fakeToolSlot();
+    rotarySlot.body.x = 0;
+    rotarySlot.body.y = 110;
+    rotarySlot.body.z = 200;
+    rotarySlot.body.tool_id = rotaryTool.body.id;
+    rotarySlot.body.pullout_direction = 1;
     const weederSlot = fakeToolSlot();
     weederSlot.body.x = 0;
     weederSlot.body.y = 110;
@@ -275,21 +284,24 @@ describe("<ProfileSvg />", () => {
     soilSensorSlot.body.z = 200;
     soilSensorSlot.body.tool_id = soilSensor.body.id;
     soilSensorSlot.body.pullout_direction = 0;
-    p.allPoints = [weederSlot, seederSlot, seedBinSlot, soilSensorSlot];
+    p.allPoints = [rotarySlot, weederSlot, seederSlot, seedBinSlot, soilSensorSlot];
     return p;
   };
 
   it("renders tool implements: side", () => {
     const p = toolGraphicsProps();
     const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#rotary-tool-implement-profile").length).toEqual(1);
     expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
     expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
     expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
     expect(wrapper.find("#soil-sensor-implement-profile").length).toEqual(1);
     expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
     expect(wrapper.find("#no-slot-direction").length).toEqual(1);
-    expect(wrapper.find("#slot-side-profile").length).toEqual(3);
+    expect(wrapper.find("#slot-side-profile").length).toEqual(4);
     expect(wrapper.find("#slot-front-profile").length).toEqual(0);
+    expect(wrapper.find("#rotary-tool-front-view").length).toEqual(0);
+    expect(wrapper.find("#rotary-tool-side-view").length).toEqual(1);
     expect(wrapper.find("#weeder-front-view").length).toEqual(0);
     expect(wrapper.find("#weeder-side-view").length).toEqual(1);
     expect(wrapper.find("#soil-sensor-front-view").length).toEqual(0);
@@ -300,6 +312,7 @@ describe("<ProfileSvg />", () => {
     const p = toolGraphicsProps();
     p.axis = "x";
     const wrapper = mount(<ProfileSvg {...p} />);
+    expect(wrapper.find("#rotary-tool-implement-profile").length).toEqual(1);
     expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
     expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
     expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
@@ -307,7 +320,9 @@ describe("<ProfileSvg />", () => {
     expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
     expect(wrapper.find("#no-slot-direction").length).toEqual(1);
     expect(wrapper.find("#slot-side-profile").length).toEqual(0);
-    expect(wrapper.find("#slot-front-profile").length).toEqual(3);
+    expect(wrapper.find("#slot-front-profile").length).toEqual(4);
+    expect(wrapper.find("#rotary-tool-front-view").length).toEqual(1);
+    expect(wrapper.find("#rotary-tool-side-view").length).toEqual(0);
     expect(wrapper.find("#weeder-front-view").length).toEqual(1);
     expect(wrapper.find("#weeder-side-view").length).toEqual(0);
     expect(wrapper.find("#soil-sensor-front-view").length).toEqual(1);

@@ -1,7 +1,7 @@
 import React from "react";
 import { TileIf } from "../tile_if";
 import { mount } from "enzyme";
-import { If } from "farmbot/dist";
+import { If } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
