@@ -30,7 +30,7 @@ We take security seriously and value the input of independent researchers. Pleas
 
 This repo contains FarmBot's web based user interface, a RESTful JSON API and a Dockerized MQTT server. The API stores data such as user account information, plant data, authorization tokens and a variety of other resources. The MQTT server facilitates realtime messaging from the browser to the device.
 
-# Q: Can I see some example API requests?
+# Q: Can I see some examples of API requests?
 
 For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/10db2df375d717e9efdd3c2d9d8932af). If you wish to write an add-on application that uses the FarmBot API, please let us know in an issue. We are happy to answer any specific questions you may have.
 
