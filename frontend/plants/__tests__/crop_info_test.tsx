@@ -28,6 +28,7 @@ import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { cropSearchUrl } from "../crop_catalog";
+import { clickButton } from "../../__test_support__/helpers";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -42,6 +43,7 @@ describe("<CropInfo />", () => {
       cropSearchInProgress: false,
       openedSavedGarden: undefined,
       botPosition: { x: undefined, y: undefined, z: undefined },
+      xySwap: false,
     };
   };
 
@@ -53,13 +55,6 @@ describe("<CropInfo />", () => {
     expect(wrapper.text()).toContain("Row Spacing1000mm");
     expect(wrapper.find("img").last().props().src)
       .toEqual(svgToUrl("fake_mint_svg"));
-  });
-
-  it("navigates to /add", () => {
-    mockPath = cropSearchUrl("mint");
-    const wrapper = mount(<CropInfo {...fakeProps()} />);
-    wrapper.find(".right-button").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(cropSearchUrl("mint/add"));
   });
 
   it("returns to crop search", () => {
@@ -94,9 +89,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    const button = wrapper.find("button").last();
-    expect(button.text()).toContain("location (100, 200)");
-    button.simulate("click");
+    clickButton(wrapper, 0, "location (100, 200)", { partial_match: true });
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -110,9 +103,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    const button = wrapper.find("button").last();
-    expect(button.text()).toContain("location (unknown)");
-    button.simulate("click");
+    clickButton(wrapper, 0, "location (unknown)", { partial_match: true });
     expect(initSave).not.toHaveBeenCalled();
   });
 

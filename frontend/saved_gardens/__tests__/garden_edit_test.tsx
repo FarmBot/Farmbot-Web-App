@@ -16,7 +16,7 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditGarden as EditGarden, mapStateToProps } from "../garden_edit";
 import { EditGardenProps } from "../interfaces";
@@ -80,7 +80,7 @@ describe("<EditGarden />", () => {
     mockPath = "/app/designer/gardens/nope";
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
-    expect(push).toHaveBeenCalledWith("/app/designer/gardens");
+    expect(push).toHaveBeenCalledWith("/app/designer/plants");
   });
 
   it("doesn't redirect", () => {

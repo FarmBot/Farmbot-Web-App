@@ -55,6 +55,12 @@ export const validPointTypes =
     return validValues.length > 0 ? validValues : undefined;
   };
 
+export const pointGroupSubset =
+  (groups: TaggedPointGroup[], pointerType: PointType) =>
+    groups.filter(p =>
+      (validPointTypes(p.body.criteria.string_eq.pointer_type) || [])
+        .includes(pointerType));
+
 export const setSelectionPointType = (payload: PointType[] | undefined) =>
   (dispatch: Function) =>
     dispatch({ type: Actions.SET_SELECTION_POINT_TYPE, payload });

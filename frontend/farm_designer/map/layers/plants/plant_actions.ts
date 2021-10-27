@@ -7,7 +7,9 @@ import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString } from "lodash";
-import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";
+import {
+  CropLiveSearchResult, GardenMapState, MovePlantProps,
+} from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import {
@@ -103,6 +105,7 @@ export const dropPlant = (props: DropPlantProps) => {
   const { gardenCoords, openedSavedGarden, gridSize, dispatch } = props;
   if (gardenCoords) {
     const slug = getPathArray()[5];
+    if (!slug) { return; }
     const { crop } = findBySlug(props.cropSearchResults, slug);
     createPlant({
       cropName: crop.name,
@@ -148,6 +151,37 @@ export const dragPlant = (props: DragPlantProps) => {
       activeDragXY: { x: plant.body.x + dX, y: plant.body.y + dY, z: 0 }
     });
     props.dispatch(movePlant({ deltaX: dX, deltaY: dY, plant, gridSize }));
+  }
+};
+
+export interface JogPlantProps {
+  keyName: string;
+  plant: TaggedPlant | undefined;
+  mapTransformProps: MapTransformProps;
+  dispatch: Function;
+}
+
+export const jogPlant = (props: JogPlantProps) => {
+  const { keyName, plant, dispatch } = props;
+  if (!plant) { return; }
+  const { gridSize, xySwap } = props.mapTransformProps;
+  const horizontal = xySwap ? "deltaY" : "deltaX";
+  const vertical = xySwap ? "deltaX" : "deltaY";
+  const generatePayload = (keyName: string): MovePlantProps | undefined => {
+    switch (keyName) {
+      case "ArrowLeft":
+        return { deltaX: 0, deltaY: 0, [horizontal]: -10, plant, gridSize };
+      case "ArrowRight":
+        return { deltaX: 0, deltaY: 0, [horizontal]: 10, plant, gridSize };
+      case "ArrowUp":
+        return { deltaX: 0, deltaY: 0, [vertical]: -10, plant, gridSize };
+      case "ArrowDown":
+        return { deltaX: 0, deltaY: 0, [vertical]: 10, plant, gridSize };
+    }
+  };
+  const payload = generatePayload(keyName);
+  if (payload) {
+    dispatch(movePlant(payload));
   }
 };
 
@@ -198,6 +232,17 @@ export const maybeSavePlantLocation = (props: MaybeSavePlantLocationProps) => {
       x: round(props.plant.body.x),
       y: round(props.plant.body.y)
     }));
+    props.dispatch(save(props.plant.uuid));
+  }
+};
+
+export interface SavePlantProps {
+  plant: TaggedPlant | undefined;
+  dispatch: Function;
+}
+
+export const savePlant = (props: SavePlantProps) => {
+  if (props.plant) {
     props.dispatch(save(props.plant.uuid));
   }
 };

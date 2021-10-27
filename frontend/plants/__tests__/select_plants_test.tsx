@@ -9,11 +9,12 @@ jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
 
 jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
   getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
+  pointGroupSubset,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
@@ -426,6 +427,18 @@ describe("validPointTypes()", () => {
 
   it("returns undefined", () => {
     expect(validPointTypes(["nope"])).toEqual(undefined);
+  });
+});
+
+describe("pointGroupSubset()", () => {
+  it("returns filtered groups", () => {
+    const group0 = fakePointGroup();
+    group0.body.criteria.string_eq = {};
+    const group1 = fakePointGroup();
+    group1.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    const group2 = fakePointGroup();
+    group2.body.criteria.string_eq = { pointer_type: ["Weed"] };
+    expect(pointGroupSubset([group0, group1, group2], "Plant")).toEqual([group1]);
   });
 });
 

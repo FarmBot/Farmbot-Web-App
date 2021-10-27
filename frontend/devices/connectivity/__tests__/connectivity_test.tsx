@@ -11,6 +11,7 @@ import { refresh } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
+import { fakeAlert } from "../../../__test_support__/fake_state/resources";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -102,5 +103,14 @@ describe("<Connectivity />", () => {
     p.flags.botFirmware = false;
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.find(".fix-firmware-buttons").length).toEqual(0);
+  });
+
+  it("displays firmware alerts", () => {
+    const p = fakeProps();
+    const alert = fakeAlert().body;
+    alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alerts = [alert];
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("choose firmware");
   });
 });

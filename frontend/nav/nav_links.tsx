@@ -10,10 +10,8 @@ import { maybeBeacon } from "../help/tours";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,
-  Panel.Groups,
   Panel.Sequences,
   Panel.Regimens,
-  Panel.SavedGardens,
   Panel.FarmEvents,
   Panel.Points,
   Panel.Weeds,

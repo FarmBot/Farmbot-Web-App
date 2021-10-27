@@ -1,3 +1,6 @@
+const lodash = require("lodash");
+lodash.debounce = jest.fn(x => x);
+
 jest.mock("../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
   closePlantInfo: jest.fn(() => jest.fn()),
@@ -25,6 +28,8 @@ jest.mock("../layers/plants/plant_actions", () => ({
   dropPlant: jest.fn(),
   beginPlantDrag: jest.fn(),
   maybeSavePlantLocation: jest.fn(),
+  jogPlant: jest.fn(),
+  savePlant: jest.fn(),
 }));
 
 jest.mock("../drawn_point/drawn_point_actions", () => ({
@@ -70,7 +75,7 @@ import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { unselectPlant, closePlantInfo } from "../actions";
 import {
-  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant,
+  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant, jogPlant, savePlant,
 } from "../layers/plants/plant_actions";
 import {
   startNewSelectionBox, resizeBox, maybeUpdateGroup,
@@ -148,6 +153,46 @@ describe("<GardenMap/>", () => {
     mockMode = Mode.clickToAdd;
     wrapper.find(".drop-area-svg").simulate("click", DEFAULT_EVENT);
     expect(dropPlant).toHaveBeenCalled();
+  });
+
+  it("moves plant left", () => {
+    mockMode = Mode.editPlant;
+    const preventDefault = jest.fn();
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.find(".drop-area").simulate("keyDown",
+      { key: "ArrowDown", preventDefault });
+    expect(jogPlant).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it("doesn't move plant left", () => {
+    mockMode = Mode.editPlant;
+    const preventDefault = jest.fn();
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.find(".drop-area").simulate("keyDown",
+      { key: "Enter", preventDefault });
+    expect(jogPlant).not.toHaveBeenCalled();
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
+  it("saves plant", () => {
+    mockMode = Mode.editPlant;
+    const preventDefault = jest.fn();
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.find(".drop-area").simulate("keyUp",
+      { key: "ArrowDown", preventDefault });
+    expect(savePlant).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it("doesn't save plant", () => {
+    mockMode = Mode.editPlant;
+    const preventDefault = jest.fn();
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.find(".drop-area").simulate("keyUp",
+      { key: "Enter", preventDefault });
+    expect(savePlant).not.toHaveBeenCalled();
+    expect(preventDefault).not.toHaveBeenCalled();
   });
 
   it("starts drag: move plant", () => {

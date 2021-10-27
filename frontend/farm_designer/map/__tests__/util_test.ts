@@ -382,7 +382,7 @@ describe("getMode()", () => {
     mockPath = "/app/designer/plants/select";
     expect(getMode()).toEqual(Mode.boxSelect);
     mockPath = cropSearchUrl("mint");
-    expect(getMode()).toEqual(Mode.addPlant);
+    expect(getMode()).toEqual(Mode.clickToAdd);
     mockPath = "/app/designer/location";
     expect(getMode()).toEqual(Mode.locationInfo);
     mockPath = "/app/designer/points";

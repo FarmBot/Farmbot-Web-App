@@ -1,6 +1,6 @@
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => ["L", "O", "L"]),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 jest.mock("../actions", () => ({
@@ -15,7 +15,6 @@ import {
 import {
   fakePointGroup, fakePlant,
 } from "../../__test_support__/fake_state/resources";
-import { history } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -23,6 +22,7 @@ import {
 import { createGroup } from "../actions";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
+import { push } from "../../history";
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
@@ -74,7 +74,7 @@ describe("<GroupListPanel />", () => {
   it("navigates to group", () => {
     const wrapper = mount(<GroupListPanel {...fakeProps()} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/9");
+    expect(push).toHaveBeenCalledWith("/app/designer/groups/9");
   });
 
   it("navigates to group: handles missing id", () => {
@@ -82,7 +82,7 @@ describe("<GroupListPanel />", () => {
     p.groups[0].body.id = undefined;
     const wrapper = mount(<GroupListPanel {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/0");
+    expect(push).toHaveBeenCalledWith("/app/designer/groups/0");
   });
 
   it("renders no groups", () => {

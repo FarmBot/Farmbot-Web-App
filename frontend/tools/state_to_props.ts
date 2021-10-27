@@ -4,6 +4,8 @@ import {
   selectAllToolSlotPointers,
   getDeviceAccountSettings,
   selectAllSensors,
+  selectAllPointGroups,
+  selectAllActivePoints,
 } from "../resources/selectors";
 import { validBotLocationData } from "../util";
 import { UUID } from "../resources/interfaces";
@@ -37,6 +39,8 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     toolTransformProps: { xySwap, quadrant },
+    groups: selectAllPointGroups(props.resources.index),
+    allPoints: selectAllActivePoints(props.resources.index),
   };
 };
 

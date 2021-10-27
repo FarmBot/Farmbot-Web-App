@@ -1274,20 +1274,20 @@ export namespace TourContent {
     trim(`This is the plants panel. Here you can view and manage all of the
     plants in your garden. Mousing over a plant in the list will highlight
     it in the map and vice versa. Clicking a plant will open up the plant
-    details panel where you can edit it. Pressing the + button will allow
+    details panel where you can edit it. Pressing the plant + button will allow
     you to search for and add new crops to your garden.`);
 
   export const GROUPS_PANEL =
-    trim(`This is the groups panel. Here you can create and manage groups
-    of plants, weeds, points, and more based on any criteria. Clicking a
-    group will open up the group details panel where you can make edits.
-    Pressing the + button will create a new group.`);
+    trim(`This is the groups section. Here you can create and manage groups
+    of plants based on any criteria. Clicking a group will open up the group
+    details panel where you can make edits.
+    Pressing the group + button will create a new group.`);
 
   export const SAVED_GARDENS_PANEL =
-    trim(`This is the gardens panel. Here you can view and manage all of
+    trim(`This is the gardens section. Here you can view and manage all of
     your saved gardens for quickly replanting season after season. Clicking
     a garden will open up the garden details panel where you can view and
-    edit it. Pressing the + button will allow to snapshot the current
+    edit it. Pressing the garden + button will allow to snapshot the current
     garden or add a new one from scratch.`);
 
   export const SEQUENCES_PANEL =
@@ -1314,7 +1314,7 @@ export namespace TourContent {
     points in your garden, including measured soil height points. Mousing
     over a point in the list will highlight it in the map and vice versa.
     Clicking a point will open up the point details panel where you can
-    edit it. Pressing the + button will allow you to add a point or a grid
+    edit it. Pressing the point + button will allow you to add a point or a grid
     of points to the map.`);
 
   export const WEEDS_PANEL =
@@ -1402,7 +1402,7 @@ export namespace TourContent {
   export const PLANT_INVENTORY =
     trim(`This is the plants panel. Once you add plants to your garden,
     they will be listed here for you to view and manage. To add a plant to
-    your garden, press the + button and then advance the tour.`);
+    your garden, press the plant + button and then advance the tour.`);
 
   export const CROP_SEARCH =
     trim(`This is the crop search panel. Type in a crop name to the search
@@ -1413,7 +1413,8 @@ export namespace TourContent {
   export const ADD_PLANTS_TO_MAP =
     trim(`This is the crop details panel. Here you can view factual
     information about the chosen crop such as the expected spread and
-    height at maturity. Click ADD TO MAP and then advance the tour.`);
+    height at maturity. Proceed to the next step of the tour to learn how
+    to add the crop to your garden.`);
 
   export const CLICK_TO_ADD =
     trim(`Click anywhere in the map to add an individual plant. If you are
@@ -1423,10 +1424,11 @@ export namespace TourContent {
     lot of plants at once? Go to the next step of the tour!`);
 
   export const GRID_AND_ROW_PLANTING =
-    trim(`To add a grid or row of plants, enter values into the grid and
-    row planting fields and click PREVIEW. The previewed plants will show
-    in the map in grayscale. Make adjustments as necessary and when you are
-    happy with the preview, click SAVE. Then advance the tour.`);
+    trim(`To add a grid or row of plants, scroll to the bottom of the panel,
+    enter values into the grid and row planting fields and click PREVIEW.
+    The previewed plants will show in the map in grayscale. Make adjustments
+    as necessary and when you are happy with the preview, click SAVE.
+    Then advance the tour.`);
 
   export const FILLED_PLANT_INVENTORY =
     trim(`All of the plants you added to your garden are listed here in the
@@ -1447,14 +1449,15 @@ export namespace TourContent {
     crop type. Advance the tour when you're ready.`);
 
   export const GARDEN_GROUPS_PANEL =
-    trim(`This is the groups panel. Once you create some groups, they will
-    be listed here for you to view and manage. To make your first group,
-    press the + button and then advance the tour.`);
+    trim(`Groups of plants are listed in the groups section. Once you
+    create some groups, they will be listed here for you to view and manage.
+    To make your first group, press the group + button and then advance the
+    tour.`);
 
   export const GROUP_FILTERS =
     trim(`This is the edit group panel. To make a group of all plants of
-    one crop type, first Select All Plants. Then select the crop type you
-    would like to include. Check that the correct plants are listed in the
+    one crop type, select the crop type you would like to include.
+    Check that the correct plants are listed in the
     Group Members section, then advance the tour.`);
 
   export const SORT_BY =

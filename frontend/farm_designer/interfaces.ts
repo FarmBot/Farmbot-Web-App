@@ -326,6 +326,7 @@ export interface CropInfoProps {
   openedSavedGarden: string | undefined;
   openfarmSearch: OpenfarmSearch;
   botPosition: BotPosition;
+  xySwap: boolean;
 }
 
 export interface CameraCalibrationData {

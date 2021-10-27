@@ -3,7 +3,7 @@ import { svgToUrl } from "../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch,
 } from "../farm_designer/interfaces";
-import { history, getPathArray } from "../history";
+import { getPathArray } from "../history";
 import { connect } from "react-redux";
 import { findBySlug } from "../farm_designer/search_selectors";
 import { Everything } from "../interfaces";
@@ -26,6 +26,9 @@ import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
 import { cropSearchUrl } from "./crop_catalog";
+import { PlantGrid } from "./grid/plant_grid";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 interface InfoFieldProps {
   title: string;
@@ -183,16 +186,6 @@ const EditOnOpenFarm = ({ slug }: { slug: string }) =>
     </a>
   </div>;
 
-/** Navigate to click-to-add panel. */
-const AddToMapButton =
-  ({ basePath, crop }: { basePath: string, crop: string }) =>
-    <a
-      className="right-button"
-      title={t("Enter click-to-add mode")}
-      onClick={() => history.push(basePath + crop + "/add")}>
-      {t("Add to map")}
-    </a>;
-
 /** Get values common to crop panel headers. */
 export const getCropHeaderProps = (props: {
   cropSearchResults: CropLiveSearchResult[]
@@ -216,7 +209,8 @@ export function mapStateToProps(props: Everything): CropInfoProps {
     cropSearchResults,
     cropSearchInProgress,
     openedSavedGarden,
-    botPosition: validBotLocationData(props.bot.hardware.location_data).position
+    botPosition: validBotLocationData(props.bot.hardware.location_data).position,
+    xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
   };
 }
 /** Get OpenFarm crop search results for crop info page contents. */
@@ -256,7 +250,6 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
         onBack={this.clearCropSearchResults(crop)}
         style={{ background: backgroundURL }}
         description={result.crop.description}>
-        <AddToMapButton basePath={basePath} crop={crop} />
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
@@ -272,6 +265,13 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
             cropName={result.crop.name}
             slug={result.crop.slug}
             dispatch={this.props.dispatch} />
+          <PlantGrid
+            xy_swap={this.props.xySwap}
+            dispatch={this.props.dispatch}
+            openfarm_slug={result.crop.slug}
+            spread={result.crop.spread}
+            botPosition={this.props.botPosition}
+            itemName={result.crop.name} />
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

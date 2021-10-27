@@ -71,7 +71,7 @@ describe("<FlipToolDirection />", () => {
 
   it("renders", () => {
     const wrapper = shallow(<FlipToolDirection {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("rotated");
+    expect(wrapper.text().toLowerCase()).toContain("rotate");
   });
 
   it("changes value to flipped", () => {

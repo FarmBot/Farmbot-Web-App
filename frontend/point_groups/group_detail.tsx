@@ -6,7 +6,7 @@ import {
   selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups,
   selectAllTools,
 } from "../resources/selectors";
-import { push, getPathArray } from "../history";
+import { getPathArray } from "../history";
 import { GroupDetailActive } from "./group_detail_active";
 import { uniq } from "lodash";
 import { UUID } from "../resources/interfaces";
@@ -21,8 +21,9 @@ import { ToolTransformProps } from "../tools/interfaces";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { isBotOriginQuadrant } from "../farm_designer/interfaces";
+import { validPointTypes } from "../plants/select_plants";
 
-interface GroupDetailProps {
+export interface GroupDetailProps {
   dispatch: Function;
   group: TaggedPointGroup | undefined;
   allPoints: TaggedPoint[];
@@ -65,17 +66,36 @@ export function mapStateToProps(props: Everything): GroupDetailProps {
   };
 }
 
+const panelInfo = (
+  group: TaggedPointGroup | undefined,
+): { title: string, backTo: string | undefined } => {
+  const pointTypes =
+    validPointTypes(group?.body.criteria.string_eq.pointer_type) || [];
+  switch (pointTypes[0]) {
+    case "GenericPointer":
+      return { title: t("Edit point group"), backTo: "/app/designer/points" };
+    case "Plant":
+      return { title: t("Edit plant group"), backTo: "/app/designer/plants" };
+    case "Weed":
+      return { title: t("Edit weed group"), backTo: "/app/designer/weeds" };
+    case "ToolSlot":
+      return { title: t("Edit slot group"), backTo: "/app/designer/tools" };
+    default:
+      return { title: t("Edit group"), backTo: undefined };
+  }
+};
+
 export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
   render() {
     const { group } = this.props;
     const groupsPath = "/app/designer/groups";
-    !group && getPathArray().join("/").startsWith(groupsPath) && push(groupsPath);
+    !group && getPathArray().join("/").startsWith(groupsPath) && history.back();
     return <DesignerPanel panelName={"group-detail"} panel={Panel.Groups}>
       <DesignerPanelHeader
         panelName={Panel.Groups}
         panel={Panel.Groups}
-        title={t("Edit group")}
-        backTo={groupsPath} />
+        backTo={panelInfo(group).backTo}
+        title={panelInfo(group).title} />
       <DesignerPanelContent panelName={"groups"}>
         {group
           ? <GroupDetailActive {...this.props} group={group} />

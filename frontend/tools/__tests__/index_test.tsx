@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/tools";
 jest.mock("../../history", () => ({
-  history: { push: jest.fn() },
   getPathArray: () => mockPath.split("/"),
+  push: jest.fn(),
 }));
 
 jest.mock("../../api/crud", () => ({
@@ -11,6 +11,10 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
+}));
+
+jest.mock("../../point_groups/actions", () => ({
+  createGroup: jest.fn(),
 }));
 
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
@@ -23,9 +27,9 @@ import {
   ToolSlotInventoryItem,
 } from "../index";
 import {
-  fakeTool, fakeToolSlot, fakeSensor,
+  fakeTool, fakeToolSlot, fakeSensor, fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
-import { history } from "../../history";
+import { push } from "../../history";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { error } from "../../toast/toast";
@@ -36,6 +40,9 @@ import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
 import { mapPointClickAction } from "../../farm_designer/map/actions";
 import { SearchField } from "../../ui/search_field";
+import { PanelSection } from "../../plants/plant_inventory";
+import { createGroup } from "../../point_groups/actions";
+import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -50,6 +57,8 @@ describe("<Tools />", () => {
     firmwareHardware: undefined,
     isActive: jest.fn(),
     toolTransformProps: fakeToolTransformProps(),
+    groups: [],
+    allPoints: [],
   });
 
   it("renders with no tools", () => {
@@ -78,6 +87,48 @@ describe("<Tools />", () => {
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
+  it("toggles section", () => {
+    const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
+    expect(wrapper.state().groups).toEqual(false);
+    wrapper.instance().toggleOpen("groups")();
+    expect(wrapper.state().groups).toEqual(true);
+  });
+
+  it("renders groups", () => {
+    const p = fakeProps();
+    p.tools = [fakeTool()];
+    const group1 = fakePointGroup();
+    group1.body.name = "Tool Slot Group";
+    group1.body.criteria.string_eq = { pointer_type: ["ToolSlot"] };
+    const group2 = fakePointGroup();
+    group2.body.name = "Plant Group";
+    group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    p.groups = [group1, group2];
+    const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.text()).toContain("Groups (1)");
+  });
+
+  it("navigates to group", () => {
+    const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
+    wrapper.instance().navigate(1)();
+    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+  });
+
+  it("adds new group", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.criteria.string_eq = { pointer_type: ["ToolSlot"] };
+    p.groups = [group1];
+    const wrapper = shallow(<Tools {...p} />);
+    wrapper.find(PanelSection).last().props().addNew();
+    expect(createGroup).toHaveBeenCalledWith({
+      criteria: {
+        ...DEFAULT_CRITERIA,
+        string_eq: { pointer_type: ["ToolSlot"] },
+      }
+    });
+  });
+
   it("navigates to tool", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
@@ -87,9 +138,9 @@ describe("<Tools />", () => {
     p.toolSlots[0].body.tool_id = 3;
     const wrapper = mount(<Tools {...p} />);
     wrapper.find(".tool-slot-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/2");
+    expect(push).toHaveBeenCalledWith("/app/designer/tool-slots/2");
     wrapper.find(".tool-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools/1");
+    expect(push).toHaveBeenCalledWith("/app/designer/tools/1");
   });
 
   it("hovers tool", () => {
@@ -263,7 +314,7 @@ describe("<ToolSlotInventoryItem />", () => {
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find("div").first().simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
+    expect(push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
@@ -275,7 +326,7 @@ describe("<ToolSlotInventoryItem />", () => {
     wrapper.find("div").first().simulate("click");
     expect(mapPointClickAction).toHaveBeenCalledWith(expect.any(Function),
       p.toolSlot.uuid);
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_TOOL_SLOT,
       payload: undefined,
