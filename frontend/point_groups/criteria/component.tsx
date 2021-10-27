@@ -71,7 +71,8 @@ export class GroupCriteria extends
         content={<this.AdvancedToggleMenu />} />
       {!this.state.advanced
         ? <div className={"basic"}>
-          <PointTypeSelection {...commonProps} pointTypes={pointTypes} />
+          {pointTypes.length < 1 &&
+            <PointTypeSelection {...commonProps} pointTypes={pointTypes} />}
           <div className={"point-type-checkboxes"}>
             <SubCriteriaSection pointerTypes={pointTypes}
               disabled={false} group={group} dispatch={dispatch} slugs={slugs} />

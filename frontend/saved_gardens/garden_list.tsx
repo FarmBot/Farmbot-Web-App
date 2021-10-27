@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Col } from "../ui";
 import { isNumber, isString } from "lodash";
 import { openSavedGarden } from "./actions";
 import {
-  SavedGardenItemProps, SavedGardenInfoProps, SavedGardensListProps,
+  SavedGardenItemProps, SavedGardenInfoProps, SavedGardenListProps,
 } from "./interfaces";
 import { t } from "../i18next_wrapper";
 
@@ -33,7 +33,7 @@ const SavedGardenItem = (props: SavedGardenItemProps) => {
 };
 
 /** Info and action list for all SavedGardens. */
-export const SavedGardenList = (props: SavedGardensListProps) =>
+export const SavedGardenList = (props: SavedGardenListProps) =>
   <div className="saved-garden-list">
     {props.savedGardens.map(sg => {
       const validSavedGarden =

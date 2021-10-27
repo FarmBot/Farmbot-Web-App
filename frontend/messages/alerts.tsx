@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { sortBy, isNumber } from "lodash";
 import { ProblemTag, FirmwareAlertsProps, AlertsProps } from "./interfaces";
 import { AlertCard } from "./cards";
@@ -18,19 +18,20 @@ const filterIncompleteAlerts = (x: Alert) =>
 export const filterAlerts = (x: Alert) =>
   x.problem_tag != "farmbot_os.firmware.missing";
 
-export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
-  const firmwareAlerts = sortAlerts(props.alerts)
+export const firmwareAlerts = (alerts: Alert[]) =>
+  sortAlerts(alerts)
     .filter(filterIncompleteAlerts)
     .filter(x => splitProblemTag(x.problem_tag).noun === "firmware");
-  return <div className="firmware-alerts">
-    {firmwareAlerts.map((x, i) =>
+
+export const FirmwareAlerts = (props: FirmwareAlertsProps) =>
+  <div className="firmware-alerts">
+    {firmwareAlerts(props.alerts).map((x, i) =>
       <AlertCard key={i}
         alert={x}
         dispatch={props.dispatch}
         apiFirmwareValue={props.apiFirmwareValue}
         timeSettings={props.timeSettings} />)}
   </div>;
-};
 
 export const Alerts = (props: AlertsProps) =>
   <div className="problem-alerts">

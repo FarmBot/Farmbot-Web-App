@@ -1,7 +1,7 @@
 import { UUID } from "../resources/interfaces";
 import {
   FirmwareHardware, TaggedTool, TaggedToolSlotPointer,
-  TaggedDevice, TaggedSensor, Xyz,
+  TaggedDevice, TaggedSensor, Xyz, TaggedPointGroup, TaggedPoint,
 } from "farmbot";
 import { BotOriginQuadrant } from "../farm_designer/interfaces";
 import { BotState, BotPosition, UserEnv } from "../devices/interfaces";
@@ -57,10 +57,13 @@ export interface ToolsProps {
   firmwareHardware: FirmwareHardware | undefined;
   isActive(id: number | undefined): boolean;
   toolTransformProps: ToolTransformProps;
+  groups: TaggedPointGroup[];
+  allPoints: TaggedPoint[];
 }
 
 export interface ToolsState {
   searchTerm: string;
+  groups: boolean;
 }
 
 export interface ToolSlotInventoryItemProps {

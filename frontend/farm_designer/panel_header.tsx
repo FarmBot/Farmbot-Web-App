@@ -285,8 +285,6 @@ export class DesignerNavTabs
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
         <NavTab panel={Panel.Map} desktopHide={true} />
         <NavTab panel={Panel.Plants} />
-        <NavTab panel={Panel.Groups} />
-        <NavTab panel={Panel.SavedGardens} />
         <NavTab panel={Panel.Sequences} />
         <NavTab panel={Panel.Regimens} />
         <NavTab panel={Panel.FarmEvents} />

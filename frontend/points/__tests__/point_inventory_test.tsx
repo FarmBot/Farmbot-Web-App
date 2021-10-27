@@ -5,12 +5,18 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/delete_points", () => ({ deletePoints: jest.fn() }));
 
+jest.mock("../../point_groups/actions", () => ({
+  createGroup: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawPoints as Points, PointsProps, mapStateToProps,
 } from "../point_inventory";
-import { fakePoint } from "../../__test_support__/fake_state/resources";
+import {
+  fakePoint, fakePointGroup,
+} from "../../__test_support__/fake_state/resources";
 import { push } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -21,6 +27,9 @@ import { PointSortMenu } from "../../farm_designer/sort_options";
 import { deletePoints } from "../../api/delete_points";
 import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../soil_height";
+import { PanelSection } from "../../plants/plant_inventory";
+import { createGroup } from "../../point_groups/actions";
+import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -30,6 +39,8 @@ describe("<Points />", () => {
     gridIds: [],
     soilHeightLabels: false,
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
+    groups: [],
+    allPoints: [],
   });
 
   it("renders no points", () => {
@@ -42,6 +53,49 @@ describe("<Points />", () => {
     p.genericPoints = [fakePoint()];
     const wrapper = mount(<Points {...p} />);
     expect(wrapper.text()).toContain("Point 1");
+  });
+
+  it("toggles section", () => {
+    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    expect(wrapper.state().groups).toEqual(false);
+    wrapper.instance().toggleOpen("groups")();
+    expect(wrapper.state().groups).toEqual(true);
+  });
+
+  it("renders groups", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.name = "Point Group";
+    group1.body.criteria.string_eq = { pointer_type: ["GenericPointer"] };
+    const group2 = fakePointGroup();
+    group2.body.name = "Plant Group";
+    group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    p.groups = [group1, group2];
+    const wrapper = mount(<Points {...p} />);
+    expect(wrapper.text()).toContain("Groups (1)");
+  });
+
+  it("navigates to group", () => {
+    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    wrapper.instance().navigate(1)();
+    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+  });
+
+  it("adds new group", () => {
+    const wrapper = shallow(<Points {...fakeProps()} />);
+    wrapper.find(PanelSection).first().props().addNew();
+    expect(createGroup).toHaveBeenCalledWith({
+      criteria: {
+        ...DEFAULT_CRITERIA,
+        string_eq: { pointer_type: ["GenericPointer"] },
+      }
+    });
+  });
+
+  it("adds new point", () => {
+    const wrapper = shallow(<Points {...fakeProps()} />);
+    wrapper.find(PanelSection).last().props().addNew();
+    expect(push).toHaveBeenCalledWith("/app/designer/points/add");
   });
 
   it("navigates to point info", () => {
@@ -95,7 +149,7 @@ describe("<Points />", () => {
     expect(wrapper.html()).not.toContain("soil-orange");
     expect(wrapper.text().toLowerCase()).toContain("soil height");
     expect(wrapper.state().soilHeight).toEqual(false);
-    wrapper.find(".fa-caret-down").first().simulate("click");
+    wrapper.find(".fa-caret-down").at(1).simulate("click");
     expect(wrapper.state().soilHeight).toEqual(true);
     expect(wrapper.html()).toContain("soil-orange");
   });
@@ -116,11 +170,11 @@ describe("<Points />", () => {
     expect(wrapper.html()).not.toContain("soil-red");
     expect(wrapper.text().toLowerCase()).toContain("all soil height");
     expect(wrapper.state().soilHeightColors).toEqual([]);
-    wrapper.find(".fa-caret-down").at(1).simulate("click");
+    wrapper.find(".fa-caret-down").at(2).simulate("click");
     expect(wrapper.state().soilHeightColors).toEqual(["red"]);
     expect(wrapper.html()).not.toContain("soil-orange");
     expect(wrapper.html()).toContain("soil-red");
-    wrapper.find(".fa-caret-up").first().simulate("click");
+    wrapper.find(".fa-caret-up").at(1).simulate("click");
     expect(wrapper.state().soilHeightColors).toEqual([]);
   });
 
@@ -133,9 +187,9 @@ describe("<Points />", () => {
     const wrapper = mount<Points>(<Points {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("mesh grid");
     expect(wrapper.state().gridIds).toEqual([]);
-    wrapper.find(".fa-caret-down").last().simulate("click");
+    wrapper.find(".fa-caret-down").at(1).simulate("click");
     expect(wrapper.state().gridIds).toEqual(["123"]);
-    wrapper.find(".fa-caret-up").last().simulate("click");
+    wrapper.find(".fa-caret-up").at(1).simulate("click");
     expect(wrapper.state().gridIds).toEqual([]);
   });
 

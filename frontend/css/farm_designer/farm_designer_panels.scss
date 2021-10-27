@@ -3,6 +3,7 @@
   position: fixed;
   top: 8.9rem;
   width: 45rem;
+  box-shadow: 0 0 10px $translucent;
   @media screen and (max-width: 450px) {
     width: 100%;
   }
@@ -740,15 +741,48 @@
         font-size: 1.25rem;
       }
     }
+    .grid-and-row-planting {
+      padding-bottom: 2rem;
+      margin-left: -1rem;
+      margin-right: -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      hr {
+        border-color: $medium_gray;
+      }
+      label {
+        color: $dark_gray;
+      }
+      .preview-button,
+      .cancel-button,
+      .save-button {
+        text-decoration: none !important;
+        color: $dark_gray;
+        &:hover {
+          color: $black;
+          background: $off_white;
+        }
+      }
+      .use-current-location {
+        margin-top: 1.5rem;
+      }
+    }
   }
   .edit-on-openfarm {
     margin-bottom: 1rem;
   }
 }
 
+.weeds-inventory-panel-content,
 .plant-panel-content,
 .points-panel-content {
   padding: 0;
+  .empty-state {
+    margin-bottom: 4rem;
+  }
+  .non-empty-state {
+    margin-bottom: 1rem;
+  }
 }
 
 .plants-panel-content {
@@ -767,6 +801,46 @@
   }
   input {
     background: $white;
+  }
+}
+
+.panel-section {
+  .delete {
+    float: none;
+    margin-left: 1rem;
+  }
+}
+
+.section-header {
+  display: inline-block;
+  width: 100%;
+  line-height: 3rem;
+  cursor: pointer;
+  padding-left: 1rem;
+  &:hover {
+    background: $light_gray;
+  }
+  label {
+    margin: 0 !important;
+    cursor: pointer;
+  }
+  .fb-button {
+    line-height: 1rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+    i {
+      margin: 0 !important;
+    }
+  }
+  .fa-caret-up,
+  .fa-caret-down {
+    float: right;
+    line-height: 0;
+    font-size: 2rem;
+    margin-right: 2rem;
+    margin-top: 1.75rem !important;
+    color: $dark_gray;
   }
 }
 
@@ -1005,6 +1079,10 @@
       button {
         margin-top: 0;
       }
+    }
+    .panel-section {
+      margin-left: -10px;
+      margin-right: -10px;
     }
   }
 }

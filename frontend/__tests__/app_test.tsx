@@ -133,10 +133,8 @@ describe("<App />: NavBar", () => {
     const t = wrapper.text();
     const strings = [
       "Plants",
-      "Groups",
       "Sequences",
       "Regimens",
-      "Gardens",
       "Events",
       "Points",
       "Weeds",

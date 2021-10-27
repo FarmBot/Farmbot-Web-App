@@ -13,9 +13,9 @@ jest.mock("../../../actions", () => ({
   movePlant: jest.fn(),
 }));
 
+let mockPath = "/app/designer/plants/crop_search/mint";
 jest.mock("../../../../../history", () => ({
-  getPathArray: () =>
-    "/app/designer/plants/crop_search/mint".split("/"),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import {
@@ -25,7 +25,7 @@ import {
   setActiveSpread, SetActiveSpreadProps,
   dragPlant, DragPlantProps,
   createPlant, CreatePlantProps,
-  dropPlant, DropPlantProps,
+  dropPlant, DropPlantProps, jogPlant, JogPlantProps, SavePlantProps, savePlant,
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { edit, save, initSave } from "../../../../../api/crud";
@@ -103,7 +103,14 @@ describe("dropPlant()", () => {
       expect.objectContaining({ name: "Mint", x: 10, y: 20 }));
   });
 
+  it("doesn't drop plant", () => {
+    mockPath = "/app/designer/plants/crop_search/";
+    dropPlant(fakeProps());
+    expect(initSave).not.toHaveBeenCalled();
+  });
+
   it("throws error", () => {
+    mockPath = "/app/designer/plants/crop_search/mint";
     const p = fakeProps();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.gardenCoords = undefined as any;
@@ -212,6 +219,63 @@ describe("dragPlant()", () => {
   });
 });
 
+describe("jogPlant()", () => {
+  const fakeProps = (): JogPlantProps => ({
+    keyName: "",
+    plant: undefined,
+    mapTransformProps: fakeMapTransformProps(),
+    dispatch: jest.fn(),
+  });
+
+  it("doesn't move plant: no plant", () => {
+    const p = fakeProps();
+    p.keyName = "ArrowLeft";
+    p.plant = undefined;
+    jogPlant(p);
+    expect(movePlant).not.toHaveBeenCalled();
+  });
+
+  it("doesn't move plant: not arrow key", () => {
+    const p = fakeProps();
+    p.keyName = "Enter";
+    p.plant = fakePlant();
+    jogPlant(p);
+    expect(movePlant).not.toHaveBeenCalled();
+  });
+
+  it("moves plant: rotated map", () => {
+    const p = fakeProps();
+    p.keyName = "ArrowLeft";
+    p.plant = fakePlant();
+    p.mapTransformProps.xySwap = true;
+    jogPlant(p);
+    expect(movePlant).toHaveBeenCalledWith({
+      deltaX: 0,
+      deltaY: -10,
+      plant: p.plant,
+      gridSize: p.mapTransformProps.gridSize,
+    });
+  });
+
+  it.each<[string, number, number]>([
+    ["ArrowLeft", -10, 0],
+    ["ArrowRight", 10, 0],
+    ["ArrowDown", 0, 10],
+    ["ArrowUp", 0, -10],
+  ])("moves plant: %s", (keyName, x, y) => {
+    const p = fakeProps();
+    p.keyName = keyName;
+    p.plant = fakePlant();
+    jogPlant(p);
+    expect(movePlant).toHaveBeenCalledWith({
+      deltaX: x,
+      deltaY: y,
+      plant: p.plant,
+      gridSize: p.mapTransformProps.gridSize,
+    });
+  });
+});
+
 describe("setActiveSpread()", () => {
   const fakeProps = (): SetActiveSpreadProps => ({
     selectedPlant: fakePlant(),
@@ -274,6 +338,27 @@ describe("maybeSavePlantLocation()", () => {
     const p = fakeProps();
     p.isDragging = false;
     maybeSavePlantLocation(p);
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+});
+
+describe("savePlant()", () => {
+  const fakeProps = (): SavePlantProps => ({
+    plant: fakePlant(),
+    dispatch: jest.fn(),
+  });
+
+  it("saves plant", () => {
+    savePlant(fakeProps());
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalledWith(expect.stringContaining("Point"));
+  });
+
+  it("doesn't save plant", () => {
+    const p = fakeProps();
+    p.plant = undefined;
+    savePlant(p);
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });

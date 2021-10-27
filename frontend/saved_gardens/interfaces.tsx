@@ -8,7 +8,7 @@ export interface SavedGardensProps {
   openedSavedGarden: string | undefined;
 }
 
-export interface SavedGardensListProps extends SavedGardensProps {
+export interface SavedGardenListProps extends SavedGardensProps {
   searchTerm: string;
 }
 

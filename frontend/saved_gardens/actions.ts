@@ -17,7 +17,7 @@ export const snapshotGarden = (gardenName?: string | undefined) =>
     : {})
     .then(() => {
       success(t("Garden Saved."));
-      history.push("/app/designer/gardens");
+      history.push("/app/designer/plants");
     });
 
 export const unselectSavedGarden = {
@@ -38,12 +38,12 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
 
 export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
   dispatch(unselectSavedGarden);
-  history.push("/app/designer/gardens");
+  history.push("/app/designer/plants");
   dispatch(destroy(uuid));
 };
 
 export const closeSavedGarden = () => {
-  history.push("/app/designer/gardens");
+  history.push("/app/designer/plants");
   return (dispatch: Function) =>
     dispatch(unselectSavedGarden);
 };
@@ -71,22 +71,21 @@ export const newSavedGarden = (gardenName: string) =>
     dispatch(initSave("SavedGarden", { name: gardenName || "Untitled Garden" }))
       .then(() => {
         success(t("Garden Saved."));
-        history.push("/app/designer/gardens");
+        history.push("/app/designer/plants");
       });
   };
 
 /** Create a copy of a PlantTemplate body and assign it a new SavedGarden. */
 const newPTBody =
-  (source: TaggedPlantTemplate, newSGId: number): TaggedPlantTemplate["body"] =>
-    ({
-      name: source.body.name,
-      openfarm_slug: source.body.openfarm_slug,
-      saved_garden_id: newSGId,
-      radius: source.body.radius,
-      x: source.body.x,
-      y: source.body.y,
-      z: source.body.z,
-    });
+  (source: TaggedPlantTemplate, newSGId: number): TaggedPlantTemplate["body"] => ({
+    name: source.body.name,
+    openfarm_slug: source.body.openfarm_slug,
+    saved_garden_id: newSGId,
+    radius: source.body.radius,
+    x: source.body.x,
+    y: source.body.y,
+    z: source.body.z,
+  });
 
 /** Copy a SavedGarden and all of its PlantTemplates. */
 export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
@@ -103,6 +102,6 @@ export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
           .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
           .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId))));
         success(t("Garden Saved."));
-        history.push("/app/designer/gardens");
+        history.push("/app/designer/plants");
       });
   };

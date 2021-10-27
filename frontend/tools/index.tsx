@@ -11,7 +11,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
-import { history } from "../history";
+import { push } from "../history";
 import { Row, Col, Help } from "../ui";
 import {
   botPositionLabel,
@@ -32,9 +32,14 @@ import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { SearchField } from "../ui/search_field";
 import { ToolVerification } from "./tool_verification";
+import { PanelSection } from "../plants/plant_inventory";
+import { createGroup } from "../point_groups/actions";
+import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
+import { GroupInventoryItem } from "../point_groups/group_inventory_item";
+import { pointGroupSubset } from "../plants/select_plants";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
-  state: ToolsState = { searchTerm: "" };
+  state: ToolsState = { searchTerm: "", groups: false };
 
   getToolName = (toolId: number | undefined): string | undefined => {
     const foundTool = this.props.tools.filter(tool => tool.body.id === toolId)[0];
@@ -132,9 +137,18 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
     };
   }
 
+  toggleOpen = (category: keyof ToolsState) => () =>
+    this.setState({ ...this.state, [category]: !this.state[category] });
+
+  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+
   render() {
     const panelName = "tools";
     const hasTools = this.props.tools.length > 0;
+    const toolSlotGroups = pointGroupSubset(this.props.groups, "ToolSlot");
+    const filteredGroups = toolSlotGroups
+      .filter(p => p.body.name.toLowerCase()
+        .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerNavTabs />
       <DesignerPanelTop
@@ -155,6 +169,29 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           {!this.noUTM && <this.MountedToolInfo />}
           <this.ToolSlots />
           <this.Tools />
+          {toolSlotGroups.length > 0 &&
+            <PanelSection isOpen={this.state.groups} panel={Panel.Tools}
+              toggleOpen={this.toggleOpen("groups")}
+              itemCount={toolSlotGroups.length}
+              addNew={() => this.props.dispatch(createGroup({
+                criteria: {
+                  ...DEFAULT_CRITERIA,
+                  string_eq: { pointer_type: ["ToolSlot"] },
+                },
+              }))}
+              addTitle={t("add new group")}
+              addClassName={"plus-group"}
+              title={t("Groups")}>
+              {filteredGroups
+                .map(group => <GroupInventoryItem
+                  key={group.uuid}
+                  group={group}
+                  allPoints={this.props.allPoints}
+                  hovered={false}
+                  dispatch={this.props.dispatch}
+                  onClick={this.navigate(group.body.id)}
+                />)}
+            </PanelSection>}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;
@@ -172,7 +209,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         mapPointClickAction(props.dispatch, props.toolSlot.uuid)();
         props.dispatch(setToolHover(undefined));
       } else {
-        history.push(`/app/designer/tool-slots/${id}`);
+        push(`/app/designer/tool-slots/${id}`);
       }
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
@@ -216,7 +253,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
 const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
   return <div className={"tool-search-item"}
-    onClick={() => history.push(`/app/designer/tools/${props.toolId}`)}>
+    onClick={() => push(`/app/designer/tools/${props.toolId}`)}>
     <Row>
       <Col xs={2} className={"tool-search-item-icon"}>
         <ToolSVG toolName={props.toolName} />

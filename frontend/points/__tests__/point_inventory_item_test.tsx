@@ -83,7 +83,7 @@ describe("<PointInventoryItem> />", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/points/1");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
-      payload: [p.tpp.uuid],
+      payload: p.tpp.uuid,
     });
   });
 
@@ -97,7 +97,7 @@ describe("<PointInventoryItem> />", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/points/ERR_NO_POINT_ID");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
-      payload: [p.tpp.uuid],
+      payload: p.tpp.uuid,
     });
   });
 

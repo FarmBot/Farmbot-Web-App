@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { GardenViewButtonProps, EditGardenProps } from "./interfaces";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import { error } from "../toast/toast";
@@ -79,15 +79,16 @@ export class RawEditGarden extends React.Component<EditGardenProps, {}> {
   render() {
     const { savedGarden } = this.props;
     const gardensPath = "/app/designer/gardens";
+    const plantsPath = "/app/designer/plants";
     !savedGarden && getPathArray().join("/").startsWith(gardensPath)
-      && push(gardensPath);
+      && push(plantsPath);
     return <DesignerPanel panelName={"saved-garden-edit"}
       panel={Panel.SavedGardens}>
       <DesignerPanelHeader
         panelName={"saved-garden"}
         panel={Panel.SavedGardens}
         title={t("Edit garden")}
-        backTo={gardensPath} />
+        backTo={plantsPath} />
       <DesignerPanelContent panelName={"saved-garden-edit"}>
         {savedGarden
           ? <div className={"saved-garden-content"}>

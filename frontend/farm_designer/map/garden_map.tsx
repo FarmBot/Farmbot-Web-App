@@ -31,7 +31,8 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPlant,
+  SavePlantProps, savePlant,
 } from "./layers/plants/plant_actions";
 import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
@@ -42,9 +43,11 @@ import { findGroupFromUrl } from "../../point_groups/group_detail";
 import { pointsSelectedByGroup } from "../../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
-import { throttle } from "lodash";
+import { debounce, throttle } from "lodash";
 import { SequenceVisualization } from "./sequence_visualization";
 import { chooseProfile, ProfileLine } from "./profile";
+
+const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -374,6 +377,46 @@ export class GardenMap extends
     }
   };
 
+  /** Map key actions. */
+  onKeyDown = (e: React.KeyboardEvent) => {
+    const plant = this.getPlant();
+    const { dispatch, mapTransformProps } = this.props;
+    switch (getMode()) {
+      case Mode.editPlant:
+        if (BOUND_KEYS.includes(e.key)) {
+          this.preventKey(e);
+          jogPlant({ keyName: e.key, plant, dispatch, mapTransformProps });
+        }
+        break;
+    }
+  };
+
+  /** Map key actions. */
+  preventKey = (e: React.KeyboardEvent) => {
+    switch (getMode()) {
+      case Mode.editPlant:
+        BOUND_KEYS.includes(e.key) && e.preventDefault();
+        break;
+    }
+  };
+
+  debouncedPlantSave = debounce((props: SavePlantProps) => savePlant(props), 2000);
+
+  /** Map key actions. */
+  onKeyUp = (e: React.KeyboardEvent) => {
+    switch (getMode()) {
+      case Mode.editPlant:
+        if (BOUND_KEYS.includes(e.key)) {
+          e.preventDefault();
+          this.debouncedPlantSave({
+            plant: this.getPlant(),
+            dispatch: this.props.dispatch,
+          });
+        }
+        break;
+    }
+  };
+
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
     switch (getMode()) {
@@ -408,6 +451,9 @@ export class GardenMap extends
     onMouseUp: this.endDrag,
     onDragEnd: this.endDrag,
     onDragStart: (e: React.DragEvent<HTMLElement>) => e.preventDefault(),
+    onKeyPress: this.preventKey,
+    onKeyUp: this.onKeyUp,
+    onKeyDown: this.onKeyDown,
     style: {
       height: this.mapSize.h + "px", maxHeight: this.mapSize.h + "px",
       width: this.mapSize.w + "px", maxWidth: this.mapSize.w + "px"

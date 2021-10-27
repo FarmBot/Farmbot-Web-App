@@ -297,7 +297,7 @@ export const getMode = (): Mode => {
     if (pathArray[5] === "edit") { return Mode.editPlant; }
     if (pathArray[6] === "edit") { return Mode.editPlant; }
     if (pathArray[4] === "select") { return Mode.boxSelect; }
-    if (pathArray[4] === "crop_search") { return Mode.addPlant; }
+    if (pathArray[4] === "crop_search" && pathArray[5]) { return Mode.clickToAdd; }
     if (pathArray[3] === "location") { return Mode.locationInfo; }
     if (pathArray[3] === "points") {
       if (pathArray[4] === "add") { return Mode.createPoint; }

@@ -6,18 +6,20 @@ import { GetState } from "../redux/interfaces";
 import { findPointGroup } from "../resources/selectors";
 import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
-import { DEFAULT_CRITERIA } from "./criteria/interfaces";
+import { DEFAULT_CRITERIA, PointGroupCriteria } from "./criteria/interfaces";
 import { TaggedPointGroup } from "farmbot";
 
 interface CreateGroupProps {
-  pointUuids: UUID[];
+  pointUuids?: UUID[];
   groupName?: string;
+  criteria?: PointGroupCriteria;
 }
 
-export const createGroup = ({ pointUuids, groupName }: CreateGroupProps) =>
+export const createGroup = (props: CreateGroupProps) =>
   (dispatch: Function, getState: GetState) => {
+    const { pointUuids, groupName, criteria } = props;
     const { references } = getState().resources.index;
-    const possiblyNil = pointUuids
+    const possiblyNil = (pointUuids || [])
       .map(x => references[x])
       .map(x => x ? x.body.id : undefined);
     const point_ids = betterCompact(possiblyNil);
@@ -25,7 +27,7 @@ export const createGroup = ({ pointUuids, groupName }: CreateGroupProps) =>
       name: groupName || t("Untitled Group"),
       point_ids,
       sort_type: "xy_ascending",
-      criteria: DEFAULT_CRITERIA
+      criteria: criteria || DEFAULT_CRITERIA,
     };
     const action = init("PointGroup", group);
     dispatch(action);

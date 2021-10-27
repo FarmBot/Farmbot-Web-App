@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedWeedPointer } from "farmbot";
 import { Actions } from "../constants";
 import { push } from "../history";
@@ -45,7 +45,7 @@ export class WeedInventoryItem extends
         toggle("leave");
       } else {
         push(`/app/designer/weeds/${weedId}`);
-        dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: [tpp.uuid] });
+        dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: tpp.uuid });
         dispatch(selectPoint([tpp.uuid]));
       }
     };

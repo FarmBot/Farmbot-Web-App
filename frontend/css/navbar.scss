@@ -240,6 +240,7 @@ nav {
     position: relative;
     width: 22rem;
     background: $dark_gray;
+    padding: 0;
     i {
       margin-right: 0.8rem;
     }
@@ -247,9 +248,10 @@ nav {
     letter-spacing: 1.2px;
     a:not(.app-version) {
       display: inline-block;
+      width: 100%;
       text-transform: uppercase;
       color: $off_white;
-      margin-bottom: 0.6rem;
+      padding: 0.5rem 1rem;
     }
     img {
       margin-right: 0.8rem;
@@ -258,7 +260,6 @@ nav {
       filter: invert(1);
     }
     .app-version {
-      margin: 1rem -1rem -1rem;
       background: $dark_gray;
       color: $white;
       padding: 0.5rem 0 0 1rem;
@@ -268,6 +269,7 @@ nav {
         color: $white;
       }
       a {
+        width: auto;
         color: $white;
       }
       p {

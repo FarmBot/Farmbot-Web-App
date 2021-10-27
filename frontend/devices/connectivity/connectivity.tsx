@@ -14,7 +14,7 @@ import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
 import { refresh } from "../../api/crud";
 import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
-import { FirmwareAlerts } from "../../messages/alerts";
+import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
@@ -113,13 +113,14 @@ export class Connectivity
             </div>}
         </Col>
       </Row>
-      <Row>
-        <FirmwareAlerts
-          alerts={this.props.alerts}
-          dispatch={this.props.dispatch}
-          apiFirmwareValue={this.props.apiFirmwareValue}
-          timeSettings={this.props.timeSettings} />
-      </Row>
+      {firmwareAlerts(this.props.alerts).length > 0 &&
+        <Row>
+          <FirmwareAlerts
+            alerts={this.props.alerts}
+            dispatch={this.props.dispatch}
+            apiFirmwareValue={this.props.apiFirmwareValue}
+            timeSettings={this.props.timeSettings} />
+        </Row>}
     </div>;
   }
 }
