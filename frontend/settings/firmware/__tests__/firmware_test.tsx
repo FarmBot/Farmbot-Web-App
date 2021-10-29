@@ -18,7 +18,7 @@ import {
   fakeTimeSettings,
 } from "../../../__test_support__/fake_time_settings";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 
 describe("<Firmware />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -32,13 +32,13 @@ describe("<Firmware />", () => {
     bot: bot,
     alerts: [],
     timeSettings: fakeTimeSettings(),
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     showAdvanced: true,
   });
 
   it("restarts firmware", () => {
     const p = fakeProps();
-    p.controlPanelState.firmware = true;
+    p.settingsPanelState.firmware = true;
     const wrapper = mount(<Firmware {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
@@ -48,7 +48,7 @@ describe("<Firmware />", () => {
 
   it("flashes firmware", () => {
     const p = fakeProps();
-    p.controlPanelState.firmware = true;
+    p.settingsPanelState.firmware = true;
     p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
     const wrapper = mount(<Firmware {...p} />);
     expect(wrapper.text().toLowerCase())

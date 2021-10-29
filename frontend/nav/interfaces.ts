@@ -68,3 +68,8 @@ export interface AccountMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   logout: () => void;
 }
+
+export interface EStopButtonProps {
+  bot: BotState;
+  forceUnlock: boolean;
+}

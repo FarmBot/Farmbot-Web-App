@@ -14,7 +14,7 @@ import { some } from "lodash";
 
 export function LimitSwitches(props: LimitSwitchesProps) {
 
-  const { limit_switches } = props.controlPanelState;
+  const { limit_switches } = props.settingsPanelState;
   const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
 
   const commonProps = {

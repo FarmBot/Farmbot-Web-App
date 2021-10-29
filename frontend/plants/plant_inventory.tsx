@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
-import { Everything } from "../interfaces";
+import { Everything, PlantsPanelState } from "../interfaces";
 import { Panel, DesignerNavTabs, TAB_COLOR } from "../farm_designer/panel_header";
 import { getPlants } from "../farm_designer/state_to_props";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
@@ -43,13 +43,11 @@ export interface PlantInventoryProps {
   plantTemplates: TaggedPlantTemplate[];
   plantPointerCount: number;
   openedSavedGarden: string | undefined;
+  plantsPanelState: PlantsPanelState;
 }
 
 interface PlantInventoryState {
   searchTerm: string;
-  plants: boolean;
-  groups: boolean;
-  savedGardens: boolean;
 }
 
 export function mapStateToProps(props: Everything): PlantInventoryProps {
@@ -64,6 +62,7 @@ export function mapStateToProps(props: Everything): PlantInventoryProps {
     plantTemplates: selectAllPlantTemplates(props.resources.index),
     plantPointerCount: selectAllPlantPointers(props.resources.index).length,
     openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
+    plantsPanelState: props.app.plantsPanelState,
   };
 }
 
@@ -71,9 +70,6 @@ export class RawPlants
   extends React.Component<PlantInventoryProps, PlantInventoryState> {
   state: PlantInventoryState = {
     searchTerm: "",
-    plants: true,
-    groups: false,
-    savedGardens: false,
   };
 
   get noResult() {
@@ -90,8 +86,10 @@ export class RawPlants
     </p>;
   }
 
-  toggleOpen = (key: keyof PlantInventoryState) => () =>
-    this.setState({ ...this.state, [key]: !this.state[key] });
+  toggleOpen = (section: keyof PlantsPanelState) => () =>
+    this.props.dispatch({
+      type: Actions.TOGGLE_PLANTS_PANEL_OPTION, payload: section,
+    });
 
   navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
 
@@ -112,7 +110,8 @@ export class RawPlants
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
-        <PanelSection isOpen={this.state.groups} panel={Panel.Plants}
+        <PanelSection isOpen={this.props.plantsPanelState.groups}
+          panel={Panel.Plants}
           toggleOpen={this.toggleOpen("groups")}
           itemCount={plantGroups.length}
           addNew={() => this.props.dispatch(createGroup({
@@ -134,7 +133,8 @@ export class RawPlants
               onClick={this.navigate(group.body.id)}
             />)}
         </PanelSection>
-        <PanelSection isOpen={this.state.savedGardens} panel={Panel.Plants}
+        <PanelSection isOpen={this.props.plantsPanelState.savedGardens}
+          panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
           addNew={() => push("/app/designer/gardens/add")}
@@ -152,7 +152,8 @@ export class RawPlants
           </button>
           <SavedGardenList {...this.props} searchTerm={this.state.searchTerm} />
         </PanelSection>
-        <PanelSection isOpen={this.state.plants} panel={Panel.Plants}
+        <PanelSection isOpen={this.props.plantsPanelState.plants}
+          panel={Panel.Plants}
           toggleOpen={this.toggleOpen("plants")}
           itemCount={this.props.plants.length}
           addNew={() => push(cropSearchUrl())}

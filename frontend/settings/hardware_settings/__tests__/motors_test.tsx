@@ -14,7 +14,9 @@ import { MotorsProps } from "../interfaces";
 import { Motors } from "../motors";
 import { render, mount, shallow } from "enzyme";
 import { McuParamName } from "farmbot";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import {
+  settingsPanelState as fakeSettingsPanelState,
+} from "../../../__test_support__/panel_state";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   fakeFirmwareConfig,
@@ -31,11 +33,11 @@ describe("<Motors />", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): MotorsProps => {
-    const controlPanelState = panelState();
-    controlPanelState.motors = true;
+    const settingsPanelState = fakeSettingsPanelState();
+    settingsPanelState.motors = true;
     return {
       dispatch: jest.fn(x => x(jest.fn(), () => state)),
-      controlPanelState,
+      settingsPanelState,
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
       arduinoBusy: false,
@@ -90,7 +92,7 @@ describe("<Motors />", () => {
     description: string, parameter: McuParamName, position: number) => {
     it(`${description}`, () => {
       const p = fakeProps();
-      p.controlPanelState.motors = true;
+      p.settingsPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });
       const wrapper = mount(<Motors {...p} />);
       wrapper.find("button").at(position).simulate("click");

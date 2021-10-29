@@ -31,8 +31,8 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPlant,
-  SavePlantProps, savePlant,
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPoint,
+  SavePointProps, savePoint,
 } from "./layers/plants/plant_actions";
 import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
@@ -56,6 +56,11 @@ export class GardenMap extends
     super(props);
     this.state = {};
   }
+
+  componentDidMount = () => {
+    document.onkeydown = this.onKeyDown as never;
+    document.onkeyup = this.onKeyUp as never;
+  };
 
   componentWillUnmount() {
     // Clear plant selection when navigating away from the designer.
@@ -261,6 +266,13 @@ export class GardenMap extends
     return this.props.designer.selectedPoints?.[0];
   }
 
+  get currentPointOrPlant(): TaggedPoint | TaggedPlant | undefined {
+    return allowInteraction()
+      ? this.props.allPoints.filter(p => p.uuid == this.currentPoint)[0]
+      || this.props.selectedPlant
+      : undefined;
+  }
+
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     switch (getMode()) {
       case Mode.addPlant:
@@ -379,13 +391,13 @@ export class GardenMap extends
 
   /** Map key actions. */
   onKeyDown = (e: React.KeyboardEvent) => {
-    const plant = this.getPlant();
+    const point = this.currentPointOrPlant;
     const { dispatch, mapTransformProps } = this.props;
     switch (getMode()) {
       case Mode.editPlant:
         if (BOUND_KEYS.includes(e.key)) {
           this.preventKey(e);
-          jogPlant({ keyName: e.key, plant, dispatch, mapTransformProps });
+          jogPoint({ keyName: e.key, point, dispatch, mapTransformProps });
         }
         break;
     }
@@ -400,7 +412,7 @@ export class GardenMap extends
     }
   };
 
-  debouncedPlantSave = debounce((props: SavePlantProps) => savePlant(props), 2000);
+  debouncedPointSave = debounce((props: SavePointProps) => savePoint(props), 1500);
 
   /** Map key actions. */
   onKeyUp = (e: React.KeyboardEvent) => {
@@ -408,8 +420,8 @@ export class GardenMap extends
       case Mode.editPlant:
         if (BOUND_KEYS.includes(e.key)) {
           e.preventDefault();
-          this.debouncedPlantSave({
-            plant: this.getPlant(),
+          this.debouncedPointSave({
+            point: this.currentPointOrPlant,
             dispatch: this.props.dispatch,
           });
         }
@@ -452,8 +464,6 @@ export class GardenMap extends
     onDragEnd: this.endDrag,
     onDragStart: (e: React.DragEvent<HTMLElement>) => e.preventDefault(),
     onKeyPress: this.preventKey,
-    onKeyUp: this.onKeyUp,
-    onKeyDown: this.onKeyDown,
     style: {
       height: this.mapSize.h + "px", maxHeight: this.mapSize.h + "px",
       width: this.mapSize.w + "px", maxWidth: this.mapSize.w + "px"
@@ -537,6 +547,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     designer={this.props.designer}
     visible={!!this.props.showPoints}
+    currentPoint={this.currentPoint}
     overlayVisible={
       !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}

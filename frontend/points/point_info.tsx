@@ -15,6 +15,7 @@ import {
 } from "./point_edit_actions";
 import { ListItem } from "../plants/plant_panel";
 import { isBotOnlineFromState } from "../devices/must_be_online";
+import { save } from "../api/crud";
 
 export interface EditPointProps {
   dispatch: Function;
@@ -46,6 +47,9 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
         panelName={this.panelName}
         panel={Panel.Points}
         title={t("Edit point")}
+        specialStatus={this.point?.specialStatus}
+        onSave={() => this.point?.uuid &&
+          this.props.dispatch(save(this.point.uuid))}
         backTo={pointsPath}
         onBack={() => this.props.dispatch({
           type: Actions.TOGGLE_HOVERED_POINT, payload: undefined

@@ -22,7 +22,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
     dispatch, onReset, botOnline, arduinoBusy, firmwareHardware,
     getConfigValue,
   } = props;
-  const { parameter_management } = props.controlPanelState;
+  const { parameter_management } = props.settingsPanelState;
   return <Highlight className={"section"}
     settingName={DeviceSetting.parameterManagement}>
     <Header

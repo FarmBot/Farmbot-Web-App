@@ -1,4 +1,4 @@
-import { MovePlantProps, DraggableEvent } from "../interfaces";
+import { MovePointProps, DraggableEvent } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
 import { history } from "../../history";
@@ -14,9 +14,9 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
 
-export function movePlant(payload: MovePlantProps) {
-  const tr = payload.plant;
-  const update = defensiveClone(payload.plant).body;
+export function movePoint(payload: MovePointProps) {
+  const tr = payload.point;
+  const update = defensiveClone(payload.point).body;
   update.x += payload.deltaX;
   update.y += payload.deltaY;
   update.x = clamp(update.x, 0, payload.gridSize.x);

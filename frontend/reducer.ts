@@ -1,11 +1,16 @@
 import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
-import { ControlPanelState } from "./devices/interfaces";
+import {
+  PlantsPanelState, PointsPanelState, SettingsPanelState, WeedsPanelState,
+} from "./interfaces";
 
 export interface AppState {
   settingsSearchTerm: string;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
+  plantsPanelState: PlantsPanelState;
+  weedsPanelState: WeedsPanelState;
+  pointsPanelState: PointsPanelState;
   toasts: ToastMessages;
   controlsPopupOpen: boolean;
 }
@@ -13,7 +18,7 @@ export interface AppState {
 export const emptyState = (): AppState => {
   return {
     settingsSearchTerm: "",
-    controlPanelState: {
+    settingsPanelState: {
       farmbot_settings: false,
       firmware: false,
       power_and_reset: false,
@@ -29,6 +34,23 @@ export const emptyState = (): AppState => {
       account: false,
       other_settings: false,
     },
+    plantsPanelState: {
+      groups: false,
+      savedGardens: false,
+      plants: true,
+    },
+    weedsPanelState: {
+      groups: false,
+      weeds: true,
+      pending: true,
+      active: true,
+      removed: true,
+    },
+    pointsPanelState: {
+      groups: false,
+      points: true,
+      soilHeight: false,
+    },
     toasts: {},
     controlsPopupOpen: false,
   };
@@ -40,26 +62,38 @@ export const appReducer =
       s.settingsSearchTerm = payload;
       return s;
     })
-    .add<keyof ControlPanelState>(Actions.TOGGLE_CONTROL_PANEL_OPTION, (s, a) => {
-      s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
+    .add<keyof SettingsPanelState>(Actions.TOGGLE_SETTINGS_PANEL_OPTION, (s, a) => {
+      s.settingsPanelState[a.payload] = !s.settingsPanelState[a.payload];
+      return s;
+    })
+    .add<keyof PlantsPanelState>(Actions.TOGGLE_PLANTS_PANEL_OPTION, (s, a) => {
+      s.plantsPanelState[a.payload] = !s.plantsPanelState[a.payload];
+      return s;
+    })
+    .add<keyof WeedsPanelState>(Actions.TOGGLE_WEEDS_PANEL_OPTION, (s, a) => {
+      s.weedsPanelState[a.payload] = !s.weedsPanelState[a.payload];
+      return s;
+    })
+    .add<keyof PointsPanelState>(Actions.TOGGLE_POINTS_PANEL_OPTION, (s, a) => {
+      s.pointsPanelState[a.payload] = !s.pointsPanelState[a.payload];
       return s;
     })
     .add<boolean>(
-      Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
-        s.controlPanelState.farmbot_settings = a.payload;
-        s.controlPanelState.firmware = a.payload;
-        s.controlPanelState.power_and_reset = a.payload;
-        s.controlPanelState.axis_settings = a.payload;
-        s.controlPanelState.motors = a.payload;
-        s.controlPanelState.encoders_or_stall_detection = a.payload;
-        s.controlPanelState.limit_switches = a.payload;
-        s.controlPanelState.error_handling = a.payload;
-        s.controlPanelState.pin_bindings = a.payload;
-        s.controlPanelState.pin_guard = a.payload;
-        s.controlPanelState.parameter_management = a.payload;
-        s.controlPanelState.farm_designer = a.payload;
-        s.controlPanelState.account = a.payload;
-        s.controlPanelState.other_settings = a.payload;
+      Actions.BULK_TOGGLE_SETTINGS_PANEL, (s, a) => {
+        s.settingsPanelState.farmbot_settings = a.payload;
+        s.settingsPanelState.firmware = a.payload;
+        s.settingsPanelState.power_and_reset = a.payload;
+        s.settingsPanelState.axis_settings = a.payload;
+        s.settingsPanelState.motors = a.payload;
+        s.settingsPanelState.encoders_or_stall_detection = a.payload;
+        s.settingsPanelState.limit_switches = a.payload;
+        s.settingsPanelState.error_handling = a.payload;
+        s.settingsPanelState.pin_bindings = a.payload;
+        s.settingsPanelState.pin_guard = a.payload;
+        s.settingsPanelState.parameter_management = a.payload;
+        s.settingsPanelState.farm_designer = a.payload;
+        s.settingsPanelState.account = a.payload;
+        s.settingsPanelState.other_settings = a.payload;
         return s;
       })
     .add<boolean>(Actions.OPEN_CONTROLS_POPUP, (s, { payload }) => {

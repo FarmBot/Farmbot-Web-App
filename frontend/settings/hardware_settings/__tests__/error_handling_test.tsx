@@ -12,7 +12,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { ErrorHandling } from "../error_handling";
 import { ErrorHandlingProps } from "../interfaces";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { edit, save } from "../../../api/crud";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -29,7 +29,7 @@ describe("<ErrorHandling />", () => {
   state.resources = buildResourceIndex([fakeConfig]);
   const fakeProps = (): ErrorHandlingProps => ({
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     firmwareHardware: undefined,
@@ -45,7 +45,7 @@ describe("<ErrorHandling />", () => {
 
   it("toggles retries e-stop parameter", () => {
     const p = fakeProps();
-    p.controlPanelState.error_handling = true;
+    p.settingsPanelState.error_handling = true;
     p.sourceFwConfig = () => ({ value: 1, consistent: true });
     const wrapper = mount(<ErrorHandling {...p} />);
     wrapper.find("button").at(0).simulate("click");
@@ -56,7 +56,7 @@ describe("<ErrorHandling />", () => {
   it("shows new parameters", () => {
     mockShouldDisplay = true;
     const p = fakeProps();
-    p.controlPanelState.error_handling = true;
+    p.settingsPanelState.error_handling = true;
     const wrapper = mount(<ErrorHandling {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("total");
   });

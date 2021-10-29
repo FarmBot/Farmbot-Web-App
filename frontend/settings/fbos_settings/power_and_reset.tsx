@@ -11,7 +11,7 @@ import { Highlight } from "../maybe_highlight";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, botOnline } = props;
-  const { power_and_reset } = props.controlPanelState;
+  const { power_and_reset } = props.settingsPanelState;
   return <Highlight className={"section"}
     settingName={DeviceSetting.powerAndReset}>
     <Header

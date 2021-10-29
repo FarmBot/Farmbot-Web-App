@@ -30,6 +30,7 @@ import { tagAsSoilHeight } from "../soil_height";
 import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
+import { pointsPanelState } from "../../__test_support__/panel_state";
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -41,6 +42,7 @@ describe("<Points />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     groups: [],
     allPoints: [],
+    pointsPanelState: pointsPanelState(),
   });
 
   it("renders no points", () => {
@@ -56,10 +58,13 @@ describe("<Points />", () => {
   });
 
   it("toggles section", () => {
-    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
-    expect(wrapper.state().groups).toEqual(false);
+    const p = fakeProps();
+    const wrapper = shallow<Points>(<Points {...p} />);
     wrapper.instance().toggleOpen("groups")();
-    expect(wrapper.state().groups).toEqual(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POINTS_PANEL_OPTION,
+      payload: "groups",
+    });
   });
 
   it("renders groups", () => {
@@ -148,9 +153,13 @@ describe("<Points />", () => {
     const wrapper = mount<Points>(<Points {...p} />);
     expect(wrapper.html()).not.toContain("soil-orange");
     expect(wrapper.text().toLowerCase()).toContain("soil height");
-    expect(wrapper.state().soilHeight).toEqual(false);
     wrapper.find(".fa-caret-down").at(1).simulate("click");
-    expect(wrapper.state().soilHeight).toEqual(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POINTS_PANEL_OPTION,
+      payload: "soilHeight",
+    });
+    p.pointsPanelState.soilHeight = true;
+    wrapper.setProps(p);
     expect(wrapper.html()).toContain("soil-orange");
   });
 
@@ -232,11 +241,11 @@ describe("<Points />", () => {
 
   it("toggles height label visibility", () => {
     const p = fakeProps();
+    p.pointsPanelState.soilHeight = true;
     const soilHeightPoint = fakePoint();
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.setState({ soilHeight: true });
     wrapper.find(".fb-toggle-button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined

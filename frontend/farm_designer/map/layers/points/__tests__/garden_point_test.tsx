@@ -33,6 +33,7 @@ describe("<GardenPoint/>", () => {
     cropPhotos: false,
     soilHeightLabels: false,
     getSoilHeightColor: () => "rgb(128, 128, 128)",
+    current: false,
   });
 
   it("renders point", () => {

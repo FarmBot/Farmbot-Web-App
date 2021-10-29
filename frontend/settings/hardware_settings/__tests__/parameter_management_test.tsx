@@ -15,7 +15,7 @@ import {
   ParameterManagement, ParameterImport, ParameterImportProps,
 } from "../parameter_management";
 import { ParameterManagementProps } from "../interfaces";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { Content } from "../../../constants";
 import { importParameters, resendParameters } from "../export_menu";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
@@ -27,7 +27,7 @@ describe("<ParameterManagement />", () => {
     firmwareConfig: undefined,
     botOnline: true,
     dispatch: jest.fn(),
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     sourceFwConfig: () => ({ value: 0, consistent: true }),
     firmwareHardware: undefined,
     arduinoBusy: false,
@@ -36,14 +36,14 @@ describe("<ParameterManagement />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    p.controlPanelState.parameter_management = true;
+    p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("reset");
   });
 
   it("resends", () => {
     const p = fakeProps();
-    p.controlPanelState.parameter_management = true;
+    p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     wrapper.find("button.yellow").first().simulate("click");
     expect(resendParameters).toHaveBeenCalled();
@@ -52,7 +52,7 @@ describe("<ParameterManagement />", () => {
   it("imports", () => {
     window.confirm = jest.fn(() => true);
     const p = fakeProps();
-    p.controlPanelState.parameter_management = true;
+    p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     wrapper.find("input").simulate("submit", { currentTarget: { value: "" } });
     wrapper.find("button.yellow").last().simulate("click");
@@ -62,7 +62,7 @@ describe("<ParameterManagement />", () => {
 
   it("toggles advanced settings", () => {
     const p = fakeProps();
-    p.controlPanelState.parameter_management = true;
+    p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     wrapper.find(".fb-toggle-button").at(1).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(

@@ -17,7 +17,7 @@ import {
 import { getModifiedClassName } from "./default_values";
 
 export const Designer = (props: DesignerSettingsSectionProps) => {
-  const { getConfigValue, dispatch, controlPanelState } = props;
+  const { getConfigValue, dispatch, settingsPanelState } = props;
   const settingsProps = { getConfigValue, dispatch };
   return <Highlight className={"section"}
     settingName={DeviceSetting.farmDesigner}>
@@ -25,8 +25,8 @@ export const Designer = (props: DesignerSettingsSectionProps) => {
       title={DeviceSetting.farmDesigner}
       panel={"farm_designer"}
       dispatch={dispatch}
-      expanded={controlPanelState.farm_designer} />
-    <Collapse isOpen={!!controlPanelState.farm_designer}>
+      expanded={settingsPanelState.farm_designer} />
+    <Collapse isOpen={!!settingsPanelState.farm_designer}>
       {PlainDesignerSettings(settingsProps)}
     </Collapse>
   </Highlight>;

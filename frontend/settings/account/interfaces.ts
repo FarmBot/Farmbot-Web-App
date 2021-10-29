@@ -1,11 +1,11 @@
 import { TaggedUser } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
-import { ControlPanelState } from "../../devices/interfaces";
+import { SettingsPanelState } from "../../interfaces";
 import { Thunk } from "../../redux/interfaces";
 
 export interface AccountSettingsProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   user: TaggedUser;
   getConfigValue: GetWebAppConfigValue;
 }

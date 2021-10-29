@@ -52,10 +52,10 @@ export class RawDesignerSettings
 
   render() {
     const { getConfigValue, dispatch, firmwareConfig,
-      sourceFwConfig, sourceFbosConfig, resources, controlPanelState,
+      sourceFwConfig, sourceFbosConfig, resources, settingsPanelState,
     } = this.props;
     const showAdvanced = !!getConfigValue(BooleanSetting.show_advanced_settings);
-    const commonProps = { dispatch, controlPanelState, showAdvanced };
+    const commonProps = { dispatch, settingsPanelState, showAdvanced };
     const { value } = this.props.sourceFbosConfig("firmware_hardware");
     const firmwareHardware = validFirmwareHardware(value);
     const botOnline = isBotOnlineFromState(this.props.bot);
@@ -79,7 +79,7 @@ export class RawDesignerSettings
               payload: searchTerm,
             });
           }} />
-        <ToggleSettingsOpen dispatch={dispatch} panels={controlPanelState} />
+        <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>
         {getUrlQuery("only") && !this.props.searchTerm &&
@@ -92,7 +92,7 @@ export class RawDesignerSettings
           </div>}
         <FarmBotSettings
           bot={this.props.bot}
-          controlPanelState={controlPanelState}
+          settingsPanelState={settingsPanelState}
           alerts={this.props.alerts}
           dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}

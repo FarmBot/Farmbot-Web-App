@@ -14,7 +14,7 @@ import { DevSettings } from "../dev/dev_support";
 // eslint-disable-next-line complexity
 export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
 
-  const { encoders_or_stall_detection } = props.controlPanelState;
+  const { encoders_or_stall_detection } = props.settingsPanelState;
   const {
     dispatch, sourceFwConfig, firmwareHardware, arduinoBusy, showAdvanced,
   } = props;

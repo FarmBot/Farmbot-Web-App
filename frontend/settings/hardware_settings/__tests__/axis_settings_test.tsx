@@ -20,7 +20,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { error, warning } from "../../../toast/toast";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { AxisSettingsProps } from "../interfaces";
 import { CalibrationRow } from "../calibration_row";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
@@ -37,7 +37,7 @@ describe("<AxisSettings />", () => {
   const fakeProps = (): AxisSettingsProps => ({
     dispatch: mockDispatch(jest.fn(), () => state),
     bot,
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     sourceFwConfig: x => ({
       value: bot.hardware.mcu_params[x], consistent: true
     }),
@@ -53,7 +53,7 @@ describe("<AxisSettings />", () => {
   function testAxisLengthInput(
     provided: string, expected: string | undefined) {
     const p = fakeProps();
-    p.controlPanelState.axis_settings = true;
+    p.settingsPanelState.axis_settings = true;
     const result = mount(<AxisSettings {...p} />);
     const e = inputEvent(provided);
     const input = result.find("input").first().props();
@@ -118,7 +118,7 @@ describe("<AxisSettings />", () => {
   it("shows express board related labels", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    p.controlPanelState.axis_settings = true;
+    p.settingsPanelState.axis_settings = true;
     const wrapper = shallow(<AxisSettings {...p} />);
     expect(wrapper.find(CalibrationRow).first().props().toolTip)
       .toContain("stall detection");
@@ -126,7 +126,7 @@ describe("<AxisSettings />", () => {
 
   it("shows z height inputs", () => {
     const p = fakeProps();
-    p.controlPanelState.axis_settings = true;
+    p.settingsPanelState.axis_settings = true;
     const wrapper = mount(<AxisSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("safe height");
     expect(wrapper.text().toLowerCase()).toContain("soil height");

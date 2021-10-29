@@ -605,6 +605,11 @@ export namespace Content {
   export const CHECK_EMAIL_TO_CONFIRM =
     trim(`Please check your email to confirm email address changes.`);
 
+  export const ACCOUNT_EMAIL_CHANGE =
+    trim(`Warning: Upon successful change of your account email or password,
+    FarmBot will cease to function and become inaccessible until it is
+    reconfigured with your new web app credentials.`);
+
   export const ACCOUNT_PASSWORD_CHANGE =
     trim(`Upon successful password change, your FarmBot will soft reset
     allowing you to configure it with the updated credentials.
@@ -2064,8 +2069,11 @@ export enum Actions {
 
   // App
   OPEN_CONTROLS_POPUP = "OPEN_CONTROLS_POPUP",
-  TOGGLE_CONTROL_PANEL_OPTION = "TOGGLE_CONTROL_PANEL_OPTION",
-  BULK_TOGGLE_CONTROL_PANEL = "BULK_TOGGLE_CONTROL_PANEL",
+  TOGGLE_PLANTS_PANEL_OPTION = "TOGGLE_PLANTS_PANEL_OPTION",
+  TOGGLE_WEEDS_PANEL_OPTION = "TOGGLE_WEEDS_PANEL_OPTION",
+  TOGGLE_POINTS_PANEL_OPTION = "TOGGLE_POINTS_PANEL_OPTION",
+  TOGGLE_SETTINGS_PANEL_OPTION = "TOGGLE_SETTINGS_PANEL_OPTION",
+  BULK_TOGGLE_SETTINGS_PANEL = "BULK_TOGGLE_SETTINGS_PANEL",
 
   // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",

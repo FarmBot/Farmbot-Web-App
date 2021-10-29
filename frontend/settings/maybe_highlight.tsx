@@ -1,6 +1,6 @@
 import React from "react";
 import { store } from "../redux/store";
-import { ControlPanelState } from "../devices/interfaces";
+import { SettingsPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { getUrlQuery, urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
@@ -199,7 +199,7 @@ const APP_SETTINGS = [
 ];
 
 /** Look up parent panels for settings. */
-const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof ControlPanelState>;
+const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof SettingsPanelState>;
 FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_settings");
 FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
@@ -242,7 +242,7 @@ CONTENT_LOOKUP[DeviceSetting.otherSettings] = CONTROLS_SETTINGS
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
 
 /** Look up parent panels for settings using URL-friendly names. */
-const URL_FRIENDLY_LOOKUP: Record<string, keyof ControlPanelState> = {};
+const URL_FRIENDLY_LOOKUP: Record<string, keyof SettingsPanelState> = {};
 Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) => {
   URL_FRIENDLY_LOOKUP[urlFriendly(setting)] = panel;
   URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting))] = panel;
