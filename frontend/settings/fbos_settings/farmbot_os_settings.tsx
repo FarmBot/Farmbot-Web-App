@@ -1,5 +1,6 @@
 import React from "react";
-import { Feature, FarmbotSettingsProps } from "../../devices/interfaces";
+import { Feature } from "../../devices/interfaces";
+import { FarmbotSettingsProps } from "./interfaces";
 import { FarmbotOsRow } from "./farmbot_os_row";
 import { AutoUpdateRow } from "./auto_update_row";
 import { BootSequenceSelector } from "./boot_sequence_selector";
@@ -31,8 +32,8 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       title={DeviceSetting.farmbotSettings}
       panel={"farmbot_settings"}
       dispatch={dispatch}
-      expanded={props.controlPanelState.farmbot_settings} />
-    <Collapse isOpen={!!props.controlPanelState.farmbot_settings}>
+      expanded={props.settingsPanelState.farmbot_settings} />
+    <Collapse isOpen={!!props.settingsPanelState.farmbot_settings}>
       <NameRow {...commonProps} />
       <OrderNumberRow {...commonProps} />
       <TimezoneRow {...commonProps} />

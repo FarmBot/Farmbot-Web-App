@@ -1,6 +1,5 @@
 import {
-  BotState, SourceFwConfig,
-  ControlPanelState, Axis, SourceFbosConfig,
+  BotState, SourceFwConfig, Axis, SourceFbosConfig,
 } from "../../devices/interfaces";
 import { McuParamName, McuParams, FirmwareHardware, Xyz } from "farmbot";
 import { IntegerSize } from "../../util";
@@ -8,6 +7,7 @@ import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { ResourceIndex } from "../../resources/interfaces";
 import { DeviceSetting } from "../../constants";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { SettingsPanelState } from "../../interfaces";
 
 export interface ZeroRowProps {
   botDisconnected: boolean;
@@ -16,7 +16,7 @@ export interface ZeroRowProps {
 export interface AxisSettingsProps {
   dispatch: Function;
   bot: BotState;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   sourceFbosConfig: SourceFbosConfig;
   firmwareConfig: FirmwareConfig | undefined;
@@ -55,6 +55,24 @@ export interface CalibrationRowProps {
   title: DeviceSetting;
   axisTitle: string;
   stallUseDisabled?: boolean;
+}
+
+export interface McuInputBoxProps {
+  sourceFwConfig: SourceFwConfig;
+  setting: McuParamName;
+  dispatch: Function;
+  intSize?: IntegerSize;
+  float?: boolean;
+  scale?: number;
+  filter?: number;
+  gray?: boolean;
+  min?: number;
+  max?: number;
+  disabled?: boolean;
+  title?: string;
+  firmwareHardware: FirmwareHardware | undefined;
+  warnMin?: number;
+  warning?: string;
 }
 
 export interface NumericMCUInputGroupProps {
@@ -96,7 +114,7 @@ export interface PinGuardMCUInputGroupProps {
 
 export interface PinGuardProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   resources: ResourceIndex;
@@ -105,7 +123,7 @@ export interface PinGuardProps {
 
 export interface MotorsProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
@@ -114,7 +132,7 @@ export interface MotorsProps {
 
 export interface EncodersOrStallDetectionProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
@@ -123,7 +141,7 @@ export interface EncodersOrStallDetectionProps {
 
 export interface LimitSwitchesProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
@@ -132,7 +150,7 @@ export interface LimitSwitchesProps {
 
 export interface ErrorHandlingProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   arduinoBusy: boolean;
@@ -141,7 +159,7 @@ export interface ErrorHandlingProps {
 
 export interface ParameterManagementProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   onReset(): void;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;

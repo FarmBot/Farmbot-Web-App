@@ -20,6 +20,7 @@ import {
   TaggedTool,
   Vector3,
   TaggedFarmwareEnv,
+  TaggedPlantTemplate,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -110,10 +111,10 @@ export interface FarmDesignerProps {
   farmwareEnvs: TaggedFarmwareEnv[];
 }
 
-export interface MovePlantProps {
+export interface MovePointProps {
   deltaX: number;
   deltaY: number;
-  plant: TaggedPlant;
+  point: TaggedPoint | TaggedPlantTemplate;
   gridSize: AxisNumberProperty;
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { GardenPointProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { Actions } from "../../../../constants";
-import { mapPointClickAction } from "../../actions";
+import { mapPointClickAction, selectPoint } from "../../actions";
 import { CameraViewArea } from "../farmbot/bot_figure";
 import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
@@ -18,7 +18,7 @@ export const GardenPoint = (props: GardenPointProps) => {
     });
   };
 
-  const { point, mapTransformProps, hovered } = props;
+  const { point, mapTransformProps, current, hovered } = props;
   const { id, x, y, z, meta } = point.body;
   const { qx, qy } = transformXY(x, y, mapTransformProps);
   const color = meta.color || "green";
@@ -26,11 +26,14 @@ export const GardenPoint = (props: GardenPointProps) => {
   return <g id={`point-${id}`} className={"map-point"} stroke={color}
     onMouseEnter={iconHover("start")}
     onMouseLeave={iconHover("end")}
-    onClick={mapPointClickAction(props.dispatch, point.uuid,
-      `/app/designer/points/${id}`)}>
+    onClick={() => {
+      props.dispatch(selectPoint([point.uuid]));
+      mapPointClickAction(props.dispatch, point.uuid,
+        `/app/designer/points/${id}`)();
+    }}>
     <circle id="point-radius" cx={qx} cy={qy} r={point.body.radius}
       strokeDasharray={meta.gridId && unsaved ? "4 5" : undefined}
-      fill={hovered ? color : "transparent"} />
+      fill={(current || hovered) ? color : "transparent"} />
     <circle id="point-center" cx={qx} cy={qy} r={2} />
     {props.soilHeightLabels && soilHeightPoint(point) &&
       <text x={qx} y={qy}

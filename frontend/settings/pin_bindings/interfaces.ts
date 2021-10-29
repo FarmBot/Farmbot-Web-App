@@ -4,11 +4,11 @@ import {
   PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { FirmwareHardware } from "farmbot";
-import { ControlPanelState } from "../../devices/interfaces";
+import { SettingsPanelState } from "../../interfaces";
 
 export interface PinBindingsProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   resources: ResourceIndex;
   firmwareHardware: FirmwareHardware | undefined;
 }

@@ -5,7 +5,7 @@ import React from "react";
 import { PowerAndReset } from "../power_and_reset";
 import { mount } from "enzyme";
 import { PowerAndResetProps } from "../interfaces";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 import {
@@ -18,14 +18,14 @@ describe("<PowerAndReset/>", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): PowerAndResetProps => ({
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     botOnline: true,
   });
 
   it("renders in open state", () => {
     const p = fakeProps();
-    p.controlPanelState.power_and_reset = true;
+    p.settingsPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
     ["Power and Reset", "Restart", "Shutdown", "Soft Reset", "Hard Reset"]
       .map(string => expect(wrapper.text().toLowerCase())
@@ -34,7 +34,7 @@ describe("<PowerAndReset/>", () => {
 
   it("renders as closed", () => {
     const p = fakeProps();
-    p.controlPanelState.power_and_reset = false;
+    p.settingsPanelState.power_and_reset = false;
     const wrapper = mount(<PowerAndReset {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Power and Reset".toLowerCase());

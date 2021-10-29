@@ -34,6 +34,8 @@ import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { push } from "../../history";
+import { weedsPanelState } from "../../__test_support__/panel_state";
+import { Actions } from "../../constants";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -43,6 +45,7 @@ describe("<Weeds> />", () => {
     getConfigValue: jest.fn(),
     groups: [],
     allPoints: [],
+    weedsPanelState: weedsPanelState(),
   });
 
   it("renders no points", () => {
@@ -97,10 +100,13 @@ describe("<Weeds> />", () => {
   });
 
   it("closes section", () => {
-    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    expect(wrapper.state().pending).toEqual(true);
+    const p = fakeProps();
+    const wrapper = shallow<Weeds>(<Weeds {...p} />);
     wrapper.instance().toggleOpen("pending")();
-    expect(wrapper.instance().state.pending).toEqual(false);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
+      payload: "pending",
+    });
   });
 
   it("navigates to group", () => {

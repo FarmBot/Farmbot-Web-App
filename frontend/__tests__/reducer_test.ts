@@ -1,6 +1,8 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
-import { ControlPanelState } from "../devices/interfaces";
+import {
+  PlantsPanelState, PointsPanelState, SettingsPanelState, WeedsPanelState,
+} from "../interfaces";
 import { app } from "../__test_support__/fake_state/app";
 import { fakeToast, fakeToasts } from "../__test_support__/fake_toasts";
 import { ReduxAction } from "../redux/interfaces";
@@ -16,25 +18,58 @@ describe("resource reducer", () => {
     expect(newState.settingsSearchTerm).toEqual("random");
   });
 
-  it("toggles control panel options", () => {
-    const payload: keyof ControlPanelState = "parameter_management";
+  it("toggles settings panel options", () => {
+    const payload: keyof SettingsPanelState = "parameter_management";
     const state = app;
     const newState = appReducer(state, {
-      type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
+      type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload,
     });
-    expect(newState.controlPanelState.parameter_management)
-      .toBe(!state.controlPanelState.parameter_management);
+    expect(newState.settingsPanelState.parameter_management)
+      .toBe(!state.settingsPanelState.parameter_management);
   });
 
-  it("bulk toggles all control panel options", () => {
+  it("bulk toggles all settings panel options", () => {
     const newState = appReducer(app, {
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
       payload: true,
     });
-    Object.values(newState.controlPanelState).map(value => {
+    Object.values(newState.settingsPanelState).map(value => {
       expect(value).toBeTruthy();
     });
+  });
+
+  it("toggles plants panel options", () => {
+    const payload: keyof PlantsPanelState = "groups";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_PLANTS_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.plantsPanelState.groups)
+      .toBe(!state.plantsPanelState.groups);
+  });
+
+  it("toggles weeds panel options", () => {
+    const payload: keyof WeedsPanelState = "groups";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.weedsPanelState.groups)
+      .toBe(!state.weedsPanelState.groups);
+  });
+
+  it("toggles points panel options", () => {
+    const payload: keyof PointsPanelState = "groups";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_POINTS_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.pointsPanelState.groups)
+      .toBe(!state.pointsPanelState.groups);
   });
 
   it("sets controls popup state", () => {

@@ -20,11 +20,11 @@ export const AccountSettings = (props: AccountSettingsProps) =>
   <Highlight className={"section"}
     settingName={DeviceSetting.accountSettings}>
     <Header
-      expanded={props.controlPanelState.account}
+      expanded={props.settingsPanelState.account}
       title={DeviceSetting.accountSettings}
       panel={"account"}
       dispatch={props.dispatch} />
-    <Collapse isOpen={!!props.controlPanelState.account}>
+    <Collapse isOpen={!!props.settingsPanelState.account}>
       <Highlight settingName={DeviceSetting.accountName}>
         <Row className={"zero-side-margins"}>
           <label>
@@ -40,6 +40,11 @@ export const AccountSettings = (props: AccountSettingsProps) =>
               props.dispatch(save(props.user.uuid));
             }} />
         </Row>
+      </Highlight>
+      <Highlight settingName={DeviceSetting.accountEmail}>
+        <div className={"credentials-change-warning-banner"}>
+          <p>{t(Content.ACCOUNT_EMAIL_CHANGE)}</p>
+        </div>
       </Highlight>
       <Highlight settingName={DeviceSetting.accountEmail}>
         <Row className={"zero-side-margins"}>

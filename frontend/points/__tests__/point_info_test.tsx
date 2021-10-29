@@ -6,6 +6,7 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
+  save: jest.fn(),
 }));
 
 import React from "react";
@@ -21,7 +22,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { Xyz } from "farmbot";
 import { clickButton } from "../../__test_support__/helpers";
-import { destroy } from "../../api/crud";
+import { destroy, save } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
 import { push } from "../../history";
@@ -92,6 +93,28 @@ describe("<EditPoint />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
+  });
+
+  it("saves", () => {
+    mockPath = "/app/designer/weeds/1";
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.id = 1;
+    p.findPoint = () => point;
+    const wrapper = shallow(<EditPoint {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).toHaveBeenCalledWith(point.uuid);
+  });
+
+  it("doesn't save", () => {
+    mockPath = "/app/designer/logs";
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.id = 1;
+    p.findPoint = () => point;
+    const wrapper = shallow(<EditPoint {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("deletes point", () => {

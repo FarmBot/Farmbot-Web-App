@@ -6,6 +6,7 @@ import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 import { maybeBeacon } from "../help/tours";
+import { SpecialStatus } from "farmbot";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -43,6 +44,8 @@ interface DesignerPanelHeaderProps {
   descriptionElement?: JSX.Element;
   backTo?: string;
   onBack?: () => void;
+  specialStatus?: SpecialStatus;
+  onSave?: () => void;
   style?: React.CSSProperties;
   children?: React.ReactNode;
 }
@@ -70,6 +73,11 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
           {t(props.title)}
         </span>}
       {props.titleElement}
+      {props.specialStatus == SpecialStatus.DIRTY &&
+        <p className={"saving-indicator"} onClick={props.onSave}>
+          <i className={"fa fa-spinner fa-pulse"} />
+          {t("saving...")}
+        </p>}
       {props.children}
     </div>
 

@@ -1,13 +1,13 @@
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import {
-  SourceFwConfig, SourceFbosConfig, BotState, ControlPanelState,
+  SourceFwConfig, SourceFbosConfig, BotState,
 } from "../devices/interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import {
   TaggedDevice, Alert, TaggedUser, TaggedFarmwareEnv, TaggedWizardStepResult,
 } from "farmbot";
-import { TimeSettings } from "../interfaces";
+import { SettingsPanelState, TimeSettings } from "../interfaces";
 import { DeviceSetting } from "../constants";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
@@ -33,12 +33,12 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   user: TaggedUser;
   farmwareEnvs: TaggedFarmwareEnv[];
   wizardStepResults: TaggedWizardStepResult[];
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
 }
 
 export interface DesignerSettingsSectionProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   getConfigValue: GetWebAppConfigValue;
 }
 
@@ -60,7 +60,7 @@ export interface SettingProps
 
 export interface OtherSettingsProps {
   dispatch: Function;
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   getConfigValue: GetWebAppConfigValue;
   sourceFbosConfig: SourceFbosConfig;
   searchTerm: string;

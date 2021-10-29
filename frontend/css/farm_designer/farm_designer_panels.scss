@@ -720,6 +720,16 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+  .saving-indicator {
+    position: absolute;
+    right: 1rem;
+    line-height: 6rem;
+    color: $white;
+    i {
+      margin-right: 1rem;
+      color: $white;
+    }
+  }
 }
 
 .crop-info-panel {
@@ -826,11 +836,11 @@
   }
   .fb-button {
     line-height: 1rem;
-    padding: 0.5rem;
     margin-top: 0.5rem;
     margin-right: 1rem;
     i {
       margin: 0 !important;
+      font-size: 1.5rem;
     }
   }
   .fa-caret-up,
@@ -1343,6 +1353,7 @@
       display: inline;
     }
   }
+  .credentials-change-warning-banner,
   .settings-warning-banner,
   .stall-detection-note,
   .limit-switch-warning {

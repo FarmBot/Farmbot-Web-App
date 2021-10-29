@@ -1,11 +1,11 @@
 const mockDevice = { emergencyUnlock: jest.fn(() => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { EStopButton } from "../e_stop_btn";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { EStopButtonProps } from "../../devices/interfaces";
+import { EStopButtonProps } from "../interfaces";
 
 describe("<EStopButton />", () => {
   const fakeProps = (): EStopButtonProps => ({ bot, forceUnlock: false });

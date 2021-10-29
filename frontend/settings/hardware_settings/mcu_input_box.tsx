@@ -1,6 +1,6 @@
 import React from "react";
 import { warning } from "../../toast/toast";
-import { McuInputBoxProps } from "../../devices/interfaces";
+import { McuInputBoxProps } from "./interfaces";
 import { updateMCU } from "../../devices/actions";
 import { BlurableInput } from "../../ui";
 import {

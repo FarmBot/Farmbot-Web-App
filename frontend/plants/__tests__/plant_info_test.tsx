@@ -12,12 +12,13 @@ jest.mock("../../api/crud", () => ({
 
 import React from "react";
 import { RawPlantInfo as PlantInfo } from "../plant_info";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../farm_designer/interfaces";
 import { push } from "../../history";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { edit, save, destroy } from "../../api/crud";
+import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
@@ -112,6 +113,28 @@ describe("<PlantInfo />", () => {
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
     wrapper.instance().updatePlant("uuid", {});
     expect(edit).not.toHaveBeenCalled();
+  });
+
+  it("saves", () => {
+    mockPath = "/app/designer/weeds/1";
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.findPlant = () => plant;
+    const wrapper = shallow(<PlantInfo {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).toHaveBeenCalledWith(plant.uuid);
+  });
+
+  it("doesn't save", () => {
+    mockPath = "/app/designer/logs";
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.findPlant = () => undefined;
+    const wrapper = shallow(<PlantInfo {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("destroys plant", () => {

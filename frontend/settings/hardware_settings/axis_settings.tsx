@@ -25,7 +25,7 @@ export function AxisSettings(props: AxisSettingsProps) {
     firmwareHardware, showAdvanced,
   } = props;
   const mcuParams = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
-  const { axis_settings } = props.controlPanelState;
+  const { axis_settings } = props.settingsPanelState;
   const { busy, locked } = bot.hardware.informational_settings;
 
   /**

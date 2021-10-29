@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { PointInventoryItem } from "./point_inventory_item";
-import { Everything } from "../interfaces";
+import { Everything, PointsPanelState } from "../interfaces";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -99,15 +99,13 @@ export interface PointsProps {
   sourceFbosConfig: SourceFbosConfig;
   groups: TaggedPointGroup[];
   allPoints: TaggedPoint[];
+  pointsPanelState: PointsPanelState;
 }
 
 interface PointsState extends SortOptions {
   searchTerm: string;
   gridIds: string[];
   soilHeightColors: string[];
-  soilHeight: boolean;
-  groups: boolean;
-  points: boolean;
 }
 
 export function mapStateToProps(props: Everything): PointsProps {
@@ -125,13 +123,13 @@ export function mapStateToProps(props: Everything): PointsProps {
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     groups: selectAllPointGroups(props.resources.index),
     allPoints: selectAllActivePoints(props.resources.index),
+    pointsPanelState: props.app.pointsPanelState,
   };
 }
 
 export class RawPoints extends React.Component<PointsProps, PointsState> {
   state: PointsState = {
-    searchTerm: "", gridIds: [], soilHeightColors: [], soilHeight: false,
-    groups: false, points: true,
+    searchTerm: "", gridIds: [], soilHeightColors: [],
   };
 
   toggleGrid = (gridId: string) => () =>
@@ -148,13 +146,14 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         : this.state.soilHeightColors.concat(color)
     });
 
-  toggleOpen = (category: keyof PointsState) => () =>
-    this.setState({ ...this.state, [category]: !this.state[category] });
+  toggleOpen = (section: keyof PointsPanelState) => () =>
+    this.props.dispatch({
+      type: Actions.TOGGLE_POINTS_PANEL_OPTION, payload: section,
+    });
 
   navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
 
   render() {
-    const { soilHeight } = this.state;
     const gridIds = compact(uniq(this.props.genericPoints
       .map(p => p.body.meta.gridId)));
     const points = orderedPoints(this.props.genericPoints, this.state)
@@ -180,7 +179,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
-        <PanelSection isOpen={this.state.groups} panel={Panel.Points}
+        <PanelSection isOpen={this.props.pointsPanelState.groups}
+          panel={Panel.Points}
           toggleOpen={this.toggleOpen("groups")}
           itemCount={pointGroups.length}
           addNew={() => this.props.dispatch(createGroup({
@@ -202,7 +202,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               onClick={this.navigate(group.body.id)}
             />)}
         </PanelSection>
-        <PanelSection isOpen={this.state.points} panel={Panel.Points}
+        <PanelSection isOpen={this.props.pointsPanelState.points}
+          panel={Panel.Points}
           toggleOpen={this.toggleOpen("points")}
           itemCount={this.props.genericPoints.length}
           addNew={() => push("/app/designer/points/add")}
@@ -228,8 +229,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
                 title={soilHeightPointColors.length > 1
                   ? t("All Soil Height")
                   : t("Soil Height")}
-                isOpen={soilHeight}
-                toggleOpen={() => this.setState({ soilHeight: !soilHeight })}
+                isOpen={this.props.pointsPanelState.soilHeight}
+                toggleOpen={this.toggleOpen("soilHeight")}
                 toggleValue={this.props.soilHeightLabels}
                 toggleAction={() => this.props.dispatch({
                   type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined

@@ -30,8 +30,8 @@ import { Actions } from "../../constants";
 import { Motors } from "../hardware_settings";
 import { SearchField } from "../../ui/search_field";
 import { maybeOpenPanel } from "../maybe_highlight";
-import { ControlPanelState } from "../../devices/interfaces";
-import { panelState } from "../../__test_support__/control_panel_state";
+import { SettingsPanelState } from "../../interfaces";
+import { settingsPanelState } from "../../__test_support__/panel_state";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { API } from "../../api";
 import { push } from "../../history";
@@ -46,8 +46,8 @@ const getSetting =
   };
 
 describe("<DesignerSettings />", () => {
-  const fakePanelState = panelState();
-  Object.keys(fakePanelState).map((key: keyof ControlPanelState) =>
+  const fakePanelState = settingsPanelState();
+  Object.keys(fakePanelState).map((key: keyof SettingsPanelState) =>
     fakePanelState[key] = true);
 
   const fakeProps = (): DesignerSettingsProps => ({
@@ -66,7 +66,7 @@ describe("<DesignerSettings />", () => {
     user: fakeUser(),
     farmwareEnvs: [],
     wizardStepResults: [],
-    controlPanelState: fakePanelState,
+    settingsPanelState: fakePanelState,
   });
 
   it("renders settings", () => {
@@ -110,7 +110,7 @@ describe("<DesignerSettings />", () => {
     const wrapper = shallow(<DesignerSettings {...p} />);
     wrapper.find(SearchField).simulate("change", "setting");
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
       payload: true,
     });
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -129,30 +129,30 @@ describe("<DesignerSettings />", () => {
 
   it("expands all", () => {
     const p = fakeProps();
-    p.controlPanelState = panelState();
+    p.settingsPanelState = settingsPanelState();
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
       payload: true,
     });
   });
 
   it("collapses all", () => {
     const p = fakeProps();
-    p.controlPanelState = panelState();
-    p.controlPanelState.motors = true;
+    p.settingsPanelState = settingsPanelState();
+    p.settingsPanelState.motors = true;
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 0, "");
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
       payload: false,
     });
   });
 
   it("renders defaultOn setting", () => {
     const p = fakeProps();
-    p.controlPanelState.farm_designer = true;
+    p.settingsPanelState.farm_designer = true;
     p.getConfigValue = () => undefined;
     const wrapper = mount(<DesignerSettings {...p} />);
     const confirmDeletion = getSetting(wrapper, 10, "confirm plant");
@@ -161,7 +161,7 @@ describe("<DesignerSettings />", () => {
 
   it("toggles setting", () => {
     const p = fakeProps();
-    p.controlPanelState.farm_designer = true;
+    p.settingsPanelState.farm_designer = true;
     const wrapper = mount(<DesignerSettings {...p} />);
     const trailSetting = getSetting(wrapper, 1, "trail");
     trailSetting.find("button").simulate("click");
@@ -171,7 +171,7 @@ describe("<DesignerSettings />", () => {
 
   it("changes origin", () => {
     const p = fakeProps();
-    p.controlPanelState.farm_designer = true;
+    p.settingsPanelState.farm_designer = true;
     p.getConfigValue = () => 2;
     const wrapper = mount(<DesignerSettings {...p} />);
     const originSetting = getSetting(wrapper, 6, "origin");

@@ -33,6 +33,7 @@ import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { deletePoints } from "../../api/delete_points";
 import { Panel } from "../../farm_designer/panel_header";
+import { plantsPanelState } from "../../__test_support__/panel_state";
 
 describe("<PlantInventory />", () => {
   const fakeProps = (): PlantInventoryProps => ({
@@ -45,6 +46,7 @@ describe("<PlantInventory />", () => {
     plantTemplates: [],
     plantPointerCount: 0,
     openedSavedGarden: undefined,
+    plantsPanelState: plantsPanelState(),
   });
 
   it("renders", () => {
@@ -78,10 +80,13 @@ describe("<PlantInventory />", () => {
   });
 
   it("toggles section", () => {
-    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    expect(wrapper.state().groups).toEqual(false);
+    const p = fakeProps();
+    const wrapper = shallow<Plants>(<Plants {...p} />);
     wrapper.instance().toggleOpen("groups")();
-    expect(wrapper.state().groups).toEqual(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_PLANTS_PANEL_OPTION,
+      payload: "groups",
+    });
   });
 
   it("navigates to group", () => {

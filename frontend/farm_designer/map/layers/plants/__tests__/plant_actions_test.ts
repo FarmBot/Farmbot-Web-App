@@ -10,7 +10,7 @@ jest.mock("../../../../../open_farm/cached_crop", () => ({
 }));
 
 jest.mock("../../../actions", () => ({
-  movePlant: jest.fn(),
+  movePoint: jest.fn(),
 }));
 
 let mockPath = "/app/designer/plants/crop_search/mint";
@@ -25,7 +25,7 @@ import {
   setActiveSpread, SetActiveSpreadProps,
   dragPlant, DragPlantProps,
   createPlant, CreatePlantProps,
-  dropPlant, DropPlantProps, jogPlant, JogPlantProps, SavePlantProps, savePlant,
+  dropPlant, DropPlantProps, jogPoint, JogPointProps, SavePointProps, savePoint,
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { edit, save, initSave } from "../../../../../api/crud";
@@ -33,11 +33,12 @@ import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { movePlant } from "../../../actions";
+import { movePoint } from "../../../actions";
 import {
   fakeCropLiveSearchResult,
 } from "../../../../../__test_support__/fake_crop_search_result";
 import { error } from "../../../../../toast/toast";
+import { BotOriginQuadrant } from "../../../../interfaces";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
@@ -151,9 +152,9 @@ describe("dragPlant()", () => {
       activeDragXY: { x: 190, y: 380, z: 0 },
       qPageX: 100, qPageY: 200
     });
-    expect(movePlant).toHaveBeenCalledWith({
+    expect(movePoint).toHaveBeenCalledWith({
       deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
-      plant: p.getPlant()
+      point: p.getPlant()
     });
   });
 
@@ -171,9 +172,9 @@ describe("dragPlant()", () => {
       activeDragXY: { x: 700, y: 400, z: 0 },
       qPageX: 200, qPageY: 2900
     });
-    expect(movePlant).toHaveBeenCalledWith({
+    expect(movePoint).toHaveBeenCalledWith({
       deltaX: 600, deltaY: 200, gridSize: p.mapTransformProps.gridSize,
-      plant: p.getPlant()
+      point: p.getPlant()
     });
   });
 
@@ -187,9 +188,9 @@ describe("dragPlant()", () => {
       activeDragXY: { x: 190, y: 380, z: 0 },
       qPageX: 100, qPageY: 200
     });
-    expect(movePlant).toHaveBeenCalledWith({
+    expect(movePoint).toHaveBeenCalledWith({
       deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
-      plant: p.getPlant()
+      point: p.getPlant()
     });
   });
 
@@ -198,7 +199,7 @@ describe("dragPlant()", () => {
     p.isDragging = false;
     dragPlant(p);
     expect(p.setMapState).not.toHaveBeenCalled();
-    expect(movePlant).not.toHaveBeenCalled();
+    expect(movePoint).not.toHaveBeenCalled();
   });
 
   it("moves plant: same location", () => {
@@ -212,68 +213,85 @@ describe("dragPlant()", () => {
       activeDragXY: { x: 100, y: 200, z: 0 },
       qPageX: 100, qPageY: 200
     });
-    expect(movePlant).toHaveBeenCalledWith({
+    expect(movePoint).toHaveBeenCalledWith({
       deltaX: 0, deltaY: 0, gridSize: p.mapTransformProps.gridSize,
-      plant: p.getPlant()
+      point: p.getPlant()
     });
   });
 });
 
-describe("jogPlant()", () => {
-  const fakeProps = (): JogPlantProps => ({
+describe("jogPoint()", () => {
+  const fakeProps = (): JogPointProps => ({
     keyName: "",
-    plant: undefined,
+    point: undefined,
     mapTransformProps: fakeMapTransformProps(),
     dispatch: jest.fn(),
   });
 
-  it("doesn't move plant: no plant", () => {
+  it("doesn't move point: no point", () => {
     const p = fakeProps();
     p.keyName = "ArrowLeft";
-    p.plant = undefined;
-    jogPlant(p);
-    expect(movePlant).not.toHaveBeenCalled();
+    p.point = undefined;
+    jogPoint(p);
+    expect(movePoint).not.toHaveBeenCalled();
   });
 
-  it("doesn't move plant: not arrow key", () => {
+  it("doesn't move point: not arrow key", () => {
     const p = fakeProps();
     p.keyName = "Enter";
-    p.plant = fakePlant();
-    jogPlant(p);
-    expect(movePlant).not.toHaveBeenCalled();
+    p.point = fakePlant();
+    jogPoint(p);
+    expect(movePoint).not.toHaveBeenCalled();
   });
 
-  it("moves plant: rotated map", () => {
-    const p = fakeProps();
-    p.keyName = "ArrowLeft";
-    p.plant = fakePlant();
-    p.mapTransformProps.xySwap = true;
-    jogPlant(p);
-    expect(movePlant).toHaveBeenCalledWith({
-      deltaX: 0,
-      deltaY: -10,
-      plant: p.plant,
-      gridSize: p.mapTransformProps.gridSize,
+  it.each<[string, BotOriginQuadrant, boolean, number, number]>([
+    ["ArrowLeft", 1, false, 10, 0],
+    ["ArrowLeft", 1, true, 0, 10],
+    ["ArrowLeft", 2, false, -10, 0],
+    ["ArrowLeft", 2, true, 0, -10],
+    ["ArrowLeft", 3, false, -10, 0],
+    ["ArrowLeft", 3, true, 0, -10],
+    ["ArrowLeft", 4, false, 10, 0],
+    ["ArrowLeft", 4, true, 0, 10],
+    ["ArrowRight", 1, false, -10, 0],
+    ["ArrowRight", 1, true, 0, -10],
+    ["ArrowRight", 2, false, 10, 0],
+    ["ArrowRight", 2, true, 0, 10],
+    ["ArrowRight", 3, false, 10, 0],
+    ["ArrowRight", 3, true, 0, 10],
+    ["ArrowRight", 4, false, -10, 0],
+    ["ArrowRight", 4, true, 0, -10],
+    ["ArrowDown", 1, false, 0, 10],
+    ["ArrowDown", 1, true, 10, 0],
+    ["ArrowDown", 2, false, 0, 10],
+    ["ArrowDown", 2, true, 10, 0],
+    ["ArrowDown", 3, false, 0, -10],
+    ["ArrowDown", 3, true, -10, 0],
+    ["ArrowDown", 4, false, 0, -10],
+    ["ArrowDown", 4, true, -10, 0],
+    ["ArrowUp", 1, false, 0, -10],
+    ["ArrowUp", 1, true, -10, 0],
+    ["ArrowUp", 2, false, 0, -10],
+    ["ArrowUp", 2, true, -10, 0],
+    ["ArrowUp", 3, false, 0, 10],
+    ["ArrowUp", 3, true, 10, 0],
+    ["ArrowUp", 4, false, 0, 10],
+    ["ArrowUp", 4, true, 10, 0],
+  ])("moves point: %s, quadrant: %s, rotated: %s",
+    (keyName, quadrant, swap, x, y) => {
+      const p = fakeProps();
+      p.keyName = keyName;
+      p.point = fakePlant();
+      p.mapTransformProps.quadrant = quadrant;
+      p.mapTransformProps.xySwap = swap;
+      jogPoint(p);
+      expect(movePoint).toHaveBeenCalledWith({
+        deltaX: x,
+        deltaY: y,
+        point: p.point,
+        gridSize: p.mapTransformProps.gridSize,
+      });
     });
-  });
-
-  it.each<[string, number, number]>([
-    ["ArrowLeft", -10, 0],
-    ["ArrowRight", 10, 0],
-    ["ArrowDown", 0, 10],
-    ["ArrowUp", 0, -10],
-  ])("moves plant: %s", (keyName, x, y) => {
-    const p = fakeProps();
-    p.keyName = keyName;
-    p.plant = fakePlant();
-    jogPlant(p);
-    expect(movePlant).toHaveBeenCalledWith({
-      deltaX: x,
-      deltaY: y,
-      plant: p.plant,
-      gridSize: p.mapTransformProps.gridSize,
-    });
-  });
 });
 
 describe("setActiveSpread()", () => {
@@ -343,22 +361,22 @@ describe("maybeSavePlantLocation()", () => {
   });
 });
 
-describe("savePlant()", () => {
-  const fakeProps = (): SavePlantProps => ({
-    plant: fakePlant(),
+describe("savePoint()", () => {
+  const fakeProps = (): SavePointProps => ({
+    point: fakePlant(),
     dispatch: jest.fn(),
   });
 
   it("saves plant", () => {
-    savePlant(fakeProps());
+    savePoint(fakeProps());
     expect(edit).not.toHaveBeenCalled();
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Point"));
   });
 
   it("doesn't save plant", () => {
     const p = fakeProps();
-    p.plant = undefined;
-    savePlant(p);
+    p.point = undefined;
+    savePoint(p);
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });

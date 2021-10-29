@@ -25,8 +25,8 @@ export const OtherSettings = (props: OtherSettingsProps) =>
       title={DeviceSetting.otherSettings}
       panel={"other_settings"}
       dispatch={props.dispatch}
-      expanded={props.controlPanelState.other_settings} />
-    <Collapse isOpen={!!props.controlPanelState.other_settings}>
+      expanded={props.settingsPanelState.other_settings} />
+    <Collapse isOpen={!!props.settingsPanelState.other_settings}>
       {OTHER_SETTINGS().map(setting =>
         <Setting key={setting.title} {...setting} {...props} />)}
       {LOG_LEVEL_SETTINGS().map(setting =>
