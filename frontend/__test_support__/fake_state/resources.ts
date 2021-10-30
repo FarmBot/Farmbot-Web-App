@@ -35,6 +35,9 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import {
+  NumberConfigKey as NumberFirmwareConfigKey,
+} from "farmbot/dist/resources/configs/firmware";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -484,6 +487,8 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_active_state: 1,
     pin_guard_5_pin_nr: 0,
     pin_guard_5_time_out: 60,
+    ["pin_report_1_pin_nr" as NumberFirmwareConfigKey]: 0,
+    ["pin_report_2_pin_nr" as NumberFirmwareConfigKey]: 0,
   });
 }
 

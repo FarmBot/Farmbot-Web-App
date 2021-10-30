@@ -112,7 +112,26 @@ export interface PinGuardMCUInputGroupProps {
   disabled: boolean;
 }
 
+export interface PinReportingMCUInputGroupProps {
+  sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
+  dispatch: Function;
+  label: DeviceSetting;
+  pinNumKey: McuParamName;
+  resources: ResourceIndex;
+  disabled: boolean;
+}
+
 export interface PinGuardProps {
+  dispatch: Function;
+  settingsPanelState: SettingsPanelState;
+  sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
+  resources: ResourceIndex;
+  arduinoBusy: boolean;
+}
+
+export interface PinReportingProps {
   dispatch: Function;
   settingsPanelState: SettingsPanelState;
   sourceFwConfig: SourceFwConfig;

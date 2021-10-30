@@ -21,12 +21,16 @@ const isAxisKey = (key: string) =>
   ["x", "y", "z", "z2"].includes(getAxisSubKey(key));
 const isPinGuardKey = (key: string) =>
   ["_active_state", "_pin_nr", "_time_out"].includes(key.slice(11));
+const isPinReportKey = (key: string) =>
+  ["_pin_nr"].includes(key.slice(12));
 
 const getSubKeyName = (key: string) => {
   if (isAxisKey(key)) {
     return getAxisSubKey(key);
   } else if (isPinGuardKey(key)) {
     return key.slice(12);
+  } else if (isPinReportKey(key)) {
+    return key.slice(13);
   } else {
     return "";
   }
@@ -37,6 +41,8 @@ const getSupKeyName = (key: string) => {
     return getAxisSupKey(key);
   } else if (isPinGuardKey(key)) {
     return key.slice(0, 11);
+  } else if (isPinReportKey(key)) {
+    return key.slice(0, 12);
   } else {
     return key;
   }
