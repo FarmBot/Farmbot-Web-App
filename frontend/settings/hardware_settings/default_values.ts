@@ -110,6 +110,8 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
   pin_guard_5_active_state: 1,
   pin_guard_5_pin_nr: 0,
   pin_guard_5_time_out: 60,
+  ["pin_report_1_pin_nr" as NumberFirmwareConfigKey]: 0,
+  ["pin_report_2_pin_nr" as NumberFirmwareConfigKey]: 0,
   movement_invert_2_endpoints_x: 0,
   movement_invert_2_endpoints_y: 0,
   movement_invert_2_endpoints_z: 0,

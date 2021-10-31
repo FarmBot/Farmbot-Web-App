@@ -14,6 +14,15 @@ jest.mock("../../history", () => ({
   getPathArray: () => [],
 }));
 
+jest.mock("../fbos_settings/boot_sequence_selector", () => ({
+  BootSequenceSelector: () => <div />,
+}));
+
+let mockShouldDisplay = false;
+jest.mock("../../farmware/state_to_props", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import { RawDesignerSettings as DesignerSettings } from "../index";
@@ -76,6 +85,13 @@ describe("<DesignerSettings />", () => {
     const settings = wrapper.find(".designer-setting");
     expect(settings.length).toBeGreaterThanOrEqual(8);
     expect(wrapper.text().toLowerCase()).not.toContain("unstable fe");
+  });
+
+  it("renders all settings", () => {
+    mockShouldDisplay = true;
+    const wrapper = mount(<DesignerSettings {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("reporting");
+    mockShouldDisplay = false;
   });
 
   it("mounts", () => {

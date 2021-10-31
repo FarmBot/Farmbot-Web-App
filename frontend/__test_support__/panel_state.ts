@@ -14,6 +14,7 @@ export const settingsPanelState = (): SettingsPanelState => {
     error_handling: false,
     pin_bindings: false,
     pin_guard: false,
+    pin_reporting: false,
     parameter_management: false,
     farm_designer: false,
     account: false,

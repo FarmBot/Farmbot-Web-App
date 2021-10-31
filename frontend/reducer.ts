@@ -29,6 +29,7 @@ export const emptyState = (): AppState => {
       error_handling: false,
       pin_bindings: false,
       pin_guard: false,
+      pin_reporting: false,
       parameter_management: false,
       farm_designer: false,
       account: false,
@@ -90,6 +91,7 @@ export const appReducer =
         s.settingsPanelState.error_handling = a.payload;
         s.settingsPanelState.pin_bindings = a.payload;
         s.settingsPanelState.pin_guard = a.payload;
+        s.settingsPanelState.pin_reporting = a.payload;
         s.settingsPanelState.parameter_management = a.payload;
         s.settingsPanelState.farm_designer = a.payload;
         s.settingsPanelState.account = a.payload;

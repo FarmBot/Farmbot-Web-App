@@ -110,6 +110,11 @@ const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard4,
   DeviceSetting.pinGuard5,
 ];
+const PIN_REPORTING_PANEL = [
+  DeviceSetting.pinReporting,
+  DeviceSetting.pinReporting1,
+  DeviceSetting.pinReporting2,
+];
 const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.parameterManagement,
   DeviceSetting.paramLoadProgress,
@@ -210,6 +215,7 @@ LIMIT_SWITCHES_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "limit_switches");
 ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
+PIN_REPORTING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_reporting");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
 ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");

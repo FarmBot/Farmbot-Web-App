@@ -31,6 +31,20 @@ export const TOURS = (
         url: "/app/designer/plants",
       },
       {
+        slug: "weeds",
+        title: t("Weeds"),
+        content: TourContent.WEEDS_PANEL,
+        beacons: ["weeds", "weeds-inventory"],
+        url: "/app/designer/weeds",
+      },
+      {
+        slug: "points",
+        title: t("Points"),
+        content: TourContent.POINTS_PANEL,
+        beacons: ["points", "point-inventory"],
+        url: "/app/designer/points",
+      },
+      {
         slug: "sequences",
         title: t("Sequences"),
         content: TourContent.SEQUENCES_PANEL,
@@ -50,20 +64,6 @@ export const TOURS = (
         content: TourContent.FARM_EVENTS_PANEL,
         beacons: ["events", "farm-event"],
         url: "/app/designer/events",
-      },
-      {
-        slug: "points",
-        title: t("Points"),
-        content: TourContent.POINTS_PANEL,
-        beacons: ["points", "point-inventory"],
-        url: "/app/designer/points",
-      },
-      {
-        slug: "weeds",
-        title: t("Weeds"),
-        content: TourContent.WEEDS_PANEL,
-        beacons: ["weeds", "weeds-inventory"],
-        url: "/app/designer/weeds",
       },
       {
         slug: "controls",

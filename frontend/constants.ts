@@ -316,6 +316,11 @@ export namespace ToolTips {
     trim(`The number of the pin to guard. This pin will be set to the specified
     state after the duration specified by TIMEOUT.`);
 
+  // Hardware Settings: Pin Reporting
+  export const PIN_REPORTING_PIN_NUMBER =
+    trim(`The number of the pin to report. Analog pin values will be
+    reported every 500ms.`);
+
   // Hardware Parameter Management
   export const PARAMETER_LOAD_PROGRESS =
     trim(`FarmBot adoption of hardware parameter changes. Tip: If progress
@@ -1884,6 +1889,11 @@ export enum DeviceSetting {
   pinGuard3 = `Pin Guard 3`,
   pinGuard4 = `Pin Guard 4`,
   pinGuard5 = `Pin Guard 5`,
+
+  // Pin Reporting
+  pinReporting = `Pin Reporting`,
+  pinReporting1 = `Pin Reporting 1`,
+  pinReporting2 = `Pin Reporting 2`,
 
   // Parameter Management
   parameterManagement = `Parameter Management`,
