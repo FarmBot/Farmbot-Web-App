@@ -3,7 +3,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { EditPlantStatusProps } from "../plant_panel";
 import { shallow } from "enzyme";
 import {
@@ -12,7 +12,8 @@ import {
 import { edit } from "../../api/crud";
 import {
   EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate,
-  EditWeedStatus, EditWeedStatusProps,
+  EditWeedStatus, EditWeedStatusProps, PointSizeBulkUpdate,
+  PointSizeBulkUpdateProps,
 } from "../edit_plant_status";
 
 describe("<EditPlantStatus />", () => {
@@ -103,6 +104,50 @@ describe("<PlantStatusBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledTimes(2);
     expect(edit).toHaveBeenCalledWith(weed1, { plant_stage: "removed" });
     expect(edit).toHaveBeenCalledWith(weed2, { plant_stage: "removed" });
+  });
+});
+
+describe("<PointSizeBulkUpdate />", () => {
+  const fakeProps = (): PointSizeBulkUpdateProps => ({
+    allPoints: [],
+    selected: [],
+    dispatch: jest.fn(),
+  });
+
+  it("doesn't update plant sizes", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    p.allPoints = [plant1, plant2];
+    p.selected = [plant1.uuid];
+    const wrapper = shallow(<PointSizeBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => false);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
+    wrapper.find("input").simulate("blur");
+    expect(window.confirm).toHaveBeenCalled();
+    expect(edit).not.toHaveBeenCalled();
+  });
+
+  it("updates plant sizes", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.allPoints = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PointSizeBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
+    wrapper.find("input").simulate("blur");
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change radius to 1mm for 2 items?");
+    expect(edit).toHaveBeenCalledTimes(2);
+    expect(edit).toHaveBeenCalledWith(plant1, {
+      radius: 1,
+    });
+    expect(edit).toHaveBeenCalledWith(plant2, {
+      radius: 1,
+    });
   });
 });
 

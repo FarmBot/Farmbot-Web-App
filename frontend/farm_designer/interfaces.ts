@@ -111,10 +111,10 @@ export interface FarmDesignerProps {
   farmwareEnvs: TaggedFarmwareEnv[];
 }
 
-export interface MovePointProps {
+export interface MovePointsProps {
   deltaX: number;
   deltaY: number;
-  point: TaggedPoint | TaggedPlantTemplate;
+  points: (TaggedPoint | TaggedPlantTemplate)[];
   gridSize: AxisNumberProperty;
 }
 

@@ -456,6 +456,26 @@
         margin-right: 1rem;
       }
     }
+    .actions {
+      display: inline-flex;
+      width: 100%;
+      .plant-status-bulk-update {
+        width: 50%;
+      }
+      .point-size-bulk-update {
+        width: 40%;
+        margin-left: 2rem;
+        p {
+          display: inline-block;
+          font-size: 1.2rem;
+        }
+        input {
+          width: 40%;
+          margin-top: 0.5rem;
+          margin-left: 1rem;
+        }
+      }
+    }
   }
   .panel-content {
     padding-top: 16rem;
@@ -475,6 +495,10 @@
     }
     .tool-slot-search-item-icon {
       padding-left: 5px !important;
+    }
+    .tool-slot-search-item {
+      margin-left: -2rem;
+      padding-right: 4.5rem;
     }
   }
 }

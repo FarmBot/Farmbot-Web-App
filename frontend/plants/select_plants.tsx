@@ -17,13 +17,14 @@ import { t } from "../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../farm_designer/panel_header";
 import { error } from "../toast/toast";
-import { PlantStatusBulkUpdate } from "./edit_plant_status";
+import { PlantStatusBulkUpdate, PointSizeBulkUpdate } from "./edit_plant_status";
 import { FBSelect, DropDownItem } from "../ui";
 import {
   PointType, TaggedPoint, TaggedGenericPointer, TaggedToolSlotPointer,
   TaggedTool,
   TaggedWeedPointer,
   TaggedPointGroup,
+  SpecialStatus,
 } from "farmbot";
 import { UUID } from "../resources/interfaces";
 import {
@@ -43,6 +44,8 @@ import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { WeedInventoryItem } from "../weeds/weed_inventory_item";
 import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { ToolTransformProps } from "../tools/interfaces";
+import { betterCompact } from "../util";
+import { savePoints } from "../farm_designer/map/layers/plants/plant_actions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -185,10 +188,15 @@ export class RawSelectPlants
     this.props.dispatch(selectPoint(pointUuids));
   };
 
-  ActionButtons = () =>
-    <div className={["panel-action-buttons",
+  ActionButtons = () => {
+    const unsavedPoints = betterCompact(this.selected.map(uuid =>
+      this.props.allPoints.filter(p => p.uuid == uuid)[0])
+      .filter(p => p?.specialStatus == SpecialStatus.DIRTY));
+    return <div className={["panel-action-buttons",
       this.state.more ? "more" : "",
-      ["Plant", "Weed"].includes(this.selectionPointType) ? "status" : "",
+      ["Plant", "Weed", "GenericPointer"].includes(this.selectionPointType)
+        ? "status"
+        : "",
     ].join(" ")}>
       <label>{t("selection type")}</label>
       <FBSelect key={this.selectionPointType}
@@ -248,15 +256,34 @@ export class RawSelectPlants
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
-        {(this.selectionPointType == "Plant" ||
-          this.selectionPointType == "Weed") &&
-          <PlantStatusBulkUpdate
-            pointerType={this.selectionPointType}
-            allPoints={this.props.allPoints}
-            selected={this.selected}
-            dispatch={this.props.dispatch} />}
+        {unsavedPoints.length > 1 &&
+          <button className={"fb-button green"}
+            title={t("Save")}
+            onClick={() => savePoints({
+              points: unsavedPoints,
+              dispatch: this.props.dispatch,
+            })}>
+            {t("save")}
+          </button>}
+        {this.selected.length > 0 &&
+          <div className={"actions"}>
+            {(this.selectionPointType == "Plant" ||
+              this.selectionPointType == "Weed") &&
+              <PlantStatusBulkUpdate
+                pointerType={this.selectionPointType}
+                allPoints={this.props.allPoints}
+                selected={this.selected}
+                dispatch={this.props.dispatch} />}
+            {["Plant", "Weed", "GenericPointer"]
+              .includes(this.selectionPointType) &&
+              <PointSizeBulkUpdate
+                allPoints={this.props.allPoints}
+                selected={this.selected}
+                dispatch={this.props.dispatch} />}
+          </div>}
       </div>
     </div>;
+  };
 
   get filteredPoints() {
     const { plants, allPoints, selectionPointType, getConfigValue } = this.props;

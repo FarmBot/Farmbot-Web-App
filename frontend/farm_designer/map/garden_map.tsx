@@ -31,8 +31,8 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPoint,
-  SavePointProps, savePoint,
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPoints,
+  SavePointsProps, savePoints,
 } from "./layers/plants/plant_actions";
 import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
@@ -46,6 +46,7 @@ import { UUID } from "../../resources/interfaces";
 import { debounce, throttle } from "lodash";
 import { SequenceVisualization } from "./sequence_visualization";
 import { chooseProfile, ProfileLine } from "./profile";
+import { betterCompact } from "../../util";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -266,11 +267,12 @@ export class GardenMap extends
     return this.props.designer.selectedPoints?.[0];
   }
 
-  get currentPointOrPlant(): TaggedPoint | TaggedPlant | undefined {
+  get currentSelection(): (TaggedPoint | TaggedPlant)[] {
     return allowInteraction()
-      ? this.props.allPoints.filter(p => p.uuid == this.currentPoint)[0]
-      || this.props.selectedPlant
-      : undefined;
+      ? this.props.designer.selectedPoints?.map(uuid =>
+        this.props.allPoints.filter(p => p.uuid == uuid)[0])
+      || betterCompact([this.props.selectedPlant])
+      : [];
   }
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
@@ -391,13 +393,18 @@ export class GardenMap extends
 
   /** Map key actions. */
   onKeyDown = (e: React.KeyboardEvent) => {
-    const point = this.currentPointOrPlant;
     const { dispatch, mapTransformProps } = this.props;
     switch (getMode()) {
       case Mode.editPlant:
+      case Mode.boxSelect:
         if (BOUND_KEYS.includes(e.key)) {
           this.preventKey(e);
-          jogPoint({ keyName: e.key, point, dispatch, mapTransformProps });
+          jogPoints({
+            keyName: e.key,
+            points: this.currentSelection,
+            dispatch,
+            mapTransformProps,
+          });
         }
         break;
     }
@@ -407,23 +414,27 @@ export class GardenMap extends
   preventKey = (e: React.KeyboardEvent) => {
     switch (getMode()) {
       case Mode.editPlant:
+      case Mode.boxSelect:
         BOUND_KEYS.includes(e.key) && e.preventDefault();
         break;
     }
   };
 
-  debouncedPointSave = debounce((props: SavePointProps) => savePoint(props), 1500);
+  debouncedPointSave = debounce((props: SavePointsProps) =>
+    savePoints(props), 1500);
 
   /** Map key actions. */
   onKeyUp = (e: React.KeyboardEvent) => {
     switch (getMode()) {
       case Mode.editPlant:
+      case Mode.boxSelect:
         if (BOUND_KEYS.includes(e.key)) {
           e.preventDefault();
-          this.debouncedPointSave({
-            point: this.currentPointOrPlant,
-            dispatch: this.props.dispatch,
-          });
+          this.currentSelection.length == 1 &&
+            this.debouncedPointSave({
+              points: this.currentSelection,
+              dispatch: this.props.dispatch,
+            });
         }
         break;
     }

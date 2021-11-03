@@ -28,8 +28,8 @@ jest.mock("../layers/plants/plant_actions", () => ({
   dropPlant: jest.fn(),
   beginPlantDrag: jest.fn(),
   maybeSavePlantLocation: jest.fn(),
-  jogPoint: jest.fn(),
-  savePoint: jest.fn(),
+  jogPoints: jest.fn(),
+  savePoints: jest.fn(),
 }));
 
 jest.mock("../drawn_point/drawn_point_actions", () => ({
@@ -75,7 +75,8 @@ import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { unselectPlant, closePlantInfo } from "../actions";
 import {
-  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant, jogPoint, savePoint,
+  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant, jogPoints,
+  savePoints,
 } from "../layers/plants/plant_actions";
 import {
   startNewSelectionBox, resizeBox, maybeUpdateGroup,
@@ -161,7 +162,7 @@ describe("<GardenMap/>", () => {
     mount(<GardenMap {...fakeProps()} />);
     const e = keyboardEvent("ArrowDown");
     document.onkeydown?.(e as never);
-    expect(jogPoint).toHaveBeenCalled();
+    expect(jogPoints).toHaveBeenCalled();
     expect(e.preventDefault).toHaveBeenCalled();
   });
 
@@ -170,16 +171,20 @@ describe("<GardenMap/>", () => {
     mount(<GardenMap {...fakeProps()} />);
     const e = keyboardEvent("Enter");
     document.onkeydown?.(e as never);
-    expect(jogPoint).not.toHaveBeenCalled();
+    expect(jogPoints).not.toHaveBeenCalled();
     expect(e.preventDefault).not.toHaveBeenCalled();
   });
 
   it("saves plant", () => {
     mockMode = Mode.editPlant;
-    mount(<GardenMap {...fakeProps()} />);
+    const p = fakeProps();
+    const point = fakePoint();
+    p.designer.selectedPoints = [point.uuid];
+    p.allPoints = [point];
+    mount(<GardenMap {...p} />);
     const e = keyboardEvent("ArrowDown");
     document.onkeyup?.(e as never);
-    expect(savePoint).toHaveBeenCalled();
+    expect(savePoints).toHaveBeenCalled();
     expect(e.preventDefault).toHaveBeenCalled();
   });
 
@@ -188,7 +193,7 @@ describe("<GardenMap/>", () => {
     mount(<GardenMap {...fakeProps()} />);
     const e = keyboardEvent("Enter");
     document.onkeyup?.(e as never);
-    expect(savePoint).not.toHaveBeenCalled();
+    expect(savePoints).not.toHaveBeenCalled();
     expect(e.preventDefault).not.toHaveBeenCalled();
   });
 
@@ -570,13 +575,13 @@ describe("<GardenMap/>", () => {
     p.designer.selectedPoints = [point.uuid];
     const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
     mockMode = Mode.none;
-    expect(wrapper.instance().currentPointOrPlant).toEqual(point);
+    expect(wrapper.instance().currentSelection).toEqual([point]);
   });
 
   it("doesn't return point in wrong mode", () => {
     mockInteractionAllow = false;
     const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
-    expect(wrapper.instance().currentPointOrPlant).toEqual(undefined);
+    expect(wrapper.instance().currentSelection).toEqual([]);
     mockInteractionAllow = true;
   });
 
