@@ -1,12 +1,16 @@
-import * as React from "react";
+import React from "react";
 import { FBSelect, DropDownItem } from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
-import { PlantStage, TaggedWeedPointer, PointType, TaggedPoint } from "farmbot";
+import {
+  PlantStage, TaggedWeedPointer, PointType, TaggedPoint, TaggedPlantPointer,
+  TaggedGenericPointer,
+} from "farmbot";
 import moment from "moment";
 import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
 import { edit, save } from "../api/crud";
 import { EditPlantStatusProps } from "./plant_panel";
+import { mean, round } from "lodash";
 
 export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   planned: { label: t("Planned"), value: "planned" },
@@ -121,6 +125,37 @@ export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
           });
       }} />
   </div>;
+
+export interface PointSizeBulkUpdateProps {
+  allPoints: TaggedPoint[];
+  selected: UUID[];
+  dispatch: Function;
+}
+
+/** Update `radius` for multiple points at once. */
+export const PointSizeBulkUpdate = (props: PointSizeBulkUpdateProps) => {
+  const points = props.allPoints.filter(point =>
+    props.selected.includes(point.uuid) && point.kind === "Point" &&
+    point.body.pointer_type != "ToolSlot")
+    .map((p: TaggedPlantPointer | TaggedWeedPointer | TaggedGenericPointer) => p);
+  const averageSize = round(mean(points.map(p => p.body.radius)));
+  const [radius, setRadius] = React.useState(averageSize || 25);
+  return <div className={"point-size-bulk-update"}>
+    <p>{t("update radius to")}</p>
+    <input
+      value={radius}
+      onChange={e => setRadius(parseInt(e.currentTarget.value))}
+      onBlur={() => {
+        points.length > 0 && confirm(
+          t("Change radius to {{ radius }}mm for {{ num }} items?",
+            { radius, num: points.length }))
+          && points.map(point => {
+            props.dispatch(edit(point, { radius }));
+            props.dispatch(save(point.uuid));
+          });
+      }} />
+  </div>;
+};
 
 export interface EditWeedStatusProps {
   weed: TaggedWeedPointer;

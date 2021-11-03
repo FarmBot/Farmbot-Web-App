@@ -1,4 +1,4 @@
-import { MovePointProps, DraggableEvent } from "../interfaces";
+import { MovePointsProps, DraggableEvent } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
 import { history } from "../../history";
@@ -14,15 +14,17 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
 
-export function movePoint(payload: MovePointProps) {
-  const tr = payload.point;
-  const update = defensiveClone(payload.point).body;
-  update.x += payload.deltaX;
-  update.y += payload.deltaY;
-  update.x = clamp(update.x, 0, payload.gridSize.x);
-  update.y = clamp(update.y, 0, payload.gridSize.y);
-  return edit(tr, update);
-}
+export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
+  payload.points.map(point => {
+    const tr = point;
+    const update = defensiveClone(point).body;
+    update.x += payload.deltaX;
+    update.y += payload.deltaY;
+    update.x = clamp(update.x, 0, payload.gridSize.x);
+    update.y = clamp(update.y, 0, payload.gridSize.y);
+    dispatch(edit(tr, update));
+  });
+};
 
 export const selectPoint = (payload: string[] | undefined) => {
   return { type: Actions.SELECT_POINT, payload };

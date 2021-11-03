@@ -19,11 +19,11 @@ jest.mock("../../../point_groups/group_detail", () => ({
 }));
 
 import {
-  movePoint, closePlantInfo, setDragIcon, clickMapPlant, selectPoint,
+  movePoints, closePlantInfo, setDragIcon, clickMapPlant, selectPoint,
   setHoveredPlant,
   mapPointClickAction,
 } from "../actions";
-import { MovePointProps } from "../../interfaces";
+import { MovePointsProps } from "../../interfaces";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { DEFAULT_ICON, svgToUrl } from "../../../open_farm/icons";
@@ -36,20 +36,20 @@ import {
 import { overwriteGroup } from "../../../point_groups/actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
-describe("movePoint", () => {
+describe("movePoints", () => {
   it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
     ["within bounds", { x: 1, y: 2 }, { x: 101, y: 202 }],
     ["too high", { x: 10000, y: 10000 }, { x: 3000, y: 1500 }],
     ["too low", { x: -10000, y: -10000 }, { x: 0, y: 0 }],
   ])("restricts plant to grid area: %s",
     (_test_description, attempted, expected) => {
-      const payload: MovePointProps = {
+      const payload: MovePointsProps = {
         deltaX: attempted.x,
         deltaY: attempted.y,
-        point: fakePlant(),
+        points: [fakePlant()],
         gridSize: { x: 3000, y: 1500 }
       };
-      movePoint(payload);
+      movePoints(payload)(jest.fn());
       expect(edit).toHaveBeenCalledWith(
         // Old plant
         expect.objectContaining({

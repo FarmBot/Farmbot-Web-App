@@ -8,14 +8,14 @@ import moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString } from "lodash";
 import {
-  CropLiveSearchResult, GardenMapState, MovePointProps,
+  CropLiveSearchResult, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import {
   transformXY, round, getZoomLevelFromMap, defaultSpreadCmDia,
 } from "../../util";
-import { movePoint } from "../../actions";
+import { movePoints } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
@@ -151,43 +151,44 @@ export const dragPlant = (props: DragPlantProps) => {
       qPageX: qx, qPageY: qy,
       activeDragXY: { x: plant.body.x + dX, y: plant.body.y + dY, z: 0 }
     });
-    props.dispatch(movePoint({ deltaX: dX, deltaY: dY, point: plant, gridSize }));
+    const points = [plant];
+    props.dispatch(movePoints({ deltaX: dX, deltaY: dY, points, gridSize }));
   }
 };
 
-export interface JogPointProps {
+export interface JogPointsProps {
   keyName: string;
-  point: TaggedPoint | TaggedPlantTemplate | undefined;
+  points: (TaggedPoint | TaggedPlantTemplate)[];
   mapTransformProps: MapTransformProps;
   dispatch: Function;
 }
 
-export const jogPoint = (props: JogPointProps) => {
-  const { keyName, point, dispatch } = props;
-  if (!point) { return; }
+export const jogPoints = (props: JogPointsProps) => {
+  const { keyName, points, dispatch } = props;
+  if (!(points.length > 0)) { return; }
   const { gridSize, xySwap, quadrant } = props.mapTransformProps;
   const horizontal = xySwap ? "deltaY" : "deltaX";
   const vertical = xySwap ? "deltaX" : "deltaY";
   const amount = 10;
-  const leftAmount = [1, 4].includes(quadrant) ? amount : -amount;
-  const rightAmount = [1, 4].includes(quadrant) ? -amount : amount;
-  const upAmount = [3, 4].includes(quadrant) ? amount : -amount;
-  const downAmount = [3, 4].includes(quadrant) ? -amount : amount;
-  const generatePayload = (keyName: string): MovePointProps | undefined => {
+  const left = [1, 4].includes(quadrant) ? amount : -amount;
+  const right = [1, 4].includes(quadrant) ? -amount : amount;
+  const up = [3, 4].includes(quadrant) ? amount : -amount;
+  const down = [3, 4].includes(quadrant) ? -amount : amount;
+  const generatePayload = (keyName: string): MovePointsProps | undefined => {
     switch (keyName) {
       case "ArrowLeft":
-        return { deltaX: 0, deltaY: 0, [horizontal]: leftAmount, point, gridSize };
+        return { deltaX: 0, deltaY: 0, [horizontal]: left, points, gridSize };
       case "ArrowRight":
-        return { deltaX: 0, deltaY: 0, [horizontal]: rightAmount, point, gridSize };
+        return { deltaX: 0, deltaY: 0, [horizontal]: right, points, gridSize };
       case "ArrowUp":
-        return { deltaX: 0, deltaY: 0, [vertical]: upAmount, point, gridSize };
+        return { deltaX: 0, deltaY: 0, [vertical]: up, points, gridSize };
       case "ArrowDown":
-        return { deltaX: 0, deltaY: 0, [vertical]: downAmount, point, gridSize };
+        return { deltaX: 0, deltaY: 0, [vertical]: down, points, gridSize };
     }
   };
   const payload = generatePayload(keyName);
   if (payload) {
-    dispatch(movePoint(payload));
+    dispatch(movePoints(payload));
   }
 };
 
@@ -242,13 +243,11 @@ export const maybeSavePlantLocation = (props: MaybeSavePlantLocationProps) => {
   }
 };
 
-export interface SavePointProps {
-  point: TaggedPoint | TaggedPlantTemplate | undefined;
+export interface SavePointsProps {
+  points: (TaggedPoint | TaggedPlantTemplate)[];
   dispatch: Function;
 }
 
-export const savePoint = (props: SavePointProps) => {
-  if (props.point) {
-    props.dispatch(save(props.point.uuid));
-  }
+export const savePoints = (props: SavePointsProps) => {
+  props.points.map(p => props.dispatch(save(p.uuid)));
 };

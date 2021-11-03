@@ -9,6 +9,10 @@ jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
 
 jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
+jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
+  savePoints: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -35,6 +39,8 @@ import {
 import { history } from "../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
+import { SpecialStatus } from "farmbot";
+import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -358,6 +364,24 @@ describe("<SelectPlants />", () => {
     wrapper.find(".dark-blue").simulate("click");
     expect(createGroup).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.ERROR_PLANT_TEMPLATE_GROUP);
+  });
+
+  it("saves points", () => {
+    const p = fakeProps();
+    const point0 = fakePoint();
+    point0.specialStatus = SpecialStatus.DIRTY;
+    const point1 = fakePoint();
+    point1.specialStatus = SpecialStatus.DIRTY;
+    p.selected = [point0.uuid, point1.uuid];
+    p.allPoints = [point0, point1];
+    const wrapper = mount(<SelectPlants {...p} />);
+    const saveBtn = wrapper.find(".fb-button.green").first();
+    saveBtn.simulate("click");
+    expect(saveBtn.text().toLowerCase()).toEqual("save");
+    expect(savePoints).toHaveBeenCalledWith({
+      dispatch: p.dispatch,
+      points: p.allPoints,
+    });
   });
 });
 
