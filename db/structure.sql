@@ -298,7 +298,7 @@ CREATE TABLE public.devices (
     max_images_count integer DEFAULT 450,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
-    fbos_version character varying(15),
+    fbos_version character varying(17),
     throttled_until timestamp without time zone,
     throttled_at timestamp without time zone,
     mounted_tool_id bigint,
@@ -649,7 +649,9 @@ CREATE TABLE public.firmware_configs (
     movement_axis_stealth_z integer DEFAULT 1,
     movement_calibration_retry_total_x integer DEFAULT 10,
     movement_calibration_retry_total_y integer DEFAULT 10,
-    movement_calibration_retry_total_z integer DEFAULT 10
+    movement_calibration_retry_total_z integer DEFAULT 10,
+    pin_report_1_pin_nr integer DEFAULT 0,
+    pin_report_2_pin_nr integer DEFAULT 0
 );
 
 
@@ -1899,7 +1901,8 @@ CREATE TABLE public.web_app_configs (
     highlight_modified_settings boolean DEFAULT true,
     show_advanced_settings boolean DEFAULT false,
     show_soil_interpolation_map boolean DEFAULT false,
-    show_moisture_interpolation_map boolean DEFAULT false
+    show_moisture_interpolation_map boolean DEFAULT false,
+    clip_image_layer boolean DEFAULT true
 );
 
 
@@ -3742,6 +3745,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210913175949'),
 ('20210914194342'),
 ('20210917165755'),
-('20210929220719');
+('20210929220719'),
+('20211007164834'),
+('20211030193113'),
+('20211104173453');
 
 
