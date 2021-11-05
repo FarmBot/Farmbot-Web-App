@@ -7,7 +7,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { AccountSettings } from "../account_settings";
 import { AccountSettingsProps } from "../interfaces";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { fakeUser } from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";
 import { success } from "../../../toast/toast";
@@ -16,7 +16,7 @@ import { Content } from "../../../constants";
 describe("<AccountSettings />", () => {
   const fakeProps = (): AccountSettingsProps => ({
     dispatch: jest.fn(),
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
     user: fakeUser(),
     getConfigValue: jest.fn(),
   });

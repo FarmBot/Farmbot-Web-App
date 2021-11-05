@@ -20,7 +20,7 @@ import { Feature } from "../../devices/interfaces";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
 
-  const { error_handling } = props.controlPanelState;
+  const { error_handling } = props.settingsPanelState;
   const {
     dispatch, sourceFwConfig, arduinoBusy, firmwareHardware, showAdvanced,
   } = props;

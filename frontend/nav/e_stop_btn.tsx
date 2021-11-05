@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { emergencyLock, emergencyUnlock } from "../devices/actions";
-import { EStopButtonProps } from "../devices/interfaces";
+import { EStopButtonProps } from "./interfaces";
 import { isBotUp } from "../devices/must_be_online";
 import { t } from "../i18next_wrapper";
 

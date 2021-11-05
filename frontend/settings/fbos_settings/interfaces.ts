@@ -1,10 +1,17 @@
-import {
-  BotState,
-  ControlPanelState,
-  SourceFbosConfig,
-} from "../../devices/interfaces";
-import { TaggedDevice } from "farmbot";
-import { TimeSettings } from "../../interfaces";
+import { BotState, SourceFbosConfig } from "../../devices/interfaces";
+import { Alert, TaggedDevice } from "farmbot";
+import { SettingsPanelState, TimeSettings } from "../../interfaces";
+
+export interface FarmbotSettingsProps {
+  bot: BotState;
+  alerts: Alert[];
+  device: TaggedDevice;
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  timeSettings: TimeSettings;
+  botOnline: boolean;
+  settingsPanelState: SettingsPanelState;
+}
 
 export interface NameRowProps {
   dispatch: Function;
@@ -47,7 +54,7 @@ export interface OtaTimeSelectorRowProps {
 }
 
 export interface PowerAndResetProps {
-  controlPanelState: ControlPanelState;
+  settingsPanelState: SettingsPanelState;
   dispatch: Function;
   botOnline: boolean;
 }

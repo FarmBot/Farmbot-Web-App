@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Header, HeaderProps } from "../header";
 import { mount } from "enzyme";
 import { DeviceSetting, Actions } from "../../../constants";
@@ -22,7 +22,7 @@ describe("<Header />", () => {
     const wrapper = mount(<Header {...p} />);
     wrapper.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_CONTROL_PANEL_OPTION,
+      type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload: "motors",
     });
   });

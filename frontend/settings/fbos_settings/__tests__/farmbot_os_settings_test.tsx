@@ -11,10 +11,10 @@ import React from "react";
 import { FarmBotSettings } from "../farmbot_os_settings";
 import { shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { FarmbotSettingsProps } from "../../../devices/interfaces";
+import { FarmbotSettingsProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
-import { panelState } from "../../../__test_support__/control_panel_state";
+import { settingsPanelState } from "../../../__test_support__/panel_state";
 
 describe("<FarmBotSettings />", () => {
   const fakeProps = (): FarmbotSettingsProps => ({
@@ -26,12 +26,12 @@ describe("<FarmBotSettings />", () => {
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
     timeSettings: fakeTimeSettings(),
-    controlPanelState: panelState(),
+    settingsPanelState: settingsPanelState(),
   });
 
   it("doesn't display boot sequence selector", () => {
     const p = fakeProps();
-    p.controlPanelState.farmbot_settings = true;
+    p.settingsPanelState.farmbot_settings = true;
     mockShouldDisplay = false;
     const osSettings = shallow(<FarmBotSettings {...p} />);
     expect(osSettings.find("BootSequenceSelector").length).toEqual(0);
@@ -39,7 +39,7 @@ describe("<FarmBotSettings />", () => {
 
   it("displays boot sequence selector", () => {
     const p = fakeProps();
-    p.controlPanelState.farmbot_settings = true;
+    p.settingsPanelState.farmbot_settings = true;
     mockShouldDisplay = true;
     const osSettings = shallow(<FarmBotSettings {...p} />);
     expect(osSettings.find("BootSequenceSelector").length).toEqual(1);

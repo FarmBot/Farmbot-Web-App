@@ -15,7 +15,7 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   WeedInventoryItem, WeedInventoryItemProps,
@@ -57,7 +57,7 @@ describe("<WeedInventoryItem /> />", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/weeds/1");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
-      payload: [p.tpp.uuid],
+      payload: p.tpp.uuid,
     });
   });
 
@@ -70,7 +70,7 @@ describe("<WeedInventoryItem /> />", () => {
     expect(push).toHaveBeenCalledWith("/app/designer/weeds/ERR_NO_POINT_ID");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
-      payload: [p.tpp.uuid],
+      payload: p.tpp.uuid,
     });
   });
 

@@ -33,7 +33,7 @@ export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
   const { toolSlotMeta } = props;
   const value = isToolFlipped(toolSlotMeta);
   return <fieldset className="tool-direction-input">
-    <label>{t("rotated 180 degrees")}</label>
+    <label>{t("rotate tool 180 degrees")}</label>
     <input type="checkbox" name="tool_direction"
       onChange={() => {
         const tool_direction = value ? "standard" : "flipped";

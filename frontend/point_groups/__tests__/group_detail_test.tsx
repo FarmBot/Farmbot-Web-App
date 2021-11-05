@@ -1,18 +1,4 @@
-import {
-  fakePointGroup, fakePlant, fakeWebAppConfig,
-} from "../../__test_support__/fake_state/resources";
-const GOOD_ID = 9;
-
-const mockPlant = fakePlant();
-mockPlant.body.id = 23;
-
-const mockGroup = fakePointGroup();
-mockGroup.body.name = "one";
-mockGroup.body.id = GOOD_ID;
-mockGroup.body.point_ids = [23];
-
-const mockId = GOOD_ID;
-let mockPath = `/app/designer/groups/${mockId}`;
+let mockPath = "/app/designer/groups/1";
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -23,85 +9,110 @@ jest.mock("../group_detail_active", () => ({
 }));
 
 import React from "react";
-import { Provider } from "react-redux";
 import { mount } from "enzyme";
 import { GroupDetailActive } from "../group_detail_active";
-import { GroupDetail, findGroupFromUrl, mapStateToProps } from "../group_detail";
+import {
+  RawGroupDetail as GroupDetail, findGroupFromUrl, mapStateToProps,
+  GroupDetailProps,
+} from "../group_detail";
 import { fakeState } from "../../__test_support__/fake_state";
-import { createStore } from "redux";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { push } from "../../history";
+import { fakeBotSize } from "../../__test_support__/fake_bot_data";
+import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
+import {
+  fakePlant,
+  fakePointGroup, fakeWebAppConfig,
+} from "../../__test_support__/fake_state/resources";
+import { PointType } from "farmbot";
 
 describe("<GroupDetail />", () => {
-  const fakeStore = () => {
-    const state = fakeState();
-    state.resources = buildResourceIndex([
-      mockGroup,
-      mockPlant,
-    ]);
-    return createStore(s => s, state);
+  const fakeProps = (): GroupDetailProps => {
+    const group = fakePointGroup();
+    group.body.name = "one";
+    group.body.id = 1;
+    group.body.point_ids = [23];
+    return {
+      dispatch: jest.fn(),
+      group: group,
+      allPoints: [],
+      slugs: [],
+      hovered: undefined,
+      editGroupAreaInMap: false,
+      botSize: fakeBotSize(),
+      selectionPointType: undefined,
+      tools: [],
+      toolTransformProps: fakeToolTransformProps(),
+    };
   };
 
   it("redirects when group is not found", () => {
-    mockPath = "/app/designer/groups/-23";
-    const store = fakeStore();
-    const el = mount(<Provider store={store}>
-      <GroupDetail />
-    </Provider>);
-    const result = el.find(GroupDetailActive);
-    expect(result.length).toEqual(0);
-    expect(push).toHaveBeenCalledWith("/app/designer/groups");
+    mockPath = "/app/designer/groups/-1";
+    history.back = jest.fn();
+    const p = fakeProps();
+    p.group = undefined;
+    const wrapper = mount(<GroupDetail {...p} />);
+    expect(wrapper.find(GroupDetailActive).length).toEqual(0);
+    expect(history.back).toHaveBeenCalled();
   });
 
   it("doesn't redirect", () => {
     mockPath = "/app/logs";
-    const store = fakeStore();
-    mount(<Provider store={store}><GroupDetail /></Provider>);
-    expect(push).not.toHaveBeenCalled();
+    history.back = jest.fn();
+    const p = fakeProps();
+    p.group = undefined;
+    mount(<GroupDetail {...p} />);
+    expect(history.back).not.toHaveBeenCalled();
   });
 
-  it("loads <GroupDetailActive />", () => {
-    mockPath = `/app/designer/groups/${mockId}`;
-    const store = fakeStore();
-    const el = mount(<Provider store={store}>
-      <GroupDetail />
-    </Provider>);
-    const result = el.find(GroupDetailActive);
-    expect(result.length).toEqual(1);
+  it("renders groups", () => {
+    mockPath = "/app/designer/groups/1";
+    history.back = jest.fn();
+    const wrapper = mount(<GroupDetail {...fakeProps()} />);
+    expect(wrapper.find(GroupDetailActive).length).toEqual(1);
+    expect(history.back).not.toHaveBeenCalled();
+  });
+
+  it.each<[string, PointType]>([
+    ["plant", "Plant"],
+    ["weed", "Weed"],
+    ["point", "GenericPointer"],
+    ["slot", "ToolSlot"],
+  ])("renders %s group", (title, pointerType) => {
+    mockPath = "/app/designer/groups/1";
+    const p = fakeProps();
+    p.group && (p.group.body.criteria.string_eq = { pointer_type: [pointerType] });
+    const wrapper = mount(<GroupDetail {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain(`edit ${title} group`);
   });
 });
 
 describe("findGroupFromUrl()", () => {
   it("finds group from URL", () => {
-    mockPath = `/app/designer/groups/${mockId}`;
+    mockPath = "/app/designer/groups/1";
     const group = fakePointGroup();
-    group.body.id = mockId;
+    group.body.id = 1;
     const otherGroup = fakePointGroup();
-    otherGroup.body.id = mockId + 1;
-    const result = findGroupFromUrl([group]);
-    expect(result).toEqual(group);
+    otherGroup.body.id = 2;
+    expect(findGroupFromUrl([group])).toEqual(group);
   });
 
   it("fails to find group from URL", () => {
-    mockPath = `/app/designer/groups/${mockId}`;
-    const result = findGroupFromUrl([]);
-    expect(result).toEqual(undefined);
+    mockPath = "/app/designer/groups/1";
+    expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("fails to find group from URL: undefined array item", () => {
     mockPath = "/app/designer/groups/";
-    const result = findGroupFromUrl([]);
-    expect(result).toEqual(undefined);
+    expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("doesn't try to find a group when at a different URL", () => {
-    mockPath = `/app/designer/plants/${mockId}`;
+    mockPath = "/app/logs";
     const group = fakePointGroup();
-    group.body.id = mockId;
-    const result = findGroupFromUrl([group]);
-    expect(result).toEqual(undefined);
+    group.body.id = 1;
+    expect(findGroupFromUrl([group])).toEqual(undefined);
   });
 });
 
@@ -112,5 +123,17 @@ describe("mapStateToProps()", () => {
     webAppConfig.body.bot_origin_quadrant = 2;
     state.resources = buildResourceIndex([webAppConfig]);
     expect(mapStateToProps(state).toolTransformProps.quadrant).toEqual(2);
+  });
+
+  it("returns default quadrant", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.bot_origin_quadrant = 9;
+    const plant = fakePlant();
+    plant.body.openfarm_slug = "mint";
+    state.resources = buildResourceIndex([webAppConfig, plant]);
+    const props = mapStateToProps(state);
+    expect(props.toolTransformProps.quadrant).toEqual(2);
+    expect(props.slugs).toEqual(["mint"]);
   });
 });

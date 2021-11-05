@@ -1,10 +1,7 @@
 import {
-  BotStateTree, ConfigurationName, McuParamName, SyncStatus, TaggedDevice,
-  Alert, Xyz, LocationData, FirmwareHardware,
+  BotStateTree, ConfigurationName, McuParamName, SyncStatus, Xyz, LocationData,
 } from "farmbot";
 import { ConnectionState } from "../connectivity/interfaces";
-import { IntegerSize } from "../util";
-import { TimeSettings } from "../interfaces";
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
 export type SourceFbosConfig = (config: ConfigurationName) =>
@@ -57,6 +54,7 @@ export enum Feature {
   none_firmware = "none_firmware",
   ota_update_hour = "ota_update_hour",
   planted_at_now = "planted_at_now",
+  pin_reporting = "pin_reporting",
   quiet_motors = "quiet_motors",
   rpi_led_control = "rpi_led_control",
   safe_height_input = "safe_height_input",
@@ -133,54 +131,3 @@ export type BotLocationData = LocationData;
 export type StepsPerMm = Record<Xyz, number | undefined>;
 
 export type UserEnv = Record<string, string | undefined>;
-
-export interface FarmbotSettingsProps {
-  bot: BotState;
-  alerts: Alert[];
-  device: TaggedDevice;
-  dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
-  timeSettings: TimeSettings;
-  botOnline: boolean;
-  controlPanelState: ControlPanelState;
-}
-
-export interface McuInputBoxProps {
-  sourceFwConfig: SourceFwConfig;
-  setting: McuParamName;
-  dispatch: Function;
-  intSize?: IntegerSize;
-  float?: boolean;
-  scale?: number;
-  filter?: number;
-  gray?: boolean;
-  min?: number;
-  max?: number;
-  disabled?: boolean;
-  title?: string;
-  firmwareHardware: FirmwareHardware | undefined;
-  warnMin?: number;
-  warning?: string;
-}
-
-export interface EStopButtonProps {
-  bot: BotState;
-  forceUnlock: boolean;
-}
-
-export interface ControlPanelState {
-  farmbot_settings: boolean;
-  firmware: boolean;
-  power_and_reset: boolean;
-  axis_settings: boolean;
-  motors: boolean;
-  encoders_or_stall_detection: boolean;
-  limit_switches: boolean;
-  error_handling: boolean;
-  pin_bindings: boolean;
-  pin_guard: boolean;
-  parameter_management: boolean;
-  farm_designer: boolean;
-  account: boolean;
-  other_settings: boolean;
-}

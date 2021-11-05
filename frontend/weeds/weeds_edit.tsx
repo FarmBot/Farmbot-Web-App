@@ -15,6 +15,7 @@ import {
 import { Actions } from "../constants";
 import { selectPoint } from "../farm_designer/map/actions";
 import { isBotOnlineFromState } from "../devices/must_be_online";
+import { save } from "../api/crud";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -30,7 +31,7 @@ export const mapStateToProps = (props: Everything): EditWeedProps => ({
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {
   get stringyID() { return getPathArray()[4] || ""; }
-  get point() {
+  get weed() {
     if (this.stringyID) {
       return this.props.findPoint(parseInt(this.stringyID));
     }
@@ -39,13 +40,16 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
 
   render() {
     const weedsPath = "/app/designer/weeds";
-    !this.point && getPathArray().join("/").startsWith(weedsPath)
+    !this.weed && getPathArray().join("/").startsWith(weedsPath)
       && push(weedsPath);
     return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Weeds}
         title={t("Edit weed")}
+        specialStatus={this.weed?.specialStatus}
+        onSave={() => this.weed?.uuid &&
+          this.props.dispatch(save(this.weed.uuid))}
         backTo={weedsPath}
         onBack={() => {
           this.props.dispatch({
@@ -54,14 +58,14 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
           this.props.dispatch(selectPoint(undefined));
         }} />
       <DesignerPanelContent panelName={this.panelName}>
-        {this.point
+        {this.weed
           ? <div className={"weed-panel-content-wrapper"}>
-            <EditPointProperties point={this.point}
+            <EditPointProperties point={this.weed}
               botOnline={this.props.botOnline}
-              updatePoint={updatePoint(this.point, this.props.dispatch)} />
-            <AdditionalWeedProperties point={this.point}
-              updatePoint={updatePoint(this.point, this.props.dispatch)} />
-            <PointActions uuid={this.point.uuid} dispatch={this.props.dispatch} />
+              updatePoint={updatePoint(this.weed, this.props.dispatch)} />
+            <AdditionalWeedProperties point={this.weed}
+              updatePoint={updatePoint(this.weed, this.props.dispatch)} />
+            <PointActions uuid={this.weed.uuid} dispatch={this.props.dispatch} />
           </div>
           : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>

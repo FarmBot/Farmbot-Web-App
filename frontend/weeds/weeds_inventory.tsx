@@ -1,17 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Everything } from "../interfaces";
+import { Everything, WeedsPanelState } from "../interfaces";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
-import { Content } from "../constants";
+import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { TaggedWeedPointer } from "farmbot";
-import { selectAllWeedPointers } from "../resources/selectors";
+import { TaggedPoint, TaggedPointGroup, TaggedWeedPointer } from "farmbot";
+import {
+  selectAllActivePoints, selectAllPointGroups, selectAllWeedPointers,
+} from "../resources/selectors";
 import { WeedInventoryItem } from "./weed_inventory_item";
 import { SearchField } from "../ui/search_field";
 import {
@@ -26,19 +28,25 @@ import { UUID } from "../resources/interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { destroy, edit, save } from "../api/crud";
 import { Collapse } from "@blueprintjs/core";
+import { PanelSection } from "../plants/plant_inventory";
+import { pointGroupSubset } from "../plants/select_plants";
+import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
+import { createGroup } from "../point_groups/actions";
+import { GroupInventoryItem } from "../point_groups/group_inventory_item";
+import { push } from "../history";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
   dispatch: Function;
   hoveredPoint: string | undefined;
   getConfigValue: GetWebAppConfigValue;
+  groups: TaggedPointGroup[];
+  allPoints: TaggedPoint[];
+  weedsPanelState: WeedsPanelState;
 }
 
 interface WeedsState extends SortOptions {
   searchTerm: string;
-  pending: boolean;
-  active: boolean;
-  removed: boolean;
 }
 
 export const mapStateToProps = (props: Everything): WeedsProps => ({
@@ -46,6 +54,9 @@ export const mapStateToProps = (props: Everything): WeedsProps => ({
   dispatch: props.dispatch,
   hoveredPoint: props.resources.consumers.farm_designer.hoveredPoint,
   getConfigValue: getWebAppConfigValue(() => props),
+  groups: selectAllPointGroups(props.resources.index),
+  allPoints: selectAllActivePoints(props.resources.index),
+  weedsPanelState: props.app.weedsPanelState,
 });
 
 export interface WeedsSectionProps {
@@ -108,7 +119,6 @@ export const WeedsSection = (props: WeedsSectionProps) => {
 export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
   state: WeedsState = {
     searchTerm: "", sortBy: "radius", reverse: true,
-    pending: true, active: true, removed: true,
   };
 
   get weeds() {
@@ -116,15 +126,17 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       p.body.name.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
   }
 
-  toggleOpen = (category: keyof WeedsState) => () =>
-    this.setState({ ...this.state, [category]: !this.state[category] });
+  toggleOpen = (section: keyof WeedsPanelState) => () =>
+    this.props.dispatch({
+      type: Actions.TOGGLE_WEEDS_PANEL_OPTION, payload: section,
+    });
 
   PendingWeeds = () => <WeedsSection
     category={"pending"}
     sectionTitle={t("Pending")}
     emptyStateText={t("No pending weeds.")}
     items={this.weeds.filter(p => p.body.plant_stage === "pending")}
-    open={this.state.pending}
+    open={this.props.weedsPanelState.pending}
     hoveredPoint={this.props.hoveredPoint}
     clickOpen={this.toggleOpen("pending")}
     dispatch={this.props.dispatch} />;
@@ -135,7 +147,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     emptyStateText={t("No active weeds.")}
     items={this.weeds.filter(p =>
       !["removed", "pending"].includes(p.body.plant_stage))}
-    open={this.state.active}
+    open={this.props.weedsPanelState.active}
     hoveredPoint={this.props.hoveredPoint}
     clickOpen={this.toggleOpen("active")}
     layerSetting={BooleanSetting.show_weeds}
@@ -147,7 +159,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     sectionTitle={t("Removed")}
     emptyStateText={t("No removed weeds.")}
     items={this.weeds.filter(p => p.body.plant_stage === "removed")}
-    open={this.state.removed}
+    open={this.props.weedsPanelState.removed}
     hoveredPoint={this.props.hoveredPoint}
     clickOpen={this.toggleOpen("removed")}
     layerSetting={BooleanSetting.show_historic_points}
@@ -155,13 +167,16 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
     dispatch={this.props.dispatch} />;
 
+  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+
   render() {
+    const weedGroups = pointGroupSubset(this.props.groups, "Weed");
+    const filteredGroups = weedGroups
+      .filter(p => p.body.name.toLowerCase()
+        .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
       <DesignerNavTabs />
-      <DesignerPanelTop
-        panel={Panel.Weeds}
-        linkTo={"/app/designer/weeds/add"}
-        title={t("Add weed")}>
+      <DesignerPanelTop panel={Panel.Weeds}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={t("Search your weeds...")}
           customLeftIcon={<PointSortMenu
@@ -169,16 +184,48 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
-        <EmptyStateWrapper
-          notEmpty={this.props.weeds.length > 0}
-          graphic={EmptyStateGraphic.weeds}
-          title={t("No weeds yet.")}
-          text={Content.NO_WEEDS}
-          colorScheme={"weeds"}>
-          <this.PendingWeeds />
-          <this.ActiveWeeds />
-          <this.RemovedWeeds />
-        </EmptyStateWrapper>
+        <PanelSection isOpen={this.props.weedsPanelState.groups}
+          panel={Panel.Weeds}
+          toggleOpen={this.toggleOpen("groups")}
+          itemCount={weedGroups.length}
+          addNew={() => this.props.dispatch(createGroup({
+            criteria: {
+              ...DEFAULT_CRITERIA,
+              string_eq: { pointer_type: ["Weed"] },
+            },
+          }))}
+          addTitle={t("add new group")}
+          addClassName={"plus-group"}
+          title={t("Weed Groups")}>
+          {filteredGroups
+            .map(group => <GroupInventoryItem
+              key={group.uuid}
+              group={group}
+              allPoints={this.props.allPoints}
+              hovered={false}
+              dispatch={this.props.dispatch}
+              onClick={this.navigate(group.body.id)}
+            />)}
+        </PanelSection>
+        <PanelSection isOpen={this.props.weedsPanelState.weeds}
+          panel={Panel.Weeds}
+          toggleOpen={this.toggleOpen("weeds")}
+          itemCount={this.props.weeds.length}
+          addNew={() => push("/app/designer/weeds/add")}
+          addTitle={t("add weed")}
+          addClassName={"plus-weed"}
+          title={t("Weeds")}>
+          <EmptyStateWrapper
+            notEmpty={this.props.weeds.length > 0}
+            graphic={EmptyStateGraphic.weeds}
+            title={t("No weeds yet.")}
+            text={Content.NO_WEEDS}
+            colorScheme={"weeds"}>
+            <this.PendingWeeds />
+            <this.ActiveWeeds />
+            <this.RemovedWeeds />
+          </EmptyStateWrapper>
+        </PanelSection>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

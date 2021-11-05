@@ -13,7 +13,7 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/crud", () => ({ edit: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSavedGardens as SavedGardens, mapStateToProps, SavedGardenHUD,
@@ -101,20 +101,14 @@ describe("mapStateToProps()", () => {
 describe("<SavedGardenHUD />", () => {
   it("renders", () => {
     const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
-    ["viewing saved garden", "menu", "edit", "exit"].map(string =>
+    ["viewing saved garden", "edit", "exit"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
-  });
-
-  it("opens menu", () => {
-    const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
-    clickButton(wrapper, 0, "menu");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
   });
 
   it("navigates to plants", () => {
     const dispatch = jest.fn();
     const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
-    clickButton(wrapper, 1, "edit");
+    clickButton(wrapper, 0, "edit");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
@@ -124,7 +118,7 @@ describe("<SavedGardenHUD />", () => {
 
   it("exits garden", () => {
     const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
-    clickButton(wrapper, 2, "exit");
+    clickButton(wrapper, 1, "exit");
     expect(closeSavedGarden).toHaveBeenCalled();
   });
 });

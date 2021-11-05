@@ -39,7 +39,6 @@ describe("<DesignerNavTabs />", () => {
     ["map", "/app/designer", "gray"],
     ["plants", "/app/designer/plants", "green"],
     ["plants", "/app/designer/gardens/templates/1", "green"],
-    ["groups", "/app/designer/groups", "blue"],
     ["tools", "/app/designer/tool-slots", "gray"],
   ])("shows active %s icon", (slug, path, color) => {
     mockPath = path;

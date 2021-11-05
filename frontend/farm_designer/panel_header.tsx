@@ -17,14 +17,14 @@ import { selectAllFarmwareInstallations } from "../resources/selectors";
 export enum Panel {
   Map = "Map",
   Plants = "Plants",
+  Weeds = "Weeds",
+  Points = "Points",
   Groups = "Groups",
   SavedGardens = "SavedGardens",
   Sequences = "Sequences",
   Regimens = "Regimens",
   FarmEvents = "FarmEvents",
   Zones = "Zones",
-  Points = "Points",
-  Weeds = "Weeds",
   Controls = "Controls",
   Sensors = "Sensors",
   Photos = "Photos",
@@ -56,14 +56,14 @@ export enum PanelColor {
 export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Map]: PanelColor.gray,
   [Panel.Plants]: PanelColor.green,
+  [Panel.Weeds]: PanelColor.red,
+  [Panel.Points]: PanelColor.teal,
   [Panel.Groups]: PanelColor.blue,
   [Panel.Sequences]: PanelColor.gray,
   [Panel.Regimens]: PanelColor.gray,
   [Panel.SavedGardens]: PanelColor.navy,
   [Panel.FarmEvents]: PanelColor.yellow,
   [Panel.Zones]: PanelColor.brown,
-  [Panel.Points]: PanelColor.teal,
-  [Panel.Weeds]: PanelColor.red,
   [Panel.Controls]: PanelColor.gray,
   [Panel.Sensors]: PanelColor.gray,
   [Panel.Photos]: PanelColor.gray,
@@ -79,14 +79,14 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
 export enum Icon {
   map = "map",
   plant = "plant",
+  weeds = "weeds",
+  point = "point",
   groups = "groups",
   sequence = "sequence",
   regimens = "regimen",
   gardens = "gardens",
   calendar = "calendar",
   zones = "zones",
-  point = "point",
-  weeds = "weeds",
   controls = "controls",
   sensors = "sensors",
   photos = "photos",
@@ -109,14 +109,14 @@ export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;
 export const TAB_ICON: Record<Panel, string> = {
   [Panel.Map]: iconFile(Icon.map),
   [Panel.Plants]: iconFile(Icon.plant),
+  [Panel.Weeds]: iconFile(Icon.weeds),
+  [Panel.Points]: iconFile(Icon.point),
   [Panel.Groups]: iconFile(Icon.groups),
   [Panel.Sequences]: iconFile(Icon.sequence),
   [Panel.Regimens]: iconFile(Icon.regimens),
   [Panel.SavedGardens]: iconFile(Icon.gardens),
   [Panel.FarmEvents]: iconFile(Icon.calendar),
   [Panel.Zones]: iconFile(Icon.zones),
-  [Panel.Points]: iconFile(Icon.point),
-  [Panel.Weeds]: iconFile(Icon.weeds),
   [Panel.Controls]: iconFile(Icon.controls),
   [Panel.Sensors]: iconFile(Icon.sensors),
   [Panel.Photos]: iconFile(Icon.photos),
@@ -132,14 +132,14 @@ export const TAB_ICON: Record<Panel, string> = {
 export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Map]: "",
   [Panel.Plants]: "plants",
+  [Panel.Weeds]: "weeds",
+  [Panel.Points]: "points",
   [Panel.Groups]: "groups",
   [Panel.Sequences]: "sequences",
   [Panel.Regimens]: "regimens",
   [Panel.SavedGardens]: "gardens",
   [Panel.FarmEvents]: "events",
   [Panel.Zones]: "zones",
-  [Panel.Points]: "points",
-  [Panel.Weeds]: "weeds",
   [Panel.Controls]: "controls",
   [Panel.Sensors]: "sensors",
   [Panel.Photos]: "photos",
@@ -170,14 +170,14 @@ const PANEL_PATH: Partial<Record<Panel, () => string>> = {
 export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Map]: t("Map"),
   [Panel.Plants]: t("Plants"),
+  [Panel.Weeds]: t("Weeds"),
+  [Panel.Points]: t("Points"),
   [Panel.Groups]: t("Groups"),
   [Panel.Sequences]: t("Sequences"),
   [Panel.Regimens]: t("Regimens"),
   [Panel.SavedGardens]: t("Gardens"),
   [Panel.FarmEvents]: t("Events"),
   [Panel.Zones]: t("Zones"),
-  [Panel.Points]: t("Points"),
-  [Panel.Weeds]: t("Weeds"),
   [Panel.Controls]: t("Controls"),
   [Panel.Sensors]: t("Sensors"),
   [Panel.Photos]: t("Photos"),
@@ -285,14 +285,12 @@ export class DesignerNavTabs
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
         <NavTab panel={Panel.Map} desktopHide={true} />
         <NavTab panel={Panel.Plants} />
-        <NavTab panel={Panel.Groups} />
-        <NavTab panel={Panel.SavedGardens} />
+        <NavTab panel={Panel.Weeds} />
+        <NavTab panel={Panel.Points} />
         <NavTab panel={Panel.Sequences} />
         <NavTab panel={Panel.Regimens} />
         <NavTab panel={Panel.FarmEvents} />
         {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
-        <NavTab panel={Panel.Points} />
-        <NavTab panel={Panel.Weeds} />
         <NavTab panel={Panel.Controls} />
         {showSensors() && <NavTab panel={Panel.Sensors} />}
         <NavTab panel={Panel.Photos} />

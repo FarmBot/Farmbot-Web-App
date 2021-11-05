@@ -31,7 +31,8 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPoints,
+  SavePointsProps, savePoints,
 } from "./layers/plants/plant_actions";
 import { chooseLocation, locationUrl } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
@@ -42,9 +43,12 @@ import { findGroupFromUrl } from "../../point_groups/group_detail";
 import { pointsSelectedByGroup } from "../../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";
-import { throttle } from "lodash";
+import { debounce, throttle } from "lodash";
 import { SequenceVisualization } from "./sequence_visualization";
 import { chooseProfile, ProfileLine } from "./profile";
+import { betterCompact } from "../../util";
+
+const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -53,6 +57,11 @@ export class GardenMap extends
     super(props);
     this.state = {};
   }
+
+  componentDidMount = () => {
+    document.onkeydown = this.onKeyDown as never;
+    document.onkeyup = this.onKeyUp as never;
+  };
 
   componentWillUnmount() {
     // Clear plant selection when navigating away from the designer.
@@ -258,6 +267,14 @@ export class GardenMap extends
     return this.props.designer.selectedPoints?.[0];
   }
 
+  get currentSelection(): (TaggedPoint | TaggedPlant)[] {
+    return allowInteraction()
+      ? this.props.designer.selectedPoints?.map(uuid =>
+        this.props.allPoints.filter(p => p.uuid == uuid)[0])
+      || betterCompact([this.props.selectedPlant])
+      : [];
+  }
+
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     switch (getMode()) {
       case Mode.addPlant:
@@ -374,6 +391,55 @@ export class GardenMap extends
     }
   };
 
+  /** Map key actions. */
+  onKeyDown = (e: React.KeyboardEvent) => {
+    const { dispatch, mapTransformProps } = this.props;
+    switch (getMode()) {
+      case Mode.editPlant:
+      case Mode.boxSelect:
+        if (BOUND_KEYS.includes(e.key)) {
+          this.preventKey(e);
+          jogPoints({
+            keyName: e.key,
+            points: this.currentSelection,
+            dispatch,
+            mapTransformProps,
+          });
+        }
+        break;
+    }
+  };
+
+  /** Map key actions. */
+  preventKey = (e: React.KeyboardEvent) => {
+    switch (getMode()) {
+      case Mode.editPlant:
+      case Mode.boxSelect:
+        BOUND_KEYS.includes(e.key) && e.preventDefault();
+        break;
+    }
+  };
+
+  debouncedPointSave = debounce((props: SavePointsProps) =>
+    savePoints(props), 1500);
+
+  /** Map key actions. */
+  onKeyUp = (e: React.KeyboardEvent) => {
+    switch (getMode()) {
+      case Mode.editPlant:
+      case Mode.boxSelect:
+        if (BOUND_KEYS.includes(e.key)) {
+          e.preventDefault();
+          this.currentSelection.length == 1 &&
+            this.debouncedPointSave({
+              points: this.currentSelection,
+              dispatch: this.props.dispatch,
+            });
+        }
+        break;
+    }
+  };
+
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
     switch (getMode()) {
@@ -408,6 +474,7 @@ export class GardenMap extends
     onMouseUp: this.endDrag,
     onDragEnd: this.endDrag,
     onDragStart: (e: React.DragEvent<HTMLElement>) => e.preventDefault(),
+    onKeyPress: this.preventKey,
     style: {
       height: this.mapSize.h + "px", maxHeight: this.mapSize.h + "px",
       width: this.mapSize.w + "px", maxWidth: this.mapSize.w + "px"
@@ -491,6 +558,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     designer={this.props.designer}
     visible={!!this.props.showPoints}
+    currentPoint={this.currentPoint}
     overlayVisible={
       !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}

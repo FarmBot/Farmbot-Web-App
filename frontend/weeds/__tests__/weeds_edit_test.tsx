@@ -4,6 +4,10 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
+jest.mock("../../api/crud", () => ({
+  save: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -17,6 +21,7 @@ import {
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { push } from "../../history";
+import { save } from "../../api/crud";
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -60,6 +65,28 @@ describe("<EditWeed />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
+  });
+
+  it("saves", () => {
+    mockPath = "/app/designer/weeds/1";
+    const p = fakeProps();
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    p.findPoint = () => weed;
+    const wrapper = shallow(<EditWeed {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).toHaveBeenCalledWith(weed.uuid);
+  });
+
+  it("doesn't save", () => {
+    mockPath = "/app/designer/logs";
+    const p = fakeProps();
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    p.findPoint = () => weed;
+    const wrapper = shallow(<EditWeed {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("save");
+    expect(save).not.toHaveBeenCalled();
   });
 });
 

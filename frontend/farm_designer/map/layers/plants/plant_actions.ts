@@ -7,16 +7,19 @@ import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString } from "lodash";
-import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";
+import {
+  CropLiveSearchResult, GardenMapState, MovePointsProps,
+} from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import {
   transformXY, round, getZoomLevelFromMap, defaultSpreadCmDia,
 } from "../../util";
-import { movePlant } from "../../actions";
+import { movePoints } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
+import { TaggedPlantTemplate, TaggedPoint } from "farmbot";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -103,6 +106,7 @@ export const dropPlant = (props: DropPlantProps) => {
   const { gardenCoords, openedSavedGarden, gridSize, dispatch } = props;
   if (gardenCoords) {
     const slug = getPathArray()[5];
+    if (!slug) { return; }
     const { crop } = findBySlug(props.cropSearchResults, slug);
     createPlant({
       cropName: crop.name,
@@ -147,7 +151,44 @@ export const dragPlant = (props: DragPlantProps) => {
       qPageX: qx, qPageY: qy,
       activeDragXY: { x: plant.body.x + dX, y: plant.body.y + dY, z: 0 }
     });
-    props.dispatch(movePlant({ deltaX: dX, deltaY: dY, plant, gridSize }));
+    const points = [plant];
+    props.dispatch(movePoints({ deltaX: dX, deltaY: dY, points, gridSize }));
+  }
+};
+
+export interface JogPointsProps {
+  keyName: string;
+  points: (TaggedPoint | TaggedPlantTemplate)[];
+  mapTransformProps: MapTransformProps;
+  dispatch: Function;
+}
+
+export const jogPoints = (props: JogPointsProps) => {
+  const { keyName, points, dispatch } = props;
+  if (!(points.length > 0)) { return; }
+  const { gridSize, xySwap, quadrant } = props.mapTransformProps;
+  const horizontal = xySwap ? "deltaY" : "deltaX";
+  const vertical = xySwap ? "deltaX" : "deltaY";
+  const amount = 10;
+  const left = [1, 4].includes(quadrant) ? amount : -amount;
+  const right = [1, 4].includes(quadrant) ? -amount : amount;
+  const up = [3, 4].includes(quadrant) ? amount : -amount;
+  const down = [3, 4].includes(quadrant) ? -amount : amount;
+  const generatePayload = (keyName: string): MovePointsProps | undefined => {
+    switch (keyName) {
+      case "ArrowLeft":
+        return { deltaX: 0, deltaY: 0, [horizontal]: left, points, gridSize };
+      case "ArrowRight":
+        return { deltaX: 0, deltaY: 0, [horizontal]: right, points, gridSize };
+      case "ArrowUp":
+        return { deltaX: 0, deltaY: 0, [vertical]: up, points, gridSize };
+      case "ArrowDown":
+        return { deltaX: 0, deltaY: 0, [vertical]: down, points, gridSize };
+    }
+  };
+  const payload = generatePayload(keyName);
+  if (payload) {
+    dispatch(movePoints(payload));
   }
 };
 
@@ -200,4 +241,13 @@ export const maybeSavePlantLocation = (props: MaybeSavePlantLocationProps) => {
     }));
     props.dispatch(save(props.plant.uuid));
   }
+};
+
+export interface SavePointsProps {
+  points: (TaggedPoint | TaggedPlantTemplate)[];
+  dispatch: Function;
+}
+
+export const savePoints = (props: SavePointsProps) => {
+  props.points.map(p => props.dispatch(save(p.uuid)));
 };

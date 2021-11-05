@@ -1,6 +1,6 @@
 import React from "react";
 import { store } from "../redux/store";
-import { ControlPanelState } from "../devices/interfaces";
+import { SettingsPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { getUrlQuery, urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
@@ -110,6 +110,11 @@ const PIN_GUARD_PANEL = [
   DeviceSetting.pinGuard4,
   DeviceSetting.pinGuard5,
 ];
+const PIN_REPORTING_PANEL = [
+  DeviceSetting.pinReporting,
+  DeviceSetting.pinReporting1,
+  DeviceSetting.pinReporting2,
+];
 const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.parameterManagement,
   DeviceSetting.paramLoadProgress,
@@ -199,7 +204,7 @@ const APP_SETTINGS = [
 ];
 
 /** Look up parent panels for settings. */
-const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof ControlPanelState>;
+const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof SettingsPanelState>;
 FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_settings");
 FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
@@ -210,6 +215,7 @@ LIMIT_SWITCHES_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "limit_switches");
 ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
+PIN_REPORTING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_reporting");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
 ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");
@@ -242,7 +248,7 @@ CONTENT_LOOKUP[DeviceSetting.otherSettings] = CONTROLS_SETTINGS
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
 
 /** Look up parent panels for settings using URL-friendly names. */
-const URL_FRIENDLY_LOOKUP: Record<string, keyof ControlPanelState> = {};
+const URL_FRIENDLY_LOOKUP: Record<string, keyof SettingsPanelState> = {};
 Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) => {
   URL_FRIENDLY_LOOKUP[urlFriendly(setting)] = panel;
   URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting))] = panel;

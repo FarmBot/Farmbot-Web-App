@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../../i18next_wrapper";
 import { capitalize, uniq, some, isEqual } from "lodash";
 import {
@@ -124,6 +124,26 @@ const PlantStage = (props: PointSubCriteriaProps) =>
           .map(ddi => ({ label: ddi.label, value: "" + ddi.value }))} />
   </div>;
 
+const RemovalMethod = (props: PointSubCriteriaProps) =>
+  <div className={"removal-method-criteria"}>
+    <p className={"category"}>{t("Removal Method")}</p>
+    <ClearCategory
+      group={props.group}
+      criteriaCategories={["string_eq"]}
+      criteriaKeys={["meta.removal_method"]}
+      dispatch={props.dispatch} />
+    <CheckboxList
+      disabled={props.disabled}
+      pointerType={props.pointerType}
+      criteriaKey={"meta.removal_method"}
+      group={props.group}
+      dispatch={props.dispatch}
+      list={[
+        { label: t("Automatic"), value: "automatic" },
+        { label: t("Manual"), value: "manual" },
+      ]} />
+  </div>;
+
 const PlantType = (props: PlantSubCriteriaProps) =>
   <div className={"plant-type-criteria"}>
     <p className={"category"}>{t("Type")}</p>
@@ -152,6 +172,7 @@ export const WeedCriteria = (props: SubCriteriaProps) => {
   return <div className={"weed-criteria-options"}>
     <PointSource {...commonProps} />
     <PlantStage {...commonProps} />
+    <RemovalMethod {...commonProps} />
     <Color {...commonProps} />
     <Radius {...commonProps} />
   </div>;

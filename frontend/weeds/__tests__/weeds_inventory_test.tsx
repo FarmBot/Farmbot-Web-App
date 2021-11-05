@@ -4,6 +4,15 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
+jest.mock("../../point_groups/actions", () => ({
+  createGroup: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -12,7 +21,7 @@ import {
 } from "../weeds_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  fakeWeed, fakeWebAppConfig,
+  fakeWeed, fakeWebAppConfig, fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
 import { SearchField } from "../../ui/search_field";
 import { PointSortMenu } from "../../farm_designer/sort_options";
@@ -21,6 +30,12 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { BooleanSetting } from "../../session_keys";
 import { destroy, edit, save } from "../../api/crud";
+import { PanelSection } from "../../plants/plant_inventory";
+import { createGroup } from "../../point_groups/actions";
+import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
+import { push } from "../../history";
+import { weedsPanelState } from "../../__test_support__/panel_state";
+import { Actions } from "../../constants";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -28,6 +43,9 @@ describe("<Weeds> />", () => {
     dispatch: jest.fn(),
     hoveredPoint: undefined,
     getConfigValue: jest.fn(),
+    groups: [],
+    allPoints: [],
+    weedsPanelState: weedsPanelState(),
   });
 
   it("renders no points", () => {
@@ -62,6 +80,19 @@ describe("<Weeds> />", () => {
     expect(wrapper.text()).toContain("No removed weeds.");
   });
 
+  it("renders groups", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.name = "Weed Group";
+    group1.body.criteria.string_eq = { pointer_type: ["Weed"] };
+    const group2 = fakePointGroup();
+    group2.body.name = "Plant Group";
+    group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    p.groups = [group1, group2];
+    const wrapper = mount(<Weeds {...p} />);
+    expect(wrapper.text()).toContain("Groups (1)");
+  });
+
   it("changes search term", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
     wrapper.find(SearchField).simulate("change", "0");
@@ -69,10 +100,33 @@ describe("<Weeds> />", () => {
   });
 
   it("closes section", () => {
-    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    expect(wrapper.state().pending).toEqual(true);
+    const p = fakeProps();
+    const wrapper = shallow<Weeds>(<Weeds {...p} />);
     wrapper.instance().toggleOpen("pending")();
-    expect(wrapper.instance().state.pending).toEqual(false);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
+      payload: "pending",
+    });
+  });
+
+  it("navigates to group", () => {
+    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
+    wrapper.instance().navigate(1)();
+    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+  });
+
+  it("adds new weed", () => {
+    const wrapper = shallow(<Weeds {...fakeProps()} />);
+    wrapper.find(PanelSection).last().props().addNew();
+    expect(push).toHaveBeenCalledWith("/app/designer/weeds/add");
+  });
+
+  it("adds new group", () => {
+    const wrapper = shallow(<Weeds {...fakeProps()} />);
+    wrapper.find(PanelSection).first().props().addNew();
+    expect(createGroup).toHaveBeenCalledWith({
+      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } }
+    });
   });
 
   it("changes sort term", () => {

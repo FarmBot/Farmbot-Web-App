@@ -31,6 +31,7 @@ describe("<PointLayer/>", () => {
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
     farmwareEnvs: [],
+    currentPoint: undefined,
   });
 
   it("shows points", () => {

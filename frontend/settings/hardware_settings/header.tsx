@@ -1,5 +1,5 @@
 import React from "react";
-import { ControlPanelState } from "../../devices/interfaces";
+import { SettingsPanelState } from "../../interfaces";
 import { toggleControlPanel } from "../toggle_section";
 import { ExpandableHeader } from "../../ui/expandable_header";
 import { t } from "../../i18next_wrapper";
@@ -7,7 +7,7 @@ import { DeviceSetting } from "../../constants";
 
 export interface HeaderProps {
   dispatch: Function;
-  panel: keyof ControlPanelState;
+  panel: keyof SettingsPanelState;
   title: DeviceSetting;
   expanded: boolean;
 }

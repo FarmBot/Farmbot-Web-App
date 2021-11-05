@@ -10,13 +10,11 @@ import { maybeBeacon } from "../help/tours";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,
-  Panel.Groups,
+  Panel.Weeds,
+  Panel.Points,
   Panel.Sequences,
   Panel.Regimens,
-  Panel.SavedGardens,
   Panel.FarmEvents,
-  Panel.Points,
-  Panel.Weeds,
   Panel.Controls,
   ...(showSensors() ? [Panel.Sensors] : []),
   Panel.Photos,

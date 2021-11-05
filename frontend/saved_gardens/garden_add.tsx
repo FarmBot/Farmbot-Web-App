@@ -32,7 +32,7 @@ export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
         panel={Panel.SavedGardens}
         title={t("Add garden")}
         description={Content.SAVED_GARDENS}
-        backTo={"/app/designer/gardens"} />
+        backTo={"/app/designer/plants"} />
       <DesignerPanelContent panelName={"saved-garden"}>
         <Row>
           <GardenSnapshot

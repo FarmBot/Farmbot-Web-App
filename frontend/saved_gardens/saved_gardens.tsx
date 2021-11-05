@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
 import { history } from "../history";
@@ -65,11 +65,6 @@ export class RawSavedGardens
 export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
-    <button className="fb-button gray"
-      title={t("open saved gardens panel")}
-      onClick={() => history.push("/app/designer/gardens")}>
-      {t("Menu")}
-    </button>
     <button className="fb-button green"
       title={t("open plants panel")}
       onClick={() => {

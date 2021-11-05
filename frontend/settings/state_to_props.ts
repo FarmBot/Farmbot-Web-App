@@ -32,5 +32,5 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   user: getUserAccountSettings(props.resources.index),
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   wizardStepResults: selectAllWizardStepResults(props.resources.index),
-  controlPanelState: props.app.controlPanelState,
+  settingsPanelState: props.app.settingsPanelState,
 });

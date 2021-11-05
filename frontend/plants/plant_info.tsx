@@ -55,13 +55,16 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
     </DesignerPanel>;
   };
 
-  default = (plant_info: TaggedPlant) => {
-    const info = formatPlantInfo(plant_info);
+  default = (plant: TaggedPlant) => {
+    const info = formatPlantInfo(plant);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}
         panel={Panel.Plants}
         title={`${t("Edit")} ${info.name}`}
+        specialStatus={plant.specialStatus}
+        onSave={() => plant.uuid &&
+          this.props.dispatch(save(plant.uuid))}
         backTo={"/app/designer/plants"}
         onBack={unselectPlant(this.props.dispatch)} />
       <PlantPanel
@@ -77,8 +80,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   };
 
   render() {
-    const plant_info = this.plant;
-    return plant_info ? this.default(plant_info) : this.fallback();
+    return this.plant ? this.default(this.plant) : this.fallback();
   }
 }
 

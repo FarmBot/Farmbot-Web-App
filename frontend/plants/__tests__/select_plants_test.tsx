@@ -9,11 +9,16 @@ jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
 
 jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
-import * as React from "react";
+jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
+  savePoints: jest.fn(),
+}));
+
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
   getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
+  pointGroupSubset,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
@@ -34,6 +39,8 @@ import {
 import { history } from "../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
+import { SpecialStatus } from "farmbot";
+import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -358,6 +365,24 @@ describe("<SelectPlants />", () => {
     expect(createGroup).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.ERROR_PLANT_TEMPLATE_GROUP);
   });
+
+  it("saves points", () => {
+    const p = fakeProps();
+    const point0 = fakePoint();
+    point0.specialStatus = SpecialStatus.DIRTY;
+    const point1 = fakePoint();
+    point1.specialStatus = SpecialStatus.DIRTY;
+    p.selected = [point0.uuid, point1.uuid];
+    p.allPoints = [point0, point1];
+    const wrapper = mount(<SelectPlants {...p} />);
+    const saveBtn = wrapper.find(".fb-button.green").first();
+    saveBtn.simulate("click");
+    expect(saveBtn.text().toLowerCase()).toEqual("save");
+    expect(savePoints).toHaveBeenCalledWith({
+      dispatch: p.dispatch,
+      points: p.allPoints,
+    });
+  });
 });
 
 describe("mapStateToProps", () => {
@@ -426,6 +451,18 @@ describe("validPointTypes()", () => {
 
   it("returns undefined", () => {
     expect(validPointTypes(["nope"])).toEqual(undefined);
+  });
+});
+
+describe("pointGroupSubset()", () => {
+  it("returns filtered groups", () => {
+    const group0 = fakePointGroup();
+    group0.body.criteria.string_eq = {};
+    const group1 = fakePointGroup();
+    group1.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    const group2 = fakePointGroup();
+    group2.body.criteria.string_eq = { pointer_type: ["Weed"] };
+    expect(pointGroupSubset([group0, group1, group2], "Plant")).toEqual([group1]);
   });
 });
 

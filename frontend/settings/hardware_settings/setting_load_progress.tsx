@@ -40,6 +40,11 @@ const T_KEYS: (keyof FirmwareConfig)[] = [
   "movement_calibration_retry_total_z",
 ];
 
+const REPORT_KEYS: (keyof FirmwareConfig)[] = [
+  "pin_report_1_pin_nr" as keyof FirmwareConfig,
+  "pin_report_2_pin_nr" as keyof FirmwareConfig,
+];
+
 /** Track firmware configuration adoption by FarmBot OS. */
 export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
   const { firmwareHardware } = props;
@@ -47,6 +52,7 @@ export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
       .concat(shouldDisplayFeature(Feature.calibration_total_retries) ? [] : T_KEYS)
+      .concat(shouldDisplayFeature(Feature.pin_reporting) ? [] : REPORT_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>
     props.sourceFwConfig(key).consistent);

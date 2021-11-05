@@ -13,7 +13,7 @@ import { PinBindings } from "./pin_bindings/pin_bindings";
 import { validFirmwareHardware } from "./firmware/firmware_hardware_support";
 import {
   AxisSettings, Motors, EncodersOrStallDetection, LimitSwitches,
-  ErrorHandling, PinGuard, ParameterManagement,
+  ErrorHandling, PinGuard, ParameterManagement, PinReporting,
 } from "./hardware_settings";
 import { maybeOpenPanel } from "./maybe_highlight";
 import { isBotOnlineFromState } from "../devices/must_be_online";
@@ -37,6 +37,8 @@ import {
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { getUrlQuery } from "../util";
 import { push } from "../history";
+import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { Feature } from "../devices/interfaces";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -52,10 +54,10 @@ export class RawDesignerSettings
 
   render() {
     const { getConfigValue, dispatch, firmwareConfig,
-      sourceFwConfig, sourceFbosConfig, resources, controlPanelState,
+      sourceFwConfig, sourceFbosConfig, resources, settingsPanelState,
     } = this.props;
     const showAdvanced = !!getConfigValue(BooleanSetting.show_advanced_settings);
-    const commonProps = { dispatch, controlPanelState, showAdvanced };
+    const commonProps = { dispatch, settingsPanelState, showAdvanced };
     const { value } = this.props.sourceFbosConfig("firmware_hardware");
     const firmwareHardware = validFirmwareHardware(value);
     const botOnline = isBotOnlineFromState(this.props.bot);
@@ -79,7 +81,7 @@ export class RawDesignerSettings
               payload: searchTerm,
             });
           }} />
-        <ToggleSettingsOpen dispatch={dispatch} panels={controlPanelState} />
+        <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>
         {getUrlQuery("only") && !this.props.searchTerm &&
@@ -92,7 +94,7 @@ export class RawDesignerSettings
           </div>}
         <FarmBotSettings
           bot={this.props.bot}
-          controlPanelState={controlPanelState}
+          settingsPanelState={settingsPanelState}
           alerts={this.props.alerts}
           dispatch={this.props.dispatch}
           sourceFbosConfig={sourceFbosConfig}
@@ -139,6 +141,12 @@ export class RawDesignerSettings
           resources={resources}
           firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
+        {shouldDisplayFeature(Feature.pin_reporting) &&
+          <PinReporting {...commonProps}
+            arduinoBusy={busy}
+            resources={resources}
+            firmwareHardware={firmwareHardware}
+            sourceFwConfig={sourceFwConfig} />}
         <ParameterManagement {...commonProps}
           arduinoBusy={busy}
           sourceFwConfig={sourceFwConfig}

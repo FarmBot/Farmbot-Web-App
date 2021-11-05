@@ -57,7 +57,7 @@ describe("destroySavedGarden", () => {
     const dispatch = jest.fn((_) => Promise.resolve());
     destroySavedGarden("SavedGardenUuid")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(destroy).toHaveBeenCalledWith("SavedGardenUuid");
   });
 });
@@ -66,7 +66,7 @@ describe("closeSavedGarden", () => {
   it("closes garden", () => {
     const dispatch = jest.fn();
     closeSavedGarden()(dispatch);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
   });
 });
@@ -102,7 +102,7 @@ describe("openOrCloseGarden", () => {
       gardenIsOpen: true,
     };
     openOrCloseGarden(props)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
   });
 });
 

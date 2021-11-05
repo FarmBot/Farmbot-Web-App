@@ -20,6 +20,7 @@ import {
   TaggedTool,
   Vector3,
   TaggedFarmwareEnv,
+  TaggedPlantTemplate,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -110,10 +111,10 @@ export interface FarmDesignerProps {
   farmwareEnvs: TaggedFarmwareEnv[];
 }
 
-export interface MovePlantProps {
+export interface MovePointsProps {
   deltaX: number;
   deltaY: number;
-  plant: TaggedPlant;
+  points: (TaggedPoint | TaggedPlantTemplate)[];
   gridSize: AxisNumberProperty;
 }
 
@@ -326,6 +327,7 @@ export interface CropInfoProps {
   openedSavedGarden: string | undefined;
   openfarmSearch: OpenfarmSearch;
   botPosition: BotPosition;
+  xySwap: boolean;
 }
 
 export interface CameraCalibrationData {

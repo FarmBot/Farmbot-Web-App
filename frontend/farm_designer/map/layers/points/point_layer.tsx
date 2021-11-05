@@ -9,11 +9,13 @@ import {
 import {
   fetchInterpolationOptions, generateData, InterpolationMap,
 } from "./interpolation_map";
+import { UUID } from "../../../../resources/interfaces";
 
 export interface PointLayerProps {
   visible: boolean;
   overlayVisible: boolean;
   genericPoints: TaggedGenericPointer[];
+  currentPoint: UUID | undefined;
   mapTransformProps: MapTransformProps;
   dispatch: Function;
   interactions: boolean;
@@ -50,6 +52,7 @@ export function PointLayer(props: PointLayerProps) {
           <GardenPoint
             point={p}
             key={p.uuid}
+            current={props.currentPoint == p.uuid}
             hovered={hoveredPoint == p.uuid}
             cameraViewGridId={cameraViewGridId}
             cameraCalibrationData={props.cameraCalibrationData}

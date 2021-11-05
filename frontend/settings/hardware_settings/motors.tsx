@@ -33,7 +33,7 @@ export const calculateScale =
 
 export function Motors(props: MotorsProps) {
   const {
-    dispatch, controlPanelState, sourceFwConfig, firmwareHardware, arduinoBusy,
+    dispatch, settingsPanelState, sourceFwConfig, firmwareHardware, arduinoBusy,
     showAdvanced,
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
@@ -53,14 +53,14 @@ export function Motors(props: MotorsProps) {
   return <Highlight className={"section"}
     settingName={DeviceSetting.motors}>
     <Header
-      expanded={controlPanelState.motors}
+      expanded={settingsPanelState.motors}
       title={DeviceSetting.motors}
       panel={"motors"}
       dispatch={dispatch} />
-    {controlPanelState.motors &&
+    {settingsPanelState.motors &&
       <Help customClass={"hw-warn"} text={ToolTips.HW_SETTINGS}
         customIcon={"exclamation-triangle"} />}
-    <Collapse isOpen={!!controlPanelState.motors}>
+    <Collapse isOpen={!!settingsPanelState.motors}>
       <SpacePanelHeader />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.maxSpeed}

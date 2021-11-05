@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
@@ -6,15 +6,16 @@ import { t } from "../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { findAll } from "../resources/find_all";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
-import { history } from "../history";
+import { push } from "../history";
 import { GroupInventoryItem } from "./group_inventory_item";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
 import { Content } from "../constants";
-import { selectAllActivePoints } from "../resources/selectors";
+import {
+  selectAllActivePoints, selectAllPointGroups,
+} from "../resources/selectors";
 import { createGroup } from "./actions";
 import { SearchField } from "../ui/search_field";
 
@@ -30,9 +31,9 @@ interface State {
 
 export function mapStateToProps(props: Everything): GroupListPanelProps {
   return {
-    groups: findAll<TaggedPointGroup>(props.resources.index, "PointGroup"),
+    groups: selectAllPointGroups(props.resources.index),
     dispatch: props.dispatch,
-    allPoints: selectAllActivePoints(props.resources.index)
+    allPoints: selectAllActivePoints(props.resources.index),
   };
 }
 
@@ -40,7 +41,8 @@ export class RawGroupListPanel
   extends React.Component<GroupListPanelProps, State> {
   state: State = { searchTerm: "" };
 
-  navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () =>
+    push(`/app/designer/groups/${id || 0}`);
 
   render() {
     return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
@@ -69,7 +71,7 @@ export class RawGroupListPanel
               allPoints={this.props.allPoints}
               hovered={false}
               dispatch={this.props.dispatch}
-              onClick={() => this.navigate(group.body.id || 0)}
+              onClick={this.navigate(group.body.id)}
             />)}
         </EmptyStateWrapper>
       </DesignerPanelContent>

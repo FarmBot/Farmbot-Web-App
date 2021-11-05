@@ -1,9 +1,14 @@
 import { AppState } from "../../reducer";
-import { panelState } from "../control_panel_state";
+import {
+  plantsPanelState, pointsPanelState, settingsPanelState, weedsPanelState,
+} from "../panel_state";
 
 export const app: AppState = {
   settingsSearchTerm: "",
-  controlPanelState: panelState(),
+  settingsPanelState: settingsPanelState(),
+  plantsPanelState: plantsPanelState(),
+  weedsPanelState: weedsPanelState(),
+  pointsPanelState: pointsPanelState(),
   controlsPopupOpen: false,
   toasts: {},
 };

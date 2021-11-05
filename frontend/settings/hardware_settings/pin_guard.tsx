@@ -17,11 +17,11 @@ export function PinGuard(props: PinGuardProps) {
   return <Highlight className={"section"}
     settingName={DeviceSetting.pinGuard}>
     <Header
-      expanded={props.controlPanelState.pin_guard}
+      expanded={props.settingsPanelState.pin_guard}
       title={DeviceSetting.pinGuard}
       panel={"pin_guard"}
       dispatch={props.dispatch} />
-    <Collapse isOpen={!!props.controlPanelState.pin_guard}>
+    <Collapse isOpen={!!props.settingsPanelState.pin_guard}>
       <PinGuardMCUInputGroup {...commonProps}
         label={DeviceSetting.pinGuard1}
         pinNumKey={"pin_guard_1_pin_nr"}

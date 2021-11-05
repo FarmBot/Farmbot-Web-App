@@ -1,11 +1,11 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { Actions } from "../constants";
-import { ControlPanelState } from "../devices/interfaces";
+import { SettingsPanelState } from "../interfaces";
 
 interface ToggleSettingsOpenProps {
   dispatch: Function;
-  panels: ControlPanelState;
+  panels: SettingsPanelState;
 }
 
 export class ToggleSettingsOpen extends React.Component<ToggleSettingsOpenProps> {
@@ -29,11 +29,11 @@ export class ToggleSettingsOpen extends React.Component<ToggleSettingsOpenProps>
 }
 
 /** Toggles visibility of individual settings panel sections. */
-export const toggleControlPanel = (payload: keyof ControlPanelState) => ({
-  type: Actions.TOGGLE_CONTROL_PANEL_OPTION, payload
+export const toggleControlPanel = (payload: keyof SettingsPanelState) => ({
+  type: Actions.TOGGLE_SETTINGS_PANEL_OPTION, payload
 });
 
 /** Toggle visibility of all settings panel sections. */
 export const bulkToggleControlPanel = (open: boolean) => ({
-  type: Actions.BULK_TOGGLE_CONTROL_PANEL, payload: open
+  type: Actions.BULK_TOGGLE_SETTINGS_PANEL, payload: open
 });

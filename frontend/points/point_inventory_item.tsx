@@ -46,7 +46,7 @@ export class PointInventoryItem extends
         toggle("leave");
       } else {
         push(`/app/designer/points/${pointId}`);
-        dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: [tpp.uuid] });
+        dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: tpp.uuid });
       }
     };
 

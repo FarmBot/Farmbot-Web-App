@@ -2,6 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
 import { act } from "react-dom/test-utils";
+import { SpecialStatus } from "farmbot";
 
 describe("<DesignerPanel />", () => {
   it("renders default panel", () => {
@@ -24,6 +25,12 @@ describe("<DesignerPanelHeader />", () => {
   it("renders default panel header", () => {
     const wrapper = mount(<DesignerPanelHeader panelName={"test-panel"} />);
     expect(wrapper.find("div").first().hasClass("gray-panel")).toBeTruthy();
+  });
+
+  it("renders saving indicator", () => {
+    const wrapper = mount(<DesignerPanelHeader panelName={"test-panel"}
+      specialStatus={SpecialStatus.DIRTY} />);
+    expect(wrapper.text().toLowerCase()).toContain("saving");
   });
 
   it("goes back", () => {

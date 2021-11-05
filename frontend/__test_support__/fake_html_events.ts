@@ -45,6 +45,6 @@ export const focusEvent = (value: string): FocusEvent => {
 
 type KeyboardEvent = React.KeyboardEvent<HTMLInputElement>;
 export const keyboardEvent = (key: string): KeyboardEvent => {
-  const event: DeepPartial<KeyboardEvent> = { key };
+  const event: DeepPartial<KeyboardEvent> = { key, preventDefault: jest.fn() };
   return event as KeyboardEvent;
 };
