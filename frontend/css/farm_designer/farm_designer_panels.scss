@@ -406,14 +406,14 @@
     width: 100%;
     background: $panel_medium_light_gray;
     padding: 0.5rem;
-    &.status {
-      height: 20rem;
-    }
-    &.more {
+    &.more-select {
       height: 23rem;
     }
-    &.more.status {
-      height: 26rem;
+    &.more-action {
+      height: 28rem;
+    }
+    &.more-select.more-action {
+      height: 36rem;
     }
     button {
       margin: 0.5rem;
@@ -434,21 +434,63 @@
       padding-right: 1rem;
     }
     .plant-status-bulk-update {
-      display: inline-flex;
+      display: inline-block;
       width: 100%;
-      margin-left: 1rem;
       .filter-search {
-        margin-left: 0.5rem;
+        display: inline-block;
+        width: 50%;
       }
       p {
+        display: inline-block;
         font-size: 1.2rem;
         line-height: 4.1rem;
+        vertical-align: top;
+      }
+    }
+    .point-size-bulk-update {
+      display: inline-block;
+      width: 100%;
+      p {
+        display: inline-block;
+        font-size: 1.2rem;
+        vertical-align: middle;
+      }
+      input {
+        margin: 0;
+        width: 48%;
+        height: 3rem;
+        margin-left: 0.5rem;
+      }
+    }
+    .plant-date-bulk-update {
+      display: inline-block;
+      width: 100%;
+      .input {
+        display: inline-block;
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+        width: 48%;
+        input {
+          height: 3rem;
+          padding: 0;
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+      }
+    }
+    .point-color-bulk-update {
+      display: inline-block;
+      width: 100%;
+      margin-top: 1rem;
+      .color-picker {
+        display: inline-block;
+        margin-left: 0.5rem;
+        margin-bottom: -0.5rem;
       }
     }
     .more {
-      float: right;
       cursor: pointer;
-      margin-right: 1rem;
+      margin-left: 0.5rem;
       line-height: 2.5rem;
       p {
         display: inline;
@@ -456,24 +498,14 @@
         margin-right: 1rem;
       }
     }
-    .actions {
-      display: inline-flex;
-      width: 100%;
-      .plant-status-bulk-update {
-        width: 50%;
-      }
-      .point-size-bulk-update {
-        width: 40%;
-        margin-left: 2rem;
-        p {
-          display: inline-block;
-          font-size: 1.2rem;
-        }
-        input {
-          width: 40%;
-          margin-top: 0.5rem;
-          margin-left: 1rem;
-        }
+    .more-button {
+      float: right;
+      width: max-content;
+      margin-right: 1rem;
+    }
+    .more-content {
+      label {
+        width: 100%;
       }
     }
   }
@@ -484,14 +516,14 @@
     max-height: calc(100vh - 13rem);
     overflow-y: auto;
     overflow-x: hidden;
-    &.status {
-      padding-top: 20rem;
-    }
-    &.more {
+    &.more-select {
       padding-top: 23rem;
     }
-    &.more.status {
-      padding-top: 26rem;
+    &.more-action {
+      padding-top: 28rem;
+    }
+    &.more-select.more-action {
+      padding-top: 36rem;
     }
     .tool-slot-search-item-icon {
       padding-left: 5px !important;

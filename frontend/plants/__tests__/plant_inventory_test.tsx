@@ -183,4 +183,11 @@ describe("<PanelSection />", () => {
     const wrapper = mount(<PanelSection {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("text");
   });
+
+  it("calls add", () => {
+    const p = fakeProps();
+    const wrapper = mount(<PanelSection {...p} />);
+    wrapper.find(".fb-button").first().simulate("click");
+    expect(p.addNew).toHaveBeenCalled();
+  });
 });

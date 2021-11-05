@@ -103,11 +103,7 @@ export class RawDesignerPhotos
           onClick={this.toggle("calibration")} />
         <Collapse isOpen={!!this.state.calibration}>
           <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
-            docPage={"camera-calibration"}>
-            <UpdateImagingPackage
-              version={this.props.versions[FarmwareName.PlantDetection]}
-              farmwareName={FarmwareName.PlantDetection} botOnline={botOnline} />
-          </ToolTip>
+            docPage={"camera-calibration"} />
           <CameraCalibration {...common}
             wDEnv={this.props.wDEnv}
             showAdvanced={!!this.props.getConfigValue(
@@ -129,11 +125,7 @@ export class RawDesignerPhotos
           title={t("Weed detection")}
           onClick={this.toggle("detection")} />
         <Collapse isOpen={!!this.state.detection}>
-          <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"}>
-            <UpdateImagingPackage
-              version={this.props.versions[FarmwareName.PlantDetection]}
-              farmwareName={FarmwareName.PlantDetection} botOnline={botOnline} />
-          </ToolTip>
+          <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"} />
           <WeedDetector {...common}
             wDEnv={this.props.wDEnv}
             showAdvanced={!!this.props.getConfigValue(
@@ -146,13 +138,7 @@ export class RawDesignerPhotos
           onClick={this.toggle("measure")} />
         <Collapse isOpen={!!this.state.measure}>
           <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
-            docPage={"measure-soil-height"}>
-            {farmwareNames.includes(FarmwareName.MeasureSoilHeight) &&
-              <UpdateImagingPackage
-                version={this.props.versions[FarmwareName.MeasureSoilHeight]}
-                farmwareName={FarmwareName.MeasureSoilHeight}
-                botOnline={botOnline} />}
-          </ToolTip>
+            docPage={"measure-soil-height"} />
           {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
             ? <FarmwareForm
               farmware={this.props.farmwares[FarmwareName.MeasureSoilHeight]}
