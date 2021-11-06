@@ -52,14 +52,6 @@ describe("<DesignerPhotos />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
-  it("shows version", () => {
-    const p = fakeProps();
-    p.versions = { "take-photo": "1.0.0" };
-    const wrapper = mount(<DesignerPhotos {...p} />);
-    wrapper.setState({ camera: true });
-    expect(wrapper.text()).toContain("1.0.0");
-  });
-
   it("expands sections", () => {
     const p = fakeProps();
     const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);

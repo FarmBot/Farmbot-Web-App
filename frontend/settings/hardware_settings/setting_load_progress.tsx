@@ -41,8 +41,8 @@ const T_KEYS: (keyof FirmwareConfig)[] = [
 ];
 
 const REPORT_KEYS: (keyof FirmwareConfig)[] = [
-  "pin_report_1_pin_nr" as keyof FirmwareConfig,
-  "pin_report_2_pin_nr" as keyof FirmwareConfig,
+  "pin_report_1_pin_nr",
+  "pin_report_2_pin_nr",
 ];
 
 /** Track firmware configuration adoption by FarmBot OS. */

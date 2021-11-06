@@ -3,7 +3,6 @@ import { CameraSelection } from "./camera_selection";
 import { CaptureSizeSelection } from "./capture_size_selection";
 import { RotationSetting } from "./rotation_setting";
 import { CaptureSettingsProps, CaptureSettingsState } from "./interfaces";
-import { UpdateRow } from "./update_row";
 
 export class CaptureSettings
   extends React.Component<CaptureSettingsProps, CaptureSettingsState> {
@@ -16,7 +15,6 @@ export class CaptureSettings
       <CameraSelection {...common} botOnline={botOnline} />
       <CaptureSizeSelection {...common} />
       <RotationSetting {...common} version={this.props.version} />
-      <UpdateRow version={this.props.version} botOnline={botOnline} />
     </div>;
   }
 }

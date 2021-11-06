@@ -2,7 +2,6 @@ import {
   BooleanConfigKey as BooleanWebAppConfigKey,
   StringConfigKey as StringWebAppConfigKey,
   NumberConfigKey as NumberWebAppConfigKey,
-  WebAppConfig,
 } from "farmbot/dist/resources/configs/web_app";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { store } from "../redux/store";
@@ -72,7 +71,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   display_map_missed_steps: false,
   time_format_seconds: false,
   crop_images: false,
-  ["clip_image_layer" as keyof WebAppConfig]: true,
+  clip_image_layer: true,
   show_camera_view_area: false,
   view_celery_script: false,
   highlight_modified_settings: true,

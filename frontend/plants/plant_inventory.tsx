@@ -204,7 +204,11 @@ export const PanelSection = (props: PanelSectionProps) =>
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
       <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`} />
-      <div onClick={props.addNew}
+      <div
+        onClick={e => {
+          e.stopPropagation();
+          props.addNew();
+        }}
         className={[
           "fb-button",
           `panel-${TAB_COLOR[props.panel]}`,
