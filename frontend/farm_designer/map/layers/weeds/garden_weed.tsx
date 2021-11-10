@@ -1,12 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { GardenWeedProps } from "../../interfaces";
 import { transformXY, scaleIcon } from "../../util";
 import { Actions } from "../../../../constants";
 import { Color } from "../../../../ui";
 import { mapPointClickAction, selectPoint } from "../../actions";
 import { Circle } from "../plants/circle";
-
-export const DEFAULT_WEED_ICON = "/app-resources/img/generic-weed.svg";
+import { FilePath, Path } from "../../../../internal_urls";
 
 interface GardenWeedState {
   iconHovered: boolean;
@@ -44,8 +43,7 @@ export class GardenWeed
       onMouseLeave={this.iconHover("end")}
       onClick={() => {
         dispatch(selectPoint([weed.uuid]));
-        mapPointClickAction(dispatch, weed.uuid,
-          `/app/designer/weeds/${id}`)();
+        mapPointClickAction(dispatch, weed.uuid, Path.weeds(id))();
       }}>
       <defs>
         <radialGradient id={`Weed${id}Gradient`}>
@@ -85,7 +83,7 @@ export class GardenWeed
       <g id="weed-icon">
         <image
           className={className}
-          xlinkHref={DEFAULT_WEED_ICON}
+          xlinkHref={FilePath.DEFAULT_WEED_ICON}
           height={iconRadius * 2}
           width={iconRadius * 2}
           x={qx - iconRadius}

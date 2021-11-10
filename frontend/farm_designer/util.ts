@@ -1,10 +1,10 @@
 import axios, { AxiosPromise } from "axios";
 import { OpenFarm, CropSearchResult } from "../open_farm/openfarm";
-import { DEFAULT_ICON } from "../open_farm/icons";
 import { Actions } from "../constants";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { get } from "lodash";
 import { ExternalUrl } from "../external_urls";
+import { FilePath } from "../internal_urls";
 
 const url = (q: string) =>
   `${ExternalUrl.OpenFarm.cropApi}?include=pictures&filter=${q}`;
@@ -31,7 +31,7 @@ export const OFSearch = (searchTerm: string) =>
         const payload = resp.data.data.map(datum => {
           const crop = datum.attributes;
           const id = get(datum, "relationships.pictures.data[0].id", "");
-          return { crop, image: (images[id] || DEFAULT_ICON) };
+          return { crop, image: (images[id] || FilePath.DEFAULT_ICON) };
         });
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
       })

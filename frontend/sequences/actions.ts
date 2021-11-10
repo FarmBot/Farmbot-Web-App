@@ -1,3 +1,5 @@
+import axios from "axios";
+import { t } from "../i18next_wrapper";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { SelectSequence } from "./interfaces";
 import { edit, init, overwrite } from "../api/crud";
@@ -7,12 +9,10 @@ import {
 import { push } from "../history";
 import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
-import { t } from "../i18next_wrapper";
 import { isNumber } from "lodash";
-import { sequencesUrlBase } from "../folders/component";
 import { error, success } from "../toast/toast";
 import { API } from "../api";
-import axios from "axios";
+import { Path } from "../internal_urls";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -38,7 +38,7 @@ export const copySequence = (payload: TaggedSequence) =>
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
     dispatch(init(copy.kind, copy.body));
-    push(sequencesUrlBase() + urlFriendly(copy.body.name));
+    push(Path.sequences(urlFriendly(copy.body.name)));
     setActiveSequenceByName();
   };
 
@@ -56,7 +56,7 @@ export function selectSequence(uuid: string): SelectSequence {
 }
 
 export const unselectSequence = () => {
-  push(sequencesUrlBase());
+  push(Path.sequences());
   return { type: Actions.SELECT_SEQUENCE, payload: undefined };
 };
 

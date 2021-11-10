@@ -40,6 +40,7 @@ import {
 import { Collapse } from "@blueprintjs/core";
 import { ImageFlipper } from "../photos/images/image_flipper";
 import { PhotoFooter } from "../photos/images/photos";
+import { Path } from "../internal_urls";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -121,7 +122,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
       <DesignerPanelHeader
         panelName={"location-info"}
         panelColor={PanelColor.gray}
-        backTo={"/app/designer/plants"}
+        backTo={Path.plants()}
         title={chosenXY ? `(${chosenXY.x}, ${chosenXY.y})` : t("Location info")} />
       <DesignerPanelContent panelName={"location-info"}>
         <EmptyStateWrapper
@@ -462,7 +463,7 @@ const LocationActions = (props: LocationActionsProps) =>
             cy: props.chosenLocation.y,
           }
         });
-        push("/app/designer/points/add");
+        push(Path.points("add"));
       }}>
       {t("Add point at this location")}
     </button>

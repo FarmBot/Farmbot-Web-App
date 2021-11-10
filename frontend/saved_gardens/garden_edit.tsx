@@ -13,11 +13,12 @@ import { Everything } from "../interfaces";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
+import { Path } from "../internal_urls";
 
 /** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
@@ -57,8 +58,8 @@ const DestroyGardenButton =
     </button>;
 
 export const findSavedGardenByUrl = (ri: ResourceIndex) => {
-  const id = getPathArray()[4];
-  const num = parseInt(id || "NOPE", 10);
+  const id = Path.getSlug(Path.savedGardens());
+  const num = parseInt(id, 10);
   if (isNumber(num) && !isNaN(num)) {
     return maybeFindSavedGardenById(ri, num);
   }
@@ -78,10 +79,9 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
 export class RawEditGarden extends React.Component<EditGardenProps, {}> {
   render() {
     const { savedGarden } = this.props;
-    const gardensPath = "/app/designer/gardens";
-    const plantsPath = "/app/designer/plants";
-    !savedGarden && getPathArray().join("/").startsWith(gardensPath)
-      && push(plantsPath);
+    const gardensPath = Path.savedGardens();
+    const plantsPath = Path.plants();
+    !savedGarden && Path.startsWith(gardensPath) && push(plantsPath);
     return <DesignerPanel panelName={"saved-garden-edit"}
       panel={Panel.SavedGardens}>
       <DesignerPanelHeader

@@ -1,6 +1,8 @@
+import { Path } from "../../../../../internal_urls";
+const mockPath = Path.mock(Path.weeds());
 jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: jest.fn(),
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import React from "react";
@@ -11,7 +13,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<GardenWeed />", () => {
@@ -86,8 +88,7 @@ describe("<GardenWeed />", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
     wrapper.find("g").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      `/app/designer/weeds/${p.weed.body.id}`);
+    expect(push).toHaveBeenCalledWith(Path.weeds(p.weed.body.id));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
       payload: [p.weed.uuid],

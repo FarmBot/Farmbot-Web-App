@@ -18,6 +18,7 @@ import {
 } from "../resources/selectors";
 import { createGroup } from "./actions";
 import { SearchField } from "../ui/search_field";
+import { Path } from "../internal_urls";
 
 export interface GroupListPanelProps {
   dispatch: Function;
@@ -41,8 +42,7 @@ export class RawGroupListPanel
   extends React.Component<GroupListPanelProps, State> {
   state: State = { searchTerm: "" };
 
-  navigate = (id: number | undefined) => () =>
-    push(`/app/designer/groups/${id || 0}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
     return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>

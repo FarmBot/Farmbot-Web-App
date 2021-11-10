@@ -7,8 +7,9 @@ import { Panel } from "../../farm_designer/panel_header";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { initSave } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import { error } from "../../toast/toast";
+import { Path } from "../../internal_urls";
 
 export interface DesignerFarmwareAddProps {
   dispatch: Function;
@@ -28,7 +29,7 @@ export class RawDesignerFarmwareAdd
   extends React.Component<DesignerFarmwareAddProps, FarmwareAddState> {
   state: FarmwareAddState = { packageUrl: "" };
 
-  clearUrl = () => history.push("/app/designer/farmware");
+  clearUrl = () => push(Path.farmware());
 
   install = () => {
     const url = this.state.packageUrl;
@@ -48,7 +49,7 @@ export class RawDesignerFarmwareAdd
         panelName={panelName}
         panel={Panel.Farmware}
         title={t("Install new Farmware")}
-        backTo={"/app/designer/farmware"} />
+        backTo={Path.farmware()} />
       <DesignerPanelContent panelName={panelName}>
         <label>
           {t("Farmware manifest URL")}

@@ -1,5 +1,5 @@
 import React from "react";
-import { DEFAULT_ICON, svgToUrl } from "../open_farm/icons";
+import { svgToUrl } from "../open_farm/icons";
 import { maybeGetCachedPlantIcon } from "../open_farm/cached_crop";
 import { setHoveredPlant } from "../farm_designer/map/actions";
 import {
@@ -7,11 +7,11 @@ import {
 } from "farmbot";
 import { error } from "../toast/toast";
 import { t } from "../i18next_wrapper";
-import { DEFAULT_WEED_ICON } from "../farm_designer/map/layers/weeds/garden_weed";
 import { uniq } from "lodash";
 import { overwriteGroup } from "./actions";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolTransformProps } from "../tools/interfaces";
+import { FilePath } from "../internal_urls";
 
 export interface PointGroupItemProps {
   point: TaggedPoint;
@@ -98,7 +98,7 @@ export class PointGroupItem
   get initIcon() {
     switch (this.props.point.body.pointer_type) {
       case "Plant":
-        return DEFAULT_ICON;
+        return FilePath.DEFAULT_ICON;
       case "GenericPointer":
         const { color } = this.props.point.body.meta;
         return svgToUrl(genericPointIcon(color));
@@ -134,7 +134,7 @@ export class PointGroupItem
       onClick={this.click}>
       {this.props.point.body.pointer_type == "Weed" &&
         <img className={"weed-icon"}
-          src={DEFAULT_WEED_ICON}
+          src={FilePath.DEFAULT_WEED_ICON}
           width={32}
           height={32} />}
       <this.ToolSlotGraphic />

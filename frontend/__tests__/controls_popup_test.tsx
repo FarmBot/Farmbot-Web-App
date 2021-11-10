@@ -1,9 +1,3 @@
-let mockPath = "";
-jest.mock("../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
-}));
-
 const mockDevice = {
   moveRelative: jest.fn((_) => Promise.resolve()),
   takePhoto: jest.fn(() => Promise.resolve()),
@@ -11,7 +5,7 @@ const mockDevice = {
 jest.mock("../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
-import { ControlsPopup, showControlsPopup } from "../controls_popup";
+import { ControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import { ControlsPopupProps } from "../controls/move/interfaces";
@@ -58,27 +52,5 @@ describe("<ControlsPopup />", () => {
     expect(wrapper.find(".controls-popup").hasClass("open")).toBeFalsy();
     [0, 1, 2, 3].map((i) => wrapper.find("button").at(i).simulate("click"));
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
-  });
-});
-
-describe("showControlsPopup()", () => {
-  it.each<["shows" | "doesn't show", string]>([
-    ["shows", "designer"],
-    ["shows", "designer/plants"],
-    ["doesn't show", "designer/controls"],
-    ["shows", "device"],
-    ["shows", "sequences"],
-    ["shows", "sequences/for_regimens"],
-    ["doesn't show", "regimens"],
-    ["shows", "tools"],
-    ["shows", "farmware"],
-    ["shows", "messages"],
-    ["shows", "logs"],
-    ["shows", "help"],
-    ["shows", ""],
-    ["doesn't show", "account"],
-  ])("%s controls pop-up on %s page", (expected, page) => {
-    mockPath = "/app/" + page;
-    expect(showControlsPopup()).toEqual(expected == "shows");
   });
 });

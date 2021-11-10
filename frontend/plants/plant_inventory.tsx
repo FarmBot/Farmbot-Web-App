@@ -15,7 +15,6 @@ import {
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
 import { push } from "../history";
-import { cropSearchUrl } from "./crop_catalog";
 import {
   selectAllActivePoints,
   selectAllPlantPointers,
@@ -32,6 +31,7 @@ import { Collapse } from "@blueprintjs/core";
 import { createGroup } from "../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { deletePoints } from "../api/delete_points";
+import { Path } from "../internal_urls";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -79,7 +79,7 @@ export class RawPlants
           type: Actions.SEARCH_QUERY_CHANGE,
           payload: this.state.searchTerm,
         });
-        push(cropSearchUrl());
+        push(Path.cropSearch());
       }}>
         {t("search all crops?")}
       </a>
@@ -91,7 +91,7 @@ export class RawPlants
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
     const filteredPlants = this.props.plants
@@ -137,7 +137,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => push("/app/designer/gardens/add")}
+          addNew={() => push(Path.savedGardens("add"))}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -156,7 +156,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("plants")}
           itemCount={this.props.plants.length}
-          addNew={() => push(cropSearchUrl())}
+          addNew={() => push(Path.cropSearch())}
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}>

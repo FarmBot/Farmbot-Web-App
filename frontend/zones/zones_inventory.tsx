@@ -15,9 +15,10 @@ import {
   selectAllPointGroups, selectAllActivePoints,
 } from "../resources/selectors";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
-import { history } from "../history";
+import { push } from "../history";
 import { initSaveGetId } from "../api/crud";
 import { SearchField } from "../ui/search_field";
+import { Path } from "../internal_urls";
 
 export interface ZonesProps {
   dispatch: Function;
@@ -32,7 +33,7 @@ export const mapStateToProps = (props: Everything): ZonesProps => ({
 });
 
 export const RawZones = (props: ZonesProps) => {
-  const navigate = (id: number) => history.push(`/app/designer/zones/${id}`);
+  const navigate = (id: number) => push(Path.zones(id));
   const [searchTerm, setSearchTerm] = React.useState("");
   return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
     <DesignerNavTabs />

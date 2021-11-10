@@ -38,6 +38,7 @@ import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { createGroup } from "../point_groups/actions";
 import { pointGroupSubset } from "../plants/select_plants";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 interface PointsSectionProps {
   title: string;
@@ -151,7 +152,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       type: Actions.TOGGLE_POINTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
     const gridIds = compact(uniq(this.props.genericPoints
@@ -206,7 +207,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("points")}
           itemCount={this.props.genericPoints.length}
-          addNew={() => push("/app/designer/points/add")}
+          addNew={() => push(Path.points("add"))}
           addTitle={t("add point")}
           addClassName={"plus-point"}
           title={t("Points")}>

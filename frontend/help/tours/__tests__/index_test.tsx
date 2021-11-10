@@ -1,5 +1,3 @@
-jest.mock("../../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import { mount } from "enzyme";
 import {

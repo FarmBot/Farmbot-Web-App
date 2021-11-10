@@ -2,7 +2,8 @@ jest.mock("../../open_farm/cached_crop", () => ({
   maybeGetCachedPlantIcon: jest.fn(),
 }));
 
-let mockPath = "/app/designer/plants";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -70,13 +71,13 @@ describe("<PlantInventoryItem />", () => {
   });
 
   it("selects plant", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(selectPoint).toBeCalledWith([p.plant.uuid]);
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.plant.body.id);
+    expect(push).toHaveBeenCalledWith(Path.plants(p.plant.body.id));
   });
 
   it("handles missing plant id", () => {
@@ -85,11 +86,11 @@ describe("<PlantInventoryItem />", () => {
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(selectPoint).toBeCalledWith([p.plant.uuid]);
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/ERR_NO_PLANT_ID");
+    expect(push).toHaveBeenCalledWith(Path.plants("ERR_NO_PLANT_ID"));
   });
 
   it("removes item in box select mode", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const p = fakeProps();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
@@ -100,14 +101,14 @@ describe("<PlantInventoryItem />", () => {
   });
 
   it("selects plant template", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.plant = fakePlantTemplate();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(selectPoint).toBeCalledWith([p.plant.uuid]);
     expect(push).toHaveBeenCalledWith(
-      "/app/designer/gardens/templates/" + p.plant.body.id);
+      Path.savedGardens(`templates/${p.plant.body.id}`));
   });
 
   it("gets cached icon", () => {

@@ -1,9 +1,9 @@
 import { MovePointsProps, DraggableEvent } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import { Actions } from "../../constants";
-import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
+import { svgToUrl } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../../redux/interfaces";
@@ -13,6 +13,7 @@ import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
+import { FilePath, Path } from "../../internal_urls";
 
 export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
   payload.points.map(point => {
@@ -95,14 +96,14 @@ export const closePlantInfo = (dispatch: Function) => () => {
   const mode = getMode();
   if (mode == Mode.editPlant || mode == Mode.boxSelect) {
     unselectPlant(dispatch)();
-    history.push("/app/designer/plants");
+    push(Path.plants());
   }
 };
 
 export const setDragIcon =
   (icon: string | undefined) => (e: DraggableEvent) => {
     const dragImg = new Image();
-    dragImg.src = icon ? svgToUrl(icon) : DEFAULT_ICON;
+    dragImg.src = icon ? svgToUrl(icon) : FilePath.DEFAULT_ICON;
     const width = dragImg.naturalWidth;
     const height = dragImg.naturalHeight;
     e.dataTransfer.setDragImage
@@ -116,6 +117,6 @@ export const mapPointClickAction =
       case Mode.boxSelect:
         return dispatch(clickMapPlant(uuid, ""));
       default:
-        return path && history.push(path);
+        return path && push(path);
     }
   };

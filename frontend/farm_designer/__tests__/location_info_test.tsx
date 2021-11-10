@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -17,6 +15,7 @@ import { tagAsSoilHeight } from "../../points/soil_height";
 import { Actions } from "../../constants";
 import { push } from "../../history";
 import { ImageFlipper } from "../../photos/images/image_flipper";
+import { Path } from "../../internal_urls";
 
 describe("<LocationInfo />", () => {
   const fakeProps = (): LocationInfoProps => ({
@@ -151,7 +150,7 @@ describe("<LocationInfo />", () => {
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { cx: 1, cy: 1 }
     });
-    expect(push).toHaveBeenCalledWith("/app/designer/points/add");
+    expect(push).toHaveBeenCalledWith(Path.points("add"));
   });
 });
 

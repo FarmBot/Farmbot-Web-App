@@ -4,11 +4,11 @@ import { Position } from "@blueprintjs/core";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { splice, remove, move } from "../step_tiles";
 import { push } from "../../history";
-import { sequencesUrlBase } from "../../folders/component";
 import { urlFriendly } from "../../util";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { t } from "../../i18next_wrapper";
 import { Popover } from "../../ui";
+import { Path } from "../../internal_urls";
 
 export interface StepIconBarProps {
   index: number;
@@ -51,7 +51,7 @@ export function StepIconGroup(props: StepIconBarProps) {
     dispatch(move({ step, sequence, from: index, to }));
   };
   const onSequenceLinkNav = (sequenceName: string) => () => {
-    push(sequencesUrlBase() + urlFriendly(sequenceName));
+    push(Path.sequences(urlFriendly(sequenceName)));
     setActiveSequenceByName();
   };
 

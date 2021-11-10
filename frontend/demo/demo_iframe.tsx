@@ -5,6 +5,7 @@ import axios from "axios";
 import { ExternalUrl } from "../external_urls";
 import { t } from "../i18next_wrapper";
 import { tourPath } from "../help/tours";
+import { Path } from "../internal_urls";
 
 interface State {
   error: Error | undefined;
@@ -51,7 +52,8 @@ export class DemoIframe extends React.Component<{}, State> {
   handleMessage =
     (_chan: string, _buffer: Buffer) => {
       localStorage.setItem("session", _buffer.toString());
-      location.assign(tourPath("/app/designer/plants", "gettingStarted", "intro"));
+      const stepUrl = Path.withApp(Path.plants());
+      location.assign(tourPath(stepUrl, "gettingStarted", "intro"));
     };
 
   requestAccount = () => {

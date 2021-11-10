@@ -1,15 +1,13 @@
 import axios from "axios";
 import { InitOptions } from "i18next";
 import { merge } from "lodash";
-
-const translationFilePath = (lang: string): string =>
-  `/app-resources/languages/${lang}.json`;
+import { FilePath } from "./internal_urls";
 
 /** @public */
 export function generateUrl(langCode: string, host: string, port: string) {
   const lang = langCode.slice(0, 2);
   const baseUrl = `//${host.split(":")[0]}:${port}`;
-  const url = `${baseUrl}${translationFilePath(lang)}`;
+  const url = `${baseUrl}${FilePath.language(lang)}`;
   return url;
 }
 
@@ -28,7 +26,7 @@ const parseTranslationData = (data: TranslationFile): Translations =>
 
 export function generateI18nConfig(lang: string): Promise<InitOptions> {
   return axios
-    .get<TranslationFile>(translationFilePath(lang))
+    .get<TranslationFile>(FilePath.language(lang))
     .then(response => {
       const translation = parseTranslationData(response.data);
       return {

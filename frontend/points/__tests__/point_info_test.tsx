@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/points/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.points(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -26,7 +27,6 @@ import { destroy, save } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
 import { push } from "../../history";
-import { locationUrl } from "../../farm_designer/move_to";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -36,21 +36,21 @@ describe("<EditPoint />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/points/";
+    mockPath = Path.mock(Path.points());
     const wrapper = mount(<EditPoint {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/points");
+    expect(push).toHaveBeenCalledWith(Path.points());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<EditPoint {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
     expect(push).not.toHaveBeenCalled();
   });
 
   it("renders with points", () => {
-    mockPath = "/app/designer/points/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
     point.body.meta = { meta_key: "meta value" };
@@ -61,7 +61,7 @@ describe("<EditPoint />", () => {
   });
 
   it("doesn't render duplicate values", () => {
-    mockPath = "/app/designer/points/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
     point.body.meta = { color: "red", meta_key: undefined, gridId: "123" };
@@ -73,7 +73,7 @@ describe("<EditPoint />", () => {
   });
 
   it("moves the device to a particular point", () => {
-    mockPath = "/app/designer/points/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
     const coords = { x: 1, y: -2, z: 3 };
@@ -82,11 +82,11 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(locationUrl(coords));
+    expect(push).toHaveBeenCalledWith(Path.location(coords));
   });
 
   it("goes back", () => {
-    mockPath = "/app/designer/points/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const wrapper = shallow(<EditPoint {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("back");
@@ -96,7 +96,7 @@ describe("<EditPoint />", () => {
   });
 
   it("saves", () => {
-    mockPath = "/app/designer/weeds/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
     point.body.id = 1;
@@ -107,7 +107,7 @@ describe("<EditPoint />", () => {
   });
 
   it("doesn't save", () => {
-    mockPath = "/app/designer/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     const point = fakePoint();
     point.body.id = 1;
@@ -118,7 +118,7 @@ describe("<EditPoint />", () => {
   });
 
   it("deletes point", () => {
-    mockPath = "/app/designer/points/1";
+    mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
     p.findPoint = () => point;

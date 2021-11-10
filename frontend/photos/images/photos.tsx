@@ -22,7 +22,7 @@ import { TaggedImage, Xyz } from "farmbot";
 import { MarkedSlider, Popover } from "../../ui";
 import { takePhoto } from "../../devices/actions";
 import { push } from "../../history";
-import { locationUrl } from "../../farm_designer/move_to";
+import { Path } from "../../internal_urls";
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -129,7 +129,7 @@ export const MoveToLocation = (props: MoveToLocationProps) =>
     onClick={() =>
       isNumber(props.imageLocation.x) &&
       isNumber(props.imageLocation.y) &&
-      push(locationUrl({
+      push(Path.location({
         x: props.imageLocation.x,
         y: props.imageLocation.y,
         z: props.imageLocation.z,

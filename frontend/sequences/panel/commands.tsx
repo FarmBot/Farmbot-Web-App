@@ -12,6 +12,7 @@ import { urlFriendly } from "../../util";
 import { Everything } from "../../interfaces";
 import { findSequence, selectAllSequences } from "../../resources/selectors";
 import { getFarmwareData } from "../state_to_props";
+import { Path } from "../../internal_urls";
 
 export const mapStateToProps = (props: Everything): StepButtonProps => {
   const uuid = props.resources.consumers.sequences.current;
@@ -36,7 +37,7 @@ export class RawDesignerSequenceCommands
         panelName={panelName}
         panel={Panel.Sequences}
         title={t("Add Command")}
-        backTo={`/app/designer/sequences/${sequenceName}`} />
+        backTo={Path.sequences(sequenceName)} />
       <DesignerPanelContent panelName={panelName}>
         <StepButtonCluster
           current={this.props.current}

@@ -6,7 +6,6 @@ import {
   selectAllFarmwareEnvs,
   selectAllGenericPointers,
 } from "../resources/selectors";
-import { history } from "../history";
 import { PlantStage, TaggedPoint } from "farmbot";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import { isNumber, get } from "lodash";
@@ -33,7 +32,6 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
   return {
     openedSavedGarden,
     findPlant,
-    push: history.push,
     dispatch: props.dispatch,
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),

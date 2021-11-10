@@ -3,7 +3,7 @@ import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
 import { Row, Col, Popover } from "../ui";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
 import { updatePageInfo } from "../util";
 import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
@@ -23,6 +23,7 @@ import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { setupProgressString } from "../wizard/data";
 import { lastSeenNumber } from "../settings/fbos_settings/last_seen_row";
+import { Path } from "../internal_urls";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -125,7 +126,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const { wizardStepResults, device } = this.props;
     return !device.body.setup_completed_at
       ? <a className={"setup-button"}
-        onClick={() => push("/app/designer/setup")}>
+        onClick={() => push(Path.setup())}>
         {t("Setup")}
         {window.innerWidth > 450 &&
           `: ${setupProgressString(wizardStepResults, firmwareHardware)}`}
@@ -160,7 +161,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   render() {
     /** Change document meta title on every route change. */
-    updatePageInfo(getPathArray()[2] || "", getPathArray()[3]);
+    updatePageInfo(Path.getSlug(Path.app()), Path.getSlug(Path.designer()));
 
     return <ErrorBoundary>
       <div className={[

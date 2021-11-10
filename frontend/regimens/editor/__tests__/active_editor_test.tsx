@@ -1,4 +1,5 @@
-const mockPath = "/app/designer/regimens/1";
+import { Path } from "../../../internal_urls";
+const mockPath = Path.mock(Path.regimens("1"));
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),

@@ -33,6 +33,7 @@ import { push } from "../history";
 import { shouldDisplayFeature } from "../farmware/state_to_props";
 import { Feature } from "../devices/interfaces";
 import moment from "moment";
+import { Path } from "../internal_urls";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -338,7 +339,7 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push("/app/designer/tours")}
+      onClick={() => push(Path.tours())}
       title={t("View available tours")}>
       {t("View available tours")}
     </a>
@@ -438,7 +439,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push("/app/designer/setup")}
+      onClick={() => push(Path.setup())}
       title={buttonText}>
       {buttonText}
     </a>

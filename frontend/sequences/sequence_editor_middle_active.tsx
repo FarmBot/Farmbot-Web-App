@@ -36,7 +36,6 @@ import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { clone, isUndefined, last, sortBy } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
-import { sequencesUrlBase, inDesigner } from "../folders/component";
 import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 import { getModifiedClassName } from "../settings/default_values";
 import { error } from "../toast/toast";
@@ -47,6 +46,7 @@ import { InputLengthIndicator } from "./inputs/input_length_indicator";
 import {
   License, loadSequenceVersion, SequencePreviewContent,
 } from "./panel/preview";
+import { Path } from "../internal_urls";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -200,7 +200,7 @@ export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
   const { sequence } = props;
   const disabled = sequence.specialStatus !== SpecialStatus.SAVED;
   const ids = sortBy(sequence.body.sequence_versions);
-  const linkPath = sequenceVersionPath(last(ids));
+  const linkPath = Path.sequenceVersion(last(ids));
   const [publishing, setPublishing] = React.useState(false);
   const [unpublishing, setUnpublishing] = React.useState(false);
   return <div className={"sequence-share-menu"}>
@@ -228,7 +228,7 @@ export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
             <p>{version.label}</p>
           </Col>
           <Col xs={6}>
-            <Link to={sequenceVersionPath(version.value)}>
+            <Link to={Path.sequenceVersion(version.value)}>
               <i className={"fa fa-link"} />
             </Link>
           </Col>
@@ -259,7 +259,7 @@ export const SequenceBtnGroup = ({
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
       onClick={() => dispatch(save(sequence.uuid)).then(() =>
-        push(sequencesUrlBase() + urlFriendly(sequence.body.name)))} />
+        push(Path.sequences(urlFriendly(sequence.body.name))))} />
     <TestButton
       key={JSON.stringify(sequence)}
       syncStatus={syncStatus}
@@ -289,7 +289,7 @@ export const SequenceBtnGroup = ({
         sequence.body.pinned ? "pinned" : "",
       ].join(" ")}
       onClick={() => dispatch(pinSequenceToggle(sequence))} />
-    {inDesigner() &&
+    {Path.inDesigner() &&
       <i className={`fa fa-eye${visualized ? "" : "-slash"}`}
         title={visualized ? t("unvisualize") : t("visualize")}
         onClick={() =>
@@ -304,7 +304,7 @@ export const SequenceBtnGroup = ({
           BooleanSetting.confirm_sequence_deletion);
         const force = !(confirm ?? true);
         dispatch(destroy(sequence.uuid, force))
-          .then(() => push(sequencesUrlBase()));
+          .then(() => push(Path.sequences()));
       }} />
     <div className={"publish-button"}>
       <Popover position={Position.BOTTOM_RIGHT}
@@ -650,14 +650,11 @@ const PublicCopyToolbar = (props: PublicCopyToolbarProps) => {
       {t("upgrade your copy to this version")}
     </button>
     <Link
-      to={sequenceVersionPath(previewVersionId)}>
+      to={Path.sequenceVersion(previewVersionId)}>
       <i className={"fa fa-link"} />
     </Link>
   </div>;
 };
-
-export const sequenceVersionPath = (id: string | number | undefined) =>
-  `/app/shared/sequence/${id}`;
 
 export interface AddCommandButtonProps {
   dispatch: Function;
@@ -683,7 +680,7 @@ export const AddCommandButton = (props: AddCommandButtonProps) => {
           type: Actions.SET_SEQUENCE_STEP_POSITION,
           payload: index,
         });
-        inDesigner() && push("/app/designer/sequences/commands");
+        Path.inDesigner() && push(Path.sequences("commands"));
       }}>
       {stepCount == 0
         ? t("add command")

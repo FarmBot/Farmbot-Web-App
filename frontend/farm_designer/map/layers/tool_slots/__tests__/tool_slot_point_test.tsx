@@ -1,6 +1,8 @@
+import { Path } from "../../../../../internal_urls";
+const mockPath = Path.mock(Path.toolSlots());
 jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: jest.fn(),
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import React from "react";
@@ -12,7 +14,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
 
 describe("<ToolSlotPoint/>", () => {
   const fakeProps = (): TSPProps => ({
@@ -42,7 +44,7 @@ describe("<ToolSlotPoint/>", () => {
     p.slot.toolSlot.body.id = 1;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     wrapper.find("g").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
+    expect(push).toHaveBeenCalledWith(Path.toolSlots(1));
   });
 
   it("displays tool name", () => {

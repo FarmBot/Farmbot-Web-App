@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Actions } from "../../constants";
 import { UUID } from "../../resources/interfaces";
 import {
@@ -10,17 +10,16 @@ import { transformXY } from "./util";
 import { Color } from "../../ui";
 import { BotPosition } from "../../devices/interfaces";
 import { zoomCompensation } from "./zoom";
-import { iconFile, Icon } from "../panel_header";
 import {
   findPointerByTypeAndId, findSlotByToolId,
 } from "../../resources/selectors";
 import { store } from "../../redux/store";
 import { findVariableByName } from "../../resources/sequence_meta";
-import { inDesigner } from "../../folders/component";
 import { getStepTag } from "../../resources/sequence_tagging";
 import {
   computeCoordinate,
 } from "../../sequences/step_tiles/tile_computed_move/compute";
+import { FilePath, Icon, Path } from "../../internal_urls";
 
 const ICON_LOOKUP: Partial<Record<LegalSequenceKind, Icon>> = {
   // _if: Icon.settings,
@@ -149,7 +148,7 @@ export const SequenceVisualization = (props: SequenceVisualizationProps) => {
 };
 
 export const hoverSequenceStep =
-  (uuid: string | undefined) => (dispatch: Function) => () => inDesigner() &&
+  (uuid: string | undefined) => (dispatch: Function) => () => Path.inDesigner() &&
     dispatch({
       type: Actions.HOVER_SEQUENCE_STEP,
       payload: uuid,
@@ -207,7 +206,7 @@ const addIcon = (props: AddSVGElementProps) =>
         onMouseLeave={props.dispatch(hoverSequenceStep(undefined))}
         x={qx - size / 2} y={qy - size / 2}
         width={size} height={size}
-        xlinkHref={iconFile(location.icon)}
+        xlinkHref={FilePath.icon(location.icon)}
         opacity={hovered ? 1 : 0.5} />
       : <g />;
   };

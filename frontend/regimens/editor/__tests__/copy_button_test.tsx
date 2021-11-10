@@ -1,16 +1,10 @@
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-  history: { getCurrentLocation: () => ({ pathname: "" }) },
-}));
-
 jest.mock("../../../api/crud", () => ({ init: jest.fn() }));
 
 jest.mock("../../set_active_regimen_by_name", () => ({
   setActiveRegimenByName: jest.fn()
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
@@ -18,6 +12,7 @@ import { push } from "../../../history";
 import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
 import { init } from "../../../api/crud";
 import { CopyButtonProps } from "../interfaces";
+import { Path } from "../../../internal_urls";
 
 describe("<CopyButton />", () => {
   const fakeProps = (): CopyButtonProps => ({
@@ -37,7 +32,7 @@ describe("<CopyButton />", () => {
     expect(init).toHaveBeenCalledWith("Regimen", {
       color: "red", name: "Foo copy 1", regimen_items, body: []
     });
-    expect(push).toHaveBeenCalledWith("/app/designer/regimens/foo_copy_1");
+    expect(push).toHaveBeenCalledWith(Path.regimens("foo_copy_1"));
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

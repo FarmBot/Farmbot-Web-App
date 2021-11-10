@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/zones/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.zones(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -34,21 +35,21 @@ describe("<EditZone />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/zones/nope";
+    mockPath = Path.mock(Path.zones("nope"));
     const wrapper = mount(<EditZone {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/zones");
+    expect(push).toHaveBeenCalledWith(Path.zones());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<EditZone {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
     expect(push).not.toHaveBeenCalled();
   });
 
   it("renders", () => {
-    mockPath = "/app/designer/zones/1";
+    mockPath = Path.mock(Path.zones(1));
     const p = fakeProps();
     p.findZone = () => fakePointGroup();
     const wrapper = mount(<EditZone {...p} />);
@@ -56,7 +57,7 @@ describe("<EditZone />", () => {
   });
 
   it("changes name", () => {
-    mockPath = "/app/designer/zones/1";
+    mockPath = Path.mock(Path.zones(1));
     const p = fakeProps();
     const group = fakePointGroup();
     p.findZone = () => group;

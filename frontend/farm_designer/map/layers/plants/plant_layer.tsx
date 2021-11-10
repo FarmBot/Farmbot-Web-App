@@ -1,9 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { GardenPlant } from "./garden_plant";
 import { PlantLayerProps, Mode } from "../../interfaces";
 import { unpackUUID } from "../../../../util";
 import { getMode } from "../../util";
 import { Link } from "../../../../link";
+import { Path } from "../../../../internal_urls";
 
 export function PlantLayer(props: PlantLayerProps) {
   const {
@@ -28,9 +29,9 @@ export function PlantLayer(props: PlantLayerProps) {
       const hovered = p.uuid === hoveredPlant?.uuid;
       const selectedByBox = !!boxSelected?.includes(p.uuid);
       const selectedByGroup = groupSelected.includes(p.uuid);
-      const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
-        ? "gardens/templates"
-        : "plants";
+      const path = unpackUUID(p.uuid).kind === "PlantTemplate"
+        ? Path.plantTemplates
+        : Path.plants;
       const plant = <GardenPlant
         uuid={p.uuid}
         mapTransformProps={mapTransformProps}
@@ -56,7 +57,7 @@ export function PlantLayer(props: PlantLayerProps) {
       return (getMode() === Mode.editGroup || getMode() === Mode.boxSelect)
         ? <g {...wrapperProps}>{plant}</g>
         : <Link {...wrapperProps}
-          to={`/app/designer/${plantCategory}/${"" + p.body.id}`}>
+          to={path(p.body.id)}>
           {plant}
         </Link>;
     })}

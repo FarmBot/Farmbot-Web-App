@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
@@ -52,7 +53,7 @@ describe("<PointLayer/>", () => {
   });
 
   it("allows point mode interaction", () => {
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.interactions = true;
     const wrapper = svgMount(<PointLayer {...p} />);

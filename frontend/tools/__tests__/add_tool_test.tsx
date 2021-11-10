@@ -6,18 +6,17 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SaveBtn } from "../../ui";
 import { initSave, init, destroy } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import { Path } from "../../internal_urls";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
@@ -67,7 +66,7 @@ describe("<AddTool />", () => {
     await wrapper.find(SaveBtn).simulate("click");
     expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
     expect(wrapper.state().uuid).toEqual(undefined);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("removes unsaved tool on exit", async () => {
@@ -79,7 +78,7 @@ describe("<AddTool />", () => {
     await wrapper.find(SaveBtn).simulate("click");
     expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
     expect(wrapper.state().uuid).toEqual("fake uuid");
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     wrapper.unmount();
     expect(destroy).toHaveBeenCalledWith("fake uuid");
   });
@@ -98,7 +97,7 @@ describe("<AddTool />", () => {
     const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(expectedAdds);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't add stock tools twice", () => {
@@ -108,7 +107,7 @@ describe("<AddTool />", () => {
     const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(1);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("copies a tool name", () => {

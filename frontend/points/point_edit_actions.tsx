@@ -15,8 +15,8 @@ import { EditWeedStatus } from "../plants/edit_plant_status";
 import {
   MEASURE_SOIL_HEIGHT_NAME, soilHeightPoint, toggleSoilHeight,
 } from "./soil_height";
-import { locationUrl } from "../farm_designer/move_to";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -185,7 +185,7 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
       className={"fb-button gray no-float move-to-button"}
       type={"button"}
       title={t("move to location")}
-      onClick={() => push(locationUrl(props.pointLocation))}>
+      onClick={() => push(Path.location(props.pointLocation))}>
       {t("Move FarmBot to location")}
     </button>
   </Row>;

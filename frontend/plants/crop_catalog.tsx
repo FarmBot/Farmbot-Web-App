@@ -16,9 +16,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { SearchField } from "../ui/search_field";
-
-export const cropSearchUrl = (slugPlus?: string) =>
-  `/app/designer/plants/crop_search/${slugPlus || ""}`;
+import { Path } from "../internal_urls";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const { cropSearchQuery, cropSearchInProgress, cropSearchResults
@@ -70,7 +68,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
         panelName={"crop-catalog"}
         panel={Panel.Plants}
         title={t("Choose a crop")}
-        backTo={"/app/designer/plants"} />
+        backTo={Path.plants()} />
       <DesignerPanelTop panel={Panel.Plants}>
         <SearchField
           searchTerm={this.cropSearchQuery}

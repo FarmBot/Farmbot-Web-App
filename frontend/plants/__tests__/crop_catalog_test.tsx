@@ -1,28 +1,20 @@
 const lodash = require("lodash");
 lodash.debounce = jest.fn(x => x);
 
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 import React from "react";
 import {
-  cropSearchUrl, mapStateToProps, RawCropCatalog as CropCatalog,
+  mapStateToProps, RawCropCatalog as CropCatalog,
 } from "../crop_catalog";
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
-import { history } from "../../history";
+import { push } from "../../history";
 import {
   fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 import { SearchField } from "../../ui/search_field";
 import { fakeState } from "../../__test_support__/fake_state";
-
-describe("cropSearchUrl()", () => {
-  it("returns url", () => {
-    expect(cropSearchUrl()).toEqual("/app/designer/plants/crop_search/");
-    expect(cropSearchUrl("mint")).toEqual("/app/designer/plants/crop_search/mint");
-  });
-});
+import { Path } from "../../internal_urls";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => ({
@@ -55,7 +47,7 @@ describe("<CropCatalog />", () => {
   it("goes back", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
   });
 
   it("search term is too short", () => {

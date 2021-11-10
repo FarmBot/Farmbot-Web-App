@@ -9,6 +9,7 @@ import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 import { t } from "../../i18next_wrapper";
 import { Link } from "../../link";
+import { Path } from "../../internal_urls";
 
 export enum FarmwareName {
   PlantDetection = "plant-detection",
@@ -120,7 +121,7 @@ const DetectWeedsStep = () =>
   <Col xs={12}>
     <p>
       {`${t("Results are viewable from the")} `}
-      <Link to={"/app/designer/photos"}>
+      <Link to={Path.photos()}>
         {t("photos panel")}
       </Link>.
     </p>
@@ -130,7 +131,7 @@ const MeasureSoilHeightStep = () =>
   <Col xs={12}>
     <p>
       {`${t("Results are viewable in the")} `}
-      <Link to={"/app/designer/points"}>
+      <Link to={Path.points()}>
         {t("points panel")}
       </Link>.
     </p>

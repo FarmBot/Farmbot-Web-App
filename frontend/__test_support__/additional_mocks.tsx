@@ -30,3 +30,8 @@ jest.mock("../error_boundary", () => ({
 jest.mock("@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog", () => ({
   showHotkeysDialog: jest.fn(),
 }));
+
+jest.mock("../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => [],
+}));

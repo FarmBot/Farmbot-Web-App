@@ -1,5 +1,6 @@
 import { RouteConfig } from "takeme";
 import { Apology } from "./apology";
+import { Path } from "./internal_urls";
 import { AnyConnectedComponent, ChangeRoute } from "./routes";
 
 /** 99% of route configurations will use this interface. */
@@ -101,37 +102,37 @@ const key = "FarmDesigner";
 export const UNBOUND_ROUTES = [
   route({
     children: false,
-    $: "/controls",
+    $: Path.route(Path.app("controls")),
     getModule: () => import("./controls/controls_page"),
     key: "Controls",
   }),
   route({
     children: false,
-    $: "/messages",
+    $: Path.route(Path.app("messages")),
     getModule: () => import("./messages/messages_page"),
     key: "Messages",
   }),
   route({
     children: false,
-    $: "/logs",
+    $: Path.route(Path.logs()),
     getModule: () => import("./logs"),
     key: "Logs",
   }),
   route({
     children: false,
-    $: "/sequences(/:sequence)",
+    $: Path.route(Path.sequencePage()) + "(/:sequence)",
     getModule: () => import("./sequences/sequences"),
     key: "Sequences",
   }),
   route({
     children: false,
-    $: "/designer",
+    $: Path.route(Path.designer()),
     getModule: () => import("./farm_designer"),
     key: "FarmDesigner"
   }),
   route({
     children: true,
-    $: "/designer/events",
+    $: Path.route(Path.farmEvents()),
     getModule,
     key,
     getChild: () => import("./farm_events/farm_events"),
@@ -139,7 +140,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/events/add",
+    $: Path.route(Path.farmEvents("add")),
     getModule,
     key,
     getChild: () => import("./farm_events/add_farm_event"),
@@ -147,7 +148,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/events/:farm_event_id",
+    $: Path.route(Path.farmEvents(":farm_event_id")),
     getModule,
     key,
     getChild: () => import("./farm_events/edit_farm_event"),
@@ -155,7 +156,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants",
+    $: Path.route(Path.plants()),
     getModule,
     key,
     getChild: () => import("./plants/plant_inventory"),
@@ -163,7 +164,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/location",
+    $: Path.route(Path.location()),
     getModule,
     key,
     getChild: () => import("./farm_designer/location_info"),
@@ -171,7 +172,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/gardens",
+    $: Path.route(Path.plants("gardens")),
     getModule,
     key,
     getChild: () => import("./saved_gardens/saved_gardens"),
@@ -179,7 +180,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/select",
+    $: Path.route(Path.plants("select")),
     getModule,
     key,
     getChild: () => import("./plants/select_plants"),
@@ -187,7 +188,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/points",
+    $: Path.route(Path.points()),
     getModule,
     key,
     getChild: () => import("./points/point_inventory"),
@@ -195,7 +196,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/points/add",
+    $: Path.route(Path.points("add")),
     getModule,
     key,
     getChild: () => import("./points/create_points"),
@@ -203,7 +204,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/points/:point_id",
+    $: Path.route(Path.points(":point_id")),
     getModule,
     key,
     getChild: () => import("./points/point_info"),
@@ -211,7 +212,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/crop_search",
+    $: Path.route(Path.cropSearch()),
     getModule,
     key,
     getChild: () => import("./plants/crop_catalog"),
@@ -219,7 +220,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/crop_search/:crop/add",
+    $: Path.route(Path.cropSearch(":crop/add")),
     getModule,
     key,
     getChild: () => import("./plants/add_plant"),
@@ -227,7 +228,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/crop_search/:crop",
+    $: Path.route(Path.cropSearch(":crop")),
     getModule,
     key,
     getChild: () => import("./plants/crop_info"),
@@ -235,7 +236,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/:plant_id",
+    $: Path.route(Path.plants(":plant_id")),
     getModule,
     key,
     getChild: () => import("./plants/plant_info"),
@@ -243,7 +244,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/gardens",
+    $: Path.route(Path.savedGardens()),
     getModule,
     key,
     getChild: () => import("./saved_gardens/saved_gardens"),
@@ -251,7 +252,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/gardens/templates",
+    $: Path.route(Path.plantTemplates()),
     getModule,
     key,
     getChild: () => import("./plants/plant_inventory"),
@@ -259,7 +260,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/gardens/templates/:plant_template_id",
+    $: Path.route(Path.plantTemplates(":plant_template_id")),
     getModule,
     key,
     getChild: () => import("./plants/plant_info"),
@@ -267,7 +268,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/gardens/add",
+    $: Path.route(Path.savedGardens("add")),
     getModule,
     key,
     getChild: () => import("./saved_gardens/garden_add"),
@@ -275,7 +276,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/gardens/:saved_garden_id",
+    $: Path.route(Path.savedGardens(":saved_garden_id")),
     getModule,
     key,
     getChild: () => import("./saved_gardens/garden_edit"),
@@ -283,7 +284,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/controls",
+    $: Path.route(Path.controls()),
     getModule,
     key,
     getChild: () => import("./controls/controls"),
@@ -291,7 +292,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/setup",
+    $: Path.route(Path.setup()),
     getModule,
     key,
     getChild: () => import("./wizard/index"),
@@ -299,7 +300,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/sensors",
+    $: Path.route(Path.designer("sensors")),
     getModule,
     key,
     getChild: () => import("./sensors/sensors"),
@@ -307,7 +308,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/photos",
+    $: Path.route(Path.photos()),
     getModule,
     key,
     getChild: () => import("./photos/photos"),
@@ -315,7 +316,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farmware",
+    $: Path.route(Path.farmware()),
     getModule,
     key,
     getChild: () => import("./farmware/panel/list"),
@@ -323,7 +324,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farmware/add",
+    $: Path.route(Path.farmware("add")),
     getModule,
     key,
     getChild: () => import("./farmware/panel/add"),
@@ -331,7 +332,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farmware/:farmware_name",
+    $: Path.route(Path.farmware(":farmware_name")),
     getModule,
     key,
     getChild: () => import("./farmware/panel/info"),
@@ -339,7 +340,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/sequences",
+    $: Path.route(Path.designerSequences()),
     getModule,
     key,
     getChild: () => import("./sequences/panel/list"),
@@ -347,7 +348,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/sequences/commands",
+    $: Path.route(Path.designerSequences("commands")),
     getModule,
     key,
     getChild: () => import("./sequences/panel/commands"),
@@ -355,7 +356,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/sequences/:sequence_name",
+    $: Path.route(Path.designerSequences(":sequence_name")),
     getModule,
     key,
     getChild: () => import("./sequences/panel/editor"),
@@ -363,7 +364,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/shared/sequence/:sequence_version_id",
+    $: Path.route(Path.sequenceVersion(":sequence_version_id")),
     getModule,
     key,
     getChild: () => import("./sequences/panel/preview"),
@@ -371,7 +372,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/regimens",
+    $: Path.route(Path.regimens()),
     getModule,
     key,
     getChild: () => import("./regimens/list/list"),
@@ -379,7 +380,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/regimens/scheduler",
+    $: Path.route(Path.regimens("scheduler")),
     getModule,
     key,
     getChild: () => import("./regimens/bulk_scheduler/scheduler"),
@@ -387,7 +388,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/regimens/:regimen_name",
+    $: Path.route(Path.regimens(":regimen_name")),
     getModule,
     key,
     getChild: () => import("./regimens/editor/editor"),
@@ -395,7 +396,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/messages",
+    $: Path.route(Path.messages()),
     getModule,
     key,
     getChild: () => import("./messages/messages"),
@@ -403,7 +404,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/help",
+    $: Path.route(Path.help()),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -411,7 +412,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/developer",
+    $: Path.route(Path.developer()),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -419,7 +420,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/genesis",
+    $: Path.route(Path.designer("genesis")),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -427,7 +428,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/express",
+    $: Path.route(Path.designer("express")),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -435,7 +436,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/business",
+    $: Path.route(Path.designer("business")),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -443,7 +444,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/education",
+    $: Path.route(Path.designer("education")),
     getModule,
     key,
     getChild: () => import("./help/documentation"),
@@ -451,7 +452,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tours",
+    $: Path.route(Path.tours()),
     getModule,
     key,
     getChild: () => import("./help/tours/panel"),
@@ -459,7 +460,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/support",
+    $: Path.route(Path.support()),
     getModule,
     key,
     getChild: () => import("./help/support"),
@@ -467,7 +468,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/jobs",
+    $: Path.route(Path.designer("jobs")),
     getModule,
     key,
     getChild: () => import("./devices/jobs"),
@@ -475,7 +476,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/settings",
+    $: Path.route(Path.settings()),
     getModule,
     key,
     getChild: () => import("./settings"),
@@ -483,7 +484,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tools",
+    $: Path.route(Path.tools()),
     getModule,
     key,
     getChild: () => import("./tools"),
@@ -491,7 +492,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tools/add",
+    $: Path.route(Path.tools("add")),
     getModule,
     key,
     getChild: () => import("./tools/add_tool"),
@@ -499,7 +500,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tools/:tool_id",
+    $: Path.route(Path.tools(":tool_id")),
     getModule,
     key,
     getChild: () => import("./tools/edit_tool"),
@@ -507,7 +508,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tool-slots/add",
+    $: Path.route(Path.toolSlots("add")),
     getModule,
     key,
     getChild: () => import("./tools/add_tool_slot"),
@@ -515,7 +516,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/tool-slots/:tool_id",
+    $: Path.route(Path.toolSlots(":tool_id")),
     getModule,
     key,
     getChild: () => import("./tools/edit_tool_slot"),
@@ -523,7 +524,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/groups",
+    $: Path.route(Path.groups()),
     getModule,
     key,
     getChild: () => import("./point_groups/group_list_panel"),
@@ -531,7 +532,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/groups/:group_id",
+    $: Path.route(Path.groups(":group_id")),
     getModule,
     key,
     getChild: () => import("./point_groups/group_detail"),
@@ -539,7 +540,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/weeds",
+    $: Path.route(Path.weeds()),
     getModule,
     key,
     getChild: () => import("./weeds/weeds_inventory"),
@@ -547,7 +548,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/weeds/add",
+    $: Path.route(Path.weeds("add")),
     getModule,
     key,
     getChild: () => import("./points/create_points"),
@@ -555,7 +556,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/weeds/:point_id",
+    $: Path.route(Path.weeds(":point_id")),
     getModule,
     key,
     getChild: () => import("./weeds/weeds_edit"),
@@ -563,7 +564,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/zones",
+    $: Path.route(Path.zones()),
     getModule,
     key,
     getChild: () => import("./zones/zones_inventory"),
@@ -571,7 +572,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/zones/add",
+    $: Path.route(Path.zones("add")),
     getModule,
     key,
     getChild: () => import("./zones/add_zone"),
@@ -579,7 +580,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/zones/:zone_id",
+    $: Path.route(Path.zones(":zone_id")),
     getModule,
     key,
     getChild: () => import("./zones/edit_zone"),

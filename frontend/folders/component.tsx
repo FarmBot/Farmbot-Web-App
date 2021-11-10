@@ -46,17 +46,13 @@ import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { variableList } from "../sequences/locals_list/variable_support";
 import { UUID } from "../resources/interfaces";
 import { SearchField } from "../ui/search_field";
-import { getPathArray } from "../history";
 import { isSequencePublished } from "../sequences/sequence_editor_middle_active";
-
-export const inDesigner = () => getPathArray()[2] == "designer";
-export const sequencesUrlBase = () =>
-  `/app${inDesigner() ? "/designer" : ""}/sequences/`;
+import { Path } from "../internal_urls";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;
   const seqName = sequence.body.name;
-  const url = sequencesUrlBase() + urlFriendly(seqName || "");
+  const url = Path.sequences(urlFriendly(seqName || ""));
   const moveSource = movedSequenceUuid === sequence.uuid ? "move-source" : "";
   const nameWithSaveIndicator = seqName + (sequence.specialStatus ? "*" : "");
   const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";

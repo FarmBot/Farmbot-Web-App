@@ -4,8 +4,6 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn()
 }));
 
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 let mockPointGroup = { body: { id: 323232332 } };
 jest.mock("../../resources/selectors", () => ({
   findPointGroup: jest.fn(() => mockPointGroup),
@@ -15,7 +13,7 @@ jest.mock("../../resources/selectors", () => ({
 
 import { createGroup, overwriteGroup } from "../actions";
 import { init, save, overwrite } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -27,6 +25,7 @@ import { Everything } from "../../interfaces";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { cloneDeep } from "lodash";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Path } from "../../internal_urls";
 
 describe("createGroup()", () => {
   it("creates group", async () => {
@@ -45,8 +44,8 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(history.push)
-      .toHaveBeenCalledWith("/app/designer/groups/323232332");
+    expect(push)
+      .toHaveBeenCalledWith(Path.groups(323232332));
   });
 
   it("creates group with default name", async () => {
@@ -67,7 +66,7 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/");
+    expect(push).toHaveBeenCalledWith(Path.groups());
   });
 });
 

@@ -14,6 +14,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../__test_support__/svg_mount";
+import { FilePath } from "../../../../internal_urls";
 
 const expectAlive = (value: string) =>
   expect(getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE)).toEqual(value);
@@ -36,7 +37,7 @@ describe("<Bugs />", () => {
       className: expect.stringContaining("bug"),
       filter: "",
       opacity: 1,
-      xlinkHref: expect.stringContaining("/app-resources/img/bugs/")
+      xlinkHref: expect.stringContaining(FilePath.bug())
     }));
   });
 

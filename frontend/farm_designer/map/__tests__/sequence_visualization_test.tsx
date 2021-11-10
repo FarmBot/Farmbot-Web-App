@@ -32,6 +32,7 @@ import { TaggedToolSlotPointer, MoveAbsolute } from "farmbot";
 import { Actions } from "../../../constants";
 import { maybeTagStep, getStepTag } from "../../../resources/sequence_tagging";
 import { SequenceMeta } from "../../../resources/sequence_meta";
+import { Path } from "../../../internal_urls";
 
 const moveAbsolute =
   (location: MoveAbsolute["args"]["location"]): MoveAbsolute => ({
@@ -153,7 +154,7 @@ describe("<SequenceVisualization />", () => {
 
 describe("hoverSequenceStep()", () => {
   it("sets hovered step", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.designerSequences("1"));
     const dispatch = jest.fn();
     hoverSequenceStep("uuid")(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
@@ -163,7 +164,7 @@ describe("hoverSequenceStep()", () => {
   });
 
   it("doesn't set hovered step", () => {
-    mockPath = "/app/sequences/1";
+    mockPath = Path.mock(Path.sequencePage("1"));
     const dispatch = jest.fn();
     hoverSequenceStep("uuid")(dispatch)();
     expect(dispatch).not.toHaveBeenCalled();

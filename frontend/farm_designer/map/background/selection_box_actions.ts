@@ -2,7 +2,7 @@ import { isNumber, uniq, cloneDeep, isEqual } from "lodash";
 import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
-import { history } from "../../../history";
+import { push } from "../../../history";
 import { selectPoint } from "../actions";
 import { getMode } from "../util";
 import { editGtLtCriteria } from "../../../point_groups/criteria";
@@ -12,6 +12,7 @@ import { UUID } from "../../../resources/interfaces";
 import { getFilteredPoints } from "../../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { overwriteGroup } from "../../../point_groups/actions";
+import { Path } from "../../../internal_urls";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -65,7 +66,7 @@ export const resizeBox = (props: ResizeSelectionBoxProps) => {
           });
         const payload = getSelected(points, newSelectionBox);
         if (payload && getMode() === Mode.none) {
-          history.push("/app/designer/plants/select");
+          push(Path.plants("select"));
         }
         props.dispatch(selectPoint(payload));
       }

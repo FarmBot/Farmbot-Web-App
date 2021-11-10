@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
@@ -14,12 +14,13 @@ import { mapStateToPropsEdit } from "./state_to_props";
 import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
 import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { Popover } from "../ui";
+import { Path } from "../internal_urls";
 
 export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {
   state: EditToolSlotState = { saveError: true };
 
-  get stringyID() { return getPathArray()[4] || ""; }
+  get stringyID() { return Path.getSlug(Path.toolSlots()); }
   get toolSlot() { return this.props.findToolSlot(this.stringyID); }
   get tool() {
     return this.toolSlot && this.props.findTool(this.toolSlot.body.tool_id || 0);
@@ -37,10 +38,9 @@ export class RawEditToolSlot
 
   render() {
     const { toolSlot } = this;
-    const toolsPath = "/app/designer/tools";
-    const toolSlotsPath = "/app/designer/tool-slots";
-    !toolSlot && getPathArray().join("/").startsWith(toolSlotsPath)
-      && push(toolsPath);
+    const toolsPath = Path.tools();
+    const toolSlotsPath = Path.toolSlots();
+    !toolSlot && Path.startsWith(toolSlotsPath) && push(toolsPath);
     const panelName = "edit-tool-slot";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader

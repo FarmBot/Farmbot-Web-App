@@ -15,6 +15,7 @@ import {
 } from "../tool_graphics/all_tools";
 import { TaggedToolSlotPointer } from "farmbot";
 import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
+import { FilePath } from "../../../internal_urls";
 
 export enum UTMDimensions {
   height = 40,
@@ -59,7 +60,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
       x={profileUtmH - 2} y={profileUtmV - 2}
       width={4} height={4} />
     <image x={profileUtmH - 25} y={profileUtmV - 35} width={50} height={30}
-      xlinkHref={"/app-resources/img/farmbot.svg"} opacity={0.75} />
+      xlinkHref={FilePath.image("farmbot")} opacity={0.75} />
     {toolInfo.name &&
       <ToolProfile toolName={toolInfo.name}
         x={profileUtmH - ToolDimensions.radius} y={profileUtmV}

@@ -1,5 +1,4 @@
 import React from "react";
-import { DEFAULT_ICON } from "../open_farm/icons";
 import { push } from "../history";
 import { TaggedPlant, Mode } from "../farm_designer/map/interfaces";
 import { unpackUUID } from "../util";
@@ -11,6 +10,7 @@ import {
 import { plantAge } from "./map_state_to_props";
 import { getMode } from "../farm_designer/map/util";
 import { isUndefined, round } from "lodash";
+import { FilePath, Path } from "../internal_urls";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
@@ -46,11 +46,11 @@ export class PlantInventoryItem extends
         mapPointClickAction(dispatch, plant.uuid)();
         toggle("leave");
       } else {
-        const plantCategory =
+        const path =
           unpackUUID(plant.uuid).kind === "PlantTemplate"
-            ? "gardens/templates"
-            : "plants";
-        push(`/app/designer/${plantCategory}/${plantId}`);
+            ? Path.plantTemplates
+            : Path.plants;
+        push(path(plantId));
         dispatch(selectPoint([plant.uuid]));
       }
     };
@@ -70,7 +70,7 @@ export class PlantInventoryItem extends
       onClick={click}>
       <img
         className="plant-search-item-image"
-        src={DEFAULT_ICON}
+        src={FilePath.DEFAULT_ICON}
         onLoad={onLoad} />
       <span className="plant-search-item-name">
         {label}

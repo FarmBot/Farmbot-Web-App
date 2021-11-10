@@ -4,11 +4,6 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 jest.mock("../../point_groups/actions", () => ({
   createGroup: jest.fn(),
 }));
@@ -36,6 +31,7 @@ import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { push } from "../../history";
 import { weedsPanelState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
+import { Path } from "../../internal_urls";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -112,13 +108,13 @@ describe("<Weeds> />", () => {
   it("navigates to group", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
     wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new weed", () => {
     const wrapper = shallow(<Weeds {...fakeProps()} />);
     wrapper.find(PanelSection).last().props().addNew();
-    expect(push).toHaveBeenCalledWith("/app/designer/weeds/add");
+    expect(push).toHaveBeenCalledWith(Path.weeds("add"));
   });
 
   it("adds new group", () => {

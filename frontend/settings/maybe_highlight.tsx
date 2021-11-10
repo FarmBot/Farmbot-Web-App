@@ -6,6 +6,7 @@ import { getUrlQuery, urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -407,7 +408,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 }
 
 export const linkToSetting = (settingName: DeviceSetting) =>
-  `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
+  Path.settings(urlFriendly(stripUnits(settingName)));
 
 export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
 export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

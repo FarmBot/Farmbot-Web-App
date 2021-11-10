@@ -1,5 +1,5 @@
 import React from "react";
-import { history } from "../history";
+import { push } from "../history";
 import { connect } from "react-redux";
 import { Everything, TimeSettings } from "../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -50,6 +50,7 @@ import { pointsSelectedByGroup } from "../point_groups/criteria";
 import { ToolTransformProps } from "../tools/interfaces";
 import { betterCompact } from "../util";
 import { savePoints } from "../farm_designer/map/layers/plants/plant_actions";
+import { Path } from "../internal_urls";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -161,7 +162,7 @@ export class RawSelectPlants
         this.props.dispatch(destroy(uuid, true))
           .then(noop, noop);
       });
-      history.push("/app/designer/plants");
+      push(Path.plants());
     }
   };
 
@@ -347,7 +348,7 @@ export class RawSelectPlants
         blackText={true}
         title={t("{{length}} {{name}} selected",
           { length: this.selected.length, name: this.itemName })}
-        backTo={"/app/designer/plants"}
+        backTo={Path.plants()}
         onBack={unselectPlant(dispatch)}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
@@ -474,7 +475,7 @@ export const SelectModeLink = () =>
     <button
       className="fb-button gray"
       title={t("open point select panel")}
-      onClick={() => history.push("/app/designer/plants/select")}>
+      onClick={() => push(Path.plants("select"))}>
       {t("select")}
     </button>
   </div>;

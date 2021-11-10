@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -30,7 +28,7 @@ import {
   EditToolSlotMetaProps,
 } from "../interfaces";
 import { push } from "../../history";
-import { locationUrl } from "../../farm_designer/move_to";
+import { Path } from "../../internal_urls";
 
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
@@ -265,7 +263,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = false;
     const wrapper = shallow(<SlotLocationInputRow {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(push).toHaveBeenCalledWith(locationUrl({ x: 1, y: 2, z: 3 }));
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 1, y: 2, z: 3 }));
   });
 
   it("moves to gantry-mounted tool slot", () => {
@@ -277,7 +275,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = true;
     const wrapper = shallow(<SlotLocationInputRow {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(push).toHaveBeenCalledWith(locationUrl({ x: 10, y: 2, z: 3 }));
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 10, y: 2, z: 3 }));
   });
 
   it("falls back to tool slot when moving to gantry-mounted tool slot", () => {
@@ -289,7 +287,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = true;
     const wrapper = shallow(<SlotLocationInputRow {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(push).toHaveBeenCalledWith(locationUrl({ x: 1, y: 2, z: 3 }));
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 1, y: 2, z: 3 }));
   });
 });
 

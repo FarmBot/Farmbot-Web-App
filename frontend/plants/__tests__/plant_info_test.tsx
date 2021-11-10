@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/plants/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.plants(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -22,7 +23,6 @@ import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
-    push: jest.fn(),
     findPlant: fakePlant,
     dispatch: jest.fn(),
     openedSavedGarden: undefined,
@@ -42,25 +42,25 @@ describe("<PlantInfo />", () => {
   });
 
   it("renders: no plant", () => {
-    mockPath = "/app/designer/plants/nope";
+    mockPath = Path.mock(Path.plants("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
   });
 
   it("renders: no plant template", () => {
-    mockPath = "/app/designer/gardens/templates/nope";
+    mockPath = Path.mock(Path.plantTemplates("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
@@ -73,11 +73,11 @@ describe("<PlantInfo />", () => {
     p.openedSavedGarden = undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.find("Link").first().props().to)
-      .toContain("/app/designer/plants");
+      .toContain(Path.plants());
   });
 
   it("gets plant id", () => {
-    mockPath = "/app/designer/plants/1";
+    mockPath = Path.mock(Path.plants(1));
     const p = fakeProps();
     p.openedSavedGarden = undefined;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -85,7 +85,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("gets template id", () => {
-    mockPath = "/app/designer/gardens/templates/2";
+    mockPath = Path.mock(Path.plantTemplates(2));
     const p = fakeProps();
     p.openedSavedGarden = "uuid";
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -93,7 +93,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("handles missing plant id", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.openedSavedGarden = undefined;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -116,7 +116,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("saves", () => {
-    mockPath = "/app/designer/weeds/1";
+    mockPath = Path.mock(Path.plants(1));
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.id = 1;
@@ -127,7 +127,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("doesn't save", () => {
-    mockPath = "/app/designer/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.id = 1;

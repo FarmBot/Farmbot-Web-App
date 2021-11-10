@@ -1,13 +1,14 @@
 import { betterCompact } from "../util";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { init, save, overwrite } from "../api/crud";
-import { history } from "../history";
+import { push } from "../history";
 import { GetState } from "../redux/interfaces";
 import { findPointGroup } from "../resources/selectors";
 import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
 import { DEFAULT_CRITERIA, PointGroupCriteria } from "./criteria/interfaces";
 import { TaggedPointGroup } from "farmbot";
+import { Path } from "../internal_urls";
 
 interface CreateGroupProps {
   pointUuids?: UUID[];
@@ -35,7 +36,7 @@ export const createGroup = (props: CreateGroupProps) =>
       .then(() => {
         const pg = findPointGroup(getState().resources.index, action.payload.uuid);
         const { id } = pg.body;
-        history.push("/app/designer/groups/" + (id ? id : ""));
+        push(Path.groups(id));
       });
   };
 

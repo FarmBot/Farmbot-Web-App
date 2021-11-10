@@ -45,7 +45,6 @@ jest.mock("../background/selection_box_actions", () => ({
 
 jest.mock("../../move_to", () => ({
   chooseLocation: jest.fn(),
-  locationUrl: jest.fn(() => "/app/designer/location"),
 }));
 
 jest.mock("../profile", () => ({
@@ -53,12 +52,9 @@ jest.mock("../profile", () => ({
   ProfileLine: () => <g />,
 }));
 
-let mockPath = "/app/designer/plants";
+import { Path } from "../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../history", () => ({
-  history: {
-    push: jest.fn(),
-    getPathArray: () => mockPath.split("/"),
-  },
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
 }));
@@ -82,7 +78,7 @@ import {
   startNewSelectionBox, resizeBox, maybeUpdateGroup,
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
-import { chooseLocation, locationUrl } from "../../move_to";
+import { chooseLocation } from "../../move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
   fakeDesignerState,
@@ -91,7 +87,7 @@ import {
   fakePlant, fakePointGroup, fakePoint, fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { history } from "../../../history";
+import { push } from "../../../history";
 import { TaggedPointGroup } from "farmbot";
 import { fakeMountedToolInfo } from "../../../__test_support__/fake_tool_info";
 import {
@@ -239,7 +235,7 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalled();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
@@ -250,7 +246,7 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
@@ -261,7 +257,7 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
@@ -271,7 +267,7 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
@@ -281,7 +277,7 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
@@ -292,7 +288,7 @@ describe("<GardenMap/>", () => {
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewPoint).toHaveBeenCalled();
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
@@ -306,13 +302,13 @@ describe("<GardenMap/>", () => {
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalledWith(
       expect.objectContaining({ plantActions: false }));
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
 
   it("starts drag on background: opening location info", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.designer.selectedPoints = [];
     p.designer.hoveredPlant = { icon: "", plantUUID: undefined };
@@ -530,9 +526,8 @@ describe("<GardenMap/>", () => {
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 0,
     });
     wrapper.instance().closePanel()();
-    expect(locationUrl).toHaveBeenCalled();
-    expect(history.push).toHaveBeenCalledWith(
-      expect.stringContaining("/app/designer/location"));
+    expect(push).toHaveBeenCalledWith(
+      expect.stringContaining(Path.location()));
     expect(closePlantInfo).toHaveBeenCalled();
     expect(wrapper.state().toLocation).toEqual(undefined);
   });
@@ -545,9 +540,8 @@ describe("<GardenMap/>", () => {
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 1000,
     });
     wrapper.instance().closePanel()();
-    expect(locationUrl).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalledWith(
-      expect.stringContaining("/app/designer/location"));
+    expect(push).not.toHaveBeenCalledWith(
+      expect.stringContaining(Path.location()));
     expect(closePlantInfo).toHaveBeenCalled();
     expect(wrapper.state().toLocation).toEqual(undefined);
   });

@@ -11,8 +11,6 @@ jest.mock("../../../config_storage/actions", () => ({
   toggleWebAppBool: jest.fn()
 }));
 
-jest.mock("../../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { BotPositionRows } from "../bot_position_rows";
@@ -22,6 +20,7 @@ import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../../session_keys";
 import { clickButton } from "../../../__test_support__/helpers";
 import { push } from "../../../history";
+import { Path } from "../../../internal_urls";
 
 describe("<BotPositionRows />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -99,6 +98,6 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...fakeProps()} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/settings?highlight=axes");
+    expect(push).toHaveBeenCalledWith(Path.settings("axes"));
   });
 });

@@ -7,7 +7,7 @@ export const farmwareUrlFriendly = (farmwareName: string) =>
 
 export function setActiveFarmwareByName(farmwareNames: (string | undefined)[]) {
   const chunk = farmwareUrlFriendly(lastUrlChunk());
-  if (chunk == "farmware") { return; }
+  if (!chunk || chunk == "farmware") { return; }
 
   farmwareNames.map(farmwareName => {
     if (farmwareName) {

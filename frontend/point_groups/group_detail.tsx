@@ -22,6 +22,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { isBotOriginQuadrant } from "../farm_designer/interfaces";
 import { validPointTypes } from "../plants/select_plants";
+import { Path } from "../internal_urls";
 
 export interface GroupDetailProps {
   dispatch: Function;
@@ -73,13 +74,13 @@ const panelInfo = (
     validPointTypes(group?.body.criteria.string_eq.pointer_type) || [];
   switch (pointTypes[0]) {
     case "GenericPointer":
-      return { title: t("Edit point group"), backTo: "/app/designer/points" };
+      return { title: t("Edit point group"), backTo: Path.points() };
     case "Plant":
-      return { title: t("Edit plant group"), backTo: "/app/designer/plants" };
+      return { title: t("Edit plant group"), backTo: Path.plants() };
     case "Weed":
-      return { title: t("Edit weed group"), backTo: "/app/designer/weeds" };
+      return { title: t("Edit weed group"), backTo: Path.weeds() };
     case "ToolSlot":
-      return { title: t("Edit slot group"), backTo: "/app/designer/tools" };
+      return { title: t("Edit slot group"), backTo: Path.tools() };
     default:
       return { title: t("Edit group"), backTo: undefined };
   }
@@ -88,8 +89,8 @@ const panelInfo = (
 export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
   render() {
     const { group } = this.props;
-    const groupsPath = "/app/designer/groups";
-    !group && getPathArray().join("/").startsWith(groupsPath) && history.back();
+    const groupsPath = Path.groups();
+    !group && Path.startsWith(groupsPath) && history.back();
     return <DesignerPanel panelName={"group-detail"} panel={Panel.Groups}>
       <DesignerPanelHeader
         panelName={Panel.Groups}

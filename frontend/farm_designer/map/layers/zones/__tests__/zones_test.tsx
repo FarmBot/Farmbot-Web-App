@@ -1,5 +1,3 @@
-jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
-
 import React from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
@@ -12,7 +10,8 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { DEFAULT_CRITERIA } from "../../../../../point_groups/criteria/interfaces";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
+import { Path } from "../../../../../internal_urls";
 
 const fakeProps = (): ZonesProps => ({
   group: fakePointGroup(),
@@ -68,7 +67,7 @@ describe("<Zones0D />", () => {
     p.group.body.criteria.number_eq = { x: [100], y: [200, 300] };
     const wrapper = svgMount(<Zones0D {...p} />);
     wrapper.find("#zones-0D-1").simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 });
 
@@ -124,7 +123,7 @@ describe("<Zones1D />", () => {
     p.group.body.criteria.number_eq = { x: [], y: [200, 300] };
     const wrapper = svgMount(<Zones1D {...p} />);
     wrapper.find("#zones-1D-1").simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 });
 
@@ -167,7 +166,7 @@ describe("<Zones2D />", () => {
     p.group.body.criteria.number_lt = { x: 300, y: 400 };
     const wrapper = svgMount(<Zones2D {...p} />);
     wrapper.find("#zones-2D-1").simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 });
 

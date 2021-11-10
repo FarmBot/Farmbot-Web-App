@@ -25,6 +25,7 @@ import { FarmwareInfo } from "../farmware_info";
 import { needsFarmwareForm, FarmwareForm } from "../farmware_forms";
 import { BasicFarmwarePage } from "../basic_farmware_page";
 import { uniq } from "lodash";
+import { Path } from "../../internal_urls";
 
 export interface DesignerFarmwareInfoProps {
   dispatch: Function;
@@ -81,7 +82,7 @@ export class RawDesignerFarmwareInfo
         panelName={panelName}
         panel={Panel.Farmware}
         title={farmware?.name || t("No Farmware selected")}
-        backTo={"/app/designer/farmware"} />
+        backTo={Path.farmware()} />
       <DesignerPanelContent panelName={panelName}>
         {farmware && needsFarmwareForm(farmware)
           ? <FarmwareForm farmware={farmware}

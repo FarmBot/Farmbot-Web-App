@@ -17,8 +17,9 @@ import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
+import { FilePath, Path } from "../internal_urls";
 
-export const DEFAULT_APP_PAGE = "/app/designer/controls";
+export const DEFAULT_APP_PAGE = Path.withApp(Path.controls());
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
@@ -252,7 +253,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         <LaptopSplash className={showFor(["md", "lg", "xl"], "col-md-7")} />
         <img
           className={showFor(["sm"], "col-md-7")}
-          src="/app-resources/img/farmbot-tablet.png" />
+          src={FilePath.image("farmbot-tablet", "png")} />
         <Row>
           <this.activePanel />
           <CreateAccount

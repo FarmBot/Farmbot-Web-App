@@ -12,7 +12,7 @@ import { Everything } from "../../interfaces";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import axios from "axios";
 import { API } from "../../api";
-import { getPathArray, push } from "../../history";
+import { push } from "../../history";
 import { noop } from "lodash";
 import { ErrorBoundary } from "../../error_boundary";
 import { AllSteps } from "../all_steps";
@@ -30,11 +30,12 @@ import { stringifySequenceData } from "../step_tiles";
 import { installSequence } from "../actions";
 import { Collapse } from "@blueprintjs/core";
 import {
-  isSequencePublished, publishAction, SectionHeader, sequenceVersionPath,
+  isSequencePublished, publishAction, SectionHeader,
 } from "../sequence_editor_middle_active";
 import moment from "moment";
 import { edit } from "../../api/crud";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { Path } from "../../internal_urls";
 
 interface LoadSequenceVersionProps {
   id: string;
@@ -94,7 +95,7 @@ export class RawDesignerSequencePreview
 
   componentDidMount = () => {
     loadSequenceVersion({
-      id: getPathArray()[sequenceVersionPath(0).split("/").length - 1],
+      id: Path.getSlug(Path.sequenceVersion()),
       onSuccess: sequence => this.setState({ sequence }),
       onError: () => this.setState({ error: true }),
     });
@@ -118,7 +119,7 @@ export class RawDesignerSequencePreview
           resource={sequence}
           fallback={this.state.error ? t("Sequence not found") : t("Loading...")}
           dispatch={this.props.dispatch} />}
-        backTo={"/app/designer/sequences"} />
+        backTo={Path.sequences()} />
       <DesignerPanelContent panelName={panelName}>
         <ImportBanner sequence={sequence} />
         <div className={"sequence-editor-content"}>
@@ -211,7 +212,7 @@ const ImportBanner = (props: ImportBannerProps) => {
       <button className={"transparent-button"}
         onClick={() => {
           installSequence(sequence.body.id)()
-            .then(() => push("/app/designer/sequences"));
+            .then(() => push(Path.sequences()));
           publishAction(setImporting);
         }}>
         {importing ? t("importing") : t("import")}

@@ -1,8 +1,3 @@
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => ["L", "O", "L"]),
-  push: jest.fn(),
-}));
-
 jest.mock("../actions", () => ({
   createGroup: jest.fn(),
 }));
@@ -23,6 +18,7 @@ import { createGroup } from "../actions";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
 import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
@@ -74,7 +70,7 @@ describe("<GroupListPanel />", () => {
   it("navigates to group", () => {
     const wrapper = mount(<GroupListPanel {...fakeProps()} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/9");
+    expect(push).toHaveBeenCalledWith(Path.groups(9));
   });
 
   it("navigates to group: handles missing id", () => {
@@ -82,7 +78,7 @@ describe("<GroupListPanel />", () => {
     p.groups[0].body.id = undefined;
     const wrapper = mount(<GroupListPanel {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/0");
+    expect(push).toHaveBeenCalledWith(Path.groups());
   });
 
   it("renders no groups", () => {

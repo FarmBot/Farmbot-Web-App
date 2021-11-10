@@ -4,7 +4,7 @@ jest.mock("../../open_farm/cached_crop", () => ({
 
 jest.mock("../../history", () => ({
   push: jest.fn(),
-  getPathArray: () => "/app/designer/plants".split("/"),
+  getPathArray: () => Path.mock(Path.plants()).split("/"),
 }));
 
 jest.mock("../../point_groups/actions", () => ({
@@ -28,12 +28,12 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { SearchField } from "../../ui/search_field";
 import { Actions } from "../../constants";
 import { push } from "../../history";
-import { cropSearchUrl } from "../crop_catalog";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { deletePoints } from "../../api/delete_points";
 import { Panel } from "../../farm_designer/panel_header";
 import { plantsPanelState } from "../../__test_support__/panel_state";
+import { Path } from "../../internal_urls";
 
 describe("<PlantInventory />", () => {
   const fakeProps = (): PlantInventoryProps => ({
@@ -92,7 +92,7 @@ describe("<PlantInventory />", () => {
   it("navigates to group", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
     wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -106,13 +106,13 @@ describe("<PlantInventory />", () => {
   it("adds new saved garden", () => {
     const wrapper = shallow(<Plants {...fakeProps()} />);
     wrapper.find(PanelSection).at(1).props().addNew();
-    expect(push).toHaveBeenCalledWith("/app/designer/gardens/add");
+    expect(push).toHaveBeenCalledWith(Path.savedGardens("add"));
   });
 
   it("adds new plant", () => {
     const wrapper = shallow(<Plants {...fakeProps()} />);
     wrapper.find(PanelSection).last().props().addNew();
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/crop_search/");
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
   });
 
   it("deletes all plants", () => {
@@ -153,7 +153,7 @@ describe("<PlantInventory />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
     });
-    expect(push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
   });
 });
 

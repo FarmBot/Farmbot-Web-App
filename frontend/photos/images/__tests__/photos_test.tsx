@@ -1,8 +1,6 @@
 const mockDevice = { takePhoto: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../history", () => ({ push: jest.fn() }));
-
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
@@ -22,8 +20,8 @@ import {
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { push } from "../../../history";
-import { locationUrl } from "../../../farm_designer/move_to";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
+import { Path } from "../../../internal_urls";
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -266,6 +264,6 @@ describe("<MoveToLocation />", () => {
   it("moves to location", () => {
     const wrapper = mount(<MoveToLocation {...fakeProps()} />);
     clickButton(wrapper, 0, "move farmbot to location");
-    expect(push).toHaveBeenCalledWith(locationUrl({ x: 0, y: 0, z: 0 }));
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 0, y: 0, z: 0 }));
   });
 });

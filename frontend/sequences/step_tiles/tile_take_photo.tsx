@@ -5,6 +5,7 @@ import { StepWrapper, StepWarning } from "../step_ui";
 import { Col, Row } from "../../ui";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
+import { Path } from "../../internal_urls";
 
 export const TileTakePhoto = (props: StepParams) =>
   <StepWrapper {...props}
@@ -19,7 +20,7 @@ export const TileTakePhoto = (props: StepParams) =>
       <Col xs={12}>
         <p>
           {`${t("Photos are viewable from the")} `}
-          <Link to={"/app/designer/photos"}>
+          <Link to={Path.photos()}>
             {t("photos panel")}
           </Link>.
         </p>
