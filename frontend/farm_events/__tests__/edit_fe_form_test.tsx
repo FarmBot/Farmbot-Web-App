@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   overwrite: jest.fn(),
@@ -30,7 +28,7 @@ import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, ParameterApplication } from "farmbot";
 import moment from "moment";
-import { history } from "../../history";
+import { push } from "../../history";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -40,6 +38,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success } from "../../toast/toast";
 import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { Path } from "../../internal_urls";
 
 const mockSequence = fakeSequence();
 
@@ -121,7 +120,7 @@ describe("<EditFEForm />", () => {
     const i = instance(p);
     i.executableSet({ value: "wow", label: "hey", headingId: "Regimen" });
     expect(error).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("doesn't allow improper changes to the executable", () => {
@@ -132,7 +131,7 @@ describe("<EditFEForm />", () => {
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
       "Cannot change between Sequences and Regimens.");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
+    expect(push).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("handles empty dropdown value", () => {
@@ -142,7 +141,7 @@ describe("<EditFEForm />", () => {
     const i = instance(p);
     i.executableSet({ value: "", label: "hey", headingId: "Sequence" });
     expect(error).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("gets executable info", () => {
@@ -670,7 +669,7 @@ describe("<FarmEventDeleteButton />", () => {
     const wrapper = shallow(<FarmEventDeleteButton {...p} />);
     await wrapper.find("button").simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
+    expect(push).toHaveBeenCalledWith(Path.farmEvents());
     expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });
   });
 });

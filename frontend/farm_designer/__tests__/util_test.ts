@@ -3,6 +3,7 @@ jest.mock("axios", () => ({ get: () => mockPromise }));
 
 import { executableType, OFSearch } from "../util";
 import { Actions } from "../../constants";
+import { FilePath } from "../../internal_urls";
 
 describe("executableType", () => {
   it("handles expected values", () => {
@@ -28,7 +29,7 @@ describe("OFSearch()", () => {
     expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [
-        { crop: {}, image: "/app-resources/img/generic-plant.svg" }]
+        { crop: {}, image: FilePath.DEFAULT_ICON }]
     });
     await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });

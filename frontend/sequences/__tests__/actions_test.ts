@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ push: jest.fn(), getPathArray: () => [] }));
-
 jest.mock("../../api/crud", () => ({
   init: jest.fn(),
   edit: jest.fn(),
@@ -31,6 +29,7 @@ import { TakePhoto, Wait } from "farmbot";
 import axios from "axios";
 import { API } from "../../api";
 import { error, success } from "../../toast/toast";
+import { Path } from "../../internal_urls";
 
 describe("copySequence()", () => {
   it("copies sequence", () => {
@@ -44,7 +43,7 @@ describe("copySequence()", () => {
 
   it("updates current path", () => {
     copySequence(fakeSequence())(jest.fn());
-    expect(push).toHaveBeenCalledWith("/app/sequences/fake_copy_2");
+    expect(push).toHaveBeenCalledWith(Path.sequences("fake_copy_2"));
   });
 
   it("selects sequence", () => {

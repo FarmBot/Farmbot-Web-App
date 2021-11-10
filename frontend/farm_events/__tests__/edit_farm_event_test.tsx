@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/events/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.farmEvents(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -50,16 +51,16 @@ describe("<EditFarmEvent />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/events/nope";
+    mockPath = Path.mock(Path.farmEvents("nope"));
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
-    expect(push).toHaveBeenCalledWith("/app/designer/events");
+    expect(push).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);

@@ -6,7 +6,8 @@ jest.mock("../../../api/crud", () => ({
 
 jest.mock("../../actions", () => ({ editRegimen: jest.fn() }));
 
-const mockPath = "/app/designer/regimens/1";
+import { Path } from "../../../internal_urls";
+const mockPath = Path.mock(Path.regimens("1"));
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -96,6 +97,6 @@ describe("<OpenSchedulerButton />", () => {
   it("opens scheduler", () => {
     const wrapper = mount(<OpenSchedulerButton />);
     clickButton(wrapper, 0, "schedule item");
-    expect(push).toHaveBeenCalledWith("/app/designer/regimens/scheduler");
+    expect(push).toHaveBeenCalledWith(Path.regimens("scheduler"));
   });
 });

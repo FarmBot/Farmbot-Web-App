@@ -9,12 +9,13 @@ jest.mock("../../history", () => ({
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation, locationUrl,
+  MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
 } from "../move_to";
 import { push } from "../../history";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { move } from "../../devices/actions";
+import { Path } from "../../internal_urls";
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -89,7 +90,7 @@ describe("<MoveModeLink />", () => {
   it("enters 'move to' mode", () => {
     const wrapper = shallow(<MoveModeLink />);
     clickButton(wrapper, 0, "move mode");
-    expect(push).toHaveBeenCalledWith("/app/designer/location");
+    expect(push).toHaveBeenCalledWith(Path.location());
   });
 });
 
@@ -107,12 +108,5 @@ describe("chooseLocation()", () => {
     const dispatch = jest.fn();
     chooseLocation({ dispatch, gardenCoords: undefined });
     expect(dispatch).not.toHaveBeenCalled();
-  });
-});
-
-describe("locationUrl()", () => {
-  it("returns url without z", () => {
-    expect(locationUrl({ x: 10, y: 20 }))
-      .toEqual("/app/designer/location?x=10?y=20");
   });
 });

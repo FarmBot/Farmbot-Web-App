@@ -4,7 +4,8 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-let mockPath = "/app/designer/tools/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.tools(1));
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -30,7 +31,7 @@ import { EditToolProps } from "../interfaces";
 
 describe("<EditTool />", () => {
   beforeEach(() => {
-    mockPath = "/app/designer/tools/1";
+    mockPath = Path.mock(Path.tools(1));
   });
 
   const fakeProps = (): EditToolProps => ({
@@ -58,17 +59,17 @@ describe("<EditTool />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/tools/";
+    mockPath = Path.mock(Path.tools()) + "/";
     const p = fakeProps();
     p.findTool = jest.fn(() => undefined);
     const wrapper = mount<EditTool>(<EditTool {...p} />);
     expect(wrapper.instance().stringyID).toEqual("");
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     p.findTool = jest.fn(() => undefined);
     const wrapper = mount(<EditTool {...p} />);
@@ -108,7 +109,7 @@ describe("<EditTool />", () => {
     wrapper.find(SaveBtn).simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "Foo" });
     expect(save).toHaveBeenCalledWith(tool.uuid);
-    expect(push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("removes tool", () => {

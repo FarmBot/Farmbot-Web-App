@@ -1,12 +1,11 @@
-let mockShowPopUp = false;
-jest.mock("../controls_popup", () => ({
-  ControlsPopup: () => <div className="controls-popup" />,
-  showControlsPopup: () => mockShowPopUp,
-}));
-
 let mockSatisfies = true;
 jest.mock("bowser", () => ({
   getParser: () => ({ satisfies: () => mockSatisfies }),
+}));
+
+let mockPath = "";
+jest.mock("../history", () => ({
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import React from "react";
@@ -26,6 +25,7 @@ import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
 import { fakeHelpState } from "../__test_support__/fake_designer_state";
+import { Path } from "../internal_urls";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -57,13 +57,13 @@ const fakeProps = (): AppProps => ({
 
 describe("<App />: Controls Pop-Up", () => {
   it("renders controls pop-up", () => {
-    mockShowPopUp = true;
+    mockPath = Path.mock(Path.plants());
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.html()).toContain("controls-popup");
   });
 
   it("doesn't render controls pop-up", () => {
-    mockShowPopUp = false;
+    mockPath = Path.mock(Path.controls());
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.html()).not.toContain("controls-popup");
   });

@@ -15,6 +15,7 @@ import { isTaggedRegimen } from "../../resources/tagged_resources";
 import { Content } from "../../constants";
 import { ActiveEditor } from "./active_editor";
 import { ResourceTitle } from "../../sequences/panel/editor";
+import { Path } from "../../internal_urls";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -35,7 +36,7 @@ export class RawDesignerRegimenEditor
           resource={regimen}
           fallback={t("No Regimen selected")}
           dispatch={this.props.dispatch} />}
-        backTo={"/app/designer/regimens"} />
+        backTo={Path.regimens()} />
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
           notEmpty={regimen && isTaggedRegimen(regimen) && this.props.calendar}

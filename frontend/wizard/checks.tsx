@@ -81,6 +81,7 @@ import {
 import { tourPath } from "../help/tours";
 import { TOURS } from "../help/tours/data";
 import { push } from "../history";
+import { FilePath } from "../internal_urls";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -333,7 +334,7 @@ export const ConfiguratorDocs = () => {
 
 export const EthernetPortImage = () =>
   <img style={{ width: "100%" }}
-    src={"/app-resources/img/pi-ethernet-port.jpg"} />;
+    src={FilePath.image("pi-ethernet-port", "jpg")} />;
 
 export const Connectivity = (props: WizardStepComponentProps) => {
   const data = connectivityData({

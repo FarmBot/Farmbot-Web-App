@@ -1,9 +1,9 @@
 import { Collapse } from "@blueprintjs/core";
 import React from "react";
-import { Icon, iconFile } from "../farm_designer/panel_header";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
 import { openHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
+import { FilePath, Icon, Path } from "../internal_urls";
 
 interface Page {
   title: string;
@@ -26,11 +26,11 @@ const PAGES = (): Pages => ({
   },
   genesis: {
     title: t("Genesis Documentation"),
-    iconPath: "/app-resources/img/favicon.png",
+    iconPath: FilePath.image("favicon", "png"),
   },
   express: {
     title: t("Express Documentation"),
-    iconPath: "/app-resources/img/favicon.png",
+    iconPath: FilePath.image("favicon", "png"),
   },
   business: {
     title: t("Business Documentation"),
@@ -62,7 +62,7 @@ const maybeAddHotkeysMenuItem = (): [string, Page][] =>
 export const HelpHeader = () => {
   const [isOpen, setOpen] = React.useState(false);
   const click = () => setOpen(!isOpen);
-  const currentSlug = getPathArray()[3];
+  const currentSlug = Path.getSlug(Path.designer());
   const currentPage = PAGES()[currentSlug] || PAGES().help;
   return <div className={"help-panel-header"} onClick={click}>
     {PageLink([currentSlug, currentPage])}
@@ -78,10 +78,10 @@ export const HelpHeader = () => {
 };
 
 const PageLink = ([slug, page]: [string, Page]) => {
-  const iconSrc = page.icon ? iconFile(page.icon) : page.iconPath;
+  const iconSrc = page.icon ? FilePath.icon(page.icon) : page.iconPath;
   return <a key={slug}
     title={page.title}
-    onClick={() => page.onClick ? page.onClick() : push(`/app/designer/${slug}`)}>
+    onClick={() => page.onClick ? page.onClick() : push(Path.designer(slug))}>
     {page.fa_icon
       ? <i className={`fa fa-${page.fa_icon}`} />
       : <img width={25} height={25} src={iconSrc} />}

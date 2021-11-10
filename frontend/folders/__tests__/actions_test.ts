@@ -38,6 +38,7 @@ import { stepGet } from "../../draggable/actions";
 import { SpecialStatus } from "farmbot";
 import { dragEvent } from "../../__test_support__/fake_html_events";
 import { mockFolders, TEST_GRAPH } from "../test_fixtures";
+import { Path } from "../../internal_urls";
 
 const mockSequence = fakeSequence();
 const i = buildResourceIndex(newTaggedResource("Folder", mockFolders));
@@ -66,10 +67,6 @@ jest.mock("../../api/crud", () => {
 
 jest.mock("../../sequences/set_active_sequence_by_name", () => {
   return { setActiveSequenceByName: jest.fn() };
-});
-
-jest.mock("../../history", () => {
-  return { push: jest.fn(), getPathArray: () => [] };
 });
 
 describe("expand/collapse all", () => {
@@ -117,7 +114,7 @@ describe("addNewSequenceToFolder", () => {
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
       name: "new sequence 1"
     }));
-    expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_1");
+    expect(push).toHaveBeenCalledWith(Path.sequences("new_sequence_1"));
   });
 });
 

@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/weeds";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.weeds());
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -54,7 +55,7 @@ describe("<WeedInventoryItem /> />", () => {
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/weeds/1");
+    expect(push).toHaveBeenCalledWith(Path.weeds(1));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -67,7 +68,7 @@ describe("<WeedInventoryItem /> />", () => {
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/weeds/ERR_NO_POINT_ID");
+    expect(push).toHaveBeenCalledWith(Path.weeds("ERR_NO_POINT_ID"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -75,7 +76,7 @@ describe("<WeedInventoryItem /> />", () => {
   });
 
   it("removes item in box select mode", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const p = fakeProps();
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");

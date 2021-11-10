@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/tools";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.tools());
 jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
   push: jest.fn(),
@@ -111,7 +112,7 @@ describe("<Tools />", () => {
   it("navigates to group", () => {
     const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
     wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -138,9 +139,9 @@ describe("<Tools />", () => {
     p.toolSlots[0].body.tool_id = 3;
     const wrapper = mount(<Tools {...p} />);
     wrapper.find(".tool-slot-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/tool-slots/2");
+    expect(push).toHaveBeenCalledWith(Path.toolSlots(2));
     wrapper.find(".tool-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/tools/1");
+    expect(push).toHaveBeenCalledWith(Path.tools(1));
   });
 
   it("hovers tool", () => {
@@ -308,18 +309,18 @@ describe("<ToolSlotInventoryItem />", () => {
   });
 
   it("opens tool slot", () => {
-    mockPath = "/app/designer/tool-slots";
+    mockPath = Path.mock(Path.toolSlots());
     const p = fakeProps();
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find("div").first().simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
+    expect(push).toHaveBeenCalledWith(Path.toolSlots(1));
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("removes item in box select mode", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const p = fakeProps();
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);

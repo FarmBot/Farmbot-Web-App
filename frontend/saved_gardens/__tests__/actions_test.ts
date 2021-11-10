@@ -5,8 +5,6 @@ jest.mock("axios", () => ({
   })),
 }));
 
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   initSave: jest.fn(),
@@ -20,12 +18,13 @@ import {
   openSavedGarden, openOrCloseGarden, newSavedGarden, unselectSavedGarden,
   copySavedGarden,
 } from "../actions";
-import { history } from "../../history";
+import { push } from "../../history";
 import { Actions } from "../../constants";
 import { destroy, initSave, initSaveGetId } from "../../api/crud";
 import {
   fakeSavedGarden, fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
+import { Path } from "../../internal_urls";
 
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", () => {
@@ -47,7 +46,7 @@ describe("applyGarden", () => {
     const dispatch = jest.fn();
     await applyGarden(4)(dispatch);
     expect(axios.patch).toHaveBeenCalledWith(API.current.applyGardenPath(4));
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
   });
 });
@@ -57,7 +56,7 @@ describe("destroySavedGarden", () => {
     const dispatch = jest.fn((_) => Promise.resolve());
     destroySavedGarden("SavedGardenUuid")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(destroy).toHaveBeenCalledWith("SavedGardenUuid");
   });
 });
@@ -66,7 +65,7 @@ describe("closeSavedGarden", () => {
   it("closes garden", () => {
     const dispatch = jest.fn();
     closeSavedGarden()(dispatch);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
   });
 });
@@ -76,7 +75,7 @@ describe("openSavedGarden", () => {
     const dispatch = jest.fn();
     const uuid = "SavedGardenUuid.1.0";
     openSavedGarden(uuid)(dispatch);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens/1");
+    expect(push).toHaveBeenCalledWith(Path.savedGardens(1));
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_SAVED_GARDEN,
       payload: uuid
@@ -92,7 +91,7 @@ describe("openOrCloseGarden", () => {
       gardenIsOpen: false,
     };
     openOrCloseGarden(props)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens/1");
+    expect(push).toHaveBeenCalledWith(Path.savedGardens(1));
   });
 
   it("closes garden", () => {
@@ -102,7 +101,7 @@ describe("openOrCloseGarden", () => {
       gardenIsOpen: true,
     };
     openOrCloseGarden(props)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
   });
 });
 

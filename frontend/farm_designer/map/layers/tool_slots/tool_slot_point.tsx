@@ -10,6 +10,7 @@ import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 import { ToolbaySlot } from "../../tool_graphics/slot";
 import { GantryToolSlot } from "../../tool_graphics/seed_trough";
 import { reduceToolName } from "../../tool_graphics/all_tools";
+import { Path } from "../../../../internal_urls";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -43,7 +44,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
   };
   return <g id={"toolslot-" + id}
     onClick={mapPointClickAction(props.dispatch, toolSlot.uuid,
-      `/app/designer/tool-slots/${id}`)}>
+      Path.toolSlots(id))}>
     {pullout_direction && !gantry_mounted &&
       <ToolbaySlot
         id={id}

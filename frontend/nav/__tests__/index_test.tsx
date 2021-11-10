@@ -2,11 +2,6 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
 jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
@@ -26,6 +21,7 @@ import { Session } from "../../session";
 import { refresh } from "../../api/crud";
 import { push } from "../../history";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
+import { Path } from "../../internal_urls";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -124,7 +120,7 @@ describe("<NavBar />", () => {
   it("displays setup button", () => {
     const wrapper = mount(<NavBar {...fakeProps()} />);
     wrapper.find(".setup-button").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/setup");
+    expect(push).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.text().toLowerCase()).toContain("complete");
   });
 

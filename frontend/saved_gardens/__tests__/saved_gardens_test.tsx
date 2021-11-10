@@ -6,11 +6,6 @@ jest.mock("../actions", () => ({
   closeSavedGarden: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: () => [],
-}));
-
 jest.mock("../../api/crud", () => ({ edit: jest.fn() }));
 
 import React from "react";
@@ -22,7 +17,7 @@ import { clickButton } from "../../__test_support__/helpers";
 import {
   fakePlantTemplate, fakeSavedGarden,
 } from "../../__test_support__/fake_state/resources";
-import { history } from "../../history";
+import { push } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -31,6 +26,7 @@ import { SavedGardensProps } from "../interfaces";
 import { closeSavedGarden } from "../actions";
 import { Actions } from "../../constants";
 import { SearchField } from "../../ui/search_field";
+import { Path } from "../../internal_urls";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -109,7 +105,7 @@ describe("<SavedGardenHUD />", () => {
     const dispatch = jest.fn();
     const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
     clickButton(wrapper, 0, "edit");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
       payload: undefined

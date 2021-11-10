@@ -1,4 +1,5 @@
-let mockPath = "/app/designer";
+import { Path } from "../../../../internal_urls";
+let mockPath = Path.mock(Path.designer());
 jest.mock("../../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
@@ -403,7 +404,7 @@ describe("<ProfileSvg />", () => {
     });
 
   it("renders interpolated soil", () => {
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     const p = fakeProps();
     p.expanded = true;
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });

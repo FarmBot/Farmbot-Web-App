@@ -14,6 +14,7 @@ import { generateFarmwareDictionary } from "../state_to_props";
 import { Link } from "../../link";
 import { farmwareUrlFriendly } from "../set_active_farmware_by_name";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
+import { Path } from "../../internal_urls";
 
 export interface DesignerFarmwareListProps {
   dispatch: Function;
@@ -52,7 +53,7 @@ export class RawDesignerFarmwareList
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Farmware}
-        linkTo={"/app/designer/farmware/add"}
+        linkTo={Path.farmware("add")}
         title={t("Install Farmware")}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={t("Search your Farmware...")}
@@ -95,7 +96,7 @@ export const FarmwareListItem = (props: FarmwareListItemProps) => {
     payload: farmwareName
   });
   return <Link
-    to={`/app/designer/farmware/${farmwareUrlFriendly(farmwareName)}`}
+    to={Path.farmware(farmwareUrlFriendly(farmwareName))}
     key={farmwareName}
     onClick={click}>
     <div className={"farmware-list-items"}>

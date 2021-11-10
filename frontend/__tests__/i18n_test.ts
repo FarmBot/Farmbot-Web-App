@@ -13,8 +13,11 @@ let mockGet = Promise.resolve({
 });
 jest.mock("axios", () => ({ get: jest.fn((_url: string) => mockGet) }));
 
-import { generateUrl, getUserLang, generateI18nConfig } from "../i18n";
+import {
+  generateUrl, getUserLang, generateI18nConfig, detectLanguage,
+} from "../i18n";
 import axios from "axios";
+import { FilePath } from "../internal_urls";
 
 const LANG_CODE = "en_US";
 const HOST = "local.dev";
@@ -23,7 +26,7 @@ const PORT = "2323";
 describe("generateUrl", () => {
   it("Generates a URL from a language code", () => {
     const result = generateUrl(LANG_CODE, HOST, PORT);
-    expect(result).toBe("//local.dev:2323/app-resources/languages/en.json");
+    expect(result).toBe("//local.dev:2323" + FilePath.language("en"));
   });
 });
 
@@ -55,5 +58,13 @@ describe("getUserLang", () => {
           generateUrl(BAD_LANG_CODE, HOST, PORT));
         expect(result).toEqual("en");
       });
+  });
+});
+
+describe("detectLanguage()", () => {
+  it("detects language", () => {
+    Object.defineProperty(navigator, "language", { value: "en" });
+    detectLanguage().catch(() => { });
+    expect(axios.get).toHaveBeenCalledWith(generateUrl("en", "", ""));
   });
 });

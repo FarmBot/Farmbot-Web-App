@@ -3,7 +3,6 @@ import { svgToUrl } from "../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch,
 } from "../farm_designer/interfaces";
-import { getPathArray } from "../history";
 import { connect } from "react-redux";
 import { findBySlug } from "../farm_designer/search_selectors";
 import { Everything } from "../interfaces";
@@ -25,10 +24,10 @@ import { startCase, isArray, chain, isNumber } from "lodash";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
-import { cropSearchUrl } from "./crop_catalog";
 import { PlantGrid } from "./grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { Path } from "../internal_urls";
 
 interface InfoFieldProps {
   title: string;
@@ -190,9 +189,9 @@ const EditOnOpenFarm = ({ slug }: { slug: string }) =>
 export const getCropHeaderProps = (props: {
   cropSearchResults: CropLiveSearchResult[]
 }) => {
-  const crop = getPathArray()[5] || "";
+  const crop = Path.getSlug(Path.cropSearch());
   const result = findBySlug(props.cropSearchResults, crop);
-  const basePath = cropSearchUrl();
+  const basePath = Path.cropSearch();
   const backgroundURL = `linear-gradient(
     rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
   return { crop, result, basePath, backgroundURL };
@@ -216,7 +215,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 /** Get OpenFarm crop search results for crop info page contents. */
 export const searchForCurrentCrop = (openfarmSearch: OpenfarmSearch) =>
   (dispatch: Function) => {
-    const crop = getPathArray()[5];
+    const crop = Path.getSlug(Path.cropSearch());
     openfarmSearch(crop)(dispatch);
     unselectPlant(dispatch)();
   };

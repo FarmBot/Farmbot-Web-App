@@ -21,6 +21,7 @@ import { urlFriendly } from "../util";
 import { setActiveRegimenByName } from "../regimens/set_active_regimen_by_name";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { Path } from "../internal_urls";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -28,10 +29,10 @@ const filterSearch = (term: string) => (item: CalendarOccurrence) =>
 
 const resourceLink =
   (resourceKind: ExecutableType, resourceName: string) => {
-    const resourcePathSlug =
-      resourceKind == "Regimen" ? "regimens" : "sequences";
+    const path =
+      resourceKind == "Regimen" ? Path.regimens : Path.sequences;
     return <Link
-      to={`/app/designer/${resourcePathSlug}/${urlFriendly(resourceName)}`}
+      to={path(urlFriendly(resourceName))}
       onClick={resourceKind == "Regimen"
         ? setActiveRegimenByName
         : setActiveSequenceByName}>
@@ -55,8 +56,6 @@ export class RawFarmEvents
     return sortBy(items, x => x.sortKey)
       .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
-        const url = "/app/designer/events/"
-          + (occur.id || "UNSAVED_EVENT").toString();
         const headingResource =
           (occur.executableType == "Regimen" && !occur.subheading)
             ? "Regimen"
@@ -82,7 +81,8 @@ export class RawFarmEvents
             {subHeading}
             {variables}
           </div>
-          <Link className={"edit-link"} to={url}>
+          <Link className={"edit-link"}
+            to={Path.farmEvents(occur.id || "UNSAVED_EVENT")}>
             <i className="fa fa-pencil-square-o edit-icon" />
           </Link>
         </div>;
@@ -130,7 +130,7 @@ export class RawFarmEvents
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.FarmEvents}
-        linkTo={"/app/designer/events/add"}
+        linkTo={Path.farmEvents("add")}
         title={t("Add event")}>
         <SearchField searchTerm={this.state.searchTerm}
           customLeftIcon={

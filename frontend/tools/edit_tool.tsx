@@ -5,7 +5,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
@@ -22,6 +22,7 @@ import { CustomToolGraphicsInput } from "./custom_tool_graphics";
 import {
   reduceFarmwareEnv, saveOrEditFarmwareEnv,
 } from "../farmware/state_to_props";
+import { Path } from "../internal_urls";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -43,13 +44,13 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
 export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   state: EditToolState = { toolName: this.tool ? this.tool.body.name || "" : "" };
 
-  get stringyID() { return getPathArray()[4] || ""; }
+  get stringyID() { return Path.getSlug(Path.tools()); }
 
   get tool() { return this.props.findTool(this.stringyID); }
 
   fallback = () => {
-    const toolsPath = "/app/designer/tools";
-    getPathArray().join("/").startsWith(toolsPath) && push(toolsPath);
+    const toolsPath = Path.tools();
+    Path.startsWith(toolsPath) && push(toolsPath);
     return <this.PanelWrapper>
       <span>{t("Redirecting")}...</span>
     </this.PanelWrapper>;
@@ -81,7 +82,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           onClick={() => {
             this.props.dispatch(edit(tool, { name: toolName }));
             this.props.dispatch(save(tool.uuid));
-            push("/app/designer/tools");
+            push(Path.tools());
           }}
           disabled={!this.state.toolName || nameTaken}
           status={SpecialStatus.DIRTY} />
@@ -108,7 +109,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
       <DesignerPanelHeader
         panelName={panelName}
         title={t("Edit tool")}
-        backTo={"/app/designer/tools"}
+        backTo={Path.tools()}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         {props.children}

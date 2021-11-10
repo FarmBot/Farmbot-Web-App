@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { Everything } from "../interfaces";
 import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../resources/selectors";
@@ -16,6 +16,7 @@ import { Actions } from "../constants";
 import { selectPoint } from "../farm_designer/map/actions";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { save } from "../api/crud";
+import { Path } from "../internal_urls";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -30,7 +31,7 @@ export const mapStateToProps = (props: Everything): EditWeedProps => ({
 });
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {
-  get stringyID() { return getPathArray()[4] || ""; }
+  get stringyID() { return Path.getSlug(Path.weeds()); }
   get weed() {
     if (this.stringyID) {
       return this.props.findPoint(parseInt(this.stringyID));
@@ -39,9 +40,8 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
   get panelName() { return "weed-info"; }
 
   render() {
-    const weedsPath = "/app/designer/weeds";
-    !this.weed && getPathArray().join("/").startsWith(weedsPath)
-      && push(weedsPath);
+    const weedsPath = Path.weeds();
+    !this.weed && Path.startsWith(weedsPath) && push(weedsPath);
     return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={this.panelName}

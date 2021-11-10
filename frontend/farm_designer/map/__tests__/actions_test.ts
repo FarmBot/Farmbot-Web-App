@@ -1,7 +1,8 @@
-let mockPath = "/app/designer/plants";
+import { FilePath, Path } from "../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../history", () => ({
-  history: { push: jest.fn() },
   getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn(),
 }));
 
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
@@ -26,8 +27,8 @@ import {
 import { MovePointsProps } from "../../interfaces";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
-import { DEFAULT_ICON, svgToUrl } from "../../../open_farm/icons";
-import { history } from "../../../history";
+import { svgToUrl } from "../../../open_farm/icons";
+import { push } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { GetState } from "../../../redux/interfaces";
 import {
@@ -66,28 +67,28 @@ describe("movePoints", () => {
 
 describe("closePlantInfo()", () => {
   it("no plant info open", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const dispatch = jest.fn();
     closePlantInfo(dispatch)();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
   });
 
   it("plant edit open", () => {
-    mockPath = "/app/designer/plants/1";
+    mockPath = Path.mock(Path.plants(1));
     const dispatch = jest.fn();
     closePlantInfo(dispatch)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: Actions.SELECT_POINT
     });
   });
 
   it("plant info open", () => {
-    mockPath = "/app/designer/plants/1";
+    mockPath = Path.mock(Path.plants(1));
     const dispatch = jest.fn();
     closePlantInfo(dispatch)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: Actions.SELECT_POINT
     });
@@ -109,7 +110,7 @@ describe("setDragIcon()", () => {
     const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
     setDragIcon(undefined)(e);
     const img = new Image();
-    img.src = DEFAULT_ICON;
+    img.src = FilePath.DEFAULT_ICON;
     expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
   });
 });
@@ -126,7 +127,7 @@ describe("clickMapPlant", () => {
   });
 
   it("adds a point to current group if group editor is active", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1];
     const state = fakeState();
     const plant = fakePlant();
@@ -143,7 +144,7 @@ describe("clickMapPlant", () => {
   });
 
   it("doesn't add a point to current group", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1];
     const state = fakeState();
     state.resources = buildResourceIndex([]);
@@ -155,7 +156,7 @@ describe("clickMapPlant", () => {
   });
 
   it("removes a point from the current group if group editor is active", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1, 2];
     const state = fakeState();
     const plant = fakePlant();
@@ -172,7 +173,7 @@ describe("clickMapPlant", () => {
   });
 
   it("adds a plant to the current selection if plant select is active", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
     plant.uuid = "fakePlantUuid";
@@ -187,7 +188,7 @@ describe("clickMapPlant", () => {
   });
 
   it("removes a plant to the current selection if plant select is active", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
     plant.uuid = "fakePlantUuid";
@@ -205,26 +206,26 @@ describe("clickMapPlant", () => {
 
 describe("mapPointClickAction()", () => {
   it("navigates", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const dispatch = jest.fn();
     mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(history.push).toHaveBeenCalledWith("fake path");
+    expect(push).toHaveBeenCalledWith("fake path");
     expect(dispatch).not.toHaveBeenCalled();
   });
 
   it("doesn't navigate: box select", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const dispatch = jest.fn();
     mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalled();
   });
 
   it("doesn't navigate: group edit", () => {
-    mockPath = "/app/designer/groups/edit/1";
+    mockPath = Path.mock(Path.groups(1));
     const dispatch = jest.fn();
     mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalled();
   });
 });

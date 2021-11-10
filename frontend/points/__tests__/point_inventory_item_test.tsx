@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/points";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.points());
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -51,7 +52,7 @@ describe("<PointInventoryItem> />", () => {
 
   it("deletes point", () => {
     mockDelMode = true;
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
     const wrapper = shallow(<PointInventoryItem {...p} />);
@@ -64,7 +65,7 @@ describe("<PointInventoryItem> />", () => {
 
   it("hovers point in quick delete mode", () => {
     mockDelMode = true;
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
     p.hovered = true;
@@ -74,13 +75,13 @@ describe("<PointInventoryItem> />", () => {
   });
 
   it("navigates to point", () => {
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
     const wrapper = shallow(<PointInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/points/1");
+    expect(push).toHaveBeenCalledWith(Path.points(1));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -88,13 +89,13 @@ describe("<PointInventoryItem> />", () => {
   });
 
   it("navigates to point without id", () => {
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = undefined;
     const wrapper = shallow(<PointInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/app/designer/points/ERR_NO_POINT_ID");
+    expect(push).toHaveBeenCalledWith(Path.points("ERR_NO_POINT_ID"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -102,7 +103,7 @@ describe("<PointInventoryItem> />", () => {
   });
 
   it("removes item in box select mode", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     const p = fakeProps();
     const wrapper = shallow(<PointInventoryItem {...p} />);
     wrapper.simulate("click");

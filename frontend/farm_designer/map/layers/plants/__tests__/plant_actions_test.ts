@@ -13,7 +13,8 @@ jest.mock("../../../actions", () => ({
   movePoints: jest.fn(),
 }));
 
-let mockPath = "/app/designer/plants/crop_search/mint";
+import { Path } from "../../../../../internal_urls";
+let mockPath = Path.mock(Path.cropSearch("mint"));
 jest.mock("../../../../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
@@ -105,13 +106,13 @@ describe("dropPlant()", () => {
   });
 
   it("doesn't drop plant", () => {
-    mockPath = "/app/designer/plants/crop_search/";
+    mockPath = Path.mock(Path.cropSearch()) + "/";
     dropPlant(fakeProps());
     expect(initSave).not.toHaveBeenCalled();
   });
 
   it("throws error", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.gardenCoords = undefined as any;

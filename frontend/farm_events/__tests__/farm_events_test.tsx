@@ -6,6 +6,7 @@ import {
 } from "../../__test_support__/farm_event_calendar_support";
 import { defensiveClone } from "../../util";
 import { FarmEventProps } from "../../farm_designer/interfaces";
+import { Path } from "../../internal_urls";
 
 describe("<FarmEvents />", () => {
   const fakeProps = (): FarmEventProps => ({
@@ -44,7 +45,7 @@ describe("<FarmEvents />", () => {
     expect(item.hasClass("gray")).toBeFalsy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
-      .toEqual("/app/designer/sequences/every_4_hours");
+      .toEqual(Path.sequences("every_4_hours"));
   });
 
   it("renders regimen FarmEvent lacking a subheading", () => {
@@ -69,7 +70,7 @@ describe("<FarmEvents />", () => {
     expect(item.hasClass("gray")).toBeFalsy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
-      .toEqual("/app/designer/regimens/every_4_hours");
+      .toEqual(Path.regimens("every_4_hours"));
   });
 
   it("filters farm events: finds none", () => {
@@ -115,6 +116,6 @@ describe("<FarmEvents />", () => {
   it("has add new farm event link", () => {
     const wrapper = mount(<FarmEvents {...fakeProps()} />);
     expect(wrapper.html()).toContain("fa-plus");
-    expect(wrapper.html()).toContain("/app/designer/events/add");
+    expect(wrapper.html()).toContain(Path.farmEvents("add"));
   });
 });

@@ -12,11 +12,10 @@ import { isUndefined, startCase } from "lodash";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
-import { cropSearchUrl } from "./crop_catalog";
-import { locationUrl } from "../farm_designer/move_to";
 import {
   fetchInterpolationOptions, interpolatedZ,
 } from "../farm_designer/map/layers/points/interpolation_map";
+import { Path } from "../internal_urls";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -112,7 +111,7 @@ const MoveToPlant = (props: MoveToPlantProps) =>
   <button className={"fb-button gray no-float"}
     style={{ marginTop: "1rem" }}
     title={t("Move to this plant")}
-    onClick={() => push(locationUrl({ x: props.x, y: props.y, z: props.z }))}>
+    onClick={() => push(Path.location({ x: props.x, y: props.y, z: props.z }))}>
     {t("Move FarmBot to this plant")}
   </button>;
 
@@ -137,7 +136,7 @@ const DeleteButtons = (props: DeleteButtonsProps) =>
       className="fb-button gray no-float"
       style={{ marginRight: "10px" }}
       title={t("Delete multiple")}
-      onClick={() => push("/app/designer/plants/select")}>
+      onClick={() => push(Path.plants("select"))}>
       {t("Delete multiple")}
     </button>
   </div>;
@@ -174,7 +173,7 @@ export function PlantPanel(props: PlantPanelProps) {
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
-          to={cropSearchUrl(slug)}>
+          to={Path.cropSearch(slug)}>
           {startCase(slug)}
         </Link>
       </ListItem>

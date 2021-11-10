@@ -4,12 +4,13 @@ import { BotPosition } from "../devices/interfaces";
 import { move } from "../devices/actions";
 import { push } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
-import { isNumber, isUndefined } from "lodash";
+import { isNumber } from "lodash";
 import { Actions, Content } from "../constants";
 import { AxisNumberProperty } from "./map/interfaces";
 import { t } from "../i18next_wrapper";
 import { SafeZCheckbox } from "../sequences/step_tiles/tile_computed_move/safe_z";
 import { Slider } from "@blueprintjs/core";
+import { Path } from "../internal_urls";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -105,7 +106,7 @@ export const MoveModeLink = () =>
     <button
       className="fb-button gray"
       title={t("open move mode panel")}
-      onClick={() => push("/app/designer/location")}>
+      onClick={() => push(Path.location())}>
       {t("move mode")}
     </button>
   </div>;
@@ -122,8 +123,3 @@ export const chooseLocation = (props: {
     });
   }
 };
-
-export const locationUrl = ({ x, y, z }: { x: number, y: number, z?: number }) =>
-  isUndefined(z)
-    ? `/app/designer/location?x=${x}?y=${y}`
-    : `/app/designer/location?x=${x}?y=${y}?z=${z}`;

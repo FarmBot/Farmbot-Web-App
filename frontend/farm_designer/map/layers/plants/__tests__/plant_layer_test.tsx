@@ -1,9 +1,10 @@
-let mockPath = "/app/designer/plants";
+import { FilePath, Path } from "../../../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/"))
 }));
 
-import * as React from "react";
+import React from "react";
 import { PlantLayer } from "../plant_layer";
 import {
   fakePlant, fakePlantTemplate,
@@ -16,7 +17,7 @@ import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { shallow } from "enzyme";
 import { GardenPlant } from "../garden_plant";
 
-describe("<PlantLayer/>", () => {
+describe("<PlantLayer />", () => {
   const fakeProps = (): PlantLayerProps => ({
     visible: true,
     plants: [fakePlant()],
@@ -42,7 +43,7 @@ describe("<PlantLayer/>", () => {
     ["soil-cloud",
       "plant-icon",
       "image visibility=\"visible\"",
-      "/app-resources/img/generic-plant.svg",
+      FilePath.DEFAULT_ICON,
       "height=\"40\" width=\"40\" x=\"80\" y=\"180\"",
       "drag-helpers",
       "plant-icon",
@@ -58,7 +59,7 @@ describe("<PlantLayer/>", () => {
   });
 
   it("is in clickable mode", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.interactions = true;
     p.plants[0].body.id = 1;
@@ -69,7 +70,7 @@ describe("<PlantLayer/>", () => {
   });
 
   it("is in non-clickable mode", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.interactions = false;
     p.plants[0].body.id = 1;
@@ -79,26 +80,26 @@ describe("<PlantLayer/>", () => {
   });
 
   it("has link to plant", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.plants[0].body.id = 5;
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
-      .toEqual("/app/designer/plants/5");
+      .toEqual(Path.plants(5));
   });
 
   it("has link to plant template", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     p.plants = [fakePlantTemplate()];
     p.plants[0].body.id = 5;
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
-      .toEqual("/app/designer/gardens/templates/5");
+      .toEqual(Path.plantTemplates(5));
   });
 
   it("has hovered plant", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     const plant = fakePlant();
     p.plants = [plant];
@@ -108,7 +109,7 @@ describe("<PlantLayer/>", () => {
   });
 
   it("has plant selected by selection box", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const p = fakeProps();
     const plant = fakePlant();
     p.plants = [plant];
@@ -127,7 +128,7 @@ describe("<PlantLayer/>", () => {
   });
 
   it("wraps the component in <g> (instead of <Link>", () => {
-    mockPath = "/app/designer/groups/15";
+    mockPath = Path.mock(Path.groups(15));
     const p = fakeProps();
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("a").length).toBe(0);

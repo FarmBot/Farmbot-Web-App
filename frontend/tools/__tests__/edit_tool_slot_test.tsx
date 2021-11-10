@@ -4,7 +4,8 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-let mockPath = "/app/designer/tool-slots/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.toolSlots(1));
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: jest.fn(() => mockPath.split("/")),
@@ -50,14 +51,14 @@ describe("<EditToolSlot />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/tool-slots/nope";
+    mockPath = Path.mock(Path.toolSlots("nope"));
     const wrapper = mount(<EditToolSlot {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting");
-    expect(push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<EditToolSlot {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting");
     expect(push).not.toHaveBeenCalled();

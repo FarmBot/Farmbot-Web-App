@@ -287,7 +287,6 @@ export interface GardenMapState {
 export type PlantOptions = Partial<PlantPointer>;
 
 export interface EditPlantInfoProps {
-  push(url: string): void;
   dispatch: Function;
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
   openedSavedGarden: string | undefined;

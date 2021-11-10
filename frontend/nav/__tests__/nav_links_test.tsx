@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
@@ -56,7 +57,7 @@ describe("<NavLinks />", () => {
   });
 
   it("shows active link", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
     expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
     expect(wrapper.html().toLowerCase()).not.toContain("sensors");

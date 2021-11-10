@@ -4,7 +4,8 @@ jest.mock("../../api/delete_points", () => ({
   deletePoints: jest.fn()
 }));
 
-let mockPath = "/app/designer/points/add";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.points("add"));
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -50,7 +51,7 @@ describe("mapStateToProps", () => {
 
 describe("<CreatePoints />", () => {
   beforeEach(() => {
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
   });
 
   const fakeProps = (): CreatePointsProps => ({
@@ -61,14 +62,14 @@ describe("<CreatePoints />", () => {
   });
 
   it("renders for points", () => {
-    mockPath = "/app/designer";
+    mockPath = Path.mock(Path.designer());
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     ["add point", "delete", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     ["add weed", "delete", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
@@ -125,7 +126,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("adds soil height flag", () => {
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
     const panel = mount<CreatePoints>(<CreatePoints {...p} />);
@@ -142,7 +143,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("creates point with soil height flag", () => {
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = FAKE_POINT;
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
@@ -161,11 +162,11 @@ describe("<CreatePoints />", () => {
     });
   });
 
-  it.each<[string]>([
-    ["point"],
-    ["weed"],
-  ])("uses current location: %s", (type) => {
-    mockPath = `/app/designer/${type}s/add`;
+  it.each<[string, string]>([
+    ["point", Path.points("add")],
+    ["weed", Path.weeds("add")],
+  ])("uses current location: %s", (type, path) => {
+    mockPath = Path.mock(path);
     const p = fakeProps();
     p.drawnPoint = FAKE_POINT;
     p.botPosition = { x: 1, y: 2, z: 3 };
@@ -182,7 +183,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("doesn't use current location", () => {
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = FAKE_POINT;
     p.botPosition = { x: undefined, y: undefined, z: undefined };
@@ -195,7 +196,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("updates weed name", () => {
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
     const panel = mount<CreatePoints>(<CreatePoints {...p} />);
@@ -211,7 +212,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("creates point", () => {
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
     clickButton(wrapper, 1, "save");
@@ -225,7 +226,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("creates weed", () => {
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
     clickButton(wrapper, 1, "save");
@@ -258,7 +259,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("deletes all weeds", () => {
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     const wrapper = mount(<CreatePoints {...p} />);
     const button = wrapper.find("button").last();
@@ -291,7 +292,7 @@ describe("<CreatePoints />", () => {
   });
 
   it("changes weed color", () => {
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);

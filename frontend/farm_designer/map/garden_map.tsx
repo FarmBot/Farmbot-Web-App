@@ -34,9 +34,9 @@ import {
   dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation, jogPoints,
   SavePointsProps, savePoints,
 } from "./layers/plants/plant_actions";
-import { chooseLocation, locationUrl } from "../move_to";
+import { chooseLocation } from "../move_to";
 import { GroupOrder, NNPath } from "./group_order_visual";
-import { history } from "../../history";
+import { push } from "../../history";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -47,6 +47,7 @@ import { debounce, throttle } from "lodash";
 import { SequenceVisualization } from "./sequence_visualization";
 import { chooseProfile, ProfileLine } from "./profile";
 import { betterCompact } from "../../util";
+import { Path } from "../../internal_urls";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -233,7 +234,7 @@ export class GardenMap extends
             return true;
           }
         };
-        openLocationInfo(e) && history.push("/app/designer/plants");
+        openLocationInfo(e) && push(Path.plants());
         startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
@@ -456,7 +457,7 @@ export class GardenMap extends
           const box = area && area > 10;
           if (this.state.toLocation &&
             [Mode.none, Mode.points, Mode.weeds].includes(getMode())) {
-            !box && history.push(locationUrl(this.state.toLocation));
+            !box && push(Path.location(this.state.toLocation));
           }
           this.setState({
             toLocation: undefined, previousSelectionBoxArea: undefined,

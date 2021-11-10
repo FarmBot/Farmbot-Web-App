@@ -1,19 +1,20 @@
 import React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
-import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
+import { svgToUrl } from "../../../../open_farm/icons";
 import { transformXY, scaleIcon } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
-import { Color } from "../../../../ui/index";
+import { Color } from "../../../../ui";
 import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { clickMapPlant } from "../../actions";
 import { Circle } from "./circle";
 import { SpecialStatus } from "farmbot";
+import { FilePath } from "../../../../internal_urls";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: DEFAULT_ICON, hover: false };
+  state: GardenPlantState = { icon: FilePath.DEFAULT_ICON, hover: false };
 
   componentDidMount() {
     const OFS = this.props.plant.body.openfarm_slug;

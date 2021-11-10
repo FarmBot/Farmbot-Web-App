@@ -15,7 +15,6 @@ jest.mock("../actions", () => ({
 
 let mockPath = "";
 jest.mock("../../history", () => ({
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) },
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
@@ -42,7 +41,7 @@ import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
-  FolderButtonCluster, FolderListItem, FolderNameInput, sequencesUrlBase,
+  FolderButtonCluster, FolderListItem, FolderNameInput,
 } from "../component";
 import {
   FolderProps, FolderPanelTopProps, SequenceDropAreaProps, FolderNodeProps,
@@ -65,6 +64,7 @@ import {
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
+import { Path } from "../../internal_urls";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -235,15 +235,6 @@ describe("<Folders />", () => {
   });
 });
 
-describe("sequencesUrlBase()", () => {
-  it("returns correct base", () => {
-    mockPath = "/app/sequences/1";
-    expect(sequencesUrlBase()).toEqual("/app/sequences/");
-    mockPath = "/app/designer/sequences/1";
-    expect(sequencesUrlBase()).toEqual("/app/designer/sequences/");
-  });
-});
-
 describe("<FolderListItem />", () => {
   const fakeProps = (): FolderItemProps => ({
     startSequenceMove: jest.fn(),
@@ -274,7 +265,7 @@ describe("<FolderListItem />", () => {
   it("renders: active", () => {
     const p = fakeProps();
     p.sequence.body.name = "sequence";
-    mockPath = "/app/sequences/sequence";
+    mockPath = Path.mock(Path.sequences("sequence"));
     const wrapper = mount(<FolderListItem {...p} />);
     expect(wrapper.find("li").hasClass("active")).toBeTruthy();
   });

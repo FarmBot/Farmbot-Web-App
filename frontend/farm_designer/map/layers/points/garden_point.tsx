@@ -7,6 +7,7 @@ import { CameraViewArea } from "../farmbot/bot_figure";
 import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
 import { SpecialStatus } from "farmbot";
+import { Path } from "../../../../internal_urls";
 
 export const GardenPoint = (props: GardenPointProps) => {
 
@@ -28,8 +29,7 @@ export const GardenPoint = (props: GardenPointProps) => {
     onMouseLeave={iconHover("end")}
     onClick={() => {
       props.dispatch(selectPoint([point.uuid]));
-      mapPointClickAction(props.dispatch, point.uuid,
-        `/app/designer/points/${id}`)();
+      mapPointClickAction(props.dispatch, point.uuid, Path.points(id))();
     }}>
     <circle id="point-radius" cx={qx} cy={qy} r={point.body.radius}
       strokeDasharray={meta.gridId && unsaved ? "4 5" : undefined}

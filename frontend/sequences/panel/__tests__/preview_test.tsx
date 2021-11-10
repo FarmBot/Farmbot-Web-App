@@ -1,8 +1,3 @@
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 import {
   fakeSequence, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
@@ -38,6 +33,7 @@ import { BooleanSetting } from "../../../session_keys";
 import { edit } from "../../../api/crud";
 import { push } from "../../../history";
 import { installSequence } from "../../actions";
+import { Path } from "../../../internal_urls";
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
@@ -75,7 +71,7 @@ describe("<DesignerSequencePreview />", () => {
     expect(importBtn.text()).toEqual("import");
     await importBtn.simulate("click");
     expect(installSequence).toHaveBeenCalledWith(sequence.body.id);
-    expect(push).toHaveBeenCalledWith("/app/designer/sequences");
+    expect(push).toHaveBeenCalledWith(Path.sequences());
   });
 
   it("loads sequence", async () => {

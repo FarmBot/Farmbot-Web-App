@@ -1,5 +1,5 @@
 import React from "react";
-import { history as routeHistory } from "../history";
+import { push } from "../history";
 import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
@@ -65,7 +65,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
       <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
-          props.backTo ? routeHistory.push(props.backTo) : history.back();
+          props.backTo ? push(props.backTo) : history.back();
           props.onBack?.();
         }} />
       {props.title &&

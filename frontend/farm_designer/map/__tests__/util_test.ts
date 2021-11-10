@@ -1,7 +1,6 @@
 let mockPath = "";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -35,7 +34,7 @@ import {
   fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { cropSearchUrl } from "../../../plants/crop_catalog";
+import { Path } from "../../../internal_urls";
 
 describe("round()", () => {
   it("rounds a number", () => {
@@ -50,9 +49,9 @@ describe("mapPanelClassName()", () => {
       value: 400,
       configurable: true
     });
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     expect(mapPanelClassName()).toEqual("short-panel");
-    mockPath = cropSearchUrl("mint/add");
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     expect(mapPanelClassName()).toEqual("short-panel");
   });
 
@@ -61,9 +60,9 @@ describe("mapPanelClassName()", () => {
       value: 500,
       configurable: true
     });
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     expect(mapPanelClassName()).toEqual("panel-open");
-    mockPath = cropSearchUrl("mint/add");
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     expect(mapPanelClassName()).toEqual("panel-open");
   });
 });
@@ -369,33 +368,29 @@ describe("transformForQuadrant()", () => {
 
 describe("getMode()", () => {
   it("returns correct Mode", () => {
-    mockPath = cropSearchUrl("mint/add");
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = "/app/designer/plants/1/edit";
+    mockPath = Path.mock(Path.plants(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/gardens/templates/1/edit";
+    mockPath = Path.mock(Path.plantTemplates(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/plants/1";
-    expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/gardens/templates/1";
-    expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     expect(getMode()).toEqual(Mode.boxSelect);
-    mockPath = cropSearchUrl("mint");
+    mockPath = Path.mock(Path.cropSearch("mint"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     expect(getMode()).toEqual(Mode.locationInfo);
-    mockPath = "/app/designer/points";
+    mockPath = Path.mock(Path.points());
     expect(getMode()).toEqual(Mode.points);
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     expect(getMode()).toEqual(Mode.createPoint);
-    mockPath = "/app/designer/weeds";
+    mockPath = Path.mock(Path.weeds());
     expect(getMode()).toEqual(Mode.weeds);
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     expect(getMode()).toEqual(Mode.createWeed);
-    mockPath = "/app/designer/gardens/1";
+    mockPath = Path.mock(Path.savedGardens(1));
     expect(getMode()).toEqual(Mode.templateView);
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     expect(getMode()).toEqual(Mode.editGroup);
     mockPath = "";
     mockState.resources.consumers.farm_designer.profileOpen = true;
@@ -408,7 +403,8 @@ describe("getMode()", () => {
 
 describe("savedGardenOpen", () => {
   it("is open", () => {
-    const result = savedGardenOpen(["", "", "", "gardens", "4", ""]);
+    mockPath = Path.mock(Path.savedGardens(4));
+    const result = savedGardenOpen();
     expect(result).toEqual(4);
   });
 });
@@ -456,34 +452,34 @@ describe("getGardenCoordinates()", () => {
 
 describe("allowInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     expect(allowInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = cropSearchUrl("mint/add");
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     expect(allowInteraction()).toBeFalsy();
-    mockPath = "/app/designer/points/add";
+    mockPath = Path.mock(Path.points("add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = "/app/designer/weeds/add";
+    mockPath = Path.mock(Path.weeds("add"));
     expect(allowInteraction()).toBeFalsy();
   });
 });
 
 describe("allowGroupAreaInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     expect(allowGroupAreaInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = Path.mock(Path.plants("select"));
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     expect(allowGroupAreaInteraction()).toBeFalsy();
   });
 });

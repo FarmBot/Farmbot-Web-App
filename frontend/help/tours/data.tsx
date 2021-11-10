@@ -4,6 +4,7 @@ import { FirmwareHardware } from "farmbot";
 import { Actions, TourContent } from "../../constants";
 import { Tour, TourStep } from "./interfaces";
 import { isExpress } from "../../settings/firmware/firmware_hardware_support";
+import { Path } from "../../internal_urls";
 
 export const TOURS = (
   firmwareHardware?: FirmwareHardware | undefined,
@@ -28,84 +29,84 @@ export const TOURS = (
         title: t("Plants"),
         content: TourContent.PLANTS_PANEL,
         beacons: ["plants", "plant-inventory"],
-        url: "/app/designer/plants",
+        url: Path.plants(),
       },
       {
         slug: "weeds",
         title: t("Weeds"),
         content: TourContent.WEEDS_PANEL,
         beacons: ["weeds", "weeds-inventory"],
-        url: "/app/designer/weeds",
+        url: Path.weeds(),
       },
       {
         slug: "points",
         title: t("Points"),
         content: TourContent.POINTS_PANEL,
         beacons: ["points", "point-inventory"],
-        url: "/app/designer/points",
+        url: Path.points(),
       },
       {
         slug: "sequences",
         title: t("Sequences"),
         content: TourContent.SEQUENCES_PANEL,
         beacons: ["sequences", "designer-sequence-list"],
-        url: "/app/designer/sequences",
+        url: Path.sequences(),
       },
       {
         slug: "regimens",
         title: t("Regimens"),
         content: TourContent.REGIMENS_PANEL,
         beacons: ["regimens", "designer-regimen-list"],
-        url: "/app/designer/regimens",
+        url: Path.regimens(),
       },
       {
         slug: "farmEvents",
         title: t("Events"),
         content: TourContent.FARM_EVENTS_PANEL,
         beacons: ["events", "farm-event"],
-        url: "/app/designer/events",
+        url: Path.farmEvents(),
       },
       {
         slug: "controls",
         title: t("Controls"),
         content: TourContent.CONTROLS_PANEL,
         beacons: ["controls"],
-        url: "/app/designer/controls",
+        url: Path.controls(),
       },
       {
         slug: "photos",
         title: t("Photos"),
         content: TourContent.PHOTOS_PANEL,
         beacons: ["photos"],
-        url: "/app/designer/photos",
+        url: Path.photos(),
       },
       {
         slug: "tools",
         title: t("Tools"),
         content: TourContent.TOOLS_PANEL,
         beacons: ["tools"],
-        url: "/app/designer/tools",
+        url: Path.tools(),
       },
       {
         slug: "messages",
         title: t("Messages"),
         content: TourContent.MESSAGES_PANEL,
         beacons: ["messages"],
-        url: "/app/designer/messages",
+        url: Path.messages(),
       },
       {
         slug: "help",
         title: t("Help"),
         content: TourContent.HELP_PANEL,
         beacons: ["help"],
-        url: "/app/designer/help",
+        url: Path.help(),
       },
       {
         slug: "settings",
         title: t("Settings"),
         content: TourContent.SETTINGS_PANEL,
         beacons: ["settings"],
-        url: "/app/designer/settings",
+        url: Path.settings(),
       },
       {
         slug: "connectivityPopup",
@@ -147,7 +148,7 @@ export const TOURS = (
         title: t("What's next?"),
         content: TourContent.GETTING_STARTED_END,
         beacons: undefined,
-        url: "/app/designer/tours",
+        url: Path.tours(),
       },
     ],
   },
@@ -167,7 +168,7 @@ export const TOURS = (
         content: TourContent.PLANT_INVENTORY,
         beacons: ["plants", "plant-inventory"],
         activeBeacons: [{ class: "plus-plant", type: "hard" }],
-        url: "/app/designer/plants",
+        url: Path.plants(),
       },
       {
         slug: "cropSearch",
@@ -217,7 +218,7 @@ export const TOURS = (
         content: TourContent.FILLED_PLANT_INVENTORY,
         beacons: ["plant-inventory"],
         activeBeacons: [{ class: "thin-search", type: "soft" }],
-        url: "/app/designer/plants",
+        url: Path.plants(),
       },
       {
         slug: "plantDetails",
@@ -233,7 +234,7 @@ export const TOURS = (
         content: TourContent.ADD_MORE_PLANTS,
         beacons: undefined,
         activeBeacons: [{ class: "plus-plant", type: "hard" }],
-        url: "/app/designer/plants",
+        url: Path.plants(),
       },
       {
         slug: "groupsIntro",
@@ -248,7 +249,7 @@ export const TOURS = (
         content: TourContent.GARDEN_GROUPS_PANEL,
         beacons: ["groups"],
         activeBeacons: [{ class: "plus-group", type: "hard" }],
-        url: "/app/designer/plants",
+        url: Path.plants(),
       },
       {
         slug: "filter",
@@ -301,7 +302,7 @@ export const TOURS = (
         activeBeacons: [
           { class: "tool-slots", type: "hard" },
         ],
-        url: "/app/designer/tools",
+        url: Path.tools(),
       },
       {
         slug: "edit",
@@ -354,7 +355,7 @@ export const TOURS = (
         content: TourContent.LOADING_SLOTS,
         beacons: undefined,
         activeBeacons: [{ class: "tool-selection-wrapper", type: "hard" }],
-        url: "/app/designer/tools",
+        url: Path.tools(),
       },
       ...(isExpress(firmwareHardware)
         ? []
@@ -377,7 +378,7 @@ export const TOURS = (
         content: TourContent.LOCATION_GRID,
         beacons: undefined,
         activeBeacons: [{ class: "bot-position-rows", type: "soft" }],
-        url: "/app/designer/controls",
+        url: Path.controls(),
       },
       {
         slug: "virtual",
@@ -385,7 +386,7 @@ export const TOURS = (
         content: TourContent.VIRTUAL_FARMBOT,
         beacons: undefined,
         activeBeacons: [{ class: "farm-designer", type: "soft" }],
-        url: "/app/designer/controls",
+        url: Path.controls(),
       },
       {
         slug: "logs",
@@ -393,14 +394,14 @@ export const TOURS = (
         content: TourContent.LOGS_TABLE,
         beacons: undefined,
         activeBeacons: [{ class: "logs-page", type: "soft" }],
-        url: "/app/logs",
+        url: Path.logs(),
       },
       {
         slug: "photos",
         title: t("Take and view photos"),
         content: TourContent.PHOTOS,
         beacons: ["photos"],
-        url: "/app/designer/photos",
+        url: Path.photos(),
       },
     ],
   },

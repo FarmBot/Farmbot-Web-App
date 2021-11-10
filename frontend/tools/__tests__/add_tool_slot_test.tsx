@@ -5,8 +5,6 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
@@ -18,12 +16,13 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { init, save, edit, destroy } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import { SpecialStatus } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
+import { Path } from "../../internal_urls";
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -70,7 +69,7 @@ describe("<AddToolSlot />", () => {
     const wrapper = shallow<AddToolSlot>(<AddToolSlot {...fakeProps()} />);
     wrapper.find("SaveBtn").simulate("click");
     expect(save).toHaveBeenCalled();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+    expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
   it("saves on unmount", () => {

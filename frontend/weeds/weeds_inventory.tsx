@@ -34,6 +34,7 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { createGroup } from "../point_groups/actions";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -167,7 +168,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
     dispatch={this.props.dispatch} />;
 
-  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
     const weedGroups = pointGroupSubset(this.props.groups, "Weed");
@@ -211,7 +212,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           panel={Panel.Weeds}
           toggleOpen={this.toggleOpen("weeds")}
           itemCount={this.props.weeds.length}
-          addNew={() => push("/app/designer/weeds/add")}
+          addNew={() => push(Path.weeds("add"))}
           addTitle={t("add weed")}
           addClassName={"plus-weed"}
           title={t("Weeds")}>

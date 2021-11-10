@@ -19,6 +19,7 @@ import { shallow } from "enzyme";
 import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
 import { MqttClient } from "mqtt";
 import { tourPath } from "../../help/tours";
+import { Path } from "../../internal_urls";
 
 describe("<DemoIframe />", () => {
   it("renders OK", async () => {
@@ -46,7 +47,7 @@ describe("<DemoIframe />", () => {
     const el = shallow<DemoIframe>(<DemoIframe />);
     el.instance().handleMessage("foo", Buffer.from("bar"));
     expect(location.assign).toHaveBeenCalledWith(
-      tourPath("/app/designer/plants", "gettingStarted", "intro"));
+      tourPath(Path.withApp(Path.plants()), "gettingStarted", "intro"));
   });
 
   it("does something 🤫", async () => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API } from "../api";
 import { success, info } from "../toast/toast";
-import { history } from "../history";
+import { push } from "../history";
 import { Actions } from "../constants";
 import { destroy, initSave, initSaveGetId } from "../api/crud";
 import { unpackUUID } from "../util";
@@ -9,6 +9,7 @@ import { isString } from "lodash";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
+import { Path } from "../internal_urls";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (gardenName?: string | undefined) =>
@@ -17,7 +18,7 @@ export const snapshotGarden = (gardenName?: string | undefined) =>
     : {})
     .then(() => {
       success(t("Garden Saved."));
-      history.push("/app/designer/plants");
+      push(Path.plants());
     });
 
 export const unselectSavedGarden = {
@@ -30,7 +31,7 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
   .patch<void>(API.current.applyGardenPath(gardenId))
   .then(data => {
     stopTracking(data.headers["x-farmbot-rpc-id"]);
-    history.push("/app/designer/plants");
+    push(Path.plants());
     dispatch(unselectSavedGarden);
     const busyToastTitle = t("Please wait");
     info(t("while your garden is applied."), { title: busyToastTitle });
@@ -38,18 +39,18 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
 
 export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
   dispatch(unselectSavedGarden);
-  history.push("/app/designer/plants");
+  push(Path.plants());
   dispatch(destroy(uuid));
 };
 
 export const closeSavedGarden = () => {
-  history.push("/app/designer/plants");
+  push(Path.plants());
   return (dispatch: Function) =>
     dispatch(unselectSavedGarden);
 };
 
 export const openSavedGarden = (savedGarden: string) => {
-  history.push("/app/designer/gardens/" + unpackUUID(savedGarden).remoteId);
+  push(Path.savedGardens(unpackUUID(savedGarden).remoteId));
   return (dispatch: Function) =>
     dispatch({ type: Actions.CHOOSE_SAVED_GARDEN, payload: savedGarden });
 };
@@ -71,7 +72,7 @@ export const newSavedGarden = (gardenName: string) =>
     dispatch(initSave("SavedGarden", { name: gardenName || "Untitled Garden" }))
       .then(() => {
         success(t("Garden Saved."));
-        history.push("/app/designer/plants");
+        push(Path.plants());
       });
   };
 
@@ -102,6 +103,6 @@ export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
           .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
           .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId))));
         success(t("Garden Saved."));
-        history.push("/app/designer/plants");
+        push(Path.plants());
       });
   };

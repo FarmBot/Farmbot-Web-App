@@ -9,6 +9,7 @@ import { mapPointClickAction } from "../farm_designer/map/actions";
 import { DevSettings } from "../settings/dev/dev_support";
 import { destroy } from "../api/crud";
 import { isUndefined, round } from "lodash";
+import { Path } from "../internal_urls";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
@@ -45,7 +46,7 @@ export class PointInventoryItem extends
         mapPointClickAction(dispatch, tpp.uuid)();
         toggle("leave");
       } else {
-        push(`/app/designer/points/${pointId}`);
+        push(Path.points(pointId));
         dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: tpp.uuid });
       }
     };

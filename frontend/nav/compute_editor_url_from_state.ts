@@ -1,3 +1,4 @@
+import { Path } from "../internal_urls";
 import { store } from "../redux/store";
 import { urlFriendly } from "../util";
 
@@ -9,12 +10,7 @@ export const computeEditorUrlFromState =
         ? resources.consumers.sequences.current
         : resources.consumers.regimens.currentRegimen;
       const r = resources.index.references[current || ""];
-      const base = `/app/designer/${
-        resource === "Sequence" ? "sequences" : "regimens"}/`;
-      if (r?.kind == resource) {
-        return base + urlFriendly(r.body.name);
-      } else {
-        return base;
-      }
+      const path = resource === "Sequence" ? Path.designerSequences : Path.regimens;
+      return path(r?.kind == resource ? urlFriendly(r.body.name) : undefined);
     };
   };

@@ -17,7 +17,7 @@ import {
 import { parseIntInput, validBotLocationData } from "../util";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { ListItem } from "../plants/plant_panel";
 import { success } from "../toast/toast";
 import { PlantGrid } from "../plants/grid/plant_grid";
@@ -28,6 +28,7 @@ import {
 } from "../tools/tool_slot_edit_components";
 import { BotPosition } from "../devices/interfaces";
 import { round } from "lodash";
+import { Path } from "../internal_urls";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
@@ -183,7 +184,7 @@ export class RawCreatePoints
     });
   };
 
-  get panel() { return getPathArray()[3] || "points"; }
+  get panel() { return Path.getSlug(Path.designer()) || "points"; }
 
   createPoint = () => {
     const body: GenericPointer | WeedPointer = {
@@ -209,7 +210,7 @@ export class RawCreatePoints
     this.closePanel();
   };
 
-  closePanel = () => push(`/app/designer/${this.panel}`);
+  closePanel = () => push(Path.designer(this.panel));
 
   PointProperties = () =>
     <ul>
@@ -360,7 +361,7 @@ export class RawCreatePoints
         panelName={"point-creation"}
         panel={panelType}
         title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
-        backTo={`/app/designer/${this.panel}`}
+        backTo={Path.designer(this.panel)}
         description={panelDescription} />
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />

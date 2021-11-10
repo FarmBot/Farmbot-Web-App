@@ -10,6 +10,7 @@ import { push } from "../history";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { Popover } from "../ui";
+import { Path } from "../internal_urls";
 
 export interface FarmwareInfoProps {
   dispatch: Function;
@@ -123,7 +124,7 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
       firstPartyFarmwareNames.includes(farmwareName);
     if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
       removeFromAPI({ url, installations, dispatch });
-      push("/app/designer/farmware");
+      push(Path.farmware());
     }
   };
 

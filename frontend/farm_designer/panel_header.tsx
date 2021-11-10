@@ -13,6 +13,7 @@ import { getFbosConfig } from "../resources/getters";
 import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
 import { compact } from "lodash";
 import { selectAllFarmwareInstallations } from "../resources/selectors";
+import { FilePath, Icon, Path } from "../internal_urls";
 
 export enum Panel {
   Map = "Map",
@@ -76,57 +77,27 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Shop]: PanelColor.gray,
 };
 
-export enum Icon {
-  map = "map",
-  plant = "plant",
-  weeds = "weeds",
-  point = "point",
-  groups = "groups",
-  sequence = "sequence",
-  regimens = "regimen",
-  gardens = "gardens",
-  calendar = "calendar",
-  zones = "zones",
-  controls = "controls",
-  sensors = "sensors",
-  photos = "photos",
-  farmware = "farmware",
-  tool = "tool",
-  messages = "messages",
-  logs = "logs",
-  help = "help",
-  documentation = "documentation",
-  support = "support",
-  settings = "settings",
-  shop = "shop",
-  developer = "developer",
-  logout = "logout",
-  settings_small = "settings_small",
-}
-
-export const iconFile = (icon: Icon) => `/app-resources/img/icons/${icon}.svg`;
-
 export const TAB_ICON: Record<Panel, string> = {
-  [Panel.Map]: iconFile(Icon.map),
-  [Panel.Plants]: iconFile(Icon.plant),
-  [Panel.Weeds]: iconFile(Icon.weeds),
-  [Panel.Points]: iconFile(Icon.point),
-  [Panel.Groups]: iconFile(Icon.groups),
-  [Panel.Sequences]: iconFile(Icon.sequence),
-  [Panel.Regimens]: iconFile(Icon.regimens),
-  [Panel.SavedGardens]: iconFile(Icon.gardens),
-  [Panel.FarmEvents]: iconFile(Icon.calendar),
-  [Panel.Zones]: iconFile(Icon.zones),
-  [Panel.Controls]: iconFile(Icon.controls),
-  [Panel.Sensors]: iconFile(Icon.sensors),
-  [Panel.Photos]: iconFile(Icon.photos),
-  [Panel.Farmware]: iconFile(Icon.farmware),
-  [Panel.Tools]: iconFile(Icon.tool),
-  [Panel.Messages]: iconFile(Icon.messages),
-  [Panel.Logs]: iconFile(Icon.logs),
-  [Panel.Help]: iconFile(Icon.help),
-  [Panel.Settings]: iconFile(Icon.settings),
-  [Panel.Shop]: iconFile(Icon.shop),
+  [Panel.Map]: FilePath.icon(Icon.map),
+  [Panel.Plants]: FilePath.icon(Icon.plant),
+  [Panel.Weeds]: FilePath.icon(Icon.weeds),
+  [Panel.Points]: FilePath.icon(Icon.point),
+  [Panel.Groups]: FilePath.icon(Icon.groups),
+  [Panel.Sequences]: FilePath.icon(Icon.sequence),
+  [Panel.Regimens]: FilePath.icon(Icon.regimens),
+  [Panel.SavedGardens]: FilePath.icon(Icon.gardens),
+  [Panel.FarmEvents]: FilePath.icon(Icon.calendar),
+  [Panel.Zones]: FilePath.icon(Icon.zones),
+  [Panel.Controls]: FilePath.icon(Icon.controls),
+  [Panel.Sensors]: FilePath.icon(Icon.sensors),
+  [Panel.Photos]: FilePath.icon(Icon.photos),
+  [Panel.Farmware]: FilePath.icon(Icon.farmware),
+  [Panel.Tools]: FilePath.icon(Icon.tool),
+  [Panel.Messages]: FilePath.icon(Icon.messages),
+  [Panel.Logs]: FilePath.icon(Icon.logs),
+  [Panel.Help]: FilePath.icon(Icon.help),
+  [Panel.Settings]: FilePath.icon(Icon.settings),
+  [Panel.Shop]: FilePath.icon(Icon.shop),
 };
 
 export const PANEL_SLUG: Record<Panel, string> = {
@@ -162,7 +133,7 @@ Object.entries(PANEL_SLUG).map(([panel, slug]: [Panel, string]) =>
   PANEL_BY_SLUG[slug] = panel);
 
 const PANEL_PATH: Partial<Record<Panel, () => string>> = {
-  [Panel.Map]: () => "/app/designer",
+  [Panel.Map]: Path.designer,
   [Panel.Sequences]: computeEditorUrlFromState("Sequence"),
   [Panel.Regimens]: computeEditorUrlFromState("Regimen"),
 };
@@ -191,19 +162,19 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
 });
 
 export const getCurrentPanel = (): Tabs | undefined => {
-  const pathArray = getPathArray();
-  if (pathArray.join("/") === "/app/designer") {
+  if (getPathArray().join("/") === Path.designer()) {
     return Panel.Map;
-  } else if (pathArray[2] == "sequences") {
+  } else if (Path.getSlug(Path.app()) == "sequences") {
     return undefined;
-  } else if (pathArray[2] == "logs") {
+  } else if (Path.getSlug(Path.app()) == "logs") {
     return undefined;
-  } else if (pathArray[4] == "templates") {
+  } else if (Path.getSlug(Path.savedGardens()) == "templates") {
     return Panel.Plants;
   } else {
     const panelMatches = Object.values(PANEL_SLUG).map(slug => {
       const altSlugs = ALT_PANEL_SLUG[slug];
-      if ([slug, ...(altSlugs || [])].includes(pathArray[3])) {
+      if ([slug, ...(altSlugs || [])]
+        .includes(Path.getSlug(Path.designer()))) {
         return PANEL_BY_SLUG[slug];
       }
     });
@@ -212,7 +183,7 @@ export const getCurrentPanel = (): Tabs | undefined => {
 };
 
 export const getPanelPath = (panel: Panel) => {
-  const defaultLinkFn = () => `/app/designer/${PANEL_SLUG[panel]}`;
+  const defaultLinkFn = () => Path.designer(PANEL_SLUG[panel]);
   const getPath = PANEL_PATH[panel] || defaultLinkFn;
   return getPath();
 };

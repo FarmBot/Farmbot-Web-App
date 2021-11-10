@@ -15,6 +15,7 @@ import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { forceOnline } from "../devices/must_be_online";
 import { formatTime } from "../util";
+import { Path } from "../internal_urls";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -118,7 +119,7 @@ export const TickerList = (props: TickerListProps) => {
             <TickerLog key={log.uuid} log={log} timeSettings={timeSettings} />)}
       </Collapse>
       <Collapse isOpen={tickerListOpen}>
-        <Link to={"/app/logs"}>
+        <Link to={Path.logs()}>
           <div className="logs-page-link">
             <label>
               {t("View all logs")}

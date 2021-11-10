@@ -14,6 +14,7 @@ import {
 import { AddButton } from "../../bulk_scheduler/add_button";
 import { RegimenSchedulerProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { Path } from "../../../internal_urls";
 
 describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): RegimenSchedulerProps => ({
@@ -38,7 +39,7 @@ describe("<DesignerRegimenScheduler />", () => {
     p.current = undefined;
     const wrapper = shallow(<DesignerRegimenScheduler {...p} />);
     expect(wrapper.find(DesignerPanelHeader).props().backTo)
-      .toEqual("/app/designer/regimens/");
+      .toEqual(Path.regimens());
   });
 
   it("commits bulk editor", () => {

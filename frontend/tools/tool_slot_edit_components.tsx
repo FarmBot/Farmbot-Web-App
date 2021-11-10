@@ -14,8 +14,8 @@ import {
   EditToolSlotMetaProps,
 } from "./interfaces";
 import { betterMerge } from "../util";
-import { locationUrl } from "../farm_designer/move_to";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
@@ -134,7 +134,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
           ? props.botPosition.x ?? props.slotLocation.x
           : props.slotLocation.x;
         const { y, z } = props.slotLocation;
-        push(locationUrl({ x, y, z }));
+        push(Path.location({ x, y, z }));
       }}>
       {t("Move FarmBot to slot location")}
     </button>

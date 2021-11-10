@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.designer());
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -21,17 +22,17 @@ describe("<HelpHeader />", () => {
   });
 
   it.each<[string, string]>([
-    ["software documentation", "/app/designer/"],
-    ["software documentation", "/app/designer/help"],
-    ["developer documentation", "/app/designer/developer"],
-    ["genesis documentation", "/app/designer/genesis"],
-    ["express documentation", "/app/designer/express"],
-    ["business documentation", "/app/designer/business"],
-    ["education documentation", "/app/designer/education"],
-    ["take a tour", "/app/designer/tours"],
-    ["get help", "/app/designer/support"],
+    ["software documentation", Path.designer()],
+    ["software documentation", Path.help()],
+    ["developer documentation", Path.developer()],
+    ["genesis documentation", Path.designer("genesis")],
+    ["express documentation", Path.designer("express")],
+    ["business documentation", Path.designer("business")],
+    ["education documentation", Path.designer("education")],
+    ["take a tour", Path.tours()],
+    ["get help", Path.support()],
   ])("renders %s panel", (title, path) => {
-    mockPath = path;
+    mockPath = Path.mock(path);
     const wrapper = mount(<HelpHeader />);
     expect(wrapper.text().toLowerCase()).toContain(title);
   });
@@ -56,7 +57,7 @@ describe("<HelpHeader />", () => {
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
     wrapper.find("a").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/support");
+    expect(push).toHaveBeenCalledWith(Path.support());
   });
 
   it("opens hotkeys", () => {

@@ -7,6 +7,7 @@ jest.mock("../../history", () => ({
 import { devDocLink, devDocLinkClick, docLink, docLinkClick } from "../doc_link";
 import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("docLink", () => {
   it("creates doc links", () => {
@@ -24,27 +25,27 @@ describe("devDocLink", () => {
 
 describe("docLinkClick", () => {
   it("navigates to doc link", () => {
-    mockPath = "/app/designer";
+    mockPath = Path.mock(Path.designer());
     docLinkClick("farmware")();
-    expect(push).toHaveBeenCalledWith("/app/designer/help?page=farmware");
+    expect(push).toHaveBeenCalledWith(Path.help("farmware"));
     expect(location.assign).not.toHaveBeenCalled();
   });
 
   it("reloads to doc link", () => {
-    mockPath = "/app/designer/help";
+    mockPath = Path.mock(Path.help());
     location.assign = jest.fn();
     docLinkClick("farmware")();
     expect(push).not.toHaveBeenCalled();
     expect(location.assign).toHaveBeenCalledWith(expect.stringContaining(
-      "/app/designer/help?page=farmware"));
+      Path.help("farmware")));
   });
 });
 
 describe("devDocLinkClick", () => {
   it("navigates to doc link", () => {
-    mockPath = "/app/designer";
+    mockPath = Path.mock(Path.designer());
     devDocLinkClick("lua")();
-    expect(push).toHaveBeenCalledWith("/app/designer/developer?page=lua");
+    expect(push).toHaveBeenCalledWith(Path.developer("lua"));
     expect(location.assign).not.toHaveBeenCalled();
   });
 });

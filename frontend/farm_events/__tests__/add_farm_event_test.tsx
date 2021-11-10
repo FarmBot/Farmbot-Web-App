@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   init: jest.fn(() => ({ payload: { uuid: "fakeUuid" } })),

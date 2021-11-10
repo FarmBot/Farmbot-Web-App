@@ -20,6 +20,7 @@ import { push } from "../../history";
 import { urlFriendly } from "../../util";
 import { edit } from "../../api/crud";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
+import { Path } from "../../internal_urls";
 
 export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 
@@ -39,12 +40,12 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
           resource={this.props.sequence}
           fallback={t("No Sequence selected")}
           dispatch={this.props.dispatch} />}
-        backTo={"/app/designer/sequences"}>
+        backTo={Path.sequences()}>
         {sequence && window.innerWidth > 450 &&
           <a className={"right-button"}
             title={t("open full-page editor")}
             onClick={() =>
-              push(`/app/sequences/${urlFriendly(sequence.body.name)}`)}>
+              push(Path.sequencePage(urlFriendly(sequence.body.name)))}>
             {t("full editor")}
           </a>}
       </DesignerPanelHeader>

@@ -9,6 +9,7 @@ import {
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { push } from "../history";
 import { t } from "../i18next_wrapper";
+import { Path } from "../internal_urls";
 import { store } from "../redux/store";
 import { maybeGetDevice } from "../resources/selectors";
 import { DevSettings } from "../settings/dev/dev_support";
@@ -122,7 +123,7 @@ export const Feedback = (props: FeedbackProps) => {
     </button>
     {!orderNumber && <Help text={Content.MUST_REGISTER} links={[
       <a key={0}
-        onClick={() => push("/app/designer/settings?highlight=order_number")}>
+        onClick={() => push(Path.settings("order_number"))}>
         &nbsp;{t("Register your ORDER NUMBER")}
         <i className={"fa fa-external-link"} />
       </a>]} />}

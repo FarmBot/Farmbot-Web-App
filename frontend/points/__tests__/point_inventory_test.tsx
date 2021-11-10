@@ -1,8 +1,3 @@
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 jest.mock("../../api/delete_points", () => ({ deletePoints: jest.fn() }));
 
 jest.mock("../../point_groups/actions", () => ({
@@ -31,6 +26,7 @@ import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { pointsPanelState } from "../../__test_support__/panel_state";
+import { Path } from "../../internal_urls";
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -83,7 +79,7 @@ describe("<Points />", () => {
   it("navigates to group", () => {
     const wrapper = shallow<Points>(<Points {...fakeProps()} />);
     wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith("/app/designer/groups/1");
+    expect(push).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -100,7 +96,7 @@ describe("<Points />", () => {
   it("adds new point", () => {
     const wrapper = shallow(<Points {...fakeProps()} />);
     wrapper.find(PanelSection).last().props().addNew();
-    expect(push).toHaveBeenCalledWith("/app/designer/points/add");
+    expect(push).toHaveBeenCalledWith(Path.points("add"));
   });
 
   it("navigates to point info", () => {
@@ -109,7 +105,7 @@ describe("<Points />", () => {
     p.genericPoints[0].body.id = 1;
     const wrapper = mount(<Points {...p} />);
     wrapper.find(".point-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/points/1");
+    expect(push).toHaveBeenCalledWith(Path.points(1));
   });
 
   it("changes search term", () => {

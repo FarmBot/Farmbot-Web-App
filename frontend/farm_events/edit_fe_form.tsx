@@ -16,7 +16,7 @@ import {
   Help,
 } from "../ui";
 import { destroy, save, overwrite } from "../api/crud";
-import { history } from "../history";
+import { push } from "../history";
 import { betterMerge, parseIntInput } from "../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
@@ -41,6 +41,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { ErrorBoundary } from "../error_boundary";
+import { Path } from "../internal_urls";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -228,7 +229,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       const next_executable_type = executableType(ddi.headingId);
       if (id && prev_executable_type !== next_executable_type) {
         error(t("Cannot change between Sequences and Regimens."));
-        history.push("/app/designer/events");
+        push(Path.farmEvents());
       } else {
         const { uuid } = this.props.findExecutable(
           next_executable_type, parseInt("" + ddi.value));
@@ -337,7 +338,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
         success(t("The next item in this event will run {{timeFromNow}}.",
           { timeFromNow: nextRun.from(now) }));
-        history.push("/app/designer/events");
+        push(Path.farmEvents());
       })
       .catch(() => {
         error(t("Unable to save event."));
@@ -495,7 +496,7 @@ export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
-          history.push("/app/designer/events");
+          push(Path.farmEvents());
           success(t("Deleted event."), { title: t("Deleted") });
         })}>
     {t("Delete")}

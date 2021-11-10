@@ -1,17 +1,18 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
+  push: jest.fn(),
   getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
-import * as React from "react";
+import React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../../__test_support__/fake_resource";
 import { shallow } from "enzyme";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
 import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
 import { TaggedToolSlotPointer } from "farmbot";
 import { ToolSlotPoint } from "../tool_slot_point";
@@ -53,16 +54,16 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("doesn't navigate to tools page", async () => {
-    mockPath = "/app/designer/plants/1";
+    mockPath = Path.mock(Path.plants(1));
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p} />);
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("is in clickable mode", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.interactions = true;
     const wrapper = shallow(<ToolSlotLayer {...p} />);
@@ -71,7 +72,7 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("is in non-clickable mode", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.interactions = false;
     const wrapper = shallow(<ToolSlotLayer {...p} />);

@@ -10,8 +10,6 @@ jest.mock("../../toggle_section", () => ({
 let mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
 jest.mock("axios", () => ({ get: jest.fn(() => mockResponse) }));
 
-jest.mock("../../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import axios from "axios";
 import { mount, shallow } from "enzyme";
@@ -28,6 +26,7 @@ import { toggleControlPanel } from "../../toggle_section";
 import {
   fakeBytesJob, fakePercentJob,
 } from "../../../__test_support__/fake_bot_data";
+import { Path } from "../../../internal_urls";
 
 describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -197,8 +196,7 @@ describe("<OsUpdateButton />", () => {
     osUpdateButton.simulate("click");
     expect(checkControllerUpdates).not.toHaveBeenCalled();
     expect(toggleControlPanel).toHaveBeenCalledWith("power_and_reset");
-    expect(push).toHaveBeenCalledWith(
-      "/app/designer/settings?highlight=hard_reset");
+    expect(push).toHaveBeenCalledWith(Path.settings("hard_reset"));
   });
 
   it("handles undefined jobs", () => {
