@@ -189,9 +189,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       <this.ReadOnlyStatus />
                       <this.AccountMenu />
                       <this.EstopButton />
-                      <this.Coordinates />
                       <this.ConnectionStatus />
                       <this.SetupButton />
+                      <this.Coordinates />
                     </ErrorBoundary>
                   </div>
                 </div>
