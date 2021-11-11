@@ -162,7 +162,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
 });
 
 export const getCurrentPanel = (): Tabs | undefined => {
-  if (getPathArray().join("/") === Path.designer()) {
+  if (getPathArray().join("/") === Path.withApp(Path.designer())) {
     return Panel.Map;
   } else if (Path.getSlug(Path.app()) == "sequences") {
     return undefined;
@@ -190,7 +190,6 @@ export const getPanelPath = (panel: Panel) => {
 
 interface NavTabProps {
   panel: Panel;
-  desktopHide?: boolean;
 }
 
 const NavTab = (props: NavTabProps) =>
@@ -199,7 +198,6 @@ const NavTab = (props: NavTabProps) =>
     style={{ flex: 0.3 }}
     className={[
       getCurrentPanel() === props.panel ? "active" : "",
-      props.desktopHide ? "desktop-hide" : "",
     ].join(" ")}>
     <img width={35} height={30}
       src={TAB_ICON[props.panel]}
@@ -254,7 +252,7 @@ export class DesignerNavTabs
     return <div className={`panel-nav ${color}-panel ${hidden}`}>
       {!this.state.atEnd && <div className={"scroll-indicator"} />}
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
-        <NavTab panel={Panel.Map} desktopHide={true} />
+        <NavTab panel={Panel.Map} />
         <NavTab panel={Panel.Plants} />
         <NavTab panel={Panel.Weeds} />
         <NavTab panel={Panel.Points} />

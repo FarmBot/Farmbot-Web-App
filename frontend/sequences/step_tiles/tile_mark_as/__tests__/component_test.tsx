@@ -2,7 +2,7 @@ const mockEditStep = jest.fn();
 jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
 let mockShouldDisplay = false;
-jest.mock("../../../../farmware/state_to_props", () => ({
+jest.mock("../../../../devices/should_display", () => ({
   shouldDisplayFeature: () => mockShouldDisplay,
 }));
 

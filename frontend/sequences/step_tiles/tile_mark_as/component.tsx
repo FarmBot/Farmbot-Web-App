@@ -12,7 +12,7 @@ import { isUndefined } from "lodash";
 import { NOTHING_SELECTED } from "../../locals_list/handle_select";
 import { CustomFieldWarning } from "./field_warning";
 import { StepParams } from "../../interfaces";
-import { shouldDisplayFeature } from "../../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../../devices/should_display";
 import { Feature } from "../../../devices/interfaces";
 
 export class MarkAs

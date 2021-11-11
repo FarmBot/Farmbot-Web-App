@@ -120,11 +120,11 @@ export const TOURS = (
         url: undefined,
       },
       {
-        slug: "syncStatus",
-        title: t("Sync Status"),
-        content: TourContent.SYNC_STATUS,
+        slug: "coordinates",
+        title: t("Current position"),
+        content: TourContent.CURRENT_POSITION,
         beacons: undefined,
-        activeBeacons: [{ class: "nav-sync", type: "soft", keep: true }],
+        activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
         url: undefined,
       },
       {

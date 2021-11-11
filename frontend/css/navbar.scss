@@ -25,17 +25,14 @@ nav {
   }
 }
 
-.nav-sync {
-  min-width: 90px;
-  background: none !important;
-  box-shadow: none;
-  text-transform: none;
-  &.syncing {
-    font-style: italic;
-  }
-  &:hover {
-    background: none !important;
-  }
+.nav-coordinates {
+  font-style: italic;
+  color: $white;
+  line-height: 0;
+  float: right;
+  margin-top: 2.25rem;
+  border-radius: 10px;
+  padding: 1rem 0.5rem;
 }
 
 .links {

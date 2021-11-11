@@ -37,7 +37,7 @@ import {
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { getUrlQuery } from "../util";
 import { push } from "../history";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
 import { Feature } from "../devices/interfaces";
 
 export class RawDesignerSettings

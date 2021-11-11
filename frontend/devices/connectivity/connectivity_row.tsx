@@ -1,7 +1,9 @@
 import React from "react";
 import { CowardlyDictionary } from "../../util";
-import { Row, Col } from "../../ui/index";
+import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
+import { syncText } from "../../nav/sync_text";
+import { SyncStatus } from "farmbot";
 
 /** Data model for a single row within the <ConnectivityPanel /> */
 export interface StatusRowProps {
@@ -13,6 +15,7 @@ export interface StatusRowProps {
   connectionName?: string;
   hover?: Function;
   hoveredConnection?: string | undefined;
+  syncStatus?: SyncStatus;
 }
 
 const colorLookup: CowardlyDictionary<string> = {
@@ -28,7 +31,9 @@ const iconLookup: CowardlyDictionary<string> = {
 };
 
 export function ConnectivityRow(props: StatusRowProps) {
-  const { connectionStatus, connectionName, hoveredConnection } = props;
+  const {
+    connectionStatus, connectionName, hoveredConnection, syncStatus,
+  } = props;
   const colorClass = colorLookup["" + connectionStatus];
   const connectorColorClass =
     connectionName === "botFirmware" && colorClass === "gray"
@@ -40,8 +45,10 @@ export function ConnectivityRow(props: StatusRowProps) {
     ? "saucer active grey"
     : `diagnosis-indicator saucer active ${colorClass} ${hoverClass}`;
   const icon = iconLookup["" + connectionStatus];
+  const iconClass = syncStatus == "syncing" ? "spinner fa-pulse" : icon;
 
-  const getTitle = () => {
+  const getTitle = (header?: boolean) => {
+    if (header) { return t("Status"); }
     switch (connectionStatus) {
       case undefined: return t("Unknown");
       case true: return t("Ok");
@@ -56,10 +63,10 @@ export function ConnectivityRow(props: StatusRowProps) {
   return <Row>
     <Col xs={1}>
       <div className={className}
-        title={props.header ? t("Status") : getTitle()}
+        title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
         onMouseEnter={hoverOver(connectionName)}
         onMouseLeave={hoverOver(undefined)}>
-        {!props.header && <i className={`fa fa-${icon}`} />}
+        {!props.header && <i className={`fa fa-${iconClass}`} />}
       </div>
       {!props.header &&
         <div className={`saucer-connector ${connectorColorClass}`} />}
