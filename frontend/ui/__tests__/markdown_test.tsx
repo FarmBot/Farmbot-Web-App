@@ -6,6 +6,11 @@ describe("<Markdown />", () => {
     const result = mount(Markdown({ children: "nice" }));
     expect(result.html()).toContain("nice");
   });
+
+  it("renders html", () => {
+    const result = mount(Markdown({ children: "nice", html: true }));
+    expect(result.html()).toContain("nice");
+  });
 });
 
 describe("link_open_for_tests()", () => {

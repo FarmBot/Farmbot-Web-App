@@ -138,7 +138,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {window.innerWidth > 450 &&
           `: ${setupProgressString(wizardStepResults, firmwareHardware)}`}
       </a>
-      : <div />;
+      : <div style={{ display: "inline" }} />;
   };
 
   AppNavLinks = () =>
