@@ -1385,6 +1385,11 @@ export namespace TourContent {
     depending on your internet connection, and longer when FarmBot first
     boots up.`);
 
+  export const CURRENT_POSITION =
+    trim(`This is the current position indicator. FarmBot's current X, Y,
+    and Z coordinates in millimeters are displayed for quick viewing from
+    any page in the web app.`);
+
   export const ESTOP_BUTTON =
     trim(`This is the E-STOP button, allowing you to emergency stop any
     movements and turn off all of FarmBot's peripherals in case something

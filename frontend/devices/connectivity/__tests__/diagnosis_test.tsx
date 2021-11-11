@@ -44,6 +44,13 @@ describe("<DiagnosisSaucer />", () => {
     const wrapper = mount(<DiagnosisSaucer {...fakeProps()} />);
     expect(wrapper.find(".saucer").hasClass("green")).toBeTruthy();
   });
+
+  it("renders sync status", () => {
+    const p = fakeProps();
+    p.syncStatus = "syncing";
+    const wrapper = mount(<DiagnosisSaucer {...p} />);
+    expect(wrapper.html()).toContain("fa-spinner");
+  });
 });
 
 describe("getDiagnosisCode()", () => {

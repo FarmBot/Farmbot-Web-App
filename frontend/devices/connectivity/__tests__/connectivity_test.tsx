@@ -1,17 +1,23 @@
 jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
 
+jest.mock("../../actions", () => ({
+  restartFirmware: jest.fn(),
+  sync: jest.fn(),
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { Connectivity, ConnectivityProps } from "../connectivity";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
-import { fill } from "lodash";
+import { clone } from "lodash";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
 import { refresh } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
+import { sync } from "../../actions";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -21,7 +27,13 @@ describe("<Connectivity />", () => {
     connectionStatus: false,
     children: "Can't do things with stuff."
   };
-  const rowData: StatusRowProps[] = fill(Array(5), statusRow);
+  const rowData: StatusRowProps[] = [
+    clone(statusRow),
+    clone(statusRow),
+    clone(statusRow),
+    clone(statusRow),
+    clone(statusRow),
+  ];
   const flags = {
     userMQTT: false,
     userAPI: false,
@@ -52,6 +64,7 @@ describe("<Connectivity />", () => {
     const p = fakeProps();
     mount(<Connectivity {...p} />);
     expect(refresh).toHaveBeenCalledWith(p.device);
+    expect(sync).toHaveBeenCalled();
   });
 
   it("displays fbos_version", () => {
@@ -112,5 +125,13 @@ describe("<Connectivity />", () => {
     p.alerts = [alert];
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("choose firmware");
+  });
+
+  it("displays sync status", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.sync_status = "syncing";
+    p.rowData[3].connectionName = "botAPI";
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.html()).toContain("fa-spinner");
   });
 });

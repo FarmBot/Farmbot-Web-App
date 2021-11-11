@@ -157,10 +157,10 @@ fieldset {
   i {
     display: block;
     position: absolute;
-    top: 0.1rem;
-    left: 0.1rem;
+    top: 2px;
+    left: 2px;
     color: $white;
-    font-size: 14px;
+    font-size: 11px;
     &.fa-times {
       left: 0.25rem;
     }

@@ -8,12 +8,6 @@ import { TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
 import { HelpState } from "../help/reducer";
 
-export interface SyncButtonProps {
-  dispatch: Function;
-  bot: BotState;
-  onClick?: () => void;
-}
-
 export interface NavBarProps {
   logs: TaggedLog[];
   bot: BotState;
