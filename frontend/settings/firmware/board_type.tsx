@@ -14,7 +14,7 @@ import {
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { getModifiedClassName } from "../fbos_settings/default_values";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../devices/should_display";
 
 export class BoardType extends React.Component<BoardTypeProps, {}> {
   get sending() {

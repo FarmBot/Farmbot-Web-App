@@ -7,7 +7,7 @@ import { Actions } from "../constants";
 import { edit, save } from "../api/crud";
 import { TaggedPointGroup, TaggedPoint, TaggedSensorReading } from "farmbot";
 import { error } from "../toast/toast";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
 import { Feature } from "../devices/interfaces";
 
 export const convertToXY =

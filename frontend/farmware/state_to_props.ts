@@ -1,17 +1,13 @@
-import { maybeGetDevice } from "../resources/selectors";
-import { UserEnv, BotState, Feature } from "../devices/interfaces";
+import { UserEnv, BotState } from "../devices/interfaces";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../resources/selectors_by_kind";
-import { determineInstalledOsVersion, createShouldDisplayFn } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { FarmwareManifest, TaggedFarmwareEnv } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { FarmwareManifestInfo, Farmwares, SaveFarmwareEnv } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../settings/dev/dev_support";
-import { store } from "../redux/store";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -42,20 +38,6 @@ export const reduceFarmwareEnv =
   };
 
 export const getEnv = (ri: ResourceIndex) => reduceFarmwareEnv(ri);
-
-export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
-  const lookupData = bot.minOsFeatureData;
-  const installed = determineInstalledOsVersion(bot, maybeGetDevice(ri));
-  const override = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = createShouldDisplayFn(installed, lookupData, override);
-  return shouldDisplay;
-};
-
-export const shouldDisplayFeature = (feature: Feature) => {
-  const { resources, bot } = store.getState();
-  const shouldDisplay = getShouldDisplayFn(resources.index, bot);
-  return shouldDisplay(feature);
-};
 
 export const generateFarmwareDictionary = (
   bot: BotState,

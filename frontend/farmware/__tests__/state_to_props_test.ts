@@ -7,7 +7,6 @@ jest.mock("../../api/crud", () => ({
 import {
   saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
   isPendingInstallation,
-  getShouldDisplayFn,
 } from "../state_to_props";
 import {
   buildResourceIndex,
@@ -18,7 +17,6 @@ import {
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { fakeState } from "../../__test_support__/fake_state";
-import { Feature } from "../../devices/interfaces";
 
 describe("getEnv()", () => {
   it("returns API farmware env", () => {
@@ -29,17 +27,6 @@ describe("getEnv()", () => {
     expect(gotEnv).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"
     });
-  });
-});
-
-describe("getShouldDisplayFn()", () => {
-  it("returns shouldDisplay()", () => {
-    const state = fakeState();
-    state.bot.hardware.informational_settings.controller_version = "2.0.0";
-    state.bot.minOsFeatureData = { "jest_feature": "1.0.0" };
-    const shouldDisplay = getShouldDisplayFn(state.resources.index, state.bot);
-    expect(shouldDisplay("some_feature" as Feature)).toBeFalsy();
-    expect(shouldDisplay(Feature.jest_feature)).toBeTruthy();
   });
 });
 

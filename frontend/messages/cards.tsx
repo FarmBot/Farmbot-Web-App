@@ -30,7 +30,7 @@ import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
 import { Feature } from "../devices/interfaces";
 import moment from "moment";
 import { Path } from "../internal_urls";

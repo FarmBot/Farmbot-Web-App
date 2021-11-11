@@ -15,7 +15,7 @@ import {
   getDefaultFwConfigValue, getModifiedClassName,
 } from "./default_values";
 import { calculateScale } from "./motors";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../devices/should_display";
 import { Feature } from "../../devices/interfaces";
 
 export function ErrorHandling(props: ErrorHandlingProps) {

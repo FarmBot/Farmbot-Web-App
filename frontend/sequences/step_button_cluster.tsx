@@ -11,7 +11,7 @@ import { push } from "../history";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
 import { Path } from "../internal_urls";
 
 export interface StepButtonProps {

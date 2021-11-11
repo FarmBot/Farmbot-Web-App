@@ -5,7 +5,7 @@ import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../devices/should_display";
 
 export interface SettingLoadProgressProps {
   botOnline: boolean;
