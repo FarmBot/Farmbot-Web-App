@@ -2,7 +2,7 @@ import React from "react";
 const emoji = require("markdown-it-emoji");
 const md = require("markdown-it")({
   /** Enable HTML tags in source */
-  html: true,
+  html: false,
   /** Convert '\n' in paragraphs into <br> */
   breaks: true,
   /** Autoconvert URL-like text to links */
