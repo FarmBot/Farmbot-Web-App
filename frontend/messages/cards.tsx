@@ -84,7 +84,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
     {alert.id && !props.noDismiss && <i className="fa fa-times"
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
-      <Markdown>{t(props.message)}</Markdown>
+      <Markdown html={true}>{t(props.message)}</Markdown>
       {props.children}
     </div>
   </div>;
