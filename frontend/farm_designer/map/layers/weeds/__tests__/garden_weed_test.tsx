@@ -35,6 +35,15 @@ describe("<GardenWeed />", () => {
     expect(wrapper.find("#weed-radius").props().r).toEqual(100);
     expect(wrapper.find("#weed-radius").props().opacity).toEqual(0.5);
     expect(wrapper.find("stop").first().props().stopColor).toEqual("red");
+    expect(wrapper.find(".new").length).toEqual(0);
+  });
+
+  it("renders weed with no id", () => {
+    const p = fakeProps();
+    p.weed.body.id = 0;
+    p.weed.body.meta.color = undefined;
+    const wrapper = svgMount(<GardenWeed {...p} />);
+    expect(wrapper.find(".new").length).toEqual(1);
   });
 
   it("renders weed color", () => {

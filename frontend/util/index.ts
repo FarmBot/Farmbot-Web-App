@@ -6,3 +6,4 @@ export * from "./page";
 export * from "./progress";
 export * from "./version";
 export * from "./celery";
+export * from "./beep";

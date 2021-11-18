@@ -6,9 +6,13 @@ jest.mock("../../index", () => ({
 const mockDevice = { readStatus: jest.fn(() => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-let mockConfigValue = false;
+let mockConfigValue: boolean | number = false;
 jest.mock("../../../config_storage/actions", () => ({
   getWebAppConfigValue: () => () => mockConfigValue,
+}));
+
+jest.mock("../../../util/beep", () => ({
+  beep: jest.fn(),
 }));
 
 import { HardwareState } from "../../../devices/interfaces";
@@ -28,6 +32,7 @@ import {
   speakLogAloud,
   onPublicBroadcast,
   onReconnect,
+  logBeep,
 } from "../../connect_device";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
@@ -43,6 +48,7 @@ import {
 import { onLogs } from "../../log_handlers";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { globalQueue } from "../../batch_queue";
+import { beep } from "../../../util/beep";
 
 const ANY_NUMBER = expect.any(Number);
 
@@ -155,6 +161,36 @@ describe("speakLogAloud", () => {
   });
 });
 
+describe("logBeep()", () => {
+  const log = fakeLog(MessageType.info);
+  log.verbosity = 2;
+
+  it("doesn't beep: off", () => {
+    mockConfigValue = 0;
+    logBeep(jest.fn())(log);
+    expect(beep).not.toHaveBeenCalled();
+  });
+
+  it("doesn't beep: lower verbosity", () => {
+    mockConfigValue = 1;
+    logBeep(jest.fn())(log);
+    expect(beep).not.toHaveBeenCalled();
+  });
+
+  it("beeps", () => {
+    mockConfigValue = 2;
+    logBeep(jest.fn())(log);
+    expect(beep).toHaveBeenCalledWith(MessageType.info);
+  });
+
+  it("handles unknown verbosity", () => {
+    mockConfigValue = 2;
+    log.verbosity = undefined;
+    logBeep(jest.fn())(log);
+    expect(beep).toHaveBeenCalledWith(MessageType.info);
+  });
+});
+
 describe("initLog", () => {
   it("creates a Redux action (new log)", () => {
     const log = fakeLog(MessageType.error);
@@ -248,7 +284,7 @@ describe("onPublicBroadcast", () => {
       FbjsEventName.publicBroadcast, expect.any(Object));
 
   describe("onLogs", () => {
-    it("Calls `networkUp` when good logs come in", () => {
+    it("calls `networkUp` when good logs come in", () => {
       const dispatch = jest.fn();
       const fn = onLogs(dispatch, fakeState);
       const log = fakeLog(MessageType.error, []);

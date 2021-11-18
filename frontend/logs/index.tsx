@@ -78,6 +78,8 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
     return !filterValues.every(x => x == 3) || this.state.currentFbosOnly;
   }
 
+  toggleMarkdown = () => this.setState({ markdown: !this.state.markdown });
+
   render() {
     const { dispatch, bot } = this.props;
     const filterBtnColor = this.filterActive ? "green" : "gray";
@@ -93,6 +95,8 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
             <Popover position={Position.TOP_RIGHT}
               target={<i className="fa fa-gear" />}
               content={<LogsSettingsMenu
+                markdown={this.state.markdown}
+                toggleMarkdown={this.toggleMarkdown}
                 setFilterLevel={this.setFilterLevel}
                 dispatch={dispatch}
                 sourceFbosConfig={this.props.sourceFbosConfig}
@@ -109,12 +113,6 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
                 toggle={this.toggle} state={this.state}
                 toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
                 setFilterLevel={this.setFilterLevel} />} />
-          </div>
-          <div className="fa-stack fa-2x"
-            title={this.state.markdown ? t("display raw") : t("display markdown")}
-            onClick={() => this.setState({ markdown: !this.state.markdown })}>
-            <i className="fa fa-font fa-stack-1x" />
-            {this.state.markdown && <i className="fa fa-ban fa-stack-2x" />}
           </div>
         </Col>
       </Row>

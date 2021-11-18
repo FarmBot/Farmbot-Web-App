@@ -3,6 +3,7 @@ import { selectAllSequences } from "../resources/selectors";
 import { TaggedSequence } from "farmbot";
 import { resourceUsageList } from "../resources/in_use";
 import { Everything } from "../interfaces";
+import { getWebAppConfigValue } from "../config_storage/actions";
 type SequenceDict = Record<string, TaggedSequence>;
 type Reducer = (a: FolderProps["sequences"], b: TaggedSequence) => SequenceDict;
 
@@ -21,5 +22,6 @@ export function mapStateToFolderProps(props: Everything): FolderProps {
     dispatch: props.dispatch,
     sequenceMetas: props.resources.index.sequenceMetas,
     resourceUsage: resourceUsageList(props.resources.index.inUse),
+    getWebAppConfigValue: getWebAppConfigValue(() => props),
   };
 }

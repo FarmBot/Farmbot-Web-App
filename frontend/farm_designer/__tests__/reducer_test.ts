@@ -241,6 +241,16 @@ describe("designer reducer", () => {
     expect(newState.cropSearchInProgress).toEqual(false);
   });
 
+  it("sets plant type change id", () => {
+    const state = oldState();
+    state.plantTypeChangeId = undefined;
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
+    };
+    const newState = designer(state, action);
+    expect(newState.plantTypeChangeId).toEqual(1);
+  });
+
   it("starts group sort type trial", () => {
     const state = oldState();
     state.tryGroupSortType = undefined;

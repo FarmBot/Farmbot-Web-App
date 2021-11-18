@@ -26,6 +26,7 @@ export interface BotFigureProps {
   cameraCalibrationData?: CameraCalibrationData;
   cameraViewArea?: boolean;
   cropPhotos?: boolean;
+  color?: Color;
 }
 
 interface BotFigureState {
@@ -57,6 +58,7 @@ export class BotFigure extends
   }
 
   get color() {
+    if (this.props.color) { return this.props.color; }
     return this.props.eStopStatus ? Color.virtualRed : Color.darkGray;
   }
 

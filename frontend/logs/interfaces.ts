@@ -56,4 +56,6 @@ export interface LogsSettingsMenuProps {
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
   bot: BotState;
+  markdown: boolean;
+  toggleMarkdown(): void;
 }

@@ -16,6 +16,7 @@ import {
   fetchInterpolationOptions, interpolatedZ,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { Path } from "../internal_urls";
+import { Actions } from "../constants";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -143,7 +144,7 @@ const DeleteButtons = (props: DeleteButtonsProps) =>
 
 interface ListItemProps {
   name?: string;
-  children: React.ReactChild;
+  children: React.ReactChild | React.ReactChild[];
 }
 
 export const ListItem = (props: ListItemProps) =>
@@ -176,6 +177,11 @@ export function PlantPanel(props: PlantPanelProps) {
           to={Path.cropSearch(slug)}>
           {startCase(slug)}
         </Link>
+        <i className={"fa fa-pencil"}
+          onClick={() => {
+            dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
+            push(Path.cropSearch());
+          }} />
       </ListItem>
       {(timeSettings && !inSavedGarden) &&
         <Row>

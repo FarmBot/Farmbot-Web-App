@@ -37,6 +37,8 @@ describe("<LogsSettingsMenu />", () => {
     sourceFbosConfig: () => ({ value: false, consistent: true }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
+    markdown: true,
+    toggleMarkdown: jest.fn(),
   });
 
   it("renders", () => {
@@ -71,9 +73,9 @@ describe("<LogsSettingsMenu />", () => {
       expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
     });
   }
-  testSettingToggle("sequence_init_log", 0);
-  testSettingToggle("sequence_body_log", 1);
-  testSettingToggle("sequence_complete_log", 2);
+  testSettingToggle("sequence_init_log", 1);
+  testSettingToggle("sequence_body_log", 2);
+  testSettingToggle("sequence_complete_log", 3);
 
   it("conditionally increases filter level", () => {
     const p = fakeProps();
@@ -81,11 +83,11 @@ describe("<LogsSettingsMenu />", () => {
     p.setFilterLevel = () => setFilterLevel;
     const wrapper = mount(<LogsSettingsMenu {...p} />);
     mockStorj[NumericSetting.busy_log] = 0;
-    wrapper.find("button").at(0).simulate("click");
+    wrapper.find("button").at(1).simulate("click");
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
     mockStorj[NumericSetting.busy_log] = 3;
-    wrapper.find("button").at(0).simulate("click");
+    wrapper.find("button").at(1).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 
@@ -96,7 +98,7 @@ describe("<LogsSettingsMenu />", () => {
     p.setFilterLevel = () => setFilterLevel;
     const wrapper = mount(<LogsSettingsMenu {...p} />);
     mockStorj[NumericSetting.busy_log] = 0;
-    wrapper.find("button").at(0).simulate("click");
+    wrapper.find("button").at(1).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 

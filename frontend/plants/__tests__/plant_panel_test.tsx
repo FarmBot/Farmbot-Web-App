@@ -19,6 +19,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Path } from "../../internal_urls";
+import { Actions } from "../../constants";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -96,6 +97,17 @@ describe("<PlantPanel/>", () => {
     const wrapper = mount(<PlantPanel {...fakeProps()} />);
     clickButton(wrapper, 0, "Move FarmBot to this plant");
     expect(push).toHaveBeenCalledWith(Path.location({ x: 12, y: 34, z: 0 }));
+  });
+
+  it("edits plant type", () => {
+    const p = fakeProps();
+    p.info.id = 1;
+    const wrapper = mount(<PlantPanel {...p} />);
+    wrapper.find(".fa-pencil").simulate("click");
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
+    });
   });
 });
 

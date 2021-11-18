@@ -45,7 +45,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
     const plantsPath = Path.plants();
     const templatePath = Path.plantTemplates();
     (Path.startsWith(plantsPath) || Path.startsWith(templatePath))
-      && push(plantsPath);
+      && !Path.startsWith(Path.cropSearch()) && push(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}

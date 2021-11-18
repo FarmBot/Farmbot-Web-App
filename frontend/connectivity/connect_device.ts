@@ -17,8 +17,8 @@ import { autoSync } from "./auto_sync";
 import { startPinging } from "./ping_mqtt";
 import { talk } from "browser-speech";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting } from "../session_keys";
-import { versionOK } from "../util";
+import { BooleanSetting, NumericSetting } from "../session_keys";
+import { beep, versionOK } from "../util";
 import { onLogs } from "./log_handlers";
 import { ChannelName, MessageType } from "../sequences/interfaces";
 import { slowDown } from "./slow_down";
@@ -78,6 +78,16 @@ export function speakLogAloud(getState: GetState) {
     const speak = getConfigValue(BooleanSetting.enable_browser_speak);
     if (speak) {
       talk(log.message, navigator.language.slice(0, 2) || "en");
+    }
+  };
+}
+
+export function logBeep(getState: GetState) {
+  return (log: Log) => {
+    const getConfigValue = getWebAppConfigValue(getState);
+    const beepVerbosity = getConfigValue(NumericSetting.beep_verbosity);
+    if (beepVerbosity && (log.verbosity || 1) <= beepVerbosity) {
+      beep(log.type);
     }
   };
 }

@@ -9,7 +9,7 @@ import { getModifiedClassName } from "./default_values";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
-  return <Highlight settingName={DeviceSetting.osAutoUpdate}>
+  return <Highlight settingName={DeviceSetting.osAutoUpdate} hidden={true}>
     <Row>
       <Col xs={9}>
         <label>

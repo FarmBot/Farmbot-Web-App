@@ -31,6 +31,7 @@ export const initialState: DesignerState = {
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
+  plantTypeChangeId: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
   drawnWeed: undefined,
@@ -71,6 +72,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.OF_SEARCH_RESULTS_NO, (s) => {
     s.cropSearchInProgress = false;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_PLANT_TYPE_CHANGE_ID, (s, { payload }) => {
+    s.plantTypeChangeId = payload;
     return s;
   })
   .add<UUID[] | undefined>(Actions.SELECT_POINT, (s, { payload }) => {

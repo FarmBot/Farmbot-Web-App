@@ -93,7 +93,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   </div>;
 };
 
-interface DesignerPanelTopProps {
+export interface DesignerPanelTopProps {
   panel: Panel;
   linkTo?: string;
   onClick?(): void;
@@ -104,7 +104,10 @@ interface DesignerPanelTopProps {
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   const withBtn = !!props.withButton || !!props.linkTo || !!props.onClick;
-  return <div className={`panel-top ${withBtn ? "with-button" : ""}`}>
+  const content = document.getElementsByClassName("panel-content")[0];
+  const contentScrolled = (content?.scrollTop || 0) > 0;
+  return <div className={`panel-top ${withBtn ? "with-button" : ""}`}
+    style={contentScrolled ? { boxShadow: "0 10px 10px rgba(0, 0, 0, 0.05)" } : {}}>
     {props.children}
     {props.onClick &&
       <a>
