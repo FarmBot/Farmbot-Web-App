@@ -16,6 +16,7 @@ export const fakeDesignerState = (): DesignerState => ({
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
+  plantTypeChangeId: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
   drawnWeed: undefined,

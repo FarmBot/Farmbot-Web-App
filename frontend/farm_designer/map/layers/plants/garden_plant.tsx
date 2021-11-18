@@ -54,8 +54,10 @@ export class GardenPlant extends
     const iconRadius = hover ? plantIconSize * 1.1 : plantIconSize;
     const { qx, qy } = transformXY(x, y, mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
+    const newClass = id ? "" : "new";
     const className = [
       "plant-image",
+      newClass,
       `is-chosen-${current || selected}`,
       animate ? "animate" : "",
     ].join(" ");
@@ -67,7 +69,7 @@ export class GardenPlant extends
 
       {animate &&
         <circle
-          className="soil-cloud"
+          className={`soil-cloud ${newClass}`}
           cx={qx}
           cy={qy}
           r={plantIconSize}

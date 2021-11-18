@@ -24,6 +24,7 @@ export class GardenWeed
     });
   };
 
+  // eslint-disable-next-line complexity
   render() {
     const {
       weed, mapTransformProps, hovered, current, selected, animate,
@@ -33,8 +34,12 @@ export class GardenWeed
     const { qx, qy } = transformXY(x, y, mapTransformProps);
     const color = meta.color || "red";
     const stopOpacity = ["gray", "pink", "orange"].includes(color) ? 0.5 : 0.25;
+    const newClass = id ? "" : "new";
     const className = [
-      "weed-image", `is-chosen-${current || selected}`, animate ? "animate" : "",
+      "weed-image",
+      newClass,
+      `is-chosen-${current || selected}`,
+      animate ? "animate" : "",
     ].join(" ");
     const plantIconSize = scaleIcon(radius);
     const iconRadius = hovered ? plantIconSize * 1.1 : plantIconSize;
@@ -54,7 +59,7 @@ export class GardenWeed
 
       {animate &&
         <circle
-          className="soil-cloud"
+          className={`soil-cloud ${newClass}`}
           cx={qx}
           cy={qy}
           r={radius}

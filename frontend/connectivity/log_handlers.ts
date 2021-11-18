@@ -4,6 +4,7 @@ import {
   showLogOnScreen,
   speakLogAloud,
   initLog,
+  logBeep,
 } from "./connect_device";
 import { GetState } from "../redux/interfaces";
 import { Log } from "farmbot/dist/resources/api_resources";
@@ -15,6 +16,7 @@ export const onLogs =
       !msg.type && (msg.type = "info");
       actOnChannelName(msg, "toast", showLogOnScreen);
       actOnChannelName(msg, "espeak", speakLogAloud(getState));
+      logBeep(getState)(msg);
       const log = initLog(msg).payload;
       if (log.kind == "Log") {
         globalQueue.push(log);

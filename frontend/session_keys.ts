@@ -5,7 +5,8 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
-type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey
+  | "beep_verbosity";
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
@@ -94,6 +95,7 @@ export const NumericSetting: NumericSettings = {
   /** Other */
   id: "id",
   device_id: "device_id",
+  beep_verbosity: "beep_verbosity" as WebAppNumberConfigKey,
 };
 
 export const StringSetting: StringSettings = {

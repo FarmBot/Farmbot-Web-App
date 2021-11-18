@@ -1,8 +1,11 @@
 import React from "react";
 import { mount } from "enzyme";
-import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelTop, DesignerPanelTopProps,
+} from "../designer_panel";
 import { act } from "react-dom/test-utils";
 import { SpecialStatus } from "farmbot";
+import { Panel } from "../panel_header";
 
 describe("<DesignerPanel />", () => {
   it("renders default panel", () => {
@@ -38,5 +41,31 @@ describe("<DesignerPanelHeader />", () => {
     history.back = jest.fn();
     wrapper.find("i").first().simulate("click");
     expect(history.back).toHaveBeenCalled();
+  });
+});
+
+describe("<DesignerPanelTop />", () => {
+  const fakeProps = (): DesignerPanelTopProps => ({
+    panel: Panel.Controls,
+  });
+
+  it("doesn't show content scroll indicator", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{ scrollTop: 0 }],
+      configurable: true
+    });
+    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().style).toEqual({});
+  });
+
+  it("shows content scroll indicator", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{ scrollTop: 100 }],
+      configurable: true
+    });
+    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
+    expect(wrapper.find("div").first().props().style).toEqual({
+      boxShadow: "0 10px 10px rgba(0, 0, 0, 0.05)",
+    });
   });
 });

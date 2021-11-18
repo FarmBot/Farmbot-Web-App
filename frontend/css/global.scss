@@ -2263,6 +2263,14 @@ textarea:focus {
       top: 0.1rem;
     }
   }
+  .activity-beep-setting {
+    margin-left: 0;
+    margin-right: 1.5rem !important;
+    .bp3-slider {
+      width: 0;
+      margin-left: 1rem;
+    }
+  }
 }
 
 .beacon-transition {

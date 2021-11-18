@@ -153,7 +153,6 @@ export class GardenMap extends
             selectedPlant: this.props.selectedPlant,
           });
         } else { // Actions away from plant exit plant edit mode.
-          this.closePanel()();
           startNewSelectionBox({
             gardenCoords,
             setMapState: this.setMapState,
@@ -510,7 +509,9 @@ export class GardenMap extends
     cameraCalibrationData={this.props.cameraCalibrationData}
     deviceTarget={this.props.deviceTarget}
     visible={!!this.props.showImages}
+    botPosition={this.props.botLocationData.position}
     mapTransformProps={this.mapTransformProps}
+    plantAreaOffset={this.props.gridOffset}
     getConfigValue={this.props.getConfigValue} />;
   Grid = () => <Grid
     onClick={this.closePanel()}

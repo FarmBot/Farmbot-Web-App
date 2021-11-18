@@ -190,7 +190,7 @@ describe("<Logs />", () => {
   it("toggles raw text display", () => {
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     expect(wrapper.state().markdown).toBeTruthy();
-    wrapper.find(".fa-stack").simulate("click");
+    wrapper.instance().toggleMarkdown();
     expect(wrapper.state().markdown).toBeFalsy();
   });
 

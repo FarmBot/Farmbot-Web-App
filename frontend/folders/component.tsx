@@ -20,6 +20,7 @@ import {
   FolderButtonClusterProps,
   FolderNameInputProps,
   SequenceDropAreaState,
+  SequenceButtonClusterProps,
 } from "./interfaces";
 import {
   createFolder,
@@ -46,8 +47,11 @@ import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { variableList } from "../sequences/locals_list/variable_support";
 import { UUID } from "../resources/interfaces";
 import { SearchField } from "../ui/search_field";
-import { isSequencePublished } from "../sequences/sequence_editor_middle_active";
+import {
+  deleteSequence, isSequencePublished,
+} from "../sequences/sequence_editor_middle_active";
 import { Path } from "../internal_urls";
+import { copySequence } from "../sequences/actions";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;
@@ -61,6 +65,7 @@ export const FolderListItem = (props: FolderItemProps) => {
   const { pinned, forked, sequence_version_id } = props.sequence.body;
   const imported = sequence_version_id && !forked;
   const published = isSequencePublished(sequence);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
   return <StepDragger
     dispatch={props.dispatch}
     step={{
@@ -99,6 +104,11 @@ export const FolderListItem = (props: FolderItemProps) => {
           <i className={"fa fa-globe"}
             title={t("Published as a publicly shared sequence.")} />}
         <div className={"icon-spacer"} />
+        <Popover className={"sequence-settings-icon"} usePortal={false}
+          isOpen={settingsOpen}
+          target={<i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
+            onClick={() => setSettingsOpen(!settingsOpen)} />}
+          content={<SequenceButtonCluster {...props} />} />
         <i className={"fa fa-arrows-v"}
           onMouseDown={() => props.startSequenceMove(sequence.uuid)}
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
@@ -106,6 +116,29 @@ export const FolderListItem = (props: FolderItemProps) => {
     </li>
   </StepDragger>;
 };
+
+export const SequenceButtonCluster =
+  (props: SequenceButtonClusterProps) => {
+    const { dispatch, getWebAppConfigValue, sequence } = props;
+    return <div className="folder-button-cluster">
+      <button
+        className={"fb-button yellow"}
+        title={t("copy sequence")}
+        onClick={() => dispatch(copySequence(sequence))}>
+        <i className={"fa fa-copy"} />
+      </button>
+      <button
+        className={"fb-button red"}
+        title={t("delete sequence")}
+        onClick={deleteSequence({
+          sequenceUuid: sequence.uuid,
+          getWebAppConfigValue,
+          dispatch,
+        })}>
+        <i className={"fa fa-trash"} />
+      </button>
+    </div>;
+  };
 
 const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {
   return <button className="fb-button gray"
@@ -195,7 +228,7 @@ export const FolderNameEditor = (props: FolderNodeProps) => {
       isOpen={settingsOpen}
       target={<i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
         onClick={() => setSettingsOpen(!settingsOpen)} />}
-      content={<FolderButtonCluster {...props}
+      content={<FolderButtonCluster node={node}
         close={() => setSettingsOpen(false)} />} />
   </div>;
 };
@@ -212,6 +245,7 @@ const FolderNode = (props: FolderNodeProps) => {
       inUse={!!props.resourceUsage[seqUuid]}
       toggleSequenceMove={props.toggleSequenceMove}
       startSequenceMove={props.startSequenceMove}
+      getWebAppConfigValue={props.getWebAppConfigValue}
       movedSequenceUuid={props.movedSequenceUuid} />);
 
   const childFolders: FolderUnion[] = node.children || [];
@@ -224,6 +258,7 @@ const FolderNode = (props: FolderNodeProps) => {
       sequenceMetas={props.sequenceMetas}
       resourceUsage={props.resourceUsage}
       movedSequenceUuid={props.movedSequenceUuid}
+      getWebAppConfigValue={props.getWebAppConfigValue}
       toggleSequenceMove={props.toggleSequenceMove}
       startSequenceMove={props.startSequenceMove}
       onMoveEnd={props.onMoveEnd} />);
@@ -282,6 +317,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
           toggleSequenceMove={this.toggleSequenceMove}
           startSequenceMove={this.startSequenceMove}
           onMoveEnd={this.endSequenceMove}
+          getWebAppConfigValue={this.props.getWebAppConfigValue}
           sequences={this.props.sequences} />;
       })}
     </div>;
@@ -313,6 +349,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       variableData={this.props.sequenceMetas[seqUuid]}
       inUse={!!this.props.resourceUsage[seqUuid]}
       sequence={this.props.sequences[seqUuid]}
+      getWebAppConfigValue={this.props.getWebAppConfigValue}
       toggleSequenceMove={this.toggleSequenceMove}
       startSequenceMove={this.startSequenceMove}
       movedSequenceUuid={this.state.movedSequenceUuid} />);

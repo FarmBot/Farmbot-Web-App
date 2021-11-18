@@ -1,7 +1,7 @@
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
-import { LogsLayer } from "../logs_layer";
+import { LogsLayer, positionDifferent } from "../logs_layer";
 import { LogsLayerProps } from "../interfaces";
 import {
   fakeMapTransformProps,
@@ -11,6 +11,7 @@ import {
 } from "../../../../../__test_support__/fake_camera_data";
 import { fakeLog } from "../../../../../__test_support__/fake_state/resources";
 import { CameraViewArea } from "../../farmbot/bot_figure";
+import { fakeBotLocationData } from "../../../../../__test_support__/fake_bot_data";
 
 describe("<LogsLayer />", () => {
   const captureLog1 = fakeLog();
@@ -33,17 +34,28 @@ describe("<LogsLayer />", () => {
   measureLog.body.id = undefined;
   measureLog.uuid = "fakeMeasureLogUuid";
   measureLog.body.message = "Executing Measure Soil Height";
+  const findHomeLog = fakeLog();
+  findHomeLog.body.id = undefined;
+  findHomeLog.uuid = "fakeFindHomeLogUuid";
+  findHomeLog.body.message = "Finding home";
   const otherLog = fakeLog();
   otherLog.body.id = undefined;
   otherLog.uuid = "fakeOtherLogUuid";
   otherLog.body.message = "photo";
   const fakeProps = (): LogsLayerProps => ({
     visible: true,
-    logs: [captureLog1, captureLog2, calibrateLog, detectLog, measureLog],
+    logs: [
+      captureLog1, captureLog2,
+      calibrateLog, detectLog, measureLog,
+      findHomeLog,
+      otherLog,
+    ],
     mapTransformProps: fakeMapTransformProps(),
     cameraCalibrationData: fakeCameraCalibrationData(),
     getConfigValue: jest.fn(),
     deviceTarget: "",
+    botPosition: fakeBotLocationData().position,
+    plantAreaOffset: { x: 0, y: 0 },
   });
 
   it("renders", () => {
@@ -53,6 +65,7 @@ describe("<LogsLayer />", () => {
       "#image-log-fakeCalibrateLogUuid-visual",
       "#image-log-fakeDetectLogUuid-visual",
       "#image-log-fakeMeasureLogUuid-visual",
+      "#movement-log-fakeFindHomeLogUuid-visual",
     ].map(id => expect(wrapper.find(id).length).toEqual(1));
     [
       "#image-log-fakeCaptureLog2Uuid-visual",
@@ -60,7 +73,8 @@ describe("<LogsLayer />", () => {
     ].map(id => expect(wrapper.find(id).length).toEqual(0));
     expect(wrapper.find(".capture").length).toEqual(1);
     expect(wrapper.find(".scan").length).toEqual(3);
-    expect(wrapper.find(".animate").length).toEqual(4);
+    expect(wrapper.find(".find").length).toEqual(1);
+    expect(wrapper.find(".animate").length).toEqual(5);
   });
 
   it("doesn't animate", () => {
@@ -69,6 +83,7 @@ describe("<LogsLayer />", () => {
     const wrapper = svgMount(<LogsLayer {...p} />);
     expect(wrapper.find(".capture").length).toEqual(1);
     expect(wrapper.find(".scan").length).toEqual(3);
+    expect(wrapper.find(".find").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(0);
   });
 
@@ -101,9 +116,11 @@ describe("<LogsLayer />", () => {
   it("shows full visuals", () => {
     const p = fakeProps();
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.botPosition = { x: 10, y: 20, z: 30 };
     const wrapper = svgMount(<LogsLayer {...p} />);
     expect(wrapper.find("#image-log-visuals").length).toEqual(4);
     expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(4);
+    expect(wrapper.find("#finding-home").length).toEqual(1);
   });
 
   it("shows cropped visuals", () => {
@@ -113,5 +130,30 @@ describe("<LogsLayer />", () => {
     const wrapper = svgMount(<LogsLayer {...p} />);
     expect(wrapper.find("#image-log-visuals").length).toEqual(4);
     expect(wrapper.find("#angled-camera-view-area-wrapper").length).toEqual(0);
+    expect(wrapper.find("#finding-home").length).toEqual(0);
+  });
+});
+
+describe("positionDifferent()", () => {
+  it("returns false: undefined", () => {
+    const result = positionDifferent(
+      { x: undefined, y: undefined, z: undefined },
+      { x: undefined, y: undefined, z: undefined });
+    expect(result).toEqual(false);
+  });
+
+  it("returns false", () => {
+    const result = positionDifferent(
+      { x: 1, y: 2, z: 3 },
+      { x: 2, y: 3, z: 4 },
+      2);
+    expect(result).toEqual(false);
+  });
+
+  it("returns true", () => {
+    const result = positionDifferent(
+      { x: 1, y: 2, z: 3 },
+      { x: 2, y: 3, z: 4 });
+    expect(result).toEqual(true);
   });
 });

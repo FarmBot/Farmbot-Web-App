@@ -32,7 +32,9 @@ import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { Content, Actions, DeviceSetting } from "../constants";
 import { Collapse, PopoverInteractionKind, Position } from "@blueprintjs/core";
-import { setWebAppConfigValue } from "../config_storage/actions";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue,
+} from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { clone, isUndefined, last, sortBy } from "lodash";
 import { ErrorBoundary } from "../error_boundary";
@@ -47,6 +49,7 @@ import {
   License, loadSequenceVersion, SequencePreviewContent,
 } from "./panel/preview";
 import { Path } from "../internal_urls";
+import { UUID } from "../resources/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -299,13 +302,11 @@ export const SequenceBtnGroup = ({
       onClick={() => dispatch(copySequence(sequence))} />
     <i className={"fa fa-trash"}
       title={t("delete sequence")}
-      onClick={() => {
-        const confirm = getWebAppConfigValue(
-          BooleanSetting.confirm_sequence_deletion);
-        const force = !(confirm ?? true);
-        dispatch(destroy(sequence.uuid, force))
-          .then(() => push(Path.sequences()));
-      }} />
+      onClick={deleteSequence({
+        sequenceUuid: sequence.uuid,
+        getWebAppConfigValue,
+        dispatch,
+      })} />
     <div className={"publish-button"}>
       <Popover position={Position.BOTTOM_RIGHT}
         target={<i className={"fa fa-share"} title={t("share sequence")} />}
@@ -314,6 +315,20 @@ export const SequenceBtnGroup = ({
           : <SequencePublishMenu sequence={sequence} />} />
     </div>
   </div>;
+
+export interface DeleteSequenceProps {
+  getWebAppConfigValue: GetWebAppConfigValue;
+  dispatch: Function;
+  sequenceUuid: UUID;
+}
+
+export const deleteSequence = (props: DeleteSequenceProps) => () => {
+  const confirm = props.getWebAppConfigValue(
+    BooleanSetting.confirm_sequence_deletion);
+  const force = !(confirm ?? true);
+  props.dispatch(destroy(props.sequenceUuid, force))
+    .then(() => push(Path.sequences()));
+};
 
 export const isSequencePublished = (sequence: TaggedSequence) =>
   !sequence.body.sequence_version_id

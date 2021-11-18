@@ -603,6 +603,12 @@
       position: absolute;
       right: 0;
     }
+    .sequence-settings-icon {
+      .bp-popover-target {
+        position: absolute;
+        right: 2rem;
+      }
+    }
     .fa-arrows-v, .fa-ellipsis-v {
       display: none;
     }
@@ -689,7 +695,7 @@
         width: 1.75rem;
       }
       .icon-spacer {
-        margin-right: 3rem;
+        margin-right: 5rem;
       }
     }
     button {

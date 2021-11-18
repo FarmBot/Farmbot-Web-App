@@ -43,6 +43,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   stub_config: false,
   show_first_party_farmware: false,
   enable_browser_speak: false,
+  ["beep_verbosity" as NumberWebAppConfigKey]: 0,
   show_images: true,
   photo_filter_begin: "",
   photo_filter_end: "",

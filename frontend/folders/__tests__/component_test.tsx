@@ -37,6 +37,10 @@ jest.mock("@blueprintjs/select", () => ({
   ItemRenderer: jest.fn(),
 }));
 
+jest.mock("../../sequences/actions", () => ({
+  copySequence: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -65,6 +69,7 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
+import { copySequence } from "../../sequences/actions";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -101,6 +106,7 @@ describe("<Folders />", () => {
     dispatch: jest.fn(),
     resourceUsage: {},
     sequenceMetas: {},
+    getWebAppConfigValue: jest.fn(),
   });
 
   it("renders empty state", () => {
@@ -244,6 +250,7 @@ describe("<FolderListItem />", () => {
     dispatch: jest.fn(),
     variableData: undefined,
     inUse: false,
+    getWebAppConfigValue: jest.fn(),
   });
 
   it("renders", () => {
@@ -357,6 +364,14 @@ describe("<FolderListItem />", () => {
     wrapper.find(".fa-arrows-v").simulate("mouseUp");
     expect(p.toggleSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
+
+  it("copies sequence", () => {
+    const p = fakeProps();
+    const wrapper = mount(<FolderListItem {...p} />);
+    wrapper.find(".fa-ellipsis-v").simulate("click");
+    wrapper.find(".fb-button.yellow").simulate("click");
+    expect(copySequence).toHaveBeenCalledWith(p.sequence);
+  });
 });
 
 describe("<FolderButtonCluster />", () => {
@@ -442,6 +457,7 @@ describe("<FolderNameEditor />", () => {
     dispatch: jest.fn(),
     resourceUsage: {},
     sequenceMetas: {},
+    getWebAppConfigValue: jest.fn(),
   });
 
   it("renders", () => {
