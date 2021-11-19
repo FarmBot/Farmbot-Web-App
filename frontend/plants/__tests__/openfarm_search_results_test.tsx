@@ -32,6 +32,7 @@ describe("<OpenFarmResults />", () => {
     cropSearchInProgress: false,
     plant: undefined,
     dispatch: jest.fn(),
+    bulkPlantSlug: undefined,
   });
 
   it("renders OpenFarmSearchResults", () => {
@@ -70,6 +71,20 @@ describe("<OpenFarmResults />", () => {
       openfarm_slug: "potato",
     });
     expect(save).toHaveBeenCalledWith(p.plant.uuid);
+  });
+
+  it("sets bulk slug", () => {
+    const p = fakeProps();
+    p.bulkPlantSlug = "slug";
+    const wrapper = mount(<OpenFarmResults {...p} />);
+    const link = wrapper.find("Link").first();
+    expect(link.prop("to")).toEqual(Path.plants("select"));
+    link.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SLUG_BULK,
+      payload: "potato",
+    });
+    expect(edit).not.toHaveBeenCalled();
   });
 
   it("shows search in progress", () => {

@@ -15,12 +15,13 @@ const hourToUtcHour =
   (hour: number | undefined, offset: number): number | undefined =>
     !isNumber(hour) ? undefined : (hour + offset) % 24;
 
-export const ASAP = () => t("As soon as possible");
-const DDI_NEVER = () => ({ label: t("Never"), value: "never" });
+export const DDI_ASAP = (): DropDownItem =>
+  ({ label: t("As soon as possible"), value: "", isNull: true });
+const DDI_NEVER = (): DropDownItem => ({ label: t("Never"), value: "never" });
 
 const formatHour = (hour: number | undefined, hour24: boolean) =>
   !isNumber(hour)
-    ? ASAP()
+    ? DDI_ASAP().label
     : moment().startOf("day")
       .add(hour, "hours")
       .format(hour24 ? "H:mm" : "h:mm A");
@@ -53,12 +54,11 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
       }));
       dispatch(save(device.uuid));
     }}
-    list={range(24)
+    list={[DDI_ASAP()].concat(range(24)
       .map((hour: number): DropDownItem =>
         ({ label: formatHour(hour, hour24), value: hour }))
-      .concat(DDI_NEVER())}
-    allowEmpty={true}
-    customNullLabel={ASAP()}
+      .concat(DDI_NEVER()))}
+    customNullLabel={DDI_ASAP().label}
     extraClass={[
       !osAutoUpdate.consistent ? "dim" : "",
       getModifiedClassNameSpecifyDefault(localHour, 3),

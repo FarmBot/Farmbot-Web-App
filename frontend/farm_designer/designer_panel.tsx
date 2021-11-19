@@ -104,10 +104,10 @@ export interface DesignerPanelTopProps {
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   const withBtn = !!props.withButton || !!props.linkTo || !!props.onClick;
-  const content = document.getElementsByClassName("panel-content")[0];
-  const contentScrolled = (content?.scrollTop || 0) > 0;
-  return <div className={`panel-top ${withBtn ? "with-button" : ""}`}
-    style={contentScrolled ? { boxShadow: "0 10px 10px rgba(0, 0, 0, 0.05)" } : {}}>
+  return <div className={[
+    "panel-top",
+    withBtn ? "with-button" : "",
+  ].join(" ")}>
     {props.children}
     {props.onClick &&
       <a>
@@ -125,16 +125,19 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   </div>;
 };
 
-interface DesignerPanelContentProps {
+export interface DesignerPanelContentProps {
   panelName: string;
   children?: React.ReactNode;
   className?: string;
 }
 
-export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
-  <div className={[
+export const DesignerPanelContent = (props: DesignerPanelContentProps) => {
+  const content = document.getElementsByClassName("panel-content")[0];
+  const contentScrolled = (content?.scrollTop || 0) > 0;
+  return <div className={[
     "panel-content",
     `${props.panelName}-panel-content`,
+    contentScrolled ? "scrolled" : "",
     props.className || "",
   ].join(" ")}>
     <ErrorBoundary>
@@ -142,3 +145,4 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
     </ErrorBoundary>
     <div className={"padding"}></div>
   </div>;
+};

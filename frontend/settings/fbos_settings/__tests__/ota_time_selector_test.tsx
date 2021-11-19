@@ -9,7 +9,9 @@ jest.mock("../../../devices/actions", () => ({
 
 import React from "react";
 import { shallow, mount } from "enzyme";
-import { OtaTimeSelector, OtaTimeSelectorRow, ASAP } from "../ota_time_selector";
+import {
+  OtaTimeSelector, OtaTimeSelectorRow, DDI_ASAP,
+} from "../ota_time_selector";
 import { FBSelect } from "../../../ui";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "../interfaces";
@@ -30,7 +32,7 @@ describe("<OtaTimeSelector />", () => {
     p.device.body.ota_hour = undefined;
     const wrapper = mount(<OtaTimeSelector {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem).toEqual(undefined);
-    expect(wrapper.text()).toContain(ASAP());
+    expect(wrapper.text()).toContain(DDI_ASAP().label);
   });
 
   it("renders the current value", () => {
@@ -39,7 +41,7 @@ describe("<OtaTimeSelector />", () => {
     const wrapper = mount(<OtaTimeSelector {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem)
       .toEqual({ label: "5:00 PM", value: 17 });
-    expect(wrapper.text()).not.toContain(ASAP());
+    expect(wrapper.text()).not.toContain(DDI_ASAP().label);
   });
 
   it("renders the current value using UTC data", () => {
@@ -48,7 +50,7 @@ describe("<OtaTimeSelector />", () => {
     const wrapper = mount(<OtaTimeSelector {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem)
       .toEqual({ label: "5:00 PM", value: 17 });
-    expect(wrapper.text()).not.toContain(ASAP());
+    expect(wrapper.text()).not.toContain(DDI_ASAP().label);
   });
 
   it("selects an OTA update time", () => {

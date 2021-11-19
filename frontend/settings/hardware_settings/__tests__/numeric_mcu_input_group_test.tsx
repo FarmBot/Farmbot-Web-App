@@ -34,7 +34,7 @@ describe("<NumericMCUInputGroup />", () => {
     expect(wrapper.find("Highlight").props().hidden).toEqual(false);
   });
 
-  it("shows warnings", () => {
+  it("shows limit warnings", () => {
     const p = fakeProps();
     bot.hardware.mcu_params.encoder_enabled_x = 1;
     bot.hardware.mcu_params.encoder_enabled_y = 1;
@@ -42,6 +42,18 @@ describe("<NumericMCUInputGroup />", () => {
     p.warnMin = { x: 2, y: 2, z: 0 };
     const wrapper = mount(<NumericMCUInputGroup {...p} />);
     expect(wrapper.find(".error").length).toEqual(2);
+  });
+
+  it("shows other warnings", () => {
+    const p = fakeProps();
+    bot.hardware.mcu_params.encoder_enabled_x = 1;
+    bot.hardware.mcu_params.encoder_enabled_y = 1;
+    bot.hardware.mcu_params.encoder_enabled_z = 1;
+    p.advanced = true;
+    p.showAdvanced = false;
+    p.warning = { x: undefined, y: undefined, z: "error" };
+    const wrapper = mount(<NumericMCUInputGroup {...p} />);
+    expect(wrapper.find(".error").length).toEqual(1);
   });
 
   it("handles undefined values", () => {

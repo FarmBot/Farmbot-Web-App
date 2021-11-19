@@ -180,6 +180,7 @@ export function PlantPanel(props: PlantPanelProps) {
         <i className={"fa fa-pencil"}
           onClick={() => {
             dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
+            dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
             push(Path.cropSearch());
           }} />
       </ListItem>

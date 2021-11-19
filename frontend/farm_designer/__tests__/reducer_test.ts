@@ -251,6 +251,16 @@ describe("designer reducer", () => {
     expect(newState.plantTypeChangeId).toEqual(1);
   });
 
+  it("sets bulk plant slug", () => {
+    const state = oldState();
+    state.bulkPlantSlug = undefined;
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_SLUG_BULK, payload: "slug",
+    };
+    const newState = designer(state, action);
+    expect(newState.bulkPlantSlug).toEqual("slug");
+  });
+
   it("starts group sort type trial", () => {
     const state = oldState();
     state.tryGroupSortType = undefined;

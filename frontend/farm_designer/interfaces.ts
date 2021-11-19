@@ -147,6 +147,7 @@ export interface DesignerState {
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
   plantTypeChangeId: number | undefined;
+  bulkPlantSlug: string | undefined;
   chosenLocation: BotPosition;
   drawnPoint: DrawnPointPayl | undefined;
   drawnWeed: DrawnWeedPayl | undefined;
@@ -319,6 +320,7 @@ export interface CropCatalogProps {
   openfarmSearch: OpenfarmSearch;
   cropSearchInProgress: boolean;
   plant: TaggedPlantPointer | undefined;
+  bulkPlantSlug: string | undefined;
 }
 
 export interface CropInfoProps {

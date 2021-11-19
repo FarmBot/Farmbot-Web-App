@@ -410,10 +410,10 @@
       height: 23rem;
     }
     &.more-action {
-      height: 28rem;
+      height: 32rem;
     }
     &.more-select.more-action {
-      height: 36rem;
+      height: 40rem;
     }
     button {
       margin: 0.5rem;
@@ -433,9 +433,15 @@
     .filter-search {
       padding-right: 1rem;
     }
+    .point-size-bulk-update,
+    .plant-date-bulk-update,
+    .point-color-bulk-update,
+    .plant-slug-bulk-update,
     .plant-status-bulk-update {
       display: inline-block;
       width: 100%;
+    }
+    .plant-status-bulk-update {
       .filter-search {
         display: inline-block;
         width: 50%;
@@ -448,8 +454,6 @@
       }
     }
     .point-size-bulk-update {
-      display: inline-block;
-      width: 100%;
       p {
         display: inline-block;
         font-size: 1.2rem;
@@ -463,8 +467,6 @@
       }
     }
     .plant-date-bulk-update {
-      display: inline-block;
-      width: 100%;
       .input {
         display: inline-block;
         margin-left: 1.5rem;
@@ -479,13 +481,27 @@
       }
     }
     .point-color-bulk-update {
-      display: inline-block;
-      width: 100%;
       margin-top: 1rem;
       .color-picker {
         display: inline-block;
         margin-left: 0.5rem;
         margin-bottom: -0.5rem;
+      }
+    }
+    .plant-slug-bulk-update {
+      a {
+        margin-left: 2rem;
+      }
+      .fa-pencil {
+        margin-left: 1rem;
+      }
+      .fb-button {
+        float: none;
+        height: 2rem;
+        line-height: 1.75rem;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        vertical-align: bottom;
       }
     }
     .more {
@@ -520,10 +536,10 @@
       padding-top: 23rem;
     }
     &.more-action {
-      padding-top: 28rem;
+      padding-top: 32rem;
     }
     &.more-select.more-action {
-      padding-top: 36rem;
+      padding-top: 40rem;
     }
     .tool-slot-search-item-icon {
       padding-left: 5px !important;
