@@ -105,8 +105,8 @@ export enum FbosVersionFallback {
 }
 
 export const fallbackData: MinOsFeatureLookup = {
+  [Feature.calibration_total_retries]: "14.6.2",
   [Feature.pin_reporting]: MinVersionOverride.NEVER,
-  [Feature.calibration_total_retries]: MinVersionOverride.NEVER,
   [Feature.farmduino_k16]: MinVersionOverride.NEVER,
   [Feature.express_k11]: MinVersionOverride.NEVER,
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
@@ -134,7 +134,7 @@ export function createShouldDisplayFn(
       FbosVersionFallback.NULL;
     const target = override || current || fallback;
     const table = lookupData || fallbackData;
-    const min = table[feature] || MinVersionOverride.NEVER;
+    const min = table[feature] || fallbackData[feature] || MinVersionOverride.NEVER;
     switch (semverCompare(target, min)) {
       case SemverResult.LEFT_IS_GREATER:
       case SemverResult.EQUAL:

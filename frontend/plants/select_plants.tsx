@@ -18,7 +18,8 @@ import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../farm_designer/panel_header";
 import { error } from "../toast/toast";
 import {
-  PlantDateBulkUpdate, PlantStatusBulkUpdate, PointColorBulkUpdate,
+  PlantDateBulkUpdate, PlantSlugBulkUpdate, PlantStatusBulkUpdate,
+  PointColorBulkUpdate,
   PointSizeBulkUpdate,
 } from "./edit_plant_status";
 import { FBSelect, DropDownItem } from "../ui";
@@ -94,19 +95,23 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
   const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
   const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
   const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
+  const {
+    selectedPoints, selectionPointType, openedSavedGarden, bulkPlantSlug,
+  } = props.resources.consumers.farm_designer;
   return {
-    selected: props.resources.consumers.farm_designer.selectedPoints,
-    selectionPointType: props.resources.consumers.farm_designer.selectionPointType,
+    selected: selectedPoints,
+    selectionPointType,
     getConfigValue: getWebAppConfig,
     plants: getPlants(props.resources),
     allPoints: selectAllActivePoints(props.resources.index),
     dispatch: props.dispatch,
-    gardenOpen: props.resources.consumers.farm_designer.openedSavedGarden,
+    gardenOpen: openedSavedGarden,
     tools: selectAllTools(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     toolTransformProps: { xySwap, quadrant },
     timeSettings: maybeGetTimeSettings(props.resources.index),
+    bulkPlantSlug,
   };
 };
 
@@ -123,6 +128,7 @@ export interface SelectPlantsProps {
   tools: TaggedTool[];
   groups: TaggedPointGroup[];
   timeSettings: TimeSettings;
+  bulkPlantSlug: string | undefined;
 }
 
 interface SelectPlantsState {
@@ -149,7 +155,7 @@ export class RawSelectPlants
     }
   }
 
-  componentWillUnmount = () =>
+  componentWillUnmount = () => !this.props.bulkPlantSlug &&
     this.props.dispatch(setSelectionPointType(undefined));
 
   get selected() { return this.props.selected || []; }
@@ -298,6 +304,13 @@ export class RawSelectPlants
             <PointColorBulkUpdate
               allPoints={this.props.allPoints}
               selected={this.selected}
+              dispatch={this.props.dispatch} />}
+          {["Plant"]
+            .includes(this.selectionPointType) &&
+            <PlantSlugBulkUpdate
+              allPoints={this.props.allPoints}
+              selected={this.selected}
+              bulkPlantSlug={this.props.bulkPlantSlug}
               dispatch={this.props.dispatch} />}
         </More>
       </div>

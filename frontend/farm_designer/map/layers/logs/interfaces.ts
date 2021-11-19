@@ -9,7 +9,14 @@ export enum RenderedLog {
   imageCalibrate = "imageCalibrate",
   imageDetect = "imageDetect",
   imageMeasure = "imageMeasure",
-  findHome = "findHome",
+  findHomeAll = "findHomeAll",
+  findHomeX = "findHomeX",
+  findHomeY = "findHomeY",
+  findHomeZ = "findHomeZ",
+  findLengthAll = "findLengthAll",
+  findLengthX = "findLengthX",
+  findLengthY = "findLengthY",
+  findLengthZ = "findLengthZ",
 }
 
 export enum AnimationClass {

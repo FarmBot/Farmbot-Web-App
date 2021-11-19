@@ -24,6 +24,7 @@ export interface SearchResultProps {
   cropSearchInProgress: boolean;
   plant: TaggedPlantPointer | undefined;
   dispatch: Function;
+  bulkPlantSlug: string | undefined;
 }
 
 export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
@@ -40,6 +41,34 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
     const {
       cropSearchResults, cropSearchInProgress, dispatch, plant,
     } = this.props;
+    const to = (slug: string) => {
+      if (plant) {
+        return Path.plants(plant.body.id);
+      }
+      if (this.props.bulkPlantSlug) {
+        return Path.plants("select");
+      }
+      return Path.cropSearch(slug);
+    };
+    const click = (crop: Result["crop"]) => () => {
+      if (plant) {
+        dispatch(edit(plant, {
+          name: crop.name,
+          openfarm_slug: crop.slug,
+        }));
+        dispatch(save(plant.uuid));
+        dispatch({
+          type: Actions.SET_PLANT_TYPE_CHANGE_ID,
+          payload: undefined,
+        });
+      }
+      if (this.props.bulkPlantSlug) {
+        dispatch({
+          type: Actions.SET_SLUG_BULK,
+          payload: crop.slug,
+        });
+      }
+    };
     return <EmptyStateWrapper
       notEmpty={cropSearchResults.length > 0}
       graphic={EmptyStateGraphic.no_crop_results}
@@ -51,24 +80,10 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
       {cropSearchResults.map(resp => {
         const { crop, image } = resp;
         return <Link
-          key={resp.crop.slug}
+          key={crop.slug}
           draggable={false}
-          onClick={() => {
-            if (plant) {
-              dispatch(edit(plant, {
-                name: resp.crop.name,
-                openfarm_slug: resp.crop.slug,
-              }));
-              dispatch(save(plant.uuid));
-              dispatch({
-                type: Actions.SET_PLANT_TYPE_CHANGE_ID,
-                payload: undefined,
-              });
-            }
-          }}
-          to={plant
-            ? Path.plants(plant.body.id)
-            : Path.cropSearch(crop.slug)}>
+          onClick={click(crop)}
+          to={to(crop.slug)}>
           <div className={"plant-catalog-tile col-xs-6"}>
             <label>
               {crop.name}

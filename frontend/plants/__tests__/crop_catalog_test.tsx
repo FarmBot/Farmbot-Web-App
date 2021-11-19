@@ -26,6 +26,7 @@ describe("<CropCatalog />", () => {
     cropSearchQuery: undefined,
     cropSearchInProgress: false,
     plant: undefined,
+    bulkPlantSlug: undefined,
   });
 
   it("renders", () => {

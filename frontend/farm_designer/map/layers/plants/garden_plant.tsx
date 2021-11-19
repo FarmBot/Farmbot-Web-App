@@ -16,13 +16,18 @@ export class GardenPlant extends
 
   state: GardenPlantState = { icon: FilePath.DEFAULT_ICON, hover: false };
 
-  componentDidMount() {
+  fetchIcon = () => {
     const OFS = this.props.plant.body.openfarm_slug;
     cachedCrop(OFS)
       .then(({ svg_icon }) => {
         this.setState({ icon: svgToUrl(svg_icon) });
       });
-  }
+  };
+
+  componentDidMount = () => this.fetchIcon();
+  componentDidUpdate = (prevProps: GardenPlantProps) =>
+    this.props.plant.body.openfarm_slug != prevProps.plant.body.openfarm_slug &&
+    this.fetchIcon();
 
   click = () => {
     this.props.dispatch(clickMapPlant(this.props.uuid, this.state.icon));

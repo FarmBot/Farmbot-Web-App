@@ -34,9 +34,6 @@ import {
   ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
-import {
-  NumberConfigKey as WebAppNumberConfigKey,
-} from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -343,7 +340,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     expand_step_options: false,
     hide_sensors: false,
     enable_browser_speak: false,
-    ["beep_verbosity" as WebAppNumberConfigKey]: 0,
+    beep_verbosity: 0,
     photo_filter_begin: "2018-01-11T20:20:38.362Z",
     photo_filter_end: "2018-01-22T15:32:41.970Z",
     discard_unsaved: false,

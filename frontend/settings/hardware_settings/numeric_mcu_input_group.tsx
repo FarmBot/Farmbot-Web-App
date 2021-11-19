@@ -83,10 +83,17 @@ export class NumericMCUInputGroup
       || modified(this.props.z, this.props.zScale);
   }
 
+  get error() {
+    return this.props.warning?.x
+      || this.props.warning?.y
+      || this.props.warning?.z;
+  }
+
   render() {
     const { label } = this.props;
     return <Highlight settingName={label}
-      hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)}
+      hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)
+        && !this.error}
       className={this.props.advanced ? "advanced" : undefined}>
       <Row>
         <Col xs={12} className={"widget-body-tooltips"}>

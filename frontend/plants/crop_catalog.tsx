@@ -22,6 +22,7 @@ import { maybeFindPlantById } from "../resources/selectors_by_id";
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const {
     cropSearchQuery, cropSearchInProgress, cropSearchResults, plantTypeChangeId,
+    bulkPlantSlug,
   } = props.resources.consumers.farm_designer;
   const plant = plantTypeChangeId
     ? maybeFindPlantById(props.resources.index, plantTypeChangeId)
@@ -33,6 +34,7 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
     cropSearchResults,
     cropSearchInProgress,
     plant,
+    bulkPlantSlug,
   };
 }
 
@@ -105,6 +107,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
               cropSearchResults={this.props.cropSearchResults}
               cropSearchInProgress={this.props.cropSearchInProgress}
               plant={this.props.plant}
+              bulkPlantSlug={this.props.bulkPlantSlug}
               dispatch={this.props.dispatch} />
           </EmptyStateWrapper>
         </div>

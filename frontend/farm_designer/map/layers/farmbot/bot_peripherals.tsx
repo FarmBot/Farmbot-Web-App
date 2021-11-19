@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
@@ -119,6 +119,39 @@ function vacuumFigure(
   </g>;
 }
 
+function rotaryFigure(
+  props: { i: number, cx: number, cy: number, animate: boolean }) {
+  const { i, cx, cy, animate } = props;
+  const color = "black";
+  const copies = animate ? 3 : 1;
+  const animateClass = animate ? "animate" : "";
+
+  return <g id="rotary" key={`peripheral_${i}`}>
+    <defs>
+      <radialGradient id="WaveGradient">
+        <stop offset="0%" stopColor={color} stopOpacity={0} />
+        <stop offset="80%" stopColor={color} stopOpacity={0} />
+        <stop offset="90%" stopColor={color} stopOpacity={0.25} />
+        <stop offset="100%" stopColor={color} stopOpacity={0} />
+      </radialGradient>
+      <g id="rotary-wave">
+        <circle
+          cx={cx}
+          cy={cy}
+          r={100}
+          fill="url(#WaveGradient)" />
+      </g>
+    </defs>
+
+    {range(0, copies).map(s => {
+      return <g
+        className={`rotary delay-${s} ${animateClass}`} key={`rotary-${s}`}>
+        <use xlinkHref="#rotary-wave" />
+      </g>;
+    })}
+  </g>;
+}
+
 export function BotPeripherals(props: BotPeripheralsProps) {
   const {
     peripherals, position, plantAreaOffset, mapTransformProps, getConfigValue
@@ -148,6 +181,13 @@ export function BotPeripherals(props: BotPeripheralsProps) {
         });
       } else if (x.label.toLowerCase().includes("vacuum") && x.value) {
         return vacuumFigure({
+          i,
+          cx: positionQ.qx,
+          cy: positionQ.qy,
+          animate
+        });
+      } else if (x.label.toLowerCase().includes("rotary") && x.value) {
+        return rotaryFigure({
           i,
           cx: positionQ.qx,
           cy: positionQ.qy,

@@ -32,6 +32,7 @@ export const initialState: DesignerState = {
   cropSearchResults: [],
   cropSearchInProgress: false,
   plantTypeChangeId: undefined,
+  bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
   drawnWeed: undefined,
@@ -76,6 +77,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<number | undefined>(Actions.SET_PLANT_TYPE_CHANGE_ID, (s, { payload }) => {
     s.plantTypeChangeId = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_SLUG_BULK, (s, { payload }) => {
+    s.bulkPlantSlug = payload;
     return s;
   })
   .add<UUID[] | undefined>(Actions.SELECT_POINT, (s, { payload }) => {

@@ -17,8 +17,13 @@ import {
   PointColorBulkUpdate,
   PlantDateBulkUpdateProps,
   PlantDateBulkUpdate,
+  PlantSlugBulkUpdate,
+  PlantSlugBulkUpdateProps,
 } from "../edit_plant_status";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { Actions } from "../../constants";
+import { Path } from "../../internal_urls";
+import { push } from "../../history";
 
 describe("<EditPlantStatus />", () => {
   const fakeProps = (): EditPlantStatusProps => ({
@@ -231,6 +236,64 @@ describe("<PointColorBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledTimes(2);
     expect(edit).toHaveBeenCalledWith(point1, { meta: { color: "green" } });
     expect(edit).toHaveBeenCalledWith(point2, { meta: { color: "green" } });
+  });
+});
+
+describe("<PlantSlugBulkUpdate />", () => {
+  const fakeProps = (): PlantSlugBulkUpdateProps => ({
+    allPoints: [],
+    selected: [],
+    dispatch: jest.fn(),
+    bulkPlantSlug: undefined,
+  });
+
+  it("doesn't update plant slug", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    plant1.body.openfarm_slug = "slug";
+    const plant2 = fakePlant();
+    p.allPoints = [plant1, plant2];
+    p.selected = [plant1.uuid];
+    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => false);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalled();
+    expect(edit).not.toHaveBeenCalled();
+  });
+
+  it("sets bulk plant slug", () => {
+    const p = fakeProps();
+    p.bulkPlantSlug = "slug";
+    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
+    wrapper.find(".fa-pencil").simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SLUG_BULK, payload: "slug",
+    });
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+  });
+
+  it("updates plant slug", () => {
+    const p = fakeProps();
+    p.bulkPlantSlug = "slug";
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.allPoints = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change crop type to slug for 2 plants?");
+    expect(edit).toHaveBeenCalledTimes(2);
+    expect(edit).toHaveBeenCalledWith(plant1, {
+      openfarm_slug: "slug",
+      name: "Slug",
+    });
+    expect(edit).toHaveBeenCalledWith(plant2, {
+      openfarm_slug: "slug",
+      name: "Slug",
+    });
   });
 });
 

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { BotPeripheralsProps, BotPeripherals } from "../bot_peripherals";
 import {
@@ -18,6 +18,7 @@ describe("<BotPeripherals/>", () => {
     ["lights"],
     ["vacuum"],
     ["water"],
+    ["rotary"],
   ])("doesn't display %s", (peripheralName) => {
     const p = fakeProps();
     p.peripherals[0].label = peripheralName;
@@ -96,6 +97,18 @@ describe("<BotPeripherals/>", () => {
     p.peripherals[0].value = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#vacuum").length).toEqual(1);
+    expect(wrapper.find("circle").last().props()).toEqual({
+      fill: "url(#WaveGradient)", cx: 0, cy: 0, r: 100
+    });
+    animationToggle(p, 3, 1);
+  });
+
+  it("displays rotary", () => {
+    const p = fakeProps();
+    p.peripherals[0].label = "rotary tool";
+    p.peripherals[0].value = true;
+    const wrapper = shallow(<BotPeripherals {...p} />);
+    expect(wrapper.find("#rotary").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({
       fill: "url(#WaveGradient)", cx: 0, cy: 0, r: 100
     });

@@ -1,7 +1,8 @@
 import React from "react";
 import { mount } from "enzyme";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelTop, DesignerPanelTopProps,
+  DesignerPanel, DesignerPanelContent, DesignerPanelContentProps,
+  DesignerPanelHeader, DesignerPanelTop, DesignerPanelTopProps,
 } from "../designer_panel";
 import { act } from "react-dom/test-utils";
 import { SpecialStatus } from "farmbot";
@@ -49,13 +50,31 @@ describe("<DesignerPanelTop />", () => {
     panel: Panel.Controls,
   });
 
+  it("doesn't have with-button class", () => {
+    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("with-button")).toBeFalsy();
+  });
+
+  it("has with-button class", () => {
+    const p = fakeProps();
+    p.onClick = jest.fn();
+    const wrapper = mount(<DesignerPanelTop {...p} />);
+    expect(wrapper.find("div").first().hasClass("with-button")).toBeTruthy();
+  });
+});
+
+describe("<DesignerPanelContent />", () => {
+  const fakeProps = (): DesignerPanelContentProps => ({
+    panelName: Panel.Controls,
+  });
+
   it("doesn't show content scroll indicator", () => {
     Object.defineProperty(document, "getElementsByClassName", {
       value: () => [{ scrollTop: 0 }],
       configurable: true
     });
-    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().style).toEqual({});
+    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("scrolled")).toBeFalsy();
   });
 
   it("shows content scroll indicator", () => {
@@ -63,9 +82,8 @@ describe("<DesignerPanelTop />", () => {
       value: () => [{ scrollTop: 100 }],
       configurable: true
     });
-    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().style).toEqual({
-      boxShadow: "0 10px 10px rgba(0, 0, 0, 0.05)",
-    });
+    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("scrolled")).toBeTruthy();
+
   });
 });

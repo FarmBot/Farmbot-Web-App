@@ -13,7 +13,14 @@ const LOG_MESSAGE_LOOKUP: Record<RenderedLog, string> = {
   [RenderedLog.imageCalibrate]: "Calibrating camera",
   [RenderedLog.imageDetect]: "Running weed detector",
   [RenderedLog.imageMeasure]: "Executing Measure Soil Height",
-  [RenderedLog.findHome]: "Finding home",
+  [RenderedLog.findHomeAll]: "Finding home on all axes",
+  [RenderedLog.findHomeX]: "Finding home on the X axis",
+  [RenderedLog.findHomeY]: "Finding home on the Y axis",
+  [RenderedLog.findHomeZ]: "Finding home on the Z axis",
+  [RenderedLog.findLengthAll]: "Finding length of all axes",
+  [RenderedLog.findLengthX]: "Determining length of the X axis",
+  [RenderedLog.findLengthY]: "Determining length of the Y axis",
+  [RenderedLog.findLengthZ]: "Determining length of the Z axis",
 };
 
 const LOG_VISUAL_LOOKUP: Record<string, RenderedLog> = {};
@@ -26,7 +33,14 @@ const ANIMATION_CLASS_LOOKUP: Record<RenderedLog, AnimationClass> = {
   [RenderedLog.imageCalibrate]: AnimationClass.scan,
   [RenderedLog.imageDetect]: AnimationClass.scan,
   [RenderedLog.imageMeasure]: AnimationClass.scan,
-  [RenderedLog.findHome]: AnimationClass.find,
+  [RenderedLog.findHomeAll]: AnimationClass.find,
+  [RenderedLog.findHomeX]: AnimationClass.find,
+  [RenderedLog.findHomeY]: AnimationClass.find,
+  [RenderedLog.findHomeZ]: AnimationClass.find,
+  [RenderedLog.findLengthAll]: AnimationClass.find,
+  [RenderedLog.findLengthX]: AnimationClass.find,
+  [RenderedLog.findLengthY]: AnimationClass.find,
+  [RenderedLog.findLengthZ]: AnimationClass.find,
 };
 
 const ANIMATION_DURATION_LOOKUP =
@@ -37,7 +51,14 @@ const ANIMATION_DURATION_LOOKUP =
       [RenderedLog.imageCalibrate]: slow ? 60 : 15,
       [RenderedLog.imageDetect]: slow ? 60 : 15,
       [RenderedLog.imageMeasure]: slow ? 60 : 15,
-      [RenderedLog.findHome]: 10,
+      [RenderedLog.findHomeAll]: 20,
+      [RenderedLog.findHomeX]: 10,
+      [RenderedLog.findHomeY]: 10,
+      [RenderedLog.findHomeZ]: 10,
+      [RenderedLog.findLengthAll]: 20,
+      [RenderedLog.findLengthX]: 10,
+      [RenderedLog.findLengthY]: 10,
+      [RenderedLog.findLengthZ]: 10,
     };
   };
 
@@ -67,7 +88,14 @@ export const LogVisual = (props: LogVisualProps) => {
     case RenderedLog.imageDetect:
     case RenderedLog.imageMeasure:
       return <ImageVisual {...props} />;
-    case RenderedLog.findHome:
+    case RenderedLog.findHomeAll:
+    case RenderedLog.findHomeX:
+    case RenderedLog.findHomeY:
+    case RenderedLog.findHomeZ:
+    case RenderedLog.findLengthAll:
+    case RenderedLog.findLengthX:
+    case RenderedLog.findLengthY:
+    case RenderedLog.findLengthZ:
       return <MovementVisual {...props} />;
   }
 };

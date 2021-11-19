@@ -10,8 +10,12 @@ import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
 import { edit, save } from "../api/crud";
 import { EditPlantStatusProps } from "./plant_panel";
-import { mean, round } from "lodash";
+import { capitalize, mean, round, startCase } from "lodash";
 import { TimeSettings } from "../interfaces";
+import { Link } from "../link";
+import { Path } from "../internal_urls";
+import { push } from "../history";
+import { Actions } from "../constants";
 
 export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   planned: { label: t("Planned"), value: "planned" },
@@ -139,7 +143,7 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
   const plants = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
-    .map((p: TaggedWeedPointer | TaggedGenericPointer) => p);
+    .map((p: TaggedPlantPointer) => p);
   return <div className={"plant-date-bulk-update"}>
     <p>{t("update start to")}</p>
     <BlurableInput
@@ -151,12 +155,12 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
             date: moment(e.currentTarget.value).format("YYYY-MM-DD"),
             num: plants.length,
           }))
-          && plants.map(point => {
-            props.dispatch(edit(point, {
+          && plants.map(plant => {
+            props.dispatch(edit(plant, {
               planted_at: moment(e.currentTarget.value)
                 .utcOffset(props.timeSettings.utcOffset).toISOString()
             }));
-            props.dispatch(save(point.uuid));
+            props.dispatch(save(plant.uuid));
           });
       }} />
   </div>;
@@ -207,6 +211,51 @@ export const PointColorBulkUpdate = (props: BulkUpdateBaseProps) => {
             props.dispatch(save(point.uuid));
           });
       }} />
+  </div>;
+};
+
+export interface PlantSlugBulkUpdateProps extends BulkUpdateBaseProps {
+  bulkPlantSlug: string | undefined;
+}
+
+/** Update `openfarm_slug` for multiple plants at once. */
+export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
+  const plants = props.allPoints.filter(point =>
+    props.selected.includes(point.uuid) && point.kind === "Point" &&
+    point.body.pointer_type == "Plant")
+    .map((p: TaggedPlantPointer) => p);
+  const slug = props.bulkPlantSlug || plants[0]?.body.openfarm_slug;
+  return <div className={"plant-slug-bulk-update"}>
+    <p>{t("update type to")}</p>
+    <Link
+      title={t("View crop info")}
+      to={Path.cropSearch(slug)}>
+      {startCase(slug)}
+    </Link>
+    <i className={"fa fa-pencil"}
+      onClick={() => {
+        props.dispatch({ type: Actions.SET_SLUG_BULK, payload: slug });
+        push(Path.cropSearch());
+      }} />
+    <button className={"fb-button green"}
+      onClick={() => {
+        if (slug && plants.length > 0 && confirm(
+          t("Change crop type to {{ slug }} for {{ num }} plants?", {
+            slug,
+            num: plants.length,
+          }))) {
+          plants.map(plant => {
+            props.dispatch(edit(plant, {
+              openfarm_slug: slug,
+              name: capitalize(slug).replace(/-/g, " "),
+            }));
+            props.dispatch(save(plant.uuid));
+          });
+          props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
+        }
+      }}>
+      {t("apply")}
+    </button>
   </div>;
 };
 
