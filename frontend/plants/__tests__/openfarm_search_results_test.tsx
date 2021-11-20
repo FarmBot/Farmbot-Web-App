@@ -17,7 +17,8 @@ describe("<OpenFarmResults />", () => {
       {
         crop: {
           slug: "potato",
-          name: "S. tuberosum"
+          name: "S. tuberosum",
+          svg_icon: "icon",
         },
         image: "potato.jpg"
       },
@@ -33,6 +34,7 @@ describe("<OpenFarmResults />", () => {
     plant: undefined,
     dispatch: jest.fn(),
     bulkPlantSlug: undefined,
+    hoveredPlant: { plantUUID: undefined, icon: "" },
   });
 
   it("renders OpenFarmSearchResults", () => {
@@ -71,6 +73,19 @@ describe("<OpenFarmResults />", () => {
       openfarm_slug: "potato",
     });
     expect(save).toHaveBeenCalledWith(p.plant.uuid);
+  });
+
+  it("changes plant type and hover icon", () => {
+    const p = fakeProps();
+    p.plant = fakePlant();
+    p.plant.body.id = 1;
+    p.hoveredPlant = { plantUUID: p.plant.uuid, icon: "old" };
+    const wrapper = mount(<OpenFarmResults {...p} />);
+    wrapper.find("Link").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_PLANT,
+      payload: { plantUUID: p.plant.uuid, icon: "icon" },
+    });
   });
 
   it("sets bulk slug", () => {

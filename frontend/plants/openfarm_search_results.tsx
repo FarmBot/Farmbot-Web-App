@@ -9,12 +9,15 @@ import { ExternalUrl } from "../external_urls";
 import { Path } from "../internal_urls";
 import { edit, save } from "../api/crud";
 import { TaggedPlantPointer } from "farmbot";
+import { setHoveredPlant } from "../farm_designer/map/actions";
+import { HoveredPlantPayl } from "../farm_designer/interfaces";
 
 /** A stripped down version of OFSearchResult */
 interface Result {
   crop: {
     slug: string;
     name: string;
+    svg_icon?: string | undefined;
   };
   image: string;
 }
@@ -25,6 +28,7 @@ export interface SearchResultProps {
   plant: TaggedPlantPointer | undefined;
   dispatch: Function;
   bulkPlantSlug: string | undefined;
+  hoveredPlant: HoveredPlantPayl;
 }
 
 export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
@@ -41,6 +45,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
     const {
       cropSearchResults, cropSearchInProgress, dispatch, plant,
     } = this.props;
+    const { plantUUID } = this.props.hoveredPlant;
     const to = (slug: string) => {
       if (plant) {
         return Path.plants(plant.body.id);
@@ -61,6 +66,9 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
           type: Actions.SET_PLANT_TYPE_CHANGE_ID,
           payload: undefined,
         });
+        if (plant.uuid == plantUUID && crop.svg_icon) {
+          dispatch(setHoveredPlant(plantUUID, crop.svg_icon));
+        }
       }
       if (this.props.bulkPlantSlug) {
         dispatch({

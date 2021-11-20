@@ -43,7 +43,7 @@ jest.mock("../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => jest.fn()),
 }));
 
-jest.mock("../panel/preview", () => ({
+jest.mock("../panel/preview_support", () => ({
   License: () => <div />,
   loadSequenceVersion: jest.fn(),
   SequencePreviewContent: () => <div />,
@@ -94,7 +94,7 @@ import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 import { error } from "../../toast/toast";
 import { API } from "../../api";
-import { loadSequenceVersion } from "../panel/preview";
+import { loadSequenceVersion } from "../panel/preview_support";
 import { act } from "react-dom/test-utils";
 
 describe("<SequenceEditorMiddleActive />", () => {

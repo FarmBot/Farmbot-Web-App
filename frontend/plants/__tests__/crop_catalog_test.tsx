@@ -27,6 +27,7 @@ describe("<CropCatalog />", () => {
     cropSearchInProgress: false,
     plant: undefined,
     bulkPlantSlug: undefined,
+    hoveredPlant: { plantUUID: undefined, icon: "" },
   });
 
   it("renders", () => {
