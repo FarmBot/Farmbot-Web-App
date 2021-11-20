@@ -8,6 +8,7 @@ import {
 } from "../../../__test_support__/fake_sequence_step_data";
 import { Content } from "../../../constants";
 import { TakePhoto } from "farmbot";
+import { Path } from "../../../internal_urls";
 
 describe("<TileTakePhoto/>", () => {
   const fakeProps = (): StepParams<TakePhoto> => ({
@@ -27,7 +28,7 @@ describe("<TileTakePhoto/>", () => {
     const inputs = wrapper.find("input");
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Take a Photo");
-    expect(wrapper.html()).toContain("/app/designer/photos");
+    expect(wrapper.html()).toContain(Path.photos());
     expect(wrapper.text()).toContain("photos panel");
   });
 

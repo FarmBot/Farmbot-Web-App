@@ -1,6 +1,6 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../history", () => ({
-  history: { getCurrentLocation: jest.fn(() => ({ pathname: mockPath })) },
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
@@ -102,7 +102,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders nav titles", () => {
-    mockPath = "/app/designer/plants";
+    mockPath = Path.mock(Path.plants());
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
       .toBeTruthy();
@@ -113,7 +113,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("hides panel", () => {
-    mockPath = "/app/designer";
+    mockPath = Path.mock(Path.designer());
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
       .toBeFalsy();

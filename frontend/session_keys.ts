@@ -4,8 +4,7 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
-  | "clip_image_layer";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -46,7 +45,7 @@ export const BooleanSetting: BooleanSettings = {
   xy_swap: "xy_swap",
   confirm_plant_deletion: "confirm_plant_deletion",
   crop_images: "crop_images",
-  clip_image_layer: "clip_image_layer" as WebAppBooleanConfigKey,
+  clip_image_layer: "clip_image_layer",
   highlight_modified_settings: "highlight_modified_settings",
 
   /** Sequence settings */
@@ -95,6 +94,7 @@ export const NumericSetting: NumericSettings = {
   /** Other */
   id: "id",
   device_id: "device_id",
+  beep_verbosity: "beep_verbosity",
 };
 
 export const StringSetting: StringSettings = {

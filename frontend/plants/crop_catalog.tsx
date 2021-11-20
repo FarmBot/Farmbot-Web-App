@@ -16,19 +16,26 @@ import {
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { SearchField } from "../ui/search_field";
-
-export const cropSearchUrl = (slugPlus?: string) =>
-  `/app/designer/plants/crop_search/${slugPlus || ""}`;
+import { Path } from "../internal_urls";
+import { maybeFindPlantById } from "../resources/selectors_by_id";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
-  const { cropSearchQuery, cropSearchInProgress, cropSearchResults
+  const {
+    cropSearchQuery, cropSearchInProgress, cropSearchResults, plantTypeChangeId,
+    bulkPlantSlug, hoveredPlant,
   } = props.resources.consumers.farm_designer;
+  const plant = plantTypeChangeId
+    ? maybeFindPlantById(props.resources.index, plantTypeChangeId)
+    : undefined;
   return {
     openfarmSearch: OFSearch,
     cropSearchQuery,
     dispatch: props.dispatch,
     cropSearchResults,
     cropSearchInProgress,
+    plant,
+    bulkPlantSlug,
+    hoveredPlant,
   };
 }
 
@@ -64,13 +71,18 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
     this.props.openfarmSearch(this.cropSearchQuery)(this.props.dispatch);
   }
 
+  componentWillUnmount = () => this.props.dispatch({
+    type: Actions.SET_PLANT_TYPE_CHANGE_ID,
+    payload: undefined,
+  });
+
   render() {
     return <DesignerPanel panelName={"crop-catalog"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"crop-catalog"}
         panel={Panel.Plants}
         title={t("Choose a crop")}
-        backTo={"/app/designer/plants"} />
+        backTo={Path.plants()} />
       <DesignerPanelTop panel={Panel.Plants}>
         <SearchField
           searchTerm={this.cropSearchQuery}
@@ -94,7 +106,11 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
             colorScheme={"plants"}>
             <OpenFarmResults
               cropSearchResults={this.props.cropSearchResults}
-              cropSearchInProgress={this.props.cropSearchInProgress} />
+              cropSearchInProgress={this.props.cropSearchInProgress}
+              plant={this.props.plant}
+              hoveredPlant={this.props.hoveredPlant}
+              bulkPlantSlug={this.props.bulkPlantSlug}
+              dispatch={this.props.dispatch} />
           </EmptyStateWrapper>
         </div>
       </DesignerPanelContent>

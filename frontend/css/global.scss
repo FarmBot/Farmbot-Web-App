@@ -157,15 +157,15 @@ fieldset {
   i {
     display: block;
     position: absolute;
-    top: 0.1rem;
-    left: 0.1rem;
+    top: 2.5px;
+    left: 2.5px;
     color: $white;
-    font-size: 14px;
+    font-size: 11px;
     &.fa-times {
-      left: 0.25rem;
+      left: 0.35rem;
     }
     &.fa-question {
-      left: 0.35rem;
+      left: 0.45rem;
     }
   }
 }
@@ -2261,6 +2261,14 @@ textarea:focus {
     &.section {
       position: absolute !important;
       top: 0.1rem;
+    }
+  }
+  .activity-beep-setting {
+    margin-left: 0;
+    margin-right: 1.5rem !important;
+    .bp3-slider {
+      width: 0;
+      margin-left: 1rem;
     }
   }
 }

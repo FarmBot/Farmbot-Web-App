@@ -13,6 +13,7 @@ import {
 import {
   fakeFarmwareData,
 } from "../../../__test_support__/fake_sequence_step_data";
+import { Path } from "../../../internal_urls";
 
 describe("<DesignerSequenceCommands />", () => {
   const fakeProps = (): StepButtonProps => ({
@@ -36,7 +37,7 @@ describe("<DesignerSequenceCommands />", () => {
     p.current = undefined;
     const wrapper = shallow(<DesignerSequenceCommands {...p} />);
     expect(wrapper.find(DesignerPanelHeader).props().backTo)
-      .toEqual("/app/designer/sequences/");
+      .toEqual(Path.sequences());
   });
 });
 

@@ -22,11 +22,6 @@ const mockDevice = {
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 jest.mock("../../messages/actions", () => ({
   seedAccount: jest.fn(x => () => x()),
 }));
@@ -90,6 +85,7 @@ import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { tourPath } from "../../help/tours";
+import { Path } from "../../internal_urls";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -376,7 +372,7 @@ describe("<ConfiguratorDocs />", () => {
   it("follows link", () => {
     const wrapper = mount(<ConfiguratorDocs />);
     wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/help?page=farmbot-os");
+    expect(push).toHaveBeenCalledWith(Path.help("farmbot-os"));
   });
 });
 

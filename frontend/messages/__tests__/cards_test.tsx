@@ -20,8 +20,6 @@ jest.mock("../actions", () => ({
 
 jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
-jest.mock("../../history", () => ({ push: jest.fn() }));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({
@@ -29,7 +27,7 @@ jest.mock("../../redux/store", () => ({
 }));
 
 let mockShouldDisplay = false;
-jest.mock("../../farmware/state_to_props", () => ({
+jest.mock("../../devices/should_display", () => ({
   shouldDisplayFeature: () => mockShouldDisplay,
 }));
 
@@ -45,6 +43,7 @@ import { Session } from "../../session";
 import { push } from "../../history";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
+import { Path } from "../../internal_urls";
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
@@ -142,7 +141,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("wizard");
     wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/setup");
+    expect(push).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.text().toLowerCase()).toContain("get started");
   });
 
@@ -162,7 +161,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("tour");
     wrapper.find(".link-button").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/tours");
+    expect(push).toHaveBeenCalledWith(Path.tours());
   });
 
   it("renders welcome card", () => {

@@ -1,24 +1,27 @@
 import React from "react";
 import moment from "moment";
 import { t } from "../../i18next_wrapper";
-import { FBSelect, Row, Col } from "../../ui";
+import { FBSelect, Row, Col, DropDownItem, Help } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { ColWidth } from "./farmbot_os_settings";
-import { DeviceSetting } from "../../constants";
+import { Content, DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "./interfaces";
 import { isNumber, range } from "lodash";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
+import { updateConfig } from "../../devices/actions";
 
 const hourToUtcHour =
   (hour: number | undefined, offset: number): number | undefined =>
     !isNumber(hour) ? undefined : (hour + offset) % 24;
 
-export const ASAP = () => t("As soon as possible");
+export const DDI_ASAP = (): DropDownItem =>
+  ({ label: t("As soon as possible"), value: "", isNull: true });
+const DDI_NEVER = (): DropDownItem => ({ label: t("Never"), value: "never" });
 
 const formatHour = (hour: number | undefined, hour24: boolean) =>
   !isNumber(hour)
-    ? ASAP()
+    ? DDI_ASAP().label
     : moment().startOf("day")
       .add(hour, "hours")
       .format(hour24 ? "H:mm" : "h:mm A");
@@ -28,11 +31,22 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
   const { utcOffset, hour24 } = timeSettings;
   const localHour = hourToUtcHour(device.body.ota_hour_utc, -utcOffset) ??
     device.body.ota_hour;
-  return <FBSelect key={formatHour(localHour, hour24)}
-    selectedItem={!isNumber(localHour)
+  const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
+  const selected = () => {
+    if (!osAutoUpdate.value) { return DDI_NEVER(); }
+    return !isNumber(localHour)
       ? undefined
-      : { label: formatHour(localHour, hour24), value: localHour }}
+      : { label: formatHour(localHour, hour24), value: localHour };
+  };
+  return <FBSelect key={formatHour(localHour, hour24) + osAutoUpdate.value}
+    selectedItem={selected()}
     onChange={ddi => {
+      if (ddi?.value == DDI_NEVER().value) {
+        props.dispatch(updateConfig({ os_auto_update: false }));
+        return;
+      }
+      !osAutoUpdate.value &&
+        props.dispatch(updateConfig({ os_auto_update: true }));
       const newLocalHour = ddi ? parseInt("" + ddi.value) : undefined;
       dispatch(edit(device, {
         ota_hour: newLocalHour,
@@ -40,29 +54,31 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
       }));
       dispatch(save(device.uuid));
     }}
-    list={range(24)
-      .map(hour => ({ label: formatHour(hour, hour24), value: hour }))}
-    allowEmpty={true}
-    customNullLabel={ASAP()}
+    list={[DDI_ASAP()].concat(range(24)
+      .map((hour: number): DropDownItem =>
+        ({ label: formatHour(hour, hour24), value: hour }))
+      .concat(DDI_NEVER()))}
+    customNullLabel={DDI_ASAP().label}
     extraClass={[
-      props.disabled ? "disabled" : "",
+      !osAutoUpdate.consistent ? "dim" : "",
       getModifiedClassNameSpecifyDefault(localHour, 3),
+      getModifiedClassNameSpecifyDefault(osAutoUpdate.value, true),
     ].join(" ")} />;
 };
 
 export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
-  const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
-  return <Highlight settingName={DeviceSetting.osUpdateTime}>
+  return <Highlight settingName={DeviceSetting.osAutoUpdate}>
     <Row>
       <Col xs={5}>
         <label>
-          {t(DeviceSetting.osUpdateTime)}
+          {t(DeviceSetting.osAutoUpdate)}
         </label>
+        <Help text={Content.OS_AUTO_UPDATE} />
       </Col>
       <Col xs={ColWidth.description}>
         <OtaTimeSelector
+          sourceFbosConfig={props.sourceFbosConfig}
           timeSettings={props.timeSettings}
-          disabled={!osAutoUpdate.value}
           dispatch={props.dispatch}
           device={props.device} />
       </Col>

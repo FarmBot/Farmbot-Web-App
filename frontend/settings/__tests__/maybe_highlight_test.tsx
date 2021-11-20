@@ -9,8 +9,6 @@ jest.mock("../../redux/store", () => ({
   store: { getState: () => mockState },
 }));
 
-jest.mock("../../history", () => ({ push: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -20,6 +18,7 @@ import {
 import { DeviceSetting } from "../../constants";
 import { toggleControlPanel, bulkToggleControlPanel } from "../toggle_section";
 import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("<Highlight />", () => {
   const fakeProps = (): HighlightProps => ({
@@ -125,7 +124,7 @@ describe("<Highlight />", () => {
   it("adds anchor link to url bar", () => {
     const wrapper = mount(<Highlight {...fakeProps()} />);
     wrapper.find("i").last().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/settings?highlight=motors");
+    expect(push).toHaveBeenCalledWith(Path.settings("motors"));
   });
 
   it("doesn't show anchor for non-setting sections", () => {
@@ -208,6 +207,6 @@ describe("goToFbosSettings()", () => {
   it("renders correct path", () => {
     goToFbosSettings();
     expect(push).toHaveBeenCalledWith(
-      "/app/designer/settings?highlight=farmbot_os");
+      Path.settings("farmbot_os"));
   });
 });

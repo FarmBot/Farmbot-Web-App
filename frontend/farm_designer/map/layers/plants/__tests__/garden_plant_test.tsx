@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { GardenPlant } from "../garden_plant";
 import { shallow } from "enzyme";
 import { GardenPlantProps } from "../../../interfaces";
@@ -8,8 +8,9 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpecialStatus } from "farmbot";
+import { cachedCrop } from "../../../../../open_farm/cached_crop";
 
-describe("<GardenPlant/>", () => {
+describe("<GardenPlant />", () => {
   function fakeProps(): GardenPlantProps {
     return {
       mapTransformProps: fakeMapTransformProps(),
@@ -120,5 +121,16 @@ describe("<GardenPlant/>", () => {
     p.plant = plant;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
+  });
+
+  it("fetches icon", () => {
+    const p = fakeProps();
+    p.plant.body.openfarm_slug = "slug";
+    const np = fakeProps();
+    np.plant.body.openfarm_slug = "new-slug";
+    const wrapper = shallow(<GardenPlant {...p} />);
+    wrapper.setProps(np);
+    expect(cachedCrop).toHaveBeenCalledWith("slug");
+    expect(cachedCrop).toHaveBeenCalledWith("new-slug");
   });
 });

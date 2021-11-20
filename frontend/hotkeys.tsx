@@ -1,7 +1,7 @@
 import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
-import { push, getPathArray } from "./history";
+import { push } from "./history";
 import { HotkeyConfig, useHotkeys } from "@blueprintjs/core";
 import { unselectPlant } from "./farm_designer/map/actions";
 import { getPanelPath, PANEL_BY_SLUG } from "./farm_designer/panel_header";
@@ -11,7 +11,7 @@ import {
 import { t } from "./i18next_wrapper";
 import { store } from "./redux/store";
 import { save } from "./api/crud";
-import { cropSearchUrl } from "./plants/crop_catalog";
+import { Path } from "./internal_urls";
 
 type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
@@ -97,16 +97,16 @@ export const hotkeysWithActions = (dispatch: Function, slug: string) => {
     },
     [HotKey.addPlant]: {
       ...hotkeysBase[HotKey.addPlant],
-      onKeyDown: () => push(cropSearchUrl()),
+      onKeyDown: () => push(Path.cropSearch()),
     },
     [HotKey.addEvent]: {
       ...hotkeysBase[HotKey.addEvent],
-      onKeyDown: () => push("/app/designer/events/add"),
+      onKeyDown: () => push(Path.farmEvents("add")),
     },
     [HotKey.backToPlantOverview]: {
       ...hotkeysBase[HotKey.backToPlantOverview],
       onKeyDown: () => {
-        push("/app/designer/plants");
+        push(Path.plants());
         dispatch(unselectPlant(dispatch));
       },
     },
@@ -120,7 +120,7 @@ export const openHotkeyHelpOverlay = () =>
     .map(hotkey => ({ ...hotkey, global: true })));
 
 export const HotKeys = (props: HotKeysProps) => {
-  const slug = getPathArray()[3];
+  const slug = Path.getSlug(Path.designer()) || "plants";
   const hotkeys = React.useMemo(() =>
     Object.values(hotkeysWithActions(props.dispatch, slug))
       .map(hotkey => ({ ...hotkey, global: true })), [props.dispatch, slug]);

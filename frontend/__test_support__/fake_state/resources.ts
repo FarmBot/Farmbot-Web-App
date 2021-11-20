@@ -34,10 +34,6 @@ import {
   ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
-import {
-  NumberConfigKey as NumberFirmwareConfigKey,
-} from "farmbot/dist/resources/configs/firmware";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -305,7 +301,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     confirm_step_deletion: false,
     confirm_sequence_deletion: true,
     crop_images: false,
-    ["clip_image_layer" as keyof WebAppConfig]: false,
+    clip_image_layer: false,
     disable_animations: false,
     disable_i18n: false,
     display_map_missed_steps: false,
@@ -344,6 +340,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     expand_step_options: false,
     hide_sensors: false,
     enable_browser_speak: false,
+    beep_verbosity: 0,
     photo_filter_begin: "2018-01-11T20:20:38.362Z",
     photo_filter_end: "2018-01-22T15:32:41.970Z",
     discard_unsaved: false,
@@ -487,8 +484,8 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_active_state: 1,
     pin_guard_5_pin_nr: 0,
     pin_guard_5_time_out: 60,
-    ["pin_report_1_pin_nr" as NumberFirmwareConfigKey]: 0,
-    ["pin_report_2_pin_nr" as NumberFirmwareConfigKey]: 0,
+    pin_report_1_pin_nr: 0,
+    pin_report_2_pin_nr: 0,
   });
 }
 

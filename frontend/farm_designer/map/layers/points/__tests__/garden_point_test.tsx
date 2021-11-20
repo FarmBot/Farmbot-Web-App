@@ -1,6 +1,8 @@
+import { Path } from "../../../../../internal_urls";
+const mockPath = Path.mock(Path.points());
 jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: jest.fn(),
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import React from "react";
@@ -11,7 +13,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
   fakeCameraCalibrationData, fakeCameraCalibrationDataFull,
@@ -84,8 +86,7 @@ describe("<GardenPoint/>", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      `/app/designer/points/${p.point.body.id}`);
+    expect(push).toHaveBeenCalledWith(Path.points(p.point.body.id));
   });
 
   it("shows camera view area", () => {

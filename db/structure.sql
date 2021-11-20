@@ -1902,7 +1902,8 @@ CREATE TABLE public.web_app_configs (
     show_advanced_settings boolean DEFAULT false,
     show_soil_interpolation_map boolean DEFAULT false,
     show_moisture_interpolation_map boolean DEFAULT false,
-    clip_image_layer boolean DEFAULT true
+    clip_image_layer boolean DEFAULT true,
+    beep_verbosity integer DEFAULT 0
 );
 
 
@@ -3748,6 +3749,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210929220719'),
 ('20211007164834'),
 ('20211030193113'),
-('20211104173453');
+('20211104173453'),
+('20211117212015');
 
 

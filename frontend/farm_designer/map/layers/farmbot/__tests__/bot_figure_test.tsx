@@ -2,7 +2,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
-import { Color } from "../../../../../ui/index";
+import { Color } from "../../../../../ui";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
@@ -254,5 +254,12 @@ describe("<BotFigure/>", () => {
     const view = wrapper.find("#camera-view-area-wrapper");
     const circle = view.find("#cropped-camera-view-area");
     expect(circle.length).toEqual(0);
+  });
+
+  it("renders custom color", () => {
+    const p = fakeProps();
+    p.color = Color.blue;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    expect(wrapper.find("#gantry").props().fill).toEqual(Color.blue);
   });
 });

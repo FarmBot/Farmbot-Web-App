@@ -1,5 +1,6 @@
 import { ExternalUrl } from "../external_urls";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
+import { Path } from "../internal_urls";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
  * rename / move links in the future. */
@@ -30,11 +31,11 @@ export const devDocLink = (slug?: DevDocSlug) =>
   `${ExternalUrl.developerDocs}/${slug || ""}`;
 
 const genericDocLinkClick = <T>(slug: T, page: "help" | "developer") => () => {
-  const path = `/app/designer/${page}?page=${slug}`;
-  if (getPathArray()[3] == page) {
-    location.assign(window.location.origin + path);
+  const path = page == "help" ? Path.help : Path.developer;
+  if (Path.getSlug(Path.designer()) == page) {
+    location.assign(window.location.origin + Path.withApp(path("" + slug)));
   } else {
-    push(path);
+    push(path("" + slug));
   }
 };
 

@@ -16,7 +16,7 @@ import {
   selectAllWizardStepResults,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
-import { ControlsPopup, showControlsPopup } from "./controls_popup";
+import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
 import { validBotLocationData, validFwConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
@@ -42,6 +42,7 @@ import { TourStepContainer } from "./help/tours";
 import { ToastMessages } from "./toast/interfaces";
 import { Toasts } from "./toast/fb_toast";
 import Bowser from "bowser";
+import { Path } from "./internal_urls";
 
 export interface AppProps {
   dispatch: Function;
@@ -160,7 +161,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         wizardStepResults={this.props.wizardStepResults}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
-      {showControlsPopup() &&
+      {!Path.startsWith(Path.controls()) &&
         <ControlsPopup
           dispatch={dispatch}
           isOpen={this.props.controlsPopupOpen}

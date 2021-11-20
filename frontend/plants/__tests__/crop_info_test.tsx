@@ -1,7 +1,7 @@
 let mockPath = "";
 jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
-  history: { push: jest.fn() }
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn(),
 }));
 
 jest.mock("../../api/crud", () => ({ initSave: jest.fn() }));
@@ -19,7 +19,7 @@ import {
 import { mount } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
 import { initSave } from "../../api/crud";
-import { history } from "../../history";
+import { push } from "../../history";
 import {
   fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
@@ -27,8 +27,8 @@ import { unselectPlant } from "../../farm_designer/map/actions";
 import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
-import { cropSearchUrl } from "../crop_catalog";
 import { clickButton } from "../../__test_support__/helpers";
+import { Path } from "../../internal_urls";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -48,7 +48,7 @@ describe("<CropInfo />", () => {
   };
 
   it("renders", () => {
-    mockPath = cropSearchUrl("mint");
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const wrapper = mount(<CropInfo {...fakeProps()} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Drag and drop into map");
@@ -58,23 +58,23 @@ describe("<CropInfo />", () => {
   });
 
   it("returns to crop search", () => {
-    mockPath = cropSearchUrl("mint");
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
     wrapper.find(".back-arrow").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
     });
   });
 
   it("doesn't change search query", () => {
-    mockPath = cropSearchUrl("mint");
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.cropSearchQuery = "mint";
     const wrapper = mount(<CropInfo {...p} />);
     wrapper.find(".back-arrow").simulate("click");
-    expect(history.push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
     expect(p.dispatch).not.toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
     });
@@ -135,7 +135,7 @@ describe("<CropInfo />", () => {
 
 describe("searchForCurrentCrop()", () => {
   it("searches", () => {
-    mockPath = cropSearchUrl("mint");
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const dispatch = jest.fn();
     const fakeOFSearch = jest.fn((_) => jest.fn());
     searchForCurrentCrop(fakeOFSearch)(dispatch);
@@ -146,7 +146,7 @@ describe("searchForCurrentCrop()", () => {
 
 describe("getCropHeaderProps()", () => {
   it("handles missing crop", () => {
-    mockPath = cropSearchUrl();
+    mockPath = Path.mock(Path.cropSearch());
     const result = getCropHeaderProps({ cropSearchResults: [] });
     expect(result.result.crop.name).toEqual("");
   });

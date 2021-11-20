@@ -5,7 +5,7 @@ jest.mock("../../history", () => ({
 }));
 
 let mockShouldDisplay = false;
-jest.mock("../../farmware/state_to_props", () => ({
+jest.mock("../../devices/should_display", () => ({
   shouldDisplayFeature: () => mockShouldDisplay,
 }));
 
@@ -18,6 +18,7 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
 import { FarmwareName } from "../step_tiles/tile_execute_script";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { Path } from "../../internal_urls";
 
 describe("<StepButtonCluster />", () => {
   const COMMANDS = ["move", "control peripheral", "read sensor",
@@ -68,25 +69,25 @@ describe("<StepButtonCluster />", () => {
   });
 
   it("navigates to sequence", () => {
-    mockPath = "/app/designer/sequences/commands";
+    mockPath = Path.mock(Path.designerSequences("commands"));
     const p = fakeProps();
     p.current = fakeSequence();
     p.current.body.name = "sequence 1";
     const wrapper = mount(<StepButtonCluster {...p} />);
     wrapper.find(".step-button").last().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/sequences/sequence_1");
+    expect(push).toHaveBeenCalledWith(Path.sequences("sequence_1"));
   });
 
   it("navigates back", () => {
-    mockPath = "/app/designer/sequences/commands";
+    mockPath = Path.mock(Path.designerSequences("commands"));
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
     wrapper.find(".step-button").last().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/sequences/");
+    expect(push).toHaveBeenCalledWith(Path.sequences());
   });
 
   it("doesn't navigate", () => {
-    mockPath = "/app/sequences/1";
+    mockPath = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
     wrapper.find(".step-button").last().simulate("click");
@@ -94,7 +95,7 @@ describe("<StepButtonCluster />", () => {
   });
 
   it("shows pinned sequences", () => {
-    mockPath = "/app/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const sequence = fakeSequence();
     sequence.body.pinned = true;

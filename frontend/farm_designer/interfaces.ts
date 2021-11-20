@@ -21,6 +21,7 @@ import {
   Vector3,
   TaggedFarmwareEnv,
   TaggedPlantTemplate,
+  TaggedPlantPointer,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -145,6 +146,8 @@ export interface DesignerState {
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
+  plantTypeChangeId: number | undefined;
+  bulkPlantSlug: string | undefined;
   chosenLocation: BotPosition;
   drawnPoint: DrawnPointPayl | undefined;
   drawnWeed: DrawnWeedPayl | undefined;
@@ -287,7 +290,6 @@ export interface GardenMapState {
 export type PlantOptions = Partial<PlantPointer>;
 
 export interface EditPlantInfoProps {
-  push(url: string): void;
   dispatch: Function;
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
   openedSavedGarden: string | undefined;
@@ -317,6 +319,9 @@ export interface CropCatalogProps {
   cropSearchResults: CropLiveSearchResult[];
   openfarmSearch: OpenfarmSearch;
   cropSearchInProgress: boolean;
+  plant: TaggedPlantPointer | undefined;
+  bulkPlantSlug: string | undefined;
+  hoveredPlant: HoveredPlantPayl;
 }
 
 export interface CropInfoProps {

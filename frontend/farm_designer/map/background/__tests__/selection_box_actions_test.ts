@@ -2,8 +2,6 @@ import { Mode } from "../../interfaces";
 let mockMode = Mode.none;
 jest.mock("../../util", () => ({ getMode: () => mockMode }));
 
-jest.mock("../../../../history", () => ({ history: { push: jest.fn() } }));
-
 jest.mock("../../../../point_groups/criteria", () => ({
   editGtLtCriteria: jest.fn(),
 }));
@@ -22,10 +20,11 @@ import {
   MaybeUpdateGroupProps,
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
-import { history } from "../../../../history";
+import { push } from "../../../../history";
 import { editGtLtCriteria } from "../../../../point_groups/criteria";
 import { cloneDeep } from "lodash";
 import { overwriteGroup } from "../../../../point_groups/actions";
+import { Path } from "../../../../internal_urls";
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -118,7 +117,7 @@ describe("resizeBox", () => {
       type: Actions.SELECT_POINT,
       payload: [plant.uuid]
     });
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
+    expect(push).toHaveBeenCalledWith(Path.plants("select"));
   });
 });
 

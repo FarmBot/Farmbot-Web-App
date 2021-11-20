@@ -13,6 +13,7 @@ import { Link } from "../../link";
 import {
   setActiveSequenceByName,
 } from "../../sequences/set_active_sequence_by_name";
+import { Path } from "../../internal_urls";
 
 /** Make room for the regimen header variable form when necessary. */
 const regimenSectionHeight =
@@ -48,7 +49,7 @@ const regimenItemRow = (
       key={`${dayIndex}.${itemIndex}`}>
       <span className="regimen-event-title">
         {row.sequenceName}
-        <Link to={`/app/designer/sequences/${urlFriendly(row.sequenceName)}`}
+        <Link to={Path.sequences(urlFriendly(row.sequenceName))}
           onClick={setActiveSequenceByName}>
           <i className="fa fa-external-link" />
         </Link>

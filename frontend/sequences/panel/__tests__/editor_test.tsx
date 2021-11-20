@@ -2,11 +2,6 @@ jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
   setActiveSequenceByName: jest.fn()
 }));
 
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -27,6 +22,7 @@ import {
   setActiveSequenceByName,
 } from "../../set_active_sequence_by_name";
 import { push } from "../../../history";
+import { Path } from "../../../internal_urls";
 
 describe("<DesignerSequenceEditor />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -64,7 +60,7 @@ describe("<DesignerSequenceEditor />", () => {
     const p = fakeProps();
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     wrapper.find("a").first().simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/sequences/fake");
+    expect(push).toHaveBeenCalledWith(Path.sequencePage("fake"));
   });
 });
 

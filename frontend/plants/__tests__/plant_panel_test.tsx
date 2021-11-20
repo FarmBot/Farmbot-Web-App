@@ -1,5 +1,3 @@
-jest.mock("../../history", () => ({ push: jest.fn() }));
-
 jest.mock("../../ui/help", () => ({
   Help: ({ text }: { text: string }) => <p>{text}</p>,
 }));
@@ -18,9 +16,10 @@ import { clickButton } from "../../__test_support__/helpers";
 import { push } from "../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { locationUrl } from "../../farm_designer/move_to";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
+import { Path } from "../../internal_urls";
+import { Actions } from "../../constants";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -91,13 +90,24 @@ describe("<PlantPanel/>", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 3, "Delete multiple");
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/select");
+    expect(push).toHaveBeenCalledWith(Path.plants("select"));
   });
 
   it("navigates to 'move to' mode", () => {
     const wrapper = mount(<PlantPanel {...fakeProps()} />);
     clickButton(wrapper, 0, "Move FarmBot to this plant");
-    expect(push).toHaveBeenCalledWith(locationUrl({ x: 12, y: 34, z: 0 }));
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 12, y: 34, z: 0 }));
+  });
+
+  it("edits plant type", () => {
+    const p = fakeProps();
+    p.info.id = 1;
+    const wrapper = mount(<PlantPanel {...p} />);
+    wrapper.find(".fa-pencil").simulate("click");
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
+    });
   });
 });
 

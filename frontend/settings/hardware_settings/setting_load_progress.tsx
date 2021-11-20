@@ -5,7 +5,7 @@ import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../devices/should_display";
 
 export interface SettingLoadProgressProps {
   botOnline: boolean;
@@ -41,8 +41,8 @@ const T_KEYS: (keyof FirmwareConfig)[] = [
 ];
 
 const REPORT_KEYS: (keyof FirmwareConfig)[] = [
-  "pin_report_1_pin_nr" as keyof FirmwareConfig,
-  "pin_report_2_pin_nr" as keyof FirmwareConfig,
+  "pin_report_1_pin_nr",
+  "pin_report_2_pin_nr",
 ];
 
 /** Track firmware configuration adoption by FarmBot OS. */

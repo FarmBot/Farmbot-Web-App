@@ -9,6 +9,7 @@ import {
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import { Link } from "../link";
+import { Path } from "../internal_urls";
 
 export class RawMessagesPanel
   extends React.Component<MessagesProps, {}> {
@@ -26,7 +27,7 @@ export class RawMessagesPanel
           {this.props.alerts.length > 0
             ? t("No more messages.")
             : t("No messages.")}
-          &nbsp;<Link to="/app/logs">{t("View Logs")}</Link>
+          &nbsp;<Link to={Path.logs()}>{t("View Logs")}</Link>
         </div>
       </DesignerPanelContent>
     </DesignerPanel>;

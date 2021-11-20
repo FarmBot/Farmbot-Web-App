@@ -37,6 +37,7 @@ import { createGroup } from "../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { pointGroupSubset } from "../plants/select_plants";
+import { Path } from "../internal_urls";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -76,7 +77,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
     <div className="tool-slots">
       <div className="tool-slots-header">
         <label>{this.strings.toolSlots}</label>
-        <Link to={"/app/designer/tool-slots/add"}>
+        <Link to={Path.toolSlots("add")}>
           <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
             <i className="fa fa-plus" title={this.strings.addSlot} />
           </div>
@@ -99,7 +100,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
     <div className="tools">
       <div className="tools-header">
         <label>{this.strings.tools}</label>
-        <Link to={"/app/designer/tools/add"}>
+        <Link to={Path.tools("add")}>
           <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]} add-tool-btn`}>
             <i className="fa fa-plus" title={this.strings.titleText} />
           </div>
@@ -140,7 +141,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   toggleOpen = (category: keyof ToolsState) => () =>
     this.setState({ ...this.state, [category]: !this.state[category] });
 
-  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
     const panelName = "tools";
@@ -153,7 +154,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Tools}
-        linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
+        linkTo={!hasTools ? Path.tools("add") : undefined}
         title={!hasTools ? this.strings.titleText : undefined}>
         <SearchField searchTerm={this.state.searchTerm}
           placeholder={this.strings.placeholder}
@@ -209,7 +210,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         mapPointClickAction(props.dispatch, props.toolSlot.uuid)();
         props.dispatch(setToolHover(undefined));
       } else {
-        push(`/app/designer/tool-slots/${id}`);
+        push(Path.toolSlots(id));
       }
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
@@ -253,7 +254,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
 const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
   return <div className={"tool-search-item"}
-    onClick={() => push(`/app/designer/tools/${props.toolId}`)}>
+    onClick={() => push(Path.tools(props.toolId))}>
     <Row>
       <Col xs={2} className={"tool-search-item-icon"}>
         <ToolSVG toolName={props.toolName} />

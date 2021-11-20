@@ -1,6 +1,7 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
+import { FilePath } from "../internal_urls";
 
 export enum EmptyStateGraphic {
   plants = "plants",
@@ -38,7 +39,7 @@ export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
     : <div className={`empty-state ${props.colorScheme || ""}`}>
       <img
         className="empty-state-graphic"
-        src={`/app-resources/img/empty_state/${props.graphic}.png`} />
+        src={FilePath.emptyState(props.graphic)} />
       {props.title &&
         <h5>{t(props.title)}</h5>}
       {props.textElement || <div className={"no-empty-state-text"} />}

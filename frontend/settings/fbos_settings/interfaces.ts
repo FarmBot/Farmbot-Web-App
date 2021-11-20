@@ -40,10 +40,10 @@ export interface AutoUpdateRowProps {
 }
 
 export interface OtaTimeSelectorProps {
-  disabled: boolean;
   timeSettings: TimeSettings;
   device: TaggedDevice;
   dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
 }
 
 export interface OtaTimeSelectorRowProps {

@@ -6,12 +6,13 @@ import { selectRegimen } from "./actions";
 const setRegimen = (uuid: string) => store.dispatch(selectRegimen(uuid));
 
 export function setActiveRegimenByName() {
-  if (lastUrlChunk() == "regimens") {
+  const chunk = lastUrlChunk();
+  if (!chunk || chunk == "regimens") {
     return;
   }
 
   selectAllRegimens(store.getState().resources.index).map(reg => {
     const regimenName = urlFriendly(reg.body.name);
-    (lastUrlChunk() === regimenName) && setRegimen(reg.uuid);
+    (chunk === regimenName) && setRegimen(reg.uuid);
   });
 }

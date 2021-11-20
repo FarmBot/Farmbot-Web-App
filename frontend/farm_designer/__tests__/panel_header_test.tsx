@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
@@ -36,12 +37,12 @@ const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
 
 describe("<DesignerNavTabs />", () => {
   it.each<[string, string, string]>([
-    ["map", "/app/designer", "gray"],
-    ["plants", "/app/designer/plants", "green"],
-    ["plants", "/app/designer/gardens/templates/1", "green"],
-    ["tools", "/app/designer/tool-slots", "gray"],
+    ["map", Path.designer(), "gray"],
+    ["plants", Path.plants(), "green"],
+    ["plants", Path.plantTemplates(1), "green"],
+    ["tools", Path.toolSlots(), "gray"],
   ])("shows active %s icon", (slug, path, color) => {
-    mockPath = path;
+    mockPath = Path.mock(path);
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);
     expectColor(wrapper, color);
@@ -49,19 +50,19 @@ describe("<DesignerNavTabs />", () => {
   });
 
   it("shows inactive icons for sequences page", () => {
-    mockPath = "/app/sequences";
+    mockPath = Path.mock(Path.sequencePage());
     const wrapper = mount(<DesignerNavTabs />);
     expect(wrapper.find(".active").length).toEqual(0);
   });
 
   it("shows inactive icons for logs page", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<DesignerNavTabs />);
     expect(wrapper.find(".active").length).toEqual(0);
   });
 
   it("shows active zones icon", () => {
-    mockPath = "/app/designer/zones";
+    mockPath = Path.mock(Path.zones());
     mockDev = true;
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);

@@ -12,6 +12,7 @@ import {
 import { overwrite, save, destroy } from "../../api/crud";
 import { CopyButton } from "./copy_button";
 import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 export const RegimenColorPicker = ({ regimen, dispatch }: RegimenProps) =>
   <ColorPicker
@@ -38,7 +39,7 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
     <i className={"fa fa-trash"}
       title={t("delete regimen")}
       onClick={() => dispatch(destroy(regimen.uuid))
-        .then(() => push("/app/designer/regimens/"))} />
+        .then(() => push(Path.regimens()))} />
   </div>;
 };
 
@@ -46,7 +47,7 @@ export const OpenSchedulerButton = () =>
   <div className={"open-bulk-scheduler-btn-wrapper"}>
     <button className={"fb-button gray"}
       title={t("open scheduler panel")}
-      onClick={() => push("/app/designer/regimens/scheduler")}>
+      onClick={() => push(Path.regimens("scheduler"))}>
       {t("Schedule item")}
     </button>
   </div>;

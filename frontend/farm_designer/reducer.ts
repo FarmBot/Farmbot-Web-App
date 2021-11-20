@@ -12,8 +12,9 @@ import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
 import { getUrlQuery } from "../util";
+import { Path } from "../internal_urls";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -30,6 +31,8 @@ export const initialState: DesignerState = {
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
+  plantTypeChangeId: undefined,
+  bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
   drawnWeed: undefined,
@@ -70,6 +73,14 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.OF_SEARCH_RESULTS_NO, (s) => {
     s.cropSearchInProgress = false;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_PLANT_TYPE_CHANGE_ID, (s, { payload }) => {
+    s.plantTypeChangeId = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_SLUG_BULK, (s, { payload }) => {
+    s.bulkPlantSlug = payload;
     return s;
   })
   .add<UUID[] | undefined>(Actions.SELECT_POINT, (s, { payload }) => {
@@ -135,10 +146,11 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
     s.chosenLocation = payload;
-    !isUndefined(payload.x) && getPathArray()[3] === "location" &&
+    !isUndefined(payload.x) &&
+      Path.getSlug(Path.designer()) === "location" &&
       parseFloat("" + getUrlQuery("x")) != payload.x &&
       parseFloat("" + getUrlQuery("y")) != payload.y &&
-      push(`/app/designer/location?x=${payload.x}?y=${payload.y}`);
+      push(Path.location({ x: payload.x, y: payload.y }));
     return s;
   })
   .add<string | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {

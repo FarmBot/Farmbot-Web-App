@@ -24,13 +24,11 @@ import { setHoveredPlant } from "../../farm_designer/map/actions";
 import { cloneDeep } from "lodash";
 import { imgEvent } from "../../__test_support__/fake_html_events";
 import { error } from "../../toast/toast";
-import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
-import {
-  DEFAULT_WEED_ICON,
-} from "../../farm_designer/map/layers/weeds/garden_weed";
+import { svgToUrl } from "../../open_farm/icons";
 import { overwriteGroup } from "../actions";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
+import { FilePath } from "../../internal_urls";
 
 describe("<PointGroupItem/>", () => {
   const fakeProps = (): PointGroupItemProps => ({
@@ -86,7 +84,7 @@ describe("<PointGroupItem/>", () => {
     const p = fakeProps();
     p.point = fakePlant();
     const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(DEFAULT_ICON);
+    expect(wrapper.find("img").props().src).toEqual(FilePath.DEFAULT_ICON);
   });
 
   it("displays point icon", () => {
@@ -102,7 +100,8 @@ describe("<PointGroupItem/>", () => {
     p.point = fakeWeed();
     p.point.body.meta.color = undefined;
     const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").first().props().src).toEqual(DEFAULT_WEED_ICON);
+    expect(wrapper.find("img").first().props().src)
+      .toEqual(FilePath.DEFAULT_WEED_ICON);
     expect(wrapper.find("img").last().props().src).toEqual(
       svgToUrl(genericWeedIcon(undefined)));
     expect(wrapper.find(".slot-icon").length).toEqual(0);

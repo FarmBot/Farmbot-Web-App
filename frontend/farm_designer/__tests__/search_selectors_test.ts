@@ -1,15 +1,15 @@
 import { findBySlug } from "../search_selectors";
-import { DEFAULT_ICON } from "../../open_farm/icons";
 import {
   fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
+import { FilePath } from "../../internal_urls";
 
 describe("findBySlug()", () => {
   it("returns crop default result", () => {
     const result = findBySlug([fakeCropLiveSearchResult()], "some-crop");
     expect(result).toEqual({
       crop: expect.objectContaining({ name: "Some Crop" }),
-      image: DEFAULT_ICON
+      image: FilePath.DEFAULT_ICON
     });
   });
 
@@ -17,7 +17,7 @@ describe("findBySlug()", () => {
     const result = findBySlug([fakeCropLiveSearchResult()]);
     expect(result).toEqual({
       crop: expect.objectContaining({ name: "" }),
-      image: DEFAULT_ICON
+      image: FilePath.DEFAULT_ICON
     });
   });
 

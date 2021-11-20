@@ -1,5 +1,5 @@
 let mockShouldDisplay = false;
-jest.mock("../../../../farmware/state_to_props", () => ({
+jest.mock("../../../../devices/should_display", () => ({
   shouldDisplayFeature: () => mockShouldDisplay,
 }));
 

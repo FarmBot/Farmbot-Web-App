@@ -1,8 +1,12 @@
 import React from "react";
 import { mount } from "enzyme";
-import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
+import {
+  DesignerPanel, DesignerPanelContent, DesignerPanelContentProps,
+  DesignerPanelHeader, DesignerPanelTop, DesignerPanelTopProps,
+} from "../designer_panel";
 import { act } from "react-dom/test-utils";
 import { SpecialStatus } from "farmbot";
+import { Panel } from "../panel_header";
 
 describe("<DesignerPanel />", () => {
   it("renders default panel", () => {
@@ -38,5 +42,48 @@ describe("<DesignerPanelHeader />", () => {
     history.back = jest.fn();
     wrapper.find("i").first().simulate("click");
     expect(history.back).toHaveBeenCalled();
+  });
+});
+
+describe("<DesignerPanelTop />", () => {
+  const fakeProps = (): DesignerPanelTopProps => ({
+    panel: Panel.Controls,
+  });
+
+  it("doesn't have with-button class", () => {
+    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("with-button")).toBeFalsy();
+  });
+
+  it("has with-button class", () => {
+    const p = fakeProps();
+    p.onClick = jest.fn();
+    const wrapper = mount(<DesignerPanelTop {...p} />);
+    expect(wrapper.find("div").first().hasClass("with-button")).toBeTruthy();
+  });
+});
+
+describe("<DesignerPanelContent />", () => {
+  const fakeProps = (): DesignerPanelContentProps => ({
+    panelName: Panel.Controls,
+  });
+
+  it("doesn't show content scroll indicator", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{ scrollTop: 0 }],
+      configurable: true
+    });
+    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("scrolled")).toBeFalsy();
+  });
+
+  it("shows content scroll indicator", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{ scrollTop: 100 }],
+      configurable: true
+    });
+    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
+    expect(wrapper.find("div").first().hasClass("scrolled")).toBeTruthy();
+
   });
 });

@@ -1,4 +1,5 @@
-let mockPath = "/app/designer";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.designer());
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -120,14 +121,14 @@ describe("designer reducer", () => {
   });
 
   it("sets query upon chosen location", () => {
-    mockPath = "/app/designer/location";
+    mockPath = Path.mock(Path.location());
     const action: ReduxAction<BotPosition> = {
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 0, y: 0, z: 0 },
     };
     const newState = designer(oldState(), action);
     expect(newState.chosenLocation).toEqual({ x: 0, y: 0, z: 0 });
-    expect(push).toHaveBeenCalledWith("/app/designer/location?x=0?y=0");
+    expect(push).toHaveBeenCalledWith(Path.location({ x: 0, y: 0 }));
   });
 
   it("sets current point data", () => {
@@ -238,6 +239,26 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.cropSearchInProgress).toEqual(false);
+  });
+
+  it("sets plant type change id", () => {
+    const state = oldState();
+    state.plantTypeChangeId = undefined;
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
+    };
+    const newState = designer(state, action);
+    expect(newState.plantTypeChangeId).toEqual(1);
+  });
+
+  it("sets bulk plant slug", () => {
+    const state = oldState();
+    state.bulkPlantSlug = undefined;
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_SLUG_BULK, payload: "slug",
+    };
+    const newState = designer(state, action);
+    expect(newState.bulkPlantSlug).toEqual("slug");
   });
 
   it("starts group sort type trial", () => {

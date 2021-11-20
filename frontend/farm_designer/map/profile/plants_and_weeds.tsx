@@ -3,17 +3,17 @@ import { TaggedWeedPointer } from "farmbot";
 import { PlantPointState, ProfilePointProps } from "./interfaces";
 import { Color } from "../../../ui";
 import { defaultSpreadCmDia, scaleIcon } from "../util";
-import { DEFAULT_ICON, svgToUrl } from "../../../open_farm/icons";
+import { svgToUrl } from "../../../open_farm/icons";
 import { TaggedPlant } from "../interfaces";
 import { cachedCrop } from "../../../open_farm/cached_crop";
-import { DEFAULT_WEED_ICON } from "../layers/weeds/garden_weed";
 import { BooleanSetting } from "../../../session_keys";
+import { FilePath } from "../../../internal_urls";
 
 /** Plant point profile. */
 export class PlantPoint
   extends React.Component<ProfilePointProps<TaggedPlant>, PlantPointState> {
   state: PlantPointState = {
-    icon: DEFAULT_ICON,
+    icon: FilePath.DEFAULT_ICON,
     spreadDiaCm: defaultSpreadCmDia(this.props.point.body.radius),
   };
 
@@ -104,7 +104,7 @@ export const WeedPoint = (props: ProfilePointProps<TaggedWeedPointer>) => {
       fill={`url(#weed-radius-gradient-${point.uuid})`} />
     <g id={"weed-icon"}>
       <image className={"weed-image"}
-        xlinkHref={DEFAULT_WEED_ICON}
+        xlinkHref={FilePath.DEFAULT_WEED_ICON}
         x={profileX - plantIconSize / 2}
         y={profileY - plantIconSize}
         height={plantIconSize}

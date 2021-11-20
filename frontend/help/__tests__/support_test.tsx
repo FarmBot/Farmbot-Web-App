@@ -5,11 +5,6 @@ jest.mock("../../settings/dev/dev_support", () => ({
 
 jest.mock("axios", () => ({ post: jest.fn(() => Promise.resolve({})) }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({
@@ -27,6 +22,7 @@ import { push } from "../../history";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
+import { Path } from "../../internal_urls";
 
 describe("<SupportPanel />", () => {
   it("renders", () => {
@@ -82,6 +78,6 @@ describe("<Feedback />", () => {
     const link = mount(wrapper.find(Help).props().links?.[0] || <div />);
     link.find("a").simulate("click");
     expect(push)
-      .toHaveBeenCalledWith("/app/designer/settings?highlight=order_number");
+      .toHaveBeenCalledWith(Path.settings("order_number"));
   });
 });

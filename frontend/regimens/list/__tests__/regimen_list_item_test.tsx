@@ -1,13 +1,13 @@
-let mockPath = "/app/designer/regimens";
+import { Path } from "../../../internal_urls";
+let mockPath = Path.mock(Path.regimens());
 jest.mock("../../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
-  history: { getCurrentLocation: () => ({ pathname: mockPath }) },
 }));
 
 jest.mock("../../actions", () => ({ selectRegimen: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
 import { render, shallow, mount } from "enzyme";
@@ -56,7 +56,7 @@ describe("<RegimenListItem/>", () => {
     const wrapper = shallow(<RegimenListItem {...p} />);
     wrapper.simulate("click");
     expect(selectRegimen).toHaveBeenCalledWith(p.regimen.uuid);
-    expect(push).toHaveBeenCalledWith("/app/designer/regimens/foo");
+    expect(push).toHaveBeenCalledWith(Path.regimens("foo"));
   });
 
   it("handles missing data", () => {
@@ -64,7 +64,7 @@ describe("<RegimenListItem/>", () => {
     p.regimen.body.name = "";
     p.regimen.body.color = "" as Color;
     p.regimen.specialStatus = SpecialStatus.DIRTY;
-    mockPath = "/app/designer/regimens";
+    mockPath = Path.mock(Path.regimens());
     const wrapper = mount(<RegimenListItem {...p} />);
     expect(wrapper.text()).toEqual(" *");
     expect(wrapper.find(".saucer").hasClass("gray")).toBeTruthy();

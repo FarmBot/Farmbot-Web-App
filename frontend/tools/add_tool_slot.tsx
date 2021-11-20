@@ -9,11 +9,12 @@ import { SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import { init, save, edit, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { history } from "../history";
+import { push } from "../history";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsAdd } from "./state_to_props";
 import { AddToolSlotState, AddToolSlotProps } from "./interfaces";
+import { Path } from "../internal_urls";
 
 export class RawAddToolSlot
   extends React.Component<AddToolSlotProps, AddToolSlotState> {
@@ -55,7 +56,7 @@ export class RawAddToolSlot
 
   save = () => {
     this.state.uuid && this.props.dispatch(save(this.state.uuid));
-    history.push("/app/designer/tools");
+    push(Path.tools());
   };
 
   render() {
@@ -64,7 +65,7 @@ export class RawAddToolSlot
       <DesignerPanelHeader
         panelName={panelName}
         title={t("Add new slot")}
-        backTo={"/app/designer/tools"}
+        backTo={Path.tools()}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         {this.toolSlot

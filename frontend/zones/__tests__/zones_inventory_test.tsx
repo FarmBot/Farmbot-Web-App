@@ -1,8 +1,3 @@
-jest.mock("../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: () => [],
-}));
-
 jest.mock("../../api/crud", () => ({ initSaveGetId: jest.fn() }));
 
 import React from "react";
@@ -13,10 +8,11 @@ import {
 } from "../zones_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakePointGroup } from "../../__test_support__/fake_state/resources";
-import { history } from "../../history";
+import { push } from "../../history";
 import { initSaveGetId } from "../../api/crud";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
+import { Path } from "../../internal_urls";
 
 describe("<Zones> />", () => {
   const fakeProps = (): ZonesProps => ({
@@ -36,7 +32,7 @@ describe("<Zones> />", () => {
     p.zones[0].body.id = 1;
     const wrapper = mount(<Zones {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/zones/1");
+    expect(push).toHaveBeenCalledWith(Path.zones(1));
   });
 
   it("navigates to unsaved zone", () => {
@@ -45,7 +41,7 @@ describe("<Zones> />", () => {
     p.zones[0].body.id = 0;
     const wrapper = mount(<Zones {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/zones/0");
+    expect(push).toHaveBeenCalledWith(Path.zones(0));
   });
 
   it("filters points", () => {
@@ -66,7 +62,7 @@ describe("<Zones> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
-    expect(history.push).toHaveBeenCalledWith("/app/designer/zones/1");
+    expect(push).toHaveBeenCalledWith(Path.zones(1));
   });
 
   it("handles zone creation error", async () => {
@@ -77,7 +73,7 @@ describe("<Zones> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });
 

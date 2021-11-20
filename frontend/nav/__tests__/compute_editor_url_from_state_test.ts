@@ -1,3 +1,4 @@
+import { Path } from "../../internal_urls";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   fakeSequence, fakeRegimen, fakeWebAppConfig,
@@ -24,24 +25,24 @@ describe("computeEditorUrlFromState", () => {
   it("computes a URL when no sequence is selected", () => {
     mockState.resources.consumers.sequences.current = "";
     const result = computeEditorUrlFromState("Sequence")();
-    expect(result).toBe("/app/designer/sequences/");
+    expect(result).toBe(Path.designerSequences());
   });
 
   it("computes another URL when a sequence _is_ selected", () => {
     mockState.resources.consumers.sequences.current = mockSequence.uuid;
     const result = computeEditorUrlFromState("Sequence")();
-    expect(result).toBe("/app/designer/sequences/sequence_123");
+    expect(result).toBe(Path.designerSequences("sequence_123"));
   });
 
   it("computes a URL when no regimen is selected", () => {
     mockState.resources.consumers.regimens.currentRegimen = "";
     const result = computeEditorUrlFromState("Regimen")();
-    expect(result).toBe("/app/designer/regimens/");
+    expect(result).toBe(Path.regimens());
   });
 
   it("computes another URL when a regimen _is_ selected", () => {
     mockState.resources.consumers.regimens.currentRegimen = mockRegimen.uuid;
     const result = computeEditorUrlFromState("Regimen")();
-    expect(result).toBe("/app/designer/regimens/regimen_123");
+    expect(result).toBe(Path.regimens("regimen_123"));
   });
 });

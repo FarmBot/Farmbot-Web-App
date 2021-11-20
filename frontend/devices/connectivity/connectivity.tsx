@@ -18,7 +18,7 @@ import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
-import { restartFirmware } from "../actions";
+import { restartFirmware, sync } from "../actions";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -40,7 +40,10 @@ export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
 
-  componentDidMount = () => this.props.dispatch(refresh(this.props.device));
+  componentDidMount = () => {
+    this.props.dispatch(refresh(this.props.device));
+    this.props.dispatch(sync());
+  };
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
@@ -49,7 +52,7 @@ export class Connectivity
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
-      firmware_version, private_ip, node_name, target, memory_usage,
+      firmware_version, private_ip, node_name, target, memory_usage, sync_status,
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
@@ -87,6 +90,9 @@ export class Connectivity
           {this.props.rowData
             .map((statusRowProps, index) =>
               <ConnectivityRow {...statusRowProps} key={index}
+                syncStatus={statusRowProps.connectionName == "botAPI"
+                  ? sync_status
+                  : undefined}
                 hover={this.hover}
                 hoveredConnection={this.state.hoveredConnection} />)}
           <hr style={{ marginLeft: "3rem" }} />

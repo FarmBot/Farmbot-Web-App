@@ -5,9 +5,9 @@ import {
   CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode,
   TaggedPlant,
 } from "./interfaces";
-import { trim } from "../../util";
-import { history, getPathArray } from "../../history";
+import { lastUrlChunk, trim } from "../../util";
 import { store } from "../../redux/store";
+import { Path } from "../../internal_urls";
 
 /*
  * Farm Designer Map Utilities
@@ -60,7 +60,7 @@ export enum MapPanelStatus {
 
 /** Get farm designer side panel status. */
 export const getPanelStatus = (): MapPanelStatus => {
-  if (history.getCurrentLocation().pathname === "/app/designer") {
+  if (Path.equals(Path.designer())) {
     return MapPanelStatus.closed;
   }
   const mode = getMode();
@@ -284,37 +284,43 @@ export const transformForQuadrant =
 /** Determine the current map mode based on path. */
 // eslint-disable-next-line complexity
 export const getMode = (): Mode => {
-  const pathArray = getPathArray();
-  if (pathArray) {
-    if (store.getState().resources.consumers.farm_designer.profileOpen) {
-      return Mode.profile;
+  if (store.getState().resources.consumers.farm_designer.profileOpen) {
+    return Mode.profile;
+  }
+  const panelSlug = Path.getSlug(Path.designer());
+  if ((panelSlug === "groups" || panelSlug === "zones")
+    && Path.getSlug(Path.groups())) { return Mode.editGroup; }
+  if (Path.getSlug(Path.cropSearch("plant")) === "add") {
+    return Mode.clickToAdd;
+  }
+  if (savedGardenOpen()) { return Mode.templateView; }
+  if (!isNaN(parseInt(lastUrlChunk()))) { return Mode.editPlant; }
+  if (Path.getSlug(Path.plants()) === "select") {
+    return Mode.boxSelect;
+  }
+  if (Path.getSlug(Path.plants()) === "crop_search" &&
+    Path.getSlug(Path.cropSearch())) { return Mode.clickToAdd; }
+  if (panelSlug === "location") { return Mode.locationInfo; }
+  if (panelSlug === "points") {
+    if (Path.getSlug(Path.points()) === "add") {
+      return Mode.createPoint;
     }
-    if ((pathArray[3] === "groups" || pathArray[3] === "zones")
-      && pathArray[4]) { return Mode.editGroup; }
-    if (pathArray[6] === "add") { return Mode.clickToAdd; }
-    if (savedGardenOpen(pathArray)) { return Mode.templateView; }
-    if (!isNaN(parseInt(pathArray.slice(-1)[0]))) { return Mode.editPlant; }
-    if (pathArray[5] === "edit") { return Mode.editPlant; }
-    if (pathArray[6] === "edit") { return Mode.editPlant; }
-    if (pathArray[4] === "select") { return Mode.boxSelect; }
-    if (pathArray[4] === "crop_search" && pathArray[5]) { return Mode.clickToAdd; }
-    if (pathArray[3] === "location") { return Mode.locationInfo; }
-    if (pathArray[3] === "points") {
-      if (pathArray[4] === "add") { return Mode.createPoint; }
-      return Mode.points;
+    return Mode.points;
+  }
+  if (Path.getSlug(Path.designer()) === "weeds") {
+    if (Path.getSlug(Path.weeds()) === "add") {
+      return Mode.createWeed;
     }
-    if (pathArray[3] === "weeds") {
-      if (pathArray[4] === "add") { return Mode.createWeed; }
-      return Mode.weeds;
-    }
+    return Mode.weeds;
   }
   return Mode.none;
 };
 
 /** Check if a SavedGarden is currently open (URL approach). */
-export const savedGardenOpen = (pathArray: string[]) =>
-  pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
-    ? parseInt(pathArray[4])
+export const savedGardenOpen = () =>
+  Path.getSlug(Path.designer()) === "gardens" &&
+    parseInt(Path.getSlug(Path.savedGardens())) > 0
+    ? parseInt(Path.getSlug(Path.savedGardens()))
     : false;
 
 export const getZoomLevelFromMap = (map: Element) =>

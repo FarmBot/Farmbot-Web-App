@@ -16,6 +16,7 @@ import {
 import { push } from "../../history";
 import { AxisActionsProps, BotPositionRowsProps } from "./interfaces";
 import { lockedClass } from "../locked_class";
+import { Path } from "../../internal_urls";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
@@ -107,7 +108,7 @@ export const AxisActions = (props: AxisActionsProps) => {
         onClick={() => findAxisLength(axis)}>
         {t("FIND LENGTH")}
       </LockableButton>
-      <a onClick={() => push("/app/designer/settings?highlight=axes")}>
+      <a onClick={() => push(Path.settings("axes"))}>
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>

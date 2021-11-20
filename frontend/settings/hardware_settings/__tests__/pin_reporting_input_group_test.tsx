@@ -7,15 +7,12 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
-import {
-  NumberConfigKey as NumberFirmwareConfigKey,
-} from "farmbot/dist/resources/configs/firmware";
 
 describe("<PinReportingMCUInputGroup/>", () => {
   const fakeProps = (): PinReportingMCUInputGroupProps => {
     return {
       label: DeviceSetting.pinReporting1,
-      pinNumKey: "pin_report_1_pin_nr" as NumberFirmwareConfigKey,
+      pinNumKey: "pin_report_1_pin_nr",
       dispatch: jest.fn(),
       sourceFwConfig: x =>
         ({ value: bot.hardware.mcu_params[x], consistent: true }),

@@ -1,8 +1,6 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
-jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
-
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawDesignerFarmwareAdd as DesignerFarmwareAdd,
@@ -10,9 +8,10 @@ import {
   mapStateToProps,
 } from "../add";
 import { initSave } from "../../../api/crud";
-import { history } from "../../../history";
+import { push } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { error } from "../../../toast/toast";
+import { Path } from "../../../internal_urls";
 
 describe("<DesignerFarmwareAdd />", () => {
   const fakeProps = (): DesignerFarmwareAddProps => ({
@@ -41,7 +40,7 @@ describe("<DesignerFarmwareAdd />", () => {
     expect(initSave).toHaveBeenCalledWith("FarmwareInstallation", {
       url: "fake url"
     });
-    expect(history.push).toHaveBeenCalledWith("/app/designer/farmware");
+    expect(push).toHaveBeenCalledWith(Path.farmware());
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -50,7 +49,7 @@ describe("<DesignerFarmwareAdd />", () => {
     wrapper.setState({ packageUrl: undefined });
     wrapper.find("button").simulate("click");
     expect(initSave).not.toHaveBeenCalled();
-    expect(history.push).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Please enter a URL");
   });
 });

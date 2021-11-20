@@ -2,7 +2,7 @@ import moment from "moment";
 import { t } from "../i18next_wrapper";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { Everything, TimeSettings } from "../interfaces";
-import { history, getPathArray } from "../history";
+import { push } from "../history";
 import {
   selectAllFarmEvents,
   indexRegimenById,
@@ -24,6 +24,7 @@ import {
 import { DropDownItem } from "../ui";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { Path } from "../internal_urls";
 
 export const formatTimeField = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
@@ -110,11 +111,11 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
       uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
   const getFarmEvent = (): TaggedFarmEvent | undefined => {
-    const id = parseInt(getPathArray()[4]);
+    const id = parseInt(Path.getSlug(Path.farmEvents()));
     if (id && hasId(props.resources.index, "FarmEvent", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
-      history.push("/app/designer/events");
+      push(Path.farmEvents());
     }
   };
 

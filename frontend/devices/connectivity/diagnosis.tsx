@@ -5,6 +5,8 @@ import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
 import { goToFbosSettings } from "../../settings/maybe_highlight";
+import { SyncStatus } from "farmbot";
+import { syncText } from "../../nav/sync_text";
 
 export type ConnectionName =
   | "userAPI"
@@ -20,6 +22,7 @@ export interface DiagnosisProps {
 }
 export interface DiagnosisSaucerProps extends ConnectionStatusFlags {
   className?: string;
+  syncStatus?: SyncStatus;
 }
 
 export const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
@@ -28,13 +31,16 @@ export const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
 export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
+  const diagnosisIcon = diagnosisBoolean ? "check" : "times";
+  const spinner = props.syncStatus == "syncing";
+  const diagnosisIconClass = spinner ? "spinner fa-pulse" : diagnosisIcon;
   const title = diagnosisBoolean ? t("Ok") : t("Error");
   const classes = [
     "diagnosis-indicator", "saucer", "active", diagnosisColor, props.className,
   ];
   return <div className={classes.join(" ")}
-    title={title}>
-    <i className={`fa fa-${diagnosisBoolean ? "check" : "times"}`} />
+    title={props.syncStatus ? syncText(props.syncStatus) : title}>
+    <i className={`fa fa-${diagnosisIconClass}`} />
   </div>;
 };
 
@@ -56,7 +62,7 @@ export function Diagnosis(props: DiagnosisProps) {
           <a className="blinking" onClick={goToFbosSettings}>
             <u>{t("upgrade FarmBot OS")}</u>
           </a>
-            &nbsp;{t("before troubleshooting.")}
+          &nbsp;{t("before troubleshooting.")}
         </p>
         <p>
           {diagnosisMessage(getDiagnosisCode(props.statusFlags))}

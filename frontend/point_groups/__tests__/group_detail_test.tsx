@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/groups/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.groups(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -48,7 +49,7 @@ describe("<GroupDetail />", () => {
   };
 
   it("redirects when group is not found", () => {
-    mockPath = "/app/designer/groups/-1";
+    mockPath = Path.mock(Path.groups(-1));
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
@@ -58,7 +59,7 @@ describe("<GroupDetail />", () => {
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
@@ -67,7 +68,7 @@ describe("<GroupDetail />", () => {
   });
 
   it("renders groups", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     history.back = jest.fn();
     const wrapper = mount(<GroupDetail {...fakeProps()} />);
     expect(wrapper.find(GroupDetailActive).length).toEqual(1);
@@ -80,7 +81,7 @@ describe("<GroupDetail />", () => {
     ["point", "GenericPointer"],
     ["slot", "ToolSlot"],
   ])("renders %s group", (title, pointerType) => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     const p = fakeProps();
     p.group && (p.group.body.criteria.string_eq = { pointer_type: [pointerType] });
     const wrapper = mount(<GroupDetail {...p} />);
@@ -90,7 +91,7 @@ describe("<GroupDetail />", () => {
 
 describe("findGroupFromUrl()", () => {
   it("finds group from URL", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     const group = fakePointGroup();
     group.body.id = 1;
     const otherGroup = fakePointGroup();
@@ -99,17 +100,17 @@ describe("findGroupFromUrl()", () => {
   });
 
   it("fails to find group from URL", () => {
-    mockPath = "/app/designer/groups/1";
+    mockPath = Path.mock(Path.groups(1));
     expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("fails to find group from URL: undefined array item", () => {
-    mockPath = "/app/designer/groups/";
+    mockPath = Path.mock(Path.groups());
     expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("doesn't try to find a group when at a different URL", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const group = fakePointGroup();
     group.body.id = 1;
     expect(findGroupFromUrl([group])).toEqual(undefined);

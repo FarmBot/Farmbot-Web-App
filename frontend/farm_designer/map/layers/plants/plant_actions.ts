@@ -10,7 +10,6 @@ import { isNumber, isString } from "lodash";
 import {
   CropLiveSearchResult, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
-import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import {
   transformXY, round, getZoomLevelFromMap, defaultSpreadCmDia,
@@ -20,6 +19,7 @@ import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
 import { TaggedPlantTemplate, TaggedPoint } from "farmbot";
+import { Path } from "../../../../internal_urls";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -105,7 +105,7 @@ export interface DropPlantProps {
 export const dropPlant = (props: DropPlantProps) => {
   const { gardenCoords, openedSavedGarden, gridSize, dispatch } = props;
   if (gardenCoords) {
-    const slug = getPathArray()[5];
+    const slug = Path.getSlug(Path.plants(1));
     if (!slug) { return; }
     const { crop } = findBySlug(props.cropSearchResults, slug);
     createPlant({

@@ -4,7 +4,8 @@ import { MapTransformProps, BotSize } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isUndefined } from "lodash";
 import { UUID } from "../../../../resources/interfaces";
-import { history } from "../../../../history";
+import { push } from "../../../../history";
+import { Path } from "../../../../internal_urls";
 
 export interface ZonesProps {
   currentGroup: UUID | undefined;
@@ -45,7 +46,7 @@ export const getZoneType = (group: TaggedPointGroup): ZoneType => {
 };
 
 const openGroup = (id: number | undefined) =>
-  () => history.push(`/app/designer/groups/${id}`);
+  () => push(Path.groups(id));
 
 /** Bounds for area selected by criteria or bot extents. */
 const getBoundary = (props: GetBoundaryProps): Boundary => {

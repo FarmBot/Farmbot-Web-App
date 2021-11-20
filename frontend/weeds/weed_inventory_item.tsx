@@ -3,7 +3,6 @@ import { TaggedWeedPointer } from "farmbot";
 import { Actions } from "../constants";
 import { push } from "../history";
 import { t } from "../i18next_wrapper";
-import { DEFAULT_WEED_ICON } from "../farm_designer/map/layers/weeds/garden_weed";
 import { svgToUrl } from "../open_farm/icons";
 import { genericWeedIcon } from "../point_groups/point_group_item";
 import { getMode } from "../farm_designer/map/util";
@@ -11,6 +10,7 @@ import { Mode } from "../farm_designer/map/interfaces";
 import { mapPointClickAction, selectPoint } from "../farm_designer/map/actions";
 import { round } from "lodash";
 import { edit, save, destroy } from "../api/crud";
+import { FilePath, Path } from "../internal_urls";
 
 export interface WeedInventoryItemProps {
   tpp: TaggedWeedPointer;
@@ -44,7 +44,7 @@ export class WeedInventoryItem extends
         mapPointClickAction(dispatch, tpp.uuid)();
         toggle("leave");
       } else {
-        push(`/app/designer/weeds/${weedId}`);
+        push(Path.weeds(weedId));
         dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: tpp.uuid });
         dispatch(selectPoint([tpp.uuid]));
       }
@@ -59,7 +59,7 @@ export class WeedInventoryItem extends
       <span className={"weed-item-icon"}
         style={{ transform: `scale(${scale})` }}>
         <img className={"weed-icon"}
-          src={DEFAULT_WEED_ICON}
+          src={FilePath.DEFAULT_WEED_ICON}
           width={32}
           height={32} />
         <img

@@ -1,7 +1,7 @@
 let mockPath = "";
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
-  history: { push: jest.fn() }
+  push: jest.fn(),
 }));
 
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
@@ -12,8 +12,9 @@ import {
 import {
   fakeSequence, fakeRegimen, fakeFarmEvent,
 } from "../../__test_support__/fake_state/resources";
-import { history } from "../../history";
+import { push } from "../../history";
 import { inputEvent } from "../../__test_support__/fake_html_events";
+import { Path } from "../../internal_urls";
 
 describe("mapStateToPropsAddEdit()", () => {
 
@@ -63,7 +64,7 @@ describe("mapStateToPropsAddEdit()", () => {
       const state = fakeState();
       const fe = fakeFarmEvent("Sequence", -1);
       state.resources = buildResourceIndex([fe, fakeDevice()]);
-      mockPath = "/app/designer/events/" + fe.body.id;
+      mockPath = Path.mock(Path.farmEvents(fe.body.id));
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       expect(getFarmEvent()).toEqual(expect.objectContaining({
         kind: "FarmEvent",
@@ -74,10 +75,10 @@ describe("mapStateToPropsAddEdit()", () => {
     it("doesn't find event", () => {
       const state = fakeState();
       state.resources = buildResourceIndex([fakeDevice()]);
-      mockPath = "/app/designer/events/999";
+      mockPath = Path.mock(Path.farmEvents(999));
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       getFarmEvent();
-      expect(history.push).toHaveBeenCalledWith("/app/designer/events");
+      expect(push).toHaveBeenCalledWith(Path.farmEvents());
     });
   });
 

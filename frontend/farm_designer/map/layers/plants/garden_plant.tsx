@@ -1,27 +1,33 @@
 import React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
-import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
+import { svgToUrl } from "../../../../open_farm/icons";
 import { transformXY, scaleIcon } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
-import { Color } from "../../../../ui/index";
+import { Color } from "../../../../ui";
 import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { clickMapPlant } from "../../actions";
 import { Circle } from "./circle";
 import { SpecialStatus } from "farmbot";
+import { FilePath } from "../../../../internal_urls";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: DEFAULT_ICON, hover: false };
+  state: GardenPlantState = { icon: FilePath.DEFAULT_ICON, hover: false };
 
-  componentDidMount() {
+  fetchIcon = () => {
     const OFS = this.props.plant.body.openfarm_slug;
     cachedCrop(OFS)
       .then(({ svg_icon }) => {
         this.setState({ icon: svgToUrl(svg_icon) });
       });
-  }
+  };
+
+  componentDidMount = () => this.fetchIcon();
+  componentDidUpdate = (prevProps: GardenPlantProps) =>
+    this.props.plant.body.openfarm_slug != prevProps.plant.body.openfarm_slug &&
+    this.fetchIcon();
 
   click = () => {
     this.props.dispatch(clickMapPlant(this.props.uuid, this.state.icon));
@@ -53,8 +59,10 @@ export class GardenPlant extends
     const iconRadius = hover ? plantIconSize * 1.1 : plantIconSize;
     const { qx, qy } = transformXY(x, y, mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
+    const newClass = id ? "" : "new";
     const className = [
       "plant-image",
+      newClass,
       `is-chosen-${current || selected}`,
       animate ? "animate" : "",
     ].join(" ");
@@ -66,7 +74,7 @@ export class GardenPlant extends
 
       {animate &&
         <circle
-          className="soil-cloud"
+          className={`soil-cloud ${newClass}`}
           cx={qx}
           cy={qy}
           r={plantIconSize}

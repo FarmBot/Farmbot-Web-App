@@ -1,18 +1,28 @@
 import { TaggedLog } from "farmbot";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
+import { BotPosition } from "../../../../devices/interfaces";
 import { CameraCalibrationData } from "../../../interfaces";
-import { MapTransformProps } from "../../interfaces";
+import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 
 export enum RenderedLog {
   imageCapture = "imageCapture",
   imageCalibrate = "imageCalibrate",
   imageDetect = "imageDetect",
   imageMeasure = "imageMeasure",
+  findHomeAll = "findHomeAll",
+  findHomeX = "findHomeX",
+  findHomeY = "findHomeY",
+  findHomeZ = "findHomeZ",
+  findLengthAll = "findLengthAll",
+  findLengthX = "findLengthX",
+  findLengthY = "findLengthY",
+  findLengthZ = "findLengthZ",
 }
 
 export enum AnimationClass {
   capture = "capture",
   scan = "scan",
+  find = "find",
 }
 
 export interface LogsLayerProps {
@@ -22,6 +32,8 @@ export interface LogsLayerProps {
   cameraCalibrationData: CameraCalibrationData;
   getConfigValue: GetWebAppConfigValue;
   deviceTarget: string;
+  botPosition: BotPosition;
+  plantAreaOffset: AxisNumberProperty;
 }
 
 export interface LogVisualProps {
@@ -32,4 +44,6 @@ export interface LogVisualProps {
   animate: boolean;
   mapTransformProps: MapTransformProps;
   deviceTarget: string;
+  botPosition: BotPosition;
+  plantAreaOffset: AxisNumberProperty;
 }

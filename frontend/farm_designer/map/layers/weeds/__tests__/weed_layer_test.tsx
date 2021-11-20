@@ -1,9 +1,10 @@
-let mockPath = "/app/designer/plants";
+import { Path } from "../../../../../internal_urls";
+let mockPath = Path.mock(Path.plants());
 jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-import * as React from "react";
+import React from "react";
 import { WeedLayer, WeedLayerProps } from "../weed_layer";
 import { fakeWeed } from "../../../../../__test_support__/fake_state/resources";
 import {
@@ -45,7 +46,7 @@ describe("<WeedLayer/>", () => {
   });
 
   it("allows weed mode interaction", () => {
-    mockPath = "/app/designer/weeds";
+    mockPath = Path.mock(Path.weeds());
     const p = fakeProps();
     p.interactions = true;
     const wrapper = svgMount(<WeedLayer {...p} />);
@@ -54,7 +55,7 @@ describe("<WeedLayer/>", () => {
   });
 
   it("is selected", () => {
-    mockPath = "/app/designer/weeds";
+    mockPath = Path.mock(Path.weeds());
     const p = fakeProps();
     const weed = fakeWeed();
     p.weeds = [weed];

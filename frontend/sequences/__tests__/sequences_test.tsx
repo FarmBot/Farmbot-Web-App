@@ -1,9 +1,3 @@
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-  history: { getCurrentLocation: () => "" },
-}));
-
 import React from "react";
 import {
   RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton,
@@ -21,6 +15,7 @@ import {
 import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
+import { Path } from "../../internal_urls";
 
 describe("<Sequences />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -85,6 +80,6 @@ describe("<SequenceBackButton />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_SEQUENCE, payload: undefined
     });
-    expect(push).toHaveBeenCalledWith("/app/sequences/");
+    expect(push).toHaveBeenCalledWith(Path.sequences());
   });
 });

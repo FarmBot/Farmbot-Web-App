@@ -10,7 +10,8 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockPath = "/app/designer/gardens/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.savedGardens(1));
 jest.mock("../../history", () => ({
   push: jest.fn(),
   getPathArray: jest.fn(() => mockPath.split("/")),
@@ -77,14 +78,14 @@ describe("<EditGarden />", () => {
   });
 
   it("shows garden not found", () => {
-    mockPath = "/app/designer/gardens/nope";
+    mockPath = Path.mock(Path.savedGardens("nope"));
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
-    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
     expect(push).not.toHaveBeenCalled();
@@ -112,7 +113,7 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const sg = fakeSavedGarden();
     sg.body.id = 1;
-    mockPath = "/app/designer/gardens/1";
+    mockPath = Path.mock(Path.savedGardens(1));
     const state = fakeState();
     state.resources = buildResourceIndex([sg]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
@@ -124,7 +125,7 @@ describe("mapStateToProps()", () => {
   it("doesn't find saved garden", () => {
     const sg = fakeSavedGarden();
     sg.body.id = 1;
-    mockPath = "/app/designer/gardens/";
+    mockPath = Path.mock(Path.savedGardens());
     const state = fakeState();
     state.resources = buildResourceIndex([sg]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;

@@ -767,6 +767,11 @@ export namespace Content {
     trim(`Have the browser also read aloud log messages on the
     "Speak" channel that are spoken by FarmBot.`);
 
+  export const BROWSER_ACTIVITY_BEEP =
+    trim(`Have the browser beep when FarmBot sends a log message.
+    Verbosity can be adjusted using the slider; increase the value for more
+    frequent beeps.`);
+
   export const DISCARD_UNSAVED_CHANGES =
     trim(`Don't ask about saving work before
     closing browser tab. Warning: may cause loss of data.`);
@@ -830,7 +835,7 @@ export namespace Content {
     trim(`Please re-flash your FarmBot's SD card.`);
 
   export const OS_AUTO_UPDATE =
-    trim(`When enabled, FarmBot OS will automatically download and install
+    trim(`FarmBot OS will automatically download and install
     software updates at the chosen time.`);
 
   // FarmBot OS Settings: Firmware
@@ -1384,6 +1389,11 @@ export namespace TourContent {
     download (sync) this information. Syncing may take up to 10 seconds
     depending on your internet connection, and longer when FarmBot first
     boots up.`);
+
+  export const CURRENT_POSITION =
+    trim(`This is the current position indicator. FarmBot's current X, Y,
+    and Z coordinates in millimeters are displayed for quick viewing from
+    any page in the web app.`);
 
   export const ESTOP_BUTTON =
     trim(`This is the E-STOP button, allowing you to emergency stop any
@@ -1999,6 +2009,7 @@ export enum DeviceSetting {
   hideWebcamWidget = `Hide Webcam widget`,
   hideSensorsPanel = `Hide Sensors panel`,
   readSpeakLogsInBrowser = `Read speak logs in browser`,
+  browserFarmbotActivityBeep = `Browser FarmBot activity beep`,
   discardUnsavedChanges = `Discard Unsaved Changes`,
   confirmEmergencyUnlock = `Confirm emergency unlock`,
   userInterfaceReadOnlyMode = `User Interface Read Only Mode`,
@@ -2114,6 +2125,8 @@ export enum Actions {
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
+  SET_PLANT_TYPE_CHANGE_ID = "SET_PLANT_TYPE_CHANGE_ID",
+  SET_SLUG_BULK = "SET_SLUG_BULK",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_DRAWN_POINT_DATA = "SET_DRAWN_POINT_DATA",
   SET_DRAWN_WEED_DATA = "SET_DRAWN_WEED_DATA",

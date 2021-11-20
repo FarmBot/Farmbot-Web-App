@@ -1,6 +1,12 @@
 import React from "react";
 const emoji = require("markdown-it-emoji");
 const md = require("markdown-it")({
+  breaks: true,
+  linkify: true,
+  typographer: true,
+});
+
+const md_with_html = require("markdown-it")({
   /** Enable HTML tags in source */
   html: true,
   /** Convert '\n' in paragraphs into <br> */
@@ -12,6 +18,7 @@ const md = require("markdown-it")({
 });
 
 md.use(emoji);
+md_with_html.use(emoji);
 
 const defaultRenderer = md.renderer.rules.link_open ||
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,10 +41,13 @@ export const md_for_tests = md;
 
 interface MarkdownProps {
   children?: React.ReactNode;
+  html?: boolean;
 }
 
 export function Markdown(props: MarkdownProps) {
-  const result = md.render(props.children);
+  const result = props.html
+    ? md_with_html.render(props.children)
+    : md.render(props.children);
   return <span
     className="markdown"
     dangerouslySetInnerHTML={{ __html: result }}>

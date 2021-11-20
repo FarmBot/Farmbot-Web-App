@@ -1,6 +1,6 @@
 import { CropLiveSearchResult } from "./interfaces";
-import { DEFAULT_ICON } from "../open_farm/icons";
 import { startCase, find } from "lodash";
+import { FilePath } from "../internal_urls";
 
 export function findBySlug(
   crops: CropLiveSearchResult[], slug?: string): CropLiveSearchResult {
@@ -16,6 +16,6 @@ export function findBySlug(
       sowing_method: "",
       processing_pictures: 0
     },
-    image: DEFAULT_ICON
+    image: FilePath.DEFAULT_ICON
   };
 }

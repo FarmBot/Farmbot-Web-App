@@ -1,6 +1,5 @@
 import React from "react";
 import { store as _store } from "./redux/store";
-import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
@@ -43,7 +42,7 @@ export class RootComponent
 
   UNSAFE_componentWillMount() {
     const notLoggedIn = !Session.fetchStoredToken();
-    const currentLocation = history.getCurrentLocation().pathname;
+    const currentLocation = window.location.pathname;
     const restrictedArea = currentLocation.includes("/app");
     (notLoggedIn && restrictedArea && Session.clear());
   }

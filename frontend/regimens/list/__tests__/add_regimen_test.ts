@@ -1,8 +1,8 @@
-const mockPath = "/app/designer/regimens";
+import { Path } from "../../../internal_urls";
+const mockPath = Path.mock(Path.regimens());
 jest.mock("../../../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
-  history: { getCurrentLocation: () => mockPath },
 }));
 
 jest.mock("../../set_active_regimen_by_name", () => ({
@@ -24,7 +24,7 @@ describe("addRegimen()", () => {
         kind: "Regimen"
       })
     });
-    expect(push).toHaveBeenCalledWith("/app/designer/regimens/new_regimen_0");
+    expect(push).toHaveBeenCalledWith(Path.regimens("new_regimen_0"));
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

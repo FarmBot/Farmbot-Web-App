@@ -3,9 +3,8 @@ import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Session } from "../session";
 import { Row, Col, Popover } from "../ui";
-import { getPathArray, push } from "../history";
+import { push } from "../history";
 import { updatePageInfo } from "../util";
-import { SyncButton } from "./sync_button";
 import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
 import { AdditionalMenu } from "./additional_menu";
@@ -23,6 +22,10 @@ import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { setupProgressString } from "../wizard/data";
 import { lastSeenNumber } from "../settings/fbos_settings/last_seen_row";
+import { Path } from "../internal_urls";
+import {
+  botPositionLabel,
+} from "../farm_designer/map/layers/farmbot/bot_position_label";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -56,8 +59,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     <ReadOnlyIcon locked={!!this.props.getConfigValue(
       BooleanSetting.user_interface_read_only_mode)} />;
 
-  SyncButton = () =>
-    <SyncButton bot={this.props.bot} dispatch={this.props.dispatch} />;
+  Coordinates = () =>
+    <p className={"nav-coordinates"} title={t("FarmBot position (X, Y, Z)")}>
+      {botPositionLabel(this.props.bot.hardware.location_data.position)}
+    </p>;
 
   EstopButton = () =>
     <div className={"e-stop-btn"}>
@@ -92,6 +97,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       device: this.props.device,
       apiFirmwareValue: this.props.apiFirmwareValue,
     });
+    const { sync_status } = this.props.bot.hardware.informational_settings;
     return <div className="connection-status-popover">
       <ErrorBoundary>
         <Popover position={Position.BOTTOM_RIGHT}
@@ -99,10 +105,12 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           popoverClassName="connectivity-popover"
           target={window.innerWidth <= 450
             ? <DiagnosisSaucer {...data.flags}
+              syncStatus={sync_status}
               className={"nav connectivity-icon"} />
             : <div className={"connectivity-button"}>
               <p>{t("Connectivity")}</p>
-              <DiagnosisSaucer {...data.flags} className={"nav"} />
+              <DiagnosisSaucer {...data.flags} className={"nav"}
+                syncStatus={sync_status} />
             </div>}
           content={<ErrorBoundary>
             <Connectivity
@@ -125,12 +133,12 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const { wizardStepResults, device } = this.props;
     return !device.body.setup_completed_at
       ? <a className={"setup-button"}
-        onClick={() => push("/app/designer/setup")}>
+        onClick={() => push(Path.setup())}>
         {t("Setup")}
         {window.innerWidth > 450 &&
           `: ${setupProgressString(wizardStepResults, firmwareHardware)}`}
       </a>
-      : <div />;
+      : <div style={{ display: "inline" }} />;
   };
 
   AppNavLinks = () =>
@@ -160,7 +168,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   render() {
     /** Change document meta title on every route change. */
-    updatePageInfo(getPathArray()[2] || "", getPathArray()[3]);
+    updatePageInfo(Path.getSlug(Path.app()), Path.getSlug(Path.designer()));
 
     return <ErrorBoundary>
       <div className={[
@@ -181,9 +189,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       <this.ReadOnlyStatus />
                       <this.AccountMenu />
                       <this.EstopButton />
-                      <this.SyncButton />
                       <this.ConnectionStatus />
                       <this.SetupButton />
+                      <this.Coordinates />
                     </ErrorBoundary>
                   </div>
                 </div>

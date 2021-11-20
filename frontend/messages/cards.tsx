@@ -30,9 +30,10 @@ import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
 import { Feature } from "../devices/interfaces";
 import moment from "moment";
+import { Path } from "../internal_urls";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -83,7 +84,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
     {alert.id && !props.noDismiss && <i className="fa fa-times"
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
-      <Markdown>{t(props.message)}</Markdown>
+      <Markdown html={true}>{t(props.message)}</Markdown>
       {props.children}
     </div>
   </div>;
@@ -338,7 +339,7 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push("/app/designer/tours")}
+      onClick={() => push(Path.tours())}
       title={t("View available tours")}>
       {t("View available tours")}
     </a>
@@ -438,7 +439,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
     findApiAlertById={props.findApiAlertById}
     iconName={"info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push("/app/designer/setup")}
+      onClick={() => push(Path.setup())}
       title={buttonText}>
       {buttonText}
     </a>

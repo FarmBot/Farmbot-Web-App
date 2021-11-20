@@ -1,10 +1,10 @@
 let mockPath = "";
 jest.mock("../../history", () => ({
-  history: { push: jest.fn() },
+  push: jest.fn(),
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawAddPlant as AddPlant, AddPlantProps, mapStateToProps,
@@ -20,6 +20,7 @@ import {
 import {
   fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
+import { Path } from "../../internal_urls";
 
 describe("<AddPlant />", () => {
   const fakeProps = (): AddPlantProps => {
@@ -35,7 +36,7 @@ describe("<AddPlant />", () => {
   };
 
   it("renders", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockPath = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.dispatch = jest.fn(x => x(jest.fn()));
     const wrapper = mount(<AddPlant {...p} />);

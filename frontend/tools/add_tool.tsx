@@ -9,7 +9,7 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
-import { history } from "../history";
+import { push } from "../history";
 import { selectAllTools } from "../resources/selectors";
 import { betterCompact } from "../util";
 import {
@@ -22,6 +22,7 @@ import {
   reduceFarmwareEnv, saveOrEditFarmwareEnv,
 } from "../farmware/state_to_props";
 import { CustomToolGraphicsInput } from "./custom_tool_graphics";
+import { Path } from "../internal_urls";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -57,7 +58,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     this.props.dispatch(save(uuid))
       .then(() => {
         this.setState({ uuid: undefined });
-        history.push("/app/designer/tools");
+        push(Path.tools());
       }).catch(() => { });
   };
 
@@ -127,7 +128,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
           add.map(n => this.newTool(n));
-          history.push("/app/designer/tools");
+          push(Path.tools());
         }}>
         <i className="fa fa-plus" />
         {t("selected")}
@@ -143,7 +144,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       <DesignerPanelHeader
         panelName={panelName}
         title={t("Add new")}
-        backTo={"/app/designer/tools"}
+        backTo={Path.tools()}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool">

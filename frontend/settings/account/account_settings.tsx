@@ -2,12 +2,12 @@ import React from "react";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting, Content } from "../../constants";
 import { Header } from "../hardware_settings/header";
-import { Collapse } from "@blueprintjs/core";
+import { Collapse, Slider } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
-import { BlurableInput, Row } from "../../ui";
+import { BlurableInput, Help, Row, ToggleButton } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { SettingDescriptionProps } from "../interfaces";
-import { BooleanSetting } from "../../session_keys";
+import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { Setting } from "../farm_designer_settings";
 import { resetAccount, deleteUser } from "./actions";
 import { requestAccountExport } from "./request_account_export";
@@ -15,6 +15,12 @@ import { success } from "../../toast/toast";
 import { ChangePassword } from "./change_password";
 import { DangerousDeleteWidget } from "./dangerous_delete_widget";
 import { AccountSettingsProps } from "./interfaces";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue,
+} from "../../config_storage/actions";
+import {
+  getModifiedClassName, getModifiedClassNameDefaultFalse,
+} from "../default_values";
 
 export const AccountSettings = (props: AccountSettingsProps) =>
   <Highlight className={"section"}
@@ -68,6 +74,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
       </Highlight>
       {APP_SETTINGS().map(setting => <Setting key={setting.title}
         {...setting} {...props} useToolTip={true} />)}
+      <ActivityBeepSetting {...props} />
       <Highlight settingName={DeviceSetting.resetAccount}>
         <DangerousDeleteWidget
           title={DeviceSetting.resetAccount}
@@ -153,3 +160,29 @@ const APP_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.user_interface_read_only_mode,
   },
 ]);
+
+export interface ActivityBeepSettingProps {
+  getConfigValue: GetWebAppConfigValue;
+  dispatch: Function;
+}
+
+export const ActivityBeepSetting = (props: ActivityBeepSettingProps) => {
+  const value = props.getConfigValue(NumericSetting.beep_verbosity);
+  return <Highlight settingName={DeviceSetting.browserFarmbotActivityBeep}>
+    <Row className={"activity-beep-setting"}>
+      <label>{t(DeviceSetting.browserFarmbotActivityBeep)}</label>
+      <Help text={Content.BROWSER_ACTIVITY_BEEP} />
+      <ToggleButton
+        className={getModifiedClassNameDefaultFalse(value)}
+        toggleValue={!!value}
+        toggleAction={() => props.dispatch(setWebAppConfigValue(
+          NumericSetting.beep_verbosity, value ? 0 : 1))}
+        title={t("toggle beeps")} />
+      <Slider min={0} max={3} stepSize={1}
+        className={getModifiedClassName(NumericSetting.beep_verbosity)}
+        onChange={newValue => props.dispatch(setWebAppConfigValue(
+          NumericSetting.beep_verbosity, newValue))}
+        value={parseInt("" + value)} />
+    </Row>
+  </Highlight>;
+};

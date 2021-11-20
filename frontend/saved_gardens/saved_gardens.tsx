@@ -1,7 +1,7 @@
 import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { history } from "../history";
+import { push } from "../history";
 import { unselectPlant } from "../farm_designer/map/actions";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers,
@@ -19,6 +19,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { Content } from "../constants";
 import { SearchField } from "../ui/search_field";
+import { Path } from "../internal_urls";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -42,7 +43,7 @@ export class RawSavedGardens
       <DesignerPanelContent panelName={"saved-garden"}>
         <DesignerPanelTop
           panel={Panel.SavedGardens}
-          linkTo={"/app/designer/gardens/add"}
+          linkTo={Path.savedGardens("add")}
           title={t("Add garden")}>
           <SearchField searchTerm={this.state.searchTerm}
             placeholder={t("Search your gardens...")}
@@ -68,7 +69,7 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
     <button className="fb-button green"
       title={t("open plants panel")}
       onClick={() => {
-        history.push("/app/designer/plants");
+        push(Path.plants());
         unselectPlant(props.dispatch)();
       }}>
       {t("Edit")}

@@ -1,4 +1,5 @@
-let mockPath = "/app/designer";
+import { Path } from "../internal_urls";
+let mockPath = Path.mock(Path.designer());
 jest.mock("../history", () => ({
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
@@ -27,7 +28,6 @@ import {
   showHotkeysDialog,
 } from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
 import { save } from "../api/crud";
-import { cropSearchUrl } from "../plants/crop_catalog";
 
 describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
@@ -50,19 +50,19 @@ describe("hotkeysWithActions()", () => {
     expect(dispatch).toHaveBeenCalledWith(sync());
 
     hotkeys[HotKey.navigateRight].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
 
     hotkeys[HotKey.navigateLeft].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith("/app/designer/settings");
+    expect(push).toHaveBeenCalledWith(Path.settings());
 
     hotkeys[HotKey.addPlant].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(cropSearchUrl());
+    expect(push).toHaveBeenCalledWith(Path.cropSearch());
 
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith("/app/designer/events/add");
+    expect(push).toHaveBeenCalledWith(Path.farmEvents("add"));
 
     hotkeys[HotKey.backToPlantOverview].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(push).toHaveBeenCalledWith(Path.plants());
     expect(unselectPlant).toHaveBeenCalled();
   });
 });
@@ -80,7 +80,7 @@ describe("<HotKeys />", () => {
   });
 
   it("renders", () => {
-    mockPath = "/app/designer/nope";
+    mockPath = Path.mock(Path.designer("nope"));
     const wrapper = shallow(<HotKeys {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });

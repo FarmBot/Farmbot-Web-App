@@ -15,7 +15,6 @@ import {
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
 import { push } from "../history";
-import { cropSearchUrl } from "./crop_catalog";
 import {
   selectAllActivePoints,
   selectAllPlantPointers,
@@ -32,6 +31,7 @@ import { Collapse } from "@blueprintjs/core";
 import { createGroup } from "../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { deletePoints } from "../api/delete_points";
+import { Path } from "../internal_urls";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -79,7 +79,8 @@ export class RawPlants
           type: Actions.SEARCH_QUERY_CHANGE,
           payload: this.state.searchTerm,
         });
-        push(cropSearchUrl());
+        push(Path.cropSearch());
+        this.props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
       }}>
         {t("search all crops?")}
       </a>
@@ -91,10 +92,11 @@ export class RawPlants
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(`/app/designer/groups/${id}`);
+  navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
-    const filteredPlants = this.props.plants
+    const { dispatch, plantsPanelState, plants } = this.props;
+    const filteredPlants = plants
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     const plantGroups = pointGroupSubset(this.props.groups, "Plant");
@@ -110,11 +112,11 @@ export class RawPlants
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
-        <PanelSection isOpen={this.props.plantsPanelState.groups}
+        <PanelSection isOpen={plantsPanelState.groups}
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("groups")}
           itemCount={plantGroups.length}
-          addNew={() => this.props.dispatch(createGroup({
+          addNew={() => dispatch(createGroup({
             criteria: {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Plant"] },
@@ -129,15 +131,15 @@ export class RawPlants
               group={group}
               allPoints={this.props.allPoints}
               hovered={false}
-              dispatch={this.props.dispatch}
+              dispatch={dispatch}
               onClick={this.navigate(group.body.id)}
             />)}
         </PanelSection>
-        <PanelSection isOpen={this.props.plantsPanelState.savedGardens}
+        <PanelSection isOpen={plantsPanelState.savedGardens}
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => push("/app/designer/gardens/add")}
+          addNew={() => push(Path.savedGardens("add"))}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -145,23 +147,26 @@ export class RawPlants
             title={t("delete all plants in active garden")}
             onClick={() =>
               confirm(t("Delete all {{ count }} plants in your main garden?",
-                { count: this.props.plants.length })) &&
-              this.props.dispatch(deletePoints("plants",
+                { count: plants.length })) &&
+              dispatch(deletePoints("plants",
                 { pointer_type: "Plant" }))}>
             {t("delete all active plants")}
           </button>
           <SavedGardenList {...this.props} searchTerm={this.state.searchTerm} />
         </PanelSection>
-        <PanelSection isOpen={this.props.plantsPanelState.plants}
+        <PanelSection isOpen={plantsPanelState.plants}
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("plants")}
-          itemCount={this.props.plants.length}
-          addNew={() => push(cropSearchUrl())}
+          itemCount={plants.length}
+          addNew={() => {
+            push(Path.cropSearch());
+            dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
+          }}
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}>
           <EmptyStateWrapper
-            notEmpty={this.props.plants.length > 0 && !noSearchResults}
+            notEmpty={plants.length > 0 && !noSearchResults}
             graphic={noSearchResults
               ? EmptyStateGraphic.no_crop_results
               : EmptyStateGraphic.plants}
@@ -176,7 +181,7 @@ export class RawPlants
                 key={p.uuid}
                 plant={p}
                 hovered={this.props.hoveredPlantListItem === p.uuid}
-                dispatch={this.props.dispatch} />)}
+                dispatch={dispatch} />)}
           </EmptyStateWrapper>
         </PanelSection>
       </DesignerPanelContent>
@@ -204,7 +209,11 @@ export const PanelSection = (props: PanelSectionProps) =>
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
       <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`} />
-      <div onClick={props.addNew}
+      <div
+        onClick={e => {
+          e.stopPropagation();
+          props.addNew();
+        }}
         className={[
           "fb-button",
           `panel-${TAB_COLOR[props.panel]}`,

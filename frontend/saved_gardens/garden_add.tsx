@@ -12,6 +12,7 @@ import { Content } from "../constants";
 import { Row } from "../ui";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
+import { Path } from "../internal_urls";
 
 export const mapStateToProps = (props: Everything): GardenSnapshotProps => {
   const { openedSavedGarden } = props.resources.consumers.farm_designer;
@@ -32,7 +33,7 @@ export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
         panel={Panel.SavedGardens}
         title={t("Add garden")}
         description={Content.SAVED_GARDENS}
-        backTo={"/app/designer/plants"} />
+        backTo={Path.plants()} />
       <DesignerPanelContent panelName={"saved-garden"}>
         <Row>
           <GardenSnapshot

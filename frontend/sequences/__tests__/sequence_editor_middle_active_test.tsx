@@ -1,7 +1,7 @@
+import { Path } from "../../internal_urls";
 let mockPath = "";
 jest.mock("../../history", () => ({
   push: jest.fn(),
-  history: { push: jest.fn() },
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
@@ -43,7 +43,7 @@ jest.mock("../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => jest.fn()),
 }));
 
-jest.mock("../panel/preview", () => ({
+jest.mock("../panel/preview_support", () => ({
   License: () => <div />,
   loadSequenceVersion: jest.fn(),
   SequencePreviewContent: () => <div />,
@@ -94,7 +94,7 @@ import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 import { error } from "../../toast/toast";
 import { API } from "../../api";
-import { loadSequenceVersion } from "../panel/preview";
+import { loadSequenceVersion } from "../panel/preview_support";
 import { act } from "react-dom/test-utils";
 
 describe("<SequenceEditorMiddleActive />", () => {
@@ -184,7 +184,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     await clickButton(wrapper, 0, "Save * ");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
-    expect(push).toHaveBeenCalledWith("/app/sequences/fake");
+    expect(push).toHaveBeenCalledWith(Path.sequences("fake"));
   });
 
   it("tests", () => {
@@ -277,7 +277,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("visualizes", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".fa-eye-slash").simulate("click");
@@ -288,7 +288,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("un-visualizes", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     p.visualized = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -300,7 +300,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("pins sequence", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.pinned = false;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -309,7 +309,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("unpins sequence", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.pinned = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -318,7 +318,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("loads sequence preview", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.sequence_versions = [1, 2, 3];
     mount(<SequenceEditorMiddleActive {...p} />);
@@ -327,7 +327,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("sets description", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
     const wrapper = mount<SequenceEditorMiddleActive>(
@@ -338,7 +338,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("sets sequence preview", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
     const wrapper = mount<SequenceEditorMiddleActive>(
@@ -350,7 +350,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("sets error", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
@@ -360,7 +360,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders public view", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
@@ -371,7 +371,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders celery script view button: enabled", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence = fakeSequence();
     p.sequence.body.sequence_version_id = 1;
@@ -389,7 +389,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders celery script view button: disabled", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const previewSequence = fakeSequence();
     p.getWebAppConfigValue = () => true;
@@ -403,7 +403,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("makes selections", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const wrapper = shallow<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...fakeProps()} />);
     wrapper.instance().loadSequenceVersion = jest.fn();
@@ -416,7 +416,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("edits description", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
     const wrapper = mount<SequenceEditorMiddleActive>(
@@ -431,7 +431,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("handles empty description", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "";
     const wrapper = mount<SequenceEditorMiddleActive>(
@@ -561,12 +561,12 @@ describe("<AddCommandButton />", () => {
   });
 
   it("navigates", () => {
-    mockPath = "/app/designer/sequences/1";
+    mockPath = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     p.stepCount = 1;
     const wrapper = shallow(<AddCommandButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith("/app/designer/sequences/commands");
+    expect(push).toHaveBeenCalledWith(Path.designerSequences("commands"));
   });
 });
 

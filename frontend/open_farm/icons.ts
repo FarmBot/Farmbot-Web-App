@@ -1,5 +1,6 @@
+import { FilePath } from "../internal_urls";
+
 export const DATA_URI = "data:image/svg+xml;utf8,";
-export const DEFAULT_ICON = "/app-resources/img/generic-plant.svg";
 
 export interface OFCropAttrs {
   svg_icon?: string | undefined;
@@ -22,5 +23,5 @@ export interface OFCropResponse {
 export function svgToUrl(xml: string | undefined): string {
   return xml
     ? (DATA_URI + encodeURIComponent(xml))
-    : DEFAULT_ICON;
+    : FilePath.DEFAULT_ICON;
 }

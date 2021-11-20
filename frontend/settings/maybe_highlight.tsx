@@ -6,6 +6,7 @@ import { getUrlQuery, urlFriendly } from "../util";
 import { DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { push } from "../history";
+import { Path } from "../internal_urls";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -198,6 +199,7 @@ const APP_SETTINGS = [
   DeviceSetting.hideWebcamWidget,
   DeviceSetting.hideSensorsPanel,
   DeviceSetting.readSpeakLogsInBrowser,
+  DeviceSetting.browserFarmbotActivityBeep,
   DeviceSetting.discardUnsavedChanges,
   DeviceSetting.confirmEmergencyUnlock,
   DeviceSetting.userInterfaceReadOnlyMode,
@@ -272,6 +274,7 @@ ALTERNATE_NAMES[DeviceSetting.firmware].push(DeviceSetting.flashFirmware);
 ALTERNATE_NAMES[DeviceSetting.flashFirmware].push(DeviceSetting.firmware);
 ALTERNATE_NAMES[DeviceSetting.time_zone].push(DeviceSetting.timezone);
 ALTERNATE_NAMES[DeviceSetting.timezone].push(DeviceSetting.time_zone);
+ALTERNATE_NAMES[DeviceSetting.osAutoUpdate].push(DeviceSetting.osUpdateTime);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
@@ -407,7 +410,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 }
 
 export const linkToSetting = (settingName: DeviceSetting) =>
-  `/app/designer/settings?highlight=${urlFriendly(stripUnits(settingName))}`;
+  Path.settings(urlFriendly(stripUnits(settingName)));
 
 export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
 export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

@@ -1,4 +1,5 @@
-let mockPath = "/app/designer/weeds/1";
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.weeds(1));
 jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
   push: jest.fn(),
@@ -31,21 +32,21 @@ describe("<EditWeed />", () => {
   });
 
   it("redirects", () => {
-    mockPath = "/app/designer/weeds/nope";
+    mockPath = Path.mock(Path.weeds("nope"));
     const wrapper = mount(<EditWeed {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith("/app/designer/weeds");
+    expect(push).toHaveBeenCalledWith(Path.weeds());
   });
 
   it("doesn't redirect", () => {
-    mockPath = "/app/logs";
+    mockPath = Path.mock(Path.logs());
     const wrapper = mount(<EditWeed {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
     expect(push).not.toHaveBeenCalled();
   });
 
   it("renders", () => {
-    mockPath = "/app/designer/weeds/1";
+    mockPath = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;
@@ -55,7 +56,7 @@ describe("<EditWeed />", () => {
   });
 
   it("goes back", () => {
-    mockPath = "/app/designer/weeds/1";
+    mockPath = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;
@@ -68,7 +69,7 @@ describe("<EditWeed />", () => {
   });
 
   it("saves", () => {
-    mockPath = "/app/designer/weeds/1";
+    mockPath = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;
@@ -79,7 +80,7 @@ describe("<EditWeed />", () => {
   });
 
   it("doesn't save", () => {
-    mockPath = "/app/designer/logs";
+    mockPath = Path.mock(Path.logs());
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;

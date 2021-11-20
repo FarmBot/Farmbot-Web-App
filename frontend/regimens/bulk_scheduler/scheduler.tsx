@@ -14,6 +14,7 @@ import {
   maybeGetRegimen, selectAllSequences, maybeGetSequence,
 } from "../../resources/selectors";
 import { RegimenSchedulerProps } from "./interfaces";
+import { Path } from "../../internal_urls";
 
 export const mapStateToProps = (props: Everything): RegimenSchedulerProps => {
   const {
@@ -43,7 +44,7 @@ export class RawDesignerRegimenScheduler
         panelName={panelName}
         panel={Panel.Regimens}
         title={t("Scheduler")}
-        backTo={`/app/designer/regimens/${urlFriendly(regimenName)}`}>
+        backTo={Path.regimens(urlFriendly(regimenName))}>
         <AddButton
           active={!!this.props.sequences.length}
           onClick={() => this.props.dispatch(commitBulkEditor())} />

@@ -10,6 +10,7 @@ import { t } from "../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
+import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
 
 interface LogSettingRecord {
   label: string;
@@ -78,7 +79,8 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
 
   shouldComponentUpdate(nextProps: LogsSettingsMenuProps) {
     const data = (props: LogsSettingsMenuProps) =>
-      JSON.stringify(LOG_SETTING_NAMES.map(s => props.sourceFbosConfig(s)));
+      JSON.stringify(LOG_SETTING_NAMES.map(s => props.sourceFbosConfig(s)))
+      + props.markdown;
     return data(nextProps) !== data(this.props);
   }
 
@@ -97,6 +99,15 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
     };
     const { private_ip } = this.props.bot.hardware.informational_settings;
     return <div className={"logs-settings-menu"}>
+      <fieldset>
+        <label>
+          {t("Display raw")}
+        </label>
+        <ToggleButton
+          toggleValue={!this.props.markdown}
+          className={getModifiedClassNameSpecifyDefault(this.props.markdown, true)}
+          toggleAction={this.props.toggleMarkdown} />
+      </fieldset>
       {t("Sequence logs:")}
       {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
       {DevSettings.futureFeaturesEnabled() && private_ip &&

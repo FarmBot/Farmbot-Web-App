@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
 import { selectAllPointGroups } from "../resources/selectors";
@@ -13,6 +13,7 @@ import { edit, save } from "../api/crud";
 import { LocationSelection } from "../point_groups/criteria";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { botSize } from "../farm_designer/state_to_props";
+import { Path } from "../internal_urls";
 
 export interface EditZoneProps {
   dispatch: Function;
@@ -28,7 +29,7 @@ export const mapStateToProps = (props: Everything): EditZoneProps => ({
 });
 
 export class RawEditZone extends React.Component<EditZoneProps, {}> {
-  get stringyID() { return getPathArray()[4] || ""; }
+  get stringyID() { return Path.getSlug(Path.zones()); }
   get zone() {
     if (this.stringyID) {
       return this.props.findZone(parseInt(this.stringyID));
@@ -37,8 +38,8 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
 
   render() {
     const { zone } = this;
-    const zonesPath = "/app/designer/zones";
-    !zone && getPathArray().join("/").startsWith(zonesPath) && push(zonesPath);
+    const zonesPath = Path.zones();
+    !zone && Path.startsWith(zonesPath) && push(zonesPath);
     return <DesignerPanel panelName={"zone-info"} panel={Panel.Zones}>
       <DesignerPanelHeader
         panelName={"zone-info"}

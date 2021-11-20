@@ -9,17 +9,12 @@ jest.mock("../../settings/maybe_highlight", () => ({
   getHighlightName: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 jest.mock("../fbos_settings/boot_sequence_selector", () => ({
   BootSequenceSelector: () => <div />,
 }));
 
 let mockShouldDisplay = false;
-jest.mock("../../farmware/state_to_props", () => ({
+jest.mock("../../devices/should_display", () => ({
   shouldDisplayFeature: () => mockShouldDisplay,
 }));
 

@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { Panel } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
 import { TaggedGenericPointer } from "farmbot";
@@ -16,6 +16,7 @@ import {
 import { ListItem } from "../plants/plant_panel";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { save } from "../api/crud";
+import { Path } from "../internal_urls";
 
 export interface EditPointProps {
   dispatch: Function;
@@ -30,7 +31,7 @@ export const mapStateToProps = (props: Everything): EditPointProps => ({
 });
 
 export class RawEditPoint extends React.Component<EditPointProps, {}> {
-  get stringyID() { return getPathArray()[4] || ""; }
+  get stringyID() { return Path.getSlug(Path.points()); }
   get point() {
     if (this.stringyID) {
       return this.props.findPoint(parseInt(this.stringyID));
@@ -39,9 +40,8 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
   get panelName() { return "point-info"; }
 
   render() {
-    const pointsPath = "/app/designer/points";
-    !this.point && getPathArray().join("/").startsWith(pointsPath)
-      && push(pointsPath);
+    const pointsPath = Path.points();
+    !this.point && Path.startsWith(pointsPath) && push(pointsPath);
     return <DesignerPanel panelName={this.panelName} panel={Panel.Points}>
       <DesignerPanelHeader
         panelName={this.panelName}

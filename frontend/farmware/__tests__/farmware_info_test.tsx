@@ -5,11 +5,6 @@ jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 jest.mock("../actions", () => ({ retryFetchPackageName: jest.fn() }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  history: { getCurrentLocation: jest.fn(() => ({ pathname: "" })) }
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
@@ -22,6 +17,7 @@ import {
 import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
 import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => ({
@@ -101,7 +97,7 @@ describe("<FarmwareInfo />", () => {
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
     expect(destroy).toHaveBeenCalledWith(p.installations[0].uuid);
-    expect(push).toHaveBeenCalledWith("/app/designer/farmware");
+    expect(push).toHaveBeenCalledWith(Path.farmware());
   });
 
   it("doesn't remove Farmware from API", () => {

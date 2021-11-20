@@ -5,9 +5,6 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
-import {
-  NumberConfigKey as NumberFirmwareConfigKey,
-} from "farmbot/dist/resources/configs/firmware";
 
 export const PinReporting = (props: PinReportingProps) => {
   const commonProps = {
@@ -27,10 +24,10 @@ export const PinReporting = (props: PinReportingProps) => {
     <Collapse isOpen={!!props.settingsPanelState.pin_reporting}>
       <PinReportingMCUInputGroup {...commonProps}
         label={DeviceSetting.pinReporting1}
-        pinNumKey={"pin_report_1_pin_nr" as NumberFirmwareConfigKey} />
+        pinNumKey={"pin_report_1_pin_nr"} />
       <PinReportingMCUInputGroup {...commonProps}
         label={DeviceSetting.pinReporting2}
-        pinNumKey={"pin_report_2_pin_nr" as NumberFirmwareConfigKey} />
+        pinNumKey={"pin_report_2_pin_nr"} />
     </Collapse>
   </Highlight>;
 };

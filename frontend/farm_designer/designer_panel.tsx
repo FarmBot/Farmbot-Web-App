@@ -1,5 +1,5 @@
 import React from "react";
-import { history as routeHistory } from "../history";
+import { push } from "../history";
 import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
@@ -65,7 +65,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
       <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
-          props.backTo ? routeHistory.push(props.backTo) : history.back();
+          props.backTo ? push(props.backTo) : history.back();
           props.onBack?.();
         }} />
       {props.title &&
@@ -93,7 +93,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   </div>;
 };
 
-interface DesignerPanelTopProps {
+export interface DesignerPanelTopProps {
   panel: Panel;
   linkTo?: string;
   onClick?(): void;
@@ -104,7 +104,10 @@ interface DesignerPanelTopProps {
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   const withBtn = !!props.withButton || !!props.linkTo || !!props.onClick;
-  return <div className={`panel-top ${withBtn ? "with-button" : ""}`}>
+  return <div className={[
+    "panel-top",
+    withBtn ? "with-button" : "",
+  ].join(" ")}>
     {props.children}
     {props.onClick &&
       <a>
@@ -122,16 +125,19 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
   </div>;
 };
 
-interface DesignerPanelContentProps {
+export interface DesignerPanelContentProps {
   panelName: string;
   children?: React.ReactNode;
   className?: string;
 }
 
-export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
-  <div className={[
+export const DesignerPanelContent = (props: DesignerPanelContentProps) => {
+  const content = document.getElementsByClassName("panel-content")[0];
+  const contentScrolled = (content?.scrollTop || 0) > 0;
+  return <div className={[
     "panel-content",
     `${props.panelName}-panel-content`,
+    contentScrolled ? "scrolled" : "",
     props.className || "",
   ].join(" ")}>
     <ErrorBoundary>
@@ -139,3 +145,4 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
     </ErrorBoundary>
     <div className={"padding"}></div>
   </div>;
+};

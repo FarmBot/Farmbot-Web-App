@@ -8,11 +8,11 @@ import { FarmwareData, MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { NOTHING_SELECTED } from "./locals_list/handle_select";
 import { push } from "../history";
-import { inDesigner } from "../folders/component";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
-import { shouldDisplayFeature } from "../farmware/state_to_props";
+import { shouldDisplayFeature } from "../devices/should_display";
+import { Path } from "../internal_urls";
 
 export interface StepButtonProps {
   dispatch: Function;
@@ -215,7 +215,7 @@ export function StepButtonCluster(props: StepButtonProps) {
   const sequenceUrlName = urlFriendly(props.current?.body.name || "");
   const click = () => {
     scrollToBottom("sequenceDiv");
-    inDesigner() && push(`/app/designer/sequences/${sequenceUrlName}`);
+    Path.inDesigner() && push(Path.sequences(sequenceUrlName));
   };
   const pinnedSequences = props.sequences.filter(s => s.body.pinned);
   return <Row>

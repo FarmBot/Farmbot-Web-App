@@ -12,7 +12,7 @@ import { Header } from "../hardware_settings/header";
 import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
 import { OrderNumberRow } from "./order_number_row";
-import { shouldDisplayFeature } from "../../farmware/state_to_props";
+import { shouldDisplayFeature } from "../../devices/should_display";
 import { GardenLocationRow } from "./garden_location_row";
 
 export enum ColWidth {

@@ -1,6 +1,6 @@
 let mockPath = "";
 jest.mock("../../history", () => ({
-  history: { push: jest.fn() },
+  push: jest.fn(),
   getPathArray: jest.fn(() => mockPath.split("/"))
 }));
 
@@ -36,15 +36,17 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { history } from "../../history";
+import { push } from "../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { SpecialStatus } from "farmbot";
 import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { Path } from "../../internal_urls";
 
 describe("<SelectPlants />", () => {
-  beforeEach(function () {
-    mockPath = "/app/designer/plants/select";
+  beforeEach(() => {
+    mockPath = Path.mock(Path.plants("select"));
   });
 
   function fakeProps(): SelectPlantsProps {
@@ -66,6 +68,8 @@ describe("<SelectPlants />", () => {
       isActive: () => false,
       tools: [],
       groups: [],
+      timeSettings: fakeTimeSettings(),
+      bulkPlantSlug: undefined,
     };
   }
 
@@ -217,16 +221,24 @@ describe("<SelectPlants />", () => {
       { payload: undefined, type: Actions.SELECT_POINT });
   });
 
-  it("toggles more", () => {
+  it("toggles more selection options", () => {
     const p = fakeProps();
     const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    expect(wrapper.state().more).toEqual(false);
-    expect(wrapper.find(".select-more").props().hidden).toBeTruthy();
-    expect(wrapper.html()).not.toContain(" more status");
-    wrapper.find(".more").simulate("click");
-    expect(wrapper.state().more).toEqual(true);
-    expect(wrapper.find(".select-more").props().hidden).toBeFalsy();
-    expect(wrapper.html()).toContain(" more status");
+    expect(wrapper.state().moreSelections).toEqual(false);
+    expect(wrapper.find(".more-content").first().props().hidden).toBeTruthy();
+    wrapper.find(".more-button").first().simulate("click");
+    expect(wrapper.state().moreSelections).toEqual(true);
+    expect(wrapper.find(".more-content").first().props().hidden).toBeFalsy();
+  });
+
+  it("toggles more actions", () => {
+    const p = fakeProps();
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    expect(wrapper.state().moreActions).toEqual(false);
+    expect(wrapper.find(".more-content").last().props().hidden).toBeTruthy();
+    wrapper.find(".more-button").last().simulate("click");
+    expect(wrapper.state().moreActions).toEqual(true);
+    expect(wrapper.find(".more-content").last().props().hidden).toBeFalsy();
   });
 
   it("selects group items", () => {
@@ -470,6 +482,6 @@ describe("<SelectModeLink />", () => {
   it("navigates to panel", () => {
     const wrapper = shallow(<SelectModeLink />);
     wrapper.find("button").simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
+    expect(push).toHaveBeenCalledWith(Path.plants("select"));
   });
 });

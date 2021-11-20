@@ -3,6 +3,7 @@ import { TaggedSequence } from "farmbot";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
 import { VariableNameSet, UUID } from "../resources/interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface FolderMeta {
   open: boolean;
@@ -64,6 +65,7 @@ export interface FolderProps {
   dispatch: Function;
   resourceUsage: Record<UUID, boolean | undefined>;
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 export interface FolderState {
@@ -88,6 +90,13 @@ export interface FolderNodeProps {
   dispatch: Function;
   resourceUsage: Record<UUID, boolean | undefined>;
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
+  getWebAppConfigValue: GetWebAppConfigValue;
+}
+
+export interface SequenceButtonClusterProps {
+  sequence: TaggedSequence;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  dispatch: Function;
 }
 
 export interface FolderButtonClusterProps {
@@ -107,6 +116,7 @@ export interface FolderItemProps {
   dispatch: Function;
   variableData: VariableNameSet | undefined;
   inUse: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 export interface SequenceDropAreaProps {

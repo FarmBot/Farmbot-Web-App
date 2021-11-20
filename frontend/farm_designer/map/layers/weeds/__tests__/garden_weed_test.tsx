@@ -1,6 +1,8 @@
+import { Path } from "../../../../../internal_urls";
+const mockPath = Path.mock(Path.weeds());
 jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
-  getPathArray: jest.fn(),
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 import React from "react";
@@ -11,7 +13,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
-import { history } from "../../../../../history";
+import { push } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<GardenWeed />", () => {
@@ -33,6 +35,15 @@ describe("<GardenWeed />", () => {
     expect(wrapper.find("#weed-radius").props().r).toEqual(100);
     expect(wrapper.find("#weed-radius").props().opacity).toEqual(0.5);
     expect(wrapper.find("stop").first().props().stopColor).toEqual("red");
+    expect(wrapper.find(".new").length).toEqual(0);
+  });
+
+  it("renders weed with no id", () => {
+    const p = fakeProps();
+    p.weed.body.id = 0;
+    p.weed.body.meta.color = undefined;
+    const wrapper = svgMount(<GardenWeed {...p} />);
+    expect(wrapper.find(".new").length).toEqual(1);
   });
 
   it("renders weed color", () => {
@@ -86,8 +97,7 @@ describe("<GardenWeed />", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
     wrapper.find("g").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      `/app/designer/weeds/${p.weed.body.id}`);
+    expect(push).toHaveBeenCalledWith(Path.weeds(p.weed.body.id));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
       payload: [p.weed.uuid],

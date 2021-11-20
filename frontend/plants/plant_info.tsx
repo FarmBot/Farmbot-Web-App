@@ -10,14 +10,19 @@ import {
 import { t } from "../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../farm_designer/interfaces";
 import { isString } from "lodash";
-import { push, getPathArray } from "../history";
+import { push } from "../history";
 import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
 import { Panel } from "../farm_designer/panel_header";
+import { Path } from "../internal_urls";
 
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
-  get stringyID() { return getPathArray()[this.templates ? 5 : 4] || ""; }
+  get stringyID() {
+    return Path.getSlug((this.templates
+      ? Path.plantTemplates
+      : Path.plants)());
+  }
   get plant() { return this.props.findPlant(this.stringyID); }
   get confirmDelete() {
     const confirmSetting = this.props.getConfigValue(
@@ -37,11 +42,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   };
 
   fallback = () => {
-    const plantsPath = "/app/designer/plants";
-    const currentPath = getPathArray().join("/");
-    const templatePath = "/app/designer/gardens/templates";
-    (currentPath.startsWith(plantsPath) || currentPath.startsWith(templatePath))
-      && push(plantsPath);
+    const plantsPath = Path.plants();
+    const templatePath = Path.plantTemplates();
+    (Path.startsWith(plantsPath) || Path.startsWith(templatePath))
+      && !Path.startsWith(Path.cropSearch()) && push(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}
@@ -65,7 +69,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         specialStatus={plant.specialStatus}
         onSave={() => plant.uuid &&
           this.props.dispatch(save(plant.uuid))}
-        backTo={"/app/designer/plants"}
+        backTo={Path.plants()}
         onBack={unselectPlant(this.props.dispatch)} />
       <PlantPanel
         info={info}
