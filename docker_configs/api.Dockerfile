@@ -1,4 +1,4 @@
-FROM ruby:3.0.0
+FROM ruby:3.0.2
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - && \
   sh -c 'VERSION_CODENAME=buster; . /etc/os-release; echo "deb http://apt.postgresql.org/pub/repos/apt/ $VERSION_CODENAME-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
   apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql postgresql-contrib && \
