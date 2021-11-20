@@ -321,6 +321,7 @@ export interface CropCatalogProps {
   cropSearchInProgress: boolean;
   plant: TaggedPlantPointer | undefined;
   bulkPlantSlug: string | undefined;
+  hoveredPlant: HoveredPlantPayl;
 }
 
 export interface CropInfoProps {

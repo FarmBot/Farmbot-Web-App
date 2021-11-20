@@ -47,7 +47,7 @@ import { ExternalUrl } from "../external_urls";
 import { InputLengthIndicator } from "./inputs/input_length_indicator";
 import {
   License, loadSequenceVersion, SequencePreviewContent,
-} from "./panel/preview";
+} from "./panel/preview_support";
 import { Path } from "../internal_urls";
 import { UUID } from "../resources/interfaces";
 
