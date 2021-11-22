@@ -39,15 +39,17 @@ describe Sequence do
   end
 
   it "does not allow `numeric` in move_abs" do
-    fake_params[:body][0] = {
+    fake_params[:body] = [{
       kind: "move_absolute",
       args: {
         speed: 100,
         location: { kind: "identifier", args: { label: "var1" } },
         offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       },
-    },
+    }]
     result = Sequences::Create.run(**fake_params)
     expect(result.success?).to be(false)
+    error = result.errors["body"].message
+    expect(error).to include("but got numeric")
   end
 end
