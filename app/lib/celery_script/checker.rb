@@ -132,8 +132,6 @@ module CeleryScript
     end
 
     # This is where leaves get invalidated.
-    # IDEA: Add a refinement to string class to allow it to quack like other
-    #       special classes.
     def maybe_bad_leaf(node, key = nil)
       node.cross_check(corpus, key)
     end

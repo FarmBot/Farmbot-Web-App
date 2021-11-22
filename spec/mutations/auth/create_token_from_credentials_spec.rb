@@ -32,7 +32,7 @@ describe Auth::FromJwt do
     input = {
       email: "x@y.z",
       password: "password123",
-      fbos_version: Gem::Version.new("10.9.8"),
+      fbos_version: Gem::Version.new("17.0.0"),
     }
     x = Auth::CreateToken.run(input)
     expect(x.success?).to be false
