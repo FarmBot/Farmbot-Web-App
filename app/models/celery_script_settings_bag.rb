@@ -47,7 +47,7 @@ module CeleryScriptSettingsBag
   ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off read_status
                            reboot sync take_photo)
   ALLOWED_SPECIAL_VALUE = %w(current_location safe_height soil_height)
-  ANY_VARIABLE = %i(tool coordinate point identifier)
+  ANY_VARIABLE = %i(tool coordinate point identifier numeric)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. ' \
                           "Allowed values: %s"
   BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. ' \
@@ -160,7 +160,7 @@ module CeleryScriptSettingsBag
       defn: [n(:scope_declaration)],
     },
     location: {
-      defn: ANY_VAR_TOKENIZED,
+      defn: [n(:tool), n(:coordinate), n(:point), n(:identifier)],
     },
     milliseconds: {
       defn: [v(:integer)],

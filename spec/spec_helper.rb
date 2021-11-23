@@ -104,7 +104,7 @@ FAKE_ATTACHMENT_URL = "https://cdn.shopify.com/s/files/1/2040/0" \
                       "289/files/FarmBot.io_Trimmed_Logo_Gray_o" \
                       "n_Transparent_1_434x200.png?v=1525220371"
 
-def simulate_fbos_request(version = "10.1.2")
+def simulate_fbos_request(version = "17.1.2")
   ua = "FARMBOTOS/#{version} (RPI3) RPI3 (#{version})"
   allow(request).to receive(:user_agent).and_return(ua)
   request.env["HTTP_USER_AGENT"] = ua
