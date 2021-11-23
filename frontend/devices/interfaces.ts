@@ -52,6 +52,7 @@ export enum Feature {
   no_auto_reset = "no_auto_reset",
   no_firmware_logs = "no_firmware_logs",
   none_firmware = "none_firmware",
+  number_variables = "number_variables",
   ota_update_hour = "ota_update_hour",
   planted_at_now = "planted_at_now",
   pin_reporting = "pin_reporting",

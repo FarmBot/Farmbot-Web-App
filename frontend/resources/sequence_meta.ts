@@ -108,6 +108,11 @@ export const determineDropdown =
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });
         return { label: varName, value: "?" };
+      case "numeric":
+        return {
+          label: `${t("Number variable")}: ${data_value.args.number}`,
+          value: data_value.args.number,
+        };
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
         const pointer =

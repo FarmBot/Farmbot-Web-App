@@ -148,6 +148,15 @@ describe("determineDropdown", () => {
     expect(r.label).toBe(formatTool(tool, undefined).label);
     expect(r.value).toBe("" + tool.body.id);
   });
+
+  it("Returns a label for numeric", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: { label: "x", data_value: { kind: "numeric", args: { number: 1 } } }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Number variable: 1");
+    expect(r.value).toBe(1);
+  });
 });
 
 describe("determineVector()", () => {

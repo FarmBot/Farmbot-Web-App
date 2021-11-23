@@ -65,7 +65,10 @@ describe("<PlantInventory />", () => {
     const group2 = fakePointGroup();
     group2.body.name = "Weed Group";
     group2.body.criteria.string_eq = { pointer_type: ["Weed"] };
-    p.groups = [group1, group2];
+    const group3 = fakePointGroup();
+    group3.body.name = "Weed Group";
+    group3.body.criteria.string_eq = {};
+    p.groups = [group1, group2, group3];
     const wrapper = mount(<Plants {...p} />);
     expect(wrapper.text()).toContain("Groups (1)");
   });
