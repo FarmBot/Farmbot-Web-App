@@ -368,6 +368,21 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.text()).not.toContain("upgrade your copy to this version");
     wrapper.setState({ view: "public" });
     expect(wrapper.text()).toContain("upgrade your copy to this version");
+    expect(wrapper.find(".public-copy-toolbar").find("a").first().props().href)
+      .toEqual("");
+  });
+
+  it("renders public view with id", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    const p = fakeProps();
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...p} />);
+    wrapper.setState({ view: "public", sequencePreview: sequence });
+    expect(wrapper.text()).toContain("upgrade your copy to this version");
+    expect(wrapper.find(".public-copy-toolbar").find("a").first().props().href)
+      .toEqual(Path.sequenceVersion(1));
   });
 
   it("renders celery script view button: enabled", () => {

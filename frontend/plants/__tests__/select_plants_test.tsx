@@ -19,6 +19,7 @@ import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
   getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
   pointGroupSubset,
+  uncategorizedGroupSubset,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
@@ -475,6 +476,18 @@ describe("pointGroupSubset()", () => {
     const group2 = fakePointGroup();
     group2.body.criteria.string_eq = { pointer_type: ["Weed"] };
     expect(pointGroupSubset([group0, group1, group2], "Plant")).toEqual([group1]);
+  });
+});
+
+describe("uncategorizedGroupSubset()", () => {
+  it("returns filtered groups", () => {
+    const group0 = fakePointGroup();
+    group0.body.criteria.string_eq = {};
+    const group1 = fakePointGroup();
+    group1.body.criteria.string_eq = { pointer_type: ["Plant"] };
+    const group2 = fakePointGroup();
+    group2.body.criteria.string_eq = { pointer_type: ["Weed"] };
+    expect(uncategorizedGroupSubset([group0, group1, group2])).toEqual([group0]);
   });
 });
 

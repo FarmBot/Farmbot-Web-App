@@ -364,6 +364,14 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: Path.route(Path.sequenceVersion()),
+    getModule,
+    key,
+    getChild: () => import("./sequences/panel/preview"),
+    childKey: "DesignerSequencePreview"
+  }),
+  route({
+    children: true,
     $: Path.route(Path.sequenceVersion(":sequence_version_id")),
     getModule,
     key,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect, Help, Color } from "../../ui";
+import { Row, Col, FBSelect, Help, Color, BlurableInput } from "../../ui";
 import {
   locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
 } from "./location_form_list";
@@ -18,6 +18,10 @@ import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
+import { shouldDisplayFeature } from "../../devices/should_display";
+import { Feature } from "../../devices/interfaces";
+import { defensiveClone } from "../../util";
+import { Numeric } from "farmbot";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -93,6 +97,13 @@ export const LocationForm =
             <i className={"fa fa-trash"}
               style={props.inUse ? { color: Color.gray } : {}}
               onClick={() => removeVariable(label)} />}
+          {shouldDisplayFeature(Feature.number_variables) &&
+            <i className={"fa fa-list-ol"}
+              onClick={() => onChange(convertDDItoVariable({
+                identifierLabel: label,
+                allowedVariableNodes,
+                dropdown: { label: "", headingId: "Numeric", value: 0 },
+              }), label)} />}
         </div>}
       {!props.collapsed &&
         <div className="location-form-content">
@@ -112,6 +123,7 @@ export const LocationForm =
                 }} />
             </Col>
           </Row>
+          <NumericInput label={label} variable={variable} onChange={onChange} />
           <CoordinateInputBoxes
             variableNode={celeryNode}
             vector={vector}
@@ -125,6 +137,28 @@ export const LocationForm =
         </div>}
     </div>;
   };
+
+export interface NumericInputProps {
+  variable: SequenceMeta;
+  onChange: OnChange;
+  label: string;
+}
+
+export const NumericInput = (props: NumericInputProps) => {
+  const variableNode = props.variable.celeryNode;
+  return variableNode.kind == "variable_declaration" &&
+    variableNode.args.data_value.kind == "numeric"
+    ? <BlurableInput type={"number"}
+      className={"numeric-input"}
+      onCommit={e => {
+        const editableVariable = defensiveClone(variableNode);
+        (editableVariable.args.data_value as Numeric).args.number =
+          parseFloat(e.currentTarget.value);
+        props.onChange(editableVariable, props.label);
+      }}
+      value={variableNode.args.data_value.args.number} />
+    : <div />;
+};
 
 interface LabelProps {
   label: string;

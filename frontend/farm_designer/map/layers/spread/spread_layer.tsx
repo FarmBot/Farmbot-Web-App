@@ -64,10 +64,15 @@ export class SpreadCircle extends
   React.Component<SpreadCircleProps, SpreadCircleState> {
   state: SpreadCircleState = { spread: undefined, loaded: false };
 
-  componentDidMount = () => {
+  fetchSpread = () => {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread, loaded: true }));
   };
+
+  componentDidMount = () => this.fetchSpread();
+  componentDidUpdate = (prevProps: SpreadCircleProps) =>
+    this.props.plant.body.openfarm_slug != prevProps.plant.body.openfarm_slug &&
+    this.fetchSpread();
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;

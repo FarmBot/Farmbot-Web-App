@@ -17,8 +17,7 @@ export class GardenPlant extends
   state: GardenPlantState = { icon: FilePath.DEFAULT_ICON, hover: false };
 
   fetchIcon = () => {
-    const OFS = this.props.plant.body.openfarm_slug;
-    cachedCrop(OFS)
+    cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ svg_icon }) => {
         this.setState({ icon: svgToUrl(svg_icon) });
       });

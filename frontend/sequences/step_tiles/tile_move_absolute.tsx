@@ -57,7 +57,7 @@ export class TileMoveAbsolute
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
     const location = variable.args.data_value;
-    if (location.kind !== "point_group") {
+    if (location.kind !== "point_group" && location.kind !== "numeric") {
       return this.updateArgs({ location });
     }
   };
