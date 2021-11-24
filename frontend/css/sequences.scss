@@ -330,6 +330,12 @@
       padding: 1rem;
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;
+      .variable-icon {
+        margin: 0.5rem;
+        line-height: 0.5rem;
+        font-size: 1.2rem;
+        vertical-align: top;
+      }
       label,
       input {
         vertical-align: top;

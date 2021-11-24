@@ -4,7 +4,9 @@ jest.mock("../../../devices/should_display", () => ({
 }));
 
 import React from "react";
-import { LocationForm, NumericInput, NumericInputProps } from "../location_form";
+import {
+  LocationForm, NumericInput, NumericInputProps, VariableIcon, VariableIconProps,
+} from "../location_form";
 import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
@@ -285,5 +287,57 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 1 } }
       }
     }, "label");
+  });
+
+  it("changes default variable", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    const wrapper = mount(<NumericInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 1 } }
+      }
+    }, "label");
+  });
+});
+
+describe("<VariableIcon />", () => {
+  const fakeProps = (): VariableIconProps => ({
+    variable: {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "label", default_value: {
+            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+          }
+        }
+      },
+      dropdown: { label: "label", value: 0 },
+      vector: { x: 0, y: 0, z: 0 }
+    },
+  });
+
+  it("renders location icon", () => {
+    const wrapper = mount(<VariableIcon {...fakeProps()} />);
+    expect(wrapper.find("i").hasClass("fa-crosshairs")).toBeTruthy();
+  });
+
+  it("renders numeric icon", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    const wrapper = mount(<VariableIcon {...p} />);
+    expect(wrapper.find("i").hasClass("fa-hashtag")).toBeTruthy();
   });
 });
