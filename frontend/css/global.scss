@@ -1779,6 +1779,9 @@ ul {
 .lua-input {
   .lua-editor {
     height: 20rem;
+    &.full {
+      height: 40rem;
+    }
   }
   .char-limit {
     padding: 0.5rem;

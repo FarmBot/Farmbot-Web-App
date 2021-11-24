@@ -85,6 +85,7 @@ export const LocationForm =
     return <div className="location-form">
       {!props.hideHeader &&
         <div className="location-form-header">
+          <VariableIcon variable={variable} />
           <Label label={label} inUse={props.inUse || !removeVariable}
             variable={variable} onChange={onChange} />
           {isDefault &&
@@ -138,6 +139,26 @@ export const LocationForm =
     </div>;
   };
 
+const isNumeric = (variableNode: VariableNode) =>
+  ((variableNode.kind == "variable_declaration" ||
+    variableNode.kind == "parameter_application") &&
+    variableNode.args.data_value.kind == "numeric") ||
+  (variableNode.kind == "parameter_declaration" &&
+    variableNode.args.default_value.kind == "numeric");
+
+export interface VariableIconProps {
+  variable: SequenceMeta;
+}
+
+export const VariableIcon = (props: VariableIconProps) => {
+  const variableNode = props.variable.celeryNode;
+  const iconClass = () => {
+    if (isNumeric(variableNode)) { return "fa-hashtag"; }
+    return "fa-crosshairs";
+  };
+  return <i className={`fa ${iconClass()} variable-icon`} />;
+};
+
 export interface NumericInputProps {
   variable: SequenceMeta;
   onChange: OnChange;
@@ -146,17 +167,22 @@ export interface NumericInputProps {
 
 export const NumericInput = (props: NumericInputProps) => {
   const variableNode = props.variable.celeryNode;
-  return variableNode.kind == "variable_declaration" &&
-    variableNode.args.data_value.kind == "numeric"
+  return isNumeric(variableNode)
     ? <BlurableInput type={"number"}
       className={"numeric-input"}
       onCommit={e => {
         const editableVariable = defensiveClone(variableNode);
-        (editableVariable.args.data_value as Numeric).args.number =
-          parseFloat(e.currentTarget.value);
+        const value = parseFloat(e.currentTarget.value);
+        if (editableVariable.kind == "parameter_declaration") {
+          (editableVariable.args.default_value as Numeric).args.number = value;
+        } else {
+          (editableVariable.args.data_value as Numeric).args.number = value;
+        }
         props.onChange(editableVariable, props.label);
       }}
-      value={variableNode.args.data_value.args.number} />
+      value={variableNode.kind == "parameter_declaration"
+        ? (variableNode.args.default_value as Numeric).args.number
+        : (variableNode.args.data_value as Numeric).args.number} />
     : <div />;
 };
 

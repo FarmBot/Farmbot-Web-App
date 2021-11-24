@@ -6,6 +6,7 @@ import { Assertion, Lua } from "farmbot/dist/corpus";
 import { editStep } from "../../api/crud";
 import { InputLengthIndicator } from "../inputs/input_length_indicator";
 import { debounce } from "lodash";
+import { Path } from "../../internal_urls";
 
 export interface LuaTextAreaProps<Step extends Lua | Assertion>
   extends StepParams<Step> {
@@ -47,7 +48,7 @@ export class LuaTextArea<Step extends Lua | Assertion>
 
   render() {
     return <div className={"lua-input"}>
-      <div className={"lua-editor"}>
+      <div className={`lua-editor ${Path.inDesigner() ? "" : "full"}`}>
         {this.props.useMonacoEditor
           ? <Editor
             language={"lua"}
