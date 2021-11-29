@@ -8,7 +8,7 @@ import { capitalize } from "lodash";
 import { t } from "../i18next_wrapper";
 import { stopIE } from "./stop_ie";
 import { detectLanguage } from "../i18n";
-import I from "i18next";
+import { init } from "i18next";
 
 /** Dynamically change the meta title of the page. */
 export function updatePageInfo(pageName: string, panel?: string | undefined) {
@@ -40,5 +40,5 @@ export function attachToRoot<P>(
 
 export function entryPoint(page: ComponentClass | React.FunctionComponent) {
   stopIE();
-  detectLanguage().then(conf => I.init(conf, () => attachToRoot(page)));
+  detectLanguage().then(conf => init(conf, () => attachToRoot(page)));
 }

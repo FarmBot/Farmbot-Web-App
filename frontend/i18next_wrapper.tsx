@@ -1,6 +1,6 @@
 import { Dictionary } from "farmbot";
-import I from "i18next";
+import { t as translate } from "i18next";
 
 export function t(str: string, map: Dictionary<string | number> = {}): string {
-  return I.t(str, map) || "";
+  return translate(str, map) || "";
 }

@@ -6,7 +6,7 @@
 import { detectLanguage } from "./i18n";
 import { stopIE } from "./util/stop_ie";
 import { attachAppToDom } from "./routes";
-import I from "i18next";
+import { init } from "i18next";
 
 stopIE();
-detectLanguage().then(config => I.init(config, attachAppToDom));
+detectLanguage().then(config => init(config, attachAppToDom));

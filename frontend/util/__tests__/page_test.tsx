@@ -8,7 +8,7 @@ import { updatePageInfo, attachToRoot, entryPoint } from "../page";
 import React from "react";
 import { detectLanguage } from "../../i18n";
 import { stopIE } from "../stop_ie";
-import I from "i18next";
+import { init } from "i18next";
 
 describe("updatePageInfo()", () => {
   it("sets page title", () => {
@@ -51,7 +51,7 @@ describe("entryPoint()", () => {
     await entryPoint(Foo);
     expect(document.body.innerHTML).toEqual("<div id=\"root\"><p></p></div>");
     expect(detectLanguage).toHaveBeenCalled();
-    expect(I.init).toHaveBeenCalled();
+    expect(init).toHaveBeenCalled();
     expect(stopIE).toHaveBeenCalled();
   });
 });
