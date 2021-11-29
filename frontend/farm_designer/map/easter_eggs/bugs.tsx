@@ -1,12 +1,12 @@
 import React from "react";
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
-import { random, range, some, clamp, sample, every } from "lodash";
+import { random, range, some, clamp, sample } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
 import { Row, Col, ToggleButton } from "../../../ui";
-import { getHighlightName } from "../../../settings/maybe_highlight";
 import { BUGS, FilePath, Bug as BugSlug } from "../../../internal_urls";
+import { showByEveryTerm } from "../../../settings";
 
 export interface BugsProps {
   mapTransformProps: MapTransformProps;
@@ -58,7 +58,7 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
         r: random(25, 100),
         hp: 100,
         alive: true,
-        slug: sample(BUGS) || BugSlug.caterpillar,
+        slug: sample(BUGS) as BugSlug,
       })),
       startTime: this.seconds
     });
@@ -149,8 +149,8 @@ const Setting = (title: string, key: string, value: string) => {
   </div>;
 };
 
-export const ExtraSettings = (term: string) => {
-  return every([term, getHighlightName()], x => x == "surprise") &&
+export const ExtraSettings = (searchTerm: string) => {
+  return showByEveryTerm("surprise", searchTerm) &&
     <div className={"settings"}>
       {Setting("Bug Attack", EggKeys.BRING_ON_THE_BUGS, "true")}
     </div>;

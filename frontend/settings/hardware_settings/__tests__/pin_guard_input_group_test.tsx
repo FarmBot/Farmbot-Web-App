@@ -11,21 +11,19 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
 
-describe("<PinGuardMCUInputGroup/>", () => {
-  const fakeProps = (): PinGuardMCUInputGroupProps => {
-    return {
-      label: DeviceSetting.pinGuard1,
-      pinNumKey: "pin_guard_1_pin_nr",
-      timeoutKey: "pin_guard_1_time_out",
-      activeStateKey: "pin_guard_1_active_state",
-      dispatch: jest.fn(),
-      sourceFwConfig: x =>
-        ({ value: bot.hardware.mcu_params[x], consistent: true }),
-      firmwareHardware: undefined,
-      resources: buildResourceIndex([]).index,
-      disabled: false,
-    };
-  };
+describe("<PinGuardMCUInputGroup />", () => {
+  const fakeProps = (): PinGuardMCUInputGroupProps => ({
+    label: DeviceSetting.pinGuard1,
+    pinNumKey: "pin_guard_1_pin_nr",
+    timeoutKey: "pin_guard_1_time_out",
+    activeStateKey: "pin_guard_1_active_state",
+    dispatch: jest.fn(),
+    sourceFwConfig: x =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
+    resources: buildResourceIndex([]).index,
+    disabled: false,
+  });
 
   it("calls toggle action", () => {
     const p = fakeProps();

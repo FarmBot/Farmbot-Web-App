@@ -235,15 +235,17 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
   if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
   if (headerForm) { return []; }
-  const oldVariables = variables.map(variable_ => ({
-    value: variable_.args.label,
-    label: determineVarDDILabel({
-      label: variable_.args.label,
-      resources,
-      uuid: sequenceUuid,
-    }),
-    headingId,
-  }));
+  const oldVariables = variables
+    .filter(v => !isNumeric(v))
+    .map(variable_ => ({
+      value: variable_.args.label,
+      label: determineVarDDILabel({
+        label: variable_.args.label,
+        resources,
+        uuid: sequenceUuid,
+      }),
+      headingId,
+    }));
   const newVarLabel = generateNewVariableLabel(variables);
   const newVariable = [{
     value: newVarLabel,

@@ -15,7 +15,7 @@ import {
   AxisSettings, Motors, EncodersOrStallDetection, LimitSwitches,
   ErrorHandling, PinGuard, ParameterManagement, PinReporting,
 } from "./hardware_settings";
-import { maybeOpenPanel } from "./maybe_highlight";
+import { getHighlightName, maybeOpenPanel } from "./maybe_highlight";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { DesignerSettingsProps } from "./interfaces";
 import { Designer } from "./farm_designer_settings";
@@ -35,10 +35,8 @@ import { ReSeedAccount } from "../messages/cards";
 import {
   InterpolationSettings,
 } from "../farm_designer/map/layers/points/interpolation_map";
-import { getUrlQuery } from "../util";
+import { getUrlQuery, urlFriendly } from "../util";
 import { push } from "../history";
-import { shouldDisplayFeature } from "../devices/should_display";
-import { Feature } from "../devices/interfaces";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -141,7 +139,7 @@ export class RawDesignerSettings
           resources={resources}
           firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
-        {shouldDisplayFeature(Feature.pin_reporting) &&
+        {showByEveryTerm("pin reporting", this.props.searchTerm) &&
           <PinReporting {...commonProps}
             arduinoBusy={busy}
             resources={resources}
@@ -190,5 +188,8 @@ export class RawDesignerSettings
 
 const showByTerm = (term: string, searchTerm: string) =>
   getUrlQuery("only") == term || searchTerm.toLowerCase() == term.toLowerCase();
+
+export const showByEveryTerm = (term: string, searchTerm: string) =>
+  searchTerm == term && getHighlightName() == urlFriendly(term);
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);
