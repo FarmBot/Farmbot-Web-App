@@ -10,7 +10,7 @@ export const PinReporting = (props: PinReportingProps) => {
   const commonProps = {
     dispatch: props.dispatch,
     resources: props.resources,
-    disabled: props.arduinoBusy,
+    disabled: true,
     sourceFwConfig: props.sourceFwConfig,
     firmwareHardware: props.firmwareHardware,
   };

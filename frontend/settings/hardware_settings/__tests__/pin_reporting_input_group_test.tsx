@@ -8,19 +8,17 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
 
-describe("<PinReportingMCUInputGroup/>", () => {
-  const fakeProps = (): PinReportingMCUInputGroupProps => {
-    return {
-      label: DeviceSetting.pinReporting1,
-      pinNumKey: "pin_report_1_pin_nr",
-      dispatch: jest.fn(),
-      sourceFwConfig: x =>
-        ({ value: bot.hardware.mcu_params[x], consistent: true }),
-      firmwareHardware: undefined,
-      resources: buildResourceIndex([]).index,
-      disabled: false,
-    };
-  };
+describe("<PinReportingMCUInputGroup />", () => {
+  const fakeProps = (): PinReportingMCUInputGroupProps => ({
+    label: DeviceSetting.pinReporting1,
+    pinNumKey: "pin_report_1_pin_nr",
+    dispatch: jest.fn(),
+    sourceFwConfig: x =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    firmwareHardware: undefined,
+    resources: buildResourceIndex([]).index,
+    disabled: false,
+  });
 
   it("renders", () => {
     const wrapper = mount(<PinReportingMCUInputGroup {...fakeProps()} />);

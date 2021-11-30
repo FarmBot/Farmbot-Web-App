@@ -1,5 +1,5 @@
-jest.mock("../../../../settings/maybe_highlight", () => ({
-  getHighlightName: () => "surprise",
+jest.mock("../../../../settings/index", () => ({
+  showByEveryTerm: () => true,
 }));
 
 import React from "react";

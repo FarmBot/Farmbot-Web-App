@@ -52,7 +52,7 @@ export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
       .concat(shouldDisplayFeature(Feature.calibration_total_retries) ? [] : T_KEYS)
-      .concat(shouldDisplayFeature(Feature.pin_reporting) ? [] : REPORT_KEYS)
+      .concat(REPORT_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>
     props.sourceFwConfig(key).consistent);

@@ -16,7 +16,7 @@ jest.mock("../routes", () => ({ attachAppToDom: jest.fn() }));
 
 import { stopIE } from "../util/stop_ie";
 import { detectLanguage } from "../i18n";
-import I from "i18next";
+import { init } from "i18next";
 
 describe("entry file", () => {
   it("Calls the expected callbacks", async () => {
@@ -24,6 +24,6 @@ describe("entry file", () => {
 
     expect(stopIE).toHaveBeenCalled();
     expect(detectLanguage).toHaveBeenCalled();
-    expect(I.init).toHaveBeenCalled();
+    expect(init).toHaveBeenCalled();
   });
 });
