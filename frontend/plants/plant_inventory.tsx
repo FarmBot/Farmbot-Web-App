@@ -26,7 +26,7 @@ import {
 } from "farmbot";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { SavedGardenList } from "../saved_gardens/garden_list";
-import { pointGroupSubset } from "./select_plants";
+import { pointGroupSubset, uncategorizedGroupSubset } from "./select_plants";
 import { Collapse } from "@blueprintjs/core";
 import { createGroup } from "../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
@@ -103,6 +103,7 @@ export class RawPlants
     const filteredGroups = plantGroups
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
+    const uncategorizedGroups = uncategorizedGroupSubset(this.props.groups);
     const noSearchResults = this.state.searchTerm && filteredPlants.length == 0;
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
       <DesignerNavTabs />
@@ -125,15 +126,31 @@ export class RawPlants
           addTitle={t("add new group")}
           addClassName={"plus-group"}
           title={t("Plant Groups")}>
-          {filteredGroups
-            .map(group => <GroupInventoryItem
-              key={group.uuid}
-              group={group}
-              allPoints={this.props.allPoints}
-              hovered={false}
-              dispatch={dispatch}
-              onClick={this.navigate(group.body.id)}
-            />)}
+          <div className={"plant-groups"}>
+            {filteredGroups
+              .map(group => <GroupInventoryItem
+                key={group.uuid}
+                group={group}
+                allPoints={this.props.allPoints}
+                hovered={false}
+                dispatch={dispatch}
+                onClick={this.navigate(group.body.id)}
+              />)}
+          </div>
+          {uncategorizedGroups.length > 0
+            ? <label style={{ marginLeft: "1rem" }}>{t("uncategorized")}</label>
+            : <div />}
+          <div className={"uncategorized-groups"}>
+            {uncategorizedGroups
+              .map(group => <GroupInventoryItem
+                key={group.uuid}
+                group={group}
+                allPoints={this.props.allPoints}
+                hovered={false}
+                dispatch={dispatch}
+                onClick={this.navigate(group.body.id)}
+              />)}
+          </div>
         </PanelSection>
         <PanelSection isOpen={plantsPanelState.savedGardens}
           panel={Panel.Plants}

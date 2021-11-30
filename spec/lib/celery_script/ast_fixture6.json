@@ -1,0 +1,32 @@
+{
+  "name": "numeric var input",
+  "args": {
+    "locals": {
+      "kind": "scope_declaration",
+      "args": {},
+      "body": [
+        {
+          "kind": "variable_declaration",
+          "args": {
+            "label": "var1",
+            "data_value": {
+              "kind": "numeric",
+              "args": {
+                "number": 123
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sequence_name": "Delete Me"
+  },
+  "body": [
+    {
+      "args": {
+        "lua": "print(inspect(variable(\"var1\")))"
+      },
+      "kind": "lua"
+    }
+  ]
+}

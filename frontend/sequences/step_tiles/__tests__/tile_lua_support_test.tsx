@@ -4,6 +4,12 @@ lodash.debounce = jest.fn(x => x);
 const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
+import { Path } from "../../../internal_urls";
+let mockPath = Path.mock(Path.designer());
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
@@ -57,5 +63,17 @@ describe("<LuaTextArea />", () => {
     });
     fallback.find("textarea").simulate("blur");
     expect(mockEditStep).not.toHaveBeenCalled();
+  });
+
+  it("renders for designer", () => {
+    mockPath = Path.mock(Path.designer());
+    const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
+    expect(wrapper.find(".lua-editor").hasClass("full")).toBeFalsy();
+  });
+
+  it("renders full editor", () => {
+    mockPath = Path.mock(Path.sequencePage());
+    const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
+    expect(wrapper.find(".lua-editor").hasClass("full")).toBeTruthy();
   });
 });

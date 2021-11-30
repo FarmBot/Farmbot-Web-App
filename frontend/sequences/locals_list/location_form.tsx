@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect, Help, Color } from "../../ui";
+import { Row, Col, FBSelect, Help, Color, BlurableInput } from "../../ui";
 import {
   locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
 } from "./location_form_list";
@@ -18,6 +18,10 @@ import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
+import { shouldDisplayFeature } from "../../devices/should_display";
+import { Feature } from "../../devices/interfaces";
+import { defensiveClone } from "../../util";
+import { Numeric } from "farmbot";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -81,6 +85,7 @@ export const LocationForm =
     return <div className="location-form">
       {!props.hideHeader &&
         <div className="location-form-header">
+          <VariableIcon variable={variable} />
           <Label label={label} inUse={props.inUse || !removeVariable}
             variable={variable} onChange={onChange} />
           {isDefault &&
@@ -93,6 +98,13 @@ export const LocationForm =
             <i className={"fa fa-trash"}
               style={props.inUse ? { color: Color.gray } : {}}
               onClick={() => removeVariable(label)} />}
+          {shouldDisplayFeature(Feature.number_variables) &&
+            <i className={"fa fa-list-ol"}
+              onClick={() => onChange(convertDDItoVariable({
+                identifierLabel: label,
+                allowedVariableNodes,
+                dropdown: { label: "", headingId: "Numeric", value: 0 },
+              }), label)} />}
         </div>}
       {!props.collapsed &&
         <div className="location-form-content">
@@ -112,6 +124,7 @@ export const LocationForm =
                 }} />
             </Col>
           </Row>
+          <NumericInput label={label} variable={variable} onChange={onChange} />
           <CoordinateInputBoxes
             variableNode={celeryNode}
             vector={vector}
@@ -125,6 +138,53 @@ export const LocationForm =
         </div>}
     </div>;
   };
+
+const isNumeric = (variableNode: VariableNode) =>
+  ((variableNode.kind == "variable_declaration" ||
+    variableNode.kind == "parameter_application") &&
+    variableNode.args.data_value.kind == "numeric") ||
+  (variableNode.kind == "parameter_declaration" &&
+    variableNode.args.default_value.kind == "numeric");
+
+export interface VariableIconProps {
+  variable: SequenceMeta;
+}
+
+export const VariableIcon = (props: VariableIconProps) => {
+  const variableNode = props.variable.celeryNode;
+  const iconClass = () => {
+    if (isNumeric(variableNode)) { return "fa-hashtag"; }
+    return "fa-crosshairs";
+  };
+  return <i className={`fa ${iconClass()} variable-icon`} />;
+};
+
+export interface NumericInputProps {
+  variable: SequenceMeta;
+  onChange: OnChange;
+  label: string;
+}
+
+export const NumericInput = (props: NumericInputProps) => {
+  const variableNode = props.variable.celeryNode;
+  return isNumeric(variableNode)
+    ? <BlurableInput type={"number"}
+      className={"numeric-input"}
+      onCommit={e => {
+        const editableVariable = defensiveClone(variableNode);
+        const value = parseFloat(e.currentTarget.value);
+        if (editableVariable.kind == "parameter_declaration") {
+          (editableVariable.args.default_value as Numeric).args.number = value;
+        } else {
+          (editableVariable.args.data_value as Numeric).args.number = value;
+        }
+        props.onChange(editableVariable, props.label);
+      }}
+      value={variableNode.kind == "parameter_declaration"
+        ? (variableNode.args.default_value as Numeric).args.number
+        : (variableNode.args.data_value as Numeric).args.number} />
+    : <div />;
+};
 
 interface LabelProps {
   label: string;
@@ -175,15 +235,17 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
   if (!displayVariables) { return []; }
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
   if (headerForm) { return []; }
-  const oldVariables = variables.map(variable_ => ({
-    value: variable_.args.label,
-    label: determineVarDDILabel({
-      label: variable_.args.label,
-      resources,
-      uuid: sequenceUuid,
-    }),
-    headingId,
-  }));
+  const oldVariables = variables
+    .filter(v => !isNumeric(v))
+    .map(variable_ => ({
+      value: variable_.args.label,
+      label: determineVarDDILabel({
+        label: variable_.args.label,
+        resources,
+        uuid: sequenceUuid,
+      }),
+      headingId,
+    }));
   const newVarLabel = generateNewVariableLabel(variables);
   const newVariable = [{
     value: newVarLabel,

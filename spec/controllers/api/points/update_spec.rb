@@ -80,7 +80,7 @@ describe Api::PointsController do
     end
 
     it "logs failed updates" do
-      ua = "FarmbotOS/10.0.0 (host) host ()"
+      ua = "FarmbotOS/17.0.0 (host) host ()"
       allow(request).to receive(:user_agent).and_return(ua)
       sign_in user
       request.env["HTTP_USER_AGENT"] = ua

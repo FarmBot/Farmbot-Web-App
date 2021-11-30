@@ -11,7 +11,7 @@ type TrailRecord = {
   coord: Record<"x" | "y", number | undefined>,
   miss: Record<Xyz, number | undefined> | undefined,
   water: number | undefined
-} | undefined;
+};
 
 export enum VirtualTrail {
   records = "virtualTrailRecords",
@@ -24,7 +24,7 @@ function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[]
   const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]") as string);
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
-  if (update?.coord &&
+  if (update.coord &&
     (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
     arr.push(update); // unique addition
   } else { // nothing new to add, increase water circle size if watering
@@ -63,13 +63,13 @@ export function BotTrail(props: BotTrailProps) {
     opacity: number,
   ) =>
     <g id={"missed-steps"}>
-      {missed?.x && missed?.x > 50 &&
+      {missed?.x && missed.x > 50 &&
         <text x={position.qx - 5} y={position.qy} textAnchor={"end"}
           fill={indicatorColor(missed.x)} fillOpacity={opacity}>X</text>}
-      {missed?.y && missed?.y > 50 &&
+      {missed?.y && missed.y > 50 &&
         <text x={position.qx} y={position.qy} textAnchor={"middle"}
           fill={indicatorColor(missed.y)} fillOpacity={opacity}>Y</text>}
-      {missed?.z && missed?.z > 50 &&
+      {missed?.z && missed.z > 50 &&
         <text x={position.qx + 5} y={position.qy} textAnchor={"start"}
           fill={indicatorColor(missed.z)} fillOpacity={opacity}>Z</text>}
     </g>;

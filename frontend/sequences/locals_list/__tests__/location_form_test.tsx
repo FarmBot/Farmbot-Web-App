@@ -1,5 +1,12 @@
+let mockShouldDisplay = false;
+jest.mock("../../../devices/should_display", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import React from "react";
-import { LocationForm } from "../location_form";
+import {
+  LocationForm, NumericInput, NumericInputProps, VariableIcon, VariableIconProps,
+} from "../location_form";
 import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
@@ -14,6 +21,7 @@ import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
+import { changeBlurableInput } from "../../../__test_support__/helpers";
 
 describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
@@ -224,5 +232,112 @@ describe("<LocationForm />", () => {
     p.removeVariable = undefined;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(".fa-trash").length).toEqual(0);
+  });
+
+  it("changes to number variable", () => {
+    const p = fakeProps();
+    mockShouldDisplay = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    wrapper.find(".fa-list-ol").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      },
+    }, "label");
+  });
+});
+
+describe("<NumericInput />", () => {
+  const fakeProps = (): NumericInputProps => ({
+    variable: {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "label", default_value: {
+            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+          }
+        }
+      },
+      dropdown: { label: "label", value: 0 },
+      vector: { x: 0, y: 0, z: 0 }
+    },
+    onChange: jest.fn(),
+    label: "label",
+  });
+
+  it("doesn't render input", () => {
+    const wrapper = mount(<NumericInput {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("numeric-input");
+  });
+
+  it("changes variable", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    const wrapper = mount(<NumericInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 1 } }
+      }
+    }, "label");
+  });
+
+  it("changes default variable", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    const wrapper = mount(<NumericInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 1 } }
+      }
+    }, "label");
+  });
+});
+
+describe("<VariableIcon />", () => {
+  const fakeProps = (): VariableIconProps => ({
+    variable: {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "label", default_value: {
+            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+          }
+        }
+      },
+      dropdown: { label: "label", value: 0 },
+      vector: { x: 0, y: 0, z: 0 }
+    },
+  });
+
+  it("renders location icon", () => {
+    const wrapper = mount(<VariableIcon {...fakeProps()} />);
+    expect(wrapper.find("i").hasClass("fa-crosshairs")).toBeTruthy();
+  });
+
+  it("renders numeric icon", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    const wrapper = mount(<VariableIcon {...p} />);
+    expect(wrapper.find("i").hasClass("fa-hashtag")).toBeTruthy();
   });
 });

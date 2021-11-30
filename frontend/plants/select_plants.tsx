@@ -70,6 +70,10 @@ export const pointGroupSubset =
       (validPointTypes(p.body.criteria.string_eq.pointer_type) || [])
         .includes(pointerType));
 
+export const uncategorizedGroupSubset = (groups: TaggedPointGroup[]) =>
+  groups.filter(p =>
+    (validPointTypes(p.body.criteria.string_eq.pointer_type) || []).length < 1);
+
 export const setSelectionPointType = (payload: PointType[] | undefined) =>
   (dispatch: Function) =>
     dispatch({ type: Actions.SET_SELECTION_POINT_TYPE, payload });

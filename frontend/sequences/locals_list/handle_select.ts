@@ -12,6 +12,7 @@ import {
   ScopeDeclarationBodyItem,
   VariableDeclaration,
   PointGroup,
+  Numeric,
 } from "farmbot";
 import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
 import { betterCompact } from "../../util";
@@ -29,6 +30,7 @@ type DataValue =
   | Identifier
   | Point
   | PointGroup
+  | Numeric
   | Tool;
 
 type CreateVariableDeclaration =
@@ -96,6 +98,14 @@ const groupVar = (value: string | number) => ({
     args: { point_group_id: parseInt("" + value) }
   });
 
+const numberVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "numeric",
+    args: { number: parseFloat("" + value) }
+  });
+
 const manualEntry = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
@@ -141,6 +151,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Variable": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup": return groupVar(ddi.value)(props);
+    case "Numeric": return numberVar(ddi.value)(props);
   }
   console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;

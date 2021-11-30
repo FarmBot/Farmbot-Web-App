@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   SpreadLayer, SpreadLayerProps, SpreadCircle, SpreadCircleProps,
 } from "../spread_layer";
@@ -8,6 +8,7 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
+import { cachedCrop } from "../../../../../open_farm/cached_crop";
 
 describe("<SpreadLayer/>", () => {
   const fakeProps = (): SpreadLayerProps => ({
@@ -62,5 +63,16 @@ describe("<SpreadCircle />", () => {
     expect(wrapper.find("circle").props().r).toEqual(100);
     expect(wrapper.find("circle").hasClass("animate")).toBeTruthy();
     expect(wrapper.find("circle").props().fill).toEqual("none");
+  });
+
+  it("fetches icon", () => {
+    const p = fakeProps();
+    p.plant.body.openfarm_slug = "slug";
+    const np = fakeProps();
+    np.plant.body.openfarm_slug = "new-slug";
+    const wrapper = shallow(<SpreadCircle {...p} />);
+    wrapper.setProps(np);
+    expect(cachedCrop).toHaveBeenCalledWith("slug");
+    expect(cachedCrop).toHaveBeenCalledWith("new-slug");
   });
 });

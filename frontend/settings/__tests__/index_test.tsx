@@ -3,19 +3,15 @@ jest.mock("../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
+let mockHighlightName = "";
 jest.mock("../../settings/maybe_highlight", () => ({
   maybeOpenPanel: jest.fn(),
   Highlight: (p: { children: React.ReactChild }) => <div>{p.children}</div>,
-  getHighlightName: jest.fn(),
+  getHighlightName: jest.fn(() => mockHighlightName),
 }));
 
 jest.mock("../fbos_settings/boot_sequence_selector", () => ({
   BootSequenceSelector: () => <div />,
-}));
-
-let mockShouldDisplay = false;
-jest.mock("../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
 }));
 
 import React from "react";
@@ -80,13 +76,15 @@ describe("<DesignerSettings />", () => {
     const settings = wrapper.find(".designer-setting");
     expect(settings.length).toBeGreaterThanOrEqual(8);
     expect(wrapper.text().toLowerCase()).not.toContain("unstable fe");
+    expect(wrapper.text().toLowerCase()).not.toContain("reporting");
   });
 
   it("renders all settings", () => {
-    mockShouldDisplay = true;
-    const wrapper = mount(<DesignerSettings {...fakeProps()} />);
+    mockHighlightName = "pin_reporting";
+    const p = fakeProps();
+    p.searchTerm = "pin reporting";
+    const wrapper = mount(<DesignerSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("reporting");
-    mockShouldDisplay = false;
   });
 
   it("mounts", () => {

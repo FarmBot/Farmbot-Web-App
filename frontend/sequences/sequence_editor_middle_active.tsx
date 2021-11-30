@@ -665,7 +665,7 @@ const PublicCopyToolbar = (props: PublicCopyToolbarProps) => {
       {t("upgrade your copy to this version")}
     </button>
     <Link
-      to={Path.sequenceVersion(previewVersionId)}>
+      to={previewVersionId ? Path.sequenceVersion(previewVersionId) : ""}>
       <i className={"fa fa-link"} />
     </Link>
   </div>;

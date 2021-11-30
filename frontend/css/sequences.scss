@@ -330,6 +330,12 @@
       padding: 1rem;
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;
+      .variable-icon {
+        margin: 0.5rem;
+        line-height: 0.5rem;
+        font-size: 1.2rem;
+        vertical-align: top;
+      }
       label,
       input {
         vertical-align: top;
@@ -367,6 +373,11 @@
         display: inline;
         margin-left: 1rem;
         font-size: 1.2rem;
+      }
+      .fa-list-ol {
+        font-size: 1rem;
+        vertical-align: top;
+        line-height: 1.75rem;
       }
     }
     >.location-form-content {
