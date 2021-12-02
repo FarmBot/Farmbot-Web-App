@@ -5,7 +5,8 @@ jest.mock("../../../devices/should_display", () => ({
 
 import React from "react";
 import {
-  LocationForm, NumericInput, NumericInputProps, VariableIcon, VariableIconProps,
+  LocationForm, NumericInput, NumericInputProps, TextInput, TextInputProps,
+  VariableIcon, VariableIconProps,
 } from "../location_form";
 import {
   fakeSequence,
@@ -238,11 +239,24 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     mockShouldDisplay = true;
     const wrapper = shallow(<LocationForm {...p} />);
-    wrapper.find(".fa-list-ol").simulate("click");
+    wrapper.find(".fa-hashtag").last().simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "variable_declaration",
       args: {
         label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      },
+    }, "label");
+  });
+
+  it("changes to string variable", () => {
+    const p = fakeProps();
+    mockShouldDisplay = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    wrapper.find(".fa-font").last().simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
       },
     }, "label");
   });
@@ -308,6 +322,66 @@ describe("<NumericInput />", () => {
   });
 });
 
+describe("<TextInput />", () => {
+  const fakeProps = (): TextInputProps => ({
+    variable: {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "label", default_value: {
+            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+          }
+        }
+      },
+      dropdown: { label: "label", value: 0 },
+      vector: { x: 0, y: 0, z: 0 }
+    },
+    onChange: jest.fn(),
+    label: "label",
+  });
+
+  it("doesn't render input", () => {
+    const wrapper = mount(<TextInput {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("text-input");
+  });
+
+  it("changes variable", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    const wrapper = mount(<TextInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "1" } }
+      }
+    }, "label");
+  });
+
+  it("changes default variable", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    const wrapper = mount(<TextInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "1" } }
+      }
+    }, "label");
+  });
+});
+
 describe("<VariableIcon />", () => {
   const fakeProps = (): VariableIconProps => ({
     variable: {
@@ -339,5 +413,17 @@ describe("<VariableIcon />", () => {
     };
     const wrapper = mount(<VariableIcon {...p} />);
     expect(wrapper.find("i").hasClass("fa-hashtag")).toBeTruthy();
+  });
+
+  it("renders text icon", () => {
+    const p = fakeProps();
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "text" } }
+      }
+    };
+    const wrapper = mount(<VariableIcon {...p} />);
+    expect(wrapper.find("i").hasClass("fa-font")).toBeTruthy();
   });
 });
