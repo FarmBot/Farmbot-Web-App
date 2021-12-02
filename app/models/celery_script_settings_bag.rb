@@ -47,7 +47,7 @@ module CeleryScriptSettingsBag
   ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off read_status
                            reboot sync take_photo)
   ALLOWED_SPECIAL_VALUE = %w(current_location safe_height soil_height)
-  ANY_VARIABLE = %i(tool coordinate point identifier numeric)
+  ANY_VARIABLE = %i(tool coordinate point identifier numeric text)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. ' \
                           "Allowed values: %s"
   BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. ' \
@@ -141,77 +141,26 @@ module CeleryScriptSettingsBag
   ANY_VAR_TOKENIZED = ANY_VARIABLE.map { |x| n(x) }
 
   CORPUS_ARGS = {
-    _else: {
-      defn: [n(:execute), n(:nothing)],
-    },
-    _then: {
-      defn: [n(:execute), n(:nothing)],
-    },
-    data_value: {
-      defn: ANY_VAR_TOKENIZED + [n(:point_group)],
-    },
-    default_value: {
-      defn: ANY_VAR_TOKENIZED,
-    },
-    label: {
-      defn: [v(:string)],
-    },
-    locals: {
-      defn: [n(:scope_declaration)],
-    },
-    location: {
-      defn: [n(:tool), n(:coordinate), n(:point), n(:identifier)],
-    },
-    milliseconds: {
-      defn: [v(:integer)],
-    },
-    offset: {
-      defn: [n(:coordinate)],
-    },
-    pin_id: {
-      defn: [v(:integer)],
-    },
-    pin_number: {
-      defn: [v(:integer), n(:named_pin)],
-    },
-    pin_value: {
-      defn: [v(:integer)],
-    },
-    radius: {
-      defn: [v(:integer)],
-    },
-    resource_id: {
-      defn: [v(:integer)],
-    },
-    rhs: {
-      defn: [v(:integer)],
-    },
-    url: {
-      defn: [v(:string)],
-    },
-    value: {
-      defn: [v(:string), v(:integer), v(:boolean)],
-    },
-    version: { defn: [v(:integer)] },
-    x: {
-      defn: [v(:integer), v(:float)],
-    },
-    y: {
-      defn: [v(:integer), v(:float)],
-    },
-    z: {
-      defn: [v(:integer), v(:float)],
-    },
-    pin_type: {
-      defn: [e(:AllowedPinTypes)],
-    },
-    pointer_id: {
-      defn: [v(:integer)],
-      blk: ->(node, device) do
-        bad_node = !Point.where(id: node.value, device_id: device.id).exists?
-        node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
-      end,
-    },
+    _else: { defn: [n(:execute), n(:nothing)] },
+    _then: { defn: [n(:execute), n(:nothing)] },
+    assertion_type: { defn: [e(:ALLOWED_ASSERTION_TYPES)] },
+    axis: { defn: [e(:ALLOWED_AXIS)] },
+    channel_name: { defn: [e(:ALLOWED_CHANNEL_NAMES)] },
+    data_value: { defn: ANY_VAR_TOKENIZED + [n(:point_group)] },
+    default_value: { defn: ANY_VAR_TOKENIZED },
+    label: { defn: [v(:string)] },
+    locals: { defn: [n(:scope_declaration)] },
+    location: { defn: [n(:tool), n(:coordinate), n(:point), n(:identifier)] },
+    lua: { defn: [v(:string)] },
+    message_type: { defn: [e(:ALLOWED_MESSAGE_TYPES)] },
+    milliseconds: { defn: [v(:integer)] },
+    number: { defn: [v(:integer)] },
+    offset: { defn: [n(:coordinate)] },
+    op: { defn: [e(:ALLOWED_OPS)] },
+    pin_id: { defn: [v(:integer)] },
+    pin_mode: { defn: [e(:ALLOWED_PIN_MODES)] },
+    pin_number: { defn: [v(:integer), n(:named_pin)] },
+    pin_type: { defn: [e(:AllowedPinTypes)] },
     point_group_id: {
       defn: [v(:integer)],
       blk: ->(node, device) do
@@ -219,12 +168,18 @@ module CeleryScriptSettingsBag
         node.invalidate!(BAD_POINT_GROUP_ID % node.value) if bad_node
       end,
     },
-    pointer_type: {
-      defn: [e(:PointType)],
-    },
-    pin_mode: {
-      defn: [e(:ALLOWED_PIN_MODES)],
-    },
+    pointer_id: { defn: [v(:integer)], blk: ->(node, device) do
+      bad_node = !Point.where(id: node.value, device_id: device.id).exists?
+      node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
+    end },
+    pin_value: { defn: [v(:integer)] },
+    pointer_type: { defn: [e(:PointType)] },
+    priority: { defn: [v(:integer)] },
+    radius: { defn: [v(:integer)] },
+    resource_id: { defn: [v(:integer)] },
+    resource_type: { defn: [e(:resource_type)] },
+    resource: { defn: [n(:identifier), n(:resource), n(:point)] },
+    rhs: { defn: [v(:integer)] },
     sequence_id: {
       defn: [v(:integer)],
       blk: ->(node) do
@@ -236,6 +191,16 @@ module CeleryScriptSettingsBag
         end
       end,
     },
+    speed_setting: { defn: [n(:lua), n(:numeric)] },
+    speed: { defn: [v(:integer)] },
+    string: { defn: [n(:string)] },
+    url: { defn: [v(:string)] },
+    value: { defn: [v(:string), v(:integer), v(:boolean)] },
+    variance: { defn: [v(:integer)] },
+    version: { defn: [v(:integer)] },
+    x: { defn: [v(:integer), v(:float)] },
+    y: { defn: [v(:integer), v(:float)] },
+    z: { defn: [v(:integer), v(:float)] },
     lhs: {
       defn: [v(:string), n(:named_pin)], # See ALLOWED_LHS_TYPES
       blk: ->(node) do
@@ -244,16 +209,6 @@ module CeleryScriptSettingsBag
         #  heterogenous args :(
         manual_enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end,
-    },
-    op: {
-      defn: [e(:ALLOWED_OPS)],
-    },
-    priority: { defn: [v(:integer)] },
-    channel_name: {
-      defn: [e(:ALLOWED_CHANNEL_NAMES)],
-    },
-    message_type: {
-      defn: [e(:ALLOWED_MESSAGE_TYPES)],
     },
     tool_id: {
       defn: [v(:integer)],
@@ -271,9 +226,6 @@ module CeleryScriptSettingsBag
         manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
       end,
     },
-    axis: {
-      defn: [e(:ALLOWED_AXIS)],
-    },
     axis_operand: {
       defn: [
         n(:coordinate),
@@ -286,15 +238,6 @@ module CeleryScriptSettingsBag
         n(:tool),
       ],
     },
-    number: {
-      defn: [v(:integer)],
-    },
-    variance: {
-      defn: [v(:integer)],
-    },
-    speed_setting: {
-      defn: [n(:lua), n(:numeric)],
-    },
     message: {
       defn: [v(:string)],
       blk: ->(node) do
@@ -303,21 +246,6 @@ module CeleryScriptSettingsBag
         tooLong = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end,
-    },
-    speed: {
-      defn: [v(:integer)],
-    },
-    resource_type: {
-      defn: [e(:resource_type)],
-    },
-    assertion_type: {
-      defn: [e(:ALLOWED_ASSERTION_TYPES)],
-    },
-    lua: {
-      defn: [v(:string)],
-    },
-    resource: {
-      defn: [n(:identifier), n(:resource), n(:point)],
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
@@ -495,6 +423,7 @@ module CeleryScriptSettingsBag
     take_photo: {
       tags: [:disk_user, :function],
     },
+    text: { args: [:string] },
     toggle_pin: {
       args: [:pin_number],
       tags: [:function, :firmware_user],
