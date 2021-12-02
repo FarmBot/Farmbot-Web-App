@@ -340,7 +340,7 @@
       label,
       input {
         vertical-align: top;
-        max-width: 80%;
+        max-width: 75%;
       }
       label {
         width: 100%;
@@ -358,7 +358,6 @@
       }
       .fa-trash {
         float: right;
-        margin-left: 1rem;
         margin-right: 0;
         color: $darkest_red;
       }
@@ -381,7 +380,8 @@
     }
   }
   .location-form-header {
-    .fa-list-ol {
+    .fa-hashtag,
+    .fa-font {
       font-size: 1rem;
       vertical-align: top;
       line-height: 1.75rem;
@@ -391,6 +391,11 @@
     .location-form-header {
       .variable-icon {
         display: none;
+      }
+      .fa-hashtag,
+      .fa-font {
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
       }
     }
   }

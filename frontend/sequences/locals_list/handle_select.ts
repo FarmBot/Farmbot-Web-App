@@ -13,6 +13,7 @@ import {
   VariableDeclaration,
   PointGroup,
   Numeric,
+  Text,
 } from "farmbot";
 import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
 import { betterCompact } from "../../util";
@@ -31,6 +32,7 @@ type DataValue =
   | Point
   | PointGroup
   | Numeric
+  | Text
   | Tool;
 
 type CreateVariableDeclaration =
@@ -106,6 +108,14 @@ const numberVar = (value: string | number) => ({
     args: { number: parseFloat("" + value) }
   });
 
+const stringVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "text",
+    args: { string: "" + value }
+  });
+
 const manualEntry = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
@@ -152,6 +162,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup": return groupVar(ddi.value)(props);
     case "Numeric": return numberVar(ddi.value)(props);
+    case "Text": return stringVar(ddi.value)(props);
   }
   console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;

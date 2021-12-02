@@ -21,7 +21,7 @@ import { cloneDeep } from "lodash";
 import { shouldDisplayFeature } from "../../devices/should_display";
 import { Feature } from "../../devices/interfaces";
 import { defensiveClone } from "../../util";
-import { Numeric } from "farmbot";
+import { Numeric, Text } from "farmbot";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -99,11 +99,18 @@ export const LocationForm =
               style={props.inUse ? { color: Color.gray } : {}}
               onClick={() => removeVariable(label)} />}
           {shouldDisplayFeature(Feature.number_variables) &&
-            <i className={"fa fa-list-ol"}
+            <i className={"fa fa-hashtag"}
               onClick={() => onChange(convertDDItoVariable({
                 identifierLabel: label,
                 allowedVariableNodes,
                 dropdown: { label: "", headingId: "Numeric", value: 0 },
+              }), label)} />}
+          {shouldDisplayFeature(Feature.string_variables) &&
+            <i className={"fa fa-font"}
+              onClick={() => onChange(convertDDItoVariable({
+                identifierLabel: label,
+                allowedVariableNodes,
+                dropdown: { label: "", headingId: "Text", value: "" },
               }), label)} />}
         </div>}
       {!props.collapsed &&
@@ -125,6 +132,7 @@ export const LocationForm =
             </Col>
           </Row>
           <NumericInput label={label} variable={variable} onChange={onChange} />
+          <TextInput label={label} variable={variable} onChange={onChange} />
           <CoordinateInputBoxes
             variableNode={celeryNode}
             vector={vector}
@@ -146,6 +154,13 @@ const isNumeric = (variableNode: VariableNode) =>
   (variableNode.kind == "parameter_declaration" &&
     variableNode.args.default_value.kind == "numeric");
 
+const isText = (variableNode: VariableNode) =>
+  ((variableNode.kind == "variable_declaration" ||
+    variableNode.kind == "parameter_application") &&
+    variableNode.args.data_value.kind == "text") ||
+  (variableNode.kind == "parameter_declaration" &&
+    variableNode.args.default_value.kind == "text");
+
 export interface VariableIconProps {
   variable: SequenceMeta;
 }
@@ -154,6 +169,7 @@ export const VariableIcon = (props: VariableIconProps) => {
   const variableNode = props.variable.celeryNode;
   const iconClass = () => {
     if (isNumeric(variableNode)) { return "fa-hashtag"; }
+    if (isText(variableNode)) { return "fa-font"; }
     return "fa-crosshairs";
   };
   return <i className={`fa ${iconClass()} variable-icon`} />;
@@ -183,6 +199,33 @@ export const NumericInput = (props: NumericInputProps) => {
       value={variableNode.kind == "parameter_declaration"
         ? (variableNode.args.default_value as Numeric).args.number
         : (variableNode.args.data_value as Numeric).args.number} />
+    : <div />;
+};
+
+export interface TextInputProps {
+  variable: SequenceMeta;
+  onChange: OnChange;
+  label: string;
+}
+
+export const TextInput = (props: TextInputProps) => {
+  const variableNode = props.variable.celeryNode;
+  return isText(variableNode)
+    ? <BlurableInput type={"text"}
+      className={"string-input"}
+      onCommit={e => {
+        const editableVariable = defensiveClone(variableNode);
+        const value = e.currentTarget.value;
+        if (editableVariable.kind == "parameter_declaration") {
+          (editableVariable.args.default_value as Text).args.string = value;
+        } else {
+          (editableVariable.args.data_value as Text).args.string = value;
+        }
+        props.onChange(editableVariable, props.label);
+      }}
+      value={variableNode.kind == "parameter_declaration"
+        ? (variableNode.args.default_value as Text).args.string
+        : (variableNode.args.data_value as Text).args.string} />
     : <div />;
 };
 
