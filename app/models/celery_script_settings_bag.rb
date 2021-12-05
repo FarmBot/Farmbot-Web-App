@@ -193,7 +193,7 @@ module CeleryScriptSettingsBag
     },
     speed_setting: { defn: [n(:lua), n(:numeric)] },
     speed: { defn: [v(:integer)] },
-    string: { defn: [n(:string)] },
+    string: { defn: [v(:string)] },
     url: { defn: [v(:string)] },
     value: { defn: [v(:string), v(:integer), v(:boolean)] },
     variance: { defn: [v(:integer)] },
