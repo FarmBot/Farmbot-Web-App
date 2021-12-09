@@ -6,11 +6,17 @@ import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { WDENVKey } from "../remote_env/interfaces";
-import { namespace, WEED_DETECTOR_KEY_PART } from "../remote_env/constants";
+import {
+  namespace, WD_KEY_DEFAULTS, WEED_DETECTOR_KEY_PART,
+} from "../remote_env/constants";
 import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
+import { BoolConfig, NumberBoxConfig } from "../camera_calibration/config";
+import { SPECIAL_VALUE_DDI } from "../camera_calibration/constants";
+import { ToolTips } from "../../constants";
+import { getModifiedClassNameSpecifyModified } from "../../settings/default_values";
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {
@@ -39,6 +45,31 @@ export class WeedDetector
 
   saveEnvVar = (key: WDENVKey, value: number) =>
     this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value));
+
+  wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
+
+  getDefault = (key: WEED_DETECTOR_KEY_PART) =>
+    WD_KEY_DEFAULTS[this.namespace(key)];
+
+  getLabeledDefault = (key: WEED_DETECTOR_KEY_PART) =>
+    SPECIAL_VALUE_DDI()[this.getDefault(key)].label;
+
+  get commonProps() {
+    return {
+      wdEnvGet: this.wdEnvGet,
+      onChange: this.saveEnvVar,
+    };
+  }
+
+  getModifiedClass = (key: NumericKeyName) =>
+    getModifiedClassNameSpecifyModified(
+      this.getDefault(key) != this.wdEnvGet(this.namespace(key)));
+
+  get anyAdvancedModified() {
+    return !!["save_detected_plants"]
+      .map((key: NumericKeyName) => this.getModifiedClass(key))
+      .join("");
+  }
 
   render() {
     const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
@@ -85,6 +116,38 @@ export class WeedDetector
             S_HI={wDEnvGet(this.namespace("S_HI"))}
             V_LO={wDEnvGet(this.namespace("V_LO"))}
             V_HI={wDEnvGet(this.namespace("V_HI"))} />
+          <div className={"camera-calibration-config"}>
+            <div className={"camera-calibration-configs"}>
+              {(this.props.showAdvanced || this.anyAdvancedModified) &&
+                <BoolConfig {...this.commonProps}
+                  helpText={t(ToolTips.SAVE_DETECTED_PLANTS, {
+                    defaultSavePlants:
+                      this.getLabeledDefault("save_detected_plants")
+                  })}
+                  configKey={this.namespace("save_detected_plants")}
+                  label={t("Save detected plants")} />}
+              <BoolConfig {...this.commonProps}
+                helpText={t(ToolTips.USE_BOUNDS, {
+                  defaultUseBounds: this.getLabeledDefault("use_bounds")
+                })}
+                configKey={this.namespace("use_bounds")}
+                label={t("Ignore detections out of bounds")} />
+              <NumberBoxConfig {...this.commonProps}
+                configKey={this.namespace("min_radius")}
+                label={t("Minimum weed size")}
+                scale={2}
+                helpText={t(ToolTips.MIN_RADIUS, {
+                  defaultMinDiameter: this.getDefault("min_radius") * 2
+                })} />
+              <NumberBoxConfig {...this.commonProps}
+                configKey={this.namespace("max_radius")}
+                label={t("Maximum weed size")}
+                scale={2}
+                helpText={t(ToolTips.MAX_RADIUS, {
+                  defaultMaxDiameter: this.getDefault("max_radius") * 2
+                })} />
+            </div>
+          </div>
         </Col>
       </Row>
     </div>;

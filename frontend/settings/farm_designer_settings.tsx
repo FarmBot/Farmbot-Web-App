@@ -124,7 +124,7 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.clip_image_layer,
     },
     {
-      title: DeviceSetting.showCameraViewAreaInMap,
+      title: DeviceSetting.cameraView,
       description: Content.SHOW_CAMERA_VIEW_AREA,
       setting: BooleanSetting.show_camera_view_area,
     },

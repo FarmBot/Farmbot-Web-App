@@ -32,4 +32,14 @@ describe("generalizedError()", () => {
     expect(result.type).toEqual(Actions._RESOURCE_NO);
     expect(toastErrors).toHaveBeenCalledWith(payl);
   });
+
+  it("handles bad statuses", () => {
+    const payl: GeneralizedError = {
+      err: {},
+      uuid: "---",
+      statusBeforeError: SpecialStatus.SAVING
+    };
+    const result = generalizedError(payl);
+    expect(result.payload.statusBeforeError).toEqual(SpecialStatus.DIRTY);
+  });
 });
