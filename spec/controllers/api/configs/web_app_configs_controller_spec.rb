@@ -16,7 +16,7 @@ describe Api::WebAppConfigsController do
         confirm_step_deletion: false,
         disable_animations: false,
         disable_i18n: false,
-        display_trail: false,
+        display_trail: true,
         dynamic_map: false,
         encoder_figure: false,
         hide_webcam_widget: false,

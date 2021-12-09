@@ -154,5 +154,5 @@ export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
 export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
   sortBy(betterCompact(variables),
     v => v.celeryNode.args.label == "parent"
-      ? t("Location variable")
+      ? t("Location")
       : v.celeryNode.args.label);

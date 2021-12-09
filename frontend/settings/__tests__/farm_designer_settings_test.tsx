@@ -38,7 +38,7 @@ describe("<PlainDesignerSettings />", () => {
 
   it("calls callback", () => {
     const wrapper = mount(<div>{PlainDesignerSettings(fakeProps())}</div>);
-    expect(wrapper.find("label").at(1).text()).toContain("trail");
+    expect(wrapper.find("label").at(1).text()).toContain("Trail");
     wrapper.find("button").at(1).simulate("click");
     expect(resetVirtualTrail).toHaveBeenCalled();
   });

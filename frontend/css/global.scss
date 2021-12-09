@@ -384,7 +384,6 @@ a {
   margin-left: 1rem;
 }
 
-.add-variable,
 .drag-drop-area {
   &.visible {
     margin: 0.75rem 0;
@@ -882,6 +881,11 @@ ul {
   }
   .fb-button {
     float: none;
+  }
+  .locals-list {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    margin-right: -3rem;
   }
 }
 
@@ -1891,9 +1895,14 @@ ul {
 
 .default-value-form {
   position: relative;
-  .default-value-tooltip {
-    position: absolute;
-    right: 0;
+}
+
+.custom-coordinate-form {
+  .x,
+  .y,
+  .z {
+    padding-left: 2.5rem;
+    margin-right: -0.25rem;
   }
 }
 
@@ -2103,7 +2112,7 @@ ul {
   }
 }
 
-.dynamic-column {
+.move-absolute-form {
   display: flex;
   .location-form,
   .expandable-header {
@@ -2118,6 +2127,10 @@ ul {
   .more-options {
     min-width: 110px;
     margin-top: 0.5rem;
+  }
+  .custom-coordinate-form {
+    margin-left: -2.5rem;
+    margin-right: -11.25rem;
   }
 }
 

@@ -758,6 +758,11 @@
       }
     }
   }
+  .locals-list {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    margin-right: -3rem;
+  }
 }
 
 .add-farm-event-panel button.red,
@@ -2284,6 +2289,10 @@
       font-weight: bold;
     }
   }
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+  }
 }
 
 .designer-sequence-list-panel {
@@ -2373,6 +2382,14 @@
 .designer-regimen-editor-panel {
   .title {
     width: 45%;
+  }
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    label {
+      margin-top: 0;
+    }
   }
 }
 

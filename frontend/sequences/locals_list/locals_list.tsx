@@ -1,11 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import {
-  addOrEditDeclarationLocals, NOTHING_SELECTED,
-} from "../locals_list/handle_select";
-import {
-  AllowedVariableNodes, LocalsListProps, VariableNode,
-} from "../locals_list/locals_list_support";
+import { addOrEditDeclarationLocals } from "../locals_list/handle_select";
+import { LocalsListProps, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone, betterCompact } from "../../util/util";
 import {
   TaggedSequence,
@@ -24,6 +20,7 @@ import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
 import { error } from "../../toast/toast";
 import { variableIsInUse } from "./sanitize_nodes";
 import { sortVariables } from "./location_form_list";
+import { determineVariableType } from "./new_variable";
 
 export interface LocalListCbProps {
   dispatch: Function;
@@ -109,37 +106,23 @@ export const LocalsList = (props: LocalsListProps) => {
         sequenceUuid={props.sequenceUuid}
         resources={props.resources}
         allowedVariableNodes={props.allowedVariableNodes}
-        collapsible={props.collapsible}
-        collapsed={props.collapsed}
-        toggleVarShow={props.toggleVarShow}
         removeVariable={props.removeVariable}
         onChange={props.onChange}
-        hideGroups={props.hideGroups}
-        customFilterRule={props.customFilterRule} />)}
-    {props.allowedVariableNodes == AllowedVariableNodes.parameter &&
-      props.hideGroups &&
-      <div className={"add-variable visible"} onClick={() => {
-        const label = generateNewVariableLabel(
-          variableData.map(data => data?.celeryNode));
-        props.onChange({
-          kind: "variable_declaration",
-          args: { label, data_value: NOTHING_SELECTED }
-        }, label);
-      }}>
-        <p>{t("Add Variable")}</p>
-      </div>}
+        variableType={determineVariableType(variable.celeryNode)}
+        hideGroups={props.hideGroups} />)}
   </div>;
 };
 
-export const generateNewVariableLabel =
-  (variableData: (VariableNode | undefined)[]) => {
-    const existingLabels = betterCompact(variableData)
-      .map(variable => variable.args.label);
-    const newLabel = (num: number) => t("Location variable {{ num }}", { num });
-    let i = 1;
-    while (existingLabels.includes(newLabel(i))) { i++; }
-    return newLabel(i);
-  };
+export const generateNewVariableLabel = (
+  variableData: (VariableNode | undefined)[],
+  newLabel: (n: number) => string,
+) => {
+  const existingLabels = betterCompact(variableData)
+    .map(variable => variable.args.label);
+  let i = 1;
+  while (existingLabels.includes(newLabel(i))) { i++; }
+  return newLabel(i);
+};
 
 /** Show a parameter_declaration as its default value in the location form. */
 export const convertFormVariable =

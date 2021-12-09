@@ -8,10 +8,8 @@ import { LocationForm } from "./location_form";
 import {
   SequenceMeta, determineVector, determineDropdown,
 } from "../../resources/sequence_meta";
-import { Help } from "../../ui";
-import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
-import { Position } from "@blueprintjs/core";
+import { determineVariableType } from "./new_variable";
 
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
@@ -22,9 +20,6 @@ export interface DefaultValueFormProps {
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
   if (props.variableNode.kind === "parameter_declaration") {
     return <div className="default-value-form">
-      <div className="default-value-tooltip">
-        <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />
-      </div>
       <LocationForm
         key={props.variableNode.args.label + "default_value"}
         locationDropdownKey={JSON.stringify(props.variableNode) + "default_value"}
@@ -33,6 +28,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         resources={props.resources}
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideGroups={true}
+        variableType={determineVariableType(props.variableNode)}
         onChange={change(props.onChange, props.variableNode)} />
     </div>;
   } else {

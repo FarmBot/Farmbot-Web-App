@@ -7,7 +7,6 @@ import {
   ResourceIndex, VariableNameSet, UUID,
 } from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
-import { DropDownItem } from "../../ui";
 
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
@@ -49,15 +48,8 @@ interface CommonProps {
    * chooses between reassignment vs. creation for new variables,
    * and determines which variables to display in the form. */
   allowedVariableNodes: AllowedVariableNodes;
-  /** Add ability to collapse the form content. */
-  collapsible?: boolean;
-  collapsed?: boolean;
-  toggleVarShow?: () => void;
   /** Don't show groups in dropdown. */
   hideGroups?: boolean;
-  /** Optional filter to allow removal of arbitrary dropdown items.
-   * Return `false` to omit an item from display. */
-  customFilterRule?: (ddi: DropDownItem) => boolean;
 }
 
 export interface LocalsListProps extends CommonProps {
@@ -66,10 +58,14 @@ export interface LocalsListProps extends CommonProps {
 
 export interface LocationFormProps extends CommonProps {
   variable: SequenceMeta;
-  /** Coordinate input box width. */
-  width?: number;
-  /** Set to true to hide the form header and label. */
-  hideHeader?: boolean;
+  hideWrapper?: boolean;
   /** Is the variable being used? */
   inUse?: boolean;
+  variableType: VariableType;
+}
+
+export enum VariableType {
+  Location = "Location",
+  Number = "Number",
+  Text = "Text",
 }
