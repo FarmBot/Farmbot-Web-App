@@ -19,8 +19,8 @@ describe Api::FeaturedSequencesController do
       first = json.first
       id = sp.sequence_version_ids.sort.last
       expect(first[:id]).to eq(id)
-      expect(first[:url]).to include(id.to_s)
-      expect(first[:url]).to include($API_URL)
+      expect(first[:path]).to include(id.to_s)
+      expect(first[:path]).to include("/app/shared/sequence/")
       expect(first[:name]).to eq(name)
       expect(first[:description]).to eq(description)
     end

@@ -1842,7 +1842,7 @@ CREATE TABLE public.web_app_configs (
     confirm_step_deletion boolean DEFAULT false,
     disable_animations boolean DEFAULT false,
     disable_i18n boolean DEFAULT false,
-    display_trail boolean DEFAULT false,
+    display_trail boolean DEFAULT true,
     dynamic_map boolean DEFAULT false,
     encoder_figure boolean DEFAULT false,
     hide_webcam_widget boolean DEFAULT false,
@@ -1895,8 +1895,8 @@ CREATE TABLE public.web_app_configs (
     show_weeds boolean DEFAULT true,
     display_map_missed_steps boolean DEFAULT false,
     time_format_seconds boolean DEFAULT false,
-    crop_images boolean DEFAULT false,
-    show_camera_view_area boolean DEFAULT false,
+    crop_images boolean DEFAULT true,
+    show_camera_view_area boolean DEFAULT true,
     view_celery_script boolean DEFAULT false,
     highlight_modified_settings boolean DEFAULT true,
     show_advanced_settings boolean DEFAULT false,
@@ -3750,6 +3750,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211007164834'),
 ('20211030193113'),
 ('20211104173453'),
-('20211117212015');
+('20211117212015'),
+('20211206165259');
 
 
