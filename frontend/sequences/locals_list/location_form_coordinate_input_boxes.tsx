@@ -4,7 +4,6 @@ import { OnChange, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone } from "../../util/util";
 import { Xyz, Vector3 } from "farmbot";
 import { determineEditable } from "../../resources/sequence_meta";
-import { t } from "../../i18next_wrapper";
 
 export interface AxisEditProps {
   axis: Xyz;
@@ -28,8 +27,8 @@ export const manuallyEditAxis = (props: AxisEditProps) =>
 interface CoordinateInputBoxesProps {
   vector: Vector3 | undefined;
   variableNode: VariableNode;
-  width: number | undefined;
   onChange: OnChange;
+  hideWrapper: boolean;
 }
 
 /** LocationForm coordinate input boxes.  */
@@ -39,12 +38,10 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const visible = determineEditable(variableNode);
   const editableVariable = defensiveClone(variableNode);
   return (vector && visible)
-    ? <Row>
+    ? <Row className={"custom-coordinate-form"}>
+      {!props.hideWrapper && <Col xs={5} />}
       {["x", "y", "z"].map((axis: Xyz) =>
-        <Col xs={props.width || 4} key={axis}>
-          <label>
-            {t("{{axis}} (mm)", { axis })}
-          </label>
+        <Col xs={props.hideWrapper ? 3 : 2} className={`${axis} no-pad`} key={axis}>
           <BlurableInput type="number"
             onCommit={manuallyEditAxis({ axis, onChange, editableVariable })}
             name={`location-${axis}`}

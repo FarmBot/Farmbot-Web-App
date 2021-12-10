@@ -87,7 +87,7 @@ export class TileExecute
       helpText={ToolTips.EXECUTE_SEQUENCE}
       pinnedView={this.pinnedView}
       togglePinnedView={this.togglePinnedView}>
-      {(!pinned || !this.pinnedView) &&
+      {(!currentStep.args.sequence_id || !this.pinnedView) &&
         <Row>
           <Col>
             <SequenceSelectBox

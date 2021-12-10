@@ -127,6 +127,6 @@ describe("<FarmbotSubMenu />", () => {
     expect(toggleBtn.text()).toEqual("yes");
     toggleBtn.simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
-      BooleanSetting.show_camera_view_area, false);
+      BooleanSetting.display_trail, false);
   });
 });

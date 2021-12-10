@@ -77,6 +77,7 @@ export interface ActiveMiddleState {
   sequencePreview: TaggedSequence | undefined;
   error: boolean;
   view: "local" | "public";
+  addVariableMenuOpen: boolean;
 }
 
 export interface SequenceHeaderProps extends SequencePropsBase {

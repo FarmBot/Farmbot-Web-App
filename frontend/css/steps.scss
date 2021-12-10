@@ -290,6 +290,11 @@
     .execute-row {
       margin-top: 1rem;
     }
+    .locals-list {
+      margin-top: 1rem;
+      margin-left: -1rem;
+      margin-right: -4rem;
+    }
   }
   &.assertion-step {
     background: $light_purple;
@@ -307,18 +312,26 @@
     .row {
       margin: 0;
     }
+    .locals-list {
+      margin-left: -1rem;
+      margin-right: -4rem;
+    }
+    .location-form {
+      .row {
+        margin-top: 1rem;
+      }
+    }
     &.pinned-view {
       .location-form {
         background: none;
         margin-top: 0;
         max-width: unset;
         box-shadow: none;
-        .location-form-header {
-          background: none;
-          padding: 0;
-        }
         .location-form-content {
           padding: 0;
+        }
+        .row {
+          margin-top: 1rem;
         }
         label {
           margin-top: 0.5rem;

@@ -3,7 +3,9 @@ import {
 } from "../handle_select";
 import { Point, Tool, Coordinate } from "farmbot";
 import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../location_form_list";
-import { VariableNode, AllowedVariableNodes } from "../locals_list_support";
+import {
+  VariableNode, AllowedVariableNodes, VariableType,
+} from "../locals_list_support";
 
 const label = "label";
 const allowedVariableNodes = AllowedVariableNodes.variable;
@@ -162,6 +164,86 @@ describe("convertDDItoDeclaration()", () => {
             label: "parent0"
           }
         }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns variable: numeric", () => {
+    const dropdown = ({
+      headingId: "Variable", label: "Label0", value: "label0"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Number,
+    });
+    const expected: VariableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label",
+        default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns variable: text", () => {
+    const dropdown = ({
+      headingId: "Variable", label: "Label0", value: "label0"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Text,
+    });
+    const expected: VariableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label",
+        default_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns new variable: numeric", () => {
+    const dropdown = ({
+      headingId: "Numeric", label: "Label0", value: "label0"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Number,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: { kind: "numeric", args: { number: expect.any(Number) } }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns new variable: text", () => {
+    const dropdown = ({
+      headingId: "Text", label: "Label0", value: "label0"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Text,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: { kind: "text", args: { string: expect.any(String) } }
       }
     };
     expect(variable).toEqual(expected);

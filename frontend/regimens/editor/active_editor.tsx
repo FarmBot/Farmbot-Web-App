@@ -11,6 +11,9 @@ import {
 } from "../../sequences/locals_list/locals_list_support";
 import { ErrorBoundary } from "../../error_boundary";
 import { RegimenRows } from "./regimen_rows";
+import { t } from "../../i18next_wrapper";
+import { SectionHeader } from "../../sequences/sequence_editor_middle_active";
+import { Collapse } from "@blueprintjs/core";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -41,9 +44,6 @@ export class ActiveEditor
         resource: regimen,
         variableData: this.props.variableData,
       })}
-      collapsible={true}
-      collapsed={this.state.variablesCollapsed}
-      toggleVarShow={this.toggleVarShow}
       allowedVariableNodes={AllowedVariableNodes.parameter} />;
   };
 
@@ -51,16 +51,21 @@ export class ActiveEditor
     return <div className="regimen-editor-content">
       <div id="regimen-editor-tools" className="regimen-editor-tools">
         <RegimenButtonGroup {...this.regimenProps} />
-        <ErrorBoundary>
-          <this.LocalsList />
-        </ErrorBoundary>
+        <SectionHeader title={t("Variables")}
+          count={Object.values(this.props.variableData).length}
+          collapsed={this.state.variablesCollapsed}
+          toggle={this.toggleVarShow} />
+        <Collapse isOpen={!this.state.variablesCollapsed}>
+          <ErrorBoundary>
+            <this.LocalsList />
+          </ErrorBoundary>
+        </Collapse>
         <hr />
       </div>
       <OpenSchedulerButton />
       <ErrorBoundary>
         <RegimenRows {...this.regimenProps}
           calendar={this.props.calendar}
-          varsCollapsed={this.state.variablesCollapsed}
           resources={this.props.resources} />
       </ErrorBoundary>
     </div>;

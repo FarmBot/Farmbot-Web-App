@@ -61,9 +61,9 @@ export const maybeFindVariable = (
 ): SequenceMeta | undefined =>
   uuid ? findVariableByName(resources, uuid, label) : undefined;
 
-/** Add "Location variable - " prefix to string. */
+/** Add "Location - " prefix to string. */
 export const withPrefix = (label: string, info: string) =>
-  `${label == "parent" ? t("Location variable") : label} - ${info}`;
+  `${label == "parent" ? t("Location") : label} - ${info}`;
 
 interface DetermineVarDDILabelProps {
   label: string;
@@ -73,8 +73,8 @@ interface DetermineVarDDILabelProps {
 }
 
 export const determineVarDDILabel =
-  ({ label, resources, uuid, forceExternal }: DetermineVarDDILabelProps):
-    string => {
+  (props: DetermineVarDDILabelProps): string => {
+    const { label, resources, uuid, forceExternal } = props;
     if (forceExternal) { return t("Externally defined"); }
     const variable = maybeFindVariable(label, resources, uuid);
     if (variable) {
@@ -110,12 +110,12 @@ export const determineDropdown =
         return { label: varName, value: "?" };
       case "numeric":
         return {
-          label: `${t("Number variable")}: ${data_value.args.number}`,
+          label: `${t("Number")}: ${data_value.args.number}`,
           value: data_value.args.number,
         };
       case "text":
         return {
-          label: `${t("String variable")}: ${data_value.args.string}`,
+          label: `${t("Text")}: ${data_value.args.string}`,
           value: data_value.args.string,
         };
       case "point":

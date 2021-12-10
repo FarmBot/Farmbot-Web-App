@@ -95,7 +95,7 @@ describe("<LocationSelection />", () => {
     [
       LocSelection.identifier,
       { kind: "identifier", args: { label: "variable" } },
-      { label: "Location variable - Add new", value: "variable" },
+      { label: "Location - Add new", value: "variable" },
     ],
     [
       LocSelection.tool,
@@ -166,13 +166,13 @@ describe("<LocationSelection />", () => {
       },
       {
         headingId: "Identifier",
-        label: "Location variable - fake variable info label",
+        label: "Location - fake variable info label",
         value: "parent",
       },
       {
         headingId: "Identifier",
         label: "Add new",
-        value: "Location variable 1",
+        value: "Location 1",
       },
       {
         headingId: "Tool",

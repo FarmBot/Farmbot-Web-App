@@ -15,22 +15,8 @@ import {
 } from "../../sequences/set_active_sequence_by_name";
 import { Path } from "../../internal_urls";
 
-/** Make room for the regimen header variable form when necessary. */
-const regimenSectionHeight =
-  (regimen: TaggedRegimen, varsCollapsed: boolean) => {
-    let subHeight = 200;
-    const variables = regimen.body.body.length > 0;
-    if (variables) { subHeight = 500; }
-    if (varsCollapsed) { subHeight = 300; }
-    const variablesDiv = document.getElementById("regimen-editor-tools");
-    if (variablesDiv) { subHeight = 200 + variablesDiv.offsetHeight; }
-    return `calc(100vh - ${subHeight}px)`;
-  };
-
 export const RegimenRows = (props: RegimenRowsProps) =>
-  <div className="regimen" style={{
-    height: regimenSectionHeight(props.regimen, props.varsCollapsed)
-  }}>
+  <div className={"regimen"}>
     {props.calendar.map(regimenDay(props.dispatch, props.resources))}
   </div>;
 
