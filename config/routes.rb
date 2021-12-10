@@ -23,6 +23,7 @@ FarmBot::Application.routes.draw do
       sensor_readings: [:create, :destroy, :index, :show],
       sensors: [:create, :destroy, :index, :show, :update],
       sequences: [:create, :destroy, :index, :show, :update],
+      featured_sequences: [:index],
       sequence_versions: [:show],
       tools: [:create, :destroy, :index, :show, :update],
       webcam_feeds: [:create, :destroy, :index, :show, :update],

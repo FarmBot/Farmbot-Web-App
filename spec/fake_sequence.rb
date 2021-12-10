@@ -1,6 +1,7 @@
 class FakeSequence < Mutations::Command
   def self.create(inputs = {})
     inputs[:device] ||= FactoryBot.create(:device, inputs[:device] || {})
+    FactoryBot.create(:user, device: inputs[:device]) if inputs[:device].users.empty?
     inputs[:name] ||= Faker::Company.catch_phrase
     inputs[:color] ||= Sequence::COLORS.sample
     inputs[:body] ||= []
