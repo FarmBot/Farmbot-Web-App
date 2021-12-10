@@ -16,7 +16,7 @@ describe Api::WebAppConfigsController do
         confirm_step_deletion: false,
         disable_animations: false,
         disable_i18n: false,
-        display_trail: false,
+        display_trail: true,
         dynamic_map: false,
         encoder_figure: false,
         hide_webcam_widget: false,
@@ -39,7 +39,9 @@ describe Api::WebAppConfigsController do
         info_log: 1,
         fun_log: 1,
         debug_log: 1,
-      }.to_a.map { |key, value| expect(json[key]).to eq(value) }
+      }.to_a.map do |key, value|
+        expect([key, json[key]]).to eq([key, value])
+      end
 
       { created_at: String, updated_at: String }
         .to_a.map { |key, value| expect(json[key]).to be_kind_of(value) }

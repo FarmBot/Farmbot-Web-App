@@ -60,7 +60,7 @@ describe("determineDropdown", () => {
     expect(r.value).toEqual(pg.body.id);
   });
 
-  it("Returns a label for `parameter_declarations`", () => {
+  it("returns a label for `parameter_declarations`", () => {
     const r = determineDropdown({
       kind: "parameter_declaration",
       args: {
@@ -73,7 +73,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("?");
   });
 
-  it("Returns a label for `coordinate`", () => {
+  it("returns a label for `coordinate`", () => {
     const r = determineDropdown({
       kind: "parameter_application",
       args: {
@@ -85,7 +85,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("{\"x\":0,\"y\":1.1,\"z\":2}");
   });
 
-  it("Returns a label for `identifier`", () => {
+  it("returns a label for `identifier`", () => {
     const varData = fakeVariableNameSet("variable");
     const ri = buildResourceIndex([]).index;
     ri.sequenceMetas["sequence uuid"] = varData;
@@ -100,7 +100,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("?");
   });
 
-  it("Returns a label for `point`", () => {
+  it("returns a label for `point`", () => {
     const point = fakePoint();
     const pointNode: Point = {
       kind: "point",
@@ -117,7 +117,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("" + point.body.id);
   });
 
-  it("Returns a label for `tool`", () => {
+  it("returns a label for `tool`", () => {
     const tool = fakeTool();
     tool.body.id = 1;
     const toolNode: Tool = {
@@ -134,7 +134,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("" + tool.body.id);
   });
 
-  it("Returns a label for `tool (no toolSlot)", () => {
+  it("returns a label for `tool (no toolSlot)", () => {
     const tool = fakeTool();
     tool.body.id = 1;
     const toolNode: Tool = {
@@ -149,13 +149,22 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("" + tool.body.id);
   });
 
-  it("Returns a label for numeric", () => {
+  it("returns a label for numeric", () => {
     const r = determineDropdown({
       kind: "parameter_application",
       args: { label: "x", data_value: { kind: "numeric", args: { number: 1 } } }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Number variable: 1");
+    expect(r.label).toBe("Number: 1");
     expect(r.value).toBe(1);
+  });
+
+  it("returns a label for text", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: { label: "x", data_value: { kind: "text", args: { string: "text" } } }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Text: text");
+    expect(r.value).toBe("text");
   });
 });
 
@@ -278,7 +287,7 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "parent", resources: ri, uuid: "sequence uuid"
     });
-    expect(label).toEqual("Location variable - Select a location");
+    expect(label).toEqual("Location - Select a location");
   });
 
   it("returns 'externally defined' variable label", () => {

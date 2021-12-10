@@ -410,6 +410,21 @@ export namespace ToolTips {
     trim(`Color value, 0 (black) to 255 (color)
     (default: {{ defaultLow }} - {{ defaultHigh }})`);
 
+  export const SAVE_DETECTED_PLANTS =
+    trim(`Save detected plants as map points. (default: {{ defaultSavePlants }})`);
+
+  export const USE_BOUNDS =
+    trim(`Don't save weeds detected outside of garden bed.
+    (default: {{ defaultUseBounds }})`);
+
+  export const MIN_RADIUS =
+    trim(`Minimum weed size (diameter) in millimeters. Set to 0 to disable limit.
+    (default: {{ defaultMinDiameter }})`);
+
+  export const MAX_RADIUS =
+    trim(`Maximum weed size (diameter) in millimeters. Set to 0 to disable limit.
+    (default: {{ defaultMaxDiameter }})`);
+
   // Sequences
   export const SEQUENCE_COMMANDS =
     trim(`These are the most basic commands FarmBot can execute. Drag and drop
@@ -936,7 +951,7 @@ export namespace Content {
 
   export const MAP_MISSED_STEPS =
     trim(`Display high motor load warning indicators in map.
-    Requires VIRTUAL FARMBOT TRAIL and stall detection to be enabled.`);
+    Requires TRAIL and stall detection to be enabled.`);
 
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
@@ -1248,6 +1263,9 @@ export namespace Content {
   export const DOWNLOAD_FBOS =
     trim(`Download the version of FarmBot OS that corresponds to your
     FarmBot kit and its internal computer.`);
+
+  export const FEATURED_SEQUENCES =
+    trim(`Featured shared sequences published by FarmBot Inc.`);
 
   export const UNSUPPORTED_BROWSER =
     trim(`Your web browser may not work properly with the FarmBot Web App.
@@ -1918,7 +1936,7 @@ export enum DeviceSetting {
   // Farm Designer
   farmDesigner = `Farm Designer`,
   animations = `Plant animations`,
-  trail = `Virtual FarmBot trail`,
+  trail = `Trail`,
   mapMissedSteps = `FarmBot motor load`,
   dynamicMap = `Dynamic map size`,
   mapSize = `Map size`,
@@ -1926,7 +1944,7 @@ export enum DeviceSetting {
   mapOrigin = `Map origin`,
   cropMapImages = `Crop map images`,
   clipPhotosOutOfBounds = `Clip photos out of bounds`,
-  showCameraViewAreaInMap = `Show camera view area in map`,
+  cameraView = `Camera view`,
   confirmPlantDeletion = `Confirm plant deletion`,
 
   // Account

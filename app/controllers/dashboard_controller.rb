@@ -8,6 +8,7 @@ class DashboardController < ApplicationController
                         :front_page,
                         :main_app,
                         :os_download,
+                        :featured,
                         :password_reset,
                         :terminal,
                         :tos_update,
@@ -32,6 +33,7 @@ class DashboardController < ApplicationController
     demo: "/demo/index.tsx",
     try_farmbot: "/try_farmbot/index.tsx",
     os_download: "/os_download/index.tsx",
+    featured: "/featured/index.tsx",
     terminal: "/terminal/index.tsx",
   }.with_indifferent_access
 

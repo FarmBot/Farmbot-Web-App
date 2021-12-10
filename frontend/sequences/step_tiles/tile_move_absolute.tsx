@@ -12,7 +12,7 @@ import {
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
 import {
-  VariableNode, AllowedVariableNodes,
+  VariableNode, AllowedVariableNodes, VariableType,
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
 import {
@@ -57,7 +57,9 @@ export class TileMoveAbsolute
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
     const location = variable.args.data_value;
-    if (location.kind !== "point_group" && location.kind !== "numeric") {
+    if (location.kind !== "point_group"
+      && location.kind !== "numeric"
+      && location.kind !== "text") {
       return this.updateArgs({ location });
     }
   };
@@ -97,11 +99,11 @@ export class TileMoveAbsolute
       onChange={(x) => x &&
         x.kind == "parameter_application" &&
         this.updateLocation(x)}
-      hideHeader={true}
+      hideWrapper={true}
       hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      width={3} />;
+      variableType={VariableType.Location} />;
 
   SpeedInput = () =>
     <Col xs={3}>
@@ -142,7 +144,7 @@ export class TileMoveAbsolute
         coordinate={getPositionSum(this.vector, this.args.offset.args)}
         hardwareFlags={this.props.hardwareFlags} />}>
       <Row>
-        <div className={"dynamic-column"}>
+        <div className={"move-absolute-form"}>
           <div className="input-line">
             <this.LocationForm />
           </div>

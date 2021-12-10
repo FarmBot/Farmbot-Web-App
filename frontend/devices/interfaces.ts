@@ -62,6 +62,7 @@ export enum Feature {
   soil_height = "soil_height",
   sort_type_optimized = "sort_type_optimized",
   sort_type_alternating = "sort_type_alternating",
+  string_variables = "string_variables",
   toggle_peripheral = "toggle_peripheral",
   update_resource = "update_resource",
   use_update_channel = "use_update_channel",

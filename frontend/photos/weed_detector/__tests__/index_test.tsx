@@ -109,4 +109,11 @@ describe("<WeedDetector />", () => {
     expect(scanImage).toHaveBeenCalledWith(0.5);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
+
+  it("shows all configs", () => {
+    const p = fakeProps();
+    p.showAdvanced = true;
+    const wrapper = mount(<WeedDetector {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("save detected plants");
+  });
 });

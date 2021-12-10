@@ -157,6 +157,7 @@ export interface NumberBoxConfigProps {
   wdEnvGet(key: keyof WD_ENV): number;
   onChange(key: keyof WD_ENV, value: number): void;
   helpText: string;
+  scale?: number;
 }
 
 export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
@@ -169,9 +170,10 @@ export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
       id={props.configKey}
       className={getModifiedClassName(props.configKey,
         props.wdEnvGet(props.configKey))}
-      value={"" + props.wdEnvGet(props.configKey)}
+      value={"" + (props.wdEnvGet(props.configKey) * (props.scale || 1))}
       onCommit={e =>
-        props.onChange(props.configKey, parseFloat(e.currentTarget.value))}
+        props.onChange(props.configKey,
+          parseFloat(e.currentTarget.value) / (props.scale || 1))}
       placeholder={t(props.label)} />
   </div>;
 };
