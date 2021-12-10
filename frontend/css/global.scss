@@ -2186,6 +2186,7 @@ textarea:focus {
   }
 }
 
+.featured-sequences-page,
 .os-download-page {
   text-align: center;
   .all-content-wrapper {
@@ -2239,6 +2240,22 @@ textarea:focus {
         display: block;
         white-space: nowrap;
       }
+    }
+  }
+}
+
+.featured-sequences-page {
+  summary {
+    color: $light_gray;
+    cursor: pointer;
+  }
+  .sequence-description {
+    margin-left: -1.5rem;
+    margin-right: -5rem;
+  }
+  .markdown {
+    p {
+      color: $white !important;
     }
   }
 }

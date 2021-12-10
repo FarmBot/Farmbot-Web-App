@@ -1264,6 +1264,9 @@ export namespace Content {
     trim(`Download the version of FarmBot OS that corresponds to your
     FarmBot kit and its internal computer.`);
 
+  export const FEATURED_SEQUENCES =
+    trim(`Featured shared sequences published by FarmBot Inc.`);
+
   export const UNSUPPORTED_BROWSER =
     trim(`Your web browser may not work properly with the FarmBot Web App.
     If you experience any issues, try using a recent version of Chrome,

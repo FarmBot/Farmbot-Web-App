@@ -127,6 +127,7 @@ FarmBot::Application.routes.draw do
   get "/demo" => "dashboard#demo", as: :demo_main
   get "/try_farmbot" => "dashboard#try_farmbot", as: :try_farmbot_main
   get "/os" => "dashboard#os_download", as: :os_download
+  get "/featured" => "dashboard#featured", as: :featured
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
   get "/tos_update" => "dashboard#tos_update", as: :tos_update
   get "/verify/:token" => "dashboard#confirmation_page", as: :confirmation_page
