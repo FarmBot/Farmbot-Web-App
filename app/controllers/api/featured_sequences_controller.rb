@@ -25,7 +25,7 @@ module Api
           .map do |x|
           {
             id: x.id,
-            url: "#{$API_URL}/app/shared/sequence/#{x.id}",
+            path: "/app/shared/sequence/#{x.id}",
             name: x.name,
             description: x.description,
           }
