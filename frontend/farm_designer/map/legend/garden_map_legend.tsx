@@ -84,9 +84,9 @@ export const FarmbotSubMenu =
   ({ dispatch, getConfigValue }: LayerSubMenuProps) =>
     <div className="farmbot-layer-submenu">
       <NonLayerToggle
-        setting={BooleanSetting.show_camera_view_area}
-        label={DeviceSetting.showCameraViewAreaInMap}
-        helpText={Content.SHOW_CAMERA_VIEW_AREA}
+        setting={BooleanSetting.display_trail}
+        label={DeviceSetting.trail}
+        helpText={Content.VIRTUAL_TRAIL}
         getConfigValue={getConfigValue}
         dispatch={dispatch} />
     </div>;
@@ -147,6 +147,10 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           setting={BooleanSetting.clip_image_layer}
           label={DeviceSetting.clipPhotosOutOfBounds}
           helpText={Content.CLIP_PHOTOS_OUT_OF_BOUNDS} />
+        <NonLayerToggle {...subMenuProps}
+          setting={BooleanSetting.show_camera_view_area}
+          label={DeviceSetting.cameraView}
+          helpText={Content.SHOW_CAMERA_VIEW_AREA} />
       </div>} />
     <LayerToggle
       settingName={BooleanSetting.show_zones}

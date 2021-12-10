@@ -154,7 +154,7 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: { label: "x", data_value: { kind: "numeric", args: { number: 1 } } }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Number variable: 1");
+    expect(r.label).toBe("Number: 1");
     expect(r.value).toBe(1);
   });
 
@@ -163,7 +163,7 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: { label: "x", data_value: { kind: "text", args: { string: "text" } } }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("String variable: text");
+    expect(r.label).toBe("Text: text");
     expect(r.value).toBe("text");
   });
 });
@@ -287,7 +287,7 @@ describe("determineVarDDILabel()", () => {
     const label = determineVarDDILabel({
       label: "parent", resources: ri, uuid: "sequence uuid"
     });
-    expect(label).toEqual("Location variable - Select a location");
+    expect(label).toEqual("Location - Select a location");
   });
 
   it("returns 'externally defined' variable label", () => {

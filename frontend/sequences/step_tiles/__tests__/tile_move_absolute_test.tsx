@@ -45,7 +45,7 @@ describe("<TileMoveAbsolute />", () => {
     label: string,
     value: string | number,
   ) {
-    expect(block.find("label").at(position).text().toLowerCase())
+    expect(block.find("label").at(position - 3).text().toLowerCase())
       .toEqual(label);
     expect(block.find("input").at(position + 1).props().value)
       .toEqual(value);
@@ -58,13 +58,13 @@ describe("<TileMoveAbsolute />", () => {
     const labels = block.find("label");
     const buttons = block.find("button");
     expect(inputs.length).toEqual(8);
-    expect(labels.length).toEqual(7);
+    expect(labels.length).toEqual(4);
     expect(buttons.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Move To");
     expect(buttons.at(0).text()).toEqual("Coordinate (1.1, 2, 3)");
-    checkField(block, 0, "x (mm)", "1.1");
-    checkField(block, 1, "y (mm)", "2");
-    checkField(block, 2, "z (mm)", "3");
+    expect(block.find("input").at(1).props().value).toEqual("1.1");
+    expect(block.find("input").at(2).props().value).toEqual("2");
+    expect(block.find("input").at(3).props().value).toEqual("3");
     checkField(block, 6, "speed (%)", 100);
     checkField(block, 3, "x-offset", "4.4");
     checkField(block, 4, "y-offset", "5");

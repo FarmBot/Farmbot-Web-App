@@ -15,8 +15,11 @@ import {
   Numeric,
   Text,
 } from "farmbot";
-import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
+import {
+  VariableNode, AllowedVariableNodes, VariableType,
+} from "./locals_list_support";
 import { betterCompact } from "../../util";
+import { newVariableDataValue } from "./new_variable";
 
 /**
  * Empty `data_value` for location form initial state.
@@ -66,6 +69,7 @@ interface NewVarProps {
   allowedVariableNodes: AllowedVariableNodes;
   dropdown: DropDownItem;
   newVarLabel?: string;
+  variableType?: VariableType;
 }
 
 const nothingVar = ({
@@ -142,7 +146,7 @@ export const newParameter = (p: NewVarProps): VariableNode => {
       kind: "parameter_declaration",
       args: {
         label,
-        default_value: NOTHING_SELECTED
+        default_value: newVariableDataValue(p.variableType)
       }
     };
   }
@@ -173,7 +177,8 @@ export const convertDDItoVariable =
     if (p.dropdown.headingId === "Variable") {
       return createNewVariable({
         ...p,
-        newVarLabel: "" + p.dropdown.value
+        newVarLabel: "" + p.dropdown.value,
+        variableType: p.variableType,
       });
     } else {
       return createNewVariable({

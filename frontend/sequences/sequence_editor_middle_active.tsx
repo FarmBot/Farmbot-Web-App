@@ -20,15 +20,19 @@ import {
 } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
-import { SpecialStatus, TaggedSequence } from "farmbot";
+import {
+  ParameterDeclaration, SpecialStatus, TaggedSequence, VariableDeclaration,
+} from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps, AllStepsProps } from "./all_steps";
 import {
-  LocalsList, localListCallback, removeVariable,
+  LocalsList, localListCallback, removeVariable, generateNewVariableLabel,
 } from "./locals_list/locals_list";
 import { betterCompact, urlFriendly } from "../util";
-import { AllowedVariableNodes } from "./locals_list/locals_list_support";
+import {
+  AllowedVariableNodes, VariableType,
+} from "./locals_list/locals_list_support";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { Content, Actions, DeviceSetting } from "../constants";
 import { Collapse, PopoverInteractionKind, Position } from "@blueprintjs/core";
@@ -49,7 +53,10 @@ import {
   License, loadSequenceVersion, SequencePreviewContent,
 } from "./panel/preview_support";
 import { Path } from "../internal_urls";
-import { UUID } from "../resources/interfaces";
+import { UUID, VariableNameSet } from "../resources/interfaces";
+import { Feature } from "../devices/interfaces";
+import { shouldDisplayFeature } from "../devices/should_display";
+import { newVariableDataValue, newVariableLabel } from "./locals_list/new_variable";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -384,6 +391,7 @@ export class SequenceEditorMiddleActive extends
     sequencePreview: undefined,
     error: false,
     view: "local",
+    addVariableMenuOpen: false,
   };
 
   componentDidMount = () => {
@@ -421,6 +429,29 @@ export class SequenceEditorMiddleActive extends
     onSuccess: this.setSequencePreview,
     onError: this.setError,
   });
+
+  addVariable = (
+    variableData: VariableNameSet,
+    declarations: (ParameterDeclaration | VariableDeclaration)[],
+    variableType: VariableType,
+  ) => (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    const label = generateNewVariableLabel(
+      Object.values(variableData).map(data => data?.celeryNode),
+      newVariableLabel(variableType));
+    localListCallback(this.props)(declarations)({
+      kind: "variable_declaration",
+      args: { label, data_value: newVariableDataValue(variableType) }
+    }, label);
+    this.setState({ addVariableMenuOpen: false });
+  };
+
+  openAddVariableMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    this.setState({
+      addVariableMenuOpen: !this.state.addVariableMenuOpen,
+    });
+  };
 
   render() {
     const { dispatch, sequence } = this.props;
@@ -478,6 +509,40 @@ export class SequenceEditorMiddleActive extends
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("Variables")}
               count={Object.values(variableData).length}
+              buttonElement={(shouldDisplayFeature(Feature.number_variables) ||
+                shouldDisplayFeature(Feature.string_variables))
+                ? <Popover position={Position.TOP} usePortal={false}
+                  isOpen={this.state.addVariableMenuOpen}
+                  target={<button
+                    className={"fb-button gray add-variable-btn"}
+                    onClick={this.openAddVariableMenu}
+                    title={t("Add variable")}>
+                    <i className={"fa fa-plus"} />
+                  </button>}
+                  content={<div className={"add-variable-options"}>
+                    <button className={"fb-button gray"}
+                      onClick={this.addVariable(variableData, declarations,
+                        VariableType.Location)}>
+                      {t("location")}
+                    </button>
+                    <button className={"fb-button gray"}
+                      onClick={this.addVariable(variableData, declarations,
+                        VariableType.Number)}>
+                      {t("number")}
+                    </button>
+                    <button className={"fb-button gray"}
+                      onClick={this.addVariable(variableData, declarations,
+                        VariableType.Text)}>
+                      {t("text")}
+                    </button>
+                  </div>} />
+                : <button
+                  className={"fb-button gray add-variable-btn"}
+                  title={t("Add variable")}
+                  onClick={this.addVariable(variableData, declarations,
+                    VariableType.Location)}>
+                  <i className={"fa fa-plus"} />
+                </button>}
               collapsed={this.state.variablesCollapsed}
               toggle={this.toggleSection("variablesCollapsed")} />}
           {!viewSequenceCeleryScript &&
@@ -495,7 +560,6 @@ export class SequenceEditorMiddleActive extends
                   })}
                   locationDropdownKey={JSON.stringify(sequence)}
                   allowedVariableNodes={AllowedVariableNodes.parameter}
-                  toggleVarShow={this.toggleSection("variablesCollapsed")}
                   hideGroups={true} />
               </ErrorBoundary>
             </Collapse>}
@@ -709,6 +773,7 @@ export interface SectionHeaderProps {
   collapsed: boolean;
   toggle(): void;
   count?: number;
+  buttonElement?: JSX.Element;
 }
 
 export const SectionHeader = (props: SectionHeaderProps) =>
@@ -716,5 +781,6 @@ export const SectionHeader = (props: SectionHeaderProps) =>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
       : t(props.title)}</label>
+    {props.buttonElement}
     <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
   </div>;

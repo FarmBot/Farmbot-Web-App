@@ -52,7 +52,6 @@ export interface RegimenRowsProps {
   regimen: TaggedRegimen;
   calendar: CalendarRow[];
   dispatch: Function;
-  varsCollapsed: boolean;
   resources: ResourceIndex;
 }
 

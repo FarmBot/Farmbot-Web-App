@@ -1,11 +1,11 @@
 import React from "react";
-import { Row, Col, FBSelect, Help, Color, BlurableInput } from "../../ui";
+import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
   locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
 } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, AllowedVariableNodes, VariableNode, OnChange,
+  LocationFormProps, AllowedVariableNodes, VariableNode, OnChange, VariableType,
 } from "../locals_list/locals_list_support";
 import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
@@ -14,14 +14,14 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { DefaultValueForm } from "./default_value_form";
 import { t } from "../../i18next_wrapper";
 import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
-import { ToolTips } from "../../constants";
 import { generateNewVariableLabel } from "./locals_list";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
-import { shouldDisplayFeature } from "../../devices/should_display";
-import { Feature } from "../../devices/interfaces";
 import { defensiveClone } from "../../util";
 import { Numeric, Text } from "farmbot";
+import { ToolTips } from "../../constants";
+import { Position } from "@blueprintjs/core";
+import { isNumeric, isText, VariableIcon } from "./new_variable";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -50,8 +50,9 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
  * Can be used to set a specific value, import a value, or declare a variable.
  */
 export const LocationForm =
+  // eslint-disable-next-line complexity
   (props: LocationFormProps) => {
-    const { sequenceUuid, resources, bodyVariables, variable,
+    const { sequenceUuid, resources, bodyVariables, variable, variableType,
       allowedVariableNodes, hideGroups, removeVariable, onChange } = props;
     const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
@@ -60,11 +61,14 @@ export const LocationForm =
       allowedVariableNodes, resources, sequenceUuid,
     });
     const displayGroups = !hideGroups;
-    const unfiltered = locationFormList(resources, [], variableListItems,
+    const initList = locationFormList(resources, [], variableListItems,
       displayGroups);
-    const list = props.customFilterRule
-      ? unfiltered.filter(props.customFilterRule)
-      : unfiltered;
+    const list = [
+      VariableType.Number,
+      VariableType.Text,
+    ].includes(variableType)
+      ? []
+      : initList;
     /** Variable name. */
     const { label } = celeryNode.args;
     const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
@@ -82,98 +86,67 @@ export const LocationForm =
       defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
       list.unshift(defaultDDI);
     }
-    return <div className="location-form">
-      {!props.hideHeader &&
-        <div className="location-form-header">
-          <VariableIcon variable={variable} />
-          <Label label={label} inUse={props.inUse || !removeVariable}
-            variable={variable} onChange={onChange} />
-          {isDefault &&
-            <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
-              customIcon={"exclamation-triangle"} onHover={true} />}
-          {props.collapsible &&
-            <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
-              onClick={props.toggleVarShow} />}
+    const isDefaultValueForm =
+      props.locationDropdownKey?.endsWith("default_value");
+    return <div className={"location-form"}>
+      <div className={"location-form-content"}>
+        <Row>
+          {!props.hideWrapper &&
+            <Col xs={1}>
+              {!isDefaultValueForm &&
+                <VariableIcon variableType={variableType} />}
+            </Col>}
+          {!props.hideWrapper &&
+            <Col xs={4}>
+              {isDefaultValueForm
+                ? <p>{t("Default value")}</p>
+                : <Label label={label} inUse={props.inUse || !removeVariable}
+                  variable={variable} onChange={onChange} />}
+              {isDefaultValueForm &&
+                <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
+              {isDefaultValueForm && isDefault &&
+                <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
+                  customIcon={"exclamation-triangle"} onHover={true} />}
+            </Col>}
+          <Col xs={props.hideWrapper ? 12 : 6}>
+            <FBSelect
+              key={props.locationDropdownKey}
+              list={list}
+              selectedItem={dropdown}
+              customNullLabel={NO_VALUE_SELECTED_DDI().label}
+              onChange={ddi => {
+                onChange(convertDDItoVariable({
+                  identifierLabel: label,
+                  allowedVariableNodes,
+                  dropdown: ddi,
+                  variableType,
+                }), label);
+              }} />
+          </Col>
           {removeVariable &&
-            <i className={"fa fa-trash"}
-              style={props.inUse ? { color: Color.gray } : {}}
-              onClick={() => removeVariable(label)} />}
-          {shouldDisplayFeature(Feature.number_variables) &&
-            <i className={"fa fa-hashtag"}
-              onClick={() => onChange(convertDDItoVariable({
-                identifierLabel: label,
-                allowedVariableNodes,
-                dropdown: { label: "", headingId: "Numeric", value: 0 },
-              }), label)} />}
-          {shouldDisplayFeature(Feature.string_variables) &&
-            <i className={"fa fa-font"}
-              onClick={() => onChange(convertDDItoVariable({
-                identifierLabel: label,
-                allowedVariableNodes,
-                dropdown: { label: "", headingId: "Text", value: "" },
-              }), label)} />}
-        </div>}
-      {!props.collapsed &&
-        <div className="location-form-content">
-          <Row>
-            <Col xs={12}>
-              <FBSelect
-                key={props.locationDropdownKey}
-                list={list}
-                selectedItem={dropdown}
-                customNullLabel={NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => {
-                  onChange(convertDDItoVariable({
-                    identifierLabel: label,
-                    allowedVariableNodes,
-                    dropdown: ddi
-                  }), label);
-                }} />
-            </Col>
-          </Row>
-          <NumericInput label={label} variable={variable} onChange={onChange} />
-          <TextInput label={label} variable={variable} onChange={onChange} />
-          <CoordinateInputBoxes
-            variableNode={celeryNode}
-            vector={vector}
-            width={props.width}
-            onChange={onChange} />
-          <DefaultValueForm
-            key={props.locationDropdownKey}
-            variableNode={celeryNode}
-            resources={resources}
-            onChange={onChange} />
-        </div>}
+            <Col xs={1}>
+              <i className={"fa fa-trash"}
+                style={props.inUse ? { color: Color.gray } : {}}
+                onClick={() => removeVariable(label)} />
+            </Col>}
+        </Row>
+        {variableType == VariableType.Number &&
+          <NumericInput label={label} variable={variable} onChange={onChange} />}
+        {variableType == VariableType.Text &&
+          <TextInput label={label} variable={variable} onChange={onChange} />}
+        <CoordinateInputBoxes
+          variableNode={celeryNode}
+          vector={vector}
+          hideWrapper={!!props.hideWrapper}
+          onChange={onChange} />
+        <DefaultValueForm
+          key={props.locationDropdownKey}
+          variableNode={celeryNode}
+          resources={resources}
+          onChange={onChange} />
+      </div>
     </div>;
   };
-
-const isNumeric = (variableNode: VariableNode) =>
-  ((variableNode.kind == "variable_declaration" ||
-    variableNode.kind == "parameter_application") &&
-    variableNode.args.data_value.kind == "numeric") ||
-  (variableNode.kind == "parameter_declaration" &&
-    variableNode.args.default_value.kind == "numeric");
-
-const isText = (variableNode: VariableNode) =>
-  ((variableNode.kind == "variable_declaration" ||
-    variableNode.kind == "parameter_application") &&
-    variableNode.args.data_value.kind == "text") ||
-  (variableNode.kind == "parameter_declaration" &&
-    variableNode.args.default_value.kind == "text");
-
-export interface VariableIconProps {
-  variable: SequenceMeta;
-}
-
-export const VariableIcon = (props: VariableIconProps) => {
-  const variableNode = props.variable.celeryNode;
-  const iconClass = () => {
-    if (isNumeric(variableNode)) { return "fa-hashtag"; }
-    if (isText(variableNode)) { return "fa-font"; }
-    return "fa-crosshairs";
-  };
-  return <i className={`fa ${iconClass()} variable-icon`} />;
-};
 
 export interface NumericInputProps {
   variable: SequenceMeta;
@@ -183,23 +156,26 @@ export interface NumericInputProps {
 
 export const NumericInput = (props: NumericInputProps) => {
   const variableNode = props.variable.celeryNode;
-  return isNumeric(variableNode)
-    ? <BlurableInput type={"number"}
-      className={"numeric-input"}
-      onCommit={e => {
-        const editableVariable = defensiveClone(variableNode);
-        const value = parseFloat(e.currentTarget.value);
-        if (editableVariable.kind == "parameter_declaration") {
-          (editableVariable.args.default_value as Numeric).args.number = value;
-        } else {
-          (editableVariable.args.data_value as Numeric).args.number = value;
-        }
-        props.onChange(editableVariable, props.label);
-      }}
-      value={variableNode.kind == "parameter_declaration"
-        ? (variableNode.args.default_value as Numeric).args.number
-        : (variableNode.args.data_value as Numeric).args.number} />
-    : <div />;
+  return <Row>
+    <Col xs={5} />
+    <Col xs={7} className={"numeric-variable-input"}>
+      <BlurableInput type={"number"}
+        className={"number-input"}
+        onCommit={e => {
+          const editableVariable = defensiveClone(variableNode);
+          const value = parseFloat(e.currentTarget.value);
+          if (editableVariable.kind == "parameter_declaration") {
+            (editableVariable.args.default_value as Numeric).args.number = value;
+          } else {
+            (editableVariable.args.data_value as Numeric).args.number = value;
+          }
+          props.onChange(editableVariable, props.label);
+        }}
+        value={variableNode.kind == "parameter_declaration"
+          ? (variableNode.args.default_value as Numeric).args.number
+          : (variableNode.args.data_value as Numeric).args.number} />
+    </Col>
+  </Row>;
 };
 
 export interface TextInputProps {
@@ -210,57 +186,64 @@ export interface TextInputProps {
 
 export const TextInput = (props: TextInputProps) => {
   const variableNode = props.variable.celeryNode;
-  return isText(variableNode)
-    ? <BlurableInput type={"text"}
-      className={"string-input"}
-      onCommit={e => {
-        const editableVariable = defensiveClone(variableNode);
-        const value = e.currentTarget.value;
-        if (editableVariable.kind == "parameter_declaration") {
-          (editableVariable.args.default_value as Text).args.string = value;
-        } else {
-          (editableVariable.args.data_value as Text).args.string = value;
-        }
-        props.onChange(editableVariable, props.label);
-      }}
-      value={variableNode.kind == "parameter_declaration"
-        ? (variableNode.args.default_value as Text).args.string
-        : (variableNode.args.data_value as Text).args.string} />
-    : <div />;
+  return <Row>
+    <Col xs={5} />
+    <Col xs={7} className={"text-variable-input"}>
+      <BlurableInput type={"text"}
+        className={"string-input"}
+        onCommit={e => {
+          const editableVariable = defensiveClone(variableNode);
+          const value = e.currentTarget.value;
+          if (editableVariable.kind == "parameter_declaration") {
+            (editableVariable.args.default_value as Text).args.string = value;
+          } else {
+            (editableVariable.args.data_value as Text).args.string = value;
+          }
+          props.onChange(editableVariable, props.label);
+        }}
+        value={variableNode.kind == "parameter_declaration"
+          ? (variableNode.args.default_value as Text).args.string
+          : (variableNode.args.data_value as Text).args.string} />
+    </Col>
+  </Row>;
 };
 
-interface LabelProps {
+export interface LabelProps {
   label: string;
   inUse: boolean | undefined;
   variable: SequenceMeta;
   onChange: OnChange;
 }
 
-const Label = (props: LabelProps) => {
-  const { label, inUse } = props;
-  const [isEditingLabel, setIsEditingLabel] = React.useState(false);
-  const [labelValue, setLabelValue] = React.useState(label);
-  const formTitle = labelValue == "parent" ? t("Location variable") : labelValue;
-  return isEditingLabel
-    ? <input value={labelValue}
-      autoFocus={true}
-      onBlur={() => {
-        setIsEditingLabel(false);
-        const editableVariable = cloneDeep(props.variable.celeryNode);
-        editableVariable.args.label = labelValue;
-        props.onChange(editableVariable, label);
-      }}
-      onChange={e => {
-        setLabelValue(e.currentTarget.value);
-      }} />
-    : <label
-      title={inUse ? "" : t("click to edit")}
-      onClick={() => inUse
-        ? error(t("Can't edit variable name while in use."))
-        : setIsEditingLabel(true)}>
-      {formTitle}
-    </label>;
-};
+interface LabelState {
+  labelValue: string;
+}
+
+export class Label extends React.Component<LabelProps, LabelState> {
+  state: LabelState = { labelValue: this.props.label };
+  setLabelValue = (e: React.FormEvent<HTMLInputElement>) =>
+    this.setState({ labelValue: e.currentTarget.value });
+  render() {
+    const { labelValue } = this.state;
+    const { label, inUse, variable, onChange } = this.props;
+    return !inUse
+      ? <input value={labelValue}
+        autoFocus={true}
+        onBlur={() => {
+          const editableVariable = cloneDeep(variable.celeryNode);
+          if (editableVariable.args.label != labelValue) {
+            editableVariable.args.label = labelValue;
+            onChange(editableVariable, label);
+          }
+        }}
+        onChange={this.setLabelValue} />
+      : <input
+        style={{ background: Color.lightGray }}
+        value={labelValue == "parent" ? t("Location") : labelValue}
+        readOnly={true}
+        onClick={() => error(t("Can't edit variable name while in use."))} />;
+  }
+}
 
 export interface GenerateVariableListProps {
   allowedVariableNodes: AllowedVariableNodes;
@@ -279,7 +262,7 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
   if (headerForm) { return []; }
   const oldVariables = variables
-    .filter(v => !isNumeric(v))
+    .filter(v => !isNumeric(v) && !isText(v))
     .map(variable_ => ({
       value: variable_.args.label,
       label: determineVarDDILabel({
@@ -289,7 +272,8 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
       }),
       headingId,
     }));
-  const newVarLabel = generateNewVariableLabel(variables);
+  const newVarLabel = generateNewVariableLabel(variables,
+    (num: number) => t("Location {{ num }}", { num }));
   const newVariable = [{
     value: newVarLabel,
     label: determineVarDDILabel({

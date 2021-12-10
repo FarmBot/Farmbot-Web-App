@@ -47,6 +47,10 @@
       background: $lighter_gray !important;
     }
   }
+}
+
+.designer-regimen-editor-panel,
+.sequence-editor-panel {
   .sequence-section-header {
     &:hover {
       background: $lighter_gray !important;
@@ -187,26 +191,6 @@
       margin-top: 0;
     }
   }
-  .sequence-section-header {
-    line-height: 3rem;
-    cursor: pointer;
-    padding-left: 1.5rem;
-    &:hover {
-      background: $off_white;
-    }
-    label {
-      cursor: pointer;
-    }
-    .fa-caret-up,
-    .fa-caret-down {
-      float: right;
-      line-height: 3rem;
-      font-size: 2rem;
-      margin-right: 2rem;
-      margin-top: 0.5rem;
-      color: $dark_gray;
-    }
-  }
   .sequence-description {
     position: relative;
     width: 100%;
@@ -229,10 +213,14 @@
       p {
         display: revert;
         margin: revert;
+        width: 100%;
         color: $dark_gray;
         overflow: revert;
         white-space: revert;
         text-transform: revert;
+        font-size: 16px;
+        line-height: 140%;
+        margin: 1rem 0;
       }
       ul {
         list-style-type: revert !important;
@@ -241,6 +229,19 @@
       }
       :first-child {
         margin-top: 0;
+      }
+      h1 {
+        font-size: 30px;
+      }
+      h2 {
+        font-size: 25px;
+      }
+      h3 {
+        font-size: 20px;
+      }
+      h1, h2, h3 {
+        display: block;
+        margin-top: 2rem;
       }
     }
     .description-editor-tools {
@@ -257,6 +258,66 @@
         color: $medium_gray;
         &.over {
           color: $darkest_red;
+        }
+      }
+    }
+  }
+}
+
+.regimen-editor-content,
+.sequence-editor-sections {
+  .sequence-section-header {
+    position: relative;
+    line-height: 3rem;
+    cursor: pointer;
+    padding-left: 1.5rem;
+    &:hover {
+      background: $off_white;
+    }
+    label {
+      cursor: pointer;
+    }
+    .fa-caret-up,
+    .fa-caret-down {
+      float: right;
+      line-height: 3rem;
+      font-size: 2rem;
+      margin-right: 2rem;
+      margin-top: 0.5rem;
+      color: $dark_gray;
+    }
+    .add-variable-btn {
+      position: absolute;
+      right: 4rem;
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      margin-top: 0.75rem;
+      padding: 0.25rem;
+      .fa-plus {
+        vertical-align: top;
+        padding-top: 0.25rem;
+      }
+    }
+    .bp3-popover-wrapper {
+      position: absolute;
+      top: 0;
+      right: 4rem;
+      .add-variable-btn {
+        position: relative;
+        right: unset;
+      }
+      .bp3-popover-content {
+        background: $off_white;
+        height: 100%;
+        align-content: center;
+        .add-variable-options {
+          text-align: center;
+        }
+        .fb-button {
+          float: none;
+          height: 2rem;
+          line-height: 2rem;
         }
       }
     }
@@ -289,9 +350,6 @@
   hr {
     margin: 0.5rem 0;
   }
-  input {
-    margin-top: 1rem;
-  }
   &.preview {
     .filter-search,
     .input,
@@ -308,124 +366,32 @@
 }
 
 .locals-list {
-  display: flex;
-  overflow-y: hidden;
-  overflow-x: auto;
-  >.location-form {
-    margin: 1rem;
-    width: 100%;
-    height: 100%;
-    min-width: 30rem;
-    max-width: 30rem;
-    background: $off_white;
-    border-radius: 3px;
-    box-shadow: 0px 0px 10px #ccc;
+  margin-left: 1.5rem;
+  margin-right: 2rem;
+  .location-form {
     label {
       margin-top: 0;
     }
-    >.location-form-header {
-      width: 100%;
-      height: 3.5rem;
-      background: darken($off_white, 5%);
-      padding: 1rem;
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
-      .variable-icon {
-        margin: 0.5rem;
-        line-height: 0.5rem;
-        font-size: 1.2rem;
-        vertical-align: top;
-        cursor: default !important;
-      }
-      label,
-      input {
-        vertical-align: top;
-        max-width: 75%;
-      }
-      label {
-        width: 100%;
-        font-size: 1.2rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        cursor: text;
-        text-transform: none;
-        white-space: nowrap;
-      }
-      input {
-        height: 1.5rem;
-        font-weight: bold;
-        padding-left: 0;
-      }
-      .fa-trash {
-        float: right;
-        margin-right: 0;
-        color: $darkest_red;
-      }
-      .fa-caret-down,
-      .fa-caret-up {
-        float: right;
-        font-size: 2rem;
-        color: $dark_gray;
-        margin-top: -0.25rem;
-        margin-left: 1rem;
-      }
-      .bp3-popover-wrapper {
-        display: inline;
-        margin-left: 1rem;
-        font-size: 1.2rem;
-      }
-    }
-    >.location-form-content {
-      padding: 1rem;
-    }
   }
-  .location-form-header {
-    .fa-hashtag,
-    .fa-font {
-      font-size: 1rem;
-      vertical-align: top;
-      line-height: 1.75rem;
+  .location-form-content {
+    .bp3-popover-wrapper {
+      display: inline;
+      margin-left: 1rem;
     }
-  }
-  .default-value-form {
-    .location-form-header {
-      .variable-icon {
-        display: none;
-      }
-      .fa-hashtag,
-      .fa-font {
-        margin-left: 0.5rem;
-        margin-top: 0.5rem;
-      }
+    .variable-icon {
+      cursor: default !important;
     }
-  }
-  .add-variable {
-    margin: 1rem;
-    cursor: pointer;
-    width: 100%;
-    min-width: 30rem;
-    max-width: 30rem;
-    padding: 1rem;
-    background: $off_white;
-    transition: 0.2s ease;
     p {
-      transition: 0.2s ease;
-    }
-    &:hover {
-      background: darken($off_white, 5%);
-      p {
-        color: $placeholder_gray;
-      }
-      border-color: $medium_light_gray;
-    }
-    text-align: left;
-    p {
-      margin: auto;
-      padding: 1rem;
+      display: inline;
       font-size: 1.2rem;
-      color: $gray;
-      font-weight: bold;
-      text-transform: uppercase;
+    }
+    .fa-trash {
+      color: $darkest_red;
+    }
+    .numeric-variable-input,
+    .text-variable-input {
+      padding-left: 2.5rem;
+      padding-right: 4rem;
     }
   }
 }
@@ -920,6 +886,7 @@
   }
   label {
     display: inline-block;
+    padding-left: 1rem;
   }
   .bp3-popover-wrapper {
     display: inline-block;

@@ -39,7 +39,7 @@ describe("<ResourceSelection />", () => {
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
-      { headingId: "Identifier", label: "Add new", value: "Location variable 1" },
+      { headingId: "Identifier", label: "Add new", value: "Location 1" },
       { headingId: "Device", label: "Device", heading: true, value: 0 },
       { headingId: "Device", label: "Tool Mount", value: 0 },
       { headingId: "Plant", label: "Plants", heading: true, value: 0 },
@@ -56,7 +56,7 @@ describe("<ResourceSelection />", () => {
     const wrapper = mount(<ResourceSelection {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
-      { headingId: "Identifier", label: "Add new", value: "Location variable 1" },
+      { headingId: "Identifier", label: "Add new", value: "Location 1" },
       { headingId: "Device", label: "Device", heading: true, value: 0 },
       { headingId: "Plant", label: "Plants", heading: true, value: 0 },
       { headingId: "GenericPointer", label: "Points", heading: true, value: 0 },

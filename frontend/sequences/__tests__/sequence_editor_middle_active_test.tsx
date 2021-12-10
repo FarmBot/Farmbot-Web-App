@@ -1,3 +1,8 @@
+let mockShouldDisplay = false;
+jest.mock("../../devices/should_display", () => ({
+  shouldDisplayFeature: () => mockShouldDisplay,
+}));
+
 import { Path } from "../../internal_urls";
 let mockPath = "";
 jest.mock("../../history", () => ({
@@ -31,11 +36,13 @@ jest.mock("../../devices/actions", () => ({
   execSequence: jest.fn()
 }));
 
+const mockCB = jest.fn();
 jest.mock("../locals_list/locals_list", () => ({
   LocalsList: () => <div />,
-  localListCallback: jest.fn(() => jest.fn()),
+  localListCallback: jest.fn(() => jest.fn(() => mockCB)),
   isParameterDeclaration: jest.fn(),
   removeVariable: jest.fn(),
+  generateNewVariableLabel: jest.fn(),
 }));
 
 jest.mock("../../config_storage/actions", () => ({
@@ -96,6 +103,8 @@ import { error } from "../../toast/toast";
 import { API } from "../../api";
 import { loadSequenceVersion } from "../panel/preview_support";
 import { act } from "react-dom/test-utils";
+import { VariableType } from "../locals_list/locals_list_support";
+import { generateNewVariableLabel } from "../locals_list/locals_list";
 
 describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -453,6 +462,53 @@ describe("<SequenceEditorMiddleActive />", () => {
       <SequenceEditorMiddleActive {...p} />);
     wrapper.setState({ editingDescription: true });
     expect(wrapper.find("textarea").length).toEqual(0);
+  });
+
+  it("shows more add variable options", () => {
+    mockShouldDisplay = true;
+    mockPath = Path.mock(Path.sequences("1"));
+    const p = fakeProps();
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.find("Popover").length).toEqual(5);
+  });
+
+  it("doesn't show more add variable options", () => {
+    mockShouldDisplay = false;
+    mockPath = Path.mock(Path.sequences("1"));
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    expect(wrapper.find("Popover").length).toEqual(4);
+  });
+
+  it("opens add variable menu", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...fakeProps()} />);
+    expect(wrapper.state().addVariableMenuOpen).toEqual(false);
+    const e = { stopPropagation: jest.fn() } as unknown as React.MouseEvent;
+    wrapper.instance().openAddVariableMenu(e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+    expect(wrapper.state().addVariableMenuOpen).toEqual(true);
+  });
+
+  it("adds new variable", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...fakeProps()} />);
+    wrapper.setState({ addVariableMenuOpen: true });
+    const e = {
+      stopPropagation: jest.fn()
+    } as unknown as React.MouseEvent<HTMLElement>;
+    const variableData = fakeVariableNameSet();
+    variableData["none"] = undefined;
+    wrapper.instance().addVariable(variableData,
+      [], VariableType.Location)(e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+    expect(wrapper.state().addVariableMenuOpen).toEqual(false);
+    expect(mockCB).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: { label: undefined, data_value: { kind: "nothing", args: {} } }
+    }, undefined);
+    expect(generateNewVariableLabel).toHaveBeenCalled();
   });
 });
 

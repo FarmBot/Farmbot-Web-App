@@ -42,7 +42,6 @@ describe("<RegimenRows />", () => {
         }]
       }],
       dispatch: jest.fn(),
-      varsCollapsed: false,
       resources: buildResourceIndex([]).index,
     };
   };
@@ -79,38 +78,5 @@ describe("<RegimenRows />", () => {
     p.calendar[0].items[0].variables = ["variable"];
     const wrapper = mount(<RegimenRows {...p} />);
     expect(wrapper.find(".regimen-event-variable").length).toEqual(0);
-  });
-
-  it("has correct height without variable form", () => {
-    const p = fakeProps();
-    p.regimen.body.body = [];
-    const wrapper = mount(<RegimenRows {...p} />);
-    expect(wrapper.find(".regimen").props().style).toEqual({
-      height: "calc(100vh - 200px)"
-    });
-  });
-
-  it("has correct height with variable form", () => {
-    const p = fakeProps();
-    p.regimen.body.body = [testVariable];
-    const wrapper = mount(<RegimenRows {...p} />);
-    expect(wrapper.find(".regimen").props().style)
-      .toEqual({ height: "calc(100vh - 500px)" });
-  });
-
-  it("has correct height with variable form collapsed", () => {
-    const p = fakeProps();
-    p.regimen.body.body = [testVariable];
-    p.varsCollapsed = true;
-    const wrapper = mount(<RegimenRows {...p} />);
-    expect(wrapper.find(".regimen").props().style)
-      .toEqual({ height: "calc(100vh - 300px)" });
-  });
-
-  it("automatically calculates height", () => {
-    document.getElementById = () => ({ offsetHeight: 101 } as HTMLElement);
-    const wrapper = mount(<RegimenRows {...fakeProps()} />);
-    expect(wrapper.find(".regimen").props().style)
-      .toEqual({ height: "calc(100vh - 301px)" });
   });
 });

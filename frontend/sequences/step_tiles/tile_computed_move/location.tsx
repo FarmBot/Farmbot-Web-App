@@ -127,7 +127,7 @@ const resourceVariableLabel = (variable: SequenceMeta | undefined) => {
   const label = variable?.celeryNode.args.label;
   const varLabel = label == "parent" ? undefined : label;
   const infoLabel = variable?.dropdown.label;
-  return `${varLabel || t("Location variable")} - ${infoLabel || t("Add new")}`;
+  return `${varLabel || t("Location")} - ${infoLabel || t("Add new")}`;
 };
 
 export const LOCATION_NODES = ["point", "tool", "identifier"];

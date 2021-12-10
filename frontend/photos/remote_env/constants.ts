@@ -50,10 +50,19 @@ export const WD_KEY_DEFAULTS = {
   WEED_DETECTOR_S_LO: 50,
   WEED_DETECTOR_V_HI: 255,
   WEED_DETECTOR_V_LO: 50,
+  WEED_DETECTOR_save_detected_plants: SPECIAL_VALUES.FALSE,
+  WEED_DETECTOR_use_bounds: SPECIAL_VALUES.FALSE,
+  WEED_DETECTOR_min_radius: 0,
+  WEED_DETECTOR_max_radius: 0,
 };
 
 export type WEED_DETECTOR_KEY_PART =
-  | "blur" | "morph" | "iteration" | NumericKeyName;
+  | "blur" | "morph" | "iteration"
+  | "save_detected_plants"
+  | "use_bounds"
+  | "min_radius"
+  | "max_radius"
+  | NumericKeyName;
 
 export type CAMERA_CALIBRATION_KEY_PART =
   | WEED_DETECTOR_KEY_PART
