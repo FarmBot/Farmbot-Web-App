@@ -35,7 +35,7 @@ module Sequences
       integer :folder_id
       boolean :pinned
       boolean :forked
-      string :description
+      string :description, empty: true
       string :copyright
     end
 
