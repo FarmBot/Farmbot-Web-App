@@ -354,7 +354,8 @@ export const SequenceName =
   ({ dispatch, sequence }: SequenceNameProps) =>
     <Row>
       <Col xs={12}>
-        <BlurableInput value={sequence.body.name}
+        <BlurableInput className={"sequence-name"}
+          value={sequence.body.name}
           placeholder={t("Sequence Name")}
           onCommit={e =>
             dispatch(edit(sequence, { name: e.currentTarget.value }))} />
@@ -421,7 +422,10 @@ export class SequenceEditorMiddleActive extends
     this.setState({ ...this.state, [key]: !this.state[key] });
   setDescription = (description: string) => this.setState({ description });
   setSequencePreview = (sequencePreview: TaggedSequence) =>
-    this.setState({ sequencePreview });
+    this.setState({
+      sequencePreview,
+      descriptionCollapsed: !sequencePreview.body.description,
+    });
   setError = () => this.setState({ error: true });
 
   loadSequenceVersion = (id: string) => loadSequenceVersion({

@@ -218,6 +218,9 @@
     margin-right: 0.35rem;
     margin-left: 0 !important;
   }
+  .fa-arrow-circle-up {
+    margin-bottom: 1rem;
+  }
 }
 
 .step-control-icons {
@@ -293,7 +296,7 @@
     .locals-list {
       margin-top: 1rem;
       margin-left: -1rem;
-      margin-right: -4rem;
+      margin-right: -0.5rem;
     }
   }
   &.assertion-step {
@@ -314,7 +317,7 @@
     }
     .locals-list {
       margin-left: -1rem;
-      margin-right: -4rem;
+      margin-right: 0;
     }
     .location-form {
       .row {

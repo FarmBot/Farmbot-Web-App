@@ -159,6 +159,16 @@ describe("<LocationForm />", () => {
     });
   });
 
+  it("shows coordinate input boxes", () => {
+    const p = fakeProps();
+    p.removeVariable = jest.fn();
+    p.hideWrapper = false;
+    const wrapper = mount(<LocationForm {...p} />);
+    const boxes = wrapper.find(".custom-coordinate-form");
+    expect(boxes.find(".col-xs-5").length).toEqual(1);
+    expect(boxes.find(".col-xs-6").length).toEqual(0);
+  });
+
   it("renders default value warning", () => {
     const p = fakeProps();
     p.locationDropdownKey = "default_value";
@@ -252,6 +262,7 @@ describe("<NumericInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
+    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -274,6 +285,7 @@ describe("<NumericInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
+    p.isDefaultValueForm = true;
     p.variable.celeryNode = {
       kind: "parameter_declaration",
       args: {
@@ -307,6 +319,7 @@ describe("<TextInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
+    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -329,6 +342,7 @@ describe("<TextInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
+    p.isDefaultValueForm = true;
     p.variable.celeryNode = {
       kind: "parameter_declaration",
       args: {
@@ -363,6 +377,7 @@ describe("<Label />", () => {
       vector: { x: 0, y: 0, z: 0 }
     },
     onChange: jest.fn(),
+    allowedVariableNodes: AllowedVariableNodes.parameter,
   });
 
   it("changes label", () => {
@@ -375,5 +390,13 @@ describe("<Label />", () => {
     const newVariableNode = cloneDeep(p.variable.celeryNode);
     newVariableNode.args.label = "new label";
     expect(p.onChange).toHaveBeenCalledWith(newVariableNode, "label");
+  });
+
+  it("doesn't render input", () => {
+    const p = fakeProps();
+    p.inUse = true;
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    const wrapper = shallow<LabelProps>(<Label {...p} />);
+    expect(wrapper.find("input").length).toEqual(0);
   });
 });
