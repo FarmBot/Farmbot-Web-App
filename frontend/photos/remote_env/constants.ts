@@ -101,6 +101,8 @@ export const DEFAULT_FORMATTER: Translation = {
       case "CAMERA_CALIBRATION_image_bot_origin_location":
       case "CAMERA_CALIBRATION_invert_hue_selection":
       case "CAMERA_CALIBRATION_easy_calibration":
+      case "WEED_DETECTOR_save_detected_plants":
+      case "WEED_DETECTOR_use_bounds":
         return ("" + (SPECIAL_VALUES[val] || val));
       default:
         return val;

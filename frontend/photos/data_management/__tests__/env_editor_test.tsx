@@ -7,7 +7,7 @@ jest.mock("../../../api/crud", () => ({
 
 import React from "react";
 import { act } from "react-dom/test-utils";
-import { mount, shallow, ReactWrapper } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import { EnvEditor } from "../env_editor";
 import { EnvEditorProps } from "../interfaces";
 import { destroy, edit, initSave, save } from "../../../api/crud";
@@ -62,9 +62,8 @@ describe("<EnvEditor />", () => {
     const p = fakeProps();
     const farmwareEnv = fakeFarmwareEnv();
     p.farmwareEnvs = [farmwareEnv];
-    const wrapper = shallow(<EnvEditor {...p} />);
-    wrapper.find("input").at(2).simulate("change",
-      { currentTarget: { value: "key" } });
+    const wrapper = mount(<EnvEditor {...p} />);
+    inputChange(wrapper, 2, "key");
     wrapper.find("input").at(2).simulate("blur");
     expect(edit).toHaveBeenCalledWith(farmwareEnv, { key: "key" });
     expect(save).toHaveBeenCalledWith(farmwareEnv.uuid);
@@ -74,9 +73,8 @@ describe("<EnvEditor />", () => {
     const p = fakeProps();
     const farmwareEnv = fakeFarmwareEnv();
     p.farmwareEnvs = [farmwareEnv];
-    const wrapper = shallow(<EnvEditor {...p} />);
-    wrapper.find("input").at(3).simulate("change",
-      { currentTarget: { value: "value" } });
+    const wrapper = mount(<EnvEditor {...p} />);
+    inputChange(wrapper, 3, "value");
     wrapper.find("input").at(3).simulate("blur");
     expect(edit).toHaveBeenCalledWith(farmwareEnv, { value: "value" });
     expect(save).toHaveBeenCalledWith(farmwareEnv.uuid);

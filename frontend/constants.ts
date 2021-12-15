@@ -439,7 +439,7 @@ export namespace ToolTips {
     assign a color; and give your commands custom names.`);
 
   export const DEFAULT_VALUE =
-    trim(`Select a location to be used as the default value for this variable.
+    trim(`Select a default value for this variable.
     If the sequence is ever run without the variable explicitly set to
     another value, the default value will be used.`);
 

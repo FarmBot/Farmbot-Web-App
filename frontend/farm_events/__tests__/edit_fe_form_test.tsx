@@ -458,6 +458,36 @@ describe("<EditFEForm />", () => {
     wrapper.find(FarmEventForm).simulate("save");
     expect(error).toHaveBeenCalled();
   });
+
+  it("displays correct variable count", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    p.findExecutable = () => sequence;
+    p.resources = buildResourceIndex([]).index;
+    const variables = fakeVariableNameSet("foo");
+    variables["none"] = undefined;
+    variables["bar"] = {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "foo",
+          default_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+        }
+      },
+      dropdown: { label: "", value: "" },
+      vector: { x: 0, y: 0, z: 0 },
+    };
+    p.resources.sequenceMetas[sequence.uuid] = variables;
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("variables (1)");
+  });
+
+  it("collapses variables section", () => {
+    const wrapper = shallow<EditFEForm>(<EditFEForm {...fakeProps()} />);
+    expect(wrapper.state().variablesCollapsed).toEqual(false);
+    wrapper.instance().toggleVarShow();
+    expect(wrapper.state().variablesCollapsed).toEqual(true);
+  });
 });
 
 describe("recombine()", () => {

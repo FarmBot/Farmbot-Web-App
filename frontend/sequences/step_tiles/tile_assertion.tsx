@@ -8,6 +8,7 @@ import { SequencePart } from "./tile_assertion/sequence_part";
 import { Assertion } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
+import { VariablesPart } from "./tile_assertion/variables_part";
 
 export const TileAssertion = (props: StepParams<Assertion>) => {
   const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
@@ -37,5 +38,6 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
             {...props} />
         </Col>}
     </Row>
+    <VariablesPart {...props} />
   </StepWrapper>;
 };

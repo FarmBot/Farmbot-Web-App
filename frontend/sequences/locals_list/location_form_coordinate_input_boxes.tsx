@@ -29,6 +29,7 @@ interface CoordinateInputBoxesProps {
   variableNode: VariableNode;
   onChange: OnChange;
   hideWrapper: boolean;
+  narrowLabel: boolean;
 }
 
 /** LocationForm coordinate input boxes.  */
@@ -39,7 +40,7 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const editableVariable = defensiveClone(variableNode);
   return (vector && visible)
     ? <Row className={"custom-coordinate-form"}>
-      {!props.hideWrapper && <Col xs={5} />}
+      {!props.hideWrapper && <Col xs={props.narrowLabel ? 5 : 6} />}
       {["x", "y", "z"].map((axis: Xyz) =>
         <Col xs={props.hideWrapper ? 3 : 2} className={`${axis} no-pad`} key={axis}>
           <BlurableInput type="number"

@@ -340,7 +340,7 @@ export const getGardenCoordinates = (props: {
     const zoomLvl = getZoomLevelFromMap(map);
     const params: ScreenToGardenParams = {
       page: { x: props.pageX, y: props.pageY },
-      scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },
+      scroll: { left: page.scrollLeft, top: page.scrollTop },
       mapTransformProps: props.mapTransformProps,
       gridOffset: props.gridOffset,
       zoomLvl,

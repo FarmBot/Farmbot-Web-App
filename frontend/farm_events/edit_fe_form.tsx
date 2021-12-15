@@ -42,6 +42,8 @@ import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { ErrorBoundary } from "../error_boundary";
 import { Path } from "../internal_urls";
+import { Collapse } from "@blueprintjs/core";
+import { SectionHeader } from "../sequences/sequence_editor_middle_active";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -158,10 +160,15 @@ export interface EditFEFormState {
    * Example: Navigating away from the page while editing will discard changes.
    */
   specialStatusLocal: SpecialStatus;
+  variablesCollapsed: boolean;
 }
 
 export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
-  state: EditFEFormState = { fe: {}, specialStatusLocal: SpecialStatus.SAVED };
+  state: EditFEFormState = {
+    fe: {},
+    specialStatusLocal: SpecialStatus.SAVED,
+    variablesCollapsed: false,
+  };
 
   /** API data for the FarmEvent to which form updates can be applied. */
   get viewModel() {
@@ -239,7 +246,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
             executable_type: next_executable_type,
             executable_id: ddi.value.toString(),
           },
-          specialStatusLocal: SpecialStatus.DIRTY
+          specialStatusLocal: SpecialStatus.DIRTY,
+          variablesCollapsed: this.state.variablesCollapsed,
         };
         this.overwriteStateFEBody(variableList(varData) || []);
         this.setState(betterMerge(this.state, update));
@@ -346,6 +354,9 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       });
   };
 
+  toggleVarShow = () =>
+    this.setState({ variablesCollapsed: !this.state.variablesCollapsed });
+
   render() {
     const { farmEvent } = this.props;
     return <div className="edit-farm-event-form">
@@ -362,9 +373,19 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
           specialStatus={farmEvent.specialStatus
             || this.state.specialStatusLocal}
           onSave={() => this.commitViewModel()}>
-          <ErrorBoundary>
-            <this.LocalsList />
-          </ErrorBoundary>
+          <div className={"farm-event-form-content"}>
+            <SectionHeader title={t("Variables")}
+              count={Object.values(this.variableData || {})
+                .filter(v => v?.celeryNode.kind == "parameter_declaration")
+                .length}
+              collapsed={this.state.variablesCollapsed}
+              toggle={this.toggleVarShow} />
+            <Collapse isOpen={!this.state.variablesCollapsed}>
+              <ErrorBoundary>
+                <this.LocalsList />
+              </ErrorBoundary>
+            </Collapse>
+          </div>
         </FarmEventForm>
       </ErrorBoundary>
       <FarmEventDeleteButton

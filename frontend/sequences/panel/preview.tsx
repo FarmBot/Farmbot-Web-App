@@ -29,7 +29,10 @@ export class RawDesignerSequencePreview
   componentDidMount = () => {
     loadSequenceVersion({
       id: Path.getSlug(Path.sequenceVersion()),
-      onSuccess: sequence => this.setState({ sequence }),
+      onSuccess: sequence => this.setState({
+        sequence,
+        descriptionCollapsed: !sequence.body.description,
+      }),
       onError: () => this.setState({ error: true }),
     });
   };

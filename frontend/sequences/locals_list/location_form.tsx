@@ -87,7 +87,8 @@ export const LocationForm =
       list.unshift(defaultDDI);
     }
     const isDefaultValueForm =
-      props.locationDropdownKey?.endsWith("default_value");
+      !!props.locationDropdownKey?.endsWith("default_value");
+    const narrowLabel = !!(removeVariable || isDefaultValueForm);
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
         <Row>
@@ -97,10 +98,11 @@ export const LocationForm =
                 <VariableIcon variableType={variableType} />}
             </Col>}
           {!props.hideWrapper &&
-            <Col xs={4}>
+            <Col xs={narrowLabel ? 4 : 5}>
               {isDefaultValueForm
                 ? <p>{t("Default value")}</p>
                 : <Label label={label} inUse={props.inUse || !removeVariable}
+                  allowedVariableNodes={allowedVariableNodes}
                   variable={variable} onChange={onChange} />}
               {isDefaultValueForm &&
                 <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
@@ -124,20 +126,25 @@ export const LocationForm =
               }} />
           </Col>
           {removeVariable &&
-            <Col xs={1}>
+            <Col xs={1} className={"trash"}>
               <i className={"fa fa-trash"}
                 style={props.inUse ? { color: Color.gray } : {}}
                 onClick={() => removeVariable(label)} />
             </Col>}
         </Row>
         {variableType == VariableType.Number &&
-          <NumericInput label={label} variable={variable} onChange={onChange} />}
+          variable.celeryNode.kind != "parameter_declaration" &&
+          <NumericInput label={label} variable={variable} onChange={onChange}
+            isDefaultValueForm={isDefaultValueForm} />}
         {variableType == VariableType.Text &&
-          <TextInput label={label} variable={variable} onChange={onChange} />}
+          variable.celeryNode.kind != "parameter_declaration" &&
+          <TextInput label={label} variable={variable} onChange={onChange}
+            isDefaultValueForm={isDefaultValueForm} />}
         <CoordinateInputBoxes
           variableNode={celeryNode}
           vector={vector}
           hideWrapper={!!props.hideWrapper}
+          narrowLabel={narrowLabel}
           onChange={onChange} />
         <DefaultValueForm
           key={props.locationDropdownKey}
@@ -152,13 +159,14 @@ export interface NumericInputProps {
   variable: SequenceMeta;
   onChange: OnChange;
   label: string;
+  isDefaultValueForm: boolean;
 }
 
 export const NumericInput = (props: NumericInputProps) => {
   const variableNode = props.variable.celeryNode;
   return <Row>
-    <Col xs={5} />
-    <Col xs={7} className={"numeric-variable-input"}>
+    <Col xs={props.isDefaultValueForm ? 5 : 6} />
+    <Col xs={6} className={"numeric-variable-input"}>
       <BlurableInput type={"number"}
         className={"number-input"}
         onCommit={e => {
@@ -182,13 +190,14 @@ export interface TextInputProps {
   variable: SequenceMeta;
   onChange: OnChange;
   label: string;
+  isDefaultValueForm: boolean;
 }
 
 export const TextInput = (props: TextInputProps) => {
   const variableNode = props.variable.celeryNode;
   return <Row>
-    <Col xs={5} />
-    <Col xs={7} className={"text-variable-input"}>
+    <Col xs={props.isDefaultValueForm ? 5 : 6} />
+    <Col xs={6} className={"text-variable-input"}>
       <BlurableInput type={"text"}
         className={"string-input"}
         onCommit={e => {
@@ -213,6 +222,7 @@ export interface LabelProps {
   inUse: boolean | undefined;
   variable: SequenceMeta;
   onChange: OnChange;
+  allowedVariableNodes: AllowedVariableNodes;
 }
 
 interface LabelState {
@@ -221,14 +231,28 @@ interface LabelState {
 
 export class Label extends React.Component<LabelProps, LabelState> {
   state: LabelState = { labelValue: this.props.label };
+
   setLabelValue = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ labelValue: e.currentTarget.value });
+
+  UneditableLabel = () => {
+    const { labelValue } = this.state;
+    const { allowedVariableNodes } = this.props;
+    const value = labelValue == "parent" ? t("Location") : labelValue;
+    return allowedVariableNodes == AllowedVariableNodes.parameter
+      ? <input
+        style={{ background: Color.lightGray }}
+        value={value}
+        readOnly={true}
+        onClick={() => error(t("Can't edit variable name while in use."))} />
+      : <p className={"variable-label"}>{value}</p>;
+  };
+
   render() {
     const { labelValue } = this.state;
     const { label, inUse, variable, onChange } = this.props;
     return !inUse
       ? <input value={labelValue}
-        autoFocus={true}
         onBlur={() => {
           const editableVariable = cloneDeep(variable.celeryNode);
           if (editableVariable.args.label != labelValue) {
@@ -237,11 +261,7 @@ export class Label extends React.Component<LabelProps, LabelState> {
           }
         }}
         onChange={this.setLabelValue} />
-      : <input
-        style={{ background: Color.lightGray }}
-        value={labelValue == "parent" ? t("Location") : labelValue}
-        readOnly={true}
-        onClick={() => error(t("Can't edit variable name while in use."))} />;
+      : <this.UneditableLabel />;
   }
 }
 
