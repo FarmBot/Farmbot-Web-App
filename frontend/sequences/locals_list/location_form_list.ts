@@ -14,6 +14,7 @@ import { capitalize, isNumber, sortBy } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
+import { VariableType } from "./locals_list_support";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -75,18 +76,26 @@ export function locationFormList(
   additionalItems: DropDownItem[],
   variableItems?: DropDownItem[],
   displayGroups?: boolean,
+  variableType?: VariableType,
 ): DropDownItem[] {
   const allPoints = selectAllActivePoints(resources);
   const plantDDI = points2ddi(allPoints, "Plant");
   const genericPointerDDI = points2ddi(allPoints, "GenericPointer");
   const weedDDI = points2ddi(allPoints, "Weed");
   const toolDDI = activeToolDDIs(resources);
-  return [COORDINATE_DDI()]
-    .concat(additionalItems)
+  const addItems = additionalItems
     .concat((variableItems && variableItems.length > 0)
       ? heading((variableItems[0].headingId as DropdownHeadingId) || "Variable")
       : [])
-    .concat(variableItems || [])
+    .concat(variableItems || []);
+  if (variableType == VariableType.Number) {
+    return [NUMBER_DDI()].concat(addItems);
+  }
+  if (variableType == VariableType.Text) {
+    return [TEXT_DDI()].concat(addItems);
+  }
+  return [COORDINATE_DDI()]
+    .concat(addItems)
     .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(displayGroups ? heading("PointGroup") : [])
@@ -147,6 +156,12 @@ export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   value: vector ? JSON.stringify(vector) : "",
   headingId: "Coordinate"
 });
+
+export const NUMBER_DDI = (): DropDownItem =>
+  ({ label: t("Custom number"), value: 0, headingId: "Numeric" });
+
+export const TEXT_DDI = (): DropDownItem =>
+  ({ label: t("Custom text"), value: "", headingId: "Text" });
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });

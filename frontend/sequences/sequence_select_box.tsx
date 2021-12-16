@@ -37,6 +37,7 @@ export function SequenceSelectBox(props: SequenceSelectBoxProps) {
   };
 
   return <FBSelect
+    extraClass={"sequence-select-box"}
     onChange={props.onChange}
     selectedItem={selectedSequence()}
     list={sequenceDropDownList()}

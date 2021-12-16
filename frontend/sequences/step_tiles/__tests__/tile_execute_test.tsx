@@ -46,13 +46,24 @@ describe("<TileExecute />", () => {
     const p = fakeProps();
     mockSequence.body.id = 1;
     p.currentStep.args.sequence_id = mockSequence.body.id;
+    p.resources.sequenceMetas[mockSequence.uuid] = {
+      parent1: {
+        celeryNode: {
+          kind: "parameter_declaration", args: {
+            label: "parent1", default_value: coordinate()
+          }
+        },
+        dropdown: { label: "Parent1", value: "parent1" },
+        vector: undefined,
+      }
+    };
     mockSequence.body.pinned = true;
     mockSequence.body.name = "Pinned Sequence";
     const block = mount<TileExecute>(<TileExecute {...p} />);
     expect(block.html().toLowerCase()).toContain("placeholder=\"pinned sequence");
-    expect(block.html().toLowerCase()).not.toContain("filter-search");
+    expect(block.html()).not.toContain("sequence-select-box");
     block.instance().togglePinnedView();
-    expect(block.html().toLowerCase()).toContain("filter-search");
+    expect(block.html()).toContain("sequence-select-box");
   });
 
   it("selects sequence", () => {
