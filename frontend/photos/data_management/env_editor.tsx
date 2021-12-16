@@ -1,3 +1,4 @@
+import { TaggedFarmwareEnv } from "farmbot";
 import { some, sortBy } from "lodash";
 import React from "react";
 import { destroy, edit, initSave, save } from "../../api/crud";
@@ -74,27 +75,44 @@ export const EnvEditor = (props: EnvEditorProps) => {
       .filter(farmwareEnv => !hidden || !some(HIDDEN_PREFIXES.map(prefix =>
         farmwareEnv.body.key.startsWith(prefix))))
       .map(farmwareEnv =>
-        <Row key={farmwareEnv.uuid}>
-          <Col xs={ColumnWidth.key}>
-            <input value={farmwareEnv.body.key}
-              onChange={e =>
-                props.dispatch(edit(farmwareEnv, { key: e.currentTarget.value }))}
-              onBlur={() => props.dispatch(save(farmwareEnv.uuid))} />
-          </Col>
-          <Col xs={ColumnWidth.value}>
-            <input value={"" + farmwareEnv.body.value}
-              onChange={e =>
-                props.dispatch(edit(farmwareEnv, { value: e.currentTarget.value }))}
-              onBlur={() => props.dispatch(save(farmwareEnv.uuid))} />
-          </Col>
-          <Col xs={ColumnWidth.button}>
-            <button
-              className={"fb-button red"}
-              title={t("delete")}
-              onClick={() => props.dispatch(destroy(farmwareEnv.uuid))}>
-              <i className={"fa fa-times"} />
-            </button>
-          </Col>
-        </Row>)}
+        <FarmwareEnvRow key={farmwareEnv.uuid + farmwareEnv.body.value}
+          dispatch={props.dispatch} farmwareEnv={farmwareEnv} />)}
   </div>;
+};
+
+interface FarmwareEnvRowProps {
+  dispatch: Function;
+  farmwareEnv: TaggedFarmwareEnv;
+}
+
+const FarmwareEnvRow = (props: FarmwareEnvRowProps) => {
+  const { dispatch, farmwareEnv } = props;
+  const [key, setKey] = React.useState(farmwareEnv.body.key);
+  const [value, setValue] = React.useState("" + farmwareEnv.body.value);
+  return <Row>
+    <Col xs={ColumnWidth.key}>
+      <input value={key}
+        onChange={e => setKey(e.currentTarget.value)}
+        onBlur={() => {
+          dispatch(edit(farmwareEnv, { key }));
+          dispatch(save(farmwareEnv.uuid));
+        }} />
+    </Col>
+    <Col xs={ColumnWidth.value}>
+      <input value={value}
+        onChange={e => setValue(e.currentTarget.value)}
+        onBlur={() => {
+          dispatch(edit(farmwareEnv, { value }));
+          dispatch(save(farmwareEnv.uuid));
+        }} />
+    </Col>
+    <Col xs={ColumnWidth.button}>
+      <button
+        className={"fb-button red"}
+        title={t("delete")}
+        onClick={() => dispatch(destroy(farmwareEnv.uuid))}>
+        <i className={"fa fa-times"} />
+      </button>
+    </Col>
+  </Row>;
 };

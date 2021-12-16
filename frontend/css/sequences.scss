@@ -49,11 +49,39 @@
   }
 }
 
+.farm-event-form-content,
 .designer-regimen-editor-panel,
 .sequence-editor-panel {
   .sequence-section-header {
     &:hover {
       background: $lighter_gray !important;
+    }
+  }
+}
+
+.designer-sequence-editor-panel,
+.sequence-editor-panel {
+  .assertion-step {
+    .locals-list {
+      margin: 1rem;
+    }
+  }
+}
+
+.farm-event-form-content {
+  .sequence-section-header {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-top: 1rem;
+    height: 4rem;
+    .fa-caret-up,
+    .fa-caret-down,
+    label {
+      margin-top: 0;
+      line-height: 4rem;
+    }
+    &:hover {
+      background: darken($panel_light_yellow, 10%) !important;
     }
   }
 }
@@ -267,6 +295,7 @@
   }
 }
 
+.farm-event-form-content,
 .regimen-editor-content,
 .sequence-editor-sections {
   .sequence-section-header {
@@ -292,14 +321,16 @@
     .add-variable-btn {
       position: absolute;
       right: 4rem;
-      width: 2rem;
+      width: 2.5rem;
       height: 2rem;
-      line-height: 2rem;
+      line-height: 1rem;
       margin-top: 0.75rem;
       padding: 0.25rem;
       .fa-plus {
         vertical-align: top;
-        padding-top: 0.25rem;
+        padding-top: 0.1rem;
+        padding-left: 0.1rem;
+        font-size: 1.5rem;
       }
     }
     .bp3-popover-wrapper {
@@ -322,6 +353,35 @@
           height: 2rem;
           line-height: 2rem;
         }
+      }
+    }
+  }
+}
+
+.designer-regimen-editor-panel-content {
+  padding: 0;
+}
+
+.regimen-editor-content {
+  margin-left: -1rem;
+  .regimen {
+    margin-left: 2rem;
+    padding-right: 3rem;
+  }
+  .button-group {
+    padding-right: 1rem;
+  }
+  .regimen-editor-tools {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  .location-form-content {
+    .row {
+      white-space: nowrap;
+      padding-right: 1rem;
+      .trash {
+        display: inline;
+        float: none;
       }
     }
   }
@@ -353,6 +413,9 @@
   hr {
     margin: 0.5rem 0;
   }
+  .sequence-name {
+    margin-top: 1rem;
+  }
   &.preview {
     .filter-search,
     .input,
@@ -383,18 +446,23 @@
     }
     .variable-icon {
       cursor: default !important;
+      margin-top: 0.5rem;
     }
     p {
       display: inline;
       font-size: 1.2rem;
     }
+    .variable-label {
+      font-weight: bold;
+    }
     .fa-trash {
       color: $darkest_red;
+      margin-top: 0.5rem;
     }
     .numeric-variable-input,
     .text-variable-input {
+      padding-right: 0.5rem;
       padding-left: 2.5rem;
-      padding-right: 4rem;
     }
   }
 }

@@ -52,7 +52,9 @@ export class ActiveEditor
       <div id="regimen-editor-tools" className="regimen-editor-tools">
         <RegimenButtonGroup {...this.regimenProps} />
         <SectionHeader title={t("Variables")}
-          count={Object.values(this.props.variableData).length}
+          count={Object.values(this.props.variableData)
+            .filter(v => v?.celeryNode.kind == "parameter_declaration")
+            .length}
           collapsed={this.state.variablesCollapsed}
           toggle={this.toggleVarShow} />
         <Collapse isOpen={!this.state.variablesCollapsed}>

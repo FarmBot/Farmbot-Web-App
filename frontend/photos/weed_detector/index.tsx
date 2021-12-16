@@ -17,6 +17,7 @@ import { BoolConfig, NumberBoxConfig } from "../camera_calibration/config";
 import { SPECIAL_VALUE_DDI } from "../camera_calibration/constants";
 import { ToolTips } from "../../constants";
 import { getModifiedClassNameSpecifyModified } from "../../settings/default_values";
+import { formatEnvKey } from "../remote_env/translators";
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {
@@ -44,7 +45,8 @@ export class WeedDetector
   };
 
   saveEnvVar = (key: WDENVKey, value: number) =>
-    this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value));
+    this.props.dispatch(this.props.saveFarmwareEnv(
+      key, JSON.stringify(formatEnvKey(key, value))));
 
   wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
 
