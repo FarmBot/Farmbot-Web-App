@@ -14,7 +14,9 @@ import {
 } from "../../locals_list/location_form_list";
 import { Move, Xyz } from "farmbot";
 import { generateVariableListItems } from "../../locals_list/location_form";
-import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
+import {
+  AllowedVariableNodes, VariableType,
+} from "../../locals_list/locals_list_support";
 
 export const LocationSelection = (props: LocationSelectionProps) => {
   const { resources, sequenceUuid } = props;
@@ -30,6 +32,7 @@ export const LocationSelection = (props: LocationSelectionProps) => {
       generateVariableListItems({
         allowedVariableNodes: AllowedVariableNodes.identifier,
         resources, sequenceUuid, headingId: "Identifier",
+        variableType: VariableType.Location,
       }),
     )}
     customNullLabel={t("Choose location")}

@@ -178,7 +178,6 @@ export const convertDDItoVariable =
       return createNewVariable({
         ...p,
         newVarLabel: "" + p.dropdown.value,
-        variableType: p.variableType,
       });
     } else {
       return createNewVariable({

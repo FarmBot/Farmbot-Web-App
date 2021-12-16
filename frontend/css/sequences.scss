@@ -440,6 +440,9 @@
     }
   }
   .location-form-content {
+    .row {
+      display: flex;
+    }
     .bp3-popover-wrapper {
       display: inline;
       margin-left: 1rem;

@@ -4,6 +4,7 @@ import { VariableNode, VariableType } from "../locals_list_support";
 import {
   determineVariableType,
   newVariableDataValue, newVariableLabel, VariableIcon, VariableIconProps,
+  varTypeFromLabel,
 } from "../new_variable";
 import { NOTHING_SELECTED } from "../handle_select";
 
@@ -18,6 +19,14 @@ describe("newVariableLabel()", () => {
 
   it("returns text label", () => {
     expect(newVariableLabel(VariableType.Text)(1)).toEqual("Text 1");
+  });
+});
+
+describe("varTypeFromLabel()", () => {
+  it("returns type", () => {
+    expect(varTypeFromLabel("Location 1")).toEqual(VariableType.Location);
+    expect(varTypeFromLabel("Number 1")).toEqual(VariableType.Number);
+    expect(varTypeFromLabel("Text 1")).toEqual(VariableType.Text);
   });
 });
 

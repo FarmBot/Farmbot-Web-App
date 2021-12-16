@@ -14,6 +14,9 @@ import {
   setActiveSequenceByName,
 } from "../../sequences/set_active_sequence_by_name";
 import { Path } from "../../internal_urls";
+import {
+  determineVariableType, VariableIcon,
+} from "../../sequences/locals_list/new_variable";
 
 export const RegimenRows = (props: RegimenRowsProps) =>
   <div className={"regimen"}>
@@ -33,17 +36,19 @@ const regimenItemRow = (
   (row: RegimenItemCalendarRow, itemIndex: number) =>
     <div className={`${row.color} regimen-event`}
       key={`${dayIndex}.${itemIndex}`}>
-      <span className="regimen-event-title">
-        {row.sequenceName}
-        <Link to={Path.sequences(urlFriendly(row.sequenceName))}
-          onClick={setActiveSequenceByName}>
-          <i className="fa fa-external-link" />
-        </Link>
-      </span>
-      <span className="regimen-event-time">{row.hhmm}</span>
+      <div className={"regimen-event-titlebar"}>
+        <span className={"regimen-event-title"}>
+          {row.sequenceName}
+          <Link to={Path.sequences(urlFriendly(row.sequenceName))}
+            onClick={setActiveSequenceByName}>
+            <i className="fa fa-external-link" />
+          </Link>
+        </span>
+        <span className="regimen-event-time">{row.hhmm}</span>
+        <i className="fa fa-trash regimen-control" onClick={() =>
+          dispatch(removeRegimenItem(row.item, row.regimen))} />
+      </div>
       <DisplayVarValue row={row} resources={resources} />
-      <i className="fa fa-trash regimen-control" onClick={() =>
-        dispatch(removeRegimenItem(row.item, row.regimen))} />
     </div>;
 
 const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {
@@ -61,12 +66,14 @@ const DisplayVarValue = (props: DisplayVarValueProps) => {
         if (variableNode) {
           return <span key={variable}
             className="regimen-event-variable">
+            <VariableIcon variableType={determineVariableType(variableNode)} />
             {withPrefix(variable,
               determineDropdown(variableNode, props.resources).label)}
           </span>;
         }
       }
-      return <span key={"no-variable"} className={"no-regimen-variable"} />;
+      return <span key={"no-variable-" + variable}
+        className={"no-regimen-variable"} />;
     })}
   </div>;
 };
