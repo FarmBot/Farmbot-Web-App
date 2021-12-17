@@ -53,7 +53,7 @@ export class FeaturedSequencePage
         <table>
           <thead>
             <tr>
-              <th>{t("Name")}</th>
+              <th style={{ width: "100%" }}>{t("Name")}</th>
               <th>{t("Link")}</th>
             </tr>
           </thead>
