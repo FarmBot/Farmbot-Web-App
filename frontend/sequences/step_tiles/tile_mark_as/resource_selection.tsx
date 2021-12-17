@@ -20,7 +20,9 @@ import {
 } from "../../../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../../../resources/getters";
 import { generateVariableListItems } from "../../locals_list/location_form";
-import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
+import {
+  AllowedVariableNodes, VariableType,
+} from "../../locals_list/locals_list_support";
 
 export const ResourceSelection = (props: ResourceSelectionProps) => {
   const selected = getSelectedResource(
@@ -65,6 +67,7 @@ const resourceList =
       ...generateVariableListItems({
         allowedVariableNodes: AllowedVariableNodes.identifier,
         resources, sequenceUuid, headingId: "Identifier",
+        variableType: VariableType.Location,
       }),
       { headingId: "Device", label: t("Device"), ...headingCommon },
       ...(utm

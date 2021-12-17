@@ -97,7 +97,7 @@ export class TileExecute
           </Col>
         </Row>}
       {hasVariables &&
-        <Row>
+        <Row className={this.pinnedView ? "" : "unpinned-view"}>
           <Col>
             <LocalsList
               bodyVariables={currentStep.body}

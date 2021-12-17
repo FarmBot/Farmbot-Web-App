@@ -359,6 +359,9 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
 
   render() {
     const { farmEvent } = this.props;
+    const variableCount = Object.values(this.variableData || {})
+      .filter(v => v?.celeryNode.kind == "parameter_declaration")
+      .length;
     return <div className="edit-farm-event-form">
       <ErrorBoundary>
         <FarmEventForm
@@ -374,12 +377,11 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
             || this.state.specialStatusLocal}
           onSave={() => this.commitViewModel()}>
           <div className={"farm-event-form-content"}>
-            <SectionHeader title={t("Variables")}
-              count={Object.values(this.variableData || {})
-                .filter(v => v?.celeryNode.kind == "parameter_declaration")
-                .length}
-              collapsed={this.state.variablesCollapsed}
-              toggle={this.toggleVarShow} />
+            {variableCount > 0 &&
+              <SectionHeader title={t("Variables")}
+                count={variableCount}
+                collapsed={this.state.variablesCollapsed}
+                toggle={this.toggleVarShow} />}
             <Collapse isOpen={!this.state.variablesCollapsed}>
               <ErrorBoundary>
                 <this.LocalsList />

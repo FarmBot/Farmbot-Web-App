@@ -885,7 +885,7 @@ ul {
   .locals-list {
     margin-top: 1rem;
     margin-left: 1rem;
-    margin-right: -3rem;
+    margin-right: 1rem;
   }
 }
 
@@ -2257,6 +2257,20 @@ textarea:focus {
     p {
       color: $white !important;
     }
+  }
+  details {
+    max-width: calc(min(70vw, 370px));
+  }
+  summary {
+    margin-bottom: 0.5rem;
+  }
+  h1,
+  h2 {
+    margin-bottom: 0;
+  }
+  li,
+  p {
+    white-space: pre-wrap;
   }
 }
 

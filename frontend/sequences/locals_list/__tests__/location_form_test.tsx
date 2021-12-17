@@ -177,6 +177,64 @@ describe("<LocationForm />", () => {
     expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 
+  it("renders number variable input", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Number;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    p.locationDropdownKey = "default_value";
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("number-input");
+  });
+
+  it("renders text variable input", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Text;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    p.locationDropdownKey = "default_value";
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("string-input");
+  });
+
+  it("renders narrow number variable input", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Number;
+    p.variable.celeryNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    p.locationDropdownKey = "";
+    p.removeVariable = jest.fn();
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("col-xs-5");
+  });
+
+  it("renders narrow text variable input", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Text;
+    p.variable.celeryNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    p.locationDropdownKey = "";
+    p.removeVariable = jest.fn();
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("col-xs-5");
+  });
+
   it("doesn't change label", () => {
     const p = fakeProps();
     p.inUse = true;
@@ -220,11 +278,18 @@ describe("<LocationForm />", () => {
     const wrapper = mount(<LocationForm {...p} />);
     expect(wrapper.find(".numeric-variable-input").length)
       .toBeGreaterThanOrEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([{
-      headingId: "Variable",
-      label: "Externally defined",
-      value: "label",
-    }]);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+      {
+        headingId: "Numeric",
+        label: "Custom number",
+        value: 0,
+      },
+    ]);
   });
 
   it("renders text variable", () => {
@@ -238,11 +303,18 @@ describe("<LocationForm />", () => {
     };
     const wrapper = mount(<LocationForm {...p} />);
     expect(wrapper.find(".text-variable-input").length).toBeGreaterThanOrEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([{
-      headingId: "Variable",
-      label: "Externally defined",
-      value: "label",
-    }]);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+      {
+        headingId: "Text",
+        label: "Custom text",
+        value: "",
+      },
+    ]);
   });
 });
 
@@ -262,7 +334,6 @@ describe("<NumericInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
-    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -285,7 +356,6 @@ describe("<NumericInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
-    p.isDefaultValueForm = true;
     p.variable.celeryNode = {
       kind: "parameter_declaration",
       args: {
@@ -319,7 +389,6 @@ describe("<TextInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
-    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -342,7 +411,6 @@ describe("<TextInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
-    p.isDefaultValueForm = true;
     p.variable.celeryNode = {
       kind: "parameter_declaration",
       args: {

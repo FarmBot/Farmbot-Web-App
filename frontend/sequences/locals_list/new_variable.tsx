@@ -15,6 +15,12 @@ export const newVariableLabel = (variableType: VariableType) => {
   }
 };
 
+export const varTypeFromLabel = (label: string) => {
+  if (label.startsWith(t("Location"))) { return VariableType.Location; }
+  if (label.startsWith(t("Number"))) { return VariableType.Number; }
+  if (label.startsWith(t("Text"))) { return VariableType.Text; }
+};
+
 export const newVariableDataValue = (variableType: VariableType | undefined) => {
   switch (variableType) {
     default:

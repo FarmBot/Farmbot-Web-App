@@ -21,7 +21,9 @@ import { defensiveClone } from "../../util";
 import { Numeric, Text } from "farmbot";
 import { ToolTips } from "../../constants";
 import { Position } from "@blueprintjs/core";
-import { isNumeric, isText, VariableIcon } from "./new_variable";
+import {
+  determineVariableType, newVariableLabel, VariableIcon,
+} from "./new_variable";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -58,17 +60,11 @@ export const LocationForm =
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
     const variableListItems = generateVariableListItems({
-      allowedVariableNodes, resources, sequenceUuid,
+      allowedVariableNodes, resources, sequenceUuid, variableType,
     });
     const displayGroups = !hideGroups;
-    const initList = locationFormList(resources, [], variableListItems,
-      displayGroups);
-    const list = [
-      VariableType.Number,
-      VariableType.Text,
-    ].includes(variableType)
-      ? []
-      : initList;
+    const list = locationFormList(resources, [], variableListItems,
+      displayGroups, variableType);
     /** Variable name. */
     const { label } = celeryNode.args;
     const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
@@ -110,21 +106,28 @@ export const LocationForm =
                 <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                   customIcon={"exclamation-triangle"} onHover={true} />}
             </Col>}
-          <Col xs={props.hideWrapper ? 12 : 6}>
-            <FBSelect
-              key={props.locationDropdownKey}
-              list={list}
-              selectedItem={dropdown}
-              customNullLabel={NO_VALUE_SELECTED_DDI().label}
-              onChange={ddi => {
-                onChange(convertDDItoVariable({
-                  identifierLabel: label,
-                  allowedVariableNodes,
-                  dropdown: ddi,
-                  variableType,
-                }), label);
-              }} />
-          </Col>
+          {(variableType == VariableType.Location || !isDefaultValueForm) &&
+            <Col xs={props.hideWrapper ? 12 : 6}>
+              <FBSelect
+                key={props.locationDropdownKey}
+                list={list}
+                selectedItem={dropdown}
+                customNullLabel={NO_VALUE_SELECTED_DDI().label}
+                onChange={ddi => {
+                  onChange(convertDDItoVariable({
+                    identifierLabel: label,
+                    allowedVariableNodes,
+                    dropdown: ddi,
+                    variableType,
+                  }), label);
+                }} />
+            </Col>}{ }
+          {variableType == VariableType.Number && isDefaultValueForm &&
+            <NumericInput label={label} variable={variable}
+              onChange={onChange} />}
+          {variableType == VariableType.Text && isDefaultValueForm &&
+            <TextInput label={label} variable={variable}
+              onChange={onChange} />}
           {removeVariable &&
             <Col xs={1} className={"trash"}>
               <i className={"fa fa-trash"}
@@ -132,14 +135,20 @@ export const LocationForm =
                 onClick={() => removeVariable(label)} />
             </Col>}
         </Row>
-        {variableType == VariableType.Number &&
-          variable.celeryNode.kind != "parameter_declaration" &&
-          <NumericInput label={label} variable={variable} onChange={onChange}
-            isDefaultValueForm={isDefaultValueForm} />}
-        {variableType == VariableType.Text &&
-          variable.celeryNode.kind != "parameter_declaration" &&
-          <TextInput label={label} variable={variable} onChange={onChange}
-            isDefaultValueForm={isDefaultValueForm} />}
+        {!isDefaultValueForm && variableType == VariableType.Number &&
+          celeryNode.kind != "parameter_declaration" &&
+          <Row>
+            <Col xs={narrowLabel ? 5 : 6} />
+            <NumericInput label={label} variable={variable}
+              onChange={onChange} />
+          </Row>}
+        {!isDefaultValueForm && variableType == VariableType.Text &&
+          celeryNode.kind != "parameter_declaration" &&
+          <Row>
+            <Col xs={narrowLabel ? 5 : 6} />
+            <TextInput label={label} variable={variable}
+              onChange={onChange} />
+          </Row>}
         <CoordinateInputBoxes
           variableNode={celeryNode}
           vector={vector}
@@ -159,62 +168,54 @@ export interface NumericInputProps {
   variable: SequenceMeta;
   onChange: OnChange;
   label: string;
-  isDefaultValueForm: boolean;
 }
 
 export const NumericInput = (props: NumericInputProps) => {
   const variableNode = props.variable.celeryNode;
-  return <Row>
-    <Col xs={props.isDefaultValueForm ? 5 : 6} />
-    <Col xs={6} className={"numeric-variable-input"}>
-      <BlurableInput type={"number"}
-        className={"number-input"}
-        onCommit={e => {
-          const editableVariable = defensiveClone(variableNode);
-          const value = parseFloat(e.currentTarget.value);
-          if (editableVariable.kind == "parameter_declaration") {
-            (editableVariable.args.default_value as Numeric).args.number = value;
-          } else {
-            (editableVariable.args.data_value as Numeric).args.number = value;
-          }
-          props.onChange(editableVariable, props.label);
-        }}
-        value={variableNode.kind == "parameter_declaration"
-          ? (variableNode.args.default_value as Numeric).args.number
-          : (variableNode.args.data_value as Numeric).args.number} />
-    </Col>
-  </Row>;
+  return <Col xs={6} className={"numeric-variable-input"}>
+    <BlurableInput type={"number"}
+      className={"number-input"}
+      onCommit={e => {
+        const editableVariable = defensiveClone(variableNode);
+        const value = parseFloat(e.currentTarget.value);
+        if (editableVariable.kind == "parameter_declaration") {
+          (editableVariable.args.default_value as Numeric).args.number = value;
+        } else {
+          (editableVariable.args.data_value as Numeric).args.number = value;
+        }
+        props.onChange(editableVariable, props.label);
+      }}
+      value={variableNode.kind == "parameter_declaration"
+        ? (variableNode.args.default_value as Numeric).args.number
+        : (variableNode.args.data_value as Numeric).args.number} />
+  </Col>;
 };
 
 export interface TextInputProps {
   variable: SequenceMeta;
   onChange: OnChange;
   label: string;
-  isDefaultValueForm: boolean;
 }
 
 export const TextInput = (props: TextInputProps) => {
   const variableNode = props.variable.celeryNode;
-  return <Row>
-    <Col xs={props.isDefaultValueForm ? 5 : 6} />
-    <Col xs={6} className={"text-variable-input"}>
-      <BlurableInput type={"text"}
-        className={"string-input"}
-        onCommit={e => {
-          const editableVariable = defensiveClone(variableNode);
-          const value = e.currentTarget.value;
-          if (editableVariable.kind == "parameter_declaration") {
-            (editableVariable.args.default_value as Text).args.string = value;
-          } else {
-            (editableVariable.args.data_value as Text).args.string = value;
-          }
-          props.onChange(editableVariable, props.label);
-        }}
-        value={variableNode.kind == "parameter_declaration"
-          ? (variableNode.args.default_value as Text).args.string
-          : (variableNode.args.data_value as Text).args.string} />
-    </Col>
-  </Row>;
+  return <Col xs={6} className={"text-variable-input"}>
+    <BlurableInput type={"text"}
+      className={"string-input"}
+      onCommit={e => {
+        const editableVariable = defensiveClone(variableNode);
+        const value = e.currentTarget.value;
+        if (editableVariable.kind == "parameter_declaration") {
+          (editableVariable.args.default_value as Text).args.string = value;
+        } else {
+          (editableVariable.args.data_value as Text).args.string = value;
+        }
+        props.onChange(editableVariable, props.label);
+      }}
+      value={variableNode.kind == "parameter_declaration"
+        ? (variableNode.args.default_value as Text).args.string
+        : (variableNode.args.data_value as Text).args.string} />
+  </Col>;
 };
 
 export interface LabelProps {
@@ -270,6 +271,7 @@ export interface GenerateVariableListProps {
   resources: ResourceIndex;
   sequenceUuid: UUID;
   headingId?: string;
+  variableType: VariableType;
 }
 
 export const generateVariableListItems = (props: GenerateVariableListProps) => {
@@ -282,7 +284,7 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
   const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
   if (headerForm) { return []; }
   const oldVariables = variables
-    .filter(v => !isNumeric(v) && !isText(v))
+    .filter(v => determineVariableType(v) == props.variableType)
     .map(variable_ => ({
       value: variable_.args.label,
       label: determineVarDDILabel({
@@ -293,7 +295,7 @@ export const generateVariableListItems = (props: GenerateVariableListProps) => {
       headingId,
     }));
   const newVarLabel = generateNewVariableLabel(variables,
-    (num: number) => t("Location {{ num }}", { num }));
+    newVariableLabel(props.variableType));
   const newVariable = [{
     value: newVarLabel,
     label: determineVarDDILabel({

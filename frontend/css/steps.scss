@@ -315,12 +315,18 @@
     .row {
       margin: 0;
     }
+    .unpinned-view {
+      margin-top: 1rem;
+    }
     .locals-list {
       margin-left: -1rem;
       margin-right: 0;
     }
+    .location-form:not(:first-of-type) {
+      margin-top: 1rem;
+    }
     .location-form {
-      .row {
+      .row:not(:first-of-type) {
         margin-top: 1rem;
       }
     }
