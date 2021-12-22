@@ -95,7 +95,7 @@ describe("<AlertCard />", () => {
     expect(wrapper.text()).not.toContain("Select one");
     expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
     expect(JSON.stringify(wrapper.find(FBSelect).props().list))
-      .not.toContain("v1.6");
+      .not.toContain("v1.1");
   });
 
   it("renders firmware card with new boards", () => {
@@ -109,7 +109,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Your device has no firmware");
     expect(JSON.stringify(wrapper.find(FBSelect).props().list))
-      .toContain("v1.6");
+      .toContain("v1.1");
     mockShouldDisplay = false;
   });
 
@@ -120,7 +120,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("FarmBot");
     expect(JSON.stringify(wrapper.find(FBSelect).props().list))
-      .not.toContain("v1.6");
+      .not.toContain("v1.1");
     wrapper.find(FBSelect).simulate("change");
   });
 
@@ -131,7 +131,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("FarmBot");
     expect(JSON.stringify(wrapper.find(FBSelect).props().list))
-      .toContain("v1.6");
+      .toContain("v1.1");
     mockShouldDisplay = false;
   });
 

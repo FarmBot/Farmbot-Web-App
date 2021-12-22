@@ -184,11 +184,11 @@ const FirmwareChoiceTable = () =>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k15"].label}</code></td>
       </tr>
-      {shouldDisplayFeature(Feature.farmduino_k16) && <tr>
+      <tr>
         <td>{"Genesis v1.6"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k16"].label}</code></td>
-      </tr>}
+      </tr>
       <tr>
         <td>{"Express v1.0"}</td>
         <td>{"Farmduino"}</td>
@@ -246,14 +246,10 @@ export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.3", value: "genesis_1.3" },
   { label: "Genesis v1.4", value: "genesis_1.4" },
   { label: "Genesis v1.5", value: "genesis_1.5" },
-  ...(shouldDisplayFeature(Feature.farmduino_k16)
-    ? [{ label: "Genesis v1.6", value: "genesis_1.6" }]
-    : []),
+  { label: "Genesis v1.6", value: "genesis_1.6" },
   { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
   { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
-  ...(shouldDisplayFeature(Feature.farmduino_k16)
-    ? [{ label: "Genesis v1.6 XL", value: "genesis_xl_1.6" }]
-    : []),
+  { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
   { label: "Express v1.0", value: "express_1.0" },
   ...(shouldDisplayFeature(Feature.express_k11)
     ? [{ label: "Express v1.1", value: "express_1.1" }]
