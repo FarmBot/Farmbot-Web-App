@@ -140,6 +140,7 @@ class DashboardController < ApplicationController
       .dump
       .merge(Release.latest_image(platform: "rpi"))
       .merge(Release.latest_image(platform: "rpi3"))
+      .merge(Release.latest_image(platform: "rpi4"))
       .to_json
   end
 end
