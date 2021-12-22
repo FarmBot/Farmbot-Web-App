@@ -6,14 +6,18 @@ describe Release do
     expected = { "rpi_release_tag" => nil, "rpi_release_url" => nil }
     expect(Release.latest_image(platform: "rpi")).to eq(expected)
     [
-      ["stable", "rpi", "11.0.1"],
-      ["stable", "rpi3", "11.0.1"],
+      ["beta", "rpi4", "11.0.1"],
+      ["beta", "rpi4", "11.1.0"],
       ["beta", "rpi", "11.0.1"],
-      ["beta", "rpi3", "11.0.1"],
-      ["stable", "rpi", "11.1.0"],
-      ["stable", "rpi3", "11.1.0"],
       ["beta", "rpi", "11.1.0"],
+      ["beta", "rpi3", "11.0.1"],
       ["beta", "rpi3", "11.1.0"],
+      ["stable", "rpi", "11.0.1"],
+      ["stable", "rpi", "11.1.0"],
+      ["stable", "rpi3", "11.0.1"],
+      ["stable", "rpi3", "11.1.0"],
+      ["stable", "rpi4", "11.0.1"],
+      ["stable", "rpi4", "11.1.0"],
     ].map do |(chan, plat, ver)|
       Release.create!(image_url: fake_image,
                       dot_img_url: fake_image.sub(/\.fw\z/, ".img"),
