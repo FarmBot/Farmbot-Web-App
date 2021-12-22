@@ -19,10 +19,10 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis v1.3",
       "Genesis v1.4",
       "Genesis v1.5",
-      // "Genesis v1.6",
+      "Genesis v1.6",
       "Genesis XL v1.4",
       "Genesis XL v1.5",
-      // "Genesis XL v1.6",
+      "Genesis XL v1.6",
     ],
   },
   {
