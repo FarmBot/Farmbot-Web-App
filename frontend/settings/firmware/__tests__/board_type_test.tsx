@@ -90,6 +90,7 @@ describe("<BoardType/>", () => {
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
       { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
       { label: "Farmduino (Genesis v1.5)", value: "farmduino_k15" },
+      { label: "Farmduino (Genesis v1.6)", value: "farmduino_k16" },
       { label: "Farmduino (Express v1.0)", value: "express_k10" },
       { label: "None", value: "none" },
     ]);

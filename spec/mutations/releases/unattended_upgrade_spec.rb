@@ -4,7 +4,7 @@ describe Devices::UnattendedUpgrade do
   def create_example_releases
     ["1.0.0", "1.0.1"].map do |version|
       ["stable", "beta"].map do |channel|
-        ["rpi", "rpi3"].map do |platform|
+        ["rpi", "rpi3", "rpi4"].map do |platform|
           yield({ fbos_version: version, update_channel: channel }) if block_given?
           Release.create!(image_url: "http://farm.bot/fw.fw",
                           version: version,

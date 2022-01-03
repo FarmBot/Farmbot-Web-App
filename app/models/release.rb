@@ -3,7 +3,11 @@ require "google/cloud/storage"
 
 class Release < ApplicationRecord
   CHANNEL = [STABLE = "stable", BETA = "beta", ALPHA = "alpha"]
-  PLATFORMS = [GENESIS = "rpi3", EXPRESS = "rpi"]
+  PLATFORMS = [
+    GENESIS = "rpi3",
+    EXPRESS = "rpi",
+    RPI4 = "rpi4",
+  ]
   # Version string, as it appears in Github.
   VERSION_INPUT_FORMAT = /v\d*\.\d*\.\d*(\-rc\d*)?/
   # Version string, as it appears in our database.
