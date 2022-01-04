@@ -44,6 +44,7 @@ export class ActiveEditor
         resource: regimen,
         variableData: this.props.variableData,
       })}
+      labelOnly={true}
       allowedVariableNodes={AllowedVariableNodes.parameter} />;
   };
 

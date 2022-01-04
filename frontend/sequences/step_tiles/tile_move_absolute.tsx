@@ -10,7 +10,7 @@ import { StepInputBox } from "../inputs/step_input_box";
 import {
   determineDropdown, determineVector, Vector3Plus,
 } from "../../resources/sequence_meta";
-import { LocationForm } from "../locals_list/location_form";
+import { VariableForm } from "../locals_list/variable_form";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
 } from "../locals_list/locals_list_support";
@@ -64,7 +64,7 @@ export class TileMoveAbsolute
     }
   };
 
-  /** Prepare step.args.location data for LocationForm. */
+  /** Prepare step.args.location data for VariableForm. */
   get celeryNode(): VariableNode {
     const { location } = this.args;
     return {
@@ -87,7 +87,7 @@ export class TileMoveAbsolute
   }
 
   LocationForm = () =>
-    <LocationForm
+    <VariableForm
       variable={{
         celeryNode: this.celeryNode,
         dropdown: determineDropdown(this.celeryNode, this.props.resources,

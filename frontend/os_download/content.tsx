@@ -3,7 +3,7 @@ import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
 
 interface PlatformContent {
-  imageUrl: string;
+  imageUrl: string | undefined;
   releaseTag: string;
   kits: string[];
   computer: string;
@@ -25,6 +25,17 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.6",
     ],
   },
+  ...(localStorage.getItem("rpi4")
+    ? [{
+      computer: "Raspberry Pi 4",
+      imageUrl: globalConfig.rpi4_release_url,
+      releaseTag: globalConfig.rpi4_release_tag,
+      kits: [
+        "Genesis v1.6.1",
+        "Genesis XL v1.6.1",
+      ],
+    }]
+    : []),
   {
     computer: "Raspberry Pi Zero W",
     imageUrl: globalConfig.rpi_release_url,

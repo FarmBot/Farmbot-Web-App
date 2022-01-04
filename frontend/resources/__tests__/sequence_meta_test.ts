@@ -20,7 +20,7 @@ import {
 } from "../../sequences/locals_list/sanitize_nodes";
 import {
   formatPoint, NO_VALUE_SELECTED_DDI, formatTool,
-} from "../../sequences/locals_list/location_form_list";
+} from "../../sequences/locals_list/variable_form_list";
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";

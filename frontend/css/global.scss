@@ -894,6 +894,7 @@ ul {
 }
 
 .note {
+  margin-top: 1rem;
   font-style: italic;
   font-size: 1.2rem;
 }
@@ -1976,7 +1977,9 @@ ul {
   }
   &.bulletin-alert {
     img, iframe {
+      margin: 1rem auto;
       width: 100%;
+      border-radius: 5px;
     }
   }
   .problem-alert-title {
