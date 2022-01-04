@@ -1,6 +1,6 @@
 import {
-  locationFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
-} from "../location_form_list";
+  variableFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
+} from "../variable_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
   fakeToolSlot, fakeTool, fakePointGroup,
@@ -9,12 +9,12 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
-describe("locationFormList()", () => {
+describe("variableFormList()", () => {
   it("returns dropdown list", () => {
     const pointGroup = fakePointGroup();
     pointGroup.body.id = 1;
     const resources = fakeResourceIndex([pointGroup]);
-    expect(locationFormList(resources, [], [], true))
+    expect(variableFormList(resources, [], [], true))
       .toEqual([
         {
           headingId: "Coordinate",
@@ -86,7 +86,7 @@ describe("locationFormList()", () => {
 
   it("returns empty dropdown list", () => {
     const resources = buildResourceIndex([]).index;
-    expect(locationFormList(resources, []))
+    expect(variableFormList(resources, []))
       .toEqual([
         {
           headingId: "Coordinate",

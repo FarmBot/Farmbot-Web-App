@@ -1,14 +1,15 @@
 import React from "react";
 import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
-  locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
-} from "./location_form_list";
+  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+} from "./variable_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, AllowedVariableNodes, VariableNode, OnChange, VariableType,
+  VariableFormProps, AllowedVariableNodes, VariableNode, OnChange, VariableType,
 } from "../locals_list/locals_list_support";
 import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
+  maybeFindVariable,
 } from "../../resources/sequence_meta";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { DefaultValueForm } from "./default_value_form";
@@ -24,6 +25,7 @@ import { Position } from "@blueprintjs/core";
 import {
   determineVariableType, newVariableLabel, VariableIcon,
 } from "./new_variable";
+import { jsonReplacer } from "../step_tiles";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -51,9 +53,9 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
  */
-export const LocationForm =
+export const VariableForm =
   // eslint-disable-next-line complexity
-  (props: LocationFormProps) => {
+  (props: VariableFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable, variableType,
       allowedVariableNodes, hideGroups, removeVariable, onChange } = props;
     const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
@@ -63,7 +65,7 @@ export const LocationForm =
       allowedVariableNodes, resources, sequenceUuid, variableType,
     });
     const displayGroups = !hideGroups;
-    const list = locationFormList(resources, [], variableListItems,
+    const list = variableFormList(resources, [], variableListItems,
       displayGroups, variableType);
     /** Variable name. */
     const { label } = celeryNode.args;
@@ -79,12 +81,18 @@ export const LocationForm =
     }
     if (variable.isDefault) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
-      defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
+      defaultDDI.label = addDefaultTextToLabel(defaultDDI.label);
       list.unshift(defaultDDI);
     }
+    const metaVariable =
+      maybeFindVariable(celeryNode.args.label, resources, sequenceUuid);
+    const usingDefaultValue = celeryNode.kind == "parameter_application" &&
+      metaVariable?.celeryNode.kind == "parameter_declaration" &&
+      JSON.stringify(celeryNode.args.data_value, jsonReplacer) ==
+      JSON.stringify(metaVariable.celeryNode.args.default_value, jsonReplacer);
     const isDefaultValueForm =
       !!props.locationDropdownKey?.endsWith("default_value");
-    const narrowLabel = !!(removeVariable || isDefaultValueForm);
+    const narrowLabel = !!removeVariable;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
         <Row>
@@ -99,6 +107,7 @@ export const LocationForm =
                 ? <p>{t("Default value")}</p>
                 : <Label label={label} inUse={props.inUse || !removeVariable}
                   allowedVariableNodes={allowedVariableNodes}
+                  labelOnly={props.labelOnly}
                   variable={variable} onChange={onChange} />}
               {isDefaultValueForm &&
                 <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
@@ -123,12 +132,12 @@ export const LocationForm =
                 }} />
             </Col>}{ }
           {variableType == VariableType.Number && isDefaultValueForm &&
-            <NumericInput label={label} variable={variable}
+            <NumericInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} />}
           {variableType == VariableType.Text && isDefaultValueForm &&
-            <TextInput label={label} variable={variable}
+            <TextInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} />}
-          {removeVariable &&
+          {removeVariable && !isDefaultValueForm &&
             <Col xs={1} className={"trash"}>
               <i className={"fa fa-trash"}
                 style={props.inUse ? { color: Color.gray } : {}}
@@ -137,16 +146,18 @@ export const LocationForm =
         </Row>
         {!isDefaultValueForm && variableType == VariableType.Number &&
           celeryNode.kind != "parameter_declaration" &&
+          !usingDefaultValue && celeryNode.args.data_value.kind != "identifier" &&
           <Row>
             <Col xs={narrowLabel ? 5 : 6} />
-            <NumericInput label={label} variable={variable}
+            <NumericInput label={label} variableNode={celeryNode}
               onChange={onChange} />
           </Row>}
         {!isDefaultValueForm && variableType == VariableType.Text &&
           celeryNode.kind != "parameter_declaration" &&
+          !usingDefaultValue && celeryNode.args.data_value.kind != "identifier" &&
           <Row>
             <Col xs={narrowLabel ? 5 : 6} />
-            <TextInput label={label} variable={variable}
+            <TextInput label={label} variableNode={celeryNode}
               onChange={onChange} />
           </Row>}
         <CoordinateInputBoxes
@@ -159,19 +170,22 @@ export const LocationForm =
           key={props.locationDropdownKey}
           variableNode={celeryNode}
           resources={resources}
+          removeVariable={removeVariable}
           onChange={onChange} />
       </div>
     </div>;
   };
 
+const addDefaultTextToLabel = (label: string) => `${t("Default value")} - ${label}`;
+
 export interface NumericInputProps {
-  variable: SequenceMeta;
+  variableNode: VariableNode;
   onChange: OnChange;
   label: string;
 }
 
 export const NumericInput = (props: NumericInputProps) => {
-  const variableNode = props.variable.celeryNode;
+  const { variableNode } = props;
   return <Col xs={6} className={"numeric-variable-input"}>
     <BlurableInput type={"number"}
       className={"number-input"}
@@ -192,13 +206,13 @@ export const NumericInput = (props: NumericInputProps) => {
 };
 
 export interface TextInputProps {
-  variable: SequenceMeta;
+  variableNode: VariableNode;
   onChange: OnChange;
   label: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
-  const variableNode = props.variable.celeryNode;
+  const { variableNode } = props;
   return <Col xs={6} className={"text-variable-input"}>
     <BlurableInput type={"text"}
       className={"string-input"}
@@ -224,6 +238,7 @@ export interface LabelProps {
   variable: SequenceMeta;
   onChange: OnChange;
   allowedVariableNodes: AllowedVariableNodes;
+  labelOnly?: boolean;
 }
 
 interface LabelState {
@@ -240,7 +255,8 @@ export class Label extends React.Component<LabelProps, LabelState> {
     const { labelValue } = this.state;
     const { allowedVariableNodes } = this.props;
     const value = labelValue == "parent" ? t("Location") : labelValue;
-    return allowedVariableNodes == AllowedVariableNodes.parameter
+    return (allowedVariableNodes == AllowedVariableNodes.parameter
+      && !this.props.labelOnly)
       ? <input
         style={{ background: Color.lightGray }}
         value={value}

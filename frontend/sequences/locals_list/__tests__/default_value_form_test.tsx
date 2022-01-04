@@ -5,7 +5,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { Coordinate, ParameterApplication } from "farmbot";
-import { LocationForm } from "../location_form";
+import { VariableForm } from "../variable_form";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
 
 describe("<DefaultValueForm />", () => {
@@ -50,7 +50,7 @@ describe("<DefaultValueForm />", () => {
       kind: "parameter_application",
       args: { label: "label", data_value: COORDINATE },
     };
-    wrapper.find(LocationForm).simulate("change", pa);
+    wrapper.find(VariableForm).simulate("change", pa);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: { label: "label", default_value: COORDINATE }
@@ -68,7 +68,7 @@ describe("<DefaultValueForm />", () => {
         }
       }
     };
-    wrapper.find(LocationForm).simulate("change", pa);
+    wrapper.find(VariableForm).simulate("change", pa);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });

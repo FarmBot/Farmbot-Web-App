@@ -20,4 +20,19 @@ describe("<OsDownloadPage />", () => {
     expect(rpiLink.text()).toEqual("DOWNLOAD v1.0.0");
     expect(rpiLink.props().href).toEqual("fake rpi img url");
   });
+
+  it("doesn't show rpi4 releases", () => {
+    globalConfig.rpi4_release_url = "fake rpi4 img url";
+    globalConfig.rpi4_release_tag = "1.0.1";
+    const wrapper = mount(<OsDownloadPage />);
+    expect(wrapper.text().toLowerCase()).not.toContain("pi 4");
+  });
+
+  it("shows rpi4 releases", () => {
+    globalConfig.rpi4_release_url = "fake rpi4 img url";
+    globalConfig.rpi4_release_tag = "1.0.1";
+    localStorage.setItem("rpi4", "true");
+    const wrapper = mount(<OsDownloadPage />);
+    expect(wrapper.text().toLowerCase()).toContain("pi 4");
+  });
 });

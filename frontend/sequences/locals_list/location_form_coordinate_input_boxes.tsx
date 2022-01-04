@@ -23,7 +23,7 @@ export const manuallyEditAxis = (props: AxisEditProps) =>
     }
   };
 
-/** For LocationForm coordinate input boxes.  */
+/** For VariableForm coordinate input boxes.  */
 interface CoordinateInputBoxesProps {
   vector: Vector3 | undefined;
   variableNode: VariableNode;
@@ -32,7 +32,7 @@ interface CoordinateInputBoxesProps {
   narrowLabel: boolean;
 }
 
-/** LocationForm coordinate input boxes.  */
+/** VariableForm coordinate input boxes.  */
 export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const { variableNode, vector, onChange } = props;
   /** Show coordinate input boxes if editable (not using external data). */

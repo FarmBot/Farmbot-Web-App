@@ -24,7 +24,7 @@ import {
 import { DropDownItem } from "../../../../ui";
 import { Move, VariableDeclaration } from "farmbot";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
-import { COORDINATE_DDI } from "../../../locals_list/location_form_list";
+import { COORDINATE_DDI } from "../../../locals_list/variable_form_list";
 
 describe("<LocationSelection />", () => {
   const fakeProps = (): LocationSelectionProps => ({

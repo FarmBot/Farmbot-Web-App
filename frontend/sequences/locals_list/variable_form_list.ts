@@ -36,7 +36,7 @@ type DropdownHeadingId =
   | "Identifier"
   | "Other";
 
-/** Location selection menu section names. */
+/** Variable selection menu section names. */
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Variable": "Variables",
   "Identifier": "Variables",
@@ -70,8 +70,8 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
     });
 };
 
-/** Location selection menu items. */
-export function locationFormList(
+/** Variable and location selection menu items. */
+export function variableFormList(
   resources: ResourceIndex,
   additionalItems: DropDownItem[],
   variableItems?: DropDownItem[],
