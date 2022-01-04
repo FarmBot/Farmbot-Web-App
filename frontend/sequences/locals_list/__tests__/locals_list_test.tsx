@@ -20,7 +20,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { LocalsListProps, AllowedVariableNodes } from "../locals_list_support";
 import { VariableNameSet } from "../../../resources/interfaces";
-import { LocationForm } from "../location_form";
+import { VariableForm } from "../variable_form";
 import { error } from "../../../toast/toast";
 import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
@@ -57,14 +57,14 @@ describe("<LocalsList/>", () => {
 
   it("doesn't have any variables to render", () => {
     const wrapper = shallow(<LocalsList {...fakeProps()} />);
-    expect(wrapper.find(LocationForm).length).toBe(0);
+    expect(wrapper.find(VariableForm).length).toBe(0);
   });
 
   it("shows all variables", () => {
     const p = fakeProps();
     p.variableData = variableData;
     const wrapper = shallow(<LocalsList {...p} />);
-    expect(wrapper.find(LocationForm).length).toBe(1);
+    expect(wrapper.find(VariableForm).length).toBe(1);
   });
 
   it("hides already assigned variables", () => {
@@ -73,7 +73,7 @@ describe("<LocalsList/>", () => {
     p.bodyVariables = [];
     p.variableData = variableData;
     const wrapper = shallow(<LocalsList {...p} />);
-    expect(wrapper.find(LocationForm).length).toBe(0);
+    expect(wrapper.find(VariableForm).length).toBe(0);
   });
 });
 

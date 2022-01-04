@@ -4,7 +4,7 @@ import {
 } from "./locals_list_support";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterDeclaration, ParameterApplication } from "farmbot";
-import { LocationForm } from "./location_form";
+import { VariableForm } from "./variable_form";
 import {
   SequenceMeta, determineVector, determineDropdown,
 } from "../../resources/sequence_meta";
@@ -21,7 +21,7 @@ export interface DefaultValueFormProps {
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
   if (props.variableNode.kind === "parameter_declaration") {
     return <div className="default-value-form">
-      <LocationForm
+      <VariableForm
         key={props.variableNode.args.label + "default_value"}
         locationDropdownKey={JSON.stringify(props.variableNode) + "default_value"}
         variable={defaultValueVariableData(props.resources, props.variableNode)}

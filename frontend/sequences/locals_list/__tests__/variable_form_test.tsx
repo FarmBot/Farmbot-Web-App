@@ -2,8 +2,8 @@ import React from "react";
 import {
   Label,
   LabelProps,
-  LocationForm, NumericInput, NumericInputProps, TextInput, TextInputProps,
-} from "../location_form";
+  VariableForm, NumericInput, NumericInputProps, TextInput, TextInputProps,
+} from "../variable_form";
 import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
@@ -13,18 +13,18 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { FBSelect, BlurableInput, Color } from "../../../ui";
 import {
-  LocationFormProps, AllowedVariableNodes, VariableType,
+  VariableFormProps, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
 import { cloneDeep, difference } from "lodash";
-import { locationFormList } from "../location_form_list";
+import { variableFormList } from "../variable_form_list";
 import { convertDDItoVariable } from "../handle_select";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
 import { SequenceMeta } from "../../../resources/sequence_meta";
 
-describe("<LocationForm />", () => {
-  const fakeProps = (): LocationFormProps => ({
+describe("<VariableForm />", () => {
+  const fakeProps = (): VariableFormProps => ({
     variable: {
       celeryNode: {
         kind: "parameter_declaration",
@@ -46,13 +46,13 @@ describe("<LocationForm />", () => {
 
   it("renders correct UI components", () => {
     const p = fakeProps();
-    const el = shallow(<LocationForm {...p} />);
+    const el = shallow(<VariableForm {...p} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(BlurableInput);
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(
+    const choices = variableFormList(
       p.resources, [], [{ label: "Externally defined", value: "" }], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
@@ -80,7 +80,7 @@ describe("<LocationForm />", () => {
         }
       }
     }];
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("add new");
   });
 
@@ -88,7 +88,7 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     p.variable.celeryNode.args.label = "parent";
     p.inUse = true;
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.find("input").first().props().value).toEqual("Location");
   });
 
@@ -97,7 +97,7 @@ describe("<LocationForm />", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     const variableNameSet = fakeVariableNameSet("parent");
     p.resources.sequenceMetas[p.sequenceUuid] = variableNameSet;
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
       .toEqual(expect.arrayContaining([{
         headingId: "Variable",
@@ -108,7 +108,7 @@ describe("<LocationForm />", () => {
 
   it("doesn't show variable in dropdown", () => {
     const p = fakeProps();
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
       .not.toEqual(expect.arrayContaining([{
         headingId: "Variable",
@@ -120,7 +120,7 @@ describe("<LocationForm />", () => {
   it("shows correct variable label", () => {
     const p = fakeProps();
     p.variable.dropdown.label = "Externally defined";
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
       label: "Externally defined", value: 0
     });
@@ -136,7 +136,7 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.variable.dropdown.isNull = true;
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     const list = wrapper.find(FBSelect).first().props().list;
     const vars = list.filter(item =>
       item.headingId == "Variable" && !item.heading);
@@ -152,7 +152,7 @@ describe("<LocationForm />", () => {
 
   it("shows groups in dropdown", () => {
     const p = fakeProps();
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",
       label: "Custom coordinates",
@@ -164,7 +164,7 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
     p.hideWrapper = false;
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     const boxes = wrapper.find(".custom-coordinate-form");
     expect(boxes.find(".col-xs-5").length).toEqual(1);
     expect(boxes.find(".col-xs-6").length).toEqual(0);
@@ -174,7 +174,7 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     p.locationDropdownKey = "default_value";
     p.variable.isDefault = true;
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 
@@ -188,7 +188,7 @@ describe("<LocationForm />", () => {
       }
     };
     p.locationDropdownKey = "default_value";
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("number-input");
   });
 
@@ -202,7 +202,7 @@ describe("<LocationForm />", () => {
       }
     };
     p.locationDropdownKey = "default_value";
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("string-input");
   });
 
@@ -217,7 +217,7 @@ describe("<LocationForm />", () => {
     };
     p.locationDropdownKey = "";
     p.removeVariable = jest.fn();
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("col-xs-5");
   });
 
@@ -232,14 +232,14 @@ describe("<LocationForm />", () => {
     };
     p.locationDropdownKey = "";
     p.removeVariable = jest.fn();
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("col-xs-5");
   });
 
   it("doesn't change label", () => {
     const p = fakeProps();
     p.inUse = true;
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     wrapper.find("input").first().simulate("click");
     expect(error).toHaveBeenCalledWith("Can't edit variable name while in use.");
   });
@@ -247,7 +247,7 @@ describe("<LocationForm />", () => {
   it("removes variable", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     wrapper.find(".fa-trash").simulate("click");
     expect(p.removeVariable).toHaveBeenCalledWith("label");
   });
@@ -256,14 +256,14 @@ describe("<LocationForm />", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
     p.inUse = true;
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(".fa-trash").props().style).toEqual({ color: Color.gray });
   });
 
   it("doesn't remove variable", () => {
     const p = fakeProps();
     p.removeVariable = undefined;
-    const wrapper = shallow(<LocationForm {...p} />);
+    const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.find(".fa-trash").length).toEqual(0);
   });
 
@@ -276,7 +276,7 @@ describe("<LocationForm />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 0 } }
       }
     };
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.find(".numeric-variable-input").length)
       .toBeGreaterThanOrEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
@@ -321,7 +321,7 @@ describe("<LocationForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.find(".numeric-variable-input").length)
       .toEqual(0);
     expect(wrapper.find("FBSelect").props().list).toEqual([
@@ -347,7 +347,7 @@ describe("<LocationForm />", () => {
         label: "label", data_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.find(".text-variable-input").length).toBeGreaterThanOrEqual(1);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       {
@@ -391,7 +391,7 @@ describe("<LocationForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
-    const wrapper = mount(<LocationForm {...p} />);
+    const wrapper = mount(<VariableForm {...p} />);
     expect(wrapper.find(".text-variable-input").length).toEqual(0);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       {

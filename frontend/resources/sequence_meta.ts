@@ -12,7 +12,7 @@ import {
   NO_VALUE_SELECTED_DDI,
   formatTool,
   COORDINATE_DDI,
-} from "../sequences/locals_list/location_form_list";
+} from "../sequences/locals_list/variable_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
 

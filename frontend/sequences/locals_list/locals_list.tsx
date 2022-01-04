@@ -12,14 +12,14 @@ import {
   TaggedResource,
 } from "farmbot";
 import { overwrite } from "../../api/crud";
-import { LocationForm } from "./location_form";
+import { VariableForm } from "./variable_form";
 import {
   SequenceMeta, determineDropdown, determineVector,
 } from "../../resources/sequence_meta";
 import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
 import { error } from "../../toast/toast";
 import { variableIsInUse } from "./sanitize_nodes";
-import { sortVariables } from "./location_form_list";
+import { sortVariables } from "./variable_form_list";
 import { determineVariableType } from "./new_variable";
 
 export interface LocalListCbProps {
@@ -96,7 +96,7 @@ export const LocalsList = (props: LocalsListProps) => {
       .map(v => v && bodyVariables && isParameterDeclaration(v.celeryNode)
         ? convertFormVariable(v.celeryNode, props.resources)
         : v))
-      .map(variable => <LocationForm
+      .map(variable => <VariableForm
         key={variable.celeryNode.args.label}
         locationDropdownKey={props.locationDropdownKey}
         bodyVariables={bodyVariables}
@@ -125,7 +125,7 @@ export const generateNewVariableLabel = (
   return newLabel(i);
 };
 
-/** Show a parameter_declaration as its default value in the location form. */
+/** Show a parameter_declaration as its default value in the variable form. */
 export const convertFormVariable =
   (variable: ParameterDeclaration, resources: ResourceIndex):
     SequenceMeta => {

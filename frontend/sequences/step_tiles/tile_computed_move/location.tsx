@@ -10,10 +10,10 @@ import {
 } from "../../../resources/selectors";
 import { maybeFindVariable, SequenceMeta } from "../../../resources/sequence_meta";
 import {
-  formatPoint, locationFormList, formatTool, COORDINATE_DDI,
-} from "../../locals_list/location_form_list";
+  formatPoint, variableFormList, formatTool, COORDINATE_DDI,
+} from "../../locals_list/variable_form_list";
 import { Move, Xyz } from "farmbot";
-import { generateVariableListItems } from "../../locals_list/location_form";
+import { generateVariableListItems } from "../../locals_list/variable_form";
 import {
   AllowedVariableNodes, VariableType,
 } from "../../locals_list/locals_list_support";
@@ -22,7 +22,7 @@ export const LocationSelection = (props: LocationSelectionProps) => {
   const { resources, sequenceUuid } = props;
   return <FBSelect
     key={JSON.stringify(props.sequence)}
-    list={locationFormList(
+    list={variableFormList(
       resources,
       [{
         headingId: "Offset",

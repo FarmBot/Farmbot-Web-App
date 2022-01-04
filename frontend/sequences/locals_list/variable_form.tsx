@@ -1,11 +1,11 @@
 import React from "react";
 import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
-  locationFormList, NO_VALUE_SELECTED_DDI, sortVariables,
-} from "./location_form_list";
+  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+} from "./variable_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, AllowedVariableNodes, VariableNode, OnChange, VariableType,
+  VariableFormProps, AllowedVariableNodes, VariableNode, OnChange, VariableType,
 } from "../locals_list/locals_list_support";
 import {
   determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
@@ -53,9 +53,9 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
  */
-export const LocationForm =
+export const VariableForm =
   // eslint-disable-next-line complexity
-  (props: LocationFormProps) => {
+  (props: VariableFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable, variableType,
       allowedVariableNodes, hideGroups, removeVariable, onChange } = props;
     const { celeryNode, dropdown, vector, isDefault } = maybeUseStepData({
@@ -65,7 +65,7 @@ export const LocationForm =
       allowedVariableNodes, resources, sequenceUuid, variableType,
     });
     const displayGroups = !hideGroups;
-    const list = locationFormList(resources, [], variableListItems,
+    const list = variableFormList(resources, [], variableListItems,
       displayGroups, variableType);
     /** Variable name. */
     const { label } = celeryNode.args;

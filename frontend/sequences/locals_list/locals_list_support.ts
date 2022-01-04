@@ -42,9 +42,9 @@ interface CommonProps {
   removeVariable?(label: string): void;
   /** Use when a local set of variables exists; i.e., execute step body. */
   bodyVariables?: VariableNode[];
-  /** Used to control updates to the LocationForm dropdown and onChange func. */
+  /** Used to control updates to the VariableForm dropdown and onChange func. */
   locationDropdownKey?: string;
-  /** Controls the available options in the LocationForm dropdown,
+  /** Controls the available options in the VariableForm dropdown,
    * chooses between reassignment vs. creation for new variables,
    * and determines which variables to display in the form. */
   allowedVariableNodes: AllowedVariableNodes;
@@ -58,7 +58,7 @@ export interface LocalsListProps extends CommonProps {
   variableData: VariableNameSet | undefined;
 }
 
-export interface LocationFormProps extends CommonProps {
+export interface VariableFormProps extends CommonProps {
   variable: SequenceMeta;
   hideWrapper?: boolean;
   /** Is the variable being used? */
