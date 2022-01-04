@@ -15,6 +15,7 @@ export interface DefaultValueFormProps {
   variableNode: VariableNode;
   resources: ResourceIndex;
   onChange: OnChange;
+  removeVariable?(label: string): void;
 }
 
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
@@ -29,6 +30,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideGroups={true}
         variableType={determineVariableType(props.variableNode)}
+        removeVariable={props.removeVariable}
         onChange={change(props.onChange, props.variableNode)} />
     </div>;
   } else {

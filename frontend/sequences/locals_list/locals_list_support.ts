@@ -50,6 +50,8 @@ interface CommonProps {
   allowedVariableNodes: AllowedVariableNodes;
   /** Don't show groups in dropdown. */
   hideGroups?: boolean;
+  /** Variable label only (no input). */
+  labelOnly?: boolean;
 }
 
 export interface LocalsListProps extends CommonProps {

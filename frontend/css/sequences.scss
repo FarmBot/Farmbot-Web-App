@@ -425,6 +425,12 @@
   }
 }
 
+.preview-variables {
+  .locals-list {
+    pointer-events: none;
+  }
+}
+
 .regimen-editor-tools {
   .button-group {
     margin-bottom: 1rem;

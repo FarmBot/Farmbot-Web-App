@@ -21,6 +21,7 @@ import { convertDDItoVariable } from "../handle_select";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
+import { SequenceMeta } from "../../../resources/sequence_meta";
 
 describe("<LocationForm />", () => {
   const fakeProps = (): LocationFormProps => ({
@@ -292,6 +293,51 @@ describe("<LocationForm />", () => {
     ]);
   });
 
+  it("doesn't render number variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Number;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    };
+    p.bodyVariables = [{
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      }
+    }];
+    const variable: SequenceMeta = {
+      celeryNode: {
+        kind: "parameter_declaration",
+        args: {
+          label: "label", default_value: {
+            kind: "numeric", args: { number: 0 }
+          }
+        }
+      },
+      dropdown: { label: "label", value: 0 },
+      vector: { x: 0, y: 0, z: 0 },
+    };
+    p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
+    const wrapper = mount(<LocationForm {...p} />);
+    expect(wrapper.find(".numeric-variable-input").length)
+      .toEqual(0);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+      {
+        headingId: "Numeric",
+        label: "Custom number",
+        value: 0,
+      },
+    ]);
+  });
+
   it("renders text variable", () => {
     const p = fakeProps();
     p.variableType = VariableType.Text;
@@ -316,21 +362,61 @@ describe("<LocationForm />", () => {
       },
     ]);
   });
-});
 
-describe("<NumericInput />", () => {
-  const fakeProps = (): NumericInputProps => ({
-    variable: {
+  it("doesn't render text variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Text;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    p.bodyVariables = [{
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    }];
+    const variable: SequenceMeta = {
       celeryNode: {
         kind: "parameter_declaration",
         args: {
           label: "label", default_value: {
-            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+            kind: "text", args: { string: "" }
           }
         }
       },
       dropdown: { label: "label", value: 0 },
-      vector: { x: 0, y: 0, z: 0 }
+      vector: { x: 0, y: 0, z: 0 },
+    };
+    p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
+    const wrapper = mount(<LocationForm {...p} />);
+    expect(wrapper.find(".text-variable-input").length).toEqual(0);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+      {
+        headingId: "Text",
+        label: "Custom text",
+        value: "",
+      },
+    ]);
+  });
+});
+
+describe("<NumericInput />", () => {
+  const fakeProps = (): NumericInputProps => ({
+    variableNode: {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: {
+          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+        }
+      }
     },
     onChange: jest.fn(),
     label: "label",
@@ -338,7 +424,7 @@ describe("<NumericInput />", () => {
 
   it("changes variable", () => {
     const p = fakeProps();
-    p.variable.celeryNode = {
+    p.variableNode = {
       kind: "variable_declaration",
       args: {
         label: "label", data_value: { kind: "numeric", args: { number: 0 } }
@@ -356,7 +442,7 @@ describe("<NumericInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
-    p.variable.celeryNode = {
+    p.variableNode = {
       kind: "parameter_declaration",
       args: {
         label: "label", default_value: { kind: "numeric", args: { number: 0 } }
@@ -375,17 +461,13 @@ describe("<NumericInput />", () => {
 
 describe("<TextInput />", () => {
   const fakeProps = (): TextInputProps => ({
-    variable: {
-      celeryNode: {
-        kind: "parameter_declaration",
-        args: {
-          label: "label", default_value: {
-            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-          }
+    variableNode: {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: {
+          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
         }
-      },
-      dropdown: { label: "label", value: 0 },
-      vector: { x: 0, y: 0, z: 0 }
+      }
     },
     onChange: jest.fn(),
     label: "label",
@@ -393,7 +475,7 @@ describe("<TextInput />", () => {
 
   it("changes variable", () => {
     const p = fakeProps();
-    p.variable.celeryNode = {
+    p.variableNode = {
       kind: "variable_declaration",
       args: {
         label: "label", data_value: { kind: "text", args: { string: "" } }
@@ -411,7 +493,7 @@ describe("<TextInput />", () => {
 
   it("changes default variable", () => {
     const p = fakeProps();
-    p.variable.celeryNode = {
+    p.variableNode = {
       kind: "parameter_declaration",
       args: {
         label: "label", default_value: { kind: "text", args: { string: "" } }
@@ -464,6 +546,15 @@ describe("<Label />", () => {
     const p = fakeProps();
     p.inUse = true;
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    const wrapper = shallow<LabelProps>(<Label {...p} />);
+    expect(wrapper.find("input").length).toEqual(0);
+  });
+
+  it("doesn't render input: prop", () => {
+    const p = fakeProps();
+    p.inUse = true;
+    p.allowedVariableNodes = AllowedVariableNodes.parameter;
+    p.labelOnly = true;
     const wrapper = shallow<LabelProps>(<Label {...p} />);
     expect(wrapper.find("input").length).toEqual(0);
   });

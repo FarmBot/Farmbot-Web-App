@@ -108,6 +108,7 @@ export const LocalsList = (props: LocalsListProps) => {
         allowedVariableNodes={props.allowedVariableNodes}
         removeVariable={props.removeVariable}
         onChange={props.onChange}
+        labelOnly={props.labelOnly}
         variableType={determineVariableType(variable.celeryNode)}
         hideGroups={props.hideGroups} />)}
   </div>;

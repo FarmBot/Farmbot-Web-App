@@ -424,4 +424,19 @@ describe("stringifySequenceData()", () => {
   }
 }`);
   });
+
+  it("returns step contents: undefined body", () => {
+    expect(stringifySequenceData({
+      kind: "wait",
+      args: { milliseconds: 100 },
+      body: undefined,
+      ["uuid" as keyof SequenceBodyItem]: "uuid",
+    }))
+      .toEqual(`{
+  "kind": "wait",
+  "args": {
+    "milliseconds": 100
+  }
+}`);
+  });
 });

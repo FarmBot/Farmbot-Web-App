@@ -178,7 +178,11 @@ export const stringifySequenceData =
   (data: SequenceBodyItem | SequenceResource) =>
     JSON.stringify(
       data,
-      (key, value) => key == "uuid" || (key == "body" && (value || []).length == 0)
-        ? undefined
-        : value,
+      jsonReplacer,
       2);
+
+export const jsonReplacer =
+  (key: string, value: string) =>
+    key == "uuid" || (key == "body" && (value || []).length == 0)
+      ? undefined
+      : value;
