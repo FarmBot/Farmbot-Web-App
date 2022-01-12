@@ -22,6 +22,7 @@ import { refresh } from "../../api/crud";
 import { push } from "../../history";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
+import { fakePercentJob } from "../../__test_support__/fake_bot_data";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -145,5 +146,29 @@ describe("<NavBar />", () => {
     p.authAud = "staff";
     const wrapper = shallow(<NavBar {...p} />);
     expect(wrapper.find("div").first().hasClass("red")).toBeTruthy();
+  });
+
+  it("displays active job", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    const p = fakeProps();
+    p.bot.hardware.jobs = { "job title": fakePercentJob() };
+    const wrapper = mount(<NavBar {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("99%");
+    expect(wrapper.text().toLowerCase()).toContain("job title");
+  });
+
+  it("displays active job on small screens", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const p = fakeProps();
+    p.bot.hardware.jobs = { "job title": fakePercentJob() };
+    const wrapper = mount(<NavBar {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("99%");
+    expect(wrapper.text().toLowerCase()).not.toContain("job title");
   });
 });

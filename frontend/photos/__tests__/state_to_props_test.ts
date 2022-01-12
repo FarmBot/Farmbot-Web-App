@@ -9,43 +9,22 @@ import {
 import { Dictionary, JobProgress } from "farmbot";
 import { StringSetting } from "../../session_keys";
 import { fakeFarmwareManifestV2 } from "../../__test_support__/fake_farmwares";
+import { fakePercentJob } from "../../__test_support__/fake_bot_data";
 
 describe("getImageJobs()", () => {
   it("returns image upload job list", () => {
+    const imageJob1 = fakePercentJob({ percent: 20, type: "image" });
+    const imageJob2 = fakePercentJob({ percent: 10, type: "image" });
     const allJobs = {
-      "img1.png": {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z",
-      } as JobProgress,
-      "FBOS_OTA": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 17:13:21.167440Z",
-      } as JobProgress,
-      "img2.png": {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z",
-      } as JobProgress,
+      "/img1.png": imageJob1,
+      "FBOS_OTA": fakePercentJob({ percent: 10 }),
+      "/img2.png": imageJob2,
     };
     const imageJobs = getImageJobs(allJobs);
     expect(imageJobs).toEqual([
-      {
-        status: "working",
-        percent: 10,
-        unit: "percent",
-        time: "2018-11-15 19:13:21.167440Z"
-      },
-      {
-        status: "working",
-        percent: 20,
-        unit: "percent",
-        time: "2018-11-15 18:13:21.167440Z"
-      }]);
+      imageJob2,
+      imageJob1,
+    ]);
   });
 
   it("handles undefined jobs", () => {

@@ -186,6 +186,7 @@ export interface ParameterManagementProps {
   getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;
   arduinoBusy: boolean;
+  showAdvanced: boolean;
 }
 
 export interface ShowAdvancedToggleProps {

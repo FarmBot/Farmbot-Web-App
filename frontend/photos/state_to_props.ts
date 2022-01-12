@@ -14,17 +14,20 @@ import { chain } from "lodash";
 import { betterCompact } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { DesignerPhotosProps } from "./interfaces";
+import { isImageUploadJob } from "../devices/jobs";
 
 export const getImageJobs =
   (allJobs: BotState["hardware"]["jobs"]): JobProgress[] => {
     const jobs = allJobs || {};
-    const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
-    const imageJobs: JobProgress[] =
-      chain(betterCompact(imageJobNames.map(x => jobs[x])))
+    const imageJobs = Object.entries(jobs)
+      .filter(([title, job]) => job && isImageUploadJob(job.type, title))
+      .map(([_title, job]) => job);
+    const sortedImageJobs: JobProgress[] =
+      chain(betterCompact(imageJobs))
         .sortBy("time")
         .reverse()
         .value();
-    return imageJobs;
+    return sortedImageJobs;
   };
 
 const getImages = (ri: ResourceIndex): TaggedImage[] =>

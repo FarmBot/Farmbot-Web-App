@@ -26,6 +26,7 @@ import { Path } from "../internal_urls";
 import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
+import { jobNameLookup, JobsTable, sortJobs } from "../devices/jobs";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -141,6 +142,28 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       : <div style={{ display: "inline" }} />;
   };
 
+  JobsButton = () => {
+    const sortedJobs = sortJobs(this.props.bot.hardware.jobs).active;
+    const jobActive = sortedJobs.length > 0;
+    const job = jobActive ? sortedJobs[0] : undefined;
+    const isPercent = job?.unit == "percent";
+    const percent = isPercent ? job.percent : "";
+    const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
+    const inactiveText = window.innerWidth > 450 ? t("no active jobs") : t("jobs");
+    const jobProgress = isPercent ? `${percent}%` : "";
+    return <Popover position={Position.BOTTOM_RIGHT}
+      portalClassName={"jobs-panel-portal"}
+      popoverClassName={"jobs-panel"}
+      target={<a className={"jobs-button"}>
+        <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
+        {jobActive && <p className={"jobs-button-progress-text"}>{jobProgress}</p>}
+        {jobActive && <div className={"jobs-button-progress-bar"}
+          style={{ width: jobProgress }} />}
+      </a>}
+      content={<JobsTable jobs={this.props.bot.hardware.jobs}
+        timeSettings={this.props.timeSettings} />} />;
+  };
+
   AppNavLinks = () =>
     <div className={"app-nav-links"}>
       <i className={"fa fa-bars mobile-menu-icon"}
@@ -191,6 +214,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       <this.EstopButton />
                       <this.ConnectionStatus />
                       <this.SetupButton />
+                      <this.JobsButton />
                       <this.Coordinates />
                     </ErrorBoundary>
                   </div>
