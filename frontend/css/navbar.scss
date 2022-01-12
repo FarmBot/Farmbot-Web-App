@@ -165,6 +165,7 @@ nav {
 .nav-right {
   height: 5rem;
   overflow: hidden;
+  .jobs-button,
   .setup-button,
   .connectivity-button {
     display: inline;
@@ -182,6 +183,26 @@ nav {
   }
   .setup-button {
     line-height: 6rem;
+  }
+  .jobs-button {
+    position: relative;
+    .jobs-button-progress-text,
+    .title {
+      display: inline;
+      color: $white;
+      font-weight: bold;
+    }
+    .jobs-button-progress-text {
+      margin-left: 1.5rem;
+    }
+    .jobs-button-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      height: 100%;
+      background: $medium_gray;
+    }
   }
   .connectivity-button {
     p {

@@ -6,7 +6,6 @@ jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { Photos, PhotoFooter, MoveToLocation } from "../photos";
-import { JobProgress } from "farmbot";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -22,6 +21,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { push } from "../../../history";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 import { Path } from "../../../internal_urls";
+import { fakePercentJob } from "../../../__test_support__/fake_bot_data";
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -139,24 +139,14 @@ describe("<Photos />", () => {
 
   it("shows image download progress", () => {
     const p = fakeProps();
-    p.imageJobs = [{
-      status: "working",
-      percent: 15,
-      unit: "percent",
-      time: "2018-11-15 19:13:21.167440Z"
-    } as JobProgress];
+    p.imageJobs = [fakePercentJob({ percent: 15 })];
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("uploading photo...15%");
   });
 
   it("doesn't show image download progress", () => {
     const p = fakeProps();
-    p.imageJobs = [{
-      status: "complete",
-      percent: 15,
-      unit: "percent",
-      time: "2018-11-15 19:13:21.167440Z"
-    } as JobProgress];
+    p.imageJobs = [fakePercentJob({ status: "complete" })];
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).not.toContain("uploading");
   });
