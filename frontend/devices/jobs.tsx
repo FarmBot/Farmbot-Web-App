@@ -64,7 +64,11 @@ export const JobsTable = (props: JobsTableProps) => {
     </thead>
     <tbody>
       {sortedJobs.active.map(JobRow)}
-      <i>{t(Content.OLD_JOBS_CLEARED)}</i>
+      <tr>
+        <td colSpan={props.more ? 7 : 6} className={"job-clear-notice"}>
+          <i>{t(Content.OLD_JOBS_CLEARED)}</i>
+        </td>
+      </tr>
       {sortedJobs.inactive.map(JobRow)}
     </tbody>
   </table>;

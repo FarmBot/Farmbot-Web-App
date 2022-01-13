@@ -2577,15 +2577,12 @@
 
 .jobs-panel {
   table {
+    margin-right: 1rem;
     p {
       padding: 1rem;
     }
-    i {
-      display: inline-block;
-      width: 400%;
-      font-size: 1.2rem;
-      margin-left: 3rem;
-      padding: 1rem;
+    .job-clear-notice {
+      text-align: center;
       color: $medium_gray;
     }
     .job-name {
