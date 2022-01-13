@@ -416,7 +416,7 @@ describe Api::SequencesController do
               args: {
                 label: "x",
                 default_value: {
-                  kind: "nothing",
+                  kind: "safe_z",
                   args: {},
                 },
               },
@@ -427,7 +427,7 @@ describe Api::SequencesController do
                 body: [] }
       post :create, body: input.to_json, params: { format: :json }
       expect(response.status).to eq(422)
-      expect(json[:body]).to include(CeleryScript::Checker::MISSING_PARAM)
+      expect(json[:body]).to include("but got safe_z")
     end
 
     it "pins a new sequence" do

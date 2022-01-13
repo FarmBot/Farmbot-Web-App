@@ -121,6 +121,4 @@ describe PointGroup do
     error = result.errors.fetch("in_use").message
     expect(error).to eq("Can't delete group because it is in use by Regimen 'Wrapper 26'")
   end
-
-  it "refuses to delete groups in-use by farm events"
 end
