@@ -37,7 +37,4 @@ describe InactiveAccountJob do
     expect(User.where(id: yes.id).count).to eq(0)
     expect(not_sure.reload.last_sign_in_at).to be
   end
-
-  it "does not delete an account during the waiting period"
-  it "finishes deletion"
 end

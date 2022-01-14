@@ -253,44 +253,4 @@ describe CeleryScript::Checker do
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
   end
-
-  it "handles bad variable declarations" do
-    ast = {
-      kind: "sequence",
-      args: {
-        version: 20180209,
-        locals: {
-          kind: "scope_declaration",
-          :args => {},
-          body: [
-            {
-              kind: "parameter_declaration",
-              args: {
-                label: "parent",
-                default_value: {
-                  kind: "nothing",
-                  args: {},
-                },
-              },
-            },
-          ],
-        },
-      },
-      body: [
-        {
-          kind: "move_absolute",
-          args: {
-            speed: 100,
-            location: { kind: "identifier", args: { label: "parent" } },
-            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
-          },
-        },
-      ],
-    }
-    tree = CeleryScript::AstNode.new(**ast)
-    chk = CeleryScript::Checker.new(tree, corpus, device)
-    expect(chk.valid?).to be false
-    message = "must provide a value for all parameters"
-    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_PARAM)
-  end
 end
