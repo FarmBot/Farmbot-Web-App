@@ -733,9 +733,6 @@
   .location-form {
     width: 100% !important;
   }
-  .note {
-    margin-top: 4rem;
-  }
   .bp3-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
@@ -2572,11 +2569,21 @@
     display: inline-block;
     max-height: calc(100vh - 9rem);
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     width: 100%;
     padding: 0;
+  }
+}
+
+.jobs-panel {
+  table {
+    margin-right: 1rem;
     p {
       padding: 1rem;
+    }
+    .job-clear-notice {
+      text-align: center;
+      color: $medium_gray;
     }
     .job-name {
       max-width: 10rem;
@@ -2590,6 +2597,10 @@
     td {
       white-space: nowrap;
       font-size: 1.2rem;
+      padding: 0.75rem;
+    }
+    th {
+      text-transform: uppercase;
     }
     .progress {
       position: absolute;
@@ -2600,6 +2611,18 @@
       border-radius: 0;
       pointer-events: none;
     }
+  }
+}
+
+.jobs-panel-portal {
+  .bp3-popover-content {
+    padding: 0;
+    max-width: 450px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
   }
 }
 

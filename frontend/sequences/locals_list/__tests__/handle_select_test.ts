@@ -2,7 +2,7 @@ import {
   addOrEditBodyVariables, convertDDItoVariable, NOTHING_SELECTED,
 } from "../handle_select";
 import { Point, Tool, Coordinate } from "farmbot";
-import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../location_form_list";
+import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../variable_form_list";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";

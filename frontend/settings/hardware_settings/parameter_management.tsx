@@ -20,7 +20,7 @@ import { getModifiedClassName, modifiedFromDefault } from "../default_values";
 export function ParameterManagement(props: ParameterManagementProps) {
   const {
     dispatch, onReset, botOnline, arduinoBusy, firmwareHardware,
-    getConfigValue,
+    getConfigValue, showAdvanced,
   } = props;
   const { parameter_management } = props.settingsPanelState;
   return <Highlight className={"section"}
@@ -31,7 +31,9 @@ export function ParameterManagement(props: ParameterManagementProps) {
       panel={"parameter_management"}
       dispatch={dispatch} />
     <Collapse isOpen={!!parameter_management}>
-      <Highlight settingName={DeviceSetting.paramLoadProgress}>
+      <Highlight settingName={DeviceSetting.paramLoadProgress}
+        hidden={!showAdvanced}
+        className={"advanced"}>
         <Row>
           <Col xs={7}>
             <label style={{ lineHeight: "1.5rem", display: "inline" }}>
@@ -82,7 +84,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
       <Highlight settingName={DeviceSetting.highlightModifiedSettings}
-        hidden={!(!!getConfigValue(BooleanSetting.show_advanced_settings)
+        hidden={!(showAdvanced
           || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
         className={"advanced"}>
         <ToggleHighlightModified
