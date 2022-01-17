@@ -43,6 +43,7 @@ import {
   ConfiguratorDocs,
   Connectivity,
   ControlsCheck,
+  ControlsCheckProps,
   CurrentPosition,
   DisableStallDetection,
   EthernetPortImage,
@@ -58,6 +59,7 @@ import {
   MotorMaxSpeed,
   MotorMinSpeed,
   MotorSettings,
+  NetworkRequirementsLink,
   PeripheralsCheck,
   RotateMapToggle,
   SelectMapOrigin,
@@ -171,27 +173,35 @@ describe("<FlashFirmware />", () => {
 });
 
 describe("<ControlsCheck />", () => {
+  const fakeControlsCheckProps = (): ControlsCheckProps => ({
+    dispatch: jest.fn(),
+    controlsCheckOptions: {},
+  });
+
   it("returns controls", () => {
-    const Component = ControlsCheck();
-    const wrapper = mount(<Component {...fakeProps()} />);
+    const wrapper = mount(<ControlsCheck {...fakeControlsCheckProps()} />);
     expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
   });
 
   it("returns highlighted controls", () => {
-    const Component = ControlsCheck({ axis: "x" });
-    const wrapper = mount(<Component {...fakeProps()} />);
+    const p = fakeControlsCheckProps();
+    p.controlsCheckOptions.axis = "x";
+    const wrapper = mount(<ControlsCheck {...p} />);
     expect(wrapper.html()).toContain("solid yellow");
   });
 
   it("returns both controls directions highlighted", () => {
-    const Component = ControlsCheck({ axis: "x", both: true });
-    const wrapper = mount(<Component {...fakeProps()} />);
+    const p = fakeControlsCheckProps();
+    p.controlsCheckOptions.axis = "x";
+    p.controlsCheckOptions.both = true;
+    const wrapper = mount(<ControlsCheck {...p} />);
     expect(wrapper.html()).toContain("solid yellow");
   });
 
   it("returns controls with home highlighted", () => {
-    const Component = ControlsCheck({ home: true });
-    const wrapper = mount(<Component {...fakeProps()} />);
+    const p = fakeControlsCheckProps();
+    p.controlsCheckOptions.home = true;
+    const wrapper = mount(<ControlsCheck {...p} />);
     expect(wrapper.html()).toContain("solid yellow");
   });
 });
@@ -284,6 +294,13 @@ describe("<AssemblyDocs />", () => {
   it("handles missing config", () => {
     const wrapper = mount(<AssemblyDocs {...fakeProps()} />);
     expect(wrapper.find("a").props().href).toEqual(ExternalUrl.genesisAssembly);
+  });
+});
+
+describe("<NetworkRequirementsLink />", () => {
+  it("renders link", () => {
+    const wrapper = mount(<NetworkRequirementsLink />);
+    expect(wrapper.text().toLowerCase()).toContain("requirements");
   });
 });
 

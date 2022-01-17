@@ -14,6 +14,7 @@ import {
   PointGroup,
   Numeric,
   Text,
+  Nothing,
 } from "farmbot";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
@@ -21,13 +22,7 @@ import {
 import { betterCompact } from "../../util";
 import { newVariableDataValue } from "./new_variable";
 
-/**
- * Empty `data_value` for location form initial state.
- * This is specifically an invalid parameter application data value to force the
- * user to make a valid selection to successfully save the parameter application.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
+export const NOTHING: Nothing = { kind: "nothing", args: {} };
 
 type DataValue =
   | Coordinate
@@ -36,7 +31,8 @@ type DataValue =
   | PointGroup
   | Numeric
   | Text
-  | Tool;
+  | Tool
+  | Nothing;
 
 type CreateVariableDeclaration =
   (label: string, data_value: DataValue) => VariableDeclaration;
@@ -75,7 +71,7 @@ interface NewVarProps {
 const nothingVar = ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
-  createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED as DataValue);
+  createVariableNode(allowedVariableNodes)(label, NOTHING);
 
 const toolVar = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes

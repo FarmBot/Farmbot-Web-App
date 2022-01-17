@@ -1,6 +1,6 @@
+import { Nothing, Numeric, Text } from "farmbot";
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { NOTHING_SELECTED } from "./handle_select";
 import { VariableNode, VariableType } from "./locals_list_support";
 
 const locationLabel = (num: number) => t("Location {{ num }}", { num });
@@ -21,10 +21,11 @@ export const varTypeFromLabel = (label: string) => {
   if (label.startsWith(t("Text"))) { return VariableType.Text; }
 };
 
-export const newVariableDataValue = (variableType: VariableType | undefined) => {
+export const newVariableDataValue = (variableType: VariableType | undefined):
+  Nothing | Numeric | Text => {
   switch (variableType) {
     default:
-    case VariableType.Location: return NOTHING_SELECTED;
+    case VariableType.Location: return { kind: "nothing", args: {} };
     case VariableType.Number: return { kind: "numeric", args: { number: 0 } };
     case VariableType.Text: return { kind: "text", args: { string: "" } };
   }
