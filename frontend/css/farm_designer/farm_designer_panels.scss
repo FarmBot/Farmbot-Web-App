@@ -2839,7 +2839,8 @@
           height: 2rem;
           width: 2rem;
           .fa {
-            padding-left: 0.05rem;
+            margin-left: -0.25rem;
+            margin-top: -0.1rem;
           }
         }
         .saucer-connector {
@@ -2940,6 +2941,9 @@
       }
       iframe {
         margin-top: 1rem;
+      }
+      .wizard-find-home-btn {
+        float: none;
       }
     }
     .setup-complete {

@@ -23,7 +23,6 @@ import {
 } from "../../sequences/locals_list/variable_form_list";
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
-import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
 
 describe("determineDropdown", () => {
@@ -281,7 +280,13 @@ describe("determineVarDDILabel()", () => {
   it("returns 'select location' variable label", () => {
     const varData = fakeVariableNameSet("parent");
     const data = Object.values(varData)[0];
-    data && (data.celeryNode = NOTHING_SELECTED);
+    data && (data.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "parent",
+        data_value: { kind: "nothing", args: {} }
+      }
+    });
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
     const label = determineVarDDILabel({
