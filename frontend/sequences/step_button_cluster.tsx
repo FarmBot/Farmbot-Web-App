@@ -6,13 +6,19 @@ import { TaggedSequence } from "farmbot";
 import { Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
-import { NOTHING_SELECTED } from "./locals_list/handle_select";
 import { push } from "../history";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
 import { shouldDisplayFeature } from "../devices/should_display";
 import { Path } from "../internal_urls";
+
+/**
+ * This is specifically an invalid field value to force the
+ * user to make a valid selection to successfully save the step.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 export interface StepButtonProps {
   dispatch: Function;

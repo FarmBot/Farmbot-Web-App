@@ -1,7 +1,7 @@
 import {
-  addOrEditBodyVariables, convertDDItoVariable, NOTHING_SELECTED,
+  addOrEditBodyVariables, convertDDItoVariable, NOTHING,
 } from "../handle_select";
-import { Point, Tool, Coordinate } from "farmbot";
+import { Point, Tool, Coordinate, Nothing } from "farmbot";
 import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../variable_form_list";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
@@ -9,7 +9,7 @@ import {
 
 const label = "label";
 const allowedVariableNodes = AllowedVariableNodes.variable;
-const expectedVariable = (data_value: Point | Tool | Coordinate) =>
+const expectedVariable = (data_value: Point | Tool | Coordinate | Nothing) =>
   ({ kind: "parameter_application", args: { label, data_value } });
 
 describe("convertDDItoDeclaration()", () => {
@@ -93,11 +93,11 @@ describe("convertDDItoDeclaration()", () => {
       allowedVariableNodes,
       dropdown: NO_VALUE_SELECTED_DDI()
     });
-    expect(variable).toEqual(expectedVariable(NOTHING_SELECTED as Coordinate));
+    expect(variable).toEqual(expectedVariable(NOTHING));
   });
 
   it("returns variable declaration: default", () => {
-    const expected = expectedVariable(NOTHING_SELECTED as Coordinate);
+    const expected = expectedVariable(NOTHING);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
       identifierLabel: label,
@@ -139,7 +139,7 @@ describe("convertDDItoDeclaration()", () => {
     const expected: VariableNode = {
       kind: "parameter_declaration",
       args: {
-        label: "label", default_value: NOTHING_SELECTED
+        label: "label", default_value: NOTHING
       }
     };
     expect(variable).toEqual(expected);
@@ -254,11 +254,11 @@ describe("addOrEditBodyVariables()", () => {
   it("filters variables", () => {
     const parameterDeclaration: VariableNode = {
       kind: "parameter_declaration",
-      args: { label: "label", default_value: NOTHING_SELECTED },
+      args: { label: "label", default_value: NOTHING },
     };
     const parameterApplication: VariableNode = {
       kind: "parameter_application",
-      args: { label: "label", data_value: NOTHING_SELECTED },
+      args: { label: "label", data_value: NOTHING },
     };
     const variables = [parameterDeclaration, parameterApplication];
     const item = parameterDeclaration;

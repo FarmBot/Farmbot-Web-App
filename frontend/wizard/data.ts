@@ -11,7 +11,6 @@ import {
   CameraCheck,
   ConfiguratorDocs,
   Connectivity,
-  ControlsCheck,
   FirmwareHardwareSelection,
   lowVoltageProblemStatus,
   CameraCalibrationCard,
@@ -381,7 +380,7 @@ export const WIZARD_STEPS = (
       title: t("X-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(xySwap),
-      component: ControlsCheck({ axis: "x" }),
+      controlsCheckOptions: { axis: "x" },
       question: t("Did FarmBot's x-axis move?"),
       outcomes: [
         {
@@ -414,7 +413,7 @@ export const WIZARD_STEPS = (
       title: t("Y-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(!xySwap),
-      component: ControlsCheck({ axis: "y" }),
+      controlsCheckOptions: { axis: "y" },
       question: t("Did FarmBot's y-axis move?"),
       outcomes: [
         {
@@ -446,7 +445,7 @@ export const WIZARD_STEPS = (
       title: t("Z-Axis Motor"),
       prerequisites: [botOnlineReq],
       content: t("Press the down arrow."),
-      component: ControlsCheck({ axis: "z" }),
+      controlsCheckOptions: { axis: "z" },
       question: t("Did FarmBot's z-axis move?"),
       outcomes: [
         {
@@ -487,7 +486,7 @@ export const WIZARD_STEPS = (
       title: t("X-axis"),
       prerequisites: [botOnlineReq],
       content: positiveMovementInstruction(xySwap),
-      component: ControlsCheck({ axis: "x" }),
+      controlsCheckOptions: { axis: "x" },
       question: positiveMovementQuestion(xySwap),
       outcomes: [
         {
@@ -522,7 +521,7 @@ export const WIZARD_STEPS = (
       title: t("Y-axis"),
       prerequisites: [botOnlineReq],
       content: positiveMovementInstruction(!xySwap),
-      component: ControlsCheck({ axis: "y" }),
+      controlsCheckOptions: { axis: "y" },
       question: positiveMovementQuestion(!xySwap),
       outcomes: [
         {
@@ -557,7 +556,7 @@ export const WIZARD_STEPS = (
       title: t("Z-axis"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.PRESS_DOWN_JOG_BUTTON),
-      component: ControlsCheck({ axis: "z" }),
+      controlsCheckOptions: { axis: "z" },
       question: t("Did FarmBot **move down**?"),
       outcomes: [
         {
@@ -597,7 +596,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("They are somewhere else"),
           tips: t(SetupWizardContent.HOME_X),
-          component: ControlsCheck({ home: true }),
+          controlsCheckOptions: { home: true },
         },
       ],
     },
@@ -629,7 +628,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("It is somewhere else"),
           tips: t(SetupWizardContent.HOME_Y),
-          component: ControlsCheck({ home: true }),
+          controlsCheckOptions: { home: true },
         },
       ],
     },
@@ -661,7 +660,7 @@ export const WIZARD_STEPS = (
           slug: "notAtHome",
           description: t("It is somewhere else"),
           tips: t(SetupWizardContent.HOME_Z),
-          component: ControlsCheck({ home: true }),
+          controlsCheckOptions: { home: true },
         },
       ],
     },
@@ -696,7 +695,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.xAxisMovement,
       title: t("X-axis movements"),
       content: t(SetupWizardContent.X_AXIS_MOVEMENTS),
-      component: ControlsCheck({ axis: "x", both: true }),
+      controlsCheckOptions: { axis: "x", both: true },
       question: t(SetupWizardContent.X_AXIS_MOVEMENTS_QUESTION),
       outcomes: [
         {
@@ -728,7 +727,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.yAxisMovement,
       title: t("Y-axis movements"),
       content: t(SetupWizardContent.Y_AXIS_MOVEMENTS),
-      component: ControlsCheck({ axis: "y", both: true }),
+      controlsCheckOptions: { axis: "y", both: true },
       question: t(SetupWizardContent.Y_AXIS_MOVEMENTS_QUESTION),
       outcomes: [
         {
@@ -760,7 +759,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.zAxisMovement,
       title: t("Z-axis movements"),
       content: t(SetupWizardContent.Z_AXIS_MOVEMENTS),
-      component: ControlsCheck({ axis: "z", both: true }),
+      controlsCheckOptions: { axis: "z", both: true },
       question: t(SetupWizardContent.Z_AXIS_MOVEMENTS_QUESTION),
       outcomes: [
         {
@@ -898,7 +897,7 @@ export const WIZARD_STEPS = (
       title: t("Calibration preparation"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.CAMERA_CALIBRATION_PREPARATION),
-      component: ControlsCheck(),
+      controlsCheckOptions: {},
       question: t("Is the z-axis as high as it will go?"),
       outcomes: [
         {
@@ -1002,7 +1001,7 @@ export const WIZARD_STEPS = (
           slug: "detectionError",
           description: t("There is a surface error message"),
           tips: t("Move FarmBot to a different location and try again."),
-          component: ControlsCheck(),
+          controlsCheckOptions: {},
         },
         {
           slug: "cameraError",

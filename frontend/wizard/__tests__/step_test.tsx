@@ -165,6 +165,17 @@ describe("<WizardStepContainer />", () => {
     expect(wrapper.html()).toContain("iframe");
     wrapper.setProps(p);
   });
+
+  it("renders controls check", () => {
+    const p = fakeProps();
+    p.step.controlsCheckOptions = {};
+    p.step.outcomes[0].detectedProblems = [
+      { status: () => false, description: "problem" },
+    ];
+    p.step.outcomes[0].controlsCheckOptions = {};
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.find(".controls-check").length).toEqual(2);
+  });
 });
 
 describe("<WizardStepHeader />", () => {

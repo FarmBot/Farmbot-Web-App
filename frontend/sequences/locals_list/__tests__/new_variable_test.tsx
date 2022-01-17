@@ -6,7 +6,6 @@ import {
   newVariableDataValue, newVariableLabel, VariableIcon, VariableIconProps,
   varTypeFromLabel,
 } from "../new_variable";
-import { NOTHING_SELECTED } from "../handle_select";
 
 describe("newVariableLabel()", () => {
   it("returns location label", () => {
@@ -32,7 +31,8 @@ describe("varTypeFromLabel()", () => {
 
 describe("newVariableDataValue()", () => {
   it("returns location data value", () => {
-    expect(newVariableDataValue(VariableType.Location)).toEqual(NOTHING_SELECTED);
+    expect(newVariableDataValue(VariableType.Location))
+      .toEqual({ kind: "nothing", args: {} });
   });
 
   it("returns number data value", () => {

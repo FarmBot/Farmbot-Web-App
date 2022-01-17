@@ -18,7 +18,7 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { editStep } from "../../../../api/crud";
-import { NOTHING_SELECTED } from "../../../locals_list/handle_select";
+import { NOTHING_SELECTED } from "../../../step_button_cluster";
 import { StepParams } from "../../../interfaces";
 import {
   fakeStepParams,
