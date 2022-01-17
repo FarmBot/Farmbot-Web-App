@@ -12,6 +12,33 @@ describe Fragments::Create do
     destroy_everything!
   end
 
+  it "disallows using resource_placeholder outside of param declarations" do
+    params = {
+      device: device,
+      kind: "internal_farm_event",
+      args: {},
+      body: [
+        {
+          kind: "parameter_application",
+          args: {
+            label: "var1",
+            data_value: {
+              kind: "resource_placeholder",
+              args: {
+                resource_type: "Sequence",
+              },
+            },
+          },
+        },
+      ],
+    }
+    boom = ->() { Fragments::Preprocessor.run!(**params) }
+
+    err = CeleryScript::TypeCheckError
+    msg = CeleryScriptSettingsBag::BAD_PLACEHOLDER
+    expect(boom).to raise_error(err, msg)
+  end
+
   it "loads CeleryScript from the database" do
     tool = FactoryBot.create(:tool, device: device)
     flat_ast = Fragments::Preprocessor.run!(device: device,
