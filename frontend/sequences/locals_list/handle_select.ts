@@ -2,19 +2,12 @@
  * figures out the corresponding Tool | Coordinate | Point */
 import { DropDownItem } from "../../ui";
 import {
-  Coordinate,
   ScopeDeclaration,
   ParameterApplication,
   Dictionary,
-  Identifier,
-  Point,
-  Tool,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
-  PointGroup,
-  Numeric,
-  Text,
-  Nothing,
+  resource_type,
 } from "farmbot";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
@@ -22,17 +15,15 @@ import {
 import { betterCompact } from "../../util";
 import { newVariableDataValue } from "./new_variable";
 
-export const NOTHING: Nothing = { kind: "nothing", args: {} };
+/**
+ * Empty `data_value` for location form initial state.
+ * This is specifically an invalid parameter application data value to force the
+ * user to make a valid selection to successfully save the parameter application.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const NOTHING: any = { kind: "nothing", args: {} };
 
-type DataValue =
-  | Coordinate
-  | Identifier
-  | Point
-  | PointGroup
-  | Numeric
-  | Text
-  | Tool
-  | Nothing;
+type DataValue = VariableDeclaration["args"]["data_value"];
 
 type CreateVariableDeclaration =
   (label: string, data_value: DataValue) => VariableDeclaration;
@@ -71,7 +62,7 @@ interface NewVarProps {
 const nothingVar = ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
-  createVariableNode(allowedVariableNodes)(label, NOTHING);
+  createVariableNode(allowedVariableNodes)(label, NOTHING as DataValue);
 
 const toolVar = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes
@@ -114,6 +105,25 @@ const stringVar = (value: string | number) => ({
   createVariableNode(allowedVariableNodes)(label, {
     kind: "text",
     args: { string: "" + value }
+  });
+
+const resourceVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes,
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "resource_placeholder",
+    args: { resource_type: ("" + value) as resource_type }
+  });
+
+const sequenceVar = (value: string | number) => ({
+  identifierLabel: label, allowedVariableNodes,
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label, {
+    kind: "resource",
+    args: {
+      resource_id: parseInt("" + value),
+      resource_type: "Sequence",
+    }
   });
 
 const manualEntry = (value: string | number) => ({
@@ -163,6 +173,8 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "PointGroup": return groupVar(ddi.value)(props);
     case "Numeric": return numberVar(ddi.value)(props);
     case "Text": return stringVar(ddi.value)(props);
+    case "Resource": return resourceVar(ddi.value)(props);
+    case "Sequence": return sequenceVar(ddi.value)(props);
   }
   console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;

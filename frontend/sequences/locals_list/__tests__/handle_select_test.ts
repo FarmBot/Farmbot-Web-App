@@ -93,11 +93,11 @@ describe("convertDDItoDeclaration()", () => {
       allowedVariableNodes,
       dropdown: NO_VALUE_SELECTED_DDI()
     });
-    expect(variable).toEqual(expectedVariable(NOTHING));
+    expect(variable).toEqual(expectedVariable(NOTHING as Nothing));
   });
 
   it("returns variable declaration: default", () => {
-    const expected = expectedVariable(NOTHING);
+    const expected = expectedVariable(NOTHING as Nothing);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
       identifierLabel: label,
@@ -244,6 +244,55 @@ describe("convertDDItoDeclaration()", () => {
       args: {
         label: "label",
         data_value: { kind: "text", args: { string: expect.any(String) } }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns new variable: resource", () => {
+    const dropdown = ({
+      headingId: "Resource", label: "Label0", value: "Sequence"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Resource,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "resource_placeholder", args: {
+            resource_type: "Sequence"
+          }
+        }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns new variable: sequence", () => {
+    const dropdown = ({
+      headingId: "Sequence", label: "Label0", value: 1
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Resource,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
       }
     };
     expect(variable).toEqual(expected);

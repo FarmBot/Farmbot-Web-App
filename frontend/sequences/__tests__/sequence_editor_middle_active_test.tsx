@@ -140,6 +140,17 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.text().toLowerCase()).toContain("upgrade");
   });
 
+  it("shows revert available", () => {
+    const p = fakeProps();
+    p.sequence.body.id = 123;
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.sequence_versions = [1];
+    p.sequence.body.forked = true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("upgrade");
+    expect(wrapper.text().toLowerCase()).toContain("revert");
+  });
+
   it("upgrades sequence", () => {
     const p = fakeProps();
     p.sequence.body.id = 123;
@@ -507,6 +518,31 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(mockCB).toHaveBeenCalledWith({
       kind: "variable_declaration",
       args: { label: undefined, data_value: { kind: "nothing", args: {} } }
+    }, undefined);
+    expect(generateNewVariableLabel).toHaveBeenCalled();
+  });
+
+  it("adds new resource variable", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const wrapper = mount<SequenceEditorMiddleActive>(
+      <SequenceEditorMiddleActive {...fakeProps()} />);
+    wrapper.setState({ addVariableMenuOpen: true });
+    const e = {
+      stopPropagation: jest.fn()
+    } as unknown as React.MouseEvent<HTMLElement>;
+    const variableData = fakeVariableNameSet();
+    variableData["none"] = undefined;
+    wrapper.instance().addVariable(variableData,
+      [], VariableType.Resource)(e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+    expect(wrapper.state().addVariableMenuOpen).toEqual(false);
+    expect(mockCB).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: undefined, default_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sequence" }
+        }
+      }
     }, undefined);
     expect(generateNewVariableLabel).toHaveBeenCalled();
   });

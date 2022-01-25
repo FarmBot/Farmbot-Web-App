@@ -6,7 +6,9 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId, findPointGroup, findUuid } from "./selectors";
-import { findSlotByToolId, findToolById } from "./selectors_by_id";
+import {
+  findSequenceById, findSlotByToolId, findToolById,
+} from "./selectors_by_id";
 import {
   formatPoint,
   NO_VALUE_SELECTED_DDI,
@@ -119,6 +121,19 @@ export const determineDropdown =
           label: `${t("Text")}: ${data_value.args.string}`,
           value: data_value.args.string,
           headingId: "Text",
+        };
+      case "resource":
+        const { resource_id } = data_value.args;
+        return {
+          label: findSequenceById(resources, resource_id).body.name,
+          value: resource_id,
+          headingId: "Resource",
+        };
+      case "resource_placeholder":
+        return {
+          label: `${data_value.args.resource_type}`,
+          value: data_value.args.resource_type,
+          headingId: "Resource",
         };
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
