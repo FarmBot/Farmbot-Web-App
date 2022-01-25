@@ -56,6 +56,7 @@ export enum Feature {
   ota_update_hour = "ota_update_hour",
   planted_at_now = "planted_at_now",
   quiet_motors = "quiet_motors",
+  resource_variables = "resource_variables",
   rpi_led_control = "rpi_led_control",
   safe_height_input = "safe_height_input",
   sensors = "sensors",

@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
-  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
 } from "./variable_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -26,6 +26,7 @@ import {
   determineVariableType, newVariableLabel, VariableIcon,
 } from "./new_variable";
 import { jsonReplacer } from "../step_tiles";
+import { selectAllSequences } from "../../resources/selectors_by_kind";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -79,7 +80,7 @@ export const VariableForm =
         headingId: "Variable",
       });
     }
-    if (variable.isDefault) {
+    if (variable.isDefault && variableType != VariableType.Resource) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
       defaultDDI.label = addDefaultTextToLabel(defaultDDI.label);
       list.unshift(defaultDDI);
@@ -92,6 +93,17 @@ export const VariableForm =
       JSON.stringify(metaVariable.celeryNode.args.default_value, jsonReplacer);
     const isDefaultValueForm =
       !!props.locationDropdownKey?.endsWith("default_value");
+    if (variableType == VariableType.Resource) {
+      if (isDefaultValueForm) {
+        [
+          { label: t("Sequence"), value: "Sequence", headingId: "Resource" },
+        ].map(item => list.unshift(item));
+      } else if (celeryNode.kind != "parameter_declaration") {
+        heading("Sequence")
+          .concat(sequences2Ddi(selectAllSequences(resources)))
+          .map(item => list.push(item));
+      }
+    }
     const narrowLabel = !!removeVariable;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
@@ -115,7 +127,9 @@ export const VariableForm =
                 <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                   customIcon={"exclamation-triangle"} onHover={true} />}
             </Col>}
-          {(variableType == VariableType.Location || !isDefaultValueForm) &&
+          {([VariableType.Location, VariableType.Resource]
+            .includes(variableType)
+            || !isDefaultValueForm) &&
             <Col xs={props.hideWrapper ? 12 : 6}>
               <FBSelect
                 key={props.locationDropdownKey}

@@ -24,6 +24,7 @@ import {
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
+import { NOTHING } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
   it("crashes on unknown DDIs", () => {
@@ -165,6 +166,40 @@ describe("determineDropdown", () => {
     expect(r.label).toBe("Text: text");
     expect(r.value).toBe("text");
   });
+
+  it("returns a label for resource", () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.name = "my sequence";
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([sequence]).index);
+    expect(r.label).toBe("my sequence");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for resource_placeholder", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource_placeholder", args: {
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Sequence");
+    expect(r.value).toBe("Sequence");
+  });
 });
 
 describe("determineVector()", () => {
@@ -284,7 +319,7 @@ describe("determineVarDDILabel()", () => {
       kind: "parameter_application",
       args: {
         label: "parent",
-        data_value: { kind: "nothing", args: {} }
+        data_value: NOTHING,
       }
     });
     const ri = buildResourceIndex().index;

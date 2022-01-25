@@ -443,10 +443,21 @@ export class SequenceEditorMiddleActive extends
     const label = generateNewVariableLabel(
       Object.values(variableData).map(data => data?.celeryNode),
       newVariableLabel(variableType));
-    localListCallback(this.props)(declarations)({
-      kind: "variable_declaration",
-      args: { label, data_value: newVariableDataValue(variableType) }
-    }, label);
+    localListCallback(this.props)(declarations)(
+      variableType == VariableType.Resource
+        ? {
+          kind: "parameter_declaration",
+          args: {
+            label, default_value: {
+              kind: "resource_placeholder",
+              args: { resource_type: "Sequence" },
+            }
+          }
+        }
+        : {
+          kind: "variable_declaration",
+          args: { label, data_value: newVariableDataValue(variableType) }
+        }, label);
     this.setState({ addVariableMenuOpen: false });
   };
 
@@ -539,6 +550,12 @@ export class SequenceEditorMiddleActive extends
                         VariableType.Text)}>
                       {t("text")}
                     </button>
+                    {shouldDisplayFeature(Feature.resource_variables) &&
+                      <button className={"fb-button gray"}
+                        onClick={this.addVariable(variableData, declarations,
+                          VariableType.Resource)}>
+                        {t("resource")}
+                      </button>}
                   </div>} />
                 : <button
                   className={"fb-button gray add-variable-btn"}
@@ -664,6 +681,7 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
   const currentVersionItem = selectVersion(versionId);
   const forked = !!props.sequence.body.forked;
   const upgradeAvailable = ((versionId != latestId) || forked);
+  const revertAvailable = (versionId == latestId) && forked;
   const currentVersionLabel = <p>
     {currentVersionItem?.label}
     <i className={`fa fa-${forked ? "chain-broken" : "link"}`} />
@@ -676,7 +694,7 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
         {upgradeAvailable &&
           <button className={"transparent-button"}
             onClick={upgradeSequence(props.sequence.body.id, latestId)}>
-            {t("upgrade to latest")}
+            {revertAvailable ? t("revert changes") : t("upgrade to latest")}
           </button>}
       </div>
       <div className={"upgrade-compare-banner"}>

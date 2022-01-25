@@ -406,6 +406,55 @@ describe("<VariableForm />", () => {
       },
     ]);
   });
+
+  it("renders resource_placeholder variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sequence" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+    ]);
+  });
+
+  it("renders resource variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    p.variable.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sequence" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Sequence",
+        label: "Sequence",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Sequence",
+        label: "Goto 0, 0, 0",
+        value: "23",
+      },
+    ]);
+  });
 });
 
 describe("<NumericInput />", () => {
