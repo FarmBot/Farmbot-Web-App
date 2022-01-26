@@ -62,7 +62,7 @@ module CeleryScriptSettingsBag
   BAD_MESSAGE_TYPE = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_OP = 'Can not put "%s" into an operand (OP) argument. Allowed values: %s'
   BAD_PACKAGE = '"%s" is not a valid package. Allowed values: %s'
-  BAD_PLACEHOLDER = "Resource placeholders can only be used in parameter declarations."
+  BAD_PLACEHOLDER = "Placeholders can only be used in parameter declarations."
   BAD_PERIPH_ID = "Peripheral #%s does not exist."
   BAD_PIN_TYPE = '"%s" is not a type of pin. Allowed values: %s'
   BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
@@ -142,7 +142,11 @@ module CeleryScriptSettingsBag
   end
 
   ANY_VAR_TOKENIZED = ANY_VARIABLE.map { |x| n(x) }
-
+  PLACEHOLDER_VALIDATION = ->(node) do
+    if node.parent.kind != "parameter_declaration"
+      node.invalidate!(BAD_PLACEHOLDER)
+    end
+  end
   CORPUS_ARGS = {
     _else: { defn: [n(:execute), n(:nothing)] },
     _then: { defn: [n(:execute), n(:nothing)] },
@@ -495,11 +499,19 @@ module CeleryScriptSettingsBag
     },
     resource_placeholder: {
       args: [:resource_type],
-      blk: ->(node) do
-        if node.parent.kind != "parameter_declaration"
-          node.invalidate!(BAD_PLACEHOLDER)
-        end
-      end,
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    number_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    text_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    location_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
     },
     update_resource: {
       args: [:resource],
