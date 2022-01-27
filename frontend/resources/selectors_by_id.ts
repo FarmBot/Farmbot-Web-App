@@ -87,6 +87,15 @@ export const findSequenceById = (ri: ResourceIndex, sequence_id: number) => {
   }
 };
 
+export const maybeFindSequenceById = (ri: ResourceIndex, sequence_id: number) => {
+  const sequence = byId("Sequence")(ri, sequence_id);
+  if (sequence && isTaggedSequence(sequence) && sanityCheck(sequence)) {
+    return sequence;
+  } else {
+    return undefined;
+  }
+};
+
 export const findSlotById = byId<TaggedToolSlotPointer>("Point");
 /** Find a Tool's corresponding Slot. */
 export const findSlotByToolId = (index: ResourceIndex, tool_id: number) => {

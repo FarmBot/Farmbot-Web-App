@@ -11,7 +11,9 @@ interface PlatformContent {
 
 const PLATFORM_DATA = (): PlatformContent[] => [
   {
-    computer: "Raspberry Pi 3",
+    computer: localStorage.getItem("rpi4")
+      ? "Raspberry Pi 3\nRaspberry Pi Zero 2 W"
+      : "Raspberry Pi 3",
     imageUrl: globalConfig.rpi3_release_url,
     releaseTag: globalConfig.rpi3_release_tag,
     kits: [
@@ -23,6 +25,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.4",
       "Genesis XL v1.5",
       "Genesis XL v1.6",
+      ...(localStorage.getItem("rpi4") ? ["Express v1.1 (USB)"] : []),
+      ...(localStorage.getItem("rpi4") ? ["Express XL v1.1 (USB)"] : []),
     ],
   },
   ...(localStorage.getItem("rpi4")
@@ -31,8 +35,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       imageUrl: globalConfig.rpi4_release_url,
       releaseTag: globalConfig.rpi4_release_tag,
       kits: [
-        "Genesis v1.6.1",
-        "Genesis XL v1.6.1",
+        "Genesis v1.6.1 (red cable)",
+        "Genesis XL v1.6.1 (red cable)",
       ],
     }]
     : []),
@@ -42,9 +46,7 @@ const PLATFORM_DATA = (): PlatformContent[] => [
     releaseTag: globalConfig.rpi_release_tag,
     kits: [
       "Express v1.0",
-      // "Express v1.1",
       "Express XL v1.0",
-      // "Express XL v1.1",
     ],
   },
 ];

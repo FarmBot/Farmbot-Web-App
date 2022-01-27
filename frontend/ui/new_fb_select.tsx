@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DropDownItem } from "./fb_select";
 import { FilterSearch } from "./filter_search";
 import { equals } from "../util";
@@ -41,7 +41,11 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
 
   render() {
     const { extraClass } = this.props;
-    return <div className={`filter-search ${extraClass ? extraClass : ""}`}>
+    return <div className={[
+      "filter-search",
+      extraClass ? extraClass : "",
+      this.item.warn ? "warning" : "",
+    ].join(" ")}>
       <FilterSearch
         selectedItem={this.item}
         items={this.list}

@@ -116,6 +116,15 @@ select {
       background: darken($white, 10%) !important;
     }
   }
+  &.warning {
+    button {
+      background: $light_red !important;
+      border: 3px solid $red !important;
+      &:hover {
+        background: $light_red !important;
+      }
+    }
+  }
 }
 
 .filter-search-popover {
