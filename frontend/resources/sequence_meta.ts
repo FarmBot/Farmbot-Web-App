@@ -7,7 +7,7 @@ import {
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId, findPointGroup, findUuid } from "./selectors";
 import {
-  findSequenceById, findSlotByToolId, findToolById,
+  findSlotByToolId, findToolById, maybeFindSequenceById,
 } from "./selectors_by_id";
 import {
   formatPoint,
@@ -94,6 +94,7 @@ export const determineVarDDILabel =
 /** Given a CeleryScript parameter application and a resource index
  * Returns a DropDownItem representation of said variable. */
 export const determineDropdown =
+  // eslint-disable-next-line complexity
   (node: VariableNode, resources: ResourceIndex, uuid?: UUID): DropDownItem => {
     if (node.kind === "parameter_declaration") {
       return {
@@ -106,6 +107,12 @@ export const determineDropdown =
     switch (data_value.kind) {
       case "coordinate":
         return COORDINATE_DDI(data_value.args);
+      case "location_placeholder":
+        return {
+          label: t("Any location"),
+          value: "",
+          headingId: "Location",
+        };
       case "identifier":
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });
@@ -116,18 +123,32 @@ export const determineDropdown =
           value: data_value.args.number,
           headingId: "Numeric",
         };
+      case "number_placeholder":
+        return {
+          label: t("Any number"),
+          value: 0,
+          headingId: "Numeric",
+        };
       case "text":
         return {
           label: `${t("Text")}: ${data_value.args.string}`,
           value: data_value.args.string,
           headingId: "Text",
         };
+      case "text_placeholder":
+        return {
+          label: t("Any text"),
+          value: "",
+          headingId: "Text",
+        };
       case "resource":
         const { resource_id } = data_value.args;
+        const seqName = maybeFindSequenceById(resources, resource_id)?.body.name;
         return {
-          label: findSequenceById(resources, resource_id).body.name,
+          label: seqName || t("Not found"),
           value: resource_id,
           headingId: "Resource",
+          warn: !seqName,
         };
       case "resource_placeholder":
         return {

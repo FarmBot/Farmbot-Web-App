@@ -42,16 +42,20 @@ export const newVariableDataValue = (variableType: VariableType | undefined):
 const isNumeric = (variableNode: VariableNode) =>
   ((variableNode.kind == "variable_declaration" ||
     variableNode.kind == "parameter_application") &&
-    variableNode.args.data_value.kind == "numeric") ||
+    ["numeric", "number_placeholder"]
+      .includes(variableNode.args.data_value.kind)) ||
   (variableNode.kind == "parameter_declaration" &&
-    variableNode.args.default_value.kind == "numeric");
+    ["numeric", "number_placeholder"]
+      .includes(variableNode.args.default_value.kind));
 
 const isText = (variableNode: VariableNode) =>
   ((variableNode.kind == "variable_declaration" ||
     variableNode.kind == "parameter_application") &&
-    variableNode.args.data_value.kind == "text") ||
+    ["text", "text_placeholder"]
+      .includes(variableNode.args.data_value.kind)) ||
   (variableNode.kind == "parameter_declaration" &&
-    variableNode.args.default_value.kind == "text");
+    ["text", "text_placeholder"]
+      .includes(variableNode.args.default_value.kind));
 
 const isResource = (variableNode: VariableNode) =>
   ((variableNode.kind == "variable_declaration" ||

@@ -180,6 +180,9 @@ export const TEXT_DDI = (): DropDownItem =>
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });
 
+export const LOCATION_PLACEHOLDER_DDI = (): DropDownItem =>
+  ({ label: t("Any location"), value: "", headingId: "Location" });
+
 export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
   sortBy(betterCompact(variables),
     v => v.celeryNode.args.label == "parent"

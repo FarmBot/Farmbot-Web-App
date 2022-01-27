@@ -59,6 +59,12 @@ interface NewVarProps {
   variableType?: VariableType;
 }
 
+const locationPlaceholderVar = ({
+  identifierLabel: label, allowedVariableNodes
+}: NewVarProps): VariableWithAValue =>
+  createVariableNode(allowedVariableNodes)(label,
+    { kind: "location_placeholder", args: {} });
+
 const nothingVar = ({
   identifierLabel: label, allowedVariableNodes
 }: NewVarProps): VariableWithAValue =>
@@ -170,6 +176,7 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Tool": return toolVar(ddi.value)(props);
     case "Variable": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
+    case "Location": return locationPlaceholderVar(props);
     case "PointGroup": return groupVar(ddi.value)(props);
     case "Numeric": return numberVar(ddi.value)(props);
     case "Text": return stringVar(ddi.value)(props);

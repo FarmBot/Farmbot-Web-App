@@ -85,6 +85,18 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("{\"x\":0,\"y\":1.1,\"z\":2}");
   });
 
+  it("returns a label for `location_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "location_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Any location");
+    expect(r.value).toBe("");
+  });
+
   it("returns a label for `identifier`", () => {
     const varData = fakeVariableNameSet("variable");
     const ri = buildResourceIndex([]).index;
@@ -158,6 +170,18 @@ describe("determineDropdown", () => {
     expect(r.value).toBe(1);
   });
 
+  it("returns a label for `number_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "number_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Any number");
+    expect(r.value).toBe(0);
+  });
+
   it("returns a label for text", () => {
     const r = determineDropdown({
       kind: "parameter_application",
@@ -165,6 +189,18 @@ describe("determineDropdown", () => {
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("Text: text");
     expect(r.value).toBe("text");
+  });
+
+  it("returns a label for `text_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "text_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Any text");
+    expect(r.value).toBe("");
   });
 
   it("returns a label for resource", () => {
@@ -183,6 +219,22 @@ describe("determineDropdown", () => {
       }
     }, buildResourceIndex([sequence]).index);
     expect(r.label).toBe("my sequence");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for missing resource", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label.toLowerCase()).toBe("not found");
     expect(r.value).toBe(1);
   });
 
