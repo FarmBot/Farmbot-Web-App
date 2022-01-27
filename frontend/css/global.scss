@@ -2239,6 +2239,7 @@ textarea:focus {
     td {
       padding-top: 1rem;
       padding-bottom: 1rem;
+      white-space: pre-wrap;
       span {
         display: block;
         white-space: nowrap;

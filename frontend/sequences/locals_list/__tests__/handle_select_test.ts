@@ -2,7 +2,9 @@ import {
   addOrEditBodyVariables, convertDDItoVariable, NOTHING,
 } from "../handle_select";
 import { Point, Tool, Coordinate, Nothing } from "farmbot";
-import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../variable_form_list";
+import {
+  NO_VALUE_SELECTED_DDI, COORDINATE_DDI, LOCATION_PLACEHOLDER_DDI,
+} from "../variable_form_list";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
@@ -115,6 +117,17 @@ describe("convertDDItoDeclaration()", () => {
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 1, y: 2, z: 3 }
     }));
+  });
+
+  it("returns location placeholder", () => {
+    const variable = convertDDItoVariable({
+      identifierLabel: label, allowedVariableNodes,
+      dropdown: LOCATION_PLACEHOLDER_DDI(),
+    });
+    expect(variable).toEqual({
+      kind: "parameter_application",
+      args: { label, data_value: { kind: "location_placeholder", args: {} } }
+    });
   });
 
   it("returns location data: new coordinate", () => {
