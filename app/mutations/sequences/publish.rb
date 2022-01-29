@@ -1,18 +1,18 @@
 module Sequences
   class Publish < Mutations::Command
     NOT_YOURS = "Can't publish sequences you didn't create."
-    OK_KINDS = %w(axis axis_addition axis_overwrite calibrate channel
-                  channel_name coordinate emergency_lock execute execute_script
-                  find_home identifier is_outdated label message message_type
-                  milliseconds move move_absolute move_relative nothing number
-                  numeric op package pair parameter_application
-                  parameter_declaration pin_mode pin_number pin_type pin_value
-                  point pointer_type power_off random read_pin reboot
-                  resource_update rhs safe_z scope_declaration send_message
-                  sequence set_servo_angle special_value speed speed_overwrite
-                  string take_photo text value variable_declaration variance
-                  version wait x y z zero)
-
+    OK_KINDS = %w( axis axis_addition axis_overwrite calibrate channel
+                   channel_name coordinate emergency_lock execute execute_script
+                   find_home identifier is_outdated label location_placeholder
+                   message message_type milliseconds move move_absolute
+                   move_relative nothing number number_placeholder numeric
+                   op package pair parameter_application parameter_declaration
+                   pin_mode pin_number pin_type pin_value point pointer_type
+                   power_off random read_pin reboot resource_placeholder
+                   resource_update resource_type rhs safe_z scope_declaration
+                   send_message sequence set_servo_angle special_value speed
+                   speed_overwrite string take_photo text text_placeholder value
+                   variable_declaration variance version wait x y z zero )
     AUTHORIZATION_REQUIRED = "For security reasons, we can't publish" \
                              " sequences that contain the following content: "
     required do
