@@ -63,7 +63,7 @@ module CeleryScriptSettingsBag
   BAD_MESSAGE_TYPE = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_OP = 'Can not put "%s" into an operand (OP) argument. Allowed values: %s'
   BAD_PACKAGE = '"%s" is not a valid package. Allowed values: %s'
-  BAD_PLACEHOLDER = "Placeholders can only be used in parameter declarations."
+  BAD_PLACEHOLDER = "You must select a value for all variables."
   BAD_PERIPH_ID = "Peripheral #%s does not exist."
   BAD_PIN_TYPE = '"%s" is not a type of pin. Allowed values: %s'
   BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
