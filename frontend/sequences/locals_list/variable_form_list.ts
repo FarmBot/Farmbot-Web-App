@@ -181,7 +181,7 @@ export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });
 
 export const LOCATION_PLACEHOLDER_DDI = (): DropDownItem =>
-  ({ label: t("Any location"), value: "", headingId: "Location" });
+  ({ label: t("None"), value: "", headingId: "Location" });
 
 export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
   sortBy(betterCompact(variables),

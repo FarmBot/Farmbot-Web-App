@@ -93,7 +93,7 @@ describe("determineDropdown", () => {
         data_value: { kind: "location_placeholder", args: {} }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Any location");
+    expect(r.label).toBe("None");
     expect(r.value).toBe("");
   });
 
@@ -178,7 +178,7 @@ describe("determineDropdown", () => {
         data_value: { kind: "number_placeholder", args: {} }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Any number");
+    expect(r.label).toBe("None");
     expect(r.value).toBe(0);
   });
 
@@ -199,7 +199,7 @@ describe("determineDropdown", () => {
         data_value: { kind: "text_placeholder", args: {} }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Any text");
+    expect(r.label).toBe("None");
     expect(r.value).toBe("");
   });
 

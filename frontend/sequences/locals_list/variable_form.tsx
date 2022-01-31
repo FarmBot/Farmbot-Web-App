@@ -250,7 +250,7 @@ export const NumericInput = (props: NumericInputProps) => {
         }
         props.onChange(editableVariable, props.label);
       }}
-      value={isPlaceholder ? t("Any number") : argsValue} />
+      value={isPlaceholder ? t("None") : argsValue} />
   </Col>;
 };
 
@@ -306,7 +306,7 @@ export const TextInput = (props: TextInputProps) => {
         }
         props.onChange(editableVariable, props.label);
       }}
-      value={isPlaceholder ? t("Any text") : argsValue} />
+      value={isPlaceholder ? t("None") : argsValue} />
   </Col>;
 };
 
