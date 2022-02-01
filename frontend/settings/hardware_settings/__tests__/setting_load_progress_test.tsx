@@ -64,26 +64,6 @@ describe("<SettingLoadProgress />", () => {
     expect(barStyle?.background).toEqual(Color.white);
   });
 
-  it("shows setting load progress: 50% (new parameters)", () => {
-    mockShouldDisplay = true;
-    const p = fakeProps("movement_calibration_retry_total_x");
-    p.firmwareHardware = "farmduino_k15";
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("50%");
-    expect(barStyle?.background).toEqual(Color.white);
-  });
-
-  it("shows setting load progress: 67% (new parameters)", () => {
-    mockShouldDisplay = false;
-    const p = fakeProps("movement_calibration_retry_total_x");
-    p.firmwareHardware = "farmduino_k15";
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("67%");
-    expect(barStyle?.background).toEqual(Color.white);
-  });
-
   it("shows setting load progress: 0%", () => {
     const p = fakeProps();
     p.botOnline = false;

@@ -109,7 +109,7 @@ export const determineDropdown =
         return COORDINATE_DDI(data_value.args);
       case "location_placeholder":
         return {
-          label: t("Any location"),
+          label: t("None"),
           value: "",
           headingId: "Location",
         };
@@ -125,7 +125,7 @@ export const determineDropdown =
         };
       case "number_placeholder":
         return {
-          label: t("Any number"),
+          label: t("None"),
           value: 0,
           headingId: "Numeric",
         };
@@ -137,7 +137,7 @@ export const determineDropdown =
         };
       case "text_placeholder":
         return {
-          label: t("Any text"),
+          label: t("None"),
           value: "",
           headingId: "Text",
         };
