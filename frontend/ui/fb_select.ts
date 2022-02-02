@@ -10,6 +10,8 @@ export interface DropDownItem {
   /** Mostly for legacy reasons. Indicates that the current object is the
    * NULL_CHOICE ddi */
   isNull?: true;
+  /** Add warning styling. */
+  warn?: boolean;
 }
 
 export interface NullChoice extends DropDownItem { label: "None"; value: ""; }

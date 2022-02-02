@@ -55,4 +55,11 @@ describe("<FBSelect />", () => {
     const wrapper = mount(<FBSelect {...p} />);
     expect(wrapper.find("div").first().hasClass("extra")).toBeTruthy();
   });
+
+  it("has warning class", () => {
+    const p = fakeProps();
+    p.selectedItem = { value: "item", label: "Item", warn: true };
+    const wrapper = mount(<FBSelect {...p} />);
+    expect(wrapper.find("div").first().hasClass("warning")).toBeTruthy();
+  });
 });

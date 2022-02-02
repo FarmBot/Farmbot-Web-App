@@ -34,7 +34,8 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
-  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed GenericPointer)
+  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed
+                             GenericPointer Sequence)
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership check_updates
                          emergency_lock emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
@@ -47,7 +48,9 @@ module CeleryScriptSettingsBag
   ALLOWED_SPEC_ACTION = %w(emergency_lock emergency_unlock power_off read_status
                            reboot sync take_photo)
   ALLOWED_SPECIAL_VALUE = %w(current_location safe_height soil_height)
-  ANY_VARIABLE = %i(tool coordinate point identifier numeric text)
+  ANY_VARIABLE = %i(coordinate identifier location_placeholder
+                    number_placeholder numeric point resource
+                    resource_placeholder text text_placeholder tool)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. ' \
                           "Allowed values: %s"
   BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. ' \
@@ -60,6 +63,7 @@ module CeleryScriptSettingsBag
   BAD_MESSAGE_TYPE = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_OP = 'Can not put "%s" into an operand (OP) argument. Allowed values: %s'
   BAD_PACKAGE = '"%s" is not a valid package. Allowed values: %s'
+  BAD_PLACEHOLDER = "You must select a value for all variables."
   BAD_PERIPH_ID = "Peripheral #%s does not exist."
   BAD_PIN_TYPE = '"%s" is not a type of pin. Allowed values: %s'
   BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
@@ -139,7 +143,11 @@ module CeleryScriptSettingsBag
   end
 
   ANY_VAR_TOKENIZED = ANY_VARIABLE.map { |x| n(x) }
-
+  PLACEHOLDER_VALIDATION = ->(node) do
+    if node.parent.kind != "parameter_declaration"
+      node.invalidate!(BAD_PLACEHOLDER)
+    end
+  end
   CORPUS_ARGS = {
     _else: { defn: [n(:execute), n(:nothing)] },
     _then: { defn: [n(:execute), n(:nothing)] },
@@ -489,6 +497,22 @@ module CeleryScriptSettingsBag
         resource_id = n.args.fetch(:resource_id).value
         check_resource_type(n, resource_type, resource_id, Device.current)
       end,
+    },
+    resource_placeholder: {
+      args: [:resource_type],
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    number_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    text_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
+    },
+    location_placeholder: {
+      args: [],
+      blk: PLACEHOLDER_VALIDATION,
     },
     update_resource: {
       args: [:resource],

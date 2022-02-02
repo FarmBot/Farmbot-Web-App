@@ -1,13 +1,15 @@
 import {
   variableFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
+  sequences2Ddi,
 } from "../variable_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
-  fakeToolSlot, fakeTool, fakePointGroup,
+  fakeToolSlot, fakeTool, fakePointGroup, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { VariableType } from "../locals_list_support";
 
 describe("variableFormList()", () => {
   it("returns dropdown list", () => {
@@ -119,6 +121,12 @@ describe("variableFormList()", () => {
         },
       ]);
   });
+
+  it("returns resource dropdown list", () => {
+    const resources = buildResourceIndex([]).index;
+    expect(variableFormList(resources, [], [], false, VariableType.Resource))
+      .toEqual([]);
+  });
 });
 
 describe("formatTool()", () => {
@@ -159,6 +167,18 @@ describe("groups2Ddi", () => {
     fakes[0].body.id = 1;
     fakes[1].body.id = undefined;
     const result = groups2Ddi(fakes);
+    expect(result.length).toEqual(1);
+    expect(result[0].label).toEqual(fakes[0].body.name);
+    expect(result[0].value).toEqual("1");
+  });
+});
+
+describe("sequences2Ddi()", () => {
+  it("returns items", () => {
+    const fakes = [fakeSequence(), fakeSequence()];
+    fakes[0].body.id = 1;
+    fakes[1].body.id = undefined;
+    const result = sequences2Ddi(fakes);
     expect(result.length).toEqual(1);
     expect(result[0].label).toEqual(fakes[0].body.name);
     expect(result[0].value).toEqual("1");

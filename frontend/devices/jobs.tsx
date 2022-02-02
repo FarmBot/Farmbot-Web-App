@@ -88,7 +88,7 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
     <td>{job.type}</td>
     {props.more && <td>{job.file_type}</td>}
     <td>
-      {job.unit == "percent" ? `${job[job.unit]}%` : job[job.unit]}
+      {job.unit == "percent" ? `${round(job[job.unit], 1)}%` : job[job.unit]}
       <div className={"progress"}
         style={percent
           ? { width: `${percent}%`, background: color }
@@ -102,8 +102,11 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
   </tr>;
 };
 
+export const isJobDone = (job: JobProgress | undefined) =>
+  !job || ["complete", "error"].includes("" + job.status.toLowerCase());
+
 const duration = (job: JobProgressWithTitle) => {
-  if (!job.time || job.status != "working") { return ""; }
+  if (!job.time || isJobDone(job)) { return ""; }
   return `${round((moment.now() - moment(job.time).valueOf()) / 1000)}s`;
 };
 
@@ -134,10 +137,10 @@ export const sortJobs =
       .filter(([_title, job]) => job))
       .map(addTitleToJobProgress);
     const activeJobs = sortBy(
-      jobsWithTitle.filter(job => job.status == "working"),
+      jobsWithTitle.filter(job => !isJobDone(job)),
       job => moment.now() - moment(job.time).unix());
     const inactiveJobs = sortBy(
-      jobsWithTitle.filter(job => job.status != "working"),
+      jobsWithTitle.filter(job => isJobDone(job)),
       job => job.time);
     return { active: activeJobs, inactive: inactiveJobs };
   };

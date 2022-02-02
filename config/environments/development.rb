@@ -10,9 +10,9 @@ FarmBot::Application.configure do
     port: 1025,
   }
   config.active_support.deprecation = :log
-  config.assets.debug = true
-  config.assets.digest = true
-  config.assets.raise_runtime_errors = true
+  # config.assets.debug = true
+  # config.assets.digest = true
+  # config.assets.raise_runtime_errors = true
   config.cache_classes = false
   config.consider_all_requests_local = true
   config.eager_load = false

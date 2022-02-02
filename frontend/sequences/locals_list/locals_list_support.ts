@@ -70,4 +70,5 @@ export enum VariableType {
   Location = "Location",
   Number = "Number",
   Text = "Text",
+  Resource = "Resource",
 }

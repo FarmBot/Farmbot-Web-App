@@ -406,6 +406,55 @@ describe("<VariableForm />", () => {
       },
     ]);
   });
+
+  it("renders resource_placeholder variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sequence" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Variable",
+        label: "Externally defined",
+        value: "label",
+      },
+    ]);
+  });
+
+  it("renders resource variable", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    p.variable.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sequence" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Sequence",
+        label: "Sequence",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Sequence",
+        label: "Goto 0, 0, 0",
+        value: "23",
+      },
+    ]);
+  });
 });
 
 describe("<NumericInput />", () => {
@@ -420,6 +469,7 @@ describe("<NumericInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
+    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -457,6 +507,108 @@ describe("<NumericInput />", () => {
       }
     }, "label");
   });
+
+  it("doesn't change variable", () => {
+    const p = fakeProps();
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "number_placeholder", args: {} }
+      }
+    };
+    const wrapper = mount(<NumericInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
+
+  it("removes placeholder", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "number_placeholder", args: {} }
+      }
+    };
+    const wrapper = shallow(<NumericInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
+      }
+    }, "label");
+  });
+
+  it("adds placeholder", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 1 } }
+      }
+    };
+    const wrapper = shallow(<NumericInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "number_placeholder", args: {} }
+      }
+    }, "label");
+  });
+
+  it("removes placeholder: declaration", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "number_placeholder", args: {} }
+      }
+    };
+    const wrapper = shallow(<NumericInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 0 } }
+      }
+    }, "label");
+  });
+
+  it("adds placeholder: declaration", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "numeric", args: { number: 1 } }
+      }
+    };
+    const wrapper = shallow(<NumericInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "number_placeholder", args: {} }
+      }
+    }, "label");
+  });
+
+  it("doesn't toggle placeholder", () => {
+    const p = fakeProps();
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "numeric", args: { number: 1 } }
+      }
+    };
+    const wrapper = shallow(<NumericInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("k", "");
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
 });
 
 describe("<TextInput />", () => {
@@ -471,6 +623,7 @@ describe("<TextInput />", () => {
     },
     onChange: jest.fn(),
     label: "label",
+    isDefaultValueForm: false,
   });
 
   it("changes variable", () => {
@@ -507,6 +660,108 @@ describe("<TextInput />", () => {
         label: "label", default_value: { kind: "text", args: { string: "1" } }
       }
     }, "label");
+  });
+
+  it("doesn't change variable", () => {
+    const p = fakeProps();
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text_placeholder", args: {} }
+      }
+    };
+    const wrapper = mount(<TextInput {...p} />);
+    changeBlurableInput(wrapper, "1");
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
+
+  it("removes placeholder", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text_placeholder", args: {} }
+      }
+    };
+    const wrapper = shallow(<TextInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    }, "label");
+  });
+
+  it("adds placeholder", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    const wrapper = shallow(<TextInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text_placeholder", args: {} }
+      }
+    }, "label");
+  });
+
+  it("removes placeholder: declaration", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text_placeholder", args: {} }
+      }
+    };
+    const wrapper = shallow(<TextInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "" } }
+      }
+    }, "label");
+  });
+
+  it("adds placeholder: declaration", () => {
+    const p = fakeProps();
+    p.isDefaultValueForm = true;
+    p.variableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    const wrapper = shallow(<TextInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: {
+        label: "label", default_value: { kind: "text_placeholder", args: {} }
+      }
+    }, "label");
+  });
+
+  it("doesn't toggle placeholder", () => {
+    const p = fakeProps();
+    p.variableNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: { kind: "text", args: { string: "" } }
+      }
+    };
+    const wrapper = shallow(<TextInput {...p} />);
+    wrapper.find(BlurableInput).props().keyCallback?.("k", "");
+    expect(p.onChange).not.toHaveBeenCalled();
   });
 });
 

@@ -8,6 +8,7 @@ import {
 import { betterCompact } from "../../util";
 import {
   TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
+  TaggedSequence,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber, sortBy } from "lodash";
@@ -34,6 +35,7 @@ type DropdownHeadingId =
   | "PointGroup"
   | "Variable"
   | "Identifier"
+  | "Sequence"
   | "Other";
 
 /** Variable selection menu section names. */
@@ -46,10 +48,11 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Tool": "Tools and Seed Containers",
   "PointGroup": "Groups",
   "Weed": "Weeds",
+  "Sequence": "Sequence",
   "Other": "Other",
 };
 
-const heading = (headingId: DropdownHeadingId): DropDownItem[] => ([{
+export const heading = (headingId: DropdownHeadingId): DropDownItem[] => ([{
   label: t(NAME_MAP[headingId]),
   heading: true,
   value: 0,
@@ -67,6 +70,14 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
     .filter(x => x.body.id)
     .map(x => {
       return { label: x.body.name, value: "" + x.body.id, headingId: "PointGroup" };
+    });
+};
+
+export const sequences2Ddi = (sequences: TaggedSequence[]): DropDownItem[] => {
+  return sequences
+    .filter(x => x.body.id)
+    .map(x => {
+      return { label: x.body.name, value: "" + x.body.id, headingId: "Sequence" };
     });
 };
 
@@ -93,6 +104,9 @@ export function variableFormList(
   }
   if (variableType == VariableType.Text) {
     return [TEXT_DDI()].concat(addItems);
+  }
+  if (variableType == VariableType.Resource) {
+    return [];
   }
   return [COORDINATE_DDI()]
     .concat(addItems)
@@ -165,6 +179,9 @@ export const TEXT_DDI = (): DropDownItem =>
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });
+
+export const LOCATION_PLACEHOLDER_DDI = (): DropDownItem =>
+  ({ label: t("None"), value: "", headingId: "Location" });
 
 export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
   sortBy(betterCompact(variables),

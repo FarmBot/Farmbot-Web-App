@@ -16,7 +16,7 @@ export namespace Path {
     path.startsWith("/app") ? path : "/app" + path;
   export const mock = withApp;
 
-  export const app = (path?: string) => appended(path);
+  export const app = (path?: string) => withApp("") + appended(path);
 
   export const designer = (path?: string) => app("designer") + appended(path);
   export const logs = (path?: string) => app("logs") + appended(path);
@@ -82,7 +82,7 @@ export namespace Path {
         : Path.designer(`location?x=${x}?y=${y}?z=${z}`);
     };
 
-  export const idIndex = (path: string) => path.split("/").length + 1;
+  export const idIndex = (path: string) => path.split("/").length + 0;
   export const getSlug = (path: string): string =>
     getPathArray()[Path.idIndex(path)] || "";
 }

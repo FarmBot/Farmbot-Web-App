@@ -23,8 +23,8 @@ import {
 } from "../../sequences/locals_list/variable_form_list";
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
-import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
+import { NOTHING } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
   it("crashes on unknown DDIs", () => {
@@ -83,6 +83,18 @@ describe("determineDropdown", () => {
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("Coordinate (0, 1.1, 2)");
     expect(r.value).toBe("{\"x\":0,\"y\":1.1,\"z\":2}");
+  });
+
+  it("returns a label for `location_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "location_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("None");
+    expect(r.value).toBe("");
   });
 
   it("returns a label for `identifier`", () => {
@@ -158,6 +170,18 @@ describe("determineDropdown", () => {
     expect(r.value).toBe(1);
   });
 
+  it("returns a label for `number_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "number_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("None");
+    expect(r.value).toBe(0);
+  });
+
   it("returns a label for text", () => {
     const r = determineDropdown({
       kind: "parameter_application",
@@ -165,6 +189,68 @@ describe("determineDropdown", () => {
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("Text: text");
     expect(r.value).toBe("text");
+  });
+
+  it("returns a label for `text_placeholder`", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: { kind: "text_placeholder", args: {} }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("None");
+    expect(r.value).toBe("");
+  });
+
+  it("returns a label for resource", () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.name = "my sequence";
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([sequence]).index);
+    expect(r.label).toBe("my sequence");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for missing resource", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label.toLowerCase()).toBe("not found");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for resource_placeholder", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource_placeholder", args: {
+            resource_type: "Sequence",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Sequence");
+    expect(r.value).toBe("Sequence");
   });
 });
 
@@ -281,7 +367,13 @@ describe("determineVarDDILabel()", () => {
   it("returns 'select location' variable label", () => {
     const varData = fakeVariableNameSet("parent");
     const data = Object.values(varData)[0];
-    data && (data.celeryNode = NOTHING_SELECTED);
+    data && (data.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "parent",
+        data_value: NOTHING,
+      }
+    });
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
     const label = determineVarDDILabel({

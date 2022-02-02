@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby "~> 3.0.2"
 
-gem "rails"
+gem "rails", "~> 6"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record"

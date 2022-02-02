@@ -1,15 +1,17 @@
 import {
-  addOrEditBodyVariables, convertDDItoVariable, NOTHING_SELECTED,
+  addOrEditBodyVariables, convertDDItoVariable, NOTHING,
 } from "../handle_select";
-import { Point, Tool, Coordinate } from "farmbot";
-import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../variable_form_list";
+import { Point, Tool, Coordinate, Nothing } from "farmbot";
+import {
+  NO_VALUE_SELECTED_DDI, COORDINATE_DDI, LOCATION_PLACEHOLDER_DDI,
+} from "../variable_form_list";
 import {
   VariableNode, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
 
 const label = "label";
 const allowedVariableNodes = AllowedVariableNodes.variable;
-const expectedVariable = (data_value: Point | Tool | Coordinate) =>
+const expectedVariable = (data_value: Point | Tool | Coordinate | Nothing) =>
   ({ kind: "parameter_application", args: { label, data_value } });
 
 describe("convertDDItoDeclaration()", () => {
@@ -93,11 +95,11 @@ describe("convertDDItoDeclaration()", () => {
       allowedVariableNodes,
       dropdown: NO_VALUE_SELECTED_DDI()
     });
-    expect(variable).toEqual(expectedVariable(NOTHING_SELECTED as Coordinate));
+    expect(variable).toEqual(expectedVariable(NOTHING as Nothing));
   });
 
   it("returns variable declaration: default", () => {
-    const expected = expectedVariable(NOTHING_SELECTED as Coordinate);
+    const expected = expectedVariable(NOTHING as Nothing);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
       identifierLabel: label,
@@ -115,6 +117,17 @@ describe("convertDDItoDeclaration()", () => {
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 1, y: 2, z: 3 }
     }));
+  });
+
+  it("returns location placeholder", () => {
+    const variable = convertDDItoVariable({
+      identifierLabel: label, allowedVariableNodes,
+      dropdown: LOCATION_PLACEHOLDER_DDI(),
+    });
+    expect(variable).toEqual({
+      kind: "parameter_application",
+      args: { label, data_value: { kind: "location_placeholder", args: {} } }
+    });
   });
 
   it("returns location data: new coordinate", () => {
@@ -139,7 +152,7 @@ describe("convertDDItoDeclaration()", () => {
     const expected: VariableNode = {
       kind: "parameter_declaration",
       args: {
-        label: "label", default_value: NOTHING_SELECTED
+        label: "label", default_value: NOTHING
       }
     };
     expect(variable).toEqual(expected);
@@ -248,17 +261,66 @@ describe("convertDDItoDeclaration()", () => {
     };
     expect(variable).toEqual(expected);
   });
+
+  it("returns new variable: resource", () => {
+    const dropdown = ({
+      headingId: "Resource", label: "Label0", value: "Sequence"
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Resource,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "resource_placeholder", args: {
+            resource_type: "Sequence"
+          }
+        }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns new variable: sequence", () => {
+    const dropdown = ({
+      headingId: "Sequence", label: "Label0", value: 1
+    });
+    const variable = convertDDItoVariable({
+      identifierLabel: "label",
+      allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown,
+      variableType: VariableType.Resource,
+    });
+    const expected: VariableNode = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sequence",
+          }
+        }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
 });
 
 describe("addOrEditBodyVariables()", () => {
   it("filters variables", () => {
     const parameterDeclaration: VariableNode = {
       kind: "parameter_declaration",
-      args: { label: "label", default_value: NOTHING_SELECTED },
+      args: { label: "label", default_value: NOTHING },
     };
     const parameterApplication: VariableNode = {
       kind: "parameter_application",
-      args: { label: "label", data_value: NOTHING_SELECTED },
+      args: { label: "label", data_value: NOTHING },
     };
     const variables = [parameterDeclaration, parameterApplication];
     const item = parameterDeclaration;

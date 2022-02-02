@@ -9,7 +9,7 @@ import { ResourceSelection } from "./resource_selection";
 import { FieldSelection, UPDATE_RESOURCE_DDIS } from "./field_selection";
 import { ValueSelection } from "./value_selection";
 import { isUndefined } from "lodash";
-import { NOTHING_SELECTED } from "../../locals_list/handle_select";
+import { NOTHING_SELECTED } from "../../step_button_cluster";
 import { CustomFieldWarning } from "./field_warning";
 import { StepParams } from "../../interfaces";
 import { shouldDisplayFeature } from "../../../devices/should_display";

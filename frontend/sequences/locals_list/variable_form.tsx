@@ -1,7 +1,8 @@
 import React from "react";
 import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
-  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables,
+  variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
+  LOCATION_PLACEHOLDER_DDI,
 } from "./variable_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -26,6 +27,7 @@ import {
   determineVariableType, newVariableLabel, VariableIcon,
 } from "./new_variable";
 import { jsonReplacer } from "../step_tiles";
+import { selectAllSequences } from "../../resources/selectors_by_kind";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -79,7 +81,7 @@ export const VariableForm =
         headingId: "Variable",
       });
     }
-    if (variable.isDefault) {
+    if (variable.isDefault && variableType != VariableType.Resource) {
       const defaultDDI = determineDropdown(variable.celeryNode, resources);
       defaultDDI.label = addDefaultTextToLabel(defaultDDI.label);
       list.unshift(defaultDDI);
@@ -92,6 +94,20 @@ export const VariableForm =
       JSON.stringify(metaVariable.celeryNode.args.default_value, jsonReplacer);
     const isDefaultValueForm =
       !!props.locationDropdownKey?.endsWith("default_value");
+    if (variableType == VariableType.Resource) {
+      if (isDefaultValueForm) {
+        [
+          { label: t("Sequence"), value: "Sequence", headingId: "Resource" },
+        ].map(item => list.unshift(item));
+      } else if (celeryNode.kind != "parameter_declaration") {
+        heading("Sequence")
+          .concat(sequences2Ddi(selectAllSequences(resources)))
+          .map(item => list.push(item));
+      }
+    }
+    if (variableType == VariableType.Location && isDefaultValueForm) {
+      list.unshift(LOCATION_PLACEHOLDER_DDI());
+    }
     const narrowLabel = !!removeVariable;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
@@ -115,13 +131,17 @@ export const VariableForm =
                 <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                   customIcon={"exclamation-triangle"} onHover={true} />}
             </Col>}
-          {(variableType == VariableType.Location || !isDefaultValueForm) &&
+          {([VariableType.Location, VariableType.Resource]
+            .includes(variableType)
+            || !isDefaultValueForm) &&
             <Col xs={props.hideWrapper ? 12 : 6}>
               <FBSelect
                 key={props.locationDropdownKey}
                 list={list}
                 selectedItem={dropdown}
-                customNullLabel={NO_VALUE_SELECTED_DDI().label}
+                customNullLabel={isDefaultValueForm
+                  ? LOCATION_PLACEHOLDER_DDI().label
+                  : NO_VALUE_SELECTED_DDI().label}
                 onChange={ddi => {
                   onChange(convertDDItoVariable({
                     identifierLabel: label,
@@ -130,13 +150,13 @@ export const VariableForm =
                     variableType,
                   }), label);
                 }} />
-            </Col>}{ }
+            </Col>}
           {variableType == VariableType.Number && isDefaultValueForm &&
             <NumericInput label={label} variableNode={variable.celeryNode}
-              onChange={onChange} />}
+              onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}
           {variableType == VariableType.Text && isDefaultValueForm &&
             <TextInput label={label} variableNode={variable.celeryNode}
-              onChange={onChange} />}
+              onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}
           {removeVariable && !isDefaultValueForm &&
             <Col xs={1} className={"trash"}>
               <i className={"fa fa-trash"}
@@ -150,7 +170,7 @@ export const VariableForm =
           <Row>
             <Col xs={narrowLabel ? 5 : 6} />
             <NumericInput label={label} variableNode={celeryNode}
-              onChange={onChange} />
+              onChange={onChange} isDefaultValueForm={isDefaultValueForm} />
           </Row>}
         {!isDefaultValueForm && variableType == VariableType.Text &&
           celeryNode.kind != "parameter_declaration" &&
@@ -158,7 +178,7 @@ export const VariableForm =
           <Row>
             <Col xs={narrowLabel ? 5 : 6} />
             <TextInput label={label} variableNode={celeryNode}
-              onChange={onChange} />
+              onChange={onChange} isDefaultValueForm={isDefaultValueForm} />
           </Row>}
         <CoordinateInputBoxes
           variableNode={celeryNode}
@@ -182,14 +202,45 @@ export interface NumericInputProps {
   variableNode: VariableNode;
   onChange: OnChange;
   label: string;
+  isDefaultValueForm: boolean;
 }
 
 export const NumericInput = (props: NumericInputProps) => {
   const { variableNode } = props;
+  const isPlaceholder = variableNode.kind == "parameter_application"
+    && variableNode.args.data_value.kind == "number_placeholder";
+  const argsValue = variableNode.kind == "parameter_declaration"
+    ? (variableNode.args.default_value as Numeric).args.number
+    : (variableNode.args.data_value as Numeric).args.number;
   return <Col xs={6} className={"numeric-variable-input"}>
-    <BlurableInput type={"number"}
+    <BlurableInput type={isPlaceholder ? "text" : "number"}
       className={"number-input"}
+      clearBtn={props.isDefaultValueForm}
+      disabled={isPlaceholder}
+      keyCallback={(key, _buffer) => {
+        if (key || !props.isDefaultValueForm) { return; }
+        const editableVariable = defensiveClone(variableNode);
+        if (editableVariable.kind == "parameter_declaration") {
+          if (editableVariable.args.default_value.kind == "numeric") {
+            editableVariable.args.default_value =
+              { kind: "number_placeholder", args: {} };
+          } else {
+            editableVariable.args.default_value =
+              { kind: "numeric", args: { number: 0 } };
+          }
+        } else {
+          if (editableVariable.args.data_value.kind == "numeric") {
+            editableVariable.args.data_value =
+              { kind: "number_placeholder", args: {} };
+          } else {
+            editableVariable.args.data_value =
+              { kind: "numeric", args: { number: 0 } };
+          }
+        }
+        props.onChange(editableVariable, props.label);
+      }}
       onCommit={e => {
+        if (isPlaceholder) { return; }
         const editableVariable = defensiveClone(variableNode);
         const value = parseFloat(e.currentTarget.value);
         if (editableVariable.kind == "parameter_declaration") {
@@ -199,9 +250,7 @@ export const NumericInput = (props: NumericInputProps) => {
         }
         props.onChange(editableVariable, props.label);
       }}
-      value={variableNode.kind == "parameter_declaration"
-        ? (variableNode.args.default_value as Numeric).args.number
-        : (variableNode.args.data_value as Numeric).args.number} />
+      value={isPlaceholder ? t("None") : argsValue} />
   </Col>;
 };
 
@@ -209,14 +258,45 @@ export interface TextInputProps {
   variableNode: VariableNode;
   onChange: OnChange;
   label: string;
+  isDefaultValueForm: boolean;
 }
 
 export const TextInput = (props: TextInputProps) => {
   const { variableNode } = props;
+  const isPlaceholder = variableNode.kind == "parameter_application"
+    && variableNode.args.data_value.kind == "text_placeholder";
+  const argsValue = variableNode.kind == "parameter_declaration"
+    ? (variableNode.args.default_value as Text).args.string
+    : (variableNode.args.data_value as Text).args.string;
   return <Col xs={6} className={"text-variable-input"}>
     <BlurableInput type={"text"}
       className={"string-input"}
+      clearBtn={props.isDefaultValueForm}
+      disabled={isPlaceholder}
+      keyCallback={(key, _buffer) => {
+        if (key || !props.isDefaultValueForm) { return; }
+        const editableVariable = defensiveClone(variableNode);
+        if (editableVariable.kind == "parameter_declaration") {
+          if (editableVariable.args.default_value.kind == "text") {
+            editableVariable.args.default_value =
+              { kind: "text_placeholder", args: {} };
+          } else {
+            editableVariable.args.default_value =
+              { kind: "text", args: { string: "" } };
+          }
+        } else {
+          if (editableVariable.args.data_value.kind == "text") {
+            editableVariable.args.data_value =
+              { kind: "text_placeholder", args: {} };
+          } else {
+            editableVariable.args.data_value =
+              { kind: "text", args: { string: "" } };
+          }
+        }
+        props.onChange(editableVariable, props.label);
+      }}
       onCommit={e => {
+        if (isPlaceholder) { return; }
         const editableVariable = defensiveClone(variableNode);
         const value = e.currentTarget.value;
         if (editableVariable.kind == "parameter_declaration") {
@@ -226,9 +306,7 @@ export const TextInput = (props: TextInputProps) => {
         }
         props.onChange(editableVariable, props.label);
       }}
-      value={variableNode.kind == "parameter_declaration"
-        ? (variableNode.args.default_value as Text).args.string
-        : (variableNode.args.data_value as Text).args.string} />
+      value={isPlaceholder ? t("None") : argsValue} />
   </Col>;
 };
 

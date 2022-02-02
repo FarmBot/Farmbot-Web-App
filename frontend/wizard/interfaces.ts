@@ -5,6 +5,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BotState } from "../devices/interfaces";
 import { TimeSettings } from "../interfaces";
 import { ResourceIndex } from "../resources/interfaces";
+import { ControlsCheckOptions } from "./checks";
 import { WizardSectionSlug, WizardStepSlug } from "./data";
 
 export interface SetupWizardProps extends WizardOutcomeComponentProps {
@@ -21,6 +22,7 @@ export interface WizardStepOutcome {
   hidden?: boolean;
   detectedProblems?: WizardOutcomeDetectedProblem[];
   component?: React.ComponentType<WizardOutcomeComponentProps>;
+  controlsCheckOptions?: ControlsCheckOptions;
   video?: string;
   firmwareNumberSettings?: { key: NumberConfigKey, label: string }[];
   goToStep?: GoToStep;
@@ -67,6 +69,7 @@ export interface WizardStep {
   video?: string;
   component?: React.ComponentType<WizardStepComponentProps>;
   componentOptions?: ComponentOptions;
+  controlsCheckOptions?: ControlsCheckOptions;
   question: string;
   outcomes: WizardStepOutcome[];
 }

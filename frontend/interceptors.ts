@@ -4,7 +4,6 @@ import { AuthState } from "./auth/interfaces";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
-import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
 import { Session } from "./session";
 import { get } from "lodash";
@@ -35,7 +34,8 @@ export function responseRejected(x: SafeError | undefined) {
     if (a && b && c) {
       setTimeout(() => {
         // Explicitly throw error so error reporting tool will save it.
-        const msg = `Bad response: ${x.response.status} ${JSON.stringify(x.response)}`;
+        const respString = JSON.stringify(x.response);
+        const msg = `Bad response: ${x.response.status} ${respString}`;
         throw new Error(msg);
       }, 1);
     }
@@ -69,7 +69,7 @@ export function requestFulfilled(auth: AuthState) {
     const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
       config.headers = config.headers || {};
-      const headers: Dictionary<string> = config.headers;
+      const headers = config.headers;
       headers["X-Farmbot-Rpc-Id"] = outstandingRequests.last;
       headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
     }

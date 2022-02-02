@@ -211,15 +211,21 @@ export interface ControlsCheckOptions {
   both?: boolean;
 }
 
-export const ControlsCheck = (options?: ControlsCheckOptions) =>
-  (props: WizardOutcomeComponentProps) =>
-    <div className={"controls-check"}>
-      <MoveControls {...mapStateToProps(store.getState())}
-        dispatch={props.dispatch}
-        highlightAxis={options?.axis}
-        highlightDirection={options?.both ? "both" : undefined}
-        highlightHome={options?.home} />
-    </div>;
+export interface ControlsCheckProps {
+  dispatch: Function;
+  controlsCheckOptions: ControlsCheckOptions;
+}
+
+export const ControlsCheck = (props: ControlsCheckProps) => {
+  const { axis, both, home } = props.controlsCheckOptions;
+  return <div className={"controls-check"}>
+    <MoveControls {...mapStateToProps(store.getState())}
+      dispatch={props.dispatch}
+      highlightAxis={axis}
+      highlightDirection={both ? "both" : undefined}
+      highlightHome={home} />
+  </div>;
+};
 
 export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
@@ -453,6 +459,7 @@ export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
   const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
     || props.bot.hardware.mcu_params);
   return <LockableButton
+    className={"wizard-find-home-btn"}
     disabled={hardwareDisabled[axis] || !botOnline}
     title={t("FIND HOME")}
     onClick={() => findHome(axis)}>

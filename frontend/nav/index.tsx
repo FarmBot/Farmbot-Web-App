@@ -27,6 +27,7 @@ import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
 import { jobNameLookup, JobsTable, sortJobs } from "../devices/jobs";
+import { round } from "lodash";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -147,7 +148,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const jobActive = sortedJobs.length > 0;
     const job = jobActive ? sortedJobs[0] : undefined;
     const isPercent = job?.unit == "percent";
-    const percent = isPercent ? job.percent : "";
+    const percent = isPercent ? round(job.percent, 1) : "";
     const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
     const inactiveText = window.innerWidth > 450 ? t("no active jobs") : t("jobs");
     const jobProgress = isPercent ? `${percent}%` : "";

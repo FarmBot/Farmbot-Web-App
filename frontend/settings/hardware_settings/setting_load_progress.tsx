@@ -1,11 +1,10 @@
 import React from "react";
 import { Color } from "../../ui";
-import { Feature, SourceFwConfig } from "../../devices/interfaces";
+import { SourceFwConfig } from "../../devices/interfaces";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName, FirmwareHardware } from "farmbot";
 import { isTMCBoard } from "../firmware/firmware_hardware_support";
 import { t } from "../../i18next_wrapper";
-import { shouldDisplayFeature } from "../../devices/should_display";
 
 export interface SettingLoadProgressProps {
   botOnline: boolean;
@@ -34,12 +33,6 @@ const TMC_KEYS: (keyof FirmwareConfig)[] = [
   "movement_axis_stealth_z",
 ];
 
-const T_KEYS: (keyof FirmwareConfig)[] = [
-  "movement_calibration_retry_total_x",
-  "movement_calibration_retry_total_y",
-  "movement_calibration_retry_total_z",
-];
-
 const REPORT_KEYS: (keyof FirmwareConfig)[] = [
   "pin_report_1_pin_nr",
   "pin_report_2_pin_nr",
@@ -51,7 +44,6 @@ export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
   const keys = Object.keys(props.firmwareConfig || {})
     .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
-      .concat(shouldDisplayFeature(Feature.calibration_total_retries) ? [] : T_KEYS)
       .concat(REPORT_KEYS)
       .includes(k));
   const loadedKeys = keys.filter((key: McuParamName) =>

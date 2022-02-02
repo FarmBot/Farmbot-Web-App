@@ -6,7 +6,6 @@ import {
   newVariableDataValue, newVariableLabel, VariableIcon, VariableIconProps,
   varTypeFromLabel,
 } from "../new_variable";
-import { NOTHING_SELECTED } from "../handle_select";
 
 describe("newVariableLabel()", () => {
   it("returns location label", () => {
@@ -20,6 +19,10 @@ describe("newVariableLabel()", () => {
   it("returns text label", () => {
     expect(newVariableLabel(VariableType.Text)(1)).toEqual("Text 1");
   });
+
+  it("returns resource label", () => {
+    expect(newVariableLabel(VariableType.Resource)(1)).toEqual("Resource 1");
+  });
 });
 
 describe("varTypeFromLabel()", () => {
@@ -27,12 +30,14 @@ describe("varTypeFromLabel()", () => {
     expect(varTypeFromLabel("Location 1")).toEqual(VariableType.Location);
     expect(varTypeFromLabel("Number 1")).toEqual(VariableType.Number);
     expect(varTypeFromLabel("Text 1")).toEqual(VariableType.Text);
+    expect(varTypeFromLabel("Resource 1")).toEqual(VariableType.Resource);
   });
 });
 
 describe("newVariableDataValue()", () => {
   it("returns location data value", () => {
-    expect(newVariableDataValue(VariableType.Location)).toEqual(NOTHING_SELECTED);
+    expect(newVariableDataValue(VariableType.Location))
+      .toEqual({ kind: "nothing", args: {} });
   });
 
   it("returns number data value", () => {
@@ -43,6 +48,14 @@ describe("newVariableDataValue()", () => {
   it("returns text data value", () => {
     expect(newVariableDataValue(VariableType.Text))
       .toEqual({ kind: "text", args: { string: "" } });
+  });
+
+  it("returns resource data value", () => {
+    expect(newVariableDataValue(VariableType.Resource))
+      .toEqual({
+        kind: "resource_placeholder",
+        args: { resource_type: "Sequence" },
+      });
   });
 });
 
@@ -79,6 +92,20 @@ describe("determineVariableType()", () => {
     };
     expect(determineVariableType(variable)).toEqual(VariableType.Text);
   });
+
+  it("returns resource", () => {
+    const variable: VariableNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "label",
+        default_value: {
+          kind: "resource_placeholder",
+          args: { resource_type: "Sequence" },
+        }
+      }
+    };
+    expect(determineVariableType(variable)).toEqual(VariableType.Resource);
+  });
 });
 
 describe("<VariableIcon />", () => {
@@ -103,5 +130,12 @@ describe("<VariableIcon />", () => {
     p.variableType = VariableType.Text;
     const wrapper = mount(<VariableIcon {...p} />);
     expect(wrapper.find("i").hasClass("fa-font")).toBeTruthy();
+  });
+
+  it("renders resource icon", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    const wrapper = mount(<VariableIcon {...p} />);
+    expect(wrapper.find("i").hasClass("fa-hdd-o")).toBeTruthy();
   });
 });

@@ -10,6 +10,7 @@ import { Feedback } from "../help/support";
 import moment from "moment";
 import { FirmwareNumberSettings, Video } from "./step_components";
 import { formatTime } from "../util";
+import { ControlsCheck } from "./checks";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -79,6 +80,10 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             dispatch={props.dispatch}
             getConfigValue={props.getConfigValue}
             resources={props.resources} />}
+        {step.controlsCheckOptions &&
+          <ControlsCheck
+            dispatch={props.dispatch}
+            controlsCheckOptions={step.controlsCheckOptions} />}
       </div>
       <Markdown>{step.question}</Markdown>
       {!requirementsMet &&
@@ -149,6 +154,10 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
             dispatch={props.dispatch}
             getConfigValue={props.getConfigValue}
             resources={props.resources} />}
+        {selected && outcome.controlsCheckOptions &&
+          <ControlsCheck
+            dispatch={props.dispatch}
+            controlsCheckOptions={outcome.controlsCheckOptions} />}
         {selected &&
           <FirmwareNumberSettings bot={props.bot}
             dispatch={props.dispatch}

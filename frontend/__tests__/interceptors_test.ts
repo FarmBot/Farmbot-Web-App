@@ -80,6 +80,18 @@ describe("responseRejected", () => {
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", ANY_NUMBER);
   });
 
+  it("throws error", () => {
+    const safeError: SafeError = {
+      request: { responseURL: "" },
+      response: { status: 400 }
+    };
+    jest.useFakeTimers();
+    expect(() => {
+      responseRejected(safeError).then(() => { }, () => { });
+      jest.runAllTimers();
+    }).toThrow("Bad response: 400 {\"status\":400}");
+  });
+
   it("handles 500", async () => {
     const safeError: SafeError = {
       request: { responseURL: "" },
@@ -98,6 +110,17 @@ describe("responseRejected", () => {
     API.setBaseUrl("http://localhost:3000");
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
     expect(Session.clear).toHaveBeenCalled();
+  });
+
+  it("handles 404", async () => {
+    const safeError: SafeError = {
+      request: { responseURL: "http://localhost:3000" },
+      response: { status: 404 }
+    };
+    API.setBaseUrl("http://localhost:3000");
+    await expect(responseRejected(safeError)).rejects.toEqual(safeError);
+    expect(Session.clear).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 
   it("handles 451", async () => {

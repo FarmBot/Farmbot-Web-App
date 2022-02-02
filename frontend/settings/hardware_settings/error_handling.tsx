@@ -15,8 +15,6 @@ import {
   getDefaultFwConfigValue, getModifiedClassName,
 } from "./default_values";
 import { calculateScale } from "./motors";
-import { shouldDisplayFeature } from "../../devices/should_display";
-import { Feature } from "../../devices/interfaces";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
 
@@ -71,14 +69,13 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         x={"movement_calibration_retry_x"}
         y={"movement_calibration_retry_y"}
         z={"movement_calibration_retry_z"} />
-      {shouldDisplayFeature(Feature.calibration_total_retries) &&
-        <NumericMCUInputGroup {...commonProps}
-          label={DeviceSetting.calibrationTotalRetries}
-          tooltip={ToolTips.CALIBRATION_TOTAL_RETRIES}
-          advanced={true}
-          x={"movement_calibration_retry_total_x"}
-          y={"movement_calibration_retry_total_y"}
-          z={"movement_calibration_retry_total_z"} />}
+      <NumericMCUInputGroup {...commonProps}
+        label={DeviceSetting.calibrationTotalRetries}
+        tooltip={ToolTips.CALIBRATION_TOTAL_RETRIES}
+        advanced={true}
+        x={"movement_calibration_retry_total_x"}
+        y={"movement_calibration_retry_total_y"}
+        z={"movement_calibration_retry_total_z"} />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.calibrationRetryResetDistance}
         tooltip={ToolTips.CALIBRATION_RETRY_RESET_DISTANCE}
