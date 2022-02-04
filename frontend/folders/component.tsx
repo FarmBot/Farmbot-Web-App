@@ -236,17 +236,19 @@ export const FolderNameEditor = (props: FolderNodeProps) => {
 const FolderNode = (props: FolderNodeProps) => {
   const { node, sequences } = props;
 
-  const sequenceItems = node.content.map(seqUuid =>
-    <FolderListItem
-      sequence={sequences[seqUuid]}
-      key={"F" + seqUuid}
-      dispatch={props.dispatch}
-      variableData={props.sequenceMetas[seqUuid]}
-      inUse={!!props.resourceUsage[seqUuid]}
-      toggleSequenceMove={props.toggleSequenceMove}
-      startSequenceMove={props.startSequenceMove}
-      getWebAppConfigValue={props.getWebAppConfigValue}
-      movedSequenceUuid={props.movedSequenceUuid} />);
+  const sequenceItems = node.content
+    .filter(seqUuid => sequences[seqUuid])
+    .map(seqUuid =>
+      <FolderListItem
+        sequence={sequences[seqUuid]}
+        key={"F" + seqUuid}
+        dispatch={props.dispatch}
+        variableData={props.sequenceMetas[seqUuid]}
+        inUse={!!props.resourceUsage[seqUuid]}
+        toggleSequenceMove={props.toggleSequenceMove}
+        startSequenceMove={props.startSequenceMove}
+        getWebAppConfigValue={props.getWebAppConfigValue}
+        movedSequenceUuid={props.movedSequenceUuid} />);
 
   const childFolders: FolderUnion[] = node.children || [];
   const folderNodes = childFolders.map(folder =>
@@ -342,17 +344,19 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     this.setState({ movedSequenceUuid: undefined });
   };
 
-  rootSequences = () => this.props.rootFolder.noFolder.map(seqUuid =>
-    <FolderListItem
-      key={seqUuid}
-      dispatch={this.props.dispatch}
-      variableData={this.props.sequenceMetas[seqUuid]}
-      inUse={!!this.props.resourceUsage[seqUuid]}
-      sequence={this.props.sequences[seqUuid]}
-      getWebAppConfigValue={this.props.getWebAppConfigValue}
-      toggleSequenceMove={this.toggleSequenceMove}
-      startSequenceMove={this.startSequenceMove}
-      movedSequenceUuid={this.state.movedSequenceUuid} />);
+  rootSequences = () => this.props.rootFolder.noFolder
+    .filter(seqUuid => this.props.sequences[seqUuid])
+    .map(seqUuid =>
+      <FolderListItem
+        key={seqUuid}
+        dispatch={this.props.dispatch}
+        variableData={this.props.sequenceMetas[seqUuid]}
+        inUse={!!this.props.resourceUsage[seqUuid]}
+        sequence={this.props.sequences[seqUuid]}
+        getWebAppConfigValue={this.props.getWebAppConfigValue}
+        toggleSequenceMove={this.toggleSequenceMove}
+        startSequenceMove={this.startSequenceMove}
+        movedSequenceUuid={this.state.movedSequenceUuid} />);
 
   render() {
     return <div className="folders-panel">

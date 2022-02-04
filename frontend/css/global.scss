@@ -2246,6 +2246,52 @@ textarea:focus {
       }
     }
   }
+  .wizard-btn {
+    margin: 1rem;
+    float: none;
+    color: $white;
+    margin-top: 7rem;
+  }
+  .os-download-wizard {
+    position: relative;
+    margin-top: 2rem;
+    button {
+      margin: 1rem;
+      float: none;
+      color: $white;
+      height: 5rem;
+      width: 15rem;
+    }
+    .back {
+      display: block;
+      position: absolute;
+      top: 0;
+      float: left;
+      height: unset;
+      width: unset;
+    }
+    .start {
+      height: unset;
+      width: unset;
+    }
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 1rem !important;
+    }
+    .os-download-wizard-note {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .os-download-wizard-btn-label {
+      display: inline-block;
+      width: 18rem;
+      vertical-align: middle;
+      margin-bottom: 0 !important;
+    }
+    .download-link {
+      display: inline-block;
+    }
+  }
 }
 
 .featured-sequences-page {
