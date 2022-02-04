@@ -35,7 +35,8 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed
-                             GenericPointer Sequence)
+                             GenericPointer Sequence Peripheral Sensor
+                             PointGroup SavedGarden)
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership check_updates
                          emergency_lock emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home

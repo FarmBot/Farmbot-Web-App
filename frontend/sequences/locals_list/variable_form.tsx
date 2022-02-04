@@ -3,6 +3,12 @@ import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
   variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
   LOCATION_PLACEHOLDER_DDI,
+  SAVED_GARDEN_HEADING,
+  savedGardens2Ddi,
+  POINT_GROUP_RESOURCE_HEADING,
+  groupResources2Ddi,
+  peripherals2Ddi,
+  sensors2Ddi,
 } from "./variable_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -20,14 +26,18 @@ import { generateNewVariableLabel } from "./locals_list";
 import { error } from "../../toast/toast";
 import { cloneDeep } from "lodash";
 import { defensiveClone } from "../../util";
-import { Numeric, Text } from "farmbot";
+import { Numeric, Resource, Text } from "farmbot";
 import { ToolTips } from "../../constants";
 import { Position } from "@blueprintjs/core";
 import {
   determineVariableType, newVariableLabel, VariableIcon,
 } from "./new_variable";
 import { jsonReplacer } from "../step_tiles";
-import { selectAllSequences } from "../../resources/selectors_by_kind";
+import {
+  selectAllPeripherals,
+  selectAllPointGroups, selectAllSavedGardens, selectAllSensors, selectAllSequences,
+} from "../../resources/selectors_by_kind";
+import { PERIPHERAL_HEADING, SENSOR_HEADING } from "../step_tiles/pin_support";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -98,11 +108,31 @@ export const VariableForm =
       if (isDefaultValueForm) {
         [
           { label: t("Sequence"), value: "Sequence", headingId: "Resource" },
+          { label: t("Peripheral"), value: "Peripheral", headingId: "Resource" },
+          { label: t("Sensor"), value: "Sensor", headingId: "Resource" },
+          { label: t("Group"), value: "PointGroup", headingId: "Resource" },
+          { label: t("Garden"), value: "SavedGarden", headingId: "Resource" },
         ].map(item => list.unshift(item));
       } else if (celeryNode.kind != "parameter_declaration") {
-        heading("Sequence")
-          .concat(sequences2Ddi(selectAllSequences(resources)))
-          .map(item => list.push(item));
+        if (variable.celeryNode.kind == "parameter_application") {
+          const resourceType = (variable.celeryNode.args.data_value as Resource)
+            .args.resource_type;
+          resourceType == "Sequence" && heading("Sequence")
+            .concat(sequences2Ddi(selectAllSequences(resources)))
+            .map(item => list.push(item));
+          resourceType == "Peripheral" && [PERIPHERAL_HEADING()]
+            .concat(peripherals2Ddi(selectAllPeripherals(resources)))
+            .map(item => list.push(item));
+          resourceType == "Sensor" && [SENSOR_HEADING()]
+            .concat(sensors2Ddi(selectAllSensors(resources)))
+            .map(item => list.push(item));
+          resourceType == "PointGroup" && [POINT_GROUP_RESOURCE_HEADING()]
+            .concat(groupResources2Ddi(selectAllPointGroups(resources)))
+            .map(item => list.push(item));
+          resourceType == "SavedGarden" && [SAVED_GARDEN_HEADING()]
+            .concat(savedGardens2Ddi(selectAllSavedGardens(resources)))
+            .map(item => list.push(item));
+        }
       }
     }
     if (variableType == VariableType.Location && isDefaultValueForm) {

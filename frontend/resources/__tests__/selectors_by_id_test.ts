@@ -1,7 +1,10 @@
 import {
   maybeFindGenericPointerById,
+  maybeFindPeripheralById,
   maybeFindPlantTemplateById,
+  maybeFindPointGroupById,
   maybeFindSavedGardenById,
+  maybeFindSensorById,
   maybeFindSequenceById,
   maybeFindWeedPointerById,
 } from "../selectors_by_id";
@@ -38,6 +41,27 @@ describe("maybeFindSavedGardenById()", () => {
 describe("maybeFindSequenceById()", () => {
   it("handles missing uuid", () => {
     expect(maybeFindSequenceById(buildResourceIndex([]).index, 1))
+      .toEqual(undefined);
+  });
+});
+
+describe("maybeFindPeripheralById()", () => {
+  it("handles missing uuid", () => {
+    expect(maybeFindPeripheralById(buildResourceIndex([]).index, 1))
+      .toEqual(undefined);
+  });
+});
+
+describe("maybeFindSensorById()", () => {
+  it("handles missing uuid", () => {
+    expect(maybeFindSensorById(buildResourceIndex([]).index, 1))
+      .toEqual(undefined);
+  });
+});
+
+describe("maybeFindPointGroupById()", () => {
+  it("handles missing uuid", () => {
+    expect(maybeFindPointGroupById(buildResourceIndex([]).index, 1))
       .toEqual(undefined);
   });
 });

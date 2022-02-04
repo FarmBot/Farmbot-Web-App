@@ -7,7 +7,9 @@ import {
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId, findPointGroup, findUuid } from "./selectors";
 import {
-  findSlotByToolId, findToolById, maybeFindSequenceById,
+  findSlotByToolId, findToolById, maybeFindPeripheralById,
+  maybeFindPointGroupById, maybeFindSavedGardenById, maybeFindSensorById,
+  maybeFindSequenceById,
 } from "./selectors_by_id";
 import {
   formatPoint,
@@ -17,6 +19,7 @@ import {
 } from "../sequences/locals_list/variable_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
+import { get } from "lodash";
 
 export interface Vector3Plus extends Vector3 {
   gantry_mounted: boolean;
@@ -142,17 +145,35 @@ export const determineDropdown =
           headingId: "Text",
         };
       case "resource":
-        const { resource_id } = data_value.args;
-        const seqName = maybeFindSequenceById(resources, resource_id)?.body.name;
+        const { resource_type, resource_id } = data_value.args;
+        const fetchResourceName = () => {
+          switch (resource_type) {
+            case "Sequence":
+              return maybeFindSequenceById(resources, resource_id)?.body.name;
+            case "Peripheral":
+              return maybeFindPeripheralById(resources, resource_id)?.body.label;
+            case "Sensor":
+              return maybeFindSensorById(resources, resource_id)?.body.label;
+            case "PointGroup":
+              return maybeFindPointGroupById(resources, resource_id)?.body.name;
+            case "SavedGarden":
+              return maybeFindSavedGardenById(resources, resource_id)?.body.name;
+          }
+        };
+        const resourceName = fetchResourceName();
         return {
-          label: seqName || t("Not found"),
+          label: resourceName || t("Not found"),
           value: resource_id,
           headingId: "Resource",
-          warn: !seqName,
+          warn: !resourceName,
         };
       case "resource_placeholder":
+        const resourceType = data_value.args.resource_type;
         return {
-          label: `${data_value.args.resource_type}`,
+          label: get({
+            "SavedGarden": t("Garden"),
+            "PointGroup": t("Group"),
+          }, resourceType, resourceType),
           value: data_value.args.resource_type,
           headingId: "Resource",
         };

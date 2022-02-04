@@ -16,6 +16,9 @@ import {
   TaggedPlantTemplate,
   TaggedSavedGarden,
   TaggedWeedPointer,
+  TaggedPeripheral,
+  TaggedSensor,
+  TaggedPointGroup,
 } from "farmbot";
 
 export interface TaggedResourceBase {
@@ -109,3 +112,10 @@ export const isTaggedSavedGarden =
   (x: object): x is TaggedSavedGarden => is("SavedGarden")(x);
 export const isTaggedPlantTemplate =
   (x: object): x is TaggedPlantTemplate => is("PlantTemplate")(x);
+
+export const isTaggedPeripheral =
+  (x: object): x is TaggedPeripheral => is("Peripheral")(x);
+export const isTaggedSensor =
+  (x: object): x is TaggedSensor => is("Sensor")(x);
+export const isTaggedPointGroup =
+  (x: object): x is TaggedPointGroup => is("PointGroup")(x);

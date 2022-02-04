@@ -32,7 +32,7 @@ This repo contains FarmBot's web based user interface, a RESTful JSON API and a 
 
 # Q: Can I see some example API requests?
 
-For a list of example API requests and responses, see our [reference documentation](https://gist.github.com/RickCarlino/10db2df375d717e9efdd3c2d9d8932af). If you wish to write an add-on application that uses the FarmBot API, please let us know in an issue. We are happy to answer any specific questions you may have.
+For a list of example API requests and responses, see our [reference documentation](https://developer.farm.bot/docs/api-docs). If you wish to write an add-on application that uses the FarmBot API, please let us know in an issue. We are happy to answer any specific questions you may have.
 
 # Q: How do I Setup an instance locally?
 
