@@ -152,7 +152,7 @@ enum Run {
 const RUNS = () => ({
   [Version["v1.6"]]: [
     { value: Run.first, label: t("black cable") },
-    { value: Run.second, label: t("red cable") },
+    { value: Run.second, label: t("white cable") },
   ]
 });
 
@@ -247,7 +247,6 @@ export class OsDownloadWizard
       content={<i className={"fa fa-arrow-left"} />} />;
 
   render() {
-    if (!localStorage.rpi4) { return <div />; }
     if (!this.props.wizard) {
       return <div className={"os-download-wizard"}>
         <Button extraClass={"start"}
@@ -276,7 +275,7 @@ export class OsDownloadWizard
       return <div className={"os-download-wizard"}>
         <div className={"os-download-wizard-version"}>
           <p className={"os-download-wizard-note"}>
-            {t("Check side of shipping box. What is the labeled version?")}
+            {t(Content.SHIPPING_BOX_LABEL_PROMPT)}
           </p>
           {VERSIONS()[this.state.model].map(version =>
             <Button key={version}
@@ -291,8 +290,7 @@ export class OsDownloadWizard
       return <div className={"os-download-wizard"}>
         <div className={"os-download-wizard-run"}>
           <p className={"os-download-wizard-note"}>
-            {t("Check inside of the electronics box.") + " " +
-              t("What color cable do you see at the top?")}
+            {t(Content.PI_POWER_CABLE_COLOR_PROMPT)}
           </p>
           {RUNS()[this.state.version].map(run =>
             <Button key={run.value}

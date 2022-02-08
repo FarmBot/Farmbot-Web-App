@@ -38,7 +38,6 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("toggles the wizard", () => {
-    localStorage.setItem("rpi4", "true");
     const wrapper = mount(<OsDownloadPage />);
     expect(wrapper.text().toLowerCase()).not.toContain("show");
     clickButton(wrapper, 0, "try the wizard");
@@ -49,7 +48,6 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("exits the wizard", () => {
-    localStorage.setItem("rpi4", "true");
     const wrapper = mount(<OsDownloadPage />);
     expect(wrapper.text().toLowerCase()).not.toContain("show");
     clickButton(wrapper, 0, "try the wizard");
@@ -59,7 +57,6 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("runs the wizard: express", () => {
-    localStorage.setItem("rpi4", "true");
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "try the wizard");
     clickButton(wrapper, 1, "express");
@@ -68,7 +65,6 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("runs the wizard: genesis", () => {
-    localStorage.setItem("rpi4", "true");
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "try the wizard");
     clickButton(wrapper, 0, "genesis");
@@ -77,12 +73,11 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("runs the wizard: genesis v1.6.1", () => {
-    localStorage.setItem("rpi4", "true");
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "try the wizard");
     clickButton(wrapper, 0, "genesis");
     clickButton(wrapper, 4, "genesis v1.6");
-    clickButton(wrapper, 1, "red cable");
+    clickButton(wrapper, 1, "white cable");
     expect(wrapper.text().toLowerCase()).toContain("pi 4");
   });
 });
