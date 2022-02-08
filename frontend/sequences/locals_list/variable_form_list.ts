@@ -9,7 +9,6 @@ import { betterCompact } from "../../util";
 import {
   TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
   TaggedSequence,
-  TaggedSavedGarden,
   TaggedPeripheral,
   TaggedSensor,
 } from "farmbot";
@@ -102,26 +101,6 @@ export const sensors2Ddi =
         label: x.body.label,
         value: "" + x.body.id,
         headingId: "Sensor"
-      }));
-
-export const savedGardens2Ddi =
-  (savedGardens: TaggedSavedGarden[]): DropDownItem[] =>
-    savedGardens
-      .filter(x => x.body.id)
-      .map(x => ({
-        label: "" + x.body.name,
-        value: "" + x.body.id,
-        headingId: "SavedGarden"
-      }));
-
-export const groupResources2Ddi =
-  (groups: TaggedPointGroup[]): DropDownItem[] =>
-    groups
-      .filter(x => x.body.id)
-      .map(x => ({
-        label: x.body.name,
-        value: "" + x.body.id,
-        headingId: "PointGroupResource"
       }));
 
 /** Variable and location selection menu items. */
@@ -225,14 +204,6 @@ export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
 
 export const LOCATION_PLACEHOLDER_DDI = (): DropDownItem =>
   ({ label: t("None"), value: "", headingId: "Location" });
-
-export const SAVED_GARDEN_HEADING = (): DropDownItem => ({
-  heading: true, headingId: "SavedGarden", label: t("Gardens"), value: 0,
-});
-
-export const POINT_GROUP_RESOURCE_HEADING = (): DropDownItem => ({
-  heading: true, headingId: "PointGroupResource", label: t("Groups"), value: 0,
-});
 
 export const sortVariables = (variables: (SequenceMeta | undefined)[]) =>
   sortBy(betterCompact(variables),

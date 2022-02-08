@@ -13,7 +13,6 @@ import {
   isTaggedWeedPointer,
   isTaggedPeripheral,
   isTaggedSensor,
-  isTaggedPointGroup,
 } from "./tagged_resources";
 import {
   TaggedResource,
@@ -162,13 +161,6 @@ export function maybeFindSensorById(index: ResourceIndex, id: number) {
   const uuid = index.byKindAndId[joinKindAndId("Sensor", id)];
   const resource = index.references[uuid || "nope"];
   if (resource && isTaggedSensor(resource)) { return resource; }
-}
-
-/** Unlike other findById methods, this one allows undefined (missed) values */
-export function maybeFindPointGroupById(index: ResourceIndex, id: number) {
-  const uuid = index.byKindAndId[joinKindAndId("PointGroup", id)];
-  const resource = index.references[uuid || "nope"];
-  if (resource && isTaggedPointGroup(resource)) { return resource; }
 }
 
 export const findRegimenById = (ri: ResourceIndex, regimen_id: number) => {

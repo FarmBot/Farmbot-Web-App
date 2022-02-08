@@ -3,10 +3,6 @@ import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
   variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
   LOCATION_PLACEHOLDER_DDI,
-  SAVED_GARDEN_HEADING,
-  savedGardens2Ddi,
-  POINT_GROUP_RESOURCE_HEADING,
-  groupResources2Ddi,
   peripherals2Ddi,
   sensors2Ddi,
 } from "./variable_form_list";
@@ -34,8 +30,7 @@ import {
 } from "./new_variable";
 import { jsonReplacer } from "../step_tiles";
 import {
-  selectAllPeripherals,
-  selectAllPointGroups, selectAllSavedGardens, selectAllSensors, selectAllSequences,
+  selectAllPeripherals, selectAllSensors, selectAllSequences,
 } from "../../resources/selectors_by_kind";
 import { PERIPHERAL_HEADING, SENSOR_HEADING } from "../step_tiles/pin_support";
 
@@ -110,8 +105,6 @@ export const VariableForm =
           { label: t("Sequence"), value: "Sequence", headingId: "Resource" },
           { label: t("Peripheral"), value: "Peripheral", headingId: "Resource" },
           { label: t("Sensor"), value: "Sensor", headingId: "Resource" },
-          { label: t("Group"), value: "PointGroup", headingId: "Resource" },
-          { label: t("Garden"), value: "SavedGarden", headingId: "Resource" },
         ].map(item => list.unshift(item));
       } else if (celeryNode.kind != "parameter_declaration") {
         if (variable.celeryNode.kind == "parameter_application") {
@@ -125,12 +118,6 @@ export const VariableForm =
             .map(item => list.push(item));
           resourceType == "Sensor" && [SENSOR_HEADING()]
             .concat(sensors2Ddi(selectAllSensors(resources)))
-            .map(item => list.push(item));
-          resourceType == "PointGroup" && [POINT_GROUP_RESOURCE_HEADING()]
-            .concat(groupResources2Ddi(selectAllPointGroups(resources)))
-            .map(item => list.push(item));
-          resourceType == "SavedGarden" && [SAVED_GARDEN_HEADING()]
-            .concat(savedGardens2Ddi(selectAllSavedGardens(resources)))
             .map(item => list.push(item));
         }
       }

@@ -2,7 +2,6 @@ import {
   maybeFindGenericPointerById,
   maybeFindPeripheralById,
   maybeFindPlantTemplateById,
-  maybeFindPointGroupById,
   maybeFindSavedGardenById,
   maybeFindSensorById,
   maybeFindSequenceById,
@@ -55,13 +54,6 @@ describe("maybeFindPeripheralById()", () => {
 describe("maybeFindSensorById()", () => {
   it("handles missing uuid", () => {
     expect(maybeFindSensorById(buildResourceIndex([]).index, 1))
-      .toEqual(undefined);
-  });
-});
-
-describe("maybeFindPointGroupById()", () => {
-  it("handles missing uuid", () => {
-    expect(maybeFindPointGroupById(buildResourceIndex([]).index, 1))
       .toEqual(undefined);
   });
 });

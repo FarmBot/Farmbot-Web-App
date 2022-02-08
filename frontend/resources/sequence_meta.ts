@@ -7,8 +7,7 @@ import {
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId, findPointGroup, findUuid } from "./selectors";
 import {
-  findSlotByToolId, findToolById, maybeFindPeripheralById,
-  maybeFindPointGroupById, maybeFindSavedGardenById, maybeFindSensorById,
+  findSlotByToolId, findToolById, maybeFindPeripheralById, maybeFindSensorById,
   maybeFindSequenceById,
 } from "./selectors_by_id";
 import {
@@ -154,10 +153,6 @@ export const determineDropdown =
               return maybeFindPeripheralById(resources, resource_id)?.body.label;
             case "Sensor":
               return maybeFindSensorById(resources, resource_id)?.body.label;
-            case "PointGroup":
-              return maybeFindPointGroupById(resources, resource_id)?.body.name;
-            case "SavedGarden":
-              return maybeFindSavedGardenById(resources, resource_id)?.body.name;
           }
         };
         const resourceName = fetchResourceName();

@@ -360,56 +360,6 @@ describe("convertDDItoDeclaration()", () => {
     };
     expect(variable).toEqual(expected);
   });
-
-  it("returns new variable: PointGroup", () => {
-    const dropdown = ({
-      headingId: "PointGroupResource", label: "Label0", value: 1
-    });
-    const variable = convertDDItoVariable({
-      identifierLabel: "label",
-      allowedVariableNodes: AllowedVariableNodes.parameter,
-      dropdown,
-      variableType: VariableType.Resource,
-    });
-    const expected: VariableNode = {
-      kind: "variable_declaration",
-      args: {
-        label: "label",
-        data_value: {
-          kind: "resource", args: {
-            resource_id: 1,
-            resource_type: "PointGroup",
-          }
-        }
-      }
-    };
-    expect(variable).toEqual(expected);
-  });
-
-  it("returns new variable: SavedGarden", () => {
-    const dropdown = ({
-      headingId: "SavedGarden", label: "Label0", value: 1
-    });
-    const variable = convertDDItoVariable({
-      identifierLabel: "label",
-      allowedVariableNodes: AllowedVariableNodes.parameter,
-      dropdown,
-      variableType: VariableType.Resource,
-    });
-    const expected: VariableNode = {
-      kind: "variable_declaration",
-      args: {
-        label: "label",
-        data_value: {
-          kind: "resource", args: {
-            resource_id: 1,
-            resource_type: "SavedGarden",
-          }
-        }
-      }
-    };
-    expect(variable).toEqual(expected);
-  });
 });
 
 describe("addOrEditBodyVariables()", () => {

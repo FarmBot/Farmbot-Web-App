@@ -354,35 +354,6 @@ const tr17: TaggedResource = {
   uuid: "Sensor.11.5"
 };
 
-const tr18: TaggedResource = {
-  specialStatus: SpecialStatus.SAVED,
-  kind: "PointGroup",
-  body: {
-    id: 11,
-    name: "my group",
-    sort_type: "random",
-    point_ids: [],
-    criteria: {
-      day: { op: "<", days_ago: 0 },
-      string_eq: {},
-      number_eq: {},
-      number_gt: {},
-      number_lt: {},
-    },
-  },
-  uuid: "PointGroup.11.5"
-};
-
-const tr19: TaggedResource = {
-  specialStatus: SpecialStatus.SAVED,
-  kind: "SavedGarden",
-  body: {
-    id: 11,
-    name: "my garden",
-  },
-  uuid: "SavedGarden.11.5"
-};
-
 const log: TaggedLog = {
   kind: "Log",
   specialStatus: SpecialStatus.SAVED,
@@ -414,8 +385,6 @@ export const FAKE_RESOURCES: TaggedResource[] = [
   tr15,
   tr16,
   tr17,
-  tr18,
-  tr19,
   log,
 ];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.

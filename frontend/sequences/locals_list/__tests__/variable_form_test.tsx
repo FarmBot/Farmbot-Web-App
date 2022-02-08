@@ -511,62 +511,6 @@ describe("<VariableForm />", () => {
       },
     ]);
   });
-
-  it("renders resource variable: PointGroup", () => {
-    const p = fakeProps();
-    p.variableType = VariableType.Resource;
-    p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    p.variable.celeryNode = {
-      kind: "parameter_application",
-      args: {
-        label: "label", data_value: {
-          kind: "resource_placeholder", args: { resource_type: "PointGroup" }
-        }
-      }
-    };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
-      {
-        headingId: "PointGroupResource",
-        label: "Groups",
-        value: 0,
-        heading: true,
-      },
-      {
-        headingId: "PointGroupResource",
-        label: "my group",
-        value: "11",
-      },
-    ]);
-  });
-
-  it("renders resource variable: SavedGarden", () => {
-    const p = fakeProps();
-    p.variableType = VariableType.Resource;
-    p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    p.variable.celeryNode = {
-      kind: "parameter_application",
-      args: {
-        label: "label", data_value: {
-          kind: "resource_placeholder", args: { resource_type: "SavedGarden" }
-        }
-      }
-    };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
-      {
-        headingId: "SavedGarden",
-        label: "Gardens",
-        value: 0,
-        heading: true,
-      },
-      {
-        headingId: "SavedGarden",
-        label: "my garden",
-        value: "11",
-      },
-    ]);
-  });
 });
 
 describe("<NumericInput />", () => {

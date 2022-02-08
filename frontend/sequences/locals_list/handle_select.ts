@@ -186,9 +186,6 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Sequence": return specificResourceVar("Sequence")(ddi.value)(props);
     case "Peripheral": return specificResourceVar("Peripheral")(ddi.value)(props);
     case "Sensor": return specificResourceVar("Sensor")(ddi.value)(props);
-    case "PointGroupResource":
-      return specificResourceVar("PointGroup")(ddi.value)(props);
-    case "SavedGarden": return specificResourceVar("SavedGarden")(ddi.value)(props);
   }
   console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;
