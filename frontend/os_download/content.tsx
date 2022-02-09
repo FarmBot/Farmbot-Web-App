@@ -318,10 +318,13 @@ export class OsDownloadWizard
 
 export const OsDownloadPage = () => {
   const [wizard, setWizard] = React.useState(false);
+  if (window.innerWidth > 450) {
+    (document.querySelector("html") as HTMLElement).style.fontSize = "15px";
+  }
   return <div className={"static-page os-download-page"}>
     <div className={"all-content-wrapper"}>
       <h1>{t("Download FarmBot OS")}</h1>
-      <p>{t(Content.DOWNLOAD_FBOS)}</p>
+      <p className={"os-download-description"}>{t(Content.DOWNLOAD_FBOS)}</p>
       <OsDownloadWizard wizard={wizard} setWizard={setWizard} />
       {wizard
         ? <Button extraClass={"wizard-btn"}

@@ -22,6 +22,18 @@ describe("<OsDownloadPage />", () => {
     expect(rpiLink.props().href).toEqual("fake rpi img url");
   });
 
+  it("renders on small screens", () => {
+    Object.defineProperty(window, "innerWidth", { value: 400, configurable: true });
+    const wrapper = mount(<OsDownloadPage />);
+    expect(wrapper.text().toLowerCase()).toContain("download");
+  });
+
+  it("renders on large screens", () => {
+    Object.defineProperty(window, "innerWidth", { value: 500, configurable: true });
+    const wrapper = mount(<OsDownloadPage />);
+    expect(wrapper.text().toLowerCase()).toContain("download");
+  });
+
   it("doesn't show rpi4 releases", () => {
     globalConfig.rpi4_release_url = "fake rpi4 img url";
     globalConfig.rpi4_release_tag = "1.0.1";

@@ -2265,7 +2265,7 @@ textarea:focus {
     .back {
       display: block;
       position: absolute;
-      top: 0;
+      top: -1rem;
       float: left;
       height: unset;
       width: unset;
@@ -2296,8 +2296,12 @@ textarea:focus {
 
 .static-page {
   &.os-download-page {
+    .os-download-description {
+      width: 80%;
+    }
     p {
       font-size: 1.5rem;
+      line-height: 2rem;
     }
     h1 {
       margin-top: 0;
