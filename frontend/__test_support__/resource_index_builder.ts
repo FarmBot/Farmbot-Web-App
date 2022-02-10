@@ -342,6 +342,18 @@ const tr16: TaggedPoint = {
   uuid: "Point.1397.11"
 };
 
+const tr17: TaggedResource = {
+  specialStatus: SpecialStatus.SAVED,
+  kind: "Sensor",
+  body: {
+    id: 11,
+    pin: 14,
+    label: "Sensor",
+    mode: 0,
+  },
+  uuid: "Sensor.11.5"
+};
+
 const log: TaggedLog = {
   kind: "Log",
   specialStatus: SpecialStatus.SAVED,
@@ -372,6 +384,7 @@ export const FAKE_RESOURCES: TaggedResource[] = [
   tr14,
   tr15,
   tr16,
+  tr17,
   log,
 ];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.

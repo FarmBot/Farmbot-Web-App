@@ -428,7 +428,7 @@ describe("<VariableForm />", () => {
     ]);
   });
 
-  it("renders resource variable", () => {
+  it("renders resource variable: sequence", () => {
     const p = fakeProps();
     p.variableType = VariableType.Resource;
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
@@ -452,6 +452,62 @@ describe("<VariableForm />", () => {
         headingId: "Sequence",
         label: "Goto 0, 0, 0",
         value: "23",
+      },
+    ]);
+  });
+
+  it("renders resource variable: peripheral", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    p.variable.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: {
+          kind: "resource_placeholder", args: { resource_type: "Peripheral" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Peripheral",
+        label: "Peripherals",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Peripheral",
+        label: "LED",
+        value: "11",
+      },
+    ]);
+  });
+
+  it("renders resource variable: Sensor", () => {
+    const p = fakeProps();
+    p.variableType = VariableType.Resource;
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    p.variable.celeryNode = {
+      kind: "parameter_application",
+      args: {
+        label: "label", data_value: {
+          kind: "resource_placeholder", args: { resource_type: "Sensor" }
+        }
+      }
+    };
+    const wrapper = mount(<VariableForm {...p} />);
+    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+      {
+        headingId: "Sensor",
+        label: "Sensors",
+        value: 0,
+        heading: true,
+      },
+      {
+        headingId: "Sensor",
+        label: "Sensor",
+        value: "11",
       },
     ]);
   });

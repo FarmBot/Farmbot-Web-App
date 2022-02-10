@@ -1264,6 +1264,14 @@ export namespace Content {
     trim(`Download the version of FarmBot OS that corresponds to your
     FarmBot kit and its internal computer.`);
 
+  export const SHIPPING_BOX_LABEL_PROMPT =
+    trim(`Check the side of the box your FarmBot came in. What is the
+    labeled version?`);
+
+  export const PI_POWER_CABLE_COLOR_PROMPT =
+    trim(`Look inside the electronics box. What color cable is plugged into
+    the top of the Raspberry Pi (the green circuit board)?`);
+
   export const FEATURED_SEQUENCES =
     trim(`Featured shared sequences published by FarmBot Inc.`);
 

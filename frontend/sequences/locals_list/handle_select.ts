@@ -121,16 +121,17 @@ const resourceVar = (value: string | number) => ({
     args: { resource_type: ("" + value) as resource_type }
   });
 
-const sequenceVar = (value: string | number) => ({
-  identifierLabel: label, allowedVariableNodes,
-}: NewVarProps): VariableWithAValue =>
-  createVariableNode(allowedVariableNodes)(label, {
-    kind: "resource",
-    args: {
-      resource_id: parseInt("" + value),
-      resource_type: "Sequence",
-    }
-  });
+const specificResourceVar = (resourceType: resource_type) =>
+  (value: string | number) => ({
+    identifierLabel: label, allowedVariableNodes,
+  }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, {
+      kind: "resource",
+      args: {
+        resource_id: parseInt("" + value),
+        resource_type: resourceType,
+      }
+    });
 
 const manualEntry = (value: string | number) => ({
   identifierLabel: label, allowedVariableNodes
@@ -165,6 +166,7 @@ export const newParameter = (p: NewVarProps): VariableNode => {
 };
 
 /** Create a variable based on the dropdown heading ID. */
+// eslint-disable-next-line complexity
 const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
   const ddi = props.dropdown;
   if (ddi.isNull) { return nothingVar(props); } // Empty form. Nothing selected yet.
@@ -181,7 +183,9 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "Numeric": return numberVar(ddi.value)(props);
     case "Text": return stringVar(ddi.value)(props);
     case "Resource": return resourceVar(ddi.value)(props);
-    case "Sequence": return sequenceVar(ddi.value)(props);
+    case "Sequence": return specificResourceVar("Sequence")(ddi.value)(props);
+    case "Peripheral": return specificResourceVar("Peripheral")(ddi.value)(props);
+    case "Sensor": return specificResourceVar("Sensor")(ddi.value)(props);
   }
   console.error(`WARNING: Don't know how to handle ${ddi.headingId}`);
   return undefined;

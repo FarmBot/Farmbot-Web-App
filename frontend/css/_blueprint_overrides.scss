@@ -98,3 +98,9 @@
   width: 0px !important;
   background-color: transparent !important;
 }
+
+*[class*=bp3-] {
+  &:focus {
+    outline: none;
+  }
+}

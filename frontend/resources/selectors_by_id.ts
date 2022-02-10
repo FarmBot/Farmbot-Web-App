@@ -11,6 +11,8 @@ import {
   isTaggedSavedGarden,
   isTaggedFolder,
   isTaggedWeedPointer,
+  isTaggedPeripheral,
+  isTaggedSensor,
 } from "./tagged_resources";
 import {
   TaggedResource,
@@ -145,6 +147,20 @@ export function maybeFindSavedGardenById(index: ResourceIndex, id: number) {
   const uuid = index.byKindAndId[joinKindAndId("SavedGarden", id)];
   const resource = index.references[uuid || "nope"];
   if (resource && isTaggedSavedGarden(resource)) { return resource; }
+}
+
+/** Unlike other findById methods, this one allows undefined (missed) values */
+export function maybeFindPeripheralById(index: ResourceIndex, id: number) {
+  const uuid = index.byKindAndId[joinKindAndId("Peripheral", id)];
+  const resource = index.references[uuid || "nope"];
+  if (resource && isTaggedPeripheral(resource)) { return resource; }
+}
+
+/** Unlike other findById methods, this one allows undefined (missed) values */
+export function maybeFindSensorById(index: ResourceIndex, id: number) {
+  const uuid = index.byKindAndId[joinKindAndId("Sensor", id)];
+  const resource = index.references[uuid || "nope"];
+  if (resource && isTaggedSensor(resource)) { return resource; }
 }
 
 export const findRegimenById = (ri: ResourceIndex, regimen_id: number) => {

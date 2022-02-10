@@ -9,6 +9,8 @@ import { betterCompact } from "../../util";
 import {
   TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
   TaggedSequence,
+  TaggedPeripheral,
+  TaggedSensor,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber, sortBy } from "lodash";
@@ -80,6 +82,26 @@ export const sequences2Ddi = (sequences: TaggedSequence[]): DropDownItem[] => {
       return { label: x.body.name, value: "" + x.body.id, headingId: "Sequence" };
     });
 };
+
+export const peripherals2Ddi =
+  (peripherals: TaggedPeripheral[]): DropDownItem[] =>
+    peripherals
+      .filter(x => x.body.id)
+      .map(x => ({
+        label: x.body.label,
+        value: "" + x.body.id,
+        headingId: "Peripheral"
+      }));
+
+export const sensors2Ddi =
+  (sensors: TaggedSensor[]): DropDownItem[] =>
+    sensors
+      .filter(x => x.body.id)
+      .map(x => ({
+        label: x.body.label,
+        value: "" + x.body.id,
+        headingId: "Sensor"
+      }));
 
 /** Variable and location selection menu items. */
 export function variableFormList(

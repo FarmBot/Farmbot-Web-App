@@ -11,6 +11,8 @@ import {
   fakeTool,
   fakeToolSlot,
   fakePointGroup,
+  fakePeripheral,
+  fakeSensor,
 } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
@@ -203,7 +205,7 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("");
   });
 
-  it("returns a label for resource", () => {
+  it("returns a label for resource: Sequence", () => {
     const sequence = fakeSequence();
     sequence.body.id = 1;
     sequence.body.name = "my sequence";
@@ -222,7 +224,45 @@ describe("determineDropdown", () => {
     expect(r.value).toBe(1);
   });
 
-  it("returns a label for missing resource", () => {
+  it("returns a label for resource: Peripheral", () => {
+    const peripheral = fakePeripheral();
+    peripheral.body.id = 1;
+    peripheral.body.label = "my peripheral";
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Peripheral",
+          }
+        }
+      }
+    }, buildResourceIndex([peripheral]).index);
+    expect(r.label).toBe("my peripheral");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for resource: Sensor", () => {
+    const sensor = fakeSensor();
+    sensor.body.id = 1;
+    sensor.body.label = "my sensor";
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sensor",
+          }
+        }
+      }
+    }, buildResourceIndex([sensor]).index);
+    expect(r.label).toBe("my sensor");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for missing resource: Sequence", () => {
     const r = determineDropdown({
       kind: "parameter_application",
       args: {
@@ -238,7 +278,39 @@ describe("determineDropdown", () => {
     expect(r.value).toBe(1);
   });
 
-  it("returns a label for resource_placeholder", () => {
+  it("returns a label for missing resource: Peripheral", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Peripheral",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label.toLowerCase()).toBe("not found");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for missing resource: Sensor", () => {
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x", data_value: {
+          kind: "resource", args: {
+            resource_id: 1,
+            resource_type: "Sensor",
+          }
+        }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label.toLowerCase()).toBe("not found");
+    expect(r.value).toBe(1);
+  });
+
+  it("returns a label for resource_placeholder: Sequence", () => {
     const r = determineDropdown({
       kind: "parameter_application",
       args: {
