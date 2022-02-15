@@ -8,9 +8,12 @@
     "npm": "8.x",
     "parcel": "2.x"
   },
+  "alias": {
+    "process": false
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/farmbot/farmbot-web-frontend"
+    "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
