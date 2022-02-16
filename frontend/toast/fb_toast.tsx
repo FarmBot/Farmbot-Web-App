@@ -3,6 +3,7 @@ import { isUndefined } from "lodash";
 import { Actions } from "../constants";
 import { ToastProps, ToastsProps, ToastState } from "./interfaces";
 import { store } from "../redux/store";
+import { Markdown } from "../ui";
 
 export class Toast extends React.Component<ToastProps, ToastState> {
   state: ToastState = {
@@ -66,7 +67,9 @@ export class Toast extends React.Component<ToastProps, ToastState> {
       onMouseLeave={() => this.setState({ isHovered: false })}>
       <h4 className={"toast-title"}>{this.props.title}</h4>
       <div className={"toast-message"}>
-        {this.props.message.replace(/\s+/g, " ")}
+        <Markdown>
+          {this.props.message.replace(/\s+/g, " ")}
+        </Markdown>
       </div>
       <div className={"toast-loader"}>
         <div className={`toast-loader-left ${color}`} style={style}></div>
