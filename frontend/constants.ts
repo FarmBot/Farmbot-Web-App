@@ -513,7 +513,7 @@ export namespace ToolTips {
     is not satisfied, chose to do nothing or execute a different sequence.`);
 
   export const EXECUTE_SEQUENCE =
-    trim(`Executes another sequence.`);
+    trim(`No description provided for this subsequence.`);
 
   export const EXECUTE_SCRIPT =
     trim(`The Run Farmware step runs a Farmware package.

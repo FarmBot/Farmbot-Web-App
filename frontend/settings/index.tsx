@@ -189,6 +189,6 @@ const showByTerm = (term: string, searchTerm: string) =>
   getUrlQuery("only") == term || searchTerm.toLowerCase() == term.toLowerCase();
 
 export const showByEveryTerm = (term: string, searchTerm: string) =>
-  searchTerm == term && getHighlightName() == urlFriendly(term);
+  searchTerm == term && getHighlightName() == urlFriendly(term).toLowerCase();
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);

@@ -34,6 +34,11 @@
       margin-left: 0.5rem;
     }
   }
+  .markdown {
+    a {
+      text-decoration: underline !important;
+    }
+  }
 }
 
 .title-help {

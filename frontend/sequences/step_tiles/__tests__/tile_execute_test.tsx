@@ -16,6 +16,8 @@ import { Execute, ParameterApplication, Coordinate } from "farmbot";
 import { LocalsList } from "../../locals_list/locals_list";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import { StepWrapper } from "../../step_ui";
+import { ToolTips } from "../../../constants";
 
 const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
   ({ kind: "coordinate", args: { x, y, z } });
@@ -40,6 +42,23 @@ describe("<TileExecute />", () => {
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
     expect(block.text()).toContain("Select a sequence");
+  });
+
+  it("renders description", () => {
+    const p = fakeProps();
+    mockSequence.body.id = 1;
+    p.currentStep.args.sequence_id = mockSequence.body.id;
+    mockSequence.body.description = "description";
+    const block = shallow(<TileExecute {...p} />);
+    expect(block.find(StepWrapper).props().helpText).toEqual("description");
+  });
+
+  it("renders fallback", () => {
+    const p = fakeProps();
+    mockSequence.body.description = "";
+    const block = shallow(<TileExecute {...p} />);
+    expect(block.find(StepWrapper).props().helpText)
+      .toEqual(ToolTips.EXECUTE_SEQUENCE);
   });
 
   it("renders pinned sequence step", () => {

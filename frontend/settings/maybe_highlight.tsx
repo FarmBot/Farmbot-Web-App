@@ -258,8 +258,8 @@ const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
 /** Look up parent panels for settings using URL-friendly names. */
 const URL_FRIENDLY_LOOKUP: Record<string, keyof SettingsPanelState> = {};
 Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) => {
-  URL_FRIENDLY_LOOKUP[urlFriendly(setting)] = panel;
-  URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting))] = panel;
+  URL_FRIENDLY_LOOKUP[urlFriendly(setting).toLowerCase()] = panel;
+  URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting)).toLowerCase()] = panel;
 });
 
 /** Look up all relevant names for the same setting. */
@@ -286,7 +286,7 @@ ALTERNATE_NAMES[DeviceSetting.osAutoUpdate].push(DeviceSetting.osUpdateTime);
 const compareValues = (settingName: DeviceSetting) =>
   (ALTERNATE_NAMES[settingName] as string[])
     .concat(stripUnits(settingName))
-    .map(s => urlFriendly(s));
+    .map(s => urlFriendly(s).toLowerCase());
 
 /** Retrieve a highlight search term. */
 export const getHighlightName = () => getUrlQuery("highlight");
@@ -302,7 +302,8 @@ export const maybeOpenPanel = () =>
       return;
     }
     if (highlight.opened) { return; }
-    const urlFriendlySettingName = urlFriendly(getHighlightName() || "");
+    const urlFriendlySettingName = urlFriendly(getHighlightName() || "")
+      .toLowerCase();
     if (!urlFriendlySettingName) { return; }
     const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
     dispatch(bulkToggleControlPanel(false));
@@ -416,7 +417,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
 }
 
 export const linkToSetting = (settingName: DeviceSetting) =>
-  Path.settings(urlFriendly(stripUnits(settingName)));
+  Path.settings(urlFriendly(stripUnits(settingName)).toLowerCase());
 
 export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
 export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

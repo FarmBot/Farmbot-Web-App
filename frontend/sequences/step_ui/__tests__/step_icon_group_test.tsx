@@ -115,6 +115,6 @@ describe("<StepIconGroup />", () => {
     p.executeSequenceName = "My Sequence";
     const wrapper = mount(<StepIconGroup {...p} />);
     wrapper.find(".fa-external-link").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.sequences("my_sequence"));
+    expect(push).toHaveBeenCalledWith(Path.sequences("My_Sequence"));
   });
 });
