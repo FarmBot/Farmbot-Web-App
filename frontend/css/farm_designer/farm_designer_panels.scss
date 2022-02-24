@@ -2271,6 +2271,9 @@
 .farmware-env-editor {
   .row {
     margin-bottom: 1rem;
+    &.no-margin {
+      margin: 0;
+    }
   }
   .env-hide-toggle {
     margin-top: 1rem;
@@ -2282,13 +2285,24 @@
     background: transparentize($orange, 0.6);
     p {
       line-height: 1.75rem;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: bold;
     }
   }
   .bp3-popover-wrapper {
     display: inline;
     margin-left: 1rem;
+  }
+}
+
+.env-editor-lua {
+  margin: 0 -15px 0 -15px;
+  padding: 1rem 1.5rem 1rem 2rem;
+  background: transparentize($blue, 0.6);
+  p {
+    line-height: 1.75rem;
+    font-size: 1.2rem;
+    font-weight: bold;
   }
 }
 

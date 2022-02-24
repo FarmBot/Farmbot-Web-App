@@ -126,6 +126,10 @@ const PARAMETER_MANAGEMENT_PANEL = [
   DeviceSetting.showAdvancedSettings,
   DeviceSetting.resetHardwareParams,
 ];
+const CUSTOM_SETTINGS_PANEL = [
+  DeviceSetting.customSettings,
+  DeviceSetting.envEditor,
+];
 const FARM_DESIGNER_PANEL = [
   DeviceSetting.farmDesigner,
   DeviceSetting.animations,
@@ -219,6 +223,7 @@ PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 PIN_REPORTING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_reporting");
 PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
+CUSTOM_SETTINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "custom_settings");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
 ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");
 APP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "account");
@@ -240,6 +245,7 @@ CONTENT_LOOKUP[DeviceSetting.errorHandling] = ERROR_HANDLING_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
 CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.customSettings] = CUSTOM_SETTINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
 CONTENT_LOOKUP[DeviceSetting.accountSettings] = ACCOUNT_PANEL
   .concat(APP_SETTINGS);

@@ -1,6 +1,5 @@
 import React from "react";
-import { Row, Col, BlurableInput } from "../../ui";
-import { ToggleButton } from "../../ui/toggle_button";
+import { Row, Col, BlurableInput, ToggleButton } from "../../ui";
 import { DevSettings } from "./dev_support";
 
 export const DevWidgetFERow = () =>
@@ -59,11 +58,28 @@ export const DevWidgetDelModeRow = () =>
     </Col>
   </Row>;
 
+export const DevWidgetShowInternalEnvsRow = () =>
+  <Row>
+    <Col xs={8}>
+      <label>
+        {"Show internal envs"}
+      </label>
+    </Col>
+    <Col xs={4}>
+      <ToggleButton
+        toggleValue={DevSettings.showInternalEnvsEnabled()}
+        toggleAction={DevSettings.showInternalEnvsEnabled()
+          ? DevSettings.disableShowInternalEnvs
+          : DevSettings.enableShowInternalEnvs} />
+    </Col>
+  </Row>;
+
 export const DevSettingsRows = () =>
   <div className={"dev-settings-rows"}>
     <Row />
     <Row />
     <DevWidgetFERow />
     <DevWidgetDelModeRow />
+    <DevWidgetShowInternalEnvsRow />
     <DevWidgetFBOSRow />
   </div>;

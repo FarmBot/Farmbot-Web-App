@@ -1255,6 +1255,10 @@ export namespace Content {
   export const FARMWARE_ENV_EDITOR_WARNING =
     trim(`Warning: Changing the values below may cause app and device errors.`);
 
+  export const FARMWARE_ENV_EDITOR_LUA =
+    trim(`Custom settings can be added here and accessed via the Lua env()
+    function.`);
+
   export const FARMWARE_ENV_EDITOR_INFO =
     trim(`Environment variables added here can be accessed via the LUA
     sequence step 'env()' function.`);
@@ -1968,6 +1972,8 @@ export enum DeviceSetting {
   exportAccountData = `Export data`,
 
   otherSettings = `Other`,
+  customSettings = `Custom Settings`,
+  envEditor = `ENV Editor`,
 
   // Map
   showPlants = `Plants`,

@@ -193,7 +193,7 @@ describe("<DesignerSettings />", () => {
     const p = fakeProps();
     p.searchTerm = "env";
     const wrapper = mount(<DesignerSettings {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("editor");
+    expect(wrapper.text().toLowerCase()).toContain("custom settings");
   });
 
   it("renders setup settings", () => {

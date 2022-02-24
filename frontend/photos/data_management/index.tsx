@@ -22,7 +22,7 @@ export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
     <ShowAdvancedToggle
       dispatch={props.dispatch}
       getConfigValue={props.getConfigValue} />
-    {DevSettings.futureFeaturesEnabled() &&
+    {DevSettings.showInternalEnvsEnabled() &&
       <div className={"advanced"}>
         <ExpandableHeader
           expanded={advanced}

@@ -4,10 +4,11 @@ jest.mock("../../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(() => () => JSON.stringify(mockDevSettings)),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow,
+  DevWidgetShowInternalEnvsRow,
 } from "../dev_settings";
 import { DevSettings } from "../dev_support";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
@@ -39,6 +40,7 @@ describe("<DevWidgetFERow />", () => {
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.FUTURE_FE_FEATURES]: "true" }));
+    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
   });
 
   it("disables unstable FE features", () => {
@@ -46,23 +48,42 @@ describe("<DevWidgetFERow />", () => {
     const wrapper = mount(<DevWidgetFERow />);
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use", "{}");
+    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
   });
 });
 
 describe("<DevWidgetDelModeRow />", () => {
   it("enables delete mode", () => {
-    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
     const wrapper = mount(<DevWidgetDelModeRow />);
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.QUICK_DELETE_MODE]: "true" }));
+    delete mockDevSettings[DevSettings.QUICK_DELETE_MODE];
   });
 
   it("disables delete mode", () => {
-    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
     mockDevSettings[DevSettings.QUICK_DELETE_MODE] = "true";
     const wrapper = mount(<DevWidgetDelModeRow />);
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use", "{}");
+    delete mockDevSettings[DevSettings.QUICK_DELETE_MODE];
+  });
+});
+
+describe("<DevWidgetShowInternalEnvsRow />", () => {
+  it("enables show internal envs", () => {
+    const wrapper = mount(<DevWidgetShowInternalEnvsRow />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use",
+      JSON.stringify({ [DevSettings.SHOW_INTERNAL_ENVS]: "true" }));
+    delete mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS];
+  });
+
+  it("disables show internal envs", () => {
+    mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS] = "true";
+    const wrapper = mount(<DevWidgetShowInternalEnvsRow />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use", "{}");
+    delete mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS];
   });
 });

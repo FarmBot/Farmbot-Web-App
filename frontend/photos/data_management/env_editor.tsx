@@ -1,11 +1,12 @@
+import React from "react";
+import { t } from "../../i18next_wrapper";
 import { TaggedFarmwareEnv } from "farmbot";
 import { some, sortBy } from "lodash";
-import React from "react";
 import { destroy, edit, initSave, save } from "../../api/crud";
 import { Content } from "../../constants";
-import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../settings/dev/dev_support";
 import { error } from "../../toast/toast";
-import { Row, Col, ToggleButton, Help } from "../../ui";
+import { Row, Col, Help } from "../../ui";
 import { ClearFarmwareData } from "./clear_farmware_data";
 import { EnvEditorProps } from "./interfaces";
 
@@ -28,26 +29,15 @@ const HIDDEN_PREFIXES = [
 export const EnvEditor = (props: EnvEditorProps) => {
   const [newKey, setNewKey] = React.useState("");
   const [newValue, setNewValue] = React.useState("");
-  const [hidden, setHidden] = React.useState(true);
   return <div className={"farmware-env-editor"}>
-    <label>{props.title || t("env editor")}</label>
-    <Help text={Content.FARMWARE_ENV_EDITOR_INFO} />
-    <ClearFarmwareData farmwareEnvs={props.farmwareEnvs}>
-      {t("delete all")}
-    </ClearFarmwareData>
-    <div className={"env-hide-toggle"}>
-      <label>{t("hide internal envs")}</label>
-      <ToggleButton toggleValue={hidden} toggleAction={() => setHidden(!hidden)} />
-    </div>
-    {!hidden &&
-      <div className={"env-editor-warning"}>
-        <p>{t(Content.FARMWARE_ENV_EDITOR_WARNING)}</p>
-      </div>}
+    <label>{props.title}</label>
+    {props.title && <Help text={Content.FARMWARE_ENV_EDITOR_INFO} />}
+    <Row className={"no-margin"} />
     <Row>
       <Col xs={ColumnWidth.key}>
         <input
           value={newKey}
-          placeholder={t("key")}
+          placeholder={t("Setting name (key)")}
           onChange={e => setNewKey(e.currentTarget.value)} />
       </Col>
       <Col xs={ColumnWidth.value}>
@@ -72,11 +62,27 @@ export const EnvEditor = (props: EnvEditorProps) => {
     </Row>
     <hr />
     {sortBy(props.farmwareEnvs, "body.id").reverse()
-      .filter(farmwareEnv => !hidden || !some(HIDDEN_PREFIXES.map(prefix =>
+      .filter(farmwareEnv => !some(HIDDEN_PREFIXES.map(prefix =>
         farmwareEnv.body.key.startsWith(prefix))))
       .map(farmwareEnv =>
         <FarmwareEnvRow key={farmwareEnv.uuid + farmwareEnv.body.value}
           dispatch={props.dispatch} farmwareEnv={farmwareEnv} />)}
+    {DevSettings.showInternalEnvsEnabled() && <label>{t("internal envs")}</label>}
+    {DevSettings.showInternalEnvsEnabled() &&
+      <ClearFarmwareData farmwareEnvs={props.farmwareEnvs}>
+        {t("delete all")}
+      </ClearFarmwareData>}
+    {DevSettings.showInternalEnvsEnabled() &&
+      <div className={"env-editor-warning"}>
+        <p>{t(Content.FARMWARE_ENV_EDITOR_WARNING)}</p>
+      </div>}
+    {DevSettings.showInternalEnvsEnabled() &&
+      sortBy(props.farmwareEnvs, "body.id").reverse()
+        .filter(farmwareEnv => some(HIDDEN_PREFIXES.map(prefix =>
+          farmwareEnv.body.key.startsWith(prefix))))
+        .map(farmwareEnv =>
+          <FarmwareEnvRow key={farmwareEnv.uuid + farmwareEnv.body.value}
+            dispatch={props.dispatch} farmwareEnv={farmwareEnv} />)}
   </div>;
 };
 
