@@ -66,6 +66,18 @@ describe("<EnvEditor />", () => {
     expect(error).toHaveBeenCalledWith("Key cannot be blank.");
   });
 
+  it("doesn't save duplicate key", () => {
+    const p = fakeProps();
+    const farmwareEnv = fakeFarmwareEnv();
+    farmwareEnv.body.key = "key";
+    p.farmwareEnvs = [farmwareEnv];
+    const wrapper = mount(<EnvEditor {...p} />);
+    inputChange(wrapper, 0, "key");
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
+    expect(initSave).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Key has already been taken.");
+  });
+
   it("edits key", () => {
     const p = fakeProps();
     const farmwareEnv = fakeFarmwareEnv();

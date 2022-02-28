@@ -51,6 +51,9 @@ export const EnvEditor = (props: EnvEditorProps) => {
           title={t("add")}
           onClick={() => {
             if (!newKey) { return error(t("Key cannot be blank.")); }
+            if (props.farmwareEnvs.map(x => x.body.key).includes(newKey)) {
+              return error(t("Key has already been taken."));
+            }
             props.dispatch(initSave("FarmwareEnv",
               { key: newKey, value: newValue }));
             setNewKey("");
