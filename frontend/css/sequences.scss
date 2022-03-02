@@ -41,6 +41,11 @@
   }
   .sequence-editor-content {
     margin-right: -15px;
+    .sequence-description {
+      a {
+        text-decoration: underline !important;
+      }
+    }
   }
   .copy-item {
     &:hover {

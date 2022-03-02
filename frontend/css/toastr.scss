@@ -58,6 +58,11 @@
     .toast-title,
     .toast-message {
       color: $dark_gray;
+      .markdown {
+        * {
+          color: $dark_gray;
+        }
+      }
     }
   }
   &.green,
@@ -69,6 +74,11 @@
     .toast-title,
     .toast-message {
       color: $off_white;
+      .markdown {
+        * {
+          color: $off_white;
+        }
+      }
     }
   }
 }
@@ -83,6 +93,14 @@
 .toast-message {
   pointer-events: none;
   font-size: 1.3rem;
+  .markdown {
+    p {
+      width: unset;
+      text-overflow: unset;
+      overflow: unset;
+      white-space: unset;
+    }
+  }
 }
 
 .toast-loader {

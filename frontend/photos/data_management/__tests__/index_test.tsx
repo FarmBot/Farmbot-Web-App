@@ -1,7 +1,7 @@
 let mockDev = false;
 jest.mock("../../../settings/dev/dev_support", () => ({
   DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
+    showInternalEnvsEnabled: () => mockDev,
     overriddenFbosVersion: jest.fn(),
   }
 }));

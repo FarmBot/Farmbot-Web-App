@@ -66,15 +66,13 @@ export class TileExecute
     const { currentStep, currentSequence, resources,
     } = this.props;
     const { sequence_id } = currentStep.args;
-    const calleeUuid = sequence_id
-      ? findSequenceById(resources, sequence_id).uuid
+    const callee = sequence_id
+      ? findSequenceById(resources, sequence_id)
       : undefined;
-    const calledSequenceVariableData = calleeUuid
-      ? resources.sequenceMetas[calleeUuid]
+    const calledSequenceVariableData = callee?.uuid
+      ? resources.sequenceMetas[callee.uuid]
       : undefined;
-    const pinned = sequence_id
-      ? findSequenceById(resources, sequence_id).body.pinned
-      : undefined;
+    const pinned = callee?.body.pinned;
     const hasVariables = Object.values(calledSequenceVariableData || {})
       .filter(v => v && isParameterDeclaration(v.celeryNode))
       .length > 0;
@@ -84,7 +82,8 @@ export class TileExecute
         pinned ? "pinned" : "",
         hasVariables ? "" : "no-inputs",
       ].join(" ")}
-      helpText={ToolTips.EXECUTE_SEQUENCE}
+      helpText={callee?.body.description || ToolTips.EXECUTE_SEQUENCE}
+      enableMarkdown={!!callee?.body.description}
       pinnedView={this.pinnedView}
       togglePinnedView={this.togglePinnedView}>
       {(!currentStep.args.sequence_id || !this.pinnedView) &&

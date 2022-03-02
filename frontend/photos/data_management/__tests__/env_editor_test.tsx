@@ -5,6 +5,13 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../../settings/dev/dev_support", () => ({
+  DevSettings: {
+    showInternalEnvsEnabled: () => mockDev,
+  }
+}));
+
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { mount, ReactWrapper } from "enzyme";
@@ -13,6 +20,7 @@ import { EnvEditorProps } from "../interfaces";
 import { destroy, edit, initSave, save } from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { error } from "../../../toast/toast";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<EnvEditor />", () => {
   const fakeProps = (): EnvEditorProps => ({
@@ -36,8 +44,8 @@ describe("<EnvEditor />", () => {
   });
 
   it("shows warning", () => {
+    mockDev = true;
     const wrapper = mount(<EnvEditor {...fakeProps()} />);
-    wrapper.find("button").at(1).simulate("click");
     expect(wrapper.text().toLowerCase()).toContain("warning");
   });
 
@@ -45,7 +53,7 @@ describe("<EnvEditor />", () => {
     const wrapper = mount(<EnvEditor {...fakeProps()} />);
     inputChange(wrapper, 0, "key");
     inputChange(wrapper, 1, "value");
-    wrapper.find("button").at(2).simulate("click");
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv",
       { key: "key", value: "value" });
     expect(error).not.toHaveBeenCalled();
@@ -53,9 +61,21 @@ describe("<EnvEditor />", () => {
 
   it("doesn't save blank key", () => {
     const wrapper = mount(<EnvEditor {...fakeProps()} />);
-    wrapper.find("button").at(2).simulate("click");
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
     expect(initSave).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Key cannot be blank.");
+  });
+
+  it("doesn't save duplicate key", () => {
+    const p = fakeProps();
+    const farmwareEnv = fakeFarmwareEnv();
+    farmwareEnv.body.key = "key";
+    p.farmwareEnvs = [farmwareEnv];
+    const wrapper = mount(<EnvEditor {...p} />);
+    inputChange(wrapper, 0, "key");
+    clickButton(wrapper, 0, "", { icon: "fa-plus" });
+    expect(initSave).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Key has already been taken.");
   });
 
   it("edits key", () => {
@@ -85,7 +105,18 @@ describe("<EnvEditor />", () => {
     const farmwareEnv = fakeFarmwareEnv();
     p.farmwareEnvs = [farmwareEnv];
     const wrapper = mount(<EnvEditor {...p} />);
-    wrapper.find("button").last().simulate("click");
+    clickButton(wrapper, 1, "", { icon: "fa-times" });
+    expect(destroy).toHaveBeenCalledWith(farmwareEnv.uuid);
+  });
+
+  it("deletes internal env", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const farmwareEnv = fakeFarmwareEnv();
+    farmwareEnv.body.key = "camera";
+    p.farmwareEnvs = [farmwareEnv];
+    const wrapper = mount(<EnvEditor {...p} />);
+    clickButton(wrapper, 2, "", { icon: "fa-times" });
     expect(destroy).toHaveBeenCalledWith(farmwareEnv.uuid);
   });
 });

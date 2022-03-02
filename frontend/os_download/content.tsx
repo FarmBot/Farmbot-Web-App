@@ -65,8 +65,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       imageUrl: RPI4().imageUrl,
       releaseTag: RPI4().releaseTag,
       kits: [
-        "Genesis v1.6.1 (red cable)",
-        "Genesis XL v1.6.1 (red cable)",
+        "Genesis v1.6.1 (white cable)",
+        "Genesis XL v1.6.1 (white cable)",
       ],
     }]
     : []),

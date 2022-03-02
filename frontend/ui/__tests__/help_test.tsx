@@ -16,4 +16,12 @@ describe("<Help />", () => {
     const wrapper = mount(<Help {...fakeProps()} />);
     expect(wrapper.text()).toContain("tip");
   });
+
+  it("returns help markdown", () => {
+    const p = fakeProps();
+    p.enableMarkdown = true;
+    p.text = "# title";
+    const wrapper = mount(<Help {...p} />);
+    expect(wrapper.text()).not.toContain("#");
+  });
 });

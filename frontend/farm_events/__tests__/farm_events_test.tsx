@@ -45,7 +45,7 @@ describe("<FarmEvents />", () => {
     expect(item.hasClass("gray")).toBeFalsy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
-      .toEqual(Path.sequences("every_4_hours"));
+      .toEqual(Path.sequences("Every_4_hours"));
   });
 
   it("renders regimen FarmEvent lacking a subheading", () => {
@@ -70,7 +70,7 @@ describe("<FarmEvents />", () => {
     expect(item.hasClass("gray")).toBeFalsy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
-      .toEqual(Path.regimens("every_4_hours"));
+      .toEqual(Path.regimens("Every_4_hours"));
   });
 
   it("filters farm events: finds none", () => {

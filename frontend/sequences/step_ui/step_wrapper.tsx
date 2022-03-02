@@ -26,6 +26,7 @@ export interface StepWrapperProps {
   links?: React.ReactElement[];
   pinnedView?: boolean;
   togglePinnedView?(): void;
+  enableMarkdown?: boolean;
 }
 
 export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
@@ -61,6 +62,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
       <StepHeader
         className={this.props.className}
         helpText={this.props.helpText}
+        enableMarkdown={this.props.enableMarkdown}
         links={this.props.links}
         currentSequence={this.props.currentSequence}
         currentStep={this.props.currentStep}

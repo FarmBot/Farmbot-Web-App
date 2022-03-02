@@ -24,7 +24,7 @@ describe("addRegimen()", () => {
         kind: "Regimen"
       })
     });
-    expect(push).toHaveBeenCalledWith(Path.regimens("new_regimen_0"));
+    expect(push).toHaveBeenCalledWith(Path.regimens("New_regimen_0"));
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

@@ -58,6 +58,12 @@ export interface SettingDescriptionProps {
 export interface SettingProps
   extends DesignerSettingsPropsBase, SettingDescriptionProps { }
 
+export interface CustomSettingsProps {
+  dispatch: Function;
+  settingsPanelState: SettingsPanelState;
+  farmwareEnvs: TaggedFarmwareEnv[];
+}
+
 export interface OtherSettingsProps {
   dispatch: Function;
   settingsPanelState: SettingsPanelState;

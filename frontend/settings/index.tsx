@@ -24,10 +24,10 @@ import { mapStateToProps } from "./state_to_props";
 import { Actions } from "../constants";
 import { ExtraSettings } from "../farm_designer/map/easter_eggs/bugs";
 import { OtherSettings } from "./other_settings";
+import { CustomSettings } from "./custom_settings";
 import { AccountSettings } from "./account/account_settings";
 import { DevSettingsRows } from "./dev/dev_settings";
 import { bulkToggleControlPanel, ToggleSettingsOpen } from "./toggle_section";
-import { EnvEditor } from "../photos/data_management/env_editor";
 import { BooleanSetting } from "../session_keys";
 import { ChangeOwnershipForm } from "./transfer_ownership/change_ownership_form";
 import { SetupWizardSettings } from "../wizard/settings";
@@ -153,6 +153,9 @@ export class RawDesignerSettings
           getConfigValue={getConfigValue}
           onReset={MCUFactoryReset}
           botOnline={botOnline} />
+        <CustomSettings {...commonProps}
+          dispatch={this.props.dispatch}
+          farmwareEnvs={this.props.farmwareEnvs} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
         <AccountSettings {...commonProps}
@@ -162,10 +165,6 @@ export class RawDesignerSettings
           searchTerm={this.props.searchTerm}
           getConfigValue={getConfigValue}
           sourceFbosConfig={sourceFbosConfig} />
-        {showByTerm("env", this.props.searchTerm) &&
-          <EnvEditor
-            dispatch={this.props.dispatch}
-            farmwareEnvs={this.props.farmwareEnvs} />}
         {showByTerm("setup", this.props.searchTerm) &&
           <SetupWizardSettings
             dispatch={this.props.dispatch}
@@ -190,6 +189,6 @@ const showByTerm = (term: string, searchTerm: string) =>
   getUrlQuery("only") == term || searchTerm.toLowerCase() == term.toLowerCase();
 
 export const showByEveryTerm = (term: string, searchTerm: string) =>
-  searchTerm == term && getHighlightName() == urlFriendly(term);
+  searchTerm == term && getHighlightName() == urlFriendly(term).toLowerCase();
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);

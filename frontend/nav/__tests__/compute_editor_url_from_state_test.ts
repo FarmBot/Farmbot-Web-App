@@ -31,7 +31,7 @@ describe("computeEditorUrlFromState", () => {
   it("computes another URL when a sequence _is_ selected", () => {
     mockState.resources.consumers.sequences.current = mockSequence.uuid;
     const result = computeEditorUrlFromState("Sequence")();
-    expect(result).toBe(Path.designerSequences("sequence_123"));
+    expect(result).toBe(Path.designerSequences("Sequence_123"));
   });
 
   it("computes a URL when no regimen is selected", () => {
@@ -43,6 +43,6 @@ describe("computeEditorUrlFromState", () => {
   it("computes another URL when a regimen _is_ selected", () => {
     mockState.resources.consumers.regimens.currentRegimen = mockRegimen.uuid;
     const result = computeEditorUrlFromState("Regimen")();
-    expect(result).toBe(Path.regimens("regimen_123"));
+    expect(result).toBe(Path.regimens("Regimen_123"));
   });
 });

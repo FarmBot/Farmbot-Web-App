@@ -5,7 +5,7 @@
 <% end %>
 <% if (request.has_params? || request.has_body?) %>
 <% if request.display_body.length > 4 %>
-### Request
+**Request**
 
 ```
 <%=
@@ -14,7 +14,7 @@
 ```
 <% end %>
 <% end %>
-### Response
+**Response**
 
 ```
 <%=

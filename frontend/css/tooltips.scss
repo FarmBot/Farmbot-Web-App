@@ -21,6 +21,10 @@
       width: 250px;
     }
   }
+  .bp3-popover-content {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
 }
 
 .help-text-content {
@@ -32,6 +36,17 @@
     }
     .fa-external-link {
       margin-left: 0.5rem;
+    }
+  }
+  .markdown {
+    a {
+      text-decoration: underline !important;
+    }
+    p {
+      width: unset;
+      text-overflow: unset;
+      overflow: unset;
+      white-space: unset;
     }
   }
 }

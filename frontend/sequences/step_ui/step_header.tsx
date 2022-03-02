@@ -25,6 +25,7 @@ export interface StepHeaderProps {
   monacoEditor: boolean | undefined;
   toggleMonacoEditor: (() => void) | undefined;
   links: React.ReactElement[] | undefined;
+  enableMarkdown?: boolean;
 }
 
 interface StepHeaderState {
@@ -69,6 +70,7 @@ export class StepHeader
             pinnedView={this.props.pinnedView}
             togglePinnedView={this.props.togglePinnedView}
             helpText={t(this.props.helpText)}
+            enableMarkdown={this.props.enableMarkdown}
             links={this.props.links}
             viewRaw={this.props.viewRaw}
             toggleViewRaw={this.props.toggleViewRaw}

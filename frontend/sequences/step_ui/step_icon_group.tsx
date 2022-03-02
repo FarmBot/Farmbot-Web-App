@@ -26,6 +26,7 @@ export interface StepIconBarProps {
   pinnedView: boolean | undefined;
   togglePinnedView: (() => void) | undefined;
   readOnly: boolean;
+  enableMarkdown?: boolean;
 }
 
 export function StepUpDownButtonPopover(
@@ -73,7 +74,7 @@ export function StepIconGroup(props: StepIconBarProps) {
         title={t("toggle code view")}
         onClick={props.toggleViewRaw} />}
     <Help text={helpText} position={Position.TOP} title={t("help")}
-      links={props.links} />
+      links={props.links} enableMarkdown={props.enableMarkdown} />
     {!readOnly && <i className={"fa fa-trash"}
       title={t("delete step")}
       onClick={onTrash} />}

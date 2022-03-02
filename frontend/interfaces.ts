@@ -46,6 +46,7 @@ export interface SettingsPanelState {
   pin_guard: boolean;
   pin_reporting: boolean;
   parameter_management: boolean;
+  custom_settings: boolean;
   farm_designer: boolean;
   account: boolean;
   other_settings: boolean;
