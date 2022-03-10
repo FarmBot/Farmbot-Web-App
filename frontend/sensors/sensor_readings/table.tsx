@@ -54,7 +54,7 @@ export const TableRow = (props: TableRowProps) => {
     sensorReading, timeSettings, period, sensorName, hover, hovered,
   } = props;
   const { uuid, body } = sensorReading;
-  const { value, x, y, z, created_at, mode } = body;
+  const { value, x, y, z, read_at, mode } = body;
   return <tr key={uuid}
     className={`table-row ${period} ${hovered === uuid ? "selected" : ""}`}
     onMouseEnter={() => hover(uuid)}
@@ -73,7 +73,7 @@ export const TableRow = (props: TableRowProps) => {
       {!isUndefined(props.distance) && ` ${round(props.distance)}mm ${t("away")}`}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
-      {formatTime(moment(created_at), timeSettings, "MMM D")}
+      {formatTime(moment(read_at), timeSettings, "MMM D")}
     </td>
   </tr>;
 };

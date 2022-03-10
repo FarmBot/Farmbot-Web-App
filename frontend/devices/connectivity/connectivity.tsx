@@ -111,7 +111,7 @@ export class Connectivity
                 <button
                   className={"fb-button yellow"}
                   type={"button"}
-                  onClick={restartFirmware}
+                  onClick={() => { restartFirmware(); }}
                   title={t("restart firmware")}>
                   {t("restart firmware")}
                 </button>

@@ -43,7 +43,7 @@ export function Firmware(props: FirmwareProps) {
         description={Content.RESTART_FIRMWARE}
         buttonText={t("RESTART")}
         color={"yellow"}
-        action={restartFirmware} />
+        action={() => { restartFirmware(); }} />
     </Collapse>
   </Highlight>;
 }

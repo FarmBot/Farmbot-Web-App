@@ -18,6 +18,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
 import { sync } from "../../actions";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -107,6 +108,7 @@ describe("<Connectivity />", () => {
     p.flags.botFirmware = false;
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.find(".fix-firmware-buttons").length).toEqual(1);
+    clickButton(wrapper, 1, "restart firmware");
   });
 
   it("doesn't display fix firmware buttons", () => {

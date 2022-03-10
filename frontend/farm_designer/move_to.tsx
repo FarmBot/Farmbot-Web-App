@@ -69,11 +69,13 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
           value={this.state.z} />
         <Col xs={3}>
           <button
-            onClick={() => move({
-              ...this.vector,
-              speed: this.state.speed,
-              safeZ: this.state.safeZ,
-            })}
+            onClick={() => {
+              move({
+                ...this.vector,
+                speed: this.state.speed,
+                safeZ: this.state.safeZ,
+              });
+            }}
             className={["fb-button green",
               (botOnline && !locked) ? "" : "pseudo-disabled",
             ].join(" ")}

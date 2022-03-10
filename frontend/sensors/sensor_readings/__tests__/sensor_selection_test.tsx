@@ -1,17 +1,16 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { SensorSelection } from "../sensor_selection";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { SensorSelectionProps } from "../interfaces";
 
 describe("<SensorSelection />", () => {
-  function fakeProps(): SensorSelectionProps {
-    return {
-      selectedSensor: undefined,
-      sensors: [],
-      setSensor: jest.fn(),
-    };
-  }
+  const fakeProps = (): SensorSelectionProps => ({
+    selectedSensor: undefined,
+    sensors: [],
+    setSensor: jest.fn(),
+    allOption: true,
+  });
 
   it("renders", () => {
     const wrapper = mount(<SensorSelection {...fakeProps()} />);

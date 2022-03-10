@@ -1,10 +1,10 @@
-import { Col, Widget, WidgetHeader } from "../ui/index";
-import axios, { AxiosResponse } from "axios";
 import React from "react";
-import { API } from "../api/index";
+import { t } from "../i18next_wrapper";
+import axios, { AxiosResponse } from "axios";
+import { Col, Widget, WidgetHeader } from "../ui";
+import { API } from "../api";
 import { UnsafeError } from "../interfaces";
 import { ResendPanelBody } from "./resend_panel_body";
-import { t } from "../i18next_wrapper";
 
 interface ResendVerificationProps {
   email: string;
@@ -28,8 +28,10 @@ export class ResendVerification
             {t("back")}
           </button>
         </WidgetHeader>
-        <ResendPanelBody onClick={() => resendEmail(this.props.email)
-          .then(this.props.ok, this.props.no)} />
+        <ResendPanelBody onClick={() => {
+          resendEmail(this.props.email)
+            .then(this.props.ok, this.props.no);
+        }} />
       </Widget>
     </Col>;
   }

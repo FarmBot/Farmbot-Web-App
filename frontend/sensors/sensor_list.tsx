@@ -99,8 +99,9 @@ const ReadSensorButton = (props: ReadSensorButtonProps) => {
     className={"fb-button gray"}
     disabled={disabled}
     title={t(`read ${sensorLabel} sensor`)}
-    onClick={() =>
-      readPin(pinNumber, `pin${pinNumber}`, mode as ALLOWED_PIN_MODES)}>
+    onClick={() => {
+      readPin(pinNumber, `pin${pinNumber}`, mode as ALLOWED_PIN_MODES);
+    }}>
     {t("read sensor")}
   </button>;
 };

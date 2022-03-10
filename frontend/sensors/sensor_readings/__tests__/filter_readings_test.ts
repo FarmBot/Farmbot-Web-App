@@ -10,17 +10,17 @@ describe("filterSensorReadings()", () => {
   const createDatedReading = (timestamps: string[]) =>
     timestamps.map(timestamp => {
       const sr = fakeSensorReading();
-      sr.body.created_at = timestamp;
+      sr.body.read_at = timestamp;
       return sr;
     });
 
-  const defaultCreatedAt = "2018-01-10T20:00:00.000Z";
+  const defaultReadAt = "2018-01-10T20:00:00.000Z";
 
   const createPinnedReading = (pins: number[]) =>
     pins.map(pin => {
       const sr = fakeSensorReading();
       sr.body.pin = pin;
-      sr.body.created_at = defaultCreatedAt;
+      sr.body.read_at = defaultReadAt;
       return sr;
     });
 
@@ -30,7 +30,7 @@ describe("filterSensorReadings()", () => {
       sr.body.x = xyzLocation.x;
       sr.body.y = xyzLocation.y;
       sr.body.z = xyzLocation.z;
-      sr.body.created_at = defaultCreatedAt;
+      sr.body.read_at = defaultReadAt;
       return sr;
     });
 
@@ -42,6 +42,7 @@ describe("filterSensorReadings()", () => {
     showPreviousPeriod: false,
     deviation: 0,
     hovered: undefined,
+    addReadingMenuOpen: false,
   });
 
   it("filters by date", () => {
@@ -52,7 +53,7 @@ describe("filterSensorReadings()", () => {
     const result = filterSensorReadings(
       createDatedReading(timestamps), filters)("current");
     expect(result.length).toEqual(1);
-    expect(result[0].body.created_at).toEqual(expected);
+    expect(result[0].body.read_at).toEqual(expected);
   });
 
   it("returns previous period readings", () => {
@@ -65,7 +66,7 @@ describe("filterSensorReadings()", () => {
     const result = filterSensorReadings(
       createDatedReading(timestamps), filters)("previous");
     expect(result.length).toEqual(1);
-    expect(result[0].body.created_at).toEqual(expected);
+    expect(result[0].body.read_at).toEqual(expected);
   });
 
   it("filters by sensor", () => {
@@ -74,7 +75,7 @@ describe("filterSensorReadings()", () => {
     sensor.body.pin = expected;
     const pins = [expected, 11];
     const filters = sensorReadingsState();
-    filters.endDate = moment(defaultCreatedAt).unix() + 1;
+    filters.endDate = moment(defaultReadAt).unix() + 1;
     filters.sensor = sensor;
     const result = filterSensorReadings(
       createPinnedReading(pins), filters)("current");
@@ -86,7 +87,7 @@ describe("filterSensorReadings()", () => {
     const expected = { x: 10, y: 20, z: 30 };
     const locations = [expected, { x: 0, y: 0, z: 0 }];
     const filters = sensorReadingsState();
-    filters.endDate = moment(defaultCreatedAt).unix() + 1;
+    filters.endDate = moment(defaultReadAt).unix() + 1;
     filters.xyzLocation = expected;
     const result = filterSensorReadings(
       createLocatedReading(locations), filters)("current");
@@ -100,7 +101,7 @@ describe("filterSensorReadings()", () => {
     const expected = { x: 10, y: 20, z: undefined };
     const locations = [{ x: 1, y: 2, z: 3 }, { x: 0, y: 0, z: 0 }];
     const filters = sensorReadingsState();
-    filters.endDate = moment(defaultCreatedAt).unix() + 1;
+    filters.endDate = moment(defaultReadAt).unix() + 1;
     filters.xyzLocation = expected;
     filters.deviation = 100;
     const result = filterSensorReadings(

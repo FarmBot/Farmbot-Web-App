@@ -101,7 +101,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
           </p>
           <button className="green fb-button"
             title={t("Export")}
-            onClick={requestAccountExport}>
+            onClick={() => { requestAccountExport(); }}>
             {t("Export")}
           </button>
         </Row>

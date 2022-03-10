@@ -178,7 +178,7 @@ export const FolderButtonCluster =
       <button
         className="fb-button red"
         title={t("delete folder")}
-        onClick={() => deleteFolder(node.id)}>
+        onClick={() => { deleteFolder(node.id); }}>
         <i className="fa fa-trash" />
       </button>
       <button

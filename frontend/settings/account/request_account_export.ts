@@ -20,14 +20,13 @@ export function jsonDownload(data: object) {
   const a = document.createElement("a");
   document.body.appendChild(a);
   a.style.display = "none";
-  const json = JSON.stringify(data),
-    blob = new Blob([json], { type: "octet/stream" }),
-    url = window.URL.createObjectURL(blob);
+  const json = JSON.stringify(data);
+  const blob = new Blob([json], { type: "octet/stream" });
+  const url = window.URL.createObjectURL(blob);
   a.href = url;
   a.download = generateFilename(data);
   a.click();
   window.URL.revokeObjectURL(url);
-  return a;
 }
 
 const ok = (resp: Response) => {
@@ -35,7 +34,7 @@ const ok = (resp: Response) => {
   return data ? jsonDownload(data) : success(t(Content.EXPORT_SENT));
 };
 
-export const requestAccountExport =
-  () => axios
+export const requestAccountExport = () =>
+  axios
     .post(API.current.exportDataPath)
     .then(ok);

@@ -29,7 +29,7 @@ describe("<DemoIframe />", () => {
     el.instance().connectMqtt = () =>
       Promise.resolve() as unknown as Promise<MqttClient>;
     await el.instance().requestAccount();
-    expect(axios.post).toHaveBeenCalled();
+    await expect(axios.post).toHaveBeenCalled();
     expect(el.state().stage).toContain(WAITING_ON_API);
   });
 

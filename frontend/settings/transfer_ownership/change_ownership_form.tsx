@@ -107,7 +107,7 @@ export class ChangeOwnershipForm
             <button
               className={"fb-button gray"}
               title={t("submit")}
-              onClick={() => submitOwnershipChange(this.state)}>
+              onClick={() => { submitOwnershipChange(this.state); }}>
               {t("submit")}
             </button>
           </Row>

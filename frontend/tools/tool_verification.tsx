@@ -33,10 +33,12 @@ export const ToolVerification = (props: ToolVerificationProps) => {
       className={`fb-button yellow ${botOnline ? "" : "pseudo-disabled"}`}
       disabled={arduinoBusy}
       title={botOnline ? "" : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}
-      onClick={() => botOnline
-        ? readPin(toolVerificationPin,
-          `pin${toolVerificationPin}`, 0)
-        : error(t(Content.NOT_AVAILABLE_WHEN_OFFLINE))}>
+      onClick={() => {
+        botOnline
+          ? readPin(toolVerificationPin,
+            `pin${toolVerificationPin}`, 0)
+          : error(t(Content.NOT_AVAILABLE_WHEN_OFFLINE));
+      }}>
       {t("verify")}
     </button>
   </div>;

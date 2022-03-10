@@ -33,7 +33,7 @@ export const filterSensorReadings =
       return sensorReadings
         // Filter by date
         .filter(x => {
-          const readingCreatedAt = moment(x.body.created_at).unix();
+          const readingCreatedAt = moment(x.body.read_at).unix();
           return (readingCreatedAt >= begin && readingCreatedAt < end);
         })
         // Filter by sensor pin

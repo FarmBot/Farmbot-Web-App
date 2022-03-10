@@ -30,8 +30,9 @@ export const PeripheralList = (props: PeripheralListProps) =>
               disabled={props.disabled || props.locked} />
             : <ToggleButton
               toggleValue={toggleValue}
-              toggleAction={() =>
-                peripheral.body.pin && pinToggle(peripheral.body.pin)}
+              toggleAction={() => {
+                peripheral.body.pin && pinToggle(peripheral.body.pin);
+              }}
               title={t(`Toggle ${peripheral.body.label}`)}
               customText={{ textFalse: t("off"), textTrue: t("on") }}
               className={lockedClass(props.locked)}
@@ -65,7 +66,7 @@ export class AnalogSlider
         labelStepSize={255}
         value={this.state.controlled ? this.state.value : this.props.initialValue}
         onChange={value => this.setState({ value, controlled: true })}
-        onRelease={value => pin && writePin(pin, value, ANALOG)} />
+        onRelease={value => { pin && writePin(pin, value, ANALOG); }} />
     </div>;
   }
 }

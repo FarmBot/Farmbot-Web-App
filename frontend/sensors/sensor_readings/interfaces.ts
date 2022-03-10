@@ -6,6 +6,7 @@ export interface SensorReadingsProps {
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
   timeSettings: TimeSettings;
+  dispatch: Function;
 }
 
 export interface SensorReadingsState {
@@ -22,6 +23,8 @@ export interface SensorReadingsState {
   deviation: number;
   /** TaggedSensorReading UUID */
   hovered: string | undefined;
+  /** Add Sensor Reading Menu state. */
+  addReadingMenuOpen: boolean;
 }
 
 export interface SensorReadingsTableProps {
@@ -49,6 +52,7 @@ export interface SensorSelectionProps {
   selectedSensor: TaggedSensor | undefined;
   sensors: TaggedSensor[];
   setSensor: (sensor: TaggedSensor) => void;
+  allOption?: boolean;
 }
 
 export interface LocationSelectionProps {

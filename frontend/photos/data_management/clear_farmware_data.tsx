@@ -8,11 +8,13 @@ export const ClearFarmwareData = (props: ClearFarmwareDataProps) =>
   <button
     className={"fb-button red"}
     title={t("delete all data")}
-    onClick={() => destroyAll("FarmwareEnv", false,
-      t("Are you sure you want to delete all {{ num }} values?", {
-        num: props.farmwareEnvs.length
-      }))
-      .then(() => success(t("Config data successfully deleted.")))
-      .catch(() => error(t("Error deleting config data")))}>
+    onClick={() => {
+      destroyAll("FarmwareEnv", false,
+        t("Are you sure you want to delete all {{ num }} values?", {
+          num: props.farmwareEnvs.length
+        }))
+        .then(() => success(t("Config data successfully deleted.")))
+        .catch(() => error(t("Error deleting config data")));
+    }}>
     {props.children || <i className={"fa fa-trash"} />}
   </button>;
