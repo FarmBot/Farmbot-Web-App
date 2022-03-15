@@ -57,7 +57,7 @@ export class DemoIframe extends React.Component<{}, State> {
     };
 
   requestAccount = () => {
-    return this.connectMqtt().then(this.connectApi);
+    this.connectMqtt().then(this.connectApi);
   };
 
   ok = () => {

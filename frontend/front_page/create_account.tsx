@@ -117,7 +117,7 @@ export function sendEmail(email: string, callback: () => void) {
 export function DidRegister(props: CreateAccountProps) {
   const email = props.get("regEmail");
   return email
-    ? <ResendPanelBody onClick={() => sendEmail(email, props.callback)} />
+    ? <ResendPanelBody onClick={() => { sendEmail(email, props.callback); }} />
     : bail(MISSING_EMAIL);
 }
 

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import moment from "moment";
 import { range, clamp } from "lodash";
 import { SensorReadingPlotProps } from "./interfaces";
@@ -136,13 +136,13 @@ const DataPoints = ({ plotProps, parentProps }: {
     {["previous", "current"].map((period: "current" | "previous") =>
       <g id={period} key={period}>
         {parentProps.readingsForPeriod(period).map(r => {
-          const created_at =
-            moment(r.body.created_at).utcOffset(parentProps.timeSettings.utcOffset);
+          const read_at =
+            moment(r.body.read_at).utcOffset(parentProps.timeSettings.utcOffset);
           const unixMax = calcEndOfPeriod(plotProps.timePeriod,
             plotProps.timeMax.unix(), period);
           /** calculated using scaled plot distance from x-axis end */
           const cx = plotProps.xMax
-            - (unixMax - created_at.unix()) / plotProps.timeScale;
+            - (unixMax - read_at.unix()) / plotProps.timeScale;
           const cy = plotProps.yZero - clamp(r.body.value
             * (r.body.mode == 0 && r.body.value <= 1 ? 1023 : 1), 0, 1023);
           const color = period === "current" ? "black" : "gray";

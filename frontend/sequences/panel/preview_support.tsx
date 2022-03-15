@@ -36,7 +36,7 @@ interface LoadSequenceVersionProps {
   onError(): void;
 }
 
-export const loadSequenceVersion = (props: LoadSequenceVersionProps) =>
+export const loadSequenceVersion = (props: LoadSequenceVersionProps) => {
   axios.get<SequenceResource>(API.current.sequenceVersionsPath + props.id)
     .then(response => {
       const sequence: TaggedSequence = {
@@ -49,6 +49,7 @@ export const loadSequenceVersion = (props: LoadSequenceVersionProps) =>
       sequence.body.body?.map(step => maybeTagStep(step));
       props.onSuccess(sequence);
     }, props.onError);
+};
 
 export interface SequencePreviewProps {
   dispatch: Function;

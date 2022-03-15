@@ -166,7 +166,8 @@ export function refreshOK(payload: TaggedResource): ReduxAction<TaggedResource> 
   return { type: Actions.REFRESH_RESOURCE_OK, payload };
 }
 
-export function refreshNO(payload: GeneralizedError): ReduxAction<GeneralizedError> {
+export function refreshNO(payload: GeneralizedError):
+  ReduxAction<GeneralizedError> {
   return { type: Actions.REFRESH_RESOURCE_NO, payload };
 }
 
@@ -277,6 +278,7 @@ export function urlFor(tag: ResourceName) {
     Regimen: API.current.regimensPath,
     SavedGarden: API.current.savedGardensPath,
     Sensor: API.current.sensorPath,
+    SensorReading: API.current.sensorReadingPath,
     Sequence: API.current.sequencesPath,
     Tool: API.current.toolsPath,
     User: API.current.usersPath,

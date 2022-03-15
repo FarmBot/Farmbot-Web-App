@@ -1,21 +1,20 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
+import moment from "moment";
 import { SensorReadings } from "../sensor_readings";
 import { SensorReadingsProps } from "../interfaces";
 import {
   fakeSensorReading, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
-import moment from "moment";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadings />", () => {
-  function fakeProps(): SensorReadingsProps {
-    return {
-      sensorReadings: [fakeSensorReading()],
-      sensors: [],
-      timeSettings: fakeTimeSettings(),
-    };
-  }
+  const fakeProps = (): SensorReadingsProps => ({
+    sensorReadings: [fakeSensorReading()],
+    sensors: [],
+    timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
+  });
 
   it("renders", () => {
     const wrapper = mount(<SensorReadings {...fakeProps()} />);
@@ -29,6 +28,13 @@ describe("<SensorReadings />", () => {
     expect(wrapper.instance().state.showPreviousPeriod).toEqual(false);
     wrapper.instance().togglePrevious();
     expect(wrapper.instance().state.showPreviousPeriod).toEqual(true);
+  });
+
+  it("toggles add reading menu", () => {
+    const wrapper = mount<SensorReadings>(<SensorReadings {...fakeProps()} />);
+    expect(wrapper.instance().state.addReadingMenuOpen).toEqual(false);
+    wrapper.instance().toggleAddReadingMenu();
+    expect(wrapper.instance().state.addReadingMenuOpen).toEqual(true);
   });
 
   it("sets sensor", () => {

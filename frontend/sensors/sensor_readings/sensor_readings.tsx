@@ -1,5 +1,6 @@
-import * as React from "react";
-import { Widget, WidgetHeader, WidgetBody, WidgetFooter } from "../../ui";
+import React from "react";
+import { t } from "../../i18next_wrapper";
+import { Widget, WidgetHeader, WidgetBody, WidgetFooter, Popover } from "../../ui";
 import { SensorReadingsProps, SensorReadingsState } from "./interfaces";
 import { SensorReadingsTable } from "./table";
 import { filterSensorReadings } from "./filter_readings";
@@ -12,7 +13,8 @@ import { ToolTips } from "../../constants";
 import { TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../../controls/interfaces";
 import { SensorReadingsPlot } from "./graph";
-import { t } from "../../i18next_wrapper";
+import { Position } from "@blueprintjs/core";
+import { AddSensorReadingMenu } from "./add_reading";
 
 export class SensorReadings
   extends React.Component<SensorReadingsProps, SensorReadingsState> {
@@ -24,6 +26,7 @@ export class SensorReadings
     showPreviousPeriod: false,
     deviation: 0,
     hovered: undefined,
+    addReadingMenuOpen: false,
   };
 
   /** Toggle display of previous time period. */
@@ -45,6 +48,10 @@ export class SensorReadings
     deviation: 0,
   });
 
+  toggleAddReadingMenu = () => {
+    this.setState({ addReadingMenuOpen: !this.state.addReadingMenuOpen });
+  };
+
   render() {
     /** Return filtered sensor readings for the specified period.
      * Must be in render() so that state updates. */
@@ -60,12 +67,25 @@ export class SensorReadings
           onClick={this.clearFilters}>
           {t("clear filters")}
         </button>
+        <Popover position={Position.TOP} usePortal={false}
+          isOpen={this.state.addReadingMenuOpen}
+          target={<button className={"fb-button green"}
+            title={t("add sensor reading")}
+            onClick={this.toggleAddReadingMenu}>
+            <i className={"fa fa-plus"} />
+          </button>}
+          content={<AddSensorReadingMenu
+            sensors={this.props.sensors}
+            closeMenu={this.toggleAddReadingMenu}
+            timeSettings={this.props.timeSettings}
+            dispatch={this.props.dispatch} />} />
       </WidgetHeader>
       <WidgetBody>
         <SensorSelection
           selectedSensor={this.state.sensor}
           sensors={this.props.sensors}
-          setSensor={this.setSensor} />
+          setSensor={this.setSensor}
+          allOption={true} />
         <TimePeriodSelection
           timePeriod={this.state.timePeriod}
           endDate={this.state.endDate}

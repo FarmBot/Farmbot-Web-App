@@ -87,8 +87,9 @@ export const upgradeSequence = (
   id: number | undefined,
   sequenceVersionId: number | undefined,
 ) =>
-  () =>
+  () => {
     axios.post(`${API.current.sequencesPath}${id}/upgrade/${sequenceVersionId}`)
       .then(() => success(t("Sequence upgraded.")),
         (err: AxiosErrorResponse) =>
           error(prettyPrintApiErrors(err), { title: t("Upgrade error") }));
+  };

@@ -63,7 +63,7 @@ const PendingInstallNameError =
         <button
           className="fb-button red no-float"
           title={t("retry fetch package name")}
-          onClick={() => retryFetchPackageName(installation.body.id)}>
+          onClick={() => { retryFetchPackageName(installation.body.id); }}>
           {t("Retry")}
         </button>
       </div>

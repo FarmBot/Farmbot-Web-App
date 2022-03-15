@@ -66,7 +66,8 @@ export class RawDesignerSensors
         <SensorReadings
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
-          timeSettings={this.props.timeSettings} />
+          timeSettings={this.props.timeSettings}
+          dispatch={this.props.dispatch} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

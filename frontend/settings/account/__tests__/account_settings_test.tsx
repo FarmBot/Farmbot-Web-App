@@ -8,6 +8,10 @@ jest.mock("../../../config_storage/actions", () => ({
   getWebAppConfigValue: () => () => true,
 }));
 
+jest.mock("../request_account_export", () => ({
+  requestAccountExport: jest.fn(),
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import {
@@ -23,6 +27,8 @@ import { setWebAppConfigValue } from "../../../config_storage/actions";
 import { NumericSetting } from "../../../session_keys";
 import { Slider } from "@blueprintjs/core";
 import { ToggleButton } from "../../../ui";
+import { clickButton } from "../../../__test_support__/helpers";
+import { requestAccountExport } from "../request_account_export";
 
 describe("<AccountSettings />", () => {
   const fakeProps = (): AccountSettingsProps => ({
@@ -53,6 +59,12 @@ describe("<AccountSettings />", () => {
     expect(edit).toHaveBeenCalledWith(p.user, { email: "new email" });
     expect(save).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
+  });
+
+  it("requests export", () => {
+    const wrapper = shallow(<AccountSettings {...fakeProps()} />);
+    clickButton(wrapper, 0, "export");
+    expect(requestAccountExport).toHaveBeenCalled();
   });
 });
 

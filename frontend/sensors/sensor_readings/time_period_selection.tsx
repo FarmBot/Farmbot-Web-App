@@ -27,7 +27,7 @@ const today = moment().startOf("day").unix();
 export const getEndDate = (sensorReadings: TaggedSensorReading[]) =>
   sensorReadings.length > 0
     ? moment(cloneDeep(sensorReadings).reverse()[0]
-      .body.created_at).startOf("day").unix()
+      .body.read_at).startOf("day").unix()
     : today;
 
 enum ColWidth {

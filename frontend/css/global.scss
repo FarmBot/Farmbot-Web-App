@@ -605,6 +605,24 @@ a {
   label {
     margin-bottom: 5px;
   }
+  .bp3-popover-wrapper {
+    float: right;
+  }
+}
+
+.add-sensor-reading-menu {
+  width: 300px;
+  .green {
+    margin-bottom: 1rem;
+  }
+  .reading-location,
+  .add-reading-value-form {
+    margin-top: 1rem;
+  }
+}
+
+.sensor-selection {
+  margin-bottom: 4rem !important;
 }
 
 .sensor-readings-plot {

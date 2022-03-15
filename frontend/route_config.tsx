@@ -59,6 +59,7 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
     const { $ } = info;
     return {
       $,
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       enter: async () => {
         try {
           const comp = (await info.getModule())[info.key];

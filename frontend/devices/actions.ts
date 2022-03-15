@@ -287,7 +287,7 @@ export function MCUFactoryReset() {
     return;
   }
   maybeNoop();
-  return getDevice().resetMCU().catch(commandErr("MCU Reset"));
+  getDevice().resetMCU().catch(commandErr("MCU Reset"));
 }
 
 /** Toggle a firmware setting. */

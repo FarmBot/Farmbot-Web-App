@@ -16,9 +16,10 @@ export const fetchBulletinContent =
       .then(response => Promise.resolve(response.data));
   };
 
-export const seedAccount = (onClick?: () => void) => (ddi: DropDownItem) =>
+export const seedAccount = (onClick?: () => void) => (ddi: DropDownItem) => {
   axios.post(API.current.accountSeedPath, { product_line: ddi.value })
     .then(() => {
       info(t("Seeding in progress."), { title: t("Busy") });
       onClick?.();
     }, (err: UnsafeError) => toastErrors({ err }));
+};
