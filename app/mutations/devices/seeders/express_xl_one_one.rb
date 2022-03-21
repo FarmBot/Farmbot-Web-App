@@ -2,7 +2,7 @@ module Devices
   module Seeders
     class ExpressXlOneOne < AbstractExpress
       def settings_device_name
-        device.update!(name: "FarmBot Express XL")
+        device.update!(name: Names::EXPRESS_XL)
       end
 
       def settings_firmware

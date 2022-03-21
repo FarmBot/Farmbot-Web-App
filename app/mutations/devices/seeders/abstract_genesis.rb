@@ -18,7 +18,7 @@ module Devices
       end
 
       def settings_device_name
-        device.update!(name: "FarmBot Genesis")
+        device.update!(name: Names::GENESIS)
       end
 
       def settings_change_firmware_config_defaults
@@ -115,27 +115,18 @@ module Devices
       def tools_rotary; end
 
       def sequences_mount_tool
-        s = SequenceSeeds::MOUNT_TOOL.deep_dup
-        tool_id = device.tools.find_by!(name: ToolNames::SEEDER).id
+        install_sequence_version_by_name("Mount Tool")
+      end
 
-        default_value = s.dig(:args, :locals, :body, 0, :args, :default_value)
-        if_args = s.dig(:body, 4, :args)
-        else_branch = if_args.dig(:_else, :args)
-        read_pin = s.dig(:body, 3, :args, :pin_number, :args)
-
-        default_value[:args][:tool_id] = tool_id
-        else_branch[:sequence_id] = tool_error_id
-        read_pin[:pin_id] = tool_verification_id
-        if_args[:lhs][:args][:pin_id] = tool_verification_id
-
-        Sequences::Create.run!(s, device: device)
+      def sequences_dismount_tool
+        install_sequence_version_by_name("Dismount Tool")
       end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
 
         seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
-        mount_tool_id = device.sequences.find_by!(name: "Mount tool").id
+        mount_tool_id = device.sequences.find_by!(name: "Mount Tool").id
 
         s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
         s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:tool_id] = seeder_id
@@ -151,7 +142,6 @@ module Devices
         s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_bin_id
 
         Sequences::Create.run!(s, device: device)
-        # when ProductLines::EXPRESS then raise "TODO"
       end
 
       def settings_firmware
