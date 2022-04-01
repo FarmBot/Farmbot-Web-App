@@ -59,6 +59,7 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
             showName={false}
             dispatch={this.props.dispatch}
             sequence={this.props.sequence}
+            sequences={this.props.sequences}
             resources={this.props.resources}
             syncStatus={this.props.syncStatus}
             hardwareFlags={this.props.hardwareFlags}

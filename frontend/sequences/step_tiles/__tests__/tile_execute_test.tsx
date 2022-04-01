@@ -80,9 +80,6 @@ describe("<TileExecute />", () => {
     mockSequence.body.name = "Pinned Sequence";
     const block = mount<TileExecute>(<TileExecute {...p} />);
     expect(block.html().toLowerCase()).toContain("placeholder=\"pinned sequence");
-    expect(block.html()).not.toContain("sequence-select-box");
-    block.instance().togglePinnedView();
-    expect(block.html()).toContain("sequence-select-box");
   });
 
   it("selects sequence", () => {

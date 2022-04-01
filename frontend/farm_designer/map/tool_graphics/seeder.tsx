@@ -11,7 +11,7 @@ enum SeederDimensions {
   needleBaseLength = 16,
   needleRadius = 2,
   needleLength = 38,
-  offset = 12.5,
+  offset = 17.5,
 }
 
 export const Seeder = (props: ToolGraphicProps) => {

@@ -349,14 +349,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: Path.route(Path.designerSequences("commands")),
-    getModule,
-    key,
-    getChild: () => import("./sequences/panel/commands"),
-    childKey: "DesignerSequenceCommands"
-  }),
-  route({
-    children: true,
     $: Path.route(Path.designerSequences(":sequence_name")),
     getModule,
     key,

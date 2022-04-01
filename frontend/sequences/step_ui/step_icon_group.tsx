@@ -23,8 +23,6 @@ export interface StepIconBarProps {
   monacoEditor: boolean | undefined;
   toggleMonacoEditor: (() => void) | undefined;
   links: React.ReactElement[] | undefined;
-  pinnedView: boolean | undefined;
-  togglePinnedView: (() => void) | undefined;
   readOnly: boolean;
   enableMarkdown?: boolean;
 }
@@ -61,10 +59,6 @@ export function StepIconGroup(props: StepIconBarProps) {
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
-    {props.togglePinnedView &&
-      <i className={`fa fa-thumb-tack ${props.pinnedView ? "enabled" : ""}`}
-        title={t("toggle pinned view")}
-        onClick={props.togglePinnedView} />}
     {props.toggleMonacoEditor &&
       <i className={`fa fa-font ${props.monacoEditor ? "enabled" : ""}`}
         title={t("toggle fancy editor")}

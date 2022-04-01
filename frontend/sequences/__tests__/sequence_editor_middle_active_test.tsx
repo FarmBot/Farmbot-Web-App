@@ -105,6 +105,7 @@ import { loadSequenceVersion } from "../panel/preview_support";
 import { act } from "react-dom/test-utils";
 import { VariableType } from "../locals_list/locals_list_support";
 import { generateNewVariableLabel } from "../locals_list/locals_list";
+import { StepButtonCluster } from "../step_button_cluster";
 
 describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -113,6 +114,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     return {
       dispatch: jest.fn(),
       sequence,
+      sequences: [sequence],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
@@ -653,6 +655,10 @@ describe("<AddCommandButton />", () => {
     dispatch: jest.fn(),
     index: 1,
     stepCount: 0,
+    sequence: fakeSequence(),
+    sequences: [],
+    farmwareData: undefined,
+    resources: buildResourceIndex().index,
   });
 
   it("dispatches new step position", () => {
@@ -667,13 +673,11 @@ describe("<AddCommandButton />", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it("navigates", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
-    const p = fakeProps();
-    p.stepCount = 1;
-    const wrapper = shallow(<AddCommandButton {...p} />);
+  it("closes cluster", () => {
+    const wrapper = shallow(<AddCommandButton {...fakeProps()} />);
     wrapper.find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.designerSequences("commands"));
+    wrapper.find(StepButtonCluster).props().close();
+    expect(wrapper.html()).not.toContain("open");
   });
 });
 

@@ -13,6 +13,7 @@ import { hoverSequenceStep } from "../farm_designer/map/sequence_visualization";
 
 export interface AllStepsProps {
   sequence: TaggedSequence;
+  sequences?: TaggedSequence[];
   onDrop(index: number, key: string): void;
   dispatch: Function;
   readOnly: boolean;
@@ -55,7 +56,11 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
           {!this.props.readOnly &&
-            <AddCommandButton dispatch={dispatch} index={index} stepCount={1} />}
+            <AddCommandButton dispatch={dispatch} index={index} stepCount={1}
+              sequence={this.props.sequence}
+              farmwareData={this.props.farmwareData}
+              sequences={this.props.sequences}
+              resources={this.props.resources} />}
           <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}
