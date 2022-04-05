@@ -13,9 +13,6 @@ describe("<StepHeader />", () => {
     readOnly: false,
     index: 0,
     executeSequence: undefined,
-    pinnedSequence: undefined,
-    pinnedView: undefined,
-    togglePinnedView: undefined,
     viewRaw: undefined,
     toggleViewRaw: undefined,
     monacoEditor: undefined,
@@ -39,9 +36,9 @@ describe("<StepHeader />", () => {
 
   it("renders pinned sequence", () => {
     const p = fakeProps();
-    p.pinnedSequence = fakeSequence().body;
-    p.pinnedSequence.color = "red";
-    p.pinnedSequence.name = "Pinned Sequence";
+    p.executeSequence = fakeSequence().body;
+    p.executeSequence.color = "red";
+    p.executeSequence.name = "Pinned Sequence";
     const wrapper = mount(<StepHeader {...p} />);
     const step = wrapper.find("div").first();
     expect(step.find(".step-header").hasClass("red")).toBeTruthy();

@@ -276,6 +276,11 @@
       line-height: 140%;
       margin: 1rem 0;
     }
+    img {
+      max-width: 100%;
+      border-radius: 5px;
+      border: 3px solid $lighter_gray;
+    }
     ul {
       list-style-type: revert !important;
       padding: revert;
@@ -524,11 +529,66 @@
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 16rem);
+  .text-input-wrapper {
+    input {
+      padding-left: 0.5rem !important;
+    }
+  }
   .step-button {
+    label {
+      cursor: pointer;
+    }
     .step-block-wrapper {
       margin-bottom: 1rem;
+    }
+    .clustered {
+      margin: 0.5rem;
+      float: left;
+      margin-bottom: 0.25rem;
+      box-shadow: none;
+      padding-bottom: 0;
       label {
-        cursor: pointer;
+        margin-bottom: 3px;
+      }
+      &.gray {
+        background: $light_gray !important;
+      }
+    }
+    &.highlight {
+      .fb-button {
+        box-shadow: 0px 0px 3px $light_gray;
+      }
+    }
+  }
+  &.designer-cluster {
+    margin: 0;
+    background: $dark_gray;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px $gray;
+    overflow: unset;
+    padding: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0;
+    .commands {
+      height: 10rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .text-input-wrapper {
+      margin: 0;
+      input {
+        color: $white;
+      }
+      border-bottom-color: $white !important;
+      &:before,
+      &:after {
+        background: $white !important;
+      }
+      .fa-times {
+        color: $red;
       }
     }
   }
@@ -937,6 +997,10 @@
     }
   }
   &.last {
+    .bp3-collapse {
+      margin-left: 1rem;
+      margin-right: 3rem;
+    }
     .add-command {
       margin-top: -1.75rem;
       border-radius: 2rem;
@@ -949,6 +1013,10 @@
     margin: auto;
     text-align: center;
     height: 3rem;
+    &.open {
+      margin-left: 1rem;
+      padding-right: 3rem;
+    }
     .add-command {
       float: none;
     }
@@ -957,6 +1025,25 @@
     display: block;
     .add-command {
       display: block;
+    }
+  }
+  &.open {
+    position: relative;
+    height: 100%;
+    .add-command {
+      position: absolute;
+      top: 50%;
+      right: -4rem;
+      transform: rotate(-45deg);
+      i {
+        transform: rotate(0);
+      }
+    }
+    &.last {
+      .add-command {
+        right: 0;
+        transform: rotate(45deg);
+      }
     }
   }
 }

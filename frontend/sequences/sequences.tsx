@@ -10,7 +10,7 @@ import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { t } from "../i18next_wrapper";
 import { unselectSequence, closeCommandMenu } from "./actions";
-import { isNumber } from "lodash";
+import { isNumber, noop } from "lodash";
 import { Folders } from "../folders/component";
 
 export interface SequenceBackButtonProps {
@@ -56,6 +56,7 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
             syncStatus={this.props.syncStatus}
             dispatch={this.props.dispatch}
             sequence={this.props.sequence}
+            sequences={this.props.sequences}
             resources={this.props.resources}
             hardwareFlags={this.props.hardwareFlags}
             farmwareData={this.props.farmwareData}
@@ -71,6 +72,7 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
           helpText={t(ToolTips.SEQUENCE_COMMANDS)}
           show={sequenceSelected}>
           <StepButtonCluster
+            close={noop}
             current={this.props.sequence}
             dispatch={this.props.dispatch}
             farmwareData={this.props.farmwareData}

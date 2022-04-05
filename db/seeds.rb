@@ -96,10 +96,17 @@ if Rails.env == "development"
                             color: (Sequence::COLORS + [nil]).sample,
                           })
   end
+  body000 = [{
+    kind: "move_absolute",
+    args: {
+      location: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+      offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+      speed: 100
+    }
+  }]
   s = Sequences::Create.run!(device: u.device,
                              name: "Goto 0, 0, 0",
-                             body: [{ kind: "move_absolute", args: { location: { kind: "coordinate", args: { x: 0,
-                                                                                                           y: 0, z: 0 } }, offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }, speed: 100 } }])
+                             body: body000)
   t = Tools::Create.run!(name: "Trench Digging Tool", device: u.device)
   body_txt = File.read("spec/lib/celery_script/ast_fixture4.json")
                  .gsub("__SEQUENCE_ID__", s[:id].to_s)

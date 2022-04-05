@@ -9,6 +9,7 @@ import { DropArea } from "../../draggable/drop_area";
 describe("<AllSteps/>", () => {
   const fakeProps = (): AllStepsProps => ({
     sequence: fakeSequence(),
+    sequences: [],
     onDrop: jest.fn(),
     dispatch: jest.fn(),
     readOnly: false,

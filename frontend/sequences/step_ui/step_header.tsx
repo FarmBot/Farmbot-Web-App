@@ -16,9 +16,6 @@ export interface StepHeaderProps {
   readOnly: boolean;
   index: number;
   executeSequence: SequenceResource | undefined;
-  pinnedSequence: SequenceResource | undefined;
-  pinnedView: boolean | undefined;
-  togglePinnedView: (() => void) | undefined;
   confirmStepDeletion: boolean;
   viewRaw: boolean | undefined;
   toggleViewRaw: (() => void) | undefined;
@@ -45,11 +42,11 @@ export class StepHeader
       dispatch,
       readOnly,
       index,
-      pinnedSequence,
+      executeSequence,
     } = this.props;
     return <Row>
       <Col sm={12}>
-        <div className={`step-header ${className} ${pinnedSequence?.color}`}
+        <div className={`step-header ${className} ${executeSequence?.color}`}
           draggable={this.state.draggable}>
           <StepTitleBar
             index={index}
@@ -57,7 +54,7 @@ export class StepHeader
             readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
-            pinnedSequenceName={this.props.pinnedSequence?.name}
+            pinnedSequenceName={executeSequence?.name}
             toggleDraggable={this.toggle} />
           {this.props.children}
           <StepIconGroup
@@ -66,9 +63,7 @@ export class StepHeader
             readOnly={readOnly}
             step={currentStep}
             sequence={currentSequence}
-            executeSequenceName={this.props.executeSequence?.name}
-            pinnedView={this.props.pinnedView}
-            togglePinnedView={this.props.togglePinnedView}
+            executeSequenceName={executeSequence?.name}
             helpText={t(this.props.helpText)}
             enableMarkdown={this.props.enableMarkdown}
             links={this.props.links}

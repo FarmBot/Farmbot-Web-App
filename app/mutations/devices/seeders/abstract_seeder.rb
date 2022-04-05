@@ -69,14 +69,19 @@ module Devices
         :webcam_feeds,
 
         # SEQUENCES ==============================
-        :sequences_tool_error,
         :sequences_mount_tool,
+        :sequences_dismount_tool,
         :sequences_pick_up_seed,
         :sequences_plant_seed,
         :sequences_take_photo_of_plant,
-        :sequences_unmount_tool,
         :sequences_water_plant,
         :sequences_water_all_plants,
+        :sequences_water_all,
+        :sequences_photo_grid,
+        :sequences_weed_detection_grid,
+        :sequences_soil_height_grid,
+        :sequences_grid,
+        :sequences_dispense_water,
 
         # EVERYTHING ELSE ========================
         :misc,
@@ -113,6 +118,7 @@ module Devices
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
       def sequences_mount_tool; end
+      def sequences_dismount_tool; end
       def sequences_pick_up_seed; end
 
       def sequences_plant_seed
@@ -124,26 +130,6 @@ module Devices
 
       def sequences_take_photo_of_plant
         s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup
-        Sequences::Create.run!(s, device: device)
-      end
-
-      def sequences_tool_error
-        Sequences::Create.run!(SequenceSeeds::TOOL_ERROR, device: device)
-      end
-
-      def sequences_unmount_tool
-        s = SequenceSeeds::UNMOUNT_TOOL.deep_dup
-
-        s.dig(:args,
-              :locals,
-              :body,
-              0,
-              :args,
-              :default_value,
-              :args)[:tool_id] = seeder_id
-        s.dig(:body, 5, :args, :pin_number, :args)[:pin_id] = tool_verification_id
-        s.dig(:body, 6, :args, :lhs, :args)[:pin_id] = tool_verification_id
-        s.dig(:body, 6, :args, :_else, :args)[:sequence_id] = tool_error_id
         Sequences::Create.run!(s, device: device)
       end
 
@@ -184,6 +170,30 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
+      def sequences_water_all
+        install_sequence_version_by_name(PublicSequenceNames::WATER_ALL)
+      end
+
+      def sequences_photo_grid
+        install_sequence_version_by_name(PublicSequenceNames::PHOTO_GRID)
+      end
+
+      def sequences_weed_detection_grid
+        install_sequence_version_by_name(PublicSequenceNames::WEED_DETECTION_GRID)
+      end
+
+      def sequences_soil_height_grid
+        install_sequence_version_by_name(PublicSequenceNames::SOIL_HEIGHT_GRID)
+      end
+
+      def sequences_grid
+        install_sequence_version_by_name(PublicSequenceNames::GRID)
+      end
+
+      def sequences_dispense_water
+        install_sequence_version_by_name(PublicSequenceNames::DISPENSE_WATER)
+      end
+
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_device_name; end
@@ -213,7 +223,31 @@ module Devices
       def tools_weeder; end
       def tools_rotary; end
 
+      def webcam_feeds; end
+      def misc; end
+
       private
+
+      def install_sequence_version_by_name(name)
+        sv = SequenceVersion
+        .joins(Api::FeaturedSequencesController::JOIN)
+        .where("sequence_publications.cached_author_email = ?",
+          ENV["AUTHORIZED_PUBLISHER"])
+        .where("sequence_publications.published = ?", true)
+        .order(updated_at: :desc)
+        .uniq(&:sequence_publication_id)
+        .filter { |x| x.name == name }[0]
+
+        if sv.nil?
+          msg = "Unable to install public sequence: #{name}"
+          device.tell(msg)
+          Rollbar.error(msg)
+        else
+          Sequences::Install.run!(
+            sequence_version: sv,
+            device: device)
+        end
+      end
 
       def add_tool(name)
         Tools::Create.run!(name: name, device: device)
@@ -278,14 +312,6 @@ module Devices
         @seeder_id ||= device.tools.find_by!(name: ToolNames::SEEDER).id
       end
 
-      def tool_verification_id
-        @tool_verification_id ||= device.sensors.find_by!(label: "Tool Verification").id
-      end
-
-      def tool_error_id
-        @tool_error_id ||= device.sequences.find_by!(name: "Tool error").id
-      end
-
       def water_plant_id
         @water_plant_id ||= device.sequences.find_by!(name: "Water plant").id
       end
@@ -301,9 +327,6 @@ module Devices
       def vacuum_id
         @vacuum_id ||= device.peripherals.find_by!(label: ToolNames::VACUUM).id
       end
-
-      def webcam_feeds; end
-      def misc; end
     end
   end
 end

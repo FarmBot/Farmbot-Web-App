@@ -2,7 +2,7 @@ module Devices
   module Seeders
     class AbstractExpress < AbstractGenesis
       def settings_device_name
-        device.update!(name: "FarmBot Express")
+        device.update!(name: Names::EXPRESS)
       end
 
       def peripherals_peripheral_4; end
@@ -84,6 +84,7 @@ module Devices
       def tools_weeder; end
       def tools_rotary; end
       def sequences_mount_tool; end
+      def sequences_dismount_tool; end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup
@@ -100,9 +101,6 @@ module Devices
         s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         Sequences::Create.run!(s, device: device)
       end
-
-      def sequences_tool_error; end
-      def sequences_unmount_tool; end
 
       def settings_default_map_size_y
         device.web_app_config.update!(map_size_y: 1_200)

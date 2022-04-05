@@ -2,21 +2,13 @@ require "spec_helper"
 
 describe Api::DevicesController do
   include Devise::Test::ControllerHelpers
+  Names = Devices::Seeders::Constants::Names
+  PublicSequenceNames = Devices::Seeders::Constants::PublicSequenceNames
 
   let(:user) { FactoryBot.create(:user) }
   let(:device) { user.device }
 
   describe "#seed" do
-    periph_names = [
-      Devices::Seeders::Constants::ToolNames::VACUUM,
-      Devices::Seeders::Constants::ToolNames::WATER,
-    ].sort
-
-    sensor_names = [
-      Devices::Seeders::Constants::ToolNames::SOIL_SENSOR,
-      Devices::Seeders::Constants::ToolNames::TOOL_VERIFICATION,
-    ].sort
-
     def peripherals_lighting?(device)
       device.peripherals.find_by(label: "Lighting")
     end
@@ -162,7 +154,11 @@ describe Api::DevicesController do
     end
 
     def sequences_mount_tool?(device)
-      device.sequences.find_by(name: "Mount tool")
+      device.sequences.find_by(name: "Mount Tool")
+    end
+
+    def sequences_dismount_tool?(device)
+      device.sequences.find_by(name: "Dismount Tool")
     end
 
     def sequences_pickup_seed_genesis?(device)
@@ -179,14 +175,6 @@ describe Api::DevicesController do
 
     def sequences_take_photo_of_plant?(device)
       device.sequences.find_by(name: "Take photo of plant")
-    end
-
-    def sequences_tool_error?(device)
-      device.sequences.find_by(name: "Tool error")
-    end
-
-    def sequences_unmount_tool?(device)
-      device.sequences.find_by(name: "Unmount tool")
     end
 
     def sequences_water_plant?(device)
@@ -221,6 +209,30 @@ describe Api::DevicesController do
       device.sequences.find_by(name: "Water all plants")
     end
 
+    def sequences_water_all?(device)
+      device.sequences.find_by(name: PublicSequenceNames::WATER_ALL)
+    end
+
+    def sequences_photo_grid?(device)
+      device.sequences.find_by(name: PublicSequenceNames::PHOTO_GRID)
+    end
+
+    def sequences_weed_detection_grid?(device)
+      device.sequences.find_by(name: PublicSequenceNames::WEED_DETECTION_GRID)
+    end
+
+    def sequences_soil_height_grid?(device)
+      device.sequences.find_by(name: PublicSequenceNames::SOIL_HEIGHT_GRID)
+    end
+
+    def sequences_grid?(device)
+      device.sequences.find_by(name: PublicSequenceNames::GRID)
+    end
+
+    def sequences_dispense_water?(device)
+      device.sequences.find_by(name: PublicSequenceNames::DISPENSE_WATER)
+    end
+
     def settings_default_map_size_x?(device)
       device.web_app_config.map_size_x
     end
@@ -244,13 +256,36 @@ describe Api::DevicesController do
       expect(device.reload.name).to eq(old_name)
     end
 
-    def start_tests(product_line)
-      sign_in user
-      run_jobs_now do
-        post :seed, body: { product_line: product_line }.to_json
+    def start_tests(product_line, publish = true)
+      u = FactoryBot.create(:user)
+      ClimateControl.modify AUTHORIZED_PUBLISHER: u.email do
+        if publish
+          [
+            PublicSequenceNames::DISPENSE_WATER,
+            PublicSequenceNames::SOIL_HEIGHT_GRID,
+            PublicSequenceNames::GRID,
+            PublicSequenceNames::WATER_ALL,
+            PublicSequenceNames::PHOTO_GRID,
+            PublicSequenceNames::WEED_DETECTION_GRID,
+            PublicSequenceNames::MOUNT_TOOL,
+            PublicSequenceNames::DISMOUNT_TOOL,
+          ].map do |name|
+            s = Sequences::Create.run!(device: u.device,
+                                        name: name,
+                                        body: [])
+            Sequences::Publish.run!(device: u.device,
+                                        sequence: Sequence.find(s[:id]),
+                                        description: "published",
+                                        copyright: "farmbot")
+          end
+        end
+        sign_in user
+        run_jobs_now do
+          post :seed, body: { product_line: product_line }.to_json
+        end
+        expect(response.status).to eq(200)
+        device.reload
       end
-      expect(response.status).to eq(200)
-      device.reload
     end
 
     def check_slot_pairing(slot, expected_name)
@@ -276,7 +311,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to be_kind_of(Sensor)
       expect(sensors_tool_verification?(device)).to be_kind_of(Sensor)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("arduino")
@@ -307,13 +342,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -322,6 +354,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -341,7 +381,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino")
@@ -372,13 +412,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -387,6 +424,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -406,7 +451,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
@@ -437,13 +482,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -452,6 +494,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -471,7 +521,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
@@ -504,13 +554,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -519,6 +566,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -538,7 +593,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
@@ -572,13 +627,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to be_kind_of(Tool)
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -587,6 +639,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -606,7 +666,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
@@ -637,13 +697,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -652,6 +709,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -671,7 +736,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
@@ -704,13 +769,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -719,6 +781,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -738,7 +808,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
-      expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
+      expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
@@ -772,13 +842,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to be_kind_of(Tool)
-      expect(sequences_mount_tool?(device)).to be
       expect(sequences_pickup_seed_genesis?(device)).to be
       expect(sequences_pickup_seed_express?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
-      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -787,6 +854,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -806,7 +881,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
-      expect(settings_device_name?(device)).to eq("FarmBot Express")
+      expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("express_k10")
@@ -833,13 +908,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to_not be
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
       expect(sequences_pickup_seed_express?(device)).to be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to_not be
-      expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -848,6 +920,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to_not be
+      expect(sequences_dismount_tool?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
@@ -867,7 +947,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
-      expect(settings_device_name?(device)).to eq("FarmBot Express")
+      expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("express_k11")
@@ -894,13 +974,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to_not be
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
       expect(sequences_pickup_seed_express?(device)).to be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to_not be
-      expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -909,6 +986,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to_not be
+      expect(sequences_dismount_tool?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
@@ -928,7 +1013,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
-      expect(settings_device_name?(device)).to eq("FarmBot Express XL")
+      expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("express_k10")
@@ -955,13 +1040,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to_not be
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
       expect(sequences_pickup_seed_express?(device)).to be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to_not be
-      expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -970,6 +1052,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to_not be
+      expect(sequences_dismount_tool?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
     end
@@ -989,7 +1079,7 @@ describe Api::DevicesController do
       expect(plants?(device)).to be false
       expect(sensors_soil_sensor?(device)).to_not be
       expect(sensors_tool_verification?(device)).to_not be
-      expect(settings_device_name?(device)).to eq("FarmBot Express XL")
+      expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
       expect(settings_firmware?(device)).to eq("express_k11")
@@ -1016,13 +1106,10 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to_not be
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
-      expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
       expect(sequences_pickup_seed_express?(device)).to be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
-      expect(sequences_tool_error?(device)).to_not be
-      expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
       expect(point_groups_spinach?(device)).to_not be
       expect(point_groups_broccoli?(device)).to_not be
@@ -1031,6 +1118,14 @@ describe Api::DevicesController do
       expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
       expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
       expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to_not be
+      expect(sequences_dismount_tool?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
     end
@@ -1042,6 +1137,12 @@ describe Api::DevicesController do
       expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
       expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
       expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+    end
+
+    it "seeds accounts when sequence versions not available" do
+      start_tests "demo_account", false
+
+      expect(sequences_grid?(device)).to_not be
     end
 
     it "does not seed accounts" do

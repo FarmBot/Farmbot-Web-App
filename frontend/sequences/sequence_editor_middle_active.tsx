@@ -4,6 +4,7 @@ import {
   ActiveMiddleProps, SequenceHeaderProps, SequenceBtnGroupProps,
   SequenceSettingProps, SequenceSettingsMenuProps, ActiveMiddleState,
   SequenceShareMenuProps,
+  FarmwareData,
 } from "./interfaces";
 import {
   editCurrentSequence, copySequence, pinSequenceToggle, publishSequence,
@@ -53,10 +54,11 @@ import {
   License, loadSequenceVersion, SequencePreviewContent,
 } from "./panel/preview_support";
 import { Path } from "../internal_urls";
-import { UUID, VariableNameSet } from "../resources/interfaces";
+import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import { Feature } from "../devices/interfaces";
 import { shouldDisplayFeature } from "../devices/should_display";
 import { newVariableDataValue, newVariableLabel } from "./locals_list/new_variable";
+import { StepButtonCluster } from "./step_button_cluster";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -405,6 +407,7 @@ export class SequenceEditorMiddleActive extends
     const getConfig = this.props.getWebAppConfigValue;
     return {
       sequence: this.props.sequence,
+      sequences: this.props.sequences,
       onDrop: onDrop(this.props.dispatch, this.props.sequence),
       dispatch: this.props.dispatch,
       readOnly: false,
@@ -599,6 +602,10 @@ export class SequenceEditorMiddleActive extends
                     <AllSteps {...this.stepProps} />
                     <AddCommandButton dispatch={dispatch}
                       stepCount={stepCount}
+                      sequence={this.props.sequence}
+                      farmwareData={this.props.farmwareData}
+                      sequences={this.props.sequences}
+                      resources={this.props.resources}
                       index={Infinity} />
                   </ErrorBoundary>
                   <Row>
@@ -761,6 +768,10 @@ export interface AddCommandButtonProps {
   dispatch: Function;
   index: number;
   stepCount: number;
+  sequence: TaggedSequence | undefined;
+  farmwareData: FarmwareData | undefined;
+  sequences?: TaggedSequence[];
+  resources: ResourceIndex;
 }
 
 export const AddCommandButton = (props: AddCommandButtonProps) => {
@@ -772,21 +783,36 @@ export const AddCommandButton = (props: AddCommandButtonProps) => {
       default: return "middle";
     }
   };
-  return <div className={`add-command-button-container ${getPositionClass()}`}>
+  const [collapsed, setCollapsed] = React.useState(stepCount != 0);
+  return <div className={[
+    "add-command-button-container",
+    getPositionClass(),
+    collapsed ? "" : "open",
+  ].join(" ")}>
     <button
-      className="add-command fb-button gray"
+      className={"add-command fb-button gray"}
       title={t("add sequence step")}
       onClick={() => {
+        setCollapsed(!collapsed);
         dispatch({
           type: Actions.SET_SEQUENCE_STEP_POSITION,
           payload: index,
         });
-        Path.inDesigner() && push(Path.sequences("commands"));
       }}>
-      {stepCount == 0
+      {stepCount == 0 && collapsed
         ? t("add command")
         : <i className={"fa fa-plus"} />}
     </button>
+    <Collapse isOpen={!collapsed}>
+      <StepButtonCluster
+        close={() => setCollapsed(true)}
+        current={props.sequence}
+        dispatch={dispatch}
+        farmwareData={props.farmwareData}
+        sequences={props.sequences}
+        resources={props.resources}
+        stepIndex={index} />
+    </Collapse>
   </div>;
 };
 

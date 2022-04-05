@@ -1,52 +1,53 @@
-import * as React from "react";
-import { StepButtonParams } from "../interfaces";
-import { StepButton, stepClick } from "../step_buttons";
-import { shallow } from "enzyme";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { Actions } from "../../constants";
-import { error } from "../../toast/toast";
+jest.mock("../actions", () => ({
+  pushStep: jest.fn(),
+  closeCommandMenu: jest.fn(),
+}));
 
-function props(): StepButtonParams {
-  return {
+let mockPath = "";
+jest.mock("../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
+import React from "react";
+import { mount } from "enzyme";
+import { StepButtonParams } from "../interfaces";
+import { StepButton } from "../step_buttons";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { error } from "../../toast/toast";
+import { closeCommandMenu, pushStep } from "../actions";
+import { Path } from "../../internal_urls";
+
+describe("<StepButton />", () => {
+  const fakeProps = (): StepButtonParams => ({
     current: fakeSequence(),
-    step: {
-      kind: "wait",
-      args: {
-        milliseconds: 9,
-      },
-    },
+    step: { kind: "wait", args: { milliseconds: 9 } },
     dispatch: jest.fn(),
     color: "blue",
     index: 1,
-  };
-}
-
-describe("<StepButton/>", () => {
-
-  it("clicks it", () => {
-    const p = props();
-    const el = shallow(<StepButton {...p} />);
-    el.find("button").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          body: [p.step]
-        }),
-      }),
-      type: Actions.OVERWRITE_RESOURCE
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SEQUENCE_STEP_POSITION,
-      payload: undefined,
-    });
   });
-});
 
-describe("stepClick", () => {
-  it("pops a toast notification when you  must select a sequence", () => {
-    const p = props();
-    const clicker = stepClick(p.dispatch, p.step, undefined);
-    clicker();
+  it("edits sequence", () => {
+    const p = fakeProps();
+    const wrapper = mount(<StepButton {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(pushStep).toHaveBeenCalledWith(p.step, p.dispatch, p.current, p.index);
+    expect(closeCommandMenu).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("doesn't edit sequence", () => {
+    const p = fakeProps();
+    p.current = undefined;
+    const wrapper = mount(<StepButton {...p} />);
+    wrapper.find("button").simulate("click");
     expect(error).toHaveBeenCalledWith("Select a sequence first");
+    expect(pushStep).not.toHaveBeenCalled();
+    expect(closeCommandMenu).toHaveBeenCalled();
+  });
+
+  it("renders in designer", () => {
+    mockPath = Path.mock(Path.designerSequences("1"));
+    const wrapper = mount(<StepButton {...fakeProps()} />);
+    expect(wrapper.html()).toContain("clustered");
   });
 });

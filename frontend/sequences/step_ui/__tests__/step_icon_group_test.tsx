@@ -20,8 +20,6 @@ describe("<StepIconGroup />", () => {
     step: { kind: "wait", args: { milliseconds: 100 } },
     sequence: fakeSequence(),
     executeSequenceName: undefined,
-    pinnedView: undefined,
-    togglePinnedView: undefined,
     viewRaw: undefined,
     toggleViewRaw: undefined,
     monacoEditor: undefined,
@@ -50,22 +48,6 @@ describe("<StepIconGroup />", () => {
     p.toggleMonacoEditor = () => true;
     const wrapper = mount(<StepIconGroup {...p} />);
     expect(wrapper.find(".fa-font").hasClass("enabled")).toEqual(false);
-  });
-
-  it("renders pinned view enabled", () => {
-    const p = fakeProps();
-    p.pinnedView = true;
-    p.togglePinnedView = () => false;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-thumb-tack").hasClass("enabled")).toEqual(true);
-  });
-
-  it("renders pinned view disabled", () => {
-    const p = fakeProps();
-    p.pinnedView = false;
-    p.togglePinnedView = () => true;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-thumb-tack").hasClass("enabled")).toEqual(false);
   });
 
   it("renders celery script view enabled", () => {

@@ -15,6 +15,7 @@ describe("<SequenceEditorMiddle/>", () => {
     return {
       dispatch: jest.fn(),
       sequence: fakeSequence(),
+      sequences: [],
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),

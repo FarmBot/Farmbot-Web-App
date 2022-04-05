@@ -8,6 +8,7 @@ import {
   ALLOWED_MESSAGE_TYPES,
   Vector3,
   TaggedSequence,
+  Color,
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
@@ -56,6 +57,7 @@ export interface SequencesProps extends SequencePropsBase {
 
 export interface SequenceEditorMiddleProps extends SequencePropsBase {
   sequence: TaggedSequence | undefined;
+  sequences: TaggedSequence[];
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
   hoveredStep?: string | undefined;
@@ -63,6 +65,7 @@ export interface SequenceEditorMiddleProps extends SequencePropsBase {
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
+  sequences: TaggedSequence[];
   showName: boolean;
 }
 
@@ -166,15 +169,7 @@ export interface StepButtonParams {
   step: SequenceBodyItem;
   dispatch: Function;
   children?: React.ReactNode;
-  color: "blue"
-  | "green"
-  | "orange"
-  | "yellow"
-  | "brown"
-  | "red"
-  | "purple"
-  | "pink"
-  | "gray";
+  color: Color | "brown";
   index?: number | undefined;
 }
 

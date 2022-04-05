@@ -30,13 +30,8 @@ const assignVariable = (props: StepParams<Execute>) =>
       }));
     };
 
-interface ExecuteStepState {
-  pinnedView: boolean;
-}
-
 export class TileExecute
-  extends React.Component<StepParams<Execute>, ExecuteStepState> {
-  state: ExecuteStepState = { pinnedView: true };
+  extends React.Component<StepParams<Execute>> {
 
   /**
    * Replace `sequence_id` with the new selection and fill the execute step
@@ -59,9 +54,6 @@ export class TileExecute
     }));
   };
 
-  get pinnedView() { return this.state.pinnedView; }
-  togglePinnedView = () => this.setState({ pinnedView: !this.pinnedView });
-
   render() {
     const { currentStep, currentSequence, resources,
     } = this.props;
@@ -83,10 +75,8 @@ export class TileExecute
         hasVariables ? "" : "no-inputs",
       ].join(" ")}
       helpText={callee?.body.description || ToolTips.EXECUTE_SEQUENCE}
-      enableMarkdown={!!callee?.body.description}
-      pinnedView={this.pinnedView}
-      togglePinnedView={this.togglePinnedView}>
-      {(!currentStep.args.sequence_id || !this.pinnedView) &&
+      enableMarkdown={!!callee?.body.description}>
+      {!currentStep.args.sequence_id &&
         <Row>
           <Col>
             <SequenceSelectBox
@@ -96,7 +86,7 @@ export class TileExecute
           </Col>
         </Row>}
       {hasVariables &&
-        <Row className={this.pinnedView ? "" : "unpinned-view"}>
+        <Row>
           <Col>
             <LocalsList
               bodyVariables={currentStep.body}

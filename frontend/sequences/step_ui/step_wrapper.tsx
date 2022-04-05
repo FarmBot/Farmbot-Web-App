@@ -24,8 +24,6 @@ export interface StepWrapperProps {
   monacoEditor?: boolean;
   toggleMonacoEditor?(): void;
   links?: React.ReactElement[];
-  pinnedView?: boolean;
-  togglePinnedView?(): void;
   enableMarkdown?: boolean;
 }
 
@@ -57,7 +55,6 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
     const executeSequence = step.kind == "execute" && step.args.sequence_id
       ? findSequenceById(this.props.resources, step.args.sequence_id).body
       : undefined;
-    const pinnedSequence = executeSequence?.pinned ? executeSequence : undefined;
     return <div className={`step-wrapper ${this.props.className}`}>
       <StepHeader
         className={this.props.className}
@@ -70,9 +67,6 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         readOnly={this.props.readOnly}
         index={this.props.index}
         executeSequence={executeSequence}
-        pinnedSequence={pinnedSequence}
-        pinnedView={this.props.pinnedView}
-        togglePinnedView={this.props.togglePinnedView}
         viewRaw={!!this.viewRaw}
         toggleViewRaw={this.toggleViewRaw}
         monacoEditor={this.props.monacoEditor}
@@ -85,7 +79,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         : <Row>
           <Col sm={12}>
             <div className={[
-              "step-content", this.props.className, pinnedSequence?.color,
+              "step-content", this.props.className, executeSequence?.color,
             ].join(" ")}>
               <ErrorBoundary>
                 {this.props.children}

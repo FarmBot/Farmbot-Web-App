@@ -8,7 +8,7 @@ module Devices
       end
 
       def settings_device_name
-        device.update!(name: "FarmBot Genesis XL")
+        device.update!(name: Names::GENESIS_XL)
       end
 
       def settings_default_map_size_x
