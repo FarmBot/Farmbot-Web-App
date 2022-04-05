@@ -37,7 +37,7 @@ export function StepButton({ children, step, color, dispatch, current, index }:
       onClick={stepClick(dispatch, step, current, index)}>
       <div className="step-block-drag">
         <label>{children}</label>
-        <i className="fa fa-arrows block-control" />
+        {!Path.inDesigner() && <i className="fa fa-arrows block-control" />}
       </div>
     </button>
   </StepDragger>;

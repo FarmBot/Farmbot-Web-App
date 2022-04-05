@@ -535,11 +535,11 @@
     }
   }
   .step-button {
+    label {
+      cursor: pointer;
+    }
     .step-block-wrapper {
       margin-bottom: 1rem;
-      label {
-        cursor: pointer;
-      }
     }
     .clustered {
       margin: 0.5rem;
@@ -567,12 +567,18 @@
     border-radius: 5px;
     box-shadow: 0px 0px 10px $gray;
     overflow: unset;
+    padding: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0;
     .commands {
+      height: 10rem;
       overflow-y: auto;
       overflow-x: hidden;
-      max-height: 10rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
     .text-input-wrapper {
+      margin: 0;
       input {
         color: $white;
       }
@@ -580,6 +586,9 @@
       &:before,
       &:after {
         background: $white !important;
+      }
+      .fa-times {
+        color: $red;
       }
     }
   }
