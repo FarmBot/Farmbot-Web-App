@@ -54,12 +54,12 @@ export const JobsTable = (props: JobsTableProps) => {
     <thead>
       <tr>
         <th>{t("Job")}</th>
-        <th>{t("Type")}</th>
+        {props.more && <th>{t("Type")}</th>}
         {props.more && <th>{t("ext")}</th>}
         <th>{props.more ? t("Progress") : "%"}</th>
         <th>{t("Status")}</th>
-        <th>{t("Time")}</th>
-        <th>{t("Duration")}</th>
+        {props.more && <th>{t("Time")}</th>}
+        {props.more && <th>{t("Duration")}</th>}
       </tr>
     </thead>
     <tbody>
@@ -85,7 +85,7 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
   return <tr key={job.title}>
     <td className={"job-name"} title={job.title}>
       {props.more ? job.title : jobNameLookup(job)}</td>
-    <td>{job.type}</td>
+    {props.more && <td>{job.type}</td>}
     {props.more && <td>{job.file_type}</td>}
     <td>
       {job.unit == "percent" ? `${round(job[job.unit], 1)}%` : job[job.unit]}
@@ -95,10 +95,10 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
           : {}} />
     </td>
     <td>{job.status}</td>
-    <td title={job.time}>{job.time
+    {props.more && <td title={job.time}>{job.time
       ? formatTime(moment(job.time), props.timeSettings)
-      : ""}</td>
-    <td>{duration(job)}</td>
+      : ""}</td>}
+    {props.more && <td>{duration(job)}</td>}
   </tr>;
 };
 
