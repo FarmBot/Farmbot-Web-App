@@ -105,15 +105,12 @@ export enum FbosVersionFallback {
 }
 
 export const fallbackData: MinOsFeatureLookup = {
-  [Feature.string_variables]: "14.7.0",
-  [Feature.number_variables]: "14.7.0",
-  [Feature.resource_variables]: "14.9.0",
+  [Feature.boot_sequence]: "15.1.0",
   [Feature.express_k11]: MinVersionOverride.NEVER,
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
   [Feature.sort_type_optimized]: MinVersionOverride.NEVER,
   [Feature.sort_type_alternating]: MinVersionOverride.NEVER,
   [Feature.toggle_peripheral]: MinVersionOverride.NEVER,
-  [Feature.boot_sequence]: MinVersionOverride.NEVER,
 };
 
 /**

@@ -1,8 +1,3 @@
-let mockShouldDisplay = false;
-jest.mock("../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import { Path } from "../../internal_urls";
 let mockPath = "";
 jest.mock("../../history", () => ({
@@ -477,19 +472,11 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.find("textarea").length).toEqual(0);
   });
 
-  it("shows more add variable options", () => {
-    mockShouldDisplay = true;
+  it("shows add variable options", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find("Popover").length).toEqual(5);
-  });
-
-  it("doesn't show more add variable options", () => {
-    mockShouldDisplay = false;
-    mockPath = Path.mock(Path.sequences("1"));
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
-    expect(wrapper.find("Popover").length).toEqual(4);
   });
 
   it("opens add variable menu", () => {
