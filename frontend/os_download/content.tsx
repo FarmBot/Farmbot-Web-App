@@ -1,6 +1,7 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
+import { FilePath } from "../internal_urls";
 
 interface ReleaseItem {
   computer: string;
@@ -292,10 +293,15 @@ export class OsDownloadWizard
           <p className={"os-download-wizard-note"}>
             {t(Content.PI_POWER_CABLE_COLOR_PROMPT)}
           </p>
-          {RUNS()[this.state.version].map(run =>
-            <Button key={run.value}
-              click={this.select("run", run.value)}
-              content={t(run.label)} />)}
+          <div className={"buttons-with-image"}>
+            <div className={"buttons"}>
+              {RUNS()[this.state.version].map(run =>
+                <Button key={run.value}
+                  click={this.select("run", run.value)}
+                  content={t(run.label)} />)}
+            </div>
+            <img src={FilePath.image("pi_power_cable", "png")} />
+          </div>
           <this.back field={"version"} />
         </div>
       </div>;
