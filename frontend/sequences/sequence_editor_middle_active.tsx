@@ -809,14 +809,16 @@ export interface SectionHeaderProps {
   collapsed: boolean;
   toggle(): void;
   count?: number;
-  buttonElement?: JSX.Element;
+  buttonElement?: JSX.Element | false;
+  extraClass?: string;
 }
 
 export const SectionHeader = (props: SectionHeaderProps) =>
-  <div className={"sequence-section-header"} onClick={props.toggle}>
+  <div className={`sequence-section-header ${props.extraClass}`}
+    onClick={props.toggle}>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
       : t(props.title)}</label>
-    {props.buttonElement}
     <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
+    {props.buttonElement}
   </div>;
