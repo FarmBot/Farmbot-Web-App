@@ -2,7 +2,11 @@ import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import {
-  PlantsPanelState, PointsPanelState, SettingsPanelState, WeedsPanelState,
+  PlantsPanelState,
+  PointsPanelState,
+  SequencesPanelState,
+  SettingsPanelState,
+  WeedsPanelState,
 } from "./interfaces";
 
 export interface AppState {
@@ -11,6 +15,7 @@ export interface AppState {
   plantsPanelState: PlantsPanelState;
   weedsPanelState: WeedsPanelState;
   pointsPanelState: PointsPanelState;
+  sequencesPanelState: SequencesPanelState;
   toasts: ToastMessages;
   controlsPopupOpen: boolean;
 }
@@ -53,6 +58,10 @@ export const emptyState = (): AppState => {
       points: true,
       soilHeight: false,
     },
+    sequencesPanelState: {
+      sequences: true,
+      featured: false,
+    },
     toasts: {},
     controlsPopupOpen: false,
   };
@@ -80,6 +89,11 @@ export const appReducer =
       s.pointsPanelState[a.payload] = !s.pointsPanelState[a.payload];
       return s;
     })
+    .add<keyof SequencesPanelState>(
+      Actions.TOGGLE_SEQUENCES_PANEL_OPTION, (s, a) => {
+        s.sequencesPanelState[a.payload] = !s.sequencesPanelState[a.payload];
+        return s;
+      })
     .add<boolean>(
       Actions.BULK_TOGGLE_SETTINGS_PANEL, (s, a) => {
         s.settingsPanelState.farmbot_settings = a.payload;

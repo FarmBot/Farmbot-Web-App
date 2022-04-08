@@ -280,6 +280,24 @@
   &.red-panel {
     background-color: $panel_red;
   }
+  &.blue,
+  &.yellow,
+  &.orange,
+  &.purple,
+  &.pink,
+  &.gray {
+    .right-button,
+    .back-arrow,
+    .title {
+      color: $dark_gray;
+    }
+    .right-button,
+    .back-arrow {
+      &:hover {
+        color: $black !important;
+      }
+    }
+  }
 }
 
 .panel-tabs {

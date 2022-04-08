@@ -8,7 +8,7 @@ import { t } from "../i18next_wrapper";
 export interface ColorPickerProps {
   position?: Position;
   current: ResourceColor;
-  onChange: (color: ResourceColor) => void;
+  onChange?: (color: ResourceColor) => void;
   saucerIcon?: string;
 }
 
@@ -44,23 +44,31 @@ export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
     })}
   </div>;
 };
-export class ColorPicker extends React.Component<ColorPickerProps, {}> {
 
-  public render() {
-    const classes = [
-      "icon-saucer fa",
-      this.props.saucerIcon,
-      this.props.current,
-    ];
-    return <Popover className="color-picker"
-      position={this.props.position || Position.BOTTOM}
-      popoverClassName="colorpicker-menu gray"
-      target={this.props.saucerIcon
-        ? <i className={classes.join(" ")} title={t("select color")} />
-        : <Saucer color={this.props.current} title={t("select color")} />}
-      content={<ColorPickerCluster
-        onChange={this.props.onChange}
-        current={this.props.current}
-        saucerIcon={this.props.saucerIcon} />} />;
+export class ColorPicker extends React.Component<ColorPickerProps> {
+  render() {
+    const { saucerIcon, onChange } = this.props;
+    const currentColor = this.props.current;
+    const title = t("select color");
+    const Target = () =>
+      saucerIcon
+        ? <i title={title}
+          className={[
+            "icon-saucer",
+            "fa",
+            saucerIcon,
+            currentColor,
+          ].join(" ")} />
+        : <Saucer color={currentColor} title={title} />;
+    return onChange
+      ? <Popover className={"color-picker"}
+        position={this.props.position || Position.BOTTOM}
+        popoverClassName={"colorpicker-menu gray"}
+        target={<Target />}
+        content={<ColorPickerCluster
+          onChange={onChange}
+          current={currentColor}
+          saucerIcon={saucerIcon} />} />
+      : <Target />;
   }
 }

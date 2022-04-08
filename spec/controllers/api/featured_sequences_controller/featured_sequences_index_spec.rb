@@ -7,6 +7,7 @@ describe Api::FeaturedSequencesController do
   it "Shows JSON for a shared sequence" do
     email = sequence.device.users.first.email
     name = sequence.name
+    color = sequence.color
     description = "foo,bar,baz"
     ClimateControl.modify AUTHORIZED_PUBLISHER: email do
       sp = Sequences::Publish.run!(sequence: sequence,
@@ -22,6 +23,7 @@ describe Api::FeaturedSequencesController do
       expect(first[:path]).to include(id.to_s)
       expect(first[:path]).to include("/app/shared/sequence/")
       expect(first[:name]).to eq(name)
+      expect(first[:color]).to eq(color)
       expect(first[:description]).to eq(description)
     end
   end

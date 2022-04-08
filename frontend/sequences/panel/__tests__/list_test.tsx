@@ -1,8 +1,20 @@
 jest.mock("axios", () => ({
   get: () => Promise.resolve({
     data: [
-      { id: 1, name: "My First Sequence", description: "", path: "" },
-      { id: 2, name: "My Second Sequence", description: undefined, path: "" },
+      {
+        id: 1,
+        name: "My First Sequence",
+        description: "description",
+        path: "",
+        color: "gray",
+      },
+      {
+        id: 2,
+        name: "My Second Sequence",
+        description: undefined,
+        path: "",
+        color: "gray",
+      },
     ]
   }),
 }));
@@ -39,6 +51,8 @@ import {
   addNewSequenceToFolder, createFolder, toggleAll,
 } from "../../../folders/actions";
 import { installSequence } from "../../actions";
+import { sequencesPanelState } from "../../../__test_support__/panel_state";
+import { Actions } from "../../../constants";
 
 API.setBaseUrl("");
 
@@ -55,6 +69,7 @@ describe("<DesignerSequenceList />", () => {
     menuOpen: undefined,
     stepIndex: undefined,
     folderData: mapStateToFolderProps(fakeState()),
+    sequencesPanelState: sequencesPanelState(),
   });
 
   it("renders", () => {
@@ -63,11 +78,14 @@ describe("<DesignerSequenceList />", () => {
   });
 
   it("toggle section", () => {
+    const p = fakeProps();
     const wrapper = shallow<DesignerSequenceList>(
-      <DesignerSequenceList {...fakeProps()} />);
-    expect(wrapper.state().sequences).toEqual(true);
+      <DesignerSequenceList {...p} />);
     wrapper.instance().toggleSection("sequences")();
-    expect(wrapper.state().sequences).toEqual(false);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_SEQUENCES_PANEL_OPTION,
+      payload: "sequences",
+    });
   });
 
   it("adds new sequence", () => {
@@ -84,13 +102,14 @@ describe("<DesignerSequenceList />", () => {
 
   it("opens folders", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 2, "", { icon: "fa-chevron-down" });
+    clickButton(wrapper, 2, "", { icon: "fa-chevron-right" });
     expect(toggleAll).toHaveBeenCalled();
   });
 
   it("imports sequence", async () => {
-    const wrapper = await mount(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.setState({ featured: true });
+    const p = fakeProps();
+    p.sequencesPanelState.featured = true;
+    const wrapper = await mount(<DesignerSequenceList {...p} />);
     wrapper.update();
     wrapper.find(".fa-download").first().simulate("click");
     expect(installSequence).toHaveBeenCalledWith(1);
@@ -98,11 +117,11 @@ describe("<DesignerSequenceList />", () => {
 
   it("filters sequences", async () => {
     const p = fakeProps();
+    p.sequencesPanelState.featured = true;
     const folderData = mapStateToFolderProps(fakeState());
     folderData.searchTerm = "second";
     p.folderData = folderData;
     const wrapper = await mount(<DesignerSequenceList {...p} />);
-    wrapper.setState({ featured: true });
     expect(wrapper.text().toLowerCase()).not.toContain("first");
     expect(wrapper.text().toLowerCase()).toContain("second");
   });

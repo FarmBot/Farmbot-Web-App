@@ -23,6 +23,7 @@ import {
 } from "../../set_active_sequence_by_name";
 import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
+import { sequencesPanelState } from "../../../__test_support__/panel_state";
 
 describe("<DesignerSequenceEditor />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -37,6 +38,7 @@ describe("<DesignerSequenceEditor />", () => {
     menuOpen: undefined,
     stepIndex: undefined,
     folderData: mapStateToFolderProps(fakeState()),
+    sequencesPanelState: sequencesPanelState(),
   });
 
   it("renders", () => {

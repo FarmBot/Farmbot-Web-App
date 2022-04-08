@@ -330,6 +330,11 @@
   .show-on-hover {
     display: none !important;
   }
+  @media screen and (max-width: 450px) {
+    .show-on-hover {
+      display: flex !important;
+    }
+  }
   .sequence-list-item {
     &:hover {
       .show-on-hover {

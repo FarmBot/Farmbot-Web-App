@@ -35,9 +35,10 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Sequences}
+        colorClass={sequence?.body.color}
         titleElement={<ResourceTitle
-          key={this.props.sequence?.body.name}
-          resource={this.props.sequence}
+          key={sequence?.body.name}
+          resource={sequence}
           fallback={t("No Sequence selected")}
           dispatch={this.props.dispatch} />}
         backTo={Path.sequences()}>
@@ -51,14 +52,14 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
-          notEmpty={this.props.sequence && isTaggedSequence(this.props.sequence)}
+          notEmpty={sequence && isTaggedSequence(sequence)}
           graphic={EmptyStateGraphic.sequences}
           title={t("No Sequence selected.")}
           text={Content.NO_SEQUENCE_SELECTED}>
-          {this.props.sequence && <SequenceEditorMiddleActive
+          {sequence && <SequenceEditorMiddleActive
             showName={false}
             dispatch={this.props.dispatch}
-            sequence={this.props.sequence}
+            sequence={sequence}
             sequences={this.props.sequences}
             resources={this.props.resources}
             syncStatus={this.props.syncStatus}

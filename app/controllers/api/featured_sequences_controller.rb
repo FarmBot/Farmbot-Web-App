@@ -28,6 +28,7 @@ module Api
             path: "/app/shared/sequence/#{x.id}",
             name: x.name,
             description: x.description,
+            color: x.color,
           }
         end
       end

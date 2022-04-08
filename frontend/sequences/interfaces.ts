@@ -16,6 +16,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Folders } from "../folders/component";
 import { DeviceSetting } from "../constants";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { SequencesPanelState } from "../interfaces";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -53,6 +54,7 @@ export interface SequencesProps extends SequencePropsBase {
   stepIndex: number | undefined;
   folderData: Folders["props"];
   hoveredStep?: string | undefined;
+  sequencesPanelState: SequencesPanelState;
 }
 
 export interface SequenceEditorMiddleProps extends SequencePropsBase {

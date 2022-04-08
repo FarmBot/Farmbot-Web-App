@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Color } from "farmbot";
 import React from "react";
 import { API } from "../api";
 import { Content } from "../constants";
@@ -10,6 +11,7 @@ export interface FeaturedSequence {
   path: string;
   name: string;
   description: string;
+  color: Color;
 }
 
 const FeaturedSequenceRow = (content: FeaturedSequence) =>
