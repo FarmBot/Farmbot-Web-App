@@ -115,6 +115,16 @@ describe("<DesignerSequenceList />", () => {
     expect(installSequence).toHaveBeenCalledWith(1);
   });
 
+  it("opens description", async () => {
+    const p = fakeProps();
+    p.sequencesPanelState.featured = true;
+    const wrapper = await mount(<DesignerSequenceList {...p} />);
+    wrapper.update();
+    expect(wrapper.find(".show-on-hover").length).toEqual(2);
+    wrapper.find(".help-icon").first().simulate("click");
+    expect(wrapper.find(".show-on-hover").length).toEqual(1);
+  });
+
   it("filters sequences", async () => {
     const p = fakeProps();
     p.sequencesPanelState.featured = true;

@@ -833,7 +833,7 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: normal;
       width: 72%;
       padding: 0.5rem;
@@ -924,6 +924,15 @@
         margin-left: 0.4rem;
       }
     }
+  }
+}
+
+.featured-sequence-list {
+  .saucer {
+    margin-left: 0.4rem !important;
+  }
+  p {
+    margin-left: 1.5rem !important;
   }
 }
 

@@ -78,7 +78,7 @@ export class RawDesignerSequenceList
           collapsed={!panelState.featured}
           toggle={this.toggleSection("featured")} />
         <Collapse isOpen={panelState.featured}>
-          <div className={"folders-panel"}>
+          <div className={"folders-panel featured-sequence-list"}>
             {this.state.featuredList
               .filter(item => item.name.toLowerCase()
                 .includes((this.props.folderData.searchTerm || "").toLowerCase()))
@@ -138,14 +138,19 @@ interface FeaturedSequenceListItemProps {
 const FeaturedSequenceListItem = (props: FeaturedSequenceListItemProps) => {
   const { item } = props;
   const [importing, setImporting] = React.useState(false);
+  const [descriptionOpen, setDescriptionOpen] = React.useState(false);
   return <li className={"sequence-list-item"}>
     <ColorPicker current={item.color} />
     <Link to={Path.sequenceVersion(item.id)}>
       <p>{item.name}</p>
     </Link>
-    <div className={"sequence-list-item-icons show-on-hover"}>
+    <div className={["sequence-list-item-icons",
+      descriptionOpen ? "" : "show-on-hover",
+    ].join(" ")}>
       {item.description &&
-        <Help text={item.description} enableMarkdown={true} />}
+        <Help text={item.description} enableMarkdown={true}
+          isOpen={descriptionOpen}
+          setOpen={() => setDescriptionOpen(!descriptionOpen)} />}
       <i className={`fa ${importing ? "fa-spinner fa-pulse" : "fa-download"}`}
         title={t("import this sequence")}
         onClick={() => {
