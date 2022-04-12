@@ -16,6 +16,7 @@ import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
+import { sequencesPanelState } from "../../__test_support__/panel_state";
 
 describe("<Sequences />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -29,7 +30,8 @@ describe("<Sequences />", () => {
     getWebAppConfigValue: jest.fn(),
     menuOpen: undefined,
     stepIndex: undefined,
-    folderData: mapStateToFolderProps(fakeState())
+    folderData: mapStateToFolderProps(fakeState()),
+    sequencesPanelState: sequencesPanelState(),
   });
 
   it("renders", () => {

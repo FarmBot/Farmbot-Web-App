@@ -1,15 +1,17 @@
 import axios from "axios";
+import { Color } from "farmbot";
 import React from "react";
 import { API } from "../api";
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";
 import { Markdown } from "../ui";
 
-interface FeaturedSequence {
+export interface FeaturedSequence {
   id: number;
   path: string;
   name: string;
   description: string;
+  color: Color;
 }
 
 const FeaturedSequenceRow = (content: FeaturedSequence) =>

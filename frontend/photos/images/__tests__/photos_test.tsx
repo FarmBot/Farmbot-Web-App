@@ -134,7 +134,7 @@ describe("<Photos />", () => {
     const button = wrapper.find("button").at(1);
     expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
     button.simulate("click");
-    expect(destroy).not.toHaveBeenCalledWith();
+    expect(destroy).not.toHaveBeenCalled();
   });
 
   it("shows image download progress", () => {

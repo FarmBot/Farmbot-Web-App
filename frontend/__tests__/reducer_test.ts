@@ -1,7 +1,11 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
-  PlantsPanelState, PointsPanelState, SettingsPanelState, WeedsPanelState,
+  PlantsPanelState,
+  PointsPanelState,
+  SequencesPanelState,
+  SettingsPanelState,
+  WeedsPanelState,
 } from "../interfaces";
 import { app } from "../__test_support__/fake_state/app";
 import { fakeToast, fakeToasts } from "../__test_support__/fake_toasts";
@@ -70,6 +74,17 @@ describe("resource reducer", () => {
     });
     expect(newState.pointsPanelState.groups)
       .toBe(!state.pointsPanelState.groups);
+  });
+
+  it("toggles sequences panel options", () => {
+    const payload: keyof SequencesPanelState = "featured";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_SEQUENCES_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.sequencesPanelState.featured)
+      .toBe(!state.sequencesPanelState.featured);
   });
 
   it("sets controls popup state", () => {

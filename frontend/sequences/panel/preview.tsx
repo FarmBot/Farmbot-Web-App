@@ -49,6 +49,7 @@ export class RawDesignerSequencePreview
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Sequences}
+        colorClass={sequence?.body.color}
         titleElement={<ResourceTitle
           key={sequence?.body.name}
           readOnly={true}

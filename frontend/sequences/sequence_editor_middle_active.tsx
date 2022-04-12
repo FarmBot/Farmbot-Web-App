@@ -55,8 +55,6 @@ import {
 } from "./panel/preview_support";
 import { Path } from "../internal_urls";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
-import { Feature } from "../devices/interfaces";
-import { shouldDisplayFeature } from "../devices/should_display";
 import { newVariableDataValue, newVariableLabel } from "./locals_list/new_variable";
 import { StepButtonCluster } from "./step_button_cluster";
 
@@ -527,46 +525,36 @@ export class SequenceEditorMiddleActive extends
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("Variables")}
               count={Object.values(variableData).length}
-              buttonElement={(shouldDisplayFeature(Feature.number_variables) ||
-                shouldDisplayFeature(Feature.string_variables))
-                ? <Popover position={Position.TOP} usePortal={false}
-                  isOpen={this.state.addVariableMenuOpen}
-                  target={<button
-                    className={"fb-button gray add-variable-btn"}
-                    onClick={this.openAddVariableMenu}
-                    title={t("Add variable")}>
-                    <i className={"fa fa-plus"} />
-                  </button>}
-                  content={<div className={"add-variable-options"}>
-                    <button className={"fb-button gray"}
-                      onClick={this.addVariable(variableData, declarations,
-                        VariableType.Location)}>
-                      {t("location")}
-                    </button>
-                    <button className={"fb-button gray"}
-                      onClick={this.addVariable(variableData, declarations,
-                        VariableType.Number)}>
-                      {t("number")}
-                    </button>
-                    <button className={"fb-button gray"}
-                      onClick={this.addVariable(variableData, declarations,
-                        VariableType.Text)}>
-                      {t("text")}
-                    </button>
-                    {shouldDisplayFeature(Feature.resource_variables) &&
-                      <button className={"fb-button gray"}
-                        onClick={this.addVariable(variableData, declarations,
-                          VariableType.Resource)}>
-                        {t("resource")}
-                      </button>}
-                  </div>} />
-                : <button
+              buttonElement={<Popover position={Position.TOP} usePortal={false}
+                isOpen={this.state.addVariableMenuOpen}
+                target={<button
                   className={"fb-button gray add-variable-btn"}
-                  title={t("Add variable")}
-                  onClick={this.addVariable(variableData, declarations,
-                    VariableType.Location)}>
+                  onClick={this.openAddVariableMenu}
+                  title={t("Add variable")}>
                   <i className={"fa fa-plus"} />
                 </button>}
+                content={<div className={"add-variable-options"}>
+                  <button className={"fb-button gray"}
+                    onClick={this.addVariable(variableData, declarations,
+                      VariableType.Location)}>
+                    {t("location")}
+                  </button>
+                  <button className={"fb-button gray"}
+                    onClick={this.addVariable(variableData, declarations,
+                      VariableType.Number)}>
+                    {t("number")}
+                  </button>
+                  <button className={"fb-button gray"}
+                    onClick={this.addVariable(variableData, declarations,
+                      VariableType.Text)}>
+                    {t("text")}
+                  </button>
+                  <button className={"fb-button gray"}
+                    onClick={this.addVariable(variableData, declarations,
+                      VariableType.Resource)}>
+                    {t("resource")}
+                  </button>
+                </div>} />}
               collapsed={this.state.variablesCollapsed}
               toggle={this.toggleSection("variablesCollapsed")} />}
           {!viewSequenceCeleryScript &&
@@ -821,14 +809,16 @@ export interface SectionHeaderProps {
   collapsed: boolean;
   toggle(): void;
   count?: number;
-  buttonElement?: JSX.Element;
+  buttonElement?: JSX.Element | false;
+  extraClass?: string;
 }
 
 export const SectionHeader = (props: SectionHeaderProps) =>
-  <div className={"sequence-section-header"} onClick={props.toggle}>
+  <div className={`sequence-section-header ${props.extraClass}`}
+    onClick={props.toggle}>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
       : t(props.title)}</label>
-    {props.buttonElement}
     <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
+    {props.buttonElement}
   </div>;

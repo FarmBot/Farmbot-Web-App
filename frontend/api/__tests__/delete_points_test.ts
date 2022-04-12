@@ -55,7 +55,7 @@ describe("deletePoints()", () => {
     await expect(dispatch).not.toHaveBeenCalled();
     await expect(mockInc).toHaveBeenCalledTimes(1);
     expect(mockFinish).toHaveBeenCalledTimes(1);
-    expect(success).not.toHaveBeenCalledWith();
+    expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "Some weeds failed to delete."));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(

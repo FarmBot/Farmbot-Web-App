@@ -14,6 +14,8 @@ export interface HelpProps {
   links?: React.ReactElement[];
   title?: string;
   enableMarkdown?: boolean;
+  isOpen?: boolean;
+  setOpen?(): void;
 }
 
 export function Help(props: HelpProps) {
@@ -23,9 +25,11 @@ export function Help(props: HelpProps) {
       ? PopoverInteractionKind.HOVER
       : PopoverInteractionKind.CLICK}
     className={props.customClass}
+    isOpen={props.isOpen}
     popoverClassName={"help"}
     target={
       <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`}
+        onClick={props.setOpen}
         title={props.title} />}
     content={<div className={"help-text-content"}>
       {props.enableMarkdown

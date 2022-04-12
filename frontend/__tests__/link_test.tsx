@@ -1,7 +1,7 @@
 jest.mock("takeme", () => ({ navigate: jest.fn() }));
 
 import { clickHandler, Link } from "../link";
-import * as React from "react";
+import React from "react";
 import { navigate } from "takeme";
 import { shallow } from "enzyme";
 
@@ -50,6 +50,6 @@ describe("<Link/>", () => {
   it("doesn't navigate when disabled", () => {
     const wrapper = shallow(<Link to="/tools" disabled={true} />);
     wrapper.simulate("click", { preventDefault: jest.fn() });
-    expect(navigate).not.toHaveBeenCalledWith();
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

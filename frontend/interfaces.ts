@@ -71,3 +71,8 @@ export interface PointsPanelState {
   points: boolean;
   soilHeight: boolean;
 }
+
+export interface SequencesPanelState {
+  sequences: boolean;
+  featured: boolean;
+}

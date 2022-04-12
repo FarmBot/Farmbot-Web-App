@@ -19,6 +19,7 @@ module Api
         description: sequence_version.description,
         copyright: sequence_version.copyright,
         name: sequence_version.name,
+        color: sequence_version.color,
       }
     end
 

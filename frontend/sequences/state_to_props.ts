@@ -62,6 +62,7 @@ export function mapStateToProps(props: Everything): SequencesProps {
     folderData: mapStateToFolderProps(props),
     visualized: !!props.resources.consumers.farm_designer.visualizedSequence,
     hoveredStep: props.resources.consumers.farm_designer.hoveredSequenceStep,
+    sequencesPanelState: props.app.sequencesPanelState,
   };
 }
 

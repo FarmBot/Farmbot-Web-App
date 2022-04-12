@@ -2309,6 +2309,20 @@ textarea:focus {
     .download-link {
       display: inline-block;
     }
+    .buttons-with-image {
+      display: flex;
+      .buttons {
+        margin: auto;
+        margin-right: 0;
+      }
+      img {
+        margin: auto;
+        margin-left: 3rem;
+        width: 12rem;
+        border-radius: 5px;
+        border: 3px solid $lighter_gray;
+      }
+    }
   }
 }
 

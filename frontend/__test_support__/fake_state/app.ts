@@ -1,6 +1,10 @@
 import { AppState } from "../../reducer";
 import {
-  plantsPanelState, pointsPanelState, settingsPanelState, weedsPanelState,
+  plantsPanelState,
+  pointsPanelState,
+  sequencesPanelState,
+  settingsPanelState,
+  weedsPanelState,
 } from "../panel_state";
 
 export const app: AppState = {
@@ -9,6 +13,7 @@ export const app: AppState = {
   plantsPanelState: plantsPanelState(),
   weedsPanelState: weedsPanelState(),
   pointsPanelState: pointsPanelState(),
+  sequencesPanelState: sequencesPanelState(),
   controlsPopupOpen: false,
   toasts: {},
 };

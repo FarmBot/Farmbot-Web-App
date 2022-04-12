@@ -1,5 +1,9 @@
 import {
-  SettingsPanelState, PlantsPanelState, WeedsPanelState, PointsPanelState,
+  SettingsPanelState,
+  PlantsPanelState,
+  WeedsPanelState,
+  PointsPanelState,
+  SequencesPanelState,
 } from "../interfaces";
 
 export const settingsPanelState = (): SettingsPanelState => {
@@ -41,4 +45,9 @@ export const pointsPanelState = (): PointsPanelState => ({
   groups: false,
   points: true,
   soilHeight: false,
+});
+
+export const sequencesPanelState = (): SequencesPanelState => ({
+  sequences: true,
+  featured: false,
 });

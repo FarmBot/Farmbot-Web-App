@@ -280,6 +280,24 @@
   &.red-panel {
     background-color: $panel_red;
   }
+  &.blue,
+  &.yellow,
+  &.orange,
+  &.purple,
+  &.pink,
+  &.gray {
+    .right-button,
+    .back-arrow,
+    .title {
+      color: $dark_gray;
+    }
+    .right-button,
+    .back-arrow {
+      &:hover {
+        color: $black !important;
+      }
+    }
+  }
 }
 
 .panel-tabs {
@@ -2308,17 +2326,15 @@
 
 .designer-sequence-list-panel {
   .panel-content {
+    max-height: calc(100vh - 15rem);
+    @media screen and (max-width: 450px) {
+      max-height: calc(100vh - 19rem);
+    }
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding-bottom: 6rem;
     .panel-top {
       margin-left: 0 !important;
-    }
-    .non-empty-state {
-      max-height: calc(100vh - 15rem);
-      @media screen and (max-width: 450px) {
-        max-height: calc(100vh - 19rem);
-      }
-      overflow-y: scroll;
-      overflow-x: hidden;
-      padding-bottom: 6rem;
     }
     a {
       text-decoration: none !important;
@@ -2591,7 +2607,7 @@
       color: $medium_gray;
     }
     .job-name {
-      max-width: 10rem;
+      max-width: 20rem;
       overflow: hidden;
       text-overflow: ellipsis;
     }

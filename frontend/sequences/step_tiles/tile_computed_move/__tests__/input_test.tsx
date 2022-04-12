@@ -31,7 +31,7 @@ describe("<MoveStepInput />", () => {
     p.value = "lua";
     const wrapper = mount(<MoveStepInput {...p} />);
     wrapper.find("input").simulate("keyUp", { key: "" });
-    expect(p.setValue).toHaveBeenCalledWith();
+    expect(p.setValue).toHaveBeenCalled();
   });
 
   it("sets lua value", () => {

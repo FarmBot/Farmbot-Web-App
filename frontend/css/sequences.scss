@@ -305,8 +305,61 @@
   }
 }
 
+.designer-sequence-list-panel-content {
+  .panel-top {
+    display: none;
+  }
+  .sequence-section-header {
+    margin-left: -15px;
+    margin-right: -10px;
+    .fa-caret-up,
+    .fa-caret-down {
+      margin: 1rem !important;
+      margin-top: 0.4rem !important;
+      margin-left: 1.5rem !important;
+    }
+    &.featured-sequence-header {
+      margin-top: 2rem;
+      .fa-caret-up,
+      .fa-caret-down {
+        position: absolute;
+        right: 0;
+      }
+    }
+  }
+  .show-on-hover {
+    display: none !important;
+  }
+  @media screen and (max-width: 450px) {
+    .show-on-hover {
+      display: flex !important;
+    }
+  }
+  .sequence-list-item {
+    &:hover {
+      .show-on-hover {
+        display: flex !important;
+      }
+    }
+  }
+}
+
+.folder-icon-wrapper {
+  display: inline;
+  button {
+    height: 2rem;
+    margin-left: 1rem;
+    margin-top: 0.75rem;
+    padding: 0 0.75rem;
+    i {
+      display: block;
+    }
+  }
+}
+
 .farm-event-form-content,
 .regimen-editor-content,
+.designer-sequence-list-panel-content,
 .sequence-editor-sections {
   .sequence-section-header {
     position: relative;
@@ -318,6 +371,7 @@
     }
     label {
       cursor: pointer;
+      margin-top: 0;
     }
     .fa-caret-up,
     .fa-caret-down {
@@ -638,11 +692,6 @@
   @media screen and (max-width: 767px) {
     margin-left: -15px;
   }
-  .non-empty-state {
-    max-height: calc(100vh - 19rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
   .panel-top {
     margin-left: 1rem !important;
     button {
@@ -784,7 +833,7 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: normal;
       width: 72%;
       padding: 0.5rem;
@@ -878,6 +927,15 @@
   }
 }
 
+.featured-sequence-list {
+  .saucer {
+    margin-left: 0.4rem !important;
+  }
+  p {
+    margin-left: 1.5rem !important;
+  }
+}
+
 .sequence-list-panel {
   padding-top: 0.4rem;
   margin-right: 5px;
@@ -889,6 +947,11 @@
     .empty-state-graphic {
       margin-top: 25%;
     }
+  }
+  .non-empty-state {
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   @media screen and (max-width: 767px) {
     &.open {
