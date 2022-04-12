@@ -106,8 +106,12 @@ export const isJobDone = (job: JobProgress | undefined) =>
   !job || ["complete", "error"].includes("" + job.status.toLowerCase());
 
 const duration = (job: JobProgressWithTitle) => {
-  if (!job.time || isJobDone(job)) { return ""; }
-  return `${round((moment.now() - moment(job.time).valueOf()) / 1000)}s`;
+  if (!job.time) { return ""; }
+  const updatedAt = job["updated_at" as keyof JobProgress
+  ] as unknown as number * 1000;
+  const last = isJobDone(job) ? updatedAt : moment.now();
+  const seconds = round((last - moment(job.time).valueOf()) / 1000);
+  return seconds > 0 ? `${seconds}s` : "";
 };
 
 export const isImageUploadJob = (jobType: string, jobTitle: string) =>
