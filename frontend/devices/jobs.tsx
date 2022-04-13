@@ -59,7 +59,7 @@ export const JobsTable = (props: JobsTableProps) => {
         <th>{props.more ? t("Progress") : "%"}</th>
         <th>{t("Status")}</th>
         {props.more && <th>{t("Time")}</th>}
-        {props.more && <th>{t("Duration")}</th>}
+        <th>{t("Duration")}</th>
       </tr>
     </thead>
     <tbody>
@@ -95,10 +95,11 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
           : {}} />
     </td>
     <td>{job.status}</td>
-    {props.more && <td title={job.time}>{job.time
-      ? formatTime(moment(job.time), props.timeSettings)
-      : ""}</td>}
-    {props.more && <td>{duration(job)}</td>}
+    {props.more && <td title={`${job.time} (${moment(job.time)})`}>
+      {job.time
+        ? formatTime(moment(job.time), props.timeSettings)
+        : ""}</td>}
+    <td>{duration(job)}</td>
   </tr>;
 };
 
@@ -142,10 +143,10 @@ export const sortJobs =
       .map(addTitleToJobProgress);
     const activeJobs = sortBy(
       jobsWithTitle.filter(job => !isJobDone(job)),
-      job => moment.now() - moment(job.time).unix());
+      job => moment.now() - moment(job.time).unix()).reverse();
     const inactiveJobs = sortBy(
       jobsWithTitle.filter(job => isJobDone(job)),
-      job => job.time);
+      job => job.time).reverse();
     return { active: activeJobs, inactive: inactiveJobs };
   };
 
