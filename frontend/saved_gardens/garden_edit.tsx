@@ -19,6 +19,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
+import { SavedGarden } from "farmbot/dist/resources/api_resources";
 
 /** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
@@ -76,7 +77,17 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
   };
 };
 
-export class RawEditGarden extends React.Component<EditGardenProps, {}> {
+interface EditGardenState {
+  notes: string;
+}
+
+export class RawEditGarden
+  extends React.Component<EditGardenProps, EditGardenState> {
+  state: EditGardenState = {
+    notes: this.props.savedGarden?.body["notes" as keyof SavedGarden] as string
+      || "",
+  };
+
   render() {
     const { savedGarden } = this.props;
     const gardensPath = Path.savedGardens();
@@ -99,6 +110,18 @@ export class RawEditGarden extends React.Component<EditGardenProps, {}> {
                 onCommit={e => {
                   this.props.dispatch(edit(savedGarden, {
                     name: e.currentTarget.value
+                  }));
+                  this.props.dispatch(save(savedGarden.uuid));
+                }} />
+            </Row>
+            <Row>
+              <label>{t("notes")}</label>
+              <textarea
+                value={this.state.notes}
+                onChange={e => this.setState({ notes: e.currentTarget.value })}
+                onBlur={() => {
+                  this.props.dispatch(edit(savedGarden, {
+                    ["notes" as keyof SavedGarden]: this.state.notes
                   }));
                   this.props.dispatch(save(savedGarden.uuid));
                 }} />

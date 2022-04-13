@@ -34,9 +34,9 @@ describe("snapshotGarden", () => {
   });
 
   it("calls with garden name", () => {
-    snapshotGarden("new saved garden");
+    snapshotGarden("new saved garden", "notes");
     expect(axios.post).toHaveBeenCalledWith(
-      API.current.snapshotPath, { name: "new saved garden" });
+      API.current.snapshotPath, { name: "new saved garden", notes: "notes" });
   });
 });
 
@@ -107,15 +107,15 @@ describe("openOrCloseGarden", () => {
 
 describe("newSavedGarden", () => {
   it("creates a new saved garden", () => {
-    newSavedGarden("my saved garden")(jest.fn(() => Promise.resolve()));
+    newSavedGarden("my saved garden", "notes")(jest.fn(() => Promise.resolve()));
     expect(initSave).toHaveBeenCalledWith(
-      "SavedGarden", { name: "my saved garden" });
+      "SavedGarden", { name: "my saved garden", notes: "notes" });
   });
 
   it("creates a new saved garden with default name", () => {
-    newSavedGarden("")(jest.fn(() => Promise.resolve()));
+    newSavedGarden("", "")(jest.fn(() => Promise.resolve()));
     expect(initSave).toHaveBeenCalledWith(
-      "SavedGarden", { name: "Untitled Garden" });
+      "SavedGarden", { name: "Untitled Garden", notes: "" });
   });
 });
 

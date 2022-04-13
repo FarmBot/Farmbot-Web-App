@@ -13,7 +13,7 @@ export const MobileMenu = (props: MobileMenuProps) => {
       onClose={props.close("mobileMenuOpen")}>
       <div className={`${classes.join(" ")} ${isActive}`}>
         <NavLinks close={props.close} alertCount={props.alertCount}
-          addMap={true} helpState={props.helpState} />
+          helpState={props.helpState} />
       </div>
     </Overlay>
   </div>;

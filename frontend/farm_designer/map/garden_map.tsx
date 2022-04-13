@@ -311,7 +311,7 @@ export class GardenMap extends
         break;
       case Mode.locationInfo:
         e.preventDefault();
-        chooseLocation({
+        !this.state.toLocation && chooseLocation({
           gardenCoords: this.getGardenCoordinates(e),
           dispatch: this.props.dispatch
         });

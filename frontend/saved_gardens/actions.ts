@@ -10,12 +10,17 @@ import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
 import { Path } from "../internal_urls";
+import { SavedGarden } from "farmbot/dist/resources/api_resources";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
-export const snapshotGarden = (gardenName?: string | undefined) =>
-  axios.post<void>(API.current.snapshotPath, gardenName
-    ? { name: gardenName }
-    : {})
+export const snapshotGarden = (
+  gardenName?: string | undefined,
+  gardenNotes?: string,
+) =>
+  axios.post<void>(API.current.snapshotPath,
+    gardenName
+      ? { name: gardenName, notes: gardenNotes }
+      : {})
     .then(() => {
       success(t("Garden Saved."));
       push(Path.plants());
@@ -67,9 +72,12 @@ export const openOrCloseGarden = (props: {
       : props.dispatch(closeSavedGarden());
 
 /** Create a new SavedGarden with the chosen name. */
-export const newSavedGarden = (gardenName: string) =>
+export const newSavedGarden = (gardenName: string, gardenNotes: string) =>
   (dispatch: Function) => {
-    dispatch(initSave("SavedGarden", { name: gardenName || "Untitled Garden" }))
+    dispatch(initSave("SavedGarden", {
+      name: gardenName || "Untitled Garden",
+      ["notes" as keyof SavedGarden]: gardenNotes,
+    }))
       .then(() => {
         success(t("Garden Saved."));
         push(Path.plants());

@@ -38,9 +38,7 @@ For a list of example API requests and responses, see our [reference documentati
 
 If you are not a software developer with Ruby on Rails experience, you should not set up a server. Data loss and security vulnerabilities are possible.
 
-We provide example setup instructions for software developers running Ubuntu 18 [here](https://github.com/FarmBot/Farmbot-Web-App/blob/main/ubuntu_example.sh).
-
-Installation was last tested against Ubuntu 18.04 in October of 2018 on an x86 based machine.
+We provide example setup instructions for software developers running Ubuntu [here](https://github.com/FarmBot/Farmbot-Web-App/blob/main/ubuntu_example.sh).
 
 Our ability to help individual users with private setup is limited. Using the public server at http://my.farm.bot is the recommended setup for end users. Please see the top of this document for more information.
 

@@ -1487,7 +1487,8 @@ CREATE TABLE public.saved_gardens (
     name character varying NOT NULL,
     device_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    notes character varying(1500)
 );
 
 
@@ -3751,6 +3752,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211030193113'),
 ('20211104173453'),
 ('20211117212015'),
-('20211206165259');
+('20211206165259'),
+('20220413194334');
 
 

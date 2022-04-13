@@ -49,6 +49,16 @@ describe("<EditGarden />", () => {
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "new name" });
   });
 
+  it("edits garden notes", () => {
+    const p = fakeProps();
+    p.savedGarden = fakeSavedGarden();
+    const wrapper = shallow(<EditGarden {...p} />);
+    wrapper.find("textarea").simulate("change",
+      { currentTarget: { value: "notes" } });
+    wrapper.find("textarea").simulate("blur");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { notes: "notes" });
+  });
+
   it("applies garden", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
