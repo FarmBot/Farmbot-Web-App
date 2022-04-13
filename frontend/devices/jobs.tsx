@@ -59,7 +59,7 @@ export const JobsTable = (props: JobsTableProps) => {
         <th>{props.more ? t("Progress") : "%"}</th>
         <th>{t("Status")}</th>
         {props.more && <th>{t("Time")}</th>}
-        {props.more && <th>{t("Duration")}</th>}
+        <th>{t("Duration")}</th>
       </tr>
     </thead>
     <tbody>
@@ -95,10 +95,11 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
           : {}} />
     </td>
     <td>{job.status}</td>
-    {props.more && <td title={job.time}>{job.time
-      ? formatTime(moment(job.time), props.timeSettings)
-      : ""}</td>}
-    {props.more && <td>{duration(job)}</td>}
+    {props.more && <td title={`${job.time} (${moment(job.time)})`}>
+      {job.time
+        ? formatTime(moment(job.time), props.timeSettings)
+        : ""}</td>}
+    <td>{duration(job)}</td>
   </tr>;
 };
 
@@ -106,8 +107,12 @@ export const isJobDone = (job: JobProgress | undefined) =>
   !job || ["complete", "error"].includes("" + job.status.toLowerCase());
 
 const duration = (job: JobProgressWithTitle) => {
-  if (!job.time || isJobDone(job)) { return ""; }
-  return `${round((moment.now() - moment(job.time).valueOf()) / 1000)}s`;
+  if (!job.time) { return ""; }
+  const updatedAt = job["updated_at" as keyof JobProgress
+  ] as unknown as number * 1000;
+  const last = isJobDone(job) ? updatedAt : moment.now();
+  const seconds = round((last - moment(job.time).valueOf()) / 1000);
+  return seconds > 0 ? `${seconds}s` : "";
 };
 
 export const isImageUploadJob = (jobType: string, jobTitle: string) =>
@@ -138,10 +143,10 @@ export const sortJobs =
       .map(addTitleToJobProgress);
     const activeJobs = sortBy(
       jobsWithTitle.filter(job => !isJobDone(job)),
-      job => moment.now() - moment(job.time).unix());
+      job => moment.now() - moment(job.time).unix()).reverse();
     const inactiveJobs = sortBy(
       jobsWithTitle.filter(job => isJobDone(job)),
-      job => job.time);
+      job => job.time).reverse();
     return { active: activeJobs, inactive: inactiveJobs };
   };
 
