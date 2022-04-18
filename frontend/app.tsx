@@ -19,14 +19,14 @@ import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
 import { validBotLocationData, validFwConfig } from "./util";
-import { BooleanSetting } from "./session_keys";
+import { BooleanSetting, StringSetting } from "./session_keys";
 import {
   getWebAppConfigValue, GetWebAppConfigValue,
 } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "./resources/getters";
-import { intersection } from "lodash";
+import { intersection, isString } from "lodash";
 import { t } from "./i18next_wrapper";
 import { ResourceIndex } from "./resources/interfaces";
 import { isBotOnlineFromState } from "./devices/must_be_online";
@@ -42,7 +42,8 @@ import { TourStepContainer } from "./help/tours";
 import { ToastMessages } from "./toast/interfaces";
 import { Toasts } from "./toast/fb_toast";
 import Bowser from "bowser";
-import { Path } from "./internal_urls";
+import { landingPagePath, Path } from "./internal_urls";
+import { push } from "./history";
 
 export interface AppProps {
   dispatch: Function;
@@ -142,6 +143,10 @@ export class RawApp extends React.Component<AppProps, {}> {
     const { bot, dispatch, getConfigValue } = this.props;
     const { location_data, mcu_params } = bot.hardware;
     const { busy, locked } = bot.hardware.informational_settings;
+    const landingPage = getConfigValue(StringSetting.landing_page);
+    if (Path.equals("") && isString(landingPage)) {
+      push(landingPagePath(landingPage));
+    }
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} />

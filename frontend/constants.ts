@@ -782,6 +782,9 @@ export namespace Content {
     trim(`Have the browser also read aloud log messages on the
     "Speak" channel that are spoken by FarmBot.`);
 
+  export const LANDING_PAGE =
+    trim(`Choose the starting page that loads after logging in.`);
+
   export const BROWSER_ACTIVITY_BEEP =
     trim(`Have the browser beep when FarmBot sends a log message.
     Verbosity can be adjusted using the slider; increase the value for more
@@ -2044,6 +2047,7 @@ export enum DeviceSetting {
   hideWebcamWidget = `Hide Webcam widget`,
   hideSensorsPanel = `Hide Sensors panel`,
   readSpeakLogsInBrowser = `Read speak logs in browser`,
+  landingPage = `Landing page`,
   browserFarmbotActivityBeep = `Browser FarmBot activity beep`,
   discardUnsavedChanges = `Discard Unsaved Changes`,
   confirmEmergencyUnlock = `Confirm emergency unlock`,

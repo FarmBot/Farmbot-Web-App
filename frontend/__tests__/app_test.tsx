@@ -6,6 +6,7 @@ jest.mock("bowser", () => ({
 let mockPath = "";
 jest.mock("../history", () => ({
   getPathArray: () => mockPath.split("/"),
+  push: jest.fn(),
 }));
 
 import React from "react";
@@ -26,6 +27,7 @@ import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
 import { fakeHelpState } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
+import { push } from "../history";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -122,6 +124,22 @@ describe("<App />: Loading", () => {
     mockSatisfies = false;
     mount(<App {...fakeProps()} />);
     expect(warning).toHaveBeenCalled();
+  });
+
+  it("navigates to landing page", () => {
+    mockPath = Path.mock(Path.app());
+    const p = fakeProps();
+    p.getConfigValue = () => "controls";
+    mount(<App {...p} />);
+    expect(push).toHaveBeenCalledWith(Path.controls());
+  });
+
+  it("doesn't navigate to landing page", () => {
+    mockPath = Path.mock(Path.controls());
+    const p = fakeProps();
+    p.getConfigValue = () => "controls";
+    mount(<App {...p} />);
+    expect(push).not.toHaveBeenCalled();
   });
 });
 

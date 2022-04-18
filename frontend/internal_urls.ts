@@ -1,5 +1,6 @@
 import { isUndefined } from "lodash";
 import { getPathArray } from "./history";
+import { t } from "./i18next_wrapper";
 
 export namespace Path {
   const appended = (path: string | number | undefined) => path ? "/" + path : "";
@@ -149,3 +150,30 @@ export const BUGS = [
   Bug.ladybug,
   Bug["roly-poly"],
 ];
+
+export const PAGE_SLUGS = (): { [x: string]: string } => ({
+  "map": t("Map"),
+  "plants": t("Plants"),
+  "weeds": t("Weeds"),
+  "points": t("Points"),
+  "sequences": t("Sequences"),
+  "regimens": t("Regimens"),
+  "events": t("Events"),
+  "controls": t("Controls"),
+  "sensors": t("Sensors"),
+  "photos": t("Photos"),
+  "tools": t("Tools"),
+  "messages": t("Messages"),
+  "help": t("Help"),
+  "settings": t("Settings"),
+  "logs": t("Logs"),
+  "tours": t("Tours"),
+});
+
+export const landingPagePath = (page: string) => {
+  switch (page) {
+    case "map": return Path.designer();
+    case "logs": return Path.logs();
+    default: return Path.designer(page);
+  }
+};

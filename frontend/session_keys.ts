@@ -6,7 +6,7 @@ import {
 
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
-type WebAppStringConfigKeyAll = WebAppStringConfigKey;
+type WebAppStringConfigKeyAll = WebAppStringConfigKey | "landing_page";
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
 type NumericSettings = Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey>;
@@ -91,16 +91,21 @@ export const NumericSetting: NumericSettings = {
   map_size_y: "map_size_y",
   bot_origin_quadrant: "bot_origin_quadrant",
 
+  /** App settings */
+  beep_verbosity: "beep_verbosity",
+
   /** Other */
   id: "id",
   device_id: "device_id",
-  beep_verbosity: "beep_verbosity",
 };
 
 export const StringSetting: StringSettings = {
   /** Designer settings */
   photo_filter_begin: "photo_filter_begin",
   photo_filter_end: "photo_filter_end",
+
+  /** App settings */
+  landing_page: "landing_page" as WebAppStringConfigKey,
 
   /** Other */
   created_at: "created_at",

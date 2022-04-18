@@ -12,10 +12,16 @@ jest.mock("../request_account_export", () => ({
   requestAccountExport: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
+  LandingPageSetting, LandingPageSettingProps,
 } from "../account_settings";
 import { AccountSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
@@ -24,11 +30,12 @@ import { edit, save } from "../../../api/crud";
 import { success } from "../../../toast/toast";
 import { Content } from "../../../constants";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
-import { NumericSetting } from "../../../session_keys";
+import { NumericSetting, StringSetting } from "../../../session_keys";
 import { Slider } from "@blueprintjs/core";
-import { ToggleButton } from "../../../ui";
+import { FBSelect, ToggleButton } from "../../../ui";
 import { clickButton } from "../../../__test_support__/helpers";
 import { requestAccountExport } from "../request_account_export";
+import { changeEvent } from "../../../__test_support__/fake_html_events";
 
 describe("<AccountSettings />", () => {
   const fakeProps = (): AccountSettingsProps => ({
@@ -95,5 +102,31 @@ describe("<ActivityBeepSetting />", () => {
     wrapper.find(Slider).simulate("change", 2);
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 2);
+  });
+});
+
+describe("<LandingPageSetting />", () => {
+  const fakeProps = (): LandingPageSettingProps => ({
+    getConfigValue: () => "controls",
+    dispatch: jest.fn(),
+  });
+
+  it("changes value", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<LandingPageSetting {...p} />);
+    wrapper.find(FBSelect).props().onChange({ label: "", value: "map" });
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      StringSetting.landing_page, "map");
+  });
+
+  it("changes value: developer", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = shallow(<LandingPageSetting {...p} />);
+    const e = changeEvent("x");
+    wrapper.find("input").props().onChange?.(e);
+    wrapper.find("input").props().onBlur?.({} as React.FocusEvent);
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      StringSetting.landing_page, "x");
   });
 });

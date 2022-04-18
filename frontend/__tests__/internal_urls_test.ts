@@ -1,4 +1,6 @@
-import { FilePath, Icon, Path } from "../internal_urls";
+import {
+  FilePath, Icon, landingPagePath, PAGE_SLUGS, Path,
+} from "../internal_urls";
 let mockPath = Path.mock(Path.designer());
 jest.mock("../history", () => ({
   getPathArray: () => mockPath.split("/"),
@@ -64,5 +66,19 @@ describe("File()", () => {
     expect(FilePath.icon(Icon.map)).toEqual("/app-resources/img/icons/map.svg");
     expect(FilePath.DEFAULT_WEED_ICON)
       .toEqual("/app-resources/img/generic-weed.svg");
+  });
+});
+
+describe("PAGE_SLUGS()", () => {
+  it("returns slug", () => {
+    expect(PAGE_SLUGS().map).toEqual("Map");
+  });
+});
+
+describe("landingPagePath()", () => {
+  it("returns correct path", () => {
+    expect(landingPagePath("map")).toEqual(Path.designer());
+    expect(landingPagePath("logs")).toEqual(Path.logs());
+    expect(landingPagePath("messages")).toEqual(Path.messages());
   });
 });

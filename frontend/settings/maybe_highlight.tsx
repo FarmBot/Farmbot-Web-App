@@ -203,6 +203,7 @@ const APP_SETTINGS = [
   DeviceSetting.hideWebcamWidget,
   DeviceSetting.hideSensorsPanel,
   DeviceSetting.readSpeakLogsInBrowser,
+  DeviceSetting.landingPage,
   DeviceSetting.browserFarmbotActivityBeep,
   DeviceSetting.discardUnsavedChanges,
   DeviceSetting.confirmEmergencyUnlock,

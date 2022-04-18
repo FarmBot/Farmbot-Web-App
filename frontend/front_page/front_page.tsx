@@ -19,7 +19,7 @@ import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
 import { FilePath, Path } from "../internal_urls";
 
-export const DEFAULT_APP_PAGE = Path.withApp(Path.controls());
+export const DEFAULT_APP_PAGE = Path.app();
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
