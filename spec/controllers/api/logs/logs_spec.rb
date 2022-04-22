@@ -126,15 +126,13 @@ describe Api::LogsController do
       expect(user.device.logs.count).to eq(0)
     end
 
-    it "deletes all logs" do
-      SmarfDoc.note("WARNING: All logs will be deleted upon request, " +
-                    "regardless of the specific log id provided.")
+    it "deletes specific log" do
       sign_in user
       before = user.device.logs.count
-      delete :destroy, params: { id: 123 }
+      delete :destroy, params: { id: logs.first.id }
       expect(response.status).to eq(200)
       expect(user.device.reload.logs.count).to be < before
-      expect(user.device.logs.count).to eq(0)
+      expect(user.device.logs.count).to eq(before - 1)
     end
 
     it "delivers emails for logs marked as `email`" do

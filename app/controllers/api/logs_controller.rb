@@ -37,9 +37,12 @@ module Api
       render json: current_device.limited_log_list
     end
 
-    # Clears out *all* logs.
     def destroy
-      render json: current_device.logs.destroy_all && ""
+      if params[:id] == "all"
+        render json: (current_device.logs.destroy_all && "")
+      else
+        render json: (current_device.logs.find(params[:id]).destroy! && "")
+      end
     end
 
     private

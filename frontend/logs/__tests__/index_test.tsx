@@ -1,5 +1,9 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
+jest.mock("../../api/crud", () => ({
+  destroy: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawLogs as Logs } from "../index";
@@ -11,6 +15,7 @@ import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
+import { destroy } from "../../api/crud";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -242,5 +247,12 @@ describe("<Logs />", () => {
     expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
     expect(wrapper.text()).toContain("message 1");
     expect(wrapper.text()).not.toContain("message 2");
+  });
+
+  it("deletes log", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Logs {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
+    expect(destroy).toHaveBeenCalledWith(p.logs[0].uuid);
   });
 });
