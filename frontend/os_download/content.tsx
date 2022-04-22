@@ -42,9 +42,7 @@ interface PlatformContent {
 
 const PLATFORM_DATA = (): PlatformContent[] => [
   {
-    computer: localStorage.getItem("rpi4")
-      ? "Raspberry Pi 3\nRaspberry Pi Zero 2 W"
-      : "Raspberry Pi 3",
+    computer: "Raspberry Pi 3\nRaspberry Pi Zero 2 W",
     imageUrl: RPI3().imageUrl,
     releaseTag: RPI3().releaseTag,
     kits: [
@@ -52,25 +50,23 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis v1.3",
       "Genesis v1.4",
       "Genesis v1.5",
-      "Genesis v1.6",
+      "Genesis v1.6 (black cable)",
       "Genesis XL v1.4",
       "Genesis XL v1.5",
-      "Genesis XL v1.6",
-      ...(localStorage.getItem("rpi4") ? ["Express v1.1 (USB)"] : []),
-      ...(localStorage.getItem("rpi4") ? ["Express XL v1.1 (USB)"] : []),
+      "Genesis XL v1.6 (black cable)",
+      "Express v1.1 (USB)",
+      "Express XL v1.1 (USB)",
     ],
   },
-  ...(localStorage.getItem("rpi4")
-    ? [{
-      computer: "Raspberry Pi 4",
-      imageUrl: RPI4().imageUrl,
-      releaseTag: RPI4().releaseTag,
-      kits: [
-        "Genesis v1.6.1 (white cable)",
-        "Genesis XL v1.6.1 (white cable)",
-      ],
-    }]
-    : []),
+  {
+    computer: "Raspberry Pi 4",
+    imageUrl: RPI4().imageUrl,
+    releaseTag: RPI4().releaseTag,
+    kits: [
+      "Genesis v1.6.1 (white cable)",
+      "Genesis XL v1.6.1 (white cable)",
+    ],
+  },
   {
     computer: "Raspberry Pi Zero W",
     imageUrl: RPIZ().imageUrl,
@@ -117,8 +113,16 @@ enum Model {
 }
 
 const MODELS = () => [
-  { value: Model.Genesis, label: t("The gantry attaches to aluminum tracks.") },
-  { value: Model.Express, label: t("The gantry is set directly upon a raised bed.") },
+  {
+    value: Model.Genesis,
+    label: t("The gantry attaches to aluminum tracks"),
+    image: "os_wizard/genesis",
+  },
+  {
+    value: Model.Express,
+    label: t("The gantry is set directly upon a raised bed"),
+    image: "os_wizard/express",
+  },
 ];
 
 enum Version {
@@ -152,8 +156,18 @@ enum Run {
 
 const RUNS = () => ({
   [Version["v1.6"]]: [
-    { value: Run.first, label: t("black cable") },
-    { value: Run.second, label: t("white cable") },
+    {
+      value: Run.first,
+      label: t("Black"),
+      image: "os_wizard/pi_power_cable_black",
+      className: "black",
+    },
+    {
+      value: Run.second,
+      label: t("White"),
+      image: "os_wizard/pi_power_cable_white",
+      className: "white",
+    },
   ]
 });
 
@@ -199,23 +213,45 @@ const DownloadLink = (content: Partial<ReleaseItem>) =>
     </a>
   </div>;
 
-interface ButtonProps {
+interface SimpleButtonProps {
   click(): void;
   content: string | JSX.Element;
   extraClass?: string;
-  label?: string;
 }
 
-const Button = (props: ButtonProps) =>
+const SimpleButton = (props: SimpleButtonProps) =>
   <div className={"download-wizard-button"}>
     <button className={`transparent-button ${props.extraClass}`}
       onClick={props.click}>
       {props.content}
     </button>
-    {props.label &&
-      <p className={"os-download-wizard-btn-label"}>
-        {t(props.label)}
-      </p>}
+  </div>;
+
+interface ContentButtonProps {
+  click(): void;
+  content: string | JSX.Element;
+  extraClass?: string;
+  label?: string;
+  image?: string;
+}
+
+const ContentButton = (props: ContentButtonProps) =>
+  <div className={"download-wizard-button"}>
+    <button className={`os-wizard-content-button ${props.extraClass}`}
+      onClick={props.click}>
+      <div className={"btn-text"}>
+        <p className={"btn-title"}
+          style={props.label ? {} : { paddingBottom: "0.75rem" }}>
+          {props.content}
+        </p>
+        {props.label &&
+          <p className={"os-download-wizard-btn-label"}>
+            {t(props.label)}
+          </p>}
+      </div>
+      {props.image &&
+        <img src={FilePath.image(props.image, "png")} />}
+    </button>
   </div>;
 
 interface OsDownloadWizardState {
@@ -243,16 +279,16 @@ export class OsDownloadWizard
       () => this.setState({ ...this.state, [key]: value });
 
   back = ({ field }: { field: keyof OsDownloadWizardState }) =>
-    <Button extraClass={"back"}
+    <SimpleButton extraClass={"back"}
       click={this.select(field, undefined)}
       content={<i className={"fa fa-arrow-left"} />} />;
 
   render() {
     if (!this.props.wizard) {
       return <div className={"os-download-wizard"}>
-        <Button extraClass={"start"}
+        <SimpleButton extraClass={"start"}
           click={() => this.props.setWizard(true)}
-          content={t("Try the wizard")} />
+          content={t("Return to the wizard")} />
       </div>;
     }
     if (!this.state.model) {
@@ -261,14 +297,14 @@ export class OsDownloadWizard
           <p className={"os-download-wizard-note"}>
             {t("Which FarmBot model do you have?")}
           </p>
-          {MODELS().map(model =>
-            <Button key={model.value}
-              click={this.select("model", model.value)}
-              content={t(model.value)}
-              label={t(model.label)} />)}
-          <Button extraClass={"back"}
-            click={() => this.props.setWizard(false)}
-            content={<i className={"fa fa-arrow-left"} />} />
+          <div className={"buttons"}>
+            {MODELS().map(model =>
+              <ContentButton key={model.value}
+                click={this.select("model", model.value)}
+                content={t(model.value)}
+                label={t(model.label)}
+                image={model.image} />)}
+          </div>
         </div>
       </div>;
     }
@@ -279,7 +315,7 @@ export class OsDownloadWizard
             {t(Content.SHIPPING_BOX_LABEL_PROMPT)}
           </p>
           {VERSIONS()[this.state.model].map(version =>
-            <Button key={version}
+            <SimpleButton key={version}
               click={this.select("version", version)}
               content={`${this.state.model} ${t(version)}`} />)}
           <this.back field={"model"} />
@@ -293,14 +329,13 @@ export class OsDownloadWizard
           <p className={"os-download-wizard-note"}>
             {t(Content.PI_POWER_CABLE_COLOR_PROMPT)}
           </p>
-          <div className={"buttons-with-image"}>
-            <div className={"buttons"}>
-              {RUNS()[this.state.version].map(run =>
-                <Button key={run.value}
-                  click={this.select("run", run.value)}
-                  content={t(run.label)} />)}
-            </div>
-            <img src={FilePath.image("pi_power_cable", "png")} />
+          <div className={"buttons"}>
+            {RUNS()[this.state.version].map(run =>
+              <ContentButton key={run.value}
+                click={this.select("run", run.value)}
+                content={t(run.label)}
+                image={run.image}
+                extraClass={run.className} />)}
           </div>
           <this.back field={"version"} />
         </div>
@@ -323,7 +358,7 @@ export class OsDownloadWizard
 }
 
 export const OsDownloadPage = () => {
-  const [wizard, setWizard] = React.useState(false);
+  const [wizard, setWizard] = React.useState(true);
   if (window.innerWidth > 450) {
     (document.querySelector("html") as HTMLElement).style.fontSize = "15px";
   }
@@ -333,7 +368,7 @@ export const OsDownloadPage = () => {
       <p className={"os-download-description"}>{t(Content.DOWNLOAD_FBOS)}</p>
       <OsDownloadWizard wizard={wizard} setWizard={setWizard} />
       {wizard
-        ? <Button extraClass={"wizard-btn"}
+        ? <SimpleButton extraClass={"wizard-btn"}
           click={() => setWizard(false)}
           content={t("Show all download links")} />
         : <OsDownloadTable />}

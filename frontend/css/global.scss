@@ -2277,6 +2277,9 @@ textarea:focus {
       }
     }
   }
+  button {
+    cursor: pointer;
+  }
   .wizard-btn {
     margin: 1rem;
     float: none;
@@ -2286,7 +2289,7 @@ textarea:focus {
   .os-download-wizard {
     position: relative;
     margin-top: 2rem;
-    button {
+    .transparent-button {
       margin: 1rem;
       float: none;
       color: $white;
@@ -2313,11 +2316,80 @@ textarea:focus {
       font-size: 1.4rem;
       font-weight: bold;
     }
-    .os-download-wizard-btn-label {
-      display: inline-block;
-      width: 18rem;
-      vertical-align: middle;
-      margin-bottom: 0 !important;
+    .buttons {
+      display: flex;
+      button {
+        width: 75%;
+        border-radius: 0;
+        padding: 0;
+        border: 3px solid $white;
+        width: 75%;
+        img {
+          margin: 0;
+          width: 100%;
+          margin-top: -1rem;
+        }
+        &:hover {
+          border-color: $off_white;
+          .btn-text {
+            background: darken($cyan, 10%);
+          }
+        }
+      }
+    }
+    .download-wizard-button {
+      .os-wizard-content-button {
+        .btn-text {
+          background: $cyan;
+          .btn-title {
+            font-family: "Inknut Antiqua";
+            font-weight: bold;
+            margin-bottom: 0.5rem !important;
+            padding-top: 0.75rem;
+            font-size: 1.7rem;
+          }
+          .os-download-wizard-btn-label {
+            width: 75%;
+            font-size: 1.2rem;
+            padding-bottom: 0.5rem;
+            line-height: 1.5rem;
+          }
+        }
+        &.white {
+          background: $white !important;
+          border-color: $off_white;
+          .btn-text {
+            background: $off_white;
+            .btn-title {
+              color: $dark_gray;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $white;
+            .btn-text {
+              background: $white;
+            }
+          }
+        }
+        &.black {
+          background: $white !important;
+          border-color: $dark_gray;
+          .btn-text {
+            background: $dark_gray;
+            .btn-title {
+              color: $white;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $darker_gray;
+            .btn-text {
+              background: $darker_gray;
+            }
+          }
+        }
+      }
     }
     .download-link {
       display: inline-block;
