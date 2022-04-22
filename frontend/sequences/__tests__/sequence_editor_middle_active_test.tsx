@@ -101,6 +101,7 @@ import { act } from "react-dom/test-utils";
 import { VariableType } from "../locals_list/locals_list_support";
 import { generateNewVariableLabel } from "../locals_list/locals_list";
 import { StepButtonCluster } from "../step_button_cluster";
+import { changeEvent } from "../../__test_support__/fake_html_events";
 
 describe("<SequenceEditorMiddleActive />", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -343,17 +344,6 @@ describe("<SequenceEditorMiddleActive />", () => {
       expect.objectContaining({ id: "3" }));
   });
 
-  it("sets description", () => {
-    mockPath = Path.mock(Path.sequences("1"));
-    const p = fakeProps();
-    p.sequence.body.description = "description";
-    const wrapper = mount<SequenceEditorMiddleActive>(
-      <SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.state().description).toEqual("description");
-    wrapper.instance().setDescription("new description");
-    expect(wrapper.state().description).toEqual("new description");
-  });
-
   it("sets sequence preview", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
@@ -451,14 +441,12 @@ describe("<SequenceEditorMiddleActive />", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
-    const wrapper = mount<SequenceEditorMiddleActive>(
-      <SequenceEditorMiddleActive {...p} />);
-    wrapper.setState({ editingDescription: true });
-    wrapper.find("textarea").simulate("change",
-      { currentTarget: { value: "edit" } });
-    wrapper.setState({ description: "edit" });
-    expect(wrapper.state().description).toEqual("edit");
-    wrapper.find("textarea").simulate("blur");
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fa-pencil").simulate("click");
+    const e = changeEvent("edit");
+    act(() => wrapper.find("textarea").props().onChange?.(e));
+    wrapper.update();
+    wrapper.find("textarea").props().onBlur?.({} as React.FocusEvent);
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { description: "edit" });
   });
 
@@ -466,10 +454,11 @@ describe("<SequenceEditorMiddleActive />", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "";
-    const wrapper = mount<SequenceEditorMiddleActive>(
-      <SequenceEditorMiddleActive {...p} />);
-    wrapper.setState({ editingDescription: true });
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find("textarea").length).toEqual(0);
+    expect(wrapper.find(".sequence-description").length).toEqual(0);
+    wrapper.setState({ descriptionCollapsed: false });
+    expect(wrapper.find(".sequence-description").length).toEqual(1);
   });
 
   it("shows add variable options", () => {

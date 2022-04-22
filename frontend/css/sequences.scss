@@ -42,6 +42,9 @@
   .sequence-editor-content {
     margin-right: -15px;
     .sequence-description {
+      .description-input {
+        padding-right: 1rem;
+      }
       a {
         text-decoration: underline !important;
       }
@@ -227,7 +230,7 @@
   .sequence-description {
     position: relative;
     width: 100%;
-    padding-right: 2rem;
+    padding-right: 3rem;
     textarea {
       margin-left: 2rem;
       height: 100%;
@@ -237,7 +240,7 @@
     .description-editor-tools {
       position: absolute;
       bottom: 0;
-      right: 2rem;
+      right: 3.5rem;
       .fa-pencil {
         margin-bottom: 1rem;
       }
