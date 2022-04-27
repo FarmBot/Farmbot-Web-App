@@ -271,34 +271,6 @@
       width: 3rem;
       vertical-align: middle;
       margin-right: 0.25rem;
-      &[class*=soil-] {
-        border-width: 2px;
-        border-style: solid;
-        &.soil-blue {
-          border-color: $blue;
-        }
-        &.soil-green {
-          border-color: $green;
-        }
-        &.soil-yellow {
-          border-color: $yellow;
-        }
-        &.soil-orange {
-          border-color: $orange;
-        }
-        &.soil-purple {
-          border-color: $purple;
-        }
-        &.soil-pink {
-          border-color: $pink;
-        }
-        &.soil-gray {
-          border-color: $gray;
-        }
-        &.soil-red {
-          border-color: $red;
-        }
-      }
     }
     .quick-delete {
       display: inline;
@@ -421,6 +393,15 @@
   fill-opacity: 0.1;
   text {
     paint-order: stroke;
+  }
+  &.is-selected {
+    .point-radius {
+      &.animate {
+        animation: dashed-rotate 4s 0.2s infinite linear;
+      }
+      transform-origin: center;
+      transform-box: fill-box;
+    }
   }
 }
 

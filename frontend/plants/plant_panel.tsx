@@ -150,9 +150,9 @@ interface ListItemProps {
 export const ListItem = (props: ListItemProps) =>
   <li>
     {props.name &&
-      <p>
+      <label>
         {props.name}
-      </p>}
+      </label>}
     <div className={"plant-info-field-data"}>
       {props.children}
     </div>
@@ -167,9 +167,6 @@ export function PlantPanel(props: PlantPanelProps) {
   const destroy = () => onDestroy(uuid);
   const commonProps = { uuid, updatePlant };
   return <DesignerPanelContent panelName={"plants"}>
-    <label>
-      {t("Plant Info")}
-    </label>
     <ul>
       <ListItem name={t("Plant Type")}>
         <Link
@@ -199,14 +196,14 @@ export function PlantPanel(props: PlantPanelProps) {
             </ListItem>
           </Col>
         </Row>}
-      <ListItem name={t("Location")}>
+      <ListItem>
         <EditPlantLocation {...commonProps}
           plantLocation={{ x, y, z }}
           soilHeightPoints={props.soilHeightPoints}
           farmwareEnvs={props.farmwareEnvs} />
       </ListItem>
       <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
-      <ListItem name={t("Size")}>
+      <ListItem>
         <EditPlantRadius {...commonProps} radius={info.radius} />
       </ListItem>
       <ListItem name={t("Status")}>

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything, WeedsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { DesignerNavTabs, Panel, TAB_COLOR } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -72,14 +72,18 @@ export interface WeedsSectionProps {
   layerValue?: boolean;
   layerSetting?: BooleanConfigKey;
   layerDisabled?: boolean;
+  children?: JSX.Element;
+  allWeeds?: TaggedWeedPointer[];
 }
 
 export const WeedsSection = (props: WeedsSectionProps) => {
   const { layerSetting } = props;
   const rawMaxSize = Math.max(...props.items.map(item => item.body.radius));
   const maxSize = isFinite(rawMaxSize) ? rawMaxSize : 0;
+  const noWeeds = props.allWeeds?.length == 0;
   return <div className={`${props.category}-weeds`}>
-    <div className={`${props.category}-weeds-header`}>
+    <div className={`${props.category}-weeds-header section-header`}
+      onClick={props.clickOpen}>
       <label>{`${t(props.sectionTitle)} (${props.items.length})`}</label>
       {props.category == "pending" && props.items.length > 0 &&
         <div className={"approval-buttons"}>
@@ -95,16 +99,23 @@ export const WeedsSection = (props: WeedsSectionProps) => {
             <i className={"fa fa-times"} />{t("all")}
           </button>
         </div>}
-      <i className={`fa fa-caret-${props.open ? "up" : "down"}`}
-        onClick={props.clickOpen} />
+      <i className={`fa fa-caret-${props.open ? "up" : "down"}`} />
       {layerSetting && <ToggleButton disabled={props.layerDisabled}
         toggleValue={props.layerValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         toggleAction={() => props.dispatch(setWebAppConfigValue(
           layerSetting, !props.layerValue))} />}
+      {props.children}
     </div>
     <Collapse isOpen={props.open}>
-      {props.items.length == 0 &&
+      {noWeeds && <EmptyStateWrapper
+        notEmpty={false}
+        graphic={EmptyStateGraphic.weeds}
+        title={t("No weeds yet.")}
+        text={Content.NO_WEEDS}
+        colorScheme={"weeds"}>
+      </EmptyStateWrapper>}
+      {props.items.length == 0 && !noWeeds &&
         <p className={"no-weeds"}>{t(props.emptyStateText)}</p>}
       {props.items.map(p => <WeedInventoryItem
         key={p.uuid}
@@ -153,7 +164,21 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     clickOpen={this.toggleOpen("active")}
     layerSetting={BooleanSetting.show_weeds}
     layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
-    dispatch={this.props.dispatch} />;
+    allWeeds={this.props.weeds}
+    dispatch={this.props.dispatch}>
+    <div
+      className={[
+        "fb-button",
+        `panel-${TAB_COLOR[Panel.Weeds]}`,
+        "plus-weed",
+      ].join(" ")}
+      onClick={e => {
+        e.stopPropagation();
+        push(Path.weeds("add"));
+      }}>
+      <i className={"fa fa-plus"} title={t("add weed")} />
+    </div>
+  </WeedsSection>;
 
   RemovedWeeds = () => <WeedsSection
     category={"removed"}
@@ -208,25 +233,9 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               onClick={this.navigate(group.body.id)}
             />)}
         </PanelSection>
-        <PanelSection isOpen={this.props.weedsPanelState.weeds}
-          panel={Panel.Weeds}
-          toggleOpen={this.toggleOpen("weeds")}
-          itemCount={this.props.weeds.length}
-          addNew={() => push(Path.weeds("add"))}
-          addTitle={t("add weed")}
-          addClassName={"plus-weed"}
-          title={t("Weeds")}>
-          <EmptyStateWrapper
-            notEmpty={this.props.weeds.length > 0}
-            graphic={EmptyStateGraphic.weeds}
-            title={t("No weeds yet.")}
-            text={Content.NO_WEEDS}
-            colorScheme={"weeds"}>
-            <this.PendingWeeds />
-            <this.ActiveWeeds />
-            <this.RemovedWeeds />
-          </EmptyStateWrapper>
-        </PanelSection>
+        <this.PendingWeeds />
+        <this.ActiveWeeds />
+        <this.RemovedWeeds />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

@@ -147,7 +147,7 @@ describe("<Points />", () => {
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const wrapper = mount<Points>(<Points {...p} />);
-    expect(wrapper.html()).not.toContain("soil-orange");
+    expect(wrapper.html()).not.toContain("orange");
     expect(wrapper.text().toLowerCase()).toContain("soil height");
     wrapper.find(".fa-caret-down").at(1).simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -156,7 +156,7 @@ describe("<Points />", () => {
     });
     p.pointsPanelState.soilHeight = true;
     wrapper.setProps(p);
-    expect(wrapper.html()).toContain("soil-orange");
+    expect(wrapper.html()).toContain("orange");
   });
 
   it("expands soil height color section", () => {
@@ -171,14 +171,12 @@ describe("<Points />", () => {
     tagAsSoilHeight(soilHeightPointRed);
     p.genericPoints = [fakePoint(), soilHeightPoint, soilHeightPointRed];
     const wrapper = mount<Points>(<Points {...p} />);
-    expect(wrapper.html()).not.toContain("soil-orange");
-    expect(wrapper.html()).not.toContain("soil-red");
+    expect(wrapper.html()).not.toContain("soil-point-graphic");
     expect(wrapper.text().toLowerCase()).toContain("all soil height");
     expect(wrapper.state().soilHeightColors).toEqual([]);
     wrapper.find(".fa-caret-down").at(2).simulate("click");
     expect(wrapper.state().soilHeightColors).toEqual(["red"]);
-    expect(wrapper.html()).not.toContain("soil-orange");
-    expect(wrapper.html()).toContain("soil-red");
+    expect(wrapper.html()).toContain("soil-point-graphic");
     wrapper.find(".fa-caret-up").at(1).simulate("click");
     expect(wrapper.state().soilHeightColors).toEqual([]);
   });

@@ -44,17 +44,7 @@ export interface AdditionalWeedPropertiesProps {
 
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
   <ul>
-    <li>
-      <Row>
-        <EditPointName
-          name={props.point.body.name}
-          updatePoint={props.updatePoint} />
-        <EditPointColor
-          color={props.point.body.meta.color}
-          updatePoint={props.updatePoint} />
-      </Row>
-    </li>
-    <ListItem name={t("Location")}>
+    <ListItem>
       <EditPointLocation
         pointLocation={{
           x: props.point.body.x,
@@ -64,7 +54,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         botOnline={props.botOnline}
         updatePoint={props.updatePoint} />
     </ListItem>
-    <ListItem name={t("Size")}>
+    <ListItem>
       <EditPointRadius
         radius={props.point.body.radius}
         updatePoint={props.updatePoint} />
@@ -168,7 +158,7 @@ export interface EditPointLocationProps {
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
-  <Row>
+  <Row className={"edit-point-location"}>
     {["x", "y", "z"].map((axis: Xyz) =>
       <Col xs={4} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>

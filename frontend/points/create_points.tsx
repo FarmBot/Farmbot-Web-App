@@ -24,7 +24,7 @@ import { PlantGrid } from "../plants/grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import {
-  definedPosition, positionButtonTitle,
+  definedPosition, UseCurrentLocation,
 } from "../tools/tool_slot_edit_components";
 import { BotPosition } from "../devices/interfaces";
 import { round } from "lodash";
@@ -235,9 +235,9 @@ export class RawCreatePoints
           </div>
         </Row>
       </li>
-      <ListItem name={t("Location")}>
+      <ListItem>
         <Row>
-          <Col xs={4}>
+          <Col xs={3}>
             <label>{t("X (mm)")}</label>
             <BlurableInput
               name="cx"
@@ -245,7 +245,7 @@ export class RawCreatePoints
               onCommit={this.updateValue("cx")}
               value={this.attr("cx", this.props.botPosition.x)} />
           </Col>
-          <Col xs={4}>
+          <Col xs={3}>
             <label>{t("Y (mm)")}</label>
             <BlurableInput
               name="cy"
@@ -253,7 +253,7 @@ export class RawCreatePoints
               onCommit={this.updateValue("cy")}
               value={this.attr("cy", this.props.botPosition.y)} />
           </Col>
-          <Col xs={4}>
+          <Col xs={3}>
             <label>{t("Z (mm)")}</label>
             <BlurableInput
               name="z"
@@ -261,27 +261,23 @@ export class RawCreatePoints
               onCommit={this.updateValue("z")}
               value={this.attr("z", this.props.botPosition.z)} />
           </Col>
+          <UseCurrentLocation botPosition={this.props.botPosition}
+            onChange={() => {
+              const position = definedPosition(this.props.botPosition);
+              if (position) {
+                const { x, y, z } = position;
+                this.setState({ cx: round(x), cy: round(y), z: round(z) }, () =>
+                  this.props.dispatch({
+                    type: this.panel == "weeds"
+                      ? Actions.SET_DRAWN_WEED_DATA
+                      : Actions.SET_DRAWN_POINT_DATA,
+                    payload: this.getPointData(),
+                  }));
+              }
+            }} />
         </Row>
       </ListItem>
-      <button
-        className={"fb-button blue"}
-        title={positionButtonTitle(this.props.botPosition)}
-        onClick={() => {
-          const position = definedPosition(this.props.botPosition);
-          if (position) {
-            const { x, y, z } = position;
-            this.setState({ cx: round(x), cy: round(y), z: round(z) }, () =>
-              this.props.dispatch({
-                type: this.panel == "weeds"
-                  ? Actions.SET_DRAWN_WEED_DATA
-                  : Actions.SET_DRAWN_POINT_DATA,
-                payload: this.getPointData(),
-              }));
-          }
-        }}>
-        {t("use FarmBot's current position")}
-      </button>
-      <ListItem name={t("Size")}>
+      <ListItem>
         <Row>
           <Col xs={6}>
             <label>{t("radius (mm)")}</label>

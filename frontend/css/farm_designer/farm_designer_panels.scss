@@ -562,16 +562,36 @@
     .tool-slot-search-item-icon {
       padding-left: 5px !important;
     }
-    .tool-slot-search-item {
-      margin-left: -2rem;
-      padding-right: 4.5rem;
-    }
   }
 }
 
 .weed-info-panel,
 .point-info-panel,
 .plant-info-panel {
+  .panel-title {
+    input {
+      margin: 1rem;
+      width: 75%;
+    }
+    .color-picker {
+      margin: 0.5rem;
+      margin-top: 0.75rem;
+      float: right;
+      .icon-saucer {
+        color: $dark_gray;
+      }
+    }
+  }
+  .green,
+  .red {
+    .panel-title {
+      .color-picker {
+        .icon-saucer {
+          color: $white;
+        }
+      }
+    }
+  }
   .panel-content {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
@@ -589,7 +609,10 @@
     }
     margin-top: 1rem;
     label {
-      margin-top: 0;
+      margin-top: 0 !important;
+    }
+    .plant-info-field-data {
+      margin-top: 1rem;
     }
     p {
       margin-top: 1rem;
@@ -641,6 +664,17 @@
     .blue {
       float: none;
     }
+    .use-current-location {
+      button {
+        position: absolute;
+        left: 1rem;
+        margin-top: 0.25rem;
+        height: 2.75rem;
+        .fa {
+          font-size: 1.5rem;
+        }
+      }
+    }
   }
 }
 
@@ -682,6 +716,7 @@
   }
   .move-to-button {
     margin-top: 1rem;
+    margin-bottom: 1rem;
     margin-left: 1.5rem;
   }
 }
@@ -814,7 +849,7 @@
   }
   .saving-indicator {
     position: absolute;
-    right: 1rem;
+    right: 4rem;
     line-height: 6rem;
     color: $white;
     i {
@@ -884,6 +919,28 @@
   }
   .non-empty-state {
     margin-bottom: 1rem;
+  }
+}
+
+.edit-point-location {
+  margin-top: 1rem;
+}
+
+.point-name-input {
+  label {
+    margin-top: 2rem !important;
+  }
+}
+
+li {
+  label {
+    margin-top: 0 !important;
+  }
+}
+
+.additional-weed-properties {
+  li {
+    margin-top: 1rem;
   }
 }
 
@@ -1920,12 +1977,16 @@
         margin-left: 1rem;
       }
     }
+    .section-header {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
     .points-section-header,
     .pending-weeds-header,
     .active-weeds-header,
     .removed-weeds-header {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
       label {
         margin: 0;
         width: 44%;
@@ -1934,7 +1995,7 @@
       }
       .fb-toggle-button {
         margin-right: 2rem;
-        margin-top: 0.25rem;
+        margin-top: 0.6rem;
         float: right;
       }
     }
@@ -1969,6 +2030,8 @@
     .no-points,
     .no-weeds {
       margin-left: 2rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
     .fa-caret-down,
     .fa-caret-up {
@@ -1977,6 +2040,12 @@
       margin-right: 2rem;
       margin-top: 0;
       color: $dark_gray;
+    }
+    .section-header {
+      .fa-caret-down,
+      .fa-caret-up {
+        margin-top: 1.5rem !important;
+      }
     }
     i {
       margin: 0.25rem;
@@ -1987,6 +2056,25 @@
     }
     .approval-buttons {
       display: inline;
+    }
+    .active-weeds {
+      .empty-state-graphic {
+        margin-top: 1rem;
+      }
+    }
+  }
+}
+
+.weeds-inventory-panel {
+  .active-weeds-header {
+    .fb-button {
+      line-height: 1rem;
+      margin-top: 0.5rem;
+      margin-right: 1rem;
+      i {
+        margin: 0 !important;
+        font-size: 1.5rem;
+      }
     }
   }
 }
@@ -2355,6 +2443,8 @@
 .designer-sequence-editor-panel {
   .panel-header {
     input {
+      position: relative;
+      z-index: 1;
       margin: 1rem;
       width: 84%;
       @media screen and (max-width: 450px) {

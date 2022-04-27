@@ -19,7 +19,7 @@ import {
 import { push } from "../../history";
 import { urlFriendly } from "../../util";
 import { edit } from "../../api/crud";
-import { TaggedRegimen, TaggedSequence } from "farmbot";
+import { TaggedPoint, TaggedRegimen, TaggedSequence } from "farmbot";
 import { Path } from "../../internal_urls";
 
 export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
@@ -77,7 +77,7 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 
 export interface ResourceTitleProps {
   dispatch: Function;
-  resource: TaggedSequence | TaggedRegimen | undefined;
+  resource: TaggedSequence | TaggedRegimen | TaggedPoint | undefined;
   readOnly?: boolean;
   fallback: string;
 }

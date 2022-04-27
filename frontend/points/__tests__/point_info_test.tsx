@@ -8,6 +8,7 @@ jest.mock("../../history", () => ({
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   save: jest.fn(),
+  edit: jest.fn(),
 }));
 
 import React from "react";
@@ -23,10 +24,11 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { Xyz } from "farmbot";
 import { clickButton } from "../../__test_support__/helpers";
-import { destroy, save } from "../../api/crud";
+import { destroy, edit, save } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { ColorPicker } from "../../ui";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -53,10 +55,11 @@ describe("<EditPoint />", () => {
     mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
+    point.body.name = "Point 1";
     point.body.meta = { meta_key: "meta value" };
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
-    expect(wrapper.text()).toContain("Edit point");
+    expect(wrapper.text()).toContain("Point 1");
     expect(wrapper.text()).toContain("meta value");
   });
 
@@ -64,10 +67,11 @@ describe("<EditPoint />", () => {
     mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
     const point = fakePoint();
+    point.body.name = "Point 1";
     point.body.meta = { color: "red", meta_key: undefined, gridId: "123" };
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
-    expect(wrapper.text()).toContain("Edit point");
+    expect(wrapper.text()).toContain("Point 1");
     expect(wrapper.text()).not.toContain("red");
     expect(wrapper.text()).not.toContain("grid");
   });
@@ -93,6 +97,15 @@ describe("<EditPoint />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
+  });
+
+  it("changes color", () => {
+    mockPath = Path.mock(Path.points(1));
+    const p = fakeProps();
+    const wrapper = shallow(<EditPoint {...p} />);
+    wrapper.find(ColorPicker).simulate("change", "blue");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object),
+      { meta: { color: "blue" } });
   });
 
   it("saves", () => {

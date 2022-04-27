@@ -109,6 +109,14 @@ describe("<EditPointColor />", () => {
     wrapper.find("ColorPicker").first().simulate("change", "blue");
     expect(p.updatePoint).toHaveBeenCalledWith({ meta: { color: "blue" } });
   });
+
+  it("edits color from default", () => {
+    const p = fakeProps();
+    p.color = "";
+    const wrapper = shallow(<EditPointColor {...p} />);
+    wrapper.find("ColorPicker").first().simulate("change", "blue");
+    expect(p.updatePoint).toHaveBeenCalledWith({ meta: { color: "blue" } });
+  });
 });
 
 describe("<EditPointSoilHeightTag />", () => {

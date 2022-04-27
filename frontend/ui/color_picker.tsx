@@ -10,6 +10,7 @@ export interface ColorPickerProps {
   current: ResourceColor;
   onChange?: (color: ResourceColor) => void;
   saucerIcon?: string;
+  targetElement?: JSX.Element;
 }
 
 export interface ColorPickerClusterProps {
@@ -47,19 +48,22 @@ export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
 
 export class ColorPicker extends React.Component<ColorPickerProps> {
   render() {
-    const { saucerIcon, onChange } = this.props;
+    const { saucerIcon, onChange, targetElement } = this.props;
     const currentColor = this.props.current;
     const title = t("select color");
-    const Target = () =>
-      saucerIcon
-        ? <i title={title}
+    const Target = () => {
+      if (saucerIcon) {
+        return <i title={title}
           className={[
             "icon-saucer",
             "fa",
             saucerIcon,
             currentColor,
-          ].join(" ")} />
-        : <Saucer color={currentColor} title={title} />;
+          ].join(" ")} />;
+      }
+      if (targetElement) { return targetElement; }
+      return <Saucer color={currentColor} title={title} />;
+    };
     return onChange
       ? <Popover className={"color-picker"}
         position={this.props.position || Position.BOTTOM}

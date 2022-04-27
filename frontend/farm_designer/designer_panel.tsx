@@ -48,7 +48,7 @@ interface DesignerPanelHeaderProps {
   onSave?: () => void;
   style?: React.CSSProperties;
   children?: React.ReactNode;
-  colorClass?: Color;
+  colorClass?: Color | string;
 }
 
 const backToText = (to: string | undefined): string => {

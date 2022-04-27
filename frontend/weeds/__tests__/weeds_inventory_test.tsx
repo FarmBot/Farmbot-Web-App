@@ -112,8 +112,8 @@ describe("<Weeds> />", () => {
   });
 
   it("adds new weed", () => {
-    const wrapper = shallow(<Weeds {...fakeProps()} />);
-    wrapper.find(PanelSection).last().props().addNew();
+    const wrapper = mount(<Weeds {...fakeProps()} />);
+    wrapper.find(".plus-weed").simulate("click");
     expect(push).toHaveBeenCalledWith(Path.weeds("add"));
   });
 

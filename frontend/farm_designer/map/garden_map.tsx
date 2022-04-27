@@ -567,6 +567,7 @@ export class GardenMap extends
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
     interactions={this.interactions("GenericPointer")}
     farmwareEnvs={this.props.farmwareEnvs}
+    animate={this.animate}
     genericPoints={this.props.genericPoints} />;
   WeedLayer = () => <WeedLayer
     mapTransformProps={this.mapTransformProps}

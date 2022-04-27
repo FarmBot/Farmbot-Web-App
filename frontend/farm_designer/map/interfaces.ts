@@ -101,6 +101,7 @@ export interface GardenPointProps {
   dispatch: Function;
   soilHeightLabels: boolean;
   getSoilHeightColor(z: number): string;
+  animate: boolean;
 }
 
 export interface GardenWeedProps {
