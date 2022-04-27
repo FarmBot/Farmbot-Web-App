@@ -288,10 +288,10 @@ export const SequenceBtnGroup = ({
       <i className={`fa fa-code ${viewCeleryScript ? "enabled" : ""} step-control`}
         title={t("toggle celery script view")}
         onClick={toggleViewSequenceCeleryScript} />}
-    <ColorPicker
+    {!Path.inDesigner() && <ColorPicker
       current={sequence.body.color}
       onChange={color =>
-        editCurrentSequence(dispatch, sequence, { color })} />
+        editCurrentSequence(dispatch, sequence, { color })} />}
     <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
       className={[
         "fa",

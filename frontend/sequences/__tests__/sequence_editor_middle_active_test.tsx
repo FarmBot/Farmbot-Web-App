@@ -465,7 +465,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.find("Popover").length).toEqual(5);
+    expect(wrapper.find("Popover").length).toEqual(4);
   });
 
   it("opens add variable menu", () => {
@@ -539,6 +539,7 @@ describe("<SequenceBtnGroup />", () => {
   });
 
   it("edits color", () => {
+    mockPath = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
     const wrapper = shallow(<SequenceBtnGroup {...p} />);
     wrapper.find("ColorPicker").simulate("change", "red");

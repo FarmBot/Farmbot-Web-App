@@ -7,7 +7,7 @@ import { Panel } from "../../farm_designer/panel_header";
 import { mapStateToProps } from "../state_to_props";
 import { SequencesProps } from "../interfaces";
 import { t } from "../../i18next_wrapper";
-import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
+import { EmptyStateWrapper, EmptyStateGraphic, ColorPicker } from "../../ui";
 import {
   SequenceEditorMiddleActive,
 } from "../sequence_editor_middle_active";
@@ -42,13 +42,18 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
           fallback={t("No Sequence selected")}
           dispatch={this.props.dispatch} />}
         backTo={Path.sequences()}>
-        {sequence && window.innerWidth > 450 &&
-          <a className={"right-button"}
-            title={t("open full-page editor")}
-            onClick={() =>
-              push(Path.sequencePage(urlFriendly(sequence.body.name)))}>
-            {t("full editor")}
-          </a>}
+        <div className={"panel-header-icon-group"}>
+          {sequence && <ColorPicker
+            current={sequence.body.color || "gray"}
+            targetElement={<i title={t("select color")}
+              className={"icon-saucer fa fa-paint-brush"} />}
+            onChange={color => this.props.dispatch(edit(sequence, { color }))} />}
+          {sequence && window.innerWidth > 450 &&
+            <i className={"fa fa-expand"}
+              title={t("open full-page editor")}
+              onClick={() =>
+                push(Path.sequencePage(urlFriendly(sequence.body.name)))} />}
+        </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper

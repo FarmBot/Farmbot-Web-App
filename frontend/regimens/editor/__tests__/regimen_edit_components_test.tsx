@@ -4,8 +4,6 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
-jest.mock("../../actions", () => ({ editRegimen: jest.fn() }));
-
 import { Path } from "../../../internal_urls";
 const mockPath = Path.mock(Path.regimens("1"));
 jest.mock("../../../history", () => ({
@@ -14,16 +12,14 @@ jest.mock("../../../history", () => ({
 }));
 
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { mount } from "enzyme";
 import {
   RegimenButtonGroup, OpenSchedulerButton,
   editRegimenVariables,
-  RegimenColorPicker,
 } from "../regimen_edit_components";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { editRegimen } from "../../actions";
 import { RegimenProps } from "../../interfaces";
-import { Color, VariableDeclaration } from "farmbot";
+import { VariableDeclaration } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy, save, overwrite } from "../../../api/crud";
 import { push } from "../../../history";
@@ -32,16 +28,6 @@ import { cloneDeep } from "lodash";
 const fakeProps = (): RegimenProps => ({
   regimen: fakeRegimen(),
   dispatch: jest.fn(),
-});
-
-describe("<RegimenColorPicker />", () => {
-  it("changes color", () => {
-    const p = fakeProps();
-    p.regimen.body.color = "" as Color;
-    const wrapper = shallow(<RegimenColorPicker {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(editRegimen).toHaveBeenCalledWith(p.regimen, { color: "red" });
-  });
 });
 
 describe("<RegimenButtonGroup />", () => {

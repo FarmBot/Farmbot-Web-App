@@ -7,6 +7,10 @@ jest.mock("../../../history", () => ({
 
 jest.mock("../../actions", () => ({ selectRegimen: jest.fn() }));
 
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+}));
+
 import React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
@@ -15,6 +19,7 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color } from "farmbot";
 import { push } from "../../../history";
 import { selectRegimen } from "../../actions";
+import { edit } from "../../../api/crud";
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
@@ -57,6 +62,13 @@ describe("<RegimenListItem/>", () => {
     wrapper.simulate("click");
     expect(selectRegimen).toHaveBeenCalledWith(p.regimen.uuid);
     expect(push).toHaveBeenCalledWith(Path.regimens("foo"));
+  });
+
+  it("changes color", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<RegimenListItem {...p} />);
+    wrapper.find("ColorPicker").simulate("change", "red");
+    expect(edit).toHaveBeenCalledWith(p.regimen, { color: "red" });
   });
 
   it("handles missing data", () => {

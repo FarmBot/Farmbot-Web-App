@@ -1,7 +1,6 @@
 import React from "react";
 import { RegimenProps } from "../interfaces";
-import { ColorPicker, SaveBtn } from "../../ui";
-import { editRegimen } from "../actions";
+import { SaveBtn } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
 import { ScopeDeclarationBodyItem } from "farmbot";
@@ -13,11 +12,6 @@ import { overwrite, save, destroy } from "../../api/crud";
 import { CopyButton } from "./copy_button";
 import { push } from "../../history";
 import { Path } from "../../internal_urls";
-
-export const RegimenColorPicker = ({ regimen, dispatch }: RegimenProps) =>
-  <ColorPicker
-    current={regimen.body.color || "gray"}
-    onChange={color => dispatch(editRegimen(regimen, { color }))} />;
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
@@ -34,7 +28,6 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
     <SaveBtn
       status={regimen.specialStatus}
       onClick={() => dispatch(save(regimen.uuid))} />
-    <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
     <CopyButton regimen={regimen} dispatch={dispatch} />
     <i className={"fa fa-trash"}
       title={t("delete regimen")}

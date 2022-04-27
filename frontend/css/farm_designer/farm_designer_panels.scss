@@ -350,6 +350,7 @@
 
 .panel-title {
   height: 50px;
+  overflow: hidden;
   .back-arrow {
     &.black-text{
       color: $medium_gray;
@@ -2455,6 +2456,31 @@ li {
 }
 
 .designer-sequence-editor-panel {
+  .panel-header-icon-group {
+    display: flex;
+    float: right;
+    padding: 1.5rem;
+    .color-picker {
+      margin-right: 0.5rem;
+    }
+    .fa-expand {
+      margin-top: 0.25rem;
+      color: $dark_gray;
+    }
+  }
+  .green,
+  .red {
+    .panel-title {
+      .color-picker {
+        .icon-saucer {
+          color: $white;
+        }
+      }
+      .fa-expand {
+        color: $white;
+      }
+    }
+  }
   .panel-content {
     .sequence-editor-content {
       @media screen and (max-width: 767px) {
@@ -2490,6 +2516,30 @@ li {
 .designer-regimen-editor-panel {
   .title {
     width: 45%;
+  }
+  .panel-title {
+    input {
+      margin: 1rem;
+      width: 75%;
+    }
+    .color-picker {
+      margin: 0.5rem;
+      margin-top: 0.75rem;
+      float: right;
+      .icon-saucer {
+        color: $dark_gray;
+      }
+    }
+  }
+  .green,
+  .red {
+    .panel-title {
+      .color-picker {
+        .icon-saucer {
+          color: $white;
+        }
+      }
+    }
   }
   .panel-content {
     max-height: calc(100vh - 14rem);
