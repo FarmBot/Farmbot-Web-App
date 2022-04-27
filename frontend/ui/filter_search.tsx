@@ -88,11 +88,14 @@ export class FilterSearch
 
 }
 
-const isMatch = (item: DropDownItem, query: string): boolean =>
-  `${item.headingId || ""}: ${item.label}`
-    .toLowerCase().indexOf(query.toLowerCase()) >= 0;
+const isMatch = (item: DropDownItem, query: string): boolean => {
+  const removeEndS = (s: string) => s.endsWith("s") ? s.slice(0, -1) : s;
+  return `${item.headingId || ""}: ${item.label}`
+    .toLowerCase().indexOf(removeEndS(query.toLowerCase())) >= 0;
+};
 
-const allMatchedItems =
+/** for FilterSearch */
+export const allMatchedItems =
   (allItems: DropDownItem[], query: string): DropDownItem[] =>
     allItems.filter(x => !x.heading).filter(x => isMatch(x, query));
 
