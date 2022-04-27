@@ -2339,8 +2339,10 @@ textarea:focus {
     }
     .download-wizard-button {
       .os-wizard-content-button {
+        border-radius: 8px;
         .btn-text {
           background: $cyan;
+          border-radius: 5px 5px 0 0;
           .btn-title {
             font-family: "Inknut Antiqua";
             font-weight: bold;
@@ -2354,6 +2356,9 @@ textarea:focus {
             padding-bottom: 0.5rem;
             line-height: 1.5rem;
           }
+        }
+        img {
+          border-radius: 0 0 5px 5px;
         }
         &.white {
           background: $white !important;
@@ -2495,8 +2500,6 @@ textarea:focus {
     }
   }
   .landing-page-setting {
-    margin-left: 0;
-    margin-right: 1.5rem !important;
     input {
       margin-top: 1rem;
     }

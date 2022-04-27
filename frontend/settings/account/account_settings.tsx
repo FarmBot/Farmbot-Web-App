@@ -4,7 +4,7 @@ import { DeviceSetting, Content } from "../../constants";
 import { Header } from "../hardware_settings/header";
 import { Collapse, Slider } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
-import { BlurableInput, FBSelect, Help, Row, ToggleButton } from "../../ui";
+import { BlurableInput, Col, FBSelect, Help, Row, ToggleButton } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { SettingDescriptionProps } from "../interfaces";
 import { BooleanSetting, NumericSetting, StringSetting } from "../../session_keys";
@@ -202,22 +202,26 @@ export const LandingPageSetting = (props: LandingPageSettingProps) => {
   const [page, setPage] = React.useState(value);
   return <Highlight settingName={DeviceSetting.landingPage}>
     <Row className={"landing-page-setting"}>
-      <label>{t(DeviceSetting.landingPage)}</label>
-      <Help text={Content.LANDING_PAGE} />
-      <FBSelect
-        key={value}
-        list={Object.entries(PAGE_SLUGS())
-          .map(([value, label]) => ({ label, value }))}
-        selectedItem={{ label: PAGE_SLUGS()[value] || t("Custom"), value }}
-        onChange={ddi => {
-          const newValue = "" + ddi.value;
-          change(newValue);
-          setPage(newValue);
-        }} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <input value={page}
-          onBlur={() => change(page)}
-          onChange={e => setPage(e.currentTarget.value)} />}
+      <Col xs={5}>
+        <label>{t(DeviceSetting.landingPage)}</label>
+        <Help text={Content.LANDING_PAGE} />
+      </Col>
+      <Col xs={7}>
+        <FBSelect
+          key={value}
+          list={Object.entries(PAGE_SLUGS())
+            .map(([value, label]) => ({ label, value }))}
+          selectedItem={{ label: PAGE_SLUGS()[value] || t("Custom"), value }}
+          onChange={ddi => {
+            const newValue = "" + ddi.value;
+            change(newValue);
+            setPage(newValue);
+          }} />
+        {DevSettings.futureFeaturesEnabled() &&
+          <input value={page}
+            onBlur={() => change(page)}
+            onChange={e => setPage(e.currentTarget.value)} />}
+      </Col>
     </Row>
   </Highlight>;
 };

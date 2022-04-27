@@ -88,7 +88,7 @@ export const getMapPadding =
   (panelStatus: MapPanelStatus): { left: number, top: number } => {
     switch (panelStatus) {
       case MapPanelStatus.short: return { left: 20, top: 350 };
-      case MapPanelStatus.closed: return { left: 20, top: 160 };
+      case MapPanelStatus.closed: return { left: 20, top: 110 };
       case MapPanelStatus.open:
       default:
         return { left: 468, top: 110 };

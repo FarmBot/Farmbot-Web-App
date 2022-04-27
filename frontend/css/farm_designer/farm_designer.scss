@@ -20,7 +20,7 @@
 .farm-designer-map {
   display: inline-block;
   min-width: 100%;
-  padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
+  padding: 11rem 2rem 2rem 2rem; // at zoom = 1.0: 110px 20px 20px 20px
   height: 100%;
   overflow: visible;
   &.panel-open {
@@ -397,7 +397,7 @@
   &.is-selected {
     .point-radius {
       &.animate {
-        animation: dashed-rotate 4s 0.2s infinite linear;
+        animation: dashed-rotate 4s infinite linear;
       }
       transform-origin: center;
       transform-box: fill-box;
