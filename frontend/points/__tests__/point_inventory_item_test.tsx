@@ -46,8 +46,10 @@ describe("<PointInventoryItem> />", () => {
   it("renders unnamed point", () => {
     const p = fakeProps();
     p.tpp.body.name = "";
+    p.tpp.body.meta.color = "";
     const wrapper = mount(<PointInventoryItem {...p} />);
     expect(wrapper.text()).toContain("Untitled point");
+    expect(wrapper.html()).toContain("green");
   });
 
   it("deletes point", () => {
@@ -68,8 +70,11 @@ describe("<PointInventoryItem> />", () => {
     mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
+    p.hovered = false;
+    const wrapper = mount<PointInventoryItem>(<PointInventoryItem {...p} />);
+    expect(wrapper.find(".quick-delete").hasClass("hovered")).toBeFalsy();
     p.hovered = true;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
+    wrapper.setProps(p);
     expect(wrapper.find(".quick-delete").hasClass("hovered")).toBeTruthy();
     mockDelMode = false;
   });
@@ -78,7 +83,7 @@ describe("<PointInventoryItem> />", () => {
     mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
+    const wrapper = mount(<PointInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith(Path.points(1));
@@ -92,7 +97,7 @@ describe("<PointInventoryItem> />", () => {
     mockPath = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = undefined;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
+    const wrapper = mount(<PointInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith(Path.points("ERR_NO_POINT_ID"));
@@ -105,7 +110,7 @@ describe("<PointInventoryItem> />", () => {
   it("removes item in box select mode", () => {
     mockPath = Path.mock(Path.plants("select"));
     const p = fakeProps();
-    const wrapper = shallow(<PointInventoryItem {...p} />);
+    const wrapper = mount(<PointInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).toHaveBeenCalledWith(expect.any(Function),
       p.tpp.uuid);

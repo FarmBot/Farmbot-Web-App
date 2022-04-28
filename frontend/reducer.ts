@@ -48,7 +48,6 @@ export const emptyState = (): AppState => {
     },
     weedsPanelState: {
       groups: false,
-      weeds: true,
       pending: true,
       active: true,
       removed: true,

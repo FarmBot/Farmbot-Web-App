@@ -1,15 +1,15 @@
 #!/bin/sh
 
-sudo docker-compose run web npm run linters   &
+sudo docker compose run web npm run linters   &
 P1=$!
 
-sudo docker-compose run web rspec spec        &
+sudo docker compose run web rspec spec        &
 P2=$!
 
-sudo docker-compose run web npm run test-slow &
+sudo docker compose run web npm run test-slow &
 P3=$!
 
-sudo docker-compose run web npm run coverage  &
+sudo docker compose run web npm run coverage  &
 P4=$!
 
 wait $P1 $P2 $P3 $P4

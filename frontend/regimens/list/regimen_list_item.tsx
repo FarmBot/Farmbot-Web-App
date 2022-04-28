@@ -5,8 +5,9 @@ import { selectRegimen } from "../actions";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { push } from "../../history";
-import { RegimenColorPicker } from "../editor/regimen_edit_components";
 import { Path } from "../../internal_urls";
+import { edit } from "../../api/crud";
+import { ColorPicker } from "../../ui";
 
 export function RegimenListItem(props: RegimenListItemProps) {
   const { regimen, dispatch, inUse } = props;
@@ -18,7 +19,9 @@ export function RegimenListItem(props: RegimenListItemProps) {
     }}
     title={t("open regimen")}>
     <div className={"regimen-color"} onClick={e => e.stopPropagation()}>
-      <RegimenColorPicker regimen={regimen} dispatch={dispatch} />
+      <ColorPicker
+        current={regimen.body.color || "gray"}
+        onChange={color => dispatch(edit(regimen, { color }))} />
     </div>
     <span className={"regimen-search-item-name"}>{label}</span>
     {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}

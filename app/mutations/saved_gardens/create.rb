@@ -6,6 +6,7 @@ module SavedGardens
     end
 
     optional do
+      string :notes, empty: true
     end
 
     def execute

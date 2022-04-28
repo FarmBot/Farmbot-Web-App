@@ -33,6 +33,7 @@ describe("<PointLayer/>", () => {
     cropPhotos: false,
     farmwareEnvs: [],
     currentPoint: undefined,
+    animate: false,
   });
 
   it("shows points", () => {

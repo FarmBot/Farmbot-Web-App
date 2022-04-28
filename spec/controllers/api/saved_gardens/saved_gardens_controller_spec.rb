@@ -4,7 +4,12 @@ describe Api::SavedGardensController do
   include Devise::Test::ControllerHelpers
 
   let(:user) { FactoryBot.create(:user) }
-  let(:saved_gardens) { FactoryBot.create_list(:saved_garden, 3, device: user.device) }
+  let(:saved_gardens) {
+    FactoryBot.create_list(:saved_garden,
+                           3,
+                           device: user.device,
+                           notes: "notes")
+  }
 
   describe "#index" do
     it "shows all saved_gardens" do
@@ -14,6 +19,7 @@ describe Api::SavedGardensController do
       expect(response.status).to eq(200)
       expect(json.length).to be(garden_size)
       expect(json.first[:name]).to be_kind_of(String)
+      expect(json.first[:notes]).to be_kind_of(String)
     end
   end
 
@@ -34,12 +40,15 @@ describe Api::SavedGardensController do
     it "updates attributes" do
       sign_in user
       garden = saved_gardens.first
-      b4 = garden.name
-      params = { name: Faker::Food.vegetables }
+      b4_name = garden.name
+      b4_notes = garden.notes
+      params = { name: Faker::Food.vegetables, notes: Faker::Food.vegetables }
       put :update, params: { format: :json, id: garden.id }, body: params.to_json
       expect(response.status).to eq(200)
-      expect(json[:name]).to_not eq(b4)
+      expect(json[:name]).to_not eq(b4_name)
       expect(json[:name]).to eq(params[:name])
+      expect(json[:notes]).to_not eq(b4_notes)
+      expect(json[:notes]).to eq(params[:notes])
     end
   end
 

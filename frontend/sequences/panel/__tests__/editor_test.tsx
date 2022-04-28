@@ -2,8 +2,12 @@ jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
   setActiveSequenceByName: jest.fn()
 }));
 
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+}));
+
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor, ResourceTitle,
   ResourceTitleProps,
@@ -24,6 +28,8 @@ import {
 import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
+import { Color } from "farmbot";
+import { edit } from "../../../api/crud";
 
 describe("<DesignerSequenceEditor />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -54,6 +60,16 @@ describe("<DesignerSequenceEditor />", () => {
     expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
   });
 
+  it("changes color", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.color = "" as Color;
+    p.sequence = sequence;
+    const wrapper = shallow(<DesignerSequenceEditor {...p} />);
+    wrapper.find("ColorPicker").simulate("change", "red");
+    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+  });
+
   it("navigates to full page editor", () => {
     Object.defineProperty(window, "innerWidth", {
       value: 500,
@@ -61,7 +77,7 @@ describe("<DesignerSequenceEditor />", () => {
     });
     const p = fakeProps();
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    wrapper.find("a").first().simulate("click");
+    wrapper.find(".fa-expand").first().simulate("click");
     expect(push).toHaveBeenCalledWith(Path.sequencePage("fake"));
   });
 });

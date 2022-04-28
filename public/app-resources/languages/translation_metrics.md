@@ -16,8 +16,8 @@ Translation file format can be checked using:
 npm run translation-check
 ```
 
-_Note: If using Docker, add `sudo docker-compose run web` before the commands.
-For example, `sudo docker-compose run web npm run translation-check`._
+_Note: If using Docker, add `sudo docker compose run web` before the commands.
+For example, `sudo docker compose run web npm run translation-check`._
 
 See the [README](https://github.com/FarmBot/Farmbot-Web-App#translating-the-web-app-into-your-language) for contribution instructions.
 

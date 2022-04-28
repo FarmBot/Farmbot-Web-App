@@ -10,6 +10,7 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { destroy } from "../api/crud";
 import { isUndefined, round } from "lodash";
 import { Path } from "../internal_urls";
+import { svgToUrl } from "../open_farm/icons";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
@@ -51,16 +52,28 @@ export class PointInventoryItem extends
       }
     };
 
+    const Graphic = () => {
+      if (DevSettings.quickDeleteEnabled()) {
+        return <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>;
+      }
+      return <img
+        className={colorOverride ? "soil-point-graphic" : "point-graphic"}
+        src={svgToUrl(
+          `<svg xmlns='http://www.w3.org/2000/svg'
+           fill='none' stroke-width='1.5' stroke='${color}'>
+           <circle cx='15' cy='15' r='12' fill='${colorOverride || "none"}' />
+           <circle cx='15' cy='15' r='2' />
+           </svg>`)}
+        width={32} height={32} />;
+    };
+
     return <div
       className={`point-search-item ${hovered ? "hovered" : ""}`}
       key={pointId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
       onClick={click}>
-      {DevSettings.quickDeleteEnabled()
-        ? <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>
-        : <div className={`saucer ${colorOverride ? `soil-${color}` : color}`}
-          style={colorOverride ? { background: colorOverride } : {}} />}
+      <Graphic />
       <span className="point-search-item-name">
         {point.name || t("Untitled point")}
       </span>

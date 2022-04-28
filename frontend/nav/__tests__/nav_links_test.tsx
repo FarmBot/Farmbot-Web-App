@@ -59,14 +59,13 @@ describe("<NavLinks />", () => {
   it("shows active link", () => {
     mockPath = Path.mock(Path.plants());
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
-    expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
+    expect(wrapper.find("Link").at(1).hasClass("active")).toBeTruthy();
     expect(wrapper.html().toLowerCase()).not.toContain("sensors");
   });
 
   it("shows sensors link", () => {
     mockHasSensors = true;
     const p = fakeProps();
-    p.addMap = true;
     const wrapper = shallow(<NavLinks {...p} />);
     expect(wrapper.html().toLowerCase()).toContain("sensors");
   });

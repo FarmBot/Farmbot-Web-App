@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import { FilterSearch } from "../filter_search";
+import { allMatchedItems, FilterSearch } from "../filter_search";
 import { DropDownItem } from "../fb_select";
 
 describe("<FilterSearch />", () => {
@@ -35,5 +35,32 @@ describe("<FilterSearch />", () => {
     const item = fakeItem({ heading: true });
     wrapper.simulate("ItemSelect", item);
     expect(p.onChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("allMatchedItems()", () => {
+  it("matches singulars with plural query", () => {
+    expect(allMatchedItems([
+      { label: "--- Plants", value: "", headingId: "Plant", heading: true },
+      { label: "plant", value: "", headingId: "Plant" },
+      { label: "mint", value: "", headingId: "Plant" },
+      { label: "--- Tools", value: "", headingId: "Tool", heading: true },
+      { label: "tool", value: "", headingId: "Tool" },
+      { label: "for plants", value: "", headingId: "Tool" },
+    ], "plants")).toEqual([
+      { label: "plant", value: "", headingId: "Plant" },
+      { label: "mint", value: "", headingId: "Plant" },
+      { label: "for plants", value: "", headingId: "Tool" },
+    ]);
+  });
+
+  it("handles missing headingId and uppercase", () => {
+    expect(allMatchedItems([
+      { label: "Easy", value: "" },
+      { label: "easy", value: "" },
+    ], "Easy")).toEqual([
+      { label: "Easy", value: "" },
+      { label: "easy", value: "" },
+    ]);
   });
 });

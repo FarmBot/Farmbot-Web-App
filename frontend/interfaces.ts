@@ -60,7 +60,6 @@ export interface PlantsPanelState {
 
 export interface WeedsPanelState {
   groups: boolean;
-  weeds: boolean;
   pending: boolean;
   active: boolean;
   removed: boolean;

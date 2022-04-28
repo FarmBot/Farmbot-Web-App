@@ -23,6 +23,7 @@ export interface PointLayerProps {
   cropPhotos: boolean;
   designer: DesignerState;
   farmwareEnvs: TaggedFarmwareEnv[];
+  animate: boolean;
 }
 
 export function PointLayer(props: PointLayerProps) {
@@ -60,6 +61,7 @@ export function PointLayer(props: PointLayerProps) {
             dispatch={props.dispatch}
             soilHeightLabels={soilHeightLabels}
             getSoilHeightColor={getColor}
+            animate={props.animate}
             mapTransformProps={mapTransformProps} />)}
   </g>;
 }

@@ -35,7 +35,6 @@ export const plantsPanelState = (): PlantsPanelState => ({
 
 export const weedsPanelState = (): WeedsPanelState => ({
   groups: false,
-  weeds: true,
   pending: true,
   active: true,
   removed: true,

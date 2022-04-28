@@ -1,16 +1,5 @@
-import { edit } from "../api/crud";
-import { isTaggedRegimen } from "../resources/tagged_resources";
 import { SelectRegimen } from "./editor/interfaces";
 import { Actions } from "../constants";
-import { TaggedRegimen } from "farmbot";
-import { Regimen } from "farmbot/dist/resources/api_resources";
-
-export function editRegimen(r: TaggedRegimen | undefined,
-  update: Partial<Regimen>) {
-  return (dispatch: Function) => {
-    r && isTaggedRegimen(r) && dispatch(edit(r, update));
-  };
-}
 
 export function selectRegimen(payload: string): SelectRegimen {
   if (payload.startsWith("Regimen")) {

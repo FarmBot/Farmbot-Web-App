@@ -1476,6 +1476,19 @@ ul {
   }
   .table-responsive {
     border: none;
+    .fa-trash {
+      display: none;
+    }
+    tr {
+      &:hover {
+        .fa-trash {
+          display: inline;
+          float: right;
+          color: $darkest_red;
+          margin-top: 0.5rem;
+        }
+      }
+    }
   }
   details {
     display: inline;
@@ -2264,6 +2277,9 @@ textarea:focus {
       }
     }
   }
+  button {
+    cursor: pointer;
+  }
   .wizard-btn {
     margin: 1rem;
     float: none;
@@ -2273,7 +2289,7 @@ textarea:focus {
   .os-download-wizard {
     position: relative;
     margin-top: 2rem;
-    button {
+    .transparent-button {
       margin: 1rem;
       float: none;
       color: $white;
@@ -2300,11 +2316,85 @@ textarea:focus {
       font-size: 1.4rem;
       font-weight: bold;
     }
-    .os-download-wizard-btn-label {
-      display: inline-block;
-      width: 18rem;
-      vertical-align: middle;
-      margin-bottom: 0 !important;
+    .buttons {
+      display: flex;
+      button {
+        width: 75%;
+        border-radius: 0;
+        padding: 0;
+        border: 3px solid $white;
+        width: 75%;
+        img {
+          margin: 0;
+          width: 100%;
+          margin-top: -1rem;
+        }
+        &:hover {
+          border-color: $off_white;
+          .btn-text {
+            background: darken($cyan, 10%);
+          }
+        }
+      }
+    }
+    .download-wizard-button {
+      .os-wizard-content-button {
+        border-radius: 8px;
+        .btn-text {
+          background: $cyan;
+          border-radius: 5px 5px 0 0;
+          .btn-title {
+            font-family: "Inknut Antiqua";
+            font-weight: bold;
+            margin-bottom: 0.5rem !important;
+            padding-top: 0.75rem;
+            font-size: 1.7rem;
+          }
+          .os-download-wizard-btn-label {
+            width: 75%;
+            font-size: 1.2rem;
+            padding-bottom: 0.5rem;
+            line-height: 1.5rem;
+          }
+        }
+        img {
+          border-radius: 0 0 5px 5px;
+        }
+        &.white {
+          background: $white !important;
+          border-color: $off_white;
+          .btn-text {
+            background: $off_white;
+            .btn-title {
+              color: $dark_gray;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $white;
+            .btn-text {
+              background: $white;
+            }
+          }
+        }
+        &.black {
+          background: $white !important;
+          border-color: $dark_gray;
+          .btn-text {
+            background: $dark_gray;
+            .btn-title {
+              color: $white;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $darker_gray;
+            .btn-text {
+              background: $darker_gray;
+            }
+          }
+        }
+      }
     }
     .download-link {
       display: inline-block;
@@ -2407,6 +2497,11 @@ textarea:focus {
     &.section {
       position: absolute !important;
       top: 0.1rem;
+    }
+  }
+  .landing-page-setting {
+    input {
+      margin-top: 1rem;
     }
   }
   .activity-beep-setting {

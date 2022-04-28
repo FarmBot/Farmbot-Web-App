@@ -288,10 +288,10 @@ export const SequenceBtnGroup = ({
       <i className={`fa fa-code ${viewCeleryScript ? "enabled" : ""} step-control`}
         title={t("toggle celery script view")}
         onClick={toggleViewSequenceCeleryScript} />}
-    <ColorPicker
+    {!Path.inDesigner() && <ColorPicker
       current={sequence.body.color}
       onChange={color =>
-        editCurrentSequence(dispatch, sequence, { color })} />
+        editCurrentSequence(dispatch, sequence, { color })} />}
     <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
       className={[
         "fa",
@@ -386,8 +386,6 @@ export class SequenceEditorMiddleActive extends
     descriptionCollapsed: !this.props.sequence.body.description,
     stepsCollapsed: false,
     licenseCollapsed: true,
-    editingDescription: false,
-    description: this.props.sequence.body.description || "",
     viewSequenceCeleryScript: false,
     sequencePreview: undefined,
     error: false,
@@ -421,7 +419,6 @@ export class SequenceEditorMiddleActive extends
 
   toggleSection = (key: keyof ActiveMiddleState) => () =>
     this.setState({ ...this.state, [key]: !this.state[key] });
-  setDescription = (description: string) => this.setState({ description });
   setSequencePreview = (sequencePreview: TaggedSequence) =>
     this.setState({
       sequencePreview,
@@ -515,12 +512,9 @@ export class SequenceEditorMiddleActive extends
             toggle={this.toggleSection("descriptionCollapsed")} />
           <Collapse isOpen={!this.state.descriptionCollapsed}>
             <Description
+              key={sequence.uuid + sequence.body.description}
               dispatch={dispatch}
-              editing={this.state.editingDescription}
-              sequence={sequence}
-              description={this.state.description}
-              setDescription={this.setDescription}
-              toggleEditing={this.toggleSection("editingDescription")} />
+              sequence={sequence} />
           </Collapse>
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("Variables")}
@@ -588,7 +582,8 @@ export class SequenceEditorMiddleActive extends
                 <div className={"sequence-step-components"}>
                   <ErrorBoundary>
                     <AllSteps {...this.stepProps} />
-                    <AddCommandButton dispatch={dispatch}
+                    <AddCommandButton key={stepCount == 0 ? 1 : undefined}
+                      dispatch={dispatch}
                       stepCount={stepCount}
                       sequence={this.props.sequence}
                       farmwareData={this.props.farmwareData}
@@ -629,34 +624,32 @@ export class SequenceEditorMiddleActive extends
 
 interface DescriptionProps {
   dispatch: Function;
-  editing: boolean;
   sequence: TaggedSequence;
-  description: string;
-  setDescription(description: string): void;
-  toggleEditing(): void;
 }
 
-const Description = (props: DescriptionProps) =>
-  <div className={"sequence-description"}>
-    {props.editing
+const Description = (props: DescriptionProps) => {
+  const sequenceDescription = props.sequence.body.description || "";
+  const [description, setDescription] = React.useState(sequenceDescription);
+  const [isEditing, setIsEditing] = React.useState(false);
+  return <div className={"sequence-description"}>
+    {isEditing
       ? <div className={"description-input"}>
         <textarea
-          value={props.description}
-          onChange={e => props.setDescription(e.currentTarget.value)}
-          onBlur={() => props.dispatch(edit(props.sequence, {
-            description: props.description,
-          }))} />
+          value={description}
+          onChange={e => setDescription(e.currentTarget.value)}
+          onBlur={() => props.dispatch(edit(props.sequence, { description }))} />
       </div>
-      : <Markdown>{props.description}</Markdown>}
+      : <Markdown>{description}</Markdown>}
     <div className={"description-editor-tools"}>
-      <i className={`fa fa-${props.editing ? "eye" : "pencil"}`}
+      <i className={`fa fa-${isEditing ? "eye" : "pencil"}`}
         title={t("toggle editor view")}
-        onClick={props.toggleEditing} />
-      {props.editing && <InputLengthIndicator field={"description"}
+        onClick={() => setIsEditing(!isEditing)} />
+      {isEditing && <InputLengthIndicator field={"description"}
         alwaysShow={true}
-        value={props.description} />}
+        value={description} />}
     </div>
   </div>;
+};
 
 interface ImportedBannerProps {
   sequence: TaggedSequence;
@@ -787,9 +780,7 @@ export const AddCommandButton = (props: AddCommandButtonProps) => {
           payload: index,
         });
       }}>
-      {stepCount == 0 && collapsed
-        ? t("add command")
-        : <i className={"fa fa-plus"} />}
+      <i className={"fa fa-plus"} />
     </button>
     <Collapse isOpen={!collapsed}>
       <StepButtonCluster

@@ -4,8 +4,10 @@ import { all } from "../resources/selectors";
 import { getWebAppConfig } from "../resources/getters";
 import { TaggedResource, TaggedWebAppConfig } from "farmbot";
 
-export function stopThem() { return "You have unsaved work."; }
-export function dontStopThem() { }
+export function stopThem(event: BeforeUnloadEvent) {
+  event.preventDefault();
+  return "You have unsaved work.";
+}
 
 /** Determine when to notify users about unsaved changes (stop auto-discard). */
 const shouldStop =
@@ -43,7 +45,9 @@ export function unsavedCheck(state: Everything) {
   const resources = all(index);
   const conf = getWebAppConfig(index);
 
-  window.onbeforeunload = shouldStop(resources, conf) ? stopThem : dontStopThem;
+  shouldStop(resources, conf)
+    ? window.addEventListener("beforeunload", stopThem)
+    : window.removeEventListener("beforeunload", stopThem);
 }
 
 export interface Subscription { fn: (state: Everything) => void; env: EnvName; }

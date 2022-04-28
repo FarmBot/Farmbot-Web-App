@@ -172,7 +172,7 @@ describe("<CreatePoints />", () => {
     p.botPosition = { x: 1, y: 2, z: 3 };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 0, "use FarmBot's current position");
+    clickButton(wrapper, 0, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { color: "red", cx: 1, cy: 2, z: 3, r: 30, name: "My Point" },
       type: type == "point"
@@ -190,7 +190,7 @@ describe("<CreatePoints />", () => {
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
     jest.resetAllMocks();
-    clickButton(wrapper, 0, "use FarmBot's current position");
+    clickButton(wrapper, 0, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).not.toHaveBeenCalled();
     expect(wrapper.state()).toEqual({ cx: 10, cy: 20, r: 30 });
   });

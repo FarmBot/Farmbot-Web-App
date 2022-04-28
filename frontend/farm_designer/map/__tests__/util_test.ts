@@ -144,7 +144,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.closed,
     });
-    expect(result).toEqual({ x: 480, y: 30 });
+    expect(result).toEqual({ x: 480, y: 80 });
   });
 
   it("translates screen coords to garden coords: short panel", () => {

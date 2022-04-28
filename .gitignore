@@ -6,6 +6,7 @@
 *.log
 *.pem
 *.tsbuildinfo
+*.pid.lock
 *scratchpad*
 /config/master.key
 api_docs.md

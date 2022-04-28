@@ -76,8 +76,6 @@ export interface ActiveMiddleState {
   descriptionCollapsed: boolean;
   stepsCollapsed: boolean;
   licenseCollapsed: boolean;
-  editingDescription: boolean;
-  description: string;
   viewSequenceCeleryScript: boolean;
   sequencePreview: TaggedSequence | undefined;
   error: boolean;

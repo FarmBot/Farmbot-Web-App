@@ -20,7 +20,7 @@
 .farm-designer-map {
   display: inline-block;
   min-width: 100%;
-  padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
+  padding: 11rem 2rem 2rem 2rem; // at zoom = 1.0: 110px 20px 20px 20px
   height: 100%;
   overflow: visible;
   &.panel-open {
@@ -271,34 +271,6 @@
       width: 3rem;
       vertical-align: middle;
       margin-right: 0.25rem;
-      &[class*=soil-] {
-        border-width: 2px;
-        border-style: solid;
-        &.soil-blue {
-          border-color: $blue;
-        }
-        &.soil-green {
-          border-color: $green;
-        }
-        &.soil-yellow {
-          border-color: $yellow;
-        }
-        &.soil-orange {
-          border-color: $orange;
-        }
-        &.soil-purple {
-          border-color: $purple;
-        }
-        &.soil-pink {
-          border-color: $pink;
-        }
-        &.soil-gray {
-          border-color: $gray;
-        }
-        &.soil-red {
-          border-color: $red;
-        }
-      }
     }
     .quick-delete {
       display: inline;
@@ -421,6 +393,15 @@
   fill-opacity: 0.1;
   text {
     paint-order: stroke;
+  }
+  &.is-selected {
+    .point-radius {
+      &.animate {
+        animation: dashed-rotate 4s infinite linear;
+      }
+      transform-origin: center;
+      transform-box: fill-box;
+    }
   }
 }
 
@@ -649,6 +630,9 @@
     &.pseudo-disabled {
       cursor: not-allowed;
     }
+  }
+  textarea {
+    font-size: 1.2rem;
   }
 }
 

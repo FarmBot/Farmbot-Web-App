@@ -1487,7 +1487,8 @@ CREATE TABLE public.saved_gardens (
     name character varying NOT NULL,
     device_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    notes character varying(1500)
 );
 
 
@@ -1903,7 +1904,8 @@ CREATE TABLE public.web_app_configs (
     show_soil_interpolation_map boolean DEFAULT false,
     show_moisture_interpolation_map boolean DEFAULT false,
     clip_image_layer boolean DEFAULT true,
-    beep_verbosity integer DEFAULT 0
+    beep_verbosity integer DEFAULT 0,
+    landing_page character varying(100) DEFAULT 'controls'::character varying
 );
 
 
@@ -3751,6 +3753,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211030193113'),
 ('20211104173453'),
 ('20211117212015'),
-('20211206165259');
+('20211206165259'),
+('20220413194334'),
+('20220415191331');
 
 

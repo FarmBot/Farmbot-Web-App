@@ -9,6 +9,7 @@ import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
 import { Markdown } from "../../ui";
 import { semverCompare, SemverResult, formatTime } from "../../util";
+import { destroy } from "../../api/crud";
 
 interface LogsRowProps {
   tlog: TaggedLog;
@@ -76,6 +77,8 @@ const LogsRow = (props: LogsRowProps) => {
         <i className={"fa fa-exclamation-triangle"}
           style={{ color: "gray", marginLeft: "0.5rem" }}
           title={t("Log not sent by current version of FarmBot OS.")} />}
+      <i className={"fa fa-trash"} title={t("delete log")}
+        onClick={() => dispatch(destroy(uuid))} />
     </td>
   </tr>;
 };

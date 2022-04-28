@@ -7,6 +7,7 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/crud", () => ({
   save: jest.fn(),
+  edit: jest.fn(),
 }));
 
 import React from "react";
@@ -22,7 +23,8 @@ import {
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { push } from "../../history";
-import { save } from "../../api/crud";
+import { edit, save } from "../../api/crud";
+import { ColorPicker } from "../../ui";
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -49,10 +51,11 @@ describe("<EditWeed />", () => {
     mockPath = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
+    weed.body.name = "weed 1";
     weed.body.id = 1;
     p.findPoint = () => weed;
     const wrapper = mount(<EditWeed {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("edit");
+    expect(wrapper.text().toLowerCase()).toContain("weed 1");
   });
 
   it("goes back", () => {
@@ -66,6 +69,16 @@ describe("<EditWeed />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
+  });
+
+  it("changes color", () => {
+    mockPath = Path.mock(Path.weeds(1));
+    const p = fakeProps();
+    p.findPoint = fakeWeed;
+    const wrapper = shallow(<EditWeed {...p} />);
+    wrapper.find(ColorPicker).simulate("change", "blue");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object),
+      { meta: { color: "blue" } });
   });
 
   it("saves", () => {
