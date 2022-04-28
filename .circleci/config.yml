@@ -2,7 +2,8 @@ version: 2.1
 
 executors:
   build-executor:
-    machine: true
+    machine:
+      image: ubuntu-2204:edge
     resource_class: large
     working_directory: /home/circleci/project
 
@@ -24,16 +25,17 @@ commands:
       - run:
           name: Build and Install Deps
           command: |
-            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
+            sudo mkdir -p /usr/local/lib/docker/cli-plugins
+            sudo curl -SL "https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+            sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             mv .circleci/circle_envs .env
             echo -e '\ndocker_volumes/db/pg_wal/*' >> .dockerignore
-            sudo docker-compose run web gem install bundler
-            sudo docker-compose run web bundle install
-            sudo docker-compose run web npm install
-            sudo docker-compose run web bundle exec rails db:create
-            sudo docker-compose run web bundle exec rails db:migrate
-            sudo docker-compose run web rake keys:generate
+            sudo docker compose run web gem install bundler
+            sudo docker compose run web bundle install
+            sudo docker compose run web npm install
+            sudo docker compose run web bundle exec rails db:create
+            sudo docker compose run web bundle exec rails db:migrate
+            sudo docker compose run web rake keys:generate
       - run:
           name: After cache update
           command: |
@@ -53,34 +55,34 @@ commands:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker-compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+            sudo docker compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
   jest-commands:
     steps:
       - run:
           name: Run JS tests
           command: |
-            sudo docker-compose run web npm run test-slow -- -c .circleci/jest-ci.config.js
+            sudo docker compose run web npm run test-slow -- -c .circleci/jest-ci.config.js
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
       - run:
           name: Run JS Linters
           command: |
-            sudo docker-compose run web npm run linters
+            sudo docker compose run web npm run linters
           when: always
   coverage-commands:
     steps:
       - run:
           name: Check coverage status
           command: |
-            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
+            sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Report coverage to Coveralls
           command: |
             if [ "$COVERAGE_AVAILABLE" ]
             then
-              sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
+              sudo docker compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
             fi
           when: always # change to `on_success` for a stricter comparison
 
@@ -137,6 +139,6 @@ jobs:
           name: Run JS Tests
           command: |
             circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
-            sudo docker-compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js $(cat /tmp/tests-to-run)
+            sudo docker compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js $(cat /tmp/tests-to-run)
       - store_test_results:
           path: /tmp/test-results

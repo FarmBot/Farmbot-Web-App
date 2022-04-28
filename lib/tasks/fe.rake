@@ -37,7 +37,7 @@ end
 
 # Install dependency updates.
 def install_updates
-  sh "sudo docker-compose run web npm install"
+  sh "sudo docker compose run web npm install"
 end
 
 namespace :fe do
@@ -69,7 +69,7 @@ namespace :fe do
       puts "Type 'save' to update #{PACKAGE_JSON_FILE}, enter to abort."
       if user_typed?("save")
         save_package_json(package_json)
-        puts "Saved. Use 'sudo docker-compose run web npm install' to upgrade."
+        puts "Saved. Use 'sudo docker compose run web npm install' to upgrade."
       else
         puts "Aborted. No changes made."
       end

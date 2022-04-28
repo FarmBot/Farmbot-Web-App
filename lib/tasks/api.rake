@@ -25,11 +25,11 @@ rescue => exception
 end
 
 def rebuild_deps
-  sh "sudo docker-compose run web bundle install"
-  sh "sudo docker-compose run web npm install"
-  sh "sudo docker-compose run web bundle exec rails db:setup"
-  sh "sudo docker-compose run web rake keys:generate"
-  sh "sudo docker-compose run web npm run build"
+  sh "sudo docker compose run web bundle install"
+  sh "sudo docker compose run web npm install"
+  sh "sudo docker compose run web bundle exec rails db:setup"
+  sh "sudo docker compose run web rake keys:generate"
+  sh "sudo docker compose run web npm run build"
 end
 
 def user_typed?(word)
@@ -47,7 +47,7 @@ namespace :api do
 
   desc "Run Rails _ONLY_. No parcel."
   task only: :environment do
-    sh "sudo docker-compose up --scale parcel=0"
+    sh "sudo docker compose up --scale parcel=0"
   end
 
   def parcel(cmd, opts = " ")

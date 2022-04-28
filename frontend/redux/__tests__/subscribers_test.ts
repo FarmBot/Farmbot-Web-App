@@ -1,7 +1,6 @@
 import {
   unsavedCheck,
   stopThem,
-  dontStopThem,
 } from "../subscribers";
 import {
   buildResourceIndex,
@@ -15,6 +14,8 @@ import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 describe("unsavedCheck", () => {
   beforeEach(() => {
     localStorage.setItem("session", "YES");
+    window.addEventListener = jest.fn();
+    window.removeEventListener = jest.fn();
   });
 
   function setItUp(
@@ -56,48 +57,54 @@ describe("unsavedCheck", () => {
     unsavedCheck(setItUp(
       { seqDirty: true, otherDirty: true },
       { discard_unsaved: false, discard_unsaved_sequences: false }));
-    expect(window.onbeforeunload).toBe(dontStopThem);
+    expect(window.removeEventListener).toHaveBeenCalled();
   });
 
   it("doesn't stop users if work is saved", () => {
     unsavedCheck(setItUp(
       { seqDirty: false, otherDirty: false },
       { discard_unsaved: false, discard_unsaved_sequences: false }));
-    expect(window.onbeforeunload).toBe(dontStopThem);
-    expect(dontStopThem()).toBeFalsy();
+    expect(window.removeEventListener).toHaveBeenCalled();
   });
 
   it("stops users if they have unsaved work without config", () => {
     unsavedCheck(setItUp({ seqDirty: true, otherDirty: true }, undefined));
-    expect(window.onbeforeunload).toBe(stopThem);
-    expect(stopThem()).toBe("You have unsaved work.");
+    expect(window.addEventListener).toHaveBeenCalled();
   });
 
   it("doesn't stop users if they want to discard all unsaved work", () => {
     unsavedCheck(setItUp(
       { seqDirty: true, otherDirty: true },
       { discard_unsaved: true, discard_unsaved_sequences: false }));
-    expect(window.onbeforeunload).toBe(dontStopThem);
+    expect(window.removeEventListener).toHaveBeenCalled();
   });
 
   it("stops users if they have unsaved work other than sequences", () => {
     unsavedCheck(setItUp(
       { seqDirty: false, otherDirty: true },
       { discard_unsaved: false, discard_unsaved_sequences: true }));
-    expect(window.onbeforeunload).toBe(stopThem);
+    expect(window.addEventListener).toHaveBeenCalled();
   });
 
   it("doesn't stop users if discard unsaved sequences is enabled", () => {
     unsavedCheck(setItUp(
       { seqDirty: true, otherDirty: true },
       { discard_unsaved: false, discard_unsaved_sequences: true }));
-    expect(window.onbeforeunload).toBe(dontStopThem);
+    expect(window.removeEventListener).toHaveBeenCalled();
   });
 
   it("stops users with unsaved sequences", () => {
     unsavedCheck(setItUp(
       { seqDirty: true, otherDirty: false },
       { discard_unsaved: false, discard_unsaved_sequences: false }));
-    expect(window.onbeforeunload).toBe(stopThem);
+    expect(window.addEventListener).toHaveBeenCalled();
+  });
+});
+
+describe("stopThem()", () => {
+  it("indicates unsaved changes", () => {
+    const e = { preventDefault: jest.fn() } as unknown as BeforeUnloadEvent;
+    expect(stopThem(e)).toEqual("You have unsaved work.");
+    expect(e.preventDefault).toHaveBeenCalled();
   });
 });
