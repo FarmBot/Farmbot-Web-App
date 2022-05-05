@@ -56,7 +56,7 @@ class NewUserReport
   def deliver
     puts message
     ActionMailer::Base.mail(
-      from: "do-not-reply@farmbot.io",
+      from: "do-not-reply@#{ENV["API_HOST"]}",
       to: EMAILS,
       subject: "Daily Report: New FarmBot Setups",
       body: message,

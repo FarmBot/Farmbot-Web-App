@@ -1,6 +1,6 @@
 Devise.setup do |config|
   config.secret_key = ENV["DEVISE_SECRET"]
-  config.mailer_sender = 'do-not-reply@farmbot.io'
+  config.mailer_sender = "do-not-reply@#{ENV["API_HOST"]}"
   require 'devise/orm/active_record'
   config.case_insensitive_keys = [ :email ]
   config.strip_whitespace_keys = [ :email ]
