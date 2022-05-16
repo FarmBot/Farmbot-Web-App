@@ -6,7 +6,7 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { validGpioPins } from "../list_and_label_support";
 import {
@@ -19,12 +19,11 @@ import {
 import { initSave } from "../../../api/crud";
 import { PinBindingInputGroupProps } from "../interfaces";
 import {
-  PinBindingInputGroup, PinNumberInputGroup, BindingTypeDropDown,
-  ActionTargetDropDown, SequenceTargetDropDown,
+  PinBindingInputGroup,
+  PinNumberInputGroup,
+  BindingTargetDropdown,
+  BindingTargetDropdownProps,
 } from "../pin_binding_input_group";
-import {
-  fakeResourceIndex,
-} from "../../../sequences/locals_list/test_helpers";
 import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
@@ -33,7 +32,7 @@ import { error, warning } from "../../../toast/toast";
 const AVAILABLE_PIN = 18;
 
 describe("<PinBindingInputGroup/>", () => {
-  function fakeProps(): PinBindingInputGroupProps {
+  const fakeProps = (): PinBindingInputGroupProps => {
     const fakeResources: TaggedSequence[] = [fakeSequence(), fakeSequence()];
     fakeResources[0].body.id = 1;
     fakeResources[0].body.name = "Sequence 1";
@@ -48,12 +47,12 @@ describe("<PinBindingInputGroup/>", () => {
       dispatch: jest.fn(),
       resources: resources,
     };
-  }
+  };
 
   it("renders", () => {
     const wrapper = mount(<PinBindingInputGroup {...fakeProps()} />);
     const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(4);
+    expect(buttons.length).toBe(3);
   });
 
   it("no pin selected", () => {
@@ -119,7 +118,10 @@ describe("<PinBindingInputGroup/>", () => {
     const id = s?.body.id;
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);
-    wrapper.instance().setSequenceIdInput({ label: "label", value: "" + id });
+    wrapper.instance().changeBinding({
+      label: "label", value: "" + id,
+      headingId: PinBindingType.standard
+    });
     expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
@@ -169,22 +171,13 @@ describe("<PinBindingInputGroup/>", () => {
     expect(wrapper.instance().state.pinNumberInput).toEqual(AVAILABLE_PIN);
   });
 
-  it("changes binding type", () => {
-    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
-      {...fakeProps()} />);
-    expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.standard);
-    wrapper.instance().setBindingType({ label: "", value: PinBindingType.special });
-    expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.special);
-  });
-
   it("changes special action", () => {
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
       {...fakeProps()} />);
-    wrapper.setState({ bindingType: PinBindingType.special });
-    expect(wrapper.instance().state.specialActionInput).toEqual(undefined);
-    wrapper.instance().setSpecialAction({
+    wrapper.instance().changeBinding({
       label: "",
-      value: PinBindingSpecialAction.sync
+      value: PinBindingSpecialAction.sync,
+      headingId: PinBindingType.special,
     });
     expect(wrapper.instance().state.specialActionInput)
       .toEqual(PinBindingSpecialAction.sync);
@@ -205,39 +198,78 @@ describe("<PinNumberInputGroup />", () => {
   });
 });
 
-describe("<BindingTypeDropDown />", () => {
-  it("sets binding type", () => {
-    const setBindingType = jest.fn();
-    const wrapper = shallow(<BindingTypeDropDown
-      bindingType={PinBindingType.standard}
-      setBindingType={setBindingType} />);
-    const ddi = { label: "", value: PinBindingType.special };
-    wrapper.find("FBSelect").simulate("change", ddi);
-    expect(setBindingType).toHaveBeenCalledWith(ddi);
-  });
-});
+describe("<BindingTargetDropdown />", () => {
+  const fakeProps = (): BindingTargetDropdownProps => {
+    const sequence0 = fakeSequence();
+    sequence0.body.id = undefined;
+    const sequence1 = fakeSequence();
+    sequence1.body.id = 1;
+    const sequence2 = fakeSequence();
+    sequence2.body.id = 2;
+    return {
+      change: jest.fn(),
+      resources: buildResourceIndex([sequence0, sequence1, sequence2]).index,
+      sequenceIdInput: undefined,
+      specialActionInput: undefined,
+    };
+  };
 
-describe("<ActionTargetDropDown />", () => {
-  it("sets action", () => {
-    const setSpecialAction = jest.fn();
-    const wrapper = shallow(<ActionTargetDropDown
-      specialActionInput={undefined}
-      setSpecialAction={setSpecialAction} />);
-    const ddi = { label: "", value: PinBindingSpecialAction.sync };
-    wrapper.find("FBSelect").simulate("change", ddi);
-    expect(setSpecialAction).toHaveBeenCalledWith(ddi);
+  it("shows sequence selected", () => {
+    const p = fakeProps();
+    p.sequenceIdInput = 1;
+    const wrapper = shallow(<BindingTargetDropdown {...p} />);
+    expect(wrapper.find("FBSelect").props().selected).toEqual(undefined);
   });
-});
 
-describe("<SequenceTargetDropDown />", () => {
-  it("sets sequence ID", () => {
-    const setSequenceIdInput = jest.fn();
-    const wrapper = shallow(<SequenceTargetDropDown
-      sequenceIdInput={undefined}
-      resources={fakeResourceIndex()}
-      setSequenceIdInput={setSequenceIdInput} />);
-    const ddi = { label: "", value: 1 };
-    wrapper.find("SequenceSelectBox").simulate("change", ddi);
-    expect(setSequenceIdInput).toHaveBeenCalledWith(ddi);
+  it("shows action selected", () => {
+    const p = fakeProps();
+    p.specialActionInput = PinBindingSpecialAction.sync;
+    const wrapper = shallow(<BindingTargetDropdown {...p} />);
+    expect(wrapper.find("FBSelect").props().selected).toEqual(undefined);
+  });
+
+  it("shows nothing selected", () => {
+    const wrapper = shallow(<BindingTargetDropdown {...fakeProps()} />);
+    expect(wrapper.find("FBSelect").props().selected).toEqual(undefined);
+  });
+
+  it("shows sequences", () => {
+    const p = fakeProps();
+    p.sequenceIdInput = 1;
+    const wrapper = shallow(<BindingTargetDropdown {...p} />);
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list?.length).toEqual(10);
+    expect(list).toContainEqual({
+      heading: true,
+      headingId: PinBindingType.special,
+      label: "Actions",
+      value: 0,
+    });
+    expect(list).toContainEqual({
+      headingId: PinBindingType.special,
+      label: "Sync",
+      value: "sync",
+    });
+    expect(list).toContainEqual({
+      heading: true,
+      headingId: PinBindingType.standard,
+      label: "Sequences",
+      value: 0,
+    });
+    expect(list).toContainEqual({
+      headingId: PinBindingType.standard,
+      label: "fake",
+      value: 2,
+    });
+    expect(list).not.toContainEqual({
+      headingId: PinBindingType.standard,
+      label: "fake",
+      value: 1,
+    });
+    expect(list).not.toContainEqual({
+      headingId: PinBindingType.standard,
+      label: "fake",
+      value: undefined,
+    });
   });
 });

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { PinBindingsContent } from "../pin_bindings_content";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -58,6 +58,6 @@ describe("<PinBindingsContent/>", () => {
     ["26", "action"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(7);
+    expect(buttons.length).toBe(6);
   });
 });

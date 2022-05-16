@@ -23,7 +23,9 @@ import {
   selectAllSequences,
 } from "./selectors_by_kind";
 import { findUuid } from "./selectors";
-import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import {
+  ExecutableType, PinBindingType,
+} from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
 import { createSequenceMeta } from "./sequence_meta";
 import { alertsReducer as alerts } from "../messages/reducer";
@@ -315,7 +317,7 @@ const AFTER_HOOKS: IndexerHook = {
     const tracker = i.inUse["Sequence.PinBinding"];
     selectAllPinBindings(i)
       .map(pinBinding => {
-        if (pinBinding.body.binding_type === "standard") {
+        if (pinBinding.body.binding_type === PinBindingType.standard) {
           const { sequence_id } = pinBinding.body;
           const uuid = i.byKindAndId[joinKindAndId("Sequence", sequence_id)];
           if (uuid) {
