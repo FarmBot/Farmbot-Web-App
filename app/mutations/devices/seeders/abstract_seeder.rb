@@ -73,6 +73,7 @@ module Devices
         :sequences_dismount_tool,
         :sequences_pick_up_seed,
         :sequences_plant_seed,
+        :sequences_find_home,
         :sequences_take_photo_of_plant,
         :sequences_water_plant,
         :sequences_water_all_plants,
@@ -167,6 +168,11 @@ module Devices
         s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:point_group_id] =
           all_plants_group_id
 
+        Sequences::Create.run!(s, device: device)
+      end
+
+      def sequences_find_home
+        s = SequenceSeeds::FIND_HOME.deep_dup
         Sequences::Create.run!(s, device: device)
       end
 

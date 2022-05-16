@@ -45,6 +45,7 @@ module Devices
         TAKE_PHOTO_OF_PLANT = ALL.fetch(:TAKE_PHOTO_OF_PLANT)
         WATER_PLANT = ALL.fetch(:WATER_PLANT)
         WATER_ALL_PLANTS = ALL.fetch(:WATER_ALL_PLANTS)
+        FIND_HOME = ALL.fetch(:FIND_HOME)
       end
 
       module PublicSequenceNames
