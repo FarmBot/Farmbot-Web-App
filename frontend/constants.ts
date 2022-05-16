@@ -1757,8 +1757,9 @@ export namespace SetupWizardContent {
 
   export const FIND_HOME_BUTTON =
     trim(`Press the circle icon to open the button selection interface.
-    Select "Button 5", then choose the "Find Home" sequence in the target
-    dropdown menu. Finally, press "SAVE" to save the pin binding.`);
+    Select "Button 5", then choose the "Find Home" sequence in the
+    dropdown menu. Press "SAVE" to save the pin binding. Once FarmBot has
+    synced the change, press Button 5 on top of the electronics box.`);
 
   export const PROBLEM_GETTING_IMAGE =
     trim(`There is a 'camera not detected' or 'problem getting image' error

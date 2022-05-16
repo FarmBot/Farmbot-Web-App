@@ -674,6 +674,11 @@ export const WIZARD_STEPS = (
       component: BootSequence,
       question: t("Is the 'Find Home' sequence selected?"),
       outcomes: [
+        {
+          slug: "noFindHomeSequence",
+          description: t("There is no 'Find Home' sequence"),
+          tips: t("Create a new sequence and add the FIND HOME command."),
+        },
       ],
     },
     {
@@ -908,9 +913,9 @@ export const WIZARD_STEPS = (
       question: t("Did FarmBot find home?"),
       outcomes: [
         {
-          slug: "nothing",
-          description: t("Nothing"),
-          tips: t("Check the LED light strip power cable connections."),
+          slug: "noFindHomeSequence",
+          description: t("There is no 'Find Home' sequence"),
+          tips: t("Create a new sequence and add the FIND HOME command."),
         },
       ],
     },
