@@ -2928,6 +2928,16 @@ li {
     .wizard-step-info {
       display: inline;
     }
+    .warning-banner {
+      margin: 0 -15px 1rem -15px;
+      padding: 1rem 1.5rem 1rem 2rem;
+      background: transparentize($orange, 0.6);
+      p {
+        line-height: 1.75rem;
+        font-size: 1.3rem;
+        font-weight: bold;
+      }
+    }
     h2,
     .wizard-step-header {
       margin-left: -15px;
@@ -3020,6 +3030,20 @@ li {
         margin: auto;
         float: none;
         padding: 1rem;
+      }
+      .setting {
+        .no-pad {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+      }
+      .pin-binding-input-rows {
+        .row {
+          margin-bottom: 0.5rem;
+        }
+        label {
+          margin-left: 1.5rem;
+        }
       }
     }
     .markdown {

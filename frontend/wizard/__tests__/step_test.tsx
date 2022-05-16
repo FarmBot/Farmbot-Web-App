@@ -158,6 +158,14 @@ describe("<WizardStepContainer />", () => {
     expect(wrapper.html()).toContain("no-background");
   });
 
+  it("renders warning banner", () => {
+    const p = fakeProps();
+    p.step.warning = "warning";
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.html()).toContain("warning-banner");
+    expect(wrapper.text()).toContain("warning");
+  });
+
   it("renders video", () => {
     const p = fakeProps();
     p.step.video = "url";
