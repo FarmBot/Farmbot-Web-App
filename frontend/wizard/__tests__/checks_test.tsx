@@ -15,6 +15,10 @@ jest.mock("../../photos/camera_calibration/actions", () => ({
   calibrate: jest.fn(),
 }));
 
+jest.mock("../../settings/fbos_settings/boot_sequence_selector", () => ({
+  BootSequenceSelector: () => <div>boot</div>,
+}));
+
 const mockDevice = {
   execScript: jest.fn(() => Promise.resolve({})),
   findHome: jest.fn(() => Promise.resolve({})),
@@ -34,6 +38,8 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import {
   AssemblyDocs,
+  AxisActions,
+  BootSequence,
   CameraCalibrationCard,
   CameraCalibrationCheck,
   CameraCheck,
@@ -46,6 +52,7 @@ import {
   ControlsCheckProps,
   CurrentPosition,
   DisableStallDetection,
+  DynamicMapToggle,
   EthernetPortImage,
   FindHome,
   FirmwareHardwareSelection,
@@ -61,6 +68,7 @@ import {
   MotorSettings,
   NetworkRequirementsLink,
   PeripheralsCheck,
+  PinBinding,
   RotateMapToggle,
   SelectMapOrigin,
   SensorsCheck,
@@ -75,7 +83,7 @@ import { WizardStepComponentProps } from "../interfaces";
 import {
   fakeAlert,
   fakeFarmwareEnv, fakeFarmwareInstallation, fakeFbosConfig,
-  fakeFirmwareConfig, fakeImage, fakeLog, fakeWebAppConfig,
+  fakeFirmwareConfig, fakeImage, fakeLog, fakePinBinding, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { destroy, edit, initSave } from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -503,6 +511,21 @@ describe("<RotateMapToggle />", () => {
   });
 });
 
+describe("<DynamicMapToggle />", () => {
+  const state = fakeState();
+  const config = fakeWebAppConfig();
+  config.body.xy_swap = false;
+  state.resources = buildResourceIndex([config]);
+
+  it("toggles dynamic map size", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn(), () => state);
+    const wrapper = mount(<DynamicMapToggle {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { dynamic_map: true });
+  });
+});
+
 describe("<SelectMapOrigin />", () => {
   it("renders origin selector", () => {
     const wrapper = mount(<SelectMapOrigin {...fakeProps()} />);
@@ -530,6 +553,16 @@ describe("<PeripheralsCheck />", () => {
   it("handles missing config", () => {
     const wrapper = mount(<PeripheralsCheck {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("peripherals");
+  });
+});
+
+describe("<PinBinding />", () => {
+  it("renders pin binding inputs", () => {
+    const p = fakeProps();
+    const pinBinding = fakePinBinding();
+    p.resources = buildResourceIndex([pinBinding]).index;
+    const wrapper = mount(<PinBinding {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("add new pin binding");
   });
 });
 
@@ -576,6 +609,28 @@ describe("<CurrentPosition />", () => {
     const Component = CurrentPosition("x");
     const wrapper = mount(<Component {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("current position");
+  });
+});
+
+describe("<AxisActions />", () => {
+  it("renders current position", () => {
+    const p = fakeProps();
+    const config = fakeFirmwareConfig();
+    p.resources = buildResourceIndex([config]).index;
+    const wrapper = mount(<AxisActions {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("current position");
+  });
+
+  it("handles missing settings", () => {
+    const wrapper = mount(<AxisActions {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("current position");
+  });
+});
+
+describe("<BootSequence />", () => {
+  it("renders boot sequence", () => {
+    const wrapper = mount(<BootSequence />);
+    expect(wrapper.text().toLowerCase()).toContain("boot");
   });
 });
 

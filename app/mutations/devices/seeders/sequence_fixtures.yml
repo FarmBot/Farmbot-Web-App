@@ -555,3 +555,17 @@
           :args:
             :point_group_id: 0
     :comment: Water all plants
+
+:FIND_HOME: # =========================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: blue
+  :name: Find Home
+  :body:
+  - :kind: find_home
+    :args:
+      :speed: 100
+      :axis: all
+    :comment: Find home on all axes

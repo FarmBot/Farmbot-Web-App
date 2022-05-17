@@ -82,6 +82,14 @@ import { tourPath } from "../help/tours";
 import { TOURS } from "../help/tours/data";
 import { push } from "../history";
 import { FilePath } from "../internal_urls";
+import {
+  PinBindingInputGroup,
+} from "../settings/pin_bindings/pin_binding_input_group";
+import { apiPinBindings } from "../settings/pin_bindings/pin_bindings_content";
+import { BotPositionRows } from "../controls/move/bot_position_rows";
+import {
+  BootSequenceSelector,
+} from "../settings/fbos_settings/boot_sequence_selector";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -425,6 +433,17 @@ export const RotateMapToggle = (props: WizardOutcomeComponentProps) =>
       toggleValue={!!props.getConfigValue(BooleanSetting.xy_swap)} />
   </fieldset>;
 
+export const DynamicMapToggle = (props: WizardOutcomeComponentProps) =>
+  <fieldset>
+    <label>
+      {t("Dynamic map size")}
+    </label>
+    <ToggleButton
+      toggleAction={() =>
+        props.dispatch(toggleWebAppBool(BooleanSetting.dynamic_map))}
+      toggleValue={!!props.getConfigValue(BooleanSetting.dynamic_map)} />
+  </fieldset>;
+
 export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
   <fieldset>
     <label>
@@ -451,6 +470,14 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
       peripherals={peripherals}
       dispatch={props.dispatch} />
   </div>;
+};
+
+export const PinBinding = (props: WizardStepComponentProps) => {
+  const pinBindings = apiPinBindings(props.resources);
+  return <PinBindingInputGroup
+    pinBindings={pinBindings}
+    dispatch={props.dispatch}
+    resources={props.resources} />;
 };
 
 export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
@@ -500,6 +527,27 @@ export const CurrentPosition = (axis: Xyz) => (props: WizardStepComponentProps) 
       label={t("Current position (mm)")}
       highlightAxis={axis} />
   </div>;
+};
+
+export const AxisActions = (props: WizardStepComponentProps) => {
+  const locationData = validBotLocationData(props.bot.hardware.location_data);
+  const firmwareSettings = getFirmwareConfig(props.resources)?.body;
+  if (!firmwareSettings) { return <div />; }
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
+  const botOnline = isBotOnlineFromState(props.bot);
+  const { busy, locked } = props.bot.hardware.informational_settings;
+  return <BotPositionRows
+    locationData={locationData}
+    getConfigValue={props.getConfigValue}
+    arduinoBusy={busy}
+    locked={locked}
+    botOnline={botOnline}
+    firmwareSettings={firmwareSettings}
+    firmwareHardware={firmwareHardware} />;
+};
+
+export const BootSequence = () => {
+  return <BootSequenceSelector />;
 };
 
 const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) =>

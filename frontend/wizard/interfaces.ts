@@ -69,6 +69,7 @@ export interface WizardStep {
   video?: string;
   component?: React.ComponentType<WizardStepComponentProps>;
   componentOptions?: ComponentOptions;
+  warning?: string;
   controlsCheckOptions?: ControlsCheckOptions;
   question: string;
   outcomes: WizardStepOutcome[];

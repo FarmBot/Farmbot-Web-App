@@ -1664,6 +1664,14 @@ export namespace SetupWizardContent {
     your real life FarmBot. Once you have finished watching, proceed to the
     next setup steps to test and set the controls for each axis.`);
 
+  export const HOME =
+    trim(`Did FarmBot reach the home position (touching the hardstop) for
+    this axis and set the coordinate to 0?`);
+
+  export const FIND_LENGTH =
+    trim(`Did FarmBot move to the end of the axis and then move back to
+    the home position for this axis?`);
+
   export const X_HOME_PROMPT =
     trim(`Are FarmBot's gantry wheel plates touching the hardstops at the
     end of the tracks?`);
@@ -1739,6 +1747,19 @@ export namespace SetupWizardContent {
   export const TOGGLE_PERIPHERAL =
     trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
     the toggle again.`);
+
+  export const ROTARY_TOOL_WARNING =
+    trim(`Before attaching the rotary tool or turning it on, ensure that all
+    hands, feet, hair, and other body parts will be kept away from the tool
+    and a safe distance will be maintained while the rotary tool is attached.
+    Be mindful of debris that may be projected and use appropriate
+    protective equipment. Disconnect the rotary tool when not in use.`);
+
+  export const FIND_HOME_BUTTON =
+    trim(`Press the circle icon to open the button selection interface.
+    Select "Button 5", then choose the "Find Home" sequence in the
+    dropdown menu. Press "SAVE" to save the pin binding. Once FarmBot has
+    synced the change, press Button 5 on top of the electronics box.`);
 
   export const PROBLEM_GETTING_IMAGE =
     trim(`There is a 'camera not detected' or 'problem getting image' error

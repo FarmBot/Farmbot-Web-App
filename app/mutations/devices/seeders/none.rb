@@ -25,6 +25,7 @@ module Devices
       def point_groups_all_plants; end
       def point_groups_all_points; end
       def point_groups_all_weeds; end
+      def sequences_find_home; end
       def sequences_water_all_plants; end
       def sequences_water_all; end
       def sequences_photo_grid; end

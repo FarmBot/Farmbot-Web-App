@@ -67,6 +67,10 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             !prerequisite.status() && <prerequisite.indicator key={index} />)}
         </div>}
       <Markdown>{step.content}</Markdown>
+      {step.warning &&
+        <div className={"warning-banner"}>
+          <p>{t(step.warning)}</p>
+        </div>}
       {step.video && <Video url={step.video} />}
       <div className={[
         "wizard-components",
