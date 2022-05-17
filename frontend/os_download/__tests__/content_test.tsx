@@ -57,14 +57,14 @@ describe("<OsDownloadPage />", () => {
   it("runs the wizard: genesis", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 0, "genesis v1.2");
+    clickButton(wrapper, 4, "genesis v1.2");
     expect(wrapper.text().toLowerCase()).toContain("pi 3");
   });
 
   it("runs the wizard: genesis v1.6.1", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 4, "genesis v1.6");
+    clickButton(wrapper, 0, "genesis v1.6");
     clickButton(wrapper, 1, "white");
     expect(wrapper.text().toLowerCase()).toContain("pi 4");
   });

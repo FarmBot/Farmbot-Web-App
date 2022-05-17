@@ -141,11 +141,11 @@ const VERSIONS = () => ({
     Version["v1.1"],
   ],
   [Model.Genesis]: [
-    Version["v1.2"],
-    Version["v1.3"],
-    Version["v1.4"],
-    Version["v1.5"],
     Version["v1.6"],
+    Version["v1.5"],
+    Version["v1.4"],
+    Version["v1.3"],
+    Version["v1.2"],
   ],
 });
 
