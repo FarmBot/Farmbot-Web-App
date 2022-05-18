@@ -24,6 +24,7 @@ import { DeviceSetting } from "../../constants";
 import { BoxTopGpioDiagram } from "./box_top_gpio_diagram";
 import { findSequenceById, selectAllSequences } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
+import { FirmwareHardware } from "farmbot";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -92,6 +93,7 @@ export class PinBindingInputGroup
 
   Number = () =>
     <PinNumberInputGroup
+      firmwareHardware={this.props.firmwareHardware}
       pinNumberInput={this.state.pinNumberInput}
       boundPins={this.boundPins}
       setSelectedPin={this.setSelectedPin} />;
@@ -135,12 +137,15 @@ export class PinBindingInputGroup
   }
 }
 
+export interface PinNumberInputGroupProps {
+  pinNumberInput: number | undefined;
+  boundPins: number[];
+  setSelectedPin: (pin: number | undefined) => void;
+  firmwareHardware: FirmwareHardware | undefined;
+}
+
 /** pin number selection */
-export const PinNumberInputGroup = (props: {
-  pinNumberInput: number | undefined,
-  boundPins: number[],
-  setSelectedPin: (pin: number | undefined) => void
-}) => {
+export const PinNumberInputGroup = (props: PinNumberInputGroupProps) => {
   const { pinNumberInput, boundPins, setSelectedPin } = props;
   const selectedPinNumber = isNumber(pinNumberInput)
     ? {
@@ -153,6 +158,7 @@ export const PinNumberInputGroup = (props: {
       <Popover position={Position.TOP}
         target={<i className="fa fa-circle-o-notch" />}
         content={<BoxTopGpioDiagram
+          firmwareHardware={props.firmwareHardware}
           boundPins={boundPins}
           setSelectedPin={setSelectedPin}
           selectedPin={pinNumberInput} />} />

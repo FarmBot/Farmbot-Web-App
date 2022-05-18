@@ -25,6 +25,8 @@ const EXPRESS_BOARDS = ["express_k10", "express_k11"];
 const NO_SENSORS = [...EXPRESS_BOARDS];
 const NO_ENCODERS = [...EXPRESS_BOARDS];
 const NO_TOOLS = [...EXPRESS_BOARDS];
+const NO_ETHERNET = ["express_k10"];
+const NO_EXTRA_BUTTONS = [...EXPRESS_BOARDS];
 const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
@@ -36,6 +38,9 @@ export const isExpress = (firmwareHardware: FirmwareHardware | undefined) =>
 export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);
 
+export const hasExtraButtons = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_EXTRA_BUTTONS.includes(firmwareHardware);
+
 export const hasEncoders = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_ENCODERS.includes(firmwareHardware);
 
@@ -44,6 +49,9 @@ export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
 
 export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
+
+export const hasEthernet = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_ETHERNET.includes(firmwareHardware);
 
 export const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>

@@ -75,6 +75,7 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
       </Highlight>
       <Highlight settingName={DeviceSetting.addNewPinBinding}>
         <PinBindingInputGroup
+          firmwareHardware={firmwareHardware}
           pinBindings={pinBindings}
           dispatch={dispatch}
           resources={resources} />

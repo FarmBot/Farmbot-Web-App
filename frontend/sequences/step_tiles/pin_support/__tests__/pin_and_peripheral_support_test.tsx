@@ -8,6 +8,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import * as PinSupport from "../index";
 import {
+  fakeFbosConfig,
   fakePeripheral, fakeSensor,
 } from "../../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../../ui";
@@ -99,6 +100,20 @@ describe("pinsAsDropdowns()", () => {
     const ri = buildResourceIndex([]);
     const result = PinSupport.pinsAsDropdowns("write_pin")(ri.index, true);
     expect(JSON.stringify(result)).toContain("Pin 13");
+  });
+
+  it("write_pin: displays box LEDs", () => {
+    const ri = buildResourceIndex([]);
+    const result = PinSupport.pinsAsDropdowns("write_pin")(ri.index, true);
+    expect(JSON.stringify(result)).toContain("Box LED");
+  });
+
+  it("write_pin: doesn't display box LEDs", () => {
+    const config = fakeFbosConfig();
+    config.body.firmware_hardware = "express_k10";
+    const ri = buildResourceIndex([config]);
+    const result = PinSupport.pinsAsDropdowns("write_pin")(ri.index, true);
+    expect(JSON.stringify(result)).not.toContain("Box LED");
   });
 
   it("read_pin: displays peripherals and sensors", () => {

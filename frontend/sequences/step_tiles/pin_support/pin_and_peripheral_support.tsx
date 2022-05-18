@@ -14,6 +14,10 @@ import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { joinKindAndId } from "../../../resources/reducer_support";
 import { t } from "../../../i18next_wrapper";
+import {
+  getFwHardwareValue, hasExtraButtons,
+} from "../../../settings/firmware/firmware_hardware_support";
+import { getFbosConfig } from "../../../resources/getters";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
@@ -110,12 +114,14 @@ export function pinDropdowns(
 
 const pinsAsDropDownsWritePin = (
   resources: ResourceIndex, showPins: boolean,
-): DropDownItem[] =>
-  [
+): DropDownItem[] => {
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(resources));
+  return [
     ...peripheralsAsDropDowns(resources),
-    ...boxLedsAsDropDowns(),
+    ...(hasExtraButtons(firmwareHardware) ? boxLedsAsDropDowns() : []),
     ...(showPins ? pinDropdowns(n => n) : []),
   ];
+};
 
 const pinsAsDropDownsReadPin = (
   resources: ResourceIndex, showPins: boolean,
