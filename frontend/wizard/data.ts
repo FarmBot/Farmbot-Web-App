@@ -40,7 +40,9 @@ import {
   BootSequence,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
-import { hasUTM } from "../settings/firmware/firmware_hardware_support";
+import {
+  hasEthernet, hasExtraButtons, hasUTM,
+} from "../settings/firmware/firmware_hardware_support";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { ExternalUrl } from "../external_urls";
@@ -255,7 +257,7 @@ export const WIZARD_STEPS = (
       question: t(SetupWizardContent.NETWORK_PORTS_QUESTION),
       outcomes: [],
     },
-    ...(hasUTM(firmwareHardware)
+    ...(hasEthernet(firmwareHardware)
       ? [{
         section: WizardSectionSlug.connectivity,
         slug: WizardStepSlug.ethernetOption,
@@ -902,23 +904,25 @@ export const WIZARD_STEPS = (
         },
       ],
     },
-    {
-      section: WizardSectionSlug.peripherals,
-      slug: WizardStepSlug.findHomeButton,
-      title: t("Find Home Button"),
-      prerequisites: [botOnlineReq],
-      content: t(SetupWizardContent.FIND_HOME_BUTTON),
-      component: PinBinding,
-      componentOptions: { fullWidth: true },
-      question: t("Did FarmBot find home?"),
-      outcomes: [
-        {
-          slug: "noFindHomeSequence",
-          description: t("There is no 'Find Home' sequence"),
-          tips: t("Create a new sequence and add the FIND HOME command."),
-        },
-      ],
-    },
+    ...(hasExtraButtons(firmwareHardware)
+      ? [{
+        section: WizardSectionSlug.peripherals,
+        slug: WizardStepSlug.findHomeButton,
+        title: t("Find Home Button"),
+        prerequisites: [botOnlineReq],
+        content: t(SetupWizardContent.FIND_HOME_BUTTON),
+        component: PinBinding,
+        componentOptions: { fullWidth: true },
+        question: t("Did FarmBot find home?"),
+        outcomes: [
+          {
+            slug: "noFindHomeSequence",
+            description: t("There is no 'Find Home' sequence"),
+            tips: t("Create a new sequence and add the FIND HOME command."),
+          },
+        ],
+      }]
+      : []),
     {
       section: WizardSectionSlug.camera,
       slug: WizardStepSlug.photo,

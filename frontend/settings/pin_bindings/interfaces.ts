@@ -37,6 +37,7 @@ export interface PinBindingInputGroupProps {
   dispatch: Function;
   resources: ResourceIndex;
   pinBindings: PinBindingListItems[];
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface PinBindingInputGroupState {

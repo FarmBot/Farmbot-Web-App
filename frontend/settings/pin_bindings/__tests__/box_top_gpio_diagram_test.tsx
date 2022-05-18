@@ -6,7 +6,8 @@ describe("<BoxTopGpioDiagram />", () => {
   const fakeProps = (): BoxTopGpioDiagramProps => ({
     boundPins: [16],
     setSelectedPin: jest.fn(),
-    selectedPin: undefined
+    selectedPin: undefined,
+    firmwareHardware: undefined,
   });
 
   it("renders", () => {
@@ -14,6 +15,13 @@ describe("<BoxTopGpioDiagram />", () => {
     p.boundPins = undefined;
     const wrapper = mount(<BoxTopGpioDiagram {...p} />);
     expect(wrapper.find("circle").length).toEqual(18);
+  });
+
+  it("renders: express", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<BoxTopGpioDiagram {...p} />);
+    expect(wrapper.find("circle").length).toEqual(8);
   });
 
   it("pin hover", () => {

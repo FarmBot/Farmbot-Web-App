@@ -23,6 +23,7 @@ import {
   PinNumberInputGroup,
   BindingTargetDropdown,
   BindingTargetDropdownProps,
+  PinNumberInputGroupProps,
 } from "../pin_binding_input_group";
 import {
   PinBindingType, PinBindingSpecialAction,
@@ -46,6 +47,7 @@ describe("<PinBindingInputGroup/>", () => {
       ],
       dispatch: jest.fn(),
       resources: resources,
+      firmwareHardware: undefined,
     };
   };
 
@@ -185,16 +187,20 @@ describe("<PinBindingInputGroup/>", () => {
 });
 
 describe("<PinNumberInputGroup />", () => {
+  const fakeProps = (): PinNumberInputGroupProps => ({
+    pinNumberInput: undefined,
+    boundPins: [],
+    setSelectedPin: jest.fn(),
+    firmwareHardware: undefined,
+  });
+
   it("sets pin", () => {
-    const setSelectedPin = jest.fn();
-    const wrapper = shallow(<PinNumberInputGroup
-      pinNumberInput={undefined}
-      boundPins={[]}
-      setSelectedPin={setSelectedPin} />);
+    const p = fakeProps();
+    const wrapper = shallow(<PinNumberInputGroup {...p} />);
     wrapper.find("FBSelect").simulate("change", {
       label: "", value: AVAILABLE_PIN
     });
-    expect(setSelectedPin).toHaveBeenCalledWith(AVAILABLE_PIN);
+    expect(p.setSelectedPin).toHaveBeenCalledWith(AVAILABLE_PIN);
   });
 });
 

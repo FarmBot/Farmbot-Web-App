@@ -474,7 +474,9 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
 
 export const PinBinding = (props: WizardStepComponentProps) => {
   const pinBindings = apiPinBindings(props.resources);
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   return <PinBindingInputGroup
+    firmwareHardware={firmwareHardware}
     pinBindings={pinBindings}
     dispatch={props.dispatch}
     resources={props.resources} />;
