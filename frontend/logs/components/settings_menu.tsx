@@ -11,6 +11,7 @@ import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
 import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
+import { destroyAll } from "../../api/crud";
 
 interface LogSettingRecord {
   label: string;
@@ -118,6 +119,12 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
             <i className="fa fa-external-link" />
           </a>
         </div>}
+      <fieldset className={"delete-all"}>
+        <button className={"fb-button red"}
+          onClick={() => { this.props.dispatch(destroyAll("Log")); }}>
+          {t("Delete all logs")}
+        </button>
+      </fieldset>
     </div>;
   }
 }

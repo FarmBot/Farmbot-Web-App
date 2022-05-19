@@ -1,6 +1,7 @@
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
+  destroyAll: jest.fn(),
 }));
 
 const mockStorj: Dictionary<number | boolean> = {};
@@ -21,7 +22,7 @@ import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { edit, save } from "../../../api/crud";
+import { destroyAll, edit, save } from "../../../api/crud";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<LogsSettingsMenu />", () => {
@@ -33,7 +34,7 @@ describe("<LogsSettingsMenu />", () => {
 
   const fakeProps = (): LogsSettingsMenuProps => ({
     setFilterLevel: () => jest.fn(),
-    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    dispatch: jest.fn(x => x?.(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: false, consistent: true }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
@@ -61,6 +62,12 @@ describe("<LogsSettingsMenu />", () => {
     p.sourceFbosConfig = () => ({ value: true, consistent: true });
     const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
     expect(wrapper.instance().shouldComponentUpdate(fakeProps())).toBeTruthy();
+  });
+
+  it("deletes all logs", () => {
+    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...fakeProps()} />);
+    wrapper.find("button").last().simulate("click");
+    expect(destroyAll).toHaveBeenCalledWith("Log");
   });
 
   function testSettingToggle(setting: ConfigurationName, position: number) {

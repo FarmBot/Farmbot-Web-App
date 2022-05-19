@@ -1516,6 +1516,12 @@ ul {
       margin-left: 0.5rem;
     }
   }
+  .delete-all {
+    text-align: center;
+    button {
+      float: none;
+    }
+  }
 }
 
 .logs-table {
