@@ -39,6 +39,7 @@ export interface DraggableState {
 export interface DropAreaProps {
   callback(key: string): void;
   isLocked?: boolean;
+  children?: React.ReactNode;
 }
 
 export interface DropAreaState {

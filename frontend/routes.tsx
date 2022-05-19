@@ -57,7 +57,10 @@ export class RootComponent
   }
 
   render() {
-    const { Route, ChildRoute } = this.state;
+    const { ChildRoute } = this.state;
+    const Route = this.state.Route as React.FunctionComponent<{
+      children: React.ReactNode
+    }>;
     return <ErrorBoundary>
       <Provider store={_store}>
         <HotkeysProvider>

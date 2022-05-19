@@ -3,6 +3,7 @@ DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
   "react", "react-dom", "react-test-renderer", # enzyme
+  "@types/react", # blueprintjs
 ]
 
 # Load package.json as JSON.

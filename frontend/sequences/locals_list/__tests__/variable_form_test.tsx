@@ -11,7 +11,7 @@ import { shallow, mount } from "enzyme";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { FBSelect, BlurableInput, Color } from "../../../ui";
+import { FBSelect, BlurableInput, Color, FBSelectProps } from "../../../ui";
 import {
   VariableFormProps, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
@@ -51,7 +51,8 @@ describe("<VariableForm />", () => {
     const inputs = el.find(BlurableInput);
 
     expect(selects.length).toBe(1);
-    const select = selects.first().props();
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const select = selects.first().props() as FBSelectProps;
     const choices = variableFormList(
       p.resources, [], [{ label: "Externally defined", value: "" }], true);
     const actualLabels = select.list.map(x => x.label).sort();
@@ -137,7 +138,8 @@ describe("<VariableForm />", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.variable.dropdown.isNull = true;
     const wrapper = shallow(<VariableForm {...p} />);
-    const list = wrapper.find(FBSelect).first().props().list;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const list = (wrapper.find(FBSelect).first().props() as FBSelectProps).list;
     const vars = list.filter(item =>
       item.headingId == "Variable" && !item.heading);
     expect(vars.length).toEqual(1);

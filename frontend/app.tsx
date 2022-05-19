@@ -68,6 +68,7 @@ export interface AppProps {
   wizardStepResults: TaggedWizardStepResult[];
   toastMessages: ToastMessages;
   controlsPopupOpen: boolean;
+  children?: React.ReactNode;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
