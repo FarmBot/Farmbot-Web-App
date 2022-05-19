@@ -3,7 +3,7 @@
   margin-top: 1rem;
 }
 
-.bp3-overlay {
+.bp4-overlay {
   .image-flipper {
     z-index: 20;
     margin: auto;
@@ -94,7 +94,7 @@
     font-weight: bold;
     font-size: 1.3rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
   }
 }
@@ -105,7 +105,7 @@
 }
 
 .image-show-menu-popover {
-  .bp3-popover-content {
+  .bp4-popover-content {
     padding: 0;
   }
 }
@@ -240,7 +240,7 @@
     height: 0px;
     float: right!important;
   }
-  .bp3-slider {
+  .bp4-slider {
     margin-left: 2rem;
     width: 90%;
   }
@@ -276,7 +276,7 @@
     .fb-button.green {
       margin-top: 1rem;
     }
-    .bp3-slider {
+    .bp4-slider {
       width: 95%;
       margin-left: 1rem;
     }
@@ -286,7 +286,7 @@
     font-size: 1.2rem;
     font-style: italic;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
     &.input-error-wrapper {
@@ -294,7 +294,7 @@
     }
   }
   .filter-search {
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       display: inline;
       margin-left: 0;
     }
@@ -336,7 +336,7 @@
     float: left;
     margin-right: 1rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin: 0.5rem;
   }

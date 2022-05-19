@@ -221,7 +221,7 @@ nav {
   }
   .connection-status-popover {
     display: inline;
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       line-height: 6rem;
       margin-top: 0;
     }
@@ -254,7 +254,7 @@ nav {
 
 .menu-popover {
   display: inline;
-  .bp3-popover-content {
+  .bp4-popover-content {
     position: relative;
     width: 22rem;
     background: $dark_gray;
@@ -297,7 +297,7 @@ nav {
       }
     }
   }
-  .bp3-popover-arrow {
+  .bp4-popover-arrow {
     visibility: hidden;
   }
 }

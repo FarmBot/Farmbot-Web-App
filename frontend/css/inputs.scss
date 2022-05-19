@@ -46,17 +46,17 @@ input:not([role="combobox"]) {
 
 .input {
   position: relative;
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     position: unset;
   }
 }
 
 .input-error-wrapper {
   height: 0;
-  .bp3-popover-content {
+  .bp4-popover-content {
     min-width: 120px;
   }
-  .bp3-overlay {
+  .bp4-overlay {
     display: inline-block;
   }
 }
@@ -128,16 +128,16 @@ select {
 }
 
 .filter-search-popover {
-  .bp3-popover-content {
+  .bp4-popover-content {
     max-width: 40rem;
     padding: 0;
-    .bp3-menu {
+    .bp4-menu {
       padding-left: 0;
       padding-right: 0;
     }
   }
   &.few-items {
-    .bp3-input-group {
+    .bp4-input-group {
       display: none;
     }
   }
@@ -146,7 +146,7 @@ select {
 .filter-search-item {
   padding-left: 1rem;
   font-weight: normal !important;
-  .bp3-text-overflow-ellipsis {
+  .bp4-text-overflow-ellipsis {
     white-space: normal;
     padding-left: 1rem;
     text-indent: -1rem;
