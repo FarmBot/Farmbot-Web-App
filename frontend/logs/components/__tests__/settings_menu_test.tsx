@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
-  destroyAll: jest.fn(),
+  destroyAll: jest.fn(() => Promise.resolve()),
 }));
 
 const mockStorj: Dictionary<number | boolean> = {};
@@ -24,6 +24,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { destroyAll, edit, save } from "../../../api/crud";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { Content } from "../../../constants";
 
 describe("<LogsSettingsMenu />", () => {
   beforeEach(() => { mockDev = false; });
@@ -64,10 +65,15 @@ describe("<LogsSettingsMenu />", () => {
     expect(wrapper.instance().shouldComponentUpdate(fakeProps())).toBeTruthy();
   });
 
-  it("deletes all logs", () => {
-    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...fakeProps()} />);
-    wrapper.find("button").last().simulate("click");
-    expect(destroyAll).toHaveBeenCalledWith("Log");
+  it("deletes all logs", async () => {
+    location.assign = jest.fn();
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
+    await wrapper.find("button").last().simulate("click");
+    expect(destroyAll).toHaveBeenCalledWith(
+      "Log", false, Content.DELETE_ALL_LOGS_CONFIRMATION);
+    expect(location.assign).toHaveBeenCalled();
   });
 
   function testSettingToggle(setting: ConfigurationName, position: number) {

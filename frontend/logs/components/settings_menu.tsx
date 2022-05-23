@@ -1,6 +1,6 @@
 import React from "react";
 import { Help, ToggleButton } from "../../ui";
-import { ToolTips, DeviceSetting } from "../../constants";
+import { ToolTips, DeviceSetting, Content } from "../../constants";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
@@ -121,7 +121,11 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
         </div>}
       <fieldset className={"delete-all"}>
         <button className={"fb-button red"}
-          onClick={() => { this.props.dispatch(destroyAll("Log")); }}>
+          onClick={() => {
+            this.props.dispatch(destroyAll("Log", false,
+              t(Content.DELETE_ALL_LOGS_CONFIRMATION)))
+              .then(() => location.assign(window.location.origin));
+          }}>
           {t("Delete all logs")}
         </button>
       </fieldset>

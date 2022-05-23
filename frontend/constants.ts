@@ -1027,6 +1027,10 @@ export namespace Content {
   export const FORCE_REFRESH_CANCEL_WARNING =
     trim(`You may experience data loss if you do not refresh the page.`);
 
+  export const DELETE_ALL_LOGS_CONFIRMATION =
+    trim(`Are you sure you want to delete all logs? A page refresh will be
+    required.`);
+
   // Front Page
   export const TOS_UPDATE =
     trim(`The terms of service have recently changed. You must accept the
