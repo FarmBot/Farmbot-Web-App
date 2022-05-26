@@ -243,7 +243,8 @@ export namespace ToolTips {
     Least sensitive: +63. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const USE_ENCODERS_FOR_POSITIONING =
-    trim(`Use encoders for positioning.
+    trim(`Use the encoders for calculating movements in addition to using
+    encoders for stall detection.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const INVERT_ENCODERS =
