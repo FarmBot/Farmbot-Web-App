@@ -66,7 +66,6 @@ export interface PhotosProps {
 }
 
 export interface PhotoButtonsProps {
-  takePhoto(): void;
   deletePhoto(): void;
   toggleCrop(): void;
   toggleRotation(): void;
@@ -74,10 +73,14 @@ export interface PhotoButtonsProps {
   canCrop: boolean;
   canTransform: boolean;
   imageUrl: string | undefined;
+}
+
+export interface NewPhotoButtonsProps {
+  takePhoto(): void;
   imageJobs: JobProgress[];
+  env: UserEnv;
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
-  env: UserEnv;
 }
 
 export interface ImageFilterProps {
@@ -117,6 +120,7 @@ export interface PhotoFooterProps {
   flags: ImageShowFlags | undefined;
   botOnline: boolean;
   distance?: number;
+  children?: React.ReactNode;
 }
 
 export interface MoveToLocationProps {

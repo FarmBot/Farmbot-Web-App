@@ -73,7 +73,8 @@ export class ImageFlipper extends
   render() {
     const { images, currentImage } = this.props;
     const multipleImages = images.length > 1;
-    return <div className="image-flipper" id={this.props.id}>
+    return <div className={"image-flipper"} id={this.props.id}
+      onKeyDown={e => this.go(e.key == "ArrowLeft" ? 1 : -1)()}>
       {currentImage && images.length > 0
         ? <FlipperImage
           key={currentImage.body.attachment_url}
@@ -93,14 +94,14 @@ export class ImageFlipper extends
         title={t("previous image")}
         disabled={!multipleImages || this.state.disablePrev}
         className="image-flipper-left fb-button">
-        {t("Prev")}
+        <i className={"fa fa-arrow-left"} />
       </button>
       <button
         onClick={this.go(-1)}
         title={t("next image")}
         disabled={!multipleImages || this.state.disableNext}
         className="image-flipper-right fb-button">
-        {t("Next")}
+        <i className={"fa fa-arrow-right"} />
       </button>
     </div>;
   }

@@ -75,6 +75,24 @@ describe("<ImageFlipper/>", () => {
     expect(p.flipActionOverride).toHaveBeenCalledWith(0);
   });
 
+  it("flips down: arrow key", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    flipper.find(".image-flipper").first().simulate("keydown",
+      { key: "ArrowRight" });
+    expectFlip(p.images[0].uuid);
+  });
+
+  it("flips up: arrow key", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    flipper.find(".image-flipper").first().simulate("keydown",
+      { key: "ArrowLeft" });
+    expectFlip(p.images[2].uuid);
+  });
+
   it("stops at upper end", () => {
     const p = fakeProps();
     p.currentImage = p.images[2];
@@ -122,7 +140,7 @@ describe("<ImageFlipper/>", () => {
     const wrapper = shallow(<ImageFlipper {...p} />);
     wrapper.setState({ disableNext: false });
     const nextButton = wrapper.render().find("button").last();
-    expect(nextButton.text().toLowerCase()).toBe("next");
+    expect(nextButton.html()).toContain("right");
     expect(nextButton.prop("disabled")).toBeFalsy();
     wrapper.find("button").last().simulate("click");
     expectFlip(p.images[0].uuid);
@@ -134,7 +152,7 @@ describe("<ImageFlipper/>", () => {
     p.currentImage = p.images[1];
     const wrapper = mount(<ImageFlipper {...p} />);
     const prevButton = wrapper.find("button").first();
-    expect(prevButton.text().toLowerCase()).toBe("prev");
+    expect(prevButton.html()).toContain("left");
     expect(prevButton.props().disabled).toBeFalsy();
     prevButton.simulate("click");
     expectFlip(p.images[2].uuid);

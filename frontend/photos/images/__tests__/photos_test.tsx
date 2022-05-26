@@ -50,7 +50,7 @@ describe("<Photos />", () => {
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("X:632Y:347Z:164");
+    expect(wrapper.text()).toContain("(632, 347, 164)");
     expect(wrapper.find(".fa-eye.green").length).toEqual(1);
   });
 
@@ -63,13 +63,13 @@ describe("<Photos />", () => {
     p.flags.zMatch = false;
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("X:632Y:347Z:100");
+    expect(wrapper.text()).toContain("(632, 347, 100)");
     expect(wrapper.find(".fa-eye-slash.gray").length).toEqual(1);
   });
 
   it("no photos", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Image:No meta data.");
+    expect(wrapper.text()).toContain("yet taken any photos");
   });
 
   it("takes photo", async () => {
@@ -109,8 +109,8 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find("i").at(3);
+    expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(success).toHaveBeenCalled();
@@ -122,8 +122,8 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find("i").at(3);
+    expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(error).toHaveBeenCalled();
@@ -131,8 +131,8 @@ describe("<Photos />", () => {
 
   it("no photos to delete", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find("i").at(3);
+    expect(button.hasClass("fa-trash")).toBeTruthy();
     button.simulate("click");
     expect(destroy).not.toHaveBeenCalled();
   });
@@ -157,7 +157,7 @@ describe("<Photos />", () => {
     p.images[0].body.meta.x = undefined;
     p.currentImage = p.images[0];
     const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("X:---");
+    expect(wrapper.text()).toContain("(---");
   });
 
   it("toggles state", () => {

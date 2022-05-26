@@ -61,9 +61,14 @@ describe("hotkeysWithActions()", () => {
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith(Path.farmEvents("add"));
 
-    hotkeys[HotKey.backToPlantOverview].onKeyDown?.(e);
+    hotkeysSettingsPath[HotKey.backToPlantOverview].onKeyDown?.(e);
     expect(push).toHaveBeenCalledWith(Path.plants());
     expect(unselectPlant).toHaveBeenCalled();
+    jest.clearAllMocks();
+    const hotkeysPhotosPath = hotkeysWithActions(dispatch, "photos");
+    hotkeysPhotosPath[HotKey.backToPlantOverview].onKeyDown?.(e);
+    expect(push).not.toHaveBeenCalled();
+    expect(unselectPlant).not.toHaveBeenCalled();
   });
 });
 
