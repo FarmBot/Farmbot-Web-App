@@ -22,6 +22,22 @@
         min-height: unset;
       }
     }
+    .image-flipper-left,
+    .image-flipper-right {
+      width: 8rem;
+      i {
+        font-size: 4rem;
+      }
+    }
+    .no-flipper-image-container {
+      background: $black;
+    }
+    .placeholder {
+      opacity: 1 !important;
+    }
+    p {
+      color: $white;
+    }
   }
 }
 
@@ -40,16 +56,24 @@
   max-width: 100%;
   max-height: 650px;
   min-height: 200px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .image-flipper-left {
   left: -5px;
+  background: linear-gradient(to left, transparent, $translucent3);
+  &:hover {
+    background: linear-gradient(to left, transparent, $translucent4);
+  }
 }
 
 .image-flipper-right {
   right: -5px;
+  background: linear-gradient(to right, transparent, $translucent3);
+  &:hover {
+    background: linear-gradient(to right, transparent, $translucent4);
+  }
 }
 
 .image-flipper-left,
@@ -59,18 +83,10 @@
   bottom: -5px;
   width: 4rem;
   text-align: center;
-  background: none;
-  &:hover {
-    background: $translucent;
-  }
-  &:disabled {
-    background: none !important;
-    box-shadow: none !important;
-  }
   i {
-    color: $medium_gray;
-    font-weight: bold;
+    color: $white;
     font-size: 2rem;
+    text-shadow: 0px 9px 5px $translucent3;
   }
 }
 
@@ -98,8 +114,8 @@
   position: relative;
   justify-content: space-between;
   background: $black;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   height: 3.5rem;
   padding-top: 0.5rem;
   .footer-text {
@@ -128,8 +144,6 @@
 }
 
 .image-show-menu-target {
-  margin-top: 0.1rem;
-  margin-right: 0.25rem;
   i {
     color: $white;
   }
@@ -275,11 +289,16 @@
     right: 1rem;
   }
   .photo-action-buttons {
+    display: flex;
+    gap: 1rem;
     height: 0px;
     float: right !important;
     margin-right: 1rem;
     a {
       margin: 0;
+    }
+    i {
+      font-size: 1.6rem;
     }
   }
   .bp4-slider {

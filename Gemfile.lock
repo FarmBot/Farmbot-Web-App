@@ -241,7 +241,7 @@ GEM
       hashie (~> 4.1)
       multi_json (~> 1.15)
     racc (1.6.0)
-    rack (2.2.3)
+    rack (2.2.3.1)
     rack-attack (6.6.1)
       rack (>= 1.0, < 3)
     rack-cors (1.1.1)

@@ -36,6 +36,7 @@ export interface FlipperImageProps {
   onImageLoad(img: HTMLImageElement): void;
   hover?(hovered: string | undefined): void;
   target?: Record<"x" | "y", number> | undefined;
+  dark?: boolean;
 }
 
 export interface FlipperImageState {
@@ -48,6 +49,7 @@ export interface PlaceholderImgProps {
   textOverlay: string;
   width?: number;
   height?: number;
+  dark?: boolean;
 }
 
 export interface PhotosProps {
@@ -73,6 +75,10 @@ export interface PhotoButtonsProps {
   canCrop: boolean;
   canTransform: boolean;
   imageUrl: string | undefined;
+  image: TaggedImage | undefined;
+  size: Record<"width" | "height", number | undefined>;
+  dispatch: Function;
+  flags: ImageShowFlags | undefined;
 }
 
 export interface NewPhotoButtonsProps {
@@ -114,10 +120,7 @@ export interface GetImageShownStatusFlagsProps {
 
 export interface PhotoFooterProps {
   image: TaggedImage | undefined;
-  size: Record<"width" | "height", number | undefined>;
   timeSettings: TimeSettings;
-  dispatch: Function;
-  flags: ImageShowFlags | undefined;
   botOnline: boolean;
   distance?: number;
   children?: React.ReactNode;

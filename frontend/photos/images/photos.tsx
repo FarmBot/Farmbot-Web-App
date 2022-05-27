@@ -50,25 +50,33 @@ const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   </div>;
 };
 
-const PhotoButtons = (props: PhotoButtonsProps) => {
+export const PhotoButtons = (props: PhotoButtonsProps) => {
+  const { imageUrl } = props;
+  const { image, dispatch, flags, size } = props;
+  const imageShowMenuProps = { dispatch, flags, image, size };
   return <div className={"photo-action-buttons"}>
-    <i className={"fa fa-trash"}
+    {flags && image &&
+      <Popover className={"image-show-menu-target"}
+        popoverClassName={"image-show-menu-popover"}
+        target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
+        content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
+    {imageUrl && <i className={"fa fa-trash"}
       title={t("Delete Photo")}
-      onClick={props.deletePhoto} />
-    <a
+      onClick={props.deletePhoto} />}
+    {imageUrl && <a
       title={t("Download Photo")}
       href={props.imageUrl}
       target={"_blank"}
       rel={"noreferrer"}
       download={true}>
       <i className={"fa fa-download"} />
-    </a>
-    <i className={"fa fa-scissors"}
+    </a>}
+    {imageUrl && <i className={"fa fa-scissors"}
       title={t("Toggle crop")}
-      onClick={!props.canCrop ? props.toggleCrop : undefined} />
-    <i className={"fa fa-repeat"}
+      onClick={!props.canCrop ? props.toggleCrop : undefined} />}
+    {imageUrl && <i className={"fa fa-repeat"}
       title={t("Toggle rotation")}
-      onClick={!props.canTransform ? props.toggleRotation : undefined} />
+      onClick={!props.canTransform ? props.toggleRotation : undefined} />}
     <i className={"fa fa-arrows-alt desktop-only"}
       title={t("View fullscreen")}
       onClick={props.toggleFullscreen} />
@@ -76,11 +84,10 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
 };
 
 export const PhotoFooter = (props: PhotoFooterProps) => {
-  const { image, timeSettings, dispatch, flags, size } = props;
+  const { image, timeSettings } = props;
   const created_at = image
     ? formatTime(moment(image.body.created_at), timeSettings, "MMMM Do, YYYY")
     : "";
-  const imageShowMenuProps = { dispatch, flags, image, size };
   return <div className="photos-footer">
     <div className={"gradient"} />
     <div className={"footer-text"}>
@@ -100,11 +107,6 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
         <span>{created_at}</span>
       </div>
     </div>
-    {flags &&
-      <Popover className={"image-show-menu-target"}
-        popoverClassName={"image-show-menu-popover"}
-        target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
-        content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
     {props.children}
   </div>;
 };
@@ -198,9 +200,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       <this.ImageFlipper id={"panel-flipper"} />
       <PhotoFooter
         image={this.props.currentImage}
-        flags={this.props.flags}
-        size={this.props.currentImageSize}
-        dispatch={this.props.dispatch}
         botOnline={isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
         timeSettings={this.props.timeSettings}>
         <PhotoButtons
@@ -209,6 +208,10 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
           toggleRotation={this.toggleRotation}
           toggleFullscreen={this.toggleFullscreen}
           imageUrl={this.props.currentImage?.body.attachment_url}
+          image={this.props.currentImage}
+          flags={this.props.flags}
+          size={this.props.currentImageSize}
+          dispatch={this.props.dispatch}
           canTransform={this.canTransform}
           canCrop={this.canCrop} />
       </PhotoFooter>

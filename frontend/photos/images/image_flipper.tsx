@@ -10,6 +10,7 @@ import { TaggedImage } from "farmbot";
 import { UUID } from "../../resources/interfaces";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
+export const PLACEHOLDER_FARMBOT_DARK = "/placeholder_farmbot_dark.jpg";
 
 export const getIndexOfUuid = (images: TaggedImage[], uuid: UUID | undefined) =>
   uuid ? images.map(x => x.uuid).indexOf(uuid) : 0;
@@ -36,8 +37,9 @@ export const selectNextImage = (images: TaggedImage[], index: number) =>
 export const PlaceholderImg = (props: PlaceholderImgProps) =>
   <div className={"no-flipper-image-container"}>
     <p>{t(props.textOverlay)}</p>
-    <img className={"image-flipper-image"}
-      src={PLACEHOLDER_FARMBOT} width={props.width} height={props.height} />
+    <img className={"image-flipper-image placeholder"}
+      src={props.dark ? PLACEHOLDER_FARMBOT_DARK : PLACEHOLDER_FARMBOT}
+      width={props.width} height={props.height} />
   </div>;
 
 export class ImageFlipper extends
@@ -73,8 +75,13 @@ export class ImageFlipper extends
   render() {
     const { images, currentImage } = this.props;
     const multipleImages = images.length > 1;
-    return <div className={"image-flipper"} id={this.props.id}
-      onKeyDown={e => this.go(e.key == "ArrowLeft" ? 1 : -1)()}>
+    const dark = this.props.id === "fullscreen-flipper";
+    return <div className={`image-flipper ${this.props.id}`} id={this.props.id}
+      onKeyDown={e => {
+        if (["ArrowLeft", "ArrowRight"].includes(e.key)) {
+          this.go(e.key == "ArrowLeft" ? 1 : -1)();
+        }
+      }}>
       {currentImage && images.length > 0
         ? <FlipperImage
           key={currentImage.body.attachment_url}
@@ -87,22 +94,25 @@ export class ImageFlipper extends
           target={this.props.target}
           hover={this.props.hover}
           onImageLoad={this.onImageLoad}
+          dark={dark}
           image={currentImage} />
-        : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET} />}
-      <button
-        onClick={this.go(1)}
-        title={t("previous image")}
-        disabled={!multipleImages || this.state.disablePrev}
-        className="image-flipper-left fb-button">
-        <i className={"fa fa-arrow-left"} />
-      </button>
-      <button
-        onClick={this.go(-1)}
-        title={t("next image")}
-        disabled={!multipleImages || this.state.disableNext}
-        className="image-flipper-right fb-button">
-        <i className={"fa fa-arrow-right"} />
-      </button>
+        : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET}
+          dark={dark} />}
+      {multipleImages && !this.state.disablePrev &&
+        <button
+          onClick={this.go(1)}
+          autoFocus={true}
+          title={t("previous image")}
+          className="image-flipper-left fb-button">
+          <i className={"fa fa-chevron-left"} />
+        </button>}
+      {multipleImages && !this.state.disableNext &&
+        <button
+          onClick={this.go(-1)}
+          title={t("next image")}
+          className="image-flipper-right fb-button">
+          <i className={"fa fa-chevron-right"} />
+        </button>}
     </div>;
   }
 }

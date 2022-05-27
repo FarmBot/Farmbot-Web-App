@@ -2,7 +2,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import { FlipperImage } from "../flipper_image";
 import { FlipperImageProps } from "../interfaces";
-import { PLACEHOLDER_FARMBOT } from "../image_flipper";
+import { PLACEHOLDER_FARMBOT, PLACEHOLDER_FARMBOT_DARK } from "../image_flipper";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 
 describe("<FlipperImage />", () => {
@@ -22,6 +22,15 @@ describe("<FlipperImage />", () => {
     p.image.body.attachment_processed_at = undefined;
     const wrapper = mount(<FlipperImage {...p} />);
     expect(wrapper.find("img").first().props().src).toEqual(PLACEHOLDER_FARMBOT);
+  });
+
+  it("renders dark placeholder", () => {
+    const p = fakeProps();
+    p.image.body.attachment_processed_at = undefined;
+    p.dark = true;
+    const wrapper = mount(<FlipperImage {...p} />);
+    expect(wrapper.find("img").first().props().src)
+      .toEqual(PLACEHOLDER_FARMBOT_DARK);
   });
 
   it("renders placeholder at specific size", () => {

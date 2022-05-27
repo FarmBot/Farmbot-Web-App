@@ -5,11 +5,13 @@ jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { Photos, PhotoFooter, MoveToLocation } from "../photos";
+import { Photos, MoveToLocation, PhotoButtons } from "../photos";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
-import { PhotosProps, PhotoFooterProps, MoveToLocationProps } from "../interfaces";
+import {
+  PhotosProps, MoveToLocationProps, PhotoButtonsProps,
+} from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
 import { Content, ToolTips, Actions } from "../../../constants";
@@ -109,7 +111,7 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(3);
+    const button = wrapper.find("i").at(1);
     expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
@@ -122,7 +124,7 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(3);
+    const button = wrapper.find("i").at(1);
     expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
@@ -130,10 +132,9 @@ describe("<Photos />", () => {
   });
 
   it("no photos to delete", () => {
-    const wrapper = mount(<Photos {...fakeProps()} />);
-    const button = wrapper.find("i").at(3);
-    expect(button.hasClass("fa-trash")).toBeTruthy();
-    button.simulate("click");
+    const wrapper = mount<Photos>(<Photos {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("fa-trash");
+    wrapper.instance().deletePhoto();
     expect(destroy).not.toHaveBeenCalled();
   });
 
@@ -219,21 +220,26 @@ describe("<Photos />", () => {
   });
 });
 
-describe("<PhotoFooter />", () => {
-  const fakeProps = (): PhotoFooterProps => ({
+describe("<PhotoButtons />", () => {
+  const fakeProps = (): PhotoButtonsProps => ({
     image: undefined,
     dispatch: jest.fn(),
-    timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
     size: { width: 0, height: 0 },
-    botOnline: true,
+    deletePhoto: jest.fn(),
+    toggleCrop: jest.fn(),
+    toggleRotation: jest.fn(),
+    toggleFullscreen: jest.fn(),
+    canCrop: true,
+    canTransform: true,
+    imageUrl: undefined,
   });
 
   it("highlights map image", () => {
     const p = fakeProps();
     p.image = fakeImage();
     p.image.body.id = 1;
-    const wrapper = mount(<PhotoFooter {...p} />);
+    const wrapper = mount(<PhotoButtons {...p} />);
     wrapper.find("i").first().simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1,
