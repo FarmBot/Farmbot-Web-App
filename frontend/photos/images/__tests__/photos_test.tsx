@@ -249,6 +249,14 @@ describe("<PhotoButtons />", () => {
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
   });
+
+  it("toggles rotation", () => {
+    const p = fakeProps();
+    p.imageUrl = "fake url";
+    const wrapper = mount(<PhotoButtons {...p} />);
+    wrapper.find(".fa-repeat").simulate("click");
+    expect(p.toggleRotation).toHaveBeenCalled();
+  });
 });
 
 describe("<MoveToLocation />", () => {

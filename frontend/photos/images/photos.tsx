@@ -71,12 +71,14 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
       download={true}>
       <i className={"fa fa-download"} />
     </a>}
-    {imageUrl && <i className={"fa fa-scissors"}
-      title={t("Toggle crop")}
-      onClick={!props.canCrop ? props.toggleCrop : undefined} />}
-    {imageUrl && <i className={"fa fa-repeat"}
-      title={t("Toggle rotation")}
-      onClick={!props.canTransform ? props.toggleRotation : undefined} />}
+    {imageUrl &&
+      <i className={`fa fa-scissors ${props.canCrop ? "" : "disabled"}`}
+        title={t("Toggle crop")}
+        onClick={props.canCrop ? props.toggleCrop : undefined} />}
+    {imageUrl &&
+      <i className={`fa fa-repeat ${props.canTransform ? "" : "disabled"}`}
+        title={t("Toggle rotation")}
+        onClick={props.canTransform ? props.toggleRotation : undefined} />}
     <i className={"fa fa-arrows-alt desktop-only"}
       title={t("View fullscreen")}
       onClick={props.toggleFullscreen} />
