@@ -17,6 +17,7 @@ import {
 } from "./soil_height";
 import { push } from "../history";
 import { Path } from "../internal_urls";
+import { daysOldText } from "../plants/plant_inventory_item";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -70,7 +71,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
 export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
   <ul className="additional-weed-properties">
     <ListItem name={t("Age")}>
-      {`${plantAge(props.point)} ${t("days old")}`}
+      {daysOldText(plantAge(props.point))}
     </ListItem>
     <ListItem name={t("Status")}>
       <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />

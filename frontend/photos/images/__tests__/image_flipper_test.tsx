@@ -5,7 +5,9 @@ jest.mock("../actions", () => ({
 
 import React from "react";
 import { shallow, mount } from "enzyme";
-import { ImageFlipper, PLACEHOLDER_FARMBOT } from "../image_flipper";
+import {
+  ImageFlipper, PLACEHOLDER_FARMBOT, PLACEHOLDER_FARMBOT_DARK,
+} from "../image_flipper";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
@@ -75,6 +77,24 @@ describe("<ImageFlipper/>", () => {
     expect(p.flipActionOverride).toHaveBeenCalledWith(0);
   });
 
+  it("flips down: arrow key", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    flipper.find(".image-flipper").first().simulate("keydown",
+      { key: "ArrowRight" });
+    expectFlip(p.images[0].uuid);
+  });
+
+  it("flips up: arrow key", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    flipper.find(".image-flipper").first().simulate("keydown",
+      { key: "ArrowLeft" });
+    expectFlip(p.images[2].uuid);
+  });
+
   it("stops at upper end", () => {
     const p = fakeProps();
     p.currentImage = p.images[2];
@@ -93,57 +113,41 @@ describe("<ImageFlipper/>", () => {
     expectNoFlip();
   });
 
-  it("disables flippers when no images", () => {
+  it("hides flippers when no images", () => {
     const p = fakeProps();
     p.images = prepareImages([]);
     const wrapper = shallow(<ImageFlipper {...p} />);
-    expect(wrapper.find("button").first().props().disabled).toBeTruthy();
-    expect(wrapper.find("button").last().props().disabled).toBeTruthy();
+    expect(wrapper.find("button").length).toEqual(0);
   });
 
-  it("disables flippers when only one image", () => {
+  it("hides flippers when only one image", () => {
     const p = fakeProps();
     p.images = prepareImages([fakeImages[0]]);
     const wrapper = shallow(<ImageFlipper {...p} />);
-    expect(wrapper.find("button").first().props().disabled).toBeTruthy();
-    expect(wrapper.find("button").last().props().disabled).toBeTruthy();
+    expect(wrapper.find("button").length).toEqual(0);
   });
 
-  it("disables next flipper on load", () => {
+  it("hides next flipper on load", () => {
     const wrapper = shallow(<ImageFlipper {...fakeProps()} />);
     wrapper.update();
-    expect(wrapper.find("button").first().props().disabled).toBeFalsy();
-    expect(wrapper.find("button").last().props().disabled).toBeTruthy();
+    const buttons = wrapper.find("button");
+    expect(buttons.length).toEqual(1);
+    expect(buttons.first().hasClass("image-flipper-left")).toBeTruthy();
   });
 
-  it("disables flipper at lower end", () => {
+  it("hides flipper at ends", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
     const wrapper = shallow(<ImageFlipper {...p} />);
-    wrapper.setState({ disableNext: false });
-    const nextButton = wrapper.render().find("button").last();
-    expect(nextButton.text().toLowerCase()).toBe("next");
-    expect(nextButton.prop("disabled")).toBeFalsy();
-    wrapper.find("button").last().simulate("click");
-    expectFlip(p.images[0].uuid);
-    expect(wrapper.find("button").last().render().prop("disabled")).toBeTruthy();
-  });
-
-  it("disables flipper at upper end", () => {
-    const p = fakeProps();
-    p.currentImage = p.images[1];
-    const wrapper = mount(<ImageFlipper {...p} />);
-    const prevButton = wrapper.find("button").first();
-    expect(prevButton.text().toLowerCase()).toBe("prev");
-    expect(prevButton.props().disabled).toBeFalsy();
-    prevButton.simulate("click");
+    const buttons = wrapper.render().find("button");
+    expect(buttons.html()).toContain("left");
+    expect(buttons.length).toEqual(1);
+    wrapper.find("button").first().simulate("click");
     expectFlip(p.images[2].uuid);
-    jest.resetAllMocks();
     wrapper.update();
-    const updatedPrevButton = wrapper.find("button").first();
-    expect(updatedPrevButton.props().disabled).toBeTruthy();
-    updatedPrevButton.simulate("click");
-    expectNoFlip();
+    const btns = wrapper.render().find("button");
+    expect(btns.html()).toContain("right");
+    expect(btns.length).toEqual(1);
   });
 
   it("renders placeholder", () => {
@@ -151,6 +155,15 @@ describe("<ImageFlipper/>", () => {
     p.images = [];
     const wrapper = mount(<ImageFlipper {...p} />);
     expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
+  });
+
+  it("renders dark placeholder", () => {
+    const p = fakeProps();
+    p.images = [];
+    p.id = "fullscreen-flipper";
+    const wrapper = mount(<ImageFlipper {...p} />);
+    expect(wrapper.find("img").last().props().src)
+      .toEqual(PLACEHOLDER_FARMBOT_DARK);
   });
 
   it("calls back on transformed image load", () => {

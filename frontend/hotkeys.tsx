@@ -106,8 +106,10 @@ export const hotkeysWithActions = (dispatch: Function, slug: string) => {
     [HotKey.backToPlantOverview]: {
       ...hotkeysBase[HotKey.backToPlantOverview],
       onKeyDown: () => {
-        push(Path.plants());
-        dispatch(unselectPlant(dispatch));
+        if (slug != "photos") {
+          push(Path.plants());
+          dispatch(unselectPlant(dispatch));
+        }
       },
     },
     [HotKey.openGuide]: hotkeysBase[HotKey.openGuide],

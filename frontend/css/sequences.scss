@@ -14,7 +14,7 @@
   }
   padding: 3rem 1.5rem 8rem;
   overflow: hidden;
-  .bp3-popover-target .saucer {
+  .bp4-popover-target .saucer {
     float: left;
   }
   @media screen and (max-width: 767px) {
@@ -170,7 +170,7 @@
       label {
         cursor: pointer;
       }
-      .bp3-popover-wrapper {
+      .bp4-popover-wrapper {
         display: inline;
       }
       p {
@@ -400,7 +400,7 @@
         font-size: 1.5rem;
       }
     }
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       position: absolute;
       top: 0;
       right: 4rem;
@@ -408,7 +408,7 @@
         position: relative;
         right: unset;
       }
-      .bp3-popover-content {
+      .bp4-popover-content {
         background: $off_white;
         height: 100%;
         align-content: center;
@@ -516,7 +516,7 @@
     .row {
       display: flex;
     }
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       display: inline;
       margin-left: 1rem;
     }
@@ -570,7 +570,7 @@
     &.read-only {
       margin-top: 1rem;
       margin-bottom: 1rem;
-      .bp3-control,
+      .bp4-control,
       .filter-search,
       textarea,
       .input,
@@ -899,10 +899,10 @@
   }
   .folder-list-item,
   .sequence-list-item {
-    .bp3-popover-wrapper.color-picker {
+    .bp4-popover-wrapper.color-picker {
       position: absolute;
       line-height: 0;
-      .bp3-popover-target {
+      .bp4-popover-target {
         width: 2rem;
         height: 3.5rem;
       }
@@ -917,7 +917,7 @@
   }
   .folder-list-item {
     padding-left: 0;
-    .bp3-popover-wrapper.color-picker {
+    .bp4-popover-wrapper.color-picker {
       margin-left: 3rem;
     }
     .color-picker {
@@ -1063,7 +1063,7 @@
     }
   }
   &.last {
-    .bp3-collapse {
+    .bp4-collapse {
       margin-left: 1rem;
       margin-right: 3rem;
     }
@@ -1126,7 +1126,7 @@
     display: inline-block;
     padding-left: 1rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline-block;
     margin-left: 1rem;
   }

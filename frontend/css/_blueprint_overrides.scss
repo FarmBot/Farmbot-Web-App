@@ -1,34 +1,34 @@
 // Padding for the popups.
-.bp3-popover-content {
+.bp4-popover-content {
   z-index: 999;
   padding: 1rem;
 }
 
 // Arrow is slightly off by default in the popup menu.
-.bp3-tether-element-attached-left.bp3-tether-target-attached-right>.bp3-popover>.bp3-popover-arrow {
+.bp4-tether-element-attached-left.bp4-tether-target-attached-right>.bp4-popover>.bp4-popover-arrow {
   left: -1rem;
 }
 
-.bp3-overlay-content.bp3-tether-abutted.bp3-tether-abutted-top.bp3-tether-element.bp3-tether-element-attached-left.bp3-tether-element-attached-top.bp3-tether-enabled.bp3-tether-target-attached-bottom.bp3-tether-target-attached-left.bp3-transition-container {
+.bp4-overlay-content.bp4-tether-abutted.bp4-tether-abutted-top.bp4-tether-element.bp4-tether-element-attached-left.bp4-tether-element-attached-top.bp4-tether-enabled.bp4-tether-target-attached-bottom.bp4-tether-target-attached-left.bp4-transition-container {
   top: 2rem !important;
 }
 
-.bp3-portal {
+.bp4-portal {
   z-index: 99;
 }
 
-.bp3-menu {
+.bp4-menu {
   max-height: 20rem !important;
   overflow-y: scroll;
 }
 
-.bp3-input-group {
-  .bp3-icon {
+.bp4-input-group {
+  .bp4-icon {
     top: 0.6rem;
   }
 }
 
-.bp3-button:not(.bp3-minimal) {
+.bp4-button:not(.bp4-minimal) {
   font-weight: normal;
   text-transform: none;
   background: $white;
@@ -57,7 +57,7 @@
   }
 }
 
-.bp3-popover-wrapper {
+.bp4-popover-wrapper {
   display: block;
   position: relative;
   * {
@@ -65,14 +65,14 @@
   }
 }
 
-.bp3-icon-standard.bp3-align-right {
+.bp4-icon-standard.bp4-align-right {
   float: right !important;
   margin-top: 0.6rem !important;
   margin-left: 0 !important;
   font-size: 1.6rem !important;
 }
 
-.nav-right .bp3-popover-wrapper {
+.nav-right .bp4-popover-wrapper {
   transition: all 0.2s ease;
   text-transform: uppercase;
   color: $gray;
@@ -88,18 +88,18 @@
   }
 }
 
-.bp3-collapse {
+.bp4-collapse {
   scrollbar-width: none;
 }
 
-.bp3-collapse::-webkit-scrollbar,
-.bp3-collapse-body::-webkit-scrollbar {
+.bp4-collapse::-webkit-scrollbar,
+.bp4-collapse-body::-webkit-scrollbar {
   display: none !important;
   width: 0px !important;
   background-color: transparent !important;
 }
 
-*[class*=bp3-] {
+*[class*=bp4-] {
   &:focus {
     outline: none;
   }

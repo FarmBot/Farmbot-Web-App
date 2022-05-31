@@ -52,7 +52,7 @@ describe("<PlantPanel/>", () => {
     p.info.meta = { meta_key: "meta value", gridId: "1", key: undefined };
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
-    expect(txt).toContain("1 days old");
+    expect(txt).toContain("1 day old");
     expect(txt).toContain("meta value");
     expect(txt).not.toContain("gridId");
     const x = wrapper.find("input").at(1).props().value;
@@ -73,7 +73,7 @@ describe("<PlantPanel/>", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
-    expect(txt).toContain("1 days old");
+    expect(txt).toContain("1 day old");
     expect(wrapper.find("button").length).toEqual(4);
   });
 
@@ -82,7 +82,7 @@ describe("<PlantPanel/>", () => {
     p.inSavedGarden = true;
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
-    expect(txt).not.toContain("days old");
+    expect(txt).not.toContain("old");
     expect(wrapper.find("button").length).toEqual(3);
   });
 

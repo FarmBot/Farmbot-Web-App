@@ -17,6 +17,7 @@ import {
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { Path } from "../internal_urls";
 import { Actions } from "../constants";
+import { daysOldText } from "./plant_inventory_item";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -192,7 +193,7 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
           <Col xs={5}>
             <ListItem name={t("Age")}>
-              {`${daysOld} ${t("days old")}`}
+              {daysOldText(daysOld)}
             </ListItem>
           </Col>
         </Row>}

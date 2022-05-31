@@ -1,6 +1,6 @@
 import React from "react";
 import { Help, ToggleButton } from "../../ui";
-import { ToolTips, DeviceSetting } from "../../constants";
+import { ToolTips, DeviceSetting, Content } from "../../constants";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
@@ -11,6 +11,7 @@ import { Position } from "@blueprintjs/core";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
 import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
+import { destroyAll } from "../../api/crud";
 
 interface LogSettingRecord {
   label: string;
@@ -118,6 +119,16 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
             <i className="fa fa-external-link" />
           </a>
         </div>}
+      <fieldset className={"delete-all"}>
+        <button className={"fb-button red"}
+          onClick={() => {
+            this.props.dispatch(destroyAll("Log", false,
+              t(Content.DELETE_ALL_LOGS_CONFIRMATION)))
+              .then(() => location.assign(window.location.origin));
+          }}>
+          {t("Delete all logs")}
+        </button>
+      </fieldset>
     </div>;
   }
 }

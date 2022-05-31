@@ -79,8 +79,13 @@ export class PlantInventoryItem extends
         {!isUndefined(this.props.distance)
           ? `(${plant.body.x}, ${plant.body.y})
              ${round(this.props.distance)}mm ${t("away")}`
-          : `${plantAge(plant)} ${t("days old")}`}
+          : daysOldText(plantAge(plant))}
       </i>
     </div>;
   }
 }
+
+export const daysOldText = (daysOld: number) =>
+  `${daysOld} ${daysOld == 1
+    ? t("day old")
+    : t("days old")}`;

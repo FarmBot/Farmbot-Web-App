@@ -402,7 +402,7 @@ export const ImageListItem = (props: ImageListItemProps) => {
   const images = sortBy(props.images.items, "body.created_at").reverse();
   const [currentImage, setCurrentImage] = React.useState(images[0]);
   return <div className={"image-items"}>
-    <ImageFlipper id={"image-items"}
+    <ImageFlipper id={"image-items-flipper"}
       currentImage={currentImage}
       dispatch={props.dispatch}
       flipActionOverride={nextIndex => setCurrentImage(images[nextIndex])}
@@ -419,9 +419,6 @@ export const ImageListItem = (props: ImageListItemProps) => {
       images={images} />
     <PhotoFooter
       image={images[0]}
-      flags={undefined}
-      size={{ width: undefined, height: undefined }}
-      dispatch={props.dispatch}
       botOnline={false}
       distance={props.images.distance}
       timeSettings={props.timeSettings} />

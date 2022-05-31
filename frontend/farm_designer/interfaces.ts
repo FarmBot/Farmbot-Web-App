@@ -110,6 +110,7 @@ export interface FarmDesignerProps {
   deviceTarget: string;
   sourceFbosConfig: SourceFbosConfig;
   farmwareEnvs: TaggedFarmwareEnv[];
+  children?: React.ReactNode;
 }
 
 export interface MovePointsProps {

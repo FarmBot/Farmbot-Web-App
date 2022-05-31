@@ -169,9 +169,9 @@
           color: $medium_dark_red;
         }
       }
-      .bp3-popover-wrapper {
+      .bp4-popover-wrapper {
         position: absolute;
-        .bp3-popover-target {
+        .bp4-popover-target {
           width: 3rem;
         }
       }
@@ -716,13 +716,13 @@
       }
       .sliders {
         height: 98%;
-        .bp3-slider {
+        .bp4-slider {
           height: 100%;
           margin-left: 1rem;
         }
         .input-slider {
           pointer-events: none;
-          .bp3-slider-handle {
+          .bp4-slider-handle {
             left: 3.8px;
             height: 8px;
             width: 9px;
@@ -730,20 +730,20 @@
             box-shadow: none;
             border: 1px solid $dark_gray;
             border-radius: 2px;
-            .bp3-slider-label {
+            .bp4-slider-label {
               margin-left: -6px;
               margin-top: -14px;
             }
           }
         }
         .data-slider {
-          .bp3-start {
+          .bp4-start {
             &:first-of-type {
               display: unset;
             }
             height: 5px;
           }
-          .bp3-slider-label {
+          .bp4-slider-label {
             margin-left: -6rem;
             opacity: 1;
           }
@@ -832,7 +832,7 @@
 }
 
 .farmbot-layer-submenu {
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }
@@ -994,7 +994,7 @@
     margin-left: 1rem;
     margin-right: 1rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }
@@ -1009,17 +1009,17 @@
   width: 100%;
   margin-bottom: 3rem;
   margin-top: 1rem;
-  .bp3-slider {
+  .bp4-slider {
     margin-left: 3rem;
     margin-top: 1rem;
     width: 80%;
   }
   &.vertical {
-    .bp3-slider {
+    .bp4-slider {
       margin-top: 0;
     }
   }
-  .bp3-slider-label {
+  .bp4-slider-label {
     white-space: nowrap;
     text-align: center;
     &:empty {
@@ -1028,14 +1028,14 @@
   }
   .data-slider {
     pointer-events: none;
-    .bp3-slider-axis,
-    .bp3-slider-track {
+    .bp4-slider-axis,
+    .bp4-slider-track {
       display: none;
     }
-    .bp3-slider-label {
+    .bp4-slider-label {
       box-shadow: none;
     }
-    .bp3-start {
+    .bp4-start {
       &:first-of-type {
         display: none;
       }
@@ -1047,7 +1047,7 @@
       border-radius: 0;
     }
     &.vertical {
-      .bp3-start {
+      .bp4-start {
         top: unset;
         left: 0.53rem;
         height: 0.5px;

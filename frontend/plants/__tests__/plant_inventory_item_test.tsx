@@ -17,6 +17,7 @@ jest.mock("../../farm_designer/map/actions", () => ({
 
 import React from "react";
 import {
+  daysOldText,
   PlantInventoryItem, PlantInventoryItemProps,
 } from "../plant_inventory_item";
 import { shallow, mount } from "enzyme";
@@ -38,7 +39,7 @@ describe("<PlantInventoryItem />", () => {
 
   it("renders", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Strawberry Plant 11 days old");
+    expect(wrapper.text()).toEqual("Strawberry Plant 11 day old");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
   });
 
@@ -46,7 +47,7 @@ describe("<PlantInventoryItem />", () => {
     const p = fakeProps();
     p.plant.body.name = "";
     const wrapper = shallow(<PlantInventoryItem {...p} />);
-    expect(wrapper.text()).toEqual("Unknown plant1 days old");
+    expect(wrapper.text()).toEqual("Unknown plant1 day old");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
   });
 
@@ -126,5 +127,13 @@ describe("<PlantInventoryItem />", () => {
     expect(wrapper.state().icon).toEqual("");
     wrapper.instance().updateStateIcon("fake icon");
     expect(wrapper.state().icon).toEqual("fake icon");
+  });
+});
+
+describe("daysOldText()", () => {
+  it("returns correct text", () => {
+    expect(daysOldText(1)).toEqual("1 day old");
+    expect(daysOldText(0)).toEqual("0 days old");
+    expect(daysOldText(2)).toEqual("2 days old");
   });
 });

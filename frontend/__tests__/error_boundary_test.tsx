@@ -2,7 +2,7 @@ jest.unmock("../error_boundary");
 
 jest.mock("../util/errors.ts", () => ({ catchErrors: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { ErrorBoundary } from "../error_boundary";
 import { catchErrors } from "../util";
@@ -29,7 +29,6 @@ describe("<ErrorBoundary/>", () => {
     expect(i.state.hasError).toBe(true);
     expect(catchErrors).toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledTimes(2);
-    expect(console.error).toHaveBeenCalledWith(expect.any(String), Error("ALWAYS"));
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Kaboom"));
   });
 });

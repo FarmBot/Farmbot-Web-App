@@ -3,7 +3,7 @@
   margin-top: 1rem;
 }
 
-.bp3-overlay {
+.bp4-overlay {
   .image-flipper {
     z-index: 20;
     margin: auto;
@@ -21,6 +21,22 @@
         max-height: unset;
         min-height: unset;
       }
+    }
+    .image-flipper-left,
+    .image-flipper-right {
+      width: 8rem;
+      i {
+        font-size: 4rem;
+      }
+    }
+    .no-flipper-image-container {
+      background: $black;
+    }
+    .placeholder {
+      opacity: 1 !important;
+    }
+    p {
+      color: $white;
     }
   }
 }
@@ -40,27 +56,37 @@
   max-width: 100%;
   max-height: 650px;
   min-height: 200px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .image-flipper-left {
-  position: absolute;
-  top: -5px;
   left: -5px;
-  bottom: -5px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to left, transparent, $translucent3);
   &:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(to left, transparent, $translucent4);
   }
 }
 
 .image-flipper-right {
+  right: -5px;
+  background: linear-gradient(to right, transparent, $translucent3);
+  &:hover {
+    background: linear-gradient(to right, transparent, $translucent4);
+  }
+}
+
+.image-flipper-left,
+.image-flipper-right {
   position: absolute;
   top: -5px;
   bottom: -5px;
-  right: -5px;
-  background-color: rgba(0, 0, 0, 0.5);
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+  width: 4rem;
+  text-align: center;
+  i {
+    color: $white;
+    font-size: 2rem;
+    text-shadow: 0px 0px 5px $translucent3;
   }
 }
 
@@ -87,6 +113,14 @@
   display: flex;
   position: relative;
   justify-content: space-between;
+  background: $black;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  height: 3.5rem;
+  padding-top: 0.5rem;
+  .footer-text {
+    margin-top: -1rem;
+  }
   label {
     font-weight: normal;
   }
@@ -94,18 +128,29 @@
     font-weight: bold;
     font-size: 1.3rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
+  }
+  i {
+    color: $white;
+  }
+  .gradient {
+    position: absolute;
+    top: -3rem;
+    width: 100%;
+    height: 3rem;
+    background: linear-gradient(to top, $black 0%, transparent 30%);
   }
 }
 
 .image-show-menu-target {
-  position: absolute;
-  margin-top: 0.2rem;
+  i {
+    color: $white;
+  }
 }
 
 .image-show-menu-popover {
-  .bp3-popover-content {
+  .bp4-popover-content {
     padding: 0;
   }
 }
@@ -220,10 +265,14 @@
     margin-left: 1rem;
     margin-right: 0.5rem;
   }
+  p {
+    color: $off_white !important;
+  }
 }
 
 .image-created-at {
-  margin-left: 2rem;
+  color: $white;
+  margin-left: 1rem;
   span {
     white-space: nowrap;
   }
@@ -234,15 +283,48 @@
 }
 
 .photos {
-  .farmware-button {
-    position: relative!important;
-    bottom: 3rem;
-    height: 0px;
-    float: right!important;
+  .new-photo-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    p {
+      float: left;
+      margin-top: 0.75rem;
+      margin-right: 1rem;
+    }
   }
-  .bp3-slider {
+  .photo-action-buttons {
+    display: flex;
+    gap: 1rem;
+    height: 0px;
+    float: right !important;
+    margin-right: 1rem;
+    a {
+      margin: 0;
+    }
+    i {
+      font-size: 1.6rem;
+      &.disabled {
+        pointer-events: none;
+        color: $medium_gray;
+      }
+    }
+  }
+  .bp4-slider {
     margin-left: 2rem;
     width: 90%;
+  }
+}
+
+.image-items {
+  .footer-text {
+    display: flex;
+    * {
+      color: $white;
+    }
+  }
+  .photos-footer {
+    height: 2rem;
   }
 }
 
@@ -276,7 +358,7 @@
     .fb-button.green {
       margin-top: 1rem;
     }
-    .bp3-slider {
+    .bp4-slider {
       width: 95%;
       margin-left: 1rem;
     }
@@ -286,7 +368,7 @@
     font-size: 1.2rem;
     font-style: italic;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
     &.input-error-wrapper {
@@ -294,7 +376,7 @@
     }
   }
   .filter-search {
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       display: inline;
       margin-left: 0;
     }
@@ -336,7 +418,7 @@
     float: left;
     margin-right: 1rem;
   }
-  .bp3-popover-wrapper {
+  .bp4-popover-wrapper {
     display: inline;
     margin: 0.5rem;
   }

@@ -6,7 +6,8 @@ import { DropAreaProps } from "../interfaces";
 describe("<DropArea />", () => {
   const fakeProps = (): DropAreaProps => ({
     callback: jest.fn(),
-    isLocked: false
+    isLocked: false,
+    children: undefined,
   });
 
   it("opens", () => {

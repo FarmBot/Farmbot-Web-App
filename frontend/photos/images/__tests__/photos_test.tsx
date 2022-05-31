@@ -5,11 +5,13 @@ jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { Photos, PhotoFooter, MoveToLocation } from "../photos";
+import { Photos, MoveToLocation, PhotoButtons } from "../photos";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
-import { PhotosProps, PhotoFooterProps, MoveToLocationProps } from "../interfaces";
+import {
+  PhotosProps, MoveToLocationProps, PhotoButtonsProps,
+} from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
 import { Content, ToolTips, Actions } from "../../../constants";
@@ -50,7 +52,7 @@ describe("<Photos />", () => {
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("X:632Y:347Z:164");
+    expect(wrapper.text()).toContain("(632, 347, 164)");
     expect(wrapper.find(".fa-eye.green").length).toEqual(1);
   });
 
@@ -63,13 +65,13 @@ describe("<Photos />", () => {
     p.flags.zMatch = false;
     const wrapper = mount(<Photos {...p} />);
     expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("X:632Y:347Z:100");
+    expect(wrapper.text()).toContain("(632, 347, 100)");
     expect(wrapper.find(".fa-eye-slash.gray").length).toEqual(1);
   });
 
   it("no photos", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Image:No meta data.");
+    expect(wrapper.text()).toContain("yet taken any photos");
   });
 
   it("takes photo", async () => {
@@ -109,8 +111,8 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find("i").at(1);
+    expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(success).toHaveBeenCalled();
@@ -122,18 +124,17 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find("i").at(1);
+    expect(button.hasClass("fa-trash")).toBeTruthy();
     await button.simulate("click");
     await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(error).toHaveBeenCalled();
   });
 
   it("no photos to delete", () => {
-    const wrapper = mount(<Photos {...fakeProps()} />);
-    const button = wrapper.find("button").at(1);
-    expect(button.find("i").hasClass("fa-trash")).toBeTruthy();
-    button.simulate("click");
+    const wrapper = mount<Photos>(<Photos {...fakeProps()} />);
+    expect(wrapper.html()).not.toContain("fa-trash");
+    wrapper.instance().deletePhoto();
     expect(destroy).not.toHaveBeenCalled();
   });
 
@@ -157,7 +158,7 @@ describe("<Photos />", () => {
     p.images[0].body.meta.x = undefined;
     p.currentImage = p.images[0];
     const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("X:---");
+    expect(wrapper.text()).toContain("(---");
   });
 
   it("toggles state", () => {
@@ -219,21 +220,26 @@ describe("<Photos />", () => {
   });
 });
 
-describe("<PhotoFooter />", () => {
-  const fakeProps = (): PhotoFooterProps => ({
+describe("<PhotoButtons />", () => {
+  const fakeProps = (): PhotoButtonsProps => ({
     image: undefined,
     dispatch: jest.fn(),
-    timeSettings: fakeTimeSettings(),
     flags: fakeImageShowFlags(),
     size: { width: 0, height: 0 },
-    botOnline: true,
+    deletePhoto: jest.fn(),
+    toggleCrop: jest.fn(),
+    toggleRotation: jest.fn(),
+    toggleFullscreen: jest.fn(),
+    canCrop: true,
+    canTransform: true,
+    imageUrl: undefined,
   });
 
   it("highlights map image", () => {
     const p = fakeProps();
     p.image = fakeImage();
     p.image.body.id = 1;
-    const wrapper = mount(<PhotoFooter {...p} />);
+    const wrapper = mount(<PhotoButtons {...p} />);
     wrapper.find("i").first().simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1,
@@ -242,6 +248,14 @@ describe("<PhotoFooter />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
+  });
+
+  it("toggles rotation", () => {
+    const p = fakeProps();
+    p.imageUrl = "fake url";
+    const wrapper = mount(<PhotoButtons {...p} />);
+    wrapper.find(".fa-repeat").simulate("click");
+    expect(p.toggleRotation).toHaveBeenCalled();
   });
 });
 
