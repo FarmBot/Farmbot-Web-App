@@ -2,8 +2,9 @@ PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
-  "react", "react-dom", "react-test-renderer", # enzyme
+  "react", "react-dom", "react-test-renderer", "cheerio", # enzyme
   "@types/react", # blueprintjs
+  "parse5", # @types/jsdom
 ]
 
 # Load package.json as JSON.
