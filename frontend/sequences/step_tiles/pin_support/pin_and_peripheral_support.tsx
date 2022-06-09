@@ -123,6 +123,14 @@ const pinsAsDropDownsWritePin = (
   ];
 };
 
+const pinsAsDropDownsTogglePin = (
+  resources: ResourceIndex, showPins: boolean,
+): DropDownItem[] =>
+  [
+    ...peripheralsAsDropDowns(resources),
+    ...(showPins ? pinDropdowns(n => n) : []),
+  ];
+
 const pinsAsDropDownsReadPin = (
   resources: ResourceIndex, showPins: boolean,
 ): DropDownItem[] =>
@@ -136,9 +144,8 @@ export const pinsAsDropdowns =
   (kind: "read_pin" | "write_pin" | "toggle_pin") => {
     switch (kind) {
       case "read_pin": return pinsAsDropDownsReadPin;
-      case "write_pin":
-      case "toggle_pin":
-        return pinsAsDropDownsWritePin;
+      case "write_pin": return pinsAsDropDownsWritePin;
+      case "toggle_pin": return pinsAsDropDownsTogglePin;
     }
 
   };

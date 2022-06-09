@@ -132,6 +132,20 @@ describe("pinsAsDropdowns()", () => {
     const result = PinSupport.pinsAsDropdowns("read_pin")(ri.index, true);
     expect(JSON.stringify(result)).toContain("Pin 13");
   });
+
+  it("toggle_pin: displays peripherals and sensors", () => {
+    const p = fakePeripheral();
+    p.body.label = "displayed peripheral";
+    const ri = buildResourceIndex([p]);
+    const result = PinSupport.pinsAsDropdowns("toggle_pin")(ri.index, true);
+    expect(JSON.stringify(result)).toContain("displayed peripheral");
+  });
+
+  it("toggle_pin: displays pins", () => {
+    const ri = buildResourceIndex([]);
+    const result = PinSupport.pinsAsDropdowns("toggle_pin")(ri.index, true);
+    expect(JSON.stringify(result)).toContain("Pin 13");
+  });
 });
 
 describe("findByPinNumber()", () => {
