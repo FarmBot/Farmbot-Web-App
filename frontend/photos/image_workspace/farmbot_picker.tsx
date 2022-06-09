@@ -107,7 +107,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       <div id="hue" style={this.hueCSS()}>
         <Hue
           {...dontTouchThis}
-          pointer={this.customPointer}
+          pointer={this.customPointer as unknown as React.ReactNode}
           onChange={noop} />
         {getHueBoxes(this.props.h, !!this.props.invertHue)
           .map((box, i) => <div key={i} style={box} />)}
@@ -116,7 +116,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
       <div id="saturation" style={this.saturationCSS()}>
         <Saturation
           {...dontTouchThis}
-          pointer={this.customPointer}
+          pointer={this.customPointer as unknown as React.ReactNode}
           onChange={noop} />
         <div style={this.saturationboxCSS()} />
       </div>

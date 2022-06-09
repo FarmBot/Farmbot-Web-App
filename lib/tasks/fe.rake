@@ -3,7 +3,6 @@ DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
   "react", "react-dom", "react-test-renderer", "cheerio", # enzyme
-  "@types/react", # blueprintjs
   "parse5", # @types/jsdom
 ]
 
