@@ -1,6 +1,6 @@
 class PointGroup < ApplicationRecord
   SORT_TYPES =
-    %w(xy_ascending xy_descending yx_ascending yx_descending random).sort
+    %w(xy_ascending xy_descending yx_ascending yx_descending xy_alternating yx_alternating nn random).sort
   BAD_SORT = "%{value} is not valid. Valid options are: " +
              SORT_TYPES.map(&:inspect).join(", ")
   DEFAULT_CRITERIA = {
