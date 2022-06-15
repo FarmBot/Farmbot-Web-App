@@ -13,7 +13,9 @@ import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
 import { refresh } from "../../api/crud";
-import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
+import {
+  TaggedDevice, Alert, FirmwareHardware, InformationalSettings,
+} from "farmbot";
 import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
@@ -54,6 +56,10 @@ export class Connectivity
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
       firmware_version, private_ip, node_name, target, memory_usage, sync_status,
     } = informational_settings;
+    const video_devices = informational_settings[
+      "video_devices" as keyof InformationalSettings];
+    const camera = video_devices &&
+      video_devices.toString().trim().split(",").length > 0;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
       <Row>
@@ -80,6 +86,7 @@ export class Connectivity
               wifi={isWifi(wifi_level, wifi_level_percent)} />
             <LocalIpAddress address={private_ip} />
             <VoltageDisplay throttleData={throttled} />
+            <p><b>{t("Camera")}: </b>{camera ? t("connected") : t("none")}</p>
             <p><b>{t("Connectivity code")}: </b>{
               getDiagnosisCode(this.props.flags)}</p>
           </div>

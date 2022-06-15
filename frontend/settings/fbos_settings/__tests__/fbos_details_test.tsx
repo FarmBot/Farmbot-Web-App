@@ -16,6 +16,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../devices/actions";
+import { InformationalSettings } from "farmbot";
 
 describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -225,6 +226,14 @@ describe("<FbosDetails />", () => {
     (p.deviceAccount.body as any).last_ota = "2018-02-11T20:20:38.362Z";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("last updated: february");
+  });
+
+  it("displays video devices", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings[
+      "video_devices" as keyof InformationalSettings] = "1,0" as never;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("1,0");
   });
 });
 

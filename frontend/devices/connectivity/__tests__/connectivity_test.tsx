@@ -19,6 +19,7 @@ import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
 import { sync } from "../../actions";
 import { clickButton } from "../../../__test_support__/helpers";
+import { InformationalSettings } from "farmbot";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -135,5 +136,29 @@ describe("<Connectivity />", () => {
     p.rowData[3].connectionName = "botAPI";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.html()).toContain("fa-spinner");
+  });
+
+  it("displays camera status: missing value", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings[
+      "video_devices" as keyof InformationalSettings] = undefined as never;
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("camera: none");
+  });
+
+  it("displays camera status: no devices", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings[
+      "video_devices" as keyof InformationalSettings] = "" as never;
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("camera: none");
+  });
+
+  it("displays camera status: connected", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings[
+      "video_devices" as keyof InformationalSettings] = "1,0" as never;
+    const wrapper = mount(<Connectivity {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("camera: connected");
   });
 });
