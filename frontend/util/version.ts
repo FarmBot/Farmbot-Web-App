@@ -105,7 +105,6 @@ export enum FbosVersionFallback {
 }
 
 export const fallbackData: MinOsFeatureLookup = {
-  [Feature.boot_sequence]: "15.1.0",
   [Feature.toggle_peripheral]: "15.3.0",
   [Feature.sort_type_optimized]: "15.3.0",
   [Feature.sort_type_alternating]: "15.3.0",

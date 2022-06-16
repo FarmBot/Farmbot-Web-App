@@ -8,6 +8,7 @@ import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
   reformatFwVersion, reformatFbosVersion, LocalIpAddress, MacAddress, isWifi,
   MemoryUsageDisplay,
+  CameraIndicator,
 } from "../../settings/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
@@ -57,13 +58,11 @@ export class Connectivity
       firmware_version, private_ip, node_name, target, memory_usage, sync_status,
     } = informational_settings;
     const video_devices = informational_settings[
-      "video_devices" as keyof InformationalSettings];
-    const camera = video_devices &&
-      video_devices.toString().trim().split(",").length > 0;
+      "video_devices" as keyof InformationalSettings] as string | undefined;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
-      <Row>
-        <Col md={12} lg={4}>
+      <Row className={"connectivity-content"}>
+        <Col md={12} lg={4} className={"connectivity-left-column"}>
           <ConnectivityDiagram
             rowData={this.props.rowData}
             hover={this.hover}
@@ -86,13 +85,13 @@ export class Connectivity
               wifi={isWifi(wifi_level, wifi_level_percent)} />
             <LocalIpAddress address={private_ip} />
             <VoltageDisplay throttleData={throttled} />
-            <p><b>{t("Camera")}: </b>{camera ? t("connected") : t("none")}</p>
+            <CameraIndicator videoDevices={video_devices} />
             <p><b>{t("Connectivity code")}: </b>{
               getDiagnosisCode(this.props.flags)}</p>
           </div>
           <QosPanel pings={this.props.pings} />
         </Col>
-        <Col md={12} lg={8}>
+        <Col md={12} lg={8} className={"connectivity-right-column"}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
           {this.props.rowData
             .map((statusRowProps, index) =>

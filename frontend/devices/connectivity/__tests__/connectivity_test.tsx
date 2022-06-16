@@ -143,7 +143,7 @@ describe("<Connectivity />", () => {
     p.bot.hardware.informational_settings[
       "video_devices" as keyof InformationalSettings] = undefined as never;
     const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("camera: none");
+    expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: no devices", () => {
@@ -151,7 +151,7 @@ describe("<Connectivity />", () => {
     p.bot.hardware.informational_settings[
       "video_devices" as keyof InformationalSettings] = "" as never;
     const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("camera: none");
+    expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: connected", () => {

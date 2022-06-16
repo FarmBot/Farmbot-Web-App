@@ -79,6 +79,23 @@ export const MemoryUsageDisplay = ({ usage }: MemoryUsageDisplayProps) =>
     <Saucer color={colorFromMemoryUsage(usage)} className={"small-inline"} />
   </div>;
 
+interface CameraIndicatorProps {
+  videoDevices: string | undefined;
+}
+
+/** Camera connection status indicator. */
+export const CameraIndicator = ({ videoDevices }: CameraIndicatorProps) => {
+  const camera = videoDevices &&
+    videoDevices.toString().trim().split(",").length > 0;
+  return <div className={"camera-connection-indicator"}>
+    <p>
+      <b>{t("Camera")}: </b>
+      <span>{camera ? t("connected") : t("unknown")}</span>
+    </p>
+    <Saucer color={camera ? "green" : "gray"} className={"small-inline"} />
+  </div>;
+};
+
 /** Return an indicator color for the given WiFi signal strength (%). */
 export const colorFromSignalStrength = (percent: number) => {
   if (percent < 20) {
@@ -256,7 +273,7 @@ export const VoltageDisplay = ({ chip, throttleData }: VoltageDisplayProps) => {
     <p><b>{chip && chip.toUpperCase()} {t("Voltage")}</b></p>
     <Help text={ToolTips.VOLTAGE_STATUS} />
     <p>:&nbsp;{VOLTAGE_COLOR_KEY()[voltageColor]}</p>
-    <Popover usePortal={false}
+    <Popover usePortal={false} className={"voltage-saucer"}
       target={<ThrottleIndicator
         throttleDataString={throttleData}
         throttleType={ThrottleType.UnderVoltage} />}
