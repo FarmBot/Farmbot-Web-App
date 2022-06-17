@@ -184,6 +184,15 @@ fieldset {
       .row {
         margin-bottom: 1rem;
       }
+      .connectivity-content {
+        margin-bottom: 0;
+      }
+      .connectivity-left-column {
+        padding-left: 0;
+      }
+      .connectivity-right-column {
+        margin-top: 1rem;
+      }
       .connectivity-diagram svg {
         max-height: 200px !important;
       }
@@ -221,12 +230,26 @@ fieldset {
   }
 }
 
+.camera-connection-indicator,
 .memory-usage-display,
 .chip-temp-display {
   position: relative;
   .saucer {
     position: absolute;
     top: 2px;
+    right: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+    cursor: default;
+  }
+}
+
+.voltage-display {
+  position: relative;
+  height: 1.4rem;
+  .voltage-saucer {
+    position: absolute;
+    top: 0;
     right: 0.5rem;
     height: 1rem;
     width: 1rem;
@@ -288,15 +311,19 @@ fieldset {
 .network-info,
 .fbos-info {
   margin: auto;
-  margin-bottom: 2rem;
-  margin-top: 2rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   background: $white;
   padding: 1rem;
   box-shadow: 0px 0px 10px $light_gray;
-  width: 18rem;
+  width: 20rem;
   .ip-address {
     word-break: break-all;
   }
+}
+
+.connectivity-diagram {
+  width: 20rem;
 }
 
 .qos-display {

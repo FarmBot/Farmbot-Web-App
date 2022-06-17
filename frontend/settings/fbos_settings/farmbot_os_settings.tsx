@@ -1,5 +1,4 @@
 import React from "react";
-import { Feature } from "../../devices/interfaces";
 import { FarmbotSettingsProps } from "./interfaces";
 import { FarmbotOsRow } from "./farmbot_os_row";
 import { AutoUpdateRow } from "./auto_update_row";
@@ -12,7 +11,6 @@ import { Header } from "../hardware_settings/header";
 import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
 import { OrderNumberRow } from "./order_number_row";
-import { shouldDisplayFeature } from "../../devices/should_display";
 import { GardenLocationRow } from "./garden_location_row";
 
 export enum ColWidth {
@@ -48,7 +46,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
         timeSettings={timeSettings} />
-      {shouldDisplayFeature(Feature.boot_sequence) && <BootSequenceSelector />}
+      <BootSequenceSelector />
     </Collapse>
   </Highlight>;
 };
