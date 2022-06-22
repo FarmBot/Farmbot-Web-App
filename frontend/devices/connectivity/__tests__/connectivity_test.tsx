@@ -19,7 +19,6 @@ import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
 import { sync } from "../../actions";
 import { clickButton } from "../../../__test_support__/helpers";
-import { InformationalSettings } from "farmbot";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -140,24 +139,21 @@ describe("<Connectivity />", () => {
 
   it("displays camera status: missing value", () => {
     const p = fakeProps();
-    p.bot.hardware.informational_settings[
-      "video_devices" as keyof InformationalSettings] = undefined as never;
+    p.bot.hardware.informational_settings.video_devices = undefined;
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: no devices", () => {
     const p = fakeProps();
-    p.bot.hardware.informational_settings[
-      "video_devices" as keyof InformationalSettings] = "" as never;
+    p.bot.hardware.informational_settings.video_devices = "";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: connected", () => {
     const p = fakeProps();
-    p.bot.hardware.informational_settings[
-      "video_devices" as keyof InformationalSettings] = "1,0" as never;
+    p.bot.hardware.informational_settings.video_devices = "1,0";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: connected");
   });

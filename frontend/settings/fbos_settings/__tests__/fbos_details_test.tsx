@@ -16,7 +16,6 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../devices/actions";
-import { InformationalSettings } from "farmbot";
 
 describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -230,8 +229,7 @@ describe("<FbosDetails />", () => {
 
   it("displays video devices", () => {
     const p = fakeProps();
-    p.bot.hardware.informational_settings[
-      "video_devices" as keyof InformationalSettings] = "1,0" as never;
+    p.bot.hardware.informational_settings.video_devices = "1,0";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("1,0");
   });

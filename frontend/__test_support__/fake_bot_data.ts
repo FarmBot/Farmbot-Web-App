@@ -22,6 +22,7 @@ export const fakeBytesJob =
     type: "ota",
     file_type: ".fw",
     time: "2017-09-03T20:01:40.336Z",
+    updated_at: 0,
     ...update,
   });
 
@@ -33,5 +34,6 @@ export const fakePercentJob =
     type: "ota",
     file_type: ".fw",
     time: "2017-09-03T20:01:40.336Z",
+    updated_at: 0,
     ...update,
   });

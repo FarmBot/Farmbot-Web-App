@@ -6,7 +6,7 @@ import {
 
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
-type WebAppStringConfigKeyAll = WebAppStringConfigKey | "landing_page";
+type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
 type NumericSettings = Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey>;
@@ -105,7 +105,7 @@ export const StringSetting: StringSettings = {
   photo_filter_end: "photo_filter_end",
 
   /** App settings */
-  landing_page: "landing_page" as WebAppStringConfigKey,
+  landing_page: "landing_page",
 
   /** Other */
   created_at: "created_at",

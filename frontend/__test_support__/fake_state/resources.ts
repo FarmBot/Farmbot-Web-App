@@ -310,6 +310,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     encoder_figure: false,
     hide_webcam_widget: false,
     highlight_modified_settings: false,
+    landing_page: "controls",
     legend_menu_open: false,
     raw_encoders: true,
     scaled_encoders: true,

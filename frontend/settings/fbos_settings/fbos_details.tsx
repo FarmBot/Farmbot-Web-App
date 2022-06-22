@@ -15,7 +15,6 @@ import {
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { getModifiedClassName } from "./default_values";
-import { InformationalSettings } from "farmbot";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -375,10 +374,8 @@ export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
-    wifi_level_percent, cpu_usage, private_ip,
+    wifi_level_percent, cpu_usage, private_ip, video_devices,
   } = informational_settings;
-  const video_devices = informational_settings[
-    "video_devices" as keyof InformationalSettings];
   const { fbos_version } = props.deviceAccount.body;
   const last_ota = props.deviceAccount.body[
     "last_ota" as keyof DeviceAccountSettings] as string | undefined;
