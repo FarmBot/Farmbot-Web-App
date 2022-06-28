@@ -71,6 +71,7 @@ export const emptyState = (): RestResources => {
         WebAppConfig: {},
         WebcamFeed: {},
         WizardStepResult: {},
+        Telemetry: {},
       },
       byKindAndId: {},
       references: {},
