@@ -115,6 +115,7 @@ module FarmBot
         script_src: [
           PARCELJS_URL,
           "www.datadoghq-browser-agent.com",
+          "cdn.rollbar.com",
           "localhost:3808",
           "chrome-extension:",
           "cdnjs.cloudflare.com",
