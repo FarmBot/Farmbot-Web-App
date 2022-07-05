@@ -186,6 +186,24 @@ fieldset {
       }
       .connectivity-content {
         margin-bottom: 0;
+        .tabs {
+          display: flex;
+          label {
+            margin: 0;
+            padding: 0.5rem;
+            background: $light_gray;
+            width: 50%;
+            text-align: center;
+            margin-top: -1rem;
+            cursor: pointer;
+            &.selected {
+              background: $gray;
+            }
+          }
+        }
+        table {
+          font-size: 1.3rem;
+        }
       }
       .connectivity-left-column {
         padding-left: 0;
@@ -1076,6 +1094,7 @@ ul {
   }
 }
 
+.fbos-metric-history-plot-border,
 .motor-position-plot-border {
   text {
     font-size: 0.4rem;

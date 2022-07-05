@@ -55,6 +55,7 @@ const fakeProps = (): AppProps => ({
   wizardStepResults: [],
   toastMessages: {},
   controlsPopupOpen: false,
+  telemetry: [],
 });
 
 describe("<App />: Controls Pop-Up", () => {

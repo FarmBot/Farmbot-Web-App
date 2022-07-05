@@ -23,7 +23,7 @@ describe LogService do
     FakeDeliveryInfo.new("bot.device_#{device_id}.logs", device)
   end
 
-  it "Sends errors to rollbar" do
+  it "sends errors to rollbar" do
     expect(Rollbar).to receive(:error)
     LogService.new().deliver("") # Will raise NoMethodError
   end

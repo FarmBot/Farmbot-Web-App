@@ -8,12 +8,14 @@ import { BotState, UserEnv } from "./devices/interfaces";
 import {
   ResourceName, TaggedUser, TaggedLog, Xyz, Alert, FirmwareHardware,
   TaggedWizardStepResult,
+  TaggedTelemetry,
 } from "farmbot";
 import {
   maybeFetchUser,
   maybeGetTimeSettings,
   getDeviceAccountSettings,
   selectAllWizardStepResults,
+  selectAllTelemetry,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
@@ -66,6 +68,7 @@ export interface AppProps {
   env: UserEnv;
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
+  telemetry: TaggedTelemetry[];
   toastMessages: ToastMessages;
   controlsPopupOpen: boolean;
   children?: React.ReactNode;
@@ -98,6 +101,7 @@ export function mapStateToProps(props: Everything): AppProps {
     env: getEnv(props.resources.index),
     authAud: props.auth?.token.unencoded.aud,
     wizardStepResults: selectAllWizardStepResults(props.resources.index),
+    telemetry: selectAllTelemetry(props.resources.index),
     toastMessages: props.app.toasts,
     controlsPopupOpen: props.app.controlsPopupOpen,
   };
@@ -165,6 +169,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         apiFirmwareValue={this.props.apiFirmwareValue}
         authAud={this.props.authAud}
         wizardStepResults={this.props.wizardStepResults}
+        telemetry={this.props.telemetry}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {!Path.startsWith(Path.controls()) &&

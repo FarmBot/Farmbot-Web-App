@@ -53,6 +53,19 @@ describe("<Connectivity />", () => {
     alerts: [],
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
+    telemetry: [],
+  });
+
+  it("shows connectivity", () => {
+    const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
+    wrapper.instance().toggleHistory(false)();
+    expect(wrapper.instance().state.history).toEqual(false);
+  });
+
+  it("shows history", () => {
+    const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
+    wrapper.instance().toggleHistory(true)();
+    expect(wrapper.instance().state.history).toEqual(true);
   });
 
   it("sets hovered connection", () => {

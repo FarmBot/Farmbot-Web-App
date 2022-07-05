@@ -280,6 +280,7 @@ export function urlFor(tag: ResourceName) {
     Sensor: API.current.sensorPath,
     SensorReading: API.current.sensorReadingPath,
     Sequence: API.current.sequencesPath,
+    Telemetry: API.current.telemetryPath,
     Tool: API.current.toolsPath,
     User: API.current.usersPath,
     WebAppConfig: API.current.webAppConfigPath,

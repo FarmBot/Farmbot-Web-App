@@ -14,6 +14,7 @@ const IGNORE_LIST: ResourceName[] = [
   "WebAppConfig",
   "WebcamFeed",
   "WizardStepResult",
+  "Telemetry",
   "Alert",
   "Folder",
 ];

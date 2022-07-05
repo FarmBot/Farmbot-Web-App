@@ -158,6 +158,7 @@ def destroy_everything!
     SensorReading,
     FarmwareInstallation,
     Tool,
+    Telemetry,
     Delayed::Job,
     Delayed::Backend::ActiveRecord::Job,
     Fragment,

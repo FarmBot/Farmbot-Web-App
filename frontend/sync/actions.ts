@@ -96,6 +96,7 @@ export async function fetchSyncData(dispatch: Function) {
       get("Log", API.current.filteredLogsPath),
       get("WebcamFeed", API.current.webcamFeedPath),
       get("WizardStepResult", API.current.wizardStepResultsPath),
+      get("Telemetry", API.current.telemetryPath),
     ]),
   };
   const step = (num: keyof typeof group) => group[num];

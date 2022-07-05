@@ -306,23 +306,24 @@ const CommitDisplay = (
   </p>;
 };
 
+export const convertUptime = (seconds: number) => {
+  if (seconds >= 172800) {
+    return `${Math.round(seconds / 86400)} ${t("days")}`;
+  } else if (seconds >= 7200) {
+    return `${Math.round(seconds / 3600)} ${t("hours")}`;
+  } else if (seconds >= 120) {
+    return `${Math.round(seconds / 60)} ${t("minutes")}`;
+  } else {
+    return `${seconds} ${t("seconds")}`;
+  }
+};
+
 interface UptimeDisplayProps {
   uptime_sec: number;
 }
 
 /** FBOS uptime display row: label and uptime in relevant unit. */
 const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
-  const convertUptime = (seconds: number) => {
-    if (seconds >= 172800) {
-      return `${Math.round(seconds / 86400)} ${t("days")}`;
-    } else if (seconds >= 7200) {
-      return `${Math.round(seconds / 3600)} ${t("hours")}`;
-    } else if (seconds >= 120) {
-      return `${Math.round(seconds / 60)} ${t("minutes")}`;
-    } else {
-      return `${seconds} ${t("seconds")}`;
-    }
-  };
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 

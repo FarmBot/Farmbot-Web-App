@@ -23,6 +23,7 @@ import {
   TaggedPointGroup,
   TaggedFolder,
   TaggedWizardStepResult,
+  TaggedTelemetry,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -106,5 +107,7 @@ export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
 export const selectAllAlerts =
   (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
+export const selectAllTelemetry =
+  (i: ResourceIndex) => findAll<TaggedTelemetry>(i, "Telemetry");
 export const selectAllFolders =
   (i: ResourceIndex) => findAll<TaggedFolder>(i, "Folder");

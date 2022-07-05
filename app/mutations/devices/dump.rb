@@ -3,7 +3,7 @@ module Devices
     RESOURCES = [:farmware_envs, :farm_events, :farmware_installations,
                  :folders, :images, :logs, :peripherals, :pin_bindings,
                  :plant_templates, :point_groups, :regimens, :saved_gardens,
-                 :sensor_readings, :sensors, :sequences, :token_issuances,
+                 :sensor_readings, :sensors, :sequences, :token_issuances, :telemetries,
                  :users, :webcam_feeds, :wizard_step_results]
 
     required { model :device, class: Device }

@@ -29,6 +29,7 @@ module Resources
     FarmEvent => FarmEvents,
     Image => Images,
     Log => Logs,
+    Telemetries => Telemetries,
     Peripheral => Peripherals,
     PinBinding => PinBindings,
     PlantTemplate => PlantTemplates,

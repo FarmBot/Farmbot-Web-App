@@ -40,6 +40,7 @@ describe("<NavBar />", () => {
     apiFirmwareValue: undefined,
     authAud: undefined,
     wizardStepResults: [],
+    telemetry: [],
   });
 
   it("has correct parent className", () => {

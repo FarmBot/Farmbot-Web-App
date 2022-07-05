@@ -3,6 +3,7 @@ class Device < ApplicationRecord
   DEFAULT_MAX_CONFIGS = 300
   DEFAULT_MAX_IMAGES = 100
   DEFAULT_MAX_LOGS = 1000
+  DEFAULT_MAX_TELEMETRY = 100
 
   TIMEZONES = TZInfo::Timezone.all_identifiers
   BAD_TZ = "%{value} is not a valid timezone"
@@ -15,7 +16,7 @@ class Device < ApplicationRecord
   PLURAL_RESOURCES = %i(alerts farm_events farmware_envs farmware_installations
                         folders fragments images logs peripherals pin_bindings plant_templates
                         point_groups points regimens saved_gardens sensor_readings sensors sequences
-                        token_issuances tools webcam_feeds wizard_step_results)
+                        telemetries token_issuances tools webcam_feeds wizard_step_results)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 
@@ -64,6 +65,25 @@ class Device < ApplicationRecord
     # Calls to `destroy_all` rather than `delete_all` can be
     # disastrous- this is a big table! RC
     excess_logs.delete_all
+  end
+
+  # Give the user back the amount of telemetry they are allowed to view.
+  def limited_telemetry_list
+    Telemetry
+      .order(created_at: :desc)
+      .where(device_id: self.id)
+      .limit(DEFAULT_MAX_TELEMETRY)
+  end
+
+  def excess_telemetry
+    Telemetry
+      .where
+      .not(id: limited_telemetry_list.pluck(:id))
+      .where(device_id: self.id)
+  end
+
+  def trim_excess_telemetry
+    excess_telemetry.delete_all
   end
 
   def self.current

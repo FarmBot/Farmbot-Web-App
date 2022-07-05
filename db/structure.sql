@@ -1732,6 +1732,47 @@ ALTER SEQUENCE public.standard_pairs_id_seq OWNED BY public.standard_pairs.id;
 
 
 --
+-- Name: telemetries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.telemetries (
+    id bigint NOT NULL,
+    device_id bigint,
+    soc_temp integer,
+    wifi_level_percent integer,
+    uptime integer,
+    memory_usage integer,
+    disk_usage integer,
+    cpu_usage integer,
+    throttled character varying(10),
+    target character varying(10),
+    fbos_version character varying(20),
+    firmware_hardware character varying(20),
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: telemetries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.telemetries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: telemetries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.telemetries_id_seq OWNED BY public.telemetries.id;
+
+
+--
 -- Name: token_issuances; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2283,6 +2324,13 @@ ALTER TABLE ONLY public.standard_pairs ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: telemetries id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.telemetries ALTER COLUMN id SET DEFAULT nextval('public.telemetries_id_seq'::regclass);
+
+
+--
 -- Name: token_issuances id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2666,6 +2714,14 @@ ALTER TABLE ONLY public.sequences
 
 ALTER TABLE ONLY public.standard_pairs
     ADD CONSTRAINT standard_pairs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: telemetries telemetries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.telemetries
+    ADD CONSTRAINT telemetries_pkey PRIMARY KEY (id);
 
 
 --
@@ -3242,6 +3298,13 @@ CREATE INDEX index_standard_pairs_on_node_id ON public.standard_pairs USING btre
 
 
 --
+-- Name: index_telemetries_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_telemetries_on_device_id ON public.telemetries USING btree (device_id);
+
+
+--
 -- Name: index_token_issuances_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3348,6 +3411,14 @@ ALTER TABLE ONLY public.pin_bindings
 
 ALTER TABLE ONLY public.folders
     ADD CONSTRAINT fk_rails_58e285f76e FOREIGN KEY (parent_id) REFERENCES public.folders(id);
+
+
+--
+-- Name: telemetries fk_rails_6f6c1e8196; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.telemetries
+    ADD CONSTRAINT fk_rails_6f6c1e8196 FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -3755,6 +3826,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211117212015'),
 ('20211206165259'),
 ('20220413194334'),
-('20220415191331');
+('20220415191331'),
+('20220620225957');
 
 

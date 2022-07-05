@@ -14,12 +14,13 @@ import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
 import { refresh } from "../../api/crud";
-import { TaggedDevice, Alert, FirmwareHardware } from "farmbot";
+import { TaggedDevice, Alert, FirmwareHardware, TaggedTelemetry } from "farmbot";
 import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
 import { restartFirmware, sync } from "../actions";
+import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -31,15 +32,20 @@ export interface ConnectivityProps {
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
   timeSettings: TimeSettings;
+  telemetry: TaggedTelemetry[];
 }
 
 interface ConnectivityState {
   hoveredConnection: string | undefined;
+  history: boolean;
 }
 
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
-  state: ConnectivityState = { hoveredConnection: undefined };
+  state: ConnectivityState = {
+    hoveredConnection: undefined,
+    history: false,
+  };
 
   componentDidMount = () => {
     this.props.dispatch(refresh(this.props.device));
@@ -48,6 +54,9 @@ export class Connectivity
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
+
+  toggleHistory = (action: boolean) => () =>
+    this.setState({ history: action });
 
   render() {
     const { informational_settings } = this.props.bot.hardware;
@@ -59,7 +68,14 @@ export class Connectivity
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
       <Row className={"connectivity-content"}>
-        <Col md={12} lg={4} className={"connectivity-left-column"}>
+        <div className={"tabs"}>
+          <label className={this.state.history ? "" : "selected"}
+            onClick={this.toggleHistory(false)}>{t("connectivity")}</label>
+          <label className={this.state.history ? "selected" : ""}
+            onClick={this.toggleHistory(true)}>{t("history")}</label>
+        </div>
+        <Col md={12} lg={4} className={"connectivity-left-column"}
+          hidden={this.state.history}>
           <ConnectivityDiagram
             rowData={this.props.rowData}
             hover={this.hover}
@@ -88,7 +104,8 @@ export class Connectivity
           </div>
           <QosPanel pings={this.props.pings} />
         </Col>
-        <Col md={12} lg={8} className={"connectivity-right-column"}>
+        <Col md={12} lg={8} className={"connectivity-right-column"}
+          hidden={this.state.history}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
           {this.props.rowData
             .map((statusRowProps, index) =>
@@ -121,6 +138,9 @@ export class Connectivity
               </Col>
             </div>}
         </Col>
+        <FbosMetricHistoryTable telemetry={this.props.telemetry}
+          hidden={!this.state.history}
+          timeSettings={this.props.timeSettings} />
       </Row>
       {firmwareAlerts(this.props.alerts).length > 0 &&
         <Row>
