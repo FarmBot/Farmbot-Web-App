@@ -188,16 +188,33 @@ fieldset {
         margin-bottom: 0;
         .tabs {
           display: flex;
+          :first-child {
+            margin-left: 1rem;
+            margin-right: 0.3rem;
+            border-bottom-left-radius: 7px;
+            border-top-left-radius: 7px;
+          }
+          :last-child {
+            margin-right: 1rem;
+            border-bottom-right-radius: 7px;
+            border-top-right-radius: 7px;
+          }
           label {
             margin: 0;
             padding: 0.5rem;
             background: $light_gray;
+            color: $medium_gray;
             width: 50%;
             text-align: center;
             margin-top: -1rem;
             cursor: pointer;
             &.selected {
-              background: $gray;
+              background: $medium_gray;
+              color: $off_white;
+            }
+            &:hover {
+              background-color: darken($white, 40%);
+              color: $off_white;
             }
           }
         }
@@ -1091,6 +1108,20 @@ ul {
         }
       }
     }
+  }
+}
+
+.fbos-metric-history-table-wrapper {
+  overflow-y: scroll;
+  height: 25rem;
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: $white;
+  }
+  .saucer {
+    cursor: default;
   }
 }
 

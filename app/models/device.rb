@@ -3,7 +3,7 @@ class Device < ApplicationRecord
   DEFAULT_MAX_CONFIGS = 300
   DEFAULT_MAX_IMAGES = 100
   DEFAULT_MAX_LOGS = 1000
-  DEFAULT_MAX_TELEMETRY = 100
+  DEFAULT_MAX_TELEMETRY = 300
 
   TIMEZONES = TZInfo::Timezone.all_identifiers
   BAD_TZ = "%{value} is not a valid timezone"

@@ -2,15 +2,16 @@ import React from "react";
 import { trim } from "../../util";
 import { Telemetry } from "farmbot/dist/resources/api_resources";
 import { TaggedTelemetry } from "farmbot";
-import { last, max, range, sortBy } from "lodash";
+import { isNumber, last, max, range, sortBy } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { COLORS, OnMetricHover } from "./fbos_metric_history_table";
 
 const HEIGHT = 100;
 const HISTORY_LENGTH_HOURS = 30 * 10;
 const BORDER_WIDTH = 15;
 const BORDERS = BORDER_WIDTH * 2;
 const MAX_X = HISTORY_LENGTH_HOURS;
-const MAX_Y = 100;
+const MAX_Y = HEIGHT;
 
 const METRIC_NAMES: (keyof Telemetry)[] = [
   "cpu_usage",
@@ -21,21 +22,21 @@ const METRIC_NAMES: (keyof Telemetry)[] = [
   "wifi_level_percent",
 ];
 
-const COLORS: Record<keyof Telemetry, string> = {
-  id: "red",
-  created_at: "red",
-  updated_at: "red",
-  target: "red",
-  soc_temp: "red",
-  throttled: "blue",
-  wifi_level_percent: "orange",
-  uptime: "green",
-  memory_usage: "purple",
-  disk_usage: "gray",
-  cpu_usage: "yellow",
-  fbos_version: "red",
-  firmware_hardware: "red",
+const MAXIMUMS: Partial<Record<keyof Telemetry, number>> = {
+  memory_usage: 512,
 };
+
+const clipX = (
+  seconds: string | number | undefined,
+  lastEntry: TaggedTelemetry | undefined,
+) => {
+  const lastAt = lastEntry?.body.created_at as unknown as number | undefined;
+  const thisAt = seconds as unknown as number | undefined;
+  const withinBounds = lastAt && thisAt
+    && (lastAt - thisAt) < (HISTORY_LENGTH_HOURS / 10 * 3600);
+  return withinBounds ? lastAt - thisAt : undefined;
+};
+const plotX = (seconds: number) => MAX_X - (seconds / 3600 * 10);
 
 const getData = (
   all: TaggedTelemetry[],
@@ -47,11 +48,8 @@ const getData = (
     return data;
   }
   sortBy(all, "body.created_at").map(entry => {
-    const lastAt = mostRecent.body.created_at as unknown as number;
-    const thisAt = entry.body.created_at as unknown as number;
-    if (lastAt && thisAt
-      && (lastAt - thisAt) < (HISTORY_LENGTH_HOURS / 10 * 3600)) {
-      const x = lastAt - thisAt;
+    const x = clipX(entry.body.created_at, mostRecent);
+    if (isNumber(x)) {
       const y = parseInt("" + entry.body[metricName]);
       data.push([x, y]);
     }
@@ -65,11 +63,12 @@ const getPath = (
 ): string => {
   const data = getData(all, metricName);
   const ys = data.map(d => d[1]);
-  const yMax = max(ys) || 1;
+  const yMax = Math.max(MAXIMUMS[metricName] || 100, max(ys) || 1);
   let path = "";
   data.map(d => {
-    const x = MAX_X - (d[0] / 3600 * 10);
+    const x = plotX(d[0]);
     const raw_y = d[1];
+    if (isNaN(raw_y)) { return; }
     const y = MAX_Y - (raw_y / yMax) * MAX_Y;
     if (!path.startsWith("M")) {
       path = `M ${x},${y} `;
@@ -80,20 +79,18 @@ const getPath = (
   return path;
 };
 
-const YAxisLabels = () => {
-  const maxY = 100;
-  return <g id="y_axis_labels">
-    {[0, maxY].map(yPosition =>
+const YAxisLabels = () =>
+  <g id="y_axis_labels" visibility={"hidden"}>
+    {[0, MAX_Y].map(yPosition =>
       <g key={"y_axis_label_" + yPosition}>
-        <text x={MAX_X + BORDER_WIDTH / 2} y={maxY - yPosition - BORDER_WIDTH}>
+        <text x={MAX_X + BORDER_WIDTH / 2} y={MAX_Y - yPosition - BORDER_WIDTH}>
           {yPosition}
         </text>
-        <text x={-BORDER_WIDTH / 2} y={maxY - yPosition - BORDER_WIDTH}>
+        <text x={-BORDER_WIDTH / 2} y={MAX_Y - yPosition - BORDER_WIDTH}>
           {yPosition}
         </text>
       </g>)}
   </g>;
-};
 
 const XAxisLabels = () =>
   <g id="x_axis_labels">
@@ -116,21 +113,36 @@ const PlotBackground = () =>
       strokeWidth={0.25} stroke={"grey"} />
   </g>;
 
-const PlotLines = ({ telemetry }: { telemetry: TaggedTelemetry[] }) => {
+export interface PlotLinesProps {
+  telemetry: TaggedTelemetry[];
+  hoveredMetric: keyof Telemetry | undefined;
+  onHover: OnMetricHover;
+}
+
+const PlotLines = (props: PlotLinesProps) => {
   return <g id="plot_lines">
     {METRIC_NAMES.map((metricName: keyof Telemetry) =>
-      <path key={metricName} fill={"none"}
-        stroke={COLORS[metricName]} strokeWidth={2}
+      <path key={metricName}
+        onMouseEnter={props.onHover(metricName)}
+        onMouseLeave={props.onHover(undefined)}
+        fill={"none"}
+        stroke={COLORS[metricName]}
+        strokeWidth={props.hoveredMetric == metricName ? 4 : 2}
         strokeLinecap={"round"} strokeLinejoin={"round"}
-        d={getPath(telemetry, metricName)} />)}
+        d={getPath(props.telemetry, metricName)} />)}
   </g>;
 };
 
 export interface FbosMetricHistoryPlotProps {
   telemetry: TaggedTelemetry[];
+  hoveredMetric: keyof Telemetry | undefined;
+  hoveredTime: number | undefined;
+  onHover: OnMetricHover;
 }
 
 export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
+  const mostRecent = last(sortBy(props.telemetry, "body.created_at"));
+  const hoveredSeconds = clipX(props.hoveredTime, mostRecent);
   return <svg
     className={"fbos-metric-history-plot-border"}
     style={{ marginTop: "2rem", maxHeight: "250px" }}
@@ -148,7 +160,14 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
       y={-BORDER_WIDTH}
       viewBox={`0 ${0} ${HISTORY_LENGTH_HOURS} ${HEIGHT}`}>
       <PlotBackground />
-      <PlotLines telemetry={props.telemetry} />
+      <PlotLines telemetry={props.telemetry}
+        hoveredMetric={props.hoveredMetric}
+        onHover={props.onHover} />
+      {hoveredSeconds &&
+        <line y1={0} y2={MAX_Y}
+          x1={plotX(hoveredSeconds)}
+          x2={plotX(hoveredSeconds)}
+          stroke={"black"} strokeWidth={0.5} />}
     </svg>
   </svg>;
 };

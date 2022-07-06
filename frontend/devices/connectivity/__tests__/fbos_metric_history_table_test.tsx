@@ -1,7 +1,11 @@
+jest.mock("../fbos_metric_history_plot", () => ({
+  FbosMetricHistoryPlot: () => <div />,
+}));
+
 import React from "react";
+import { mount } from "enzyme";
 import { fakeTelemetry } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { svgMount } from "../../../__test_support__/svg_mount";
 import {
   FbosMetricHistoryTable, FbosMetricHistoryTableProps,
 } from "../fbos_metric_history_table";
@@ -24,7 +28,35 @@ describe("<FbosMetricHistoryTable />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = svgMount(<FbosMetricHistoryTable {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hours");
+    const wrapper = mount(<FbosMetricHistoryTable {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("wifi");
+  });
+
+  it("sets metric hover state", () => {
+    const p = fakeProps();
+    const wrapper = mount<FbosMetricHistoryTable>(
+      <FbosMetricHistoryTable {...p} />);
+    const backgroundBefore = wrapper.find("th").last().props().style?.background;
+    expect(backgroundBefore).toEqual(undefined);
+    expect(wrapper.instance().state.hoveredMetric).toEqual(undefined);
+    wrapper.instance().hoverMetric("wifi_level_percent")();
+    expect(wrapper.instance().state.hoveredMetric).toEqual("wifi_level_percent");
+    wrapper.update();
+    const backgroundAfter = wrapper.find("th").last().props().style?.background;
+    expect(backgroundAfter).toEqual("#eee");
+  });
+
+  it("sets time hover state", () => {
+    const p = fakeProps();
+    const wrapper = mount<FbosMetricHistoryTable>(
+      <FbosMetricHistoryTable {...p} />);
+    const backgroundBefore = wrapper.find("td").first().props().style?.background;
+    expect(backgroundBefore).toEqual(undefined);
+    expect(wrapper.instance().state.hoveredTime).toEqual(undefined);
+    wrapper.instance().hoverTime(2)();
+    expect(wrapper.instance().state.hoveredTime).toEqual(2);
+    wrapper.update();
+    const backgroundAfter = wrapper.find("td").first().props().style?.background;
+    expect(backgroundAfter).toEqual("#eee");
   });
 });

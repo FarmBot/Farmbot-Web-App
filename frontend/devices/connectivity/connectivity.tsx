@@ -54,7 +54,6 @@ export class Connectivity
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
-
   toggleHistory = (action: boolean) => () =>
     this.setState({ history: action });
 
@@ -70,7 +69,7 @@ export class Connectivity
       <Row className={"connectivity-content"}>
         <div className={"tabs"}>
           <label className={this.state.history ? "" : "selected"}
-            onClick={this.toggleHistory(false)}>{t("connectivity")}</label>
+            onClick={this.toggleHistory(false)}>{t("realtime")}</label>
           <label className={this.state.history ? "selected" : ""}
             onClick={this.toggleHistory(true)}>{t("history")}</label>
         </div>

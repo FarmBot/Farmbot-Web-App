@@ -44,11 +44,11 @@ describe Api::TelemetriesController do
 
     it "runs compaction when the telemetry piles up" do
       Telemetry.destroy_all
-      110.times { Telemetry.create!(device: user.device) }
+      310.times { Telemetry.create!(device: user.device) }
       sign_in user
       get :index, params: { format: :json }
       expect(response.status).to eq(200)
-      expect(json.length).to eq(100)
+      expect(json.length).to eq(300)
     end
 
     it "deletes ALL telemetry" do
