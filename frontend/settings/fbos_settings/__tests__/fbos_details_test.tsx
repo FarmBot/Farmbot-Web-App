@@ -5,6 +5,7 @@ import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
   OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
   reformatFbosVersion, MacAddress, MacAddressProps, colorFromMemoryUsage,
+  convertUptime,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -339,6 +340,14 @@ describe("colorFromThrottle()", () => {
   });
   it("hasn't been throttled", () => {
     expect(colorFromThrottle("0x0", ThrottleType.Throttled)).toEqual("green");
+  });
+});
+
+describe("convertUptime()", () => {
+  it("returns abbreviated time units", () => {
+    expect(convertUptime(12, true)).toEqual("12 sec");
+    expect(convertUptime(120, true)).toEqual("2 min");
+    expect(convertUptime(7200, true)).toEqual("2 hours");
   });
 });
 

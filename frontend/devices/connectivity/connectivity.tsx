@@ -16,11 +16,12 @@ import { PingDictionary } from "./qos";
 import { refresh } from "../../api/crud";
 import { TaggedDevice, Alert, FirmwareHardware, TaggedTelemetry } from "farmbot";
 import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
-import { TimeSettings } from "../../interfaces";
+import { MetricPanelState, TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
 import { restartFirmware, sync } from "../actions";
 import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
+import { Actions } from "../../constants";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -33,18 +34,17 @@ export interface ConnectivityProps {
   apiFirmwareValue: FirmwareHardware | undefined;
   timeSettings: TimeSettings;
   telemetry: TaggedTelemetry[];
+  metricPanelState: MetricPanelState;
 }
 
 interface ConnectivityState {
   hoveredConnection: string | undefined;
-  history: boolean;
 }
 
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = {
     hoveredConnection: undefined,
-    history: false,
   };
 
   componentDidMount = () => {
@@ -54,10 +54,22 @@ export class Connectivity
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
-  toggleHistory = (action: boolean) => () =>
-    this.setState({ history: action });
+
+  setHistoryOpen = (action: boolean) => () => {
+    const historyOpen = this.props.metricPanelState.history;
+    if ((action && !historyOpen) || (!action && historyOpen)) {
+      this.togglePanelState("history");
+    }
+  };
+
+  togglePanelState = (key: keyof MetricPanelState) =>
+    this.props.dispatch({
+      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      payload: key,
+    });
 
   render() {
+    const historyOpen = this.props.metricPanelState.history;
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
@@ -68,13 +80,13 @@ export class Connectivity
     return <div className="connectivity">
       <Row className={"connectivity-content"}>
         <div className={"tabs"}>
-          <label className={this.state.history ? "" : "selected"}
-            onClick={this.toggleHistory(false)}>{t("realtime")}</label>
-          <label className={this.state.history ? "selected" : ""}
-            onClick={this.toggleHistory(true)}>{t("history")}</label>
+          <label className={historyOpen ? "" : "selected"}
+            onClick={this.setHistoryOpen(false)}>{t("realtime")}</label>
+          <label className={historyOpen ? "selected" : ""}
+            onClick={this.setHistoryOpen(true)}>{t("history")}</label>
         </div>
         <Col md={12} lg={4} className={"connectivity-left-column"}
-          hidden={this.state.history}>
+          hidden={historyOpen}>
           <ConnectivityDiagram
             rowData={this.props.rowData}
             hover={this.hover}
@@ -104,7 +116,7 @@ export class Connectivity
           <QosPanel pings={this.props.pings} />
         </Col>
         <Col md={12} lg={8} className={"connectivity-right-column"}
-          hidden={this.state.history}>
+          hidden={historyOpen}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
           {this.props.rowData
             .map((statusRowProps, index) =>
@@ -138,7 +150,7 @@ export class Connectivity
             </div>}
         </Col>
         <FbosMetricHistoryTable telemetry={this.props.telemetry}
-          hidden={!this.state.history}
+          hidden={!historyOpen}
           timeSettings={this.props.timeSettings} />
       </Row>
       {firmwareAlerts(this.props.alerts).length > 0 &&

@@ -125,6 +125,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
               alerts={this.props.alerts}
               apiFirmwareValue={this.props.apiFirmwareValue}
               telemetry={this.props.telemetry}
+              metricPanelState={this.props.metricPanelState}
               timeSettings={this.props.timeSettings} />
           </ErrorBoundary>} />
       </ErrorBoundary>

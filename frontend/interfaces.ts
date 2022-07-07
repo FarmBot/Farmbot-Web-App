@@ -75,3 +75,7 @@ export interface SequencesPanelState {
   sequences: boolean;
   featured: boolean;
 }
+
+export interface MetricPanelState {
+  history: boolean;
+}

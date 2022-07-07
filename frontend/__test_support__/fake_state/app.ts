@@ -1,5 +1,6 @@
 import { AppState } from "../../reducer";
 import {
+  metricPanelState,
   plantsPanelState,
   pointsPanelState,
   sequencesPanelState,
@@ -14,6 +15,7 @@ export const app: AppState = {
   weedsPanelState: weedsPanelState(),
   pointsPanelState: pointsPanelState(),
   sequencesPanelState: sequencesPanelState(),
+  metricPanelState: metricPanelState(),
   controlsPopupOpen: false,
   toasts: {},
 };

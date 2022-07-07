@@ -306,15 +306,15 @@ const CommitDisplay = (
   </p>;
 };
 
-export const convertUptime = (seconds: number) => {
+export const convertUptime = (seconds: number, abrv = false) => {
   if (seconds >= 172800) {
     return `${Math.round(seconds / 86400)} ${t("days")}`;
   } else if (seconds >= 7200) {
     return `${Math.round(seconds / 3600)} ${t("hours")}`;
   } else if (seconds >= 120) {
-    return `${Math.round(seconds / 60)} ${t("minutes")}`;
+    return `${Math.round(seconds / 60)} ${abrv ? t("min") : t("minutes")}`;
   } else {
-    return `${seconds} ${t("seconds")}`;
+    return `${seconds} ${abrv ? t("sec") : t("seconds")}`;
   }
 };
 

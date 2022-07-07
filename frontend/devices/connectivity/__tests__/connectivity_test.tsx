@@ -19,6 +19,8 @@ import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
 import { sync } from "../../actions";
 import { clickButton } from "../../../__test_support__/helpers";
+import { metricPanelState } from "../../../__test_support__/panel_state";
+import { Actions } from "../../../constants";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -54,18 +56,36 @@ describe("<Connectivity />", () => {
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
     telemetry: [],
+    metricPanelState: metricPanelState(),
   });
 
-  it("shows connectivity", () => {
-    const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
-    wrapper.instance().toggleHistory(false)();
-    expect(wrapper.instance().state.history).toEqual(false);
+  it("show connectivity", () => {
+    const p = fakeProps();
+    p.metricPanelState.history = true;
+    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
+    wrapper.instance().setHistoryOpen(false)();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_METRIC_PANEL_OPTION, payload: "history",
+    });
   });
 
   it("shows history", () => {
-    const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
-    wrapper.instance().toggleHistory(true)();
-    expect(wrapper.instance().state.history).toEqual(true);
+    const p = fakeProps();
+    p.metricPanelState.history = false;
+    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
+    wrapper.instance().setHistoryOpen(true)();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_METRIC_PANEL_OPTION, payload: "history",
+    });
+  });
+
+  it("doesn't toggle history", () => {
+    const p = fakeProps();
+    p.metricPanelState.history = true;
+    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
+    jest.resetAllMocks();
+    wrapper.instance().setHistoryOpen(true)();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("sets hovered connection", () => {

@@ -39,6 +39,7 @@ interface TableHeaderCellProps {
   metricName: keyof Telemetry;
   hoveredMetric: keyof Telemetry | undefined;
   onHover: OnMetricHover;
+  rightAlign?: boolean;
 }
 
 const TableHeaderCell = (props: TableHeaderCellProps) =>
@@ -46,6 +47,7 @@ const TableHeaderCell = (props: TableHeaderCellProps) =>
     style={{
       color: COLORS[props.metricName],
       background: props.hoveredMetric == props.metricName ? "#eee" : undefined,
+      textAlign: props.rightAlign ? "right" : undefined,
     }}
     onMouseEnter={props.onHover(props.metricName)}
     onMouseLeave={props.onHover(undefined)}>
@@ -57,13 +59,17 @@ interface TableBodyCellProps {
   hoveredMetric: keyof Telemetry | undefined;
   onHover: OnMetricHover;
   recordSelected: boolean;
+  rightAlign?: boolean;
   children: React.ReactNode;
 }
 
 const TableBodyCell = (props: TableBodyCellProps) => {
   const selected = props.recordSelected || props.hoveredMetric == props.metricName;
   return <td
-    style={{ background: selected ? "#eee" : undefined }}
+    style={{
+      background: selected ? "#eee" : undefined,
+      textAlign: props.rightAlign ? "right" : undefined,
+    }}
     onMouseEnter={props.onHover(props.metricName)}
     onMouseLeave={props.onHover(undefined)}>
     {props.children}
@@ -100,6 +106,7 @@ export class FbosMetricHistoryTable
       hoveredTime: this.state.hoveredTime,
       onHover: this.hoverMetric,
     };
+    const rightAlignProps = { ...commonProps, rightAlign: true };
     return <div className={"fbos-metric-history"} hidden={this.props.hidden}>
       <FbosMetricHistoryPlot {...commonProps} telemetry={this.props.telemetry} />
       <div className={"fbos-metric-history-table-wrapper"}>
@@ -109,12 +116,13 @@ export class FbosMetricHistoryTable
               <th>{t("Time")}</th>
               <th>{t("Version")}</th>
               <TableHeaderCell {...commonProps} metricName={"uptime"} />
-              <TableHeaderCell {...commonProps} metricName={"cpu_usage"} />
-              <TableHeaderCell {...commonProps} metricName={"disk_usage"} />
-              <TableHeaderCell {...commonProps} metricName={"memory_usage"} />
-              <TableHeaderCell {...commonProps} metricName={"soc_temp"} />
-              <th>{t("Voltage")}</th>
-              <TableHeaderCell {...commonProps} metricName={"wifi_level_percent"} />
+              <TableHeaderCell {...rightAlignProps} metricName={"cpu_usage"} />
+              <TableHeaderCell {...rightAlignProps} metricName={"disk_usage"} />
+              <TableHeaderCell {...rightAlignProps} metricName={"memory_usage"} />
+              <TableHeaderCell {...rightAlignProps} metricName={"soc_temp"} />
+              <th style={{ textAlign: "center" }}>{t("Voltage")}</th>
+              <TableHeaderCell {...rightAlignProps}
+                metricName={"wifi_level_percent"} />
             </tr>
           </thead>
           <tbody>
@@ -127,32 +135,34 @@ export class FbosMetricHistoryTable
                 style: { background: recordSelected ? "#eee" : undefined },
               };
               const cellProps = { ...commonProps, recordSelected };
+              const rightCellProps = { ...cellProps, rightAlign: true };
               return <tr key={m.uuid}>
                 <td {...recordProps}
                   onMouseEnter={this.hoverTime(
                     m.body.created_at as unknown as number)}
                   onMouseLeave={this.hoverTime(undefined)}>
                   {formatTime(moment.unix(m.body.created_at as unknown as number),
-                    this.props.timeSettings, "MMMM D")}
+                    this.props.timeSettings, "MMM D")}
                 </td>
                 <td {...recordProps}>{m.body.fbos_version}</td>
                 <TableBodyCell {...cellProps} metricName={"uptime"}>
-                  {convertUptime(m.body.uptime || 0)}
+                  {convertUptime(m.body.uptime || 0, true)}
                 </TableBodyCell>
-                <TableBodyCell {...cellProps} metricName={"cpu_usage"}>
+                <TableBodyCell {...rightCellProps} metricName={"cpu_usage"}>
                   {m.body.cpu_usage}%
                 </TableBodyCell>
-                <TableBodyCell {...cellProps} metricName={"disk_usage"}>
+                <TableBodyCell {...rightCellProps} metricName={"disk_usage"}>
                   {m.body.disk_usage}%
                 </TableBodyCell>
-                <TableBodyCell {...cellProps} metricName={"memory_usage"}>
+                <TableBodyCell {...rightCellProps} metricName={"memory_usage"}>
                   {m.body.memory_usage} MB
                 </TableBodyCell>
-                <TableBodyCell {...cellProps} metricName={"soc_temp"}>
+                <TableBodyCell {...rightCellProps} metricName={"soc_temp"}>
                   {m.body.soc_temp}&deg;C
                 </TableBodyCell>
                 <td {...recordProps}><Saucer color={voltageColor} /></td>
-                <TableBodyCell {...cellProps} metricName={"wifi_level_percent"}>
+                <TableBodyCell {...rightCellProps}
+                  metricName={"wifi_level_percent"}>
                   {m.body.wifi_level_percent}%
                 </TableBodyCell>
               </tr>;

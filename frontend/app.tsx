@@ -2,7 +2,7 @@ import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
 import { error, warning } from "./toast/toast";
 import { NavBar } from "./nav";
-import { Everything, TimeSettings } from "./interfaces";
+import { Everything, MetricPanelState, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, UserEnv } from "./devices/interfaces";
 import {
@@ -71,6 +71,7 @@ export interface AppProps {
   telemetry: TaggedTelemetry[];
   toastMessages: ToastMessages;
   controlsPopupOpen: boolean;
+  metricPanelState: MetricPanelState;
   children?: React.ReactNode;
 }
 
@@ -104,6 +105,7 @@ export function mapStateToProps(props: Everything): AppProps {
     telemetry: selectAllTelemetry(props.resources.index),
     toastMessages: props.app.toasts,
     controlsPopupOpen: props.app.controlsPopupOpen,
+    metricPanelState: props.app.metricPanelState,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -170,6 +172,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         authAud={this.props.authAud}
         wizardStepResults={this.props.wizardStepResults}
         telemetry={this.props.telemetry}
+        metricPanelState={this.props.metricPanelState}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {!Path.startsWith(Path.controls()) &&

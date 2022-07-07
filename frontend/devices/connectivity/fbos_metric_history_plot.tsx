@@ -7,10 +7,10 @@ import { t } from "../../i18next_wrapper";
 import { COLORS, OnMetricHover } from "./fbos_metric_history_table";
 
 const HEIGHT = 100;
-const HISTORY_LENGTH_HOURS = 30 * 10;
+const HISTORY_LENGTH_HOUR_TENTHS = 24 * 10;
 const BORDER_WIDTH = 15;
 const BORDERS = BORDER_WIDTH * 2;
-const MAX_X = HISTORY_LENGTH_HOURS;
+const MAX_X = HISTORY_LENGTH_HOUR_TENTHS;
 const MAX_Y = HEIGHT;
 
 const METRIC_NAMES: (keyof Telemetry)[] = [
@@ -33,10 +33,11 @@ const clipX = (
   const lastAt = lastEntry?.body.created_at as unknown as number | undefined;
   const thisAt = seconds as unknown as number | undefined;
   const withinBounds = lastAt && thisAt
-    && (lastAt - thisAt) < (HISTORY_LENGTH_HOURS / 10 * 3600);
+    && (lastAt - thisAt) < (HISTORY_LENGTH_HOUR_TENTHS / 10 * 3600);
   return withinBounds ? lastAt - thisAt : undefined;
 };
-const plotX = (seconds: number) => MAX_X - (seconds / 3600 * 10);
+const plotXHours = (hours: number) => MAX_X - (hours * 10);
+const plotXSeconds = (seconds: number) => plotXHours(seconds / 3600);
 
 const getData = (
   all: TaggedTelemetry[],
@@ -66,7 +67,7 @@ const getPath = (
   const yMax = Math.max(MAXIMUMS[metricName] || 100, max(ys) || 1);
   let path = "";
   data.map(d => {
-    const x = plotX(d[0]);
+    const x = plotXSeconds(d[0]);
     const raw_y = d[1];
     if (isNaN(raw_y)) { return; }
     const y = MAX_Y - (raw_y / yMax) * MAX_Y;
@@ -94,13 +95,13 @@ const YAxisLabels = () =>
 
 const XAxisLabels = () =>
   <g id="x_axis_labels">
-    <text x={HISTORY_LENGTH_HOURS / 2} y={HEIGHT - BORDER_WIDTH / 1.25}
+    <text x={MAX_X / 2} y={MAX_Y - BORDER_WIDTH / 1.25}
       fontStyle={"italic"}>
       {t("hours prior to most recent record")}
     </text>
-    {range(0, HISTORY_LENGTH_HOURS / 10 + 1, 2).map(hoursAgo =>
+    {range(0, HISTORY_LENGTH_HOUR_TENTHS / 10 + 1, 2).map(hoursAgo =>
       <text key={"x_axis_label_" + hoursAgo}
-        x={MAX_X - hoursAgo * 10} y={HEIGHT - BORDER_WIDTH / 3}>
+        x={plotXHours(hoursAgo)} y={MAX_Y - BORDER_WIDTH / 3}>
         {hoursAgo}
       </text>)}
   </g>;
@@ -149,24 +150,24 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
     width={"100%"}
     height={"100%"}
     viewBox={trim(`${-BORDER_WIDTH} ${-BORDER_WIDTH - 5}
-      ${HISTORY_LENGTH_HOURS + BORDERS} ${HEIGHT + BORDERS}`)}>
+      ${MAX_X + BORDERS} ${MAX_Y + BORDERS}`)}>
     <YAxisLabels />
     <XAxisLabels />
     <svg
       className={"fbos-metric-history-plot"}
-      width={HISTORY_LENGTH_HOURS}
-      height={HEIGHT}
+      width={MAX_X}
+      height={MAX_Y}
       x={0}
       y={-BORDER_WIDTH}
-      viewBox={`0 ${0} ${HISTORY_LENGTH_HOURS} ${HEIGHT}`}>
+      viewBox={`0 ${0} ${MAX_X} ${MAX_Y}`}>
       <PlotBackground />
       <PlotLines telemetry={props.telemetry}
         hoveredMetric={props.hoveredMetric}
         onHover={props.onHover} />
       {hoveredSeconds &&
         <line y1={0} y2={MAX_Y}
-          x1={plotX(hoveredSeconds)}
-          x2={plotX(hoveredSeconds)}
+          x1={plotXSeconds(hoveredSeconds)}
+          x2={plotXSeconds(hoveredSeconds)}
           stroke={"black"} strokeWidth={0.5} />}
     </svg>
   </svg>;

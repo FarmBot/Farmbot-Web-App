@@ -4,6 +4,7 @@ import {
   WeedsPanelState,
   PointsPanelState,
   SequencesPanelState,
+  MetricPanelState,
 } from "../interfaces";
 
 export const settingsPanelState = (): SettingsPanelState => {
@@ -49,4 +50,8 @@ export const pointsPanelState = (): PointsPanelState => ({
 export const sequencesPanelState = (): SequencesPanelState => ({
   sequences: true,
   featured: false,
+});
+
+export const metricPanelState = (): MetricPanelState => ({
+  history: true,
 });

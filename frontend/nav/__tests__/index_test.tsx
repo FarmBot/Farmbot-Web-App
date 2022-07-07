@@ -23,6 +23,7 @@ import { push } from "../../history";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
 import { fakePercentJob } from "../../__test_support__/fake_bot_data";
+import { metricPanelState } from "../../__test_support__/panel_state";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -41,6 +42,7 @@ describe("<NavBar />", () => {
     authAud: undefined,
     wizardStepResults: [],
     telemetry: [],
+    metricPanelState: metricPanelState(),
   });
 
   it("has correct parent className", () => {
