@@ -206,7 +206,8 @@ const THROTTLE_BIT_LOOKUP:
 
 /** Return a color based on throttle flag states. */
 export const colorFromThrottle =
-  (throttled: string, throttleType: ThrottleType) => {
+  (throttled: string | undefined, throttleType: ThrottleType) => {
+    if (!throttled) { return "gray"; }
     const throttleCode = parseInt(throttled, 16);
     const bit = THROTTLE_BIT_LOOKUP[throttleType];
     // eslint-disable-next-line no-bitwise
@@ -226,21 +227,23 @@ const THROTTLE_COLOR_KEY = () => ({
   red: t("active"),
   yellow: t("occurred"),
   green: t("ok"),
+  gray: t("unknown"),
 });
 
 const VOLTAGE_COLOR_KEY = () => ({
   red: t("low"),
   yellow: t("ok"),
   green: t("good"),
+  gray: t("unknown"),
 });
 
 interface ThrottleIndicatorProps {
-  throttleDataString: string;
+  throttleDataString: string | undefined;
   throttleType: ThrottleType;
 }
 
 /** Saucer with color and title indicating throttle state. */
-const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
+export const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
   const { throttleDataString, throttleType } = props;
   const throttleColor = colorFromThrottle(throttleDataString, throttleType);
   return <Saucer className={"small-inline"}

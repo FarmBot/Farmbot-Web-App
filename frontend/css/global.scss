@@ -183,9 +183,10 @@ fieldset {
     .connectivity {
       padding: 1rem;
       padding-bottom: 0;
-      max-width: 600px;
+      width: 600px;
+      max-width: calc(100vw - 3rem);
       overflow-x: hidden;
-      max-height: 550px;
+      max-height: 600px;
       overflow-y: auto;
       .row {
         margin-bottom: 1rem;
@@ -1150,9 +1151,20 @@ ul {
 .fbos-metric-history-plot-border,
 .motor-position-plot-border {
   text {
-    font-size: 0.4rem;
     text-anchor: middle;
     dominant-baseline: middle;
+  }
+}
+
+.fbos-metric-history-plot-border {
+  text {
+    font-size: 0.6rem;
+  }
+}
+
+.motor-position-plot-border {
+  text {
+    font-size: 0.4rem;
   }
 }
 

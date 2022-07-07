@@ -1,9 +1,8 @@
 import React from "react";
-import { Saucer } from "../../ui";
 import {
-  colorFromThrottle,
   ThrottleType,
   convertUptime,
+  ThrottleIndicator,
 } from "../../settings/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { TaggedTelemetry } from "farmbot";
@@ -127,9 +126,6 @@ export class FbosMetricHistoryTable
           </thead>
           <tbody>
             {cloneDeep(this.props.telemetry).reverse().map(m => {
-              const voltageColor = m.body.throttled
-                ? colorFromThrottle(m.body.throttled, ThrottleType.UnderVoltage)
-                : undefined;
               const recordSelected = this.state.hoveredTime == m.body.created_at;
               const recordProps = {
                 style: { background: recordSelected ? "#eee" : undefined },
@@ -160,7 +156,10 @@ export class FbosMetricHistoryTable
                 <TableBodyCell {...rightCellProps} metricName={"soc_temp"}>
                   {m.body.soc_temp}&deg;C
                 </TableBodyCell>
-                <td {...recordProps}><Saucer color={voltageColor} /></td>
+                <td {...recordProps}>
+                  <ThrottleIndicator throttleDataString={m.body.throttled}
+                    throttleType={ThrottleType.UnderVoltage} />
+                </td>
                 <TableBodyCell {...rightCellProps}
                   metricName={"wifi_level_percent"}>
                   {m.body.wifi_level_percent}%

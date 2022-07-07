@@ -95,13 +95,13 @@ const YAxisLabels = () =>
 
 const XAxisLabels = () =>
   <g id="x_axis_labels">
-    <text x={MAX_X / 2} y={MAX_Y - BORDER_WIDTH / 1.25}
+    <text x={MAX_X / 2} y={MAX_Y}
       fontStyle={"italic"}>
       {t("hours prior to most recent record")}
     </text>
     {range(0, HISTORY_LENGTH_HOUR_TENTHS / 10 + 1, 2).map(hoursAgo =>
       <text key={"x_axis_label_" + hoursAgo}
-        x={plotXHours(hoursAgo)} y={MAX_Y - BORDER_WIDTH / 3}>
+        x={plotXHours(hoursAgo)} y={MAX_Y - BORDER_WIDTH / 2}>
         {hoursAgo}
       </text>)}
   </g>;
@@ -128,7 +128,7 @@ const PlotLines = (props: PlotLinesProps) => {
         onMouseLeave={props.onHover(undefined)}
         fill={"none"}
         stroke={COLORS[metricName]}
-        strokeWidth={props.hoveredMetric == metricName ? 4 : 2}
+        strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
         strokeLinecap={"round"} strokeLinejoin={"round"}
         d={getPath(props.telemetry, metricName)} />)}
   </g>;
@@ -146,7 +146,6 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
   const hoveredSeconds = clipX(props.hoveredTime, mostRecent);
   return <svg
     className={"fbos-metric-history-plot-border"}
-    style={{ marginTop: "2rem", maxHeight: "250px" }}
     width={"100%"}
     height={"100%"}
     viewBox={trim(`${-BORDER_WIDTH} ${-BORDER_WIDTH - 5}

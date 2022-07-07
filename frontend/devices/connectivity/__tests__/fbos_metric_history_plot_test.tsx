@@ -27,7 +27,7 @@ describe("<FbosMetricHistoryPlot />", () => {
     const p = fakeProps();
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("hours");
-    expect(wrapper.find("path").first().props().strokeWidth).toEqual(2);
+    expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
   });
 
   it("renders when hovered", () => {
@@ -35,6 +35,6 @@ describe("<FbosMetricHistoryPlot />", () => {
     p.hoveredMetric = "cpu_usage";
     p.hoveredTime = 1;
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
-    expect(wrapper.find("path").first().props().strokeWidth).toEqual(4);
+    expect(wrapper.find("path").first().props().strokeWidth).toEqual(2.5);
   });
 });
