@@ -2,6 +2,7 @@ import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import {
+  MetricPanelState,
   PlantsPanelState,
   PointsPanelState,
   SequencesPanelState,
@@ -16,6 +17,7 @@ export interface AppState {
   weedsPanelState: WeedsPanelState;
   pointsPanelState: PointsPanelState;
   sequencesPanelState: SequencesPanelState;
+  metricPanelState: MetricPanelState;
   toasts: ToastMessages;
   controlsPopupOpen: boolean;
 }
@@ -61,6 +63,9 @@ export const emptyState = (): AppState => {
       sequences: true,
       featured: false,
     },
+    metricPanelState: {
+      history: false,
+    },
     toasts: {},
     controlsPopupOpen: false,
   };
@@ -91,6 +96,11 @@ export const appReducer =
     .add<keyof SequencesPanelState>(
       Actions.TOGGLE_SEQUENCES_PANEL_OPTION, (s, a) => {
         s.sequencesPanelState[a.payload] = !s.sequencesPanelState[a.payload];
+        return s;
+      })
+    .add<keyof MetricPanelState>(
+      Actions.TOGGLE_METRIC_PANEL_OPTION, (s, a) => {
+        s.metricPanelState[a.payload] = !s.metricPanelState[a.payload];
         return s;
       })
     .add<boolean>(

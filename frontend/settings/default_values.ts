@@ -21,6 +21,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   dynamic_map: false,
   encoder_figure: false,
   hide_webcam_widget: false,
+  landing_page: "controls",
   legend_menu_open: true,
   raw_encoders: false,
   scaled_encoders: false,

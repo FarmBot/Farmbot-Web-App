@@ -77,8 +77,7 @@ export const alternating = (pathPoints: TaggedPoint[], axis: "xy" | "yx") => {
   return ordered;
 };
 
-export type ExtendedPointGroupSortType = PointGroupSortType
-  | "nn" | "xy_alternating" | "yx_alternating";
+export type ExtendedPointGroupSortType = PointGroupSortType;
 
 const SORT_TYPES: ExtendedPointGroupSortType[] = [
   "random", "xy_ascending", "xy_descending", "yx_ascending", "yx_descending"];
@@ -97,9 +96,6 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
   const normalizedLength = pathLength / maxLength * 100;
   const sortLabel = () => {
     switch (sortTypeKey) {
-      case "nn": return t("Optimized");
-      case "xy_alternating": return t("X/Y Alternating");
-      case "yx_alternating": return t("Y/X Alternating");
       default: return sortOptionsTable()[sortTypeKey];
     }
   };
@@ -116,7 +112,7 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
           && !shouldDisplayFeature(Feature.sort_type_alternating))) {
         error(t("Not supported yet."));
       } else {
-        dispatch(edit(group, { sort_type: sortTypeKey as PointGroupSortType }));
+        dispatch(edit(group, { sort_type: sortTypeKey }));
         dispatch(save(group.uuid));
       }
     }}>

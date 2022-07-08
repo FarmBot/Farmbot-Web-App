@@ -5,6 +5,7 @@ import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
   OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
   reformatFbosVersion, MacAddress, MacAddressProps, colorFromMemoryUsage,
+  convertUptime,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -16,7 +17,6 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../devices/actions";
-import { InformationalSettings } from "farmbot";
 
 describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -230,8 +230,7 @@ describe("<FbosDetails />", () => {
 
   it("displays video devices", () => {
     const p = fakeProps();
-    p.bot.hardware.informational_settings[
-      "video_devices" as keyof InformationalSettings] = "1,0" as never;
+    p.bot.hardware.informational_settings.video_devices = "1,0";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("1,0");
   });
@@ -341,6 +340,14 @@ describe("colorFromThrottle()", () => {
   });
   it("hasn't been throttled", () => {
     expect(colorFromThrottle("0x0", ThrottleType.Throttled)).toEqual("green");
+  });
+});
+
+describe("convertUptime()", () => {
+  it("returns abbreviated time units", () => {
+    expect(convertUptime(12, true)).toEqual("12 sec");
+    expect(convertUptime(120, true)).toEqual("2 min");
+    expect(convertUptime(7200, true)).toEqual("2 hours");
   });
 });
 

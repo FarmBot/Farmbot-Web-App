@@ -2737,6 +2737,9 @@ li {
 }
 
 .jobs-panel {
+  &.bp4-popover {
+    margin-top: 1.5rem;
+  }
   table {
     margin-right: 1rem;
     p {

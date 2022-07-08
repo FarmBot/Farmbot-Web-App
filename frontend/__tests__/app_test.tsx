@@ -28,6 +28,7 @@ import { auth } from "../__test_support__/fake_state/token";
 import { fakeHelpState } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
 import { push } from "../history";
+import { metricPanelState } from "../__test_support__/panel_state";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -55,6 +56,8 @@ const fakeProps = (): AppProps => ({
   wizardStepResults: [],
   toastMessages: {},
   controlsPopupOpen: false,
+  telemetry: [],
+  metricPanelState: metricPanelState(),
 });
 
 describe("<App />: Controls Pop-Up", () => {

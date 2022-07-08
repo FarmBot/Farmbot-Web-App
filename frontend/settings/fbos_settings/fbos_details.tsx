@@ -15,7 +15,6 @@ import {
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { getModifiedClassName } from "./default_values";
-import { InformationalSettings } from "farmbot";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -207,7 +206,8 @@ const THROTTLE_BIT_LOOKUP:
 
 /** Return a color based on throttle flag states. */
 export const colorFromThrottle =
-  (throttled: string, throttleType: ThrottleType) => {
+  (throttled: string | undefined, throttleType: ThrottleType) => {
+    if (!throttled) { return "gray"; }
     const throttleCode = parseInt(throttled, 16);
     const bit = THROTTLE_BIT_LOOKUP[throttleType];
     // eslint-disable-next-line no-bitwise
@@ -227,21 +227,23 @@ const THROTTLE_COLOR_KEY = () => ({
   red: t("active"),
   yellow: t("occurred"),
   green: t("ok"),
+  gray: t("unknown"),
 });
 
 const VOLTAGE_COLOR_KEY = () => ({
   red: t("low"),
   yellow: t("ok"),
   green: t("good"),
+  gray: t("unknown"),
 });
 
 interface ThrottleIndicatorProps {
-  throttleDataString: string;
+  throttleDataString: string | undefined;
   throttleType: ThrottleType;
 }
 
 /** Saucer with color and title indicating throttle state. */
-const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
+export const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
   const { throttleDataString, throttleType } = props;
   const throttleColor = colorFromThrottle(throttleDataString, throttleType);
   return <Saucer className={"small-inline"}
@@ -307,23 +309,24 @@ const CommitDisplay = (
   </p>;
 };
 
+export const convertUptime = (seconds: number, abrv = false) => {
+  if (seconds >= 172800) {
+    return `${Math.round(seconds / 86400)} ${t("days")}`;
+  } else if (seconds >= 7200) {
+    return `${Math.round(seconds / 3600)} ${t("hours")}`;
+  } else if (seconds >= 120) {
+    return `${Math.round(seconds / 60)} ${abrv ? t("min") : t("minutes")}`;
+  } else {
+    return `${seconds} ${abrv ? t("sec") : t("seconds")}`;
+  }
+};
+
 interface UptimeDisplayProps {
   uptime_sec: number;
 }
 
 /** FBOS uptime display row: label and uptime in relevant unit. */
 const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
-  const convertUptime = (seconds: number) => {
-    if (seconds >= 172800) {
-      return `${Math.round(seconds / 86400)} ${t("days")}`;
-    } else if (seconds >= 7200) {
-      return `${Math.round(seconds / 3600)} ${t("hours")}`;
-    } else if (seconds >= 120) {
-      return `${Math.round(seconds / 60)} ${t("minutes")}`;
-    } else {
-      return `${seconds} ${t("seconds")}`;
-    }
-  };
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
@@ -375,10 +378,8 @@ export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
-    wifi_level_percent, cpu_usage, private_ip,
+    wifi_level_percent, cpu_usage, private_ip, video_devices,
   } = informational_settings;
-  const video_devices = informational_settings[
-    "video_devices" as keyof InformationalSettings];
   const { fbos_version } = props.deviceAccount.body;
   const last_ota = props.deviceAccount.body[
     "last_ota" as keyof DeviceAccountSettings] as string | undefined;

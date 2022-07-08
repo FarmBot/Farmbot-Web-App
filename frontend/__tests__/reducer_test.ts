@@ -1,6 +1,7 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
+  MetricPanelState,
   PlantsPanelState,
   PointsPanelState,
   SequencesPanelState,
@@ -85,6 +86,17 @@ describe("resource reducer", () => {
     });
     expect(newState.sequencesPanelState.featured)
       .toBe(!state.sequencesPanelState.featured);
+  });
+
+  it("toggles metric panel options", () => {
+    const payload: keyof MetricPanelState = "history";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.metricPanelState.history)
+      .toBe(!state.metricPanelState.history);
   });
 
   it("sets controls popup state", () => {

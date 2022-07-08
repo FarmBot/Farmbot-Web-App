@@ -15,7 +15,7 @@ class LogService < AbstractServiceRunner
     params = { routing_key: delivery_info.routing_key, payload: payload }
     m = AmqpLogParser.run!(params)
     THROTTLE_POLICY.track(m.device_id)
-    m.device.excess_logs.delete_all if rand(0..TIDY_RATE) == TIDY_RATE
+    m.device.trim_excess_logs if rand(0..TIDY_RATE) == TIDY_RATE
     maybe_deliver(m)
   rescue Mutations::ValidationException => e
     msg = ERR_TPL % [params.merge({ e: e }).to_json]

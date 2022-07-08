@@ -14,14 +14,14 @@ import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
 import { PingDictionary } from "./qos";
 import { refresh } from "../../api/crud";
-import {
-  TaggedDevice, Alert, FirmwareHardware, InformationalSettings,
-} from "farmbot";
+import { TaggedDevice, Alert, FirmwareHardware, TaggedTelemetry } from "farmbot";
 import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
-import { TimeSettings } from "../../interfaces";
+import { MetricPanelState, TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
 import { restartFirmware, sync } from "../actions";
+import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
+import { Actions } from "../../constants";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -33,6 +33,8 @@ export interface ConnectivityProps {
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
   timeSettings: TimeSettings;
+  telemetry: TaggedTelemetry[];
+  metricPanelState: MetricPanelState;
 }
 
 interface ConnectivityState {
@@ -41,7 +43,9 @@ interface ConnectivityState {
 
 export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
-  state: ConnectivityState = { hoveredConnection: undefined };
+  state: ConnectivityState = {
+    hoveredConnection: undefined,
+  };
 
   componentDidMount = () => {
     this.props.dispatch(refresh(this.props.device));
@@ -51,18 +55,38 @@ export class Connectivity
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
 
+  setHistoryOpen = (action: boolean) => () => {
+    const historyOpen = this.props.metricPanelState.history;
+    if ((action && !historyOpen) || (!action && historyOpen)) {
+      this.togglePanelState("history");
+    }
+  };
+
+  togglePanelState = (key: keyof MetricPanelState) =>
+    this.props.dispatch({
+      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      payload: key,
+    });
+
   render() {
+    const historyOpen = this.props.metricPanelState.history;
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
       firmware_version, private_ip, node_name, target, memory_usage, sync_status,
+      video_devices,
     } = informational_settings;
-    const video_devices = informational_settings[
-      "video_devices" as keyof InformationalSettings] as string | undefined;
     const { id, fbos_version } = this.props.device.body;
     return <div className="connectivity">
       <Row className={"connectivity-content"}>
-        <Col md={12} lg={4} className={"connectivity-left-column"}>
+        <div className={"tabs"}>
+          <label className={historyOpen ? "" : "selected"}
+            onClick={this.setHistoryOpen(false)}>{t("realtime")}</label>
+          <label className={historyOpen ? "selected" : ""}
+            onClick={this.setHistoryOpen(true)}>{t("history")}</label>
+        </div>
+        <Col md={12} lg={4} className={"connectivity-left-column"}
+          hidden={historyOpen}>
           <ConnectivityDiagram
             rowData={this.props.rowData}
             hover={this.hover}
@@ -91,7 +115,8 @@ export class Connectivity
           </div>
           <QosPanel pings={this.props.pings} />
         </Col>
-        <Col md={12} lg={8} className={"connectivity-right-column"}>
+        <Col md={12} lg={8} className={"connectivity-right-column"}
+          hidden={historyOpen}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
           {this.props.rowData
             .map((statusRowProps, index) =>
@@ -124,6 +149,9 @@ export class Connectivity
               </Col>
             </div>}
         </Col>
+        <FbosMetricHistoryTable telemetry={this.props.telemetry}
+          hidden={!historyOpen}
+          timeSettings={this.props.timeSettings} />
       </Row>
       {firmwareAlerts(this.props.alerts).length > 0 &&
         <Row>

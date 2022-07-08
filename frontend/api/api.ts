@@ -156,6 +156,8 @@ export class API {
   get exportDataPath() { return `${this.baseUrl}/api/export_data`; }
   /** /api/plant_templates/:id */
   get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates/`; }
+  /** /api/telemetry/ */
+  get telemetryPath() { return `${this.baseUrl}/api/telemetries/`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations/`;

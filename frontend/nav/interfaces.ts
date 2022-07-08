@@ -2,9 +2,10 @@ import { BotState } from "../devices/interfaces";
 import {
   TaggedUser, TaggedLog, TaggedDevice, Alert, FirmwareHardware,
   TaggedWizardStepResult,
+  TaggedTelemetry,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { TimeSettings } from "../interfaces";
+import { MetricPanelState, TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
 import { HelpState } from "../help/reducer";
 
@@ -23,6 +24,8 @@ export interface NavBarProps {
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
   helpState: HelpState;
+  telemetry: TaggedTelemetry[];
+  metricPanelState: MetricPanelState;
 }
 
 export interface NavBarState {

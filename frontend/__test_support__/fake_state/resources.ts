@@ -28,6 +28,7 @@ import {
   TaggedFolder,
   TaggedWeedPointer,
   TaggedWizardStepResult,
+  TaggedTelemetry,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
@@ -232,6 +233,25 @@ export function fakeWizardStepResult(): TaggedWizardStepResult {
   });
 }
 
+export function fakeTelemetry(): TaggedTelemetry {
+  const id = idCounter++;
+  return fakeResource("Telemetry", {
+    id,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-11T20:20:38.362Z",
+    target: "rpi",
+    soc_temp: 0,
+    throttled: "0x000000",
+    wifi_level_percent: 0,
+    uptime: 0,
+    memory_usage: 0,
+    disk_usage: 0,
+    cpu_usage: 0,
+    fbos_version: "0.0.0",
+    firmware_hardware: "arduino",
+  });
+}
+
 export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
     id: idCounter++,
@@ -310,6 +330,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     encoder_figure: false,
     hide_webcam_widget: false,
     highlight_modified_settings: false,
+    landing_page: "controls",
     legend_menu_open: false,
     raw_encoders: true,
     scaled_encoders: true,

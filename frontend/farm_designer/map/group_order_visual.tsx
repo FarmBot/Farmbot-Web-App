@@ -6,7 +6,7 @@ import { sortGroupBy } from "../../point_groups/point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "./util";
 import {
-  nn, alternating, ExtendedPointGroupSortType, convertToXY,
+  nn, ExtendedPointGroupSortType, convertToXY,
 } from "../../point_groups/paths";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import { zoomCompensation } from "./zoom";
@@ -23,9 +23,6 @@ export const sortGroup = (
   groupPoints: TaggedPoint[],
 ) => {
   switch (groupSortType) {
-    case "xy_alternating": return alternating(groupPoints, "xy");
-    case "yx_alternating": return alternating(groupPoints, "yx");
-    case "nn": return nn(groupPoints);
     default: return sortGroupBy(groupSortType, groupPoints);
   }
 };

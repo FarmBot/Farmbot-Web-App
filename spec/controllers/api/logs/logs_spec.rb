@@ -107,7 +107,7 @@ describe Api::LogsController do
       expect(Log.count).to eq(0)
     end
 
-    it "Runs compaction when the logs pile up" do
+    it "runs compaction when the logs pile up" do
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
       sign_in user
