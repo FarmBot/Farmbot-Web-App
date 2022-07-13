@@ -7,7 +7,6 @@ import { t } from "../i18next_wrapper";
 import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import { MCUFactoryReset } from "../devices/actions";
 import { FarmBotSettings } from "./fbos_settings/farmbot_os_settings";
-import { Firmware } from "./firmware/firmware";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { PinBindings } from "./pin_bindings/pin_bindings";
 import { validFirmwareHardware } from "./firmware/firmware_hardware_support";
@@ -98,13 +97,8 @@ export class RawDesignerSettings
           sourceFbosConfig={sourceFbosConfig}
           botOnline={botOnline}
           timeSettings={this.props.timeSettings}
+          showAdvanced={showAdvanced}
           device={this.props.deviceAccount} />
-        <Firmware {...commonProps}
-          bot={this.props.bot}
-          alerts={this.props.alerts}
-          sourceFbosConfig={sourceFbosConfig}
-          botOnline={botOnline}
-          timeSettings={this.props.timeSettings} />
         <PowerAndReset {...commonProps}
           botOnline={botOnline} />
         {botOnline && showAdvanced && <ChangeOwnershipForm />}

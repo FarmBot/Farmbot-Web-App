@@ -11,6 +11,7 @@ export interface FarmbotSettingsProps {
   timeSettings: TimeSettings;
   botOnline: boolean;
   settingsPanelState: SettingsPanelState;
+  showAdvanced: boolean;
 }
 
 export interface NameRowProps {
@@ -57,6 +58,7 @@ export interface PowerAndResetProps {
   settingsPanelState: SettingsPanelState;
   dispatch: Function;
   botOnline: boolean;
+  showAdvanced: boolean;
 }
 
 export interface FactoryResetRowsProps {

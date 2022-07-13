@@ -21,16 +21,13 @@ const FARMBOT_PANEL = [
   DeviceSetting.osAutoUpdate,
   DeviceSetting.farmbotOS,
   DeviceSetting.bootSequence,
-];
-const FIRMWARE_PANEL = [
-  DeviceSetting.firmwareSection,
   DeviceSetting.firmware,
   DeviceSetting.flashFirmware,
   DeviceSetting.firmwarePath,
-  DeviceSetting.restartFirmware,
 ];
 const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,
+  DeviceSetting.restartFirmware,
   DeviceSetting.restartFarmbot,
   DeviceSetting.shutdownFarmbot,
   DeviceSetting.softReset,
@@ -213,7 +210,6 @@ const APP_SETTINGS = [
 /** Look up parent panels for settings. */
 const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof SettingsPanelState>;
 FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_settings");
-FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
 AXES_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "axis_settings");
 MOTORS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "motors");
@@ -235,7 +231,6 @@ LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 
 const CONTENT_LOOKUP = {} as Record<DeviceSetting, DeviceSetting[]>;
 CONTENT_LOOKUP[DeviceSetting.farmbotSettings] = FARMBOT_PANEL;
-CONTENT_LOOKUP[DeviceSetting.firmwareSection] = FIRMWARE_PANEL;
 CONTENT_LOOKUP[DeviceSetting.powerAndReset] = POWER_AND_RESET_PANEL;
 CONTENT_LOOKUP[DeviceSetting.axisSettings] = AXES_PANEL;
 CONTENT_LOOKUP[DeviceSetting.motors] = MOTORS_PANEL;

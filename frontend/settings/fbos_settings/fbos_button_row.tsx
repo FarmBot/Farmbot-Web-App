@@ -10,11 +10,15 @@ export interface FbosButtonRowProps {
   description: string;
   buttonText: string;
   color: string;
+  advanced?: boolean;
+  showAdvanced?: boolean;
   action: () => void;
 }
 
 export const FbosButtonRow = (props: FbosButtonRowProps) => {
-  return <Highlight settingName={props.label}>
+  return <Highlight settingName={props.label}
+    hidden={props.advanced && !props.showAdvanced}
+    className={props.advanced ? "advanced" : ""}>
     <Row>
       <Col xs={7}>
         <label>

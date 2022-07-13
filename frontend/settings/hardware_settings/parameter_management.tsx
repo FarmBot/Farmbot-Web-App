@@ -67,7 +67,9 @@ export function ParameterManagement(props: ParameterManagementProps) {
           </Col>
         </Row>
       </Highlight>
-      <Highlight settingName={DeviceSetting.exportParameters}>
+      <Highlight settingName={DeviceSetting.exportParameters}
+        hidden={!showAdvanced}
+        className={"advanced"}>
         <Row>
           <Col xs={8}>
             <label style={{ lineHeight: "1.5rem" }}>
@@ -82,7 +84,8 @@ export function ParameterManagement(props: ParameterManagementProps) {
           </Col>
         </Row>
       </Highlight>
-      <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
+      <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy}
+        showAdvanced={showAdvanced} />
       <Highlight settingName={DeviceSetting.highlightModifiedSettings}
         hidden={!(showAdvanced
           || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
@@ -94,7 +97,9 @@ export function ParameterManagement(props: ParameterManagementProps) {
       <Highlight settingName={DeviceSetting.showAdvancedSettings}>
         <ShowAdvancedToggle dispatch={dispatch} getConfigValue={getConfigValue} />
       </Highlight>
-      <Highlight settingName={DeviceSetting.resetHardwareParams}>
+      <Highlight settingName={DeviceSetting.resetHardwareParams}
+        hidden={!showAdvanced}
+        className={"advanced"}>
         <Row>
           <Col xs={8}>
             <label style={{ lineHeight: "1.5rem" }}>
@@ -120,6 +125,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
 export interface ParameterImportProps {
   dispatch: Function;
   arduinoBusy: boolean;
+  showAdvanced: boolean;
 }
 
 interface ParameterImportState {
@@ -130,7 +136,9 @@ export class ParameterImport
   extends React.Component<ParameterImportProps, ParameterImportState> {
   state: ParameterImportState = { input: "" };
   render() {
-    return <Highlight settingName={DeviceSetting.importParameters}>
+    return <Highlight settingName={DeviceSetting.importParameters}
+      hidden={!this.props.showAdvanced}
+      className={"advanced"}>
       <Row>
         <Col xs={12}>
           <label>

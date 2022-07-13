@@ -72,14 +72,12 @@ export class RawBootSequenceSelector
   render() {
     return <Highlight settingName={DeviceSetting.bootSequence}>
       <Row>
-        <Col xs={12}>
+        <Col xs={5}>
           <label>
             {t("BOOT SEQUENCE")}
           </label>
         </Col>
-      </Row>
-      <Row>
-        <Col xs={12} className="no-pad">
+        <Col xs={7} className="no-pad">
           <this.SelectionInput />
         </Col>
       </Row>

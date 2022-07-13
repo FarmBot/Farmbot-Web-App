@@ -11,6 +11,7 @@ import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<PowerAndReset/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -21,6 +22,7 @@ describe("<PowerAndReset/>", () => {
     settingsPanelState: settingsPanelState(),
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     botOnline: true,
+    showAdvanced: true,
   });
 
   it("renders in open state", () => {
@@ -40,5 +42,15 @@ describe("<PowerAndReset/>", () => {
       .toContain("Power and Reset".toLowerCase());
     expect(wrapper.text().toLowerCase())
       .not.toContain("Soft Reset".toLowerCase());
+  });
+
+  it("restarts firmware", () => {
+    const p = fakeProps();
+    p.settingsPanelState.power_and_reset = true;
+    const wrapper = mount(<PowerAndReset {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("Restart Firmware".toLowerCase());
+    clickButton(wrapper, 0, "restart");
+    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 });

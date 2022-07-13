@@ -1870,16 +1870,13 @@ export enum DeviceSetting {
   osAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
   bootSequence = `Boot Sequence`,
-
-  // Firmware
-  firmwareSection = `Firmware`,
   firmware = `Firmware`,
   firmwarePath = `Firmware path`,
-  restartFirmware = `Restart Firmware`,
   flashFirmware = `Flash firmware`,
 
   // Power and Reset
   powerAndReset = `Power and Reset`,
+  restartFirmware = `Restart Firmware`,
   restartFarmbot = `Restart Farmbot`,
   shutdownFarmbot = `Shutdown Farmbot`,
   softReset = `Soft Reset`,
