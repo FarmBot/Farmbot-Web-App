@@ -58,7 +58,7 @@ describe("determineDropdown", () => {
         }
       }
     }, buildResourceIndex([pg]).index);
-    expect(r.label).toEqual(pg.body.name);
+    expect(r.label).toEqual(pg.body.name + " (0)");
     expect(r.value).toEqual(pg.body.id);
   });
 

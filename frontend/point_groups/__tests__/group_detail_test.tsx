@@ -7,6 +7,11 @@ jest.mock("../../history", () => ({
 
 jest.mock("../group_detail_active", () => ({
   GroupDetailActive: () => <div />,
+  GroupSortSelection: () => <div />,
+}));
+
+jest.mock("../../api/crud", () => ({
+  destroy: jest.fn(),
 }));
 
 import React from "react";
@@ -27,6 +32,7 @@ import {
   fakePointGroup, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { PointType } from "farmbot";
+import { destroy } from "../../api/crud";
 
 describe("<GroupDetail />", () => {
   const fakeProps = (): GroupDetailProps => {
@@ -76,16 +82,23 @@ describe("<GroupDetail />", () => {
   });
 
   it.each<[string, PointType]>([
-    ["plant", "Plant"],
-    ["weed", "Weed"],
-    ["point", "GenericPointer"],
-    ["slot", "ToolSlot"],
+    ["plants", "Plant"],
+    ["weeds", "Weed"],
+    ["points", "GenericPointer"],
+    ["tools", "ToolSlot"],
   ])("renders %s group", (title, pointerType) => {
     mockPath = Path.mock(Path.groups(1));
     const p = fakeProps();
     p.group && (p.group.body.criteria.string_eq = { pointer_type: [pointerType] });
     const wrapper = mount(<GroupDetail {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain(`edit ${title} group`);
+    expect(wrapper.html()).toContain("go back to " + title);
+  });
+
+  it("deletes group", () => {
+    mockPath = Path.mock(Path.groups(1));
+    const wrapper = mount(<GroupDetail {...fakeProps()} />);
+    wrapper.find(".fa-trash").first().simulate("click");
+    expect(destroy).toHaveBeenCalled();
   });
 });
 

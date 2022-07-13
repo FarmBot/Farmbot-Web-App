@@ -4,6 +4,7 @@ jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
 
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import React from "react";
@@ -29,7 +30,7 @@ import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Color } from "farmbot";
-import { edit } from "../../../api/crud";
+import { edit, save } from "../../../api/crud";
 
 describe("<DesignerSequenceEditor />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -95,5 +96,19 @@ describe("<ResourceTitle />", () => {
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "abc" } });
     wrapper.find("input").first().simulate("blur");
+    expect(edit).toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("saves change", () => {
+    const p = fakeProps();
+    p.save = true;
+    const wrapper = mount(<ResourceTitle {...p} />);
+    wrapper.find("span").first().simulate("click");
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "abc" } });
+    wrapper.find("input").first().simulate("blur");
+    expect(edit).toHaveBeenCalled();
+    expect(save).toHaveBeenCalled();
   });
 });

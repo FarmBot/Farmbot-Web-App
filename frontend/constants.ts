@@ -11,11 +11,10 @@ export namespace ToolTips {
     every time, so the ordering shown below will only be representative.`);
 
   export const CRITERIA_SELECTION_COUNT =
-    trim(`Filter additions can only be removed by changing filters.
-    Click and drag in the map to modify selection filters.
-    Filters will be applied at the time of sequence execution. The final
-    selection at that time may differ from the selection currently
-    displayed.`);
+    trim(`Manually add group members by clicking in the map. Group members
+    selected by filters can only be removed by changing the filters.
+    Filters will be applied at the time of sequence execution.
+    Group members at that time may differ from those currently displayed.`);
 
   export const DOT_NOTATION_TIP =
     trim(`Tip: Use dot notation (i.e., 'meta.color') to access meta fields.`);

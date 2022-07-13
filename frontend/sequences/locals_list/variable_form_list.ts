@@ -18,6 +18,7 @@ import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { VariableType } from "./locals_list_support";
+import { pointsSelectedByGroup } from "../../point_groups/criteria/apply";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -67,11 +68,16 @@ const points2ddi = (allPoints: TaggedPoint[], pointerType: PointerTypeName) =>
     .map(formatPoint)
     .filter(x => parseInt("" + x.value) > 0);
 
-export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
+export const groups2Ddi = (
+  groups: TaggedPointGroup[],
+  allPoints: TaggedPoint[],
+): DropDownItem[] => {
   return groups
-    .filter(x => x.body.id)
-    .map(x => {
-      return { label: x.body.name, value: "" + x.body.id, headingId: "PointGroup" };
+    .filter(group => group.body.id)
+    .map(group => {
+      const count = pointsSelectedByGroup(group, allPoints).length;
+      const label = `${group.body.name} (${count})`;
+      return { label, value: "" + group.body.id, headingId: "PointGroup" };
     });
 };
 
@@ -130,12 +136,13 @@ export function variableFormList(
   if (variableType == VariableType.Resource) {
     return [];
   }
+  const allGroups = selectAllPointGroups(resources);
   return [COORDINATE_DDI()]
     .concat(addItems)
     .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(displayGroups ? heading("PointGroup") : [])
-    .concat(displayGroups ? groups2Ddi(selectAllPointGroups(resources)) : [])
+    .concat(displayGroups ? groups2Ddi(allGroups, allPoints) : [])
     .concat(heading("Plant"))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))
