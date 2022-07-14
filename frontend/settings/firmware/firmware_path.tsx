@@ -66,17 +66,15 @@ export const FirmwarePathRow = (props: FirmwarePathRowProps) =>
     hidden={!props.showAdvanced}
     className={"advanced"}>
     <Row>
-      <Col xs={6}>
+      <Col xs={4}>
         <label>
           {t("Firmware path")}
         </label>
       </Col>
-      <Col xs={6}>
+      <Col xs={3}>
         <code>{props.firmwarePath || t("not set")}</code>
       </Col>
-    </Row>
-    <Row>
-      <Col xs={12} className={"no-pad"}>
+      <Col xs={5} className={"no-pad"}>
         <ChangeFirmwarePath
           dispatch={props.dispatch}
           firmwarePath={props.firmwarePath} />

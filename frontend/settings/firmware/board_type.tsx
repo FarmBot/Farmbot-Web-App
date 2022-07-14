@@ -1,7 +1,6 @@
 import React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../ui";
 import { info } from "../../toast/toast";
-import { ColWidth } from "../fbos_settings/farmbot_os_settings";
 import { updateConfig } from "../../devices/actions";
 import { BoardTypeProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
@@ -50,12 +49,12 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
   render() {
     return <Highlight settingName={DeviceSetting.firmware}>
       <Row>
-        <Col xs={ColWidth.label}>
+        <Col xs={2}>
           <label>
             {t("FIRMWARE")}
           </label>
         </Col>
-        <Col xs={ColWidth.button}>
+        <Col xs={1}>
           <FirmwareHardwareStatus
             botOnline={this.props.botOnline}
             apiFirmwareValue={this.props.firmwareHardware}
@@ -64,14 +63,13 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             dispatch={this.props.dispatch}
             timeSettings={this.props.timeSettings} />
         </Col>
-        <Col xs={ColWidth.description}>
+        <Col xs={2}>
           <FlashFirmwareBtn
+            short={true}
             apiFirmwareValue={this.props.firmwareHardware}
             botOnline={this.props.botOnline} />
         </Col>
-      </Row>
-      <Row>
-        <Col xs={12} className="no-pad">
+        <Col xs={7} className="no-pad">
           <this.FirmwareSelection />
         </Col>
       </Row>

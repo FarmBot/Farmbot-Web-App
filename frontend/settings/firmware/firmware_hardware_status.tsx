@@ -46,6 +46,7 @@ export interface FirmwareHardwareStatusDetailsProps {
 export interface FlashFirmwareBtnProps {
   apiFirmwareValue: string | undefined;
   botOnline: boolean;
+  short?: boolean;
 }
 
 export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
@@ -55,7 +56,7 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
     title={t("flash firmware")}
     onClick={() => isFwHardwareValue(apiFirmwareValue) &&
       flashFirmware(apiFirmwareValue)}>
-    {t("flash firmware")}
+    {props.short ? t("flash") : t("flash firmware")}
   </button>;
 };
 

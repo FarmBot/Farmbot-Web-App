@@ -80,7 +80,7 @@ export const alternating = (pathPoints: TaggedPoint[], axis: "xy" | "yx") => {
 export type ExtendedPointGroupSortType = PointGroupSortType;
 
 const SORT_TYPES: ExtendedPointGroupSortType[] = [
-  "random", "xy_ascending", "xy_descending", "yx_ascending", "yx_descending"];
+  "random", "yx_descending", "yx_ascending", "xy_descending", "xy_ascending"];
 
 export interface PathInfoBarProps {
   sortTypeKey: ExtendedPointGroupSortType;
@@ -152,9 +152,10 @@ export class Paths extends React.Component<PathsProps, PathsState> {
     return <div className={"group-sort-types"}>
       {SORT_TYPES
         .concat(shouldDisplayFeature(Feature.sort_type_alternating)
-          ? ["xy_alternating", "yx_alternating"]
+          ? ["yx_alternating", "xy_alternating"]
           : [])
         .concat(shouldDisplayFeature(Feature.sort_type_optimized) ? ["nn"] : [])
+        .reverse()
         .map(sortType =>
           <PathInfoBar key={sortType}
             sortTypeKey={sortType}

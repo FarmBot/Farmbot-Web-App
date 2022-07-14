@@ -42,7 +42,7 @@ describe("variableFormList()", () => {
         },
         {
           headingId: "PointGroup",
-          label: "Fake",
+          label: "Fake (0)",
           value: "1"
         },
         {
@@ -166,9 +166,9 @@ describe("groups2Ddi", () => {
     const fakes = [fakePointGroup(), fakePointGroup()];
     fakes[0].body.id = 1;
     fakes[1].body.id = undefined;
-    const result = groups2Ddi(fakes);
+    const result = groups2Ddi(fakes, []);
     expect(result.length).toEqual(1);
-    expect(result[0].label).toEqual(fakes[0].body.name);
+    expect(result[0].label).toEqual(fakes[0].body.name + " (0)");
     expect(result[0].value).toEqual("1");
   });
 });

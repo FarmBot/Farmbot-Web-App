@@ -40,7 +40,7 @@ describe("createGroup()", () => {
     expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Name123",
       point_ids: [1, 2],
-      sort_type: "xy_ascending",
+      sort_type: "nn",
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
@@ -62,7 +62,7 @@ describe("createGroup()", () => {
     expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Untitled Group",
       point_ids: [4],
-      sort_type: "xy_ascending",
+      sort_type: "nn",
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");

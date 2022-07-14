@@ -12,6 +12,9 @@ import { DeviceSetting } from "../../constants";
 import { Collapse } from "@blueprintjs/core";
 import { OrderNumberRow } from "./order_number_row";
 import { GardenLocationRow } from "./garden_location_row";
+import { BoardType } from "../firmware/board_type";
+import { FirmwarePathRow } from "../firmware/firmware_path";
+import { validFirmwareHardware } from "../firmware/firmware_hardware_support";
 
 export enum ColWidth {
   label = 3,
@@ -23,6 +26,8 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
   const {
     dispatch, device, timeSettings, sourceFbosConfig, botOnline,
   } = props;
+  const { value } = props.sourceFbosConfig("firmware_hardware");
+  const firmwareHardware = validFirmwareHardware(value);
   const commonProps = { dispatch, device };
   return <Highlight className={"section"}
     settingName={DeviceSetting.farmbotSettings}>
@@ -47,6 +52,18 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
         botOnline={botOnline}
         timeSettings={timeSettings} />
       <BootSequenceSelector />
+      <BoardType
+        botOnline={botOnline}
+        bot={props.bot}
+        alerts={props.alerts}
+        dispatch={props.dispatch}
+        timeSettings={props.timeSettings}
+        firmwareHardware={firmwareHardware}
+        sourceFbosConfig={sourceFbosConfig} />
+      <FirmwarePathRow
+        dispatch={props.dispatch}
+        firmwarePath={"" + sourceFbosConfig("firmware_path").value}
+        showAdvanced={props.showAdvanced} />
     </Collapse>
   </Highlight>;
 };

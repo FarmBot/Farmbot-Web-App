@@ -192,6 +192,20 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
 export const LocationSelection = (props: LocationSelectionProps) =>
   <div className="location-criteria">
     <p className={"category"}>{t("Location")}</p>
+    <div className={"edit-in-map"}>
+      <ToggleButton
+        title={props.editGroupAreaInMap
+          ? t("map boxes will change location filter")
+          : t("map boxes will manually add plants")}
+        customText={{ textFalse: t("off"), textTrue: t("on") }}
+        toggleValue={props.editGroupAreaInMap}
+        toggleAction={() =>
+          props.dispatch({
+            type: Actions.EDIT_GROUP_AREA_IN_MAP,
+            payload: !props.editGroupAreaInMap
+          })} />
+      <label>{t("edit in map")}</label>
+    </div>
     <ClearCategory
       group={props.group}
       criteriaCategories={["number_lt", "number_gt"]}
@@ -208,18 +222,4 @@ export const LocationSelection = (props: LocationSelectionProps) =>
         criteriaKey={axis}
         group={props.group}
         dispatch={props.dispatch} />)}
-    <div className={"edit-in-map"}>
-      <ToggleButton
-        title={props.editGroupAreaInMap
-          ? t("map boxes will change location filter")
-          : t("map boxes will manually add plants")}
-        customText={{ textFalse: t("off"), textTrue: t("on") }}
-        toggleValue={props.editGroupAreaInMap}
-        toggleAction={() =>
-          props.dispatch({
-            type: Actions.EDIT_GROUP_AREA_IN_MAP,
-            payload: !props.editGroupAreaInMap
-          })} />
-      <label>{t("edit in map")}</label>
-    </div>
   </div>;

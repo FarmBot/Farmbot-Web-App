@@ -3,7 +3,6 @@ import moment from "moment";
 import { t } from "../../i18next_wrapper";
 import { FBSelect, Row, Col, DropDownItem, Help } from "../../ui";
 import { edit, save } from "../../api/crud";
-import { ColWidth } from "./farmbot_os_settings";
 import { Content, DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "./interfaces";
@@ -75,7 +74,7 @@ export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
         </label>
         <Help text={Content.OS_AUTO_UPDATE} />
       </Col>
-      <Col xs={ColWidth.description}>
+      <Col xs={7}>
         <OtaTimeSelector
           sourceFbosConfig={props.sourceFbosConfig}
           timeSettings={props.timeSettings}

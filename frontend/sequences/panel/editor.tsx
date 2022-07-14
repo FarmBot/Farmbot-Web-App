@@ -18,8 +18,10 @@ import {
 } from "../set_active_sequence_by_name";
 import { push } from "../../history";
 import { urlFriendly } from "../../util";
-import { edit } from "../../api/crud";
-import { TaggedPoint, TaggedRegimen, TaggedSequence } from "farmbot";
+import { edit, save } from "../../api/crud";
+import {
+  TaggedPoint, TaggedPointGroup, TaggedRegimen, TaggedSequence,
+} from "farmbot";
 import { Path } from "../../internal_urls";
 
 export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
@@ -82,9 +84,14 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
 
 export interface ResourceTitleProps {
   dispatch: Function;
-  resource: TaggedSequence | TaggedRegimen | TaggedPoint | undefined;
+  resource: TaggedSequence
+  | TaggedRegimen
+  | TaggedPoint
+  | TaggedPointGroup
+  | undefined;
   readOnly?: boolean;
   fallback: string;
+  save?: boolean;
 }
 
 export const ResourceTitle = (props: ResourceTitleProps) => {
@@ -97,6 +104,7 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
       onBlur={() => {
         setIsEditing(false);
         props.resource && props.dispatch(edit(props.resource, { name: nameValue }));
+        props.save && props.resource && props.dispatch(save(props.resource.uuid));
       }}
       onChange={e => {
         setNameValue(e.currentTarget.value);

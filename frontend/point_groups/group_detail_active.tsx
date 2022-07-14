@@ -1,8 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { TaggedPointGroup, TaggedPoint, PointType, TaggedTool } from "farmbot";
-import { DeleteButton } from "../ui/delete_button";
-import { save, edit } from "../api/crud";
 import { Paths } from "./paths";
 import { ErrorBoundary } from "../error_boundary";
 import {
@@ -48,9 +46,6 @@ export class GroupDetailActive
   render() {
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
-      <GroupNameInput group={group} dispatch={dispatch} />
-      <GroupSortSelection group={group} dispatch={dispatch}
-        pointsSelectedByGroup={this.pointsSelectedByGroup} />
       <GroupMemberDisplay group={group} dispatch={dispatch}
         pointsSelectedByGroup={this.pointsSelectedByGroup}
         hovered={this.props.hovered}
@@ -62,47 +57,18 @@ export class GroupDetailActive
         group={group} slugs={this.props.slugs} botSize={this.props.botSize}
         editGroupAreaInMap={this.props.editGroupAreaInMap}
         selectionPointType={this.props.selectionPointType} />
-      <DeleteButton
-        className="group-delete-btn"
-        dispatch={dispatch}
-        uuid={group.uuid}
-        onDestroy={history.back}>
-        {t("DELETE GROUP")}
-      </DeleteButton>
     </ErrorBoundary>;
   }
 }
 
-interface GroupNameInputProps {
-  group: TaggedPointGroup;
-  dispatch: Function;
-}
-
-const GroupNameInput = (props: GroupNameInputProps) => {
-  const { dispatch, group } = props;
-  return <div className={"group-name-input"}>
-    <label>{t("GROUP NAME")}</label>
-    <input
-      name="name"
-      defaultValue={group.body.name}
-      onBlur={e => {
-        const newGroupName = e.currentTarget.value;
-        if (newGroupName != "" && newGroupName != group.body.name) {
-          dispatch(edit(group, { name: newGroupName }));
-          dispatch(save(group.uuid));
-        }
-      }} />
-  </div>;
-};
-
-interface GroupSortSelectionProps {
+export interface GroupSortSelectionProps {
   group: TaggedPointGroup;
   dispatch: Function;
   pointsSelectedByGroup: TaggedPoint[];
 }
 
 /** Choose and view group point sort method. */
-const GroupSortSelection = (props: GroupSortSelectionProps) =>
+export const GroupSortSelection = (props: GroupSortSelectionProps) =>
   <div className={"group-sort-section"}>
     <label>
       {t("SORT BY")}
@@ -138,10 +104,7 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
         count: props.pointsSelectedByGroup.length
       })}
     </label>
-    <Help text={`${t("Click plants in map to add or remove.")} ${(
-      props.pointsSelectedByGroup.length != props.group.body.point_ids.length)
-      ? t(ToolTips.CRITERIA_SELECTION_COUNT)
-      : ""}`} />
+    <Help text={ToolTips.CRITERIA_SELECTION_COUNT} />
     <i onClick={props.toggleIconShow}
       className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
       title={props.iconDisplay

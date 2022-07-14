@@ -1670,6 +1670,20 @@ li {
 }
 
 .group-detail-panel {
+  .panel-header-icon-group {
+    display: flex;
+    float: right;
+    padding: 1.5rem;
+    .fa-sort {
+      margin-top: 0.25rem;
+      color: $white;
+    }
+    .fa-trash {
+      margin-top: 0.25rem;
+      margin-left: 2rem;
+      color: $white;
+    }
+  }
   .panel-content {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
@@ -1915,6 +1929,7 @@ li {
 .lt-gt-criteria,
 .location-criteria {
   display: inline-block;
+  position: relative;
   .row {
     margin-left: 0;
     margin-right: -2.5rem;
@@ -1937,7 +1952,9 @@ li {
     margin-top: 2rem !important;
   }
   .edit-in-map {
-    float: right;
+    position: absolute;
+    top: 0;
+    right: 0;
     button {
       margin: 1rem !important;
       width: 5rem !important;
@@ -2440,6 +2457,7 @@ li {
   }
 }
 
+.group-detail-panel,
 .designer-regimen-editor-panel,
 .designer-sequence-editor-panel {
   .panel-header {
