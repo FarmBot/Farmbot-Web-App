@@ -27,11 +27,11 @@ const MAXIMUMS: Partial<Record<keyof Telemetry, number>> = {
 };
 
 const clipX = (
-  seconds: string | number | undefined,
+  seconds: number | undefined,
   lastEntry: TaggedTelemetry | undefined,
 ) => {
-  const lastAt = lastEntry?.body.created_at as unknown as number | undefined;
-  const thisAt = seconds as unknown as number | undefined;
+  const lastAt = lastEntry?.body.created_at;
+  const thisAt = seconds;
   const withinBounds = lastAt && thisAt
     && (lastAt - thisAt) < (HISTORY_LENGTH_HOUR_TENTHS / 10 * 3600);
   return withinBounds ? lastAt - thisAt : undefined;

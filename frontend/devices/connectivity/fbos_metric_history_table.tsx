@@ -134,10 +134,9 @@ export class FbosMetricHistoryTable
               const rightCellProps = { ...cellProps, rightAlign: true };
               return <tr key={m.uuid}>
                 <td {...recordProps}
-                  onMouseEnter={this.hoverTime(
-                    m.body.created_at as unknown as number)}
+                  onMouseEnter={this.hoverTime(m.body.created_at)}
                   onMouseLeave={this.hoverTime(undefined)}>
-                  {formatTime(moment.unix(m.body.created_at as unknown as number),
+                  {formatTime(moment.unix(m.body.created_at),
                     this.props.timeSettings, "MMM D")}
                 </td>
                 <td {...recordProps}>{m.body.fbos_version}</td>

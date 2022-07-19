@@ -8,12 +8,12 @@ import { fakeTelemetry } from "../../../__test_support__/fake_state/resources";
 describe("<FbosMetricHistoryPlot />", () => {
   const fakeProps = (): FbosMetricHistoryPlotProps => {
     const telemetry0 = fakeTelemetry();
-    telemetry0.body.created_at = 0 as unknown as string;
+    telemetry0.body.created_at = 0;
     const telemetry1 = fakeTelemetry();
-    telemetry1.body.created_at = 1 as unknown as string;
+    telemetry1.body.created_at = 1;
     telemetry1.body.cpu_usage = undefined;
     const telemetry2 = fakeTelemetry();
-    telemetry2.body.created_at = 2 as unknown as string;
+    telemetry2.body.created_at = 2;
     telemetry2.body.throttled = undefined;
     return {
       telemetry: [telemetry0, telemetry1, telemetry2],
