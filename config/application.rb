@@ -28,6 +28,10 @@ module FarmBot
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
     config.active_record.belongs_to_required_by_default = false
+    config.active_record.yaml_column_permitted_classes = [
+      ActiveSupport::HashWithIndifferentAccess,
+      Symbol,
+    ]
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false

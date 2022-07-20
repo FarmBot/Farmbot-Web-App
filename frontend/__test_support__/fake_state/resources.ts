@@ -237,7 +237,7 @@ export function fakeTelemetry(): TaggedTelemetry {
   const id = idCounter++;
   return fakeResource("Telemetry", {
     id,
-    created_at: "2018-01-11T20:20:38.362Z",
+    created_at: 1501703421,
     updated_at: "2018-01-11T20:20:38.362Z",
     target: "rpi",
     soc_temp: 0,
