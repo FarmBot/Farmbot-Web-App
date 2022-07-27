@@ -54,5 +54,7 @@ export const bot: Everything["bot"] = {
       "user.api": undefined,
     },
     pings: {}
-  }
+  },
+  needVersionCheck: true,
+  alreadyToldUserAboutMalformedMsg: false,
 };

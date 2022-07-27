@@ -267,14 +267,22 @@ describe("onSent", () => {
 
 describe("onMalformed()", () => {
   it("handles malformed messages", () => {
-    onMalformed();
+    const dispatch = jest.fn();
+    const state = fakeState();
+    state.bot.alreadyToldUserAboutMalformedMsg = false;
+    onMalformed(dispatch, () => state)();
     expect(warning)
       .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_MALFORMED_NOTIFICATION_SENT, payload: true,
+    });
     jest.resetAllMocks();
-    onMalformed();
+    state.bot.alreadyToldUserAboutMalformedMsg = true;
+    onMalformed(dispatch, () => state)();
     expect(warning) // Only fire once.
       .not
       .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });
 

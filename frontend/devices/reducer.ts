@@ -70,7 +70,9 @@ export const initialState = (): BotState => ({
       "user.api": undefined
     },
     pings: {}
-  }
+  },
+  needVersionCheck: true,
+  alreadyToldUserAboutMalformedMsg: false,
 });
 
 export const botReducer = generateReducer<BotState>(initialState())
@@ -114,6 +116,14 @@ export const botReducer = generateReducer<BotState>(initialState())
   .add<HardwareState>(Actions.STATUS_UPDATE, statusHandler)
   .add<void>(Actions.STASH_STATUS, (s) => {
     stash(s);
+    return s;
+  })
+  .add<boolean>(Actions.SET_NEEDS_VERSION_CHECK, (s, { payload }) => {
+    s.needVersionCheck = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_MALFORMED_NOTIFICATION_SENT, (s, { payload }) => {
+    s.alreadyToldUserAboutMalformedMsg = payload;
     return s;
   })
   .add<void>(Actions._RESOURCE_NO, (s) => {

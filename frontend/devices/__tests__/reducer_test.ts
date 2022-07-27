@@ -135,4 +135,22 @@ describe("botReducer", () => {
     const step3 = botReducer(step2, no);
     expect(statusOf(step3)).toBe(step3.statusStash);
   });
+
+  it("sets needs version check flag", () => {
+    const state = initialState();
+    state.needVersionCheck = true;
+    const action = { type: Actions.SET_NEEDS_VERSION_CHECK, payload: false };
+    const r = botReducer(state, action);
+    expect(r.needVersionCheck).toEqual(false);
+  });
+
+  it("sets sent malformed message notification flag", () => {
+    const state = initialState();
+    state.alreadyToldUserAboutMalformedMsg = true;
+    const action = {
+      type: Actions.SET_MALFORMED_NOTIFICATION_SENT, payload: false,
+    };
+    const r = botReducer(state, action);
+    expect(r.alreadyToldUserAboutMalformedMsg).toEqual(false);
+  });
 });
