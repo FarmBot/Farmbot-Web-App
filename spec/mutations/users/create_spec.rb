@@ -62,4 +62,16 @@ describe Users::Create do
       errors = results.errors.message_list
       expect(errors).to include(Users::Create::ALREADY_REGISTERED)
     end
+
+    it "disallows short passwords and mismatches" do
+      email   = "#{SecureRandom.hex(8)}@qwerty.io"
+      results = Users::Create.run(email:                 email,
+                                  name:                  "Faker",
+                                  password:              "passwor",
+                                  password_confirmation: "x",
+                                  agree_to_terms:        false)
+      expect(results.success?).to be false
+      errors = results.errors.message_list
+      expect(errors).to include(Users::Create::PASSWORD_PROBLEMS)
+    end
 end

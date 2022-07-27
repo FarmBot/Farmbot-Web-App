@@ -154,7 +154,7 @@ describe Api::UsersController do
                name: "Frank" }
     post :create, body: params.to_json
     expect(User.count > original_count).to be_falsy
-    expect(json[:password]).to include("do not match")
+    expect(json[:password]).to include("does not match")
     expect(response.status).to eq(422)
   end
 
