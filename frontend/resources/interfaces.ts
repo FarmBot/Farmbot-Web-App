@@ -7,6 +7,7 @@ import {
   ResourceName,
   TaggedToolSlotPointer,
   TaggedTool,
+  RestResource,
 } from "farmbot";
 import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
@@ -16,6 +17,7 @@ import { SequenceMeta } from "./sequence_meta";
 import { AlertReducerState } from "../messages/interfaces";
 import { RootFolderNode, FolderMeta } from "../folders/interfaces";
 import { PhotosState } from "../photos/reducer";
+import { PointGroup } from "farmbot/dist/resources/api_resources";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;
@@ -103,3 +105,8 @@ export interface SlotWithTool {
   toolSlot: TaggedToolSlotPointer;
   tool: TaggedTool | undefined;
 }
+
+export interface PointGroupPlus extends PointGroup {
+  member_count?: number;
+}
+export type TaggedPointGroup = RestResource<"PointGroup", PointGroupPlus>;

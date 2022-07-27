@@ -6,7 +6,7 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import {
-  findPointerByTypeAndId, findPointGroup, findUuid, selectAllActivePoints,
+  findPointerByTypeAndId, findPointGroup, findUuid,
 } from "./selectors";
 import {
   findSlotByToolId, findToolById, maybeFindPeripheralById, maybeFindSensorById,
@@ -21,7 +21,6 @@ import {
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
 import { get } from "lodash";
-import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 
 export interface Vector3Plus extends Vector3 {
   gantry_mounted: boolean;
@@ -188,8 +187,7 @@ export const determineDropdown =
         const value = data_value.args.point_group_id;
         const uuid2 = findUuid(resources, "PointGroup", value);
         const group = findPointGroup(resources, uuid2);
-        const allPoints = selectAllActivePoints(resources);
-        const count = pointsSelectedByGroup(group, allPoints).length;
+        const count = group.body.member_count || 0;
         return {
           label: `${group.body.name} (${count})`,
           value

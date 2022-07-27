@@ -24,7 +24,6 @@ import {
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
   TaggedAlert,
-  TaggedPointGroup,
   TaggedFolder,
   TaggedWeedPointer,
   TaggedWizardStepResult,
@@ -35,6 +34,7 @@ import {
   ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
+import { TaggedPointGroup } from "../../resources/interfaces";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -544,6 +544,7 @@ export function fakePointGroup(): TaggedPointGroup {
       number_gt: {},
       number_lt: {},
       string_eq: {}
-    }
+    },
+    member_count: 0,
   });
 }

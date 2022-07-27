@@ -1,10 +1,10 @@
 import React from "react";
-import { TaggedPointGroup, TaggedPoint } from "farmbot";
+import { TaggedPoint } from "farmbot";
 import { t } from "../i18next_wrapper";
-import { pointsSelectedByGroup } from "./criteria";
 import { ErrorBoundary } from "../error_boundary";
 import { DevSettings } from "../settings/dev/dev_support";
 import { destroy } from "../api/crud";
+import { TaggedPointGroup } from "../resources/interfaces";
 
 export interface GroupInventoryItemProps {
   group: TaggedPointGroup;
@@ -37,7 +37,7 @@ interface GroupItemCountProps {
 }
 
 const GroupItemCount = (props: GroupItemCountProps) => {
-  const count = pointsSelectedByGroup(props.group, props.allPoints).length;
+  const count = props.group.body.member_count || 0;
   return <i className="group-item-count">
     {t("{{count}} items", { count })}
   </i>;

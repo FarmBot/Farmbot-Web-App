@@ -49,6 +49,27 @@ describe("determineDropdown", () => {
   it("returns a label for `PointGroup`", () => {
     const pg = fakePointGroup();
     pg.body.id = 12;
+    pg.body.point_ids = [1];
+    pg.body.member_count = 1;
+    const p = fakePoint();
+    p.body.id = 1;
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: {
+          kind: "point_group", args: { point_group_id: 12 }
+        }
+      }
+    }, buildResourceIndex([pg, p]).index);
+    expect(r.label).toEqual(pg.body.name + " (1)");
+    expect(r.value).toEqual(pg.body.id);
+  });
+
+  it("returns a label for `PointGroup`: no member count", () => {
+    const pg = fakePointGroup();
+    pg.body.id = 12;
+    pg.body.member_count = undefined;
     const r = determineDropdown({
       kind: "parameter_application",
       args: {

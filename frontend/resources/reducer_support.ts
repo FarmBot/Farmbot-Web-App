@@ -8,7 +8,7 @@ import { photosReducer as photos } from "../photos/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
-import { RestResources, ResourceIndex } from "./interfaces";
+import { RestResources, ResourceIndex, TaggedPointGroup } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { arrayWrap, arrayUnwrap } from "./util";
 import {
@@ -21,6 +21,8 @@ import {
   selectAllRegimens,
   selectAllFolders,
   selectAllSequences,
+  selectAllActivePoints,
+  selectAllPointGroups,
 } from "./selectors_by_kind";
 import { findUuid } from "./selectors";
 import {
@@ -40,6 +42,7 @@ import {
   FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial,
 } from "../folders/interfaces";
 import { climb } from "../folders/climb";
+import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -228,6 +231,11 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
     });
 }
 
+const reindexAllPointGroups = (i: ResourceIndex) => {
+  selectAllPointGroups(i).map((pg: TaggedPointGroup) => pg.body.member_count =
+    pointsSelectedByGroup(pg, selectAllActivePoints(i)).length);
+};
+
 export const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
@@ -327,6 +335,8 @@ const AFTER_HOOKS: IndexerHook = {
         }
       });
   },
+  PointGroup: reindexAllPointGroups,
+  Point: reindexAllPointGroups,
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
   Regimen: (i) => {
