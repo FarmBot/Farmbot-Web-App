@@ -1,4 +1,4 @@
-import { ResourceIndex } from "./interfaces";
+import { ResourceIndex, TaggedPointGroup } from "./interfaces";
 import {
   TaggedResource,
   SpecialStatus,
@@ -20,7 +20,6 @@ import {
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
   TaggedAlert,
-  TaggedPointGroup,
   TaggedFolder,
   TaggedWizardStepResult,
   TaggedTelemetry,

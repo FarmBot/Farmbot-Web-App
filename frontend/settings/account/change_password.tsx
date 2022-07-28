@@ -51,11 +51,16 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         success(t("Your password is changed."));
         this.clearForm();
       }, (e: AxiosErrorResponse) => {
-        error(e ? prettyPrintApiErrors(e) : t("Password change failed."));
+        error(prettyPrintApiErrors(e));
         this.clearForm();
       });
 
   save = () => {
+    if (this.state.form.new_password.length < 8) {
+      error(t("New password must be at least 8 characters."));
+      this.clearForm();
+      return;
+    }
     const numUniqueValues = uniq(Object.values(this.state.form)).length;
     switch (numUniqueValues) {
       case 1:

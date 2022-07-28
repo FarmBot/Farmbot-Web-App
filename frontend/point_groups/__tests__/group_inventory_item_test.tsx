@@ -32,6 +32,7 @@ describe("<GroupInventoryItem />", () => {
     const p = fakeProps();
     p.group.body.point_ids = [1, 2, 3];
     p.group.body.name = "woosh";
+    p.group.body.member_count = 3;
     const point1 = fakePlant();
     point1.body.id = 1;
     const point2 = fakePlant();
@@ -41,6 +42,16 @@ describe("<GroupInventoryItem />", () => {
     p.allPoints = [point1, point2, point3];
     const x = mount(<GroupInventoryItem {...p} />);
     expect(x.text()).toContain("3 items");
+    expect(x.text()).toContain("woosh");
+    expect(x.find(".hovered").length).toBe(1);
+  });
+
+  it("renders information about the current group: no member count", () => {
+    const p = fakeProps();
+    p.group.body.name = "woosh";
+    p.group.body.member_count = undefined;
+    const x = mount(<GroupInventoryItem {...p} />);
+    expect(x.text()).toContain("0 items");
     expect(x.text()).toContain("woosh");
     expect(x.find(".hovered").length).toBe(1);
   });

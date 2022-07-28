@@ -4,7 +4,8 @@ module Users
     CANT_USE_SERVER = "You are not authorized to use this server. " \
                       "Please use an official email address."
     ALREADY_REGISTERED = "Already registered"
-    PW_MISMATCH = "Password and confirmation do not match."
+    PASSWORD_PROBLEMS = "Password less than 8 characters or does not match " \
+                        "password confirmation."
 
     required do
       string :name
@@ -23,8 +24,11 @@ module Users
       maybe_check_email_domain
       email.downcase!
       add_error :email, :*, ALREADY_REGISTERED if User.find_by(email: email)
-      if password != password_confirmation
-        add_error :password, :*, PW_MISMATCH
+      pw_length_ok = password.length > 7
+      pw_match = password == password_confirmation
+      pw_invalid = !(pw_match && pw_length_ok)
+      if pw_invalid
+        add_error :password, :*, PASSWORD_PROBLEMS
       end
     end
 

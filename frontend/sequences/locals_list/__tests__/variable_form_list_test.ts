@@ -165,8 +165,10 @@ describe("groups2Ddi", () => {
   it("excludes unsaved groups", () => {
     const fakes = [fakePointGroup(), fakePointGroup()];
     fakes[0].body.id = 1;
+    fakes[0].body.member_count = undefined;
     fakes[1].body.id = undefined;
-    const result = groups2Ddi(fakes, []);
+    fakes[1].body.member_count = 1;
+    const result = groups2Ddi(fakes);
     expect(result.length).toEqual(1);
     expect(result[0].label).toEqual(fakes[0].body.name + " (0)");
     expect(result[0].value).toEqual("1");

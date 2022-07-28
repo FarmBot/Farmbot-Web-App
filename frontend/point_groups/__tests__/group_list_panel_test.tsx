@@ -26,6 +26,7 @@ describe("<GroupListPanel />", () => {
     group1.body.name = "one";
     group1.body.id = 9;
     group1.body.point_ids = [1, 2, 3];
+    group1.body.member_count = 3;
     const group2 = fakePointGroup();
     group2.body.name = "two";
     group2.body.criteria.day.days_ago = -1;

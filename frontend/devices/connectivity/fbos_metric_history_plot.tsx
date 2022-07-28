@@ -134,6 +134,37 @@ const PlotLines = (props: PlotLinesProps) => {
   </g>;
 };
 
+interface VersionChangeLinesProps {
+  telemetry: TaggedTelemetry[];
+}
+
+const VersionChangeLines = (props: VersionChangeLinesProps) => {
+  const changes: [number, string, string][] = [];
+  const mostRecent = last(sortBy(props.telemetry, "body.created_at"));
+  props.telemetry.map((d, i) => {
+    if (i == 0) { return; }
+    const previousVersion = props.telemetry[i - 1].body.fbos_version;
+    if (d.body.fbos_version && previousVersion &&
+      d.body.fbos_version != previousVersion) {
+      const x = clipX(d.body.created_at, mostRecent);
+      isNumber(x) && changes.push([x, previousVersion, d.body.fbos_version]);
+    }
+  });
+  return <g id="version-change-lines">
+    {changes.map(c =>
+      <g id={"" + c[0]}>
+        <line y1={0} y2={MAX_Y}
+          x1={plotXSeconds(c[0])}
+          x2={plotXSeconds(c[0])}
+          stroke={"gray"} strokeWidth={1} strokeDasharray={2} />
+        <text x={plotXSeconds(c[0]) - 3} y={5} color={"gray"}
+          textAnchor={"end"} style={{ textAnchor: "end" }}>v{c[1]}</text>
+        <text x={plotXSeconds(c[0]) + 3} y={5} color={"gray"}
+          textAnchor={"start"} style={{ textAnchor: "start" }}>v{c[2]}</text>
+      </g>)}
+  </g>;
+};
+
 export interface FbosMetricHistoryPlotProps {
   telemetry: TaggedTelemetry[];
   hoveredMetric: keyof Telemetry | undefined;
@@ -163,6 +194,7 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
       <PlotLines telemetry={props.telemetry}
         hoveredMetric={props.hoveredMetric}
         onHover={props.onHover} />
+      <VersionChangeLines telemetry={props.telemetry} />
       {hoveredSeconds &&
         <line y1={0} y2={MAX_Y}
           x1={plotXSeconds(hoveredSeconds)}

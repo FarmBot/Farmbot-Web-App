@@ -101,6 +101,8 @@ export interface BotState {
    * lets us know if it is safe to do data critical tasks with the bot */
   consistent: boolean;
   connectivity: ConnectionState;
+  needVersionCheck: boolean;
+  alreadyToldUserAboutMalformedMsg: boolean;
 }
 
 /** Status registers for the bot's status */

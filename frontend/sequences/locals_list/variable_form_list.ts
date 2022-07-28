@@ -1,4 +1,4 @@
-import { ResourceIndex } from "../../resources/interfaces";
+import { ResourceIndex, TaggedPointGroup } from "../../resources/interfaces";
 import {
   selectAllToolSlotPointers,
   selectAllActivePoints,
@@ -7,7 +7,7 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3,
   TaggedSequence,
   TaggedPeripheral,
   TaggedSensor,
@@ -18,7 +18,6 @@ import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { VariableType } from "./locals_list_support";
-import { pointsSelectedByGroup } from "../../point_groups/criteria/apply";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -70,12 +69,11 @@ const points2ddi = (allPoints: TaggedPoint[], pointerType: PointerTypeName) =>
 
 export const groups2Ddi = (
   groups: TaggedPointGroup[],
-  allPoints: TaggedPoint[],
 ): DropDownItem[] => {
   return groups
     .filter(group => group.body.id)
     .map(group => {
-      const count = pointsSelectedByGroup(group, allPoints).length;
+      const count = group.body.member_count || 0;
       const label = `${group.body.name} (${count})`;
       return { label, value: "" + group.body.id, headingId: "PointGroup" };
     });
@@ -142,7 +140,7 @@ export function variableFormList(
     .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(displayGroups ? heading("PointGroup") : [])
-    .concat(displayGroups ? groups2Ddi(allGroups, allPoints) : [])
+    .concat(displayGroups ? groups2Ddi(allGroups) : [])
     .concat(heading("Plant"))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))

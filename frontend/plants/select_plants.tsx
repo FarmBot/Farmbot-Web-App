@@ -27,10 +27,9 @@ import {
   PointType, TaggedPoint, TaggedGenericPointer, TaggedToolSlotPointer,
   TaggedTool,
   TaggedWeedPointer,
-  TaggedPointGroup,
   SpecialStatus,
 } from "farmbot";
-import { UUID } from "../resources/interfaces";
+import { TaggedPointGroup, UUID } from "../resources/interfaces";
 import {
   selectAllActivePoints, selectAllToolSlotPointers, selectAllTools,
   selectAllPointGroups,
@@ -186,7 +185,7 @@ export class RawSelectPlants
     this.props.groups.map(group => {
       const { id } = group.body;
       const groupName = group.body.name;
-      const count = pointsSelectedByGroup(group, this.props.allPoints).length;
+      const count = group.body.member_count || 0;
       const label = `${groupName} (${t("{{count}} items", { count })})`;
       id && (lookup[id] = { label, value: id });
     });

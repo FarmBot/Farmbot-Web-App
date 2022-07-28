@@ -24,12 +24,22 @@ describe("<PasswordReset/>", () => {
           }));
 
   it("handles form submission errors", async () => {
+    const wrapper = mount<PasswordReset>(<PasswordReset />);
+    const e = formEvent();
+    wrapper.instance().submit(e);
+    expect(e.preventDefault).toHaveBeenCalled();
+    await respondWith({ status: 400, response: { err: "xyz" } });
+    expect(error).toHaveBeenCalledWith("Err: xyz");
+  });
+
+  it("handles missing TOS agreement", async () => {
     const pr = new PasswordReset({});
     const e = formEvent();
     pr.submit(e);
     expect(e.preventDefault).toHaveBeenCalled();
-    await respondWith({ status: 400, response: { err: "xyz" } });
-    expect(error).toHaveBeenCalledWith("Err: xyz");
+    await respondWith({ status: 451, response: { err: "xyz" } });
+    expect(error).not.toHaveBeenCalled();
+    expect(window.location.assign).toHaveBeenCalledWith("/tos_update");
   });
 
   it("resets the users password", async () => {

@@ -7,6 +7,7 @@ import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui";
 import { Session } from "../session";
 import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
+import { get } from "lodash";
 
 export interface State {
   password?: string;
@@ -25,6 +26,8 @@ export class PasswordReset extends React.Component<{}, State> {
       serverPort: ""
     };
   }
+
+  update = () => setTimeout(() => this.forceUpdate(), 100);
 
   componentDidMount() {
     API.setBaseUrl(API.fetchBrowserLocation());
@@ -51,7 +54,14 @@ export class PasswordReset extends React.Component<{}, State> {
     })
       .then(Session.clear)
       .catch((error: string) => {
-        log(prettyPrintApiErrors(error as {}));
+        switch (get(error, "response.status")) {
+          case 451: // TOS was updated; User must agree to terms.
+            window.location.assign("/tos_update");
+            break;
+          default:
+            log(prettyPrintApiErrors(error as {}));
+            this.update();
+        }
       });
   }
 
