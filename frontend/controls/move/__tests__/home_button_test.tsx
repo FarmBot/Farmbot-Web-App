@@ -6,13 +6,14 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { mount } from "enzyme";
-import { HomeButton } from "../home_button";
+import { calculateHomeDirection, HomeButton } from "../home_button";
 import { HomeButtonProps } from "../interfaces";
 
 describe("<HomeButton />", () => {
   const fakeProps = (): HomeButtonProps => ({
     doFindHome: false,
-    disabled: false,
+    arduinoBusy: false,
+    botOnline: true,
     locked: false,
   });
 
@@ -35,5 +36,14 @@ describe("<HomeButton />", () => {
     const jogButtons = mount(<HomeButton {...p} />);
     jogButtons.find("button").simulate("click");
     expect(mockDevice.findHome).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("calculateHomeDirection()", () => {
+  it("returns correct direction", () => {
+    expect(calculateHomeDirection(true, true)).toEqual(45);
+    expect(calculateHomeDirection(true, false)).toEqual(-45);
+    expect(calculateHomeDirection(false, true)).toEqual(135);
+    expect(calculateHomeDirection(false, false)).toEqual(-135);
   });
 });

@@ -4,51 +4,114 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 import React from "react";
 import { mount } from "enzyme";
 import {
-  DirectionButton, directionDisabled, calculateDistance,
+  DirectionButton, directionDisabled, calculateDistance, calcBtnStyle,
 } from "../direction_button";
-import { DirectionButtonProps } from "../interfaces";
+import { ButtonDirection, DirectionButtonProps } from "../interfaces";
+import { fakeBotLocationData } from "../../../__test_support__/fake_bot_data";
 
-function fakeButtonProps(): DirectionButtonProps {
-  return {
-    axis: "y",
-    direction: "up",
-    directionAxisProps: {
-      isInverted: false,
-      stopAtHome: false,
-      stopAtMax: false,
-      axisLength: 0,
-      negativeOnly: false,
-      position: undefined
-    },
-    steps: 1000,
-    disabled: false,
-    locked: false,
-  };
-}
+const fakeProps = (): DirectionButtonProps => ({
+  axis: "y",
+  direction: "up",
+  directionAxisProps: {
+    isInverted: false,
+    stopAtHome: false,
+    stopAtMax: false,
+    axisLength: 0,
+    negativeOnly: false,
+    position: undefined
+  },
+  steps: 1000,
+  arduinoBusy: false,
+  botOnline: true,
+  click: jest.fn(),
+  active: "yup",
+  locked: false,
+  botPosition: fakeBotLocationData().position,
+});
 
-describe("<DirectionButton/>", function () {
-  const buttonProps = fakeButtonProps();
-
-  beforeEach(function () {
-    buttonProps.disabled = false;
-  });
-
+describe("<DirectionButton />", () => {
   it("calls move command", () => {
-    const btn = mount(<DirectionButton {...buttonProps} />);
-    btn.simulate("click");
+    const p = fakeProps();
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
     expect(mockDevice.moveRelative).toHaveBeenCalledTimes(1);
   });
 
-  it("is disabled", () => {
-    buttonProps.disabled = true;
-    const btn = mount(<DirectionButton {...buttonProps} />);
-    btn.simulate("click");
+  it("has class for z button", () => {
+    const p = fakeProps();
+    p.axis = "z";
+    const wrapper = mount(<DirectionButton {...p} />);
+    expect(wrapper.find("button").hasClass("z")).toBeTruthy();
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows progress", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 1, y: 150, z: 3 };
+    p.steps = 100;
+    p.arduinoBusy = true;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.setState({ start: 100, distance: 100 });
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("is locked", () => {
+    const p = fakeProps();
+    p.locked = true;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("is busy", () => {
+    const p = fakeProps();
+    p.arduinoBusy = true;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("is offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("is at min", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.direction = "down";
+    p.directionAxisProps.isInverted = false;
+    p.directionAxisProps.negativeOnly = false;
+    p.directionAxisProps.position = 0;
+    p.directionAxisProps.stopAtHome = true;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+  });
+
+  it("is at max", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.direction = "up";
+    p.directionAxisProps.isInverted = false;
+    p.directionAxisProps.negativeOnly = false;
+    p.directionAxisProps.position = 1000;
+    p.directionAxisProps.stopAtMax = true;
+    p.directionAxisProps.axisLength = 1000;
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
   });
 
   it("call has correct args", () => {
-    const btn = mount(<DirectionButton {...buttonProps} />);
-    btn.simulate("click");
+    const p = fakeProps();
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
     expect(mockDevice.moveRelative)
       .toHaveBeenCalledWith({ x: 0, y: 1000, z: 0 });
   });
@@ -56,7 +119,7 @@ describe("<DirectionButton/>", function () {
 
 describe("calculateDistance()", () => {
   it("normal", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.steps = 100;
     p.direction = "up";
     p.directionAxisProps.isInverted = false;
@@ -64,7 +127,7 @@ describe("calculateDistance()", () => {
   });
 
   it("inverted", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.steps = 100;
     p.direction = "up";
     p.directionAxisProps.isInverted = true;
@@ -72,7 +135,7 @@ describe("calculateDistance()", () => {
   });
 
   it("opposite direction", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.steps = 100;
     p.direction = "down";
     p.directionAxisProps.isInverted = false;
@@ -80,7 +143,7 @@ describe("calculateDistance()", () => {
   });
 
   it("opposite direction and inverted", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.steps = 100;
     p.direction = "down";
     p.directionAxisProps.isInverted = true;
@@ -90,7 +153,7 @@ describe("calculateDistance()", () => {
 
 describe("directionDisabled()", () => {
   it("disabled at max", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.direction = "up";
     p.steps = 100;
     p.directionAxisProps = {
@@ -105,7 +168,7 @@ describe("directionDisabled()", () => {
   });
 
   it("not disabled at max", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.direction = "up";
     p.steps = 100;
     p.directionAxisProps = {
@@ -120,7 +183,7 @@ describe("directionDisabled()", () => {
   });
 
   it("disabled at min: positive", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.direction = "down";
     p.steps = 100;
     p.directionAxisProps = {
@@ -135,7 +198,7 @@ describe("directionDisabled()", () => {
   });
 
   it("disabled at min: negative", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.direction = "up";
     p.steps = 100;
     p.directionAxisProps = {
@@ -150,7 +213,7 @@ describe("directionDisabled()", () => {
   });
 
   it("not disabled at min", () => {
-    const p = fakeButtonProps();
+    const p = fakeProps();
     p.direction = "down";
     p.steps = 100;
     p.directionAxisProps = {
@@ -162,5 +225,46 @@ describe("directionDisabled()", () => {
       negativeOnly: false
     };
     expect(directionDisabled(p)).toBeFalsy();
+  });
+
+  it("disabled at max: left", () => {
+    const p = fakeProps();
+    p.direction = "left";
+    p.steps = 100;
+    p.directionAxisProps = {
+      position: 100,
+      isInverted: true,
+      stopAtHome: false,
+      stopAtMax: true,
+      axisLength: 100,
+      negativeOnly: false,
+    };
+    expect(directionDisabled(p)).toBeTruthy();
+  });
+
+  it("disabled at min: right", () => {
+    const p = fakeProps();
+    p.direction = "right";
+    p.steps = 100;
+    p.directionAxisProps = {
+      position: 0,
+      isInverted: true,
+      stopAtHome: true,
+      stopAtMax: false,
+      axisLength: 0,
+      negativeOnly: false,
+    };
+    expect(directionDisabled(p)).toBeTruthy();
+  });
+});
+
+describe("calcBtnStyle()", () => {
+  it.each<[ButtonDirection, number, React.CSSProperties]>([
+    ["up", 50, { height: "50%", bottom: 0, left: 0 }],
+    ["down", 50, { height: "50%", top: 0, left: 0 }],
+    ["left", 50, { width: "50%", top: 0, right: 0 }],
+    ["right", 50, { width: "50%", top: 0, left: 0 }],
+  ])("returns correct style for %s button", (direction, remaining, expected) => {
+    expect(calcBtnStyle(direction, remaining)).toEqual(expected);
   });
 });

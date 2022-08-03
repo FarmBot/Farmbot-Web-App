@@ -1,9 +1,11 @@
 import React from "react";
 import { moveRelative } from "../../devices/actions";
-import { DirectionButtonProps } from "./interfaces";
+import { ButtonDirection, DirectionButtonProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { MoveRelProps } from "../../devices/interfaces";
 import { lockedClass } from "../locked_class";
+import { isNumber } from "lodash";
+import { Popover } from "../../ui";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
@@ -40,17 +42,79 @@ export function calculateDistance(props: DirectionButtonProps) {
   return distance;
 }
 
-export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
-  sendCommand = () => {
-    const payload: MoveRelProps = { x: 0, y: 0, z: 0 };
-    payload[this.props.axis] = calculateDistance(this.props);
-    moveRelative(payload);
+export const calcBtnStyle = (
+  direction: ButtonDirection,
+  remaining: number | undefined,
+): React.CSSProperties => ({
+  [["left", "right"].includes(direction) ? "width" : "height"]: remaining + "%",
+  [direction == "up" ? "bottom" : "top"]: 0,
+  [direction == "left" ? "right" : "left"]: 0,
+});
+
+interface DirectionButtonState {
+  start: number | undefined;
+  distance: number;
+  popoverOpen: boolean;
+  popoverText: string;
+}
+
+export class DirectionButton
+  extends React.Component<DirectionButtonProps, DirectionButtonState> {
+  state: DirectionButtonState = {
+    start: undefined,
+    distance: 0,
+    popoverOpen: false,
+    popoverText: "",
   };
 
+  get btnActive() {
+    return this.props.active == this.props.axis + this.props.direction;
+  }
+
+  sendCommand = () => {
+    const { botPosition, locked, axis, arduinoBusy, botOnline } = this.props;
+    !arduinoBusy && this.props.click();
+    const text = () => {
+      if (locked) { return t("FarmBot is locked."); }
+      if (arduinoBusy) { return t("FarmBot is busy."); }
+      if (!botOnline) { return t("FarmBot is offline."); }
+      if (directionDisabled(this.props) && this.distance > 0) {
+        return t("Axis is already at maximum position.");
+      }
+      if (directionDisabled(this.props) && this.distance < 0) {
+        return t("Axis is already at minimum position.");
+      }
+      return "";
+    };
+    if (arduinoBusy || !botOnline || locked || directionDisabled(this.props)) {
+      this.setState({
+        popoverOpen: !this.state.popoverOpen,
+        popoverText: text(),
+      });
+      return;
+    }
+    this.setState({ popoverOpen: false, popoverText: text() });
+    const payload: MoveRelProps = { x: 0, y: 0, z: 0 };
+    payload[this.props.axis] = this.distance;
+    moveRelative(payload);
+    this.setState({ start: botPosition[axis], distance: this.distance });
+  };
+
+  get distance() { return calculateDistance(this.props); }
+
+  get remaining() {
+    const axisPosition = this.props.botPosition[this.props.axis];
+    if (!isNumber(axisPosition) || !isNumber(this.state.start)) {
+      return;
+    }
+    return (axisPosition - this.state.start) / this.state.distance * 100;
+  }
+
   render() {
-    const { direction, axis, disabled, locked } = this.props;
-    const distance = calculateDistance(this.props);
-    const title = `${t("move {{axis}} axis", { axis })} (${distance})`;
+    const { direction, axis, locked, arduinoBusy, botOnline } = this.props;
+    const title = `${t("move {{axis}} axis", { axis })} (${this.distance})`;
+    const style = calcBtnStyle(direction, this.remaining);
+    const disabled = arduinoBusy || !botOnline || directionDisabled(this.props);
     return <button
       onClick={this.sendCommand}
       className={[
@@ -58,8 +122,20 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
         `fa fa-2x fa-arrow-${direction}`,
         axis == "z" ? "z" : "",
         lockedClass(locked),
+        disabled ? "pseudo-disabled" : "",
       ].join(" ")}
-      title={title}
-      disabled={disabled || directionDisabled(this.props)} />;
+      title={title}>
+      <p>{this.distance > 0 ? "+" : "-"}{axis}</p>
+      {(this.btnActive && this.remaining && arduinoBusy)
+        ? <div className={"movement-progress"} style={style} />
+        : <i />}
+      <Popover
+        isOpen={this.btnActive && this.state.popoverOpen}
+        popoverClassName={"help movement-message"}
+        target={<i />}
+        content={<div className={"help-text-content"}>
+          {t(this.state.popoverText)}
+        </div>} />
+    </button>;
   }
 }

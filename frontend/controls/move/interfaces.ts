@@ -14,9 +14,11 @@ export interface MoveProps {
   firmwareHardware: FirmwareHardware | undefined;
 }
 
+export type ButtonDirection = "up" | "down" | "left" | "right";
+
 export interface DirectionButtonProps {
   axis: Xyz;
-  direction: "up" | "down" | "left" | "right";
+  direction: ButtonDirection;
   directionAxisProps: {
     isInverted: boolean;
     stopAtHome: boolean;
@@ -26,8 +28,12 @@ export interface DirectionButtonProps {
     position: number | undefined;
   }
   steps: number;
-  disabled: boolean | undefined;
+  arduinoBusy: boolean | undefined;
+  botOnline: boolean | undefined;
   locked: boolean;
+  botPosition: BotPosition;
+  click(): void;
+  active: string | undefined;
 }
 
 export interface TakePhotoButtonProps {
@@ -37,8 +43,10 @@ export interface TakePhotoButtonProps {
 
 export interface HomeButtonProps {
   doFindHome: boolean;
-  disabled: boolean;
+  arduinoBusy: boolean | undefined;
+  botOnline: boolean | undefined;
   locked: boolean;
+  homeDirection?: number;
 }
 
 export interface StepSizeSelectorProps {

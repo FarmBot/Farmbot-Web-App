@@ -1,7 +1,7 @@
 import React from "react";
 import { Position } from "@blueprintjs/core";
 import { getStatus } from "../../connectivity/reducer_support";
-import { isBotOnlineFromState, MustBeOnline } from "../../devices/must_be_online";
+import { isBotOnline, isBotOnlineFromState } from "../../devices/must_be_online";
 import { BooleanSetting } from "../../session_keys";
 import { validBotLocationData } from "../../util";
 import { MoveControlsProps } from "./interfaces";
@@ -23,31 +23,29 @@ export const MoveControls = (props: MoveControlsProps) => {
         dispatch={props.dispatch}
         getConfigValue={props.getConfigValue}
         firmwareHardware={props.firmwareHardware} />} />
-    <MustBeOnline
-      networkState={getStatus(props.bot.connectivity.uptime["bot.mqtt"])}
-      syncStatus={informational_settings.sync_status}>
-      <JogControlsGroup
-        dispatch={props.dispatch}
-        stepSize={props.bot.stepSize}
-        botPosition={locationData.position}
-        getConfigValue={props.getConfigValue}
-        arduinoBusy={busy}
-        locked={locked}
-        botOnline={true} // covered by MustBeOnline
-        env={props.env}
-        highlightAxis={props.highlightAxis}
-        highlightDirection={props.highlightDirection}
-        highlightHome={props.highlightHome}
-        firmwareSettings={props.firmwareSettings} />
-      <BotPositionRows
-        locationData={locationData}
-        getConfigValue={props.getConfigValue}
-        arduinoBusy={busy}
-        locked={locked}
-        botOnline={botOnline}
-        firmwareSettings={props.firmwareSettings}
-        firmwareHardware={props.firmwareHardware} />
-    </MustBeOnline>
+    <JogControlsGroup
+      dispatch={props.dispatch}
+      stepSize={props.bot.stepSize}
+      botPosition={locationData.position}
+      getConfigValue={props.getConfigValue}
+      arduinoBusy={busy}
+      locked={locked}
+      botOnline={isBotOnline(
+        informational_settings.sync_status,
+        getStatus(props.bot.connectivity.uptime["bot.mqtt"]))}
+      env={props.env}
+      highlightAxis={props.highlightAxis}
+      highlightDirection={props.highlightDirection}
+      highlightHome={props.highlightHome}
+      firmwareSettings={props.firmwareSettings} />
+    <BotPositionRows
+      locationData={locationData}
+      getConfigValue={props.getConfigValue}
+      arduinoBusy={busy}
+      locked={locked}
+      botOnline={botOnline}
+      firmwareSettings={props.firmwareSettings}
+      firmwareHardware={props.firmwareHardware} />
     {props.getConfigValue(BooleanSetting.show_motor_plot) &&
       <MotorPositionPlot locationData={locationData} />}
   </div>;
