@@ -20,8 +20,11 @@ describe("<FbosMetricHistoryPlot />", () => {
     const telemetry3 = fakeTelemetry();
     telemetry3.body.created_at = 3;
     telemetry3.body.fbos_version = undefined;
+    const telemetry4 = fakeTelemetry();
+    telemetry4.body.created_at = 20 * 60;
+    telemetry4.body.fbos_version = undefined;
     return {
-      telemetry: [telemetry0, telemetry1, telemetry2, telemetry3],
+      telemetry: [telemetry0, telemetry1, telemetry2, telemetry3, telemetry4],
       onHover: jest.fn(),
       hoveredMetric: undefined,
       hoveredTime: undefined,
@@ -33,6 +36,13 @@ describe("<FbosMetricHistoryPlot />", () => {
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("hours");
     expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
+  });
+
+  it("handles missing data", () => {
+    const p = fakeProps();
+    p.telemetry = [];
+    const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("hours");
   });
 
   it("renders when hovered", () => {

@@ -12,7 +12,9 @@ const BORDER_WIDTH = 15;
 const BORDERS = BORDER_WIDTH * 2;
 const MAX_X = HISTORY_LENGTH_HOUR_TENTHS;
 const MAX_Y = HEIGHT;
+const MAX_GAP_SECONDS = 15 * 60;
 
+/** Names of metrics in plot. */
 const METRIC_NAMES: (keyof Telemetry)[] = [
   "cpu_usage",
   "disk_usage",
@@ -22,10 +24,12 @@ const METRIC_NAMES: (keyof Telemetry)[] = [
   "wifi_level_percent",
 ];
 
+/** Maximum plot range if not 100. */
 const MAXIMUMS: Partial<Record<keyof Telemetry, number>> = {
   memory_usage: 512,
 };
 
+/** Returns seconds ago if within plot bounds. */
 const clipX = (
   seconds: number | undefined,
   lastEntry: TaggedTelemetry | undefined,
@@ -36,40 +40,58 @@ const clipX = (
     && (lastAt - thisAt) < (HISTORY_LENGTH_HOUR_TENTHS / 10 * 3600);
   return withinBounds ? lastAt - thisAt : undefined;
 };
+/** Convert hours to plot x-axis values. */
 const plotXHours = (hours: number) => MAX_X - (hours * 10);
+/** Convert seconds to plot x-axis values. */
 const plotXSeconds = (seconds: number) => plotXHours(seconds / 3600);
 
+/** Process data: clip to plot bounds and split into continuous runs. */
 const getData = (
   all: TaggedTelemetry[],
   metricName: keyof Telemetry,
-): [number, number][] => {
-  const data: [number, number][] = [];
+): Record<"x" | "y", number>[][] => {
+  const data: Record<"x" | "y", number>[] = [];
   const mostRecent = last(sortBy(all, "body.created_at"));
   if (!mostRecent) {
-    return data;
+    return [data];
   }
   sortBy(all, "body.created_at").map(entry => {
     const x = clipX(entry.body.created_at, mostRecent);
     if (isNumber(x)) {
       const y = parseInt("" + entry.body[metricName]);
-      data.push([x, y]);
+      if (isFinite(y)) {
+        data.push({ x, y });
+      }
     }
   });
-  return data;
+  const splitData: Record<"x" | "y", number>[][] = [];
+  let continuousData: Record<"x" | "y", number>[] = [];
+  data.map((d, i) => {
+    if (i == 0) {
+      continuousData.push(d);
+      return;
+    }
+    if ((data[i - 1].x - d.x) > MAX_GAP_SECONDS) {
+      splitData.push(continuousData);
+      continuousData = [];
+    }
+    continuousData.push(d);
+  });
+  splitData.push(continuousData);
+  return splitData;
 };
 
+/** Returns SVG path string. */
 const getPath = (
-  all: TaggedTelemetry[],
+  data: Record<"x" | "y", number>[],
   metricName: keyof Telemetry,
 ): string => {
-  const data = getData(all, metricName);
-  const ys = data.map(d => d[1]);
+  const ys = data.map(d => d.y);
   const yMax = Math.max(MAXIMUMS[metricName] || 100, max(ys) || 1);
   let path = "";
   data.map(d => {
-    const x = plotXSeconds(d[0]);
-    const raw_y = d[1];
-    if (isNaN(raw_y)) { return; }
+    const x = plotXSeconds(d.x);
+    const raw_y = d.y;
     const y = MAX_Y - (raw_y / yMax) * MAX_Y;
     if (!path.startsWith("M")) {
       path = `M ${x},${y} `;
@@ -80,6 +102,7 @@ const getPath = (
   return path;
 };
 
+/** y-axis labels SVG */
 const YAxisLabels = () =>
   <g id="y_axis_labels" visibility={"hidden"}>
     {[0, MAX_Y].map(yPosition =>
@@ -93,6 +116,7 @@ const YAxisLabels = () =>
       </g>)}
   </g>;
 
+/** x-axis labels SVG */
 const XAxisLabels = () =>
   <g id="x_axis_labels">
     <text x={MAX_X / 2} y={MAX_Y}
@@ -106,6 +130,7 @@ const XAxisLabels = () =>
       </text>)}
   </g>;
 
+/** plot background color and top and bottom lines */
 const PlotBackground = () =>
   <g id="plot_background">
     <rect fill="white" x={0} y={0} width={"100%"} height={"100%"} />
@@ -120,17 +145,19 @@ export interface PlotLinesProps {
   onHover: OnMetricHover;
 }
 
+/** Metric data lines SVG */
 const PlotLines = (props: PlotLinesProps) => {
   return <g id="plot_lines">
     {METRIC_NAMES.map((metricName: keyof Telemetry) =>
-      <path key={metricName}
-        onMouseEnter={props.onHover(metricName)}
-        onMouseLeave={props.onHover(undefined)}
-        fill={"none"}
-        stroke={COLORS[metricName]}
-        strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
-        strokeLinecap={"round"} strokeLinejoin={"round"}
-        d={getPath(props.telemetry, metricName)} />)}
+      getData(props.telemetry, metricName).map((data, index) =>
+        <path key={metricName + index}
+          onMouseEnter={props.onHover(metricName)}
+          onMouseLeave={props.onHover(undefined)}
+          fill={"none"}
+          stroke={COLORS[metricName]}
+          strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
+          strokeLinecap={"round"} strokeLinejoin={"round"}
+          d={getPath(data, metricName)} />))}
   </g>;
 };
 
@@ -138,29 +165,42 @@ interface VersionChangeLinesProps {
   telemetry: TaggedTelemetry[];
 }
 
+interface VersionChangeRecord {
+  changedAt: number;
+  previousVersion: string;
+  nextVersion: string;
+}
+
+/** SVG lines for FBOS version changes */
 const VersionChangeLines = (props: VersionChangeLinesProps) => {
-  const changes: [number, string, string][] = [];
+  const changes: VersionChangeRecord[] = [];
   const mostRecent = last(sortBy(props.telemetry, "body.created_at"));
   props.telemetry.map((d, i) => {
     if (i == 0) { return; }
     const previousVersion = props.telemetry[i - 1].body.fbos_version;
-    if (d.body.fbos_version && previousVersion &&
-      d.body.fbos_version != previousVersion) {
-      const x = clipX(d.body.created_at, mostRecent);
-      isNumber(x) && changes.push([x, previousVersion, d.body.fbos_version]);
+    const nextVersion = d.body.fbos_version;
+    if (nextVersion && previousVersion &&
+      nextVersion != previousVersion) {
+      const changedAt = clipX(d.body.created_at, mostRecent);
+      isNumber(changedAt) &&
+        changes.push({ changedAt, previousVersion, nextVersion });
     }
   });
   return <g id="version-change-lines">
-    {changes.map(c =>
-      <g id={"" + c[0]}>
+    {changes.map(change =>
+      <g key={"" + change.changedAt}>
         <line y1={0} y2={MAX_Y}
-          x1={plotXSeconds(c[0])}
-          x2={plotXSeconds(c[0])}
+          x1={plotXSeconds(change.changedAt)}
+          x2={plotXSeconds(change.changedAt)}
           stroke={"gray"} strokeWidth={1} strokeDasharray={2} />
-        <text x={plotXSeconds(c[0]) - 3} y={5} color={"gray"}
-          textAnchor={"end"} style={{ textAnchor: "end" }}>v{c[1]}</text>
-        <text x={plotXSeconds(c[0]) + 3} y={5} color={"gray"}
-          textAnchor={"start"} style={{ textAnchor: "start" }}>v{c[2]}</text>
+        <text x={plotXSeconds(change.changedAt) - 3} y={5} color={"gray"}
+          textAnchor={"end"} style={{ textAnchor: "end" }}>
+          v{change.previousVersion}
+        </text>
+        <text x={plotXSeconds(change.changedAt) + 3} y={5} color={"gray"}
+          textAnchor={"start"} style={{ textAnchor: "start" }}>
+          v{change.nextVersion}
+        </text>
       </g>)}
   </g>;
 };
