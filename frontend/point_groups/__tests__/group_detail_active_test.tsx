@@ -51,6 +51,7 @@ describe("<GroupDetailActive />", () => {
       selectionPointType: undefined,
       tools: [],
       toolTransformProps: fakeToolTransformProps(),
+      tryGroupSortType: undefined,
     };
   };
 

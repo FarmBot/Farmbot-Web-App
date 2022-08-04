@@ -1,21 +1,17 @@
-import { fakeState } from "../../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../../redux/store", () => ({
-  store: { getState: () => mockState },
-}));
-
-import * as React from "react";
+import React from "react";
 import {
-  GroupOrder, GroupOrderProps, NNPath,
+  GroupOrder, GroupOrderProps,
 } from "../../map/group_order_visual";
 import {
   fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import {
-  fakePlant, fakePointGroup,
+  fakePlant, fakePoint, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { svgMount } from "../../../__test_support__/svg_mount";
 import { ExtendedPointGroupSortType } from "../../../point_groups/paths";
+import { shallow } from "enzyme";
+import { times } from "lodash";
 
 describe("<GroupOrder />", () => {
   const fakeProps = (): GroupOrderProps => {
@@ -36,12 +32,22 @@ describe("<GroupOrder />", () => {
       zoomLvl: 1,
       groupPoints: [plant1, plant2, plant3],
       group,
+      tryGroupSortType: undefined,
     };
   };
 
   it("renders group order", () => {
     const wrapper = svgMount(<GroupOrder {...fakeProps()} />);
     expect(wrapper.find("line").length).toEqual(3);
+  });
+
+  it("updates", () => {
+    const p = fakeProps();
+    const wrapper = shallow<GroupOrder>(<GroupOrder {...p} />);
+    expect(wrapper.instance().shouldComponentUpdate(p)).toBeTruthy();
+    p.groupPoints = times(51, fakePoint);
+    wrapper.setProps(p);
+    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
   });
 
   it.each<[ExtendedPointGroupSortType]>([
@@ -51,26 +57,8 @@ describe("<GroupOrder />", () => {
   ])("renders group order: %s", (sortType) => {
     const p = fakeProps();
     p.zoomLvl = 1.5;
-    mockState.resources.consumers.farm_designer.tryGroupSortType = sortType;
+    p.tryGroupSortType = sortType;
     const wrapper = svgMount(<GroupOrder {...p} />);
     expect(wrapper.find("line").length).toEqual(3);
-  });
-});
-
-describe("<NNPath />", () => {
-  const fakeProps = () => ({
-    pathPoints: [],
-    mapTransformProps: fakeMapTransformProps(),
-  });
-
-  it("doesn't render optimized path", () => {
-    const wrapper = svgMount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).toEqual("<svg><g></g></svg>");
-  });
-
-  it("renders optimized path", () => {
-    localStorage.setItem("try_it", "ok");
-    const wrapper = svgMount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).not.toEqual("<svg><g></g></svg>");
   });
 });

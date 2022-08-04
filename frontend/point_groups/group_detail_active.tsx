@@ -12,6 +12,7 @@ import { Help } from "../ui";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { setSelectionPointType } from "../plants/select_plants";
 import { ToolTransformProps } from "../tools/interfaces";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -24,15 +25,20 @@ export interface GroupDetailActiveProps {
   selectionPointType: PointType[] | undefined;
   tools: TaggedTool[];
   toolTransformProps: ToolTransformProps;
+  tryGroupSortType: PointGroupSortType | undefined;
 }
 
 interface GroupDetailActiveState {
   iconDisplay: boolean;
+  points: TaggedPoint[];
 }
 
 export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, GroupDetailActiveState> {
-  state: GroupDetailActiveState = { iconDisplay: true };
+  state: GroupDetailActiveState = {
+    iconDisplay: true,
+    points: this.pointsSelectedByGroup,
+  };
 
   get pointsSelectedByGroup() {
     return pointsSelectedByGroup(this.props.group, this.props.allPoints);
@@ -47,11 +53,12 @@ export class GroupDetailActive
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
       <GroupMemberDisplay group={group} dispatch={dispatch}
-        pointsSelectedByGroup={this.pointsSelectedByGroup}
+        pointsSelectedByGroup={this.state.points}
         hovered={this.props.hovered}
         iconDisplay={this.state.iconDisplay}
         toggleIconShow={this.toggleIconShow}
         tools={this.props.tools}
+        tryGroupSortType={this.props.tryGroupSortType}
         toolTransformProps={this.props.toolTransformProps} />
       <GroupCriteria dispatch={dispatch}
         group={group} slugs={this.props.slugs} botSize={this.props.botSize}
@@ -94,6 +101,7 @@ interface GroupMemberDisplayProps {
   hovered: UUID | undefined;
   tools: TaggedTool[];
   toolTransformProps: ToolTransformProps;
+  tryGroupSortType: PointGroupSortType | undefined;
 }
 
 /** View group point counts and icon list. */
@@ -117,6 +125,7 @@ const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
       hovered={props.hovered}
       tools={props.tools}
       toolTransformProps={props.toolTransformProps}
+      tryGroupSortType={props.tryGroupSortType}
       pointsSelectedByGroup={props.pointsSelectedByGroup} />
   </div>;
 };
