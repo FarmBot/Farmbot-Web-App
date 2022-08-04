@@ -2,7 +2,7 @@ import React from "react";
 import { trim } from "../../util";
 import { Telemetry } from "farmbot/dist/resources/api_resources";
 import { TaggedTelemetry } from "farmbot";
-import { isNumber, last, max, range, sortBy } from "lodash";
+import { flatten, isNumber, last, max, range, sortBy } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { COLORS, OnMetricHover } from "./fbos_metric_history_table";
 
@@ -45,11 +45,13 @@ const plotXHours = (hours: number) => MAX_X - (hours * 10);
 /** Convert seconds to plot x-axis values. */
 const plotXSeconds = (seconds: number) => plotXHours(seconds / 3600);
 
+type DataSegment = Record<"x" | "y", number>[];
+
 /** Process data: clip to plot bounds and split into continuous runs. */
 const getData = (
   all: TaggedTelemetry[],
   metricName: keyof Telemetry,
-): Record<"x" | "y", number>[][] => {
+): DataSegment[] => {
   const data: Record<"x" | "y", number>[] = [];
   const mostRecent = last(sortBy(all, "body.created_at"));
   if (!mostRecent) {
@@ -64,8 +66,8 @@ const getData = (
       }
     }
   });
-  const splitData: Record<"x" | "y", number>[][] = [];
-  let continuousData: Record<"x" | "y", number>[] = [];
+  const splitData: DataSegment[] = [];
+  let continuousData: DataSegment = [];
   data.map((d, i) => {
     if (i == 0) {
       continuousData.push(d);
@@ -83,11 +85,12 @@ const getData = (
 
 /** Returns SVG path string. */
 const getPath = (
-  data: Record<"x" | "y", number>[],
+  data: DataSegment,
   metricName: keyof Telemetry,
+  allSegments: DataSegment[],
 ): string => {
-  const ys = data.map(d => d.y);
-  const yMax = Math.max(MAXIMUMS[metricName] || 100, max(ys) || 1);
+  const allYs = flatten(allSegments.map(ds => ds.map(d => d.y)));
+  const yMax = Math.max(MAXIMUMS[metricName] || 100, max(allYs) || 1);
   let path = "";
   data.map(d => {
     const x = plotXSeconds(d.x);
@@ -148,8 +151,9 @@ export interface PlotLinesProps {
 /** Metric data lines SVG */
 const PlotLines = (props: PlotLinesProps) => {
   return <g id="plot_lines">
-    {METRIC_NAMES.map((metricName: keyof Telemetry) =>
-      getData(props.telemetry, metricName).map((data, index) =>
+    {METRIC_NAMES.map((metricName: keyof Telemetry) => {
+      const allSegments = getData(props.telemetry, metricName);
+      return allSegments.map((data, index) =>
         <path key={metricName + index}
           onMouseEnter={props.onHover(metricName)}
           onMouseLeave={props.onHover(undefined)}
@@ -157,7 +161,8 @@ const PlotLines = (props: PlotLinesProps) => {
           stroke={COLORS[metricName]}
           strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
           strokeLinecap={"round"} strokeLinejoin={"round"}
-          d={getPath(data, metricName)} />))}
+          d={getPath(data, metricName, allSegments)} />);
+    })}
   </g>;
 };
 
