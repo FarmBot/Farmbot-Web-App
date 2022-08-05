@@ -11,12 +11,14 @@ import { t } from "../i18next_wrapper";
 import { SafeZCheckbox } from "../sequences/step_tiles/tile_computed_move/safe_z";
 import { Slider } from "@blueprintjs/core";
 import { Path } from "../internal_urls";
+import { setMovementStateFromPosition } from "../connectivity/log_handlers";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
   currentBotLocation: BotPosition;
   botOnline: boolean;
   locked: boolean;
+  dispatch: Function;
 }
 
 interface MoveToFormState {
@@ -70,6 +72,8 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <Col xs={3}>
           <button
             onClick={() => {
+              this.props.dispatch(setMovementStateFromPosition(
+                this.props.currentBotLocation, this.vector));
               move({
                 ...this.vector,
                 speed: this.state.speed,

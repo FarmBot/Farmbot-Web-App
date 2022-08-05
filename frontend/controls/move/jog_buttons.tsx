@@ -9,7 +9,7 @@ import { BooleanSetting } from "../../session_keys";
 const DEFAULT_STEP_SIZE = 100;
 
 interface JogButtonsState {
-  active: string | undefined;
+  popover: string | undefined;
 }
 
 /*
@@ -20,14 +20,16 @@ interface JogButtonsState {
 /** Jog controls, take photo, and home buttons. */
 export class JogButtons
   extends React.Component<JogMovementControlsProps, JogButtonsState> {
-  state: JogButtonsState = { active: undefined };
+  state: JogButtonsState = {
+    popover: undefined,
+  };
 
-  click = (active: string) => () => { this.setState({ active }); };
+  setActivePopover = (popover: string) => { this.setState({ popover }); };
 
   render() {
     const {
       stepSize, arduinoBusy, locked, getConfigValue, env, highlightHome,
-      highlightAxis, highlightDirection, botPosition, botOnline,
+      highlightAxis, highlightDirection, botPosition, botOnline, dispatch,
     } = this.props;
     const directionAxesProps = buildDirectionProps(this.props);
     const xySwap = !!getConfigValue(BooleanSetting.xy_swap);
@@ -39,7 +41,10 @@ export class JogButtons
       botOnline,
       locked,
       botPosition,
-      active: this.state.active,
+      popover: this.state.popover,
+      setActivePopover: this.setActivePopover,
+      movementState: this.props.movementState,
+      dispatch,
     };
     const highlight = {
       upDown: {
@@ -62,14 +67,12 @@ export class JogButtons
         : {};
     const upDownUpProps: DirectionButtonProps = {
       ...commonProps,
-      click: this.click(upDown + "up"),
       axis: upDown,
       direction: "up",
       directionAxisProps: directionAxesProps[upDown],
     };
     const rightLeftLeftProps: DirectionButtonProps = {
       ...commonProps,
-      click: this.click(rightLeft + "left"),
       axis: rightLeft,
       direction: "left",
       directionAxisProps: directionAxesProps[rightLeft],
@@ -93,7 +96,6 @@ export class JogButtons
           <td />
           <td style={style(highlight.z.up)}>
             <DirectionButton {...commonProps}
-              click={this.click("z" + "up")}
               axis="z"
               direction="up"
               directionAxisProps={directionAxesProps.z} />
@@ -113,14 +115,12 @@ export class JogButtons
           </td>
           <td style={style(highlight.upDown.down)}>
             <DirectionButton {...commonProps}
-              click={this.click(upDown + "down")}
               axis={upDown}
               direction="down"
               directionAxisProps={directionAxesProps[upDown]} />
           </td>
           <td style={style(highlight.rightLeft.right)}>
             <DirectionButton {...commonProps}
-              click={this.click(rightLeft + "right")}
               axis={rightLeft}
               direction="right"
               directionAxisProps={directionAxesProps[rightLeft]} />
@@ -128,7 +128,6 @@ export class JogButtons
           <td />
           <td style={style(highlight.z.down)}>
             <DirectionButton {...commonProps}
-              click={this.click("z" + "down")}
               axis="z"
               direction="down"
               directionAxisProps={directionAxesProps.z} />

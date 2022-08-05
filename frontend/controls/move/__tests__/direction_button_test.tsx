@@ -7,7 +7,9 @@ import {
   DirectionButton, directionDisabled, calculateDistance, calcBtnStyle,
 } from "../direction_button";
 import { ButtonDirection, DirectionButtonProps } from "../interfaces";
-import { fakeBotLocationData } from "../../../__test_support__/fake_bot_data";
+import {
+  fakeBotLocationData, fakeMovementState,
+} from "../../../__test_support__/fake_bot_data";
 
 const fakeProps = (): DirectionButtonProps => ({
   axis: "y",
@@ -23,10 +25,12 @@ const fakeProps = (): DirectionButtonProps => ({
   steps: 1000,
   arduinoBusy: false,
   botOnline: true,
-  click: jest.fn(),
-  active: "yup",
+  setActivePopover: jest.fn(),
+  popover: "yup",
   locked: false,
   botPosition: fakeBotLocationData().position,
+  movementState: fakeMovementState(),
+  dispatch: jest.fn(),
 });
 
 describe("<DirectionButton />", () => {
@@ -46,15 +50,46 @@ describe("<DirectionButton />", () => {
     expect(mockDevice.moveRelative).toHaveBeenCalledTimes(1);
   });
 
-  it("shows progress", () => {
+  it("shows progress: positive", () => {
     const p = fakeProps();
-    p.botPosition = { x: 1, y: 150, z: 3 };
+    p.direction = "up";
+    p.botPosition = { x: 1, y: 2, z: 3 };
     p.steps = 100;
     p.arduinoBusy = true;
+    p.movementState.start = { x: 0, y: 0, z: 0 };
+    p.movementState.distance = { x: 0, y: 1, z: 0 };
     const wrapper = mount(<DirectionButton {...p} />);
-    wrapper.setState({ start: 100, distance: 100 });
     wrapper.simulate("click");
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(wrapper.html()).toContain("movement-progress");
+  });
+
+  it("shows progress: negative", () => {
+    const p = fakeProps();
+    p.direction = "down";
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.steps = 100;
+    p.arduinoBusy = true;
+    p.movementState.start = { x: 0, y: 0, z: 0 };
+    p.movementState.distance = { x: 0, y: -1, z: 0 };
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(wrapper.html()).toContain("movement-progress");
+  });
+
+  it("doesn't show progress", () => {
+    const p = fakeProps();
+    p.direction = "up";
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.steps = 100;
+    p.arduinoBusy = true;
+    p.movementState.start = { x: 0, y: 0, z: 0 };
+    p.movementState.distance = { x: 1, y: 0, z: 0 };
+    const wrapper = mount(<DirectionButton {...p} />);
+    wrapper.simulate("click");
+    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(wrapper.html()).not.toContain("movement-progress");
   });
 
   it("is locked", () => {

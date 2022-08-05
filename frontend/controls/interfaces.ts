@@ -5,6 +5,7 @@ import {
 } from "farmbot";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { MovementState } from "../interfaces";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;
@@ -33,6 +34,7 @@ export interface AxisInputBoxGroupProps {
   position: BotPosition;
   disabled: boolean | undefined;
   locked: boolean;
+  dispatch: Function;
 }
 
 export interface AxisInputBoxGroupState {
@@ -67,4 +69,5 @@ export interface DesignerControlsProps {
   getConfigValue: GetWebAppConfigValue;
   env: UserEnv;
   firmwareHardware: FirmwareHardware | undefined;
+  movementState: MovementState;
 }

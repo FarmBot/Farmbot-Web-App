@@ -6,6 +6,7 @@ import { isNumber } from "lodash";
 import { Vector3 } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { lockedClass } from "./locked_class";
+import { setMovementStateFromPosition } from "../connectivity/log_handlers";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends
@@ -34,6 +35,8 @@ export class AxisInputBoxGroup extends
   }
 
   clicked = () => {
+    this.props.dispatch(setMovementStateFromPosition(
+      this.props.position, this.vector));
     this.props.onCommit(this.vector);
     this.setState({ x: undefined, y: undefined, z: undefined });
   };

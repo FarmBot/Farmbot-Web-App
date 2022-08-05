@@ -1,7 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
-import { BotState } from "./devices/interfaces";
-import { Color as FarmBotJsColor } from "farmbot";
+import { BotPosition, BotState } from "./devices/interfaces";
+import { Color as FarmBotJsColor, Xyz } from "farmbot";
 import { DraggableState } from "./draggable/interfaces";
 import { RestResources } from "./resources/interfaces";
 import { AppState } from "./reducer";
@@ -78,4 +78,9 @@ export interface SequencesPanelState {
 
 export interface MetricPanelState {
   history: boolean;
+}
+
+export interface MovementState {
+  start: BotPosition;
+  distance: Record<Xyz, number>;
 }

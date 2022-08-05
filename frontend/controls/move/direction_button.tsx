@@ -6,6 +6,7 @@ import { MoveRelProps } from "../../devices/interfaces";
 import { lockedClass } from "../locked_class";
 import { isNumber } from "lodash";
 import { Popover } from "../../ui";
+import { setMovementState } from "../../connectivity/log_handlers";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
@@ -52,8 +53,6 @@ export const calcBtnStyle = (
 });
 
 interface DirectionButtonState {
-  start: number | undefined;
-  distance: number;
   popoverOpen: boolean;
   popoverText: string;
 }
@@ -61,19 +60,25 @@ interface DirectionButtonState {
 export class DirectionButton
   extends React.Component<DirectionButtonProps, DirectionButtonState> {
   state: DirectionButtonState = {
-    start: undefined,
-    distance: 0,
     popoverOpen: false,
     popoverText: "",
   };
 
   get btnActive() {
-    return this.props.active == this.props.axis + this.props.direction;
+    const { axis, movementState } = this.props;
+    const { distance } = movementState;
+    return (distance[axis] > 0 && this.distance > 0)
+      || (distance[axis] < 0 && this.distance < 0);
+  }
+
+  get popActive() {
+    return this.props.popover == this.props.axis + this.props.direction;
   }
 
   sendCommand = () => {
     const { botPosition, locked, axis, arduinoBusy, botOnline } = this.props;
-    !arduinoBusy && this.props.click();
+    const buttonId = axis + this.props.direction;
+    this.props.setActivePopover(buttonId);
     const text = () => {
       if (locked) { return t("FarmBot is locked."); }
       if (arduinoBusy) { return t("FarmBot is busy."); }
@@ -97,17 +102,23 @@ export class DirectionButton
     const payload: MoveRelProps = { x: 0, y: 0, z: 0 };
     payload[this.props.axis] = this.distance;
     moveRelative(payload);
-    this.setState({ start: botPosition[axis], distance: this.distance });
+    this.props.dispatch(setMovementState({
+      start: botPosition,
+      distance: { x: 0, y: 0, z: 0, [axis]: this.distance },
+    }));
   };
 
   get distance() { return calculateDistance(this.props); }
 
   get remaining() {
-    const axisPosition = this.props.botPosition[this.props.axis];
-    if (!isNumber(axisPosition) || !isNumber(this.state.start)) {
+    const { axis, botPosition, movementState } = this.props;
+    const { start, distance } = movementState;
+    const axisPosition = botPosition[axis];
+    const axisStart = start[axis];
+    if (!isNumber(axisPosition) || !isNumber(axisStart)) {
       return;
     }
-    return (axisPosition - this.state.start) / this.state.distance * 100;
+    return (axisPosition - axisStart) / distance[axis] * 100;
   }
 
   render() {
@@ -130,7 +141,7 @@ export class DirectionButton
         ? <div className={"movement-progress"} style={style} />
         : <i />}
       <Popover
-        isOpen={this.btnActive && this.state.popoverOpen}
+        isOpen={this.popActive && this.state.popoverOpen}
         popoverClassName={"help movement-message"}
         target={<i />}
         content={<div className={"help-text-content"}>

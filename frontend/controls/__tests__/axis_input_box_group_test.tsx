@@ -11,6 +11,7 @@ describe("<AxisInputBoxGroup />", () => {
     onCommit: jest.fn(),
     disabled: false,
     locked: false,
+    dispatch: jest.fn(),
   });
 
   it("has 3 inputs and a button", () => {

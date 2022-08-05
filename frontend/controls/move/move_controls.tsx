@@ -37,6 +37,7 @@ export const MoveControls = (props: MoveControlsProps) => {
       highlightAxis={props.highlightAxis}
       highlightDirection={props.highlightDirection}
       highlightHome={props.highlightHome}
+      movementState={props.movementState}
       firmwareSettings={props.firmwareSettings} />
     <BotPositionRows
       locationData={locationData}
@@ -44,6 +45,7 @@ export const MoveControls = (props: MoveControlsProps) => {
       arduinoBusy={busy}
       locked={locked}
       botOnline={botOnline}
+      dispatch={props.dispatch}
       firmwareSettings={props.firmwareSettings}
       firmwareHardware={props.firmwareHardware} />
     {props.getConfigValue(BooleanSetting.show_motor_plot) &&

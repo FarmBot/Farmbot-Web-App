@@ -17,6 +17,11 @@ import { push } from "../../history";
 import { AxisActionsProps, BotPositionRowsProps } from "./interfaces";
 import { lockedClass } from "../locked_class";
 import { Path } from "../../internal_urls";
+import { Xyz } from "farmbot";
+import { BotPosition } from "../../devices/interfaces";
+import {
+  setMovementState, setMovementStateFromPosition,
+} from "../../connectivity/log_handlers";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
@@ -25,6 +30,8 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     botOnline: props.botOnline,
     arduinoBusy,
     locked,
+    dispatch: props.dispatch,
+    botPosition: locationData.position,
   };
   return <div className={"bot-position-rows"}>
     <div className={"axis-titles"}>
@@ -71,6 +78,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       position={locationData.position}
       onCommit={moveAbsolute}
       locked={locked}
+      dispatch={props.dispatch}
       disabled={arduinoBusy} />
   </div>;
 };
@@ -85,14 +93,17 @@ export const AxisActions = (props: AxisActionsProps) => {
         disabled={arduinoBusy || !botOnline}
         className={className}
         title={t("MOVE TO HOME")}
-        onClick={() => moveToHome(axis)}>
+        onClick={moveToHomeCommand(axis, props.botPosition, props.dispatch)}>
         {t("MOVE TO HOME")}
       </LockableButton>
       <LockableButton
         disabled={arduinoBusy || hardwareDisabled || !botOnline}
         className={className}
         title={t("FIND HOME")}
-        onClick={() => findHome(axis)}>
+        onClick={() => {
+          findHome(axis);
+          props.dispatch(setMovementStateFromPosition());
+        }}>
         {t("FIND HOME")}
       </LockableButton>
       <LockableButton
@@ -113,4 +124,16 @@ export const AxisActions = (props: AxisActionsProps) => {
         {t("Settings")}
       </a>
     </div>} />;
+};
+
+const moveToHomeCommand = (
+  axis: Xyz,
+  botPosition: BotPosition,
+  dispatch: Function,
+) => () => {
+  moveToHome(axis);
+  dispatch(setMovementState({
+    start: botPosition,
+    distance: { x: 0, y: 0, z: 0, [axis]: -(botPosition[axis] || 0) },
+  }));
 };

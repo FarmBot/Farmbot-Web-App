@@ -2,6 +2,7 @@ import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
   MetricPanelState,
+  MovementState,
   PlantsPanelState,
   PointsPanelState,
   SequencesPanelState,
@@ -127,5 +128,17 @@ describe("resource reducer", () => {
       payload: toastToRemove.id,
     });
     expect(newState.toasts).toEqual({ [toastToKeep.id]: toastToKeep });
+  });
+
+  it("sets movement state", () => {
+    const payload: MovementState = {
+      start: { x: 0, y: 0, z: 0 },
+      distance: { x: 0, y: 1, z: 0 },
+    };
+    const newState = appReducer(app, {
+      type: Actions.START_MOVEMENT,
+      payload,
+    });
+    expect(newState.movement).toEqual(payload);
   });
 });

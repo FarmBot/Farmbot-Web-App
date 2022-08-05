@@ -3,6 +3,7 @@ import {
 } from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { MovementState } from "../../interfaces";
 
 export interface MoveProps {
   dispatch: Function;
@@ -32,8 +33,10 @@ export interface DirectionButtonProps {
   botOnline: boolean | undefined;
   locked: boolean;
   botPosition: BotPosition;
-  click(): void;
-  active: string | undefined;
+  setActivePopover(s: string | undefined): void;
+  popover: string | undefined;
+  movementState: MovementState;
+  dispatch: Function;
 }
 
 export interface TakePhotoButtonProps {
@@ -47,6 +50,11 @@ export interface HomeButtonProps {
   botOnline: boolean | undefined;
   locked: boolean;
   homeDirection?: number;
+  setActivePopover(s: string | undefined): void;
+  popover: string | undefined;
+  movementState: MovementState;
+  botPosition: BotPosition;
+  dispatch: Function;
 }
 
 export interface StepSizeSelectorProps {
@@ -69,6 +77,8 @@ export interface JogMovementControlsProps extends DirectionAxesProps {
   highlightAxis?: Xyz;
   highlightDirection?: "both" | undefined;
   highlightHome?: boolean;
+  dispatch: Function;
+  movementState: MovementState;
 }
 
 export interface JogControlsGroupProps extends JogMovementControlsProps {
@@ -87,6 +97,7 @@ export interface BotPositionRowsProps {
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
+  dispatch: Function;
 }
 
 export interface AxisActionsProps {
@@ -95,6 +106,8 @@ export interface AxisActionsProps {
   hardwareDisabled: boolean;
   botOnline: boolean;
   axis: Xyz;
+  dispatch: Function;
+  botPosition: BotPosition;
 }
 
 export interface MoveControlsProps {
@@ -107,4 +120,5 @@ export interface MoveControlsProps {
   highlightAxis?: Xyz;
   highlightDirection?: "both" | undefined;
   highlightHome?: boolean;
+  movementState: MovementState;
 }

@@ -3,6 +3,7 @@ import { mount } from "enzyme";
 import { MoveControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { MoveControls } from "../move_controls";
+import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 
 describe("<MoveControls />", () => {
   const fakeProps = (): MoveControlsProps => ({
@@ -12,6 +13,7 @@ describe("<MoveControls />", () => {
     firmwareSettings: bot.hardware.mcu_params,
     firmwareHardware: undefined,
     env: {},
+    movementState: fakeMovementState(),
   });
 
   it("renders", () => {

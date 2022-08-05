@@ -23,6 +23,7 @@ describe("<MoveToForm />", () => {
     currentBotLocation: { x: 10, y: 20, z: 30 },
     botOnline: true,
     locked: false,
+    dispatch: jest.fn(),
   });
 
   it("moves to location: custom z value", () => {

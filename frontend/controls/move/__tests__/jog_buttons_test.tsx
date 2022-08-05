@@ -7,6 +7,7 @@ import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
+import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 
 describe("<JogButtons />", () => {
   const mockConfig = fakeWebAppConfig();
@@ -20,6 +21,8 @@ describe("<JogButtons />", () => {
     firmwareSettings: bot.hardware.mcu_params,
     env: {},
     locked: false,
+    dispatch: jest.fn(),
+    movementState: fakeMovementState(),
   });
 
   it("is disabled", () => {

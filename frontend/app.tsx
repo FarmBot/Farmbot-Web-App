@@ -2,7 +2,9 @@ import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
 import { error, warning } from "./toast/toast";
 import { NavBar } from "./nav";
-import { Everything, MetricPanelState, TimeSettings } from "./interfaces";
+import {
+  Everything, MetricPanelState, MovementState, TimeSettings,
+} from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, UserEnv } from "./devices/interfaces";
 import {
@@ -72,6 +74,7 @@ export interface AppProps {
   toastMessages: ToastMessages;
   controlsPopupOpen: boolean;
   metricPanelState: MetricPanelState;
+  movementState: MovementState;
   children?: React.ReactNode;
 }
 
@@ -106,6 +109,7 @@ export function mapStateToProps(props: Everything): AppProps {
     toastMessages: props.app.toasts,
     controlsPopupOpen: props.app.controlsPopupOpen,
     metricPanelState: props.app.metricPanelState,
+    movementState: props.app.movement,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -186,6 +190,7 @@ export class RawApp extends React.Component<AppProps, {}> {
           botOnline={isBotOnlineFromState(bot)}
           getConfigValue={getConfigValue}
           env={this.props.env}
+          movementState={this.props.movementState}
           stepSize={bot.stepSize} />}
       <div className={"toast-container"}>
         <TourStepContainer

@@ -18,6 +18,8 @@ export const JogControlsGroup = (props: JogControlsGroupProps) =>
       locked={props.locked}
       botOnline={props.botOnline}
       env={props.env}
+      dispatch={props.dispatch}
+      movementState={props.movementState}
       highlightAxis={props.highlightAxis}
       highlightDirection={props.highlightDirection}
       highlightHome={props.highlightHome}

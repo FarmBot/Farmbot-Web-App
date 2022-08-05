@@ -24,6 +24,8 @@ export const ControlsPopup = (props: ControlsPopupProps) => {
           locked={locked}
           botOnline={isOpen && botOnline}
           env={props.env}
+          dispatch={props.dispatch}
+          movementState={props.movementState}
           firmwareSettings={props.firmwareSettings} />
         <StepSizeSelector dispatch={dispatch} selected={stepSize} />
       </div>

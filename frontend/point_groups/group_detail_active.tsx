@@ -30,14 +30,12 @@ export interface GroupDetailActiveProps {
 
 interface GroupDetailActiveState {
   iconDisplay: boolean;
-  points: TaggedPoint[];
 }
 
 export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, GroupDetailActiveState> {
   state: GroupDetailActiveState = {
     iconDisplay: true,
-    points: this.pointsSelectedByGroup,
   };
 
   get pointsSelectedByGroup() {
@@ -53,7 +51,7 @@ export class GroupDetailActive
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
       <GroupMemberDisplay group={group} dispatch={dispatch}
-        pointsSelectedByGroup={this.state.points}
+        pointsSelectedByGroup={this.pointsSelectedByGroup}
         hovered={this.props.hovered}
         iconDisplay={this.state.iconDisplay}
         toggleIconShow={this.toggleIconShow}
