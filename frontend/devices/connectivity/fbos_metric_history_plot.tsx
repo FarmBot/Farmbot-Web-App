@@ -198,11 +198,11 @@ const VersionChangeLines = (props: VersionChangeLinesProps) => {
           x1={plotXSeconds(change.changedAt)}
           x2={plotXSeconds(change.changedAt)}
           stroke={"gray"} strokeWidth={1} strokeDasharray={2} />
-        <text x={plotXSeconds(change.changedAt) - 3} y={5} color={"gray"}
+        <text x={plotXSeconds(change.changedAt) - 3} y={-4} fill={"gray"}
           textAnchor={"end"} style={{ textAnchor: "end" }}>
           v{change.previousVersion}
         </text>
-        <text x={plotXSeconds(change.changedAt) + 3} y={5} color={"gray"}
+        <text x={plotXSeconds(change.changedAt) + 3} y={-4} fill={"gray"}
           textAnchor={"start"} style={{ textAnchor: "start" }}>
           v{change.nextVersion}
         </text>
@@ -234,7 +234,7 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
       height={MAX_Y}
       x={0}
       y={-BORDER_WIDTH}
-      viewBox={`0 ${0} ${MAX_X} ${MAX_Y}`}>
+      viewBox={`0 ${-7} ${MAX_X} ${MAX_Y}`}>
       <PlotBackground />
       <PlotLines telemetry={props.telemetry}
         hoveredMetric={props.hoveredMetric}

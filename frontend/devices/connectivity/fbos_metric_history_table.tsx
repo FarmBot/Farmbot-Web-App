@@ -11,7 +11,7 @@ import { FbosMetricHistoryPlot } from "./fbos_metric_history_plot";
 import { formatTime } from "../../util";
 import moment from "moment";
 import { Telemetry } from "farmbot/dist/resources/api_resources";
-import { cloneDeep } from "lodash";
+import { cloneDeep, sortBy } from "lodash";
 
 export const METRIC_TITLES = (): Partial<Record<keyof Telemetry, string>> => ({
   soc_temp: t("Temp"),
@@ -125,46 +125,47 @@ export class FbosMetricHistoryTable
             </tr>
           </thead>
           <tbody>
-            {cloneDeep(this.props.telemetry).reverse().map(m => {
-              const recordSelected = this.state.hoveredTime == m.body.created_at;
-              const recordProps = {
-                style: { background: recordSelected ? "#eee" : undefined },
-              };
-              const cellProps = { ...commonProps, recordSelected };
-              const rightCellProps = { ...cellProps, rightAlign: true };
-              return <tr key={m.uuid}>
-                <td {...recordProps}
-                  onMouseEnter={this.hoverTime(m.body.created_at)}
-                  onMouseLeave={this.hoverTime(undefined)}>
-                  {formatTime(moment.unix(m.body.created_at),
-                    this.props.timeSettings, "MMM D")}
-                </td>
-                <td {...recordProps}>{m.body.fbos_version}</td>
-                <TableBodyCell {...cellProps} metricName={"uptime"}>
-                  {convertUptime(m.body.uptime || 0, true)}
-                </TableBodyCell>
-                <TableBodyCell {...rightCellProps} metricName={"cpu_usage"}>
-                  {m.body.cpu_usage}%
-                </TableBodyCell>
-                <TableBodyCell {...rightCellProps} metricName={"disk_usage"}>
-                  {m.body.disk_usage}%
-                </TableBodyCell>
-                <TableBodyCell {...rightCellProps} metricName={"memory_usage"}>
-                  {m.body.memory_usage} MB
-                </TableBodyCell>
-                <TableBodyCell {...rightCellProps} metricName={"soc_temp"}>
-                  {m.body.soc_temp}&deg;C
-                </TableBodyCell>
-                <td {...recordProps}>
-                  <ThrottleIndicator throttleDataString={m.body.throttled}
-                    throttleType={ThrottleType.UnderVoltage} />
-                </td>
-                <TableBodyCell {...rightCellProps}
-                  metricName={"wifi_level_percent"}>
-                  {m.body.wifi_level_percent}%
-                </TableBodyCell>
-              </tr>;
-            })}
+            {sortBy(cloneDeep(this.props.telemetry), "body.created_at").reverse()
+              .map(m => {
+                const recordSelected = this.state.hoveredTime == m.body.created_at;
+                const recordProps = {
+                  style: { background: recordSelected ? "#eee" : undefined },
+                };
+                const cellProps = { ...commonProps, recordSelected };
+                const rightCellProps = { ...cellProps, rightAlign: true };
+                return <tr key={m.uuid}>
+                  <td {...recordProps}
+                    onMouseEnter={this.hoverTime(m.body.created_at)}
+                    onMouseLeave={this.hoverTime(undefined)}>
+                    {formatTime(moment.unix(m.body.created_at),
+                      this.props.timeSettings, "MMM D")}
+                  </td>
+                  <td {...recordProps}>{m.body.fbos_version}</td>
+                  <TableBodyCell {...cellProps} metricName={"uptime"}>
+                    {convertUptime(m.body.uptime || 0, true)}
+                  </TableBodyCell>
+                  <TableBodyCell {...rightCellProps} metricName={"cpu_usage"}>
+                    {m.body.cpu_usage}%
+                  </TableBodyCell>
+                  <TableBodyCell {...rightCellProps} metricName={"disk_usage"}>
+                    {m.body.disk_usage}%
+                  </TableBodyCell>
+                  <TableBodyCell {...rightCellProps} metricName={"memory_usage"}>
+                    {m.body.memory_usage} MB
+                  </TableBodyCell>
+                  <TableBodyCell {...rightCellProps} metricName={"soc_temp"}>
+                    {m.body.soc_temp}&deg;C
+                  </TableBodyCell>
+                  <td {...recordProps}>
+                    <ThrottleIndicator throttleDataString={m.body.throttled}
+                      throttleType={ThrottleType.UnderVoltage} />
+                  </td>
+                  <TableBodyCell {...rightCellProps}
+                    metricName={"wifi_level_percent"}>
+                    {m.body.wifi_level_percent}%
+                  </TableBodyCell>
+                </tr>;
+              })}
           </tbody>
         </table>
       </div>
