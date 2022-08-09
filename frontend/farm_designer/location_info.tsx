@@ -439,6 +439,7 @@ const LocationActions = (props: LocationActionsProps) =>
       chosenLocation={props.chosenLocation}
       currentBotLocation={props.currentBotLocation}
       locked={props.locked}
+      dispatch={props.dispatch}
       botOnline={props.botOnline} />
     {!isUndefined(props.currentBotLocation.x)
       && !isUndefined(props.currentBotLocation.y)

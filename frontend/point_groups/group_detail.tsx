@@ -27,6 +27,7 @@ import { destroy } from "../api/crud";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Popover } from "../ui";
 import { pointsSelectedByGroup } from "./criteria/apply";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 export interface GroupDetailProps {
   dispatch: Function;
@@ -39,6 +40,7 @@ export interface GroupDetailProps {
   selectionPointType: PointType[] | undefined;
   tools: TaggedTool[];
   toolTransformProps: ToolTransformProps;
+  tryGroupSortType: PointGroupSortType | undefined;
 }
 
 /** Find a group from a URL-provided ID. */
@@ -50,7 +52,10 @@ export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
 };
 
 export function mapStateToProps(props: Everything): GroupDetailProps {
-  const { hoveredPlantListItem, editGroupAreaInMap, selectionPointType } =
+  const {
+    hoveredPlantListItem, editGroupAreaInMap, selectionPointType,
+    tryGroupSortType,
+  } =
     props.resources.consumers.farm_designer;
   const getWebAppConfig = getWebAppConfigValue(() => props);
   const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
@@ -68,6 +73,7 @@ export function mapStateToProps(props: Everything): GroupDetailProps {
     selectionPointType,
     tools: selectAllTools(props.resources.index),
     toolTransformProps: { quadrant, xySwap },
+    tryGroupSortType,
   };
 }
 

@@ -11,6 +11,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { DesignerControlsProps } from "../interfaces";
 import { mapStateToProps } from "../state_to_props";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<DesignerControls />", () => {
   const fakeProps = (): DesignerControlsProps => ({
@@ -25,6 +26,7 @@ describe("<DesignerControls />", () => {
     getConfigValue: jest.fn(),
     env: {},
     firmwareHardware: undefined,
+    movementState: fakeMovementState(),
   });
 
   it("renders controls", () => {

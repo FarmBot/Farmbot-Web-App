@@ -29,6 +29,7 @@ import { fakeHelpState } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
 import { push } from "../history";
 import { metricPanelState } from "../__test_support__/panel_state";
+import { fakeMovementState } from "../__test_support__/fake_bot_data";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -58,6 +59,7 @@ const fakeProps = (): AppProps => ({
   controlsPopupOpen: false,
   telemetry: [],
   metricPanelState: metricPanelState(),
+  movementState: fakeMovementState(),
 });
 
 describe("<App />: Controls Pop-Up", () => {

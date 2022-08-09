@@ -1,5 +1,7 @@
 import { TaggedPointGroup, PointType, TaggedPoint, TaggedTool } from "farmbot";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
+import {
+  PointGroup, PointGroupSortType,
+} from "farmbot/dist/resources/api_resources";
 import { BotSize } from "../../farm_designer/map/interfaces";
 import { UUID } from "../../resources/interfaces";
 import { ToolTransformProps } from "../../tools/interfaces";
@@ -54,6 +56,7 @@ export interface GroupPointCountBreakdownProps {
   hovered: UUID | undefined;
   tools: TaggedTool[];
   toolTransformProps: ToolTransformProps;
+  tryGroupSortType: PointGroupSortType | undefined;
 }
 
 export interface PointTypeSelectionProps {

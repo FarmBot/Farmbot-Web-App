@@ -1,21 +1,23 @@
 import React from "react";
-import { store } from "../../redux/store";
 import { MapTransformProps } from "./interfaces";
 import { isUndefined } from "lodash";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "./util";
 import {
-  nn, ExtendedPointGroupSortType, convertToXY,
+  ExtendedPointGroupSortType, convertToXY,
 } from "../../point_groups/paths";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import { zoomCompensation } from "./zoom";
+import { equals } from "../../util";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 export interface GroupOrderProps {
   group: TaggedPointGroup | undefined;
   groupPoints: TaggedPoint[];
   zoomLvl: number;
   mapTransformProps: MapTransformProps;
+  tryGroupSortType: PointGroupSortType | undefined;
 }
 
 export const sortGroup = (
@@ -28,12 +30,12 @@ export const sortGroup = (
 };
 
 const sortedPointCoordinates = (
-  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[],
+  group: TaggedPointGroup | undefined,
+  groupPoints: TaggedPoint[],
+  tryGroupSortType: PointGroupSortType | undefined,
 ): { x: number, y: number }[] => {
   if (isUndefined(group)) { return []; }
-  const { resources } = store.getState();
-  const groupSortType = resources.consumers.farm_designer.tryGroupSortType
-    || group.body.sort_type;
+  const groupSortType = tryGroupSortType || group.body.sort_type;
   return convertToXY(sortGroup(groupSortType, groupPoints));
 };
 
@@ -86,30 +88,31 @@ export const PointsPathLabels = (props: PointsPathLabelsProps) =>
     })}
   </g>;
 
-export const GroupOrder = (props: GroupOrderProps) =>
-  <g id="group-order" style={{ pointerEvents: "none" }}>
-    <PointsPathLine
-      orderedPoints={sortedPointCoordinates(props.group, props.groupPoints)}
-      zoomLvl={props.zoomLvl}
-      mapTransformProps={props.mapTransformProps} />
-    <PointsPathLabels
-      orderedPoints={sortedPointCoordinates(props.group, props.groupPoints)}
-      zoomLvl={props.zoomLvl}
-      mapTransformProps={props.mapTransformProps} />
-  </g>;
+export class GroupOrder extends React.Component<GroupOrderProps> {
 
-interface NNPathProps {
-  pathPoints: TaggedPoint[];
-  mapTransformProps: MapTransformProps;
+  get sorted() {
+    return sortedPointCoordinates(this.props.group,
+      this.props.groupPoints, this.props.tryGroupSortType);
+  }
+
+  shouldComponentUpdate = (nextProps: GroupOrderProps) => {
+    if (this.props.groupPoints.length < 50) { return true; }
+    const shouldUpdate = !equals(this.props, nextProps);
+    return shouldUpdate;
+  };
+
+  render() {
+    const { zoomLvl, mapTransformProps } = this.props;
+    const orderedPoints = this.sorted;
+    return <g id="group-order" style={{ pointerEvents: "none" }}>
+      <PointsPathLine
+        orderedPoints={orderedPoints}
+        zoomLvl={zoomLvl}
+        mapTransformProps={mapTransformProps} />
+      <PointsPathLabels
+        orderedPoints={orderedPoints}
+        zoomLvl={zoomLvl}
+        mapTransformProps={mapTransformProps} />
+    </g>;
+  }
 }
-
-export const NNPath = (props: NNPathProps) =>
-  localStorage.getItem("try_it") == "ok"
-    ? <PointsPathLine
-      color={Color.blue}
-      strokeWidth={2}
-      dash={1}
-      orderedPoints={convertToXY(nn(props.pathPoints))}
-      zoomLvl={1}
-      mapTransformProps={props.mapTransformProps} />
-    : <g />;

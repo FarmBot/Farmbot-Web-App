@@ -24,6 +24,7 @@ export class RawDesignerControls
           env={this.props.env}
           firmwareSettings={this.props.firmwareSettings}
           firmwareHardware={this.props.firmwareHardware}
+          movementState={this.props.movementState}
           dispatch={this.props.dispatch} />
         <hr />
         <Peripherals

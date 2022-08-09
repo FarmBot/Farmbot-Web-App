@@ -544,6 +544,7 @@ export const AxisActions = (props: WizardStepComponentProps) => {
     arduinoBusy={busy}
     locked={locked}
     botOnline={botOnline}
+    dispatch={props.dispatch}
     firmwareSettings={firmwareSettings}
     firmwareHardware={firmwareHardware} />;
 };

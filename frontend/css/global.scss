@@ -1252,6 +1252,9 @@ ul {
   .arrow-button {
     margin: 5px;
     box-shadow: none !important;
+    &.pseudo-disabled {
+      box-shadow: none !important;
+    }
   }
 }
 

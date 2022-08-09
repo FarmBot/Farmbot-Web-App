@@ -21,6 +21,7 @@ import { overwriteGroup } from "../actions";
 import { PointGroupItem } from "../point_group_item";
 import { TaggedPoint } from "farmbot";
 import { sortGroup } from "../../farm_designer/map/group_order_visual";
+import { equals } from "../../util";
 
 export const CRITERIA_POINT_TYPE_LOOKUP =
   (): Record<PointerType, string> => ({
@@ -130,11 +131,24 @@ const ClearPointIds = (props: ClearPointIdsProps) =>
   </button>;
 
 /** Show counts of manual and criteria selections. */
-export const GroupPointCountBreakdown =
-  (props: GroupPointCountBreakdownProps) => {
-    const manuallyAddedIds = props.group.body.point_ids;
-    const sortedPoints =
-      sortGroup(props.group.body.sort_type, props.pointsSelectedByGroup);
+export class GroupPointCountBreakdown
+  extends React.Component<GroupPointCountBreakdownProps> {
+
+  shouldComponentUpdate = (nextProps: GroupPointCountBreakdownProps) => {
+    if (this.props.pointsSelectedByGroup.length < 50) { return true; }
+    return !equals(this.props, nextProps);
+  };
+
+  get sortedGroup() {
+    return sortGroup(
+      this.props.tryGroupSortType || this.props.group.body.sort_type,
+      this.props.pointsSelectedByGroup);
+  }
+
+  render() {
+    const { group, hovered, dispatch, iconDisplay } = this.props;
+    const manuallyAddedIds = group.body.point_ids;
+    const sortedPoints = this.sortedGroup;
     const manualPoints = sortedPoints
       .filter(p => manuallyAddedIds.includes(p.body.id || 0));
     const criteriaPoints = sortedPoints
@@ -142,33 +156,34 @@ export const GroupPointCountBreakdown =
     const generatePointIcons = (point: TaggedPoint) =>
       <PointGroupItem
         key={point.uuid}
-        hovered={point.uuid === props.hovered}
-        group={props.group}
+        hovered={point.uuid === hovered}
+        group={group}
         point={point}
-        tools={props.tools}
-        toolTransformProps={props.toolTransformProps}
-        dispatch={props.dispatch} />;
+        tools={this.props.tools}
+        toolTransformProps={this.props.toolTransformProps}
+        dispatch={dispatch} />;
     return <div className={"group-member-count-breakdown"}>
       <div className={"manual-group-member-count"}>
         <p>{`${manualPoints.length} ${t("manually selected")}`}</p>
-        <ClearPointIds dispatch={props.dispatch} group={props.group} />
+        <ClearPointIds dispatch={dispatch} group={group} />
       </div>
-      {props.iconDisplay && manualPoints.length > 0 &&
+      {iconDisplay && manualPoints.length > 0 &&
         <div className="groups-list-wrapper">
           {manualPoints.map(generatePointIcons)}
         </div>}
       <div className={"group-member-section"}>
         <div className={"criteria-group-member-count"}>
           <p>{`${criteriaPoints.length} ${t("selected by filters")}`}</p>
-          <ClearCriteria dispatch={props.dispatch} group={props.group} />
+          <ClearCriteria dispatch={dispatch} group={group} />
         </div>
-        {props.iconDisplay && criteriaPoints.length > 0 &&
+        {iconDisplay && criteriaPoints.length > 0 &&
           <div className="groups-list-wrapper">
             {criteriaPoints.map(generatePointIcons)}
           </div>}
       </div>
     </div>;
-  };
+  }
+}
 
 /** Select pointer_type string equal criteria,
  *  which determines if any additional criteria is shown. */

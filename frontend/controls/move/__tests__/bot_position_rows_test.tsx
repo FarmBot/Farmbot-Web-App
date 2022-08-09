@@ -33,6 +33,7 @@ describe("<BotPositionRows />", () => {
     firmwareHardware: undefined,
     botOnline: true,
     locked: false,
+    dispatch: jest.fn(),
   });
 
   it("inputs axis destination", () => {

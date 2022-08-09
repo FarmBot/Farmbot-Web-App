@@ -15,7 +15,7 @@ import {
 import {
   fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
-import { cloneDeep } from "lodash";
+import { cloneDeep, times } from "lodash";
 import { Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
 import { overwriteGroup } from "../../actions";
@@ -87,6 +87,7 @@ describe("<GroupPointCountBreakdown />", () => {
     hovered: undefined,
     tools: [],
     toolTransformProps: fakeToolTransformProps(),
+    tryGroupSortType: undefined,
   });
 
   it("renders point counts", () => {
@@ -153,6 +154,16 @@ describe("<GroupPointCountBreakdown />", () => {
     window.confirm = () => false;
     wrapper.find("button").last().simulate("click");
     expect(overwriteGroup).not.toHaveBeenCalled();
+  });
+
+  it("updates", () => {
+    const p = fakeProps();
+    const wrapper = mount<GroupPointCountBreakdown>(
+      <GroupPointCountBreakdown {...p} />);
+    expect(wrapper.instance().shouldComponentUpdate(p)).toBeTruthy();
+    p.pointsSelectedByGroup = times(51, fakePoint);
+    wrapper.setProps(p);
+    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
   });
 });
 

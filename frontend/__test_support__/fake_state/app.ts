@@ -1,4 +1,5 @@
 import { AppState } from "../../reducer";
+import { fakeMovementState } from "../fake_bot_data";
 import {
   metricPanelState,
   plantsPanelState,
@@ -18,4 +19,5 @@ export const app: AppState = {
   metricPanelState: metricPanelState(),
   controlsPopupOpen: false,
   toasts: {},
+  movement: fakeMovementState(),
 };

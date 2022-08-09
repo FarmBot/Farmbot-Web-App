@@ -3,6 +3,7 @@ import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import {
   MetricPanelState,
+  MovementState,
   PlantsPanelState,
   PointsPanelState,
   SequencesPanelState,
@@ -20,6 +21,7 @@ export interface AppState {
   metricPanelState: MetricPanelState;
   toasts: ToastMessages;
   controlsPopupOpen: boolean;
+  movement: MovementState,
 }
 
 export const emptyState = (): AppState => {
@@ -68,6 +70,10 @@ export const emptyState = (): AppState => {
     },
     toasts: {},
     controlsPopupOpen: false,
+    movement: {
+      start: { x: undefined, y: undefined, z: undefined },
+      distance: { x: 0, y: 0, z: 0 },
+    },
   };
 };
 
@@ -129,6 +135,10 @@ export const appReducer =
     })
     .add<ToastMessageProps>(Actions.CREATE_TOAST, (s, { payload }) => {
       s.toasts = { ...s.toasts, [payload.id]: payload };
+      return s;
+    })
+    .add<MovementState>(Actions.START_MOVEMENT, (s, { payload }) => {
+      s.movement = payload;
       return s;
     })
     .add<string>(Actions.REMOVE_TOAST, (s, { payload }) => {

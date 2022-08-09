@@ -4,6 +4,7 @@ import { JogControlsGroup } from "../jog_controls_group";
 import { JogControlsGroupProps } from "../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
+import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 
 describe("<JogControlsGroup />", () => {
   const fakeProps = (): JogControlsGroupProps => ({
@@ -16,6 +17,7 @@ describe("<JogControlsGroup />", () => {
     firmwareSettings: {},
     env: {},
     locked: false,
+    movementState: fakeMovementState(),
   });
 
   it("changes step size", () => {

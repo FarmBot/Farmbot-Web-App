@@ -23,6 +23,7 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     sequences: selectAllSequences(props.resources.index),
     resources: props.resources.index,
     menuOpen: props.resources.consumers.sequences.menuOpen,
+    movementState: props.app.movement,
     firmwareSettings: fwConfig || mcu_params,
     getConfigValue: getWebAppConfigValue(() => props),
     env: getEnv(props.resources.index),

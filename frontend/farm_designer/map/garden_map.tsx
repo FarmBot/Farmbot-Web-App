@@ -35,7 +35,7 @@ import {
   SavePointsProps, savePoints,
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
-import { GroupOrder, NNPath } from "./group_order_visual";
+import { GroupOrder } from "./group_order_visual";
 import { push } from "../../history";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
@@ -88,7 +88,9 @@ export class GardenMap extends
 
   /** Display plant animations? */
   get animate(): boolean {
-    return !this.props.getConfigValue(BooleanSetting.disable_animations);
+    return this.pointsSelectedByGroup.length > 100
+      ? false
+      : !this.props.getConfigValue(BooleanSetting.disable_animations);
   }
   get group(): TaggedPointGroup | undefined {
     return findGroupFromUrl(this.props.groups);
@@ -659,6 +661,7 @@ export class GardenMap extends
     group={this.group}
     groupPoints={this.pointsSelectedByGroup}
     zoomLvl={this.props.zoomLvl}
+    tryGroupSortType={this.props.designer.tryGroupSortType}
     mapTransformProps={this.mapTransformProps} />;
   SequenceVisualization = () => <SequenceVisualization
     botPosition={this.props.botLocationData.position}
@@ -667,8 +670,6 @@ export class GardenMap extends
     visualizedSequenceBody={this.props.visualizedSequenceBody}
     hoveredSequenceStep={this.props.designer.hoveredSequenceStep}
     dispatch={this.props.dispatch}
-    mapTransformProps={this.mapTransformProps} />;
-  NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />;
   Bugs = () => showBugs()
     ? <Bugs mapTransformProps={this.mapTransformProps}
@@ -704,7 +705,6 @@ export class GardenMap extends
             <this.DrawnWeed />
             <this.GroupOrder />
             <this.SequenceVisualization />
-            <this.NNPath />
             <this.Bugs />
           </svg>
         </svg>
