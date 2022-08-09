@@ -9,6 +9,7 @@ import {
   reformatFwVersion, reformatFbosVersion, LocalIpAddress, MacAddress, isWifi,
   MemoryUsageDisplay,
   CameraIndicator,
+  PiDisplay,
 } from "../../settings/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
@@ -110,6 +111,7 @@ export class Connectivity
             <LocalIpAddress address={private_ip} />
             <VoltageDisplay throttleData={throttled} />
             <CameraIndicator videoDevices={video_devices} />
+            <PiDisplay chip={target} firmware={this.props.apiFirmwareValue} />
             <p><b>{t("Connectivity code")}: </b>{
               getDiagnosisCode(this.props.flags)}</p>
           </div>

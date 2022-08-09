@@ -13,6 +13,7 @@ const BORDERS = BORDER_WIDTH * 2;
 const MAX_X = HISTORY_LENGTH_HOUR_TENTHS;
 const MAX_Y = HEIGHT;
 const MAX_GAP_SECONDS = 15 * 60;
+const TOP_EXTRA_HEIGHT = 7;
 
 /** Names of metrics in plot. */
 const METRIC_NAMES: (keyof Telemetry)[] = [
@@ -234,7 +235,7 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
       height={MAX_Y}
       x={0}
       y={-BORDER_WIDTH}
-      viewBox={`0 ${-7} ${MAX_X} ${MAX_Y}`}>
+      viewBox={`0 ${-TOP_EXTRA_HEIGHT} ${MAX_X} ${MAX_Y + TOP_EXTRA_HEIGHT}`}>
       <PlotBackground />
       <PlotLines telemetry={props.telemetry}
         hoveredMetric={props.hoveredMetric}
