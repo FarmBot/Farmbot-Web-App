@@ -6,6 +6,8 @@ import {
   OSReleaseChannelSelectionProps, OSReleaseChannelSelection, reformatFwVersion,
   reformatFbosVersion, MacAddress, MacAddressProps, colorFromMemoryUsage,
   convertUptime,
+  PiDisplay,
+  PiDisplayProps,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -17,6 +19,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../devices/actions";
+import { FirmwareHardware } from "farmbot";
 
 describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -287,6 +290,27 @@ describe("colorFromTemp()", () => {
   it("temperature is cold", () => {
     expect(colorFromTemp(9)).toEqual("blue");
     expect(colorFromTemp(-1)).toEqual("lightblue");
+  });
+});
+
+describe("<PiDisplay />", () => {
+  const fakeProps = (): PiDisplayProps => ({
+    chip: "rpi",
+    firmware: "arduino",
+  });
+
+  it.each<[string, string, FirmwareHardware | undefined]>([
+    ["Zero W", "rpi", "arduino"],
+    ["3", "rpi3", "arduino"],
+    ["Zero 2 W", "rpi3", "express_k11"],
+    ["4", "rpi4", "arduino"],
+    ["unknown", "", undefined],
+  ])("returns correct pi model: %s", (expected, chip, firmware) => {
+    const p = fakeProps();
+    p.chip = chip;
+    p.firmware = firmware;
+    const wrapper = mount(<PiDisplay {...p} />);
+    expect(wrapper.text()).toContain(expected);
   });
 });
 

@@ -10,11 +10,12 @@ import { LastSeen } from "./last_seen_row";
 import moment from "moment";
 import { formatTime } from "../../util";
 import {
-  boardType, FIRMWARE_CHOICES_DDI,
+  boardType, FIRMWARE_CHOICES_DDI, validFirmwareHardware,
 } from "../firmware/firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { getModifiedClassName } from "./default_values";
+import { FirmwareHardware } from "farmbot";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -51,6 +52,26 @@ export function ChipTemperatureDisplay(
     <Saucer color={colorFromTemp(temperature)} className={"small-inline"} />
   </div>;
 }
+
+export interface PiDisplayProps {
+  chip: string;
+  firmware: FirmwareHardware | undefined;
+}
+
+/** RPI model display row. */
+export const PiDisplay = ({ chip, firmware }: PiDisplayProps): JSX.Element => {
+  const pi = () => {
+    switch (chip) {
+      case "rpi": return "Zero W";
+      case "rpi3": return firmware == "express_k11" ? "Zero 2 W" : "3";
+      case "rpi4": return "4";
+      default: return t("unknown");
+    }
+  };
+  return <div className={"pi-display"}>
+    <p><b>{t("Raspberry Pi")}: </b>{pi()}</p>
+  </div>;
+};
 
 /** Return an indicator color for the given memory usage (MB). */
 export const colorFromMemoryUsage = (usage: number | undefined) => {
@@ -385,6 +406,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     "last_ota" as keyof DeviceAccountSettings] as string | undefined;
   const firmware_path =
     props.sourceFbosConfig("firmware_path").value || "---";
+  const firmware_hardware = validFirmwareHardware(
+    props.sourceFbosConfig("firmware_hardware").value);
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
   const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
@@ -399,6 +422,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     <CommitDisplay title={t("Commit")}
       repo={FarmBotRepo.FarmBotOS} commit={commit} />
     <p><b>{t("Target")}: </b>{target}</p>
+    <PiDisplay chip={target} firmware={firmware_hardware} />
     <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
     <p><b>{t("Device ID")}: </b>{props.deviceAccount.body.id}</p>
     <LocalIpAddress address={private_ip} />
