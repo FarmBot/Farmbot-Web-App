@@ -225,16 +225,16 @@ export const FbosMetricHistoryPlot = (props: FbosMetricHistoryPlotProps) => {
     className={"fbos-metric-history-plot-border"}
     width={"100%"}
     height={"100%"}
-    viewBox={trim(`${-BORDER_WIDTH} ${-BORDER_WIDTH - 5}
-      ${MAX_X + BORDERS} ${MAX_Y + BORDERS}`)}>
+    viewBox={trim(`${-BORDER_WIDTH} ${-BORDER_WIDTH - 5 - TOP_EXTRA_HEIGHT}
+      ${MAX_X + BORDERS} ${MAX_Y + BORDERS + TOP_EXTRA_HEIGHT}`)}>
     <YAxisLabels />
     <XAxisLabels />
     <svg
       className={"fbos-metric-history-plot"}
       width={MAX_X}
-      height={MAX_Y}
+      height={MAX_Y + TOP_EXTRA_HEIGHT}
       x={0}
-      y={-BORDER_WIDTH}
+      y={-BORDER_WIDTH - TOP_EXTRA_HEIGHT}
       viewBox={`0 ${-TOP_EXTRA_HEIGHT} ${MAX_X} ${MAX_Y + TOP_EXTRA_HEIGHT}`}>
       <PlotBackground />
       <PlotLines telemetry={props.telemetry}
