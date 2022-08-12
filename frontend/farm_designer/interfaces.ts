@@ -298,6 +298,9 @@ export interface EditPlantInfoProps {
   getConfigValue: GetWebAppConfigValue;
   soilHeightPoints: TaggedGenericPointer[];
   farmwareEnvs: TaggedFarmwareEnv[];
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 export interface DraggableEvent {

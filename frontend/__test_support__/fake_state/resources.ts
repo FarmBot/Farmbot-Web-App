@@ -328,6 +328,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     display_trail: false,
     dynamic_map: false,
     encoder_figure: false,
+    go_button_axes: "XY",
     hide_webcam_widget: false,
     highlight_modified_settings: false,
     landing_page: "controls",

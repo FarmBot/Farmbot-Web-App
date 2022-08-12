@@ -12,6 +12,8 @@ import { isNumber, get } from "lodash";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { selectMostRecentPoints } from "../farm_designer/location_info";
 import { soilHeightPoint } from "../points/soil_height";
+import { isBotOnlineFromState } from "../devices/must_be_online";
+import { validBotLocationData } from "../util";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const openedSavedGarden =
@@ -37,6 +39,10 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     getConfigValue: getWebAppConfigValue(() => props),
     soilHeightPoints: selectMostRecentPoints(soilHeightPoints),
     farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
+    botOnline: isBotOnlineFromState(props.bot),
+    arduinoBusy: props.bot.hardware.informational_settings.busy,
+    currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
+      .position,
   };
 }
 

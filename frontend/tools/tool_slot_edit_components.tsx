@@ -14,8 +14,7 @@ import {
   EditToolSlotMetaProps,
 } from "./interfaces";
 import { betterMerge } from "../util";
-import { push } from "../history";
-import { Path } from "../internal_urls";
+import { GoToThisLocationButton } from "../farm_designer/move_to";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
@@ -105,8 +104,12 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
     </Row>
   </div>;
 
-export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
-  <div className="tool-slot-location-input">
+export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
+  const x = props.gantryMounted
+    ? props.botPosition.x ?? props.slotLocation.x
+    : props.slotLocation.x;
+  const { y, z } = props.slotLocation;
+  return <div className="tool-slot-location-input">
     <Row>
       <Col xs={11} className="axis-inputs">
         {["x", "y", "z"].map((axis: Xyz) =>
@@ -126,19 +129,15 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
       <UseCurrentLocation botPosition={props.botPosition}
         onChange={props.onChange} />
     </Row>
-    <button
-      className={"fb-button gray no-float"}
-      title={t("move to this location")}
-      onClick={() => {
-        const x = props.gantryMounted
-          ? props.botPosition.x ?? props.slotLocation.x
-          : props.slotLocation.x;
-        const { y, z } = props.slotLocation;
-        push(Path.location({ x, y, z }));
-      }}>
-      {t("Move FarmBot to slot location")}
-    </button>
+    <GoToThisLocationButton
+      dispatch={props.dispatch}
+      locationCoordinate={{ x, y, z }}
+      botOnline={props.botOnline}
+      arduinoBusy={props.arduinoBusy}
+      currentBotLocation={props.botPosition}
+      defaultAxes={props.defaultAxes} />
   </div>;
+};
 
 export interface UseCurrentLocationProps {
   botPosition: BotPosition;
@@ -174,6 +173,9 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       gantryMounted={props.toolSlot.body.gantry_mounted}
       botPosition={props.botPosition}
       botOnline={props.botOnline}
+      dispatch={props.dispatch}
+      arduinoBusy={props.arduinoBusy}
+      defaultAxes={props.defaultAxes}
       onChange={props.updateToolSlot} />
     <ToolInputRow
       noUTM={props.noUTM}

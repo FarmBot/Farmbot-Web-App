@@ -21,6 +21,7 @@ import {
   AddEditToolSlotPropsBase, AddToolSlotProps, EditToolSlotProps, ToolsProps,
 } from "./interfaces";
 import { isBotOnlineFromState } from "../devices/must_be_online";
+import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export const mapStateToProps = (props: Everything): ToolsProps => {
   const getWebAppConfig = getWebAppConfigValue(() => props);
@@ -59,6 +60,8 @@ export const mapStateToPropsAddEditBase = (props: Everything):
     toolTransformProps: { xySwap, quadrant },
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     botOnline: isBotOnlineFromState(props.bot),
+    arduinoBusy: props.bot.hardware.informational_settings.busy,
+    defaultAxes: validGoButtonAxes(getWebAppConfig),
   };
 };
 

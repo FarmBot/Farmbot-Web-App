@@ -62,6 +62,10 @@ describe("<EditPointLocation />", () => {
     updatePoint: jest.fn(),
     pointLocation: { x: 1, y: 2, z: 0 },
     botOnline: true,
+    dispatch: jest.fn(),
+    defaultAxes: "XY",
+    arduinoBusy: false,
+    currentBotLocation: { x: 10, y: 20, z: 30 },
   });
 
   it("edits location", () => {

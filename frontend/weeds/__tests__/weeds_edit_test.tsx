@@ -15,7 +15,9 @@ import { mount, shallow } from "enzyme";
 import {
   RawEditWeed as EditWeed, EditWeedProps, mapStateToProps,
 } from "../weeds_edit";
-import { fakeWeed } from "../../__test_support__/fake_state/resources";
+import {
+  fakeWebAppConfig, fakeWeed,
+} from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -31,6 +33,9 @@ describe("<EditWeed />", () => {
     dispatch: jest.fn(),
     findPoint: () => undefined,
     botOnline: true,
+    defaultAxes: "XY",
+    arduinoBusy: false,
+    currentBotLocation: { x: 10, y: 20, z: 30 },
   });
 
   it("redirects", () => {
@@ -108,9 +113,12 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     const weed = fakeWeed();
+    const config = fakeWebAppConfig();
+    config.body.go_button_axes = "X";
     weed.body.id = 1;
-    state.resources = buildResourceIndex([weed]);
+    state.resources = buildResourceIndex([weed, config]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(weed);
+    expect(props.defaultAxes).toEqual("X");
   });
 });

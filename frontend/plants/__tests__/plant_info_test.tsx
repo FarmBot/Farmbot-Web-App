@@ -30,6 +30,9 @@ describe("<PlantInfo />", () => {
     getConfigValue: jest.fn(),
     farmwareEnvs: [],
     soilHeightPoints: [],
+    arduinoBusy: false,
+    currentBotLocation: { x: 0, y: 0, z: 0 },
+    botOnline: true,
   });
 
   it("renders", () => {
@@ -37,8 +40,8 @@ describe("<PlantInfo />", () => {
     ["Strawberry Plant 1", "Plant Type", "Strawberry"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const buttons = wrapper.find("button");
-    expect(buttons.at(0).text()).toEqual("Move FarmBot to this plant");
-    expect(buttons.at(1).text()).toEqual("Planned");
+    expect(buttons.at(0).text()).toEqual("GO (X, Y)");
+    expect(buttons.at(2).text()).toEqual("Planned");
   });
 
   it("renders: no plant", () => {

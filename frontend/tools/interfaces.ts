@@ -92,6 +92,8 @@ export interface AddEditToolSlotPropsBase {
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
 }
 
 export interface AddToolSlotProps extends AddEditToolSlotPropsBase {
@@ -143,6 +145,9 @@ export interface SlotLocationInputRowProps {
   onChange(update: Partial<Record<Xyz, number>>): void;
   botPosition: BotPosition;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  dispatch: Function;
 }
 
 export interface SlotEditRowsProps {
@@ -155,6 +160,9 @@ export interface SlotEditRowsProps {
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  dispatch: Function;
 }
 
 export interface ToolVerificationProps {

@@ -72,6 +72,8 @@ export class RawDesignerPhotos
       <DesignerPanelContent panelName={"photos"}>
         <label>{t("Photos")}</label>
         <Photos {...common} {...imageCommon}
+          currentBotLocation={this.props.currentBotLocation}
+          arduinoBusy={this.props.arduinoBusy}
           currentImageSize={this.props.currentImageSize}
           imageJobs={this.props.imageJobs} />
         <ExpandableHeader

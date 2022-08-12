@@ -106,6 +106,7 @@ export const StringSetting: StringSettings = {
 
   /** App settings */
   landing_page: "landing_page",
+  go_button_axes: "go_button_axes",
 
   /** Other */
   created_at: "created_at",

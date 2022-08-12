@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../ui";
+import { Row, Col, Popover } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { move } from "../devices/actions";
 import { push } from "../history";
@@ -9,9 +9,15 @@ import { Actions, Content } from "../constants";
 import { AxisNumberProperty } from "./map/interfaces";
 import { t } from "../i18next_wrapper";
 import { SafeZCheckbox } from "../sequences/step_tiles/tile_computed_move/safe_z";
-import { Slider } from "@blueprintjs/core";
+import { Position, Slider } from "@blueprintjs/core";
 import { Path } from "../internal_urls";
 import { setMovementStateFromPosition } from "../connectivity/log_handlers";
+import { Vector3 } from "farmbot";
+import { Link } from "../link";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue,
+} from "../config_storage/actions";
+import { StringSetting } from "../session_keys";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -123,9 +129,129 @@ export const chooseLocation = (props: {
   dispatch: Function,
 }) => {
   if (props.gardenCoords) {
-    props.dispatch({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: props.gardenCoords.x, y: props.gardenCoords.y, z: 0 }
-    });
+    props.dispatch(chooseLocationAction({
+      x: props.gardenCoords.x, y: props.gardenCoords.y, z: 0
+    }));
   }
 };
+
+type GoButtonAxes = "X" | "Y" | "Z" | "XY" | "XYZ";
+const GO_BUTTON_AXES: GoButtonAxes[] = ["X", "Y", "Z", "XY", "XYZ"];
+
+export interface GoToThisLocationButtonProps {
+  defaultAxes: string;
+  locationCoordinate: Vector3;
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  dispatch: Function;
+  currentBotLocation: BotPosition;
+}
+
+interface GoToThisLocationButtonState {
+  open: boolean;
+  setAsDefault: boolean;
+}
+
+export class GoToThisLocationButton
+  extends React.Component<GoToThisLocationButtonProps,
+  GoToThisLocationButtonState> {
+  state: GoToThisLocationButtonState = { open: false, setAsDefault: false };
+
+  toggle = (key: keyof GoToThisLocationButtonState) => () =>
+    this.setState({ ...this.state, [key]: !this.state[key] });
+
+  render() {
+    const goText = (axes: string) => `${t("GO")} (${axes.split("").join(", ")})`;
+    const current = this.props.currentBotLocation;
+    const target = this.props.locationCoordinate;
+    const { arduinoBusy, botOnline, dispatch, defaultAxes } = this.props;
+    const unavailableContent = () => {
+      if (arduinoBusy) { return t("FarmBot is busy."); }
+      if (!botOnline) { return t("FarmBot is offline."); }
+    };
+    const unavailable = arduinoBusy || !botOnline;
+    const classes = (className: string) => [
+      className,
+      "fb-button gray",
+      unavailable ? "pseudo-disabled" : "",
+    ].join(" ");
+    const defaultDestination = coordinateFromAxes(target, current, defaultAxes);
+    return <div className={"go-button-axes-wrapper"}>
+      <button
+        className={classes("go-button-axes-text")}
+        title={goText(this.props.defaultAxes)}
+        onMouseEnter={() => dispatch(chooseLocationAction(defaultDestination))}
+        onMouseLeave={() => dispatch(unChooseLocationAction())}
+        onClick={() => {
+          if (unavailable) { return; }
+          dispatch(setMovementStateFromPosition(current, defaultDestination));
+          move(defaultDestination);
+          this.setState({ open: false });
+        }}>
+        {goText(this.props.defaultAxes)}
+      </button>
+      <Popover position={Position.BOTTOM_RIGHT}
+        isOpen={this.state.open}
+        className={"go-button-axes"}
+        popoverClassName={"go-button-axes-popover"}
+        target={<button
+          className={classes("go-button-axes-dropdown")}
+          title={t("options")}
+          onClick={this.toggle("open")}>
+          <i className={"fa fa-chevron-down"} />
+        </button>}
+        content={unavailable
+          ? unavailableContent()
+          : <div className={"go-axes"}>
+            {GO_BUTTON_AXES.map(axes => {
+              const destination = coordinateFromAxes(target, current, axes);
+              return <button key={axes}
+                className={`${axes.toLowerCase()} fb-button gray`}
+                title={goText(axes)}
+                onMouseEnter={() => dispatch(chooseLocationAction(destination))}
+                onMouseLeave={() => dispatch(unChooseLocationAction())}
+                onClick={() => {
+                  this.state.setAsDefault && dispatch(setWebAppConfigValue(
+                    StringSetting.go_button_axes, axes));
+                  dispatch(setMovementStateFromPosition(current, destination));
+                  move(destination);
+                  this.setState({ open: false });
+                }}>
+                {goText(axes)}
+              </button>;
+            })}
+            <div className={"save-as-default-wrapper"}>
+              <p>{t("Save as default")}</p>
+              <input type={"checkbox"}
+                title={t("save as default")}
+                onChange={this.toggle("setAsDefault")}
+                checked={this.state.setAsDefault} />
+            </div>
+            <Link to={Path.location(target)}>
+              {t("More options")}
+              <i className={"fa fa-external-link"} />
+            </Link>
+          </div>} />
+    </div>;
+  }
+}
+
+export const validGoButtonAxes = (getConfigValue: GetWebAppConfigValue) =>
+  "" + (getConfigValue(StringSetting.go_button_axes) || "XY");
+
+const coordinateFromAxes =
+  (target: Vector3, current: BotPosition, axes: string) => ({
+    x: axes.includes("X") ? target.x : (current.x || 0),
+    y: axes.includes("Y") ? target.y : (current.y || 0),
+    z: axes.includes("Z") ? target.z : (current.z || 0),
+  });
+
+export const chooseLocationAction = (target: BotPosition) => ({
+  type: Actions.CHOOSE_LOCATION,
+  payload: target,
+});
+
+export const unChooseLocationAction = () => ({
+  type: Actions.CHOOSE_LOCATION,
+  payload: { x: undefined, y: undefined, z: undefined },
+});

@@ -34,6 +34,7 @@ describe("<LocationInfo />", () => {
     hoveredSensorReading: undefined,
     locked: false,
     farmwareEnvs: [],
+    arduinoBusy: false,
   });
 
   it("renders empty panel", () => {
@@ -176,6 +177,8 @@ describe("<ImageListItem />", () => {
       env: {},
       chosenXY: undefined,
       timeSettings: fakeTimeSettings(),
+      arduinoBusy: false,
+      currentBotLocation: { x: 0, y: 0, z: 0 },
     };
   };
 

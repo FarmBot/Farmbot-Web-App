@@ -20,6 +20,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   display_trail: true,
   dynamic_map: false,
   encoder_figure: false,
+  go_button_axes: "XY",
   hide_webcam_widget: false,
   landing_page: "controls",
   legend_menu_open: true,

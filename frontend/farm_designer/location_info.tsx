@@ -20,7 +20,9 @@ import {
   TaggedGenericPointer, TaggedImage, TaggedPlantPointer, TaggedPoint,
   TaggedSensor, TaggedSensorReading, Xyz,
 } from "farmbot";
-import { MoveToForm } from "./move_to";
+import {
+  chooseLocationAction, MoveToForm, unChooseLocationAction, validGoButtonAxes,
+} from "./move_to";
 import { Actions } from "../constants";
 import { push } from "../history";
 import { distance } from "../point_groups/paths";
@@ -60,6 +62,7 @@ export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   sensors: selectAllSensors(props.resources.index),
   timeSettings: maybeGetTimeSettings(props.resources.index),
+  arduinoBusy: props.bot.hardware.informational_settings.busy,
 });
 
 export interface LocationInfoProps {
@@ -78,6 +81,7 @@ export interface LocationInfoProps {
   sensors: TaggedSensor[];
   timeSettings: TimeSettings;
   farmwareEnvs: TaggedFarmwareEnv[];
+  arduinoBusy: boolean;
 }
 
 export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
@@ -95,17 +99,13 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
     const y = getUrlQuery("y");
     const z = getUrlQuery("z") || "0";
     !this.chosenXY && !isUndefined(x) && !isUndefined(y) &&
-      this.props.dispatch({
-        type: Actions.CHOOSE_LOCATION,
-        payload: { x: parseFloat(x), y: parseFloat(y), z: parseFloat(z) }
-      });
+      this.props.dispatch(chooseLocationAction({
+        x: parseFloat(x), y: parseFloat(y), z: parseFloat(z)
+      }));
   }
 
   componentWillUnmount() {
-    this.props.dispatch({
-      type: Actions.CHOOSE_LOCATION,
-      payload: { x: undefined, y: undefined, z: undefined }
-    });
+    this.props.dispatch(unChooseLocationAction());
   }
 
   render() {
@@ -161,6 +161,8 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
                 key={resource.title}
                 items={resource.items}
                 dispatch={this.props.dispatch}
+                arduinoBusy={this.props.arduinoBusy}
+                currentBotLocation={this.props.currentBotLocation}
                 title={resource.title}
                 timeSettings={this.props.timeSettings}
                 sensorNameByPinLookup={sensorNameByPinLookup}
@@ -241,6 +243,8 @@ interface ItemListWrapperProps {
   chosenXY: Record<"x" | "y", number> | undefined;
   hoveredSensorReading: string | undefined;
   farmwareEnvs: TaggedFarmwareEnv[];
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 function ItemListWrapper(props: ItemListWrapperProps) {
@@ -308,6 +312,8 @@ function ItemListWrapper(props: ItemListWrapperProps) {
                 dispatch={props.dispatch}
                 getConfigValue={props.getConfigValue}
                 chosenXY={chosenXY}
+                arduinoBusy={props.arduinoBusy}
+                currentBotLocation={props.currentBotLocation}
                 timeSettings={props.timeSettings}
                 env={props.env} />;
           }
@@ -396,6 +402,8 @@ export interface ImageListItemProps {
   env: UserEnv;
   chosenXY: Record<"x" | "y", number> | undefined;
   timeSettings: TimeSettings;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 export const ImageListItem = (props: ImageListItemProps) => {
@@ -421,6 +429,10 @@ export const ImageListItem = (props: ImageListItemProps) => {
       image={images[0]}
       botOnline={false}
       distance={props.images.distance}
+      arduinoBusy={props.arduinoBusy}
+      currentBotLocation={props.currentBotLocation}
+      defaultAxes={validGoButtonAxes(props.getConfigValue)}
+      dispatch={props.dispatch}
       timeSettings={props.timeSettings} />
   </div>;
 };

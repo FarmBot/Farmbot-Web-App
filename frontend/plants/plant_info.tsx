@@ -15,6 +15,7 @@ import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
 import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
+import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
@@ -77,6 +78,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         updatePlant={this.updatePlant}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
+        botOnline={this.props.botOnline}
+        arduinoBusy={this.props.arduinoBusy}
+        currentBotLocation={this.props.currentBotLocation}
+        defaultAxes={validGoButtonAxes(this.props.getConfigValue)}
         soilHeightPoints={this.props.soilHeightPoints}
         farmwareEnvs={this.props.farmwareEnvs}
         inSavedGarden={!!this.props.openedSavedGarden} />

@@ -1,7 +1,7 @@
 import { TaggedImage, JobProgress, SyncStatus, Xyz } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
-import { UserEnv } from "../../devices/interfaces";
+import { BotPosition, UserEnv } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
 
@@ -65,6 +65,8 @@ export interface PhotosProps {
   env: UserEnv;
   designer: DesignerState;
   getConfigValue: GetWebAppConfigValue;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 export interface PhotoButtonsProps {
@@ -124,11 +126,19 @@ export interface PhotoFooterProps {
   botOnline: boolean;
   distance?: number;
   children?: React.ReactNode;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
+  dispatch: Function;
 }
 
 export interface MoveToLocationProps {
   botOnline: boolean;
   imageLocation: Record<Xyz, number | undefined>;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
+  dispatch: Function;
 }
 
 export interface PhotosComponentState {

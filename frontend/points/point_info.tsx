@@ -19,17 +19,28 @@ import { save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ColorPicker } from "../ui";
 import { ResourceTitle } from "../sequences/panel/editor";
+import { BotPosition } from "../devices/interfaces";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { validBotLocationData } from "../util";
+import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export interface EditPointProps {
   dispatch: Function;
   findPoint(id: number): TaggedGenericPointer | undefined;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 export const mapStateToProps = (props: Everything): EditPointProps => ({
   dispatch: props.dispatch,
   findPoint: id => maybeFindGenericPointerById(props.resources.index, id),
   botOnline: isBotOnlineFromState(props.bot),
+  defaultAxes: validGoButtonAxes(getWebAppConfigValue(() => props)),
+  arduinoBusy: props.bot.hardware.informational_settings.busy,
+  currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
+    .position,
 });
 
 export class RawEditPoint extends React.Component<EditPointProps, {}> {
@@ -74,6 +85,10 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
           ? <div className={"point-panel-content-wrapper"}>
             <EditPointProperties point={this.point}
               botOnline={this.props.botOnline}
+              dispatch={this.props.dispatch}
+              arduinoBusy={this.props.arduinoBusy}
+              currentBotLocation={this.props.currentBotLocation}
+              defaultAxes={this.props.defaultAxes}
               updatePoint={updatePoint(this.point, dispatch)} />
             <ul className="meta">
               {Object.entries(this.point.body.meta).map(([key, value]) => {

@@ -18,6 +18,8 @@ import {
 import { Path } from "../internal_urls";
 import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
+import { GoToThisLocationButton } from "../farm_designer/move_to";
+import { BotPosition } from "../devices/interfaces";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -28,6 +30,10 @@ export interface PlantPanelProps {
   timeSettings?: TimeSettings;
   soilHeightPoints: TaggedGenericPointer[];
   farmwareEnvs: TaggedFarmwareEnv[];
+  botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 interface EditPlantProperty {
@@ -101,21 +107,6 @@ export const EditPlantRadius = (props: EditPlantRadiusProps) =>
         })} />
     </Col>
   </Row>;
-
-interface MoveToPlantProps {
-  x: number;
-  y: number;
-  z: number;
-  dispatch: Function;
-}
-
-const MoveToPlant = (props: MoveToPlantProps) =>
-  <button className={"fb-button gray no-float"}
-    style={{ marginTop: "1rem" }}
-    title={t("Move to this plant")}
-    onClick={() => push(Path.location({ x: props.x, y: props.y, z: props.z }))}>
-    {t("Move FarmBot to this plant")}
-  </button>;
 
 interface DeleteButtonsProps {
   destroy(): void;
@@ -203,7 +194,13 @@ export function PlantPanel(props: PlantPanelProps) {
           soilHeightPoints={props.soilHeightPoints}
           farmwareEnvs={props.farmwareEnvs} />
       </ListItem>
-      <MoveToPlant x={x} y={y} z={z} dispatch={dispatch} />
+      <GoToThisLocationButton
+        dispatch={props.dispatch}
+        locationCoordinate={{ x, y, z }}
+        botOnline={props.botOnline}
+        arduinoBusy={props.arduinoBusy}
+        currentBotLocation={props.currentBotLocation}
+        defaultAxes={props.defaultAxes} />
       <ListItem>
         <EditPlantRadius {...commonProps} radius={info.radius} />
       </ListItem>
