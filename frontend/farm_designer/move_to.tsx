@@ -166,8 +166,8 @@ export class GoToThisLocationButton
     const target = this.props.locationCoordinate;
     const { arduinoBusy, botOnline, dispatch, defaultAxes } = this.props;
     const unavailableContent = () => {
-      if (arduinoBusy) { return t("FarmBot is busy."); }
-      if (!botOnline) { return t("FarmBot is offline."); }
+      if (arduinoBusy) { return t("FarmBot is busy"); }
+      if (!botOnline) { return t("FarmBot is offline"); }
     };
     const unavailable = arduinoBusy || !botOnline;
     const classes = (className: string) => [
@@ -183,7 +183,10 @@ export class GoToThisLocationButton
         onMouseEnter={() => dispatch(chooseLocationAction(defaultDestination))}
         onMouseLeave={() => dispatch(unChooseLocationAction())}
         onClick={() => {
-          if (unavailable) { return; }
+          if (unavailable) {
+            this.toggle("open")();
+            return;
+          }
           dispatch(setMovementStateFromPosition(current, defaultDestination));
           move(defaultDestination);
           this.setState({ open: false });
@@ -211,8 +214,11 @@ export class GoToThisLocationButton
                 onMouseEnter={() => dispatch(chooseLocationAction(destination))}
                 onMouseLeave={() => dispatch(unChooseLocationAction())}
                 onClick={() => {
-                  this.state.setAsDefault && dispatch(setWebAppConfigValue(
-                    StringSetting.go_button_axes, axes));
+                  if (this.state.setAsDefault) {
+                    dispatch(setWebAppConfigValue(
+                      StringSetting.go_button_axes, axes));
+                    this.setState({ setAsDefault: false });
+                  }
                   dispatch(setMovementStateFromPosition(current, destination));
                   move(destination);
                   this.setState({ open: false });

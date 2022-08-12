@@ -5,7 +5,7 @@ import { MapTransformProps } from "../../interfaces";
 import { RotatedTool } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
 import { t } from "../../../../i18next_wrapper";
-import { mapPointClickAction } from "../../actions";
+import { mapPointClickAction, setHoveredPlant } from "../../actions";
 import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 import { ToolbaySlot } from "../../tool_graphics/slot";
 import { GantryToolSlot } from "../../tool_graphics/seed_trough";
@@ -43,8 +43,11 @@ export const ToolSlotPoint = (props: TSPProps) => {
     toolTransformProps: { quadrant, xySwap },
   };
   return <g id={"toolslot-" + id}
-    onClick={mapPointClickAction(props.dispatch, toolSlot.uuid,
-      Path.toolSlots(id))}>
+    onClick={() => {
+      mapPointClickAction(props.dispatch, toolSlot.uuid,
+        Path.toolSlots(id))();
+      props.dispatch(setHoveredPlant(undefined));
+    }}>
     {pullout_direction && !gantry_mounted &&
       <ToolbaySlot
         id={id}

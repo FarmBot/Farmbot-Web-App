@@ -147,7 +147,7 @@ describe("<GoToThisLocationButton />", () => {
     p.botOnline = false;
     const wrapper = mount(<GoToThisLocationButton {...p} />);
     wrapper.setState({ open: true });
-    expect(wrapper.text().toLowerCase()).toContain("farmbot is offline.");
+    expect(wrapper.text().toLowerCase()).toContain("farmbot is offline");
     wrapper.find("button").first().simulate("click");
     expect(move).not.toHaveBeenCalled();
   });
@@ -157,7 +157,7 @@ describe("<GoToThisLocationButton />", () => {
     p.arduinoBusy = true;
     const wrapper = mount(<GoToThisLocationButton {...p} />);
     wrapper.setState({ open: true });
-    expect(wrapper.text().toLowerCase()).toContain("farmbot is busy.");
+    expect(wrapper.text().toLowerCase()).toContain("farmbot is busy");
   });
 
   it("moves: default", () => {

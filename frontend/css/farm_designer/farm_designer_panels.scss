@@ -1110,6 +1110,9 @@ li {
     border-left: 1px solid $dark_gray;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    &.pseudo-disabled {
+      border-left: 1px solid $gray;
+    }
   }
 }
 
@@ -1126,8 +1129,8 @@ li {
     width: 200px;
     .go-axes {
       display: grid;
+      gap: 0.75rem;
       button {
-        margin: 0.2rem;
         padding: 0.5rem 1rem;
         float: none;
         &.x,
@@ -1161,7 +1164,7 @@ li {
       }
       input {
         float: right;
-        width: 10%;
+        width: auto;
         box-shadow: none;
         cursor: pointer;
       }
@@ -1169,7 +1172,6 @@ li {
         display: inline-block;
         grid-column: span 12;
         width: 100%;
-        padding: 1rem 0;
       }
     }
   }
