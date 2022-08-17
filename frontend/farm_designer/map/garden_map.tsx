@@ -299,6 +299,7 @@ export class GardenMap extends
       dropPlant({
         gardenCoords: this.getGardenCoordinates(e),
         cropSearchResults: this.props.designer.cropSearchResults,
+        companionIndex: this.props.designer.companionIndex,
         openedSavedGarden: this.props.designer.openedSavedGarden,
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,

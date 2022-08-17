@@ -31,6 +31,7 @@ export const initialState: DesignerState = {
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
+  companionIndex: undefined,
   plantTypeChangeId: undefined,
   bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
@@ -137,6 +138,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
     s.cropSearchResults = a.payload;
     s.cropSearchInProgress = false;
+    return s;
+  })
+  .add<number>(Actions.SET_COMPANION_INDEX, (s, a) => {
+    s.companionIndex = a.payload;
     return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {

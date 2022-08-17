@@ -1,9 +1,9 @@
-jest.mock("takeme", () => ({ navigate: jest.fn() }));
+jest.mock("../history", () => ({ push: jest.fn() }));
 
-import { clickHandler, Link } from "../link";
 import React from "react";
-import { navigate } from "takeme";
 import { shallow } from "enzyme";
+import { clickHandler, Link } from "../link";
+import { push } from "../history";
 
 describe("clickHandler", () => {
   function setupClickTest(to: string) {
@@ -19,17 +19,10 @@ describe("clickHandler", () => {
   }
 
   it("handles clicks", () => {
-    const { e, handler } = setupClickTest("/clean_path");
-    handler(e);
-    expect(e.preventDefault).toHaveBeenCalled();
-    expect(navigate).toHaveBeenCalledWith("/clean_path");
-  });
-
-  it("handles clicks, stripping out the `/app` part", () => {
     const { e, handler } = setupClickTest("/app/foo/bar");
     handler(e);
     expect(e.preventDefault).toHaveBeenCalled();
-    expect(navigate).toHaveBeenCalledWith("/foo/bar");
+    expect(push).toHaveBeenCalledWith("/app/foo/bar");
   });
 });
 
@@ -44,12 +37,12 @@ describe("<Link/>", () => {
   it("navigates", () => {
     const wrapper = shallow(<Link to="/tools" />);
     wrapper.simulate("click", { preventDefault: jest.fn() });
-    expect(navigate).toHaveBeenCalledWith("/tools");
+    expect(push).toHaveBeenCalledWith("/tools");
   });
 
   it("doesn't navigate when disabled", () => {
     const wrapper = shallow(<Link to="/tools" disabled={true} />);
     wrapper.simulate("click", { preventDefault: jest.fn() });
-    expect(navigate).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });

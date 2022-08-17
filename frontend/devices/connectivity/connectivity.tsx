@@ -69,8 +69,7 @@ export class Connectivity
       payload: key,
     });
 
-  render() {
-    const historyOpen = this.props.metricPanelState.history;
+  Realtime = () => {
     const { informational_settings } = this.props.bot.hardware;
     const {
       soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
@@ -78,6 +77,75 @@ export class Connectivity
       video_devices,
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
+    return <div className={"realtime-wrapper"}>
+      <Col md={12} lg={4} className={"connectivity-left-column"}>
+        <ConnectivityDiagram
+          rowData={this.props.rowData}
+          hover={this.hover}
+          hoveredConnection={this.state.hoveredConnection} />
+        <div className="fbos-info">
+          <label>{t("FarmBot Info")}</label>
+          <p><b>{t("Device ID")}: </b>{id}</p>
+          {controller_version
+            ? <p><b>{t("Version")}: </b>{
+              reformatFbosVersion(controller_version)}</p>
+            : <p><b>{t("Version last seen")}: </b>{
+              reformatFbosVersion(fbos_version)}</p>}
+          <p><b>{t("Model")}: </b>{getKitName(this.props.apiFirmwareValue)}</p>
+          <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
+          <ChipTemperatureDisplay temperature={soc_temp} />
+          <MemoryUsageDisplay usage={memory_usage} />
+          <WiFiStrengthDisplay wifiStrength={wifi_level}
+            wifiStrengthPercent={wifi_level_percent} />
+          <MacAddress nodeName={node_name} target={target}
+            wifi={isWifi(wifi_level, wifi_level_percent)} />
+          <LocalIpAddress address={private_ip} />
+          <VoltageDisplay throttleData={throttled} />
+          <CameraIndicator videoDevices={video_devices} />
+          <PiDisplay chip={target} firmware={this.props.apiFirmwareValue} />
+          <p><b>{t("Connectivity code")}: </b>{
+            getDiagnosisCode(this.props.flags)}</p>
+        </div>
+        <QosPanel pings={this.props.pings} />
+      </Col>
+      <Col md={12} lg={8} className={"connectivity-right-column"}>
+        <ConnectivityRow from={t("from")} to={t("to")} header={true} />
+        {this.props.rowData
+          .map((statusRowProps, index) =>
+            <ConnectivityRow {...statusRowProps} key={index}
+              syncStatus={statusRowProps.connectionName == "botAPI"
+                ? sync_status
+                : undefined}
+              hover={this.hover}
+              hoveredConnection={this.state.hoveredConnection} />)}
+        <hr style={{ marginLeft: "3rem" }} />
+        <Diagnosis statusFlags={this.props.flags} />
+        {this.props.flags.userAPI && this.props.flags.userMQTT
+          && this.props.flags.botAPI && this.props.flags.botMQTT
+          && this.props.apiFirmwareValue
+          && !this.props.flags.botFirmware &&
+          <div className={"fix-firmware-buttons"}>
+            <Col xs={6}>
+              <FlashFirmwareBtn
+                apiFirmwareValue={this.props.apiFirmwareValue}
+                botOnline={true} />
+            </Col>
+            <Col xs={6}>
+              <button
+                className={"fb-button yellow"}
+                type={"button"}
+                onClick={() => { restartFirmware(); }}
+                title={t("restart firmware")}>
+                {t("restart firmware")}
+              </button>
+            </Col>
+          </div>}
+      </Col>
+    </div>;
+  };
+
+  render() {
+    const historyOpen = this.props.metricPanelState.history;
     return <div className="connectivity">
       <Row className={"connectivity-content"}>
         <div className={"tabs"}>
@@ -86,74 +154,10 @@ export class Connectivity
           <label className={historyOpen ? "selected" : ""}
             onClick={this.setHistoryOpen(true)}>{t("history")}</label>
         </div>
-        <Col md={12} lg={4} className={"connectivity-left-column"}
-          hidden={historyOpen}>
-          <ConnectivityDiagram
-            rowData={this.props.rowData}
-            hover={this.hover}
-            hoveredConnection={this.state.hoveredConnection} />
-          <div className="fbos-info">
-            <label>{t("FarmBot Info")}</label>
-            <p><b>{t("Device ID")}: </b>{id}</p>
-            {controller_version
-              ? <p><b>{t("Version")}: </b>{
-                reformatFbosVersion(controller_version)}</p>
-              : <p><b>{t("Version last seen")}: </b>{
-                reformatFbosVersion(fbos_version)}</p>}
-            <p><b>{t("Model")}: </b>{getKitName(this.props.apiFirmwareValue)}</p>
-            <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
-            <ChipTemperatureDisplay temperature={soc_temp} />
-            <MemoryUsageDisplay usage={memory_usage} />
-            <WiFiStrengthDisplay wifiStrength={wifi_level}
-              wifiStrengthPercent={wifi_level_percent} />
-            <MacAddress nodeName={node_name} target={target}
-              wifi={isWifi(wifi_level, wifi_level_percent)} />
-            <LocalIpAddress address={private_ip} />
-            <VoltageDisplay throttleData={throttled} />
-            <CameraIndicator videoDevices={video_devices} />
-            <PiDisplay chip={target} firmware={this.props.apiFirmwareValue} />
-            <p><b>{t("Connectivity code")}: </b>{
-              getDiagnosisCode(this.props.flags)}</p>
-          </div>
-          <QosPanel pings={this.props.pings} />
-        </Col>
-        <Col md={12} lg={8} className={"connectivity-right-column"}
-          hidden={historyOpen}>
-          <ConnectivityRow from={t("from")} to={t("to")} header={true} />
-          {this.props.rowData
-            .map((statusRowProps, index) =>
-              <ConnectivityRow {...statusRowProps} key={index}
-                syncStatus={statusRowProps.connectionName == "botAPI"
-                  ? sync_status
-                  : undefined}
-                hover={this.hover}
-                hoveredConnection={this.state.hoveredConnection} />)}
-          <hr style={{ marginLeft: "3rem" }} />
-          <Diagnosis statusFlags={this.props.flags} />
-          {this.props.flags.userAPI && this.props.flags.userMQTT
-            && this.props.flags.botAPI && this.props.flags.botMQTT
-            && this.props.apiFirmwareValue
-            && !this.props.flags.botFirmware &&
-            <div className={"fix-firmware-buttons"}>
-              <Col xs={6}>
-                <FlashFirmwareBtn
-                  apiFirmwareValue={this.props.apiFirmwareValue}
-                  botOnline={true} />
-              </Col>
-              <Col xs={6}>
-                <button
-                  className={"fb-button yellow"}
-                  type={"button"}
-                  onClick={() => { restartFirmware(); }}
-                  title={t("restart firmware")}>
-                  {t("restart firmware")}
-                </button>
-              </Col>
-            </div>}
-        </Col>
-        <FbosMetricHistoryTable telemetry={this.props.telemetry}
-          hidden={!historyOpen}
-          timeSettings={this.props.timeSettings} />
+        {historyOpen
+          ? <FbosMetricHistoryTable telemetry={this.props.telemetry}
+            timeSettings={this.props.timeSettings} />
+          : <this.Realtime />}
       </Row>
       {firmwareAlerts(this.props.alerts).length > 0 &&
         <Row>

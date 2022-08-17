@@ -1,4 +1,4 @@
-import { Content } from "../../../../constants";
+import { Actions, Content } from "../../../../constants";
 import { initSave, edit, save } from "../../../../api/crud";
 import {
   AxisNumberProperty, TaggedPlant, MapTransformProps,
@@ -96,6 +96,7 @@ export const createPlant = (props: CreatePlantProps): void => {
 export interface DropPlantProps {
   gardenCoords: AxisNumberProperty | undefined;
   cropSearchResults: CropLiveSearchResult[];
+  companionIndex: number | undefined;
   openedSavedGarden: string | undefined;
   gridSize: AxisNumberProperty;
   dispatch: Function;
@@ -106,8 +107,11 @@ export const dropPlant = (props: DropPlantProps) => {
   const { gardenCoords, openedSavedGarden, gridSize, dispatch } = props;
   if (gardenCoords) {
     const slug = Path.getSlug(Path.plants(1));
-    if (!slug) { return; }
-    const { crop } = findBySlug(props.cropSearchResults, slug);
+    if (!slug) { console.log("Missing slug."); return; }
+    const crop = isNumber(props.companionIndex)
+      ? props.cropSearchResults[0]?.companions[props.companionIndex]
+      : findBySlug(props.cropSearchResults, slug).crop;
+    if (!crop) { console.log("Missing crop."); return; }
     createPlant({
       cropName: crop.name,
       slug: crop.slug,
@@ -116,6 +120,7 @@ export const dropPlant = (props: DropPlantProps) => {
       dispatch,
       openedSavedGarden,
     });
+    dispatch({ type: Actions.SET_COMPANION_INDEX, payload: undefined });
   } else {
     throw new Error(`Missing 'drop-area-svg', 'farm-designer-map', or
         'farm-designer' while trying to add a plant.`);

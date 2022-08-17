@@ -6,8 +6,7 @@ import {
 import { connect } from "react-redux";
 import { findBySlug } from "../farm_designer/search_selectors";
 import { Everything } from "../interfaces";
-import { OpenFarm } from "../open_farm/openfarm";
-import { OFSearch } from "../farm_designer/util";
+import { OFCropFetch } from "../farm_designer/util";
 import { unselectPlant, setDragIcon } from "../farm_designer/map/actions";
 import { validBotLocationData } from "../util";
 import { createPlant } from "../farm_designer/map/layers/plants/plant_actions";
@@ -28,6 +27,7 @@ import { PlantGrid } from "./grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { Path } from "../internal_urls";
+import { Link } from "../link";
 
 interface InfoFieldProps {
   title: string;
@@ -122,17 +122,58 @@ const handleDisplay = ([field, value]: string[], i: number) => {
   }
 };
 
+interface CropInfoListProps {
+  result: CropLiveSearchResult;
+  dispatch: Function;
+  openfarmCropFetch: OpenfarmSearch;
+}
+
 /** Display crop properties from OpenFarm. */
-const CropInfoList = (crop: OpenFarm.OFCrop) => {
+const CropInfoList = (props: CropInfoListProps) => {
   return <div className="object-list">
     <ul>
-      {chain(crop)
+      {chain(props.result.crop)
         .omit(OMITTED_PROPERTIES)
         .toPairs()
         .map(handleDisplay)
         .value()}
+      <Companions {...props} />
     </ul>
   </div>;
+};
+
+/** Display companion plant list from OpenFarm. */
+const Companions = (props: CropInfoListProps) => {
+  const { result, dispatch, openfarmCropFetch } = props;
+  if (result.companions.length == 0) { return <div />; }
+  return <InfoField title={t("Companions")}>
+    {result.companions.map((companion, index) =>
+      <Link key={companion.slug}
+        className={"companion"}
+        onClick={() => {
+          openfarmCropFetch(companion.slug)(dispatch);
+          unselectPlant(dispatch)();
+        }}
+        onDragStart={() => {
+          dispatch({
+            type: Actions.SET_COMPANION_INDEX,
+            payload: index,
+          });
+        }}
+        onDragEnd={() => {
+          setTimeout(() => dispatch({
+            type: Actions.SET_COMPANION_INDEX,
+            payload: undefined,
+          }), 500);
+        }}
+        to={Path.cropSearch(companion.slug)}>
+        <img
+          src={svgToUrl(companion.svg_icon)}
+          width={32}
+          height={32} />
+        <p>{companion.name}</p>
+      </Link>)}
+  </InfoField>;
 };
 
 /** Button to add a plant to the garden at the current bot position. */
@@ -202,7 +243,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
     cropSearchResults, openedSavedGarden, cropSearchInProgress, cropSearchQuery
   } = props.resources.consumers.farm_designer;
   return {
-    openfarmSearch: OFSearch,
+    openfarmCropFetch: OFCropFetch,
     dispatch: props.dispatch,
     cropSearchQuery,
     cropSearchResults,
@@ -213,17 +254,17 @@ export function mapStateToProps(props: Everything): CropInfoProps {
   };
 }
 /** Get OpenFarm crop search results for crop info page contents. */
-export const searchForCurrentCrop = (openfarmSearch: OpenfarmSearch) =>
+export const searchForCurrentCrop = (openfarmCropFetch: OpenfarmSearch) =>
   (dispatch: Function) => {
     const crop = Path.getSlug(Path.cropSearch());
-    openfarmSearch(crop)(dispatch);
+    openfarmCropFetch(crop)(dispatch);
     unselectPlant(dispatch)();
   };
 
 export class RawCropInfo extends React.Component<CropInfoProps, {}> {
 
   componentDidMount() {
-    this.props.dispatch(searchForCurrentCrop(this.props.openfarmSearch));
+    this.props.dispatch(searchForCurrentCrop(this.props.openfarmCropFetch));
   }
 
   /** Clear the current crop search results. */
@@ -257,7 +298,9 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
           title={t("Loading...")}>
           <CropDragInfoTile image={result.image} svgIcon={result.crop.svg_icon} />
           <EditOnOpenFarm slug={result.crop.slug} />
-          <CropInfoList {...result.crop} />
+          <CropInfoList result={result}
+            dispatch={this.props.dispatch}
+            openfarmCropFetch={this.props.openfarmCropFetch} />
           <AddPlantHereButton
             botPosition={this.props.botPosition}
             openedSavedGarden={this.props.openedSavedGarden}

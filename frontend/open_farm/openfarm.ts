@@ -15,6 +15,21 @@ export namespace OpenFarm {
     row_spacing?: number;
     height?: number;
     processing_pictures: number;
+    guides_count?: number;
+    main_image_path?: string;
+    taxon?: string;
+    tags_array?: string[];
+    growing_degree_days?: number;
+  }
+
+  export interface CompanionsData {
+    name: string;
+    slug: string;
+    svg_icon?: string | undefined;
+  }
+
+  export interface OFCropWithCompanions extends OFCrop {
+    companions?: CompanionsData[];
   }
 
   export interface Self {
@@ -35,12 +50,17 @@ export namespace OpenFarm {
     id: string;
   }
 
+  export interface Companions {
+    links: Links2;
+  }
+
   export interface Pictures {
     links: Links2;
     data: Datum2[];
   }
 
   export interface Relationships {
+    companions: Companions;
     pictures: Pictures;
   }
 
@@ -62,14 +82,31 @@ export namespace OpenFarm {
     canopy_url: string;
   }
 
-  export interface Included {
+  export interface IncludedPictures {
     id: string;
-    type: string;
+    type: "crops-pictures";
     attributes: ImageAttrs;
   }
+
+  export interface IncludedCompanion {
+    id: string;
+    type: "crops";
+    attributes: OFCrop;
+    links: Links;
+    relationships: Relationships;
+  }
+
+  export type Included = IncludedPictures | IncludedCompanion;
 }
+
 /** Returned by https://openfarm.cc/api/v1/crops?filter=q */
 export interface CropSearchResult {
   data: OpenFarm.Datum[];
+  included: OpenFarm.Included[];
+}
+
+/** Returned by https://openfarm.cc/api/v1/q */
+export interface CropSearchResultSpecific {
+  data: OpenFarm.Datum;
   included: OpenFarm.Included[];
 }

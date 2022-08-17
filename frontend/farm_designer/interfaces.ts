@@ -126,6 +126,7 @@ export interface MovePointsProps {
 export interface CropLiveSearchResult {
   crop: OpenFarm.OFCrop;
   image: string;
+  companions: OpenFarm.CompanionsData[];
 }
 
 export interface Crop {
@@ -147,6 +148,7 @@ export interface DesignerState {
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
+  companionIndex: number | undefined;
   plantTypeChangeId: number | undefined;
   bulkPlantSlug: string | undefined;
   chosenLocation: BotPosition;
@@ -334,7 +336,7 @@ export interface CropInfoProps {
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
   openedSavedGarden: string | undefined;
-  openfarmSearch: OpenfarmSearch;
+  openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
 }

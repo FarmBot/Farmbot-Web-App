@@ -55,6 +55,7 @@ const getData = (
 ): DataSegment[] => {
   const data: Record<"x" | "y", number>[] = [];
   const mostRecent = last(sortBy(all, "body.created_at"));
+  const demo = mostRecent?.body.target == "demo";
   if (!mostRecent) {
     return [data];
   }
@@ -74,7 +75,7 @@ const getData = (
       continuousData.push(d);
       return;
     }
-    if ((data[i - 1].x - d.x) > MAX_GAP_SECONDS) {
+    if ((data[i - 1].x - d.x) > (demo ? 60 * 60 * 24 : MAX_GAP_SECONDS)) {
       splitData.push(continuousData);
       continuousData = [];
     }

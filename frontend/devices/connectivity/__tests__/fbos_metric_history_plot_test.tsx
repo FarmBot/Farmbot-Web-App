@@ -38,6 +38,14 @@ describe("<FbosMetricHistoryPlot />", () => {
     expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
   });
 
+  it("renders: demo accounts", () => {
+    const p = fakeProps();
+    p.telemetry.map(r => r.body.target = "demo");
+    const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("hours");
+    expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
+  });
+
   it("handles missing data", () => {
     const p = fakeProps();
     p.telemetry = [];

@@ -1,7 +1,7 @@
 let mockPromise: Promise<{} | void> = Promise.resolve();
 jest.mock("axios", () => ({ get: () => mockPromise }));
 
-import { executableType, OFSearch } from "../util";
+import { executableType, OFCropFetch, OFSearch } from "../util";
 import { Actions } from "../../constants";
 import { FilePath } from "../../internal_urls";
 
@@ -29,7 +29,7 @@ describe("OFSearch()", () => {
     expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [
-        { crop: {}, image: FilePath.DEFAULT_ICON }]
+        { crop: {}, image: FilePath.DEFAULT_ICON, companions: [] }]
     });
     await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });
@@ -37,7 +37,18 @@ describe("OFSearch()", () => {
   it("searches: image", async () => {
     mockPromise = Promise.resolve({
       data: {
-        included: [{ id: 0, attributes: { thumbnail_url: "thumbnail_url" } }],
+        included: [
+          {
+            id: 0,
+            type: "crops-pictures",
+            attributes: { thumbnail_url: "thumbnail_url" },
+          },
+          {
+            id: 0,
+            type: "crops",
+            attributes: { name: "name", slug: "slug", svg_icon: "svg_icon" },
+          },
+        ],
         data: [{
           attributes: {},
           relationships: { pictures: { data: [{ id: 0 }] } }
@@ -48,8 +59,45 @@ describe("OFSearch()", () => {
     await OFSearch("mint")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.OF_SEARCH_RESULTS_OK, payload: [
-        { crop: {}, image: "thumbnail_url" }]
+      type: Actions.OF_SEARCH_RESULTS_OK, payload: [{
+        crop: {},
+        image: "thumbnail_url",
+        companions: [{ name: "name", slug: "slug", svg_icon: "svg_icon" }]
+      }]
+    });
+    await expect(dispatch).not.toHaveBeenCalledWith(NO);
+  });
+
+  it("searches: image, specific", async () => {
+    mockPromise = Promise.resolve({
+      data: {
+        included: [
+          {
+            id: 0,
+            type: "crops-pictures",
+            attributes: { thumbnail_url: "thumbnail_url" },
+          },
+          {
+            id: 0,
+            type: "crops",
+            attributes: { name: "name", slug: "slug", svg_icon: "svg_icon" },
+          },
+        ],
+        data: {
+          attributes: {},
+          relationships: { pictures: { data: [{ id: 0 }] } }
+        }
+      }
+    });
+    const dispatch = jest.fn();
+    await OFCropFetch("mint")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(START);
+    await expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.OF_SEARCH_RESULTS_OK, payload: [{
+        crop: {},
+        image: "thumbnail_url",
+        companions: [{ name: "name", slug: "slug", svg_icon: "svg_icon" }]
+      }]
     });
     await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });
@@ -57,7 +105,7 @@ describe("OFSearch()", () => {
   it("fails search", async () => {
     mockPromise = Promise.reject();
     const dispatch = jest.fn();
-    await OFSearch("mint")(dispatch);
+    await OFCropFetch("mint")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
       type: Actions.OF_SEARCH_RESULTS_OK

@@ -22,7 +22,6 @@ describe("<FbosMetricHistoryTable />", () => {
     return {
       telemetry: [telemetry0, telemetry1, telemetry2],
       timeSettings: fakeTimeSettings(),
-      hidden: false,
     };
   };
 

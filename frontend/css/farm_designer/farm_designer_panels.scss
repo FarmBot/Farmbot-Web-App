@@ -906,6 +906,20 @@
         margin-top: 1.5rem;
       }
     }
+    .companion {
+      display: inline-block;
+      margin-top: 0.5rem;
+      text-decoration: none !important;
+      &:hover {
+        text-decoration: underline !important;
+      }
+      p {
+        display: inline;
+        margin-left: 0.25rem;
+        margin-right: 1rem;
+        font-weight: bold;
+      }
+    }
   }
   .edit-on-openfarm {
     margin-bottom: 1rem;

@@ -6,8 +6,13 @@ import { getPathArray, push } from "../history";
 
 describe("push()", () => {
   it("calls history with a URL", () => {
-    push("/app/wow.html");
+    push("/wow.html");
     expect(navigate).toHaveBeenCalledWith("/wow.html");
+  });
+
+  it("calls history, stripping /app", () => {
+    push("/app/wow");
+    expect(navigate).toHaveBeenCalledWith("/wow");
   });
 });
 

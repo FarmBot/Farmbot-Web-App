@@ -1,5 +1,5 @@
-import * as React from "react";
-import { navigate } from "takeme";
+import React from "react";
+import { push } from "./history";
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to: string;
@@ -9,15 +9,11 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   disabled?: boolean;
 }
 
-export const maybeStripLegacyUrl =
-  (url: string) => url.startsWith("/app") ? url.replace("/app", "") : url;
-
 export const clickHandler =
   (props: LinkProps) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    /** BEGIN LEGACY SHIMS */
     const { onClick, to } = props;
-    navigate(maybeStripLegacyUrl(to));
+    push(to);
     onClick?.(e);
   };
 
