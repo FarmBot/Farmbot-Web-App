@@ -39,6 +39,8 @@ describe("<ToolSlotLayer/>", () => {
       dispatch: jest.fn(),
       hoveredToolSlot: undefined,
       interactions: true,
+      currentPoint: undefined,
+      animate: false,
     };
   }
   it("toggles visibility off", () => {

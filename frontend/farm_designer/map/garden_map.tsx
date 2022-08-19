@@ -604,8 +604,10 @@ export class GardenMap extends
     visible={!!this.props.showFarmbot}
     dispatch={this.props.dispatch}
     hoveredToolSlot={this.props.designer.hoveredToolSlot}
+    currentPoint={this.currentPoint}
     botPositionX={this.props.botLocationData.position.x}
     interactions={this.interactions("ToolSlot")}
+    animate={this.animate}
     slots={this.props.toolSlots} />;
   FarmBotLayer = () => <FarmBotLayer
     mapTransformProps={this.mapTransformProps}

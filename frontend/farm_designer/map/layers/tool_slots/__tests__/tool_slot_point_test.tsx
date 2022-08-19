@@ -15,6 +15,8 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { push } from "../../../../../history";
+import { shallow } from "enzyme";
+import { Actions } from "../../../../../constants";
 
 describe("<ToolSlotPoint/>", () => {
   const fakeProps = (): TSPProps => ({
@@ -23,6 +25,8 @@ describe("<ToolSlotPoint/>", () => {
     slot: { toolSlot: fakeToolSlot(), tool: fakeTool() },
     dispatch: jest.fn(),
     hoveredToolSlot: undefined,
+    current: false,
+    animate: false,
   });
 
   it.each<[0 | 1, 0 | 1]>([
@@ -141,5 +145,43 @@ describe("<ToolSlotPoint/>", () => {
       .toEqual(20);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
       .toEqual(24);
+  });
+
+  it("animates tool", () => {
+    const p = fakeProps();
+    p.animate = true;
+    p.current = true;
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find(".tool-slot-indicator").first().hasClass("animate"))
+      .toBeTruthy();
+  });
+
+  it("doesn't animate tool", () => {
+    const p = fakeProps();
+    p.animate = false;
+    p.current = true;
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find(".tool-slot-indicator").first().hasClass("animate"))
+      .toBeFalsy();
+  });
+
+  it("begins hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotPoint {...p} />);
+    wrapper.find("g").simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: p.slot.toolSlot.uuid
+    });
+  });
+
+  it("ends hover", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotPoint {...p} />);
+    wrapper.find("g").simulate("mouseLeave");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: undefined
+    });
   });
 });

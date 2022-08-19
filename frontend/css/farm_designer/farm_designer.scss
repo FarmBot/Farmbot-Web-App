@@ -386,6 +386,14 @@
   transform-box: fill-box;
 }
 
+.tool-slot-indicator {
+  &.animate {
+    animation: pulse-and-rotate 4s 0.2s infinite linear;
+  }
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
 .map-point {
   cursor: pointer !important;
   stroke-width: 2;
