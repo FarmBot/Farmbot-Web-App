@@ -81,7 +81,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
           className={`tool-slot-indicator ${animate ? "animate" : ""}`}
           x={qx}
           y={qy}
-          r={40}
+          r={40 / 1.2}
           selected={true} />
       </g>}
 
