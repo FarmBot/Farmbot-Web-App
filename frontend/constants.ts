@@ -986,6 +986,10 @@ export namespace Content {
   export const SHOW_CAMERA_VIEW_AREA =
     trim(`Show the camera's field of view in the garden map.`);
 
+  export const SHOW_UNCROPPED_CAMERA_VIEW_AREA =
+    trim(`Show the camera's uncropped and unrotated field of view in the
+    garden map when CROP MAP IMAGES is enabled.`);
+
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
@@ -1985,6 +1989,7 @@ export enum DeviceSetting {
   cropMapImages = `Crop map images`,
   clipPhotosOutOfBounds = `Clip photos out of bounds`,
   cameraView = `Camera view`,
+  uncroppedCameraView = `Uncropped Camera view`,
   confirmPlantDeletion = `Confirm plant deletion`,
 
   // Account

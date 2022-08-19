@@ -151,6 +151,10 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           setting={BooleanSetting.show_camera_view_area}
           label={DeviceSetting.cameraView}
           helpText={Content.SHOW_CAMERA_VIEW_AREA} />
+        <NonLayerToggle {...subMenuProps}
+          setting={BooleanSetting.show_uncropped_camera_view_area}
+          label={DeviceSetting.uncroppedCameraView}
+          helpText={Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA} />
       </div>} />
     <LayerToggle
       settingName={BooleanSetting.show_zones}

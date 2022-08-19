@@ -26,6 +26,7 @@ export interface BotFigureProps {
   cameraCalibrationData?: CameraCalibrationData;
   cameraViewArea?: boolean;
   cropPhotos?: boolean;
+  showUncroppedArea?: boolean;
   color?: Color;
 }
 
@@ -127,6 +128,7 @@ export class BotFigure extends
         <CameraViewArea
           position={this.props.position}
           cropPhotos={this.props.cropPhotos}
+          showUncroppedArea={this.props.showUncroppedArea}
           cameraCalibrationData={this.props.cameraCalibrationData}
           mapTransformProps={mapTransformProps} />}
       <text
@@ -152,6 +154,7 @@ interface CameraViewAreaProps {
   cameraCalibrationData: CameraCalibrationData;
   mapTransformProps: MapTransformProps;
   cropPhotos: boolean | undefined;
+  showUncroppedArea: boolean | undefined;
   logVisual?: boolean;
 }
 
@@ -200,6 +203,7 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     noRotation: xySwap && cameraRotated,
   });
   const croppedLogVisual = props.logVisual && cropPhotos;
+  const showCroppedArea = !cropPhotos || props.showUncroppedArea;
   return <g id="camera-view-area-wrapper" fill={"none"}
     stroke={Color.darkGray} strokeWidth={2} strokeOpacity={0.75}>
     <clipPath id={`snapped-camera-view-area-clip-path-${x}-${y}`}>
@@ -207,17 +211,19 @@ export const CameraViewArea = (props: CameraViewAreaProps) => {
     </clipPath>
     {angledView && <ViewCircle id={"camera-photo-center"}
       center={scaledCenter} radius={5} position={angledView} />}
-    {props.logVisual
-      ? <ImageLogVisuals position={cropPhotos ? croppedView : angledView} />
-      : <ViewRectangle id={"snapped-camera-view-area"}
+    {props.logVisual &&
+      <ImageLogVisuals position={cropPhotos ? croppedView : angledView} />}
+    {!props.logVisual && showCroppedArea &&
+      <ViewRectangle id={"snapped-camera-view-area"}
         dashed={cropPhotos} position={snappedView} />}
-    {!croppedLogVisual && <g id={"angled-camera-view-area-wrapper"}
-      clipPath={props.logVisual
-        ? undefined
-        : `url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
-      <ViewRectangle id={"angled-camera-view-area"}
-        dashed={cropPhotos} position={angledView} />
-    </g>}
+    {!croppedLogVisual && showCroppedArea &&
+      <g id={"angled-camera-view-area-wrapper"}
+        clipPath={props.logVisual
+          ? undefined
+          : `url(#snapped-camera-view-area-clip-path-${x}-${y})`}>
+        <ViewRectangle id={"angled-camera-view-area"}
+          dashed={cropPhotos} position={angledView} />
+      </g>}
     {cropPhotos && croppedView && (largeCrop(rotationAngle) && angledView
       ? <ViewCircle id={"cropped-camera-view-area"}
         center={scaledCenter}

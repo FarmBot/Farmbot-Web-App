@@ -73,6 +73,8 @@ export const LogsLayer = (props: LogsLayerProps) =>
             log={log}
             visual={LOG_VISUAL_LOOKUP[log.body.message]}
             cropImage={!!props.getConfigValue(BooleanSetting.crop_images)}
+            showUncroppedArea={!!props.getConfigValue(
+              BooleanSetting.show_uncropped_camera_view_area)}
             animate={!props.getConfigValue(BooleanSetting.disable_animations)}
             cameraCalibrationData={props.cameraCalibrationData}
             deviceTarget={props.deviceTarget}
@@ -118,6 +120,7 @@ const ImageVisual = (props: LogVisualProps) => {
     {display && <CameraViewArea logVisual={true}
       position={{ x, y, z }}
       cropPhotos={props.cropImage}
+      showUncroppedArea={props.showUncroppedArea}
       cameraCalibrationData={props.cameraCalibrationData}
       mapTransformProps={props.mapTransformProps} />}
   </g>;

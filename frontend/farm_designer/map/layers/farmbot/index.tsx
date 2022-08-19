@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { VirtualFarmBotProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
 import { BotFigure } from "./bot_figure";
@@ -15,6 +15,8 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     !!getConfigValue(BooleanSetting.display_map_missed_steps);
   const encoderFigure = !!getConfigValue(BooleanSetting.encoder_figure);
   const cameraViewArea = !!getConfigValue(BooleanSetting.show_camera_view_area);
+  const showUncroppedArea = !!getConfigValue(
+    BooleanSetting.show_uncropped_camera_view_area);
   const cropPhotos = !!getConfigValue(BooleanSetting.crop_images);
 
   return <g id="virtual-farmbot">
@@ -36,6 +38,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       cameraCalibrationData={props.cameraCalibrationData}
       cameraViewArea={cameraViewArea}
       cropPhotos={cropPhotos}
+      showUncroppedArea={showUncroppedArea}
       eStopStatus={eStopStatus} />
     {encoderFigure &&
       <BotFigure figureName={"encoder-position"}

@@ -568,6 +568,8 @@ export class GardenMap extends
       !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
+    showUncroppedArea={!!this.props.getConfigValue(
+      BooleanSetting.show_uncropped_camera_view_area)}
     interactions={this.interactions("GenericPointer")}
     farmwareEnvs={this.props.farmwareEnvs}
     animate={this.animate}

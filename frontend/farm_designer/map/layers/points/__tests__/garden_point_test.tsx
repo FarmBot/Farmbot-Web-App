@@ -33,6 +33,7 @@ describe("<GardenPoint/>", () => {
     cameraViewGridId: undefined,
     cameraCalibrationData: fakeCameraCalibrationData(),
     cropPhotos: false,
+    showUncroppedArea: false,
     soilHeightLabels: false,
     getSoilHeightColor: () => "rgb(128, 128, 128)",
     current: false,

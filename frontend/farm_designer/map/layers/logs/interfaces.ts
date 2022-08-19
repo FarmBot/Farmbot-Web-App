@@ -41,6 +41,7 @@ export interface LogVisualProps {
   visual: RenderedLog;
   cameraCalibrationData: CameraCalibrationData;
   cropImage: boolean;
+  showUncroppedArea: boolean;
   animate: boolean;
   mapTransformProps: MapTransformProps;
   deviceTarget: string;

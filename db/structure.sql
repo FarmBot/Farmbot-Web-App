@@ -1947,7 +1947,8 @@ CREATE TABLE public.web_app_configs (
     clip_image_layer boolean DEFAULT true,
     beep_verbosity integer DEFAULT 0,
     landing_page character varying(100) DEFAULT 'controls'::character varying,
-    go_button_axes character varying(3) DEFAULT 'XY'::character varying NOT NULL
+    go_button_axes character varying(3) DEFAULT 'XY'::character varying NOT NULL,
+    show_uncropped_camera_view_area boolean DEFAULT false
 );
 
 
@@ -3829,6 +3830,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220413194334'),
 ('20220415191331'),
 ('20220620225957'),
-('20220810212545');
+('20220810212545'),
+('20220819170955');
 
 

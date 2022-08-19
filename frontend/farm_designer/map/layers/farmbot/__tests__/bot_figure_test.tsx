@@ -219,6 +219,7 @@ describe("<BotFigure/>", () => {
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     p.cameraCalibrationData.rotation = "10";
     p.cameraViewArea = true;
+    p.showUncroppedArea = true;
     p.cropPhotos = true;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");
@@ -228,11 +229,27 @@ describe("<BotFigure/>", () => {
       .toBeGreaterThanOrEqual(1);
   });
 
+  it("doesn't show uncropped camera view area", () => {
+    const p = fakeProps();
+    p.cameraCalibrationData = fakeCameraCalibrationDataFull();
+    p.cameraCalibrationData.rotation = "10";
+    p.cameraViewArea = true;
+    p.showUncroppedArea = false;
+    p.cropPhotos = true;
+    const wrapper = svgMount(<BotFigure {...p} />);
+    const view = wrapper.find("#camera-view-area-wrapper");
+    expect(view.find("#angled-camera-view-area").length).toEqual(0);
+    expect(view.find("#snapped-camera-view-area").length).toEqual(0);
+    expect(view.find("#cropped-camera-view-area").length)
+      .toBeGreaterThanOrEqual(1);
+  });
+
   it("shows large cropped camera view area", () => {
     const p = fakeProps();
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     p.cameraCalibrationData.rotation = "47";
     p.cameraViewArea = true;
+    p.showUncroppedArea = true;
     p.cropPhotos = true;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");
@@ -249,6 +266,7 @@ describe("<BotFigure/>", () => {
     p.cameraCalibrationData.center = { x: undefined, y: undefined };
     p.cameraCalibrationData.rotation = "47";
     p.cameraViewArea = true;
+    p.showUncroppedArea = true;
     p.cropPhotos = true;
     const wrapper = svgMount(<BotFigure {...p} />);
     const view = wrapper.find("#camera-view-area-wrapper");

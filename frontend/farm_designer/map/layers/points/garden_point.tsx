@@ -55,6 +55,7 @@ export const GardenPoint = (props: GardenPointProps) => {
       <CameraViewArea
         position={{ x, y, z: 0 }}
         cropPhotos={props.cropPhotos}
+        showUncroppedArea={props.showUncroppedArea}
         cameraCalibrationData={props.cameraCalibrationData}
         mapTransformProps={mapTransformProps} />}
   </g>;

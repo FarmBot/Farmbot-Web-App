@@ -4,7 +4,8 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
+  | "show_uncropped_camera_view_area";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -37,6 +38,8 @@ export const BooleanSetting: BooleanSettings = {
   show_sensor_readings: "show_sensor_readings",
   show_moisture_interpolation_map: "show_moisture_interpolation_map",
   show_camera_view_area: "show_camera_view_area",
+  show_uncropped_camera_view_area: "show_uncropped_camera_view_area" as
+    WebAppBooleanConfigKey,
   disable_animations: "disable_animations",
   display_map_missed_steps: "display_map_missed_steps",
   display_trail: "display_trail",
