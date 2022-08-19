@@ -69,6 +69,7 @@
   background-size: 158% !important;
   background-color: $translucent;
   height: 12rem;
+  border-radius: 5px;
 }
 
 .crop-search-result-wrapper {
@@ -77,25 +78,35 @@
   overflow-x: hidden;
   margin-right: -10px;
   padding-bottom: inherit;
+  .openfarm-search-results-wrapper {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    margin-left: 2.5rem;
+    margin-right: 2rem;
+  }
   .plant-catalog-tile {
     position: relative;
     cursor: pointer;
-    &:nth-child(4n),
-    &:nth-child(4n-1) {
-      margin-bottom: 2rem;
-    }
-    &:nth-child(4n-2),
-    &:nth-child(4n-3) {
-      margin-bottom: 2rem;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0px 4px 7px 2px $translucent;
+    transition: transform 0.2s ease;
+    padding: 0;
+    &:hover {
+      box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.25);
+      transform: translateY(-1px);
     }
     label {
       position: absolute;
-      left: 15px;
+      left: 0;
       bottom: -5px;
-      right: 15px;
+      right: 0;
       margin-top: 0 !important;
       padding: 0.4rem 0.6rem 0.2rem;
-      background: rgba(0, 0, 0, 0.5);
+      background: linear-gradient(transparent, $translucent5);
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
       color: $white;
       font-size: 1.2rem !important;
     }
