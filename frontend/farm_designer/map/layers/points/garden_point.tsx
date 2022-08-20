@@ -2,7 +2,7 @@ import React from "react";
 import { GardenPointProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { Actions } from "../../../../constants";
-import { mapPointClickAction, selectPoint } from "../../actions";
+import { mapPointClickAction, selectPoint, setHoveredPlant } from "../../actions";
 import { CameraViewArea } from "../farmbot/bot_figure";
 import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
@@ -32,6 +32,7 @@ export const GardenPoint = (props: GardenPointProps) => {
     onMouseLeave={iconHover("end")}
     onClick={() => {
       props.dispatch(selectPoint([point.uuid]));
+      props.dispatch(setHoveredPlant(undefined));
       mapPointClickAction(props.dispatch, point.uuid, Path.points(id))();
     }}>
     <circle id={"point-radius"}
@@ -54,6 +55,7 @@ export const GardenPoint = (props: GardenPointProps) => {
       <CameraViewArea
         position={{ x, y, z: 0 }}
         cropPhotos={props.cropPhotos}
+        showUncroppedArea={props.showUncroppedArea}
         cameraCalibrationData={props.cameraCalibrationData}
         mapTransformProps={mapTransformProps} />}
   </g>;

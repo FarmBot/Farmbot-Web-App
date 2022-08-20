@@ -11,7 +11,7 @@ import { getStatus } from "../connectivity/reducer_support";
 import { prepopulateEnv } from "./remote_env/selectors";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { chain } from "lodash";
-import { betterCompact } from "../util";
+import { betterCompact, validBotLocationData } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { DesignerPhotosProps } from "./interfaces";
 import { isImageUploadJob } from "../devices/jobs";
@@ -75,5 +75,8 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     designer: props.resources.consumers.farm_designer,
     getConfigValue: getWebAppConfigValue(() => props),
     farmwares: generateFarmwareDictionary(props.bot, props.resources.index),
+    arduinoBusy: props.bot.hardware.informational_settings.busy,
+    currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
+      .position,
   };
 };

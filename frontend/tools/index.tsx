@@ -27,7 +27,7 @@ import {
   ToolsProps, ToolsState, ToolSlotInventoryItemProps, ToolInventoryItemProps,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { mapPointClickAction } from "../farm_designer/map/actions";
+import { mapPointClickAction, selectPoint } from "../farm_designer/map/actions";
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { SearchField } from "../ui/search_field";
@@ -210,6 +210,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         mapPointClickAction(props.dispatch, props.toolSlot.uuid)();
         props.dispatch(setToolHover(undefined));
       } else {
+        props.dispatch(selectPoint([props.toolSlot.uuid]));
         push(Path.toolSlots(id));
       }
     }}

@@ -4,7 +4,7 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
-jest.mock("../../api/crud", () => ({ initSave: jest.fn() }));
+jest.mock("../../api/crud", () => ({ initSave: jest.fn(), init: jest.fn() }));
 
 jest.mock("../../farm_designer/map/actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
@@ -36,7 +36,7 @@ describe("<CropInfo />", () => {
     cropSearchResult.crop.svg_icon = "fake_mint_svg";
     cropSearchResult.crop.row_spacing = 100;
     return {
-      openfarmSearch: jest.fn(),
+      openfarmCropFetch: jest.fn(),
       dispatch: jest.fn(),
       cropSearchQuery: undefined,
       cropSearchResults: [cropSearchResult],
@@ -49,11 +49,13 @@ describe("<CropInfo />", () => {
 
   it("renders", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
-    const wrapper = mount(<CropInfo {...fakeProps()} />);
+    const p = fakeProps();
+    p.cropSearchResults[0].companions = [];
+    const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Drag and drop into map");
     expect(wrapper.text()).toContain("Row Spacing1000mm");
-    expect(wrapper.find("img").last().props().src)
+    expect(wrapper.find("img").at(1).props().src)
       .toEqual(svgToUrl("fake_mint_svg"));
   });
 
@@ -130,6 +132,43 @@ describe("<CropInfo />", () => {
     p.cropSearchResults[0].crop.common_names = "names" as unknown as string[];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("common namesnames");
+  });
+
+  it("navigates to companion plant", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.openfarmCropFetch = jest.fn(() => jest.fn());
+    p.dispatch = jest.fn(x => { x(); return Promise.resolve(); });
+    const wrapper = mount(<CropInfo {...p} />);
+    jest.clearAllMocks();
+    expect(wrapper.text().toLowerCase()).toContain("strawberry");
+    const companion = wrapper.find("a").at(1);
+    expect(companion.text()).toEqual("Strawberry");
+    companion.simulate("click");
+    expect(p.openfarmCropFetch).toHaveBeenCalledWith("strawberry");
+    expect(push).toHaveBeenCalledWith(Path.cropSearch("strawberry"));
+  });
+
+  it("drags companion plant", () => {
+    jest.useFakeTimers();
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const wrapper = mount(<CropInfo {...p} />);
+    jest.clearAllMocks();
+    expect(wrapper.text().toLowerCase()).toContain("strawberry");
+    const companion = wrapper.find("a").at(1);
+    expect(companion.text()).toEqual("Strawberry");
+    companion.simulate("dragStart");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_COMPANION_INDEX,
+      payload: 0,
+    });
+    companion.simulate("dragEnd");
+    jest.runAllTimers();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_COMPANION_INDEX,
+      payload: undefined,
+    });
   });
 });
 

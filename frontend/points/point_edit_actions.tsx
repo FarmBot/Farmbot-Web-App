@@ -15,9 +15,9 @@ import { EditWeedStatus } from "../plants/edit_plant_status";
 import {
   MEASURE_SOIL_HEIGHT_NAME, soilHeightPoint, toggleSoilHeight,
 } from "./soil_height";
-import { push } from "../history";
-import { Path } from "../internal_urls";
 import { daysOldText } from "../plants/plant_inventory_item";
+import { GoToThisLocationButton } from "../farm_designer/move_to";
+import { BotPosition } from "../devices/interfaces";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -36,6 +36,10 @@ export interface EditPointPropertiesProps {
   point: TaggedGenericPointer | TaggedWeedPointer;
   updatePoint(update: PointUpdate): void;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  dispatch: Function;
+  currentBotLocation: BotPosition;
 }
 
 export interface AdditionalWeedPropertiesProps {
@@ -53,6 +57,10 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
           z: props.point.body.z,
         }}
         botOnline={props.botOnline}
+        dispatch={props.dispatch}
+        arduinoBusy={props.arduinoBusy}
+        currentBotLocation={props.currentBotLocation}
+        defaultAxes={props.defaultAxes}
         updatePoint={props.updatePoint} />
     </ListItem>
     <ListItem>
@@ -156,6 +164,10 @@ export interface EditPointLocationProps {
   updatePoint(update: PointUpdate): void;
   pointLocation: Record<Xyz, number>;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  dispatch: Function;
+  currentBotLocation: BotPosition;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
@@ -172,13 +184,13 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
             [axis]: round(parseIntInput(e.currentTarget.value))
           })} />
       </Col>)}
-    <button
-      className={"fb-button gray no-float move-to-button"}
-      type={"button"}
-      title={t("move to location")}
-      onClick={() => push(Path.location(props.pointLocation))}>
-      {t("Move FarmBot to location")}
-    </button>
+    <GoToThisLocationButton
+      dispatch={props.dispatch}
+      locationCoordinate={props.pointLocation}
+      botOnline={props.botOnline}
+      arduinoBusy={props.arduinoBusy}
+      currentBotLocation={props.currentBotLocation}
+      defaultAxes={props.defaultAxes} />
   </Row>;
 
 export interface EditPointRadiusProps {

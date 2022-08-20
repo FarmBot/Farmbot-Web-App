@@ -223,6 +223,14 @@ describe("designer reducer", () => {
     expect(newState.cropSearchInProgress).toEqual(false);
   });
 
+  it("sets companion index", () => {
+    const action: ReduxAction<number> = {
+      type: Actions.SET_COMPANION_INDEX, payload: 1,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.companionIndex).toEqual(1);
+  });
+
   it("starts search", () => {
     const action: ReduxAction<undefined> = {
       type: Actions.OF_SEARCH_RESULTS_START, payload: undefined

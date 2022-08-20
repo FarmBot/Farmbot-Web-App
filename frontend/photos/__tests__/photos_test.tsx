@@ -45,6 +45,8 @@ describe("<DesignerPhotos />", () => {
     designer: fakeDesignerState(),
     getConfigValue: jest.fn(),
     farmwares: {},
+    arduinoBusy: false,
+    currentBotLocation: { x: 0, y: 0, z: 0 },
   });
 
   it("renders photos panel", () => {

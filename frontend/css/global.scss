@@ -373,9 +373,19 @@ fieldset {
   }
 }
 
+@keyframes adjust-width {
+  100% {
+    width: 100.01%;
+  }
+}
+
 .connectivity-diagram {
   margin: auto;
   width: 20rem;
+  background: $white;
+  svg {
+    animation: adjust-width 0.01s linear forwards;
+  }
 }
 
 .qos-display {
@@ -1157,6 +1167,7 @@ ul {
 }
 
 .fbos-metric-history-plot-border {
+  animation: adjust-width 0.01s linear forwards;
   text {
     font-size: 0.6rem;
   }

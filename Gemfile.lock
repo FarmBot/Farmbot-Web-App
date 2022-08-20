@@ -120,7 +120,7 @@ GEM
       railties (>= 5.0.0)
     faker (2.22.0)
       i18n (>= 1.8.11, < 2)
-    faraday (1.10.0)
+    faraday (1.10.1)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
@@ -214,7 +214,7 @@ GEM
     memoist (0.16.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    minitest (5.16.2)
+    minitest (5.16.3)
     multi_json (1.15.0)
     multipart-post (2.2.3)
     mutations (0.9.1)
@@ -227,7 +227,7 @@ GEM
     passenger (6.0.14)
       rack
       rake (>= 0.8.1)
-    pg (1.4.2)
+    pg (1.4.3)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -407,7 +407,7 @@ DEPENDENCIES
   valid_url
 
 RUBY VERSION
-   ruby 3.0.2p107
+   ruby 3.0.4p208
 
 BUNDLED WITH
    2.3.19

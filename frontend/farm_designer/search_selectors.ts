@@ -16,6 +16,7 @@ export function findBySlug(
       sowing_method: "",
       processing_pictures: 0
     },
-    image: FilePath.DEFAULT_ICON
+    image: FilePath.DEFAULT_ICON,
+    companions: [],
   };
 }

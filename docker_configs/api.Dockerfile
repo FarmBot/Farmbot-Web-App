@@ -1,4 +1,4 @@
-FROM ruby:3.0.2
+FROM ruby:3.0.4
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg > /dev/null && \
   sh -c '. /etc/os-release; echo $VERSION_CODENAME; echo "deb http://apt.postgresql.org/pub/repos/apt/ $VERSION_CODENAME-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
   apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql postgresql-contrib && \

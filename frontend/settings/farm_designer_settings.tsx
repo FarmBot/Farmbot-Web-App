@@ -129,6 +129,11 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.show_camera_view_area,
     },
     {
+      title: DeviceSetting.uncroppedCameraView,
+      description: Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA,
+      setting: BooleanSetting.show_uncropped_camera_view_area,
+    },
+    {
       title: DeviceSetting.confirmPlantDeletion,
       description: Content.CONFIRM_PLANT_DELETION,
       setting: BooleanSetting.confirm_plant_deletion,

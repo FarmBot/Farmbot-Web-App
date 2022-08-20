@@ -12,6 +12,7 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
+  selectPoint: jest.fn(),
 }));
 
 jest.mock("../../point_groups/actions", () => ({
@@ -39,7 +40,7 @@ import { edit, save } from "../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
-import { mapPointClickAction } from "../../farm_designer/map/actions";
+import { mapPointClickAction, selectPoint } from "../../farm_designer/map/actions";
 import { SearchField } from "../../ui/search_field";
 import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
@@ -316,7 +317,10 @@ describe("<ToolSlotInventoryItem />", () => {
     wrapper.find("div").first().simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith(Path.toolSlots(1));
-    expect(p.dispatch).not.toHaveBeenCalled();
+    expect(selectPoint).toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.HOVER_TOOL_SLOT, payload: undefined,
+    });
   });
 
   it("removes item in box select mode", () => {

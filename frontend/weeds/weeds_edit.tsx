@@ -19,17 +19,28 @@ import { save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { ColorPicker } from "../ui";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { BotPosition } from "../devices/interfaces";
+import { validBotLocationData } from "../util";
+import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export interface EditWeedProps {
   dispatch: Function;
   findPoint(id: number): TaggedWeedPointer | undefined;
   botOnline: boolean;
+  defaultAxes: string;
+  arduinoBusy: boolean;
+  currentBotLocation: BotPosition;
 }
 
 export const mapStateToProps = (props: Everything): EditWeedProps => ({
   dispatch: props.dispatch,
   findPoint: id => maybeFindWeedPointerById(props.resources.index, id),
   botOnline: isBotOnlineFromState(props.bot),
+  defaultAxes: validGoButtonAxes(getWebAppConfigValue(() => props)),
+  arduinoBusy: props.bot.hardware.informational_settings.busy,
+  currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
+    .position,
 });
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {
@@ -75,6 +86,10 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
           ? <div className={"weed-panel-content-wrapper"}>
             <EditPointProperties point={this.weed}
               botOnline={this.props.botOnline}
+              dispatch={this.props.dispatch}
+              arduinoBusy={this.props.arduinoBusy}
+              currentBotLocation={this.props.currentBotLocation}
+              defaultAxes={this.props.defaultAxes}
               updatePoint={updatePoint(this.weed, dispatch)} />
             <AdditionalWeedProperties point={this.weed}
               updatePoint={updatePoint(this.weed, dispatch)} />

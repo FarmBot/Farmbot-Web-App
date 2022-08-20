@@ -76,7 +76,6 @@ const TableBodyCell = (props: TableBodyCellProps) => {
 };
 
 export interface FbosMetricHistoryTableProps {
-  hidden: boolean;
   telemetry: TaggedTelemetry[];
   timeSettings: TimeSettings;
 }
@@ -106,7 +105,7 @@ export class FbosMetricHistoryTable
       onHover: this.hoverMetric,
     };
     const rightAlignProps = { ...commonProps, rightAlign: true };
-    return <div className={"fbos-metric-history"} hidden={this.props.hidden}>
+    return <div className={"fbos-metric-history"}>
       <FbosMetricHistoryPlot {...commonProps} telemetry={this.props.telemetry} />
       <div className={"fbos-metric-history-table-wrapper"}>
         <table>

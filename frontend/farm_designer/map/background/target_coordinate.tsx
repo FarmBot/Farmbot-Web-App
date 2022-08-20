@@ -1,6 +1,6 @@
 import React from "react";
 import { AxisNumberProperty, MapTransformProps, TaggedPlant } from "../interfaces";
-import { transformXY, round, getMapSize } from "../util";
+import { transformXY, getMapSize } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import { isNumber, isUndefined } from "lodash";
 import { Color } from "../../../ui";
@@ -26,7 +26,7 @@ export function TargetCoordinate(props: TargetCoordinateProps) {
   const { x, y } = props.chosenLocation;
   if (isNumber(x) && isNumber(y)) {
     const { mapTransformProps, plantAreaOffset } = props;
-    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+    const { qx, qy } = transformXY(x, y, mapTransformProps);
     const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
     const scaleFactor = 1 + Math.round(15 * (1.8 - props.zoomLvl)) / 10;
     return <g id={ID}>

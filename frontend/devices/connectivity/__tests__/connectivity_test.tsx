@@ -89,7 +89,9 @@ describe("<Connectivity />", () => {
   });
 
   it("sets hovered connection", () => {
-    const wrapper = mount<Connectivity>(<Connectivity {...fakeProps()} />);
+    const p = fakeProps();
+    p.metricPanelState.history = false;
+    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
     wrapper.find(".saucer").at(6).simulate("mouseEnter");
     expect(wrapper.instance().state.hoveredConnection).toEqual("AB");
   });
@@ -103,6 +105,7 @@ describe("<Connectivity />", () => {
 
   it("displays fbos_version", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.controller_version = undefined;
     p.device.body.fbos_version = "1.0.0";
     const wrapper = mount(<Connectivity {...p} />);
@@ -111,6 +114,7 @@ describe("<Connectivity />", () => {
 
   it("displays controller version", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("version: v1.0.0");
@@ -118,6 +122,7 @@ describe("<Connectivity />", () => {
 
   it("displays more network info", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.private_ip = "1.0.0.1";
     p.bot.hardware.informational_settings.node_name = "f-12345678";
     const wrapper = mount(<Connectivity {...p} />);
@@ -127,6 +132,7 @@ describe("<Connectivity />", () => {
 
   it("doesn't display more network info", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.private_ip = undefined;
     p.bot.hardware.informational_settings.node_name = "---";
     const wrapper = mount(<Connectivity {...p} />);
@@ -136,6 +142,7 @@ describe("<Connectivity />", () => {
 
   it("displays fix firmware buttons", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.apiFirmwareValue = "arduino";
     Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
     p.flags.botFirmware = false;
@@ -146,6 +153,7 @@ describe("<Connectivity />", () => {
 
   it("doesn't display fix firmware buttons", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.apiFirmwareValue = undefined;
     Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
     p.flags.botFirmware = false;
@@ -155,6 +163,7 @@ describe("<Connectivity />", () => {
 
   it("displays firmware alerts", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     const alert = fakeAlert().body;
     alert.problem_tag = "farmbot_os.firmware.missing";
     p.alerts = [alert];
@@ -164,6 +173,7 @@ describe("<Connectivity />", () => {
 
   it("displays sync status", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.sync_status = "syncing";
     p.rowData[3].connectionName = "botAPI";
     const wrapper = mount(<Connectivity {...p} />);
@@ -172,6 +182,7 @@ describe("<Connectivity />", () => {
 
   it("displays camera status: missing value", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.video_devices = undefined;
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
@@ -179,6 +190,7 @@ describe("<Connectivity />", () => {
 
   it("displays camera status: no devices", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.video_devices = "";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
@@ -186,6 +198,7 @@ describe("<Connectivity />", () => {
 
   it("displays camera status: connected", () => {
     const p = fakeProps();
+    p.metricPanelState.history = false;
     p.bot.hardware.informational_settings.video_devices = "1,0";
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("camera: connected");

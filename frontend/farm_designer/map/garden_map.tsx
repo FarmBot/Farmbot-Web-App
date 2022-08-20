@@ -299,6 +299,7 @@ export class GardenMap extends
       dropPlant({
         gardenCoords: this.getGardenCoordinates(e),
         cropSearchResults: this.props.designer.cropSearchResults,
+        companionIndex: this.props.designer.companionIndex,
         openedSavedGarden: this.props.designer.openedSavedGarden,
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
@@ -567,6 +568,8 @@ export class GardenMap extends
       !!this.props.getConfigValue(BooleanSetting.show_soil_interpolation_map)}
     cameraCalibrationData={this.props.cameraCalibrationData}
     cropPhotos={!!this.props.getConfigValue(BooleanSetting.crop_images)}
+    showUncroppedArea={!!this.props.getConfigValue(
+      BooleanSetting.show_uncropped_camera_view_area)}
     interactions={this.interactions("GenericPointer")}
     farmwareEnvs={this.props.farmwareEnvs}
     animate={this.animate}
@@ -603,8 +606,10 @@ export class GardenMap extends
     visible={!!this.props.showFarmbot}
     dispatch={this.props.dispatch}
     hoveredToolSlot={this.props.designer.hoveredToolSlot}
+    currentPoint={this.currentPoint}
     botPositionX={this.props.botLocationData.position.x}
     interactions={this.interactions("ToolSlot")}
+    animate={this.animate}
     slots={this.props.toolSlots} />;
   FarmBotLayer = () => <FarmBotLayer
     mapTransformProps={this.mapTransformProps}

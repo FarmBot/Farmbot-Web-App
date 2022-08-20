@@ -48,6 +48,8 @@ describe("<EditToolSlot />", () => {
     toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
     botOnline: true,
+    arduinoBusy: false,
+    defaultAxes: "XY",
   });
 
   it("redirects", () => {

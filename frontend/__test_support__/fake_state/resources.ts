@@ -35,6 +35,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -328,6 +329,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     display_trail: false,
     dynamic_map: false,
     encoder_figure: false,
+    go_button_axes: "XY",
     hide_webcam_widget: false,
     highlight_modified_settings: false,
     landing_page: "controls",
@@ -375,6 +377,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_pins: false,
     show_zones: false,
     show_camera_view_area: false,
+    ["show_uncropped_camera_view_area" as keyof WebAppConfig]: false,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,

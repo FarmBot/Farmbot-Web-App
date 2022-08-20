@@ -1,5 +1,7 @@
-const mockDevice = { takePhoto: jest.fn(() => Promise.resolve({})) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+jest.mock("../../../devices/actions", () => ({
+  move: jest.fn(),
+  takePhoto: jest.fn(),
+}));
 
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
@@ -20,10 +22,9 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { push } from "../../../history";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
-import { Path } from "../../../internal_urls";
 import { fakePercentJob } from "../../../__test_support__/fake_bot_data";
+import { move, takePhoto } from "../../../devices/actions";
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -39,6 +40,8 @@ describe("<Photos />", () => {
     env: {},
     designer: fakeDesignerState(),
     getConfigValue: jest.fn(),
+    arduinoBusy: false,
+    currentBotLocation: { x: 0, y: 0, z: 0 },
   });
 
   it("shows photo", () => {
@@ -74,14 +77,12 @@ describe("<Photos />", () => {
     expect(wrapper.text()).toContain("yet taken any photos");
   });
 
-  it("takes photo", async () => {
+  it("takes photo", () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
     const btn = wrapper.find("button").first();
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    await clickButton(wrapper, 0, "take photo");
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
-    await expect(success).toHaveBeenCalled();
-    expect(error).not.toHaveBeenCalled();
+    clickButton(wrapper, 0, "take photo");
+    expect(takePhoto).toHaveBeenCalled();
   });
 
   it("shows disabled take photo button", () => {
@@ -94,15 +95,7 @@ describe("<Photos />", () => {
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(mockDevice.takePhoto).not.toHaveBeenCalled();
-  });
-
-  it("fails to take photo", async () => {
-    mockDevice.takePhoto = jest.fn(() => Promise.reject());
-    const wrapper = mount(<Photos {...fakeProps()} />);
-    await clickButton(wrapper, 0, "take photo");
-    await expect(mockDevice.takePhoto).toHaveBeenCalled();
-    await expect(error).toHaveBeenCalled();
+    expect(takePhoto).not.toHaveBeenCalled();
   });
 
   it("deletes photo", async () => {
@@ -263,11 +256,22 @@ describe("<MoveToLocation />", () => {
   const fakeProps = (): MoveToLocationProps => ({
     imageLocation: { x: 0, y: 0, z: 0 },
     botOnline: true,
+    arduinoBusy: false,
+    currentBotLocation: { x: 0, y: 0, z: 0 },
+    dispatch: jest.fn(),
+    defaultAxes: "XY",
   });
 
   it("moves to location", () => {
     const wrapper = mount(<MoveToLocation {...fakeProps()} />);
-    clickButton(wrapper, 0, "move farmbot to location");
-    expect(push).toHaveBeenCalledWith(Path.location({ x: 0, y: 0, z: 0 }));
+    clickButton(wrapper, 0, "go (x, y)");
+    expect(move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+  });
+
+  it("handles missing location", () => {
+    const p = fakeProps();
+    p.imageLocation.x = undefined;
+    const wrapper = mount(<MoveToLocation {...p} />);
+    expect(wrapper.html()).toEqual("<div></div>");
   });
 });

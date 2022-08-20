@@ -96,6 +96,7 @@ export interface GardenPointProps {
   cameraViewGridId: string | undefined;
   cameraCalibrationData: CameraCalibrationData;
   cropPhotos: boolean;
+  showUncroppedArea: boolean;
   current: boolean;
   hovered: boolean;
   dispatch: Function;

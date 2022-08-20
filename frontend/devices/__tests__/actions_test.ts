@@ -8,6 +8,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   emergencyLock: jest.fn(() => Promise.resolve()),
   emergencyUnlock: jest.fn(() => Promise.resolve()),
   execSequence: jest.fn(() => Promise.resolve()),
+  takePhoto: jest.fn(() => Promise.resolve()),
   resetMCU: jest.fn(() => Promise.resolve()),
   moveRelative: jest.fn(() => Promise.resolve()),
   moveAbsolute: jest.fn(() => Promise.resolve()),
@@ -49,7 +50,7 @@ import * as actions from "../actions";
 import {
   fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
@@ -211,6 +212,24 @@ describe("execSequence()", () => {
   it("implodes when executing unsaved sequences", () => {
     expect(() => actions.execSequence(undefined)).toThrow();
     expect(mockDevice.current.execSequence).not.toHaveBeenCalled();
+  });
+});
+
+describe("takePhoto()", () => {
+  it("calls takePhoto", async () => {
+    await actions.takePhoto();
+    expect(mockDevice.current.takePhoto).toHaveBeenCalled();
+    expect(success).toHaveBeenCalledWith(Content.PROCESSING_PHOTO,
+      { title: "Request sent" });
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("calls takePhoto: error", async () => {
+    mockDevice.current.takePhoto = jest.fn(() => Promise.reject("error"));
+    await actions.takePhoto();
+    await expect(mockDevice.current.takePhoto).toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Error taking photo");
   });
 });
 

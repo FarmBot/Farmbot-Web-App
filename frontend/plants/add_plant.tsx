@@ -8,7 +8,7 @@ import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import {
   DesignerPanel, DesignerPanelHeader,
 } from "../farm_designer/designer_panel";
-import { OFSearch } from "../farm_designer/util";
+import { OFCropFetch } from "../farm_designer/util";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { PlantGrid } from "./grid/plant_grid";
@@ -24,7 +24,7 @@ export const mapStateToProps = (props: Everything): AddPlantProps => ({
     .cropSearchResults,
   xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
   dispatch: props.dispatch,
-  openfarmSearch: OFSearch,
+  openfarmCropFetch: OFCropFetch,
   botPosition: validBotLocationData(props.bot.hardware.location_data).position,
 });
 
@@ -52,7 +52,7 @@ const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
 export interface AddPlantProps {
   cropSearchResults: CropLiveSearchResult[];
   dispatch: Function;
-  openfarmSearch: OpenfarmSearch;
+  openfarmCropFetch: OpenfarmSearch;
   xy_swap: boolean;
   botPosition: BotPosition;
 }
@@ -60,7 +60,7 @@ export interface AddPlantProps {
 export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 
   componentDidMount() {
-    this.props.dispatch(searchForCurrentCrop(this.props.openfarmSearch));
+    this.props.dispatch(searchForCurrentCrop(this.props.openfarmCropFetch));
   }
 
   render() {

@@ -3,7 +3,7 @@ import { GardenWeedProps } from "../../interfaces";
 import { transformXY, scaleIcon } from "../../util";
 import { Actions } from "../../../../constants";
 import { Color } from "../../../../ui";
-import { mapPointClickAction, selectPoint } from "../../actions";
+import { mapPointClickAction, selectPoint, setHoveredPlant } from "../../actions";
 import { Circle } from "../plants/circle";
 import { FilePath, Path } from "../../../../internal_urls";
 
@@ -48,6 +48,7 @@ export class GardenWeed
       onMouseLeave={this.iconHover("end")}
       onClick={() => {
         dispatch(selectPoint([weed.uuid]));
+        dispatch(setHoveredPlant(undefined));
         mapPointClickAction(dispatch, weed.uuid, Path.weeds(id))();
       }}>
       <defs>

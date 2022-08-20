@@ -22,11 +22,12 @@ import { setShownMapImages } from "./actions";
 import { TaggedImage } from "farmbot";
 import { MarkedSlider, Popover } from "../../ui";
 import { takePhoto } from "../../devices/actions";
-import { push } from "../../history";
-import { Path } from "../../internal_urls";
 import {
   botPositionLabel,
 } from "../../farm_designer/map/layers/farmbot/bot_position_label";
+import {
+  GoToThisLocationButton, validGoButtonAxes,
+} from "../../farm_designer/move_to";
 
 const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -98,6 +99,10 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
           target={<p>{botPositionLabel(image.body.meta)}</p>}
           content={<MoveToLocation
             imageLocation={image.body.meta}
+            dispatch={props.dispatch}
+            arduinoBusy={props.arduinoBusy}
+            defaultAxes={props.defaultAxes}
+            currentBotLocation={props.currentBotLocation}
             botOnline={props.botOnline} />} />}
         {!isUndefined(props.distance) &&
           <div className={"meta-info"}>
@@ -113,21 +118,17 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
   </div>;
 };
 
-export const MoveToLocation = (props: MoveToLocationProps) =>
-  <button
-    className={"fb-button gray no-float"}
-    type={"button"}
-    title={t("move to location")}
-    onClick={() =>
-      isNumber(props.imageLocation.x) &&
-      isNumber(props.imageLocation.y) &&
-      push(Path.location({
-        x: props.imageLocation.x,
-        y: props.imageLocation.y,
-        z: props.imageLocation.z,
-      }))}>
-    {t("Move FarmBot to location")}
-  </button>;
+export const MoveToLocation = (props: MoveToLocationProps) => {
+  const { x, y, z } = props.imageLocation;
+  if (!isNumber(x) || !isNumber(y) || !isNumber(z)) { return <div />; }
+  return <GoToThisLocationButton
+    dispatch={props.dispatch}
+    locationCoordinate={{ x, y, z }}
+    botOnline={props.botOnline}
+    arduinoBusy={props.arduinoBusy}
+    currentBotLocation={props.currentBotLocation}
+    defaultAxes={props.defaultAxes} />;
+};
 
 export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
   state: PhotosComponentState = {
@@ -203,6 +204,10 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       <PhotoFooter
         image={this.props.currentImage}
         botOnline={isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
+        dispatch={this.props.dispatch}
+        arduinoBusy={this.props.arduinoBusy}
+        defaultAxes={validGoButtonAxes(this.props.getConfigValue)}
+        currentBotLocation={this.props.currentBotLocation}
         timeSettings={this.props.timeSettings}>
         <PhotoButtons
           deletePhoto={this.deletePhoto}

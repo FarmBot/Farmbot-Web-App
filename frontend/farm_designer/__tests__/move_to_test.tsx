@@ -6,16 +6,28 @@ jest.mock("../../history", () => ({
   push: jest.fn(),
 }));
 
+jest.mock("../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(),
+}));
+
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
+  GoToThisLocationButtonProps, GoToThisLocationButton,
 } from "../move_to";
 import { push } from "../../history";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { move } from "../../devices/actions";
 import { Path } from "../../internal_urls";
+import { setWebAppConfigValue } from "../../config_storage/actions";
+import { StringSetting } from "../../session_keys";
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -109,5 +121,84 @@ describe("chooseLocation()", () => {
     const dispatch = jest.fn();
     chooseLocation({ dispatch, gardenCoords: undefined });
     expect(dispatch).not.toHaveBeenCalled();
+  });
+});
+
+describe("<GoToThisLocationButton />", () => {
+  const fakeProps = (): GoToThisLocationButtonProps => ({
+    defaultAxes: "XYZ",
+    locationCoordinate: { x: 1, y: 2, z: 3 },
+    botOnline: true,
+    arduinoBusy: false,
+    dispatch: jest.fn(),
+    currentBotLocation: { x: 0, y: 0, z: 0 },
+  });
+
+  it("toggles state", () => {
+    const wrapper = mount<GoToThisLocationButton>(
+      <GoToThisLocationButton {...fakeProps()} />);
+    expect(wrapper.instance().state.open).toEqual(false);
+    wrapper.instance().toggle("open")();
+    expect(wrapper.instance().state.open).toEqual(true);
+  });
+
+  it("renders as unavailable: offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    wrapper.setState({ open: true });
+    expect(wrapper.text().toLowerCase()).toContain("farmbot is offline");
+    wrapper.find("button").first().simulate("click");
+    expect(move).not.toHaveBeenCalled();
+  });
+
+  it("renders as unavailable: busy", () => {
+    const p = fakeProps();
+    p.arduinoBusy = true;
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    wrapper.setState({ open: true });
+    expect(wrapper.text().toLowerCase()).toContain("farmbot is busy");
+  });
+
+  it("moves: default", () => {
+    const p = fakeProps();
+    p.defaultAxes = "";
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    wrapper.find("button").first().simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    wrapper.find("button").first().simulate("mouseLeave");
+    expect(p.dispatch).toHaveBeenCalledTimes(2);
+    wrapper.find("button").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledTimes(3);
+    expect(move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+  });
+
+  it("moves", () => {
+    const p = fakeProps();
+    p.defaultAxes = "";
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    wrapper.setState({ open: true });
+    wrapper.update();
+    wrapper.find("button").last().simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    wrapper.find("button").last().simulate("mouseLeave");
+    expect(p.dispatch).toHaveBeenCalledTimes(2);
+    wrapper.find("button").last().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledTimes(3);
+    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+  });
+
+  it("sets new default", () => {
+    const p = fakeProps();
+    p.defaultAxes = "";
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    wrapper.setState({ open: true, setAsDefault: true });
+    wrapper.update();
+    wrapper.find("button").last().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledTimes(2);
+    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      StringSetting.go_button_axes, "XYZ");
   });
 });

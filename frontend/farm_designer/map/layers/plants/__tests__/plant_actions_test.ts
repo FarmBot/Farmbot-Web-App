@@ -94,6 +94,7 @@ describe("dropPlant()", () => {
   const fakeProps = (): DropPlantProps => ({
     gardenCoords: { x: 10, y: 20 },
     cropSearchResults: [fakeCropLiveSearchResult()],
+    companionIndex: undefined,
     openedSavedGarden: undefined,
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),
@@ -105,10 +106,31 @@ describe("dropPlant()", () => {
       expect.objectContaining({ name: "Mint", x: 10, y: 20 }));
   });
 
+  it("drops companion plant", () => {
+    const p = fakeProps();
+    p.companionIndex = 0;
+    dropPlant(p);
+    expect(initSave).toHaveBeenCalledWith("Point",
+      expect.objectContaining({ name: "Strawberry", x: 10, y: 20 }));
+  });
+
   it("doesn't drop plant", () => {
+    console.log = jest.fn();
     mockPath = Path.mock(Path.cropSearch()) + "/";
     dropPlant(fakeProps());
     expect(initSave).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("Missing slug.");
+  });
+
+  it("doesn't drop plant: no crop", () => {
+    console.log = jest.fn();
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.companionIndex = 1;
+    p.cropSearchResults = [];
+    dropPlant(p);
+    expect(initSave).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("Missing crop.");
   });
 
   it("throws error", () => {

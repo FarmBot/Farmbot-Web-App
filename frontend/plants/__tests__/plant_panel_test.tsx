@@ -2,6 +2,8 @@ jest.mock("../../ui/help", () => ({
   Help: ({ text }: { text: string }) => <p>{text}</p>,
 }));
 
+jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
+
 import React from "react";
 import {
   PlantPanel, PlantPanelProps,
@@ -20,6 +22,7 @@ import { fakePoint } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
+import { move } from "../../devices/actions";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -45,6 +48,10 @@ describe("<PlantPanel/>", () => {
     timeSettings: fakeTimeSettings(),
     farmwareEnvs: [],
     soilHeightPoints: [],
+    arduinoBusy: false,
+    currentBotLocation: { x: 0, y: 0, z: 0 },
+    botOnline: true,
+    defaultAxes: "XY",
   });
 
   it("renders: editing", () => {
@@ -65,7 +72,7 @@ describe("<PlantPanel/>", () => {
     const p = fakeProps();
     p.info.meta = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 2, "Delete");
+    clickButton(wrapper, 3, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
@@ -74,7 +81,7 @@ describe("<PlantPanel/>", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 day old");
-    expect(wrapper.find("button").length).toEqual(4);
+    expect(wrapper.find("button").length).toEqual(5);
   });
 
   it("renders in saved garden", () => {
@@ -83,20 +90,20 @@ describe("<PlantPanel/>", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("old");
-    expect(wrapper.find("button").length).toEqual(3);
+    expect(wrapper.find("button").length).toEqual(4);
   });
 
   it("enters select mode", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 3, "Delete multiple");
+    clickButton(wrapper, 4, "Delete multiple");
     expect(push).toHaveBeenCalledWith(Path.plants("select"));
   });
 
-  it("navigates to 'move to' mode", () => {
+  it("moves to plant location", () => {
     const wrapper = mount(<PlantPanel {...fakeProps()} />);
-    clickButton(wrapper, 0, "Move FarmBot to this plant");
-    expect(push).toHaveBeenCalledWith(Path.location({ x: 12, y: 34, z: 0 }));
+    clickButton(wrapper, 0, "go (x, y)");
+    expect(move).toHaveBeenCalledWith({ x: 12, y: 34, z: 0 });
   });
 
   it("edits plant type", () => {

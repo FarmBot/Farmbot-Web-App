@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SlotWithTool, UUID } from "../../../../resources/interfaces";
 import { ToolSlotPoint } from "./tool_slot_point";
 import { MapTransformProps } from "../../interfaces";
@@ -11,6 +11,8 @@ export interface ToolSlotLayerProps {
   dispatch: Function;
   hoveredToolSlot: UUID | undefined;
   interactions: boolean;
+  currentPoint: UUID | undefined;
+  animate: boolean;
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
@@ -27,6 +29,8 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
           key={slot.toolSlot.uuid}
           slot={slot}
           hoveredToolSlot={props.hoveredToolSlot}
+          current={slot.toolSlot.uuid === props.currentPoint}
+          animate={props.animate}
           dispatch={props.dispatch}
           botPositionX={props.botPositionX}
           mapTransformProps={mapTransformProps} />)}

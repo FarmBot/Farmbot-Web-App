@@ -10,5 +10,9 @@ export const fakeCropLiveSearchResult = (): CropLiveSearchResult => ({
     sun_requirements: "",
     sowing_method: "",
     processing_pictures: 0
-  }, image: "fake-mint-svg"
+  },
+  image: "fake-mint-svg",
+  companions: [
+    { name: "Strawberry", slug: "strawberry", svg_icon: "fake-strawberry-svg" },
+  ],
 });
