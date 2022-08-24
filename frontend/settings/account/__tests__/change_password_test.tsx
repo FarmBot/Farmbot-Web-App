@@ -1,12 +1,16 @@
+let mockPatch = Promise.resolve();
+jest.mock("axios", () => ({
+  patch: jest.fn(() => mockPatch),
+}));
+
 import React from "react";
-import moxios from "moxios";
 import { mount } from "enzyme";
 import { ChangePassword, ChangePWState } from "../change_password";
 import { SpecialStatus } from "farmbot";
 import { API } from "../../../api/api";
-import { error } from "../../../toast/toast";
-import { AxiosResponse } from "axios";
+import { error, success } from "../../../toast/toast";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
+import axios from "axios";
 
 describe("<ChangePassword />", () => {
   it("doesn't fire maybeClearForm() if form is filled", () => {
@@ -111,46 +115,37 @@ describe("<ChangePassword />", () => {
   describe("AJAX", () => {
     API.setBaseUrl("localhost");
 
-    beforeEach(() => moxios.install());
-    afterEach(() => moxios.uninstall());
-
-    const respondWith =
-      (response: { status: number, response: {} }) =>
-        new Promise<Partial<AxiosResponse>>(
-          (resolve: (value: Partial<AxiosResponse>) => void, reject) =>
-            moxios.wait(() => {
-              moxios.requests.mostRecent()
-                .respondWith(response)
-                .then(resolve, reject);
-            }));
-
     it("saves (KO)", async () => {
+      mockPatch = Promise.reject({ response: { data: "error" } });
       window.confirm = () => true;
       const el = mount<ChangePassword>(<ChangePassword />);
-      el.instance().state.form = {
+      const form = {
         password: "xxxxxxxx",
         new_password: "bbbbbbbb",
         new_password_confirmation: "bbbbbbbb"
       };
-      el.instance().save();
-      const resp = await respondWith({ status: 422, response: { bad: "data" } });
-      expect(resp.config?.url).toContain("api/users");
-      expect(resp.config?.method).toEqual("patch");
+      el.instance().state.form = form;
+      await el.instance().save();
+      expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/", form);
+      expect(error).toHaveBeenCalledWith("Error: error");
+      expect(success).not.toHaveBeenCalled();
       expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
     });
 
     it("saves (OK)", async () => {
+      mockPatch = Promise.resolve();
       window.confirm = () => true;
       const el = mount<ChangePassword>(<ChangePassword />);
-      el.instance().state.form = {
+      const form = {
         password: "aaaaaaaa",
         new_password: "bbbbbbbb",
         new_password_confirmation: "bbbbbbbb"
       };
-      el.instance().save();
-      const resp = await respondWith({ status: 200, response: {} });
-      expect(resp.config?.url).toContain("api/users");
-      expect(resp.config?.method).toEqual("patch");
+      el.instance().state.form = form;
+      await el.instance().save();
+      expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/", form);
+      expect(success).toHaveBeenCalledWith("Your password is changed.");
+      expect(error).not.toHaveBeenCalled();
       expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
     });
   });

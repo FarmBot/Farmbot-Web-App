@@ -1,58 +1,74 @@
 jest.mock("../../../toast_errors", () => ({ toastErrors: jest.fn() }));
 
+let mockPost = Promise.resolve();
+let mockDelete = Promise.resolve();
+jest.mock("axios", () => ({
+  post: jest.fn(() => mockPost),
+  delete: jest.fn(() => mockDelete),
+}));
+
 import { API } from "../../../api/api";
-import moxios from "moxios";
 import { deleteUser, resetAccount } from "../actions";
 import { toastErrors } from "../../../toast_errors";
+import axios from "axios";
+
+API.setBaseUrl("http://localhost:3000");
+const data = { password: "Foo!" };
+const errorResponse = { response: { data: "error" } };
 
 describe("deleteUser()", () => {
-  beforeEach(() => moxios.install());
-  afterEach(() => moxios.uninstall());
-
-  interface TestArgs {
-    fn: Function;
-    method: "post" | "delete";
-    url: string;
-    code: number;
-  }
-
-  /** Set test title string for test case. */
-  const ts = (testCase: TestArgs) => Object.assign(testCase, {
-    toString: () => [testCase.method, testCase.url, testCase.code].join(" "),
-  });
-
-  it.each<TestArgs | jest.DoneCallback>([
-    ts({ fn: deleteUser, method: "delete", url: "api/users", code: 200 }),
-    ts({ fn: deleteUser, method: "delete", url: "api/users", code: 422 }),
-    ts({ fn: resetAccount, method: "post", url: "api/device/reset", code: 200 }),
-    ts({ fn: resetAccount, method: "post", url: "api/device/reset", code: 422 }),
-  ])("%s", (testArgs: TestArgs, done: jest.DoneCallback) => {
-    expect.assertions(4);
-    API.setBaseUrl("http://example.com:80");
-    const thunk = testArgs.fn({ password: "Foo!" });
+  it("deletes user", async () => {
+    mockDelete = Promise.resolve();
+    window.alert = jest.fn();
     const dispatch = jest.fn();
     const getState = jest.fn();
     getState.mockImplementation(() => ({ auth: {} }));
-    window.alert = jest.fn();
-    thunk(dispatch, getState);
+    await deleteUser(data)(dispatch, getState);
+    expect(axios.delete).toHaveBeenCalledWith("http://localhost:3000/api/users/",
+      { data, params: { force: true } });
+    expect(toastErrors).not.toHaveBeenCalled();
+    expect(alert).toHaveBeenCalledWith("We're sorry to see you go. :(");
+  });
 
-    moxios.wait(() => {
-      const request = moxios.requests.mostRecent();
-      request.respondWith({
-        status: testArgs.code,
-        response: {},
-      }).then(resp => {
-        expect(resp.config.url).toContain(testArgs.url);
-        expect(resp.config.method).toBe(testArgs.method);
-        if (testArgs.code == 200) {
-          expect(window.alert).toHaveBeenCalled();
-          expect(toastErrors).not.toHaveBeenCalled();
-        } else {
-          expect(window.alert).not.toHaveBeenCalled();
-          expect(toastErrors).toHaveBeenCalled();
-        }
-        done();
-      }, console.log);
-    });
+  it("doesn't delete user", async () => {
+    mockDelete = Promise.reject(errorResponse);
+    window.alert = jest.fn();
+    const dispatch = jest.fn();
+    const getState = jest.fn();
+    getState.mockImplementation(() => ({ auth: {} }));
+    await deleteUser(data)(dispatch, getState);
+    await expect(axios.delete).toHaveBeenCalledWith(
+      "http://localhost:3000/api/users/",
+      { data, params: { force: true } });
+    expect(toastErrors).toHaveBeenCalledWith({ err: errorResponse });
+    expect(alert).not.toHaveBeenCalled();
+  });
+});
+
+describe("resetAccount()", () => {
+  it("resets account", async () => {
+    mockPost = Promise.resolve();
+    window.alert = jest.fn();
+    const dispatch = jest.fn();
+    const getState = jest.fn();
+    getState.mockImplementation(() => ({ auth: {} }));
+    await resetAccount(data)(dispatch, getState);
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost:3000/api/device/reset", data);
+    expect(toastErrors).not.toHaveBeenCalled();
+    expect(alert).toHaveBeenCalledWith("Account has been reset.");
+  });
+
+  it("doesn't reset account", async () => {
+    mockPost = Promise.reject(errorResponse);
+    window.alert = jest.fn();
+    const dispatch = jest.fn();
+    const getState = jest.fn();
+    getState.mockImplementation(() => ({ auth: {} }));
+    await resetAccount(data)(dispatch, getState);
+    expect(axios.post).toHaveBeenCalledWith(
+      "http://localhost:3000/api/device/reset", data);
+    expect(toastErrors).toHaveBeenCalledWith({ err: errorResponse });
+    expect(alert).not.toHaveBeenCalled();
   });
 });
