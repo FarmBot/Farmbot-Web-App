@@ -1,8 +1,8 @@
 import { Color } from "farmbot/dist/corpus";
-import { TaggedSequence } from "farmbot";
+import { SyncStatus, TaggedSequence } from "farmbot";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
-import { VariableNameSet, UUID } from "../resources/interfaces";
+import { VariableNameSet, UUID, ResourceIndex } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface FolderMeta {
@@ -66,6 +66,9 @@ export interface FolderProps {
   resourceUsage: Record<UUID, boolean | undefined>;
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
   getWebAppConfigValue: GetWebAppConfigValue;
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  syncStatus: SyncStatus | undefined;
 }
 
 export interface FolderState {
@@ -91,12 +94,17 @@ export interface FolderNodeProps {
   resourceUsage: Record<UUID, boolean | undefined>;
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
   getWebAppConfigValue: GetWebAppConfigValue;
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  syncStatus: SyncStatus | undefined;
 }
 
 export interface SequenceButtonClusterProps {
   sequence: TaggedSequence;
   getWebAppConfigValue: GetWebAppConfigValue;
   dispatch: Function;
+  startSequenceMove(sequenceUuid: UUID): void;
+  toggleSequenceMove(sequenceUuid?: UUID): void;
 }
 
 export interface FolderButtonClusterProps {
@@ -117,6 +125,9 @@ export interface FolderItemProps {
   variableData: VariableNameSet | undefined;
   inUse: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
+  resources: ResourceIndex;
+  menuOpen: UUID | undefined;
+  syncStatus: SyncStatus | undefined;
 }
 
 export interface SequenceDropAreaProps {
