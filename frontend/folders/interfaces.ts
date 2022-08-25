@@ -1,7 +1,5 @@
 import { Color } from "farmbot/dist/corpus";
 import { SyncStatus, TaggedSequence } from "farmbot";
-import { DeepPartial } from "redux";
-import { Folder } from "farmbot/dist/resources/api_resources";
 import { VariableNameSet, UUID, ResourceIndex } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
@@ -140,16 +138,6 @@ export interface SequenceDropAreaProps {
 
 export interface SequenceDropAreaState {
   hovered: boolean;
-}
-
-export interface AddFolderBtnProps {
-  folder?: DeepPartial<Folder>;
-  close?(): void;
-}
-
-export interface AddSequenceProps {
-  folderId?: number;
-  close?(): void;
 }
 
 export interface ToggleFolderBtnProps {

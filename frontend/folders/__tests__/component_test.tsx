@@ -417,14 +417,14 @@ describe("<FolderButtonCluster />", () => {
 
   it("renders", () => {
     const wrapper = mount(<FolderButtonCluster {...fakeProps()} />);
-    expect(wrapper.find("button").length).toEqual(4);
+    expect(wrapper.find(".cluster-icon").length).toEqual(4);
   });
 
   it("deletes folder", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(0).simulate("click");
+    wrapper.find(".cluster-icon").at(0).simulate("click");
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
@@ -432,7 +432,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    wrapper.find(".cluster-icon").at(1).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -441,7 +441,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(2).simulate("click");
+    wrapper.find(".cluster-icon").at(2).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({ parent_id: p.node.id });
   });
@@ -450,7 +450,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(3).simulate("click");
+    wrapper.find(".cluster-icon").at(3).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(addNewSequenceToFolder).toHaveBeenCalledWith(1);
   });
@@ -551,7 +551,7 @@ describe("<FolderNameEditor />", () => {
     const wrapper = mount(<FolderNameEditor {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(".fb-button.gray").simulate("click");
+    wrapper.find(".cluster-icon").last().simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });
@@ -649,13 +649,13 @@ describe("<FolderPanelTop />", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderPanelTop {...p} />);
     wrapper.find("button").at(1).simulate("click");
-    expect(createFolder).toHaveBeenCalledWith(undefined);
+    expect(createFolder).toHaveBeenCalled();
   });
 
   it("creates new sequence", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderPanelTop {...p} />);
     wrapper.find("button").at(2).simulate("click");
-    expect(addNewSequenceToFolder).toHaveBeenCalledWith(undefined);
+    expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 });

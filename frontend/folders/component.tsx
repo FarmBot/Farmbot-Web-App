@@ -13,8 +13,6 @@ import {
   FolderNodeProps,
   FolderProps,
   FolderState,
-  AddFolderBtnProps,
-  AddSequenceProps,
   ToggleFolderBtnProps,
   FolderPanelTopProps,
   SequenceDropAreaProps,
@@ -164,7 +162,7 @@ export const SequenceButtonCluster =
     const { dispatch, getWebAppConfigValue, sequence } = props;
     return <div className="folder-button-cluster">
       <i
-        className={"fa fa-trash"}
+        className={"fa fa-trash cluster-icon"}
         title={t("delete sequence")}
         onClick={deleteSequence({
           sequenceUuid: sequence.uuid,
@@ -172,10 +170,10 @@ export const SequenceButtonCluster =
           dispatch,
         })} />
       <i
-        className={"fa fa-copy"}
+        className={"fa fa-copy cluster-icon"}
         title={t("copy sequence")}
         onClick={() => dispatch(copySequence(sequence))} />
-      <i className={"fa fa-arrows-v"}
+      <i className={"fa fa-arrows-v cluster-icon"}
         onMouseDown={() => props.startSequenceMove(sequence.uuid)}
         onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
     </div>;
@@ -189,48 +187,36 @@ const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {
   </button>;
 };
 
-const AddFolderBtn = ({ folder, close }: AddFolderBtnProps) => {
-  return <button
-    className="fb-button green"
-    title={t("Create subfolder")}
-    onClick={() => { close?.(); createFolder(folder); }}>
-    <div className="fa-stack fa-2x" title={"Create Subfolder"}>
-      <i className="fa fa-folder fa-stack-2x" />
-      <i className="fa fa-plus fa-stack-1x" />
-    </div>
-  </button>;
-};
+interface PlusStackProps extends React.HTMLProps<HTMLDivElement> {
+  icon: string;
+}
 
-const AddSequenceBtn = ({ folderId, close }: AddSequenceProps) => {
-  return <button
-    className="fb-button green"
-    title={t("add new sequence")}
-    onClick={() => { close?.(); addNewSequenceToFolder(folderId); }}>
-    <div className="fa-stack fa-2x">
-      <i className="fa fa-server fa-stack-2x" />
-      <i className="fa fa-plus fa-stack-1x" />
-    </div>
-  </button>;
-};
+const PlusStack = (props: PlusStackProps) =>
+  <div className={"fa-stack fa-2x"} {...props}>
+    <i className={`fa ${props.icon} fa-stack-2x`} />
+    <i className={"fa fa-plus fa-stack-1x"} />
+  </div>;
 
 export const FolderButtonCluster =
   ({ node, close }: FolderButtonClusterProps) => {
-    return <div className="folder-button-cluster">
-      <button
-        className="fb-button red"
+    return <div className={"folder-button-cluster"}>
+      <i className={"fa fa-trash cluster-icon"}
         title={t("delete folder")}
-        onClick={() => { deleteFolder(node.id); }}>
-        <i className="fa fa-trash" />
-      </button>
-      <button
-        className="fb-button gray"
+        onClick={() => { deleteFolder(node.id); }} />
+      <i className={"fa fa-pencil cluster-icon"}
         title={t("edit folder")}
-        onClick={() => { close(); toggleFolderEditState(node.id); }}>
-        <i className="fa fa-pencil" />
-      </button>
+        onClick={() => { close(); toggleFolderEditState(node.id); }} />
       {node.kind !== "terminal" &&
-        <AddFolderBtn folder={{ parent_id: node.id }} close={close} />}
-      <AddSequenceBtn folderId={node.id} close={close} />
+        <div className={"stack-wrapper cluster-icon"}
+          title={t("Create subfolder")}
+          onClick={() => { close(); createFolder({ parent_id: node.id }); }}>
+          <PlusStack icon={"fa-folder"} />
+        </div>}
+      <div className={"stack-wrapper cluster-icon"}
+        title={t("add new sequence")}
+        onClick={() => { close(); addNewSequenceToFolder(node.id); }}>
+        <PlusStack icon={"fa-server"} />
+      </div>
     </div>;
   };
 
@@ -447,6 +433,16 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
     <ToggleFolderBtn
       expanded={props.toggleDirection}
       onClick={props.toggleAll} />
-    <AddFolderBtn />
-    <AddSequenceBtn />
+    <button
+      className="fb-button green"
+      title={t("Create subfolder")}
+      onClick={() => { createFolder(); }}>
+      <PlusStack icon={"fa-folder"} />
+    </button>
+    <button
+      className="fb-button green"
+      title={t("add new sequence")}
+      onClick={() => { addNewSequenceToFolder(); }}>
+      <PlusStack icon={"fa-server"} />
+    </button>
   </div>;
