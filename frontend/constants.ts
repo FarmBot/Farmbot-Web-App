@@ -1762,10 +1762,10 @@ export namespace SetupWizardContent {
     speed and current settings.`);
 
   export const FIND_AXIS_LENGTH =
-    trim(`Open the ... menu for the {{ axis }} axis and click *FIND LENGTH*.`);
+    trim(`Open the ... menu for the {{ axis }} axis and click **FIND LENGTH**.`);
 
   export const TOGGLE_PERIPHERAL =
-    trim(`Press the *{{ toggle }}* toggle, wait a few seconds, and then press
+    trim(`Press the **{{ toggle }}** toggle, wait a few seconds, and then press
     the toggle again.`);
 
   export const ROTARY_TOOL_WARNING =
