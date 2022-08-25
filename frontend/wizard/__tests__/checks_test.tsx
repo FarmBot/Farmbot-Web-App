@@ -195,7 +195,7 @@ describe("<ControlsCheck />", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.axis = "x";
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 
   it("returns both controls directions highlighted", () => {
@@ -203,14 +203,22 @@ describe("<ControlsCheck />", () => {
     p.controlsCheckOptions.axis = "x";
     p.controlsCheckOptions.both = true;
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
+  });
+
+  it("returns up controls direction highlighted", () => {
+    const p = fakeControlsCheckProps();
+    p.controlsCheckOptions.axis = "x";
+    p.controlsCheckOptions.up = true;
+    const wrapper = mount(<ControlsCheck {...p} />);
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 
   it("returns controls with home highlighted", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.home = true;
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 });
 

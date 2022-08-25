@@ -60,7 +60,7 @@ describe("<JogButtons />", () => {
     p.highlightAxis = "x";
     const wrapper = mount(<JogButtons {...p} />);
     expect(wrapper.find("td").at(13).props().style).toEqual({
-      border: "2px solid yellow"
+      border: "2px solid #fd6"
     });
   });
 
@@ -70,7 +70,7 @@ describe("<JogButtons />", () => {
     p.highlightAxis = "y";
     const wrapper = mount(<JogButtons {...p} />);
     expect(wrapper.find("td").at(4).props().style).toEqual({
-      border: "2px solid yellow"
+      border: "2px solid #fd6"
     });
   });
 
@@ -79,7 +79,7 @@ describe("<JogButtons />", () => {
     p.highlightAxis = "z";
     const wrapper = mount(<JogButtons {...p} />);
     expect(wrapper.find("td").at(15).props().style).toEqual({
-      border: "2px solid yellow"
+      border: "2px solid #fd6"
     });
   });
 });

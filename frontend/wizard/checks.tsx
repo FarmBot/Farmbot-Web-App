@@ -217,6 +217,7 @@ export interface ControlsCheckOptions {
   axis?: Xyz;
   home?: boolean;
   both?: boolean;
+  up?: boolean;
 }
 
 export interface ControlsCheckProps {
@@ -225,12 +226,14 @@ export interface ControlsCheckProps {
 }
 
 export const ControlsCheck = (props: ControlsCheckProps) => {
-  const { axis, both, home } = props.controlsCheckOptions;
+  const { axis, both, home, up } = props.controlsCheckOptions;
+  const upDirection = up ? "up" : undefined;
+  const highlightDirection = both ? "both" : upDirection;
   return <div className={"controls-check"}>
     <MoveControls {...mapStateToProps(store.getState())}
       dispatch={props.dispatch}
       highlightAxis={axis}
-      highlightDirection={both ? "both" : undefined}
+      highlightDirection={highlightDirection}
       highlightHome={home} />
   </div>;
 };

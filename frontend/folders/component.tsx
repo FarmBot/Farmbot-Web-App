@@ -122,24 +122,26 @@ const SequenceItemDescription = (props: SequenceItemDescriptionProps) => {
   const hasInfo = deprecatedSteps || inUse || pinned || forked || imported
     || published;
   return <div className={"sequence-item-help help-text-content"}>
-    {deprecatedSteps &&
-      <InfoRow className={"fa fa-exclamation-triangle"}
-        description={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
-    {inUse &&
-      <InfoRow className={"in-use fa fa-hdd-o"}
-        description={t(Content.IN_USE)} />}
-    {pinned &&
-      <InfoRow className={"fa fa-thumb-tack"}
-        description={t(Content.IS_PINNED)} />}
-    {forked &&
-      <InfoRow className={"fa fa-chain-broken"}
-        description={t("Imported and edited publicly shared sequence.")} />}
-    {imported &&
-      <InfoRow className={"fa fa-link"}
-        description={t("Imported publicly shared sequence.")} />}
-    {published &&
-      <InfoRow className={"fa fa-globe"}
-        description={t("Published as a publicly shared sequence.")} />}
+    <div className={"info-grid-wrapper"}>
+      {deprecatedSteps &&
+        <InfoRow className={"fa fa-exclamation-triangle"}
+          description={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
+      {inUse &&
+        <InfoRow className={"in-use fa fa-hdd-o"}
+          description={t(Content.IN_USE)} />}
+      {pinned &&
+        <InfoRow className={"fa fa-thumb-tack"}
+          description={t(Content.IS_PINNED)} />}
+      {forked &&
+        <InfoRow className={"fa fa-chain-broken"}
+          description={t("Imported and edited publicly shared sequence.")} />}
+      {imported &&
+        <InfoRow className={"fa fa-link"}
+          description={t("Imported publicly shared sequence.")} />}
+      {published &&
+        <InfoRow className={"fa fa-globe"}
+          description={t("Published as a publicly shared sequence.")} />}
+    </div>
     {hasInfo && <hr />}
     <label>{t("Description")}</label>
     <Markdown>{description || t("This sequence has no description.")}</Markdown>
@@ -151,11 +153,12 @@ interface InfoRowProps {
   description: string;
 }
 
+/** Fragments used for CSS grid to work properly. */
 const InfoRow = (props: InfoRowProps) =>
-  <div className={"sequence-item-icon-info-row"}>
+  <React.Fragment>
     <i className={props.className} />
     <p>{props.description}</p>
-  </div>;
+  </React.Fragment>;
 
 export const SequenceButtonCluster =
   (props: SequenceButtonClusterProps) => {

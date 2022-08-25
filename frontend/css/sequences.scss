@@ -734,8 +734,6 @@
       padding: 0.5rem;
       border-radius: 3px;
       line-height: 2rem !important;
-      margin-left: 0.5rem !important;
-      margin-right: 0.5rem !important;
       color: $off_white;
       &:hover {
         background: $medium_gray;
@@ -951,7 +949,7 @@
 }
 
 .sequence-item-help {
-  .sequence-item-icon-info-row {
+  .info-grid-wrapper {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.25rem 0.75rem;
@@ -963,9 +961,9 @@
       line-height: 1.75rem;
       color: $off_white;
     }
-  }
-  .fa-exclamation-triangle {
-    color: $orange;
+    .fa-exclamation-triangle {
+      color: $orange;
+    }
   }
   hr {
     border-color: $medium_gray;
@@ -978,7 +976,7 @@
     display: block;
     color: $off_white;
   }
-  image {
+  img {
     max-width: 100%;
     border-radius: 5px;
   }

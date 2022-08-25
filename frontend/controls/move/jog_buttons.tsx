@@ -56,14 +56,15 @@ export class JogButtons
         left: highlightAxis == rightLeft && highlightDirection == "both",
       },
       z: {
-        down: highlightAxis == "z",
-        up: highlightAxis == "z" && highlightDirection == "both",
+        down: highlightAxis == "z" && highlightDirection != "up",
+        up: highlightAxis == "z" &&
+          ["both", "up"].includes("" + highlightDirection),
       },
       home: !!highlightHome,
     };
     const style = (highlighted: boolean) =>
       highlighted
-        ? { border: "2px solid yellow" }
+        ? { border: "2px solid #fd6" }
         : {};
     const upDownUpProps: DirectionButtonProps = {
       ...commonProps,

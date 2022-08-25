@@ -1674,7 +1674,16 @@ export namespace SetupWizardContent {
 
   export const HOME =
     trim(`Did FarmBot reach the home position (touching the hardstop) for
-    this axis and set the coordinate to 0?`);
+    this axis and set the coordinate to 0? Note: sometimes after a movement,
+    FarmBot will settle into place and coordinates may change by +/-0.5mm
+    from the desired value. If the coordinates are within 1mm of 0, that is
+    acceptable.`);
+
+  export const BOOT_SEQUENCE =
+    trim(`Select the 'Find Home' sequence in the dropdown. FarmBot will
+    execute this sequence every time it boots up. You can modify this
+    sequence or choose a different boot sequence later to have FarmBot
+    perform different functions when it turns on.`);
 
   export const FIND_LENGTH =
     trim(`Did FarmBot move to the end of the axis and then move back to
@@ -1752,8 +1761,11 @@ export namespace SetupWizardContent {
     trim(`Watch the video below and make small adjustments to the motor
     speed and current settings.`);
 
+  export const FIND_AXIS_LENGTH =
+    trim(`Open the ... menu for the {{ axis }} axis and click *FIND LENGTH*.`);
+
   export const TOGGLE_PERIPHERAL =
-    trim(`Press the {{ toggle }} toggle, wait a few seconds, and then press
+    trim(`Press the *{{ toggle }}* toggle, wait a few seconds, and then press
     the toggle again.`);
 
   export const ROTARY_TOOL_WARNING =

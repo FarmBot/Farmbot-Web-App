@@ -14,7 +14,7 @@ const Axis = (props: AxisProps) => {
         missedSteps={axisState == "idle" ? 0 : missedSteps}
         axis={axis} />}
     <input disabled name={axis}
-      style={props.highlight ? { border: "2px solid yellow" } : {}}
+      style={props.highlight ? { border: "2px solid #fd6" } : {}}
       value={isNumber(val) ? val : "---"} />
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
       <p>{t(axisState)}</p>}
