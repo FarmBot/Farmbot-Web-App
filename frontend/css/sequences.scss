@@ -861,7 +861,8 @@
       height: 1.2rem;
     }
     a {
-      width: 74%;
+      overflow: hidden;
+      flex-grow: 1;
     }
     p {
       overflow: hidden;
@@ -869,7 +870,6 @@
       text-overflow: ellipsis;
       font-size: 1.4rem;
       font-weight: normal;
-      width: 72%;
       padding: 0.5rem;
       padding-left: 0;
       margin-left: 3rem;

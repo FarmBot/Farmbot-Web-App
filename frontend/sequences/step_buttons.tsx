@@ -20,7 +20,7 @@ export const stepClick =
       dispatch(closeCommandMenu());
     };
 
-export function StepButton({ children, step, color, dispatch, current, index }:
+export function StepButton({ label, step, color, dispatch, current, index }:
   StepButtonParams) {
   const Dragger = () => <StepDragger
     dispatch={dispatch}
@@ -33,10 +33,10 @@ export function StepButton({ children, step, color, dispatch, current, index }:
         Path.inDesigner() ? "clustered" : "full-width block step-block",
         color,
       ].join(" ")}
-      title={t("add step")}
+      title={label}
       onClick={stepClick(dispatch, step, current, index)}>
       <div className="step-block-drag">
-        <label>{children}</label>
+        <label>{label}</label>
         {!Path.inDesigner() && <i className="fa fa-arrows block-control" />}
       </div>
     </button>

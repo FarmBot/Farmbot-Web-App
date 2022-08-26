@@ -322,6 +322,10 @@
       label {
         margin: 0;
         width: 90%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: bottom;
       }
     }
   }
