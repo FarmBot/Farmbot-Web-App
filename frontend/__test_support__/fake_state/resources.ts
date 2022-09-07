@@ -242,7 +242,7 @@ export function fakeTelemetry(): TaggedTelemetry {
     updated_at: "2018-01-11T20:20:38.362Z",
     target: "rpi",
     soc_temp: 0,
-    throttled: "0x000000",
+    throttled: "0x0",
     wifi_level_percent: 0,
     uptime: 0,
     memory_usage: 0,

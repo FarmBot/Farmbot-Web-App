@@ -7,7 +7,7 @@ class AmqpTelemetryParser < Mutations::Command
   # This is what telemetry will look like after JSON.parse()
   EXAMPLE_JSON = {
     "soc_temp" => 100,
-    "throttled" => "0x000000",
+    "throttled" => "0x0",
     "wifi_level_percent" => 80,
     "uptime" => 12345,
     "memory_usage" => 100,

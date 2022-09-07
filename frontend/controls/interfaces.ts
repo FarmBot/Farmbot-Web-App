@@ -1,11 +1,12 @@
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import {
   Vector3, McuParams, Xyz, AxisState, SyncStatus, TaggedSequence,
-  FirmwareHardware, TaggedPeripheral, TaggedWebcamFeed,
+  FirmwareHardware, TaggedPeripheral, TaggedWebcamFeed, TaggedLog,
 } from "farmbot";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { MovementState } from "../interfaces";
+import { PinBindingListItems } from "../settings/pin_bindings/interfaces";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;
@@ -70,4 +71,6 @@ export interface DesignerControlsProps {
   env: UserEnv;
   firmwareHardware: FirmwareHardware | undefined;
   movementState: MovementState;
+  pinBindings: PinBindingListItems[];
+  logs: TaggedLog[];
 }

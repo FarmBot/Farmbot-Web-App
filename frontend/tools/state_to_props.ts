@@ -62,6 +62,7 @@ export const mapStateToPropsAddEditBase = (props: Everything):
     botOnline: isBotOnlineFromState(props.bot),
     arduinoBusy: props.bot.hardware.informational_settings.busy,
     defaultAxes: validGoButtonAxes(getWebAppConfig),
+    movementState: props.app.movement,
   };
 };
 

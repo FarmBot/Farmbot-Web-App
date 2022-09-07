@@ -4,7 +4,7 @@ import { BotPosition } from "../devices/interfaces";
 import { move } from "../devices/actions";
 import { push } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
-import { isNumber } from "lodash";
+import { isNumber, sum } from "lodash";
 import { Actions, Content } from "../constants";
 import { AxisNumberProperty } from "./map/interfaces";
 import { t } from "../i18next_wrapper";
@@ -12,12 +12,13 @@ import { SafeZCheckbox } from "../sequences/step_tiles/tile_computed_move/safe_z
 import { Position, Slider } from "@blueprintjs/core";
 import { Path } from "../internal_urls";
 import { setMovementStateFromPosition } from "../connectivity/log_handlers";
-import { Vector3 } from "farmbot";
+import { Vector3, Xyz } from "farmbot";
 import { Link } from "../link";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { StringSetting } from "../session_keys";
+import { MovementState } from "../interfaces";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -145,6 +146,7 @@ export interface GoToThisLocationButtonProps {
   arduinoBusy: boolean;
   dispatch: Function;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 interface GoToThisLocationButtonState {
@@ -176,6 +178,7 @@ export class GoToThisLocationButton
       unavailable ? "pseudo-disabled" : "",
     ].join(" ");
     const defaultDestination = coordinateFromAxes(target, current, defaultAxes);
+    const remaining = movementPercentRemaining(current, this.props.movementState);
     return <div className={"go-button-axes-wrapper"}>
       <button
         className={classes("go-button-axes-text")}
@@ -191,7 +194,11 @@ export class GoToThisLocationButton
           move(defaultDestination);
           this.setState({ open: false });
         }}>
-        {goText(this.props.defaultAxes)}
+        {remaining && !isNaN(remaining) && arduinoBusy
+          ? <div className={"movement-progress"}
+            style={{ width: `${remaining}%`, top: 0, left: 0 }} />
+          : <i />}
+        <p>{goText(this.props.defaultAxes)}</p>
       </button>
       <Popover position={Position.BOTTOM_RIGHT}
         isOpen={this.state.open}
@@ -261,3 +268,21 @@ export const unChooseLocationAction = () => ({
   type: Actions.CHOOSE_LOCATION,
   payload: { x: undefined, y: undefined, z: undefined },
 });
+
+export const movementPercentRemaining =
+  (botPosition: BotPosition, movementState: MovementState) => {
+    const { start, distance } = movementState;
+    const absDistanceArray: number[] = [];
+    const all = ["x", "y", "z"].map((axis: Xyz) => {
+      const axisPosition = botPosition[axis];
+      const axisStart = start[axis];
+      if (!isNumber(axisPosition) || !isNumber(axisStart) || distance[axis] == 0) {
+        return 0;
+      }
+      const absDistance = Math.abs(distance[axis]);
+      absDistanceArray.push(absDistance);
+      const progress = (axisPosition - axisStart) / distance[axis];
+      return Math.max(Math.min(progress * absDistance, absDistance), 0);
+    });
+    return sum(all) / sum(absDistanceArray) * 100;
+  };

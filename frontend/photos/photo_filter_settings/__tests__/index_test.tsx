@@ -5,12 +5,12 @@ jest.mock("../../../config_storage/actions", () => ({
 
 jest.mock("../actions", () => ({
   setWebAppConfigValues: jest.fn(),
-  toggleAlwaysHighlightImage: jest.fn(),
-  toggleSingleImageMode: jest.fn(),
-  toggleShowPhotoImages: jest.fn(),
-  toggleShowCalibrationImages: jest.fn(),
-  toggleShowDetectionImages: jest.fn(),
-  toggleShowHeightImages: jest.fn(),
+  toggleAlwaysHighlightImage: jest.fn(() => jest.fn(() => jest.fn())),
+  toggleSingleImageMode: jest.fn(() => jest.fn(() => jest.fn())),
+  toggleShowPhotoImages: jest.fn(() => jest.fn()),
+  toggleShowCalibrationImages: jest.fn(() => jest.fn()),
+  toggleShowDetectionImages: jest.fn(() => jest.fn()),
+  toggleShowHeightImages: jest.fn(() => jest.fn()),
 }));
 
 import React from "react";

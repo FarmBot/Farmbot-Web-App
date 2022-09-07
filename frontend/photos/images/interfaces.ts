@@ -1,6 +1,6 @@
 import { TaggedImage, JobProgress, SyncStatus, Xyz } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
-import { TimeSettings } from "../../interfaces";
+import { MovementState, TimeSettings } from "../../interfaces";
 import { BotPosition, UserEnv } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
@@ -67,6 +67,7 @@ export interface PhotosProps {
   getConfigValue: GetWebAppConfigValue;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export interface PhotoButtonsProps {
@@ -130,6 +131,7 @@ export interface PhotoFooterProps {
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
   dispatch: Function;
+  movementState: MovementState;
 }
 
 export interface MoveToLocationProps {
@@ -139,6 +141,7 @@ export interface MoveToLocationProps {
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
   dispatch: Function;
+  movementState: MovementState;
 }
 
 export interface PhotosComponentState {

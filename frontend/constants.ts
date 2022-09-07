@@ -1672,6 +1672,9 @@ export namespace SetupWizardContent {
     your real life FarmBot. Once you have finished watching, proceed to the
     next setup steps to test and set the controls for each axis.`);
 
+  export const FIND_HOME =
+    trim(`Open the ... menu for the {{ axis }} axis and click **FIND HOME**.`);
+
   export const HOME =
     trim(`Did FarmBot reach the home position (touching the hardstop) for
     this axis and set the coordinate to 0? Note: sometimes after a movement,
@@ -1781,6 +1784,27 @@ export namespace SetupWizardContent {
     dropdown menu. Press "SAVE" to save the pin binding. Once FarmBot has
     synced the change, press Button 5 on top of the electronics box.`);
 
+  export const ESTOP_BUTTON =
+    trim(`Press the physical E-Stop button on top of the electronics box.`);
+
+  export const ESTOP_BUTTON_QUESTION =
+    trim(`Are FarmBot's motors unpowered? (Try moving the Y-axis by hand)`);
+
+  export const UNLOCK_BUTTON_BOX =
+    trim(`Press the physical Unlock button on top of the electronics box.`);
+
+  export const UNLOCK_BUTTON_VIRTUAL =
+    trim(`Press the UNLOCK button below.`);
+
+  export const UNLOCK_BUTTON_QUESTION =
+    trim(`Did FarmBot's motors power back on? (Try moving the Y-axis by hand)`);
+
+  export const CUSTOM_BUTTONS =
+    trim(`Customize which Action or Sequence you want FarmBot to execute
+    when you press Button 3, 4, or 5 on the electronics box. To start, we
+    recommend setting Button 5 to the 'Find Home' sequence. You can change
+    this later from the controls panel.`);
+
   export const PROBLEM_GETTING_IMAGE =
     trim(`There is a 'camera not detected' or 'problem getting image' error
     log`);
@@ -1880,7 +1904,6 @@ export enum DeviceSetting {
   time_zone = `time zone`,
   farmbotLocation = `Location`,
   indoor = `indoor`,
-  camera = `camera`,
   osUpdateTime = `update time`,
   osAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
@@ -1967,6 +1990,8 @@ export enum DeviceSetting {
   addNewPinBinding = `Add new pin binding`,
 
   // Pin Guard
+  pinGuardLabels = ``,
+  pinGuardTitles = `pin timeout (sec) to state`,
   pinGuard = `Pin Guard`,
   pinGuard1 = `Pin Guard 1`,
   pinGuard2 = `Pin Guard 2`,
@@ -2092,6 +2117,47 @@ export enum DeviceSetting {
   confirmEmergencyUnlock = `Confirm emergency unlock`,
   userInterfaceReadOnlyMode = `User Interface Read Only Mode`,
 
+  // Photos: Filters
+  alwaysHighlightCurrentPhotoInMap = `always highlight current photo in map`,
+  onlyShowCurrentPhotoInMap = `only show current photo in map`,
+  showTakePhotoImages = `show take photo images`,
+  showCalibrationImages = `show calibration images`,
+  showWeedDetectorImages = `show weed detector images`,
+  showSoilHeightImages = `show soil height images`,
+
+  // Photos: Camera settings
+  camera = `camera`,
+  imageResolution = `image resolution`,
+  rotateDuringCapture = `rotate during capture`,
+
+  // Photos: Camera calibration
+  useAlternativeMethod = `use alternative method`,
+  calibrationHue = `calibration hue`,
+  calibrationSaturation = `calibration saturation`,
+  calibrationValue = `calibration value`,
+  calibrationBlur = `calibration blur`,
+  calibrationMorph = `calibration morph`,
+  calibrationIterations = `calibration iterations`,
+  invertHueRangeSelection = `invert hue range selection`,
+  calibrationObjectSeparation = `calibration object separation`,
+  calibrationObjectSeparationAlongAxis = `calibration object separation along axis`,
+  cameraOffsetX = `camera offset x`,
+  cameraOffsetY = `camera offset y`,
+  originLocationInImage = `origin location in image`,
+  pixelCoordinateScale = `pixel coordinate scale`,
+  cameraRotation = `camera rotation`,
+
+  // Photos: Weed detection
+  detectionHue = `detection hue`,
+  detectionSaturation = `detection saturation`,
+  detectionValue = `detection value`,
+  detectionBlur = `detection blur`,
+  detectionMorph = `detection morph`,
+  detectionIterations = `detection iterations`,
+  saveDetectedPlants = `save detected plants`,
+  ignoreDetectionsOutOfBounds = `ignore detections out of bounds`,
+  minimumWeedSize = `minimum weed size`,
+  maximumWeedSize = `maximum weed size`,
 }
 
 export namespace DiagnosticMessages {
@@ -2257,6 +2323,8 @@ export enum Actions {
   // Photos
   SELECT_IMAGE = "SELECT_IMAGE",
   SET_IMAGE_SIZE = "SET_IMAGE_SIZE",
+  TOGGLE_PHOTOS_PANEL_OPTION = "TOGGLE_PHOTOS_PANEL_OPTION",
+  BULK_TOGGLE_PHOTOS_PANEL = "BULK_TOGGLE_PHOTOS_PANEL",
 
   // Farmware
   SELECT_FARMWARE = "SELECT_FARMWARE",

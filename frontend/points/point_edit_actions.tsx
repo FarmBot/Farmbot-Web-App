@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { destroy, edit, save } from "../api/crud";
-import { ResourceColor } from "../interfaces";
+import { MovementState, ResourceColor } from "../interfaces";
 import {
   TaggedGenericPointer, TaggedPoint, TaggedWeedPointer, Xyz,
 } from "farmbot";
@@ -40,6 +40,7 @@ export interface EditPointPropertiesProps {
   arduinoBusy: boolean;
   dispatch: Function;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export interface AdditionalWeedPropertiesProps {
@@ -60,6 +61,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         dispatch={props.dispatch}
         arduinoBusy={props.arduinoBusy}
         currentBotLocation={props.currentBotLocation}
+        movementState={props.movementState}
         defaultAxes={props.defaultAxes}
         updatePoint={props.updatePoint} />
     </ListItem>
@@ -168,6 +170,7 @@ export interface EditPointLocationProps {
   arduinoBusy: boolean;
   dispatch: Function;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
@@ -190,6 +193,7 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
       botOnline={props.botOnline}
       arduinoBusy={props.arduinoBusy}
       currentBotLocation={props.currentBotLocation}
+      movementState={props.movementState}
       defaultAxes={props.defaultAxes} />
   </Row>;
 

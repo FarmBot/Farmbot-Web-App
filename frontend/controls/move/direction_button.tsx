@@ -4,9 +4,9 @@ import { ButtonDirection, DirectionButtonProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { MoveRelProps } from "../../devices/interfaces";
 import { lockedClass } from "../locked_class";
-import { isNumber } from "lodash";
 import { Popover } from "../../ui";
 import { setMovementState } from "../../connectivity/log_handlers";
+import { movementPercentRemaining } from "../../farm_designer/move_to";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {
@@ -110,21 +110,13 @@ export class DirectionButton
 
   get distance() { return calculateDistance(this.props); }
 
-  get remaining() {
-    const { axis, botPosition, movementState } = this.props;
-    const { start, distance } = movementState;
-    const axisPosition = botPosition[axis];
-    const axisStart = start[axis];
-    if (!isNumber(axisPosition) || !isNumber(axisStart)) {
-      return;
-    }
-    return (axisPosition - axisStart) / distance[axis] * 100;
-  }
-
   render() {
-    const { direction, axis, locked, arduinoBusy, botOnline } = this.props;
+    const {
+      direction, axis, locked, arduinoBusy, botOnline, botPosition, movementState,
+    } = this.props;
     const title = `${t("move {{axis}} axis", { axis })} (${this.distance})`;
-    const style = calcBtnStyle(direction, this.remaining);
+    const remaining = movementPercentRemaining(botPosition, movementState);
+    const style = calcBtnStyle(direction, remaining);
     const disabled = arduinoBusy || !botOnline || directionDisabled(this.props);
     return <button
       onClick={this.sendCommand}
@@ -137,7 +129,7 @@ export class DirectionButton
       ].join(" ")}
       title={title}>
       <p>{this.distance > 0 ? "+" : "-"}{axis}</p>
-      {(this.btnActive && this.remaining && arduinoBusy)
+      {(this.btnActive && remaining && arduinoBusy)
         ? <div className={"movement-progress"} style={style} />
         : <i />}
       <Popover

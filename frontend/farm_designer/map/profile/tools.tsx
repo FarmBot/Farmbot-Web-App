@@ -56,9 +56,10 @@ export const UTMProfile = (props: ProfileUtmProps) => {
       y={profileUtmV - UTMDimensions.height}
       width={ToolDimensions.diameter}
       height={UTMDimensions.height} />
-    <rect id={"position-indicator"} fill={Color.black} opacity={0.5}
-      x={profileUtmH - 2} y={profileUtmV - 2}
-      width={4} height={4} />
+    {!props.hidePositionIndicator &&
+      <rect id={"position-indicator"} fill={Color.black} opacity={0.5}
+        x={profileUtmH - 2} y={profileUtmV - 2}
+        width={4} height={4} />}
     <image x={profileUtmH - 25} y={profileUtmV - 35} width={50} height={30}
       xlinkHref={FilePath.image("farmbot")} opacity={0.75} />
     {toolInfo.name &&
@@ -68,6 +69,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
         height={ToolDimensions.thickness}
         sideView={props.profileAxis == slotPulloutAxis(toolInfo.pulloutDirection)}
         reversed={props.reversed}
+        hidePositionIndicator={props.hidePositionIndicator}
         toolFlipped={getToolDirection(
           toolInfo.pulloutDirection,
           toolInfo.flipped,
@@ -164,7 +166,7 @@ export const ToolProfile = (props: ProfileToolProps) => {
         stroke={"none"} fill={fontColor} fontWeight={"bold"}>
         {toolName}
       </text>}
-    {(props.coordinate ?? true) &&
+    {(props.coordinate ?? true) && !props.hidePositionIndicator &&
       <circle id={"point-coordinate-indicator"}
         opacity={0.5} fill={Color.darkGray}
         cx={x + width / 2} cy={y} r={5} />}

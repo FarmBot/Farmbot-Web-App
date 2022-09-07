@@ -135,6 +135,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
       botOnline={props.botOnline}
       arduinoBusy={props.arduinoBusy}
       currentBotLocation={props.botPosition}
+      movementState={props.movementState}
       defaultAxes={props.defaultAxes} />
   </div>;
 };
@@ -172,6 +173,7 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       slotLocation={props.toolSlot.body}
       gantryMounted={props.toolSlot.body.gantry_mounted}
       botPosition={props.botPosition}
+      movementState={props.movementState}
       botOnline={props.botOnline}
       dispatch={props.dispatch}
       arduinoBusy={props.arduinoBusy}

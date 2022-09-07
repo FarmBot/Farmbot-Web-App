@@ -15,9 +15,9 @@ import { t } from "../../i18next_wrapper";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { BoolConfig, NumberBoxConfig } from "../camera_calibration/config";
 import { SPECIAL_VALUE_DDI } from "../camera_calibration/constants";
-import { ToolTips } from "../../constants";
-import { getModifiedClassNameSpecifyModified } from "../../settings/default_values";
+import { DeviceSetting, ToolTips } from "../../constants";
 import { formatEnvKey } from "../remote_env/translators";
+import { some } from "lodash";
 
 export class WeedDetector
   extends React.Component<WeedDetectorProps, Partial<WeedDetectorState>> {
@@ -63,19 +63,16 @@ export class WeedDetector
     };
   }
 
-  getModifiedClass = (key: NumericKeyName) =>
-    getModifiedClassNameSpecifyModified(
-      this.getDefault(key) != this.wdEnvGet(this.namespace(key)));
-
   get anyAdvancedModified() {
-    return !!["save_detected_plants"]
-      .map((key: NumericKeyName) => this.getModifiedClass(key))
-      .join("");
+    return some(["save_detected_plants"].map((key: NumericKeyName) =>
+      this.getDefault(key) != this.wdEnvGet(this.namespace(key))));
   }
 
   render() {
     const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
-    const camDisabled = cameraBtnProps(this.props.env);
+    const { syncStatus, botToMqttStatus } = this.props;
+    const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+    const camDisabled = cameraBtnProps(this.props.env, botOnline);
     return <div className="weed-detector">
       <div className="farmware-button">
         <MustBeOnline
@@ -100,6 +97,9 @@ export class WeedDetector
       <Row>
         <Col sm={12}>
           <ImageWorkspace
+            sectionKey={"detection"}
+            dispatch={this.props.dispatch}
+            advancedSectionOpen={this.props.photosPanelState.detectionPP}
             botOnline={
               isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
             onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
@@ -120,30 +120,32 @@ export class WeedDetector
             V_HI={wDEnvGet(this.namespace("V_HI"))} />
           <div className={"camera-calibration-config"}>
             <div className={"camera-calibration-configs"}>
-              {(this.props.showAdvanced || this.anyAdvancedModified) &&
-                <BoolConfig {...this.commonProps}
-                  helpText={t(ToolTips.SAVE_DETECTED_PLANTS, {
-                    defaultSavePlants:
-                      this.getLabeledDefault("save_detected_plants")
-                  })}
-                  configKey={this.namespace("save_detected_plants")}
-                  label={t("Save detected plants")} />}
               <BoolConfig {...this.commonProps}
+                settingName={DeviceSetting.saveDetectedPlants}
+                advanced={true}
+                showAdvanced={this.props.showAdvanced}
+                modified={this.anyAdvancedModified}
+                helpText={t(ToolTips.SAVE_DETECTED_PLANTS, {
+                  defaultSavePlants:
+                    this.getLabeledDefault("save_detected_plants")
+                })}
+                configKey={this.namespace("save_detected_plants")} />
+              <BoolConfig {...this.commonProps}
+                settingName={DeviceSetting.ignoreDetectionsOutOfBounds}
                 helpText={t(ToolTips.USE_BOUNDS, {
                   defaultUseBounds: this.getLabeledDefault("use_bounds")
                 })}
-                configKey={this.namespace("use_bounds")}
-                label={t("Ignore detections out of bounds")} />
+                configKey={this.namespace("use_bounds")} />
               <NumberBoxConfig {...this.commonProps}
+                settingName={DeviceSetting.minimumWeedSize}
                 configKey={this.namespace("min_radius")}
-                label={t("Minimum weed size")}
                 scale={2}
                 helpText={t(ToolTips.MIN_RADIUS, {
                   defaultMinDiameter: this.getDefault("min_radius") * 2
                 })} />
               <NumberBoxConfig {...this.commonProps}
+                settingName={DeviceSetting.maximumWeedSize}
                 configKey={this.namespace("max_radius")}
-                label={t("Maximum weed size")}
                 scale={2}
                 helpText={t(ToolTips.MAX_RADIUS, {
                   defaultMaxDiameter: this.getDefault("max_radius") * 2

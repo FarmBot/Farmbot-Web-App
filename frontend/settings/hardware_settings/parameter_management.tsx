@@ -15,7 +15,7 @@ import {
 } from "../../photos/data_management/toggle_highlight_modified";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
-import { getModifiedClassName, modifiedFromDefault } from "../default_values";
+import { getModifiedClassName } from "../default_values";
 
 export function ParameterManagement(props: ParameterManagementProps) {
   const {
@@ -23,17 +23,16 @@ export function ParameterManagement(props: ParameterManagementProps) {
     getConfigValue, showAdvanced,
   } = props;
   const { parameter_management } = props.settingsPanelState;
-  return <Highlight className={"section"}
-    settingName={DeviceSetting.parameterManagement}>
+  return <Highlight className={"section advanced"}
+    settingName={DeviceSetting.parameterManagement}
+    hidden={!showAdvanced}>
     <Header
       expanded={parameter_management}
       title={DeviceSetting.parameterManagement}
       panel={"parameter_management"}
       dispatch={dispatch} />
     <Collapse isOpen={!!parameter_management}>
-      <Highlight settingName={DeviceSetting.paramLoadProgress}
-        hidden={!showAdvanced}
-        className={"advanced"}>
+      <Highlight settingName={DeviceSetting.paramLoadProgress}>
         <Row>
           <Col xs={7}>
             <label style={{ lineHeight: "1.5rem", display: "inline" }}>
@@ -67,9 +66,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
           </Col>
         </Row>
       </Highlight>
-      <Highlight settingName={DeviceSetting.exportParameters}
-        hidden={!showAdvanced}
-        className={"advanced"}>
+      <Highlight settingName={DeviceSetting.exportParameters}>
         <Row>
           <Col xs={8}>
             <label style={{ lineHeight: "1.5rem" }}>
@@ -84,12 +81,8 @@ export function ParameterManagement(props: ParameterManagementProps) {
           </Col>
         </Row>
       </Highlight>
-      <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy}
-        showAdvanced={showAdvanced} />
-      <Highlight settingName={DeviceSetting.highlightModifiedSettings}
-        hidden={!(showAdvanced
-          || modifiedFromDefault(BooleanSetting.highlight_modified_settings))}
-        className={"advanced"}>
+      <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
+      <Highlight settingName={DeviceSetting.highlightModifiedSettings}>
         <ToggleHighlightModified
           dispatch={dispatch}
           getConfigValue={getConfigValue} />
@@ -97,9 +90,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
       <Highlight settingName={DeviceSetting.showAdvancedSettings}>
         <ShowAdvancedToggle dispatch={dispatch} getConfigValue={getConfigValue} />
       </Highlight>
-      <Highlight settingName={DeviceSetting.resetHardwareParams}
-        hidden={!showAdvanced}
-        className={"advanced"}>
+      <Highlight settingName={DeviceSetting.resetHardwareParams}>
         <Row>
           <Col xs={8}>
             <label style={{ lineHeight: "1.5rem" }}>
@@ -125,7 +116,6 @@ export function ParameterManagement(props: ParameterManagementProps) {
 export interface ParameterImportProps {
   dispatch: Function;
   arduinoBusy: boolean;
-  showAdvanced: boolean;
 }
 
 interface ParameterImportState {
@@ -136,9 +126,7 @@ export class ParameterImport
   extends React.Component<ParameterImportProps, ParameterImportState> {
   state: ParameterImportState = { input: "" };
   render() {
-    return <Highlight settingName={DeviceSetting.importParameters}
-      hidden={!this.props.showAdvanced}
-      className={"advanced"}>
+    return <Highlight settingName={DeviceSetting.importParameters}>
       <Row>
         <Col xs={12}>
           <label>

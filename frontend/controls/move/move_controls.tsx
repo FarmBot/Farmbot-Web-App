@@ -10,6 +10,7 @@ import { JogControlsGroup } from "./jog_controls_group";
 import { MotorPositionPlot } from "./motor_position_plot";
 import { MoveWidgetSettingsMenu } from "./settings_menu";
 import { Popover } from "../../ui";
+import { getImageJobs } from "../../photos/state_to_props";
 
 export const MoveControls = (props: MoveControlsProps) => {
   const { location_data, informational_settings } = props.bot.hardware;
@@ -34,6 +35,8 @@ export const MoveControls = (props: MoveControlsProps) => {
         informational_settings.sync_status,
         getStatus(props.bot.connectivity.uptime["bot.mqtt"]))}
       env={props.env}
+      imageJobs={getImageJobs(props.bot.hardware.jobs)}
+      logs={props.logs}
       highlightAxis={props.highlightAxis}
       highlightDirection={props.highlightDirection}
       highlightHome={props.highlightHome}

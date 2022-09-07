@@ -9,6 +9,7 @@ import { t } from "../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../constants";
 import { Highlight } from "../../settings/maybe_highlight";
 import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
+import { Path } from "../../internal_urls";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -19,15 +20,17 @@ export const cameraCalibrated = (env: UserEnv): boolean =>
   parseFloat("" + env.CAMERA_CALIBRATION_coord_scale) > 0;
 
 /** `disabled` and `title` props for buttons with actions that use the camera. */
-export const cameraBtnProps = (env: UserEnv) => {
-  const disabled = cameraDisabled(env);
+export const cameraBtnProps = (env: UserEnv, botOnline: boolean) => {
+  const disabled = cameraDisabled(env) || !botOnline;
+  const noCameraTitle = t(Content.NO_CAMERA_SELECTED);
+  const offlineTitle = botOnline ? "" : t("FarmBot is offline");
+  const title = cameraDisabled(env) ? noCameraTitle : offlineTitle;
+  const noCameraMsg = t(ToolTips.SELECT_A_CAMERA);
   return disabled
     ? {
       class: "pseudo-disabled",
-      click: () => error(t(ToolTips.SELECT_A_CAMERA), {
-        title: t(Content.NO_CAMERA_SELECTED)
-      }),
-      title: t(Content.NO_CAMERA_SELECTED)
+      click: () => botOnline ? error(noCameraMsg, { title }) : undefined,
+      title,
     }
     : { class: "", click: undefined, title: "" };
 };
@@ -75,7 +78,7 @@ export class CameraSelection
     CAMERA_CHOICES_DDI()[parseCameraSelection(this.props.env)];
 
   render() {
-    return <Highlight settingName={DeviceSetting.camera}>
+    return <Highlight settingName={DeviceSetting.camera} pathPrefix={Path.photos}>
       <Row>
         <Col xs={5}>
           <label>

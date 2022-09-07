@@ -308,6 +308,22 @@
   }
 }
 
+.sequence-item-help,
+.sequence-description {
+  h1 {
+    font-size: 2.2rem;
+    font-weight: bold;
+  }
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+}
+
 .designer-sequence-list-panel-content {
   .panel-top {
     display: none;

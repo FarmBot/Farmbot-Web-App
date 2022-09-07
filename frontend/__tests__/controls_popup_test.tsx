@@ -25,6 +25,8 @@ describe("<ControlsPopup />", () => {
     locked: false,
     isOpen: true,
     movementState: fakeMovementState(),
+    imageJobs: [],
+    logs: [],
   });
 
   it("toggles open state", () => {
@@ -40,7 +42,7 @@ describe("<ControlsPopup />", () => {
   it("sends movement command", () => {
     const wrapper = mount(<ControlsPopup {...fakeProps()} />);
     wrapper.find("img").first().simulate("click");
-    const button = wrapper.find("button").at(1);
+    const button = wrapper.find("button").at(2);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)

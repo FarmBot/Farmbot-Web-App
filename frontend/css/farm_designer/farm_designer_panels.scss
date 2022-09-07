@@ -1119,6 +1119,16 @@ li {
   .go-button-axes-text {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    p {
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+      margin: 0 !important;
+      font-weight: bold;
+      color: $off_white;
+      height: 0;
+      line-height: 0;
+    }
   }
   .go-button-axes-dropdown {
     border-left: 1px solid $dark_gray;
@@ -1299,11 +1309,24 @@ li {
         text-overflow: ellipsis;
       }
     }
+    .mounted-tool {
+      .filter-search {
+        width: 50%;
+        float: right;
+      }
+      .utm-and-mounted-tool-graphic {
+        width: 30%;
+        margin-left: 32%;
+      }
+    }
     .mounted-tool-header {
-      display: flex;
+      display: inline;
       margin-top: 1rem;
       label {
         margin: 0;
+      }
+      .bp4-popover-wrapper {
+        display: inline;
       }
       .help-icon {
         margin-left: 1rem;
@@ -1526,6 +1549,14 @@ li {
       font-size: 1.25rem !important;
       padding: 0.1rem;
     }
+    .settings-panel-settings-menu {
+      .bp4-popover-content {
+        width: 300px;
+      }
+      label {
+        margin-top: 1rem;
+      }
+    }
   }
 }
 
@@ -1625,6 +1656,9 @@ li {
       padding-left: 0;
       padding-right: 1rem;
       margin-bottom: 1rem;
+    }
+    button {
+      float: none;
     }
   }
   .pin-bindings {

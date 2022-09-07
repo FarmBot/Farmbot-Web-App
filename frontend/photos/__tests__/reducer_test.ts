@@ -3,11 +3,13 @@ import { Actions } from "../../constants";
 import {
   fakeImage, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
+import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
 
 describe("photosReducer", () => {
   const fakeState = (): PhotosState => ({
     currentImage: undefined,
     currentImageSize: { width: undefined, height: undefined },
+    photosPanelState: fakePhotosPanelState(),
   });
 
   it("removes UUIDs from state on deletion", () => {
@@ -54,6 +56,29 @@ describe("photosReducer", () => {
     expect(oldState.currentImageSize).not.toEqual(newState.currentImageSize);
     expect(newState.currentImageSize.width).not.toBeUndefined();
     expect(newState.currentImageSize).toEqual({ width: 1, height: 1 });
+  });
+
+  it("toggles section", () => {
+    const oldState = fakeState();
+    const newState = photosReducer(oldState, {
+      type: Actions.TOGGLE_PHOTOS_PANEL_OPTION,
+      payload: "camera",
+    });
+    expect(oldState.photosPanelState.camera)
+      .not.toEqual(newState.photosPanelState.camera);
+    expect(newState.photosPanelState.camera)
+      .toEqual(!oldState.photosPanelState.camera);
+  });
+
+  it("opens all sections", () => {
+    const oldState = fakeState();
+    const newState = photosReducer(oldState, {
+      type: Actions.BULK_TOGGLE_PHOTOS_PANEL,
+      payload: true,
+    });
+    Object.values(newState.photosPanelState).map(value => {
+      expect(value).toBeTruthy();
+    });
   });
 
   it("sets the current image via INIT_RESOURCE", () => {

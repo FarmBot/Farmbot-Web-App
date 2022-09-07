@@ -1,9 +1,14 @@
-const mockDevice = { moveRelative: jest.fn((_) => Promise.resolve()) };
+const mockDevice = {
+  moveRelative: jest.fn((_) => Promise.resolve()),
+  rebootFirmware: jest.fn(() => Promise.resolve()),
+};
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { mount } from "enzyme";
-import { JogButtons } from "../jog_buttons";
+import {
+  JogButtons, PowerAndResetMenu, PowerAndResetMenuProps,
+} from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
@@ -23,6 +28,8 @@ describe("<JogButtons />", () => {
     locked: false,
     dispatch: jest.fn(),
     movementState: fakeMovementState(),
+    imageJobs: [],
+    logs: [],
   });
 
   it("is disabled", () => {
@@ -35,7 +42,7 @@ describe("<JogButtons />", () => {
 
   it("has unswapped xy jog buttons", () => {
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    const button = jogButtons.find("button").at(7);
+    const button = jogButtons.find("button").at(8);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
@@ -47,7 +54,7 @@ describe("<JogButtons />", () => {
     const p = jogButtonProps();
     (p.stepSize as number | undefined) = undefined;
     const jogButtons = mount(<JogButtons {...p} />);
-    const button = jogButtons.find("button").at(7);
+    const button = jogButtons.find("button").at(8);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
@@ -81,5 +88,18 @@ describe("<JogButtons />", () => {
     expect(wrapper.find("td").at(15).props().style).toEqual({
       border: "2px solid #fd6"
     });
+  });
+});
+
+describe("<PowerAndResetMenu />", () => {
+  const fakeProps = (): PowerAndResetMenuProps => ({
+    botOnline: true,
+    showAdvanced: true,
+  });
+
+  it("restarts firmware", () => {
+    const wrapper = mount(<PowerAndResetMenu {...fakeProps()} />);
+    wrapper.find("button").first().simulate("click");
+    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 });

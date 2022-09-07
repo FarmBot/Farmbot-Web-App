@@ -1,12 +1,11 @@
 import React from "react";
 import { McuInputBox } from "./mcu_input_box";
 import { PinGuardMCUInputGroupProps } from "./interfaces";
-import { Row, Col, Help, ToggleButton } from "../../ui";
+import { Row, Col, ToggleButton } from "../../ui";
 import { settingToggle } from "../../devices/actions";
 import { isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { PinNumberDropdown } from "./pin_number_dropdown";
-import { ToolTips } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { getModifiedClassName } from "./default_values";
 
@@ -54,33 +53,13 @@ export class PinGuardMCUInputGroup
     return <Highlight settingName={label}>
       <div className={"pin-guard-input-row"}>
         <Row>
-          <Col xs={6}>
-            <label>
-              {t(label)}
-            </label>
-            <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} />
-          </Col>
-          <Col xs={5} className="no-pad">
+          <Col xs={5}>
             <this.Number />
           </Col>
-        </Row>
-        <Row>
-          <Col xs={5} xsOffset={1} className="no-pad">
-            <label>
-              {t("Timeout (sec)")}
-            </label>
-          </Col>
-          <Col xs={5} className="no-pad">
+          <Col xs={4}>
             <this.Timeout />
           </Col>
-        </Row>
-        <Row>
-          <Col xs={5} xsOffset={1} className="no-pad">
-            <label>
-              {t("To State")}
-            </label>
-          </Col>
-          <Col xs={5} className="no-pad">
+          <Col xs={3}>
             <this.State />
           </Col>
         </Row>

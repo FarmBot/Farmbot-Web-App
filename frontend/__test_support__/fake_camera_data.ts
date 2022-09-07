@@ -1,5 +1,6 @@
 import { CameraCalibrationData } from "../farm_designer/interfaces";
 import { ImageShowFlags } from "../photos/images/interfaces";
+import { PhotosPanelState } from "../photos/interfaces";
 
 export const fakeCameraCalibrationData = (): CameraCalibrationData => ({
   offset: { x: undefined, y: undefined },
@@ -26,4 +27,15 @@ export const fakeImageShowFlags = (): ImageShowFlags => ({
   zMatch: true,
   sizeMatch: true,
   typeShown: true,
+});
+
+export const fakePhotosPanelState = (): PhotosPanelState => ({
+  filter: false,
+  camera: false,
+  calibration: false,
+  detection: false,
+  measure: false,
+  manage: false,
+  calibrationPP: false,
+  detectionPP: false,
 });

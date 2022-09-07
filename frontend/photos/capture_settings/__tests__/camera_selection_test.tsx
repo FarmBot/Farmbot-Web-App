@@ -1,9 +1,10 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  CameraSelection, cameraDisabled, cameraCalibrated,
+  CameraSelection, cameraDisabled, cameraCalibrated, cameraBtnProps, Camera,
 } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
+import { error } from "../../../toast/toast";
 
 describe("<CameraSelection />", () => {
   const fakeProps = (): CameraSelectionProps => ({
@@ -57,5 +58,16 @@ describe("cameraCalibrated()", () => {
     expect(cameraCalibrated({ [ENV_NAME]: "0" })).toEqual(false);
     expect(cameraCalibrated({ [ENV_NAME]: "0.0" })).toEqual(false);
     expect(cameraCalibrated({ [ENV_NAME]: "\"0\"" })).toEqual(false);
+  });
+});
+
+describe("cameraBtnProps()", () => {
+  it("is offline", () => {
+    const env = { camera: Camera.NONE };
+    cameraBtnProps(env, true).click?.();
+    expect(error).toHaveBeenCalled();
+    jest.resetAllMocks();
+    cameraBtnProps(env, false).click?.();
+    expect(error).not.toHaveBeenCalled();
   });
 });

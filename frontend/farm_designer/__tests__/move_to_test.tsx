@@ -19,7 +19,7 @@ import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
-  GoToThisLocationButtonProps, GoToThisLocationButton,
+  GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
 } from "../move_to";
 import { push } from "../../history";
 import { Actions } from "../../constants";
@@ -28,6 +28,7 @@ import { move } from "../../devices/actions";
 import { Path } from "../../internal_urls";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { StringSetting } from "../../session_keys";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -132,6 +133,7 @@ describe("<GoToThisLocationButton />", () => {
     arduinoBusy: false,
     dispatch: jest.fn(),
     currentBotLocation: { x: 0, y: 0, z: 0 },
+    movementState: fakeMovementState(),
   });
 
   it("toggles state", () => {
@@ -140,6 +142,18 @@ describe("<GoToThisLocationButton />", () => {
     expect(wrapper.instance().state.open).toEqual(false);
     wrapper.instance().toggle("open")();
     expect(wrapper.instance().state.open).toEqual(true);
+  });
+
+  it("renders progress", () => {
+    const p = fakeProps();
+    p.arduinoBusy = true;
+    p.currentBotLocation = { x: 50, y: 50, z: 0 };
+    p.movementState.start = { x: 0, y: 0, z: 0 };
+    p.movementState.distance = { x: 100, y: 100, z: 0 };
+    const wrapper = mount(<GoToThisLocationButton {...p} />);
+    expect(wrapper.find(".movement-progress").props().style).toEqual({
+      top: 0, left: 0, width: "50%",
+    });
   });
 
   it("renders as unavailable: offline", () => {
@@ -200,5 +214,26 @@ describe("<GoToThisLocationButton />", () => {
     expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       StringSetting.go_button_axes, "XYZ");
+  });
+});
+
+describe("movementPercentRemaining()", () => {
+  it("returns percent remaining", () => {
+    expect(movementPercentRemaining({ x: 50, y: 50, z: 0 }, {
+      start: { x: 0, y: 0, z: 0 },
+      distance: { x: 100, y: 100, z: 0 },
+    })).toEqual(50);
+    expect(movementPercentRemaining({ x: 0, y: 0, z: 0 }, {
+      start: { x: -100, y: 100, z: 0 },
+      distance: { x: 200, y: -200, z: 0 },
+    })).toEqual(50);
+    expect(movementPercentRemaining({ x: 200, y: 200, z: 200 }, {
+      start: { x: 0, y: 0, z: 0 },
+      distance: { x: 100, y: 100, z: 100 },
+    })).toEqual(100);
+    expect(movementPercentRemaining({ x: -200, y: -200, z: -200 }, {
+      start: { x: 0, y: 0, z: 0 },
+      distance: { x: 100, y: 100, z: 100 },
+    })).toEqual(0);
   });
 });

@@ -76,6 +76,7 @@ export class RawAddToolSlot
             tool={this.tool}
             botOnline={this.props.botOnline}
             botPosition={this.props.botPosition}
+            movementState={this.props.movementState}
             defaultAxes={this.props.defaultAxes}
             arduinoBusy={this.props.arduinoBusy}
             dispatch={this.props.dispatch}

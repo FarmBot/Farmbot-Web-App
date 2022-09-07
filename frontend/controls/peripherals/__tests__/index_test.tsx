@@ -7,6 +7,7 @@ import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus, FirmwareHardware } from "farmbot";
 import { error } from "../../../toast/toast";
+import { fakeResourceIndex } from "../../../sequences/locals_list/test_helpers";
 
 describe("<Peripherals />", () => {
   const fakeProps = (): PeripheralsProps => ({
@@ -14,6 +15,7 @@ describe("<Peripherals />", () => {
     peripherals: [fakePeripheral()],
     dispatch: jest.fn(),
     firmwareHardware: undefined,
+    resources: fakeResourceIndex(),
   });
 
   it("renders", () => {

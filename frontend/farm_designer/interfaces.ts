@@ -37,7 +37,7 @@ import {
   ExecutableType, PlantPointer, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { TimeSettings } from "../interfaces";
+import { MovementState, TimeSettings } from "../interfaces";
 import { ExtendedPointGroupSortType } from "../point_groups/paths";
 
 /* BotOriginQuadrant diagram
@@ -303,6 +303,7 @@ export interface EditPlantInfoProps {
   botOnline: boolean;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export interface DraggableEvent {

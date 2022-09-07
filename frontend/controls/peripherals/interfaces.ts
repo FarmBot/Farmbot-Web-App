@@ -1,5 +1,6 @@
 import { Pins, TaggedPeripheral, FirmwareHardware } from "farmbot";
 import { BotState } from "../../devices/interfaces";
+import { ResourceIndex } from "../../resources/interfaces";
 
 export interface PeripheralState {
   isEditing: boolean;
@@ -23,4 +24,6 @@ export interface PeripheralsProps {
   peripherals: TaggedPeripheral[];
   dispatch: Function;
   firmwareHardware: FirmwareHardware | undefined;
+  resources: ResourceIndex;
+  hidePinBindings?: boolean;
 }

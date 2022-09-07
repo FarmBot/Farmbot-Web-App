@@ -7,6 +7,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { clickButton } from "../../../__test_support__/helpers";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { ExpandableHeader } from "../../../ui";
+import { Actions } from "../../../constants";
 
 describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
@@ -27,6 +28,9 @@ describe("<ImageWorkspace />", () => {
     timeSettings: fakeTimeSettings(),
     namespace: jest.fn(() => "CAMERA_CALIBRATION_H_HI"),
     showAdvanced: false,
+    sectionKey: "calibration",
+    advancedSectionOpen: true,
+    dispatch: jest.fn(),
   });
 
   it("triggers onChange() event", () => {
@@ -105,13 +109,25 @@ describe("<ImageWorkspace />", () => {
     expect(wrapper.find("button").first().props().disabled).toBeTruthy();
   });
 
-  it("opens", () => {
+  it("opens: calibration", () => {
     const p = fakeProps();
     p.showAdvanced = true;
     const wrapper = shallow<ImageWorkspace>(<ImageWorkspace {...p} />);
-    expect(wrapper.state().open).toEqual(false);
     wrapper.find(ExpandableHeader).simulate("click");
-    expect(wrapper.state().open).toEqual(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: "calibrationPP",
+    });
+  });
+
+  it("opens: detection", () => {
+    const p = fakeProps();
+    p.showAdvanced = true;
+    p.sectionKey = "detection";
+    const wrapper = shallow<ImageWorkspace>(<ImageWorkspace {...p} />);
+    wrapper.find(ExpandableHeader).simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: "detectionPP",
+    });
   });
 
   it("returns the unmodified class", () => {

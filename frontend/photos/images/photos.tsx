@@ -31,7 +31,9 @@ import {
 
 const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
-  const camDisabled = cameraBtnProps(props.env);
+  const { syncStatus, botToMqttStatus } = props;
+  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+  const camDisabled = cameraBtnProps(props.env, botOnline);
   return <div className={"new-photo-button"}>
     <MustBeOnline
       syncStatus={props.syncStatus}
@@ -103,6 +105,7 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
             arduinoBusy={props.arduinoBusy}
             defaultAxes={props.defaultAxes}
             currentBotLocation={props.currentBotLocation}
+            movementState={props.movementState}
             botOnline={props.botOnline} />} />}
         {!isUndefined(props.distance) &&
           <div className={"meta-info"}>
@@ -127,6 +130,7 @@ export const MoveToLocation = (props: MoveToLocationProps) => {
     botOnline={props.botOnline}
     arduinoBusy={props.arduinoBusy}
     currentBotLocation={props.currentBotLocation}
+    movementState={props.movementState}
     defaultAxes={props.defaultAxes} />;
 };
 
@@ -208,6 +212,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
         arduinoBusy={this.props.arduinoBusy}
         defaultAxes={validGoButtonAxes(this.props.getConfigValue)}
         currentBotLocation={this.props.currentBotLocation}
+        movementState={this.props.movementState}
         timeSettings={this.props.timeSettings}>
         <PhotoButtons
           deletePhoto={this.deletePhoto}

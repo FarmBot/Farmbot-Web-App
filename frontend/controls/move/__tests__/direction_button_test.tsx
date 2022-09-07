@@ -67,11 +67,11 @@ describe("<DirectionButton />", () => {
   it("shows progress: negative", () => {
     const p = fakeProps();
     p.direction = "down";
-    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.botPosition = { x: 1, y: -1, z: 3 };
     p.steps = 100;
     p.arduinoBusy = true;
     p.movementState.start = { x: 0, y: 0, z: 0 };
-    p.movementState.distance = { x: 0, y: -1, z: 0 };
+    p.movementState.distance = { x: 0, y: -2, z: 0 };
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
     expect(mockDevice.moveRelative).not.toHaveBeenCalled();

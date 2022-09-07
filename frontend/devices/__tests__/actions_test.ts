@@ -66,6 +66,17 @@ const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   mockDevice.current = mockDeviceDefault;
 };
 
+describe("sendRPC()", () => {
+  it("calls sendRPC", async () => {
+    await actions.sendRPC({ kind: "sync", args: {} });
+    expect(mockDevice.current.send).toHaveBeenCalledWith({
+      kind: "rpc_request",
+      args: { label: expect.any(String), priority: 600 },
+      body: [{ kind: "sync", args: {} }],
+    });
+  });
+});
+
 describe("checkControllerUpdates()", () => {
   it("calls checkUpdates", async () => {
     await actions.checkControllerUpdates();

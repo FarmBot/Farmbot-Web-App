@@ -129,6 +129,9 @@ export enum WizardStepSlug {
   vacuum = "vacuum",
   lights = "lights",
   findHomeButton = "findHomeButton",
+  eStopButton = "eStopButton",
+  unlockButton = "unlockButton",
+  customButtons = "customButtons",
   photo = "photo",
   cameraCalibrationPreparation = "cameraCalibrationPreparation",
   cameraCalibrationCard = "cameraCalibrationCard",
@@ -149,6 +152,7 @@ export enum WizardStepSlug {
   toolsTour = "toolsTour",
 }
 
+// eslint-disable-next-line complexity
 export const WIZARD_STEPS = (
   firmwareHardware: FirmwareHardware | undefined,
   getConfigValue?: GetWebAppConfigValue,
@@ -603,7 +607,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.xAxisFindHome,
       title: t("Home X"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the X axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "X" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -626,7 +630,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.yAxisFindHome,
       title: t("Home Y"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the Y axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "Y" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -649,7 +653,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.zAxisFindHome,
       title: t("Home Z"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the Z axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -904,24 +908,69 @@ export const WIZARD_STEPS = (
         },
       ],
     },
+    {
+      section: WizardSectionSlug.peripherals,
+      slug: WizardStepSlug.eStopButton,
+      title: t("E-stop button"),
+      prerequisites: [botOnlineReq],
+      content: t(SetupWizardContent.ESTOP_BUTTON),
+      component: PinBinding({ editing: false }),
+      componentOptions: { fullWidth: true },
+      question: t(SetupWizardContent.ESTOP_BUTTON_QUESTION),
+      outcomes: [
+        {
+          slug: "stillPowered",
+          description: t("FarmBot's motors are still powered"),
+          tips: t("Check the E-STOP button wiring."),
+        },
+      ],
+    },
     ...(hasExtraButtons(firmwareHardware)
       ? [{
         section: WizardSectionSlug.peripherals,
-        slug: WizardStepSlug.findHomeButton,
-        title: t("Find home button"),
+        slug: WizardStepSlug.unlockButton,
+        title: t("Unlock button"),
         prerequisites: [botOnlineReq],
-        content: t(SetupWizardContent.FIND_HOME_BUTTON),
-        component: PinBinding,
+        content: t(SetupWizardContent.UNLOCK_BUTTON_BOX),
+        component: PinBinding({ editing: false }),
         componentOptions: { fullWidth: true },
-        question: t("Did FarmBot find home?"),
+        question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
         outcomes: [
           {
-            slug: "noFindHomeSequence",
-            description: t("There is no 'Find Home' sequence"),
-            tips: t("Create a new sequence and add the FIND HOME command."),
+            slug: "stillUnpowered",
+            description: t("FarmBot's motors are still unpowered"),
+            tips: t("Check the UNLOCK button wiring."),
           },
         ],
       }]
+      : [{
+        section: WizardSectionSlug.peripherals,
+        slug: WizardStepSlug.unlockButton,
+        title: t("Unlock button"),
+        prerequisites: [botOnlineReq],
+        content: t(SetupWizardContent.UNLOCK_BUTTON_VIRTUAL),
+        component: PinBinding({
+          editing: false,
+          unlockOnly: true,
+        }),
+        componentOptions: { border: false, background: false },
+        question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
+        outcomes: [],
+      }]),
+    ...(hasExtraButtons(firmwareHardware)
+      ? [
+        {
+          section: WizardSectionSlug.peripherals,
+          slug: WizardStepSlug.customButtons,
+          title: t("Custom buttons"),
+          prerequisites: [botOnlineReq],
+          content: t(SetupWizardContent.CUSTOM_BUTTONS),
+          component: PinBinding({ editing: true }),
+          componentOptions: { fullWidth: true },
+          question: t("Are you finished customizing the buttons?"),
+          outcomes: [],
+        },
+      ]
       : []),
     {
       section: WizardSectionSlug.camera,

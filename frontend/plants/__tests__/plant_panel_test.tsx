@@ -23,6 +23,7 @@ import { tagAsSoilHeight } from "../../points/soil_height";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import { move } from "../../devices/actions";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -52,6 +53,7 @@ describe("<PlantPanel/>", () => {
     currentBotLocation: { x: 0, y: 0, z: 0 },
     botOnline: true,
     defaultAxes: "XY",
+    movementState: fakeMovementState(),
   });
 
   it("renders: editing", () => {

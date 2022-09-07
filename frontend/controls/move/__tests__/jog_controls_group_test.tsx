@@ -18,6 +18,8 @@ describe("<JogControlsGroup />", () => {
     env: {},
     locked: false,
     movementState: fakeMovementState(),
+    imageJobs: [],
+    logs: [],
   });
 
   it("changes step size", () => {

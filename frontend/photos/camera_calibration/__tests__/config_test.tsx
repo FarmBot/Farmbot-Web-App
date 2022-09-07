@@ -6,6 +6,7 @@ import {
 } from "../config";
 import { CameraCalibrationConfigProps } from "../interfaces";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
+import { DeviceSetting } from "../../../constants";
 
 describe("<CameraCalibrationConfig />", () => {
   const fakeProps = (): CameraCalibrationConfigProps => ({
@@ -26,7 +27,8 @@ describe("<CameraCalibrationConfig />", () => {
       "Origin Location in Image", "Bottom Left",
       "Pixel coordinate scale", "Camera rotation",
       "Camera not yet calibrated"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(wrapper.text().toLowerCase())
+        .toContain(string.toLowerCase()));
   });
 
   it("renders z-height", () => {
@@ -43,10 +45,10 @@ describe("<CameraCalibrationConfig />", () => {
 describe("<BoolConfig />", () => {
   const fakeProps = (): BoolConfigProps => ({
     configKey: "CAMERA_CALIBRATION_invert_hue_selection",
-    label: "label",
     wdEnvGet: jest.fn(),
     onChange: jest.fn(),
     helpText: "help",
+    settingName: DeviceSetting.invertHueRangeSelection,
   });
 
   it("enables config", () => {
@@ -73,10 +75,10 @@ describe("<BoolConfig />", () => {
 describe("<NumberBoxConfig />", () => {
   const fakeProps = (): NumberBoxConfigProps => ({
     configKey: "CAMERA_CALIBRATION_blur",
-    label: "label",
     wdEnvGet: jest.fn(),
     onChange: jest.fn(),
     helpText: "help",
+    settingName: DeviceSetting.calibrationBlur,
   });
 
   it("changes config", () => {
@@ -92,11 +94,11 @@ describe("<NumberBoxConfig />", () => {
 describe("<DropdownConfig />", () => {
   const fakeProps = (): DropdownConfigProps => ({
     configKey: "CAMERA_CALIBRATION_calibration_along_axis",
-    label: "label",
     wdEnvGet: jest.fn(),
     onChange: jest.fn(),
     helpText: "help",
     list: [],
+    settingName: DeviceSetting.calibrationObjectSeparationAlongAxis,
   });
 
   it("changes config", () => {

@@ -56,6 +56,71 @@
   margin-top: 15px;
   width: auto;
   border: 0;
+  .bp4-popover-wrapper {
+    line-height: 0;
+  }
+  .fa-camera {
+    .bp4-popover-wrapper {
+      z-index: 1;
+      width: 4rem;
+      height: 4rem;
+      margin-top: -3rem;
+      margin-left: -1rem;
+      .bp4-popover-target {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+.in-progress {
+  background: $gray !important;
+  border-bottom-color: $medium_gray !important;
+}
+
+.progress-percent {
+  width: 3rem;
+  height: 3rem;
+  margin-top: -0.75rem;
+  margin-left: -0.75rem;
+  border-radius: 50%;
+  padding: 0.25rem;
+  p {
+    display: inline-block;
+    position: relative !important;
+    margin: auto !important;
+    color: $dark_gray !important;
+    background: $gray;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 2.25rem;
+    vertical-align: middle;
+  }
+}
+
+.power-btn-popover {
+  label {
+    color: $off_white;
+  }
+  .bp4-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    color: $off_white;
+  }
+  .bp4-popover-content {
+    width: 310px;
+    background: $dark_gray;
+  }
+  .bp4-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .fa-anchor {
+    display: none;
+  }
 }
 
 .arrow-button {
@@ -77,13 +142,6 @@
     border-bottom: none;
     box-shadow: none !important;
   }
-  .movement-progress {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 3px;
-    background: $medium_gray;
-  }
   p {
     position: absolute;
     top: 0;
@@ -100,6 +158,15 @@
   }
 }
 
+.movement-progress {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  background: $medium_gray;
+}
+
+.camera-message,
 .movement-message {
   .bp4-popover-content {
     width: unset !important;

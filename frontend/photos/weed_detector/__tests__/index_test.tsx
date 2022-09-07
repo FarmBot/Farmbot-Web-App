@@ -20,6 +20,7 @@ import { deletePoints } from "../../../api/delete_points";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { WeedDetectorProps } from "../interfaces";
+import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
 
 describe("<WeedDetector />", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -35,6 +36,7 @@ describe("<WeedDetector />", () => {
     syncStatus: "synced",
     saveFarmwareEnv: jest.fn(),
     showAdvanced: false,
+    photosPanelState: fakePhotosPanelState(),
   });
 
   it("renders", () => {

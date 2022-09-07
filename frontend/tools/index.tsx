@@ -38,6 +38,8 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { pointGroupSubset } from "../plants/select_plants";
 import { Path } from "../internal_urls";
+import { UTMProfile } from "../farm_designer/map/profile/tools";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -70,6 +72,19 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         isActive={this.props.isActive}
         filterSelectedTool={true}
         filterActiveTools={false} />
+      <svg className={"utm-and-mounted-tool-graphic"}
+        viewBox={"-60 -50 100 120"}>
+        <UTMProfile profileAxis={"x"} expanded={true} getX={() => 0}
+          position={{ x: 0, y: 0 }} selectionWidth={1}
+          mountedToolInfo={{
+            name: this.mountedTool?.body.name,
+            pulloutDirection: ToolPulloutDirection.POSITIVE_X,
+            noUTM: !hasUTM(this.props.firmwareHardware),
+            flipped: false,
+          }} reversed={false}
+          hidePositionIndicator={true}
+          botPosition={{ x: 0, y: 0, z: 0 }} />
+      </svg>
       <ToolVerification sensors={this.props.sensors} bot={this.props.bot} />
     </div>;
 

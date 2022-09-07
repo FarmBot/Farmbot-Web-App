@@ -15,7 +15,7 @@ import {
   Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight,
   goToFbosSettings,
 } from "../maybe_highlight";
-import { DeviceSetting } from "../../constants";
+import { Actions, DeviceSetting } from "../../constants";
 import { toggleControlPanel, bulkToggleControlPanel } from "../toggle_section";
 import { push } from "../../history";
 import { Path } from "../../internal_urls";
@@ -200,6 +200,21 @@ describe("maybeOpenPanel()", () => {
     maybeOpenPanel()(jest.fn());
     expect(toggleControlPanel).not.toHaveBeenCalled();
     expect(bulkToggleControlPanel).toHaveBeenCalledWith(true);
+  });
+
+  it("opens photos panels", () => {
+    location.search = "?highlight=detection_blur";
+    const dispatch = jest.fn();
+    maybeOpenPanel("photos")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.BULK_TOGGLE_PHOTOS_PANEL, payload: false,
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: "detection",
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: "detectionPP",
+    });
   });
 });
 

@@ -6,18 +6,19 @@ import { getWebAppConfig } from "../../resources/getters";
 import { edit, save } from "../../api/crud";
 
 export const toggleAlwaysHighlightImage =
-  (value: boolean, image: TaggedImage | undefined) => (dispatch: Function) => {
-    dispatch({
-      type: Actions.SET_SHOWN_MAP_IMAGES,
-      payload: (value || !image) ? [] : [image.body.id],
-    });
-    dispatch({
-      type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, payload: undefined,
-    });
-  };
+  (value: boolean, image: TaggedImage | undefined) => (dispatch: Function) =>
+    () => {
+      dispatch({
+        type: Actions.SET_SHOWN_MAP_IMAGES,
+        payload: (value || !image) ? [] : [image.body.id],
+      });
+      dispatch({
+        type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE, payload: undefined,
+      });
+    };
 
 export const toggleSingleImageMode =
-  (image: TaggedImage | undefined) => (dispatch: Function) => {
+  (image: TaggedImage | undefined) => (dispatch: Function) => () => {
     dispatch({
       type: Actions.SET_SHOWN_MAP_IMAGES,
       payload: image?.body.id ? [image.body.id] : [],

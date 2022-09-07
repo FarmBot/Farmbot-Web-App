@@ -43,6 +43,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     arduinoBusy: props.bot.hardware.informational_settings.busy,
     currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
       .position,
+    movementState: props.app.movement,
   };
 }
 

@@ -21,7 +21,7 @@ describe Api::TelemetriesController do
       before_count = Telemetry.count
       body = {
         soc_temp: 100,
-        throttled: "0x000000",
+        throttled: "0x0",
         wifi_level_percent: 80,
         uptime: 12345,
         memory_usage: 100,

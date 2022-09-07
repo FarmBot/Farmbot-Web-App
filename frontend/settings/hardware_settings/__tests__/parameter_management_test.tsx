@@ -75,7 +75,6 @@ describe("<ParameterImport />", () => {
   const fakeProps = (): ParameterImportProps => ({
     dispatch: jest.fn(),
     arduinoBusy: false,
-    showAdvanced: true,
   });
 
   it("updates", () => {

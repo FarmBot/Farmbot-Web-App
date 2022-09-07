@@ -14,6 +14,7 @@ describe("<MoveControls />", () => {
     firmwareHardware: undefined,
     env: {},
     movementState: fakeMovementState(),
+    logs: [],
   });
 
   it("renders", () => {

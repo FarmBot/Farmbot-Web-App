@@ -48,6 +48,7 @@ import { Toasts } from "./toast/fb_toast";
 import Bowser from "bowser";
 import { landingPagePath, Path } from "./internal_urls";
 import { push } from "./history";
+import { getImageJobs } from "./photos/state_to_props";
 
 export interface AppProps {
   dispatch: Function;
@@ -190,6 +191,8 @@ export class RawApp extends React.Component<AppProps, {}> {
           botOnline={isBotOnlineFromState(bot)}
           getConfigValue={getConfigValue}
           env={this.props.env}
+          imageJobs={getImageJobs(this.props.bot.hardware.jobs)}
+          logs={this.props.logs}
           movementState={this.props.movementState}
           stepSize={bot.stepSize} />}
       <div className={"toast-container"}>

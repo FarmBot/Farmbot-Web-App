@@ -12,7 +12,7 @@ describe("toggleAlwaysHighlightImage()", () => {
     const image = fakeImage();
     image.body.id = 1;
     const dispatch = jest.fn();
-    toggleAlwaysHighlightImage(value, image)(dispatch);
+    toggleAlwaysHighlightImage(value, image)(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE,
       payload: undefined,
@@ -26,7 +26,7 @@ describe("toggleAlwaysHighlightImage()", () => {
   it("handles missing image", () => {
     const value = false;
     const dispatch = jest.fn();
-    toggleAlwaysHighlightImage(value, undefined)(dispatch);
+    toggleAlwaysHighlightImage(value, undefined)(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE,
       payload: undefined,
@@ -42,7 +42,7 @@ describe("toggleAlwaysHighlightImage()", () => {
     const image = fakeImage();
     image.body.id = 1;
     const dispatch = jest.fn();
-    toggleAlwaysHighlightImage(value, image)(dispatch);
+    toggleAlwaysHighlightImage(value, image)(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_ALWAYS_HIGHLIGHT_IMAGE,
       payload: undefined,
@@ -59,7 +59,7 @@ describe("toggleSingleImageMode()", () => {
     const image = fakeImage();
     image.body.id = 1;
     const dispatch = jest.fn();
-    toggleSingleImageMode(image)(dispatch);
+    toggleSingleImageMode(image)(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SHOWN_IMAGES_ONLY,
       payload: undefined,
@@ -72,7 +72,7 @@ describe("toggleSingleImageMode()", () => {
 
   it("disables single image mode", () => {
     const dispatch = jest.fn();
-    toggleSingleImageMode(undefined)(dispatch);
+    toggleSingleImageMode(undefined)(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SHOWN_IMAGES_ONLY,
       payload: undefined,

@@ -33,6 +33,7 @@ import { Actions } from "../../constants";
 import { push } from "../../history";
 import { ColorPicker } from "../../ui";
 import { move } from "../../devices/actions";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -42,6 +43,7 @@ describe("<EditPoint />", () => {
     defaultAxes: "XY",
     arduinoBusy: false,
     currentBotLocation: { x: 10, y: 20, z: 30 },
+    movementState: fakeMovementState(),
   });
 
   it("redirects", () => {

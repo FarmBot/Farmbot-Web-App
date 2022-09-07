@@ -13,6 +13,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
+import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
@@ -36,6 +37,7 @@ describe("<CameraCalibration/>", () => {
     timeSettings: fakeTimeSettings(),
     versions: {},
     showAdvanced: false,
+    photosPanelState: fakePhotosPanelState(),
   });
 
   it("renders", () => {

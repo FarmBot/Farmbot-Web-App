@@ -14,6 +14,7 @@ import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { DIGITAL } from "farmbot";
 import { isBotOnlineFromState } from "../../devices/must_be_online";
+import { BoxTopButtons } from "../../settings/pin_bindings/box_top_gpio_diagram";
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {
@@ -153,6 +154,13 @@ export class Peripherals
           colorScheme={"peripherals"}>
           {this.showPins()}
         </EmptyStateWrapper>
+        {!this.props.hidePinBindings &&
+          <BoxTopButtons
+            firmwareHardware={this.props.firmwareHardware}
+            dispatch={this.props.dispatch}
+            resources={this.props.resources}
+            botOnline={isBotOnlineFromState(this.props.bot)}
+            isEditing={isEditing} />}
       </WidgetBody>
     </Widget>;
   }

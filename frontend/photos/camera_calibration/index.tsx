@@ -11,7 +11,7 @@ import { namespace, CAMERA_CALIBRATION_KEY_PART } from "../remote_env/constants"
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../remote_env/translators";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
-import { Content, ToolTips } from "../../constants";
+import { Content, DeviceSetting, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 import { ExternalUrl } from "../../external_urls";
 
@@ -32,7 +32,9 @@ export class CameraCalibration extends
 
   render() {
     const { wdEnvGet } = this;
-    const camDisabled = cameraBtnProps(this.props.env);
+    const { syncStatus, botToMqttStatus } = this.props;
+    const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+    const camDisabled = cameraBtnProps(this.props.env, botOnline);
     const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
     return <div className="camera-calibration">
       <div className="farmware-button">
@@ -61,6 +63,9 @@ export class CameraCalibration extends
           </div>
           {!easyCalibration &&
             <ImageWorkspace
+              sectionKey={"calibration"}
+              dispatch={this.props.dispatch}
+              advancedSectionOpen={this.props.photosPanelState.calibrationPP}
               botOnline={isBotOnline(
                 this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={scanImage(easyCalibration)}
@@ -99,10 +104,10 @@ interface CameraCalibrationMethodConfigProps {
 export const CameraCalibrationMethodConfig =
   (props: CameraCalibrationMethodConfigProps) =>
     <BoolConfig
+      settingName={DeviceSetting.useAlternativeMethod}
       wdEnvGet={props.wdEnvGet}
       configKey={"CAMERA_CALIBRATION_easy_calibration"}
       invert={true}
-      label={t("use alternative method")}
       helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
       links={[
         <a key={0} onClick={docLinkClick("camera-calibration")}>

@@ -22,6 +22,7 @@ export class RawDesignerControls
           bot={this.props.bot}
           getConfigValue={this.props.getConfigValue}
           env={this.props.env}
+          logs={this.props.logs}
           firmwareSettings={this.props.firmwareSettings}
           firmwareHardware={this.props.firmwareHardware}
           movementState={this.props.movementState}
@@ -31,6 +32,7 @@ export class RawDesignerControls
           firmwareHardware={this.props.firmwareHardware}
           bot={this.props.bot}
           peripherals={this.props.peripherals}
+          resources={this.props.resources}
           dispatch={this.props.dispatch} />
         <hr />
         <PinnedSequences

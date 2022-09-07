@@ -5,6 +5,9 @@ import { TaggedTelemetry } from "farmbot";
 import { flatten, isNumber, last, max, range, sortBy } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { COLORS, OnMetricHover } from "./fbos_metric_history_table";
+import {
+  colorFromThrottle, ThrottleType,
+} from "../../settings/fbos_settings/fbos_details";
 
 const HEIGHT = 100;
 const HISTORY_LENGTH_HOUR_TENTHS = 24 * 10;
@@ -13,7 +16,8 @@ const BORDERS = BORDER_WIDTH * 2;
 const MAX_X = HISTORY_LENGTH_HOUR_TENTHS;
 const MAX_Y = HEIGHT;
 const MAX_GAP_SECONDS = 15 * 60;
-const TOP_EXTRA_HEIGHT = 7;
+const TOP_EXTRA_HEIGHT = 10;
+const VERSION_LABEL_Y_POSITION = -7;
 
 /** Names of metrics in plot. */
 const METRIC_NAMES: (keyof Telemetry)[] = [
@@ -23,6 +27,7 @@ const METRIC_NAMES: (keyof Telemetry)[] = [
   "soc_temp",
   "uptime",
   "wifi_level_percent",
+  "throttled",
 ];
 
 /** Maximum plot range if not 100. */
@@ -46,25 +51,33 @@ const plotXHours = (hours: number) => MAX_X - (hours * 10);
 /** Convert seconds to plot x-axis values. */
 const plotXSeconds = (seconds: number) => plotXHours(seconds / 3600);
 
-type DataSegment = Record<"x" | "y", number>[];
+interface DataRecord {
+  x: number;
+  y: number;
+  color: string | undefined;
+}
+type DataSegment = DataRecord[];
 
-/** Process data: clip to plot bounds and split into continuous runs. */
+/** Process data: clip X values to plot bounds and split into continuous runs. */
 const getData = (
   all: TaggedTelemetry[],
   metricName: keyof Telemetry,
 ): DataSegment[] => {
-  const data: Record<"x" | "y", number>[] = [];
+  const data: DataRecord[] = [];
   const mostRecent = last(sortBy(all, "body.created_at"));
   const demo = mostRecent?.body.target == "demo";
-  if (!mostRecent) {
-    return [data];
-  }
+  if (!mostRecent) { return []; }
   sortBy(all, "body.created_at").map(entry => {
     const x = clipX(entry.body.created_at, mostRecent);
     if (isNumber(x)) {
-      const y = parseInt("" + entry.body[metricName]);
+      const y = metricName == "throttled"
+        ? 103
+        : parseInt("" + entry.body[metricName]);
       if (isFinite(y)) {
-        data.push({ x, y });
+        const color = metricName == "throttled"
+          ? colorFromThrottle(entry.body.throttled, ThrottleType.UnderVoltage)
+          : undefined;
+        data.push({ x, y, color });
       }
     }
   });
@@ -75,7 +88,10 @@ const getData = (
       continuousData.push(d);
       return;
     }
-    if ((data[i - 1].x - d.x) > (demo ? 60 * 60 * 24 : MAX_GAP_SECONDS)) {
+    const timeGap = data[i - 1].x - d.x;
+    const maxGap = demo ? 60 * 60 * 24 : MAX_GAP_SECONDS;
+    const colorChange = data[i - 1].color != d.color;
+    if ((timeGap > maxGap) || colorChange) {
       splitData.push(continuousData);
       continuousData = [];
     }
@@ -85,7 +101,7 @@ const getData = (
   return splitData;
 };
 
-/** Returns SVG path string. */
+/** Normalizes Y values and returns SVG path string. */
 const getPath = (
   data: DataSegment,
   metricName: keyof Telemetry,
@@ -97,7 +113,9 @@ const getPath = (
   data.map(d => {
     const x = plotXSeconds(d.x);
     const raw_y = d.y;
-    const y = MAX_Y - (raw_y / yMax) * MAX_Y;
+    const y = metricName == "throttled"
+      ? MAX_Y - raw_y
+      : MAX_Y - (raw_y / yMax) * MAX_Y;
     if (!path.startsWith("M")) {
       path = `M ${x},${y} `;
     } else {
@@ -105,6 +123,12 @@ const getPath = (
     }
   });
   return path;
+};
+
+/** Used to convert single-record paths into points. */
+const parseFirstPathXY = (m: string): Record<"x" | "y", number> => {
+  const values = m.split(" ")[1].split(",");
+  return { x: parseFloat(values[0]), y: parseFloat(values[1]) };
 };
 
 /** y-axis labels SVG */
@@ -156,14 +180,22 @@ const PlotLines = (props: PlotLinesProps) => {
     {METRIC_NAMES.map((metricName: keyof Telemetry) => {
       const allSegments = getData(props.telemetry, metricName);
       return allSegments.map((data, index) =>
-        <path key={metricName + index}
-          onMouseEnter={props.onHover(metricName)}
-          onMouseLeave={props.onHover(undefined)}
-          fill={"none"}
-          stroke={COLORS[metricName]}
-          strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
-          strokeLinecap={"round"} strokeLinejoin={"round"}
-          d={getPath(data, metricName, allSegments)} />);
+        data.length == 1
+          ? <circle key={metricName + index}
+            onMouseEnter={props.onHover(metricName)}
+            onMouseLeave={props.onHover(undefined)}
+            fill={COLORS[metricName] || data[0].color}
+            r={props.hoveredMetric == metricName ? 1.25 : 0.75}
+            cx={parseFirstPathXY(getPath(data, metricName, allSegments)).x}
+            cy={parseFirstPathXY(getPath(data, metricName, allSegments)).y} />
+          : <path key={metricName + index}
+            onMouseEnter={props.onHover(metricName)}
+            onMouseLeave={props.onHover(undefined)}
+            fill={"none"}
+            stroke={COLORS[metricName] || data[0].color}
+            strokeWidth={props.hoveredMetric == metricName ? 2.5 : 1.5}
+            strokeLinecap={"round"} strokeLinejoin={"round"}
+            d={getPath(data, metricName, allSegments)} />);
     })}
   </g>;
 };
@@ -200,12 +232,12 @@ const VersionChangeLines = (props: VersionChangeLinesProps) => {
           x1={plotXSeconds(change.changedAt)}
           x2={plotXSeconds(change.changedAt)}
           stroke={"gray"} strokeWidth={1} strokeDasharray={2} />
-        <text x={plotXSeconds(change.changedAt) - 3} y={-4} fill={"gray"}
-          textAnchor={"end"} style={{ textAnchor: "end" }}>
+        <text x={plotXSeconds(change.changedAt) - 3} y={VERSION_LABEL_Y_POSITION}
+          fill={"gray"} textAnchor={"end"} style={{ textAnchor: "end" }}>
           v{change.previousVersion}
         </text>
-        <text x={plotXSeconds(change.changedAt) + 3} y={-4} fill={"gray"}
-          textAnchor={"start"} style={{ textAnchor: "start" }}>
+        <text x={plotXSeconds(change.changedAt) + 3} y={VERSION_LABEL_Y_POSITION}
+          fill={"gray"} textAnchor={"start"} style={{ textAnchor: "start" }}>
           v{change.nextVersion}
         </text>
       </g>)}

@@ -130,9 +130,9 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#seed-trough").find("rect").props().width)
-      .toEqual(20);
+      .toEqual(13.5);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
-      .toEqual(49);
+      .toEqual(47.5);
   });
 
   it("renders rotated trough", () => {
@@ -142,9 +142,9 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#seed-trough").find("rect").props().width)
-      .toEqual(20);
+      .toEqual(13.5);
     expect(wrapper.find("#gantry-toolbay-slot").find("rect").props().width)
-      .toEqual(24);
+      .toEqual(22.5);
   });
 
   it("animates tool", () => {
