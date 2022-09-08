@@ -8,6 +8,7 @@ import { COLORS, OnMetricHover } from "./fbos_metric_history_table";
 import {
   colorFromThrottle, ThrottleType,
 } from "../../settings/fbos_settings/fbos_details";
+import { Color } from "../../ui";
 
 const HEIGHT = 100;
 const HISTORY_LENGTH_HOUR_TENTHS = 24 * 10;
@@ -29,6 +30,13 @@ const METRIC_NAMES: (keyof Telemetry)[] = [
   "wifi_level_percent",
   "throttled",
 ];
+
+const VOLTAGE_CHART_COLORS = {
+  red: Color.red,
+  yellow: Color.yellow,
+  green: Color.green,
+  gray: Color.gray,
+};
 
 /** Maximum plot range if not 100. */
 const MAXIMUMS: Partial<Record<keyof Telemetry, number>> = {
@@ -75,7 +83,8 @@ const getData = (
         : parseInt("" + entry.body[metricName]);
       if (isFinite(y)) {
         const color = metricName == "throttled"
-          ? colorFromThrottle(entry.body.throttled, ThrottleType.UnderVoltage)
+          ? VOLTAGE_CHART_COLORS[colorFromThrottle(
+            entry.body.throttled, ThrottleType.UnderVoltage)]
           : undefined;
         data.push({ x, y, color });
       }

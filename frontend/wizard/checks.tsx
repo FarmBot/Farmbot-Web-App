@@ -90,6 +90,8 @@ import {
 } from "../settings/fbos_settings/boot_sequence_selector";
 import { BoxTopButtons } from "../settings/pin_bindings/box_top_gpio_diagram";
 import { getImageJobs } from "../photos/state_to_props";
+import { ResourceIndex } from "../resources/interfaces";
+import { BotState } from "../devices/interfaces";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -479,28 +481,34 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   </div>;
 };
 
-interface PinBindingOptions {
+export interface PinBindingOptions {
   editing: boolean;
   unlockOnly?: boolean;
 }
 
-export const PinBinding = (options: PinBindingOptions) =>
-  (props: WizardStepComponentProps) => {
-    const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
-    return options.unlockOnly
-      ? <button
-        title={t("unlock device")}
-        className={"fb-button yellow e-stop"}
-        onClick={() => emergencyUnlock()}>
-        {t("UNLOCK")}
-      </button>
-      : <BoxTopButtons
-        firmwareHardware={firmwareHardware}
-        resources={props.resources}
-        dispatch={props.dispatch}
-        botOnline={isBotOnlineFromState(props.bot)}
-        isEditing={options.editing} />;
-  };
+export interface PinBindingProps {
+  dispatch: Function;
+  pinBindingOptions: PinBindingOptions;
+  resources: ResourceIndex;
+  bot: BotState;
+}
+
+export const PinBinding = (props: PinBindingProps) => {
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
+  return props.pinBindingOptions.unlockOnly
+    ? <button
+      title={t("unlock device")}
+      className={"fb-button yellow e-stop"}
+      onClick={() => emergencyUnlock()}>
+      {t("UNLOCK")}
+    </button>
+    : <BoxTopButtons
+      firmwareHardware={firmwareHardware}
+      resources={props.resources}
+      dispatch={props.dispatch}
+      botOnline={isBotOnlineFromState(props.bot)}
+      isEditing={props.pinBindingOptions.editing} />;
+};
 
 export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
   const botOnline = isBotOnlineFromState(props.bot);

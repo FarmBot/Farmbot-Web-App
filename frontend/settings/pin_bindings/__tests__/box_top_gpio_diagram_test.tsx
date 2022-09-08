@@ -6,6 +6,7 @@ jest.mock("../../../devices/actions", () => ({
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
+  destroy: jest.fn(),
   initSave: jest.fn(),
 }));
 
@@ -28,7 +29,7 @@ import {
   PinBindingSpecialAction,
   PinBindingType, SpecialPinBinding, StandardPinBinding,
 } from "farmbot/dist/resources/api_resources";
-import { edit, initSave, save } from "../../../api/crud";
+import { destroy, edit, initSave, save } from "../../../api/crud";
 
 describe("<BoxTopGpioDiagram />", () => {
   const fakeProps = (): BoxTopGpioDiagramProps => ({
@@ -98,6 +99,15 @@ describe("<BoxTopButtons />", () => {
     p.isEditing = false;
     const wrapper = mount(<BoxTopButtons {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("my sequence");
+  });
+
+  it("un-binds pin", () => {
+    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
+    wrapper.instance().bind(20)({
+      isNull: true, label: "", value: "",
+    });
+    expect(destroy).toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("re-binds pin", () => {

@@ -10,7 +10,7 @@ import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 import { ToolbaySlot } from "../../tool_graphics/slot";
 import { GantryToolSlot } from "../../tool_graphics/seed_trough";
 import { ToolGraphicProps, ToolProps } from "../../tool_graphics/interfaces";
-import { reduceToolName, Tool, ToolName } from "../../tool_graphics/all_tools";
+import { reduceToolName, Tool } from "../../tool_graphics/all_tools";
 import {
   getToolDirection, slotPulloutAxis, ToolProfile,
 } from "../../profile/tools";
@@ -90,7 +90,7 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
   };
   const pulloutDirection = props.toolSlot.body.pullout_direction;
   return props.toolSlot.body.gantry_mounted
-    ? <svg width="3rem" height="3rem" viewBox={"-30 0 70 1"}>
+    ? <svg width="3rem" height="3rem" viewBox={"-40 0 80 1"}>
       <GantryToolSlot x={0} y={0} xySwap={props.toolTransformProps.xySwap} />
       {props.toolSlot.body.tool_id &&
         <RotatedTool
@@ -144,9 +144,7 @@ export const ToolSVG = (props: ToolSVGProps) => {
     x: 0, y: 0, hovered: false, dispatch: noop, uuid: "", flipped: false,
     pulloutDirection: 0, toolTransformProps: { xySwap: false, quadrant: 2 },
   };
-  const viewBox = reduceToolName(props.toolName) === ToolName.seedTrough
-    ? "-25 0 50 1"
-    : "-40 0 80 1";
+  const viewBox = "-40 0 80 1";
   return <div className={"tool-svg"}>
     <div className={"top"}>
       <svg width="3rem" height="3rem" viewBox={viewBox}>

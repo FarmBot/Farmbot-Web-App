@@ -311,7 +311,7 @@ describe("<ToolSVG />", () => {
 
   it("renders trough", () => {
     const wrapper = shallow(<ToolSVG {...fakeProps()} />);
-    expect(wrapper.find("svg").props().viewBox).toEqual("-25 0 50 1");
+    expect(wrapper.find("svg").props().viewBox).toEqual("-40 0 80 1");
   });
 });
 

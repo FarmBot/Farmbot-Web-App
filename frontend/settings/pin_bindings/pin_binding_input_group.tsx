@@ -194,6 +194,8 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
     const { resources } = props;
     const dropDownList: DropDownItem[] = [];
 
+    dropDownList.push({ isNull: true, label: t("None"), value: "" });
+
     dropDownList.push({
       label: "Actions", value: 0,
       heading: true, headingId: PinBindingType.special,

@@ -5,7 +5,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BotState } from "../devices/interfaces";
 import { TimeSettings } from "../interfaces";
 import { ResourceIndex } from "../resources/interfaces";
-import { ControlsCheckOptions } from "./checks";
+import { ControlsCheckOptions, PinBindingOptions } from "./checks";
 import { WizardSectionSlug, WizardStepSlug } from "./data";
 
 export interface SetupWizardProps extends WizardOutcomeComponentProps {
@@ -71,6 +71,7 @@ export interface WizardStep {
   componentOptions?: ComponentOptions;
   warning?: string;
   controlsCheckOptions?: ControlsCheckOptions;
+  pinBindingOptions?: PinBindingOptions;
   question: string;
   outcomes: WizardStepOutcome[];
 }

@@ -572,15 +572,15 @@ describe("<PinBinding />", () => {
     const p = fakeProps();
     const pinBinding = fakePinBinding();
     p.resources = buildResourceIndex([pinBinding]).index;
-    const Component = PinBinding({ editing: false });
-    const wrapper = mount(<Component {...p} />);
+    const wrapper = mount(<PinBinding {...p}
+      pinBindingOptions={{ editing: false }} />);
     expect(wrapper.text().toLowerCase()).toContain("button 5");
   });
 
   it("unlocks the device", () => {
     window.confirm = () => true;
-    const Component = PinBinding({ editing: false, unlockOnly: true });
-    const wrapper = mount(<Component {...fakeProps()} />);
+    const wrapper = mount(<PinBinding {...fakeProps()}
+      pinBindingOptions={{ editing: false, unlockOnly: true }} />);
     expect(wrapper.text().toLowerCase()).toEqual("unlock");
     wrapper.find("button").simulate("click");
     expect(mockDevice.emergencyUnlock).toHaveBeenCalled();

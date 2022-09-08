@@ -70,13 +70,6 @@ export class RawDesignerSettings
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Settings} withButton={true}>
         <SearchField
-          customLeftIcon={<Popover usePortal={false}
-            position={Position.BOTTOM}
-            popoverClassName={"settings-panel-settings-menu"}
-            target={<i className={"fa fa-gear"} />}
-            content={<ShowAdvancedToggle
-              dispatch={dispatch}
-              getConfigValue={getConfigValue} />} />}
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {
@@ -87,6 +80,13 @@ export class RawDesignerSettings
               payload: searchTerm,
             });
           }} />
+        <Popover usePortal={false}
+          position={Position.BOTTOM}
+          popoverClassName={"settings-panel-settings-menu"}
+          target={<i className={"fa fa-gear"} />}
+          content={<ShowAdvancedToggle
+            dispatch={dispatch}
+            getConfigValue={getConfigValue} />} />
         <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>

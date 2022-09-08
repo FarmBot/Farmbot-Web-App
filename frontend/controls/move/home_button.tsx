@@ -22,7 +22,7 @@ export const HomeButton = (props: HomeButtonProps) => {
       if (locked) { return t("FarmBot is locked"); }
       if (arduinoBusy) { return t("FarmBot is busy"); }
       if (!botOnline) { return t("FarmBot is offline"); }
-      if (alreadyAtHome) { return t("FarmBot is already at home position"); }
+      if (alreadyAtHome) { return t("FarmBot is already at the home position"); }
       return "";
     };
     if (arduinoBusy || !botOnline || locked || alreadyAtHome) {

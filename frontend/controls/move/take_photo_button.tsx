@@ -14,15 +14,16 @@ export const TakePhotoButton = (props: TakePhotoButtonProps) => {
   const [clicked, setClicked] = React.useState(false);
   const clickedPercent = clicked ? 25 : 0;
   const takenPercent = taken.length > 0 ? 25 : 0;
-  const percent = clickedPercent + takenPercent + (downloadPercent || 0) / 2;
+  const percent = clickedPercent + takenPercent + downloadPercent / 2;
   const sendCommand = () => {
     takePhoto();
     setClicked(true);
-    setTimeout(() => setClicked(false), 3000);
+    setTimeout(() => setClicked(false), 15000);
   };
+  const inProgress = clicked && percent && downloadPercent < 100;
   return <button
     className={[
-      percent ? "in-progress" : "fa fa-camera",
+      inProgress ? "in-progress" : "fa fa-camera",
       "arrow-button fb-button",
       camDisabled.class,
     ].join(" ")}
@@ -35,7 +36,7 @@ export const TakePhotoButton = (props: TakePhotoButtonProps) => {
         content={<div className={"help-text-content"}>
           {t(camDisabled.title)}
         </div>} />}
-    {clicked &&
+    {inProgress &&
       <div className={"progress-percent"}
         style={{
           background: `conic-gradient(#434343 ${percent}%, #ccc ${percent}%)`,

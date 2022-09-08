@@ -34,7 +34,6 @@ import {
   MapOrientation,
   Tour,
   NetworkRequirementsLink,
-  PinBinding,
   AxisActions,
   DynamicMapToggle,
   BootSequence,
@@ -914,7 +913,7 @@ export const WIZARD_STEPS = (
       title: t("E-stop button"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.ESTOP_BUTTON),
-      component: PinBinding({ editing: false }),
+      pinBindingOptions: { editing: false },
       componentOptions: { fullWidth: true },
       question: t(SetupWizardContent.ESTOP_BUTTON_QUESTION),
       outcomes: [
@@ -932,7 +931,7 @@ export const WIZARD_STEPS = (
         title: t("Unlock button"),
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.UNLOCK_BUTTON_BOX),
-        component: PinBinding({ editing: false }),
+        pinBindingOptions: { editing: false },
         componentOptions: { fullWidth: true },
         question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
         outcomes: [
@@ -949,10 +948,10 @@ export const WIZARD_STEPS = (
         title: t("Unlock button"),
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.UNLOCK_BUTTON_VIRTUAL),
-        component: PinBinding({
+        pinBindingOptions: {
           editing: false,
           unlockOnly: true,
-        }),
+        },
         componentOptions: { border: false, background: false },
         question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
         outcomes: [],
@@ -965,7 +964,7 @@ export const WIZARD_STEPS = (
           title: t("Custom buttons"),
           prerequisites: [botOnlineReq],
           content: t(SetupWizardContent.CUSTOM_BUTTONS),
-          component: PinBinding({ editing: true }),
+          pinBindingOptions: { editing: true },
           componentOptions: { fullWidth: true },
           question: t("Are you finished customizing the buttons?"),
           outcomes: [],

@@ -1128,6 +1128,7 @@ li {
       color: $off_white;
       height: 0;
       line-height: 0;
+      font-size: 1.1rem;
     }
   }
   .go-button-axes-dropdown {
@@ -1549,6 +1550,11 @@ li {
       font-size: 1.25rem !important;
       padding: 0.1rem;
     }
+    .fa-gear {
+      color: $dark_gray;
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
     .settings-panel-settings-menu {
       .bp4-popover-content {
         width: 300px;
@@ -1618,16 +1624,6 @@ li {
   }
   .release-notes-wrapper {
     float: right !important;
-  }
-  .factory-reset-options {
-    a {
-      color: $white;
-      font-weight: bold;
-      text-decoration: none !important;
-    }
-    .fa-external-link {
-      margin-left: 0.5rem;
-    }
   }
   .settings-warning-banner {
     margin-bottom: 1rem !important;
@@ -1741,6 +1737,17 @@ li {
         background: $medium_light_gray !important;
       }
     }
+  }
+}
+
+.factory-reset-options {
+  a {
+    color: $white;
+    font-weight: bold;
+    text-decoration: none !important;
+  }
+  .fa-external-link {
+    margin-left: 0.5rem;
   }
 }
 

@@ -244,7 +244,12 @@ describe("<BindingTargetDropdown />", () => {
     p.sequenceIdInput = 1;
     const wrapper = shallow(<BindingTargetDropdown {...p} />);
     const { list } = wrapper.find("FBSelect").props();
-    expect(list?.length).toEqual(10);
+    expect(list?.length).toEqual(11);
+    expect(list).toContainEqual({
+      isNull: true,
+      label: "None",
+      value: "",
+    });
     expect(list).toContainEqual({
       heading: true,
       headingId: PinBindingType.special,

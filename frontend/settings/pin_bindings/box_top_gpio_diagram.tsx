@@ -8,7 +8,7 @@ import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_grou
 import {
   PinBindingSpecialAction, PinBindingType,
 } from "farmbot/dist/resources/api_resources";
-import { initSave, edit, save } from "../../api/crud";
+import { initSave, edit, save, destroy } from "../../api/crud";
 import { pinBindingBody } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
 import { findByUuid } from "../../resources/reducer_support";
@@ -155,6 +155,11 @@ export class BoxTopButtons
     .filter(b => b.pin_number == pin)[0];
 
   bind = (pin: number) => (ddi: DropDownItem) => {
+    const bindingUuid = this.findBinding(pin)?.uuid;
+    if (bindingUuid && ddi.isNull) {
+      this.props.dispatch(destroy(bindingUuid));
+      return;
+    }
     const bindingType = ddi.headingId as PinBindingType;
     const sequenceIdInput = ddi.headingId == PinBindingType.standard
       ? parseInt("" + ddi.value)
@@ -173,7 +178,6 @@ export class BoxTopButtons
         sequence_id: sequenceIdInput,
         binding_type: bindingType
       });
-    const bindingUuid = this.findBinding(pin)?.uuid;
     if (bindingUuid) {
       const binding = findByUuid(this.props.resources, bindingUuid);
       this.props.dispatch(edit(binding, body));
