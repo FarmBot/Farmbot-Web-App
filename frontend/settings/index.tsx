@@ -80,7 +80,7 @@ export class RawDesignerSettings
               payload: searchTerm,
             });
           }} />
-        <Popover usePortal={false}
+        <Popover
           position={Position.BOTTOM}
           popoverClassName={"settings-panel-settings-menu"}
           target={<i className={"fa fa-gear"} />}

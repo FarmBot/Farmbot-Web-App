@@ -278,6 +278,7 @@
       font-size: 16px;
       line-height: 140%;
       margin: 1rem 0;
+      margin-bottom: 0.5rem !important;
     }
     img {
       max-width: 100%;
@@ -288,6 +289,9 @@
       list-style-type: revert !important;
       padding: revert;
       font-size: 1.1rem;
+    }
+    li {
+      font-size: 1.6rem;
     }
     :first-child {
       margin-top: 0;
@@ -308,21 +312,45 @@
   }
 }
 
+.sequence-item-help {
+  li {
+    font-size: 1rem;
+  }
+}
+
 .sequence-item-help,
 .sequence-description {
+  .markdown {
+    p {
+      margin-bottom: 0.5rem !important;
+    }
+    ul {
+      list-style-type: revert !important;
+      padding: revert;
+      font-size: 1.1rem;
+    }
+  }
   h1 {
-    display: block;
     font-size: 2.2rem;
-    font-weight: bold;
   }
   h2,
   h3,
   h4,
   h5,
   h6 {
-    display: block;
     font-size: 1.8rem;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    display: block;
     font-weight: bold;
+    line-height: 1;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
   }
 }
 

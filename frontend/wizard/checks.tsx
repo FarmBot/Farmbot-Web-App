@@ -95,15 +95,22 @@ import { BotState } from "../devices/interfaces";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
-const recentErrorLog = (
+/** Check if an item's time is after the specified time, if provided. */
+export const greaterThanTime = (
+  itemTime: number | undefined,
+  thresholdTime: number | undefined,
+) =>
+  thresholdTime && (itemTime || 0) > thresholdTime;
+
+export const recentMsgLog = (
   logs: TaggedLog[],
   prevLogTime: number | undefined,
-  errorMessages: string[],
+  messages: string[],
 ) =>
   some(logs
-    .filter(log => prevLogTime && (log.body.created_at || 0) > prevLogTime)
-    .map(log => some(errorMessages.map(errorMessage =>
-      log.body.message.toLowerCase().includes(errorMessage.toLowerCase())))));
+    .filter(log => greaterThanTime(log.body.created_at, prevLogTime))
+    .map(log => some(messages.map(message =>
+      log.body.message.toLowerCase().includes(message.toLowerCase())))));
 
 const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const images = selectAllImages(props.resources);
@@ -118,7 +125,7 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const getLastLogTimestamp = () => last(logs)?.body.created_at;
   const [prevLogTime, setPrevLogTime] = React.useState(getLastLogTimestamp());
   const [error, setError] = React.useState(false);
-  if (!error && recentErrorLog(logs, prevLogTime, CAMERA_ERRORS)) {
+  if (!error && recentMsgLog(logs, prevLogTime, CAMERA_ERRORS)) {
     props.setStepSuccess(false, "cameraError")();
     setError(true);
   }
@@ -507,6 +514,8 @@ export const PinBinding = (props: PinBindingProps) => {
       resources={props.resources}
       dispatch={props.dispatch}
       botOnline={isBotOnlineFromState(props.bot)}
+      syncStatus={props.bot.hardware.informational_settings.sync_status}
+      locked={props.bot.hardware.informational_settings.locked}
       isEditing={props.pinBindingOptions.editing} />;
 };
 

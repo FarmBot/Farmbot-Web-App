@@ -28,6 +28,7 @@ import { FarmwareName } from "../sequences/step_tiles/tile_execute_script";
 import { FarmwareForm } from "../farmware/farmware_forms";
 import { BooleanSetting } from "../session_keys";
 import { maybeOpenPanel } from "../settings/maybe_highlight";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps> {
@@ -160,16 +161,18 @@ export class RawDesignerPhotos
               </button>
             </div>}
         </Collapse>
-        <ExpandableHeader
-          expanded={!!photosPanelState.manage}
-          title={t("Manage data")}
-          onClick={this.toggle("manage")} />
-        <Collapse isOpen={!!photosPanelState.manage}>
-          <ImagingDataManagement
-            dispatch={this.props.dispatch}
-            farmwareEnvs={this.props.farmwareEnvs}
-            getConfigValue={this.props.getConfigValue} />
-        </Collapse>
+        {DevSettings.futureFeaturesEnabled() &&
+          <ExpandableHeader
+            expanded={!!photosPanelState.manage}
+            title={t("Manage data")}
+            onClick={this.toggle("manage")} />}
+        {DevSettings.futureFeaturesEnabled() &&
+          <Collapse isOpen={!!photosPanelState.manage}>
+            <ImagingDataManagement
+              dispatch={this.props.dispatch}
+              farmwareEnvs={this.props.farmwareEnvs}
+              getConfigValue={this.props.getConfigValue} />
+          </Collapse>}
       </DesignerPanelContent>
     </DesignerPanel>;
   }

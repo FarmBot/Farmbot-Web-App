@@ -91,6 +91,8 @@ describe("<BoxTopButtons />", () => {
       dispatch: jest.fn(),
       resources,
       botOnline: true,
+      syncStatus: "synced",
+      locked: false,
     };
   };
 
@@ -99,6 +101,17 @@ describe("<BoxTopButtons />", () => {
     p.isEditing = false;
     const wrapper = mount(<BoxTopButtons {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("my sequence");
+    expect(wrapper.find(".fast-blink").length).toEqual(0);
+    expect(wrapper.find(".slow-blink").length).toEqual(0);
+  });
+
+  it("renders: blinking", () => {
+    const p = fakeProps();
+    p.syncStatus = "syncing";
+    p.locked = true;
+    const wrapper = mount(<BoxTopButtons {...p} />);
+    expect(wrapper.find(".fast-blink").length).toEqual(1);
+    expect(wrapper.find(".slow-blink").length).toEqual(1);
   });
 
   it("un-binds pin", () => {

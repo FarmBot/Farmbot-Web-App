@@ -59,6 +59,12 @@ export const UTMProfile = (props: ProfileUtmProps) => {
       y1={Math.min(0, profileUtmV - UTMDimensions.height)}
       x2={profileUtmH + extrusionOffset}
       y2={profileUtmV} />
+    <line id={"z-axis-separator"}
+      strokeWidth={0.5} stroke={Color.darkGray} opacity={0.5}
+      x1={profileUtmH + ToolDimensions.diameter / 2}
+      y1={Math.min(0, profileUtmV - UTMDimensions.height)}
+      x2={profileUtmH + ToolDimensions.diameter / 2}
+      y2={profileUtmV} />
     <rect id={"UTM"} fill={"url(#utm-gradient)"} opacity={0.5}
       x={profileUtmH - ToolDimensions.radius}
       y={profileUtmV - UTMDimensions.height}

@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Color } from "../../ui/colors";
-import { FirmwareHardware, RpcRequestBodyItem } from "farmbot";
+import { FirmwareHardware, RpcRequestBodyItem, SyncStatus } from "farmbot";
 import { hasExtraButtons } from "../firmware/firmware_hardware_support";
 import { DropDownItem } from "../../ui";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
@@ -131,6 +131,8 @@ export interface BoxTopButtonsProps {
   dispatch: Function;
   resources: ResourceIndex;
   botOnline: boolean;
+  syncStatus: SyncStatus | undefined;
+  locked: boolean;
 }
 
 interface BoxTopButtonsState {
@@ -188,7 +190,7 @@ export class BoxTopButtons
   };
 
   render() {
-    const { firmwareHardware } = this.props;
+    const { firmwareHardware, botOnline, locked, syncStatus } = this.props;
     const circlesProps = { firmwareHardware, clean: true };
     const buttons = CIRCLES(circlesProps).filter(circle => circle.r > 4);
     const leds = CIRCLES(circlesProps).filter(circle => circle.r < 5);
@@ -211,29 +213,64 @@ export class BoxTopButtons
               }) || circle).label}
             </p>;
         })}
-        {buttons.map(circle => <ButtonCircle key={circle.cx} {...circle}
-          hover={this.hover}
-          hovered={this.state.hoveredPin == circle.pin}
-          press={() => {
-            const binding = this.findBinding(circle.pin);
-            if (!this.props.botOnline || !binding) { return; }
-            if (binding.sequence_id) {
-              execSequence(binding.sequence_id);
-            }
-            if (binding.special_action) {
-              sendRPC({
-                kind: binding.special_action, args: {},
-              } as RpcRequestBodyItem);
-            }
-          }} />)}
+        {buttons.map(circle => {
+          const { color } = circle;
+          const statusProps = { botOnline, color, locked, syncStatus };
+          const binding = this.findBinding(circle.pin);
+          return <ButtonCircle key={circle.cx} {...circle}
+            hover={this.hover}
+            hovered={this.state.hoveredPin == circle.pin}
+            on={ledOn(statusProps)}
+            blinking={ledBlinking(statusProps)}
+            hasBinding={!!binding}
+            press={() => {
+              const binding = this.findBinding(circle.pin);
+              if (!botOnline || !binding) { return; }
+              if (binding.sequence_id) {
+                execSequence(binding.sequence_id);
+              }
+              if (binding.special_action) {
+                sendRPC({
+                  kind: binding.special_action, args: {},
+                } as RpcRequestBodyItem);
+              }
+            }} />;
+        })}
       </div>
       <div className={"box-top-leds"}>
-        {leds.map(circle => <LEDCircle key={circle.cx} color={circle.color} />)}
+        {leds.map(circle => <LEDCircle key={circle.cx} color={circle.color}
+          on={botOnline} blinking={ledBlinking({
+            botOnline, color: circle.color, locked, syncStatus,
+          })} />)}
         {leds.map(circle => <p key={circle.cx}>{circle.label}</p>)}
       </div>
     </div>;
   }
 }
+
+interface LedOnProps {
+  botOnline: boolean;
+  locked: boolean;
+  syncStatus: SyncStatus | undefined;
+  color: Color;
+}
+
+const ledOn = (props: LedOnProps) => {
+  if (!props.botOnline) { return false; }
+  switch (props.color) {
+    case Color.red: return !props.locked;
+    default: return true;
+  }
+};
+
+const ledBlinking = (props: LedOnProps) => {
+  if (!props.botOnline) { return false; }
+  switch (props.color) {
+    case Color.yellow: return props.locked;
+    case Color.green: return props.syncStatus == "syncing";
+    default: return false;
+  }
+};
 
 interface ButtonCircleProps {
   pin: number;
@@ -241,30 +278,36 @@ interface ButtonCircleProps {
   hover(hovered: number | undefined): () => void;
   hovered: boolean;
   press(): void;
+  on: boolean;
+  blinking: boolean;
+  hasBinding: boolean;
 }
 
 const ButtonCircle = (props: ButtonCircleProps) => {
-  const { pin, color } = props;
+  const { pin, color, hasBinding } = props;
   const hovered = props.hovered;
   return <svg id={"box-top-gpio"}
     width={"100%"} height={"100%"} viewBox={"-10 -10 20 20"}
     style={{ maxHeight: "100px", maxWidth: "100px" }}>
-    <g id={"button"} style={{ cursor: "pointer" }}
+    <g id={"button"} style={{ cursor: hasBinding ? "pointer" : "not-allowed" }}
       onMouseEnter={props.hover(pin)}
       onMouseLeave={props.hover(undefined)}
       onClick={() => props.press()}>
-      <circle fill={"none"} strokeWidth={4}
+      <circle className={props.blinking ? "slow-blink" : ""}
+        fill={color} fillOpacity={props.on ? 1 : 0.25} strokeWidth={2}
         stroke={hovered ? Color.darkGray : Color.gray}
-        cx={0} cy={0} r={7} />
-      <circle fill={hovered ? Color.darkGray : Color.gray}
-        strokeWidth={2} stroke={color}
-        cx={0} cy={0} r={7 - 1} />
+        cx={0} cy={0} r={8} />
+      <circle stroke={"none"}
+        fill={hovered ? Color.darkGray : Color.gray}
+        cx={0} cy={0} r={5} />
     </g>
   </svg>;
 };
 
 interface LEDCircleProps {
   color: Color;
+  on: boolean;
+  blinking: boolean;
 }
 
 const LEDCircle = (props: LEDCircleProps) => {
@@ -273,11 +316,10 @@ const LEDCircle = (props: LEDCircleProps) => {
     width={"100%"} height={"100%"} viewBox={"-10 -10 20 20"}
     style={{ maxHeight: "100px", maxWidth: "100px" }}>
     <g id={"button"}>
-      <circle fill={"none"} strokeWidth={4}
-        stroke={Color.gray}
-        cx={0} cy={0} r={4} />
-      <circle fill={color} strokeWidth={0}
-        cx={0} cy={0} r={4 - 1} />
+      <circle className={props.blinking ? "fast-blink" : ""}
+        strokeWidth={3} stroke={Color.gray}
+        fill={color} fillOpacity={props.on ? 1 : 0.25}
+        cx={0} cy={0} r={4.5} />
     </g>
   </svg>;
 };

@@ -127,7 +127,6 @@ export enum WizardStepSlug {
   valve = "valve",
   vacuum = "vacuum",
   lights = "lights",
-  findHomeButton = "findHomeButton",
   eStopButton = "eStopButton",
   unlockButton = "unlockButton",
   customButtons = "customButtons",

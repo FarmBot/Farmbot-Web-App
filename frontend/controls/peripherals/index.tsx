@@ -160,6 +160,8 @@ export class Peripherals
             dispatch={this.props.dispatch}
             resources={this.props.resources}
             botOnline={isBotOnlineFromState(this.props.bot)}
+            syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+            locked={this.props.bot.hardware.informational_settings.locked}
             isEditing={isEditing} />}
       </WidgetBody>
     </Widget>;

@@ -3,7 +3,6 @@ const mockDevice = { takePhoto: jest.fn(() => mockPhotoOutcome) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { mount } from "enzyme";
 import { TakePhotoButtonProps } from "../interfaces";
 import { TakePhotoButton } from "../take_photo_button";
@@ -26,7 +25,7 @@ describe("<TakePhotoButton />", () => {
     const cameraBtn = jogButtons.find("button").at(0);
     expect(cameraBtn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     cameraBtn.simulate("click");
-    act(() => { jest.runAllTimers(); });
+    jest.runAllTimers();
     expect(mockDevice.takePhoto).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
@@ -50,11 +49,21 @@ describe("<TakePhotoButton />", () => {
     expect(mockDevice.takePhoto).not.toHaveBeenCalled();
   });
 
+  it("shows as offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const jogButtons = mount(<TakePhotoButton {...p} />);
+    expect(jogButtons.html()).toContain("bp-popover-target");
+  });
+
   it("shows as taken", () => {
     const p = fakeProps();
-    p.imageJobs = [fakePercentJob()];
+    const job = fakePercentJob();
+    const now = new Date().getTime() / 1000;
+    job.updated_at = now + 5;
+    p.imageJobs = [job];
     const log = fakeLog();
-    log.body.id = undefined;
+    log.body.created_at = now + 5;
     log.body.message = "Taking photo";
     p.logs = [log];
     const jogButtons = mount(<TakePhotoButton {...p} />);

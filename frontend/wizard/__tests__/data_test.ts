@@ -23,7 +23,7 @@ describe("data check", () => {
     const slugs = Object.values(WizardStepSlug);
     const stepSlugs = WIZARD_STEP_SLUGS(undefined);
     expect(uniq(stepSlugs).length).toEqual(stepSlugs.length);
-    expect(slugs.length).toEqual(stepSlugs.length + 1);
+    expect(slugs.length).toEqual(stepSlugs.length);
   });
 
   it("has fewer steps for express", () => {

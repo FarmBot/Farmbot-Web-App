@@ -1555,14 +1555,12 @@ li {
       margin-right: 1rem;
       margin-top: 2rem;
     }
-    .settings-panel-settings-menu {
-      .bp4-popover-content {
-        width: 300px;
-      }
-      label {
-        margin-top: 1rem;
-      }
-    }
+  }
+}
+
+.settings-panel-settings-menu {
+  button {
+    margin-left: 1rem;
   }
 }
 

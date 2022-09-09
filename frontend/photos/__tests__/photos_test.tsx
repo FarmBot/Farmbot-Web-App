@@ -61,6 +61,7 @@ describe("<DesignerPhotos />", () => {
   });
 
   it("expands sections", () => {
+    mockDev = true;
     const p = fakeProps();
     const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);
     p.farmwares = { [FarmwareName.MeasureSoilHeight]: farmware };
