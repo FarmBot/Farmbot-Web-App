@@ -13,7 +13,7 @@ import { Collapse } from "@blueprintjs/core";
 import { FeaturedSequence } from "../../featured/content";
 import axios from "axios";
 import { API } from "../../api";
-import { ColorPicker, Help } from "../../ui";
+import { ColorPicker, Markdown, Popover } from "../../ui";
 import { Link } from "../../link";
 import { Path } from "../../internal_urls";
 import { installSequence } from "../actions";
@@ -148,9 +148,13 @@ const FeaturedSequenceListItem = (props: FeaturedSequenceListItemProps) => {
       descriptionOpen ? "" : "show-on-hover",
     ].join(" ")}>
       {item.description &&
-        <Help text={item.description} enableMarkdown={true}
+        <Popover popoverClassName={"sequence-item-description"}
           isOpen={descriptionOpen}
-          setOpen={() => setDescriptionOpen(!descriptionOpen)} />}
+          target={<i className={"fa fa-question-circle help-icon"}
+            onClick={() => setDescriptionOpen(!descriptionOpen)} />}
+          content={<div className={"sequence-item-help help-text-content"}>
+            <Markdown>{item.description}</Markdown>
+          </div>} />}
       <i className={`fa ${importing ? "fa-spinner fa-pulse" : "fa-download"}`}
         title={t("import this sequence")}
         onClick={() => {

@@ -65,7 +65,7 @@ export const SeedTrough = (props: ToolGraphicProps) => {
       y={y - Trough.length / 2 + Trough.wall}
       width={Trough.width - Trough.wall * 2}
       height={Trough.length - Trough.wall * 2}
-      strokeWidth={0.25} stroke={Color.gray}
+      strokeWidth={0.25} stroke={Color.mediumGray}
       fillOpacity={0.5} fill={"url(#SeedTroughGradient)"} />
   </g>;
 };

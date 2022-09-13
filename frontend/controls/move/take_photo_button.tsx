@@ -1,3 +1,4 @@
+import { round } from "lodash";
 import React from "react";
 import { takePhoto } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
@@ -28,7 +29,7 @@ export class TakePhotoButton
     const done = recentMsgLog(logs, clickedAt, ["Uploaded image:"]);
     const clickedPercent = clickedAt ? 25 : 0;
     const takenPercent = photoTaken ? 25 : 0;
-    const percent = clickedPercent + takenPercent + downloadPercent / 2;
+    const percent = clickedPercent + takenPercent + round(downloadPercent / 2);
     const sendCommand = () => {
       this.setState({ clickedAt: this.now });
       takePhoto();

@@ -69,6 +69,6 @@ describe("<TakePhotoButton />", () => {
     const jogButtons = mount(<TakePhotoButton {...p} />);
     const cameraBtn = jogButtons.find("button").at(0);
     cameraBtn.simulate("click");
-    expect(cameraBtn.text()).toEqual("99.5%");
+    expect(cameraBtn.text()).toEqual("100%");
   });
 });
