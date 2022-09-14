@@ -4,7 +4,7 @@ jest.mock("../../../devices/actions", () => ({
 }));
 
 jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
+  overwrite: jest.fn(),
   save: jest.fn(),
   destroy: jest.fn(),
   initSave: jest.fn(),
@@ -29,7 +29,7 @@ import {
   PinBindingSpecialAction,
   PinBindingType, SpecialPinBinding, StandardPinBinding,
 } from "farmbot/dist/resources/api_resources";
-import { destroy, edit, initSave, save } from "../../../api/crud";
+import { destroy, overwrite, initSave, save } from "../../../api/crud";
 
 describe("<BoxTopGpioDiagram />", () => {
   const fakeProps = (): BoxTopGpioDiagramProps => ({
@@ -123,14 +123,29 @@ describe("<BoxTopButtons />", () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it("re-binds pin", () => {
+  it("re-binds pin: standard", () => {
     const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
     wrapper.instance().bind(20)({
       headingId: PinBindingType.standard, label: "", value: 1,
     });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      pin_num: 20, sequence_id: 1, binding_type: PinBindingType.standard,
+    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({
+        pin_num: 20, sequence_id: 1, binding_type: PinBindingType.standard,
+        special_action: undefined,
+      }));
+    expect(save).toHaveBeenCalled();
+  });
+
+  it("re-binds pin: special", () => {
+    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
+    wrapper.instance().bind(20)({
+      headingId: PinBindingType.special, label: "", value: "sync",
     });
+    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({
+        pin_num: 20, special_action: "sync", binding_type: PinBindingType.special,
+        sequence_id: undefined,
+      }));
     expect(save).toHaveBeenCalled();
   });
 

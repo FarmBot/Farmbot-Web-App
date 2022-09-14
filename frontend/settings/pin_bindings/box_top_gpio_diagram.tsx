@@ -6,15 +6,16 @@ import { hasExtraButtons } from "../firmware/firmware_hardware_support";
 import { DropDownItem } from "../../ui";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
 import {
-  PinBindingSpecialAction, PinBindingType,
+  PinBinding,
+  PinBindingSpecialAction, PinBindingType, SpecialPinBinding, StandardPinBinding,
 } from "farmbot/dist/resources/api_resources";
-import { initSave, edit, save, destroy } from "../../api/crud";
+import { initSave, overwrite, save, destroy } from "../../api/crud";
 import { pinBindingBody } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
 import { findByUuid } from "../../resources/reducer_support";
 import { apiPinBindings } from "./pin_bindings_content";
 import { execSequence, sendRPC } from "../../devices/actions";
-import { isUndefined } from "lodash";
+import { cloneDeep, isUndefined } from "lodash";
 
 export interface BoxTopGpioDiagramProps {
   boundPins: number[] | undefined;
@@ -182,7 +183,19 @@ export class BoxTopButtons
       });
     if (bindingUuid) {
       const binding = findByUuid(this.props.resources, bindingUuid);
-      this.props.dispatch(edit(binding, body));
+      const newBody = cloneDeep(binding.body as PinBinding);
+      newBody.binding_type = bindingType;
+      if (bindingType == PinBindingType.standard && sequenceIdInput) {
+        (newBody as StandardPinBinding).sequence_id = sequenceIdInput;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (newBody as any).special_action = undefined;
+      }
+      if (bindingType == PinBindingType.special && specialActionInput) {
+        (newBody as SpecialPinBinding).special_action = specialActionInput;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (newBody as any).sequence_id = undefined;
+      }
+      this.props.dispatch(overwrite(binding, newBody));
       this.props.dispatch(save(binding.uuid));
     } else {
       this.props.dispatch(initSave("PinBinding", body));
