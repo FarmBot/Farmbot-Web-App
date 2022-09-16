@@ -36,7 +36,7 @@ describe("mapStateToPropsAddEdit()", () => {
     it("crashes on other names", () => {
       const e = inputEvent("10:52", "other");
       const boom = () => handleTime(e, "2017-05-21T22:00:00.000");
-      expect(boom).toThrowError("Expected a name attribute from time field.");
+      expect(boom).toThrow("Expected a name attribute from time field.");
     });
   });
 

@@ -7,6 +7,6 @@ describe("urlFor()", () => {
 
   it("no URL yet", () => {
     expect(() => urlFor("NewResourceWithoutURLHandler" as ResourceName))
-      .toThrowError(/NewResourceWithoutURLHandler/);
+      .toThrow(/NewResourceWithoutURLHandler/);
   });
 });

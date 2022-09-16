@@ -49,6 +49,6 @@ describe("namespace()", () => {
 
   it("throws error", () => {
     expect(() => namespace("CAMERA_CALIBRATION_")("key"))
-      .toThrowError("CAMERA_CALIBRATION_key is not a valid key.");
+      .toThrow("CAMERA_CALIBRATION_key is not a valid key.");
   });
 });

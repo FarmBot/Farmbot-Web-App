@@ -177,7 +177,7 @@ describe("sync()", () => {
     state.bot.hardware.informational_settings.controller_version = undefined;
     actions.sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
-    expect(info).toBeCalledWith("FarmBot is not connected.", {
+    expect(info).toHaveBeenCalledWith("FarmBot is not connected.", {
       title: "Disconnected", color: "red",
     });
   });

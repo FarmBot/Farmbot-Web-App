@@ -62,13 +62,13 @@ describe("<PlantInventoryItem />", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("mouseEnter");
-    expect(setHoveredPlant).toBeCalledWith(p.plant.uuid, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid, "");
   });
 
   it("hover end", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
     wrapper.simulate("mouseLeave");
-    expect(setHoveredPlant).toBeCalledWith(undefined, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined, "");
   });
 
   it("selects plant", () => {
@@ -77,7 +77,7 @@ describe("<PlantInventoryItem />", () => {
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(selectPoint).toBeCalledWith([p.plant.uuid]);
+    expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(push).toHaveBeenCalledWith(Path.plants(p.plant.body.id));
   });
 
@@ -86,7 +86,7 @@ describe("<PlantInventoryItem />", () => {
     p.plant.body.id = 0;
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
-    expect(selectPoint).toBeCalledWith([p.plant.uuid]);
+    expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(push).toHaveBeenCalledWith(Path.plants("ERR_NO_PLANT_ID"));
   });
 
@@ -107,7 +107,7 @@ describe("<PlantInventoryItem />", () => {
     p.plant = fakePlantTemplate();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
-    expect(selectPoint).toBeCalledWith([p.plant.uuid]);
+    expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(push).toHaveBeenCalledWith(
       Path.savedGardens(`templates/${p.plant.body.id}`));
   });

@@ -94,7 +94,7 @@ describe("<BulkScheduler />", () => {
     const wrapper = shallow(panel.instance().SequenceSelectBox());
     const sequenceInput = wrapper.find("FBSelect").first();
     const change = () => sequenceInput.simulate("change", { value: 4 });
-    expect(change).toThrowError("WARNING: Not a sequence UUID.");
+    expect(change).toThrow("WARNING: Not a sequence UUID.");
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 });

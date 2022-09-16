@@ -28,7 +28,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([sequence]);
     state.resources.consumers.sequences.current = sequence.uuid;
-    expect(() => mapStateToProps(state)).not.toThrowError();
+    expect(() => mapStateToProps(state)).not.toThrow();
     const props = mapStateToProps(state);
     expect(props.sequence).toEqual(expect.objectContaining({
       uuid: sequence.uuid,
@@ -48,7 +48,7 @@ describe("mapStateToProps()", () => {
     state.resources.consumers.sequences.current = sequence.uuid;
     (state.resources.index.references[sequence.uuid] as TaggedSequence).body.body =
       [{ kind: "wait", args: { milliseconds: 100 } }];
-    expect(() => mapStateToProps(state)).toThrowError(/No tag on step/);
+    expect(() => mapStateToProps(state)).toThrow(/No tag on step/);
   });
 
   it("returns farmwareNames", () => {

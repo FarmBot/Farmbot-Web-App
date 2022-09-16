@@ -80,6 +80,6 @@ describe("updateLhs()", () => {
       label: "Click me!",
       headingId: "Wrong",
     });
-    expect(action).toThrowError();
+    expect(action).toThrow();
   });
 });

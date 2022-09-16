@@ -58,7 +58,7 @@ describe("updateViaAjax()", () => {
     payload.uuid = Object.keys(payload.index.all)[0];
     console.error = jest.fn();
     await expect(updateViaAjax(payload)).rejects
-      .toThrowError("Just saved a malformed TR.");
+      .toThrow("Just saved a malformed TR.");
     expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith(
       expect.stringContaining("Peripheral"));

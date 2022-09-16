@@ -158,7 +158,7 @@ describe("findByPinNumber()", () => {
       args: { pin_id, pin_type }
     };
     const boom = () => PinSupport.findByPinNumber(ri, namedPin);
-    expect(boom).toThrowError("UUID or ID not found");
+    expect(boom).toThrow("UUID or ID not found");
   });
 
   it("bails when it is not a `Peripheral` or `Sensor`", () => {
@@ -174,7 +174,7 @@ describe("findByPinNumber()", () => {
         ri.references[key] = { kind: "Intentionally wrong" } as any;
       });
     const boom = () => PinSupport.findByPinNumber(ri, np);
-    expect(boom).toThrowError("Not a Peripheral or Sensor");
+    expect(boom).toThrow("Not a Peripheral or Sensor");
   });
 
   it("finds peripherals kind and ID", () => {
@@ -234,7 +234,7 @@ describe("namedPin2DropDown()", () => {
     const pin_id = 0;
     const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
     const boom = () => PinSupport.namedPin2DropDown(ri, np);
-    expect(boom).toThrowError("Bad pin_type: \"no\"");
+    expect(boom).toThrow("Bad pin_type: \"no\"");
   });
 });
 
@@ -260,7 +260,7 @@ describe("dropDown2CeleryArg()", () => {
     const ri = buildResourceIndex([]).index;
     const ddi = { label: "sensor", value: "x.y.z" };
     const boom = () => PinSupport.dropDown2CeleryArg(ri, ddi);
-    expect(boom).toThrowError("Bad uuid in celery arg: x.y.z");
+    expect(boom).toThrow("Bad uuid in celery arg: x.y.z");
   });
 
   it("converts box LED selection to named pin", () => {

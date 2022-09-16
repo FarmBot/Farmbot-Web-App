@@ -96,7 +96,7 @@ describe("<ChangePassword />", () => {
       new_password_confirmation: "password2",
       extra_password: "password3",
     } as ChangePWState["form"];
-    expect(el.instance().save).toThrowError("form error");
+    expect(el.instance().save).toThrow("form error");
     expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
   });
 

@@ -54,7 +54,7 @@ describe("<TileSetServoAngle/>", () => {
       kind: "named_pin",
       args: { pin_id: 0, pin_type: "Peripheral" }
     };
-    expect(() => ServoPinSelection(p)).toThrowError();
+    expect(() => ServoPinSelection(p)).toThrow();
   });
 
   it("creates a servo edit function", () => {

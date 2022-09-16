@@ -34,7 +34,7 @@ describe("toggleWebAppBool()", () => {
     const action = toggleWebAppBool(BooleanSetting.show_first_party_farmware);
     const dispatch = jest.fn();
     const kaboom = () => action(dispatch, fakeState);
-    expect(kaboom).toThrowError("Toggled settings before app was loaded.");
+    expect(kaboom).toThrow("Toggled settings before app was loaded.");
   });
 });
 
@@ -65,6 +65,6 @@ describe("setWebAppConfigValue()", () => {
     mockConfig = undefined as any;
     const action = () => setWebAppConfigValue(NumericSetting.fun_log, 1)(
       jest.fn(), fakeState);
-    expect(action).toThrowError("Changed settings before app was loaded.");
+    expect(action).toThrow("Changed settings before app was loaded.");
   });
 });

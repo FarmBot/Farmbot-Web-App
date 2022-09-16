@@ -12,7 +12,7 @@ describe("selectRegimen()", () => {
 
   it("crashes if malformed", () => {
     console.warn = jest.fn();
-    expect(() => selectRegimen("wrong")).toThrowError();
+    expect(() => selectRegimen("wrong")).toThrow();
   });
 });
 

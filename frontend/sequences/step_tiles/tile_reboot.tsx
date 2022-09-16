@@ -41,7 +41,7 @@ export const TileReboot = (props: StepParams<Reboot>) =>
     </p>
     {DevSettings.futureFeaturesEnabled() &&
       <StepRadio
-        choices={Object.keys(PACKAGE_CHOICES())}
+        choices={Object.keys(PACKAGE_CHOICES()) as ALLOWED_PACKAGES[]}
         choiceLabelLookup={PACKAGE_CHOICES()}
         currentChoice={props.currentStep.args.package as ALLOWED_PACKAGES}
         onChange={editTheRebootStep(props)} />}

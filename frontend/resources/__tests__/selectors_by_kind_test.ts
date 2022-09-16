@@ -5,7 +5,7 @@ import { error } from "../../toast/toast";
 describe("findTool()", () => {
   it("throws error", () => {
     expect(() => findTool(buildResourceIndex([]).index, "Tool.uuid"))
-      .toThrowError("Tagged resource Tool was not found or malformed: undefined");
+      .toThrow("Tagged resource Tool was not found or malformed: undefined");
     expect(error).toHaveBeenCalledWith("Resource error");
   });
 });

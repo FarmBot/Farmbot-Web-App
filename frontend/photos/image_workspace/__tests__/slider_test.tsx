@@ -24,7 +24,7 @@ describe("<WeedDetectorSlider />", () => {
     const p = fakeProps();
     p.lowValue = "nope" as unknown as number;
     expect(() => shallow(<WeedDetectorSlider {...p} />))
-      .toThrowError("Something other than number");
+      .toThrow("Something other than number");
   });
 
   it("releases the slider", () => {

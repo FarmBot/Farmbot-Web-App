@@ -66,7 +66,7 @@ describe("sendOutboundPing()", () => {
     };
     expect(pingNO).not.toHaveBeenCalled();
     await expect(sendOutboundPing(fakeBot as Farmbot)).rejects
-      .toThrowError(/sendOutboundPing failed/);
+      .toThrow(/sendOutboundPing failed/);
     expect(pingNO).toHaveBeenCalled();
   });
 });
