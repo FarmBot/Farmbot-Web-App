@@ -26,10 +26,12 @@ import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
 import { ingest } from "../folders/data_transfer";
 import {
+  isSearchMatchFolder,
   searchFolderTree, sequenceSearchMatch,
 } from "../folders/search_folder_tree";
 import { photosState } from "../photos/reducer";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { FolderUnion } from "../folders/interfaces";
 
 export const emptyState = (): RestResources => {
   return {
@@ -219,16 +221,19 @@ export const resourceReducer =
           localMetaAttributes,
           folders
         });
-        const match = sequenceSearchMatch(payload, s.index);
-        nextFolder.noFolder = nextFolder.noFolder.filter(match);
+        const match = (folders?: FolderUnion[]) =>
+          (folders && isSearchMatchFolder(payload, folders))
+            ? () => true
+            : sequenceSearchMatch(payload, s.index);
+        nextFolder.noFolder = nextFolder.noFolder.filter(match());
         /** `ingest` overwrites `content` set by `searchFolderTree`.
          *  Filter sequences here instead. */
         nextFolder.folders.map(lvl1 => {
-          lvl1.content = lvl1.content.filter(match);
+          lvl1.content = lvl1.content.filter(match([lvl1]));
           lvl1.children.map(lvl2 => {
-            lvl2.content = lvl2.content.filter(match);
+            lvl2.content = lvl2.content.filter(match([lvl1, lvl2]));
             lvl2.children.map(lvl3 => {
-              lvl3.content = lvl3.content.filter(match);
+              lvl3.content = lvl3.content.filter(match([lvl1, lvl2, lvl3]));
             });
           });
         });

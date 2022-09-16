@@ -110,5 +110,25 @@ describe("Actions.FOLDER_SEARCH", () => {
       expect(three.content.length).toEqual(1);
       expect(three.content).toEqual([s3.uuid]);
     }
+
+    const action4 = { type: Actions.FOLDER_SEARCH, payload: "@" };
+    const index4 = resourceReducer(state, action4).index;
+    expect(index4.sequenceFolders.searchTerm).toBe("@");
+    expect(index4.sequenceFolders.filteredFolders).not.toBeUndefined();
+    const filteredFolders4 = index4.sequenceFolders.filteredFolders;
+    if (filteredFolders4) {
+      expect(filteredFolders4.noFolder.length).toEqual(0);
+      expect(filteredFolders4.folders.length).toEqual(1);
+      const one = filteredFolders4.folders[0];
+      const two = one.children[0];
+      const three = two.children[0];
+      expect(one.name).toBe("@");
+      expect(one.content.length).toEqual(1);
+      expect(two.name).toBe("#");
+      expect(two.content.length).toEqual(1);
+      expect(three.name).toBe("$");
+      expect(three.content.length).toEqual(1);
+      expect(three.content).toEqual([s3.uuid]);
+    }
   });
 });

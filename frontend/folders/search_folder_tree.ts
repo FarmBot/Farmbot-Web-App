@@ -1,4 +1,5 @@
 import { TaggedResource } from "farmbot";
+import { some } from "lodash";
 import { ResourceIndex } from "../resources/interfaces";
 import { RootFolderNode, FolderUnion } from "./interfaces";
 
@@ -20,8 +21,9 @@ const isSearchMatchSeq =
     return false;
   };
 
-const isSearchMatchFolder = (searchTerm: string, f: FolderUnion) =>
-  f.name.toLowerCase().includes(searchTerm.toLowerCase());
+export const isSearchMatchFolder = (searchTerm: string, folders: FolderUnion[]) =>
+  some(folders.map(folder =>
+    folder.name.toLowerCase().includes(searchTerm.toLowerCase())));
 
 /** Given an input search term, returns folder IDs (number) that match. */
 export const searchFolderTree = (props: FolderSearchProps): FolderUnion[] => {
@@ -41,13 +43,13 @@ export const searchFolderTree = (props: FolderSearchProps): FolderUnion[] => {
       }
     });
 
-    if (isSearchMatchFolder(searchTerm, level1)) {
+    if (isSearchMatchFolder(searchTerm, [level1])) {
       // CASE 3
       folderSet.add(level1);
     }
 
     level1.children.map(level2 => { // ================ LEVEL 2
-      if (isSearchMatchFolder(searchTerm, level2)) {
+      if (isSearchMatchFolder(searchTerm, [level1, level2])) {
         // CASE 3
         folderSet.add(level2);
         // CASE 5
@@ -63,7 +65,7 @@ export const searchFolderTree = (props: FolderSearchProps): FolderUnion[] => {
         }
       });
       level2.children.map(level3 => { // ============== LEVEL 3
-        if (isSearchMatchFolder(searchTerm, level3)) {
+        if (isSearchMatchFolder(searchTerm, [level1, level2, level3])) {
           // CASE 3
           folderSet.add(level3);
           // CASE 5

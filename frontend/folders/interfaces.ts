@@ -95,6 +95,7 @@ export interface FolderNodeProps {
   resources: ResourceIndex;
   menuOpen: UUID | undefined;
   syncStatus: SyncStatus | undefined;
+  searchTerm: string | undefined;
 }
 
 export interface SequenceButtonClusterProps {
@@ -126,6 +127,7 @@ export interface FolderItemProps {
   resources: ResourceIndex;
   menuOpen: UUID | undefined;
   syncStatus: SyncStatus | undefined;
+  searchTerm: string | undefined;
 }
 
 export interface SequenceDropAreaProps {

@@ -66,6 +66,10 @@ export const FolderListItem = (props: FolderItemProps) => {
   const hovered = props.menuOpen == sequence.uuid || settingsOpen || descriptionOpen
     ? "hovered"
     : "";
+  const matched = (props.searchTerm &&
+    seqName.toLowerCase().includes(props.searchTerm.toLowerCase()))
+    ? "matched"
+    : "";
   return <StepDragger
     dispatch={props.dispatch}
     step={{
@@ -76,7 +80,9 @@ export const FolderListItem = (props: FolderItemProps) => {
     intent="step_splice"
     draggerId={NULL_DRAGGER_ID}
     resourceUuid={sequence.uuid}>
-    <li className={`sequence-list-item ${active} ${moveSource} ${hovered}`}
+    <li
+      className={["sequence-list-item", active, moveSource, hovered, matched]
+        .join(" ")}
       draggable={true}>
       <ColorPicker
         current={sequence.body.color}
@@ -241,7 +247,11 @@ export const FolderNameInput = ({ node }: FolderNameInputProps) =>
 export const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  return <div className={"folder-list-item"}>
+  return <div className={["folder-list-item",
+    (props.searchTerm && node.name.toLowerCase()
+      .includes(props.searchTerm.toLowerCase()))
+      ? "matched"
+      : ""].join(" ")}>
     <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
       title={"Open/Close Folder"}
       onClick={() => toggleFolderOpenState(node.id)} />
@@ -281,6 +291,7 @@ const FolderNode = (props: FolderNodeProps) => {
         menuOpen={props.menuOpen}
         syncStatus={props.syncStatus}
         resources={props.resources}
+        searchTerm={props.searchTerm}
         movedSequenceUuid={props.movedSequenceUuid} />);
 
   const childFolders: FolderUnion[] = node.children || [];
@@ -297,6 +308,7 @@ const FolderNode = (props: FolderNodeProps) => {
       menuOpen={props.menuOpen}
       syncStatus={props.syncStatus}
       resources={props.resources}
+      searchTerm={props.searchTerm}
       toggleSequenceMove={props.toggleSequenceMove}
       startSequenceMove={props.startSequenceMove}
       onMoveEnd={props.onMoveEnd} />);
@@ -354,6 +366,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
           menuOpen={this.props.menuOpen}
           syncStatus={this.props.syncStatus}
           resources={this.props.resources}
+          searchTerm={this.props.searchTerm}
           movedSequenceUuid={this.state.movedSequenceUuid}
           toggleSequenceMove={this.toggleSequenceMove}
           startSequenceMove={this.startSequenceMove}
@@ -396,6 +409,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         menuOpen={this.props.menuOpen}
         syncStatus={this.props.syncStatus}
         resources={this.props.resources}
+        searchTerm={this.props.searchTerm}
         toggleSequenceMove={this.toggleSequenceMove}
         startSequenceMove={this.startSequenceMove}
         movedSequenceUuid={this.state.movedSequenceUuid} />);

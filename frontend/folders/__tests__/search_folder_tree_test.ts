@@ -24,7 +24,7 @@ describe("searchFolderTree", () => {
     expect(results.length).toEqual(1);
     expect(results).toContain("One");
     const results2 = searchFor("Ten").map(x => x.name);
-    expect(results2.length).toEqual(1);
+    expect(results2.length).toEqual(4);
     expect(results2).toContain("Ten");
   });
 
@@ -39,7 +39,7 @@ describe("searchFolderTree", () => {
       // == GRANDPARENTS
       "Fourteen",
     ].map(x => expect(results).toContain(x));
-    expect(results.length).toEqual(5);
+    expect(results.length).toEqual(7);
     const results2 = searchFor("Eleven").map(x => x.name);
     ["Eleven", "Ten"].map(x => expect(results2).toContain(x));
     expect(results2.length).toEqual(2);

@@ -260,6 +260,7 @@ describe("<FolderListItem />", () => {
     resources: fakeResourceIndex(),
     menuOpen: undefined,
     syncStatus: undefined,
+    searchTerm: undefined,
   });
 
   beforeEach(() => {
@@ -274,6 +275,14 @@ describe("<FolderListItem />", () => {
     expect(wrapper.text()).toContain("my sequence");
     expect(wrapper.find("li").hasClass("move-source")).toBeFalsy();
     expect(wrapper.find("li").hasClass("active")).toBeFalsy();
+  });
+
+  it("renders: matched", () => {
+    const p = fakeProps();
+    p.sequence.body.name = "my sequence";
+    p.searchTerm = "sequence";
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".sequence-list-item").hasClass("matched")).toBeTruthy();
   });
 
   it("renders: move in progress", () => {
@@ -496,6 +505,7 @@ describe("<FolderNameEditor />", () => {
     resources: fakeResourceIndex(),
     menuOpen: undefined,
     syncStatus: undefined,
+    searchTerm: undefined,
   });
 
   it("renders", () => {
@@ -506,6 +516,14 @@ describe("<FolderNameEditor />", () => {
     expect(wrapper.find(".fa-chevron-down").length).toEqual(1);
     expect(wrapper.find(".fa-chevron-right").length).toEqual(0);
     expect(wrapper.find(".folder-name-input").length).toEqual(0);
+  });
+
+  it("renders: matched", () => {
+    const p = fakeProps();
+    p.node.name = "my folder";
+    p.searchTerm = "folder";
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".folder-list-item").hasClass("matched")).toBeTruthy();
   });
 
   it("opens settings menu", () => {

@@ -1014,6 +1014,9 @@
       }
     }
   }
+  .matched {
+    background: transparentize($yellow, 0.5);
+  }
 }
 
 .sequence-item-help {
