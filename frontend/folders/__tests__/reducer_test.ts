@@ -102,11 +102,13 @@ describe("Actions.FOLDER_SEARCH", () => {
       const one = filteredFolders.folders[0];
       const two = one.children[0];
       const three = two.children[0];
-      const four = three.content[0];
       expect(one.name).toBe("@");
+      expect(one.content.length).toEqual(0);
       expect(two.name).toBe("#");
+      expect(two.content.length).toEqual(0);
       expect(three.name).toBe("$");
-      expect(four).toBe(s3.uuid);
+      expect(three.content.length).toEqual(1);
+      expect(three.content).toEqual([s3.uuid]);
     }
   });
 });

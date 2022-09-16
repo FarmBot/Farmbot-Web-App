@@ -4,9 +4,9 @@ import { TaggedResource } from "farmbot";
 import { FolderUnion } from "../interfaces";
 
 describe("searchFolderTree", () => {
-  const searchFor = (input: string) => searchFolderTree({
+  const searchFor = (searchTerm: string) => searchFolderTree({
     references: {},
-    input,
+    searchTerm,
     root: TEST_GRAPH
   });
 
@@ -62,10 +62,7 @@ describe("searchFolderTree", () => {
     expect(folder3).toBeTruthy();
     expect(folder2).toBeTruthy();
     expect(folder1).toBeTruthy();
-    expect(folder3.content.length).toBe(1);
     expect(folder3seq).toBeTruthy();
-    expect(folder2.content.length).toBe(0);
-    expect(folder1.content.length).toBe(0);
   });
 
   it("finds sequences in an `medial` folder node", () => {
@@ -80,9 +77,7 @@ describe("searchFolderTree", () => {
     expect(folder3).toBeUndefined();
     expect(folder2).toBeTruthy();
     expect(folder1).toBeTruthy();
-    expect(folder2.content.length).toBe(1);
     expect(folder2seq).toBeTruthy();
-    expect(folder1.content.length).toBe(0);
   });
 
   it("finds sequences in an `initial` folder node", () => {
@@ -98,7 +93,6 @@ describe("searchFolderTree", () => {
     expect(folder3).toBeUndefined();
     expect(folder2).toBeUndefined();
     expect(folder1).toBeTruthy();
-    expect(folder1.content.length).toBe(1);
   });
 });
 
@@ -123,8 +117,8 @@ const TEST_REFERENCES = {
   }
 } as unknown as Record<string, TaggedResource | undefined>;
 
-const fakeSearchProps = (input: string): FolderSearchProps => ({
-  input,
+const fakeSearchProps = (searchTerm: string): FolderSearchProps => ({
+  searchTerm,
   references: TEST_REFERENCES,
   root: {
     noFolder: [],
