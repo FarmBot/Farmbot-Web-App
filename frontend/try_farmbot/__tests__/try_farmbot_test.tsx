@@ -1,3 +1,5 @@
+import React from "react";
+import { shallow } from "enzyme";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
 
 describe("<TryFarmbot />", () => {
@@ -15,5 +17,11 @@ describe("<TryFarmbot />", () => {
     tfb.state.error = new Error("Testing");
     tfb.render();
     expect(tfb.no).toHaveBeenCalled();
+  });
+
+  it("renders", () => {
+    console.error = jest.fn();
+    const wrapper = shallow(<TryFarmbot />);
+    expect(wrapper.text().toLowerCase()).toContain("loading");
   });
 });

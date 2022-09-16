@@ -3,11 +3,6 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { ErrorHandling } from "../error_handling";
@@ -54,7 +49,6 @@ describe("<ErrorHandling />", () => {
   });
 
   it("shows new parameters", () => {
-    mockShouldDisplay = true;
     const p = fakeProps();
     p.settingsPanelState.error_handling = true;
     const wrapper = mount(<ErrorHandling {...p} />);

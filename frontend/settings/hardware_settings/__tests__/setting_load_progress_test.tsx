@@ -1,8 +1,3 @@
-let mockShouldDisplay = false;
-jest.mock("../../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -16,10 +11,6 @@ import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { Color } from "../../../ui";
 
 describe("<SettingLoadProgress />", () => {
-  beforeEach(() => {
-    mockShouldDisplay = false;
-  });
-
   const fakeProps =
     (extraConfig?: keyof FirmwareConfig): SettingLoadProgressProps => {
       type ConsistencyLookup = Record<keyof FirmwareConfig, boolean>;

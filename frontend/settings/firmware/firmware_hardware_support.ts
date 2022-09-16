@@ -1,5 +1,4 @@
 import { FirmwareHardware, TaggedFbosConfig } from "farmbot";
-import { Feature, ShouldDisplay } from "../../devices/interfaces";
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
@@ -152,13 +151,13 @@ export const FIRMWARE_CHOICES_DDI = {
   [NONE.value]: NONE,
 };
 
-export const getFirmwareChoices = (shouldDisplay: ShouldDisplay) => ([
+export const getFirmwareChoices = () => ([
   ARDUINO,
   FARMDUINO,
   FARMDUINO_K14,
   FARMDUINO_K15,
   FARMDUINO_K16,
   EXPRESS_K10,
-  ...(shouldDisplay(Feature.express_k11) ? [EXPRESS_K11] : []),
+  EXPRESS_K11,
   NONE,
 ]);

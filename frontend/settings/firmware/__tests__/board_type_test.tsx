@@ -3,11 +3,6 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
@@ -81,23 +76,7 @@ describe("<BoardType/>", () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it("displays standard boards", () => {
-    mockShouldDisplay = false;
-    const wrapper = mount(<BoardType {...fakeProps()} />);
-    const { list } = wrapper.find("FBSelect").props();
-    expect(list).toEqual([
-      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
-      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
-      { label: "Farmduino (Genesis v1.5)", value: "farmduino_k15" },
-      { label: "Farmduino (Genesis v1.6)", value: "farmduino_k16" },
-      { label: "Farmduino (Express v1.0)", value: "express_k10" },
-      { label: "None", value: "none" },
-    ]);
-  });
-
-  it("displays new boards", () => {
-    mockShouldDisplay = true;
+  it("displays boards", () => {
     const wrapper = mount(<BoardType {...fakeProps()} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([
@@ -110,6 +89,5 @@ describe("<BoardType/>", () => {
       { label: "Farmduino (Express v1.1)", value: "express_k11" },
       { label: "None", value: "none" },
     ]);
-    mockShouldDisplay = false;
   });
 });

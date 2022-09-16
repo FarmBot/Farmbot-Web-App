@@ -1,8 +1,3 @@
-let mockShouldDisplay = false;
-jest.mock("../../../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { shallow } from "enzyme";
 import {
@@ -129,7 +124,6 @@ describe("<LocationSelection />", () => {
   });
 
   it("shows location list", () => {
-    mockShouldDisplay = true;
     const p = fakeProps();
     p.locationNode = { kind: "identifier", args: { label: "parent" } };
     p.locationSelection = LocSelection.identifier;

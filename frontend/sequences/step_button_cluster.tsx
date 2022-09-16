@@ -4,12 +4,10 @@ import { StepButton, stepClick } from "./step_buttons";
 import { equals, scrollToBottom } from "../util";
 import { Col, Row } from "../ui";
 import { Color, SequenceBodyItem, TaggedSequence } from "farmbot";
-import { Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
-import { shouldDisplayFeature } from "../devices/should_display";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
 
@@ -34,16 +32,14 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
       args: { pin_number: NOTHING_SELECTED, pin_value: 0, pin_mode: 0 }
     },
   },
-  ...(shouldDisplayFeature(Feature.toggle_peripheral)
-    ? [{
-      title: t("Toggle peripheral"),
-      color: "orange",
-      step: {
-        kind: "toggle_pin",
-        args: { pin_number: NOTHING_SELECTED }
-      },
-    } as CommandItem]
-    : []),
+  {
+    title: t("Toggle peripheral"),
+    color: "orange",
+    step: {
+      kind: "toggle_pin",
+      args: { pin_number: NOTHING_SELECTED }
+    },
+  },
   {
     title: t("Read sensor"),
     color: "yellow",

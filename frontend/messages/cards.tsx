@@ -30,8 +30,6 @@ import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
-import { shouldDisplayFeature } from "../devices/should_display";
-import { Feature } from "../devices/interfaces";
 import moment from "moment";
 import { Path } from "../internal_urls";
 
@@ -194,11 +192,11 @@ const FirmwareChoiceTable = () =>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
       </tr>
-      {shouldDisplayFeature(Feature.express_k11) && <tr>
+      <tr>
         <td>{"Express v1.1"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k11"].label}</code></td>
-      </tr>}
+      </tr>
     </tbody>
   </table>;
 
@@ -226,7 +224,7 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
       <Col xs={5}>
         <FBSelect
           key={props.apiFirmwareValue}
-          list={getFirmwareChoices(shouldDisplayFeature)}
+          list={getFirmwareChoices()}
           customNullLabel={t("Select one")}
           selectedItem={props.apiFirmwareValue
             ? FIRMWARE_CHOICES_DDI[props.apiFirmwareValue]
@@ -251,13 +249,9 @@ export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
   { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
   { label: "Express v1.0", value: "express_1.0" },
-  ...(shouldDisplayFeature(Feature.express_k11)
-    ? [{ label: "Express v1.1", value: "express_1.1" }]
-    : []),
+  { label: "Express v1.1", value: "express_1.1" },
   { label: "Express v1.0 XL", value: "express_xl_1.0" },
-  ...(shouldDisplayFeature(Feature.express_k11)
-    ? [{ label: "Express v1.1 XL", value: "express_xl_1.1" }]
-    : []),
+  { label: "Express v1.1 XL", value: "express_xl_1.1" },
   { label: "Custom Bot", value: "none" },
 ];
 

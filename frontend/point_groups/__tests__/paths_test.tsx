@@ -3,23 +3,16 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   PathInfoBar, nn, PathInfoBarProps, Paths, PathsProps,
-  ExtendedPointGroupSortType,
 } from "../paths";
 import {
   fakePointGroup, fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { edit } from "../../api/crud";
-import { error } from "../../toast/toast";
 import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
@@ -99,19 +92,6 @@ describe("<PathInfoBar />", () => {
     wrapper.simulate("click");
     expect(edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
   });
-
-  it.each<[ExtendedPointGroupSortType]>([
-    ["nn"],
-    ["xy_alternating"],
-    ["yx_alternating"],
-  ])("selects new path: %s", (sortType) => {
-    const p = fakeProps();
-    p.sortTypeKey = sortType;
-    const wrapper = shallow(<PathInfoBar {...p} />);
-    wrapper.simulate("click");
-    expect(edit).not.toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith("Not supported yet.");
-  });
 });
 
 describe("nearest neighbor algorithm", () => {
@@ -136,7 +116,7 @@ describe("<Paths />", () => {
     p.pathPoints = cases.order.xy_ascending;
     const wrapper = mount<Paths>(<Paths {...p} />);
     expect(wrapper.state().pathData).toEqual(cases.distance);
-    expect(wrapper.text().toLowerCase()).not.toContain("optimized");
+    expect(wrapper.text().toLowerCase()).toContain("optimized");
   });
 
   it.each<[PointGroupSortType]>([
@@ -152,7 +132,6 @@ describe("<Paths />", () => {
   });
 
   it("renders new sort type", () => {
-    mockShouldDisplay = true;
     const p = fakeProps();
     const cases = pathTestCases();
     p.pathPoints = cases.order.xy_ascending;
