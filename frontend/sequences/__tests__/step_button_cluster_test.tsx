@@ -4,11 +4,6 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-let mockShouldDisplay = false;
-jest.mock("../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
-
 const step_buttons = require("../step_buttons");
 const mockStepClick = jest.fn();
 step_buttons.stepClick = jest.fn(() => mockStepClick);
@@ -46,13 +41,12 @@ describe("<StepButtonCluster />", () => {
     const wrapper = mount(<StepButtonCluster {...fakeProps()} />);
     COMMANDS.map(command =>
       expect(wrapper.text().toLowerCase()).toContain(command));
-    expect(wrapper.text().toLowerCase()).not.toContain("toggle peripheral");
+    expect(wrapper.text().toLowerCase()).toContain("toggle peripheral");
     expect(wrapper.text().toLowerCase()).not.toContain("pinned");
   });
 
   it("renders future commands", () => {
     const p = fakeProps();
-    mockShouldDisplay = true;
     p.farmwareData &&
       (p.farmwareData.farmwareNames = [FarmwareName.MeasureSoilHeight]);
     const wrapper = mount(<StepButtonCluster {...p} />);

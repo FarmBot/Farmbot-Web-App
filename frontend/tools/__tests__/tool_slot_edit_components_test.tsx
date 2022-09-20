@@ -30,6 +30,7 @@ import {
   EditToolSlotMetaProps,
 } from "../interfaces";
 import { move } from "../../devices/actions";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
@@ -227,6 +228,7 @@ describe("<SlotLocationInputRow />", () => {
     arduinoBusy: false,
     defaultAxes: "XYZ",
     dispatch: jest.fn(),
+    movementState: fakeMovementState(),
   });
 
   it("renders", () => {
@@ -331,6 +333,7 @@ describe("<SlotEditRows />", () => {
     arduinoBusy: false,
     defaultAxes: "XY",
     dispatch: jest.fn(),
+    movementState: fakeMovementState(),
   });
 
   it("handles missing tool", () => {

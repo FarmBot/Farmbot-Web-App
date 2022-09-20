@@ -21,6 +21,8 @@ module PinBindings
 
     def execute
       x = inputs.except(:pin_binding, :device)
+      x[:special_action] = nil if raw_inputs[:binding_type] == "standard"
+      x[:sequence_id] = nil if raw_inputs[:binding_type] == "special"
       pin_binding.update!(x) && pin_binding
     end
   end

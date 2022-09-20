@@ -100,7 +100,7 @@ describe("<EditFEForm />", () => {
     const p = fakeProps();
     p.farmEvent.body.executable_type = "nope" as ExecutableType;
     console.error = jest.fn();
-    expect(() => instance(p)).toThrowError("nope is not a valid executable_type");
+    expect(() => instance(p)).toThrow("nope is not a valid executable_type");
   });
 
   it("sets the executable", () => {
@@ -308,7 +308,7 @@ describe("<EditFEForm />", () => {
     const i = instance(p);
     p.farmEvent.body.executable_type = "nope" as ExecutableType;
     const action = () => i.nextItemTime(p.farmEvent.body, fakeNow);
-    expect(action).toThrowError("nope is not a valid executable_type");
+    expect(action).toThrow("nope is not a valid executable_type");
   });
 
   it("handles incorrect kind", () => {

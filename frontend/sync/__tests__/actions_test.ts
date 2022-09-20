@@ -11,7 +11,7 @@ describe("syncFail", () => {
   it("tells you why you've been logged out", () => {
     const e = new Error("Whatever");
     console.error = jest.fn();
-    expect(() => syncFail(e)).toThrowError(e);
+    expect(() => syncFail(e)).toThrow(e);
     expect(console.error).toHaveBeenCalledWith("DATA SYNC ERROR!");
     expect(Session.clear).toHaveBeenCalled();
   });

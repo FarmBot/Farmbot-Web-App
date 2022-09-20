@@ -58,9 +58,9 @@ describe("commitBulkEditor()", () => {
     commitBulkEditor()(dispatch, getState);
     expect(dispatch).not.toHaveBeenCalled();
     if (title) {
-      expect(error).toBeCalledWith(message, title);
+      expect(error).toHaveBeenCalledWith(message, title);
     } else {
-      expect(error).toBeCalledWith(message);
+      expect(error).toHaveBeenCalledWith(message);
     }
   }
 
@@ -141,8 +141,8 @@ describe("setTimeOffset()", () => {
 
   it("throws error for NaN", () => {
     expect(() => setTimeOffset(NaN))
-      .toThrowError("Bad time input on regimen page: null");
-    expect(warning).toBeCalledWith(
+      .toThrow("Bad time input on regimen page: null");
+    expect(warning).toHaveBeenCalledWith(
       "Time is not properly formatted.", { title: "Bad Input" });
   });
 });

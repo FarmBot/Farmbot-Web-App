@@ -7,6 +7,7 @@ import { BotOriginQuadrant } from "../farm_designer/interfaces";
 import { BotState, BotPosition, UserEnv } from "../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
+import { MovementState } from "../interfaces";
 
 export interface AddToolSlotState {
   uuid: UUID | undefined;
@@ -94,6 +95,7 @@ export interface AddEditToolSlotPropsBase {
   botOnline: boolean;
   defaultAxes: string;
   arduinoBusy: boolean;
+  movementState: MovementState;
 }
 
 export interface AddToolSlotProps extends AddEditToolSlotPropsBase {
@@ -148,6 +150,7 @@ export interface SlotLocationInputRowProps {
   defaultAxes: string;
   arduinoBusy: boolean;
   dispatch: Function;
+  movementState: MovementState;
 }
 
 export interface SlotEditRowsProps {
@@ -163,6 +166,7 @@ export interface SlotEditRowsProps {
   defaultAxes: string;
   arduinoBusy: boolean;
   dispatch: Function;
+  movementState: MovementState;
 }
 
 export interface ToolVerificationProps {

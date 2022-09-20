@@ -24,6 +24,7 @@ describe("<StepButton />", () => {
     dispatch: jest.fn(),
     color: "blue",
     index: 1,
+    label: "label",
   });
 
   it("edits sequence", () => {

@@ -20,6 +20,7 @@ import { push } from "../../history";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { edit, save, destroy } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
@@ -33,6 +34,7 @@ describe("<PlantInfo />", () => {
     arduinoBusy: false,
     currentBotLocation: { x: 0, y: 0, z: 0 },
     botOnline: true,
+    movementState: fakeMovementState(),
   });
 
   it("renders", () => {

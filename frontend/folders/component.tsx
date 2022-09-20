@@ -5,6 +5,7 @@ import {
   EmptyStateGraphic,
   ColorPicker,
   Popover,
+  Markdown,
 } from "../ui";
 import {
   FolderUnion,
@@ -12,8 +13,6 @@ import {
   FolderNodeProps,
   FolderProps,
   FolderState,
-  AddFolderBtnProps,
-  AddSequenceProps,
   ToggleFolderBtnProps,
   FolderPanelTopProps,
   SequenceDropAreaProps,
@@ -52,6 +51,8 @@ import {
 } from "../sequences/sequence_editor_middle_active";
 import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
+import { TestButton } from "../sequences/test_button";
+import { TaggedSequence } from "farmbot";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;
@@ -60,12 +61,15 @@ export const FolderListItem = (props: FolderItemProps) => {
   const moveSource = movedSequenceUuid === sequence.uuid ? "move-source" : "";
   const nameWithSaveIndicator = seqName + (sequence.specialStatus ? "*" : "");
   const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
-  const deprecatedSteps = JSON.stringify(props.sequence.body.body)
-    .includes("resource_update");
-  const { pinned, forked, sequence_version_id } = props.sequence.body;
-  const imported = sequence_version_id && !forked;
-  const published = isSequencePublished(sequence);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [descriptionOpen, setDescriptionOpen] = React.useState(false);
+  const hovered = props.menuOpen == sequence.uuid || settingsOpen || descriptionOpen
+    ? "hovered"
+    : "";
+  const matched = (props.searchTerm &&
+    seqName.toLowerCase().includes(props.searchTerm.toLowerCase()))
+    ? "matched"
+    : "";
   return <StepDragger
     dispatch={props.dispatch}
     step={{
@@ -76,7 +80,9 @@ export const FolderListItem = (props: FolderItemProps) => {
     intent="step_splice"
     draggerId={NULL_DRAGGER_ID}
     resourceUuid={sequence.uuid}>
-    <li className={`sequence-list-item ${active} ${moveSource}`}
+    <li
+      className={["sequence-list-item", active, moveSource, hovered, matched]
+        .join(" ")}
       draggable={true}>
       <ColorPicker
         current={sequence.body.color}
@@ -84,59 +90,101 @@ export const FolderListItem = (props: FolderItemProps) => {
       <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
         <p>{nameWithSaveIndicator}</p>
       </Link>
-      <div className={"sequence-list-item-icons"}>
-        {deprecatedSteps &&
-          <i className={"fa fa-exclamation-triangle"}
-            title={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
-        {inUse &&
-          <i className={"in-use fa fa-hdd-o"}
-            title={t(Content.IN_USE)} />}
-        {pinned &&
-          <i className={"fa fa-thumb-tack"}
-            title={t(Content.IS_PINNED)} />}
-        {forked &&
-          <i className={"fa fa-chain-broken"}
-            title={t("Imported and edited publicly shared sequence.")} />}
-        {imported &&
-          <i className={"fa fa-link"}
-            title={t("Imported publicly shared sequence.")} />}
-        {published &&
-          <i className={"fa fa-globe"}
-            title={t("Published as a publicly shared sequence.")} />}
-        <div className={"icon-spacer"} />
-        <Popover className={"sequence-settings-icon"} usePortal={false}
-          isOpen={settingsOpen}
-          target={<i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
-            onClick={() => setSettingsOpen(!settingsOpen)} />}
-          content={<SequenceButtonCluster {...props} />} />
-        <i className={"fa fa-arrows-v"}
-          onMouseDown={() => props.startSequenceMove(sequence.uuid)}
-          onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
-      </div>
+      <TestButton
+        syncStatus={props.syncStatus}
+        sequence={sequence}
+        resources={props.resources}
+        menuOpen={props.menuOpen}
+        dispatch={props.dispatch} />
+      <Popover
+        popoverClassName={"sequence-item-description"}
+        isOpen={descriptionOpen}
+        target={<i className={"fa fa-question-circle help-icon"}
+          onClick={() => setDescriptionOpen(!descriptionOpen)} />}
+        content={<SequenceItemDescription inUse={inUse} sequence={sequence} />} />
+      <Popover usePortal={false}
+        popoverClassName={"sequence-item-action-menu"}
+        isOpen={settingsOpen}
+        target={<i className={`fa fa-ellipsis-v ${settingsOpen ? "open" : ""}`}
+          onClick={() => setSettingsOpen(!settingsOpen)} />}
+        content={<SequenceButtonCluster {...props} />} />
     </li>
   </StepDragger>;
 };
+
+interface SequenceItemDescriptionProps {
+  inUse: boolean;
+  sequence: TaggedSequence;
+}
+
+// eslint-disable-next-line complexity
+const SequenceItemDescription = (props: SequenceItemDescriptionProps) => {
+  const { sequence, inUse } = props;
+  const deprecatedSteps = JSON.stringify(props.sequence.body.body)
+    .includes("resource_update");
+  const { pinned, forked, sequence_version_id, description } = props.sequence.body;
+  const imported = sequence_version_id && !forked;
+  const published = isSequencePublished(sequence);
+  const hasInfo = deprecatedSteps || inUse || pinned || forked || imported
+    || published;
+  return <div className={"sequence-item-help help-text-content"}>
+    <div className={"info-grid-wrapper"}>
+      {deprecatedSteps &&
+        <InfoRow className={"fa fa-exclamation-triangle"}
+          description={t(Content.INCLUDES_DEPRECATED_STEPS)} />}
+      {inUse &&
+        <InfoRow className={"in-use fa fa-hdd-o"}
+          description={t(Content.IN_USE)} />}
+      {pinned &&
+        <InfoRow className={"fa fa-thumb-tack"}
+          description={t(Content.IS_PINNED)} />}
+      {forked &&
+        <InfoRow className={"fa fa-chain-broken"}
+          description={t("Imported and edited publicly shared sequence.")} />}
+      {imported &&
+        <InfoRow className={"fa fa-link"}
+          description={t("Imported publicly shared sequence.")} />}
+      {published &&
+        <InfoRow className={"fa fa-globe"}
+          description={t("Published as a publicly shared sequence.")} />}
+    </div>
+    {hasInfo && <hr />}
+    <label>{t("Description")}</label>
+    <Markdown>{description || t("This sequence has no description.")}</Markdown>
+  </div>;
+};
+
+interface InfoRowProps {
+  className: string;
+  description: string;
+}
+
+/** Fragments used for CSS grid to work properly. */
+const InfoRow = (props: InfoRowProps) =>
+  <React.Fragment>
+    <i className={props.className} />
+    <p>{props.description}</p>
+  </React.Fragment>;
 
 export const SequenceButtonCluster =
   (props: SequenceButtonClusterProps) => {
     const { dispatch, getWebAppConfigValue, sequence } = props;
     return <div className="folder-button-cluster">
-      <button
-        className={"fb-button yellow"}
-        title={t("copy sequence")}
-        onClick={() => dispatch(copySequence(sequence))}>
-        <i className={"fa fa-copy"} />
-      </button>
-      <button
-        className={"fb-button red"}
+      <i
+        className={"fa fa-trash cluster-icon"}
         title={t("delete sequence")}
         onClick={deleteSequence({
           sequenceUuid: sequence.uuid,
           getWebAppConfigValue,
           dispatch,
-        })}>
-        <i className={"fa fa-trash"} />
-      </button>
+        })} />
+      <i
+        className={"fa fa-copy cluster-icon"}
+        title={t("copy sequence")}
+        onClick={() => dispatch(copySequence(sequence))} />
+      <i className={"fa fa-arrows-v cluster-icon"}
+        onMouseDown={() => props.startSequenceMove(sequence.uuid)}
+        onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
     </div>;
   };
 
@@ -148,48 +196,36 @@ const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {
   </button>;
 };
 
-const AddFolderBtn = ({ folder, close }: AddFolderBtnProps) => {
-  return <button
-    className="fb-button green"
-    title={t("Create subfolder")}
-    onClick={() => { close?.(); createFolder(folder); }}>
-    <div className="fa-stack fa-2x" title={"Create Subfolder"}>
-      <i className="fa fa-folder fa-stack-2x" />
-      <i className="fa fa-plus fa-stack-1x" />
-    </div>
-  </button>;
-};
+interface PlusStackProps extends React.HTMLProps<HTMLDivElement> {
+  icon: string;
+}
 
-const AddSequenceBtn = ({ folderId, close }: AddSequenceProps) => {
-  return <button
-    className="fb-button green"
-    title={t("add new sequence")}
-    onClick={() => { close?.(); addNewSequenceToFolder(folderId); }}>
-    <div className="fa-stack fa-2x">
-      <i className="fa fa-server fa-stack-2x" />
-      <i className="fa fa-plus fa-stack-1x" />
-    </div>
-  </button>;
-};
+const PlusStack = (props: PlusStackProps) =>
+  <div className={"fa-stack fa-2x"} {...props}>
+    <i className={`fa ${props.icon} fa-stack-2x`} />
+    <i className={"fa fa-plus fa-stack-1x"} />
+  </div>;
 
 export const FolderButtonCluster =
   ({ node, close }: FolderButtonClusterProps) => {
-    return <div className="folder-button-cluster">
-      <button
-        className="fb-button red"
+    return <div className={"folder-button-cluster"}>
+      <i className={"fa fa-trash cluster-icon"}
         title={t("delete folder")}
-        onClick={() => { deleteFolder(node.id); }}>
-        <i className="fa fa-trash" />
-      </button>
-      <button
-        className="fb-button gray"
+        onClick={() => { deleteFolder(node.id); }} />
+      <i className={"fa fa-pencil cluster-icon"}
         title={t("edit folder")}
-        onClick={() => { close(); toggleFolderEditState(node.id); }}>
-        <i className="fa fa-pencil" />
-      </button>
+        onClick={() => { close(); toggleFolderEditState(node.id); }} />
       {node.kind !== "terminal" &&
-        <AddFolderBtn folder={{ parent_id: node.id }} close={close} />}
-      <AddSequenceBtn folderId={node.id} close={close} />
+        <div className={"stack-wrapper cluster-icon"}
+          title={t("Create subfolder")}
+          onClick={() => { close(); createFolder({ parent_id: node.id }); }}>
+          <PlusStack icon={"fa-folder"} />
+        </div>}
+      <div className={"stack-wrapper cluster-icon"}
+        title={t("add new sequence")}
+        onClick={() => { close(); addNewSequenceToFolder(node.id); }}>
+        <PlusStack icon={"fa-server"} />
+      </div>
     </div>;
   };
 
@@ -211,7 +247,11 @@ export const FolderNameInput = ({ node }: FolderNameInputProps) =>
 export const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  return <div className={"folder-list-item"}>
+  return <div className={["folder-list-item",
+    (props.searchTerm && node.name.toLowerCase()
+      .includes(props.searchTerm.toLowerCase()))
+      ? "matched"
+      : ""].join(" ")}>
     <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
       title={"Open/Close Folder"}
       onClick={() => toggleFolderOpenState(node.id)} />
@@ -248,6 +288,10 @@ const FolderNode = (props: FolderNodeProps) => {
         toggleSequenceMove={props.toggleSequenceMove}
         startSequenceMove={props.startSequenceMove}
         getWebAppConfigValue={props.getWebAppConfigValue}
+        menuOpen={props.menuOpen}
+        syncStatus={props.syncStatus}
+        resources={props.resources}
+        searchTerm={props.searchTerm}
         movedSequenceUuid={props.movedSequenceUuid} />);
 
   const childFolders: FolderUnion[] = node.children || [];
@@ -261,6 +305,10 @@ const FolderNode = (props: FolderNodeProps) => {
       resourceUsage={props.resourceUsage}
       movedSequenceUuid={props.movedSequenceUuid}
       getWebAppConfigValue={props.getWebAppConfigValue}
+      menuOpen={props.menuOpen}
+      syncStatus={props.syncStatus}
+      resources={props.resources}
+      searchTerm={props.searchTerm}
       toggleSequenceMove={props.toggleSequenceMove}
       startSequenceMove={props.startSequenceMove}
       onMoveEnd={props.onMoveEnd} />);
@@ -315,6 +363,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
           dispatch={this.props.dispatch}
           sequenceMetas={this.props.sequenceMetas}
           resourceUsage={this.props.resourceUsage}
+          menuOpen={this.props.menuOpen}
+          syncStatus={this.props.syncStatus}
+          resources={this.props.resources}
+          searchTerm={this.props.searchTerm}
           movedSequenceUuid={this.state.movedSequenceUuid}
           toggleSequenceMove={this.toggleSequenceMove}
           startSequenceMove={this.startSequenceMove}
@@ -354,6 +406,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         inUse={!!this.props.resourceUsage[seqUuid]}
         sequence={this.props.sequences[seqUuid]}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
+        menuOpen={this.props.menuOpen}
+        syncStatus={this.props.syncStatus}
+        resources={this.props.resources}
+        searchTerm={this.props.searchTerm}
         toggleSequenceMove={this.toggleSequenceMove}
         startSequenceMove={this.startSequenceMove}
         movedSequenceUuid={this.state.movedSequenceUuid} />);
@@ -394,6 +450,16 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
     <ToggleFolderBtn
       expanded={props.toggleDirection}
       onClick={props.toggleAll} />
-    <AddFolderBtn />
-    <AddSequenceBtn />
+    <button
+      className="fb-button green"
+      title={t("Create subfolder")}
+      onClick={() => { createFolder(); }}>
+      <PlusStack icon={"fa-folder"} />
+    </button>
+    <button
+      className="fb-button green"
+      title={t("add new sequence")}
+      onClick={() => { addNewSequenceToFolder(); }}>
+      <PlusStack icon={"fa-server"} />
+    </button>
   </div>;

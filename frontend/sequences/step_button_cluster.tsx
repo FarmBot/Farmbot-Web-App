@@ -4,12 +4,10 @@ import { StepButton, stepClick } from "./step_buttons";
 import { equals, scrollToBottom } from "../util";
 import { Col, Row } from "../ui";
 import { Color, SequenceBodyItem, TaggedSequence } from "farmbot";
-import { Feature } from "../devices/interfaces";
 import { FarmwareData, MessageType } from "./interfaces";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
 import { variableList } from "./locals_list/variable_support";
 import { ResourceIndex } from "../resources/interfaces";
-import { shouldDisplayFeature } from "../devices/should_display";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
 
@@ -22,30 +20,28 @@ export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
   {
-    title: t("MOVE"),
+    title: t("Move"),
     color: "blue",
     step: { kind: "move", args: {} },
   },
   {
-    title: t("CONTROL PERIPHERAL"),
+    title: t("Control peripheral"),
     color: "orange",
     step: {
       kind: "write_pin",
       args: { pin_number: NOTHING_SELECTED, pin_value: 0, pin_mode: 0 }
     },
   },
-  ...(shouldDisplayFeature(Feature.toggle_peripheral)
-    ? [{
-      title: t("TOGGLE PERIPHERAL"),
-      color: "orange",
-      step: {
-        kind: "toggle_pin",
-        args: { pin_number: NOTHING_SELECTED }
-      },
-    } as CommandItem]
-    : []),
   {
-    title: t("READ SENSOR"),
+    title: t("Toggle peripheral"),
+    color: "orange",
+    step: {
+      kind: "toggle_pin",
+      args: { pin_number: NOTHING_SELECTED }
+    },
+  },
+  {
+    title: t("Read sensor"),
     color: "yellow",
     step: {
       kind: "read_pin",
@@ -57,7 +53,7 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     },
   },
   {
-    title: t("CONTROL SERVO"),
+    title: t("Control servo"),
     color: "blue",
     step: {
       kind: "set_servo_angle",
@@ -68,12 +64,12 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     },
   },
   {
-    title: t("WAIT"),
+    title: t("Wait"),
     color: "brown",
     step: { kind: "wait", args: { milliseconds: 0 } },
   },
   {
-    title: t("SEND MESSAGE"),
+    title: t("Send message"),
     color: "brown",
     step: {
       kind: "send_message",
@@ -84,12 +80,12 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     },
   },
   {
-    title: t("REBOOT"),
+    title: t("Reboot"),
     color: "brown",
     step: { kind: "reboot", args: { package: "farmbot_os" } },
   },
   {
-    title: t("SHUTDOWN"),
+    title: t("Shutdown"),
     color: "brown",
     step: { kind: "power_off", args: {} },
   },
@@ -99,12 +95,12 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     step: { kind: "emergency_lock", args: {} },
   },
   {
-    title: t("Find Home"),
+    title: t("Find home"),
     color: "blue",
     step: { kind: "find_home", args: { axis: "all", speed: 100 } },
   },
   {
-    title: t("Set Home"),
+    title: t("Set home"),
     color: "blue",
     step: { kind: "zero", args: { axis: "all" } },
   },
@@ -114,7 +110,7 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     step: { kind: "calibrate", args: { axis: "all" } },
   },
   {
-    title: t("IF STATEMENT"),
+    title: t("If statement"),
     color: "purple",
     step: {
       kind: "_if",
@@ -129,7 +125,7 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
   },
   ...(!Path.inDesigner()
     ? [{
-      title: t("EXECUTE SEQUENCE"),
+      title: t("Execute sequence"),
       color: "gray",
       step: {
         kind: "execute",
@@ -138,7 +134,7 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     } as CommandItem]
     : []),
   {
-    title: t("Detect Weeds"),
+    title: t("Detect weeds"),
     color: "pink",
     step: {
       kind: "execute_script",
@@ -157,12 +153,12 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     } as CommandItem]
     : []),
   {
-    title: t("TAKE PHOTO"),
+    title: t("Take photo"),
     color: "brown",
     step: { kind: "take_photo", args: {} },
   },
   {
-    title: t("ASSERTION"),
+    title: t("Assertion"),
     color: "purple",
     step: {
       kind: "assertion",
@@ -174,12 +170,12 @@ const COMMANDS = (farmwareData: FarmwareData | undefined): CommandItem[] => [
     },
   },
   {
-    title: t("LUA"),
+    title: t("Lua"),
     color: "purple",
     step: { kind: "lua", args: { lua: "" } },
   },
   {
-    title: t("Mark As..."),
+    title: t("Mark as..."),
     color: "brown",
     step: {
       kind: "update_resource",
@@ -267,9 +263,8 @@ export class StepButtonCluster
           ].join(" ")} key={inx} onClick={click}>
             <StepButton {...commonStepProps}
               step={stepButton.step}
-              color={stepButton.color}>
-              {stepButton.title}
-            </StepButton>
+              label={stepButton.title}
+              color={stepButton.color} />
           </div>)}
         {!Path.inDesigner() && sequences.length > 0 &&
           <Col xs={12}><label>{t("pinned sequences")}</label></Col>}
@@ -285,9 +280,8 @@ export class StepButtonCluster
                   args: { sequence_id: s.body.id },
                   body: variableList(resources.sequenceMetas[s.uuid])
                 }}
-                color={s.body.color}>
-                {s.body.name}
-              </StepButton>
+                label={s.body.name}
+                color={s.body.color} />
             </div>)}
         </div>
       </div>

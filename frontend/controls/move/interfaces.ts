@@ -1,7 +1,7 @@
 import {
   BotLocationData, BotPosition, BotState, UserEnv,
 } from "../../devices/interfaces";
-import { McuParams, Xyz, FirmwareHardware } from "farmbot";
+import { McuParams, Xyz, FirmwareHardware, JobProgress, TaggedLog } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { MovementState } from "../../interfaces";
 
@@ -41,7 +41,9 @@ export interface DirectionButtonProps {
 
 export interface TakePhotoButtonProps {
   env: UserEnv;
-  disabled?: boolean;
+  botOnline: boolean;
+  imageJobs: JobProgress[];
+  logs: TaggedLog[];
 }
 
 export interface HomeButtonProps {
@@ -75,10 +77,12 @@ export interface JogMovementControlsProps extends DirectionAxesProps {
   arduinoBusy: boolean;
   locked: boolean;
   highlightAxis?: Xyz;
-  highlightDirection?: "both" | undefined;
+  highlightDirection?: "both" | "up" | undefined;
   highlightHome?: boolean;
   dispatch: Function;
   movementState: MovementState;
+  imageJobs: JobProgress[];
+  logs: TaggedLog[];
 }
 
 export interface JogControlsGroupProps extends JogMovementControlsProps {
@@ -118,7 +122,8 @@ export interface MoveControlsProps {
   firmwareHardware: FirmwareHardware | undefined;
   env: UserEnv;
   highlightAxis?: Xyz;
-  highlightDirection?: "both" | undefined;
+  highlightDirection?: "both" | "up" | undefined;
   highlightHome?: boolean;
   movementState: MovementState;
+  logs: TaggedLog[];
 }

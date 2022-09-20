@@ -139,7 +139,7 @@ describe("dropPlant()", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.gardenCoords = undefined as any;
     expect(() => dropPlant(p))
-      .toThrowError(/while trying to add a plant/);
+      .toThrow(/while trying to add a plant/);
   });
 });
 

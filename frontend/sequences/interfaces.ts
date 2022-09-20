@@ -168,7 +168,7 @@ export interface StepButtonParams {
   current: TaggedSequence | undefined;
   step: SequenceBodyItem;
   dispatch: Function;
-  children?: React.ReactNode;
+  label: string;
   color: Color | "brown";
   index?: number | undefined;
 }

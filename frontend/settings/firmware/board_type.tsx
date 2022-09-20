@@ -13,7 +13,6 @@ import {
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { getModifiedClassName } from "../fbos_settings/default_values";
-import { shouldDisplayFeature } from "../../devices/should_display";
 
 export class BoardType extends React.Component<BoardTypeProps, {}> {
   get sending() {
@@ -42,7 +41,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
         this.sending ? "dim" : "",
         getModifiedClassName("firmware_hardware", this.props.firmwareHardware),
       ].join(" ")}
-      list={getFirmwareChoices(shouldDisplayFeature)}
+      list={getFirmwareChoices()}
       selectedItem={this.selectedBoard}
       onChange={this.sendOffConfig} />;
 

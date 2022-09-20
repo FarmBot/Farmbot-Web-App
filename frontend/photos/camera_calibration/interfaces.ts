@@ -4,6 +4,7 @@ import { NetworkState } from "../../connectivity/interfaces";
 import { UserEnv } from "../../devices/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
+import { PhotosPanelState } from "../interfaces";
 
 export interface CameraCalibrationProps {
   dispatch: Function;
@@ -26,6 +27,7 @@ export interface CameraCalibrationProps {
   timeSettings: TimeSettings;
   versions: Record<string, string>;
   showAdvanced: boolean;
+  photosPanelState: PhotosPanelState;
 }
 
 export interface CameraCalibrationConfigProps {

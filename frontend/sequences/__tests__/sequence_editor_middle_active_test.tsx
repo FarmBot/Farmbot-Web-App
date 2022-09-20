@@ -605,7 +605,7 @@ describe("onDrop()", () => {
     onDrop(dispatch, fakeSequence())(3, "fakeUuid");
     const nope = () => dispatch.mock.calls[0][0](() =>
       ({ value: 4, intent: "nope", draggerId: 5 }));
-    expect(nope).toThrowError("Got unexpected data transfer object.");
+    expect(nope).toThrow("Got unexpected data transfer object.");
   });
 });
 

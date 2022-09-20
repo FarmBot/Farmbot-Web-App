@@ -25,7 +25,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
     axis: axis == "x" ? "y" : "x"
   })}`;
   const coordinateLabel = `${axis} = ${round((axis == "x" ? x : y) || 0)}`;
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(true);
   return <div className={className}>
     <Handle isOpen={profileOpen} dispatch={dispatch} setExpanded={setExpanded} />
     <div className={"profile-content"}>
@@ -73,6 +73,7 @@ const Handle = ({ isOpen, dispatch, setExpanded }: HandleProps) =>
     title={isOpen ? t("close profile viewer") : t("open profile viewer")}
     onClick={() => {
       isOpen && setExpanded(false);
+      !isOpen && setExpanded(true);
       dispatch({ type: Actions.SET_PROFILE_OPEN, payload: !isOpen });
     }}>
     <i className={"fa fa-area-chart"} />

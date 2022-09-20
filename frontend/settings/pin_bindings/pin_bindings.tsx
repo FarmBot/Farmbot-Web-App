@@ -11,8 +11,9 @@ export function PinBindings(props: PinBindingsProps) {
   const { pin_bindings } = props.settingsPanelState;
   const { dispatch, resources, firmwareHardware } = props;
 
-  return <Highlight className={"section"}
-    settingName={DeviceSetting.pinBindings}>
+  return <Highlight className={"section advanced"}
+    settingName={DeviceSetting.pinBindings}
+    hidden={true}>
     <Header
       expanded={pin_bindings}
       title={DeviceSetting.pinBindings}

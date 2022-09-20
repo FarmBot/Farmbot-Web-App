@@ -72,7 +72,7 @@ describe("<DidRegister />", () => {
 
   it("bails on missing email", () => {
     expect(() => shallow(<DidRegister {...fakeCreateAccountProps()} />))
-      .toThrowError();
+      .toThrow();
   });
 });
 

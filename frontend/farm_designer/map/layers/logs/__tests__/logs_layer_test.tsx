@@ -1,7 +1,7 @@
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
-import { LogsLayer, positionDifferent } from "../logs_layer";
+import { awayFromHome, LogsLayer, positionDifferent } from "../logs_layer";
 import { LogsLayerProps } from "../interfaces";
 import {
   fakeMapTransformProps,
@@ -155,5 +155,14 @@ describe("positionDifferent()", () => {
       { x: 1, y: 2, z: 3 },
       { x: 2, y: 3, z: 4 });
     expect(result).toEqual(true);
+  });
+});
+
+describe("awayFromHome()", () => {
+  it("returns result", () => {
+    expect(awayFromHome({ x: 1, y: 2, z: 3 })).toEqual(true);
+    expect(awayFromHome({ x: 0, y: 0, z: 0 })).toEqual(false);
+    expect(awayFromHome({ x: 1, y: 2, z: 3 }, 2)).toEqual(true);
+    expect(awayFromHome({ x: 1, y: 2, z: 3 }, 5)).toEqual(false);
   });
 });

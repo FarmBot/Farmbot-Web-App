@@ -17,6 +17,7 @@ import {
   SpeedOverwrite,
   Xyz,
   AxisOverwrite,
+  RpcRequestBodyItem,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
@@ -77,6 +78,14 @@ const maybeAlertLocked = () =>
   store.getState().bot.hardware.informational_settings.locked &&
   error(t("Command not available while locked."),
     { title: t("Emergency stop active") });
+
+/** Send RPC. */
+export function sendRPC(command: RpcRequestBodyItem) {
+  maybeNoop();
+  getDevice()
+    .send(rpcRequest([command]))
+    .then(maybeNoop, commandErr());
+}
 
 /** Update FBOS. */
 export function checkControllerUpdates() {

@@ -46,32 +46,54 @@ export const UTMProfile = (props: ProfileUtmProps) => {
   const extrusionOffset = (UTMDimensions.extrusion + ToolDimensions.diameter) / 2;
   const toolInfo = props.mountedToolInfo;
   return <g id={"UTM-and-axis"} opacity={0.75}>
+    <defs>
+      <linearGradient id={"utm-gradient"}>
+        <stop offset={"0%"} stopColor={Color.darkGray} stopOpacity={1} />
+        <stop offset={"10%"} stopColor={Color.darkGray} stopOpacity={0.75} />
+        <stop offset={"90%"} stopColor={Color.darkGray} stopOpacity={0.75} />
+        <stop offset={"100%"} stopColor={Color.darkGray} stopOpacity={1} />
+      </linearGradient>
+    </defs>
     <line id={"z-axis"} strokeWidth={20} stroke={Color.darkGray} opacity={0.5}
-      x1={profileUtmH - extrusionOffset}
+      x1={profileUtmH + extrusionOffset}
       y1={Math.min(0, profileUtmV - UTMDimensions.height)}
-      x2={profileUtmH - extrusionOffset}
+      x2={profileUtmH + extrusionOffset}
       y2={profileUtmV} />
-    <rect id={"UTM"} fill={Color.darkGray} opacity={0.5}
+    <line id={"z-axis-separator"}
+      strokeWidth={0.5} stroke={Color.darkGray} opacity={0.5}
+      x1={profileUtmH + ToolDimensions.diameter / 2}
+      y1={Math.min(0, profileUtmV - UTMDimensions.height)}
+      x2={profileUtmH + ToolDimensions.diameter / 2}
+      y2={profileUtmV} />
+    <rect id={"UTM"} fill={"url(#utm-gradient)"} opacity={0.5}
       x={profileUtmH - ToolDimensions.radius}
       y={profileUtmV - UTMDimensions.height}
       width={ToolDimensions.diameter}
       height={UTMDimensions.height} />
-    <rect id={"position-indicator"} fill={Color.black} opacity={0.5}
-      x={profileUtmH - 2} y={profileUtmV - 2}
-      width={4} height={4} />
+    {!props.hidePositionIndicator &&
+      <rect id={"position-indicator"} fill={Color.black} opacity={0.5}
+        x={profileUtmH - 2} y={profileUtmV - 2}
+        width={4} height={4} />}
     <image x={profileUtmH - 25} y={profileUtmV - 35} width={50} height={30}
-      xlinkHref={FilePath.image("farmbot")} opacity={0.75} />
-    {toolInfo.name &&
-      <ToolProfile toolName={toolInfo.name}
+      xlinkHref={FilePath.image("farmbot")} opacity={1}
+      style={{ filter: "invert(1)" }} />
+    {toolInfo.name
+      ? <ToolProfile toolName={toolInfo.name}
         x={profileUtmH - ToolDimensions.radius} y={profileUtmV}
         width={ToolDimensions.diameter}
         height={ToolDimensions.thickness}
         sideView={props.profileAxis == slotPulloutAxis(toolInfo.pulloutDirection)}
         reversed={props.reversed}
+        hidePositionIndicator={props.hidePositionIndicator}
         toolFlipped={getToolDirection(
           toolInfo.pulloutDirection,
           toolInfo.flipped,
-          props.reversed)} />}
+          props.reversed)} />
+      : <g id={"liquid-ports"}>
+        {[-20, 20, 0].map(xP =>
+          <rect key={xP} fill={Color.darkGray} opacity={0.5} width={8} height={2}
+            x={profileUtmH + xP - 4} y={profileUtmV} />)}
+      </g>}
   </g>;
 };
 
@@ -164,7 +186,7 @@ export const ToolProfile = (props: ProfileToolProps) => {
         stroke={"none"} fill={fontColor} fontWeight={"bold"}>
         {toolName}
       </text>}
-    {(props.coordinate ?? true) &&
+    {(props.coordinate ?? true) && !props.hidePositionIndicator &&
       <circle id={"point-coordinate-indicator"}
         opacity={0.5} fill={Color.darkGray}
         cx={x + width / 2} cy={y} r={5} />}

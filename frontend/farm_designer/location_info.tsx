@@ -1,5 +1,5 @@
 import React from "react";
-import { Everything, TimeSettings } from "../interfaces";
+import { Everything, MovementState, TimeSettings } from "../interfaces";
 import { BotPosition, UserEnv } from "../devices/interfaces";
 import { connect } from "react-redux";
 import { getUrlQuery, validBotLocationData } from "../util/util";
@@ -63,6 +63,7 @@ export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   sensors: selectAllSensors(props.resources.index),
   timeSettings: maybeGetTimeSettings(props.resources.index),
   arduinoBusy: props.bot.hardware.informational_settings.busy,
+  movementState: props.app.movement,
 });
 
 export interface LocationInfoProps {
@@ -82,6 +83,7 @@ export interface LocationInfoProps {
   timeSettings: TimeSettings;
   farmwareEnvs: TaggedFarmwareEnv[];
   arduinoBusy: boolean;
+  movementState: MovementState;
 }
 
 export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
@@ -163,6 +165,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
                 dispatch={this.props.dispatch}
                 arduinoBusy={this.props.arduinoBusy}
                 currentBotLocation={this.props.currentBotLocation}
+                movementState={this.props.movementState}
                 title={resource.title}
                 timeSettings={this.props.timeSettings}
                 sensorNameByPinLookup={sensorNameByPinLookup}
@@ -245,6 +248,7 @@ interface ItemListWrapperProps {
   farmwareEnvs: TaggedFarmwareEnv[];
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 function ItemListWrapper(props: ItemListWrapperProps) {
@@ -314,6 +318,7 @@ function ItemListWrapper(props: ItemListWrapperProps) {
                 chosenXY={chosenXY}
                 arduinoBusy={props.arduinoBusy}
                 currentBotLocation={props.currentBotLocation}
+                movementState={props.movementState}
                 timeSettings={props.timeSettings}
                 env={props.env} />;
           }
@@ -404,6 +409,7 @@ export interface ImageListItemProps {
   timeSettings: TimeSettings;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export const ImageListItem = (props: ImageListItemProps) => {
@@ -431,6 +437,7 @@ export const ImageListItem = (props: ImageListItemProps) => {
       distance={props.images.distance}
       arduinoBusy={props.arduinoBusy}
       currentBotLocation={props.currentBotLocation}
+      movementState={props.movementState}
       defaultAxes={validGoButtonAxes(props.getConfigValue)}
       dispatch={props.dispatch}
       timeSettings={props.timeSettings} />

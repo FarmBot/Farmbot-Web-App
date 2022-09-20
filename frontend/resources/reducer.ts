@@ -25,9 +25,13 @@ import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
 import { ingest } from "../folders/data_transfer";
-import { searchFolderTree } from "../folders/search_folder_tree";
+import {
+  isSearchMatchFolder,
+  searchFolderTree, sequenceSearchMatch,
+} from "../folders/search_folder_tree";
 import { photosState } from "../photos/reducer";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
+import { FolderUnion } from "../folders/interfaces";
 
 export const emptyState = (): RestResources => {
   return {
@@ -200,7 +204,7 @@ export const resourceReducer =
       if (payload) {
         const folders = searchFolderTree({
           references: s.index.references,
-          input: payload,
+          searchTerm: payload,
           root: s.index.sequenceFolders.folders
         });
         const { localMetaAttributes } = s.index.sequenceFolders;
@@ -217,14 +221,21 @@ export const resourceReducer =
           localMetaAttributes,
           folders
         });
-        nextFolder.noFolder = nextFolder.noFolder.filter(uuid => {
-          const sq = s.index.references[uuid];
-          if (sq && sq.kind === "Sequence") {
-            const n = sq.body.name.toLowerCase();
-            return n.includes(payload);
-          } else {
-            return false;
-          }
+        const match = (folders?: FolderUnion[]) =>
+          (folders && isSearchMatchFolder(payload, folders))
+            ? () => true
+            : sequenceSearchMatch(payload, s.index);
+        nextFolder.noFolder = nextFolder.noFolder.filter(match());
+        /** `ingest` overwrites `content` set by `searchFolderTree`.
+         *  Filter sequences here instead. */
+        nextFolder.folders.map(lvl1 => {
+          lvl1.content = lvl1.content.filter(match([lvl1]));
+          lvl1.children.map(lvl2 => {
+            lvl2.content = lvl2.content.filter(match([lvl1, lvl2]));
+            lvl2.children.map(lvl3 => {
+              lvl3.content = lvl3.content.filter(match([lvl1, lvl2, lvl3]));
+            });
+          });
         });
         s.index.sequenceFolders.filteredFolders = nextFolder;
       } else {

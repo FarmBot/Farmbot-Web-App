@@ -121,7 +121,7 @@ describe("<DesignerSequenceList />", () => {
     const wrapper = await mount(<DesignerSequenceList {...p} />);
     wrapper.update();
     expect(wrapper.find(".show-on-hover").length).toEqual(2);
-    wrapper.find(".help-icon").first().simulate("click");
+    wrapper.find(".help-icon").last().simulate("click");
     expect(wrapper.find(".show-on-hover").length).toEqual(1);
   });
 

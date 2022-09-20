@@ -184,6 +184,13 @@ describe("<WizardStepContainer />", () => {
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.find(".controls-check").length).toEqual(2);
   });
+
+  it("renders pin bindings", () => {
+    const p = fakeProps();
+    p.step.pinBindingOptions = { editing: false };
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.find(".box-top-buttons").length).toEqual(1);
+  });
 });
 
 describe("<WizardStepHeader />", () => {

@@ -36,6 +36,7 @@ import {
   setToolHover,
 } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
 import { SpecialStatus } from "farmbot";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
@@ -50,6 +51,7 @@ describe("<EditToolSlot />", () => {
     botOnline: true,
     arduinoBusy: false,
     defaultAxes: "XY",
+    movementState: fakeMovementState(),
   });
 
   it("redirects", () => {

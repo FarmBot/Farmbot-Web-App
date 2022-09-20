@@ -12,7 +12,7 @@ describe("executableType", () => {
   });
 
   it("throws when given bad data", () => {
-    expect(() => executableType("Nope")).toThrowError();
+    expect(() => executableType("Nope")).toThrow();
   });
 });
 

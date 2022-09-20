@@ -4,6 +4,7 @@ import { TaggedImage, SyncStatus } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
+import { PhotosPanelState } from "../interfaces";
 
 export interface WeedDetectorState {
   isEditing: boolean;
@@ -23,4 +24,5 @@ export interface WeedDetectorProps {
   syncStatus: SyncStatus | undefined;
   saveFarmwareEnv: SaveFarmwareEnv;
   showAdvanced: boolean;
+  photosPanelState: PhotosPanelState;
 }

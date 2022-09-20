@@ -1119,6 +1119,17 @@ li {
   .go-button-axes-text {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    p {
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+      margin: 0 !important;
+      font-weight: bold;
+      color: $off_white;
+      height: 0;
+      line-height: 0;
+      font-size: 1.1rem;
+    }
   }
   .go-button-axes-dropdown {
     border-left: 1px solid $dark_gray;
@@ -1299,11 +1310,24 @@ li {
         text-overflow: ellipsis;
       }
     }
+    .mounted-tool {
+      .filter-search {
+        width: 50%;
+        float: right;
+      }
+      .utm-and-mounted-tool-graphic {
+        width: 30%;
+        margin-left: 32%;
+      }
+    }
     .mounted-tool-header {
-      display: flex;
+      display: inline;
       margin-top: 1rem;
       label {
         margin: 0;
+      }
+      .bp4-popover-wrapper {
+        display: inline;
       }
       .help-icon {
         margin-left: 1rem;
@@ -1526,6 +1550,17 @@ li {
       font-size: 1.25rem !important;
       padding: 0.1rem;
     }
+    .fa-gear {
+      color: $dark_gray;
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
+  }
+}
+
+.settings-panel-settings-menu {
+  button {
+    margin-left: 1rem;
   }
 }
 
@@ -1588,16 +1623,6 @@ li {
   .release-notes-wrapper {
     float: right !important;
   }
-  .factory-reset-options {
-    a {
-      color: $white;
-      font-weight: bold;
-      text-decoration: none !important;
-    }
-    .fa-external-link {
-      margin-left: 0.5rem;
-    }
-  }
   .settings-warning-banner {
     margin-bottom: 1rem !important;
     p {
@@ -1625,6 +1650,9 @@ li {
       padding-left: 0;
       padding-right: 1rem;
       margin-bottom: 1rem;
+    }
+    button {
+      float: none;
     }
   }
   .pin-bindings {
@@ -1707,6 +1735,17 @@ li {
         background: $medium_light_gray !important;
       }
     }
+  }
+}
+
+.factory-reset-options {
+  a {
+    color: $white;
+    font-weight: bold;
+    text-decoration: none !important;
+  }
+  .fa-external-link {
+    margin-left: 0.5rem;
   }
 }
 

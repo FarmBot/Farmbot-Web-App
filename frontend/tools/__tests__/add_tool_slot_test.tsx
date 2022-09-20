@@ -23,6 +23,7 @@ import { mapStateToPropsAdd } from "../state_to_props";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -37,6 +38,7 @@ describe("<AddToolSlot />", () => {
     botOnline: true,
     arduinoBusy: false,
     defaultAxes: "XY",
+    movementState: fakeMovementState(),
   });
 
   it("renders", () => {

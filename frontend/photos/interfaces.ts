@@ -1,5 +1,5 @@
 import { TaggedImage, SyncStatus, JobProgress, TaggedFarmwareEnv } from "farmbot";
-import { TimeSettings } from "../interfaces";
+import { MovementState, TimeSettings } from "../interfaces";
 import { BotPosition, UserEnv } from "../devices/interfaces";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -27,13 +27,17 @@ export interface DesignerPhotosProps {
   farmwareEnvs: TaggedFarmwareEnv[];
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
+  photosPanelState: PhotosPanelState;
 }
 
-export interface DesignerPhotosState {
+export interface PhotosPanelState {
   filter: boolean;
   camera: boolean;
   calibration: boolean;
+  calibrationPP: boolean;
   detection: boolean;
+  detectionPP: boolean;
   measure: boolean;
   manage: boolean;
 }

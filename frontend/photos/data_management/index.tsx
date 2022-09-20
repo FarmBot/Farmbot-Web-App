@@ -8,20 +8,29 @@ import { ExpandableHeader } from "../../ui";
 import { Collapse } from "@blueprintjs/core";
 import { ClearFarmwareData } from "./clear_farmware_data";
 import { ShowAdvancedToggle } from "../../settings/hardware_settings";
+import { Highlight } from "../../settings/maybe_highlight";
+import { DeviceSetting } from "../../constants";
+import { Path } from "../../internal_urls";
 
 export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
   const [advanced, setAdvanced] = React.useState(false);
   return <div className={"imaging-data-management"}>
-    <ToggleHighlightModified
-      dispatch={props.dispatch}
-      getConfigValue={props.getConfigValue} />
+    <Highlight settingName={DeviceSetting.highlightModifiedSettings}
+      pathPrefix={Path.photos}>
+      <ToggleHighlightModified
+        dispatch={props.dispatch}
+        getConfigValue={props.getConfigValue} />
+    </Highlight>
     <fieldset>
       <label>{t("clear all config data")}</label>
       <ClearFarmwareData farmwareEnvs={props.farmwareEnvs} />
     </fieldset>
-    <ShowAdvancedToggle
-      dispatch={props.dispatch}
-      getConfigValue={props.getConfigValue} />
+    <Highlight settingName={DeviceSetting.showAdvancedSettings}
+      pathPrefix={Path.photos}>
+      <ShowAdvancedToggle
+        dispatch={props.dispatch}
+        getConfigValue={props.getConfigValue} />
+    </Highlight>
     {DevSettings.showInternalEnvsEnabled() &&
       <div className={"advanced"}>
         <ExpandableHeader

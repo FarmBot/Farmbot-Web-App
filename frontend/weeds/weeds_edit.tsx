@@ -5,7 +5,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { push } from "../history";
-import { Everything, ResourceColor } from "../interfaces";
+import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../resources/selectors";
 import { Panel } from "../farm_designer/panel_header";
@@ -31,6 +31,7 @@ export interface EditWeedProps {
   defaultAxes: string;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export const mapStateToProps = (props: Everything): EditWeedProps => ({
@@ -41,6 +42,7 @@ export const mapStateToProps = (props: Everything): EditWeedProps => ({
   arduinoBusy: props.bot.hardware.informational_settings.busy,
   currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
     .position,
+  movementState: props.app.movement,
 });
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {
@@ -89,6 +91,7 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
               dispatch={this.props.dispatch}
               arduinoBusy={this.props.arduinoBusy}
               currentBotLocation={this.props.currentBotLocation}
+              movementState={this.props.movementState}
               defaultAxes={this.props.defaultAxes}
               updatePoint={updatePoint(this.weed, dispatch)} />
             <AdditionalWeedProperties point={this.weed}

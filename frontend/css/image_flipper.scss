@@ -385,28 +385,24 @@
     label {
       display: inline;
     }
-    .input {
-      margin-top: 0.5rem;
-      margin-right: 0.25rem;
-    }
     .camera-config-number-box {
-      margin-top: 1rem;
-    }
-    .dropdown-camera-calibration-config {
-      margin-top: 2rem;
-      margin-left: 1.5rem;
-      margin-right: 1.5rem;
-      .filter-search {
-        margin-top: 0.5rem;
-        margin-right: 0.75rem;
+      margin-top: 1.5rem;
+      .input {
+        float: right;
+        margin-top: -0.25rem;
       }
     }
-    .config-results {
-      min-height: 8rem;
-      .camera-config-number-box {
-        position: absolute;
-        bottom: 0;
-        width: 85%;
+    .dropdown-camera-calibration-config {
+      margin-top: 1.5rem;
+      .filter-search {
+        float: right;
+        margin-top: -0.25rem;
+        min-width: 16.5rem;
+      }
+      &.narrow {
+        .filter-search {
+          min-width: 8rem;
+        }
       }
     }
   }

@@ -81,6 +81,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         botOnline={this.props.botOnline}
         arduinoBusy={this.props.arduinoBusy}
         currentBotLocation={this.props.currentBotLocation}
+        movementState={this.props.movementState}
         defaultAxes={validGoButtonAxes(this.props.getConfigValue)}
         soilHeightPoints={this.props.soilHeightPoints}
         farmwareEnvs={this.props.farmwareEnvs}

@@ -66,6 +66,17 @@ const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   mockDevice.current = mockDeviceDefault;
 };
 
+describe("sendRPC()", () => {
+  it("calls sendRPC", async () => {
+    await actions.sendRPC({ kind: "sync", args: {} });
+    expect(mockDevice.current.send).toHaveBeenCalledWith({
+      kind: "rpc_request",
+      args: { label: expect.any(String), priority: 600 },
+      body: [{ kind: "sync", args: {} }],
+    });
+  });
+});
+
 describe("checkControllerUpdates()", () => {
   it("calls checkUpdates", async () => {
     await actions.checkControllerUpdates();
@@ -166,7 +177,7 @@ describe("sync()", () => {
     state.bot.hardware.informational_settings.controller_version = undefined;
     actions.sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
-    expect(info).toBeCalledWith("FarmBot is not connected.", {
+    expect(info).toHaveBeenCalledWith("FarmBot is not connected.", {
       title: "Disconnected", color: "red",
     });
   });

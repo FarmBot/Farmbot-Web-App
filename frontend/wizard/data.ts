@@ -34,7 +34,6 @@ import {
   MapOrientation,
   Tour,
   NetworkRequirementsLink,
-  PinBinding,
   AxisActions,
   DynamicMapToggle,
   BootSequence,
@@ -128,7 +127,9 @@ export enum WizardStepSlug {
   valve = "valve",
   vacuum = "vacuum",
   lights = "lights",
-  findHomeButton = "findHomeButton",
+  eStopButton = "eStopButton",
+  unlockButton = "unlockButton",
+  customButtons = "customButtons",
   photo = "photo",
   cameraCalibrationPreparation = "cameraCalibrationPreparation",
   cameraCalibrationCard = "cameraCalibrationCard",
@@ -149,6 +150,7 @@ export enum WizardStepSlug {
   toolsTour = "toolsTour",
 }
 
+// eslint-disable-next-line complexity
 export const WIZARD_STEPS = (
   firmwareHardware: FirmwareHardware | undefined,
   getConfigValue?: GetWebAppConfigValue,
@@ -367,7 +369,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.map,
       slug: WizardStepSlug.mapOrientation,
-      title: t("Map Orientation"),
+      title: t("Map orientation"),
       content: t(SetupWizardContent.MAP_ORIENTATION),
       video: ExternalUrl.Video.mapOrientation,
       component: MapOrientation,
@@ -390,7 +392,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.motors,
       slug: WizardStepSlug.xMotor,
-      title: t("X-Axis Motor"),
+      title: t("X-axis motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(xySwap),
       controlsCheckOptions: { axis: "x" },
@@ -423,7 +425,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.motors,
       slug: WizardStepSlug.yMotor,
-      title: t("Y-Axis Motor"),
+      title: t("Y-axis motor"),
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(!xySwap),
       controlsCheckOptions: { axis: "y" },
@@ -455,7 +457,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.motors,
       slug: WizardStepSlug.zMotor,
-      title: t("Z-Axis Motor"),
+      title: t("Z-axis motor"),
       prerequisites: [botOnlineReq],
       content: t("Press the down arrow."),
       controlsCheckOptions: { axis: "z" },
@@ -603,7 +605,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.xAxisFindHome,
       title: t("Home X"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the X axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "X" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -626,7 +628,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.yAxisFindHome,
       title: t("Home Y"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the Y axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "Y" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -649,7 +651,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.zAxisFindHome,
       title: t("Home Z"),
       prerequisites: [botOnlineReq],
-      content: t("Open the ... menu for the Z axis and click FIND HOME."),
+      content: t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
       component: AxisActions,
       question: t(SetupWizardContent.HOME),
       outcomes: [
@@ -670,9 +672,9 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.home,
       slug: WizardStepSlug.findHomeOnBoot,
-      title: t("Boot Sequence"),
+      title: t("Boot sequence"),
       prerequisites: [botOnlineReq],
-      content: t("Select the 'Find Home' sequence in the dropdown."),
+      content: t(SetupWizardContent.BOOT_SEQUENCE),
       component: BootSequence,
       question: t("Is the 'Find Home' sequence selected?"),
       outcomes: [
@@ -792,7 +794,7 @@ export const WIZARD_STEPS = (
       section: WizardSectionSlug.axisLength,
       slug: WizardStepSlug.xAxisLength,
       title: t("X-axis length"),
-      content: t("Open the ... menu for the X axis and click FIND AXIS LENGTH."),
+      content: t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "X" }),
       component: AxisActions,
       question: t(SetupWizardContent.FIND_LENGTH),
       outcomes: [
@@ -807,7 +809,7 @@ export const WIZARD_STEPS = (
       section: WizardSectionSlug.axisLength,
       slug: WizardStepSlug.yAxisLength,
       title: t("Y-axis length"),
-      content: t("Open the ... menu for the Y axis and click FIND AXIS LENGTH."),
+      content: t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "Y" }),
       component: AxisActions,
       question: t(SetupWizardContent.FIND_LENGTH),
       outcomes: [
@@ -822,7 +824,7 @@ export const WIZARD_STEPS = (
       section: WizardSectionSlug.axisLength,
       slug: WizardStepSlug.zAxisLength,
       title: t("Z-axis length"),
-      content: t("Open the ... menu for the Z axis and click FIND AXIS LENGTH."),
+      content: t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "Z" }),
       component: AxisActions,
       question: t(SetupWizardContent.FIND_LENGTH),
       outcomes: [
@@ -836,7 +838,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.axisLength,
       slug: WizardStepSlug.dynamicMapSize,
-      title: t("Dynamic Map Size"),
+      title: t("Dynamic map size"),
       content: t("Press the toggle button to enable dynamic map size."),
       component: DynamicMapToggle,
       question: t("Does the toggle indicate ON?"),
@@ -846,7 +848,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.peripherals,
       slug: WizardStepSlug.valve,
-      title: t("Solenoid Valve"),
+      title: t("Solenoid valve"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("WATER") }),
       component: PeripheralsCheck,
@@ -868,7 +870,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.peripherals,
       slug: WizardStepSlug.vacuum,
-      title: t("Vacuum Pump"),
+      title: t("Vacuum pump"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("VACUUM") }),
       component: PeripheralsCheck,
@@ -890,7 +892,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.peripherals,
       slug: WizardStepSlug.lights,
-      title: t("LED Light Strip"),
+      title: t("LED light strip"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.TOGGLE_PERIPHERAL, { toggle: t("LIGHTING") }),
       component: PeripheralsCheck,
@@ -904,24 +906,69 @@ export const WIZARD_STEPS = (
         },
       ],
     },
+    {
+      section: WizardSectionSlug.peripherals,
+      slug: WizardStepSlug.eStopButton,
+      title: t("E-stop button"),
+      prerequisites: [botOnlineReq],
+      content: t(SetupWizardContent.ESTOP_BUTTON),
+      pinBindingOptions: { editing: false },
+      componentOptions: { fullWidth: true },
+      question: t(SetupWizardContent.ESTOP_BUTTON_QUESTION),
+      outcomes: [
+        {
+          slug: "stillPowered",
+          description: t("FarmBot's motors are still powered"),
+          tips: t("Check the E-STOP button wiring."),
+        },
+      ],
+    },
     ...(hasExtraButtons(firmwareHardware)
       ? [{
         section: WizardSectionSlug.peripherals,
-        slug: WizardStepSlug.findHomeButton,
-        title: t("Find Home Button"),
+        slug: WizardStepSlug.unlockButton,
+        title: t("Unlock button"),
         prerequisites: [botOnlineReq],
-        content: t(SetupWizardContent.FIND_HOME_BUTTON),
-        component: PinBinding,
+        content: t(SetupWizardContent.UNLOCK_BUTTON_BOX),
+        pinBindingOptions: { editing: false },
         componentOptions: { fullWidth: true },
-        question: t("Did FarmBot find home?"),
+        question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
         outcomes: [
           {
-            slug: "noFindHomeSequence",
-            description: t("There is no 'Find Home' sequence"),
-            tips: t("Create a new sequence and add the FIND HOME command."),
+            slug: "stillUnpowered",
+            description: t("FarmBot's motors are still unpowered"),
+            tips: t("Check the UNLOCK button wiring."),
           },
         ],
       }]
+      : [{
+        section: WizardSectionSlug.peripherals,
+        slug: WizardStepSlug.unlockButton,
+        title: t("Unlock button"),
+        prerequisites: [botOnlineReq],
+        content: t(SetupWizardContent.UNLOCK_BUTTON_VIRTUAL),
+        pinBindingOptions: {
+          editing: false,
+          unlockOnly: true,
+        },
+        componentOptions: { border: false, background: false },
+        question: t(SetupWizardContent.UNLOCK_BUTTON_QUESTION),
+        outcomes: [],
+      }]),
+    ...(hasExtraButtons(firmwareHardware)
+      ? [
+        {
+          section: WizardSectionSlug.peripherals,
+          slug: WizardStepSlug.customButtons,
+          title: t("Custom buttons"),
+          prerequisites: [botOnlineReq],
+          content: t(SetupWizardContent.CUSTOM_BUTTONS),
+          pinBindingOptions: { editing: true },
+          componentOptions: { fullWidth: true },
+          question: t("Are you finished customizing the buttons?"),
+          outcomes: [],
+        },
+      ]
       : []),
     {
       section: WizardSectionSlug.camera,
@@ -973,7 +1020,7 @@ export const WIZARD_STEPS = (
       title: t("Calibration preparation"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.CAMERA_CALIBRATION_PREPARATION),
-      controlsCheckOptions: {},
+      controlsCheckOptions: { axis: "z", up: true },
       question: t("Is the z-axis as high as it will go?"),
       outcomes: [
         {
@@ -1037,7 +1084,7 @@ export const WIZARD_STEPS = (
     {
       section: WizardSectionSlug.camera,
       slug: WizardStepSlug.cameraOffsetAdjustment,
-      title: t("Offset Adjustment"),
+      title: t("Offset adjustment"),
       prerequisites: [botOnlineReq],
       content: t(SetupWizardContent.CAMERA_ALIGNMENT),
       component: CameraCheck,
@@ -1124,7 +1171,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.wateringNozzle,
-        title: t("Watering Nozzle"),
+        title: t("Watering nozzle"),
         prerequisites: [botOnlineReq],
         content: t("Attach the watering nozzle tool to the UTM and press VERIFY."),
         component: ToolCheck,
@@ -1160,7 +1207,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.soilSensor,
-        title: t("Soil Sensor"),
+        title: t("Soil sensor"),
         prerequisites: [botOnlineReq],
         content: t("Attach the soil sensor tool to the UTM and press VERIFY."),
         component: ToolCheck,
@@ -1178,7 +1225,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.soilSensorValue,
-        title: t("Soil Sensor Reading"),
+        title: t("Soil sensor reading"),
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.READ_SOIL_SENSOR),
         component: SensorsCheck,
@@ -1197,7 +1244,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryTool,
-        title: t("Rotary Tool"),
+        title: t("Rotary tool"),
         prerequisites: [botOnlineReq],
         content: t("Attach the rotary tool to the UTM and press VERIFY."),
         warning: t(SetupWizardContent.ROTARY_TOOL_WARNING),
@@ -1216,7 +1263,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryToolForward,
-        title: t("Rotary Tool Forward"),
+        title: t("Rotary tool forward"),
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.TOGGLE_PERIPHERAL,
           { toggle: t("ROTARY TOOL") }),
@@ -1237,7 +1284,7 @@ export const WIZARD_STEPS = (
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryToolReverse,
-        title: t("Rotary Tool Reverse"),
+        title: t("Rotary tool reverse"),
         prerequisites: [botOnlineReq],
         content: t(SetupWizardContent.TOGGLE_PERIPHERAL,
           { toggle: t("ROTARY TOOL REVERSE") }),

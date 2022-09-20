@@ -23,5 +23,8 @@ export function mapStateToFolderProps(props: Everything): FolderProps {
     sequenceMetas: props.resources.index.sequenceMetas,
     resourceUsage: resourceUsageList(props.resources.index.inUse),
     getWebAppConfigValue: getWebAppConfigValue(() => props),
+    menuOpen: props.resources.consumers.sequences.menuOpen,
+    resources: props.resources.index,
+    syncStatus: props.bot.hardware.informational_settings.sync_status,
   };
 }

@@ -20,6 +20,7 @@ export const METRIC_TITLES = (): Partial<Record<keyof Telemetry, string>> => ({
   memory_usage: t("Memory"),
   disk_usage: t("Disk"),
   cpu_usage: t("CPU"),
+  throttled: t("Voltage"),
 });
 
 export const COLORS: Partial<Record<keyof Telemetry, string>> = {
@@ -39,6 +40,7 @@ interface TableHeaderCellProps {
   hoveredMetric: keyof Telemetry | undefined;
   onHover: OnMetricHover;
   rightAlign?: boolean;
+  style?: React.CSSProperties;
 }
 
 const TableHeaderCell = (props: TableHeaderCellProps) =>
@@ -47,6 +49,7 @@ const TableHeaderCell = (props: TableHeaderCellProps) =>
       color: COLORS[props.metricName],
       background: props.hoveredMetric == props.metricName ? "#eee" : undefined,
       textAlign: props.rightAlign ? "right" : undefined,
+      ...props.style,
     }}
     onMouseEnter={props.onHover(props.metricName)}
     onMouseLeave={props.onHover(undefined)}>
@@ -118,7 +121,8 @@ export class FbosMetricHistoryTable
               <TableHeaderCell {...rightAlignProps} metricName={"disk_usage"} />
               <TableHeaderCell {...rightAlignProps} metricName={"memory_usage"} />
               <TableHeaderCell {...rightAlignProps} metricName={"soc_temp"} />
-              <th style={{ textAlign: "center" }}>{t("Voltage")}</th>
+              <TableHeaderCell {...rightAlignProps} style={{ textAlign: "center" }}
+                metricName={"throttled"} />
               <TableHeaderCell {...rightAlignProps}
                 metricName={"wifi_level_percent"} />
             </tr>
@@ -155,10 +159,10 @@ export class FbosMetricHistoryTable
                   <TableBodyCell {...rightCellProps} metricName={"soc_temp"}>
                     {m.body.soc_temp}&deg;C
                   </TableBodyCell>
-                  <td {...recordProps}>
+                  <TableBodyCell {...rightCellProps} metricName={"throttled"}>
                     <ThrottleIndicator throttleDataString={m.body.throttled}
                       throttleType={ThrottleType.UnderVoltage} />
-                  </td>
+                  </TableBodyCell>
                   <TableBodyCell {...rightCellProps}
                     metricName={"wifi_level_percent"}>
                     {m.body.wifi_level_percent}%

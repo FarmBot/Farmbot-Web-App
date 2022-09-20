@@ -109,6 +109,7 @@ export interface ProfileUtmProps {
   mountedToolInfo: MountedToolInfo;
   getX: GetProfileX;
   reversed: boolean;
+  hidePositionIndicator?: boolean;
 }
 
 export interface PlantPointState {
@@ -139,6 +140,7 @@ export interface ProfileToolProps {
   reversed: boolean;
   toolFlipped: boolean;
   coordinate?: boolean;
+  hidePositionIndicator?: boolean;
 }
 
 export interface SlotProfileProps {

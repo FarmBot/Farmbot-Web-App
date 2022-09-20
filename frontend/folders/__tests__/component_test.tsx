@@ -28,8 +28,10 @@ jest.mock("@blueprintjs/core", () => ({
 }));
 
 import { PopoverProps } from "../../ui/popover";
+let mockPopover = ({ target, content }: PopoverProps) =>
+  <div>{target}{content}</div>;
 jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+  Popover: jest.fn((p: PopoverProps) => mockPopover(p)),
 }));
 
 jest.mock("@blueprintjs/select", () => ({
@@ -70,6 +72,7 @@ import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import { copySequence } from "../../sequences/actions";
+import { fakeResourceIndex } from "../../sequences/locals_list/test_helpers";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -107,6 +110,9 @@ describe("<Folders />", () => {
     resourceUsage: {},
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
+    resources: fakeResourceIndex(),
+    menuOpen: undefined,
+    syncStatus: undefined,
   });
 
   it("renders empty state", () => {
@@ -251,6 +257,15 @@ describe("<FolderListItem />", () => {
     variableData: undefined,
     inUse: false,
     getWebAppConfigValue: jest.fn(),
+    resources: fakeResourceIndex(),
+    menuOpen: undefined,
+    syncStatus: undefined,
+    searchTerm: undefined,
+  });
+
+  beforeEach(() => {
+    mockPopover = ({ target, content }: PopoverProps) =>
+      <div>{target}{content}</div>;
   });
 
   it("renders", () => {
@@ -260,6 +275,14 @@ describe("<FolderListItem />", () => {
     expect(wrapper.text()).toContain("my sequence");
     expect(wrapper.find("li").hasClass("move-source")).toBeFalsy();
     expect(wrapper.find("li").hasClass("active")).toBeFalsy();
+  });
+
+  it("renders: matched", () => {
+    const p = fakeProps();
+    p.sequence.body.name = "my sequence";
+    p.searchTerm = "sequence";
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.find(".sequence-list-item").hasClass("matched")).toBeTruthy();
   });
 
   it("renders: move in progress", () => {
@@ -289,7 +312,7 @@ describe("<FolderListItem />", () => {
     const p = fakeProps();
     p.inUse = true;
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toEqual(1);
+    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: in use and has bad steps", () => {
@@ -299,8 +322,9 @@ describe("<FolderListItem />", () => {
       { kind: "resource_update", args: {} } as unknown as SequenceBodyItem,
     ];
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toEqual(1);
-    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
+    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
+    expect(wrapper.find(".fa-exclamation-triangle").length)
+      .toBeGreaterThanOrEqual(1);
   });
 
   it("renders: in use and pinned", () => {
@@ -308,8 +332,8 @@ describe("<FolderListItem />", () => {
     p.inUse = true;
     p.sequence.body.pinned = true;
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toEqual(1);
-    expect(wrapper.find(".fa-thumb-tack").length).toEqual(1);
+    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
+    expect(wrapper.find(".fa-thumb-tack").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: imported", () => {
@@ -318,7 +342,7 @@ describe("<FolderListItem />", () => {
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-link").length).toEqual(1);
+    expect(wrapper.find(".fa-link").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: forked", () => {
@@ -327,7 +351,7 @@ describe("<FolderListItem />", () => {
     p.sequence.body.forked = true;
     p.sequence.body.sequence_versions = [1];
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-chain-broken").length).toEqual(1);
+    expect(wrapper.find(".fa-chain-broken").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: published", () => {
@@ -336,7 +360,27 @@ describe("<FolderListItem />", () => {
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
     const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-globe").length).toEqual(1);
+    expect(wrapper.find(".fa-globe").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders: no description", () => {
+    const p = fakeProps();
+    p.sequence.body.description = "";
+    const wrapper = mount(<FolderListItem {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("this sequence has no description");
+  });
+
+  it("opens pop-ups", () => {
+    mockPopover = ({ target, content, isOpen }: PopoverProps) =>
+      <div>{target}{isOpen ? content : ""}</div>;
+    const wrapper = mount(<FolderListItem {...fakeProps()} />);
+    expect(wrapper.find(".fa-copy").length).toEqual(0);
+    expect(wrapper.text().toLowerCase()).not.toContain("description");
+    wrapper.find(".fa-question-circle").simulate("click");
+    wrapper.find(".fa-ellipsis-v").simulate("click");
+    expect(wrapper.find(".fa-copy").length).toEqual(1);
+    expect(wrapper.text().toLowerCase()).toContain("description");
   });
 
   it("changes color", () => {
@@ -353,14 +397,14 @@ describe("<FolderListItem />", () => {
 
   it("starts sequence move", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FolderListItem {...p} />);
+    const wrapper = mount(<FolderListItem {...p} />);
     wrapper.find(".fa-arrows-v").simulate("mouseDown");
     expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 
   it("toggles sequence move", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FolderListItem {...p} />);
+    const wrapper = mount(<FolderListItem {...p} />);
     wrapper.find(".fa-arrows-v").simulate("mouseUp");
     expect(p.toggleSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
@@ -369,7 +413,7 @@ describe("<FolderListItem />", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderListItem {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
-    wrapper.find(".fb-button.yellow").simulate("click");
+    wrapper.find(".fa-copy").simulate("click");
     expect(copySequence).toHaveBeenCalledWith(p.sequence);
   });
 });
@@ -382,14 +426,14 @@ describe("<FolderButtonCluster />", () => {
 
   it("renders", () => {
     const wrapper = mount(<FolderButtonCluster {...fakeProps()} />);
-    expect(wrapper.find("button").length).toEqual(4);
+    expect(wrapper.find(".cluster-icon").length).toEqual(4);
   });
 
   it("deletes folder", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(0).simulate("click");
+    wrapper.find(".cluster-icon").at(0).simulate("click");
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
@@ -397,7 +441,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    wrapper.find(".cluster-icon").at(1).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -406,7 +450,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(2).simulate("click");
+    wrapper.find(".cluster-icon").at(2).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({ parent_id: p.node.id });
   });
@@ -415,7 +459,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find("button").at(3).simulate("click");
+    wrapper.find(".cluster-icon").at(3).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(addNewSequenceToFolder).toHaveBeenCalledWith(1);
   });
@@ -458,6 +502,10 @@ describe("<FolderNameEditor />", () => {
     resourceUsage: {},
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
+    resources: fakeResourceIndex(),
+    menuOpen: undefined,
+    syncStatus: undefined,
+    searchTerm: undefined,
   });
 
   it("renders", () => {
@@ -468,6 +516,14 @@ describe("<FolderNameEditor />", () => {
     expect(wrapper.find(".fa-chevron-down").length).toEqual(1);
     expect(wrapper.find(".fa-chevron-right").length).toEqual(0);
     expect(wrapper.find(".folder-name-input").length).toEqual(0);
+  });
+
+  it("renders: matched", () => {
+    const p = fakeProps();
+    p.node.name = "my folder";
+    p.searchTerm = "folder";
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".folder-list-item").hasClass("matched")).toBeTruthy();
   });
 
   it("opens settings menu", () => {
@@ -513,7 +569,7 @@ describe("<FolderNameEditor />", () => {
     const wrapper = mount(<FolderNameEditor {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(".fb-button.gray").simulate("click");
+    wrapper.find(".cluster-icon").last().simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });
@@ -611,13 +667,13 @@ describe("<FolderPanelTop />", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderPanelTop {...p} />);
     wrapper.find("button").at(1).simulate("click");
-    expect(createFolder).toHaveBeenCalledWith(undefined);
+    expect(createFolder).toHaveBeenCalled();
   });
 
   it("creates new sequence", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderPanelTop {...p} />);
     wrapper.find("button").at(2).simulate("click");
-    expect(addNewSequenceToFolder).toHaveBeenCalledWith(undefined);
+    expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 });

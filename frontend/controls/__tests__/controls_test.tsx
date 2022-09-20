@@ -27,6 +27,8 @@ describe("<DesignerControls />", () => {
     env: {},
     firmwareHardware: undefined,
     movementState: fakeMovementState(),
+    pinBindings: [],
+    logs: [],
   });
 
   it("renders controls", () => {

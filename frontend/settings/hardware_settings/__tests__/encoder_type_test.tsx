@@ -33,7 +33,7 @@ describe("<EncoderType/>", () => {
     const wrapper = shallow(<EncoderType {...p} />);
     const selection = wrapper.find(FBSelect).first();
     const change = () => selection.simulate("change", { label: "", value: 2 });
-    expect(change).toThrowError("Got bad encoder type in device panel.");
+    expect(change).toThrow("Got bad encoder type in device panel.");
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });

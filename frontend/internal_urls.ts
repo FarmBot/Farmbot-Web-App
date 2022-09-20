@@ -51,7 +51,6 @@ export namespace Path {
 
   export const messages = () => designer("messages");
   export const controls = () => designer("controls");
-  export const photos = () => designer("photos");
   export const support = () => designer("support");
   export const setup = () => designer("setup");
   export const tours = () => designer("tours");
@@ -65,6 +64,7 @@ export namespace Path {
     inDesigner() ? Path.designerSequences(path) : Path.sequencePage(path);
 
   export const settings = (path?: string) => designer("settings") + highlight(path);
+  export const photos = (path?: string) => designer("photos") + highlight(path);
 
   export const help = (path?: string) => designer("help") + page(path);
   export const developer = (path?: string) => designer("developer") + page(path);

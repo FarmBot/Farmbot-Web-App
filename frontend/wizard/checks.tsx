@@ -40,7 +40,9 @@ import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
-import { findHome, setHome, settingToggle } from "../devices/actions";
+import {
+  emergencyUnlock, findHome, setHome, settingToggle,
+} from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
 import { cameraBtnProps } from "../photos/capture_settings/camera_selection";
@@ -65,7 +67,7 @@ import {
   DropdownConfig,
   NumberBoxConfig, NumberBoxConfigProps,
 } from "../photos/camera_calibration/config";
-import { Actions, SetupWizardContent, ToolTips } from "../constants";
+import { Actions, DeviceSetting, SetupWizardContent, ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
 import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
 import { LockableButton } from "../settings/hardware_settings/lockable_button";
@@ -82,26 +84,33 @@ import { tourPath } from "../help/tours";
 import { TOURS } from "../help/tours/data";
 import { push } from "../history";
 import { FilePath } from "../internal_urls";
-import {
-  PinBindingInputGroup,
-} from "../settings/pin_bindings/pin_binding_input_group";
-import { apiPinBindings } from "../settings/pin_bindings/pin_bindings_content";
 import { BotPositionRows } from "../controls/move/bot_position_rows";
 import {
   BootSequenceSelector,
 } from "../settings/fbos_settings/boot_sequence_selector";
+import { BoxTopButtons } from "../settings/pin_bindings/box_top_gpio_diagram";
+import { getImageJobs } from "../photos/state_to_props";
+import { ResourceIndex } from "../resources/interfaces";
+import { BotState } from "../devices/interfaces";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
-const recentErrorLog = (
+/** Check if an item's time is after the specified time, if provided. */
+export const greaterThanTime = (
+  itemTime: number | undefined,
+  thresholdTime: number | undefined,
+) =>
+  thresholdTime && (itemTime || 0) > thresholdTime;
+
+export const recentMsgLog = (
   logs: TaggedLog[],
   prevLogTime: number | undefined,
-  errorMessages: string[],
+  messages: string[],
 ) =>
   some(logs
-    .filter(log => prevLogTime && (log.body.created_at || 0) > prevLogTime)
-    .map(log => some(errorMessages.map(errorMessage =>
-      log.body.message.toLowerCase().includes(errorMessage.toLowerCase())))));
+    .filter(log => greaterThanTime(log.body.created_at, prevLogTime))
+    .map(log => some(messages.map(message =>
+      log.body.message.toLowerCase().includes(message.toLowerCase())))));
 
 const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const images = selectAllImages(props.resources);
@@ -116,7 +125,7 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
   const getLastLogTimestamp = () => last(logs)?.body.created_at;
   const [prevLogTime, setPrevLogTime] = React.useState(getLastLogTimestamp());
   const [error, setError] = React.useState(false);
-  if (!error && recentErrorLog(logs, prevLogTime, CAMERA_ERRORS)) {
+  if (!error && recentMsgLog(logs, prevLogTime, CAMERA_ERRORS)) {
     props.setStepSuccess(false, "cameraError")();
     setError(true);
   }
@@ -138,7 +147,9 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
 const TakePhotoButtonComponent = (props: CameraCheckBaseProps) => {
   const env = getEnv(props.resources);
   const botOnline = isBotOnlineFromState(props.bot);
-  return <TakePhotoButton env={env} disabled={!botOnline} />;
+  const logs = selectAllLogs(props.resources);
+  return <TakePhotoButton env={env} botOnline={botOnline}
+    imageJobs={getImageJobs(props.bot.hardware.jobs)} logs={logs} />;
 };
 
 export const CameraCheck = (props: WizardStepComponentProps) =>
@@ -165,7 +176,7 @@ export const SwitchCameraCalibrationMethod =
 const CameraCalibrationButtonComponent = (props: CameraCheckBaseProps) => {
   const env = getEnv(props.resources);
   const botOnline = isBotOnlineFromState(props.bot);
-  const camDisabled = cameraBtnProps(env);
+  const camDisabled = cameraBtnProps(env, botOnline);
   const easyCalibration = !!envGet("CAMERA_CALIBRATION_easy_calibration",
     prepopulateEnv(env));
   return <button
@@ -217,6 +228,7 @@ export interface ControlsCheckOptions {
   axis?: Xyz;
   home?: boolean;
   both?: boolean;
+  up?: boolean;
 }
 
 export interface ControlsCheckProps {
@@ -225,12 +237,14 @@ export interface ControlsCheckProps {
 }
 
 export const ControlsCheck = (props: ControlsCheckProps) => {
-  const { axis, both, home } = props.controlsCheckOptions;
+  const { axis, both, home, up } = props.controlsCheckOptions;
+  const upDirection = up ? "up" : undefined;
+  const highlightDirection = both ? "both" : upDirection;
   return <div className={"controls-check"}>
     <MoveControls {...mapStateToProps(store.getState())}
       dispatch={props.dispatch}
       highlightAxis={axis}
-      highlightDirection={both ? "both" : undefined}
+      highlightDirection={highlightDirection}
       highlightHome={home} />
   </div>;
 };
@@ -468,18 +482,41 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
       firmwareHardware={firmwareHardware}
       bot={props.bot}
       peripherals={peripherals}
+      resources={props.resources}
+      hidePinBindings={true}
       dispatch={props.dispatch} />
   </div>;
 };
 
-export const PinBinding = (props: WizardStepComponentProps) => {
-  const pinBindings = apiPinBindings(props.resources);
+export interface PinBindingOptions {
+  editing: boolean;
+  unlockOnly?: boolean;
+}
+
+export interface PinBindingProps {
+  dispatch: Function;
+  pinBindingOptions: PinBindingOptions;
+  resources: ResourceIndex;
+  bot: BotState;
+}
+
+export const PinBinding = (props: PinBindingProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
-  return <PinBindingInputGroup
-    firmwareHardware={firmwareHardware}
-    pinBindings={pinBindings}
-    dispatch={props.dispatch}
-    resources={props.resources} />;
+  return props.pinBindingOptions.unlockOnly
+    ? <button
+      title={t("unlock device")}
+      className={"fb-button yellow e-stop"}
+      onClick={() => emergencyUnlock()}>
+      {t("UNLOCK")}
+    </button>
+    : <BoxTopButtons
+      firmwareHardware={firmwareHardware}
+      resources={props.resources}
+      dispatch={props.dispatch}
+      botOnline={isBotOnlineFromState(props.bot)}
+      syncStatus={props.bot.hardware.informational_settings.sync_status}
+      locked={props.bot.hardware.informational_settings.locked}
+      isEditing={props.pinBindingOptions.editing} />;
 };
 
 export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
@@ -634,14 +671,14 @@ export const CameraOffset = (props: WizardStepComponentProps) => {
   return <Row>
     <Col xs={6}>
       <NumberBoxConfig {...common}
+        settingName={DeviceSetting.cameraOffsetX}
         configKey={"CAMERA_CALIBRATION_camera_offset_x"}
-        label={t("Camera Offset X")}
         helpText={helpText} />
     </Col>
     <Col xs={6}>
       <NumberBoxConfig {...common}
+        settingName={DeviceSetting.cameraOffsetY}
         configKey={"CAMERA_CALIBRATION_camera_offset_y"}
-        label={t("Camera Offset Y")}
         helpText={helpText} />
     </Col>
   </Row>;
@@ -653,13 +690,13 @@ export const CameraImageOrigin = (props: WizardStepComponentProps) => {
   return <Row>
     <Col xs={12}>
       <DropdownConfig
+        settingName={DeviceSetting.originLocationInImage}
         wdEnvGet={key => envGet(key, wDEnv)}
         onChange={(key, value) =>
           props.dispatch(saveOrEditFarmwareEnv(props.resources)(
             key, JSON.stringify(formatEnvKey(key, value))))}
         list={ORIGIN_DROPDOWNS()}
         configKey={"CAMERA_CALIBRATION_image_bot_origin_location"}
-        label={t("Origin Location in Image")}
         helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
           defaultOrigin: SPECIAL_VALUE_DDI()[WD_KEY_DEFAULTS[
             "CAMERA_CALIBRATION_image_bot_origin_location"]].label

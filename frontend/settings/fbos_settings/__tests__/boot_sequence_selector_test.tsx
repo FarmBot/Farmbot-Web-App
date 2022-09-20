@@ -67,7 +67,7 @@ describe("mapStateToProps()", () => {
   it("crashes when config is missing", () => {
     const state = fakeState();
     const boom = () => mapStateToProps(state);
-    expect(boom).toThrowError("No config found?");
+    expect(boom).toThrow("No config found?");
   });
 
   it("handles no boot_sequence_id", () => {

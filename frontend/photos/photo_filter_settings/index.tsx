@@ -22,6 +22,9 @@ import { Help, ToggleButton } from "../../ui";
 import {
   getModifiedClassName, getModifiedClassNameDefaultFalse,
 } from "../../settings/default_values";
+import { Highlight } from "../../settings/maybe_highlight";
+import { DeviceSetting } from "../../constants";
+import { Path } from "../../internal_urls";
 
 export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const { dispatch, flags } = props;
@@ -41,6 +44,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const clearFilters = () => dispatch(setWebAppConfigValues({
     photo_filter_begin: "", photo_filter_end: "",
   }));
+  const commonToggleProps = { dispatch, layerOff };
   return <div className={"photo-filter-settings"}>
     <div className={className}>
       <p className={"banner"}>
@@ -62,70 +66,68 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       <FilterNearTime {...commonProps} />
       <FilterOlderOrNewer {...commonProps} />
     </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>{t("show photos in map")}</label>
-      <ToggleButton toggleValue={!layerOff}
-        className={getModifiedClassName(BooleanSetting.show_images)}
-        toggleAction={() =>
-          dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>
-        {t("always highlight current photo in map")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(alwaysHighlightImage)}
-        toggleValue={alwaysHighlightImage}
-        toggleAction={() =>
-          dispatch(toggleAlwaysHighlightImage(alwaysHighlightImage, image))} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className="toggle-label">
-        {t("only show current photo in map")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(hideUnShownImages)}
-        toggleValue={hideUnShownImages}
-        toggleAction={() => dispatch(toggleSingleImageMode(image))} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>
-        {t("show take photo images")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(!showPhotoImages)}
-        toggleValue={showPhotoImages}
-        toggleAction={toggleShowPhotoImages(dispatch)} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>
-        {t("show calibration images")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(!showCalibrationImages)}
-        toggleValue={showCalibrationImages}
-        toggleAction={toggleShowCalibrationImages(dispatch)} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>
-        {t("show weed detector images")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(!showDetectionImages)}
-        toggleValue={showDetectionImages}
-        toggleAction={toggleShowDetectionImages(dispatch)} />
-    </div>
-    <div className={"toggle-group"}>
-      <label className={"toggle-label"}>
-        {t("show soil height images")}
-      </label>
-      <ToggleButton disabled={layerOff}
-        className={getModifiedClassNameDefaultFalse(!showHeightImages)}
-        toggleValue={showHeightImages}
-        toggleAction={toggleShowHeightImages(dispatch)} />
-    </div>
+    <Highlight settingName={DeviceSetting.showPhotos} pathPrefix={Path.photos}>
+      <div className={"toggle-group"}>
+        <label className={"toggle-label"}>{t("show photos in map")}</label>
+        <ToggleButton toggleValue={!layerOff}
+          className={getModifiedClassName(BooleanSetting.show_images)}
+          toggleAction={() =>
+            dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
+      </div>
+    </Highlight>
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.alwaysHighlightCurrentPhotoInMap}
+      toggle={toggleAlwaysHighlightImage(alwaysHighlightImage, image)}
+      truthyDefault={true}
+      value={alwaysHighlightImage} />
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.onlyShowCurrentPhotoInMap}
+      toggle={toggleSingleImageMode(image)}
+      truthyDefault={true}
+      value={hideUnShownImages} />
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.showTakePhotoImages}
+      toggle={toggleShowPhotoImages}
+      value={showPhotoImages} />
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.showCalibrationImages}
+      toggle={toggleShowCalibrationImages}
+      value={showCalibrationImages} />
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.showWeedDetectorImages}
+      toggle={toggleShowDetectionImages}
+      value={showDetectionImages} />
+    <PhotoSettingToggle {...commonToggleProps}
+      settingName={DeviceSetting.showSoilHeightImages}
+      toggle={toggleShowHeightImages}
+      value={showHeightImages} />
   </div>;
 };
+
+interface PhotoSettingToggleProps {
+  settingName: DeviceSetting;
+  layerOff: boolean;
+  dispatch: Function;
+  value: boolean;
+  truthyDefault?: boolean;
+  toggle(dispatch: Function): () => void;
+}
+
+const PhotoSettingToggle = (props: PhotoSettingToggleProps) =>
+  <Highlight settingName={props.settingName}
+    pathPrefix={Path.photos}>
+    <div className={"toggle-group"}>
+      <label className={"toggle-label"}>
+        {t(props.settingName)}
+      </label>
+      <ToggleButton disabled={props.layerOff}
+        className={getModifiedClassNameDefaultFalse(props.truthyDefault
+          ? props.value
+          : !props.value)}
+        toggleValue={props.value}
+        toggleAction={props.toggle(props.dispatch)} />
+    </div>
+  </Highlight>;
 
 export const FiltersEnabledWarning = (props: FiltersEnabledWarningProps) => {
   const { getConfigValue } = props;

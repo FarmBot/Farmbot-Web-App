@@ -23,6 +23,7 @@ const mockDevice = {
   execScript: jest.fn(() => Promise.resolve({})),
   findHome: jest.fn(() => Promise.resolve({})),
   setZero: jest.fn(() => Promise.resolve({})),
+  emergencyUnlock: jest.fn(() => Promise.resolve({})),
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -163,7 +164,7 @@ describe("<CameraCheck />", () => {
 
 describe("lowVoltageProblemStatus()", () => {
   it("returns problem", () => {
-    mockState.bot.hardware.informational_settings.throttled = "0x500005";
+    mockState.bot.hardware.informational_settings.throttled = "0x50005";
     expect(lowVoltageProblemStatus()).toEqual(false);
   });
 
@@ -195,7 +196,7 @@ describe("<ControlsCheck />", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.axis = "x";
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 
   it("returns both controls directions highlighted", () => {
@@ -203,14 +204,22 @@ describe("<ControlsCheck />", () => {
     p.controlsCheckOptions.axis = "x";
     p.controlsCheckOptions.both = true;
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
+  });
+
+  it("returns up controls direction highlighted", () => {
+    const p = fakeControlsCheckProps();
+    p.controlsCheckOptions.axis = "x";
+    p.controlsCheckOptions.up = true;
+    const wrapper = mount(<ControlsCheck {...p} />);
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 
   it("returns controls with home highlighted", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.home = true;
     const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid yellow");
+    expect(wrapper.html()).toContain("solid #fd6");
   });
 });
 
@@ -253,6 +262,8 @@ describe("<SwitchCameraCalibrationMethod />", () => {
 
 describe("<CameraCalibrationCheck />", () => {
   it("calibrates", () => {
+    bot.hardware.informational_settings.sync_status = "synced";
+    bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
     const wrapper = mount(<CameraCalibrationCheck {...fakeProps()} />);
     wrapper.find(".camera-check").simulate("click");
     expect(calibrate).toHaveBeenCalledWith(true);
@@ -561,8 +572,18 @@ describe("<PinBinding />", () => {
     const p = fakeProps();
     const pinBinding = fakePinBinding();
     p.resources = buildResourceIndex([pinBinding]).index;
-    const wrapper = mount(<PinBinding {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("add new pin binding");
+    const wrapper = mount(<PinBinding {...p}
+      pinBindingOptions={{ editing: false }} />);
+    expect(wrapper.text().toLowerCase()).toContain("button 5");
+  });
+
+  it("unlocks the device", () => {
+    window.confirm = () => true;
+    const wrapper = mount(<PinBinding {...fakeProps()}
+      pinBindingOptions={{ editing: false, unlockOnly: true }} />);
+    expect(wrapper.text().toLowerCase()).toEqual("unlock");
+    wrapper.find("button").simulate("click");
+    expect(mockDevice.emergencyUnlock).toHaveBeenCalled();
   });
 });
 

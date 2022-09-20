@@ -46,7 +46,7 @@ describe("McuInputBox", () => {
   it("handles bad input", () => {
     const mib = new McuInputBox(fakeProps());
     expect(() => mib.clampInputAndWarn("QQQ", "short"))
-      .toThrowError("Bad input in mcu_input_box. Impossible?");
+      .toThrow("Bad input in mcu_input_box. Impossible?");
     expect(warning)
       .toHaveBeenCalledWith("Please enter a number between 0 and 32,000");
   });

@@ -232,7 +232,7 @@ describe("<ProfileSvg />", () => {
     const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#profile-tool").first().find("rect").props()).toEqual({
       id: "tool-body", fill: "rgba(128, 128, 128)", opacity: 0.75,
-      x: 975.5, y: 200, width: 49, height: ToolDimensions.thickness,
+      x: 976.25, y: 200, width: 47.5, height: ToolDimensions.thickness,
     });
   });
 

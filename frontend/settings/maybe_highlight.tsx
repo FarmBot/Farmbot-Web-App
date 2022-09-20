@@ -3,10 +3,11 @@ import { store } from "../redux/store";
 import { SettingsPanelState } from "../interfaces";
 import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { getUrlQuery, urlFriendly } from "../util";
-import { DeviceSetting } from "../constants";
+import { Actions, DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { push } from "../history";
 import { Path } from "../internal_urls";
+import { PhotosPanelState } from "../photos/interfaces";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -101,6 +102,7 @@ const PIN_BINDINGS_PANEL = [
   DeviceSetting.addNewPinBinding,
 ];
 const PIN_GUARD_PANEL = [
+  DeviceSetting.pinGuardTitles,
   DeviceSetting.pinGuard,
   DeviceSetting.pinGuard1,
   DeviceSetting.pinGuard2,
@@ -113,7 +115,7 @@ const PIN_REPORTING_PANEL = [
   DeviceSetting.pinReporting1,
   DeviceSetting.pinReporting2,
 ];
-const PARAMETER_MANAGEMENT_PANEL = [
+const PARAMETER_MANAGEMENT = [
   DeviceSetting.parameterManagement,
   DeviceSetting.paramLoadProgress,
   DeviceSetting.resetHardwareParams,
@@ -206,6 +208,63 @@ const APP_SETTINGS = [
   DeviceSetting.confirmEmergencyUnlock,
   DeviceSetting.userInterfaceReadOnlyMode,
 ];
+const FILTER = [
+  DeviceSetting.showPhotos,
+  DeviceSetting.alwaysHighlightCurrentPhotoInMap,
+  DeviceSetting.onlyShowCurrentPhotoInMap,
+  DeviceSetting.showTakePhotoImages,
+  DeviceSetting.showCalibrationImages,
+  DeviceSetting.showWeedDetectorImages,
+  DeviceSetting.showSoilHeightImages,
+];
+const CAMERA_SETTINGS = [
+  DeviceSetting.camera,
+  DeviceSetting.imageResolution,
+  DeviceSetting.rotateDuringCapture,
+];
+const CAMERA_CALIBRATION = [
+  DeviceSetting.useAlternativeMethod,
+  DeviceSetting.calibrationHue,
+  DeviceSetting.calibrationSaturation,
+  DeviceSetting.calibrationValue,
+  DeviceSetting.calibrationBlur,
+  DeviceSetting.calibrationMorph,
+  DeviceSetting.calibrationIterations,
+  DeviceSetting.invertHueRangeSelection,
+  DeviceSetting.calibrationObjectSeparation,
+  DeviceSetting.calibrationObjectSeparationAlongAxis,
+  DeviceSetting.cameraOffsetX,
+  DeviceSetting.cameraOffsetY,
+  DeviceSetting.originLocationInImage,
+  DeviceSetting.pixelCoordinateScale,
+  DeviceSetting.cameraRotation,
+];
+const CAMERA_CALIBRATION_PP = [
+  DeviceSetting.calibrationBlur,
+  DeviceSetting.calibrationMorph,
+  DeviceSetting.calibrationIterations,
+];
+const WEED_DETECTION = [
+  DeviceSetting.detectionHue,
+  DeviceSetting.detectionSaturation,
+  DeviceSetting.detectionValue,
+  DeviceSetting.detectionBlur,
+  DeviceSetting.detectionMorph,
+  DeviceSetting.detectionIterations,
+  DeviceSetting.saveDetectedPlants,
+  DeviceSetting.ignoreDetectionsOutOfBounds,
+  DeviceSetting.minimumWeedSize,
+  DeviceSetting.maximumWeedSize,
+];
+const WEED_DETECTION_PP = [
+  DeviceSetting.detectionBlur,
+  DeviceSetting.detectionMorph,
+  DeviceSetting.detectionIterations,
+];
+const MANAGE = [
+  DeviceSetting.highlightModifiedSettings,
+  DeviceSetting.showAdvancedSettings,
+];
 
 /** Look up parent panels for settings. */
 const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof SettingsPanelState>;
@@ -219,7 +278,7 @@ ERROR_HANDLING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "error_handling");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 PIN_REPORTING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_reporting");
-PARAMETER_MANAGEMENT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
+PARAMETER_MANAGEMENT.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 CUSTOM_SETTINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "custom_settings");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
 ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");
@@ -228,6 +287,18 @@ CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 MAP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 SEQUENCE_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+
+const PHOTOS_PANEL_LOOKUP =
+  {} as Record<DeviceSetting, (keyof PhotosPanelState)[]>;
+const add = (section: keyof PhotosPanelState) => (s: DeviceSetting) =>
+  PHOTOS_PANEL_LOOKUP[s] = (PHOTOS_PANEL_LOOKUP[s] || []).concat([section]);
+FILTER.map(add("filter"));
+CAMERA_SETTINGS.map(add("camera"));
+CAMERA_CALIBRATION.map(add("calibration"));
+CAMERA_CALIBRATION_PP.map(add("calibrationPP"));
+WEED_DETECTION.map(add("detection"));
+WEED_DETECTION_PP.map(add("detectionPP"));
+MANAGE.map(add("manage"));
 
 const CONTENT_LOOKUP = {} as Record<DeviceSetting, DeviceSetting[]>;
 CONTENT_LOOKUP[DeviceSetting.farmbotSettings] = FARMBOT_PANEL;
@@ -240,7 +311,7 @@ CONTENT_LOOKUP[DeviceSetting.limitSwitchSettings] = LIMIT_SWITCHES_PANEL;
 CONTENT_LOOKUP[DeviceSetting.errorHandling] = ERROR_HANDLING_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
-CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT_PANEL;
+CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT;
 CONTENT_LOOKUP[DeviceSetting.customSettings] = CUSTOM_SETTINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
 CONTENT_LOOKUP[DeviceSetting.accountSettings] = ACCOUNT_PANEL
@@ -256,6 +327,13 @@ const URL_FRIENDLY_LOOKUP: Record<string, keyof SettingsPanelState> = {};
 Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) => {
   URL_FRIENDLY_LOOKUP[urlFriendly(setting).toLowerCase()] = panel;
   URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting)).toLowerCase()] = panel;
+});
+
+/** Look up parent panels for settings using URL-friendly names. */
+const URL_FRIENDLY_LOOKUP_PHOTOS:
+  Record<string, (keyof PhotosPanelState)[]> = {};
+Object.entries(PHOTOS_PANEL_LOOKUP).map(([setting, panel]) => {
+  URL_FRIENDLY_LOOKUP_PHOTOS[urlFriendly(setting).toLowerCase()] = panel;
 });
 
 /** Look up all relevant names for the same setting. */
@@ -277,6 +355,14 @@ ALTERNATE_NAMES[DeviceSetting.flashFirmware].push(DeviceSetting.firmware);
 ALTERNATE_NAMES[DeviceSetting.time_zone].push(DeviceSetting.timezone);
 ALTERNATE_NAMES[DeviceSetting.timezone].push(DeviceSetting.time_zone);
 ALTERNATE_NAMES[DeviceSetting.osAutoUpdate].push(DeviceSetting.osUpdateTime);
+ALTERNATE_NAMES[DeviceSetting.pinGuardLabels].push(DeviceSetting.pinGuard);
+ALTERNATE_NAMES[DeviceSetting.pinGuardTitles].push(DeviceSetting.pinGuard);
+ALTERNATE_NAMES[DeviceSetting.pinGuardLabels].push(DeviceSetting.pinGuardTitles);
+ALTERNATE_NAMES[DeviceSetting.pinGuard1].push(DeviceSetting.pinGuardTitles);
+ALTERNATE_NAMES[DeviceSetting.pinGuard2].push(DeviceSetting.pinGuardTitles);
+ALTERNATE_NAMES[DeviceSetting.pinGuard3].push(DeviceSetting.pinGuardTitles);
+ALTERNATE_NAMES[DeviceSetting.pinGuard4].push(DeviceSetting.pinGuardTitles);
+ALTERNATE_NAMES[DeviceSetting.pinGuard5].push(DeviceSetting.pinGuardTitles);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
@@ -291,7 +377,7 @@ export const getHighlightName = () => getUrlQuery("highlight");
 export const highlight = { opened: false, highlighted: false };
 
 /** Open a panel if a setting in that panel is highlighted. */
-export const maybeOpenPanel = () =>
+export const maybeOpenPanel = (panelKey: "settings" | "photos" = "settings") =>
   (dispatch: Function) => {
     if (getUrlQuery("only") || getUrlQuery("search")) {
       dispatch(bulkToggleControlPanel(true));
@@ -301,9 +387,16 @@ export const maybeOpenPanel = () =>
     const urlFriendlySettingName = urlFriendly(getHighlightName() || "")
       .toLowerCase();
     if (!urlFriendlySettingName) { return; }
-    const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
-    dispatch(bulkToggleControlPanel(false));
-    dispatch(toggleControlPanel(panel));
+    if (panelKey == "settings") {
+      const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
+      dispatch(bulkToggleControlPanel(false));
+      dispatch(toggleControlPanel(panel));
+    }
+    if (panelKey == "photos") {
+      dispatch({ type: Actions.BULK_TOGGLE_PHOTOS_PANEL, payload: false });
+      URL_FRIENDLY_LOOKUP_PHOTOS[urlFriendlySettingName].map(panel =>
+        dispatch({ type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: panel }));
+    }
     highlight.opened = true;
   };
 
@@ -326,6 +419,7 @@ export interface HighlightProps {
   className?: string;
   searchTerm?: string;
   hidden?: boolean;
+  pathPrefix?(path?: string): string;
 }
 
 interface HighlightState {
@@ -407,13 +501,15 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       {this.props.children}
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
-          onClick={() => push(linkToSetting(this.props.settingName))} />}
+          onClick={() => push(linkToSetting(this.props.settingName,
+            this.props.pathPrefix))} />}
     </div>;
   }
 }
 
-export const linkToSetting = (settingName: DeviceSetting) =>
-  Path.settings(urlFriendly(stripUnits(settingName)).toLowerCase());
+export const linkToSetting =
+  (settingName: DeviceSetting, pathPrefix = Path.settings) =>
+    pathPrefix(urlFriendly(stripUnits(settingName)).toLowerCase());
 
 export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
 export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

@@ -39,6 +39,6 @@ describe("sanityCheck", () => {
 
 describe("isTaggedPoint()", () => {
   it("throws error", () => {
-    expect(() => isTaggedPoint(fakeLog())).toThrowError("Possible bad index");
+    expect(() => isTaggedPoint(fakeLog())).toThrow("Possible bad index");
   });
 });

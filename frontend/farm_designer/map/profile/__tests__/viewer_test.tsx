@@ -105,7 +105,7 @@ describe("<ProfileViewer />", () => {
     p.designer.profilePosition = { x: 1, y: 2 };
     const wrapper = mount(<ProfileViewer {...p} />);
     wrapper.find("i").last().simulate("click");
-    expect(wrapper.find("svg").hasClass("expand")).toBeTruthy();
+    expect(wrapper.find("svg").hasClass("expand")).toBeFalsy();
     wrapper.find("div").at(1).simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_OPEN, payload: false,

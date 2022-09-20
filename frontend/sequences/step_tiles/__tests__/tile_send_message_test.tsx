@@ -104,7 +104,7 @@ describe("<TileSendMessage/>", () => {
     const i = new TileSendMessage(fakeProps());
     mockStep = i.props.currentStep;
     expect(() => i.setMsgType({ label: "", value: "nope" }))
-      .toThrowError("message_type must be one of ALLOWED_MESSAGE_TYPES.");
+      .toThrow("message_type must be one of ALLOWED_MESSAGE_TYPES.");
   });
 
   it("updates message", () => {

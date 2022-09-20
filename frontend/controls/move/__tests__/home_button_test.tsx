@@ -26,14 +26,19 @@ describe("<HomeButton />", () => {
   });
 
   it("call has correct args", () => {
-    const wrapper = mount(<HomeButton {...fakeProps()} />);
+    const p = fakeProps();
+    p.popover = "fa-arrow-right";
+    p.botPosition = { x: 100, y: 100, z: 100 };
+    const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
   });
 
   it("calls home command", () => {
-    const wrapper = mount(<HomeButton {...fakeProps()} />);
+    const p = fakeProps();
+    p.botPosition = { x: 100, y: 100, z: 100 };
+    const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.home).toHaveBeenCalledTimes(1);
   });
@@ -65,6 +70,14 @@ describe("<HomeButton />", () => {
   it("is offline", () => {
     const p = fakeProps();
     p.botOnline = false;
+    const wrapper = mount(<HomeButton {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(mockDevice.home).not.toHaveBeenCalled();
+  });
+
+  it("is already at home", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 0, y: 0, z: 0 };
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.home).not.toHaveBeenCalled();

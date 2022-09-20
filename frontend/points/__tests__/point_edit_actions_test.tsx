@@ -25,6 +25,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { edit, save } from "../../api/crud";
 import { toggleSoilHeight } from "../soil_height";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("updatePoint()", () => {
   it("updates a point", () => {
@@ -66,6 +67,7 @@ describe("<EditPointLocation />", () => {
     defaultAxes: "XY",
     arduinoBusy: false,
     currentBotLocation: { x: 10, y: 20, z: 30 },
+    movementState: fakeMovementState(),
   });
 
   it("edits location", () => {

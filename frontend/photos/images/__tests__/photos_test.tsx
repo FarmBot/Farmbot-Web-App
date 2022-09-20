@@ -23,7 +23,9 @@ import {
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
-import { fakePercentJob } from "../../../__test_support__/fake_bot_data";
+import {
+  fakeMovementState, fakePercentJob,
+} from "../../../__test_support__/fake_bot_data";
 import { move, takePhoto } from "../../../devices/actions";
 
 describe("<Photos />", () => {
@@ -42,6 +44,7 @@ describe("<Photos />", () => {
     getConfigValue: jest.fn(),
     arduinoBusy: false,
     currentBotLocation: { x: 0, y: 0, z: 0 },
+    movementState: fakeMovementState(),
   });
 
   it("shows photo", () => {
@@ -260,6 +263,7 @@ describe("<MoveToLocation />", () => {
     currentBotLocation: { x: 0, y: 0, z: 0 },
     dispatch: jest.fn(),
     defaultAxes: "XY",
+    movementState: fakeMovementState(),
   });
 
   it("moves to location", () => {

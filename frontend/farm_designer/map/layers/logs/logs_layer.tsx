@@ -140,7 +140,7 @@ const MovementVisual = (props: LogVisualProps) => {
     : {};
   return <g id={`movement-log-${props.log.uuid}-visual`}
     className={className} style={style}>
-    {display && positionDifferent(props.botPosition, { x: 0, y: 0, z: 0 }, 5)
+    {display && awayFromHome(props.botPosition, 5)
       && <BotFigure figureName={"finding-home"}
         color={Color.yellow}
         position={{ x: 0, y: 0, z: 0 }}
@@ -164,3 +164,6 @@ export const positionDifferent =
       || yDelta > threshold
       || zDelta > threshold;
   };
+
+export const awayFromHome = (botPosition: BotPosition, threshold = 0) =>
+  positionDifferent(botPosition, { x: 0, y: 0, z: 0 }, threshold);

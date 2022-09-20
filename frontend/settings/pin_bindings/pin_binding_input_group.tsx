@@ -194,6 +194,8 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
     const { resources } = props;
     const dropDownList: DropDownItem[] = [];
 
+    dropDownList.push({ isNull: true, label: t("None"), value: "" });
+
     dropDownList.push({
       label: "Actions", value: 0,
       heading: true, headingId: PinBindingType.special,
@@ -218,24 +220,30 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
     return dropDownList;
   };
 
-  const selected = () => {
-    const { resources, sequenceIdInput, specialActionInput } = props;
-    if (sequenceIdInput) {
-      const { id, name } = findSequenceById(resources, sequenceIdInput).body;
-      return { label: name, value: id as number };
-    } else if (specialActionInput) {
-      return {
-        label: getSpecialActionLabel(specialActionInput),
-        value: specialActionInput
-      };
-    } else {
-      return undefined;
-    }
-  };
-
   return <FBSelect
     onChange={props.change}
-    selectedItem={selected()}
+    selectedItem={pinBindingLabel(props)}
     list={list()}
     customNullLabel={t("Select an action")} />;
+};
+
+export interface PinBindingLabelProps {
+  resources: ResourceIndex;
+  sequenceIdInput: number | undefined;
+  specialActionInput: PinBindingSpecialAction | undefined;
+}
+
+export const pinBindingLabel = (props: PinBindingLabelProps) => {
+  const { resources, sequenceIdInput, specialActionInput } = props;
+  if (sequenceIdInput) {
+    const { id, name } = findSequenceById(resources, sequenceIdInput).body;
+    return { label: name, value: id as number };
+  } else if (specialActionInput) {
+    return {
+      label: getSpecialActionLabel(specialActionInput),
+      value: specialActionInput
+    };
+  } else {
+    return undefined;
+  }
 };

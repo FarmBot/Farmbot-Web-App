@@ -1788,6 +1788,29 @@ ul {
   }
 }
 
+.box-top-wrapper {
+  margin-top: 2rem;
+  .box-top-leds,
+  .box-top-buttons {
+    display: grid;
+    text-align: center;
+  }
+  .box-top-buttons {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .box-top-leds {
+    margin: auto;
+    width: 80%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .fast-blink {
+    animation: fill-blink 0.2s linear infinite;
+  }
+  .slow-blink {
+    animation: fill-blink 2s linear infinite;
+  }
+}
+
 .farmware-step-input-fields {
   label {
     padding-top: 1rem;
@@ -2612,7 +2635,7 @@ textarea:focus {
   }
   &.advanced {
     border-left: 3px solid $blue;
-    padding-left: 1rem;
+    padding-left: 0.7rem;
     margin-left: -1rem;
   }
   .fa-anchor {

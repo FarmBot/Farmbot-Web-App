@@ -24,7 +24,7 @@ export function updatePageInfo(pageName: string, panel?: string | undefined) {
   // Possibly add meta "content" here dynamically as well
 }
 
-export function attachToRoot<P>(
+export function attachToRoot<P extends {}>(
   type: ComponentClass<P> | React.FunctionComponent<P>,
   props?: Attributes & P,
 ) {
@@ -32,7 +32,7 @@ export function attachToRoot<P>(
   node.id = "root";
   document.body.appendChild(node);
 
-  const reactElem = createElement(type, props);
+  const reactElem = createElement<P>(type, props);
   const domElem = document.getElementById("root");
 
   domElem && render(reactElem, domElem);

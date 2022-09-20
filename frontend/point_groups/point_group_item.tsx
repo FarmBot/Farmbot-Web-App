@@ -118,7 +118,7 @@ export class PointGroupItem
     const toolName = this.props.tools
       .filter(tool => tool.body.id == tool_id)[0]?.body.name;
     return <div className={"slot-icon"} style={{ position: "absolute" }}>
-      <ToolSlotSVG
+      <ToolSlotSVG size={2}
         toolSlot={this.props.point as TaggedToolSlotPointer}
         toolName={tool_id ? toolName : "Empty"}
         toolTransformProps={this.props.toolTransformProps} />
@@ -126,6 +126,7 @@ export class PointGroupItem
   };
 
   render() {
+    const size = 20;
     return <span
       key={this.key}
       className={"group-item-icon"}
@@ -135,15 +136,15 @@ export class PointGroupItem
       {this.props.point.body.pointer_type == "Weed" &&
         <img className={"weed-icon"}
           src={FilePath.DEFAULT_WEED_ICON}
-          width={32}
-          height={32} />}
+          width={size}
+          height={size} />}
       <this.ToolSlotGraphic />
       <img
         style={{ background: this.props.hovered ? "lightgray" : "none" }}
         src={this.initIcon}
         onLoad={this.maybeGetCachedIcon}
-        width={32}
-        height={32} />
+        width={size}
+        height={size} />
     </span>;
   }
 }

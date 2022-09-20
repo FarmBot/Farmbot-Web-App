@@ -10,7 +10,7 @@ import { DesignerPanelContent } from "../farm_designer/designer_panel";
 import { parseIntInput } from "../util";
 import { isUndefined, startCase } from "lodash";
 import { t } from "../i18next_wrapper";
-import { TimeSettings } from "../interfaces";
+import { MovementState, TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
 import {
   fetchInterpolationOptions, interpolatedZ,
@@ -34,6 +34,7 @@ export interface PlantPanelProps {
   defaultAxes: string;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 interface EditPlantProperty {
@@ -200,6 +201,7 @@ export function PlantPanel(props: PlantPanelProps) {
         botOnline={props.botOnline}
         arduinoBusy={props.arduinoBusy}
         currentBotLocation={props.currentBotLocation}
+        movementState={props.movementState}
         defaultAxes={props.defaultAxes} />
       <ListItem>
         <EditPlantRadius {...commonProps} radius={info.radius} />

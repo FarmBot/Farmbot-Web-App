@@ -142,7 +142,7 @@ describe("selectCurrentToolSlot()", () => {
 
   it("throws error", () => {
     const find = () => Selector.selectCurrentToolSlot(fakeIndex, "bad");
-    expect(find).toThrowError();
+    expect(find).toThrow();
   });
 });
 
@@ -151,7 +151,7 @@ describe("getSequenceByUUID()", () => {
     console.warn = jest.fn();
     const find = () => Selector.getSequenceByUUID(fakeIndex, "bad");
     expect(find).toThrow("BAD Sequence UUID");
-    expect(console.warn).toBeCalled();
+    expect(console.warn).toHaveBeenCalled();
   });
 });
 
@@ -260,13 +260,13 @@ describe("getDeviceAccountSettings", () => {
   it("crashes if < 1", () => {
     const { index } = buildResourceIndex([]);
     const kaboom = () => Selector.getDeviceAccountSettings(index);
-    expect(kaboom).toThrowError(/before it was loaded/);
+    expect(kaboom).toThrow(/before it was loaded/);
   });
 
   it("crashes if > 1", () => {
     const { index } = buildResourceIndex([DEV1, DEV2]);
     const kaboom = () => Selector.getDeviceAccountSettings(index);
-    expect(kaboom).toThrowError(/more than 1/);
+    expect(kaboom).toThrow(/more than 1/);
   });
 
   it("returns exactly one device", () => {
@@ -286,13 +286,13 @@ describe("getUserAccountSettings()", () => {
 
   it("errors while fetching user: no user", () => {
     const { index } = buildResourceIndex([]);
-    expect(() => Selector.getUserAccountSettings(index)).toThrowError(
+    expect(() => Selector.getUserAccountSettings(index)).toThrow(
       /before it was available/);
   });
 
   it("errors while fetching user: more than one user", () => {
     const { index } = buildResourceIndex([fakeUser(), fakeUser()]);
-    expect(() => Selector.getUserAccountSettings(index)).toThrowError(
+    expect(() => Selector.getUserAccountSettings(index)).toThrow(
       /Expected 1 user. Got: 2/);
   });
 });

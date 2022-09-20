@@ -5,12 +5,14 @@ import { findHome, moveToHome } from "../../devices/actions";
 import { lockedClass } from "../locked_class";
 import { Popover } from "../../ui";
 import { setMovementStateFromPosition } from "../../connectivity/log_handlers";
+import { awayFromHome } from "../../farm_designer/map/layers/logs/logs_layer";
 
 export const HomeButton = (props: HomeButtonProps) => {
   const { doFindHome, homeDirection, locked, arduinoBusy, botOnline } = props;
   const icon = doFindHome ? "fa-search" : "fa-arrow-right";
   const style = doFindHome ? {} : { transform: `rotate(${homeDirection}deg)` };
   const disabled = arduinoBusy || !botOnline;
+  const alreadyAtHome = !doFindHome && !awayFromHome(props.botPosition, 0.5);
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [popoverText, setPopoverText] = React.useState("");
   const sendCommand = () => {
@@ -20,9 +22,10 @@ export const HomeButton = (props: HomeButtonProps) => {
       if (locked) { return t("FarmBot is locked"); }
       if (arduinoBusy) { return t("FarmBot is busy"); }
       if (!botOnline) { return t("FarmBot is offline"); }
+      if (alreadyAtHome) { return t("FarmBot is already at the home position"); }
       return "";
     };
-    if (arduinoBusy || !botOnline || locked) {
+    if (arduinoBusy || !botOnline || locked || alreadyAtHome) {
       setPopoverOpen(!popoverOpen);
       setPopoverText(text());
       return;

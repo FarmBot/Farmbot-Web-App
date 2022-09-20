@@ -7,10 +7,11 @@ import {
   getFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import {
-  selectAllWebcamFeeds, selectAllPeripherals, selectAllSequences,
+  selectAllWebcamFeeds, selectAllPeripherals, selectAllSequences, selectAllLogs,
 } from "../resources/selectors";
 import { uniq } from "lodash";
 import { DesignerControlsProps } from "./interfaces";
+import { apiPinBindings } from "../settings/pin_bindings/pin_bindings_content";
 
 export const mapStateToProps = (props: Everything): DesignerControlsProps => {
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
@@ -28,5 +29,7 @@ export const mapStateToProps = (props: Everything): DesignerControlsProps => {
     getConfigValue: getWebAppConfigValue(() => props),
     env: getEnv(props.resources.index),
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
+    pinBindings: apiPinBindings(props.resources.index),
+    logs: selectAllLogs(props.resources.index),
   };
 };

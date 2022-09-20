@@ -82,7 +82,7 @@ module Devices
           p = {
             device: device,
             soc_temp: 40,
-            throttled: "0x000000",
+            throttled: "0x0",
             wifi_level_percent: 80 + rand(-8...8),
             uptime: up,
             memory_usage: 50 + rand(-5...5),

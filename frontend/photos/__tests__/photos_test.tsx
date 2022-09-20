@@ -20,11 +20,14 @@ import {
 } from "../../photos/photos";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { ExpandableHeader, ToggleButton } from "../../ui";
-import { DesignerPhotosProps, DesignerPhotosState } from "../interfaces";
+import { DesignerPhotosProps, PhotosPanelState } from "../interfaces";
 import { requestFarmwareUpdate } from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
+import { Actions } from "../../constants";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -47,6 +50,8 @@ describe("<DesignerPhotos />", () => {
     farmwares: {},
     arduinoBusy: false,
     currentBotLocation: { x: 0, y: 0, z: 0 },
+    movementState: fakeMovementState(),
+    photosPanelState: fakePhotosPanelState(),
   });
 
   it("renders photos panel", () => {
@@ -56,24 +61,26 @@ describe("<DesignerPhotos />", () => {
   });
 
   it("expands sections", () => {
+    mockDev = true;
     const p = fakeProps();
     const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);
     p.farmwares = { [FarmwareName.MeasureSoilHeight]: farmware };
     const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...p} />);
     const headers = wrapper.find(ExpandableHeader);
-    Object.keys(wrapper.state())
-      .map((section: keyof DesignerPhotosState, index) => {
-        expect(wrapper.state()[section]).toEqual(false);
+    Object.keys(p.photosPanelState).filter(k => !k.endsWith("PP"))
+      .map((section: keyof PhotosPanelState, index) => {
         headers.at(index).simulate("click");
-        expect(wrapper.state()[section]).toEqual(true);
+        expect(p.dispatch).toHaveBeenCalledWith({
+          type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: section,
+        });
       });
   });
 
   it("toggles highlight modified setting mode", () => {
     mockDev = true;
     const p = fakeProps();
+    p.photosPanelState.manage = true;
     const wrapper = mount<DesignerPhotos>(<DesignerPhotos {...p} />);
-    wrapper.setState({ manage: true });
     wrapper.find(ToggleButton).last().simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
   });

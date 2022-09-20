@@ -10,7 +10,7 @@ import { Feedback } from "../help/support";
 import moment from "moment";
 import { FirmwareNumberSettings, Video } from "./step_components";
 import { formatTime } from "../util";
-import { ControlsCheck } from "./checks";
+import { ControlsCheck, PinBinding } from "./checks";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -44,6 +44,7 @@ export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   </div>;
 };
 
+// eslint-disable-next-line complexity
 export const WizardStepContainer = (props: WizardStepContainerProps) => {
   const { step } = props;
   const setSuccess = props.setStepSuccess(step.slug);
@@ -88,6 +89,12 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
           <ControlsCheck
             dispatch={props.dispatch}
             controlsCheckOptions={step.controlsCheckOptions} />}
+        {step.pinBindingOptions &&
+          <PinBinding
+            dispatch={props.dispatch}
+            pinBindingOptions={step.pinBindingOptions}
+            bot={props.bot}
+            resources={props.resources} />}
       </div>
       <Markdown>{step.question}</Markdown>
       {!requirementsMet &&

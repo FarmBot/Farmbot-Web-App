@@ -6,7 +6,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { push } from "../history";
 import { Panel } from "../farm_designer/panel_header";
-import { Everything, ResourceColor } from "../interfaces";
+import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedGenericPointer } from "farmbot";
 import { maybeFindGenericPointerById } from "../resources/selectors";
 import { Actions } from "../constants";
@@ -31,6 +31,7 @@ export interface EditPointProps {
   defaultAxes: string;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
+  movementState: MovementState;
 }
 
 export const mapStateToProps = (props: Everything): EditPointProps => ({
@@ -41,6 +42,7 @@ export const mapStateToProps = (props: Everything): EditPointProps => ({
   arduinoBusy: props.bot.hardware.informational_settings.busy,
   currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
     .position,
+  movementState: props.app.movement,
 });
 
 export class RawEditPoint extends React.Component<EditPointProps, {}> {
@@ -88,6 +90,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
               dispatch={this.props.dispatch}
               arduinoBusy={this.props.arduinoBusy}
               currentBotLocation={this.props.currentBotLocation}
+              movementState={this.props.movementState}
               defaultAxes={this.props.defaultAxes}
               updatePoint={updatePoint(this.point, dispatch)} />
             <ul className="meta">

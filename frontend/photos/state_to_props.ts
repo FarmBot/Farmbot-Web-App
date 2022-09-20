@@ -55,7 +55,7 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
       versions[farmwareName] = manifest.meta.version);
 
   const currentImageUuid = props.resources.consumers.photos.currentImage;
-  const { currentImageSize } = props.resources.consumers.photos;
+  const { currentImageSize, photosPanelState } = props.resources.consumers.photos;
 
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -78,5 +78,7 @@ export const mapStateToProps = (props: Everything): DesignerPhotosProps => {
     arduinoBusy: props.bot.hardware.informational_settings.busy,
     currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
       .position,
+    movementState: props.app.movement,
+    photosPanelState,
   };
 };

@@ -9,8 +9,8 @@ import {
 
 describe("troughSize()", () => {
   it("returns correct size", () => {
-    expect(troughSize(false)).toEqual({ width: 49, height: 24 });
-    expect(troughSize(true)).toEqual({ width: 24, height: 49 });
+    expect(troughSize(false)).toEqual({ width: 47.5, height: 22.5 });
+    expect(troughSize(true)).toEqual({ width: 22.5, height: 47.5 });
   });
 });
 

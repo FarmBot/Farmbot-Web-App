@@ -10,12 +10,8 @@ import { t } from "../../i18next_wrapper";
 export function deleteUser(payload: DeletionRequest): Thunk {
   return (_, getState) => {
     const { auth } = getState();
-    auth && axios({
-      method: "delete",
-      url: API.current.usersPath,
-      data: payload,
-      params: { force: true }
-    })
+    auth && axios.delete(API.current.usersPath,
+      { data: payload, params: { force: true } })
       .then(() => {
         alert("We're sorry to see you go. :(");
         Session.clear();
@@ -28,10 +24,6 @@ export function deleteUser(payload: DeletionRequest): Thunk {
 
 export const resetAccount = (payload: DeletionRequest): Thunk =>
   (_, getState) =>
-    getState().auth && axios({
-      method: "post",
-      url: API.current.accountResetPath,
-      data: payload,
-    })
+    getState().auth && axios.post(API.current.accountResetPath, payload)
       .then(() => alert(t("Account has been reset.")))
       .catch((err: UnsafeError) => toastErrors({ err }));

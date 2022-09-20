@@ -64,6 +64,7 @@ export class RawEditToolSlot
               tools={this.props.tools}
               tool={this.tool}
               botPosition={this.props.botPosition}
+              movementState={this.props.movementState}
               botOnline={this.props.botOnline}
               dispatch={this.props.dispatch}
               arduinoBusy={this.props.arduinoBusy}

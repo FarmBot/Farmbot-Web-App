@@ -4,7 +4,7 @@ describe TelemetryService do
   normal_hash = ->() do
     return {
              telemetry_soc_temp: 100,
-             telemetry_throttled: "0x000000",
+             telemetry_throttled: "0x0",
              telemetry_wifi_level_percent: 80,
              telemetry_uptime: 12345,
              telemetry_memory_usage: 100,
@@ -80,7 +80,7 @@ describe TelemetryService do
     expect(device.fbos_version).to eq("3.2.1")
     expected = [
       "{\"telemetry_soc_temp\":100," \
-      "\"telemetry_throttled\":\"0x000000\"," \
+      "\"telemetry_throttled\":\"0x0\"," \
       "\"telemetry_wifi_level_percent\":80," \
       "\"telemetry_uptime\":12345," \
       "\"telemetry_memory_usage\":100," \
