@@ -1,4 +1,3 @@
-import { box } from "boxed_value";
 import { WDENVKey, Translation, FormatTranslationMap } from "./interfaces";
 import { snakeCase, get, isUndefined } from "lodash";
 import { NumericKeyName } from "../image_workspace";
@@ -110,10 +109,10 @@ export const DEFAULT_FORMATTER: Translation = {
   },
   parse: (__, val) => {
     try {
-      const b = box(JSON.parse(val));
-      switch (b.kind) {
+      const parsed = JSON.parse(val);
+      switch (typeof parsed) {
         case "number":
-          return b.value;
+          return parsed;
         case "boolean":
         case "string":
           return getSpecialValue(val);

@@ -14,6 +14,7 @@ FarmBot::Application.configure do
   config.perform_caching             = false
   config.public_file_server.enabled  = false
   config.serve_static_assets         = true
+  config.assets.compile              = false
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.
   # 2. FarmBot is an open source project that must be vendor neutral.

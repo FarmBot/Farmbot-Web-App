@@ -1,6 +1,5 @@
 import React from "react";
 import { StatusRowProps } from "./connectivity_row";
-import { CowardlyDictionary } from "../../util";
 import { Color } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
@@ -40,7 +39,7 @@ export enum DiagramNodes {
   arduino = "subRight"
 }
 
-const diagramPositions: CowardlyDictionary<Record<"x" | "y", number>> = {
+const diagramPositions: Record<string, Record<"x" | "y", number>> = {
   top: { x: 0, y: -75 },
   left: { x: -50, y: 0 },
   right: { x: 50, y: 0 },

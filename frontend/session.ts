@@ -1,5 +1,4 @@
 import { AuthState } from "./auth/interfaces";
-import { box } from "boxed_value";
 import { BooleanSetting, NumericSetting } from "./session_keys";
 import {
   BooleanConfigKey, NumberConfigKey,
@@ -27,7 +26,7 @@ export namespace Session {
   export function fetchStoredToken(): AuthState | undefined {
     try {
       const v: AuthState = JSON.parse(localStorage.getItem(KEY) || "");
-      if (box(v).kind === "object") {
+      if (typeof v === "object" && JSON.stringify(v)[0] === "{") {
         return v;
       } else {
         throw new Error("Expected object or undefined"); // unreachable?

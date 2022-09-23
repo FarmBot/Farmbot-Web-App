@@ -1,6 +1,5 @@
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
-import { CowardlyDictionary } from "../util";
 import {
   Dictionary,
   TaggedResource,
@@ -26,7 +25,7 @@ export type UUIDSet = Record<UUID, true>;
 export interface ResourceIndex {
   all: UUIDSet;
   byKind: Record<ResourceName, Record<UUID, UUID>>;
-  byKindAndId: CowardlyDictionary<UUID>;
+  byKindAndId: Dictionary<UUID | undefined>;
   references: Dictionary<TaggedResource | undefined>;
   /**
    * PROBLEM: _efficiently_ tracking variable declarations across all sequences.

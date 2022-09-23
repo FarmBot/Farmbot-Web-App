@@ -4,8 +4,8 @@ import {
   TaggedRegimen,
   TaggedFarmEvent,
   TaggedTool,
+  Dictionary,
 } from "farmbot";
-import { CowardlyDictionary } from "../util";
 import {
   ResourceIndex,
   SlotWithTool,
@@ -16,7 +16,7 @@ import {
 } from "./selectors";
 import { assertUuid } from "./util";
 
-type IndexLookupDictionary<T extends TaggedResource> = CowardlyDictionary<T>;
+type IndexLookupDictionary<T extends TaggedResource> = Dictionary<T | undefined>;
 interface Indexer<T extends TaggedResource> {
   (index: ResourceIndex): IndexLookupDictionary<T>;
 }
@@ -33,7 +33,7 @@ const buildIndexer =
   <T extends TaggedResource>(kind: T["kind"], mapper?: MapperFn<T>): Indexer<T> => {
     return function (index: ResourceIndex) {
       const noop: MapperFn<T> = (i) => i;
-      const output: CowardlyDictionary<T> = {};
+      const output: Dictionary<T | undefined> = {};
       const uuids = Object.keys(index.byKind[kind]);
       const m = mapper || noop;
       uuids.map(uuid => {

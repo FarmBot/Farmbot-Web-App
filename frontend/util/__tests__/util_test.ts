@@ -1,5 +1,4 @@
 import * as Util from "../util";
-import { times } from "lodash";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { LocationData } from "farmbot";
 
@@ -28,44 +27,6 @@ describe("util", () => {
       Util.scrollToBottom("wow");
       jest.runAllTimers();
       expect(el?.scrollTop).toEqual(10);
-    });
-  });
-
-  describe("safeStringFetch", () => {
-    const data = {
-      // eslint-disable-next-line no-null/no-null
-      "null": null,
-      "undefined": undefined,
-      "number": 0,
-      "string": "hello",
-      "boolean": false,
-      "other": () => { "not allowed!"; }
-    };
-
-    it("fetches null", () => {
-      expect(Util.safeStringFetch(data, "null")).toEqual("");
-    });
-
-    it("fetches undefined", () => {
-      expect(Util.safeStringFetch(data, "undefined")).toEqual("");
-    });
-
-    it("fetches number", () => {
-      expect(Util.safeStringFetch(data, "number")).toEqual("0");
-    });
-
-    it("fetches string", () => {
-      expect(Util.safeStringFetch(data, "string")).toEqual("hello");
-    });
-
-    it("fetches boolean", () => {
-      expect(Util.safeStringFetch(data, "boolean")).toEqual("false");
-      data.boolean = true;
-      expect(Util.safeStringFetch(data, "boolean")).toEqual("true");
-    });
-
-    it("handles others with exception", () => {
-      expect(() => Util.safeStringFetch(data, "other")).toThrow();
     });
   });
 
@@ -136,13 +97,6 @@ describe("util", () => {
     });
   });
 
-  describe("randomColor()", () => {
-    it("only picks valid colors", () => {
-      times(Util.colors.length * 1.5, () =>
-        expect(Util.colors).toContain(Util.randomColor()));
-    });
-  });
-
   describe("validBotLocationData()", () => {
     it("returns valid location_data object", () => {
       const result = Util.validBotLocationData(undefined);
@@ -161,20 +115,6 @@ describe("util", () => {
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
         raw_encoders: { x: 123, y: undefined, z: undefined }
       });
-    });
-  });
-
-  describe("fancyDebug()", () => {
-    it("debugs in a fanciful manner", () => {
-      const test = { testing: "fancy debug" };
-      console.log = jest.fn();
-      const result = Util.fancyDebug(test);
-      expect(result).toBe(test);
-      expect(console.log)
-        .toHaveBeenCalledWith("             testing => \"fancy debug\"");
-      Util.fancyDebug({ testing: undefined });
-      expect(console.log)
-        .toHaveBeenCalledWith("             testing => Nothing");
     });
   });
 });

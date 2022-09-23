@@ -1,5 +1,4 @@
 import React from "react";
-import { CowardlyDictionary } from "../../util";
 import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { syncText } from "../../nav/sync_text";
@@ -18,13 +17,13 @@ export interface StatusRowProps {
   syncStatus?: SyncStatus;
 }
 
-const colorLookup: CowardlyDictionary<string> = {
+const colorLookup: Record<string, string> = {
   true: "green",
   false: "red",
   undefined: "gray"
 };
 
-const iconLookup: CowardlyDictionary<string> = {
+const iconLookup: Record<string, string> = {
   true: "check",
   false: "times",
   undefined: "question"
