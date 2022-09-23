@@ -74,7 +74,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         filterActiveTools={false} />
       <svg className={"utm-and-mounted-tool-graphic"}
         viewBox={"-60 -50 120 120"}>
-        <UTMProfile profileAxis={"x"} expanded={true} getX={() => 0}
+        <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
           position={{ x: 0, y: 0 }} selectionWidth={1}
           mountedToolInfo={{
             name: this.mountedTool?.body.name,
