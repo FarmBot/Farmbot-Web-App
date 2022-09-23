@@ -5,7 +5,10 @@ jest.mock("../edit", () => ({ togglePointTypeCriteria: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  GroupCriteria, GroupPointCountBreakdown, PointTypeSelection,
+  calcMaxCount,
+  GroupCriteria, GroupPointCountBreakdown,
+  MoreIndicatorIcon, MoreIndicatorIconProps,
+  PointTypeSelection,
   togglePointTypeCriteria,
 } from "..";
 import {
@@ -160,10 +163,57 @@ describe("<GroupPointCountBreakdown />", () => {
     const p = fakeProps();
     const wrapper = mount<GroupPointCountBreakdown>(
       <GroupPointCountBreakdown {...p} />);
-    expect(wrapper.instance().shouldComponentUpdate(p)).toBeTruthy();
+    expect(wrapper.instance().shouldComponentUpdate(p, { maxCount: 0 }))
+      .toBeTruthy();
     p.pointsSelectedByGroup = times(51, fakePoint);
     wrapper.setProps(p);
-    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
+    expect(wrapper.instance().shouldComponentUpdate(p, { maxCount: 41 }))
+      .toBeFalsy();
+  });
+
+  it("expands", () => {
+    const wrapper = mount<GroupPointCountBreakdown>(
+      <GroupPointCountBreakdown {...fakeProps()} />);
+    expect(wrapper.state().maxCount).not.toEqual(1000);
+    wrapper.instance().toggleExpand();
+    expect(wrapper.state().maxCount).toEqual(1000);
+  });
+
+  it("collapses", () => {
+    const wrapper = mount<GroupPointCountBreakdown>(
+      <GroupPointCountBreakdown {...fakeProps()} />);
+    wrapper.setState({ maxCount: 1000 });
+    wrapper.instance().toggleExpand();
+    expect(wrapper.state().maxCount).not.toEqual(1000);
+  });
+});
+
+describe("calcMaxCount()", () => {
+  it("calculates max count", () => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => ({ clientWidth: 400 }), configurable: true
+    });
+    expect(calcMaxCount()).toEqual(39);
+  });
+
+  it("handles null", () => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => undefined, configurable: true
+    });
+    expect(calcMaxCount()).toEqual(41);
+  });
+});
+
+describe("<MoreIndicatorIcon />", () => {
+  const fakeProps = (): MoreIndicatorIconProps => ({
+    count: 100,
+    maxCount: 50,
+    onClick: jest.fn(),
+  });
+
+  it("returns indicator", () => {
+    const wrapper = mount(<MoreIndicatorIcon {...fakeProps()} />);
+    expect(wrapper.text()).toEqual("+50");
   });
 });
 

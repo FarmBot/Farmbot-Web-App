@@ -41,4 +41,5 @@ export interface EditGardenProps {
   gardenIsOpen: boolean;
   dispatch: Function;
   plantPointerCount: number;
+  gardenPlants: TaggedPlantTemplate[];
 }

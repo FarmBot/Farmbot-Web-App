@@ -89,4 +89,10 @@ describe("<HotKeys />", () => {
     const wrapper = shallow(<HotKeys {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });
+
+  it("renders default", () => {
+    mockPath = Path.mock(Path.designer());
+    const wrapper = shallow(<HotKeys {...fakeProps()} />);
+    expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
+  });
 });

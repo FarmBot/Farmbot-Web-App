@@ -1795,6 +1795,15 @@ li {
     width: 70%;
     height: 70%;
   }
+  &.more-indicator {
+    height: 20px;
+    width: 20px;
+    p {
+      display: inline;
+      text-align: center;
+    }
+    cursor: pointer;
+  }
 }
 
 .weeds-inventory-panel,
@@ -1835,7 +1844,7 @@ li {
         float: right;
         font-size: 2rem;
       }
-      .groups-list-wrapper {
+      .point-list-wrapper {
         padding: 0.5em 0em;
       }
     }
@@ -2950,10 +2959,8 @@ li {
     margin-left: 0.5rem;
     margin-top: 1rem;
   }
-  p {
-    font-size: 1.2rem;
-    text-align: center;
-    padding: 3rem;
+  .point-list-wrapper {
+    margin-top: 2rem;
   }
   .row {
     margin: 0;

@@ -81,7 +81,7 @@ describe("<GroupDetailActive />", () => {
   it("doesn't show icons", () => {
     const wrapper = mount(<GroupDetailActive {...fakeProps()} />);
     wrapper.setState({ iconDisplay: false });
-    expect(wrapper.find(".groups-list-wrapper").length).toEqual(0);
+    expect(wrapper.find(".point-list-wrapper").length).toEqual(0);
   });
 });
 
