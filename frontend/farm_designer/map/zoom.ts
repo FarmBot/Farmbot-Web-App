@@ -19,8 +19,6 @@ const zoomLevel1Index = findIndex(zoomLevels, x => x === 1);
 const zoomLevelsCount = zoomLevels.length;
 export const maxZoomIndex = zoomLevelsCount - 1;
 const clampZoom = (index: number): number => clamp(index, 0, maxZoomIndex);
-export const maxZoomLevel = zoomLevelsCount - zoomLevel1Index;
-export const minZoomLevel = 1 - zoomLevel1Index;
 
 export function atMaxZoom(getConfigValue: GetWebAppConfigValue): boolean {
   return getZoomLevelIndex(getConfigValue) >= maxZoomIndex;

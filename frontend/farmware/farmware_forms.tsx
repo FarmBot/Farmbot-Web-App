@@ -32,17 +32,6 @@ export function getConfigEnvName(farmwareName: string, configName: string) {
   return `${snakeCase(farmwareName)}_${configName}`;
 }
 
-/** Farmware description and version info for help text contents. */
-export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined):
-  string {
-  if (farmware) {
-    const description = farmware.meta.description;
-    const versionString = " (version: " + farmware.meta.version + ")";
-    return description + versionString;
-  }
-  return "";
-}
-
 enum DropdownInput {
   images = "verbose",
   logs = "log_verbosity",

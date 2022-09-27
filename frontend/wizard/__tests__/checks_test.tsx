@@ -59,14 +59,8 @@ import {
   FirmwareHardwareSelection,
   FlashFirmware,
   InvertJogButton,
-  InvertMotor,
   lowVoltageProblemStatus,
   MapOrientation,
-  MotorAcceleration,
-  MotorCurrent,
-  MotorMaxSpeed,
-  MotorMinSpeed,
-  MotorSettings,
   NetworkRequirementsLink,
   PeripheralsCheck,
   PinBinding,
@@ -437,25 +431,6 @@ describe("<Connectivity />", () => {
   });
 });
 
-describe("<InvertMotor />", () => {
-  const state = fakeState();
-  const config = fakeFirmwareConfig();
-  state.resources = buildResourceIndex([config]);
-
-  it("inverts motor", () => {
-    const p = fakeProps();
-    const config = fakeFirmwareConfig();
-    config.body.movement_invert_motor_x = 0;
-    p.resources = buildResourceIndex([config]).index;
-    p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(InvertMotor("x")(p));
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      movement_invert_motor_x: 1
-    });
-  });
-});
-
 describe("<DisableStallDetection />", () => {
   const state = fakeState();
   const config = fakeFirmwareConfig();
@@ -652,73 +627,6 @@ describe("<BootSequence />", () => {
   it("renders boot sequence", () => {
     const wrapper = mount(<BootSequence />);
     expect(wrapper.text().toLowerCase()).toContain("boot");
-  });
-});
-
-describe("<MotorMinSpeed />", () => {
-  it("renders min speed", () => {
-    const Component = MotorMinSpeed("x");
-    const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("x-axis min");
-  });
-});
-
-describe("<MotorMaxSpeed />", () => {
-  it("renders min speed", () => {
-    const Component = MotorMaxSpeed("x");
-    const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("x-axis max");
-  });
-});
-
-describe("<MotorAcceleration />", () => {
-  it("renders acceleration", () => {
-    const Component = MotorAcceleration("x");
-    const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("x-axis acceleration");
-  });
-});
-
-describe("<MotorCurrent />", () => {
-  const state = fakeState();
-  const config = fakeFirmwareConfig();
-  state.resources = buildResourceIndex([config]);
-
-  it("changes motor current", () => {
-    const p = fakeProps();
-    const fwConfig = fakeFirmwareConfig();
-    fwConfig.body.movement_motor_current_x = 100;
-    const fbosConfig = fakeFbosConfig();
-    fbosConfig.body.firmware_hardware = "arduino";
-    p.resources = buildResourceIndex([fwConfig, fbosConfig]).index;
-    p.dispatch = mockDispatch(jest.fn(), () => state);
-    const Component = MotorCurrent("x");
-    const wrapper = mount(<Component {...p} />);
-    changeBlurableInput(wrapper, "200", 0);
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      movement_motor_current_x: "200"
-    });
-  });
-
-  it("handles missing settings", () => {
-    const Component = MotorCurrent("x");
-    const p = fakeProps();
-    p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(<Component {...p} />);
-    changeBlurableInput(wrapper, "100", 0);
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      movement_motor_current_x: "100"
-    });
-  });
-});
-
-describe("<MotorSettings />", () => {
-  it("renders all motor settings", () => {
-    const Component = MotorSettings("x");
-    const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("x-axis min");
-    expect(wrapper.text().toLowerCase()).toContain("x-axis max");
-    expect(wrapper.text().toLowerCase()).toContain("x-axis motor");
   });
 });
 

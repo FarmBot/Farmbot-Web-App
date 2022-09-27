@@ -10,7 +10,6 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { taggedUser } from "../../__test_support__/user";
 import { NavBarProps } from "../interfaces";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
@@ -24,13 +23,14 @@ import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
 import { fakePercentJob } from "../../__test_support__/fake_bot_data";
 import { metricPanelState } from "../../__test_support__/panel_state";
+import { fakeUser } from "../../__test_support__/fake_state/resources";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
     timeSettings: fakeTimeSettings(),
     logs: [],
     bot,
-    user: taggedUser,
+    user: fakeUser(),
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
     helpState: fakeHelpState(),

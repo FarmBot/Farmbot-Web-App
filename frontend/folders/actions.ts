@@ -1,5 +1,3 @@
-import { RootFolderNode as Tree } from "./interfaces";
-import { cloneAndClimb } from "./climb";
 import { Color, SpecialStatus, TaggedSequence } from "farmbot";
 import { store } from "../redux/store";
 import { initSave, destroy, edit, save, init } from "../api/crud";
@@ -15,14 +13,6 @@ import { stepGet, STEP_DATATRANSFER_IDENTIFER } from "../draggable/actions";
 import { joinKindAndId } from "../resources/reducer_support";
 import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
-
-type TreePromise = Promise<Tree>;
-
-export const collapseAll = (tree: Tree): TreePromise => {
-  return Promise.resolve(cloneAndClimb(tree, (node) => {
-    node.open = false;
-  }));
-};
 
 export const setFolderColor = (id: number, color: Color) => {
   const d = store.dispatch as Function;

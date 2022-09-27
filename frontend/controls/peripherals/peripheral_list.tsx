@@ -7,8 +7,6 @@ import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
 import { ANALOG } from "farmbot";
 import { lockedClass } from "../locked_class";
-import { round } from "lodash";
-import { PinMode } from "../../sequences/step_tiles/pin_support/mode";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list">
@@ -70,31 +68,3 @@ export class AnalogSlider
     </div>;
   }
 }
-
-export enum PinIOMode {
-  "input" = 0,
-  "output" = 1,
-  "input_pullup" = 2,
-}
-
-/* Calculate 0-255 pin value based on pin i/o mode. */
-export const calc8BitValue = (
-  pinIOMode: PinIOMode,
-  value: number | undefined,
-  mode: PinMode,
-) => {
-  switch (pinIOMode) {
-    case PinIOMode.input:
-      return mode == PinMode.digital
-        ? (value || 0) * 255
-        : round((value || 0) / 1024 * 255);
-    case PinIOMode.output:
-      return mode == PinMode.digital
-        ? (value || 0) * 255
-        : value;
-    case PinIOMode.input_pullup:
-      return mode == PinMode.digital
-        ? (1 - (value || 1)) * 255
-        : round((1024 - (value || 1024)) / 1024 * 255);
-  }
-};

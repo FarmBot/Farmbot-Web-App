@@ -1,4 +1,4 @@
-import { selectRegimen, unselectRegimen } from "../actions";
+import { selectRegimen } from "../actions";
 import { Actions } from "../../constants";
 
 describe("selectRegimen()", () => {
@@ -13,13 +13,5 @@ describe("selectRegimen()", () => {
   it("crashes if malformed", () => {
     console.warn = jest.fn();
     expect(() => selectRegimen("wrong")).toThrow();
-  });
-});
-
-describe("unselectRegimen()", () => {
-  it("deselects regimen", () => {
-    expect(unselectRegimen()).toEqual({
-      type: Actions.SELECT_REGIMEN, payload: undefined
-    });
   });
 });

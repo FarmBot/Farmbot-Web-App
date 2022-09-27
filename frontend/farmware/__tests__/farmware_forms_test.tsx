@@ -8,7 +8,7 @@ jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  needsFarmwareForm, farmwareHelpText, getConfigEnvName,
+  needsFarmwareForm, getConfigEnvName,
   FarmwareForm, FarmwareFormProps, ConfigFields, ConfigFieldsProps,
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
@@ -40,17 +40,6 @@ describe("needsFarmwareForm()", () => {
     expect(needsFarmwareForm(farmware)).toEqual(false);
     farmware.config = undefined as unknown as FarmwareConfig[];
     expect(needsFarmwareForm(farmware)).toEqual(false);
-  });
-});
-
-describe("farmwareHelpText()", () => {
-  it("generates string", () => {
-    const farmware = fakeFarmware();
-    expect(farmwareHelpText(farmware)).toEqual("Does things. (version: 0.0.0)");
-  });
-
-  it("generates blank string", () => {
-    expect(farmwareHelpText(undefined)).toEqual("");
   });
 });
 

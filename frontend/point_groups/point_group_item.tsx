@@ -55,11 +55,6 @@ export const genericWeedIcon = (color: string | undefined) =>
         fill='url(#WeedGradient)' opacity='0.5'></circle>
     </svg>`;
 
-export const OTHER_POINT_ICON =
-  `<svg xmlns='http://www.w3.org/2000/svg' fill='gray'>
-    <circle cx='15' cy='15' r='12' />
-    </svg>`;
-
 // The individual plants in the point group detail page.
 export class PointGroupItem
   extends React.Component<PointGroupItemProps, PointGroupItemState> {

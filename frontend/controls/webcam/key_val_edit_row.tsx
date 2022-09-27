@@ -1,9 +1,16 @@
 import React from "react";
 import { Row, Col } from "../../ui";
-import { KeyValRowProps } from "./key_val_show_row";
 import { t } from "../../i18next_wrapper";
 
-export interface KeyValEditRowProps extends KeyValRowProps {
+export interface KeyValEditRowProps {
+  label: string;
+  labelPlaceholder: string;
+  value: string;
+  valuePlaceholder: string;
+  onClick(): void;
+  disabled: boolean;
+  toggleValue?: number | undefined;
+  title?: string;
   onLabelChange(e: React.ChangeEvent<HTMLInputElement>): void;
   onValueChange(e: React.ChangeEvent<HTMLInputElement>): void;
   valueType: "number" | "string";

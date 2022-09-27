@@ -20,19 +20,6 @@ import {
   TaggedSensor,
 } from "farmbot";
 
-export interface TaggedResourceBase {
-  kind: ResourceName;
-  /** Unique identifier and index key.
-   * We can't use the object's `id` attribute as a local index key because
-   * unsaved objects don't have one.
-   */
-  uuid: string;
-  body: object;
-  /** Indicates if the resource is saved, saving or dirty.
-   * `undefined` denotes that the resource is saved. */
-  specialStatus: SpecialStatus;
-}
-
 /** Given an array of TaggedResources, returns the most "important" special status.
  * the hierarchy is SAVED => DIRTY => SAVING  */
 export function getArrayStatus(i: TaggedResource[]): SpecialStatus {

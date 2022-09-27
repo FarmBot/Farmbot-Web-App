@@ -3,7 +3,6 @@ import {
   TaggedSequence,
   TaggedRegimen,
   TaggedFarmEvent,
-  TaggedTool,
   Dictionary,
 } from "farmbot";
 import {
@@ -53,7 +52,6 @@ const buildIndexer =
 export const indexSequenceById = buildIndexer<TaggedSequence>("Sequence");
 export const indexRegimenById = buildIndexer<TaggedRegimen>("Regimen");
 export const indexFarmEventById = buildIndexer<TaggedFarmEvent>("FarmEvent");
-export const indexByToolId = buildIndexer<TaggedTool>("Tool");
 
 /** For those times that you need to ref a tool and slot together. */
 export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {

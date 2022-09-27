@@ -589,22 +589,6 @@ export namespace ToolTips {
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
 
-  // Regimens
-  export const BULK_SCHEDULER =
-    trim(`Add sequences to your regimen by selecting a sequence from the
-    drop down, specifying a time, choosing which days it should run on,
-    and then clicking the + button. For example: a Seeding sequence might
-    be scheduled for Day 1, while a Watering sequence would be scheduled
-    to run every other day.`);
-
-  export const REGIMEN_EDITOR =
-    trim(`Regimens allow FarmBot to take care of a plant throughout its
-    entire life. A regimen consists of many sequences that are scheduled
-    to run based on the age of the plant. Regimens are applied to plants
-    from the farm designer (coming soon) and can be re-used on many plants
-    growing at the same or different times. Multiple regimens can be
-    applied to any one plant.`);
-
   // Logs
   export const LOGS =
     trim(`View and filter log messages.`);
@@ -894,35 +878,12 @@ export namespace Content {
     complete restore to your device once it is back online and paired with
     your web app account.`);
 
-  export const AUTO_SOFT_RESET =
-    trim(`Automatically soft reset when the WiFi network cannot be
-    detected. Useful for network changes.`);
-
-  export const AUTO_SOFT_RESET_PERIOD =
-    trim(`Time in minutes to attempt connecting to WiFi before a soft
-    reset.`);
-
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
 
   export const CONTACT_SYSADMIN =
     trim(`Please contact the system(s) administrator(s) and ask them to enable
     HTTPS://`);
-
-  // Hardware Settings: Stall Detection
-  export const STALL_DETECTION_NOT_AVAILABLE =
-    trim(`Stall detection for FarmBot Express bots is not yet available.
-    Once it is ready, you will receive a message in the Message Center.
-    We thank you for your patience.`);
-
-  export const STALL_DETECTION_IN_BETA =
-    trim(`Warning: Stall detection for FarmBot Express bots is now
-    available as a public beta. While you may enable stall detection for
-    all three axes, you may not achieve desirable or consistent results
-    for some or any of the axes. If you experience any issues, we advise
-    you to wait until there are further updates. We are working hard to
-    improve this system and thank you for your patience. Feedback is
-    appreciated and may be provided on the community forum.`);
 
   // Hardware Settings: Limit Switches
   export const LIMIT_SWITCH_WARNING =
@@ -1018,11 +979,6 @@ export namespace Content {
   export const OLD_FBOS_UNSUPPORTED =
     trim(`You are running an old version of FarmBot OS that is no longer
     supported.`);
-
-  export const EXPERIMENTAL_WARNING =
-    trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
-    broken and may break or otherwise hinder your usage of the rest of the
-    app. This feature may disappear or break at any time.`);
 
   export const FORCE_REFRESH_CONFIRM =
     trim(`A new version of the FarmBot web app has been released.
@@ -1139,11 +1095,6 @@ export namespace Content {
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
-
-  export const MOVE_MODE_DESCRIPTION =
-    trim(`Click a spot in the grid to choose a location.
-    Once selected, press button to move FarmBot to this position.
-    Press the back arrow to exit.`);
 
   export const CREATE_POINTS_DESCRIPTION =
     trim(`Click and drag or use the inputs to draw a point.`);
@@ -1342,13 +1293,6 @@ export namespace TourContent {
     details panel where you can make edits.
     Pressing the group + button will create a new group.`);
 
-  export const SAVED_GARDENS_PANEL =
-    trim(`This is the gardens section. Here you can view and manage all of
-    your saved gardens for quickly replanting season after season. Clicking
-    a garden will open up the garden details panel where you can view and
-    edit it. Pressing the garden + button will allow to snapshot the current
-    garden or add a new one from scratch.`);
-
   export const SEQUENCES_PANEL =
     trim(`This is the sequences panel. Here you can view and manage all of
     your sequences. Clicking a sequence will open up the sequence editor
@@ -1426,13 +1370,6 @@ export namespace TourContent {
     about the connection between your web browser, your FarmBot, and the
     FarmBot web app servers. Whenever your FarmBot is online and ready for
     action, you will see a green checkmark.`);
-
-  export const SYNC_STATUS =
-    trim(`This is the sync status indicator. Whenever you edit a resource
-    in the web app such as a plant, sequence, or event, your FarmBot will
-    download (sync) this information. Syncing may take up to 10 seconds
-    depending on your internet connection, and longer when FarmBot first
-    boots up.`);
 
   export const CURRENT_POSITION =
     trim(`This is the current position indicator. FarmBot's current X, Y,
@@ -1644,10 +1581,6 @@ export namespace SetupWizardContent {
     map to your real life FarmBot. The relevant controls are available
     below the video for your convenience.`);
 
-  export const FIND_MAP_ORIGIN =
-    trim(`Find the origin in the map. The origin is at the coordinate (0, 0),
-    with arrows pointing along the X and Y axes.`);
-
   export const PRESS_RIGHT_JOG_BUTTON =
     trim(`Standing from where you will normally view the FarmBot,
     **press the right arrow button**.`);
@@ -1692,24 +1625,13 @@ export namespace SetupWizardContent {
     trim(`Did FarmBot move to the end of the axis and then move back to
     the home position for this axis?`);
 
-  export const X_HOME_PROMPT =
-    trim(`Are FarmBot's gantry wheel plates touching the hardstops at the
-    end of the tracks?`);
-
   export const HOME_X =
     trim(`Press the home button or move FarmBot's x-axis (with the controls
     or manually) until the plates hit the hardstops.`);
 
-  export const Y_HOME_PROMPT =
-    trim(`Is FarmBot's cross-slide plate touching the hardstop at the end of
-    the gantry main beam?`);
-
   export const HOME_Y =
     trim(`Press the home button or move FarmBot's y-axis (with the controls
       or manually) until the plate hits the hardstop.`);
-
-  export const Z_HOME_PROMPT =
-    trim(`Is FarmBot's z-axis hardstop touching the cross-slide plate?`);
 
   export const HOME_Z =
     trim(`Press the home button or move FarmBot's z-axis (with the controls
@@ -1777,12 +1699,6 @@ export namespace SetupWizardContent {
     and a safe distance will be maintained while the rotary tool is attached.
     Be mindful of debris that may be projected and use appropriate
     protective equipment. Disconnect the rotary tool when not in use.`);
-
-  export const FIND_HOME_BUTTON =
-    trim(`Press the circle icon to open the button selection interface.
-    Select "Button 5", then choose the "Find Home" sequence in the
-    dropdown menu. Press "SAVE" to save the pin binding. Once FarmBot has
-    synced the change, press Button 5 on top of the electronics box.`);
 
   export const ESTOP_BUTTON =
     trim(`Press the physical E-Stop button on top of the electronics box.`);

@@ -1,6 +1,5 @@
 import { FolderNode } from "../interfaces";
 import { ingest } from "../data_transfer";
-import { climb } from "../climb";
 
 const FOLDERS: FolderNode[] = [
   { id: 1, color: "blue", name: "Water stuff", parent_id: undefined },
@@ -12,24 +11,6 @@ const FOLDERS: FolderNode[] = [
 const TREE = ingest({
   folders: FOLDERS,
   localMetaAttributes: {}
-});
-
-describe("climb()", () => {
-  it("traverses through the nodes", () => {
-    const results: string[] = [];
-    climb(TREE, (node) => results.push(node.color));
-    expect(results.length).toBe(FOLDERS.length);
-    expect(results.sort()).toEqual(FOLDERS.map(x => x.color).sort());
-  });
-
-  it("halts a tree climb", () => {
-    let count = 0;
-    climb(TREE, (_node, halt) => {
-      count += 1;
-      if (count == 3) { halt(); }
-    });
-    expect(count).toEqual(3);
-  });
 });
 
 describe("data transfer", () => {

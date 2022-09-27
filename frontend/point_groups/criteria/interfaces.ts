@@ -124,20 +124,6 @@ export interface PlantSubCriteriaProps extends SubCriteriaProps {
   slugs: string[];
 }
 
-export interface CheckboxSelectionsProps {
-  dispatch: Function;
-  group: TaggedPointGroup;
-  slugs: string[];
-  pointerTypes: PointType[] | undefined;
-}
-
-export interface CheckboxSelectionsState {
-  Plant: boolean;
-  GenericPointer: boolean;
-  ToolSlot: boolean;
-  Weed: boolean;
-}
-
 export interface NumberLtGtInputProps {
   criteriaKey: "x" | "y" | "radius";
   group: TaggedPointGroup;

@@ -34,5 +34,4 @@ export const generalizedError = (payload: GeneralizedError) => {
 };
 
 export const destroyNO = generalizedError;
-export const createNO = generalizedError;
 export const updateNO = generalizedError;

@@ -8,7 +8,7 @@ import {
   seqDropDown, InnerIf, IfBlockDropDownHandler, LHSOptions, ThenElseParams,
 } from "../index";
 import {
-  buildResourceIndex, FAKE_RESOURCES,
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { Execute, If, TaggedSequence, ParameterApplication } from "farmbot";
 import { overwrite } from "../../../../api/crud";
@@ -21,7 +21,7 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
-const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
+const fakeResourceIndex = buildResourceIndex().index;
 const fakeTaggedSequence = fakeResourceIndex
   .references[Object.keys(fakeResourceIndex.byKind.Sequence)[0]] as TaggedSequence;
 const fakeId = fakeTaggedSequence.body.id || 0;

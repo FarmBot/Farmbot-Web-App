@@ -19,7 +19,6 @@ enum FbosFile {
 export namespace ExternalUrl {
   const GITHUB = "https://github.com";
   const GITHUB_RAW = "https://raw.githubusercontent.com";
-  const GITHUB_API = "https://api.github.com";
   const OPENFARM = "https://openfarm.cc";
   const GENESIS_DOCS = "https://genesis.farm.bot";
   const EXPRESS_DOCS = "https://express.farm.bot";
@@ -49,9 +48,6 @@ export namespace ExternalUrl {
     `${GITHUB_RAW}/${Org.FarmBot}/${FarmBotRepo.FarmBotOS}/staging`;
   export const featureMinVersions = `${FBOS_RAW}/${FbosFile.featureMinVersions}`;
   export const osReleaseNotes = `${FBOS_RAW}/${FbosFile.osReleaseNotes}`;
-
-  export const latestRelease =
-    `${GITHUB_API}/repos/${Org.FarmBot}/${FarmBotRepo.FarmBotOS}/releases/latest`;
 
   export const gitHubFarmBot = `${GITHUB}/${Org.FarmBot}`;
   export const webAppRepo = `${gitHubFarmBot}/${FarmBotRepo.FarmBotWebApp}`;

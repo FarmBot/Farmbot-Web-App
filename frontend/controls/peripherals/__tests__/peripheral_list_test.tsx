@@ -7,7 +7,7 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  PeripheralList, AnalogSlider, AnalogSliderProps, calc8BitValue, PinIOMode,
+  PeripheralList, AnalogSlider, AnalogSliderProps,
 } from "../peripheral_list";
 import {
   TaggedPeripheral,
@@ -16,7 +16,6 @@ import {
 } from "farmbot";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-import { PinMode } from "../../../sequences/step_tiles/pin_support";
 
 describe("<PeripheralList />", () => {
   const fakeProps = (): PeripheralListProps => {
@@ -147,23 +146,4 @@ describe("<AnalogSlider />", () => {
     wrapper.find(Slider).simulate("change", 128);
     expect(wrapper.find(Slider).props().value).toEqual(128);
   });
-});
-
-describe("calc8BitValue()", () => {
-  it.each<[PinIOMode, number | undefined, PinMode, number]>([
-    [PinIOMode.input, 1000, PinMode.analog, 249],
-    [PinIOMode.input, 1, PinMode.digital, 255],
-    [PinIOMode.input, undefined, PinMode.analog, 0],
-    [PinIOMode.input, undefined, PinMode.digital, 0],
-    [PinIOMode.output, 128, PinMode.analog, 128],
-    [PinIOMode.output, 1, PinMode.digital, 255],
-    [PinIOMode.output, undefined, PinMode.digital, 0],
-    [PinIOMode.input_pullup, 1000, PinMode.analog, 6],
-    [PinIOMode.input_pullup, 1, PinMode.digital, 0],
-    [PinIOMode.input_pullup, undefined, PinMode.analog, 0],
-    [PinIOMode.input_pullup, undefined, PinMode.digital, 0],
-  ])("returns correct value in i/o mode %s for %s in mode %s",
-    (ioMode, value, mode, expected) => {
-      expect(calc8BitValue(ioMode, value, mode)).toEqual(expected);
-    });
 });

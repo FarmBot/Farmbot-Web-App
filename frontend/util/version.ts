@@ -1,4 +1,4 @@
-import { isString, isUndefined } from "lodash";
+import { isUndefined } from "lodash";
 import { BotState, Feature, MinOsFeatureLookup } from "../devices/interfaces";
 import { TaggedDevice } from "farmbot";
 
@@ -70,27 +70,6 @@ export function semverCompare(left: string, right: string): SemverResult {
   }
 
   return SemverResult.EQUAL;
-}
-
-/**
- * Conditionally display firmware settings based on
- * the user's current Arduino firmware version.
- *
- * @param current installed firmware version string ("0.0.0")
- * @param min minimum firmware version string required ("0.0.0")
- */
-export function minFwVersionCheck(current: string | undefined, min: string) {
-  if (isString(current)) {
-    switch (semverCompare(current, min)) {
-      case SemverResult.LEFT_IS_GREATER:
-      case SemverResult.EQUAL:
-        return true;
-      default:
-        return false;
-    }
-  } else {
-    return false;
-  }
 }
 
 /**

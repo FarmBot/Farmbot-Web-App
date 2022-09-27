@@ -72,7 +72,7 @@ import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import { copySequence } from "../../sequences/actions";
-import { fakeResourceIndex } from "../../sequences/locals_list/test_helpers";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -110,7 +110,7 @@ describe("<Folders />", () => {
     resourceUsage: {},
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
-    resources: fakeResourceIndex(),
+    resources: buildResourceIndex([]).index,
     menuOpen: undefined,
     syncStatus: undefined,
   });
@@ -257,7 +257,7 @@ describe("<FolderListItem />", () => {
     variableData: undefined,
     inUse: false,
     getWebAppConfigValue: jest.fn(),
-    resources: fakeResourceIndex(),
+    resources: buildResourceIndex([]).index,
     menuOpen: undefined,
     syncStatus: undefined,
     searchTerm: undefined,
@@ -502,7 +502,7 @@ describe("<FolderNameEditor />", () => {
     resourceUsage: {},
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
-    resources: fakeResourceIndex(),
+    resources: buildResourceIndex([]).index,
     menuOpen: undefined,
     syncStatus: undefined,
     searchTerm: undefined,

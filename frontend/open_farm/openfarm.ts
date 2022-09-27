@@ -28,10 +28,6 @@ export namespace OpenFarm {
     svg_icon?: string | undefined;
   }
 
-  export interface OFCropWithCompanions extends OFCrop {
-    companions?: CompanionsData[];
-  }
-
   export interface Self {
     api: string;
     website: string;
