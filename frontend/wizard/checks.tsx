@@ -69,7 +69,6 @@ import {
 } from "../photos/camera_calibration/config";
 import { Actions, DeviceSetting, SetupWizardContent, ToolTips } from "../constants";
 import { WD_KEY_DEFAULTS } from "../photos/remote_env/constants";
-import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
 import { LockableButton } from "../settings/hardware_settings/lockable_button";
 import {
   disabledAxisMap,
@@ -297,7 +296,7 @@ interface FirmwareHardwareSelectionState {
 
 export class FirmwareHardwareSelection
   extends React.Component<WizardStepComponentProps,
-  FirmwareHardwareSelectionState> {
+    FirmwareHardwareSelectionState> {
   state: FirmwareHardwareSelectionState = {
     selection: "",
     autoSeed: this.seedAlerts.length > 0,
@@ -374,15 +373,6 @@ export const Connectivity = (props: WizardStepComponentProps) => {
     <ConnectivityDiagram rowData={data.rowData} />
     <Diagnosis statusFlags={data.flags} />
   </div>;
-};
-
-export const InvertMotor = (axis: Xyz) => {
-  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
-    x: { key: "movement_invert_motor_x", label: t("Invert x-axis motor") },
-    y: { key: "movement_invert_motor_y", label: t("Invert y-axis motor") },
-    z: { key: "movement_invert_motor_z", label: t("Invert z-axis motor") },
-  };
-  return FirmwareSettingToggle(setting[axis]);
 };
 
 export const InvertJogButton = (axis: Xyz) =>
@@ -589,71 +579,6 @@ export const AxisActions = (props: WizardStepComponentProps) => {
 export const BootSequence = () => {
   return <BootSequenceSelector />;
 };
-
-const FirmwareSettingInput = (setting: { key: NumberConfigKey, label: string }) =>
-  (props: WizardOutcomeComponentProps) => {
-    const sourceFwConfig = sourceFwConfigValue(
-      validFwConfig(getFirmwareConfig(props.resources)),
-      props.bot.hardware.mcu_params);
-    const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
-    return <Row>
-      <Col xs={6}>
-        <label>{t(setting.label)}</label>
-      </Col>
-      <Col xs={6}>
-        <McuInputBox
-          dispatch={props.dispatch}
-          sourceFwConfig={sourceFwConfig}
-          firmwareHardware={firmwareHardware}
-          setting={setting.key} />
-      </Col>
-    </Row>;
-  };
-
-export const MotorMinSpeed = (axis: Xyz) => {
-  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
-    x: { key: "movement_min_spd_x", label: t("x-axis minimum speed") },
-    y: { key: "movement_min_spd_y", label: t("y-axis minimum speed") },
-    z: { key: "movement_min_spd_z", label: t("z-axis minimum speed") },
-  };
-  return FirmwareSettingInput(setting[axis]);
-};
-
-export const MotorMaxSpeed = (axis: Xyz) => {
-  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
-    x: { key: "movement_max_spd_x", label: t("x-axis maximum speed") },
-    y: { key: "movement_max_spd_y", label: t("y-axis maximum speed") },
-    z: { key: "movement_max_spd_z", label: t("z-axis maximum speed") },
-  };
-  return FirmwareSettingInput(setting[axis]);
-};
-
-export const MotorAcceleration = (axis: Xyz) => {
-  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
-    x: { key: "movement_steps_acc_dec_x", label: t("x-axis acceleration") },
-    y: { key: "movement_steps_acc_dec_y", label: t("y-axis acceleration") },
-    z: { key: "movement_steps_acc_dec_z", label: t("z-axis acceleration") },
-  };
-  return FirmwareSettingInput(setting[axis]);
-};
-
-export const MotorCurrent = (axis: Xyz) => {
-  const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
-    x: { key: "movement_motor_current_x", label: t("x-axis motor current") },
-    y: { key: "movement_motor_current_y", label: t("y-axis motor current") },
-    z: { key: "movement_motor_current_z", label: t("z-axis motor current") },
-  };
-  return FirmwareSettingInput(setting[axis]);
-};
-
-export const MotorSettings = (axis: Xyz) =>
-  (props: WizardOutcomeComponentProps) =>
-    <div className={"motor-settings"}>
-      {MotorMinSpeed(axis)(props)}
-      {MotorMaxSpeed(axis)(props)}
-      {MotorAcceleration(axis)(props)}
-      {MotorCurrent(axis)(props)}
-    </div>;
 
 export const CameraOffset = (props: WizardStepComponentProps) => {
   const helpText = t(ToolTips.CAMERA_OFFSET, {

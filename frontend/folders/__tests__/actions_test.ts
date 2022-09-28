@@ -7,7 +7,6 @@ jest.mock("../../draggable/actions", () => ({
 }));
 
 import {
-  collapseAll,
   setFolderColor,
   setFolderName,
   addNewSequenceToFolder,
@@ -21,8 +20,6 @@ import {
   dropSequence,
   sequenceEditMaybeSave,
 } from "../actions";
-import { sample } from "lodash";
-import { cloneAndClimb, climb } from "../climb";
 import { store } from "../../redux/store";
 import { DeepPartial } from "redux";
 import { Everything } from "../../interfaces";
@@ -37,7 +34,7 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { stepGet } from "../../draggable/actions";
 import { SpecialStatus } from "farmbot";
 import { dragEvent } from "../../__test_support__/fake_html_events";
-import { mockFolders, TEST_GRAPH } from "../test_fixtures";
+import { mockFolders } from "../test_fixtures";
 import { Path } from "../../internal_urls";
 
 const mockSequence = fakeSequence();
@@ -67,19 +64,6 @@ jest.mock("../../api/crud", () => {
 
 jest.mock("../../sequences/set_active_sequence_by_name", () => {
   return { setActiveSequenceByName: jest.fn() };
-});
-
-describe("expand/collapse all", () => {
-  const halfOpen = cloneAndClimb(TEST_GRAPH, (node) => {
-    node.open = !sample([true, false]);
-  });
-
-  it("collapses all folders", async () => {
-    const closed = await collapseAll(halfOpen);
-    climb(closed, (node) => {
-      expect(node.open).toBe(false);
-    });
-  });
 });
 
 describe("setFolderColor", () => {

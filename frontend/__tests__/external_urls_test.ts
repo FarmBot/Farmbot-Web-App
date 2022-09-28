@@ -9,8 +9,6 @@ describe("ExternalUrl", () => {
       .toEqual("https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/FEATURE_MIN_VERSIONS.json");
     expect(ExternalUrl.osReleaseNotes)
       .toEqual("https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/RELEASE_NOTES.md");
-    expect(ExternalUrl.latestRelease)
-      .toEqual("https://api.github.com/repos/FarmBot/farmbot_os/releases/latest");
     expect(ExternalUrl.webAppRepo)
       .toEqual("https://github.com/FarmBot/Farmbot-Web-App");
     expect(ExternalUrl.gitHubFarmBot)

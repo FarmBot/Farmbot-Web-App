@@ -105,26 +105,6 @@ describe("findUuid()", () => {
   });
 });
 
-describe("isKind()", () => {
-  it("is", () => {
-    const ret = Selector.isKind("Sequence")(fakeSequence());
-    expect(ret).toBeTruthy();
-  });
-
-  it("isn't", () => {
-    const ret = Selector.isKind("Tool")(fakeSequence());
-    expect(ret).toBeFalsy();
-  });
-});
-
-describe("groupPointsByType()", () => {
-  it("returns points", () => {
-    const points = Selector.groupPointsByType(fakeIndex);
-    const expectedKeys = ["Plant", "GenericPointer", "ToolSlot", "Weed"];
-    expect(expectedKeys.every(key => key in points)).toBeTruthy();
-  });
-});
-
 describe("findPointerByTypeAndId()", () => {
   it("throws error", () => {
     const find = () => Selector.findPointerByTypeAndId(fakeIndex, "Other", 0);
@@ -177,20 +157,6 @@ describe("maybeGetSequence", () => {
     const result = Selector.maybeGetSequence(i.index, s.uuid);
     expect(result).toBeTruthy();
     expect(result?.uuid).toBe(s.uuid);
-  });
-});
-
-describe("findAllById()", () => {
-  it("returns", () => {
-    const result = Selector.findAllById(fakeIndex, [23], "Sequence");
-    expect(result.length).toEqual(1);
-  });
-});
-
-describe("toolsInUse()", () => {
-  it("returns tools", () => {
-    const activeTools = Selector.toolsInUse(fakeIndex);
-    expect(activeTools.length).toBeGreaterThan(0);
   });
 });
 

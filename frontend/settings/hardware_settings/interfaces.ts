@@ -9,10 +9,6 @@ import { DeviceSetting } from "../../constants";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { SettingsPanelState } from "../../interfaces";
 
-export interface ZeroRowProps {
-  botDisconnected: boolean;
-}
-
 export interface AxisSettingsProps {
   dispatch: Function;
   bot: BotState;

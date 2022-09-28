@@ -4,9 +4,7 @@ import {
 } from "../sequences";
 import { shallow, mount } from "enzyme";
 import { SequencesProps } from "../interfaces";
-import {
-  FAKE_RESOURCES, buildResourceIndex,
-} from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { ToolTips, Actions } from "../../constants";
 import {
@@ -23,7 +21,7 @@ describe("<Sequences />", () => {
     dispatch: jest.fn(),
     sequence: fakeSequence(),
     sequences: [],
-    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    resources: buildResourceIndex().index,
     syncStatus: "synced",
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),

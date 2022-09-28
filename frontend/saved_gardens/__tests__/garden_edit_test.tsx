@@ -21,7 +21,9 @@ import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditGarden as EditGarden, mapStateToProps } from "../garden_edit";
 import { EditGardenProps } from "../interfaces";
-import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
+import {
+  fakePlantTemplate, fakeSavedGarden,
+} from "../../__test_support__/fake_state/resources";
 import { clickButton } from "../../__test_support__/helpers";
 import { applyGarden, destroySavedGarden } from "../actions";
 import { error } from "../../toast/toast";
@@ -38,6 +40,7 @@ describe("<EditGarden />", () => {
     gardenIsOpen: false,
     dispatch: jest.fn(),
     plantPointerCount: 0,
+    gardenPlants: [fakePlantTemplate()],
   });
 
   it("edits garden name", () => {
@@ -117,6 +120,13 @@ describe("<EditGarden />", () => {
     const wrapper = mount(<EditGarden {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("edit garden");
   });
+
+  it("expands", () => {
+    const wrapper = mount<EditGarden>(<EditGarden {...fakeProps()} />);
+    expect(wrapper.state().expand).toEqual(false);
+    wrapper.instance().toggleExpand();
+    expect(wrapper.state().expand).toEqual(true);
+  });
 });
 
 describe("mapStateToProps()", () => {
@@ -125,7 +135,7 @@ describe("mapStateToProps()", () => {
     sg.body.id = 1;
     mockPath = Path.mock(Path.savedGardens(1));
     const state = fakeState();
-    state.resources = buildResourceIndex([sg]);
+    state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
     const props = mapStateToProps(state);
     expect(props.gardenIsOpen).toEqual(true);
@@ -137,7 +147,7 @@ describe("mapStateToProps()", () => {
     sg.body.id = 1;
     mockPath = Path.mock(Path.savedGardens());
     const state = fakeState();
-    state.resources = buildResourceIndex([sg]);
+    state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
     const props = mapStateToProps(state);
     expect(props.gardenIsOpen).toEqual(false);

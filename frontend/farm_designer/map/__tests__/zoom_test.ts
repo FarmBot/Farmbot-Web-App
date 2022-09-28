@@ -26,19 +26,9 @@ describe("zoom utilities", () => {
     expect(ZoomUtils.atMinZoom(() => 1)).toBeFalsy();
   });
 
-  it("at max zoom", () => {
-    expect(ZoomUtils.atMaxZoom(() => ZoomUtils.maxZoomLevel)).toBeTruthy();
-    expect(ZoomUtils.atMinZoom(() => ZoomUtils.maxZoomLevel)).toBeFalsy();
-  });
-
   it("beyond max zoom", () => {
     const result = ZoomUtils.getZoomLevelIndex(() => 999);
     expect(result).toEqual(ZoomUtils.maxZoomIndex);
-  });
-
-  it("at min zoom", () => {
-    expect(ZoomUtils.atMaxZoom(() => ZoomUtils.minZoomLevel)).toBeFalsy();
-    expect(ZoomUtils.atMinZoom(() => ZoomUtils.minZoomLevel)).toBeTruthy();
   });
 
   it("beyond min zoom", () => {

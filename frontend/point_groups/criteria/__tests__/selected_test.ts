@@ -1,6 +1,4 @@
-import {
-  eqCriteriaSelected, criteriaHasKey, hasSubCriteria, typeDisabled,
-} from "..";
+import { eqCriteriaSelected, criteriaHasKey } from "..";
 import { DEFAULT_CRITERIA, PointGroupCriteria } from "../interfaces";
 import { cloneDeep } from "lodash";
 
@@ -64,51 +62,5 @@ describe("criteriaHasKey()", () => {
     criteria.number_eq = { x: [0] };
     const result = criteriaHasKey(criteria, ["number_eq"], "x");
     expect(result).toBeTruthy();
-  });
-});
-
-describe("hasSubCriteria()", () => {
-  it("has string criteria", () => {
-    const criteria = fakeCriteria();
-    criteria.string_eq = { plant_stage: ["planted"] };
-    const result = hasSubCriteria(criteria)("Plant");
-    expect(result).toBeTruthy();
-  });
-
-  it("doesn't have string criteria", () => {
-    const criteria = fakeCriteria();
-    criteria.string_eq = { "meta.color": ["red"] };
-    const result = hasSubCriteria(criteria)("Plant");
-    expect(result).toBeFalsy();
-  });
-
-  it("has number criteria", () => {
-    const criteria = fakeCriteria();
-    criteria.number_eq = { pullout_direction: [0] };
-    const result = hasSubCriteria(criteria)("ToolSlot");
-    expect(result).toBeTruthy();
-  });
-
-  it("doesn't have number criteria", () => {
-    const criteria = fakeCriteria();
-    criteria.number_eq = {};
-    const result = hasSubCriteria(criteria)("ToolSlot");
-    expect(result).toBeFalsy();
-  });
-});
-
-describe("typeDisabled()", () => {
-  it("is disabled", () => {
-    const criteria = fakeCriteria();
-    criteria.string_eq = { "meta.color": ["red"] };
-    const result = typeDisabled(criteria, "Plant");
-    expect(result).toBeTruthy();
-  });
-
-  it("isn't disabled", () => {
-    const criteria = fakeCriteria();
-    criteria.string_eq = { openfarm_slug: ["mint"] };
-    const result = typeDisabled(criteria, "Plant");
-    expect(result).toBeFalsy();
   });
 });

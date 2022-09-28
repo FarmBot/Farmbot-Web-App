@@ -2,18 +2,18 @@ import React from "react";
 import { AllSteps, AllStepsProps } from "../all_steps";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { fakeResourceIndex } from "../locals_list/test_helpers";
 import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
 import { DropArea } from "../../draggable/drop_area";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
-describe("<AllSteps/>", () => {
+describe("<AllSteps />", () => {
   const fakeProps = (): AllStepsProps => ({
     sequence: fakeSequence(),
     sequences: [],
     onDrop: jest.fn(),
     dispatch: jest.fn(),
     readOnly: false,
-    resources: fakeResourceIndex(),
+    resources: buildResourceIndex([]).index,
   });
 
   it("renders empty sequence", () => {

@@ -9,6 +9,10 @@ jest.mock("../history", () => ({
   push: jest.fn(),
 }));
 
+jest.mock("../hotkeys", () => ({
+  HotKeys: () => <div />,
+}));
+
 import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";

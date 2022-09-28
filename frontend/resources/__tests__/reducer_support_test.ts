@@ -1,10 +1,13 @@
-import { beforeEach } from "../reducer_support";
+import { beforeEach, reindexFolders } from "../reducer_support";
 import { ReduxAction } from "../../redux/interfaces";
 import { Actions } from "../../constants";
-import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFolder, fakeWebAppConfig,
+} from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { cloneDeep } from "lodash";
 
-describe("beforeEach", () => {
+describe("beforeEach()", () => {
   const emptyHandler = <T>(s: T, _a: ReduxAction<{}>): T => s;
 
   const readonlyState = () => {
@@ -13,7 +16,7 @@ describe("beforeEach", () => {
     return buildResourceIndex([config]);
   };
 
-  it("Can modify WebAppConfigs, even when in read-only mode", () => {
+  it("can modify WebAppConfigs, even when in read-only mode", () => {
     const state = readonlyState();
     const action = ({
       type: Actions.EDIT_RESOURCE,
@@ -24,7 +27,7 @@ describe("beforeEach", () => {
     expect(handler).toHaveBeenCalledWith(state, action);
   });
 
-  it("Cannot modify resources in readonly mode", () => {
+  it("cannot modify resources in readonly mode", () => {
     // === Don't allow EDIT_RESOURCE
     const state = readonlyState();
     const action = ({
@@ -56,5 +59,33 @@ describe("beforeEach", () => {
         expect(handler).not.toHaveBeenCalledWith(state, action2);
       }
     });
+  });
+});
+
+describe("reindexFolders()", () => {
+  it("updates folder search results", () => {
+    const matchedFolder = fakeFolder();
+    matchedFolder.body.name = "matched folder";
+    const unmatchedFolder = fakeFolder();
+    unmatchedFolder.body.name = "unmatched";
+    const ri = buildResourceIndex([
+      matchedFolder, unmatchedFolder, fakeFolder(),
+    ]).index;
+    const deletedFolder = cloneDeep(ri.sequenceFolders.folders.folders[0]);
+    deletedFolder.id = 999;
+    deletedFolder.name = "deleted";
+    ri.sequenceFolders.filteredFolders = {
+      folders: [
+        ...ri.sequenceFolders.folders.folders.filter(f => f.name == "fake"),
+        deletedFolder,
+      ],
+      noFolder: [],
+    };
+    ri.sequenceFolders.searchTerm = "folder";
+    expect(ri.sequenceFolders.filteredFolders.folders.map(f => f.name))
+      .toEqual(["fake", "deleted"]);
+    reindexFolders(ri);
+    expect(ri.sequenceFolders.filteredFolders.folders.map(f => f.name))
+      .toEqual(["fake", "matched folder"]);
   });
 });

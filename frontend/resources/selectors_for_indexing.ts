@@ -3,9 +3,8 @@ import {
   TaggedSequence,
   TaggedRegimen,
   TaggedFarmEvent,
-  TaggedTool,
+  Dictionary,
 } from "farmbot";
-import { CowardlyDictionary } from "../util";
 import {
   ResourceIndex,
   SlotWithTool,
@@ -16,7 +15,7 @@ import {
 } from "./selectors";
 import { assertUuid } from "./util";
 
-type IndexLookupDictionary<T extends TaggedResource> = CowardlyDictionary<T>;
+type IndexLookupDictionary<T extends TaggedResource> = Dictionary<T | undefined>;
 interface Indexer<T extends TaggedResource> {
   (index: ResourceIndex): IndexLookupDictionary<T>;
 }
@@ -33,7 +32,7 @@ const buildIndexer =
   <T extends TaggedResource>(kind: T["kind"], mapper?: MapperFn<T>): Indexer<T> => {
     return function (index: ResourceIndex) {
       const noop: MapperFn<T> = (i) => i;
-      const output: CowardlyDictionary<T> = {};
+      const output: Dictionary<T | undefined> = {};
       const uuids = Object.keys(index.byKind[kind]);
       const m = mapper || noop;
       uuids.map(uuid => {
@@ -53,7 +52,6 @@ const buildIndexer =
 export const indexSequenceById = buildIndexer<TaggedSequence>("Sequence");
 export const indexRegimenById = buildIndexer<TaggedRegimen>("Regimen");
 export const indexFarmEventById = buildIndexer<TaggedFarmEvent>("FarmEvent");
-export const indexByToolId = buildIndexer<TaggedTool>("Tool");
 
 /** For those times that you need to ref a tool and slot together. */
 export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {

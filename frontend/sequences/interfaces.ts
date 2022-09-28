@@ -10,8 +10,7 @@ import {
   TaggedSequence,
   Color,
 } from "farmbot";
-import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
-import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
+import { ResourceIndex, UUID } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Folders } from "../folders/component";
 import { DeviceSetting } from "../constants";
@@ -147,18 +146,6 @@ export interface SequenceReducerState {
   stepIndex: number | undefined;
 }
 
-export interface SequencesListProps {
-  sequences: TaggedSequence[];
-  resourceUsage: Record<UUID, boolean | undefined>;
-  sequence: TaggedSequence | undefined;
-  dispatch: Function;
-  sequenceMetas: Record<UUID, VariableNameSet | undefined>;
-}
-
-export interface SequencesListState {
-  searchTerm: string;
-}
-
 export interface MoveAbsState {
   more: boolean;
   viewRaw?: boolean;
@@ -218,10 +205,6 @@ export interface SelectSequence {
   type: "SELECT_SEQUENCE";
   payload: string;
 }
-
-export type DataXferObj = StepMoveDataXfer | StepSpliceDataXfer;
-
-export type dispatcher = (a: Function | { type: string }) => DataXferObj;
 
 export type FarmwareConfigs = { [x: string]: FarmwareConfig[] };
 

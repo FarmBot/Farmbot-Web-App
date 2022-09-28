@@ -38,10 +38,7 @@ import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
-import {
-  FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial,
-} from "../folders/interfaces";
-import { climb } from "../folders/climb";
+import { FolderNode, FolderMeta } from "../folders/interfaces";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
@@ -99,28 +96,6 @@ export const reindexFolders = (i: ResourceIndex) => {
 
   const { searchTerm } = i.sequenceFolders;
 
-  /** Perform tree search for search term O(n)
-   * complexity plz send help. */
-  if (searchTerm) {
-    const sequenceHits = new Set<string>();
-    const folderHits = new Set<number>();
-
-    climb(i.sequenceFolders.folders, (node) => {
-      node.content.map(x => {
-        const s = i.references[x];
-        if (s &&
-          s.kind == "Sequence" &&
-          s.body.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-          sequenceHits.add(s.uuid);
-          folderHits.add(node.id);
-        }
-      });
-      const nodes: (FolderNodeMedial | FolderNodeTerminal)[] =
-        node.children || [];
-      nodes.map(_x => { });
-    });
-  }
-
   i.sequenceFolders = {
     folders: ingest({ folders, localMetaAttributes }),
     localMetaAttributes,
@@ -130,6 +105,18 @@ export const reindexFolders = (i: ResourceIndex) => {
       : undefined
   };
 
+  if (i.sequenceFolders.filteredFolders) {
+    const existingFolders = i.sequenceFolders.folders.folders.map(f => f.id);
+    i.sequenceFolders.filteredFolders.folders =
+      i.sequenceFolders.filteredFolders.folders.filter(f =>
+        existingFolders.includes(f.id));
+    const folderResults = i.sequenceFolders.filteredFolders.folders.map(f => f.id);
+    i.sequenceFolders.folders.folders.map(f =>
+      !folderResults.includes(f.id) && searchTerm &&
+      i.sequenceFolders.filteredFolders &&
+      f.name.toLowerCase().includes(searchTerm.toLowerCase())
+      && i.sequenceFolders.filteredFolders.folders.push({ ...f, editing: false }));
+  }
 };
 
 export const folderIndexer: IndexerCallback = (r, i) => {

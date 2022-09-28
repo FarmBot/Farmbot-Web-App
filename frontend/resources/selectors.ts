@@ -4,9 +4,7 @@ import {
   TaggedGenericPointer,
   TaggedPlantPointer,
   TaggedRegimen,
-  TaggedResource,
   TaggedSequence,
-  TaggedTool,
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedDevice,
@@ -22,11 +20,9 @@ import {
   isTaggedWeedPointer,
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
-import { findAllById } from "./selectors_by_id";
 import { selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
-import { chain } from "lodash";
 import { getWebAppConfig } from "./getters";
 import { TimeSettings } from "../interfaces";
 import { BooleanSetting } from "../session_keys";
@@ -58,18 +54,6 @@ export const findUuid =
       throw new Error("UUID not found for id " + id);
     }
   };
-
-export const isKind = (resourceName: ResourceName) => (tr: TaggedResource) =>
-  tr.kind === resourceName;
-
-export function groupPointsByType(index: ResourceIndex) {
-  return chain(selectAllActivePoints(index))
-    // If this fails to compile....
-    .tap(x => x[0].body.pointer_type)
-    // ... this line must be updated:
-    .groupBy("body.pointer_type")
-    .value();
-}
 
 export function findPointerByTypeAndId(index: ResourceIndex,
   pt: string,
@@ -137,13 +121,6 @@ export function getSequenceByUUID(index: ResourceIndex,
   } else {
     throw new Error("BAD Sequence UUID;");
   }
-}
-
-/** FINDS: All tools that are in use. */
-export function toolsInUse(index: ResourceIndex): TaggedTool[] {
-  const ids = betterCompact(selectAllToolSlotPointers(index)
-    .map(ts => ts.body.tool_id));
-  return findAllById(index, ids, "Tool") as TaggedTool[];
 }
 
 export function maybeGetSequence(index: ResourceIndex,

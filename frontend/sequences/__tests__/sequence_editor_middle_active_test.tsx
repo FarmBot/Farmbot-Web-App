@@ -70,9 +70,7 @@ import {
   SequenceSettingsMenuProps,
   SequenceShareMenuProps,
 } from "../interfaces";
-import {
-  FAKE_RESOURCES, buildResourceIndex,
-} from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy, save, edit } from "../../api/crud";
 import {
@@ -111,7 +109,7 @@ describe("<SequenceEditorMiddleActive />", () => {
       dispatch: jest.fn(),
       sequence,
       sequences: [sequence],
-      resources: buildResourceIndex(FAKE_RESOURCES).index,
+      resources: buildResourceIndex().index,
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
@@ -530,7 +528,7 @@ describe("<SequenceBtnGroup />", () => {
   const fakeProps = (): SequenceBtnGroupProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
-    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    resources: buildResourceIndex().index,
     syncStatus: "synced",
     getWebAppConfigValue: jest.fn(),
     toggleViewSequenceCeleryScript: jest.fn(),

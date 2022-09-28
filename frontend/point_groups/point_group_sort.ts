@@ -4,11 +4,6 @@ import { shuffle, sortBy } from "lodash";
 import { TaggedPoint } from "farmbot";
 import { alternating, nn } from "./paths";
 
-export interface PointGroupSortSelectorProps {
-  onChange(value: PointGroupSortType): void;
-  value: PointGroupSortType;
-}
-
 export const sortOptionsTable = (): Record<PointGroupSortType, string> => ({
   random: t("Random Order"),
   xy_ascending: t("X/Y, Ascending"),

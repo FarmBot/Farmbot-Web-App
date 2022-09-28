@@ -22,6 +22,7 @@ import { PointGroupItem } from "../point_group_item";
 import { TaggedPoint } from "farmbot";
 import { sortGroup } from "../../farm_designer/map/group_order_visual";
 import { equals } from "../../util";
+import { floor, take } from "lodash";
 
 export const CRITERIA_POINT_TYPE_LOOKUP =
   (): Record<PointerType, string> => ({
@@ -130,14 +131,32 @@ const ClearPointIds = (props: ClearPointIdsProps) =>
     {t("clear")}
   </button>;
 
+interface GroupPointCountBreakdownState {
+  maxCount: number;
+}
+
 /** Show counts of manual and criteria selections. */
 export class GroupPointCountBreakdown
-  extends React.Component<GroupPointCountBreakdownProps> {
+  extends React.Component<GroupPointCountBreakdownProps,
+    GroupPointCountBreakdownState> {
 
-  shouldComponentUpdate = (nextProps: GroupPointCountBreakdownProps) => {
-    if (this.props.pointsSelectedByGroup.length < 50) { return true; }
-    return !equals(this.props, nextProps);
+  state: GroupPointCountBreakdownState = {
+    maxCount: calcMaxCount(),
   };
+
+  shouldComponentUpdate = (
+    nextProps: GroupPointCountBreakdownProps,
+    nextState: GroupPointCountBreakdownState,
+  ) => {
+    if (this.props.pointsSelectedByGroup.length < 50) { return true; }
+    return !equals(this.props, nextProps) || !equals(this.state, nextState);
+  };
+
+  componentDidMount = () => this.setState({ maxCount: calcMaxCount() });
+
+  toggleExpand = () => this.setState({
+    maxCount: this.state.maxCount > 100 ? calcMaxCount() : 1000,
+  });
 
   get sortedGroup() {
     return sortGroup(
@@ -146,6 +165,7 @@ export class GroupPointCountBreakdown
   }
 
   render() {
+    const { maxCount } = this.state;
     const { group, hovered, dispatch, iconDisplay } = this.props;
     const manuallyAddedIds = group.body.point_ids;
     const sortedPoints = this.sortedGroup;
@@ -168,8 +188,10 @@ export class GroupPointCountBreakdown
         <ClearPointIds dispatch={dispatch} group={group} />
       </div>
       {iconDisplay && manualPoints.length > 0 &&
-        <div className="groups-list-wrapper">
-          {manualPoints.map(generatePointIcons)}
+        <div className={"point-list-wrapper"}>
+          {take(manualPoints, maxCount).map(generatePointIcons)}
+          <MoreIndicatorIcon count={manualPoints.length}
+            maxCount={maxCount} onClick={this.toggleExpand} />
         </div>}
       <div className={"group-member-section"}>
         <div className={"criteria-group-member-count"}>
@@ -177,13 +199,34 @@ export class GroupPointCountBreakdown
           <ClearCriteria dispatch={dispatch} group={group} />
         </div>
         {iconDisplay && criteriaPoints.length > 0 &&
-          <div className="groups-list-wrapper">
-            {criteriaPoints.map(generatePointIcons)}
+          <div className={"point-list-wrapper"}>
+            {take(criteriaPoints, maxCount).map(generatePointIcons)}
+            <MoreIndicatorIcon count={criteriaPoints.length}
+              maxCount={maxCount} onClick={this.toggleExpand} />
           </div>}
       </div>
     </div>;
   }
 }
+
+export const calcMaxCount = (rows = 2) => {
+  const wrapperElement = document.querySelector(".point-list-wrapper");
+  const elementWidth = wrapperElement?.clientWidth || 430;
+  return floor(elementWidth / 20) * rows - 1;
+};
+
+export interface MoreIndicatorIconProps {
+  count: number;
+  maxCount: number;
+  onClick(): void;
+}
+
+export const MoreIndicatorIcon = (props: MoreIndicatorIconProps) =>
+  props.count > props.maxCount
+    ? <span className={"group-item-icon more-indicator"} onClick={props.onClick}>
+      <p>+{props.count - props.maxCount}</p>
+    </span>
+    : <></>;
 
 /** Select pointer_type string equal criteria,
  *  which determines if any additional criteria is shown. */

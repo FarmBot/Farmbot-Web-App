@@ -2,9 +2,9 @@ import {
   variableFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
   sequences2Ddi,
 } from "../variable_form_list";
-import { fakeResourceIndex } from "../test_helpers";
 import {
-  fakeToolSlot, fakeTool, fakePointGroup, fakeSequence,
+  fakeToolSlot, fakeTool, fakePointGroup, fakeSequence, fakeWeed, fakePoint,
+  fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
@@ -15,7 +15,43 @@ describe("variableFormList()", () => {
   it("returns dropdown list", () => {
     const pointGroup = fakePointGroup();
     pointGroup.body.id = 1;
-    const resources = fakeResourceIndex([pointGroup]);
+    const weed = fakeWeed();
+    weed.body.id = 5;
+    weed.body.x = 15;
+    weed.body.y = 25;
+    weed.body.z = 35;
+    const point = fakePoint();
+    point.body.x = 10;
+    point.body.y = 20;
+    point.body.z = 30;
+    const tool = fakeTool();
+    tool.body.name = "Generic Tool";
+    tool.body.id = 1;
+    const plant0 = fakePlant();
+    plant0.body.name = "Plant 1";
+    plant0.body.id = 1;
+    plant0.body.x = 1;
+    plant0.body.y = 2;
+    plant0.body.z = 3;
+    const plant1 = fakePlant();
+    plant1.body.name = "Dandelion";
+    plant1.body.x = 100;
+    plant1.body.y = 200;
+    plant1.body.z = 300;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = 1;
+    toolSlot.body.x = 100;
+    toolSlot.body.y = 200;
+    toolSlot.body.z = 300;
+    const resources = buildResourceIndex([
+      weed,
+      point,
+      tool,
+      plant0,
+      plant1,
+      toolSlot,
+      pointGroup,
+    ]).index;
     expect(variableFormList(resources, [], [], true))
       .toEqual([
         {

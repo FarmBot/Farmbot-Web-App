@@ -1,9 +1,6 @@
 import { AuthState } from "./auth/interfaces";
-import { box } from "boxed_value";
-import { BooleanSetting, NumericSetting } from "./session_keys";
-import {
-  BooleanConfigKey, NumberConfigKey,
-} from "farmbot/dist/resources/configs/web_app";
+import { NumericSetting } from "./session_keys";
+import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -27,7 +24,7 @@ export namespace Session {
   export function fetchStoredToken(): AuthState | undefined {
     try {
       const v: AuthState = JSON.parse(localStorage.getItem(KEY) || "");
-      if (box(v).kind === "object") {
+      if (typeof v === "object" && JSON.stringify(v)[0] === "{") {
         return v;
       } else {
         throw new Error("Expected object or undefined"); // unreachable?
@@ -43,17 +40,6 @@ export namespace Session {
     sessionStorage.clear();
     location.assign(window.location.origin || "/");
     return undefined as never;
-  }
-}
-
-export const isBooleanSetting =
-  (k: unknown): k is BooleanConfigKey => !!BooleanSetting[k as BooleanConfigKey];
-
-export function safeBooleanSetting(settingName: string): BooleanConfigKey {
-  if (isBooleanSetting(settingName)) {
-    return settingName;
-  } else {
-    throw new Error(`Expected BooleanConfigKey but got '${settingName}'`);
   }
 }
 

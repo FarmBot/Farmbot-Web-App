@@ -20,7 +20,7 @@ const STUB_RESOURCE: TaggedFarmEvent = {
 };
 
 test("buildResourceIndex - base case", () => {
-  const result1 = buildResourceIndex(FAKE_RESOURCES);
+  const result1 = buildResourceIndex();
   const { index } = result1;
   const OK_LENGTH = FAKE_RESOURCES.length;
   expect(Object.keys(index.all).length).toBe(OK_LENGTH);

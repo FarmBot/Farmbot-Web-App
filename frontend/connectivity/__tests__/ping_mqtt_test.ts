@@ -7,7 +7,6 @@ jest.mock("../index", () => ({
 }));
 
 import {
-  readPing,
   startPinging,
   PING_INTERVAL,
   sendOutboundPing,
@@ -17,7 +16,7 @@ import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { pingNO } from "../index";
 import { DeepPartial } from "redux";
 
-let state: Partial<FarmBotInternalConfig> = {
+const state: Partial<FarmBotInternalConfig> = {
   LAST_PING_IN: 123,
   LAST_PING_OUT: 456
 };
@@ -36,19 +35,6 @@ function fakeBot(): Farmbot {
 }
 
 describe("ping util", () => {
-  it("reads LAST_PING_(IN|OUT)", () => {
-    const bot = fakeBot();
-    expect(readPing(bot, "in")).toEqual(123);
-    expect(readPing(bot, "out")).toEqual(456);
-  });
-
-  it("handles missing LAST_PING_(IN|OUT)", () => {
-    state = {};
-    const bot = fakeBot();
-    expect(readPing(bot, "in")).toEqual(undefined);
-    expect(readPing(bot, "out")).toEqual(undefined);
-  });
-
   it("binds event handlers with startPinging()", async () => {
     jest.useFakeTimers();
     const bot = fakeBot();

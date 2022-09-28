@@ -1,6 +1,5 @@
 import { OpenFarm } from "../open_farm/openfarm";
 import { DropDownItem } from "../ui";
-import { CowardlyDictionary } from "../util";
 import {
   TaggedFarmEvent,
   TaggedSequence,
@@ -186,9 +185,9 @@ export interface AddEditFarmEventProps {
   executableOptions: DropDownItem[];
   repeatOptions: DropDownItem[];
   farmEvents: TaggedFarmEvent[];
-  regimensById: CowardlyDictionary<TaggedRegimen>;
-  sequencesById: CowardlyDictionary<TaggedSequence>;
-  farmEventsById: CowardlyDictionary<TaggedFarmEvent>;
+  regimensById: Record<string, TaggedRegimen | undefined>;
+  sequencesById: Record<string, TaggedSequence | undefined>;
+  farmEventsById: Record<string, TaggedFarmEvent | undefined>;
   getFarmEvent(): TaggedFarmEvent | undefined;
   findFarmEventByUuid(uuid: string | undefined): TaggedFarmEvent | undefined;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;

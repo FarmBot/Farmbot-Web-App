@@ -56,7 +56,6 @@ export const findTool = resourceFinder<TaggedTool>("Tool");
 export const findSequence = resourceFinder<TaggedSequence>("Sequence");
 export const findRegimen = resourceFinder<TaggedRegimen>("Regimen");
 export const findFarmEvent = resourceFinder<TaggedFarmEvent>("FarmEvent");
-export const findPoints = resourceFinder<TaggedPoint>("Point");
 export const findPointGroup = resourceFinder<TaggedPointGroup>("PointGroup");
 export const findSavedGarden = resourceFinder<TaggedSavedGarden>("SavedGarden");
 

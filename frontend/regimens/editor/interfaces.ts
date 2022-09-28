@@ -15,21 +15,6 @@ export interface ActiveEditorState {
   variablesCollapsed: boolean;
 }
 
-export interface RegimenItemListProps {
-  calendar: RegimenItemCalendarRow[];
-  dispatch: Function;
-}
-
-export interface RegimenItemStepProps {
-  item: CalendarRow;
-  dispatch: Function;
-}
-
-export interface RegimenItemDayGroupProps {
-  row: CalendarRow;
-  dispatch: Function;
-}
-
 export interface RegimenEditorProps {
   current: TaggedRegimen | undefined;
   dispatch: Function;

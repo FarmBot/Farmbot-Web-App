@@ -1,7 +1,6 @@
 import {
   semverCompare,
   SemverResult,
-  minFwVersionCheck,
   createShouldDisplayFn,
   determineInstalledOsVersion,
   versionOK,
@@ -102,19 +101,6 @@ describe("semver compare", () => {
 
     expect(semverCompare("1.1.1-rc100", "1.1.1-rc100"))
       .toBe(SemverResult.EQUAL);
-  });
-});
-
-describe("minFwVersionCheck()", () => {
-  it("firmware version meets or exceeds minimum", () => {
-    expect(minFwVersionCheck("1.0.1.R", "1.0.1")).toBeTruthy();
-    expect(minFwVersionCheck("1.0.2.F", "1.0.1")).toBeTruthy();
-  });
-
-  it("firmware version doesn't meet minimum", () => {
-    expect(minFwVersionCheck("1.0.0.R", "1.0.1")).toBeFalsy();
-    expect(minFwVersionCheck(undefined, "1.0.1")).toBeFalsy();
-    expect(minFwVersionCheck("1.0.0.9.9", "1.0.1")).toBeFalsy();
   });
 });
 
