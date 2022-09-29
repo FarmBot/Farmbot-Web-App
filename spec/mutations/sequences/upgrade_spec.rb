@@ -36,7 +36,7 @@ describe Sequences::Upgrade do
                                             body: body,
                                             color: "red",
                                             name: "forked")
-    # Upgrade to thepub_seq of someone elses account
+    # Upgrade to the pub_seq of someone elses account
     Sequences::Upgrade.run!(device: device,
                             sequence: priv_seq,
                             sequence_version: sv)
@@ -72,7 +72,7 @@ describe Sequences::Upgrade do
     end.to raise_error(Errors::Forbidden, err)
   end
 
-  it "does not allow upgrade of unpublished sequeces" do
+  it "does not allow upgrade of unpublished sequences" do
     pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
     Sequences::Publish.run!(device: other_device,
                             sequence: pub_seq,

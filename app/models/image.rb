@@ -97,7 +97,7 @@ class Image < ApplicationRecord
 
   def attachment_url(size = "x640")
     # Detect legacy attachments by way of
-    # superceded PaperClip-related field.
+    # superseded PaperClip-related field.
     # If it has an `attachment_file_size`,
     # it was made with paperclip.
     return regular_url if regular_image?

@@ -12,7 +12,7 @@ describe Api::RegimensController do
       celery = File.read("spec/lib/celery_script/ast_fixture5.json")
       json = JSON.parse(celery, symbolize_names: true)
       s = Sequences::Create.run!(json, device: user.device)
-      # No paramaters here.
+      # No parameters here.
 
       payload = {
         name: "New regimen 1",

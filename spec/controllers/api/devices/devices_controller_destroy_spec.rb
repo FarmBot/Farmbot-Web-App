@@ -35,7 +35,7 @@ describe Api::DevicesController do
         .map do |resource|
         count = device.send(resource.pluralize).reload.count
         if count > 0
-          did_not_delete = "Epected #{resource} count to be 0 but got #{count}"
+          did_not_delete = "Expected #{resource} count to be 0 but got #{count}"
           fail(did_not_delete)
         end
       end

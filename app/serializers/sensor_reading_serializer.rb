@@ -3,7 +3,7 @@ class SensorReadingSerializer < ApplicationSerializer
   # This is for legacy support reasons.
   # Very old sensor_readings will have a
   # read_at value of `nil`, so we pre-populate it
-  # to `created_at` for the convinience of API users.
+  # to `created_at` for the convenience of API users.
   def read_at
     object.read_at || object.created_at
   end
