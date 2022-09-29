@@ -13,6 +13,7 @@ module Users
 
     def execute
       user.device.update!(mounted_tool_id: nil)
+      user.device.folders.update_all(parent_id: nil)
       user.delay.destroy!
     end
   end

@@ -84,6 +84,7 @@ class User < ApplicationRecord
     # Prevent double deletion / race conditions.
     update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
     self.device.update!(mounted_tool_id: nil)
+    self.device.folders.update_all(parent_id: nil)
     delay.destroy!
     puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
   end
