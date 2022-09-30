@@ -29,6 +29,7 @@ module Sequences
       sequence.update!(forked: false,
                        name: maybe_upgrade(:name),
                        color: maybe_upgrade(:color),
+                       description: sequence_version.description,
                        sequence_version_id: sequence_version.id)
     end
 
