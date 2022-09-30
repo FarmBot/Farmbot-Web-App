@@ -55,7 +55,7 @@ export function overwrite<T extends TaggedResource>(tr: T,
   };
 }
 
-export interface EditStepProps {
+interface EditStepProps {
   step: Readonly<SequenceBodyItem>;
   sequence: Readonly<TaggedSequence>;
   index: number;

@@ -15,7 +15,7 @@ export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
 
 let count = 1;
 
-export const copyRegimen = (payload: TaggedRegimen) =>
+const copyRegimen = (payload: TaggedRegimen) =>
   (dispatch: Function) => {
     const copy = defensiveClone(payload);
     copy.body.id = undefined;

@@ -13,7 +13,7 @@ import moment from "moment";
 import { Telemetry } from "farmbot/dist/resources/api_resources";
 import { cloneDeep, sortBy } from "lodash";
 
-export const METRIC_TITLES = (): Partial<Record<keyof Telemetry, string>> => ({
+const METRIC_TITLES = (): Partial<Record<keyof Telemetry, string>> => ({
   soc_temp: t("Temp"),
   wifi_level_percent: t("WiFi"),
   uptime: t("Uptime"),

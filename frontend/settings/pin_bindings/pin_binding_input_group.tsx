@@ -227,7 +227,7 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
     customNullLabel={t("Select an action")} />;
 };
 
-export interface PinBindingLabelProps {
+interface PinBindingLabelProps {
   resources: ResourceIndex;
   sequenceIdInput: number | undefined;
   specialActionInput: PinBindingSpecialAction | undefined;

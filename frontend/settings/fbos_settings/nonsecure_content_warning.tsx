@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { API } from "../../api";
 
-export interface NonsecureContentProps {
+interface NonsecureContentProps {
   /** The warning to show the user if one of the URLs is insecure. */
   children?: React.ReactChild;
   urls: string[];

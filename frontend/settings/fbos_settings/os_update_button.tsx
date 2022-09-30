@@ -16,7 +16,7 @@ import { isJobDone } from "../../devices/jobs";
  * FBOS versions older than this can't connect to the available OTA system
  * and must manually flash the SD card to upgrade.
  */
-export const OLDEST_OTA_ABLE_VERSION = "11.1.0";
+const OLDEST_OTA_ABLE_VERSION = "11.1.0";
 
 /** FBOS update button states. */
 enum UpdateButton {

@@ -14,7 +14,7 @@ export function generateFilename({ device }: DataDumpExport): string {
 }
 
 // Thanks, @KOL - https://stackoverflow.com/a/19328891/1064917
-export function jsonDownload(data: object) {
+function jsonDownload(data: object) {
   // When email is not available on the API (self hosted).
   // Will synchronously load backup over the wire (slow)
   const a = document.createElement("a");

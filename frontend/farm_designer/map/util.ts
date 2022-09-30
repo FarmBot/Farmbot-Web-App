@@ -100,7 +100,7 @@ const leftOrTop: Record<"x" | "y", "top" | "left"> = { x: "left", y: "top" };
 
 type XYCoordinate = { x: number, y: number };
 
-export interface ScreenToGardenParams {
+interface ScreenToGardenParams {
   page: XYCoordinate;
   scroll: { left: number, top: number };
   zoomLvl: number;

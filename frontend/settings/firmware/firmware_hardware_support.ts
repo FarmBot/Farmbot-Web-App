@@ -52,7 +52,7 @@ export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
 export const hasEthernet = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_ETHERNET.includes(firmwareHardware);
 
-export const getBoardIdentifier =
+const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>
     firmwareVersion ? firmwareVersion.split(".")[3] : "undefined";
 

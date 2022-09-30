@@ -39,7 +39,7 @@ const sortedPointCoordinates = (
   return convertToXY(sortGroup(groupSortType, groupPoints));
 };
 
-export interface PointsPathLineProps {
+interface PointsPathLineProps {
   orderedPoints: { x: number, y: number }[];
   mapTransformProps: MapTransformProps;
   color?: Color;
@@ -48,7 +48,7 @@ export interface PointsPathLineProps {
   zoomLvl: number;
 }
 
-export const PointsPathLine = (props: PointsPathLineProps) =>
+const PointsPathLine = (props: PointsPathLineProps) =>
   <g id="group-order-line"
     stroke={props.color || Color.mediumGray}
     strokeWidth={props.strokeWidth || zoomCompensation(props.zoomLvl, 3)}
@@ -63,13 +63,13 @@ export const PointsPathLine = (props: PointsPathLineProps) =>
     })}
   </g>;
 
-export interface PointsPathLabelsProps {
+interface PointsPathLabelsProps {
   orderedPoints: { x: number, y: number }[];
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
 }
 
-export const PointsPathLabels = (props: PointsPathLabelsProps) =>
+const PointsPathLabels = (props: PointsPathLabelsProps) =>
   <g id="group-order-labels">
     {props.orderedPoints.map((p, i) => {
       const position = transformXY(p.x, p.y, props.mapTransformProps);

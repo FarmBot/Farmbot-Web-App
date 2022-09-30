@@ -116,7 +116,7 @@ export interface SequenceSettingProps {
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
-export const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
+const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
   "pin_value", "rhs", "sequence_id", "speed"];
 
 export const FLOAT_NUMERIC_FIELDS = ["x", "y", "z"];

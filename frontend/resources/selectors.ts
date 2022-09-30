@@ -107,7 +107,7 @@ export function selectCurrentToolSlot(index: ResourceIndex, uuid: string) {
   }
 }
 
-export function getRegimenByUUID(index: ResourceIndex, uuid: string) {
+function getRegimenByUUID(index: ResourceIndex, uuid: string) {
   assertUuid("Regimen", uuid);
   return index.references[uuid];
 }
@@ -144,19 +144,19 @@ export function maybeGetToolSlot(index: ResourceIndex,
 }
 
 /** Return the UTC offset of current bot if possible. If not, use UTC (0). */
-export function maybeGetTimeOffset(index: ResourceIndex): number {
+function maybeGetTimeOffset(index: ResourceIndex): number {
   const dev = maybeGetDevice(index);
   return dev ? dev.body.tz_offset_hrs : 0;
 }
 
 /** Return 12/24hr time format preference if possible. If not, use 12hr. */
-export function maybeGet24HourTimeSetting(index: ResourceIndex): boolean {
+function maybeGet24HourTimeSetting(index: ResourceIndex): boolean {
   const conf = getWebAppConfig(index);
   return conf ? conf.body[BooleanSetting.time_format_24_hour] : false;
 }
 
 /** Return seconds time format preference if possible. */
-export function maybeGetSecondsTimeSetting(index: ResourceIndex): boolean {
+function maybeGetSecondsTimeSetting(index: ResourceIndex): boolean {
   const conf = getWebAppConfig(index);
   return conf ? conf.body[BooleanSetting.time_format_seconds] : false;
 }

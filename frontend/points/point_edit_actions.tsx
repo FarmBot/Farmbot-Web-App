@@ -32,7 +32,7 @@ export const updatePoint =
       }
     };
 
-export interface EditPointPropertiesProps {
+interface EditPointPropertiesProps {
   point: TaggedGenericPointer | TaggedWeedPointer;
   updatePoint(update: PointUpdate): void;
   botOnline: boolean;
@@ -130,7 +130,7 @@ const SOURCE_LOOKUP = (): Record<string, string> => ({
 export const lookupPointSource = (createdBy: string | undefined) =>
   SOURCE_LOOKUP()[createdBy || ""] || t("unknown");
 
-export interface PointActionsProps {
+interface PointActionsProps {
   uuid: UUID;
   dispatch: Function;
 }

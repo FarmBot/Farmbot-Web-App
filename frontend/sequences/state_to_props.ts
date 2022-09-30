@@ -66,7 +66,7 @@ export function mapStateToProps(props: Everything): SequencesProps {
   };
 }
 
-export const getFarmwareData = (props: Everything) => {
+const getFarmwareData = (props: Everything) => {
   const getConfig = getWebAppConfigValue(() => props);
   const farmwares =
     generateFarmwareDictionary(props.bot, props.resources.index, true);

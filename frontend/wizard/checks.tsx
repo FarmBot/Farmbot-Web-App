@@ -483,7 +483,7 @@ export interface PinBindingOptions {
   unlockOnly?: boolean;
 }
 
-export interface PinBindingProps {
+interface PinBindingProps {
   dispatch: Function;
   pinBindingOptions: PinBindingOptions;
   resources: ResourceIndex;

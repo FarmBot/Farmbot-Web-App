@@ -6,7 +6,7 @@ export interface ToastOptions {
   noDismiss?: boolean;
 }
 
-export interface CreateToastProps {
+interface CreateToastProps {
   message: string;
   title: string;
   color: string;

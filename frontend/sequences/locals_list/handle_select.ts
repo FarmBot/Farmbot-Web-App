@@ -145,7 +145,7 @@ const manualEntry = (value: string | number) => ({
  * Create a parameter declaration or a parameter application containing an
  *    identifier.
  */
-export const newParameter = (p: NewVarProps): VariableNode => {
+const newParameter = (p: NewVarProps): VariableNode => {
   const { identifierLabel: label, newVarLabel, allowedVariableNodes } = p;
   if (allowedVariableNodes === AllowedVariableNodes.identifier && newVarLabel) {
     return createParameterApplication(label, {

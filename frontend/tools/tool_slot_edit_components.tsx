@@ -209,14 +209,14 @@ const directionIconClass = (slotDirection: ToolPulloutDirection) => {
   }
 };
 
-export const positionButtonTitle = (botPosition: BotPosition): string => {
+const positionButtonTitle = (botPosition: BotPosition): string => {
   const position = definedPosition(botPosition);
   return position
     ? `(${position.x}, ${position.y}, ${position.z})`
     : t("(unknown)");
 };
 
-export const newSlotDirection =
+const newSlotDirection =
   (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
     isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
 
@@ -228,7 +228,7 @@ export const definedPosition =
       : undefined;
   };
 
-export const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
+const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
   [ToolPulloutDirection.NONE]:
     { label: t("None"), value: ToolPulloutDirection.NONE },
   [ToolPulloutDirection.POSITIVE_X]:

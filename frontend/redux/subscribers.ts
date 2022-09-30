@@ -50,11 +50,11 @@ export function unsavedCheck(state: Everything) {
     : window.removeEventListener("beforeunload", stopThem);
 }
 
-export interface Subscription { fn: (state: Everything) => void; env: EnvName; }
+interface Subscription { fn: (state: Everything) => void; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
-export const subscriptions: Subscription[] = [{ env: "*", fn: unsavedCheck }];
+const subscriptions: Subscription[] = [{ env: "*", fn: unsavedCheck }];
 
 export function registerSubscribers(store: Store) {
   const ENV_LIST = [process.env.NODE_ENV, "*"];

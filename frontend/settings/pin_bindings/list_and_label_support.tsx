@@ -14,7 +14,7 @@ export const bindingTypeLabelLookup = (): { [x: string]: string } => ({
   "": t("Sequence"),
 });
 
-export const specialActionLabelLookup = (): { [x: string]: string } => ({
+const specialActionLabelLookup = (): { [x: string]: string } => ({
   [PinBindingSpecialAction.emergency_lock]: t("E-STOP"),
   [PinBindingSpecialAction.emergency_unlock]: t("UNLOCK"),
   [PinBindingSpecialAction.power_off]: t("Shutdown"),

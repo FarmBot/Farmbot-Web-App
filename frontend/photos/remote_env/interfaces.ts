@@ -11,11 +11,11 @@ export type WD_ENV = Record<WDENVKey, number>;
 
 /** Takes an internally formatted ENV var and formats it in a way that is useful
  * for the weed detector. Eg, convert 0 to "true". */
-export type FormatterFn = (key: WDENVKey, val: number) => Primitive;
+type FormatterFn = (key: WDENVKey, val: number) => Primitive;
 
 /** Takes a value from the outside world and parses it for use within this app.
  * Example: Turn "TOP_RIGHT" into the number 3. */
-export type ParserFn = (key: WDENVKey, val: string) => number;
+type ParserFn = (key: WDENVKey, val: string) => number;
 
 /** Object that contains two functions for translation of ENV variable keys. */
 export interface Translation {

@@ -22,7 +22,7 @@ import { variableIsInUse } from "./sanitize_nodes";
 import { sortVariables } from "./variable_form_list";
 import { determineVariableType } from "./new_variable";
 
-export interface LocalListCbProps {
+interface LocalListCbProps {
   dispatch: Function;
   sequence: TaggedSequence;
 }

@@ -17,7 +17,7 @@ import { TaggedToolSlotPointer } from "farmbot";
 import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
 import { FilePath } from "../../../internal_urls";
 
-export enum UTMDimensions {
+enum UTMDimensions {
   height = 40,
   extrusion = 20,
 }

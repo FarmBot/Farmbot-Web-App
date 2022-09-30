@@ -70,7 +70,7 @@ export enum WizardSectionSlug {
   tours = "tours",
 }
 
-export const WIZARD_TOC =
+const WIZARD_TOC =
   (firmwareHardware: FirmwareHardware | undefined): WizardToC => {
     const toc: WizardToC = {
       [WizardSectionSlug.intro]: { title: t("INTRO"), steps: [] },

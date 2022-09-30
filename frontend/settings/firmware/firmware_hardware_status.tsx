@@ -43,7 +43,7 @@ export interface FirmwareHardwareStatusDetailsProps {
   dispatch: Function;
 }
 
-export interface FlashFirmwareBtnProps {
+interface FlashFirmwareBtnProps {
   apiFirmwareValue: string | undefined;
   botOnline: boolean;
   short?: boolean;

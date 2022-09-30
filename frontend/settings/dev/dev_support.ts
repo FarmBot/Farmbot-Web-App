@@ -51,7 +51,7 @@ export namespace DevSettings {
     devStorage.removeItem(FUTURE_FE_FEATURES);
 
   export const FBOS_VERSION_OVERRIDE = devStorage.Key.FBOS_VERSION_OVERRIDE;
-  export const MAX_FBOS_VERSION_OVERRIDE = "1000.0.0";
+  const MAX_FBOS_VERSION_OVERRIDE = "1000.0.0";
   /**
    * Escape hatch for platform developers doing offline development.
    * Use `setFbosVersionOverride` or `setMaxFbosVersionOverride`

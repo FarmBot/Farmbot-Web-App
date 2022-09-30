@@ -158,7 +158,7 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
-export function updateSequenceUsageIndex(
+function updateSequenceUsageIndex(
   myUuid: string, ids: number[], i: ResourceIndex) {
   ids.map(id => {
     const uuid = i.byKindAndId[joinKindAndId("Sequence", id)];
@@ -169,7 +169,7 @@ export function updateSequenceUsageIndex(
   });
 }
 
-export const updateOtherSequenceIndexes =
+const updateOtherSequenceIndexes =
   (tr: TaggedSequence, i: ResourceIndex) => {
     i.references[tr.uuid] = tr;
     i.sequenceMetas[tr.uuid] = createSequenceMeta(i, tr);
@@ -196,7 +196,7 @@ const reindexAllSequences = (i: ResourceIndex) => {
   })).map(mapper);
 };
 
-export function reindexAllFarmEventUsage(i: ResourceIndex) {
+function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
   i.inUse["Sequence.FarmEvent"] = {};
   const whichOne: Record<ExecutableType, typeof i.inUse["Regimen.FarmEvent"]> = {
@@ -223,7 +223,7 @@ const reindexAllPointGroups = (i: ResourceIndex) => {
     pointsSelectedByGroup(pg, selectAllActivePoints(i)).length);
 };
 
-export const INDEXERS: Indexer[] = [
+const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
   BY_KIND,

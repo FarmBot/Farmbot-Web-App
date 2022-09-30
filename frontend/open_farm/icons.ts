@@ -1,6 +1,6 @@
 import { FilePath } from "../internal_urls";
 
-export const DATA_URI = "data:image/svg+xml;utf8,";
+const DATA_URI = "data:image/svg+xml;utf8,";
 
 export interface OFCropAttrs {
   svg_icon?: string | undefined;

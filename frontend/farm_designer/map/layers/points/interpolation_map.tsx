@@ -22,7 +22,7 @@ export enum InterpolationKey {
   opts = "interpolationOpts",
 }
 
-export enum MoistureInterpolationKey {
+enum MoistureInterpolationKey {
   data = "interpolationDataMoisture",
   hash = "interpolationHashMoisture",
 }
@@ -68,14 +68,14 @@ interface GenerateInterpolationMapDataProps {
   options: InterpolationOptions;
 }
 
-export interface PointObject {
+interface PointObject {
   uuid: string;
   x: number;
   y: number;
   value: number;
 }
 
-export const convertToPointObject =
+const convertToPointObject =
   (point: TaggedPoint | TaggedSensorReading): PointObject | undefined =>
     !isUndefined(point.body.x) && !isUndefined(point.body.y)
       ? ({
@@ -167,7 +167,7 @@ export const InterpolationMap = (props: InterpolationMapProps) => {
   </g>;
 };
 
-export interface InterpolationSettingsProps {
+interface InterpolationSettingsProps {
   dispatch: Function;
   farmwareEnvs: TaggedFarmwareEnv[];
   saveFarmwareEnv: SaveFarmwareEnv;

@@ -461,7 +461,7 @@ interface GetSelectedPointsProps extends GetFilteredPointsProps {
   selected: UUID[];
 }
 
-export const getSelectedPoints = (props: GetSelectedPointsProps) =>
+const getSelectedPoints = (props: GetSelectedPointsProps) =>
   props.selected
     .map(uuid => getFilteredPoints(props).filter(p => p.uuid == uuid)[0])
     .filter(p => p);

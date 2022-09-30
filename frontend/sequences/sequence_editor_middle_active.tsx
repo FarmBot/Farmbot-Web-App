@@ -323,7 +323,7 @@ export const SequenceBtnGroup = ({
     </div>
   </div>;
 
-export interface DeleteSequenceProps {
+interface DeleteSequenceProps {
   getWebAppConfigValue: GetWebAppConfigValue;
   dispatch: Function;
   sequenceUuid: UUID;

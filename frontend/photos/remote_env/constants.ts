@@ -80,7 +80,7 @@ export type CAMERA_CALIBRATION_KEY_PART =
 export const EVERY_WD_KEY: WDENVKey[] =
   Object.keys(WD_KEY_DEFAULTS).map((x: WDENVKey) => x);
 
-export const isWDENVKey = (key: unknown): key is WDENVKey =>
+const isWDENVKey = (key: unknown): key is WDENVKey =>
   (EVERY_WD_KEY as string[]).includes("" + key);
 
 export const namespace = <T>(

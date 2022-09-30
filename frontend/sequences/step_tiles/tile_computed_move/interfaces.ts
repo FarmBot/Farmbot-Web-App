@@ -19,7 +19,7 @@ export interface ComputedMoveState {
   viewRaw?: boolean;
 }
 
-export type AxisStateKey = keyof Pick<ComputedMoveState,
+type AxisStateKey = keyof Pick<ComputedMoveState,
   "selection" | "overwrite" | "offset" | "variance" | "speed">;
 
 export type CommitMoveField = (field: AxisStateKey, axis: Xyz) =>

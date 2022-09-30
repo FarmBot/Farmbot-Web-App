@@ -94,7 +94,7 @@ export const SupportPanel = () =>
     </DesignerPanelContent>
   </DesignerPanel>;
 
-export interface FeedbackProps {
+interface FeedbackProps {
   stepSlug?: WizardStepSlug;
   keep?: boolean;
 }

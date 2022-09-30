@@ -62,7 +62,7 @@ const DestroyGardenButton =
       {t("delete")}
     </button>;
 
-export const findSavedGardenByUrl = (ri: ResourceIndex) => {
+const findSavedGardenByUrl = (ri: ResourceIndex) => {
   const id = Path.getSlug(Path.savedGardens());
   const num = parseInt(id, 10);
   if (isNumber(num) && !isNaN(num)) {
