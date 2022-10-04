@@ -4,7 +4,7 @@ import { Path } from "../internal_urls";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
  * rename / move links in the future. */
-export const DOC_SLUGS = {
+const DOC_SLUGS = {
   "weed-detection": "Weed Detector",
   "camera-calibration": "Camera Calibration",
   "measure-soil-height": "Measure Soil Height",
@@ -15,12 +15,12 @@ export const DOC_SLUGS = {
   "for-it-security-professionals": "For IT Security Professionals",
 };
 
-export const DEV_DOC_SLUGS = {
+const DEV_DOC_SLUGS = {
   "lua": "Lua",
 };
 
 export type DocSlug = keyof typeof DOC_SLUGS;
-export type DevDocSlug = keyof typeof DEV_DOC_SLUGS;
+type DevDocSlug = keyof typeof DEV_DOC_SLUGS;
 
 /** WHY?: The function keeps things DRY. It also makes life easier when the
  * documentation URL / slug name changes. */

@@ -108,6 +108,7 @@ namespace :api do
     Device
       .where(id: users.pluck(:device_id))
       .update_all(mounted_tool_id: nil)
+    users.map { |u| u.device.folders.update_all(parent_id: nil) }
     users.destroy_all
   end
 

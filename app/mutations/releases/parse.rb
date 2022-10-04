@@ -3,7 +3,7 @@
 module Releases
   # Github has a JSON format for their own concept of "releases".
   # FarmBot also has a concept of a "release", but it is not the same schema.
-  # A single Github release contains mutiple "assets" (*.fw files) that
+  # A single Github release contains multiple "assets" (*.fw files) that
   # we must convert into multiple FarmBot Release objects.
   # 1 Github Release ==> multiple farmbot releases
   #

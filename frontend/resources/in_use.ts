@@ -7,7 +7,7 @@ type UUIDSet = Record<UUID, boolean>;
  * represents the resource that cannot be deleted (the "in use resource").
  * The value represents a set of resources that make it unsafe to delete the
  * "in use resource". */
-export type UsageMap = Record<UUID, UUIDSet>;
+type UsageMap = Record<UUID, UUIDSet>;
 
 /** A directory of all `inUse` data that the frontend cares about. */
 export type UsageIndex = Record<UsageKind, UsageMap>;
@@ -17,7 +17,7 @@ export type UsageIndex = Record<UsageKind, UsageMap>;
  *   1. Name of a resource that cannot be safely deleted.
  *   2. A single period (".")
  *   3. Name of the resource that has a "hold" on the resource listed in (1) */
-export type UsageKind =
+type UsageKind =
   | "Regimen.FarmEvent"
   | "Sequence.Regimen"
   | "Sequence.FarmEvent"

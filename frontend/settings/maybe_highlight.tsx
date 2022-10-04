@@ -507,7 +507,7 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 }
 
-export const linkToSetting =
+const linkToSetting =
   (settingName: DeviceSetting, pathPrefix = Path.settings) =>
     pathPrefix(urlFriendly(stripUnits(settingName)).toLowerCase());
 

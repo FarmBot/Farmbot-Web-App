@@ -117,7 +117,7 @@ export const CameraIndicator = ({ videoDevices }: CameraIndicatorProps) => {
 };
 
 /** Return an indicator color for the given WiFi signal strength (%). */
-export const colorFromSignalStrength = (percent: number) => {
+const colorFromSignalStrength = (percent: number) => {
   if (percent < 20) {
     return "gray";
   } else if (percent < 68) {

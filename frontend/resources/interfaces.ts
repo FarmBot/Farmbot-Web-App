@@ -105,7 +105,7 @@ export interface SlotWithTool {
   tool: TaggedTool | undefined;
 }
 
-export interface PointGroupPlus extends PointGroup {
+interface PointGroupPlus extends PointGroup {
   member_count?: number;
 }
 export type TaggedPointGroup = RestResource<"PointGroup", PointGroupPlus>;

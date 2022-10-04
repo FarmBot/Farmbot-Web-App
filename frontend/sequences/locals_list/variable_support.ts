@@ -34,7 +34,7 @@ export const variableList = (variableData: VariableNameSet | undefined):
   return body.length > 0 ? body : undefined;
 };
 
-export const varDeclarationList = (variableData: VariableNameSet | undefined):
+const varDeclarationList = (variableData: VariableNameSet | undefined):
   VariableDeclaration[] | undefined => {
   const body = onlyParameterDeclarations(variableData)
     .map(createVariableDeclaration);
@@ -60,7 +60,7 @@ export const reduceVariables = <T extends VariableNode>(
 };
 
 /** Add new parameter applications if they don't already exist. */
-export const mergeVariables = <T extends VariableNode>(
+const mergeVariables = <T extends VariableNode>(
   varData: VariableNameSet | undefined,
   variables: T[],
   newVariableKind: "parameter_application" | "variable_declaration",

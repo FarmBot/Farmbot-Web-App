@@ -8,7 +8,7 @@ class InactiveAccountJob < ApplicationJob
   WARNING_TIME = 14.days
 
   def users
-    User.includes(:device)
+    User.where.not(email: ENV["AUTHORIZED_PUBLISHER"]).includes(:device)
   end
 
   # They signed up for an account, but never configured a device.

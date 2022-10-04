@@ -19,7 +19,7 @@ class Regimen < ApplicationRecord
   # Detecting changes in child regimen_items is difficult.
   # Whenever a Regimen is saved, we pretend that the changes
   # require a sync/broadcast even though it is slightly
-  # ineffficient
+  # inefficient
   def notable_changes?
     true
   end

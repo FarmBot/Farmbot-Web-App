@@ -24,7 +24,7 @@ import { isNumber, find } from "lodash";
 import { joinKindAndId } from "./reducer_support";
 import { findAll } from "./find_all";
 
-export const byId =
+const byId =
   <T extends TaggedResource>(kind: T["kind"]) =>
     (index: ResourceIndex, id: number): T | undefined => {
       const resources = findAll(index, kind);

@@ -32,7 +32,7 @@ export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
   </g>;
 };
 
-export const seedTroughGradient =
+const seedTroughGradient =
   <linearGradient id="SeedTroughGradient" gradientTransform="rotate(90)">
     <stop offset="0%" stopColor={Color.black} stopOpacity={0.1} />
     <stop offset="66%" stopColor={Color.black} stopOpacity={0.75} />

@@ -67,7 +67,7 @@ export const toggleAndEditEqCriteria =
     };
 
 /** Clear incompatible criteria. */
-export const clearSubCriteria = (
+const clearSubCriteria = (
   pointerTypes: PointerType[],
   tempCriteria: PointGroupCriteria,
   keepKey: string,

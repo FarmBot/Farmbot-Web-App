@@ -93,7 +93,7 @@ export const CheckboxList =
   };
 
 /** Criteria specific to plants. */
-export const PlantCriteria = (props: PlantSubCriteriaProps) => {
+const PlantCriteria = (props: PlantSubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const commonProps = { group, dispatch, disabled };
   return <div className={"plant-criteria-options"}>
@@ -165,7 +165,7 @@ const PlantType = (props: PlantSubCriteriaProps) =>
   </div>;
 
 /** Criteria specific to weeds. */
-export const WeedCriteria = (props: SubCriteriaProps) => {
+const WeedCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const pointerType: PointType = "Weed";
   const commonProps = { group, dispatch, disabled, pointerType };
@@ -179,7 +179,7 @@ export const WeedCriteria = (props: SubCriteriaProps) => {
 };
 
 /** Criteria specific to map points. */
-export const PointCriteria = (props: SubCriteriaProps) => {
+const PointCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const pointerType: PointType = "GenericPointer";
   const commonProps = { group, dispatch, disabled, pointerType };
@@ -256,7 +256,7 @@ const Color = (props: PointSubCriteriaProps) =>
   </div>;
 
 /** Criteria specific to tools. */
-export const ToolCriteria = (props: SubCriteriaProps) => {
+const ToolCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const commonProps = { group, dispatch, disabled };
   return <div className={"tool-criteria-options"}>

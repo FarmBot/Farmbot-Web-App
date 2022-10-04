@@ -218,7 +218,7 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
   },
 ]);
 
-export interface LogLevelSettingDescriptionProps {
+interface LogLevelSettingDescriptionProps {
   setting: WebAppNumberConfigKey;
   title: DeviceSetting;
   description: string;
@@ -269,7 +269,7 @@ const LOG_LEVEL_SETTINGS = (): LogLevelSettingDescriptionProps[] => ([
   },
 ]);
 
-export interface LogEnableSettingDescriptionProps {
+interface LogEnableSettingDescriptionProps {
   setting: ConfigurationName;
   title: DeviceSetting;
   description: string;

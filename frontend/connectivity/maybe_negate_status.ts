@@ -22,7 +22,7 @@ export function determineStrategy(x: StratHints): SyncStrat {
   return SyncStrat.ONLINE;
 }
 
-export interface OverrideHints {
+interface OverrideHints {
   consistent: boolean;
   syncStatus: SyncStatus | undefined;
   fbosVersion: string | undefined;

@@ -83,7 +83,7 @@ export enum FbosVersionFallback {
   NULL = "0.0.0",
 }
 
-export const fallbackData: MinOsFeatureLookup = {
+const fallbackData: MinOsFeatureLookup = {
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
 };
 

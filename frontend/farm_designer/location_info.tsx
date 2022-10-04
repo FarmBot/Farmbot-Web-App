@@ -202,7 +202,7 @@ interface ItemData<T> {
   items: T[];
 }
 
-export function groupItemsByLocation<T extends Item>(
+function groupItemsByLocation<T extends Item>(
   items: T[],
   chosenXY: Record<"x" | "y", number> | undefined,
 ) {

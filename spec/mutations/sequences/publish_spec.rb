@@ -22,7 +22,7 @@ describe Sequences::Publish do
       kind: "sequence",
       args: {
         version: 20180209,
-        loals: {
+        locals: {
           kind: "scope_declaration",
           args: {},
           body: [

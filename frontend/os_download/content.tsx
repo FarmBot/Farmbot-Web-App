@@ -265,7 +265,7 @@ interface OsDownloadWizardProps {
   setWizard(value: boolean): void;
 }
 
-export class OsDownloadWizard
+class OsDownloadWizard
   extends React.Component<OsDownloadWizardProps, OsDownloadWizardState> {
   state: OsDownloadWizardState = {
     model: undefined,

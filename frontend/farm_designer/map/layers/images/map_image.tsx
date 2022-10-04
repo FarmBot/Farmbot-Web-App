@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedImage } from "farmbot";
 import { CameraCalibrationData, BotOriginQuadrant } from "../../../interfaces";
 import { MapTransformProps } from "../../interfaces";
@@ -288,7 +288,7 @@ export class MapImage extends React.Component<MapImageProps, MapImageState> {
   }
 }
 
-export interface MapImagePositionDataProps {
+interface MapImagePositionDataProps {
   x: number | undefined;
   y: number | undefined;
   width: number;

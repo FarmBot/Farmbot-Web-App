@@ -157,5 +157,5 @@ interface JobBytesProgressWithTitle extends BytesProgress {
   title: string;
 }
 
-export type JobProgressWithTitle =
+type JobProgressWithTitle =
   JobPercentProgressWithTitle | JobBytesProgressWithTitle;

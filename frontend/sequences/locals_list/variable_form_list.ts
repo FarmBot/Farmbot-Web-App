@@ -41,7 +41,7 @@ type DropdownHeadingId =
   | "Other";
 
 /** Variable selection menu section names. */
-export const NAME_MAP: Record<DropdownHeadingId, string> = {
+const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Variable": "Variables",
   "Identifier": "Variables",
   "GenericPointer": "Map Points",
@@ -198,10 +198,10 @@ export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   headingId: "Coordinate"
 });
 
-export const NUMBER_DDI = (): DropDownItem =>
+const NUMBER_DDI = (): DropDownItem =>
   ({ label: t("Custom number"), value: 0, headingId: "Numeric" });
 
-export const TEXT_DDI = (): DropDownItem =>
+const TEXT_DDI = (): DropDownItem =>
   ({ label: t("Custom text"), value: "", headingId: "Text" });
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>

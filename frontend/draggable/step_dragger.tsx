@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { stepPut } from "./actions";
 import { SequenceBodyItem as Step } from "farmbot";
 import { DataXferIntent, StepDraggerProps } from "./interfaces";
@@ -19,7 +19,7 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
  *   Drag this!
  * </button>
  * */
-export const stepDragEventHandler = (dispatch: Function,
+const stepDragEventHandler = (dispatch: Function,
   step: Step,
   intent: DataXferIntent,
   draggerId: number,

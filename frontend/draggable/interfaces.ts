@@ -23,12 +23,12 @@ export interface DataXferBase {
 }
 
 /** Data transfer payload used when moving a *new* step into an existing step */
-export interface StepSpliceDataXfer extends DataXferBase {
+interface StepSpliceDataXfer extends DataXferBase {
   intent: "step_splice";
 }
 
 /** Data transfer payload used when reordering an existing step. */
-export interface StepMoveDataXfer extends DataXferBase {
+interface StepMoveDataXfer extends DataXferBase {
   intent: "step_move";
 }
 

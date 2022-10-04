@@ -24,6 +24,7 @@ describe Sequences::Upgrade do
   it "upgrades to a specific sequence version" do
     # Create a shared sequence
     pub_seq = FakeSequence.with_parameters(device: other_device,
+                                           description: "description",
                                            color: "red",
                                            name: "upstream")
     sv = Sequences::Publish
@@ -36,7 +37,7 @@ describe Sequences::Upgrade do
                                             body: body,
                                             color: "red",
                                             name: "forked")
-    # Upgrade to thepub_seq of someone elses account
+    # Upgrade to the pub_seq of someone elses account
     Sequences::Upgrade.run!(device: device,
                             sequence: priv_seq,
                             sequence_version: sv)
@@ -44,16 +45,18 @@ describe Sequences::Upgrade do
     expect(PrimaryNode.where(sequence_id: priv_seq.id).count).to eq(0)
     expect(priv_seq.name).to eq(pub_seq.name)
     expect(priv_seq.color).to eq(pub_seq.color)
+    expect(priv_seq.description).to eq(pub_seq.description)
     expect(priv_seq.device).to eq(device)
     expect(priv_seq.forked).to eq(false)
     expect(priv_seq.sequence_version_id).to eq(sv.id)
     # After upgrading once, the `name` and `color` attrs
     # should keep downstream changes
-    priv_seq.update!(name: "changed by end user", color: "blue")
+    priv_seq.update!(name: "changed by end user", color: "blue", description: "x")
     Sequences::Upgrade.run!(device: device, sequence: priv_seq, sequence_version: sv)
     priv_seq.reload
     expect(priv_seq.color).to eq("blue")
     expect(priv_seq.name).to eq("changed by end user")
+    expect(priv_seq.description).to eq("description")
   end
 
   it "does not let you upgrade other peoples sequences" do
@@ -72,7 +75,7 @@ describe Sequences::Upgrade do
     end.to raise_error(Errors::Forbidden, err)
   end
 
-  it "does not allow upgrade of unpublished sequeces" do
+  it "does not allow upgrade of unpublished sequences" do
     pub_seq = FakeSequence.with_parameters(device: other_device, color: "red", name: "---")
     Sequences::Publish.run!(device: other_device,
                             sequence: pub_seq,

@@ -15,7 +15,7 @@ export interface SetupWizardProps extends WizardOutcomeComponentProps {
   device: TaggedDevice | undefined;
 }
 
-export interface WizardStepOutcome {
+interface WizardStepOutcome {
   slug: string;
   description: string;
   tips: string;

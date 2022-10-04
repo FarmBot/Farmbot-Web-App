@@ -42,7 +42,7 @@ export function resetBugs() {
   setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "true");
 }
 
-export function getBugTime() {
+function getBugTime() {
   return getEggStatus(EggKeys.LAST_BUG_TIME);
 }
 

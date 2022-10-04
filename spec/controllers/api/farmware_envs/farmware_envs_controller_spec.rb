@@ -19,7 +19,7 @@ describe Api::FarmwareEnvsController do
   it 'stores compound data types' do
     sign_in user
     b4 = FarmwareEnv.count
-    input = { key: "compund_data", value: {x: "y", z: 300} }
+    input = { key: "compound_data", value: {x: "y", z: 300} }
     post :create, body: input.to_json, params: { format: :json }
     expect(response.status).to eq(200)
     expect(FarmwareEnv.count).to be > b4

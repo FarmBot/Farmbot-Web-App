@@ -91,5 +91,5 @@ class Sequence < ApplicationRecord
     PrimaryNode.where(kind: "parameter_declaration", sequence_id: id).exists?
   end
 
-  def kind; "sequnece" end
+  def kind; "sequence" end
 end

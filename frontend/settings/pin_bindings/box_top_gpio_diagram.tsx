@@ -33,7 +33,7 @@ interface CirclesProps {
   clean: boolean;
 }
 
-export const CIRCLES = ({ firmwareHardware, clean }: CirclesProps) => [
+const CIRCLES = ({ firmwareHardware, clean }: CirclesProps) => [
   ...(hasExtraButtons(firmwareHardware)
     ? [{ cx: 20, cy: 20, r: 7, pin: 20, label: t("Button 5"), color: Color.white }]
     : []),

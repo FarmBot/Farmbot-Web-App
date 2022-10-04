@@ -45,7 +45,7 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
   };
 };
 
-export const mapStateToPropsAddEditBase = (props: Everything):
+const mapStateToPropsAddEditBase = (props: Everything):
   AddEditToolSlotPropsBase => {
   const getWebAppConfig = getWebAppConfigValue(() => props);
   const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);

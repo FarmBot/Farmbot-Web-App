@@ -25,7 +25,7 @@ export interface DiagnosisSaucerProps extends ConnectionStatusFlags {
   syncStatus?: SyncStatus;
 }
 
-export const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
+const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
   flags.userMQTT && flags.botAPI && flags.botMQTT && flags.botFirmware;
 
 export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {

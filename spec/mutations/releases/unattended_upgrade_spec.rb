@@ -78,7 +78,7 @@ describe Devices::UnattendedUpgrade do
     # Ineligible: OS Auto Update disabled.
     devices[2].fbos_config.update!(os_auto_update: false)
 
-    # The remianing two devices are eligible.
+    # The remaining two devices are eligible.
 
     expect(Device.count).to eq(5)
     ua = Devices::UnattendedUpgrade.new

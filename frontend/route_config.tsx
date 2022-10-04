@@ -82,7 +82,7 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
 
 /** The 404 handler. All unresolved routes end up here. MUST BE LAST ITEM IN
  * ROUTE CONFIG!!! */
-export const NOT_FOUND_ROUTE = route({
+const NOT_FOUND_ROUTE = route({
   children: false,
   $: "*",
   getModule: () => import("./404"),

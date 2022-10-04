@@ -177,7 +177,7 @@ const PlotBackground = () =>
       strokeWidth={0.25} stroke={"grey"} />
   </g>;
 
-export interface PlotLinesProps {
+interface PlotLinesProps {
   telemetry: TaggedTelemetry[];
   hoveredMetric: keyof Telemetry | undefined;
   onHover: OnMetricHover;

@@ -4,7 +4,7 @@ import { isObject, isUndefined } from "lodash";
 import { OFCropAttrs, OFCropResponse, svgToUrl } from "./icons";
 import { ExternalUrl } from "../external_urls";
 
-export type OFIcon = Readonly<OFCropAttrs>;
+type OFIcon = Readonly<OFCropAttrs>;
 type IconDictionary = Dictionary<OFIcon | undefined>;
 
 const STORAGE_KEY = "openfarm_icons_with_spread";

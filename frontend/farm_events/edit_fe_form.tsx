@@ -63,7 +63,7 @@ export interface FarmEventViewModel {
   body?: ParameterApplication[];
 }
 
-export type FarmEventViewModelKey = keyof FarmEventViewModel;
+type FarmEventViewModelKey = keyof FarmEventViewModel;
 
 /** Breaks up a TaggedFarmEvent into a structure that can easily be used
  * by the edit form.
@@ -148,7 +148,7 @@ export interface EditFEProps {
   resources: ResourceIndex;
 }
 
-export interface EditFEFormState {
+interface EditFEFormState {
   /**
    * Hold a partial FarmEvent locally containing only updates made by the form.
    */
@@ -482,7 +482,7 @@ export const RepeatForm = (props: RepeatFormProps) => {
   </div>;
 };
 
-export const dateCheck = (
+const dateCheck = (
   fieldGet: (key: FarmEventViewModelKey) => string,
 ): string | undefined => {
   const startDate = fieldGet("startDate");
@@ -492,7 +492,7 @@ export const dateCheck = (
   }
 };
 
-export const timeCheck = (
+const timeCheck = (
   fieldGet: (key: FarmEventViewModelKey) => string,
   timeSettings: TimeSettings,
 ): string | undefined => {
@@ -525,7 +525,7 @@ export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
     {t("Delete")}
   </button>;
 
-export interface FarmEventFormProps {
+interface FarmEventFormProps {
   isRegimen: boolean;
   fieldGet(key: FarmEventViewModelKey): string;
   fieldSet(key: FarmEventViewModelKey, value: string): void;

@@ -28,7 +28,7 @@ const RANGES = {
 };
 
 /** Number values that the <ImageWorkspace/> panel deals with. */
-export interface NumericValues {
+interface NumericValues {
   iteration: number;
   morph: number;
   blur: number;

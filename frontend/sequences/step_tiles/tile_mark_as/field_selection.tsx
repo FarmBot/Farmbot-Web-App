@@ -59,7 +59,7 @@ export enum KnownField {
 const isKnownField = (x: string | undefined): x is KnownField =>
   !!(x && Object.keys(KnownField).includes(x));
 
-export const knownField =
+const knownField =
   (field: string | undefined): KnownField | undefined =>
     isKnownField(field) ? field : undefined;
 

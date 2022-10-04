@@ -377,7 +377,7 @@ export class Label extends React.Component<LabelProps, LabelState> {
   }
 }
 
-export interface GenerateVariableListProps {
+interface GenerateVariableListProps {
   allowedVariableNodes: AllowedVariableNodes;
   resources: ResourceIndex;
   sequenceUuid: UUID;

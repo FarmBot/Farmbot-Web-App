@@ -24,7 +24,7 @@ import { sortGroup } from "../../farm_designer/map/group_order_visual";
 import { equals } from "../../util";
 import { floor, take } from "lodash";
 
-export const CRITERIA_POINT_TYPE_LOOKUP =
+const CRITERIA_POINT_TYPE_LOOKUP =
   (): Record<PointerType, string> => ({
     Plant: t("Plants"),
     GenericPointer: t("Points"),

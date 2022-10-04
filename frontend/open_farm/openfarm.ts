@@ -28,7 +28,7 @@ export namespace OpenFarm {
     svg_icon?: string | undefined;
   }
 
-  export interface Self {
+  interface Self {
     api: string;
     website: string;
   }
@@ -37,11 +37,11 @@ export namespace OpenFarm {
     self: Self;
   }
 
-  export interface Links2 {
+  interface Links2 {
     related: string;
   }
 
-  export interface Datum2 {
+  interface Datum2 {
     type: string;
     id: string;
   }
@@ -50,12 +50,12 @@ export namespace OpenFarm {
     links: Links2;
   }
 
-  export interface Pictures {
+  interface Pictures {
     links: Links2;
     data: Datum2[];
   }
 
-  export interface Relationships {
+  interface Relationships {
     companions: Companions;
     pictures: Pictures;
   }
@@ -68,7 +68,7 @@ export namespace OpenFarm {
     relationships: Relationships;
   }
 
-  export interface ImageAttrs {
+  interface ImageAttrs {
     id: string;
     image_url: string;
     small_url: string;
@@ -78,13 +78,13 @@ export namespace OpenFarm {
     canopy_url: string;
   }
 
-  export interface IncludedPictures {
+  interface IncludedPictures {
     id: string;
     type: "crops-pictures";
     attributes: ImageAttrs;
   }
 
-  export interface IncludedCompanion {
+  interface IncludedCompanion {
     id: string;
     type: "crops";
     attributes: OFCrop;
