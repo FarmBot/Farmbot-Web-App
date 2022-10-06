@@ -17,8 +17,8 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
         .map(row => {
           const { axis } = row;
           const hardwareDisabled = type == "zero" ? false : row.disabled;
-          return <Col xs={4} key={axis}
-            className={"centered-button-div"}>
+          return <Col xs={3} key={axis}
+            className={"centered-button-div low-pad"}>
             <LockableButton
               disabled={arduinoBusy || hardwareDisabled || !botOnline}
               className={lockedClass(locked)}
@@ -34,14 +34,14 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
   render() {
     return <Highlight settingName={this.props.title}>
       <Row>
-        <Col xs={12} className={"widget-body-tooltips"}>
+        <Col xs={3} className={"widget-body-tooltips"}>
           <label>
             {t(this.props.title)}
           </label>
           <Help text={t(this.props.toolTip)} />
         </Col>
+        <this.Axes />
       </Row>
-      <Row><this.Axes /></Row>
     </Highlight>;
   }
 }

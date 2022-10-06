@@ -15,7 +15,7 @@ export const SafeHeight = (props: ZHeightInputProps) =>
         </label>
         <Help text={ToolTips.SAFE_HEIGHT} />
       </Col>
-      <Col xs={4} className={"z-height-input"}>
+      <Col xs={4} className={"z-height-input low-pad"}>
         <BotConfigInputBox
           setting={"safe_height"}
           dispatch={props.dispatch}
@@ -33,7 +33,7 @@ export const SoilHeight = (props: ZHeightInputProps) =>
         </label>
         <Help text={ToolTips.FALLBACK_SOIL_HEIGHT} />
       </Col>
-      <Col xs={4} className={"z-height-input"}>
+      <Col xs={4} className={"z-height-input low-pad"}>
         <BotConfigInputBox
           setting={"soil_height"}
           dispatch={props.dispatch}

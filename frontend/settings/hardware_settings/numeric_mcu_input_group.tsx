@@ -26,7 +26,7 @@ export class NumericMCUInputGroup
       disabled,
     };
     return <div className={"mcu-inputs"}>
-      <Col xs={4}>
+      <Col xs={3} className={"low-pad"}>
         <McuInputBox {...commonProps}
           setting={x}
           scale={xScale}
@@ -35,7 +35,7 @@ export class NumericMCUInputGroup
           warning={warning?.x}
           gray={gray?.x} />
       </Col>
-      <Col xs={4}>
+      <Col xs={3} className={"low-pad"}>
         <McuInputBox {...commonProps}
           setting={y}
           scale={yScale}
@@ -44,7 +44,7 @@ export class NumericMCUInputGroup
           warning={warning?.y}
           gray={gray?.y} />
       </Col>
-      <Col xs={4}>
+      <Col xs={3} className={"low-pad"}>
         <McuInputBox {...commonProps}
           setting={z}
           scale={zScale}
@@ -96,14 +96,14 @@ export class NumericMCUInputGroup
         && !this.error}
       className={this.props.advanced ? "advanced" : undefined}>
       <Row>
-        <Col xs={12} className={"widget-body-tooltips"}>
+        <Col xs={3} className={"widget-body-tooltips"}>
           <label>
             {t(label)}
           </label>
           <Help text={this.tooltip} />
         </Col>
+        <this.Inputs />
       </Row>
-      <Row><this.Inputs /></Row>
     </Highlight>;
   }
 }

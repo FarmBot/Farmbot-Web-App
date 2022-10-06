@@ -82,7 +82,7 @@ export function Motors(props: MotorsProps) {
                 z: getDefault("movement_max_spd_z2") / scale.z
               })} />
           </Col>
-          <Col xs={4} className={"z-param-input"}>
+          <Col xs={4} className={"z-param-input low-pad"}>
             <McuInputBox {...commonProps}
               setting={"movement_max_spd_z2"}
               scale={scale.z} />
@@ -119,7 +119,7 @@ export function Motors(props: MotorsProps) {
                 z: getDefault("movement_min_spd_z2") / scale.z
               })} />
           </Col>
-          <Col xs={4} className={"z-param-input"}>
+          <Col xs={4} className={"z-param-input low-pad"}>
             <McuInputBox {...commonProps}
               setting={"movement_min_spd_z2"}
               scale={scale.z} />
@@ -146,7 +146,7 @@ export function Motors(props: MotorsProps) {
                 z: getDefault("movement_steps_acc_dec_z2") / scale.z
               })} />
           </Col>
-          <Col xs={4} className={"z-param-input"}>
+          <Col xs={4} className={"z-param-input low-pad"}>
             <McuInputBox {...commonProps}
               setting={"movement_steps_acc_dec_z2"}
               scale={scale.z} />

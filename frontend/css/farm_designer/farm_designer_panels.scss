@@ -1543,6 +1543,14 @@ li {
   padding: 0;
 }
 
+.low-pad {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  &.z-param-input {
+    padding-left: 4.25rem;
+  }
+}
+
 .settings-panel {
   .panel-top {
     .fa-chevron-right,
@@ -1615,7 +1623,6 @@ li {
     }
   }
   .label-headings {
-    margin-right: 2rem;
     label {
       line-height: 1rem;
     }
@@ -1705,11 +1712,13 @@ li {
     margin-top: 0.5rem;
   }
   label {
-    margin: 0 !important;
-    line-height: 3rem;
+    margin: auto 0 !important;
+    line-height: 1;
+    font-size: 1.2rem !important;
   }
   .bp4-popover-wrapper {
     display: inline;
+    margin: auto;
     float: none;
   }
   .map-size-inputs {
@@ -1724,7 +1733,7 @@ li {
     }
   }
   .help-icon {
-    margin-left: 1rem;
+    margin-left: 0.5rem;
   }
   .designer-setting {
     &.disabled {

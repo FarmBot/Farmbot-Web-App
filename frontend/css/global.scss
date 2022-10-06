@@ -517,7 +517,6 @@ a {
 .single-setting-row {
   .col-xs-5 {
     padding-left: 4.75rem;
-    padding-right: 3rem;
     &.centered-button-div {
       padding-left: 6rem;
     }
@@ -2742,10 +2741,12 @@ textarea:focus {
   }
 }
 
-.z-height-input,
-.z-param-input {
-  padding-left: 1rem;
-  padding-right: 3rem;
+.widget-body-tooltips {
+  display: flex;
+  padding-right: 0.5rem;
+  .bp4-popover-wrapper {
+    line-height: 3rem;
+  }
 }
 
 .z-param-label {
