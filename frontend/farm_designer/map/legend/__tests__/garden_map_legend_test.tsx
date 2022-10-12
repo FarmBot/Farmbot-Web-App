@@ -14,6 +14,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
+  PlantsSubMenu, MapSettingsContent, SettingsSubMenuProps,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
@@ -105,11 +106,14 @@ describe("<ZoomControls />", () => {
   });
 });
 
+const fakeProps = (): SettingsSubMenuProps => ({
+  dispatch: jest.fn(),
+  getConfigValue: () => true,
+});
+
 describe("<PointsSubMenu />", () => {
   it("shows historic points", () => {
-    const wrapper = mount(<PointsSubMenu
-      dispatch={jest.fn()}
-      getConfigValue={() => true} />);
+    const wrapper = mount(<PointsSubMenu {...fakeProps()} />);
     const toggleBtn = wrapper.find("button").first();
     expect(toggleBtn.text()).toEqual("yes");
     toggleBtn.simulate("click");
@@ -118,15 +122,35 @@ describe("<PointsSubMenu />", () => {
   });
 });
 
+describe("<PlantsSubMenu />", () => {
+  it("shows plants settings", () => {
+    const wrapper = mount(<PlantsSubMenu {...fakeProps()} />);
+    const toggleBtn = wrapper.find("button").first();
+    expect(toggleBtn.text()).toEqual("no");
+    toggleBtn.simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.disable_animations, false);
+  });
+});
+
 describe("<FarmbotSubMenu />", () => {
   it("shows farmbot settings", () => {
-    const wrapper = mount(<FarmbotSubMenu
-      dispatch={jest.fn()}
-      getConfigValue={() => true} />);
-    const toggleBtn = wrapper.find("button");
+    const wrapper = mount(<FarmbotSubMenu {...fakeProps()} />);
+    const toggleBtn = wrapper.find("button").first();
     expect(toggleBtn.text()).toEqual("yes");
     toggleBtn.simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.display_trail, false);
+  });
+});
+
+describe("<MapSettingsContent />", () => {
+  it("shows map settings", () => {
+    const wrapper = mount(<MapSettingsContent {...fakeProps()} />);
+    const toggleBtn = wrapper.find("button").first();
+    expect(toggleBtn.text()).toEqual("yes");
+    toggleBtn.simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.dynamic_map, false);
   });
 });

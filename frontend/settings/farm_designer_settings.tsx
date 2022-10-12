@@ -19,7 +19,7 @@ import { getModifiedClassName } from "./default_values";
 export const Designer = (props: DesignerSettingsSectionProps) => {
   const { getConfigValue, dispatch, settingsPanelState } = props;
   const settingsProps = { getConfigValue, dispatch };
-  return <Highlight className={"section"}
+  return <Highlight className={"section"} hidden={true}
     settingName={DeviceSetting.farmDesigner}>
     <Header
       title={DeviceSetting.farmDesigner}

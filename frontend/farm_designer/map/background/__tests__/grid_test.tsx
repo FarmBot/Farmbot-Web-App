@@ -22,7 +22,7 @@ describe("<Grid />", () => {
     expect(wrapper.find("#minor-grid").props()).toEqual(
       expect.objectContaining(expectedGridShape));
     expect(wrapper.find("#axis-arrows").find("line").first().props())
-      .toEqual({ x1: 0, x2: 25, y1: 0, y2: 0 });
+      .toEqual({ x1: 0, x2: 20, y1: 0, y2: 0 });
     expect(wrapper.find("#axis-values").find("text").length).toEqual(43);
   });
 
@@ -61,25 +61,38 @@ describe("<Grid />", () => {
     const p = fakeProps();
     p.zoomLvl = zoomLvl;
     const wrapper = shallow(<Grid {...p} />);
-    const xAxisValues = wrapper.find("#x-label").children();
-    const yAxisValues = wrapper.find("#y-label").children();
-    expect(xAxisValues).toHaveLength(xCount);
-    expect(yAxisValues).toHaveLength(yCount);
+    expect(wrapper.find("#x-label")).toHaveLength(xCount);
+    expect(wrapper.find("#y-label")).toHaveLength(yCount);
   });
 
-  it.each<[number, number, number, number, number, string, string]>([
-    [1.1, 100, -10, -10, 100, "scale(0.91) ", "scale(0.91) rotate(-90deg)"],
-    [0.5, 200, -20, -20, 200, "scale(2) ", "scale(2) rotate(-90deg)"],
-    [0.1, 500, -100, -100, 500, "scale(10) ", "scale(10) rotate(-90deg)"],
+  it.each<[
+    number, number, boolean, number, number, number, number, string, string,
+  ]>([
+    [1.1, 2, false, 100, 0, 0, 100, "translate(0, -15px) scale(0.91)",
+      "translate(-5px, -50%) rotate(-90deg) scale(0.91)"],
+    [1, 2, true, 0, 100, 100, 0, "translate(-5px, -50%) rotate(-90deg) scale(1)",
+      "translate(0, -15px) scale(1)"],
+    [0.5, 1, false, 2800, 0, 3000, 200, "translate(0, -15px) scale(2)",
+      "translate(5px, 50%) rotate(-90deg) scale(2)"],
+    [0.25, 2, false, 200, 0, 0, 200, "translate(0, -15px) scale(4)",
+      "translate(-5px, -50%) rotate(-90deg) scale(4)"],
+    [0.15, 3, false, 500, 1500, 0, 1000, "translate(0, 15px) scale(6.67)",
+      "translate(-5px, -50%) rotate(-90deg) scale(6.67)"],
+    [0.1, 4, false, 2500, 1500, 3000, 1000, "translate(0, 15px) scale(10)",
+      "translate(5px, 50%) rotate(-90deg) scale(10)"],
   ])("has correct transform for zoom level: %s",
-    (zoomLvl, xx, xy, yx, yy, xTransform, yTransform) => {
+    (zoomLvl, quadrant, xySwap, xx, xy, yx, yy, xTransform, yTransform) => {
       const p = fakeProps();
       p.zoomLvl = zoomLvl;
+      p.mapTransformProps.quadrant = quadrant;
+      p.mapTransformProps.xySwap = xySwap;
       const wrapper = shallow(<Grid {...p} />);
-      const xTextNodeProps = wrapper.find("#x-label").first().props();
-      const yTextNodeProps = wrapper.find("#y-label").first().props();
-      expect(xTextNodeProps.style?.transform).toEqual(xTransform);
-      expect(yTextNodeProps.style?.transform).toEqual(yTransform);
+      const xLabelNode = wrapper.find("#x-label").first();
+      const yLabelNode = wrapper.find("#y-label").first();
+      expect(xLabelNode.props().style?.transform).toEqual(xTransform);
+      expect(yLabelNode.props().style?.transform).toEqual(yTransform);
+      const xTextNodeProps = xLabelNode.find("text").props();
+      const yTextNodeProps = yLabelNode.find("text").props();
       expect(xTextNodeProps.x).toEqual(xx);
       expect(xTextNodeProps.y).toEqual(xy);
       expect(yTextNodeProps.x).toEqual(yx);

@@ -1721,17 +1721,6 @@ li {
     margin: auto;
     float: none;
   }
-  .map-size-inputs {
-    .row {
-      margin: 0;
-      padding: 0;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-    label {
-      margin-top: 0.5rem;
-    }
-  }
   .help-icon {
     margin-left: 0.5rem;
   }
@@ -1744,6 +1733,32 @@ li {
         background: $medium_light_gray !important;
       }
     }
+  }
+}
+
+.non-layer-config-toggle {
+  &.disabled {
+    input {
+      background: $gray !important;
+    }
+    button {
+      background: $medium_light_gray !important;
+      &:hover {
+        background: $medium_light_gray !important;
+      }
+    }
+  }
+}
+
+.map-size-inputs {
+  .row {
+    margin: 0;
+    padding: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  label {
+    margin-top: 0.5rem;
   }
 }
 

@@ -795,6 +795,7 @@
   }
   .more-bugs,
   .select-mode,
+  .map-settings,
   .move-to-mode {
     margin: auto;
     margin-top: 1rem;
@@ -850,6 +851,8 @@
   }
 }
 
+.map-plants-submenu,
+.map-settings-submenu,
 .farmbot-layer-submenu {
   .bp4-popover-wrapper {
     display: inline;
@@ -943,11 +946,11 @@
   }
 }
 
-.overlay-submenu,
+.map-plants-submenu,
+.map-settings-submenu,
 .map-points-submenu {
   display: flex;
   flex-direction: column;
-  align-items: center;
   fieldset {
     display: flex;
     margin-top: 0;
