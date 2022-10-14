@@ -991,8 +991,9 @@ li {
 
 .section-header {
   display: inline-block;
+  height: 4rem;
   width: 100%;
-  line-height: 3rem;
+  line-height: 3.75rem;
   cursor: pointer;
   padding-left: 1rem;
   &:hover {
@@ -1006,6 +1007,7 @@ li {
     line-height: 1rem;
     margin-top: 0.5rem;
     margin-right: 1rem;
+    padding: 0.25rem 0.75rem;
     i {
       margin: 0 !important;
       font-size: 1.5rem;
@@ -1017,7 +1019,7 @@ li {
     line-height: 0;
     font-size: 2rem;
     margin-right: 2rem;
-    margin-top: 1.75rem !important;
+    margin-top: 2rem !important;
     color: $dark_gray;
   }
 }
@@ -2153,6 +2155,8 @@ li {
     padding-bottom: inherit;
     .points-section-header {
       cursor: pointer;
+      height: 4rem;
+      line-height: 2.75rem;
       label {
         cursor: pointer;
       }
@@ -2164,10 +2168,25 @@ li {
         margin-right: 0.25rem;
         margin-left: 1rem;
       }
+      &:hover {
+        background: $light_gray;
+      }
+      i {
+        margin-top: 0.5rem;
+      }
     }
     .section-header {
       padding-top: 0.5rem;
       padding-bottom: 0.5rem;
+      line-height: 2.75rem;
+      .fb-button {
+        margin-top: 0.3rem;
+        margin-right: 0.75rem;
+      }
+      .fa-caret-down,
+      .fa-caret-up {
+        margin-top: 1.5rem !important;
+      }
     }
     .points-section-header,
     .pending-weeds-header,
@@ -2229,12 +2248,6 @@ li {
       margin-top: 0;
       color: $dark_gray;
     }
-    .section-header {
-      .fa-caret-down,
-      .fa-caret-up {
-        margin-top: 1.5rem !important;
-      }
-    }
     i {
       margin: 0.25rem;
     }
@@ -2249,6 +2262,14 @@ li {
       .empty-state-graphic {
         margin-top: 1rem;
       }
+    }
+  }
+}
+
+.plant-inventory-panel {
+  .section-header {
+    .fb-button {
+      margin-top: 0.75rem;
     }
   }
 }

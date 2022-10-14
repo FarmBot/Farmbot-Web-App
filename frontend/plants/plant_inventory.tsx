@@ -220,13 +220,14 @@ export interface PanelSectionProps {
   children: JSX.Element | JSX.Element[];
 }
 
-export const PanelSection = (props: PanelSectionProps) =>
-  <div className={`panel-section ${props.isOpen ? "open" : ""}`}>
+export const PanelSection = (props: PanelSectionProps) => {
+  const { isOpen } = props;
+  return <div className={`panel-section ${isOpen ? "open" : ""}`}>
     <div className={"section-header"}
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
-      <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`} />
-      <div
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
+      {isOpen && <div
         onClick={e => {
           e.stopPropagation();
           props.addNew();
@@ -237,9 +238,10 @@ export const PanelSection = (props: PanelSectionProps) =>
           props.addClassName,
         ].join(" ")}>
         <i className={"fa fa-plus"} title={props.addTitle} />
-      </div>
+      </div>}
     </div>
-    <Collapse isOpen={props.isOpen}>
+    <Collapse isOpen={isOpen}>
       {props.children}
     </Collapse>
   </div>;
+};

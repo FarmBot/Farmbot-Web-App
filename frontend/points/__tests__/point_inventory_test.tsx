@@ -227,6 +227,7 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
     const wrapper = mount<Points>(<Points {...p} />);
+    wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".fb-toggle-button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_GRID_ID, payload: "123"

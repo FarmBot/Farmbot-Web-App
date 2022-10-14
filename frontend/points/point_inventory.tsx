@@ -63,7 +63,7 @@ const PointsSection = (props: PointsSectionProps) => {
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
       <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
-      {toggleAction && <ToggleButton
+      {isOpen && toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         toggleAction={e => { e.stopPropagation(); toggleAction(); }} />}
