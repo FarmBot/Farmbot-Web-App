@@ -984,8 +984,7 @@ li {
 
 .panel-section {
   .delete {
-    float: none;
-    margin-left: 1rem;
+    height: 2rem;
   }
 }
 
@@ -2204,6 +2203,7 @@ li {
         margin-right: 2rem;
         margin-top: 0.6rem;
         float: right;
+        line-height: 0;
       }
     }
     .points-section {
@@ -2231,7 +2231,8 @@ li {
         }
       }
       .delete {
-        margin: 0 0 2rem 1rem;
+        float: right;
+        line-height: 1.5rem;
       }
     }
     .no-points,

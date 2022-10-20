@@ -519,6 +519,7 @@ export class GardenMap extends
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}
+    templateView={!!this.props.designer.openedSavedGarden}
     mapTransformProps={this.mapTransformProps}
     zoomLvl={this.props.zoomLvl} />;
   ZonesLayer = () => <ZonesLayer

@@ -5,6 +5,7 @@ import { BotPosition } from "../../../devices/interfaces";
 import { isNumber, isUndefined } from "lodash";
 import { Color } from "../../../ui";
 import { TaggedImage, TaggedPoint, TaggedSensorReading } from "farmbot";
+import { gridLabels } from "./grid_labels";
 
 interface BaseProps {
   hoveredPlant: TaggedPlant | undefined;
@@ -25,10 +26,11 @@ export function TargetCoordinate(props: TargetCoordinateProps) {
   if (!props.chosenLocation) { return <g id={ID} />; }
   const { x, y } = props.chosenLocation;
   if (isNumber(x) && isNumber(y)) {
-    const { mapTransformProps, plantAreaOffset } = props;
+    const { mapTransformProps, plantAreaOffset, zoomLvl } = props;
     const { qx, qy } = transformXY(x, y, mapTransformProps);
     const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
     const scaleFactor = 1 + Math.round(15 * (1.8 - props.zoomLvl)) / 10;
+    const commonLabelProps = { zoomLvl, mapTransformProps, fill: Color.darkGray };
     return <g id={ID}>
       <defs>
         <g id={"target-coordinate-crosshair-segment"}>
@@ -55,6 +57,8 @@ export function TargetCoordinate(props: TargetCoordinateProps) {
           transform={`rotate(${rotation}, ${qx}, ${qy})`} />;
       })}
       <TargetLine qx={qx} qy={qy} {...props} />
+      {gridLabels({ axis: "x", positions: [x], ...commonLabelProps })}
+      {gridLabels({ axis: "y", positions: [y], ...commonLabelProps })}
     </g>;
   } else {
     return <g id={ID} />;

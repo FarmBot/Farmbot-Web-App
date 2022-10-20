@@ -154,6 +154,7 @@ export interface GridProps {
   zoomLvl: number;
   onClick(e: React.MouseEvent<SVGElement>): void;
   onMouseDown(e: React.MouseEvent<SVGElement>): void;
+  templateView: boolean;
 }
 
 export interface VirtualFarmBotProps {

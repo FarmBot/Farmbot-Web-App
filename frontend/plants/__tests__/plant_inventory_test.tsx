@@ -120,9 +120,23 @@ describe("<PlantInventory />", () => {
 
   it("deletes all plants", () => {
     window.confirm = () => true;
-    const wrapper = shallow(<Plants {...fakeProps()} />);
-    wrapper.find(PanelSection).at(1).find("button").simulate("click");
+    const p = fakeProps();
+    p.plantsPanelState.plants = true;
+    const wrapper = mount(<Plants {...p} />);
+    const plantsSection = wrapper.find(PanelSection).at(2);
+    expect(plantsSection.text().toLowerCase()).toContain("delete all");
+    plantsSection.find("button").simulate("click");
     expect(deletePoints).toHaveBeenCalledWith("plants", { pointer_type: "Plant" });
+  });
+
+  it("doesn't show delete all button", () => {
+    window.confirm = () => true;
+    const p = fakeProps();
+    p.plantsPanelState.plants = true;
+    p.openedSavedGarden = "fake";
+    const wrapper = mount(<Plants {...p} />);
+    const plantsSection = wrapper.find(PanelSection).at(2);
+    expect(plantsSection.text().toLowerCase()).not.toContain("delete all");
   });
 
   it("has link to crops", () => {

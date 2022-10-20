@@ -67,15 +67,18 @@ const PointsSection = (props: PointsSectionProps) => {
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         toggleAction={e => { e.stopPropagation(); toggleAction(); }} />}
+      {isOpen && <button className={"fb-button red delete"}
+        title={t("delete all")}
+        onClick={e => {
+          e.stopPropagation();
+          confirm(t("Delete all {{ count }} points in section?",
+            { count: genericPoints.length })) &&
+            dispatch(deletePoints("points", { meta: props.metaQuery }));
+        }}>
+        {t("delete all")}
+      </button>}
     </div>
     <Collapse isOpen={isOpen}>
-      <button className={"fb-button red delete"}
-        title={t("delete all")}
-        onClick={() => confirm(t("Delete all {{ count }} points in section?",
-          { count: genericPoints.length })) &&
-          dispatch(deletePoints("points", { meta: props.metaQuery }))}>
-        {t("delete all")}
-      </button>
       {!isUndefined(averageZ) &&
         <EditSoilHeight
           sourceFbosConfig={props.sourceFbosConfig}

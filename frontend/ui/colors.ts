@@ -11,6 +11,7 @@ export enum Color {
   red = "#ee6666",
   virtualRed = "#e82f2f",
   soilBackground = "#c39f7a",
+  labelBackground = "#8d7157",
   templateSoilBkgd = "#dddddd",
   gridGray = "#333333",
   gridSoil = "#ccaa88",

@@ -12,6 +12,7 @@ describe("<Grid />", () => {
     zoomLvl: 1,
     onClick: jest.fn(),
     onMouseDown: jest.fn(),
+    templateView: false,
   });
 
   it("renders grid", () => {
