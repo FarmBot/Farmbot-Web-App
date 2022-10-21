@@ -74,14 +74,11 @@ export class GardenMap extends
     return this.props.mapTransformProps;
   }
 
-  get gridSize() { return this.mapTransformProps.gridSize; }
+  get gridSize() { return getMapSize(this.mapTransformProps); }
 
   get mapSize() {
     return getMapSize(this.mapTransformProps, this.props.gridOffset);
   }
-  get xySwap() { return this.mapTransformProps.xySwap; }
-  get gridWidth() { return this.xySwap ? this.gridSize.y : this.gridSize.x; }
-  get gridHeight() { return this.xySwap ? this.gridSize.x : this.gridSize.y; }
 
   /** Currently editing a plant? */
   get isEditing(): boolean { return getMode() === Mode.editPlant; }
@@ -490,15 +487,15 @@ export class GardenMap extends
   svgDropAreaProps = () => ({
     x: this.props.gridOffset.x,
     y: this.props.gridOffset.y,
-    width: this.gridWidth,
-    height: this.gridHeight,
+    width: this.gridSize.w,
+    height: this.gridSize.h,
     onMouseUp: this.endDrag,
     onMouseDown: this.startDrag,
     onMouseMove: this.drag,
     onClick: this.click,
   });
   ClipPath = () => <clipPath id={"map-grid-clip-path"}>
-    <rect x={0} y={0} width={this.gridWidth} height={this.gridHeight} />
+    <rect x={0} y={0} width={this.gridSize.w} height={this.gridSize.h} />
   </clipPath>;
   ImageLayer = () => <ImageLayer
     images={this.props.latestImages}
@@ -654,7 +651,6 @@ export class GardenMap extends
       image.uuid == this.props.designer.hoveredImage)[0]}
     hoveredPoint={this.props.allPoints.filter(point =>
       point.uuid == this.props.designer.hoveredPoint)[0]}
-    plantAreaOffset={this.props.gridOffset}
     zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />;
   DrawnPoint = () => <DrawnPoint

@@ -24,7 +24,7 @@ const RoundedSvgBox = (props: RoundedBoxProps) => {
   const { position, width, height, fill } = props;
   const r = 4;
   return <path fill={fill}
-    d={trim(`M${position.qx - width / 2 + r},${position.qy - height / 2 - 1}
+    d={trim(`M${position.qx - width / 2 + r},${position.qy - height / 2 - r / 2}
              h${width - r * 2} a${r},${r} 0 0 1 ${r},${r}
              v${height - r} a${r},${r} 0 0 1 -${r},${r}
              h${-(width - r * 2)} a${r},${r} 0 0 1 -${r},-${r}

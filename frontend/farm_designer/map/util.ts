@@ -249,12 +249,12 @@ export function getBotSize(
 /** Calculate map dimensions */
 export function getMapSize(
   mapTransformProps: MapTransformProps,
-  gridOffset: AxisNumberProperty,
+  gridOffset?: AxisNumberProperty,
 ): { w: number, h: number } {
   const { gridSize, xySwap } = mapTransformProps;
   const mapSize = {
-    x: gridSize.x + gridOffset.x * 2,
-    y: gridSize.y + gridOffset.y * 2
+    x: gridSize.x + (gridOffset?.x || 0) * 2,
+    y: gridSize.y + (gridOffset?.y || 0) * 2
   };
   return {
     w: xySwap ? mapSize.y : mapSize.x,

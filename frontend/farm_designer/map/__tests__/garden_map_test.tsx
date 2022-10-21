@@ -649,24 +649,6 @@ describe("<GardenMap/>", () => {
     expect(allowed).toBeFalsy();
   });
 
-  it("unswapped height and width", () => {
-    const p = fakeProps();
-    p.mapTransformProps.xySwap = false;
-    const wrapper = shallow(<GardenMap {...p} />);
-    const svg = wrapper.find(".drop-area-svg");
-    expect(svg.props().width).toEqual(3000);
-    expect(svg.props().height).toEqual(1500);
-  });
-
-  it("swapped height and width", () => {
-    const p = fakeProps();
-    p.mapTransformProps.xySwap = true;
-    const wrapper = shallow(<GardenMap {...p} />);
-    const svg = wrapper.find(".drop-area-svg");
-    expect(svg.props().width).toEqual(1500);
-    expect(svg.props().height).toEqual(3000);
-  });
-
   it("gets group points", () => {
     mockGroup = fakePointGroup();
     mockGroup.body.point_ids = [1];

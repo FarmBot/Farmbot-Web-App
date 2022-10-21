@@ -1,6 +1,6 @@
 import React from "react";
 import { GridProps } from "../interfaces";
-import { transformXY, transformForQuadrant } from "../util";
+import { transformXY, transformForQuadrant, getMapSize } from "../util";
 import { Color } from "../../../ui";
 import { range } from "lodash";
 import {
@@ -9,9 +9,7 @@ import {
 
 export const Grid = (props: GridProps) => {
   const { mapTransformProps, zoomLvl } = props;
-  const { gridSize, xySwap } = mapTransformProps;
-  const gridSizeW = xySwap ? gridSize.y : gridSize.x;
-  const gridSizeH = xySwap ? gridSize.x : gridSize.y;
+  const gridSize = getMapSize(mapTransformProps);
   const origin = transformXY(0, 0, mapTransformProps);
   const arrowEnd = transformXY(20, 20, mapTransformProps);
   const xLabel = transformXY(15, -10, mapTransformProps);
@@ -55,12 +53,12 @@ export const Grid = (props: GridProps) => {
 
     <g id="grid">
       <rect id="minor-grid"
-        width={gridSizeW} height={gridSizeH} fill={"url(#minor_grid)"} />
+        width={gridSize.w} height={gridSize.h} fill={"url(#minor_grid)"} />
       <rect id="major-grid" transform={gridTransform}
-        width={gridSizeW} height={gridSizeH} fill={"url(#major_grid)"} />
+        width={gridSize.w} height={gridSize.h} fill={"url(#major_grid)"} />
       <rect id="superior-grid" transform={gridTransform}
-        width={gridSizeW} height={gridSizeH} fill={"url(#superior_grid)"} />
-      <rect id="border" width={gridSizeW} height={gridSizeH} fill={"none"}
+        width={gridSize.w} height={gridSize.h} fill={"url(#superior_grid)"} />
+      <rect id="border" width={gridSize.w} height={gridSize.h} fill={"none"}
         stroke={"rgba(0,0,0,0.3)"} strokeWidth={2} />
     </g>
 
@@ -82,13 +80,13 @@ export const Grid = (props: GridProps) => {
     <g id="axis-values">
       {gridLabels({
         axis: "x",
-        positions: range(labelStep, gridSize.x, labelStep),
+        positions: range(labelStep, mapTransformProps.gridSize.x, labelStep),
         fill: props.templateView ? Color.mediumGray : Color.labelBackground,
         ...commonProps,
       })}
       {gridLabels({
         axis: "y",
-        positions: range(labelStep, gridSize.y, labelStep),
+        positions: range(labelStep, mapTransformProps.gridSize.y, labelStep),
         fill: props.templateView ? Color.mediumGray : Color.labelBackground,
         ...commonProps,
       })}
