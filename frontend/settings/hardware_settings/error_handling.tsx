@@ -43,14 +43,6 @@ export function ErrorHandling(props: ErrorHandlingProps) {
       panel={"error_handling"}
       dispatch={dispatch} />
     <Collapse isOpen={!!error_handling}>
-      <SpacePanelHeader />
-      <NumericMCUInputGroup {...commonProps}
-        label={DeviceSetting.timeoutAfter}
-        tooltip={ToolTips.TIMEOUT_AFTER}
-        advanced={true}
-        x={"movement_timeout_x"}
-        y={"movement_timeout_y"}
-        z={"movement_timeout_z"} />
       <SingleSettingRow settingType="input"
         label={DeviceSetting.maxRetries}
         tooltip={t(ToolTips.MAX_MOVEMENT_RETRIES, {
@@ -63,6 +55,30 @@ export function ErrorHandling(props: ErrorHandlingProps) {
           disabled={arduinoBusy}
           dispatch={dispatch} />
       </SingleSettingRow>
+      <SingleSettingRow settingType="button"
+        label={DeviceSetting.estopOnMovementError}
+        tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {
+          eStopOnError: getDefault("param_e_stop_on_mov_err")
+        })}>
+        <ToggleButton dispatch={dispatch}
+          toggleValue={eStopOnMoveError.value}
+          dim={!eStopOnMoveError.consistent}
+          className={getModifiedClassName(
+            "param_e_stop_on_mov_err",
+            eStopOnMoveError.value,
+            firmwareHardware)}
+          disabled={arduinoBusy}
+          toggleAction={() => dispatch(
+            settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
+      </SingleSettingRow>
+      <SpacePanelHeader />
+      <NumericMCUInputGroup {...commonProps}
+        label={DeviceSetting.timeoutAfter}
+        tooltip={ToolTips.TIMEOUT_AFTER}
+        advanced={true}
+        x={"movement_timeout_x"}
+        y={"movement_timeout_y"}
+        z={"movement_timeout_z"} />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.calibrationRetries}
         tooltip={ToolTips.CALIBRATION_RETRIES}
@@ -86,22 +102,6 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         xScale={scale.x}
         yScale={scale.y}
         zScale={scale.z} />
-      <SingleSettingRow settingType="button"
-        label={DeviceSetting.estopOnMovementError}
-        tooltip={t(ToolTips.E_STOP_ON_MOV_ERR, {
-          eStopOnError: getDefault("param_e_stop_on_mov_err")
-        })}>
-        <ToggleButton dispatch={dispatch}
-          toggleValue={eStopOnMoveError.value}
-          dim={!eStopOnMoveError.consistent}
-          className={getModifiedClassName(
-            "param_e_stop_on_mov_err",
-            eStopOnMoveError.value,
-            firmwareHardware)}
-          disabled={arduinoBusy}
-          toggleAction={() => dispatch(
-            settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
-      </SingleSettingRow>
     </Collapse>
   </Highlight>;
 }

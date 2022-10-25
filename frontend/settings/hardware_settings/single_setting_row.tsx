@@ -26,10 +26,10 @@ export const SingleSettingRow = (props: SingleSettingRowProps) => {
         <Help text={tooltip} position={Position.RIGHT} />
       </Col>
       {settingType === "button"
-        ? <Col xs={5} className={"centered-button-div"}>
+        ? <Col xs={5} className={"centered-button-div low-pad"}>
           {children}
         </Col>
-        : <Col xs={5}>{children}</Col>}
+        : <Col xs={5} className={"low-pad"}>{children}</Col>}
     </Row>
   </Highlight>;
 };

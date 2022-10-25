@@ -35,7 +35,7 @@ export const unselectSavedGarden = {
 export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
   .patch<void>(API.current.applyGardenPath(gardenId))
   .then(data => {
-    stopTracking(data.headers["x-farmbot-rpc-id"]);
+    stopTracking(data.headers["x-farmbot-rpc-id"] as string);
     push(Path.plants());
     dispatch(unselectSavedGarden);
     const busyToastTitle = t("Please wait");

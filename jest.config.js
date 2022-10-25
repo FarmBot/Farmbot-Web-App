@@ -27,6 +27,9 @@ module.exports = {
     "tsx",
     "js"
   ],
+  "moduleNameMapper": {
+    "^axios": require.resolve("axios"),
+  },
   "collectCoverage": true,
   "collectCoverageFrom": [
     "frontend/**/*.{ts,tsx}"

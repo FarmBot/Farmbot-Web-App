@@ -24,7 +24,6 @@ describe("<TargetCoordinate/>", () => {
     hoveredPoint: undefined,
     hoveredSensorReading: undefined,
     hoveredImage: undefined,
-    plantAreaOffset: { x: 100, y: 100 },
     zoomLvl: 1,
   });
 

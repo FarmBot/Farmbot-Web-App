@@ -383,19 +383,23 @@
   .sequence-section-header {
     margin-left: -15px;
     margin-right: -10px;
+    padding-right: 0.85rem;
     .fa-caret-up,
     .fa-caret-down {
       margin: 1rem !important;
-      margin-top: 0.4rem !important;
-      margin-left: 1.5rem !important;
+      margin-top: 0.5rem !important;
+      margin-left: 1rem !important;
+      margin-right: 1.2rem !important;
     }
     &.featured-sequence-header {
-      margin-top: 2rem;
       .fa-caret-up,
       .fa-caret-down {
         position: absolute;
-        right: 0;
+        right: 0.75rem;
       }
+    }
+    label {
+      margin: 0;
     }
   }
   .show-on-hover {
@@ -444,8 +448,10 @@
     line-height: 3rem;
     cursor: pointer;
     padding-left: 1.5rem;
+    height: 4rem;
+    line-height: 3.75rem !important;
     &:hover {
-      background: $off_white;
+      background: $light_gray;
     }
     label {
       cursor: pointer;
@@ -463,10 +469,11 @@
     .add-variable-btn {
       position: absolute;
       right: 4rem;
-      width: 2.5rem;
+      width: 2.8rem;
       height: 2rem;
       line-height: 1rem;
       margin-top: 0.75rem;
+      margin-right: 0.25rem;
       padding: 0.25rem;
       .fa-plus {
         vertical-align: top;
@@ -525,6 +532,11 @@
         display: inline;
         float: none;
       }
+    }
+  }
+  .sequence-section-header {
+    &:hover {
+      background: $light_gray !important;
     }
   }
 }
@@ -767,6 +779,7 @@
 .folders-panel {
   margin-left: -30px;
   margin-right: -20px;
+  margin-bottom: 4rem;
   @media screen and (max-width: 767px) {
     margin-left: -15px;
   }

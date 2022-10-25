@@ -1,13 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { MapBackgroundProps } from "../interfaces";
-import { Color } from "../../../ui/index";
+import { Color } from "../../../ui";
 import { getMapSize } from "../util";
 
 export function MapBackground(props: MapBackgroundProps) {
   const { mapTransformProps, plantAreaOffset, templateView } = props;
-  const { gridSize, xySwap } = mapTransformProps;
-  const gridSizeW = xySwap ? gridSize.y : gridSize.x;
-  const gridSizeH = xySwap ? gridSize.x : gridSize.y;
+  const gridSize = getMapSize(mapTransformProps);
   const boardWidth = 20;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
   const bkgdColor = templateView ? Color.templateSoilBkgd : Color.soilBackground;
@@ -33,6 +31,6 @@ export function MapBackground(props: MapBackgroundProps) {
       width={mapSize.w - boardWidth * 2} height={mapSize.h - boardWidth * 2}
       fill="url(#diagonalHatch)" />
     <rect id="grid-fill" x={plantAreaOffset.x} y={plantAreaOffset.y}
-      width={gridSizeW} height={gridSizeH} fill={fillColor} />
+      width={gridSize.w} height={gridSize.h} fill={fillColor} />
   </g>;
 }

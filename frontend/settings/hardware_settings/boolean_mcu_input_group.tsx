@@ -25,9 +25,9 @@ export class BooleanMCUInputGroup
     const xParam = sourceFwConfig(x);
     const yParam = sourceFwConfig(y);
     const zParam = sourceFwConfig(z);
-    const width = 4;
+    const width = 3;
     return <div className={"mcu-inputs"}>
-      <Col xs={width} className={"centered-button-div"}>
+      <Col xs={width} className={"centered-button-div low-pad"}>
         <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.x}
           disabled={this.props.disabled || disable?.x}
@@ -38,7 +38,7 @@ export class BooleanMCUInputGroup
           toggleAction={() =>
             dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
       </Col>
-      <Col xs={width} className={"centered-button-div"}>
+      <Col xs={width} className={"centered-button-div low-pad"}>
         <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.y}
           disabled={this.props.disabled || disable?.y}
@@ -49,7 +49,7 @@ export class BooleanMCUInputGroup
           toggleAction={() =>
             dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
       </Col>
-      <Col xs={width} className={"centered-button-div"}>
+      <Col xs={width} className={"centered-button-div low-pad"}>
         <ToggleButton dispatch={dispatch}
           grayscale={grayscale?.z}
           disabled={this.props.disabled || disable?.z}
@@ -86,7 +86,7 @@ export class BooleanMCUInputGroup
       hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)}
       className={this.props.advanced ? "advanced" : undefined}>
       <Row>
-        <Col xs={12} className={"widget-body-tooltips"}>
+        <Col xs={3} className={"widget-body-tooltips"}>
           <label>
             {t(this.props.label)}
             {this.props.caution &&
@@ -94,8 +94,8 @@ export class BooleanMCUInputGroup
           </label>
           <Help text={this.tooltip} />
         </Col>
+        <this.Toggles />
       </Row>
-      <Row><this.Toggles /></Row>
     </Highlight>;
   }
 }

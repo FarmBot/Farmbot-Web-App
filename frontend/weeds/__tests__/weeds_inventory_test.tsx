@@ -174,8 +174,16 @@ describe("<WeedsSection />", () => {
     dispatch: jest.fn(),
   });
 
+  it("renders as closed", () => {
+    const p = fakeProps();
+    p.open = false;
+    const wrapper = mount(<WeedsSection {...p} />);
+    expect(wrapper.html()).toContain("fa-caret-down");
+  });
+
   it("approves all", () => {
     const p = fakeProps();
+    p.open = true;
     const wrapper = mount(<WeedsSection {...p} />);
     wrapper.find(".fb-button.green").first().simulate("click");
     expect(edit).toHaveBeenCalledTimes(3);
@@ -185,13 +193,16 @@ describe("<WeedsSection />", () => {
 
   it("rejects all", () => {
     const p = fakeProps();
+    p.open = true;
     const wrapper = mount(<WeedsSection {...p} />);
     wrapper.find(".fb-button.red").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.items[0].uuid, true);
   });
 
   it("renders", () => {
-    const wrapper = mount(<WeedsSection {...fakeProps()} />);
+    const p = fakeProps();
+    p.open = true;
+    const wrapper = mount(<WeedsSection {...p} />);
     ["(3)", "title", "all"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.text().toLowerCase()).not.toContain("none");
@@ -199,6 +210,7 @@ describe("<WeedsSection />", () => {
 
   it("toggles layer", () => {
     const p = fakeProps();
+    p.open = true;
     const state = fakeState();
     state.resources = buildResourceIndex([fakeWebAppConfig()]);
     p.dispatch = jest.fn(x => x(jest.fn(), () => state));

@@ -270,6 +270,11 @@ describe("getbotSize()", () => {
 });
 
 describe("getMapSize()", () => {
+  it("calculates grid size", () => {
+    const gridSize = getMapSize(fakeMapTransformProps());
+    expect(gridSize).toEqual({ h: 1500, w: 3000 });
+  });
+
   it("calculates map size", () => {
     const mapSize = getMapSize(
       fakeMapTransformProps(),

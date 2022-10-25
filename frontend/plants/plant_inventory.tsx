@@ -160,15 +160,6 @@ export class RawPlants
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
-          <button className={"fb-button red delete"}
-            title={t("delete all plants in active garden")}
-            onClick={() =>
-              confirm(t("Delete all {{ count }} plants in your main garden?",
-                { count: plants.length })) &&
-              dispatch(deletePoints("plants",
-                { pointer_type: "Plant" }))}>
-            {t("delete all active plants")}
-          </button>
           <SavedGardenList {...this.props} searchTerm={this.state.searchTerm} />
         </PanelSection>
         <PanelSection isOpen={plantsPanelState.plants}
@@ -181,7 +172,20 @@ export class RawPlants
           }}
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
-          title={t("Plants")}>
+          title={t("Plants")}
+          extraHeaderContent={
+            !this.props.openedSavedGarden && plantsPanelState.plants &&
+            <button className={"fb-button red delete"}
+              title={t("delete all plants in garden")}
+              onClick={e => {
+                e.stopPropagation();
+                confirm(t("Delete all {{ count }} plants in your main garden?",
+                  { count: plants.length })) &&
+                  dispatch(deletePoints("plants",
+                    { pointer_type: "Plant" }));
+              }}>
+              {t("delete all")}
+            </button>}>
           <EmptyStateWrapper
             notEmpty={plants.length > 0 && !noSearchResults}
             graphic={noSearchResults
@@ -218,15 +222,17 @@ export interface PanelSectionProps {
   addTitle: string;
   addClassName: string;
   children: JSX.Element | JSX.Element[];
+  extraHeaderContent?: JSX.Element | false;
 }
 
-export const PanelSection = (props: PanelSectionProps) =>
-  <div className={`panel-section ${props.isOpen ? "open" : ""}`}>
+export const PanelSection = (props: PanelSectionProps) => {
+  const { isOpen } = props;
+  return <div className={`panel-section ${isOpen ? "open" : ""}`}>
     <div className={"section-header"}
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
-      <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`} />
-      <div
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
+      {isOpen && <div
         onClick={e => {
           e.stopPropagation();
           props.addNew();
@@ -237,9 +243,11 @@ export const PanelSection = (props: PanelSectionProps) =>
           props.addClassName,
         ].join(" ")}>
         <i className={"fa fa-plus"} title={props.addTitle} />
-      </div>
+      </div>}
+      {props.extraHeaderContent}
     </div>
-    <Collapse isOpen={props.isOpen}>
+    <Collapse isOpen={isOpen}>
       {props.children}
     </Collapse>
   </div>;
+};
