@@ -7,6 +7,7 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   style?: React.CSSProperties;
   className?: string;
   disabled?: boolean;
+  draggable?: boolean;
 }
 
 export const clickHandler =

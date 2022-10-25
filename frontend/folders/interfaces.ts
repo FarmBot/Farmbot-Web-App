@@ -73,6 +73,7 @@ export interface FolderState {
   toggleDirection: boolean;
   movedSequenceUuid?: string;
   stashedUuid?: string;
+  dragging?: boolean;
 }
 
 export interface FolderPanelTopProps {
@@ -87,6 +88,7 @@ export interface FolderNodeProps {
   movedSequenceUuid: string | undefined;
   startSequenceMove(sequenceUuid: UUID): void;
   toggleSequenceMove(sequenceUuid?: UUID): void;
+  dragging: boolean | undefined;
   onMoveEnd(folderId: number): void;
   dispatch: Function;
   resourceUsage: Record<UUID, boolean | undefined>;

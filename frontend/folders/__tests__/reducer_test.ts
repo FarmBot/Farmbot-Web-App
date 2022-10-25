@@ -81,12 +81,16 @@ describe("Actions.FOLDER_SEARCH", () => {
 
   it("searches folders", () => {
     const state = initialState();
+    state.index.sequenceFolders.stashedOpenState = { 1: true };
     const action = { type: Actions.FOLDER_SEARCH, payload: "" };
     const { index } = resourceReducer(state, action);
     expect(index.sequenceFolders.filteredFolders).toBeUndefined();
     expect(index.sequenceFolders.searchTerm).toBe("");
+    expect(index.sequenceFolders.localMetaAttributes[1].open).toBeTruthy();
+    expect(index.sequenceFolders.stashedOpenState).toBeUndefined();
 
     const action2 = { type: Actions.FOLDER_SEARCH, payload: "" };
+    state.index.sequenceFolders.stashedOpenState = undefined;
     const index2 = resourceReducer(state, action2).index;
     expect(index2.sequenceFolders.searchTerm).toBe("");
     expect(index2.sequenceFolders.filteredFolders).toBeUndefined();

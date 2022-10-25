@@ -37,7 +37,7 @@ const DEFAULTS = (): Folder => ({
   parent_id: 0,
 });
 
-export const addNewSequenceToFolder = (folder_id?: number) => {
+export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
   const uuidMap = store.getState().resources.index.byKind["Sequence"];
   const seqCount = Object.keys(uuidMap).length;
   const newSequence = {
@@ -46,10 +46,10 @@ export const addNewSequenceToFolder = (folder_id?: number) => {
       version: -999,
       locals: { kind: "scope_declaration", args: {} },
     },
-    color: "gray",
-    folder_id,
+    color: config.color || "gray",
+    folder_id: config.id,
     kind: "sequence",
-    body: []
+    body: [],
   };
   store.dispatch(init("Sequence", newSequence));
   push(Path.sequences(urlFriendly(newSequence.name)));

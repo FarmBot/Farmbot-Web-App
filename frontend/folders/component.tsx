@@ -79,6 +79,8 @@ export const FolderListItem = (props: FolderItemProps) => {
     }}
     intent="step_splice"
     draggerId={NULL_DRAGGER_ID}
+    onDragStart={() => props.startSequenceMove(sequence.uuid)}
+    onDragEnd={() => props.toggleSequenceMove()}
     resourceUuid={sequence.uuid}>
     <li
       className={["sequence-list-item", active, moveSource, hovered, matched]
@@ -87,7 +89,8 @@ export const FolderListItem = (props: FolderItemProps) => {
       <ColorPicker
         current={sequence.body.color}
         onChange={color => sequenceEditMaybeSave(sequence, { color })} />
-      <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
+      <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}
+        draggable={false}>
         <p>{nameWithSaveIndicator}</p>
       </Link>
       <TestButton
@@ -183,6 +186,7 @@ export const SequenceButtonCluster =
         title={t("copy sequence")}
         onClick={() => dispatch(copySequence(sequence))} />
       <i className={"fa fa-arrows-v cluster-icon"}
+        title={t("move sequence")}
         onMouseDown={() => props.startSequenceMove(sequence.uuid)}
         onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
     </div>;
@@ -218,12 +222,18 @@ export const FolderButtonCluster =
       {node.kind !== "terminal" &&
         <div className={"stack-wrapper cluster-icon"}
           title={t("Create subfolder")}
-          onClick={() => { close(); createFolder({ parent_id: node.id }); }}>
+          onClick={() => {
+            close();
+            createFolder({ parent_id: node.id, color: node.color });
+          }}>
           <PlusStack icon={"fa-folder"} />
         </div>}
       <div className={"stack-wrapper cluster-icon"}
         title={t("add new sequence")}
-        onClick={() => { close(); addNewSequenceToFolder(node.id); }}>
+        onClick={() => {
+          close();
+          addNewSequenceToFolder({ id: node.id, color: node.color });
+        }}>
         <PlusStack icon={"fa-server"} />
       </div>
     </div>;
@@ -247,16 +257,33 @@ export const FolderNameInput = ({ node }: FolderNameInputProps) =>
 export const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  return <div className={["folder-list-item",
-    (props.searchTerm && node.name.toLowerCase()
-      .includes(props.searchTerm.toLowerCase()))
-      ? "matched"
-      : ""].join(" ")}>
+  const [hovered, setHovered] = React.useState(false);
+  return <div
+    className={[
+      "folder-list-item",
+      (props.searchTerm && node.name.toLowerCase()
+        .includes(props.searchTerm.toLowerCase()))
+        ? "matched"
+        : "",
+      hovered ? "hovered" : "",
+      props.movedSequenceUuid ? "moving" : "",
+      !props.dragging ? "not-dragging" : "",
+    ].join(" ")}
+    onClick={() => props.onMoveEnd(node.id)}
+    onDrop={e => {
+      setHovered(false);
+      dropSequence(node.id)(e);
+      props.toggleSequenceMove();
+    }}
+    onDragOver={e => e.preventDefault()}
+    onDragEnter={() => setHovered(true)}
+    onDragLeave={() => setHovered(false)}>
     <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
       title={"Open/Close Folder"}
       onClick={() => toggleFolderOpenState(node.id)} />
+    <div className={"drop-visual"} />
     <ColorPicker
-      saucerIcon={"fa-folder"}
+      saucerIcon={`fa-folder${props.movedSequenceUuid ? "-open" : ""}`}
       current={node.color}
       onChange={color => setFolderColor(node.id, color)} />
     <div className="folder-name">
@@ -311,17 +338,12 @@ const FolderNode = (props: FolderNodeProps) => {
       searchTerm={props.searchTerm}
       toggleSequenceMove={props.toggleSequenceMove}
       startSequenceMove={props.startSequenceMove}
+      dragging={props.dragging}
       onMoveEnd={props.onMoveEnd} />);
 
   return <div className="folder">
     <FolderNameEditor {...props} />
     {!!node.open && <ul className="in-folder-sequences">{sequenceItems}</ul>}
-    <SequenceDropArea
-      dropAreaVisible={!!props.movedSequenceUuid}
-      onMoveEnd={props.onMoveEnd}
-      toggleSequenceMove={props.toggleSequenceMove}
-      folderId={node.id}
-      folderName={node.name} />
     {!!node.open && folderNodes}
   </div>;
 };
@@ -371,6 +393,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
           toggleSequenceMove={this.toggleSequenceMove}
           startSequenceMove={this.startSequenceMove}
           onMoveEnd={this.endSequenceMove}
+          dragging={this.state.dragging}
           getWebAppConfigValue={this.props.getWebAppConfigValue}
           sequences={this.props.sequences} />;
       })}
@@ -385,15 +408,17 @@ export class Folders extends React.Component<FolderProps, FolderState> {
   startSequenceMove = (seqUuid: UUID) => this.setState({
     movedSequenceUuid: seqUuid,
     stashedUuid: this.state.movedSequenceUuid,
+    dragging: true,
   });
 
   toggleSequenceMove = (seqUuid?: UUID) => this.setState({
     movedSequenceUuid: this.state.stashedUuid ? undefined : seqUuid,
+    dragging: false,
   });
 
   endSequenceMove = (folderId: number) => {
     moveSequence(this.state.movedSequenceUuid || "", folderId);
-    this.setState({ movedSequenceUuid: undefined });
+    this.setState({ movedSequenceUuid: undefined, dragging: false });
   };
 
   rootSequences = () => this.props.rootFolder.noFolder
@@ -429,13 +454,13 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         <ul className="sequences-not-in-folders">
           {this.rootSequences()}
         </ul>
+        <this.Graph />
         <SequenceDropArea
           dropAreaVisible={!!this.state.movedSequenceUuid}
           onMoveEnd={this.endSequenceMove}
           toggleSequenceMove={this.toggleSequenceMove}
           folderId={0}
           folderName={"none"} />
-        <this.Graph />
       </EmptyStateWrapper>
     </div>;
   }
@@ -452,7 +477,7 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
       onClick={props.toggleAll} />
     <button
       className="fb-button green"
-      title={t("Create subfolder")}
+      title={t("create subfolder")}
       onClick={() => { createFolder(); }}>
       <PlusStack icon={"fa-folder"} />
     </button>

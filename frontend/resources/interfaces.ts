@@ -82,6 +82,7 @@ export interface ResourceIndex {
     localMetaAttributes: Record<number, FolderMeta>;
     searchTerm?: string;
     filteredFolders?: RootFolderNode | undefined;
+    stashedOpenState?: Record<number, boolean>;
   }
 }
 

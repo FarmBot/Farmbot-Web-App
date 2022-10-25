@@ -395,6 +395,20 @@ describe("<FolderListItem />", () => {
     });
   });
 
+  it("starts sequence move: drag start", () => {
+    const p = fakeProps();
+    const wrapper = mount(<FolderListItem {...p} />);
+    wrapper.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
+    expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
+  });
+
+  it("starts sequence move: drag end", () => {
+    const p = fakeProps();
+    const wrapper = mount(<FolderListItem {...p} />);
+    wrapper.simulate("dragEnd");
+    expect(p.toggleSequenceMove).toHaveBeenCalled();
+  });
+
   it("starts sequence move", () => {
     const p = fakeProps();
     const wrapper = mount(<FolderListItem {...p} />);
@@ -452,7 +466,10 @@ describe("<FolderButtonCluster />", () => {
     const wrapper = mount(<FolderButtonCluster {...p} />);
     wrapper.find(".cluster-icon").at(2).simulate("click");
     expect(p.close).toHaveBeenCalled();
-    expect(createFolder).toHaveBeenCalledWith({ parent_id: p.node.id });
+    expect(createFolder).toHaveBeenCalledWith({
+      parent_id: p.node.id,
+      color: "gray",
+    });
   });
 
   it("creates new sequence", () => {
@@ -461,7 +478,10 @@ describe("<FolderButtonCluster />", () => {
     const wrapper = mount(<FolderButtonCluster {...p} />);
     wrapper.find(".cluster-icon").at(3).simulate("click");
     expect(p.close).toHaveBeenCalled();
-    expect(addNewSequenceToFolder).toHaveBeenCalledWith(1);
+    expect(addNewSequenceToFolder).toHaveBeenCalledWith({
+      id: 1,
+      color: "gray",
+    });
   });
 });
 
@@ -506,6 +526,7 @@ describe("<FolderNameEditor />", () => {
     menuOpen: undefined,
     syncStatus: undefined,
     searchTerm: undefined,
+    dragging: false,
   });
 
   it("renders", () => {
@@ -532,6 +553,35 @@ describe("<FolderNameEditor />", () => {
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
+  });
+
+  it("hovers", () => {
+    const p = fakeProps();
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
+    wrapper.find(".folder-list-item").simulate("dragEnter");
+    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeTruthy();
+    wrapper.find(".folder-list-item").simulate("dragLeave");
+    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
+    wrapper.find(".folder-list-item").simulate("dragOver");
+    wrapper.find(".folder-list-item").simulate("dragEnter");
+    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeTruthy();
+    wrapper.find(".folder-list-item").simulate("drop");
+    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
+  });
+
+  it("renders: moving", () => {
+    const p = fakeProps();
+    p.movedSequenceUuid = "fake";
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".folder-list-item").hasClass("moving")).toBeTruthy();
+  });
+
+  it("renders: dragging", () => {
+    const p = fakeProps();
+    p.dragging = true;
+    const wrapper = mount(<FolderNameEditor {...p} />);
+    expect(wrapper.find(".folder-list-item").hasClass("not-dragging")).toBeFalsy();
   });
 
   it("renders: folder closed", () => {
