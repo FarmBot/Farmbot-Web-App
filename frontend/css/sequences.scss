@@ -1058,6 +1058,12 @@
   }
 }
 
+.sequence-list-item {
+  &:hover:active {
+    cursor: grab;
+  }
+}
+
 .sequence-item-help {
   .info-grid-wrapper {
     display: grid;
