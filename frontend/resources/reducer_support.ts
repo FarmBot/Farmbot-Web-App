@@ -102,7 +102,8 @@ export const reindexFolders = (i: ResourceIndex) => {
     searchTerm: searchTerm,
     filteredFolders: searchTerm
       ? i.sequenceFolders.filteredFolders
-      : undefined
+      : undefined,
+    stashedOpenState: i.sequenceFolders.stashedOpenState,
   };
 
   if (i.sequenceFolders.filteredFolders) {

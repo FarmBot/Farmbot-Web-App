@@ -208,15 +208,20 @@ export const resourceReducer =
           root: s.index.sequenceFolders.folders
         });
         const { localMetaAttributes } = s.index.sequenceFolders;
-        Object /** Expand all folders when searching. */
-          .keys(localMetaAttributes)
-          .map(x => {
-            s
-              .index
-              .sequenceFolders
-              .localMetaAttributes[x as unknown as number]
-              .open = true;
+        const folderIds = Object.keys(localMetaAttributes) as unknown as number[];
+        /** Stash folder expansion state upon search start. */
+        if (!s.index.sequenceFolders.stashedOpenState) {
+          const stashedOpenState: Record<number, boolean> = {};
+          folderIds.map(id => {
+            stashedOpenState[id] =
+              !!s.index.sequenceFolders.localMetaAttributes[id].open;
           });
+          s.index.sequenceFolders.stashedOpenState = stashedOpenState;
+        }
+        /** Expand all folders when searching. */
+        folderIds.map(id => {
+          s.index.sequenceFolders.localMetaAttributes[id].open = true;
+        });
         const nextFolder = ingest({
           localMetaAttributes,
           folders
@@ -240,6 +245,14 @@ export const resourceReducer =
         s.index.sequenceFolders.filteredFolders = nextFolder;
       } else {
         s.index.sequenceFolders.filteredFolders = undefined;
+        /** Restore pre-search folder open state. */
+        const stashed = Object.entries(
+          s.index.sequenceFolders.stashedOpenState || {},
+        ) as unknown as [number, boolean][];
+        stashed.map(([id, open]) => {
+          s.index.sequenceFolders.localMetaAttributes[id].open = open;
+        });
+        s.index.sequenceFolders.stashedOpenState = undefined;
       }
       reindexFolders(s.index);
       return s;

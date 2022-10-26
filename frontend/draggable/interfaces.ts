@@ -53,4 +53,6 @@ export interface StepDraggerProps {
   children?: React.ReactNode;
   draggerId: number;
   resourceUuid?: UUID;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }

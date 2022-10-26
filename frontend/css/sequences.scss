@@ -864,6 +864,31 @@
     .folder > div:not(:first-child), ul {
       margin-left: 1rem;
     }
+    .folder-list-item {
+      &.moving {
+        .drop-visual {
+          position: absolute;
+          width: 75%;
+          height: 75%;
+          margin-top: 0.5rem;
+          margin-left: 3rem;
+          border: 2px dashed $gray;
+          background: $white;
+        }
+      }
+      &.hovered {
+        .drop-visual {
+          border-color: $medium_gray !important;
+        }
+      }
+      &.not-dragging {
+        &:hover {
+          .drop-visual {
+            border-color: $medium_gray !important;
+          }
+        }
+      }
+    }
   }
   .folder-list-item,
   .sequence-list-item {
@@ -957,6 +982,7 @@
       line-height: 2.5rem;
     }
     .folder-name {
+      position: relative;
       width: 100%;
       margin-right: 3rem;
       margin-left: 6rem;
@@ -989,7 +1015,7 @@
       margin-left: 0.5rem;
     }
     &.move-source {
-      border: 1px solid $dark_gray;
+      box-shadow: 0 0 0 2px $dark_gray inset;
     }
     &.move-target {
       background: $white;
@@ -1029,6 +1055,12 @@
   }
   .matched {
     background: transparentize($yellow, 0.5);
+  }
+}
+
+.sequence-list-item {
+  &:hover:active {
+    cursor: grab;
   }
 }
 

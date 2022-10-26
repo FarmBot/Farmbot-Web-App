@@ -92,11 +92,35 @@ describe("setFolderName", () => {
 });
 
 describe("addNewSequenceToFolder", () => {
-  it("Adds a new sequence to a folder", () => {
-    addNewSequenceToFolder(11);
+  it("adds a new sequence", () => {
+    addNewSequenceToFolder();
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
-      name: "new sequence 1"
+      name: "new sequence 1",
+      color: "gray",
+      folder_id: undefined,
+    }));
+    expect(push).toHaveBeenCalledWith(Path.sequences("new_sequence_1"));
+  });
+
+  it("adds a new sequence to a folder", () => {
+    addNewSequenceToFolder({ id: 11 });
+    expect(setActiveSequenceByName).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
+      name: "new sequence 1",
+      color: "gray",
+      folder_id: 11,
+    }));
+    expect(push).toHaveBeenCalledWith(Path.sequences("new_sequence_1"));
+  });
+
+  it("adds a new sequence to a folder with a color", () => {
+    addNewSequenceToFolder({ id: 11, color: "blue" });
+    expect(setActiveSequenceByName).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
+      name: "new sequence 1",
+      color: "blue",
+      folder_id: 11,
     }));
     expect(push).toHaveBeenCalledWith(Path.sequences("new_sequence_1"));
   });

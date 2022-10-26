@@ -50,9 +50,9 @@ export const WD_KEY_DEFAULTS = {
   WEED_DETECTOR_V_HI: 255,
   WEED_DETECTOR_V_LO: 50,
   WEED_DETECTOR_save_detected_plants: SPECIAL_VALUES.FALSE,
-  WEED_DETECTOR_use_bounds: SPECIAL_VALUES.FALSE,
-  WEED_DETECTOR_min_radius: 0,
-  WEED_DETECTOR_max_radius: 0,
+  WEED_DETECTOR_use_bounds: SPECIAL_VALUES.TRUE,
+  WEED_DETECTOR_min_radius: 1.5,
+  WEED_DETECTOR_max_radius: 50,
 };
 
 export type WEED_DETECTOR_KEY_PART =
