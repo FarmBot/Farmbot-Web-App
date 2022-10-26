@@ -1015,7 +1015,7 @@
       margin-left: 0.5rem;
     }
     &.move-source {
-      border: 1px solid $dark_gray;
+      box-shadow: 0 0 0 2px $dark_gray inset;
     }
     &.move-target {
       background: $white;
