@@ -986,6 +986,11 @@ li {
   .delete {
     height: 2rem;
   }
+  .garden-indicator {
+    display: inline;
+    margin-left: 2rem;
+    font-size: 1rem;
+  }
 }
 
 .section-header {
@@ -1613,7 +1618,7 @@ li {
   .change-password {
     .old-password,
     .new-password {
-      margin-bottom: 1rem;
+      margin-top: 1.5rem;
       input {
         width: 50%;
         float: right;
@@ -1629,6 +1634,7 @@ li {
     }
   }
   .release-notes-wrapper {
+    margin-top: 0.75rem;
     float: right !important;
   }
   .settings-warning-banner {

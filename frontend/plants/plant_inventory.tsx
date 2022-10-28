@@ -173,6 +173,8 @@ export class RawPlants
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}
+          extraHeaderTitle={!!this.props.openedSavedGarden &&
+            <i className={"garden-indicator"}>{t("saved garden")}</i>}
           extraHeaderContent={
             !this.props.openedSavedGarden && plantsPanelState.plants &&
             <button className={"fb-button red delete"}
@@ -223,6 +225,7 @@ export interface PanelSectionProps {
   addClassName: string;
   children: JSX.Element | JSX.Element[];
   extraHeaderContent?: JSX.Element | false;
+  extraHeaderTitle?: JSX.Element | false;
 }
 
 export const PanelSection = (props: PanelSectionProps) => {
@@ -231,6 +234,7 @@ export const PanelSection = (props: PanelSectionProps) => {
     <div className={"section-header"}
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
+      {props.extraHeaderTitle}
       <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
       {isOpen && <div
         onClick={e => {

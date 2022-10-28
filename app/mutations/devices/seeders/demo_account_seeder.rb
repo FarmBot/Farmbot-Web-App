@@ -77,23 +77,6 @@ module Devices
         DEMO_LOGS
           .map { |p| p.merge(device: device) }
           .map { |p| Logs::Create.run!(p) }
-        25.times do |n|
-          up = n * 60 * 60
-          p = {
-            device: device,
-            soc_temp: 40,
-            throttled: "0x0",
-            wifi_level_percent: 80 + rand(-8...8),
-            uptime: up,
-            memory_usage: 50 + rand(-5...5),
-            disk_usage: 1,
-            cpu_usage: 5 + rand(-4...4),
-            target: "demo",
-            fbos_version: "100.0.0",
-          }
-          record = Telemetries::Create.run!(p)
-          record.update!(created_at: Time.now - 1.days + up.seconds)
-        end
         device
           .update!(fbos_version: READ_COMMENT_ABOVE)
         device

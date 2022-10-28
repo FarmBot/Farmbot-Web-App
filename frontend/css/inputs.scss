@@ -44,6 +44,10 @@ input:not([role="combobox"]) {
   }
 }
 
+input:not([role="combobox"]):not([type="checkbox"]):not([type="radio"]) {
+  height: 3rem;
+}
+
 .input {
   position: relative;
   .bp4-popover-wrapper {
