@@ -99,11 +99,12 @@ select {
 .filter-search {
   span {
     width: 100%;
+    color: $dark_gray;
   }
   i {
     position: absolute;
-    top: 20%;
-    right: 0.65rem;
+    right: 1rem;
+    line-height: 3rem;
     color: $dark_gray
   }
   &.dim {
@@ -138,6 +139,9 @@ select {
     .bp4-menu {
       padding-left: 0;
       padding-right: 0;
+    }
+    .bp4-input {
+      height: auto !important;
     }
   }
   &.few-items {

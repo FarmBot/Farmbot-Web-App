@@ -382,6 +382,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_zones: false,
     show_camera_view_area: false,
     ["show_uncropped_camera_view_area" as keyof WebAppConfig]: false,
+    ["default_plant_depth" as keyof WebAppConfig]: 0,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,

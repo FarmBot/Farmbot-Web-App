@@ -78,6 +78,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   clip_image_layer: true,
   show_camera_view_area: true,
   ["show_uncropped_camera_view_area" as keyof WebAppConfig]: false,
+  ["default_plant_depth" as keyof WebAppConfig]: 0,
   view_celery_script: false,
   highlight_modified_settings: true,
   show_advanced_settings: false,

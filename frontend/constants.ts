@@ -954,6 +954,10 @@ export namespace Content {
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
+  export const DEFAULT_PLANT_DEPTH =
+    trim(`When adding plants to the map from the web app, set each new
+    plant's depth to this value (in millimeters).`);
+
   // App
   export const APP_LOAD_TIMEOUT_MESSAGE =
     trim(`App could not be fully loaded, we recommend you try
@@ -1103,8 +1107,7 @@ export namespace Content {
     trim(`Click and drag or use the inputs to draw a weed.`);
 
   export const BOX_SELECT_DESCRIPTION =
-    trim(`Drag a box around the items you would like to select.
-    Press the back arrow to exit.`);
+    trim(`Drag a box around the items you would like to select.`);
 
   export const SAVED_GARDENS =
     trim(`Create a new garden from scratch or by copying plants from the
@@ -1944,6 +1947,7 @@ export enum DeviceSetting {
   cameraView = `Camera view`,
   uncroppedCameraView = `Uncropped Camera view`,
   confirmPlantDeletion = `Confirm plant deletion`,
+  defaultPlantDepth = `Default plant depth`,
 
   // Account
   accountSettings = `Account`,

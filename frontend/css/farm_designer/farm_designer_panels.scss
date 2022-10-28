@@ -425,11 +425,25 @@
     width: 100%;
     background: $panel_medium_light_gray;
     padding: 0.5rem;
+    .selection-type {
+      display: flex;
+      label {
+        line-height: 4rem;
+      }
+      .filter-search {
+        position: absolute;
+        right: 1rem;
+        width: 70%;
+      }
+    }
+    .buttons {
+      float: right;
+    }
     &.more-select {
       height: 23rem;
     }
     &.more-action {
-      height: 35rem;
+      height: 38rem;
     }
     &.more-select.more-action {
       height: 43rem;
@@ -550,6 +564,10 @@
       label {
         width: 100%;
       }
+      .filter-search {
+        display: inline-block;
+        width: 100%;
+      }
     }
   }
   .panel-content {
@@ -563,7 +581,7 @@
       padding-top: 23rem;
     }
     &.more-action {
-      padding-top: 35rem;
+      padding-top: 38rem;
     }
     &.more-select.more-action {
       padding-top: 43rem;
@@ -1570,6 +1588,7 @@ li {
   }
 }
 
+.plant-inventory-panel,
 .settings-panel {
   .panel-top {
     .fa-chevron-right,
@@ -1588,6 +1607,19 @@ li {
 .settings-panel-settings-menu {
   button {
     margin-left: 1rem;
+  }
+}
+
+.plants-panel-settings-menu {
+  label {
+    line-height: 3rem;
+    vertical-align: bottom;
+    margin-bottom: 0;
+  }
+  .bp4-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    line-height: 3rem;
   }
 }
 

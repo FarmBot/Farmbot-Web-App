@@ -6,7 +6,8 @@ import {
 
 type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
   | "show_uncropped_camera_view_area";
-type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey
+  | "default_plant_depth";
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
@@ -93,6 +94,8 @@ export const NumericSetting: NumericSettings = {
   map_size_x: "map_size_x",
   map_size_y: "map_size_y",
   bot_origin_quadrant: "bot_origin_quadrant",
+  default_plant_depth: "default_plant_depth" as
+    WebAppNumberConfigKey,
 
   /** App settings */
   beep_verbosity: "beep_verbosity",

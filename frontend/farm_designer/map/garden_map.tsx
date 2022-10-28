@@ -300,6 +300,7 @@ export class GardenMap extends
         openedSavedGarden: this.props.designer.openedSavedGarden,
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
+        getConfigValue: this.props.getConfigValue,
       });
     };
 

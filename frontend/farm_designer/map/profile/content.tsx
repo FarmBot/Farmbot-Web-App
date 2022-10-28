@@ -48,6 +48,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   const getX = getProfileX({ profileAxis, mapTransformProps, width });
   const reversed = flipProfile({ profileAxis, mapTransformProps });
   return <svg className={expanded ? "expand" : undefined}
+    style={expanded ? {} : { display: "none" }}
     id={`${profileAxis}-axis-profile-at-${lineAxis}-eq-${position[lineAxis]}`}
     viewBox={`-40 -20 ${width + 80} ${height + 40}`}
     preserveAspectRatio={expanded ? undefined : "none"}>

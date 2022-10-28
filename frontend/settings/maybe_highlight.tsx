@@ -142,6 +142,7 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.clipPhotosOutOfBounds,
   DeviceSetting.cameraView,
   DeviceSetting.confirmPlantDeletion,
+  DeviceSetting.defaultPlantDepth,
 ];
 const ACCOUNT_PANEL = [
   DeviceSetting.accountSettings,

@@ -289,7 +289,11 @@ export interface GardenMapState {
   toLocation: Vector3 | undefined;
 }
 
-export type PlantOptions = Partial<PlantPointer>;
+interface PlantOptionsContent extends PlantPointer {
+  depth: number;
+}
+
+export type PlantOptions = Partial<PlantOptionsContent>;
 
 export interface EditPlantInfoProps {
   dispatch: Function;
@@ -339,6 +343,7 @@ export interface CropInfoProps {
   openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface CameraCalibrationData {

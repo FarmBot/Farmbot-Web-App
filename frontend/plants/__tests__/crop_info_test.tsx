@@ -29,6 +29,8 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { Path } from "../../internal_urls";
+import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -44,6 +46,7 @@ describe("<CropInfo />", () => {
       openedSavedGarden: undefined,
       botPosition: { x: undefined, y: undefined, z: undefined },
       xySwap: false,
+      getConfigValue: jest.fn(),
     };
   };
 
@@ -194,10 +197,14 @@ describe("getCropHeaderProps()", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.show_plants = false;
+    state.resources = buildResourceIndex([webAppConfig]);
     state.resources.consumers.farm_designer.cropSearchInProgress = true;
     state.bot.hardware.location_data.position = { x: 1, y: 2, z: 3 };
     const props = mapStateToProps(state);
     expect(props.cropSearchInProgress).toEqual(true);
     expect(props.botPosition).toEqual({ x: 1, y: 2, z: 3 });
+    expect(props.getConfigValue("show_plants")).toEqual(false);
   });
 });

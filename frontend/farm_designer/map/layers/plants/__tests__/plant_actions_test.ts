@@ -48,7 +48,8 @@ describe("newPlantKindAndBody()", () => {
       y: 0,
       slug: "mint",
       cropName: "Mint",
-      openedSavedGarden: "SavedGarden.1.1"
+      openedSavedGarden: "SavedGarden.1.1",
+      depth: 0,
     };
     const result = newPlantKindAndBody(p);
     expect(result).toEqual(expect.objectContaining({
@@ -65,6 +66,7 @@ describe("createPlant()", () => {
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),
     openedSavedGarden: undefined,
+    depth: 0,
   });
 
   it("creates plant", () => {
@@ -98,6 +100,7 @@ describe("dropPlant()", () => {
     openedSavedGarden: undefined,
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),
+    getConfigValue: jest.fn(),
   });
 
   it("drops plant", () => {
