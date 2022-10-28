@@ -6,7 +6,7 @@ jest.mock("../../../../open_farm/cached_crop", () => ({
 import React from "react";
 import { svgMount } from "../../../../__test_support__/svg_mount";
 import {
-  fakePlant, fakeWeed,
+  fakePlant, fakePlantTemplate, fakeWeed,
 } from "../../../../__test_support__/fake_state/resources";
 import { TaggedWeedPointer } from "farmbot";
 import { TaggedPlant } from "../../interfaces";
@@ -42,6 +42,13 @@ describe("<PlantPoint />", () => {
     p.soilHeight = 200;
     const wrapper = svgMount(<PlantPoint {...p} />);
     expect(wrapper.find("#point-coordinate-indicator").props().cy).toEqual(100);
+  });
+
+  it("renders plant template", () => {
+    const p = fakeProps();
+    p.point = fakePlantTemplate();
+    const wrapper = svgMount(<PlantPoint {...p} />);
+    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
   });
 
   it("renders default spread", () => {

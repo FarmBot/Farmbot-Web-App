@@ -11,6 +11,8 @@ import {
   EditPlantLocation,
   EditPlantRadiusProps,
   EditPlantRadius,
+  EditPlantDepthProps,
+  EditPlantDepth,
 } from "../plant_panel";
 import { shallow, mount } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
@@ -31,6 +33,7 @@ describe("<PlantPanel/>", () => {
     y: 34,
     z: 0,
     radius: 25,
+    depth: 0,
     id: undefined,
     name: "tomato",
     uuid: "Plant.0.0",
@@ -186,6 +189,25 @@ describe("<EditPlantRadius />", () => {
     });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
       radius: 100
+    });
+  });
+});
+
+describe("<EditPlantDepth />", () => {
+  const fakeProps = (): EditPlantDepthProps => ({
+    uuid: "Plant.0.0",
+    depth: 10,
+    updatePlant: jest.fn(),
+  });
+
+  it("changes location", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EditPlantDepth {...p} />);
+    wrapper.find("BlurableInput").first().simulate("commit", {
+      currentTarget: { value: "100" }
+    });
+    expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
+      depth: 100
     });
   });
 });

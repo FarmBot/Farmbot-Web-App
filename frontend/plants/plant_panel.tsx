@@ -20,6 +20,7 @@ import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 import { BotPosition } from "../devices/interfaces";
+import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -105,6 +106,25 @@ export const EditPlantRadius = (props: EditPlantRadiusProps) =>
         min={0}
         onCommit={e => props.updatePlant(props.uuid, {
           radius: parseIntInput(e.currentTarget.value)
+        })} />
+    </Col>
+  </Row>;
+
+export interface EditPlantDepthProps extends EditPlantProperty {
+  depth: number;
+}
+
+export const EditPlantDepth = (props: EditPlantDepthProps) =>
+  <Row>
+    <Col xs={6}>
+      <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
+      <BlurableInput
+        type="number"
+        name="depth"
+        value={props.depth}
+        min={0}
+        onCommit={e => props.updatePlant(props.uuid, {
+          ["depth" as keyof PlantPointer]: parseIntInput(e.currentTarget.value)
         })} />
     </Col>
   </Row>;
@@ -205,6 +225,9 @@ export function PlantPanel(props: PlantPanelProps) {
         defaultAxes={props.defaultAxes} />
       <ListItem>
         <EditPlantRadius {...commonProps} radius={info.radius} />
+      </ListItem>
+      <ListItem>
+        <EditPlantDepth {...commonProps} depth={info.depth} />
       </ListItem>
       <ListItem name={t("Status")}>
         {(!inSavedGarden)

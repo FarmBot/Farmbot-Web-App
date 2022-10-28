@@ -429,10 +429,10 @@
       height: 23rem;
     }
     &.more-action {
-      height: 32rem;
+      height: 35rem;
     }
     &.more-select.more-action {
-      height: 40rem;
+      height: 43rem;
     }
     button {
       margin: 0.5rem;
@@ -453,6 +453,7 @@
       padding-right: 1rem;
     }
     .point-size-bulk-update,
+    .plant-depth-bulk-update,
     .plant-date-bulk-update,
     .point-color-bulk-update,
     .plant-slug-bulk-update,
@@ -472,6 +473,7 @@
         vertical-align: top;
       }
     }
+    .plant-depth-bulk-update,
     .point-size-bulk-update {
       p {
         display: inline-block;
@@ -483,6 +485,12 @@
         width: 48%;
         height: 3rem;
         margin-left: 0.5rem;
+      }
+    }
+    .plant-depth-bulk-update {
+      input {
+        margin-top: 1rem;
+        margin-left: 0.8rem;
       }
     }
     .plant-date-bulk-update {
@@ -555,10 +563,10 @@
       padding-top: 23rem;
     }
     &.more-action {
-      padding-top: 32rem;
+      padding-top: 35rem;
     }
     &.more-select.more-action {
-      padding-top: 40rem;
+      padding-top: 43rem;
     }
     .tool-slot-search-item-icon {
       padding-left: 5px !important;
@@ -972,6 +980,11 @@ li {
     .bp4-popover-wrapper {
       display: inline-block;
       margin-left: 0.5rem;
+    }
+    .filter-search {
+      .bp4-popover-wrapper {
+        margin-left: 0;
+      }
     }
   }
   input {

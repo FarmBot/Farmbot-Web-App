@@ -21,6 +21,7 @@ import {
   PlantDateBulkUpdate, PlantSlugBulkUpdate, PlantStatusBulkUpdate,
   PointColorBulkUpdate,
   PointSizeBulkUpdate,
+  PlantDepthBulkUpdate,
 } from "./edit_plant_status";
 import { FBSelect, DropDownItem } from "../ui";
 import {
@@ -299,6 +300,12 @@ export class RawSelectPlants
           {["Plant", "Weed", "GenericPointer"]
             .includes(this.selectionPointType) &&
             <PointSizeBulkUpdate
+              allPoints={this.props.allPoints}
+              selected={this.selected}
+              dispatch={this.props.dispatch} />}
+          {["Plant"]
+            .includes(this.selectionPointType) &&
+            <PlantDepthBulkUpdate
               allPoints={this.props.allPoints}
               selected={this.selected}
               dispatch={this.props.dispatch} />}

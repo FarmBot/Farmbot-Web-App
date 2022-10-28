@@ -166,7 +166,7 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
   </div>;
 };
 
-/** Update `radius` for multiple points at once. */
+/** Update `radius` for multiple plants at once. */
 export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
   const points = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
@@ -178,6 +178,7 @@ export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
     <p>{t("update radius to")}</p>
     <input
       value={radius}
+      min={0}
       onChange={e => setRadius(e.currentTarget.value)}
       onBlur={() => {
         const radiusNum = parseInt(radius);
@@ -186,6 +187,36 @@ export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
             { radius: radiusNum, num: points.length }))
           && points.map(point => {
             props.dispatch(edit(point, { radius: radiusNum }));
+            props.dispatch(save(point.uuid));
+          });
+      }} />
+  </div>;
+};
+
+/** Update `depth` for multiple points at once. */
+export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
+  const points = props.allPoints.filter(point =>
+    props.selected.includes(point.uuid) && point.kind === "Point" &&
+    point.body.pointer_type == "Plant")
+    .map((p: TaggedPlantPointer) => p);
+  const averageDepth = round(mean(points.map(p =>
+    p.body["depth" as keyof TaggedPlantPointer["body"]])));
+  const [depth, setDepth] = React.useState("" + (averageDepth || 0));
+  return <div className={"plant-depth-bulk-update"}>
+    <p>{t("update depth to")}</p>
+    <input
+      value={depth}
+      min={0}
+      onChange={e => setDepth(e.currentTarget.value)}
+      onBlur={() => {
+        const depthNum = parseFloat(depth);
+        isFinite(depthNum) && points.length > 0 && confirm(
+          t("Change depth to {{ depth }}mm for {{ num }} items?",
+            { depth: depthNum, num: points.length }))
+          && points.map(point => {
+            props.dispatch(edit(point, {
+              ["depth" as keyof TaggedPlantPointer["body"]]: depthNum,
+            }));
             props.dispatch(save(point.uuid));
           });
       }} />

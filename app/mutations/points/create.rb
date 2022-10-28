@@ -45,6 +45,7 @@ module Points
     optional do
       hstore :meta
       float :radius, default: 25
+      integer :depth, default: 0
       integer :pullout_direction,
               min: ToolSlot::PULLOUT_DIRECTIONS.min,
               max: ToolSlot::PULLOUT_DIRECTIONS.max

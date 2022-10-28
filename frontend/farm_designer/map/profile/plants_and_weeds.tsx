@@ -8,6 +8,7 @@ import { TaggedPlant } from "../interfaces";
 import { cachedCrop } from "../../../open_farm/cached_crop";
 import { BooleanSetting } from "../../../session_keys";
 import { FilePath } from "../../../internal_urls";
+import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 /** Plant point profile. */
 export class PlantPoint
@@ -31,6 +32,9 @@ export class PlantPoint
     const spreadRadius = (spreadDiaCm || defaultSpreadCmDia(radius)) / 2 * 10;
     const profileX = getX(point.body);
     const profileY = point.body.z == 0 ? soilHeight : point.body.z;
+    const depth = point.kind == "Point"
+      ? point.body["depth" as keyof PlantPointer] as number
+      : 0;
     return <g id={"plant-profile-point"}>
       <defs>
         <radialGradient id={"plant-radius-gradient"}>
@@ -72,6 +76,12 @@ export class PlantPoint
           opacity={0.5} fill={"none"} />}
       <circle id={"point-coordinate-indicator"} opacity={0.5}
         fill={Color.darkGreen} cx={profileX} cy={profileY} r={5} />
+      <line id={"point-depth-indicator"} opacity={0.5}
+        stroke={Color.darkGreen} strokeWidth={2}
+        x1={profileX} y1={profileY}
+        x2={profileX} y2={profileY + depth} />
+      <circle id={"point-bottom-indicator"} opacity={0.5}
+        fill={Color.darkGreen} cx={profileX} cy={profileY + depth} r={2} />
     </g>;
   }
 }

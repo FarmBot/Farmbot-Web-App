@@ -8,6 +8,7 @@ class Plant < Point
              planted_at
              pointer_type
              radius
+             depth
              x
              y
              z)

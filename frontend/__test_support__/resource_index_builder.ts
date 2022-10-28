@@ -185,6 +185,7 @@ const tr7: TaggedPoint = {
     "name": "fenestrate-flower-3632",
     "pointer_type": "Plant",
     "radius": 46,
+    ["depth" as keyof TaggedPoint["body"]]: 0,
     "x": 347,
     "y": 385,
     "z": 0,
@@ -207,6 +208,7 @@ const tr8: TaggedPoint = {
     "name": "alate-fire-7363",
     "pointer_type": "Plant",
     "radius": 36,
+    ["depth" as keyof TaggedPoint["body"]]: 0,
     "x": 727,
     "y": 376,
     "z": 0,
@@ -230,6 +232,7 @@ const tr9: TaggedPoint = {
     "name": "untitled",
     "pointer_type": "GenericPointer",
     "radius": 6,
+    ["depth" as keyof TaggedPoint["body"]]: 0,
     "x": 1245,
     "y": 637,
     "z": 5
@@ -251,6 +254,7 @@ const tr10: TaggedPoint = {
     "name": "untitled",
     "pointer_type": "GenericPointer",
     "radius": 10,
+    ["depth" as keyof TaggedPoint["body"]]: 0,
     "x": 490,
     "y": 421,
     "z": 5
@@ -335,6 +339,7 @@ const tr16: TaggedPoint = {
     pointer_type: "Weed",
     plant_stage: "active",
     radius: 10,
+    ["depth" as keyof TaggedPoint["body"]]: 0,
     x: 490,
     y: 421,
     z: 5

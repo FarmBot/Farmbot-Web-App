@@ -159,6 +159,7 @@ export function fakePlant(): TaggedPlantPointer {
     y: 200,
     z: 0,
     radius: 25,
+    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     meta: {},
     openfarm_slug: "strawberry"
   });
@@ -173,6 +174,7 @@ export function fakePoint(): TaggedGenericPointer {
     y: 400,
     z: 0,
     radius: 100,
+    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     meta: { created_by: "plant-detection" }
   });
 }
@@ -186,6 +188,7 @@ export function fakeWeed(): TaggedWeedPointer {
     y: 400,
     z: 0,
     radius: 100,
+    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     plant_stage: "active",
     meta: { created_by: "plant-detection", color: "red" }
   });
@@ -203,6 +206,7 @@ export function fakePlantTemplate(): TaggedPlantTemplate {
     id: idCounter++,
     saved_garden_id: idCounter++,
     radius: 50,
+    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     x: 100,
     y: 200,
     z: 0,

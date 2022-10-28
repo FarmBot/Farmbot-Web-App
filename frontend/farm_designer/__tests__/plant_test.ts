@@ -11,6 +11,7 @@ describe("Plant()", () => {
       plant_stage: "planned",
       pointer_type: "Plant",
       radius: 25,
+      depth: 0,
       x: 0,
       y: 0,
       z: 0,

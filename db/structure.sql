@@ -869,7 +869,8 @@ CREATE TABLE public.points (
     tool_id integer,
     pullout_direction integer DEFAULT 0,
     discarded_at timestamp without time zone,
-    gantry_mounted boolean DEFAULT false
+    gantry_mounted boolean DEFAULT false,
+    depth integer DEFAULT 0
 );
 
 
@@ -3831,6 +3832,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220415191331'),
 ('20220620225957'),
 ('20220810212545'),
-('20220819170955');
+('20220819170955'),
+('20221027211207');
 
 
