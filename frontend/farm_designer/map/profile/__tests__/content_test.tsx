@@ -13,7 +13,9 @@ import React from "react";
 import { mount } from "enzyme";
 import { getProfileX, ProfileSvg } from "../content";
 import { ProfileSvgProps } from "../interfaces";
-import { fakeBotSize } from "../../../../__test_support__/fake_bot_data";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../../../__test_support__/fake_bot_data";
 import {
   fakePlant,
   fakePoint, fakeTool, fakeToolSlot, fakeWeed,
@@ -37,7 +39,8 @@ describe("<ProfileSvg />", () => {
     position: { x: 0, y: 110 },
     expanded: false,
     botSize: fakeBotSize(),
-    botPosition: { x: undefined, y: undefined, z: undefined },
+    botLocationData: fakeBotLocationData(),
+    peripheralValues: [],
     negativeZ: true,
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     mountedToolInfo: fakeMountedToolInfo(),
@@ -105,7 +108,7 @@ describe("<ProfileSvg />", () => {
 
   it("renders UTM", () => {
     const p = fakeProps();
-    p.botPosition = { x: 200, y: 100, z: 100 };
+    p.botLocationData.position = { x: 200, y: 100, z: 100 };
     const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#UTM-and-axis").find("line").length).toEqual(1);
     expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(1);
@@ -115,7 +118,7 @@ describe("<ProfileSvg />", () => {
   it("renders UTM when expanded", () => {
     const p = fakeProps();
     p.expanded = true;
-    p.botPosition = { x: 200, y: 100, z: 100 };
+    p.botLocationData.position = { x: 200, y: 100, z: 100 };
     const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
     expect(wrapper.html()).toContain("image");
@@ -125,7 +128,7 @@ describe("<ProfileSvg />", () => {
     const p = fakeProps();
     p.expanded = true;
     p.axis = "y";
-    p.botPosition = { x: 200, y: 100, z: 100 };
+    p.botLocationData.position = { x: 200, y: 100, z: 100 };
     const wrapper = mount(<ProfileSvg {...p} />);
     expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
     expect(wrapper.html()).toContain("image");
@@ -217,7 +220,7 @@ describe("<ProfileSvg />", () => {
   it("renders trough at new coordinate", () => {
     const p = fakeProps();
     p.expanded = true;
-    p.botPosition.x = 1000;
+    p.botLocationData.position.x = 1000;
     const trough = fakeTool();
     trough.body.id = 1;
     trough.body.name = "Seed trough";

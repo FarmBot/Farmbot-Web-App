@@ -223,7 +223,7 @@ export class RawFarmDesigner
           zoomLvl={zoom_level}
           mapTransformProps={this.mapTransformProps}
           gridOffset={gridOffset}
-          peripherals={this.props.peripherals}
+          peripheralValues={this.props.peripheralValues}
           eStopStatus={this.props.eStopStatus}
           latestImages={this.props.latestImages}
           cameraCalibrationData={this.props.cameraCalibrationData}
@@ -248,7 +248,8 @@ export class RawFarmDesigner
         dispatch={this.props.dispatch}
         designer={this.props.designer}
         botSize={this.props.botSize}
-        botPosition={this.props.botLocationData.position}
+        botLocationData={this.props.botLocationData}
+        peripheralValues={this.props.peripheralValues}
         negativeZ={!!this.props.botMcuParams.movement_home_up_z}
         sourceFbosConfig={this.props.sourceFbosConfig}
         mountedToolInfo={this.props.mountedToolInfo}

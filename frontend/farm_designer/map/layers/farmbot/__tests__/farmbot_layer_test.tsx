@@ -23,7 +23,7 @@ describe("<FarmBotLayer/>", () => {
     stopAtHome: { x: true, y: true },
     botSize: fakeBotSize(),
     plantAreaOffset: { x: 100, y: 100 },
-    peripherals: [],
+    peripheralValues: [],
     eStopStatus: false,
     getConfigValue: jest.fn(),
     mountedToolInfo: fakeMountedToolInfo(),

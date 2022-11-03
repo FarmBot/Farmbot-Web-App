@@ -617,7 +617,7 @@ export class GardenMap extends
     stopAtHome={this.props.stopAtHome}
     botSize={this.props.botSize}
     plantAreaOffset={this.props.gridOffset}
-    peripherals={this.props.peripherals}
+    peripheralValues={this.props.peripheralValues}
     eStopStatus={this.props.eStopStatus}
     mountedToolInfo={this.props.mountedToolInfo}
     cameraCalibrationData={this.props.cameraCalibrationData}

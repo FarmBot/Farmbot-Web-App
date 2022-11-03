@@ -102,7 +102,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     flipped: isToolFlipped(mountedToolSlotInfo?.meta),
   };
 
-  const peripherals = uniq(selectAllPeripherals(props.resources.index))
+  const peripheralValues = uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
       const label = x.body.label;
       const pinStatus = x.body.pin
@@ -141,7 +141,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     botLocationData: validBotLocationData(hardware.location_data),
     botMcuParams: firmwareSettings,
     botSize: botSize(props),
-    peripherals,
+    peripheralValues,
     eStopStatus: hardware.informational_settings.locked,
     deviceTarget: hardware.informational_settings.target,
     latestImages,

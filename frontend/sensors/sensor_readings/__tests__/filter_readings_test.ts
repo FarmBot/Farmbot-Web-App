@@ -4,7 +4,7 @@ import {
 import { filterSensorReadings } from "../filter_readings";
 import { SensorReadingsState } from "../interfaces";
 import moment from "moment";
-import { Xyz } from "farmbot";
+import { BotPosition } from "../../../devices/interfaces";
 
 describe("filterSensorReadings()", () => {
   const createDatedReading = (timestamps: string[]) =>
@@ -24,7 +24,7 @@ describe("filterSensorReadings()", () => {
       return sr;
     });
 
-  const createLocatedReading = (locations: Record<Xyz, number | undefined>[]) =>
+  const createLocatedReading = (locations: BotPosition[]) =>
     locations.map(xyzLocation => {
       const sr = fakeSensorReading();
       sr.body.x = xyzLocation.x;

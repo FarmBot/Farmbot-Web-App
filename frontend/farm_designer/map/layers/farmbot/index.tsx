@@ -8,7 +8,8 @@ import { NegativePositionLabel } from "./negative_position_labels";
 
 export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const {
-    mapTransformProps, plantAreaOffset, peripherals, eStopStatus, getConfigValue
+    mapTransformProps, plantAreaOffset, peripheralValues, eStopStatus,
+    getConfigValue,
   } = props;
   const displayTrail = !!getConfigValue(BooleanSetting.display_trail);
   const displayMissedSteps =
@@ -28,7 +29,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       position={props.botLocationData.position}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
-      peripherals={peripherals}
+      peripheralValues={peripheralValues}
       getConfigValue={getConfigValue} />
     <BotFigure figureName={"motor-position"}
       position={props.botLocationData.position}
@@ -51,6 +52,6 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
         missedSteps={props.botLocationData.load}
         displayMissedSteps={displayMissedSteps}
         mapTransformProps={mapTransformProps}
-        peripherals={peripherals} />}
+        peripheralValues={peripheralValues} />}
   </g>;
 }
