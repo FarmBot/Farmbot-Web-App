@@ -289,11 +289,7 @@ export interface GardenMapState {
   toLocation: Vector3 | undefined;
 }
 
-interface PlantOptionsContent extends PlantPointer {
-  depth: number;
-}
-
-export type PlantOptions = Partial<PlantOptionsContent>;
+export type PlantOptions = Partial<PlantPointer>;
 
 export interface EditPlantInfoProps {
   dispatch: Function;

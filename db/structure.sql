@@ -1950,7 +1950,7 @@ CREATE TABLE public.web_app_configs (
     landing_page character varying(100) DEFAULT 'controls'::character varying,
     go_button_axes character varying(3) DEFAULT 'XY'::character varying NOT NULL,
     show_uncropped_camera_view_area boolean DEFAULT false,
-    default_plant_depth integer DEFAULT 0
+    default_plant_depth integer DEFAULT 5
 );
 
 
@@ -3835,6 +3835,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220810212545'),
 ('20220819170955'),
 ('20221027211207'),
-('20221028172528');
+('20221028172528'),
+('20221103172100');
 
 

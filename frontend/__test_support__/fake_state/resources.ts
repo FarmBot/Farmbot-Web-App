@@ -35,7 +35,6 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -159,7 +158,7 @@ export function fakePlant(): TaggedPlantPointer {
     y: 200,
     z: 0,
     radius: 25,
-    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
+    depth: 0,
     meta: {},
     openfarm_slug: "strawberry"
   });
@@ -174,7 +173,6 @@ export function fakePoint(): TaggedGenericPointer {
     y: 400,
     z: 0,
     radius: 100,
-    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     meta: { created_by: "plant-detection" }
   });
 }
@@ -188,7 +186,6 @@ export function fakeWeed(): TaggedWeedPointer {
     y: 400,
     z: 0,
     radius: 100,
-    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     plant_stage: "active",
     meta: { created_by: "plant-detection", color: "red" }
   });
@@ -206,7 +203,6 @@ export function fakePlantTemplate(): TaggedPlantTemplate {
     id: idCounter++,
     saved_garden_id: idCounter++,
     radius: 50,
-    ["depth" as keyof TaggedPlantPointer["body"]]: 0,
     x: 100,
     y: 200,
     z: 0,
@@ -381,8 +377,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_pins: false,
     show_zones: false,
     show_camera_view_area: false,
-    ["show_uncropped_camera_view_area" as keyof WebAppConfig]: false,
-    ["default_plant_depth" as keyof WebAppConfig]: 0,
+    show_uncropped_camera_view_area: false,
+    default_plant_depth: 5,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,

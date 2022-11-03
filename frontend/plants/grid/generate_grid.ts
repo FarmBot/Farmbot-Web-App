@@ -42,6 +42,7 @@ const createPlantGridMapper = (
     return {
       name: cropName,
       radius: 25,
+      depth: 0,
       z: 0,
       x,
       y,

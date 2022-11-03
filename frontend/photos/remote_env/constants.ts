@@ -139,6 +139,7 @@ export function getSpecialValue(key: string | number):
   SPECIAL_VALUES {
 
   const k = snakeCase(("" + key).toUpperCase()).toUpperCase();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const v = get(SPECIAL_VALUES, k, NaN) as number | undefined;
 
   if (isUndefined(v) || isNaN(v)) {

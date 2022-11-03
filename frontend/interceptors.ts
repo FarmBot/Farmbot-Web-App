@@ -30,7 +30,8 @@ export function responseRejected(x: SafeError | undefined) {
     const a = ![451, 401, 422].includes(x.response.status);
     const b = x.response.status > 399;
     // Openfarm API was sending too many 404's.
-    const c = !get(x, "response.config.url", "").includes("openfarm.cc/");
+    const c = !(get(x, "response.config.url", "") as string)
+      .includes("openfarm.cc/");
     if (a && b && c) {
       setTimeout(() => {
         // Explicitly throw error so error reporting tool will save it.

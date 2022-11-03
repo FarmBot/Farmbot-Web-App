@@ -4,10 +4,8 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
-  | "show_uncropped_camera_view_area";
-type WebAppNumberConfigKeyAll = WebAppNumberConfigKey
-  | "default_plant_depth";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
@@ -39,8 +37,7 @@ export const BooleanSetting: BooleanSettings = {
   show_sensor_readings: "show_sensor_readings",
   show_moisture_interpolation_map: "show_moisture_interpolation_map",
   show_camera_view_area: "show_camera_view_area",
-  show_uncropped_camera_view_area: "show_uncropped_camera_view_area" as
-    WebAppBooleanConfigKey,
+  show_uncropped_camera_view_area: "show_uncropped_camera_view_area",
   disable_animations: "disable_animations",
   display_map_missed_steps: "display_map_missed_steps",
   display_trail: "display_trail",
@@ -94,8 +91,7 @@ export const NumericSetting: NumericSettings = {
   map_size_x: "map_size_x",
   map_size_y: "map_size_y",
   bot_origin_quadrant: "bot_origin_quadrant",
-  default_plant_depth: "default_plant_depth" as
-    WebAppNumberConfigKey,
+  default_plant_depth: "default_plant_depth",
 
   /** App settings */
   beep_verbosity: "beep_verbosity",

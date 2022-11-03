@@ -199,8 +199,7 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
     .map((p: TaggedPlantPointer) => p);
-  const averageDepth = round(mean(points.map(p =>
-    p.body["depth" as keyof TaggedPlantPointer["body"]])));
+  const averageDepth = round(mean(points.map(p => p.body.depth)));
   const [depth, setDepth] = React.useState("" + (averageDepth || 0));
   return <div className={"plant-depth-bulk-update"}>
     <p>{t("update depth to")}</p>
@@ -214,9 +213,7 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
           t("Change depth to {{ depth }}mm for {{ num }} items?",
             { depth: depthNum, num: points.length }))
           && points.map(point => {
-            props.dispatch(edit(point, {
-              ["depth" as keyof TaggedPlantPointer["body"]]: depthNum,
-            }));
+            props.dispatch(edit(point, { depth: depthNum }));
             props.dispatch(save(point.uuid));
           });
       }} />
