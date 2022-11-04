@@ -104,6 +104,9 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
       <BotTrail
         position={{ x: undefined, y: undefined, z: undefined }}
         getX={getX}
+        profileAxis={lineAxis}
+        selectionWidth={props.selectionWidth}
+        profilePosition={position}
         missedSteps={props.botLocationData.load}
         displayMissedSteps={
           !!getConfigValue(BooleanSetting.display_map_missed_steps)}

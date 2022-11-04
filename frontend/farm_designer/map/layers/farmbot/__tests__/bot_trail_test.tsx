@@ -50,13 +50,17 @@ describe("<BotTrail />", () => {
   it("shows profile trail", () => {
     const p = fakeProps();
     p.getX = coordinate => coordinate.x || 0;
+    p.profileAxis = "y";
+    p.selectionWidth = 50;
+    p.profilePosition = { x: 0, y: 0 };
     const wrapper = shallow(<BotTrail {...p} />);
     const lines = wrapper.find(".virtual-bot-trail").find("line");
+    expect(lines.length).toEqual(2);
     expect(lines.first().props()).toEqual({
       id: "trail-line-1",
       stroke: "red",
-      strokeOpacity: 0.25,
-      strokeWidth: 1.5,
+      strokeOpacity: 0.5,
+      strokeWidth: 2,
       x1: 1, x2: 0, y1: 100, y2: 0
     });
   });

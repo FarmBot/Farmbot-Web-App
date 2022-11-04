@@ -1,5 +1,5 @@
 import React from "react";
-import { MapTransformProps } from "../../interfaces";
+import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
@@ -8,6 +8,7 @@ import { Xyz } from "farmbot";
 import { indicatorColor } from "../../../../controls/move/missed_step_indicator";
 import { GetProfileX } from "../../profile/interfaces";
 import { definedPosition } from "../../../../tools/tool_slot_edit_components";
+import { withinProfileRange } from "../../profile/content";
 
 type MissedSteps = Record<Xyz, number | undefined>;
 
@@ -50,12 +51,15 @@ export interface BotTrailProps {
   mapTransformProps: MapTransformProps;
   peripheralValues: PeripheralValues;
   getX?: GetProfileX;
+  profileAxis?: "x" | "y";
+  selectionWidth?: number;
+  profilePosition?: AxisNumberProperty;
 }
 
 export function BotTrail(props: BotTrailProps) {
   const toQ = (original: Record<Xyz, number>) =>
     props.getX
-      ? { qx: props.getX(original), qy: original.z }
+      ? { qx: props.getX(original), qy: Math.abs(original.z) }
       : transformXY(original.x, original.y, props.mapTransformProps);
 
   const { x, y, z } = props.position;
@@ -67,7 +71,16 @@ export function BotTrail(props: BotTrailProps) {
     coord: { x, y, z },
     miss: props.missedSteps,
     water: 0,
-  }, watering, !!props.getX);
+  }, watering, !!props.getX)
+    .filter(p =>
+      !(props.profileAxis && props.selectionWidth && props.profilePosition
+        && isNumber(p.coord.x) && isNumber(p.coord.y)) ||
+      withinProfileRange({
+        axis: props.profileAxis,
+        selectionWidth: props.selectionWidth,
+        profilePosition: props.profilePosition,
+        location: { x: p.coord.x, y: p.coord.y },
+      }));
 
   const missedStepIcons = (
     position: { qx: number, qy: number },

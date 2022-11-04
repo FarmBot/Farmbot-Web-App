@@ -42,7 +42,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
           <label>
             {`${axisLabel} (${coordinateLabel})`}
           </label>
-          <p className={"left-label"}>Z</p>
+          {expanded && <p className={"left-label"}>Z</p>}
           <ProfileSvg allPoints={props.allPoints}
             axis={axis}
             position={{ x, y }}
@@ -58,7 +58,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
             getConfigValue={props.getConfigValue}
             mapTransformProps={props.mapTransformProps}
             botSize={props.botSize} />
-          <p className={"right-label"}>Z</p>
+          {expanded && <p className={"right-label"}>Z</p>}
         </div>}
       <ProfileOptions
         dispatch={dispatch}
