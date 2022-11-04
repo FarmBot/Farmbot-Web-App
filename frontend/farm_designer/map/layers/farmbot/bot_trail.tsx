@@ -22,13 +22,16 @@ export enum VirtualTrail {
   length = "virtualTrailLength"
 }
 
-function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[] {
+function getNewTrailArray(
+  update: TrailRecord, watering: boolean, readOnly: boolean,
+): TrailRecord[] {
   const key = VirtualTrail.records; // sessionStorage location
   const trailLength: number = get(sessionStorage, VirtualTrail.length, 100);
   const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]") as string);
+  if (readOnly) { return takeRight(arr, trailLength); }
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
-  if (update.coord &&
+  if (definedPosition(update.coord) &&
     (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
     arr.push(update); // unique addition
   } else { // nothing new to add, increase water circle size if watering
@@ -64,7 +67,7 @@ export function BotTrail(props: BotTrailProps) {
     coord: { x, y, z },
     miss: props.missedSteps,
     water: 0,
-  }, watering);
+  }, watering, !!props.getX);
 
   const missedStepIcons = (
     position: { qx: number, qy: number },

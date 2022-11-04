@@ -57,7 +57,7 @@ describe("<BotTrail />", () => {
       stroke: "red",
       strokeOpacity: 0.25,
       strokeWidth: 1.5,
-      x1: 2, x2: 1, y1: 200, y2: 100
+      x1: 1, x2: 0, y1: 100, y2: 0
     });
   });
 
