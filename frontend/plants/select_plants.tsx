@@ -230,7 +230,7 @@ export class RawSelectPlants
               ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
           }} />
       </div>
-      <div className="button-row">
+      <div className="button-row group-select">
         <button className="fb-button gray"
           title={t("Select none")}
           onClick={() => {
@@ -262,7 +262,7 @@ export class RawSelectPlants
             onChange={this.selectGroup} />
         </More>
       </div>
-      <label style={{ lineHeight: "3rem" }}>{t("SELECTION ACTIONS")}</label>
+      <label>{t("SELECTION ACTIONS")}</label>
       <div className="buttons">
         <button className="fb-button red"
           title={t("Delete")}
@@ -286,7 +286,7 @@ export class RawSelectPlants
             {t("save")}
           </button>}
       </div>
-      <div className="button-row">
+      <div className="button-row bulk-update">
         <More className={"more-action"} isOpen={this.state.moreActions}
           toggleOpen={() =>
             this.setState({ moreActions: !this.state.moreActions })}>
@@ -437,8 +437,8 @@ interface MoreProps {
 }
 
 const More = (props: MoreProps) => {
-  const more = props.customText?.more || t("more");
-  const less = props.customText?.less || t("less");
+  const more = props.customText?.more || t("More");
+  const less = props.customText?.less || t("Less");
   return <div className={"more"}>
     <div className={"more-button"}
       onClick={props.toggleOpen}>

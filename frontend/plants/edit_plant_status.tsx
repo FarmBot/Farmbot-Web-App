@@ -105,7 +105,7 @@ export interface PlantStatusBulkUpdateProps extends BulkUpdateBaseProps {
 /** Update `plant_stage` for multiple plants at once. */
 export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
   <div className="plant-status-bulk-update">
-    <p>{t("update status to")}</p>
+    <p>{t("Update status to")}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
       list={props.pointerType == "Plant"
@@ -145,7 +145,7 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
     point.body.pointer_type == "Plant")
     .map((p: TaggedPlantPointer) => p);
   return <div className={"plant-date-bulk-update"}>
-    <p>{t("update start to")}</p>
+    <p>{t("Update start to")}</p>
     <BlurableInput
       type="date"
       value={moment().format("YYYY-MM-DD")}
@@ -175,7 +175,7 @@ export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
   const averageSize = round(mean(points.map(p => p.body.radius)));
   const [radius, setRadius] = React.useState("" + (averageSize || 25));
   return <div className={"point-size-bulk-update"}>
-    <p>{t("update radius to")}</p>
+    <p>{t("Update radius to")}</p>
     <input
       value={radius}
       min={0}
@@ -202,7 +202,7 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
   const averageDepth = round(mean(points.map(p => p.body.depth)));
   const [depth, setDepth] = React.useState("" + (averageDepth || 0));
   return <div className={"plant-depth-bulk-update"}>
-    <p>{t("update depth to")}</p>
+    <p>{t("Update depth to")}</p>
     <input
       value={depth}
       min={0}
@@ -227,7 +227,7 @@ export const PointColorBulkUpdate = (props: BulkUpdateBaseProps) => {
     point.body.pointer_type != "ToolSlot")
     .map((p: TaggedWeedPointer | TaggedGenericPointer) => p);
   return <div className={"point-color-bulk-update"}>
-    <p>{t("update color to")}</p>
+    <p>{t("Update color to")}</p>
     <ColorPicker
       current={"green"}
       onChange={color => {
@@ -254,7 +254,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
     .map((p: TaggedPlantPointer) => p);
   const slug = props.bulkPlantSlug || plants[0]?.body.openfarm_slug;
   return <div className={"plant-slug-bulk-update"}>
-    <p>{t("update type to")}</p>
+    <p>{t("Update type to")}</p>
     <Link
       title={t("View crop info")}
       to={Path.cropSearch(slug)}>
