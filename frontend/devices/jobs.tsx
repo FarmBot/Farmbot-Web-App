@@ -118,12 +118,12 @@ export const isImageUploadJob = (jobType: string, jobTitle: string) =>
   jobType == "image" && jobTitle.includes("/");
 
 const isOSUpdateJob = (jobType: string, jobTitle: string) =>
-  jobType == "ota" && jobTitle == "FBOS_OTA";
+  jobType.toLowerCase() == "ota" && jobTitle == "FBOS_OTA";
 
 export const jobNameLookup = (job: JobProgressWithTitle | undefined) => {
   if (!job) { return ""; }
   if (isImageUploadJob(job.type, job.title)) { return t("Photo upload"); }
-  if (isOSUpdateJob(job.type, job.title)) { return t("OS update"); }
+  if (isOSUpdateJob(job.type, job.title)) { return t("FarmBot OS update"); }
   return job.title;
 };
 
