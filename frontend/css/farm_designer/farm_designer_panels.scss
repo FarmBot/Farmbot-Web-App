@@ -578,9 +578,6 @@
         width: 100%;
       }
     }
-    .fa-md {
-      margin-top: 0.45rem;
-    }
   }
   .panel-content {
     padding-top: 16rem;
@@ -827,7 +824,7 @@
     width: 100% !important;
   }
   .bp4-popover-wrapper {
-    display: inline;
+    display: inline-block;
     margin-left: 0.5rem;
     &.input-error-wrapper {
       display: block;
@@ -1350,7 +1347,7 @@ li {
           }
         }
         i {
-          line-height: 2rem;
+          top: 0.75rem;
         }
       }
       p {
@@ -1781,7 +1778,7 @@ li {
     font-size: 1.2rem !important;
   }
   .bp4-popover-wrapper {
-    display: inline;
+    display: inline-block;
     margin: auto;
     float: none;
   }
@@ -2108,7 +2105,7 @@ li {
       }
       .advanced {
         .bp4-popover-wrapper {
-          display: inline;
+          display: inline-block;
           float: none;
           margin-left: 1rem;
           font-size: 1.4rem;
@@ -2544,7 +2541,7 @@ li {
         margin-right: -1rem;
       }
       .bp4-popover-wrapper {
-        display: inline;
+        display: inline-block;
       }
       .fb-toggle-button {
         margin-top: 2rem;
@@ -3385,7 +3382,7 @@ li {
       .dropdown-camera-calibration-config,
       .camera-config-number-box {
         .bp4-popover-wrapper {
-          display: inline;
+          display: inline-block;
           margin-left: 1rem;
         }
       }
