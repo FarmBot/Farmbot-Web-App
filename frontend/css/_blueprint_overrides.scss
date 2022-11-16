@@ -40,9 +40,6 @@
   border: 0 !important;
   box-shadow: 0px 0px 10px #ddd !important;
   background: $white !important;
-  &:active {
-    box-shadow: none !important;
-  }
   &:hover {
     background: $white !important;
   }
