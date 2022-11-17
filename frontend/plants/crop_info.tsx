@@ -24,8 +24,10 @@ import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
 import { PlantGrid } from "./grid/plant_grid";
-import { getWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting } from "../session_keys";
+import {
+  GetWebAppConfigValue, getWebAppConfigValue,
+} from "../config_storage/actions";
+import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Path } from "../internal_urls";
 import { Link } from "../link";
 
@@ -176,15 +178,20 @@ const Companions = (props: CropInfoListProps) => {
   </InfoField>;
 };
 
+interface AddPlantHereButtonProps {
+  botPosition: BotPosition;
+  openedSavedGarden: string | undefined;
+  cropName: string;
+  slug: string;
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+}
+
 /** Button to add a plant to the garden at the current bot position. */
-const AddPlantHereButton = (props: {
-  botPosition: BotPosition,
-  openedSavedGarden: string | undefined,
-  cropName: string,
-  slug: string,
-  dispatch: Function
-}) => {
-  const { botPosition, openedSavedGarden, cropName, slug, dispatch } = props;
+const AddPlantHereButton = (props: AddPlantHereButtonProps) => {
+  const {
+    botPosition, openedSavedGarden, cropName, slug, dispatch, getConfigValue,
+  } = props;
   const { x, y } = botPosition;
   const botXY = isNumber(x) && isNumber(y)
     ? { x: round(x), y: round(y) }
@@ -193,7 +200,8 @@ const AddPlantHereButton = (props: {
   const click = () => botXY &&
     createPlant({
       cropName, slug, gardenCoords: botXY, gridSize: undefined,
-      dispatch, openedSavedGarden
+      dispatch, openedSavedGarden,
+      depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
     });
   return <button className="fb-button gray no-float"
     title={t("Add plant at current location")}
@@ -251,6 +259,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
     openedSavedGarden,
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
     xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }
 /** Get OpenFarm crop search results for crop info page contents. */
@@ -306,6 +315,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
             openedSavedGarden={this.props.openedSavedGarden}
             cropName={result.crop.name}
             slug={result.crop.slug}
+            getConfigValue={this.props.getConfigValue}
             dispatch={this.props.dispatch} />
           <PlantGrid
             xy_swap={this.props.xySwap}

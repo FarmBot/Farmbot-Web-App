@@ -16,6 +16,7 @@ import {
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
+import { PeripheralValues } from "./layers/farmbot/bot_trail";
 
 export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 
@@ -161,7 +162,7 @@ export interface VirtualFarmBotProps {
   mapTransformProps: MapTransformProps;
   botLocationData: BotLocationData;
   plantAreaOffset: AxisNumberProperty;
-  peripherals: { label: string, value: boolean }[];
+  peripheralValues: PeripheralValues;
   eStopStatus: boolean;
   getConfigValue: GetWebAppConfigValue;
   mountedToolInfo: MountedToolInfo;

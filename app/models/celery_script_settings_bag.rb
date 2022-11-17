@@ -184,6 +184,7 @@ module CeleryScriptSettingsBag
     pointer_type: { defn: [e(:PointType)] },
     priority: { defn: [v(:integer)] },
     radius: { defn: [v(:integer)] },
+    depth: { defn: [v(:integer)] },
     resource_id: { defn: [v(:integer)] },
     resource_type: { defn: [e(:resource_type)] },
     resource: { defn: [n(:identifier), n(:resource), n(:point)] },

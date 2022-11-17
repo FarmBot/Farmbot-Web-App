@@ -20,6 +20,8 @@ import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
 import { TaggedPlantTemplate, TaggedPoint } from "farmbot";
 import { Path } from "../../../../internal_urls";
+import { GetWebAppConfigValue } from "../../../../config_storage/actions";
+import { NumericSetting } from "../../../../session_keys";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -27,6 +29,7 @@ export interface NewPlantKindAndBodyProps {
   slug: string;
   cropName: string;
   openedSavedGarden: string | undefined;
+  depth: number;
 }
 
 /** Return a new plant or plantTemplate object. */
@@ -58,7 +61,8 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
         openfarm_slug: props.slug,
         name: props.cropName,
         created_at: moment().toISOString(),
-        radius: DEFAULT_PLANT_RADIUS
+        radius: DEFAULT_PLANT_RADIUS,
+        depth: props.depth,
       })
     };
 };
@@ -70,11 +74,14 @@ export interface CreatePlantProps {
   gridSize: AxisNumberProperty | undefined;
   dispatch: Function;
   openedSavedGarden: string | undefined;
+  depth: number;
 }
 
 /** Create a new plant in the garden map. */
 export const createPlant = (props: CreatePlantProps): void => {
-  const { cropName, slug, gardenCoords, gridSize, openedSavedGarden } = props;
+  const {
+    cropName, slug, gardenCoords, gridSize, openedSavedGarden, depth,
+  } = props;
   const { x, y } = gardenCoords;
   const tooLow = x < 0 || y < 0; // negative (beyond grid start)
   const tooHigh = gridSize
@@ -84,7 +91,9 @@ export const createPlant = (props: CreatePlantProps): void => {
   if (outsideGrid) {
     error(t(Content.OUTSIDE_PLANTING_AREA));
   } else {
-    const p = newPlantKindAndBody({ x, y, slug, cropName, openedSavedGarden });
+    const p = newPlantKindAndBody({
+      x, y, slug, cropName, openedSavedGarden, depth,
+    });
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map
@@ -100,11 +109,14 @@ export interface DropPlantProps {
   openedSavedGarden: string | undefined;
   gridSize: AxisNumberProperty;
   dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 /** Create a plant upon drop. */
 export const dropPlant = (props: DropPlantProps) => {
-  const { gardenCoords, openedSavedGarden, gridSize, dispatch } = props;
+  const {
+    gardenCoords, openedSavedGarden, gridSize, dispatch, getConfigValue,
+  } = props;
   if (gardenCoords) {
     const slug = Path.getSlug(Path.plants(1));
     if (!slug) { console.log("Missing slug."); return; }
@@ -119,6 +131,7 @@ export const dropPlant = (props: DropPlantProps) => {
       gridSize,
       dispatch,
       openedSavedGarden,
+      depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
     });
     dispatch({ type: Actions.SET_COMPANION_INDEX, payload: undefined });
   } else {

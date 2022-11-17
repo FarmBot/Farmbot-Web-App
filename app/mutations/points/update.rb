@@ -13,6 +13,7 @@ module Points
       float :y
       float :z
       float :radius
+      integer :depth
       string :name
       string :openfarm_slug
       integer :pullout_direction, in: ToolSlot::PULLOUT_DIRECTIONS

@@ -21,7 +21,7 @@ describe("<VirtualFarmBot/>", () => {
     botLocationData: fakeBotLocationData(),
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
-    peripherals: [],
+    peripheralValues: [],
     eStopStatus: false,
     getConfigValue: () => true,
     mountedToolInfo: fakeMountedToolInfo(),

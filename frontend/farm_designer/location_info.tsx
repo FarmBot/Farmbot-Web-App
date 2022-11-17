@@ -18,7 +18,7 @@ import { getSoilHeightColor, soilHeightPoint } from "../points/soil_height";
 import {
   TaggedFarmwareEnv,
   TaggedGenericPointer, TaggedImage, TaggedPlantPointer, TaggedPoint,
-  TaggedSensor, TaggedSensorReading, Xyz,
+  TaggedSensor, TaggedSensorReading,
 } from "farmbot";
 import {
   chooseLocationAction, MoveToForm, unChooseLocationAction, validGoButtonAxes,
@@ -446,10 +446,10 @@ export const ImageListItem = (props: ImageListItemProps) => {
 
 interface LocationActionsProps {
   dispatch: Function;
-  currentBotLocation: Record<Xyz, number | undefined>;
+  currentBotLocation: BotPosition;
   botOnline: boolean;
   locked: boolean;
-  chosenLocation: Record<Xyz, number | undefined>;
+  chosenLocation: BotPosition;
 }
 
 const LocationActions = (props: LocationActionsProps) =>

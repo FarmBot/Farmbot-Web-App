@@ -2,7 +2,9 @@ import React from "react";
 import { mount } from "enzyme";
 import { ProfileViewerProps } from "../interfaces";
 import { ProfileViewer } from "../viewer";
-import { fakeBotSize } from "../../../../__test_support__/fake_bot_data";
+import {
+  fakeBotLocationData, fakeBotSize,
+} from "../../../../__test_support__/fake_bot_data";
 import {
   fakeDesignerState,
 } from "../../../../__test_support__/fake_designer_state";
@@ -18,7 +20,8 @@ describe("<ProfileViewer />", () => {
     designer: fakeDesignerState(),
     allPoints: [],
     botSize: fakeBotSize(),
-    botPosition: { x: undefined, y: undefined, z: undefined },
+    botLocationData: fakeBotLocationData(),
+    peripheralValues: [],
     negativeZ: true,
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     mountedToolInfo: fakeMountedToolInfo(),
@@ -58,7 +61,7 @@ describe("<ProfileViewer />", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
     p.designer.profileFollowBot = true;
-    p.botPosition = { x: undefined, y: undefined, z: undefined };
+    p.botLocationData.position = { x: undefined, y: undefined, z: undefined };
     const wrapper = mount(<ProfileViewer {...p} />);
     expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
     expect(wrapper.text()).not.toContain("choose a profile");
@@ -82,7 +85,7 @@ describe("<ProfileViewer />", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
     p.designer.profileFollowBot = true;
-    p.botPosition = { x: 1, y: 2, z: 3 };
+    p.botLocationData.position = { x: 1, y: 2, z: 3 };
     const wrapper = mount(<ProfileViewer {...p} />);
     expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
     expect(wrapper.text()).not.toContain("choose a profile");

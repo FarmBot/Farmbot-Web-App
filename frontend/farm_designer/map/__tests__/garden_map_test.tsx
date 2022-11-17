@@ -130,7 +130,7 @@ const fakeProps = (): GardenMapProps => ({
   zoomLvl: 1,
   mapTransformProps: fakeMapTransformProps(),
   gridOffset: { x: 100, y: 100 },
-  peripherals: [],
+  peripheralValues: [],
   eStopStatus: false,
   latestImages: [],
   cameraCalibrationData: fakeCameraCalibrationData(),

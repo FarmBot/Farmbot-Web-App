@@ -1,15 +1,20 @@
 import React from "react";
-import { MapTransformProps } from "../../interfaces";
+import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
 import { get, isNumber, takeRight, isEqual, round, first } from "lodash";
 import { Xyz } from "farmbot";
 import { indicatorColor } from "../../../../controls/move/missed_step_indicator";
+import { GetProfileX } from "../../profile/interfaces";
+import { definedPosition } from "../../../../tools/tool_slot_edit_components";
+import { withinProfileRange } from "../../profile/content";
+
+type MissedSteps = Record<Xyz, number | undefined>;
 
 type TrailRecord = {
-  coord: Record<"x" | "y", number | undefined>,
-  miss: Record<Xyz, number | undefined> | undefined,
+  coord: BotPosition,
+  miss: MissedSteps | undefined,
   water: number | undefined
 };
 
@@ -18,13 +23,16 @@ export enum VirtualTrail {
   length = "virtualTrailLength"
 }
 
-function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[] {
+function getNewTrailArray(
+  update: TrailRecord, watering: boolean, readOnly: boolean,
+): TrailRecord[] {
   const key = VirtualTrail.records; // sessionStorage location
   const trailLength: number = get(sessionStorage, VirtualTrail.length, 100);
   const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]") as string);
+  if (readOnly) { return takeRight(arr, trailLength); }
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
-  if (update.coord &&
+  if (definedPosition(update.coord) &&
     (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
     arr.push(update); // unique addition
   } else { // nothing new to add, increase water circle size if watering
@@ -34,32 +42,49 @@ function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[]
   return takeRight(arr, trailLength);
 }
 
+export type PeripheralValues = { label: string, value: boolean }[];
+
 export interface BotTrailProps {
   position: BotPosition;
   missedSteps: BotPosition | undefined;
   displayMissedSteps: boolean;
   mapTransformProps: MapTransformProps;
-  peripherals: { label: string, value: boolean }[];
+  peripheralValues: PeripheralValues;
+  getX?: GetProfileX;
+  profileAxis?: "x" | "y";
+  selectionWidth?: number;
+  profilePosition?: AxisNumberProperty;
 }
 
 export function BotTrail(props: BotTrailProps) {
-  const toQ = (ox: number, oy: number) =>
-    transformXY(ox, oy, props.mapTransformProps);
+  const toQ = (original: Record<Xyz, number>) =>
+    props.getX
+      ? { qx: props.getX(original), qy: Math.abs(original.z) }
+      : transformXY(original.x, original.y, props.mapTransformProps);
 
-  const { x, y } = props.position;
-  const watering = !!first(props.peripherals
+  const { x, y, z } = props.position;
+  const watering = !!first(props.peripheralValues
     .filter(p => p.label.toLowerCase().includes("water"))
     .map(p => p.value));
 
   const array = getNewTrailArray({
-    coord: { x, y },
+    coord: { x, y, z },
     miss: props.missedSteps,
     water: 0,
-  }, watering);
+  }, watering, !!props.getX)
+    .filter(p =>
+      !(props.profileAxis && props.selectionWidth && props.profilePosition
+        && isNumber(p.coord.x) && isNumber(p.coord.y)) ||
+      withinProfileRange({
+        axis: props.profileAxis,
+        selectionWidth: props.selectionWidth,
+        profilePosition: props.profilePosition,
+        location: { x: p.coord.x, y: p.coord.y },
+      }));
 
   const missedStepIcons = (
     position: { qx: number, qy: number },
-    missed: Record<Xyz, number | undefined> | undefined,
+    missed: MissedSteps | undefined,
     opacity: number,
   ) =>
     <g id={"missed-steps"}>
@@ -77,11 +102,11 @@ export function BotTrail(props: BotTrailProps) {
     {array.map((cur: TrailRecord, i: number) => {
       const prev = (array[i - 1] || { coord: undefined }).coord; // prev coord
       const opacity = round(Math.max(0.25, i / (array.length - 1)), 2);
-      if (i > 0 && cur && prev && isNumber(prev.x) && isNumber(prev.y)
-        && isNumber(cur.coord.x) && isNumber(cur.coord.y)
-        && isNumber(cur.water)) {
-        const p1 = toQ(cur.coord.x, cur.coord.y);
-        const p2 = toQ(prev.x, prev.y);
+      const previousCoordinate = prev && definedPosition(prev);
+      const currentCoordinate = cur && definedPosition(cur.coord);
+      if (i > 0 && previousCoordinate && currentCoordinate && isNumber(cur.water)) {
+        const p1 = toQ(currentCoordinate);
+        const p2 = toQ(previousCoordinate);
         return <g id={"trail-record"} key={i}>
           <line id={`trail-line-${i}`}
             stroke="red" strokeOpacity={opacity} strokeWidth={1 + opacity * 2}

@@ -300,6 +300,7 @@ export class GardenMap extends
         openedSavedGarden: this.props.designer.openedSavedGarden,
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
+        getConfigValue: this.props.getConfigValue,
       });
     };
 
@@ -616,7 +617,7 @@ export class GardenMap extends
     stopAtHome={this.props.stopAtHome}
     botSize={this.props.botSize}
     plantAreaOffset={this.props.gridOffset}
-    peripherals={this.props.peripherals}
+    peripheralValues={this.props.peripheralValues}
     eStopStatus={this.props.eStopStatus}
     mountedToolInfo={this.props.mountedToolInfo}
     cameraCalibrationData={this.props.cameraCalibrationData}

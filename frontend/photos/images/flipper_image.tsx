@@ -12,10 +12,10 @@ import {
 import { Color } from "../../ui";
 import { MapTransformProps } from "../../farm_designer/map/interfaces";
 import { transformXY } from "../../farm_designer/map/util";
-import { Xyz } from "farmbot";
+import { BotPosition } from "../../devices/interfaces";
 
 interface TargetProps {
-  imageLocation: Record<Xyz, number | undefined>;
+  imageLocation: BotPosition;
   target: Record<"x" | "y", number> | undefined;
   mapTransformProps: MapTransformProps;
   offset: Record<"x" | "y", string | undefined>;

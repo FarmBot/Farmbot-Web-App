@@ -193,8 +193,8 @@ class Device < ApplicationRecord
     Rollbar.error("Someone is creating a debug user token", { device: self.id })
     t = SessionToken.as_json(users.first, "staff", fbos_version)
     jti = t[:token].unencoded[:jti]
-    # Auto expire after 36 hours.
-    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 36.hours).to_i)
+    # Auto expire after 1 week.
+    TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 168.hours).to_i)
     return "localStorage['session'] = JSON.stringify(#{t.to_json});"
   end
 

@@ -2,7 +2,7 @@ import React from "react";
 import { Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
-import { Row, Col, Help, ToggleButton } from "../ui";
+import { Row, Col, Help, ToggleButton, BlurableInput } from "../ui";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "../farm_designer/map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "../farm_designer/map_size_setting";
@@ -12,7 +12,7 @@ import { Header } from "./hardware_settings/header";
 import { Highlight } from "./maybe_highlight";
 import {
   DesignerSettingsSectionProps, SettingProps,
-  DesignerSettingsPropsBase, SettingDescriptionProps,
+  DesignerSettingsPropsBase, SettingDescriptionProps, WebAppNumberSettingProps,
 } from "./interfaces";
 import { getModifiedClassName } from "./default_values";
 
@@ -39,7 +39,7 @@ export const PlainDesignerSettings =
         useToolTip={true} />);
 
 export const Setting = (props: SettingProps) => {
-  const { title, setting, callback, defaultOn } = props;
+  const { title, setting, numberSetting, callback, defaultOn } = props;
   const raw_value = setting ? props.getConfigValue(setting) : undefined;
   const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   return <Highlight settingName={title}>
@@ -62,6 +62,8 @@ export const Setting = (props: SettingProps) => {
             title={`${t("toggle")} ${title}`}
             className={getModifiedClassName(setting)}
             customText={{ textFalse: t("off"), textTrue: t("on") }} />}
+          {numberSetting && <WebAppNumberSetting {...props}
+            numberSetting={numberSetting} />}
         </Col>
       </Row>
       {!props.useToolTip && <Row>
@@ -70,6 +72,16 @@ export const Setting = (props: SettingProps) => {
       {props.children}
     </div>
   </Highlight>;
+};
+
+export const WebAppNumberSetting = (props: WebAppNumberSettingProps) => {
+  const { dispatch, getConfigValue, numberSetting } = props;
+  return <BlurableInput
+    type={"number"}
+    wrapperClassName={getModifiedClassName(numberSetting)}
+    onCommit={e => dispatch(setWebAppConfigValue(numberSetting,
+      parseInt(e.currentTarget.value)))}
+    value={parseInt("" + getConfigValue(numberSetting))} />;
 };
 
 const DESIGNER_SETTINGS =
@@ -132,6 +144,11 @@ const DESIGNER_SETTINGS =
       title: DeviceSetting.uncroppedCameraView,
       description: Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA,
       setting: BooleanSetting.show_uncropped_camera_view_area,
+    },
+    {
+      title: DeviceSetting.defaultPlantDepth,
+      description: Content.DEFAULT_PLANT_DEPTH,
+      numberSetting: NumericSetting.default_plant_depth,
     },
     {
       title: DeviceSetting.confirmPlantDeletion,

@@ -6,10 +6,11 @@ import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";
 import { range } from "lodash";
+import { PeripheralValues } from "./bot_trail";
 
 export interface BotPeripheralsProps {
   position: BotPosition;
-  peripherals: { label: string, value: boolean }[];
+  peripheralValues: PeripheralValues;
   mapTransformProps: MapTransformProps;
   plantAreaOffset: AxisNumberProperty;
   getConfigValue: GetWebAppConfigValue;
@@ -154,7 +155,7 @@ function rotaryFigure(
 
 export function BotPeripherals(props: BotPeripheralsProps) {
   const {
-    peripherals, position, plantAreaOffset, mapTransformProps, getConfigValue
+    peripheralValues, position, plantAreaOffset, mapTransformProps, getConfigValue,
   } = props;
   const { xySwap } = mapTransformProps;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
@@ -163,7 +164,7 @@ export function BotPeripherals(props: BotPeripheralsProps) {
   const animate = !getConfigValue(BooleanSetting.disable_animations);
 
   return <g className={"virtual-peripherals"}>
-    {peripherals.map((x, i) => {
+    {peripheralValues.map((x, i) => {
       if (x.label.toLowerCase().includes("light") && x.value) {
         return lightsFigure({
           i,

@@ -1087,12 +1087,15 @@
 .profile-viewer {
   position: fixed;
   bottom: 0;
-  z-index: 99;
+  z-index: 2;
   width: 100%;
   background: #e5e5e5;
-  transform: translateY(21rem);
   transition: transform 0.5s ease-out;
   box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+  transform: translateY(10rem);
+  &.none-chosen {
+    transform: translateY(21rem);
+  }
   @media screen and (max-width: 450px) {
     &.panel-open {
       display: none;

@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../../i18next_wrapper";
-import { isUndefined, round } from "lodash";
+import { isNumber, isUndefined, round } from "lodash";
 import { Actions } from "../../../constants";
 import { getPanelStatus } from "../util";
 import { HandleProps, ProfileViewerProps } from "./interfaces";
@@ -19,8 +19,11 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
     "profile-viewer",
     profileOpen ? "open" : "",
     `panel-${panelStatus}`,
+    isNumber(profilePosition.x) && isNumber(profilePosition.y) ? "" : "none-chosen",
   ].join(" ");
-  const { x, y } = profileFollowBot ? props.botPosition : profilePosition;
+  const { x, y } = profileFollowBot
+    ? props.botLocationData.position
+    : profilePosition;
   const axisLabel = `${t("{{ axis }}-axis profile", {
     axis: axis == "x" ? "y" : "x"
   })}`;
@@ -39,13 +42,14 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
           <label>
             {`${axisLabel} (${coordinateLabel})`}
           </label>
-          <p className={"left-label"}>Z</p>
+          {expanded && <p className={"left-label"}>Z</p>}
           <ProfileSvg allPoints={props.allPoints}
             axis={axis}
             position={{ x, y }}
             selectionWidth={profileWidth}
             expanded={expanded}
-            botPosition={props.botPosition}
+            botLocationData={props.botLocationData}
+            peripheralValues={props.peripheralValues}
             negativeZ={props.negativeZ}
             sourceFbosConfig={props.sourceFbosConfig}
             mountedToolInfo={props.mountedToolInfo}
@@ -54,7 +58,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
             getConfigValue={props.getConfigValue}
             mapTransformProps={props.mapTransformProps}
             botSize={props.botSize} />
-          <p className={"right-label"}>Z</p>
+          {expanded && <p className={"right-label"}>Z</p>}
         </div>}
       <ProfileOptions
         dispatch={dispatch}

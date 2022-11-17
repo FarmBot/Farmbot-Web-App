@@ -1,4 +1,4 @@
-import { TaggedImage, JobProgress, SyncStatus, Xyz } from "farmbot";
+import { TaggedImage, JobProgress, SyncStatus } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { MovementState, TimeSettings } from "../../interfaces";
 import { BotPosition, UserEnv } from "../../devices/interfaces";
@@ -136,7 +136,7 @@ export interface PhotoFooterProps {
 
 export interface MoveToLocationProps {
   botOnline: boolean;
-  imageLocation: Record<Xyz, number | undefined>;
+  imageLocation: BotPosition;
   defaultAxes: string;
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;

@@ -7,7 +7,7 @@ import {
 
 describe("<BotPeripherals/>", () => {
   const fakeProps = (): BotPeripheralsProps => ({
-    peripherals: [{ label: "", value: false }],
+    peripheralValues: [{ label: "", value: false }],
     position: { x: 0, y: 0, z: 0 },
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
@@ -21,8 +21,8 @@ describe("<BotPeripherals/>", () => {
     ["rotary"],
   ])("doesn't display %s", (peripheralName) => {
     const p = fakeProps();
-    p.peripherals[0].label = peripheralName;
-    p.peripherals[0].value = false;
+    p.peripheralValues[0].label = peripheralName;
+    p.peripheralValues[0].value = false;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find(`#${peripheralName}`).length).toEqual(0);
   });
@@ -40,8 +40,8 @@ describe("<BotPeripherals/>", () => {
 
   it("displays light", () => {
     const p = fakeProps();
-    p.peripherals[0].label = "lights";
-    p.peripherals[0].value = true;
+    p.peripheralValues[0].label = "lights";
+    p.peripheralValues[0].value = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#lights").length).toEqual(1);
     expect(wrapper.find("rect").last().props()).toEqual({
@@ -60,8 +60,8 @@ describe("<BotPeripherals/>", () => {
 
   it("displays light: X&Y swapped", () => {
     const p = fakeProps();
-    p.peripherals[0].label = "lights";
-    p.peripherals[0].value = true;
+    p.peripheralValues[0].label = "lights";
+    p.peripheralValues[0].value = true;
     p.mapTransformProps.xySwap = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#lights").length).toEqual(1);
@@ -81,8 +81,8 @@ describe("<BotPeripherals/>", () => {
 
   it("displays water", () => {
     const p = fakeProps();
-    p.peripherals[0].label = "water valve";
-    p.peripherals[0].value = true;
+    p.peripheralValues[0].label = "water valve";
+    p.peripheralValues[0].value = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#water").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({
@@ -93,8 +93,8 @@ describe("<BotPeripherals/>", () => {
 
   it("displays vacuum", () => {
     const p = fakeProps();
-    p.peripherals[0].label = "vacuum pump";
-    p.peripherals[0].value = true;
+    p.peripheralValues[0].label = "vacuum pump";
+    p.peripheralValues[0].value = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#vacuum").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({
@@ -105,8 +105,8 @@ describe("<BotPeripherals/>", () => {
 
   it("displays rotary", () => {
     const p = fakeProps();
-    p.peripherals[0].label = "rotary tool";
-    p.peripherals[0].value = true;
+    p.peripheralValues[0].label = "rotary tool";
+    p.peripheralValues[0].value = true;
     const wrapper = shallow(<BotPeripherals {...p} />);
     expect(wrapper.find("#rotary").length).toEqual(1);
     expect(wrapper.find("circle").last().props()).toEqual({

@@ -42,10 +42,10 @@ export class FilterSearch
           this.props.items.length < 4 ? "few-items" : "",
         ].join(" ")
       }}>
+      <i className="fa fa-caret-down fa-md" />
       <Button
         alignText={Alignment.LEFT}
         text={item ? item.label : t("(No selection)")} />
-      <i className="fa fa-caret-down fa-lg" />
     </SelectComponent>;
   }
 

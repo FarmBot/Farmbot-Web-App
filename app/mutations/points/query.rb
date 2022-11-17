@@ -10,6 +10,7 @@ module Points
 
     optional do
       float :radius
+      integer :depth
       float :x
       float :y
       float :z

@@ -2,6 +2,11 @@ jest.mock("../fbos_metric_history_plot", () => ({
   FbosMetricHistoryPlot: () => <div />,
 }));
 
+let mockDemo = false;
+jest.mock("../../must_be_online", () => ({
+  forceOnline: () => mockDemo,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { fakeTelemetry } from "../../../__test_support__/fake_state/resources";
@@ -27,8 +32,20 @@ describe("<FbosMetricHistoryTable />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<FbosMetricHistoryTable {...p} />);
+    const wrapper = mount<FbosMetricHistoryTable>(
+      <FbosMetricHistoryTable {...p} />);
+    expect(wrapper.instance().telemetry.length).toEqual(3);
     expect(wrapper.text().toLowerCase()).toContain("wifi");
+  });
+
+  it("renders demo data", () => {
+    mockDemo = true;
+    const p = fakeProps();
+    const wrapper = mount<FbosMetricHistoryTable>(
+      <FbosMetricHistoryTable {...p} />);
+    expect(wrapper.instance().telemetry.length).toEqual(100);
+    expect(wrapper.text().toLowerCase()).toContain("wifi");
+    mockDemo = false;
   });
 
   it("sets metric hover state", () => {

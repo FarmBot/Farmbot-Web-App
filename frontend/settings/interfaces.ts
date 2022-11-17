@@ -11,6 +11,7 @@ import { SettingsPanelState, TimeSettings } from "../interfaces";
 import { DeviceSetting } from "../constants";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
+  NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 
@@ -44,6 +45,7 @@ export interface DesignerSettingsSectionProps {
 
 export interface SettingDescriptionProps {
   setting?: WebAppBooleanConfigKey;
+  numberSetting?: WebAppNumberConfigKey;
   title: DeviceSetting;
   description: string;
   invert?: boolean;
@@ -57,6 +59,10 @@ export interface SettingDescriptionProps {
 
 export interface SettingProps
   extends DesignerSettingsPropsBase, SettingDescriptionProps { }
+
+export interface WebAppNumberSettingProps extends DesignerSettingsPropsBase {
+  numberSetting: WebAppNumberConfigKey;
+}
 
 export interface CustomSettingsProps {
   dispatch: Function;

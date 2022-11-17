@@ -425,16 +425,33 @@
     width: 100%;
     background: $panel_medium_light_gray;
     padding: 0.5rem;
+    .selection-type {
+      display: flex;
+      label {
+        line-height: 4rem;
+      }
+      .filter-search {
+        position: absolute;
+        right: 1rem;
+        width: 70%;
+        .bp4-button {
+          margin-left: 0.5rem;
+        }
+        i {
+          margin-right: -0.5rem;
+        }
+      }
+    }
     &.more-select {
-      height: 23rem;
+      height: 20rem;
     }
     &.more-action {
-      height: 32rem;
+      height: 35rem;
     }
     &.more-select.more-action {
-      height: 40rem;
+      height: 38rem;
     }
-    button {
+    .fb-button {
       margin: 0.5rem;
       float: left;
     }
@@ -448,11 +465,17 @@
       float: left;
       width: 100%;
       margin-bottom: 1rem;
+      &.group-select {
+        .filter-search {
+          margin-top: 0.5rem;
+        }
+      }
     }
     .filter-search {
       padding-right: 1rem;
     }
     .point-size-bulk-update,
+    .plant-depth-bulk-update,
     .plant-date-bulk-update,
     .point-color-bulk-update,
     .plant-slug-bulk-update,
@@ -463,7 +486,8 @@
     .plant-status-bulk-update {
       .filter-search {
         display: inline-block;
-        width: 50%;
+        width: 50% !important;
+        margin-left: 0.5rem;
       }
       p {
         display: inline-block;
@@ -472,6 +496,7 @@
         vertical-align: top;
       }
     }
+    .plant-depth-bulk-update,
     .point-size-bulk-update {
       p {
         display: inline-block;
@@ -483,6 +508,12 @@
         width: 48%;
         height: 3rem;
         margin-left: 0.5rem;
+      }
+    }
+    .plant-depth-bulk-update {
+      input {
+        margin-top: 1rem;
+        margin-left: 0.8rem;
       }
     }
     .plant-date-bulk-update {
@@ -542,6 +573,10 @@
       label {
         width: 100%;
       }
+      .filter-search {
+        display: inline-block;
+        width: 100%;
+      }
     }
   }
   .panel-content {
@@ -552,13 +587,13 @@
     overflow-y: auto;
     overflow-x: hidden;
     &.more-select {
-      padding-top: 23rem;
+      padding-top: 20rem;
     }
     &.more-action {
-      padding-top: 32rem;
+      padding-top: 35rem;
     }
     &.more-select.more-action {
-      padding-top: 40rem;
+      padding-top: 38rem;
     }
     .tool-slot-search-item-icon {
       padding-left: 5px !important;
@@ -789,7 +824,7 @@
     width: 100% !important;
   }
   .bp4-popover-wrapper {
-    display: inline;
+    display: inline-block;
     margin-left: 0.5rem;
     &.input-error-wrapper {
       display: block;
@@ -973,6 +1008,11 @@ li {
       display: inline-block;
       margin-left: 0.5rem;
     }
+    .filter-search {
+      .bp4-popover-wrapper {
+        margin-left: 0;
+      }
+    }
   }
   input {
     background: $white;
@@ -985,6 +1025,11 @@ li {
 .panel-section {
   .delete {
     height: 2rem;
+  }
+  .garden-indicator {
+    display: inline;
+    margin-left: 2rem;
+    font-size: 1rem;
   }
 }
 
@@ -1302,7 +1347,7 @@ li {
           }
         }
         i {
-          line-height: 2rem;
+          top: 0.75rem;
         }
       }
       p {
@@ -1552,6 +1597,7 @@ li {
   }
 }
 
+.plant-inventory-panel,
 .settings-panel {
   .panel-top {
     .fa-chevron-right,
@@ -1570,6 +1616,19 @@ li {
 .settings-panel-settings-menu {
   button {
     margin-left: 1rem;
+  }
+}
+
+.plants-panel-settings-menu {
+  label {
+    line-height: 3rem;
+    vertical-align: bottom;
+    margin-bottom: 0;
+  }
+  .bp4-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    line-height: 3rem;
   }
 }
 
@@ -1613,7 +1672,7 @@ li {
   .change-password {
     .old-password,
     .new-password {
-      margin-bottom: 1rem;
+      margin-top: 1.5rem;
       input {
         width: 50%;
         float: right;
@@ -1629,6 +1688,7 @@ li {
     }
   }
   .release-notes-wrapper {
+    margin-top: 0.75rem;
     float: right !important;
   }
   .settings-warning-banner {
@@ -1718,7 +1778,7 @@ li {
     font-size: 1.2rem !important;
   }
   .bp4-popover-wrapper {
-    display: inline;
+    display: inline-block;
     margin: auto;
     float: none;
   }
@@ -2045,7 +2105,7 @@ li {
       }
       .advanced {
         .bp4-popover-wrapper {
-          display: inline;
+          display: inline-block;
           float: none;
           margin-left: 1rem;
           font-size: 1.4rem;
@@ -2481,7 +2541,7 @@ li {
         margin-right: -1rem;
       }
       .bp4-popover-wrapper {
-        display: inline;
+        display: inline-block;
       }
       .fb-toggle-button {
         margin-top: 2rem;
@@ -3322,7 +3382,7 @@ li {
       .dropdown-camera-calibration-config,
       .camera-config-number-box {
         .bp4-popover-wrapper {
-          display: inline;
+          display: inline-block;
           margin-left: 1rem;
         }
       }

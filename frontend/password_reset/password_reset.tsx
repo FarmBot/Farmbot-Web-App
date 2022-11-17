@@ -54,7 +54,8 @@ export class PasswordReset extends React.Component<{}, State> {
     })
       .then(Session.clear)
       .catch((error: string) => {
-        switch (get(error, "response.status")) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        switch (get(error, "response.status") as unknown) {
           case 451: // TOS was updated; User must agree to terms.
             window.location.assign("/tos_update");
             break;

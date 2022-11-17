@@ -15,6 +15,17 @@ jest.mock("../../api/delete_points", () => ({
   deletePoints: jest.fn(),
 }));
 
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
+let mockValue: number | boolean = 0;
+jest.mock("../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(),
+  getWebAppConfigValue: jest.fn(x => { x(); return () => mockValue; }),
+}));
+
 import React from "react";
 import {
   RawPlants as Plants, PlantInventoryProps, mapStateToProps, PanelSection,
@@ -22,7 +33,7 @@ import {
 } from "../plant_inventory";
 import { mount, shallow } from "enzyme";
 import {
-  fakePlant, fakePointGroup, fakeSavedGarden,
+  fakePlant, fakePointGroup, fakeSavedGarden, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SearchField } from "../../ui/search_field";
@@ -34,6 +45,10 @@ import { deletePoints } from "../../api/delete_points";
 import { Panel } from "../../farm_designer/panel_header";
 import { plantsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { changeBlurableInput } from "../../__test_support__/helpers";
+import { setWebAppConfigValue } from "../../config_storage/actions";
+import { NumericSetting } from "../../session_keys";
 
 describe("<PlantInventory />", () => {
   const fakeProps = (): PlantInventoryProps => ({
@@ -47,14 +62,24 @@ describe("<PlantInventory />", () => {
     plantPointerCount: 0,
     openedSavedGarden: undefined,
     plantsPanelState: plantsPanelState(),
+    getConfigValue: () => 0,
   });
 
   it("renders", () => {
     const wrapper = mount(<Plants {...fakeProps()} />);
     ["Strawberry Plant 1",
       "1 day old"].map(string => expect(wrapper.text()).toContain(string));
-    expect(wrapper.find("input").props().placeholder)
+    expect(wrapper.find("input").first().props().placeholder)
       .toEqual("Search your plants...");
+  });
+
+  it("changes number setting", () => {
+    mockValue = 0;
+    const p = fakeProps();
+    const wrapper = mount(<Plants {...p} />);
+    changeBlurableInput(wrapper, "100", 1);
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      NumericSetting.default_plant_depth, 100);
   });
 
   it("renders groups", () => {
@@ -176,10 +201,15 @@ describe("<PlantInventory />", () => {
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
+    mockValue = false;
     const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.show_plants = false;
+    state.resources = buildResourceIndex([webAppConfig]);
     state.resources.consumers.farm_designer.hoveredPlantListItem = "uuid";
     const result = mapStateToProps(state);
     expect(result.hoveredPlantListItem).toEqual("uuid");
+    expect(result.getConfigValue("show_plants")).toEqual(false);
   });
 });
 

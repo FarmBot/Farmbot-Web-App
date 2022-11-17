@@ -56,6 +56,7 @@ export interface FormattedPlantInfo {
   y: number;
   z: number;
   radius: number;
+  depth: number | undefined;
   id: number | undefined;
   name: string;
   uuid: string;
@@ -90,9 +91,10 @@ export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
     y: plant.body.y,
     z: plant.body.z,
     radius: plant.body.radius,
+    depth: plant.kind == "Point" ? plant.body.depth : undefined,
     uuid: plant.uuid,
     plantedAt: plantDate(plant),
-    plantStatus: get(plant, "body.plant_stage", "planned"),
+    plantStatus: get(plant, "body.plant_stage", "planned") as PlantStage,
     meta: plant.kind == "Point" ? plant.body.meta : undefined,
   };
 }

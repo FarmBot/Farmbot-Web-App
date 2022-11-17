@@ -19,6 +19,7 @@ import {
   PlantDateBulkUpdate,
   PlantSlugBulkUpdate,
   PlantSlugBulkUpdateProps,
+  PlantDepthBulkUpdate,
 } from "../edit_plant_status";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
@@ -198,6 +199,24 @@ describe("<PointSizeBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledTimes(2);
     expect(edit).toHaveBeenCalledWith(plant1, { radius: 1 });
     expect(edit).toHaveBeenCalledWith(plant2, { radius: 1 });
+  });
+
+  it("updates plant depths", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.allPoints = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PlantDepthBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
+    wrapper.find("input").simulate("blur");
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change depth to 1mm for 2 items?");
+    expect(edit).toHaveBeenCalledTimes(2);
+    expect(edit).toHaveBeenCalledWith(plant1, { depth: 1 });
+    expect(edit).toHaveBeenCalledWith(plant2, { depth: 1 });
   });
 });
 

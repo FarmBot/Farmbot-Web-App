@@ -12,6 +12,8 @@ import { formatTime } from "../../util";
 import moment from "moment";
 import { Telemetry } from "farmbot/dist/resources/api_resources";
 import { cloneDeep, sortBy } from "lodash";
+import { forceOnline } from "../must_be_online";
+import { generateDemoTelemetry } from "./fbos_metric_demo_data";
 
 const METRIC_TITLES = (): Partial<Record<keyof Telemetry, string>> => ({
   soc_temp: t("Temp"),
@@ -86,6 +88,7 @@ export interface FbosMetricHistoryTableProps {
 interface FbosMetricHistoryState {
   hoveredMetric: keyof Telemetry | undefined;
   hoveredTime: number | undefined;
+  demoData: TaggedTelemetry[],
 }
 
 export class FbosMetricHistoryTable
@@ -93,6 +96,7 @@ export class FbosMetricHistoryTable
   state: FbosMetricHistoryState = {
     hoveredMetric: undefined,
     hoveredTime: undefined,
+    demoData: generateDemoTelemetry(),
   };
 
   hoverMetric: OnMetricHover = metricName => () =>
@@ -100,6 +104,10 @@ export class FbosMetricHistoryTable
 
   hoverTime = (time: number | undefined) => () =>
     this.setState({ hoveredTime: time });
+
+  get telemetry() {
+    return forceOnline() ? this.state.demoData : this.props.telemetry;
+  }
 
   render() {
     const commonProps = {
@@ -109,7 +117,7 @@ export class FbosMetricHistoryTable
     };
     const rightAlignProps = { ...commonProps, rightAlign: true };
     return <div className={"fbos-metric-history"}>
-      <FbosMetricHistoryPlot {...commonProps} telemetry={this.props.telemetry} />
+      <FbosMetricHistoryPlot {...commonProps} telemetry={this.telemetry} />
       <div className={"fbos-metric-history-table-wrapper"}>
         <table>
           <thead>
@@ -128,7 +136,7 @@ export class FbosMetricHistoryTable
             </tr>
           </thead>
           <tbody>
-            {sortBy(cloneDeep(this.props.telemetry), "body.created_at").reverse()
+            {sortBy(cloneDeep(this.telemetry), "body.created_at").reverse()
               .map(m => {
                 const recordSelected = this.state.hoveredTime == m.body.created_at;
                 const recordProps = {

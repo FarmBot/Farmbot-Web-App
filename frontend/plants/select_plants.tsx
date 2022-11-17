@@ -21,6 +21,7 @@ import {
   PlantDateBulkUpdate, PlantSlugBulkUpdate, PlantStatusBulkUpdate,
   PointColorBulkUpdate,
   PointSizeBulkUpdate,
+  PlantDepthBulkUpdate,
 } from "./edit_plant_status";
 import { FBSelect, DropDownItem } from "../ui";
 import {
@@ -217,17 +218,19 @@ export class RawSelectPlants
       this.state.moreSelections ? "more-select" : "",
       this.state.moreActions ? "more-action" : "",
     ].join(" ")}>
-      <label>{t("selection type")}</label>
-      <FBSelect key={this.selectionPointType}
-        list={POINTER_TYPE_LIST()}
-        selectedItem={POINTER_TYPE_DDI_LOOKUP()[this.selectionPointType]}
-        onChange={ddi => {
-          this.props.dispatch(selectPoint(undefined));
-          this.setState({ group_id: undefined });
-          this.props.dispatch(setSelectionPointType(
-            ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
-        }} />
-      <div className="button-row">
+      <div className={"selection-type"}>
+        <label>{t("selection type")}</label>
+        <FBSelect key={this.selectionPointType}
+          list={POINTER_TYPE_LIST()}
+          selectedItem={POINTER_TYPE_DDI_LOOKUP()[this.selectionPointType]}
+          onChange={ddi => {
+            this.props.dispatch(selectPoint(undefined));
+            this.setState({ group_id: undefined });
+            this.props.dispatch(setSelectionPointType(
+              ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
+          }} />
+      </div>
+      <div className="button-row group-select">
         <button className="fb-button gray"
           title={t("Select none")}
           onClick={() => {
@@ -245,9 +248,11 @@ export class RawSelectPlants
           {t("Select all")}
         </button>
         <More className={"more-select"} isOpen={this.state.moreSelections}
+          customText={{
+            more: t("Select all in group"), less: t("Select all in group"),
+          }}
           toggleOpen={() =>
             this.setState({ moreSelections: !this.state.moreSelections })}>
-          <label>{t("select all in group")}</label>
           <FBSelect key={`${this.selectionPointType}-${this.state.group_id}`}
             list={Object.values(this.groupDDILookup)}
             selectedItem={this.state.group_id
@@ -258,7 +263,7 @@ export class RawSelectPlants
         </More>
       </div>
       <label>{t("SELECTION ACTIONS")}</label>
-      <div className="button-row">
+      <div className="buttons">
         <button className="fb-button red"
           title={t("Delete")}
           onClick={() => this.destroySelected(this.props.selected)}>
@@ -280,6 +285,8 @@ export class RawSelectPlants
             })}>
             {t("save")}
           </button>}
+      </div>
+      <div className="button-row bulk-update">
         <More className={"more-action"} isOpen={this.state.moreActions}
           toggleOpen={() =>
             this.setState({ moreActions: !this.state.moreActions })}>
@@ -299,6 +306,12 @@ export class RawSelectPlants
           {["Plant", "Weed", "GenericPointer"]
             .includes(this.selectionPointType) &&
             <PointSizeBulkUpdate
+              allPoints={this.props.allPoints}
+              selected={this.selected}
+              dispatch={this.props.dispatch} />}
+          {["Plant"]
+            .includes(this.selectionPointType) &&
+            <PlantDepthBulkUpdate
               allPoints={this.props.allPoints}
               selected={this.selected}
               dispatch={this.props.dispatch} />}
@@ -419,21 +432,25 @@ interface MoreProps {
   className: string;
   isOpen: boolean;
   toggleOpen(): void;
-  children: (React.ReactChild | false)[];
+  customText?: { more: string, less: string };
+  children: JSX.Element | (JSX.Element | false)[];
 }
 
-const More = (props: MoreProps) =>
-  <div className={"more"}>
+const More = (props: MoreProps) => {
+  const more = props.customText?.more || t("More");
+  const less = props.customText?.less || t("Less");
+  return <div className={"more"}>
     <div className={"more-button"}
       onClick={props.toggleOpen}>
-      <p>{props.isOpen ? t("Less") : t("More")}</p>
+      <p>{props.isOpen ? less : more}</p>
       <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`}
-        title={props.isOpen ? t("less") : t("more")} />
+        title={props.isOpen ? less : more} />
     </div>
     <div className={"more-content"} hidden={!props.isOpen}>
       {props.children}
     </div>
   </div>;
+};
 
 export interface GetFilteredPointsProps {
   selectionPointType: PointType[] | undefined;

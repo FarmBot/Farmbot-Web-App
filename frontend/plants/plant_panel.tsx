@@ -109,6 +109,25 @@ export const EditPlantRadius = (props: EditPlantRadiusProps) =>
     </Col>
   </Row>;
 
+export interface EditPlantDepthProps extends EditPlantProperty {
+  depth: number;
+}
+
+export const EditPlantDepth = (props: EditPlantDepthProps) =>
+  <Row>
+    <Col xs={6}>
+      <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
+      <BlurableInput
+        type="number"
+        name="depth"
+        value={props.depth}
+        min={0}
+        onCommit={e => props.updatePlant(props.uuid, {
+          depth: parseIntInput(e.currentTarget.value)
+        })} />
+    </Col>
+  </Row>;
+
 interface DeleteButtonsProps {
   destroy(): void;
 }
@@ -206,6 +225,9 @@ export function PlantPanel(props: PlantPanelProps) {
       <ListItem>
         <EditPlantRadius {...commonProps} radius={info.radius} />
       </ListItem>
+      {!isUndefined(info.depth) && <ListItem>
+        <EditPlantDepth {...commonProps} depth={info.depth} />
+      </ListItem>}
       <ListItem name={t("Status")}>
         {(!inSavedGarden)
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />

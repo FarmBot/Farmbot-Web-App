@@ -38,6 +38,7 @@ import {
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { MovementState, TimeSettings } from "../interfaces";
 import { ExtendedPointGroupSortType } from "../point_groups/paths";
+import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 
 /* BotOriginQuadrant diagram
 
@@ -94,7 +95,7 @@ export interface FarmDesignerProps {
   botLocationData: BotLocationData;
   botMcuParams: McuParams;
   botSize: BotSize;
-  peripherals: { label: string, value: boolean }[];
+  peripheralValues: PeripheralValues;
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
@@ -261,7 +262,7 @@ export interface GardenMapProps {
   zoomLvl: number;
   mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
-  peripherals: { label: string, value: boolean }[];
+  peripheralValues: PeripheralValues;
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
@@ -339,6 +340,7 @@ export interface CropInfoProps {
   openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface CameraCalibrationData {
