@@ -10,8 +10,6 @@ class SessionToken < AbstractJwtToken
   MQTT_WS = ENV["MQTT_WS"] || DEFAULT_MQTT_WS
   EXPIRY = 60.days
   VHOST = ENV.fetch("MQTT_VHOST") { "/" }
-  DEFAULT_OS = "https://api.github.com/repos/farmbot/farmbot_os/releases" +
-               "/latest"
 
   def self.issue_to(user,
                     iat: Time.now.to_i,

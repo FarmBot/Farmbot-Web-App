@@ -2,8 +2,6 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
-jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
-
 jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
 
 import React from "react";
@@ -16,7 +14,6 @@ import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
-import { Session } from "../../session";
 import { refresh } from "../../api/crud";
 import { push } from "../../history";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
@@ -73,12 +70,6 @@ describe("<NavBar />", () => {
     p.user = undefined;
     const wrapper = mount(<NavBar {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("menu");
-  });
-
-  it("logs out", () => {
-    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
-    wrapper.instance().logout();
-    expect(Session.clear).toHaveBeenCalled();
   });
 
   it("toggles state value", () => {
