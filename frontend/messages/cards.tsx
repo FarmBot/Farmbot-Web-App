@@ -398,14 +398,14 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     <p>
       {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
       <a href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
-        onClick={logout}
+        onClick={logout()}
         title={"my.farm.bot"}>
         {"my.farm.bot"}
       </a>.
     </p>
     <a className="link-button fb-button green"
       href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
-      onClick={logout}
+      onClick={logout()}
       title={t("Make a real account")}>
       {t("Make a real account")}
     </a>

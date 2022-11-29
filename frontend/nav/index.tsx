@@ -48,6 +48,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     }
   };
 
+  get isStaff() { return this.props.authAud == "staff"; }
+
   toggle = (key: keyof NavBarState) => () =>
     this.setState({ [key]: !this.state[key] });
 
@@ -86,7 +88,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           onClick={this.toggle("accountMenuOpen")}>
           {firstName}
         </div>}
-        content={<AdditionalMenu close={this.close} />} />
+        content={<AdditionalMenu close={this.close} isStaff={this.isStaff} />} />
     </div>;
   };
 
@@ -196,7 +198,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     return <ErrorBoundary>
       <div className={[
         "nav-wrapper",
-        this.props.authAud == "staff" ? "red" : "",
+        this.isStaff ? "red" : "",
       ].join(" ")}>
         <nav role="navigation">
           <Row>

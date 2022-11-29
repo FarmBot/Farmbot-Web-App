@@ -173,6 +173,7 @@
       .bp4-popover-wrapper {
         display: inline;
       }
+      .bp4-button-text,
       p {
         display: inline-block;
         width: max-content;
@@ -202,7 +203,17 @@
           font-size: 1rem !important;
         }
         .fa-caret-down {
+          right: 0;
+          line-height: 2.25rem;
           color: $white;
+        }
+        .bp4-button {
+          padding-left: 0.5rem;
+        }
+        .bp4-button-text {
+          margin-left: 0;
+          padding-left: 0;
+          line-height: 1.5rem;
         }
       }
       &.selected {
