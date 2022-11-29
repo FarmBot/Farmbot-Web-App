@@ -5,6 +5,7 @@ describe Api::TokensController do
 
   describe "#destroy" do
     let(:user) { FactoryBot.create(:user, password: "password") }
+    let(:device) { FactoryBot.create(:device) }
     let(:auth_token) do
       SessionToken.issue_to(user,
                             fbos_version: Gem::Version.new("9.9.9"),
@@ -13,6 +14,7 @@ describe Api::TokensController do
     end
 
     it "destroys a token" do
+      user.device = device
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"
       delete :destroy
       expect(response.status).to eq(204)

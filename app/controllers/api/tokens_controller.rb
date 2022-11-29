@@ -38,9 +38,10 @@ module Api
     def destroy
       token = SessionToken.decode!(request.headers["Authorization"].split(" ").last)
       claims = token.unencoded
+      device_id = claims["bot"].gsub("device_", "").to_i
       TokenIssuance
         .where("exp > ?", Time.now.to_i)
-        .find_by!(jti: claims["jti"], device_id: claims["sub"])
+        .find_by!(jti: claims["jti"], device_id: device_id)
         .destroy!
     end
 
