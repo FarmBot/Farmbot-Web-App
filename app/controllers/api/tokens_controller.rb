@@ -20,7 +20,7 @@ module Api
       # to log in with an unverified account (500 error).
       # Still not sure what changed or why, but this is a
       # temporary hotfix. Can be removed later if users
-      # are able to attempt logins on unverfied accounts.
+      # are able to attempt logins on unverified accounts.
       email = params.dig("user", "email")
       if needs_validation?(email)
         raise Errors::Forbidden, SessionToken::MUST_VERIFY
@@ -33,6 +33,16 @@ module Api
                  .tap { |result| maybe_halt_login(result) }
                  .tap { |result| mark_as_seen(result.result[:user].device) if result.result }
       end
+    end
+
+    def destroy
+      token = SessionToken.decode!(request.headers["Authorization"].split(" ").last)
+      claims = token.unencoded
+      device_id = claims["bot"].gsub("device_", "").to_i
+      TokenIssuance
+        .where("exp > ?", Time.now.to_i)
+        .find_by!(jti: claims["jti"], device_id: device_id)
+        .destroy!
     end
 
     private

@@ -24,7 +24,6 @@ import {
 import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
-import { Session } from "../session";
 import { ExternalUrl } from "../external_urls";
 import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
@@ -32,6 +31,7 @@ import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { push } from "../history";
 import moment from "moment";
 import { Path } from "../internal_urls";
+import { logout } from "../logout";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -398,14 +398,14 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     <p>
       {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
       <a href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
-        onClick={() => Session.clear()}
+        onClick={logout()}
         title={"my.farm.bot"}>
         {"my.farm.bot"}
       </a>.
     </p>
     <a className="link-button fb-button green"
       href={ExternalUrl.myFarmBot} target="_blank" rel={"noreferrer"}
-      onClick={() => Session.clear()}
+      onClick={logout()}
       title={t("Make a real account")}>
       {t("Make a real account")}
     </a>

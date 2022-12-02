@@ -1,7 +1,6 @@
 import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
-import { Session } from "../session";
 import { Row, Col, Popover } from "../ui";
 import { push } from "../history";
 import { updatePageInfo } from "../util";
@@ -49,7 +48,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     }
   };
 
-  logout = () => Session.clear();
+  get isStaff() { return this.props.authAud == "staff"; }
 
   toggle = (key: keyof NavBarState) => () =>
     this.setState({ [key]: !this.state[key] });
@@ -89,7 +88,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           onClick={this.toggle("accountMenuOpen")}>
           {firstName}
         </div>}
-        content={<AdditionalMenu logout={this.logout} close={this.close} />} />
+        content={<AdditionalMenu close={this.close} isStaff={this.isStaff} />} />
     </div>;
   };
 
@@ -199,7 +198,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     return <ErrorBoundary>
       <div className={[
         "nav-wrapper",
-        this.props.authAud == "staff" ? "red" : "",
+        this.isStaff ? "red" : "",
       ].join(" ")}>
         <nav role="navigation">
           <Row>

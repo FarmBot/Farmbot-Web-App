@@ -61,8 +61,8 @@ export interface NavLinksProps {
 }
 
 export interface AccountMenuProps {
+  isStaff: boolean;
   close: (property: keyof NavBarState) => ToggleEventHandler;
-  logout: () => void;
 }
 
 export interface EStopButtonProps {

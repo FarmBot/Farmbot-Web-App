@@ -39,6 +39,9 @@ import { push } from "../../history";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
+import { API } from "../../api";
+
+API.setBaseUrl("");
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({

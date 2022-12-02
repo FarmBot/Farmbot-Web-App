@@ -39,7 +39,7 @@ FarmBot::Application.routes.draw do
       fbos_config: [:destroy, :show, :update],
       firmware_config: [:destroy, :show, :update],
       public_key: [:show],
-      tokens: [:create, :show],
+      tokens: [:create, :destroy, :show],
       web_app_config: [:destroy, :show, :update],
     }.to_a.map { |(name, only)| resource name, only: only }
     get "/corpus" => "corpuses#show", as: :api_corpus

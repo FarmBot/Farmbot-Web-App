@@ -5,6 +5,7 @@ import { shortRevision } from "../util";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { FilePath, Icon, Path } from "../internal_urls";
+import { logout } from "../logout";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -34,11 +35,17 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       </Link>
     </div>
     <div className={"logout-link"}>
-      <a onClick={props.logout} title={t("logout")}>
+      <a onClick={logout(props.isStaff)} title={t("logout")}>
         <img width={12} height={12} src={FilePath.icon(Icon.logout)} />
         {t("Logout")}
       </a>
     </div>
+    {props.isStaff && <div className={"logout-link"}>
+      <a onClick={logout()} title={t("logout")}>
+        <img width={12} height={12} src={FilePath.icon(Icon.logout)} />
+        {t("Logout and destroy token")}
+      </a>
+    </div>}
     <div className="app-version">
       <label>{t("APP VERSION")}</label>:&nbsp;
       <a href={ExternalUrl.webAppRepo} target="_blank" rel={"noreferrer"}>

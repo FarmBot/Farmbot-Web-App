@@ -1,6 +1,4 @@
 module Auth
-  # The API supports a number of authentication strategies (Cookies, Bot token,
-  # JWT). This service helps determine which auth strategy to use.
   class ReloadToken < Mutations::Command
     attr_reader :user
     BAD_SUB = "Please log out and try again."
