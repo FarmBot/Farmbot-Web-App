@@ -58,6 +58,7 @@ import {
   FindHome,
   FirmwareHardwareSelection,
   FlashFirmware,
+  FlowRateInput,
   InvertJogButton,
   lowVoltageProblemStatus,
   MapOrientation,
@@ -78,9 +79,10 @@ import { WizardStepComponentProps } from "../interfaces";
 import {
   fakeAlert,
   fakeFarmwareEnv, fakeFarmwareInstallation, fakeFbosConfig,
-  fakeFirmwareConfig, fakeImage, fakeLog, fakePinBinding, fakeWebAppConfig,
+  fakeFirmwareConfig, fakeImage, fakeLog, fakePinBinding, fakeTool,
+  fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
-import { destroy, edit, initSave } from "../../api/crud";
+import { destroy, edit, initSave, save } from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { calibrate } from "../../photos/camera_calibration/actions";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
@@ -658,6 +660,19 @@ describe("<CameraImageOrigin />", () => {
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_image_bot_origin_location", value: "\"TOP_LEFT\""
     });
+  });
+});
+
+describe("<FlowRateInput />", () => {
+  it("renders tool verification button", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    p.resources = buildResourceIndex([tool]).index;
+    const wrapper = shallow(<FlowRateInput {...p} />);
+    wrapper.find("WaterFlowRateInput").simulate("change", 100);
+    expect(edit).toHaveBeenCalledWith(tool, { flow_rate_ml_per_s: 100 });
+    expect(save).toHaveBeenCalledWith(tool.uuid);
   });
 });
 

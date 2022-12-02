@@ -16,7 +16,9 @@ import { SpacePanelHeader } from "./space_panel_header";
 import {
   settingRequiredLabel, encodersOrLimitSwitchesRequired,
 } from "./encoders_or_stall_detection";
-import { SafeHeight, SoilHeight } from "../fbos_settings/z_height_inputs";
+import {
+  GantryHeight, SafeHeight, SoilHeight,
+} from "../fbos_settings/z_height_inputs";
 
 export function AxisSettings(props: AxisSettingsProps) {
 
@@ -150,6 +152,9 @@ export function AxisSettings(props: AxisSettingsProps) {
         }}
         disabledBy={settingRequiredLabel([DeviceSetting.stopAtMax])}
         intSize={"long"} />
+      <GantryHeight
+        dispatch={dispatch}
+        sourceFbosConfig={props.sourceFbosConfig} />
       <SafeHeight
         dispatch={dispatch}
         sourceFbosConfig={props.sourceFbosConfig} />

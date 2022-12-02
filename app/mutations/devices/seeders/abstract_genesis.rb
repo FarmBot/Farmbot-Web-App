@@ -102,11 +102,6 @@ module Devices
           add_tool(ToolNames::SOIL_SENSOR)
       end
 
-      def tools_watering_nozzle
-        @tools_watering_nozzle ||=
-          add_tool(ToolNames::WATERING_NOZZLE)
-      end
-
       def tools_weeder
         @tools_weeder ||=
           add_tool(ToolNames::WEEDER)
@@ -144,10 +139,8 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
-      def settings_firmware
-        device
-          .fbos_config
-          .update!(firmware_hardware: FbosConfig::FARMDUINO)
+      def settings_gantry_height
+        device.fbos_config.update!(gantry_height: 120)
       end
 
       def settings_default_map_size_x

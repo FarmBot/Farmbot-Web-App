@@ -11,6 +11,7 @@ import {
   findUuid,
   getDeviceAccountSettings, selectAllAlerts, selectAllFarmwareEnvs,
   selectAllImages, selectAllLogs, selectAllPeripherals, selectAllSensors,
+  selectAllTools,
 } from "../resources/selectors";
 import { last, some, uniq } from "lodash";
 import {
@@ -35,7 +36,7 @@ import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
 } from "../messages/cards";
 import { seedAccount } from "../messages/actions";
-import { FirmwareHardware, TaggedLog, Xyz } from "farmbot";
+import { FirmwareHardware, TaggedLog, Tool, Xyz } from "farmbot";
 import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
@@ -73,7 +74,7 @@ import { LockableButton } from "../settings/hardware_settings/lockable_button";
 import {
   disabledAxisMap,
 } from "../settings/hardware_settings/axis_tracking_status";
-import { destroy } from "../api/crud";
+import { destroy, edit, save } from "../api/crud";
 import { FlashFirmwareBtn } from "../settings/firmware/firmware_hardware_status";
 import { AxisDisplayGroup } from "../controls/axis_display_group";
 import {
@@ -91,6 +92,10 @@ import { BoxTopButtons } from "../settings/pin_bindings/box_top_gpio_diagram";
 import { getImageJobs } from "../photos/state_to_props";
 import { ResourceIndex } from "../resources/interfaces";
 import { BotState } from "../devices/interfaces";
+import {
+  reduceToolName, ToolName,
+} from "../farm_designer/map/tool_graphics/all_tools";
+import { WaterFlowRateInput } from "../tools/edit_tool";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -628,6 +633,18 @@ export const CameraImageOrigin = (props: WizardStepComponentProps) => {
         })} />
     </Col>
   </Row>;
+};
+
+export const FlowRateInput = (props: WizardStepComponentProps) => {
+  const tool = selectAllTools(props.resources).filter(tool =>
+    reduceToolName(tool.body.name) == ToolName.wateringNozzle)[0];
+  return <WaterFlowRateInput value={0} hideTooltip={true}
+    onChange={flowRate => {
+      props.dispatch(edit(tool, {
+        ["flow_rate_ml_per_s" as keyof Tool]: flowRate,
+      }));
+      props.dispatch(save(tool.uuid));
+    }} />;
 };
 
 export const ToolCheck = (props: WizardStepComponentProps) => {

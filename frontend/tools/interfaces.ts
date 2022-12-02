@@ -25,6 +25,7 @@ export interface AddToolState {
   toolName: string;
   toAdd: string[];
   uuid: UUID | undefined;
+  flowRate: number;
 }
 
 export interface EditToolProps {
@@ -39,6 +40,7 @@ export interface EditToolProps {
 
 export interface EditToolState {
   toolName: string;
+  flowRate: number;
 }
 
 export interface ToolTransformProps {
@@ -75,6 +77,7 @@ export interface ToolSlotInventoryItemProps {
   isActive(id: number | undefined): boolean;
   hideDropdown?: boolean;
   toolTransformProps: ToolTransformProps;
+  noUTM: boolean;
 }
 
 export interface ToolInventoryItemProps {
@@ -130,6 +133,7 @@ interface ToolInputPropsBase {
   selectedTool: TaggedTool | undefined;
   onChange(update: { tool_id: number }): void;
   isActive(id: number | undefined): boolean;
+  noUTM: boolean;
 }
 
 export interface ToolSelectionProps extends ToolInputPropsBase {

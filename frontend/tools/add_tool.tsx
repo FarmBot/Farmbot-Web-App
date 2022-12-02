@@ -6,7 +6,7 @@ import {
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
 import { SaveBtn } from "../ui";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, Tool } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { push } from "../history";
@@ -23,6 +23,10 @@ import {
 } from "../farmware/state_to_props";
 import { CustomToolGraphicsInput } from "./custom_tool_graphics";
 import { Path } from "../internal_urls";
+import {
+  reduceToolName, ToolName,
+} from "../farm_designer/map/tool_graphics/all_tools";
+import { WaterFlowRateInput } from "./edit_tool";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -34,7 +38,7 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
 });
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
-  state: AddToolState = { toolName: "", toAdd: [], uuid: undefined };
+  state: AddToolState = { toolName: "", toAdd: [], uuid: undefined, flowRate: 0 };
 
   filterExisting = (n: string) => !this.props.existingToolNames.includes(n);
 
@@ -51,7 +55,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
 
   save = () => {
-    const initTool = init("Tool", { name: this.state.toolName });
+    const initTool = init("Tool", {
+      name: this.state.toolName,
+      ["flow_rate_ml_per_s" as keyof Tool]: this.state.flowRate,
+    });
     this.props.dispatch(initTool);
     const { uuid } = initTool.payload;
     this.setState({ uuid });
@@ -66,9 +73,20 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     this.state.uuid && this.props.dispatch(destroy(this.state.uuid));
 
   stockToolNames = () => {
-    const TROUGHS = [t("Seed Trough 1"), t("Seed Trough 2")];
-    const BASE_TOOLS = [t("Watering Nozzle"), t("Weeder"), t("Soil Sensor")];
-    const SEED_TOOLS = [t("Seeder"), t("Seed Bin"), t("Seed Tray")];
+    const TROUGHS = [
+      t("Seed Trough 1"),
+      t("Seed Trough 2"),
+    ];
+    const BASE_TOOLS = [
+      t("Watering Nozzle"),
+    ];
+    const GENESIS_TOOLS = [
+      t("Seeder"),
+      t("Weeder"),
+      t("Soil Sensor"),
+      t("Seed Bin"),
+      t("Seed Tray"),
+    ];
     switch (this.props.firmwareHardware) {
       case "arduino":
       case "farmduino":
@@ -76,24 +94,27 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       default:
         return [
           ...BASE_TOOLS,
-          ...SEED_TOOLS,
+          ...GENESIS_TOOLS,
         ];
       case "farmduino_k15":
         return [
           ...BASE_TOOLS,
-          ...SEED_TOOLS,
+          ...GENESIS_TOOLS,
           ...TROUGHS,
         ];
       case "farmduino_k16":
         return [
           ...BASE_TOOLS,
           t("Rotary Tool"),
-          ...SEED_TOOLS,
+          ...GENESIS_TOOLS,
           ...TROUGHS,
         ];
       case "express_k10":
       case "express_k11":
-        return TROUGHS;
+        return [
+          ...BASE_TOOLS,
+          ...TROUGHS,
+        ];
     }
   };
 
@@ -136,6 +157,8 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     </div>;
   };
 
+  changeFlowRate = (flowRate: number) => this.setState({ flowRate });
+
   render() {
     const { toolName, uuid } = this.state;
     const alreadyAdded = !uuid && !this.filterExisting(toolName);
@@ -159,6 +182,9 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
             name="name"
             onChange={e =>
               this.setState({ toolName: e.currentTarget.value })} />
+          {reduceToolName(toolName) == ToolName.wateringNozzle &&
+            <WaterFlowRateInput value={this.state.flowRate}
+              onChange={this.changeFlowRate} />}
           <SaveBtn
             onClick={this.save}
             disabled={!this.state.toolName || alreadyAdded}

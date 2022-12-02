@@ -52,6 +52,10 @@ import { ToolTransformProps } from "../tools/interfaces";
 import { betterCompact } from "../util";
 import { savePoints } from "../farm_designer/map/layers/plants/plant_actions";
 import { Path } from "../internal_urls";
+import { getFbosConfig } from "../resources/getters";
+import {
+  getFwHardwareValue, hasUTM,
+} from "../settings/firmware/firmware_hardware_support";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -116,6 +120,7 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
     toolTransformProps: { xySwap, quadrant },
     timeSettings: maybeGetTimeSettings(props.resources.index),
     bulkPlantSlug,
+    noUTM: !hasUTM(getFwHardwareValue(getFbosConfig(props.resources.index))),
   };
 };
 
@@ -133,6 +138,7 @@ export interface SelectPlantsProps {
   groups: TaggedPointGroup[];
   timeSettings: TimeSettings;
   bulkPlantSlug: string | undefined;
+  noUTM: boolean;
 }
 
 interface SelectPlantsState {
@@ -416,6 +422,7 @@ export class RawSelectPlants
                   toolSlot={p as TaggedToolSlotPointer}
                   isActive={this.props.isActive}
                   tools={this.props.tools}
+                  noUTM={this.props.noUTM}
                   toolTransformProps={this.props.toolTransformProps}
                   hideDropdown={true} />;
             }

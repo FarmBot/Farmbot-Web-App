@@ -5,6 +5,38 @@ import { DeviceSetting, ToolTips } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 import { BotConfigInputBox } from "./bot_config_input_box";
 import { ZHeightInputProps } from "./interfaces";
+import { FullConfiguration } from "farmbot";
+import {
+  isExpress, validFirmwareHardware,
+} from "../firmware/firmware_hardware_support";
+
+export const GantryHeight = (props: ZHeightInputProps) => {
+  const { sourceFbosConfig } = props;
+  const setting = "gantry_height" as keyof FullConfiguration;
+  const value = sourceFbosConfig(setting).value as number;
+  const firmwareHardware = validFirmwareHardware(
+    sourceFbosConfig("firmware_hardware").value);
+  const defaultValue = isExpress(firmwareHardware) ? 140 : 120;
+  const modified = value != defaultValue;
+  return <Highlight settingName={DeviceSetting.gantryHeight}>
+    <Row>
+      <Col xs={8}>
+        <label>
+          {t(DeviceSetting.gantryHeight)}
+        </label>
+        <Help text={t(ToolTips.GANTRY_HEIGHT, { distance: defaultValue })}
+          enableMarkdown={true} />
+      </Col>
+      <Col xs={4} className={"z-height-input low-pad"}>
+        <BotConfigInputBox
+          setting={setting}
+          dispatch={props.dispatch}
+          modifiedOverride={modified}
+          sourceFbosConfig={sourceFbosConfig} />
+      </Col>
+    </Row>
+  </Highlight>;
+};
 
 export const SafeHeight = (props: ZHeightInputProps) =>
   <Highlight settingName={DeviceSetting.safeHeight}>

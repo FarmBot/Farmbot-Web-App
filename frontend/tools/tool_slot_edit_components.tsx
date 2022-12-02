@@ -70,6 +70,9 @@ export const ToolSelection = (props: ToolSelectionProps) =>
         || tool.body.id != props.selectedTool?.body.id)
       .filter(tool => !props.filterActiveTools
         || !props.isActive(tool.body.id))
+      .filter(tool => props.noUTM
+        ? tool.body.name?.toLowerCase().includes("trough")
+        : true)
       .map(tool => ({
         label: tool.body.name || "untitled",
         value: tool.body.id || 0,
@@ -98,6 +101,7 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
           selectedTool={props.selectedTool}
           onChange={props.onChange}
           isActive={props.isActive}
+          noUTM={props.noUTM}
           filterSelectedTool={false}
           filterActiveTools={true} />
       </Col>

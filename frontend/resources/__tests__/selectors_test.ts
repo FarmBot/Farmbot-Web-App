@@ -2,7 +2,7 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
-import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
+import { TaggedTool, TaggedToolSlotPointer, Tool } from "farmbot";
 import { saveOK } from "../actions";
 import { hasId, arrayUnwrap } from "../util";
 import {
@@ -16,6 +16,7 @@ const TOOL_ID = 99;
 const SLOT_ID = 100;
 const fakeTool: TaggedTool = arrayUnwrap(newTaggedResource("Tool", {
   name: "yadda yadda",
+  ["flow_rate_ml_per_s" as keyof Tool]: 0,
   id: TOOL_ID
 }));
 const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",

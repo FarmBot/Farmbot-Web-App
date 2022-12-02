@@ -1500,6 +1500,17 @@ li {
   }
 }
 
+.flow-rate-input {
+  .bp4-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .fb-button {
+    float: right;
+    margin-top: 1.5rem;
+  }
+}
+
 .edit-tool-slot-panel {
   .save-error {
     position: absolute;
@@ -1768,6 +1779,7 @@ li {
   .show-advanced-toggle,
   .highlight-modified-toggle {
     margin-right: 4.5rem;
+    margin-top: 1rem;
   }
   .fb-button {
     margin-top: 0.5rem;
@@ -3314,6 +3326,11 @@ li {
         }
         label {
           margin-left: 1.5rem;
+        }
+      }
+      .flow-rate-input {
+        .fb-button {
+          margin-top: 0;
         }
       }
     }

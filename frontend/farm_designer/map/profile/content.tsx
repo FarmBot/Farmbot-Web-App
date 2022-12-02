@@ -1,6 +1,8 @@
 import React from "react";
 import { uniq, sortBy, ceil, range, cloneDeep, reverse } from "lodash";
-import { TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer } from "farmbot";
+import {
+  FullConfiguration, TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer,
+} from "farmbot";
 import {
   FlipProfileProps,
   GetProfileX, GetProfileXFromNumber, GetProfileXProps,
@@ -39,6 +41,8 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   const width = ceil(props.botSize[profileAxis].value + 1, -2);
   const soilHeight = getFbosZValue(props.sourceFbosConfig, "soil_height");
   const safeHeight = getFbosZValue(props.sourceFbosConfig, "safe_height");
+  const gantryHeight = getFbosZValue(props.sourceFbosConfig,
+    "gantry_height" as keyof FullConfiguration);
   const maxHeight = Math.max(
     props.botSize.z.value + 1,
     Math.max(...props.allPoints.map(p => Math.abs(p.body.z))),
@@ -46,12 +50,13 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     safeHeight,
   );
   const height = ceil(maxHeight, -2);
+  const yStart = Math.max(gantryHeight + 20, 40);
   const getX = getProfileX({ profileAxis, mapTransformProps, width });
   const reversed = flipProfile({ profileAxis, mapTransformProps });
   return <svg className={expanded ? "expand" : undefined}
     style={expanded ? {} : { display: "none" }}
     id={`${profileAxis}-axis-profile-at-${lineAxis}-eq-${position[lineAxis]}`}
-    viewBox={`-40 -20 ${width + 80} ${height + 40}`}
+    viewBox={`-40 ${-yStart} ${width + 80} ${height + 40}`}
     preserveAspectRatio={expanded ? undefined : "none"}>
     {expanded && <Grid
       getX={getX} height={height} width={width} negativeZ={props.negativeZ} />}
@@ -98,7 +103,8 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
       <UTMProfile profileAxis={profileAxis} expanded={expanded} getX={getX}
         position={position} selectionWidth={props.selectionWidth}
         mountedToolInfo={props.mountedToolInfo} reversed={reversed}
-        botPosition={props.botLocationData.position} />}
+        botPosition={props.botLocationData.position} profileWidth={width}
+        gantryHeight={gantryHeight} />}
     {getConfigValue(BooleanSetting.show_farmbot) &&
       getConfigValue(BooleanSetting.display_trail) &&
       <BotTrail

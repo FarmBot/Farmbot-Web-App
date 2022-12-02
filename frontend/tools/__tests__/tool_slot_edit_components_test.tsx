@@ -145,6 +145,7 @@ describe("<ToolSelection />", () => {
     filterSelectedTool: false,
     isActive: jest.fn(),
     filterActiveTools: true,
+    noUTM: false,
   });
 
   it("renders", () => {
@@ -162,6 +163,26 @@ describe("<ToolSelection />", () => {
     p.tools = [tool];
     const wrapper = shallow(<ToolSelection {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([NULL_CHOICE]);
+  });
+
+  it("shows available items", () => {
+    const p = fakeProps();
+    const trough = fakeTool();
+    trough.body.id = 1;
+    trough.body.name = "seed trough";
+    const tool = fakeTool();
+    tool.body.id = 2;
+    tool.body.name = "watering nozzle";
+    const otherTool = fakeTool();
+    otherTool.body.id = 3;
+    otherTool.body.name = undefined;
+    p.tools = [trough, tool, otherTool];
+    p.noUTM = true;
+    const wrapper = shallow(<ToolSelection {...p} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      NULL_CHOICE,
+      { label: "seed trough", value: 1 },
+    ]);
   });
 
   it("handles missing selected tool data", () => {

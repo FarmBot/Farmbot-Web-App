@@ -120,7 +120,7 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.botLocationData.position = { x: 200, y: 100, z: 100 };
     const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
+    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(4);
     expect(wrapper.html()).toContain("image");
   });
 
@@ -130,7 +130,7 @@ describe("<ProfileSvg />", () => {
     p.axis = "y";
     p.botLocationData.position = { x: 200, y: 100, z: 100 };
     const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(3);
+    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(4);
     expect(wrapper.html()).toContain("image");
   });
 

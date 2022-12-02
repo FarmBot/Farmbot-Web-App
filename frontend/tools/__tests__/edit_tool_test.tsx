@@ -11,10 +11,13 @@ jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
+jest.mock("../../devices/actions", () => ({ sendRPC: jest.fn() }));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditTool as EditTool, mapStateToProps, isActive,
+  RawEditTool as EditTool, mapStateToProps, isActive, WaterFlowRateInput,
+  WaterFlowRateInputProps, LUA_WATER_FLOW_RATE,
 } from "../edit_tool";
 import {
   fakeTool, fakeToolSlot,
@@ -28,6 +31,7 @@ import { push } from "../../history";
 import { edit, destroy, save } from "../../api/crud";
 import { clickButton } from "../../__test_support__/helpers";
 import { EditToolProps } from "../interfaces";
+import { sendRPC } from "../../devices/actions";
 
 describe("<EditTool />", () => {
   beforeEach(() => {
@@ -47,6 +51,20 @@ describe("<EditTool />", () => {
   it("renders", () => {
     const wrapper = mount(<EditTool {...fakeProps()} />);
     expect(wrapper.text()).toContain("Edit tool");
+    expect(wrapper.text().toLowerCase()).not.toContain("flow rate");
+  });
+
+  it("renders watering nozzle", () => {
+    const wrapper = mount(<EditTool {...fakeProps()} />);
+    wrapper.setState({ toolName: "watering nozzle" });
+    expect(wrapper.text().toLowerCase()).toContain("flow rate");
+  });
+
+  it("changes flow rate", () => {
+    const wrapper = shallow<EditTool>(<EditTool {...fakeProps()} />);
+    expect(wrapper.state().flowRate).toEqual(0);
+    wrapper.instance().changeFlowRate(1);
+    expect(wrapper.state().flowRate).toEqual(1);
   });
 
   it("handles missing tool name", () => {
@@ -107,7 +125,9 @@ describe("<EditTool />", () => {
     p.findTool = () => tool;
     const wrapper = shallow(<EditTool {...p} />);
     wrapper.find(SaveBtn).simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "Foo" });
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      name: "Foo", flow_rate_ml_per_s: 0,
+    });
     expect(save).toHaveBeenCalledWith(tool.uuid);
     expect(push).toHaveBeenCalledWith(Path.tools());
   });
@@ -168,5 +188,28 @@ describe("isActive()", () => {
     expect(active(1)).toEqual(true);
     expect(active(2)).toEqual(false);
     expect(active(undefined)).toEqual(false);
+  });
+});
+
+describe("<WaterFlowRateInput />", () => {
+  const fakeProps = (): WaterFlowRateInputProps => ({
+    value: 1,
+    onChange: jest.fn(),
+  });
+
+  it("sends RPC", () => {
+    const wrapper = mount(<WaterFlowRateInput {...fakeProps()} />);
+    wrapper.find("button").first().simulate("click");
+    expect(sendRPC).toHaveBeenCalledWith({
+      kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
+    });
+  });
+
+  it("changes value", () => {
+    const p = fakeProps();
+    const wrapper = mount(<WaterFlowRateInput {...p} />);
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "1" } });
+    expect(p.onChange).toHaveBeenCalledWith(1);
   });
 });

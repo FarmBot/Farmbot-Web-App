@@ -28,6 +28,7 @@ import {
   TaggedWeedPointer,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  Tool,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
@@ -121,7 +122,10 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("Tool", { name: "Foo" });
+  return fakeResource("Tool", {
+    name: "Foo",
+    ["flow_rate_ml_per_s" as keyof Tool]: 0,
+  });
 }
 
 export function fakeUser(): TaggedUser {

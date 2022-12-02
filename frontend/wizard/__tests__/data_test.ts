@@ -32,9 +32,9 @@ describe("data check", () => {
     expect(expressSteps.length).toBeLessThan(steps.length);
   });
 
-  it("has fewer sections for express", () => {
+  it("has the same number of sections for express", () => {
     const sections = WIZARD_SECTIONS(undefined);
     const expressSections = WIZARD_SECTIONS("express_k10");
-    expect(expressSections.length).toBeLessThan(sections.length);
+    expect(expressSections.length).toEqual(sections.length);
   });
 });

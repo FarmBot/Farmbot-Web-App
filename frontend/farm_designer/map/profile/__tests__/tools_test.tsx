@@ -43,6 +43,7 @@ describe("<UTMProfile />", () => {
     position: { x: 0, y: 0 },
     botPosition: { x: 0, y: 0, z: 0 },
     mountedToolInfo: fakeMountedToolInfo(),
+    gantryHeight: 0,
   });
 
   it("renders front view", () => {
