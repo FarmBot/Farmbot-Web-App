@@ -15,7 +15,7 @@ import {
 import { Color } from "../../../ui";
 import { getFbosZValue } from "../legend/z_display";
 import { BotOriginQuadrant } from "../../interfaces";
-import { ToolProfilePoint, UTMProfile } from "./tools";
+import { ToolProfilePoint, UTMDimensions, UTMProfile } from "./tools";
 import { TaggedPlant } from "../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { BooleanSetting } from "../../../session_keys";
@@ -49,8 +49,9 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     soilHeight,
     safeHeight,
   );
-  const height = ceil(maxHeight, -2);
-  const yStart = Math.max(gantryHeight + 20, 40);
+  const gantryExtrusion = UTMDimensions.extrusion * 3;
+  const height = ceil(maxHeight + gantryHeight + gantryExtrusion, -2);
+  const yStart = Math.max(gantryHeight + gantryExtrusion, 40);
   const getX = getProfileX({ profileAxis, mapTransformProps, width });
   const reversed = flipProfile({ profileAxis, mapTransformProps });
   return <svg className={expanded ? "expand" : undefined}

@@ -14,7 +14,8 @@ import {
   DesignerPanelHeader,
   DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { parseIntInput, validBotLocationData } from "../util";
+import { parseIntInput } from "../util";
+import { validBotLocationData } from "../util/location";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { push } from "../history";

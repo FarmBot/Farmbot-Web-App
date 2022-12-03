@@ -17,7 +17,7 @@ import { TaggedToolSlotPointer } from "farmbot";
 import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
 import { FilePath } from "../../../internal_urls";
 
-enum UTMDimensions {
+export enum UTMDimensions {
   height = 40,
   extrusion = 20,
 }
@@ -48,6 +48,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
   const toolInfo = props.mountedToolInfo;
   const xProfile = props.profileAxis == "x";
   const yExtrusionX = profileUtmH + ToolDimensions.diameter / 2 - extrusion;
+  const utmTopY = profileUtmV - UTMDimensions.height;
   return <g id={"UTM-and-axis"} opacity={0.75}>
     <defs>
       <linearGradient id={"utm-gradient"}>
@@ -67,7 +68,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
     <line id={"z-axis"}
       strokeWidth={extrusion} stroke={Color.darkGray} opacity={0.5}
       x1={profileUtmH + extrusionOffset}
-      y1={Math.min(-props.gantryHeight, profileUtmV - UTMDimensions.height)}
+      y1={-props.gantryHeight - (-props.gantryHeight < utmTopY ? 0 : extrusion * 3)}
       x2={profileUtmH + extrusionOffset}
       y2={profileUtmV} />
     <line id={"z-axis-separator"}

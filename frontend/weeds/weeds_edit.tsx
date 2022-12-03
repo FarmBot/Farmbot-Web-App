@@ -21,7 +21,7 @@ import { ResourceTitle } from "../sequences/panel/editor";
 import { ColorPicker } from "../ui";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BotPosition } from "../devices/interfaces";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export interface EditWeedProps {

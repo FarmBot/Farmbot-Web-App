@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../../i18next_wrapper";
-import { isNumber, isUndefined, round } from "lodash";
+import { isUndefined, round } from "lodash";
 import { Actions } from "../../../constants";
 import { getPanelStatus } from "../util";
 import { HandleProps, ProfileViewerProps } from "./interfaces";
@@ -15,15 +15,17 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
   } = props.designer;
   const axis = props.designer.profileAxis;
   const panelStatus = getPanelStatus();
+  const { x, y } = profileFollowBot
+    ? props.botLocationData.position
+    : profilePosition;
+  const noProfile = isUndefined(x) || isUndefined(y)
+    || (!profileOpen && profileFollowBot);
   const className = [
     "profile-viewer",
     profileOpen ? "open" : "",
     `panel-${panelStatus}`,
-    isNumber(profilePosition.x) && isNumber(profilePosition.y) ? "" : "none-chosen",
+    noProfile ? "none-chosen" : "",
   ].join(" ");
-  const { x, y } = profileFollowBot
-    ? props.botLocationData.position
-    : profilePosition;
   const axisLabel = `${t("{{ axis }}-axis profile", {
     axis: axis == "x" ? "y" : "x"
   })}`;
@@ -32,7 +34,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
   return <div className={className}>
     <Handle isOpen={profileOpen} dispatch={dispatch} setExpanded={setExpanded} />
     <div className={"profile-content"}>
-      {(isUndefined(x) || isUndefined(y))
+      {noProfile
         ? <p className={"no-profile"}>
           {profileFollowBot
             ? t("FarmBot position unknown.")

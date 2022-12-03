@@ -37,6 +37,15 @@ describe("<ProfileViewer />", () => {
     expect(wrapper.find(".profile-button").props().title).toContain("open");
   });
 
+  it("renders when closed and follow bot is selected", () => {
+    const p = fakeProps();
+    p.botLocationData.position = { x: 1, y: 2, z: 3 };
+    p.designer.profileFollowBot = true;
+    const wrapper = mount(<ProfileViewer {...p} />);
+    expect(wrapper.find("div").first().hasClass("open")).toBeFalsy();
+    expect(wrapper.find("div").first().hasClass("none-chosen")).toBeTruthy();
+  });
+
   it("renders when open: y-axis", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;

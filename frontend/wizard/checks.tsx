@@ -24,7 +24,8 @@ import {
 } from "../settings/fbos_settings/fbos_details";
 import { ExternalUrl } from "../external_urls";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
-import { validBotLocationData, validFwConfig } from "../util";
+import { validFwConfig } from "../util";
+import { validBotLocationData } from "../util/location";
 import {
   getFwHardwareValue, isExpress,
 } from "../settings/firmware/firmware_hardware_support";

@@ -597,10 +597,9 @@ export namespace ToolTips {
 
   // Tools
   export const WATER_FLOW_RATE =
-    trim(`To calculate **WATER FLOW RATE**, create a sequence instructing
-    FarmBot to turn on the water, wait for 5 seconds, then turn the water
-    off. Hold a measuring cup below the watering nozzle and run the
-    sequence. Measure how much water FarmBot dispensed in milliliters (mL)
+    trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
+    watering nozzle and click the **RUN WATER FOR 5 SECONDS** button.
+    Measure how much water FarmBot dispensed in milliliters (mL)
     and then divide this number by 5. Enter the result in the field.`);
 
   // Logs

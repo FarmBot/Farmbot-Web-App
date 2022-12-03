@@ -2,7 +2,8 @@ import React from "react";
 import { Everything, MovementState, TimeSettings } from "../interfaces";
 import { BotPosition, UserEnv } from "../devices/interfaces";
 import { connect } from "react-redux";
-import { getUrlQuery, validBotLocationData } from "../util";
+import { getUrlQuery } from "../util";
+import { validBotLocationData } from "../util/location";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "./designer_panel";

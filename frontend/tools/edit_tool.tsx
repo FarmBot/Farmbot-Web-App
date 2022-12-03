@@ -35,6 +35,7 @@ export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
     !!(toolId && toolSlots.map(x => x.body.tool_id).includes(toolId));
 
 export const LUA_WATER_FLOW_RATE =
+  "toast(\"Running water for 5 seconds\")\n" +
   "write_pin(8, \"digital\", 1)\n" +
   "wait(5000)\n" +
   "write_pin(8, \"digital\", 0)";

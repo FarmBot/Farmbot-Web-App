@@ -57,8 +57,8 @@ export const initialState: DesignerState = {
   profileOpen: false,
   profileAxis: "x",
   profilePosition: { x: undefined, y: undefined },
-  profileWidth: 100,
-  profileFollowBot: false,
+  profileWidth: 500,
+  profileFollowBot: true,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
