@@ -1,4 +1,6 @@
-import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
+import {
+  BotPosition, BotState, SourceFwConfig, UserEnv,
+} from "../devices/interfaces";
 import {
   Vector3, McuParams, Xyz, AxisState, SyncStatus, TaggedSequence,
   FirmwareHardware, TaggedPeripheral, TaggedWebcamFeed, TaggedLog,
@@ -68,6 +70,7 @@ export interface DesignerControlsProps {
   menuOpen: UUID | undefined;
   firmwareSettings: McuParams;
   getConfigValue: GetWebAppConfigValue;
+  sourceFwConfig: SourceFwConfig;
   env: UserEnv;
   firmwareHardware: FirmwareHardware | undefined;
   movementState: MovementState;

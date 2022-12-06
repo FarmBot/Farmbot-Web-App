@@ -95,6 +95,9 @@ export namespace ToolTips {
     trim(`If stall detection or limit switches are enabled, home axis and
     determine maximum. Will set axis length value.`);
 
+  export const SET_AXIS_LENGTH =
+    trim(`Set axis length to the current FarmBot axis position.`);
+
   export const SET_HOME_POSITION =
     trim(`Set the current location as home (zero).`);
 
@@ -1861,8 +1864,9 @@ export enum DeviceSetting {
   stopAtHome = `Stop at Home`,
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
-  findAxisLength = `Find axis length (mm)`,
-  axisLength = `Set Axis Length (mm)`,
+  findAxisLength = `Find axis length`,
+  setAxisLength = `Set axis length`,
+  axisLength = `Axis Length (mm)`,
   gantryHeight = `Gantry Height`,
   safeHeight = `Safe Height`,
   fallbackSoilHeight = `Fallback Soil Height`,

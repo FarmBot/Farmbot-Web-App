@@ -567,6 +567,8 @@ export const CurrentPosition = (axis: Xyz) => (props: WizardStepComponentProps) 
 export const AxisActions = (props: WizardStepComponentProps) => {
   const locationData = validBotLocationData(props.bot.hardware.location_data);
   const firmwareSettings = getFirmwareConfig(props.resources)?.body;
+  const sourceFwConfig = sourceFwConfigValue(validFwConfig(getFirmwareConfig(
+    props.resources)), props.bot.hardware.mcu_params);
   if (!firmwareSettings) { return <div />; }
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   const botOnline = isBotOnlineFromState(props.bot);
@@ -574,6 +576,7 @@ export const AxisActions = (props: WizardStepComponentProps) => {
   return <BotPositionRows
     locationData={locationData}
     getConfigValue={props.getConfigValue}
+    sourceFwConfig={sourceFwConfig}
     arduinoBusy={busy}
     locked={locked}
     botOnline={botOnline}

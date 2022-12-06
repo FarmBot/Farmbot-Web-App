@@ -19,6 +19,8 @@ import {
 import {
   GantryHeight, SafeHeight, SoilHeight,
 } from "../fbos_settings/z_height_inputs";
+import { setAxisLength } from "../../controls/move/bot_position_rows";
+import { validBotLocationData } from "../../util/location";
 
 export function AxisSettings(props: AxisSettingsProps) {
 
@@ -45,6 +47,7 @@ export function AxisSettings(props: AxisSettingsProps) {
   const showEncoders = hasEncoders(firmwareHardware);
 
   const scale = calculateScale(sourceFwConfig);
+  const botPosition = validBotLocationData(bot.hardware.location_data).position;
 
   const commonProps = {
     dispatch,
@@ -131,6 +134,18 @@ export function AxisSettings(props: AxisSettingsProps) {
         arduinoBusy={busy}
         locked={locked}
         botOnline={botOnline} />
+      <CalibrationRow
+        type={"zero"}
+        title={DeviceSetting.setAxisLength}
+        axisTitle={t("SET LENGTH")}
+        toolTip={ToolTips.SET_AXIS_LENGTH}
+        action={axis => axis != "all"
+          && setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })()}
+        mcuParams={
+          { encoder_enabled_x: 1, encoder_enabled_y: 1, encoder_enabled_z: 1 }}
+        arduinoBusy={false}
+        locked={false}
+        botOnline={true} />
       <NumericMCUInputGroup {...commonProps}
         label={DeviceSetting.axisLength}
         tooltip={ToolTips.AXIS_LENGTH}

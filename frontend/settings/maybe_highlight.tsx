@@ -43,6 +43,7 @@ const AXES_PANEL = [
   DeviceSetting.stopAtMax,
   DeviceSetting.negativeCoordinatesOnly,
   DeviceSetting.findAxisLength,
+  DeviceSetting.setAxisLength,
   DeviceSetting.axisLength,
   DeviceSetting.safeHeight,
   DeviceSetting.fallbackSoilHeight,

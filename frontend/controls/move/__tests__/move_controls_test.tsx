@@ -11,6 +11,7 @@ describe("<MoveControls />", () => {
     bot: bot,
     getConfigValue: jest.fn(),
     firmwareSettings: bot.hardware.mcu_params,
+    sourceFwConfig: () => ({ value: 0, consistent: true }),
     firmwareHardware: undefined,
     env: {},
     movementState: fakeMovementState(),

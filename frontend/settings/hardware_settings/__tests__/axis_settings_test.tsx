@@ -28,11 +28,12 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { edit } from "../../../api/crud";
+import { edit, save } from "../../../api/crud";
 
 describe("<AxisSettings />", () => {
   const state = fakeState();
-  state.resources = buildResourceIndex([fakeFirmwareConfig()]);
+  const fakeConfig = fakeFirmwareConfig();
+  state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): AxisSettingsProps => ({
     dispatch: mockDispatch(jest.fn(), () => state),
@@ -44,7 +45,7 @@ describe("<AxisSettings />", () => {
     sourceFbosConfig: x => ({
       value: bot.hardware.configuration[x], consistent: true
     }),
-    firmwareConfig: fakeFirmwareConfig().body,
+    firmwareConfig: fakeConfig.body,
     botOnline: true,
     firmwareHardware: undefined,
     showAdvanced: true,
@@ -89,7 +90,7 @@ describe("<AxisSettings />", () => {
 
   it("calibrates", () => {
     const wrapper = shallow(<AxisSettings {...fakeProps()} />);
-    wrapper.find(CalibrationRow).last().props().action("all");
+    wrapper.find(CalibrationRow).at(2).props().action("all");
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
 
@@ -97,7 +98,7 @@ describe("<AxisSettings />", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
     const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
+    expect(wrapper.find(CalibrationRow).at(2).props().stallUseDisabled)
       .toBeFalsy();
   });
 
@@ -105,7 +106,7 @@ describe("<AxisSettings />", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).last().props().stallUseDisabled)
+    expect(wrapper.find(CalibrationRow).at(2).props().stallUseDisabled)
       .toBeFalsy();
   });
 
@@ -113,6 +114,27 @@ describe("<AxisSettings />", () => {
     const wrapper = shallow(<AxisSettings {...fakeProps()} />);
     wrapper.find(CalibrationRow).at(1).props().action("all");
     expect(mockDevice.setZero).toHaveBeenCalledWith("all");
+  });
+
+  it("sets axis length", () => {
+    const p = fakeProps();
+    p.bot.hardware.location_data.position.x = 100;
+    p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
+    const wrapper = shallow(<AxisSettings {...p} />);
+    wrapper.find(CalibrationRow).at(3).props().action("x");
+    expect(edit).toHaveBeenCalledWith(fakeConfig,
+      { movement_axis_nr_steps_x: "500" });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+  });
+
+  it("doesn't set axis length", () => {
+    const p = fakeProps();
+    p.bot.hardware.location_data.position.x = undefined;
+    p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
+    const wrapper = shallow(<AxisSettings {...p} />);
+    wrapper.find(CalibrationRow).at(3).props().action("x");
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("shows express board related labels", () => {

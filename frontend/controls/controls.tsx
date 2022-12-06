@@ -21,6 +21,7 @@ export class RawDesignerControls
         <MoveControls
           bot={this.props.bot}
           getConfigValue={this.props.getConfigValue}
+          sourceFwConfig={this.props.sourceFwConfig}
           env={this.props.env}
           logs={this.props.logs}
           firmwareSettings={this.props.firmwareSettings}

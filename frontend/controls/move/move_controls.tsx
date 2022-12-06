@@ -50,6 +50,7 @@ export const MoveControls = (props: MoveControlsProps) => {
       botOnline={botOnline}
       dispatch={props.dispatch}
       firmwareSettings={props.firmwareSettings}
+      sourceFwConfig={props.sourceFwConfig}
       firmwareHardware={props.firmwareHardware} />
     {props.getConfigValue(BooleanSetting.show_motor_plot) &&
       <MotorPositionPlot locationData={locationData} />}
