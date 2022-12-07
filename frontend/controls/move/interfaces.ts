@@ -1,5 +1,5 @@
 import {
-  BotLocationData, BotPosition, BotState, UserEnv,
+  BotLocationData, BotPosition, BotState, SourceFwConfig, UserEnv,
 } from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware, JobProgress, TaggedLog } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
@@ -99,6 +99,7 @@ export interface BotPositionRowsProps {
   arduinoBusy: boolean;
   locked: boolean;
   firmwareSettings: McuParams;
+  sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
   dispatch: Function;
@@ -112,12 +113,21 @@ export interface AxisActionsProps {
   axis: Xyz;
   dispatch: Function;
   botPosition: BotPosition;
+  sourceFwConfig: SourceFwConfig;
+}
+
+export interface SetAxisLengthProps {
+  axis: Xyz;
+  dispatch: Function;
+  botPosition: BotPosition;
+  sourceFwConfig: SourceFwConfig;
 }
 
 export interface MoveControlsProps {
   dispatch: Function;
   bot: BotState;
   getConfigValue: GetWebAppConfigValue;
+  sourceFwConfig: SourceFwConfig;
   firmwareSettings: McuParams;
   firmwareHardware: FirmwareHardware | undefined;
   env: UserEnv;

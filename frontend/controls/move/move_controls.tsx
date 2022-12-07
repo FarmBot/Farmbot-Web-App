@@ -3,7 +3,7 @@ import { Position } from "@blueprintjs/core";
 import { getStatus } from "../../connectivity/reducer_support";
 import { isBotOnline, isBotOnlineFromState } from "../../devices/must_be_online";
 import { BooleanSetting } from "../../session_keys";
-import { validBotLocationData } from "../../util";
+import { validBotLocationData } from "../../util/location";
 import { MoveControlsProps } from "./interfaces";
 import { BotPositionRows } from "./bot_position_rows";
 import { JogControlsGroup } from "./jog_controls_group";
@@ -50,6 +50,7 @@ export const MoveControls = (props: MoveControlsProps) => {
       botOnline={botOnline}
       dispatch={props.dispatch}
       firmwareSettings={props.firmwareSettings}
+      sourceFwConfig={props.sourceFwConfig}
       firmwareHardware={props.firmwareHardware} />
     {props.getConfigValue(BooleanSetting.show_motor_plot) &&
       <MotorPositionPlot locationData={locationData} />}

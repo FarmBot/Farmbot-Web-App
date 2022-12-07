@@ -37,6 +37,7 @@ import {
   AxisActions,
   DynamicMapToggle,
   BootSequence,
+  FlowRateInput,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import {
@@ -83,11 +84,12 @@ const WIZARD_TOC =
       [WizardSectionSlug.axisLength]: { title: t("AXIS LENGTH"), steps: [] },
       [WizardSectionSlug.peripherals]: { title: t("PERIPHERALS"), steps: [] },
       [WizardSectionSlug.camera]: { title: t("CAMERA"), steps: [] },
+      [WizardSectionSlug.tools]: {
+        title: hasUTM(firmwareHardware) ? t("UTM and TOOLS") : t("TOOLS"),
+        steps: [],
+      },
+      [WizardSectionSlug.tours]: { title: t("TOURS"), steps: [] },
     };
-    if (hasUTM(firmwareHardware)) {
-      toc[WizardSectionSlug.tools] = { title: t("UTM and TOOLS"), steps: [] };
-    }
-    toc[WizardSectionSlug.tours] = { title: t("TOURS"), steps: [] };
     return toc;
   };
 
@@ -139,6 +141,7 @@ export enum WizardStepSlug {
   utm = "utm",
   seeder = "seeder",
   wateringNozzle = "wateringNozzle",
+  flowRate = "flowRate",
   weeder = "weeder",
   soilSensor = "soilSensor",
   soilSensorValue = "soilSensorValue",
@@ -1185,6 +1188,17 @@ export const WIZARD_STEPS = (
         ],
       }]
       : []),
+    {
+      section: WizardSectionSlug.tools,
+      slug: WizardStepSlug.flowRate,
+      title: t("Water flow rate"),
+      prerequisites: [botOnlineReq],
+      content: t(ToolTips.WATER_FLOW_RATE),
+      component: FlowRateInput,
+      question: t("Has the value been entered?"),
+      outcomes: [
+      ],
+    },
     ...(hasUTM(firmwareHardware)
       ? [{
         section: WizardSectionSlug.tools,
@@ -1344,7 +1358,7 @@ export const WIZARD_SECTIONS = (
 ): WizardSection[] => {
   const toC = WIZARD_TOC(firmwareHardware);
   WIZARD_STEPS(firmwareHardware, getConfigValue)
-    .map(step => toC[step.section]?.steps.push(step));
+    .map(step => toC[step.section].steps.push(step));
   return Object.entries(toC)
     .map(([sectionSlug, sectionData]: [WizardSectionSlug, WizardToCSection]) =>
       ({ slug: sectionSlug, ...sectionData }));

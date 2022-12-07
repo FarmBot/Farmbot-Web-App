@@ -115,6 +115,8 @@ export interface ProfileUtmProps {
   getX: GetProfileX;
   reversed: boolean;
   hidePositionIndicator?: boolean;
+  profileWidth?: number;
+  gantryHeight: number;
 }
 
 export interface PlantPointState {

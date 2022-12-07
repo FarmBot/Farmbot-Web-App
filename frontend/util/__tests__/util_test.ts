@@ -1,6 +1,5 @@
 import * as Util from "../util";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { LocationData } from "farmbot";
 
 describe("util", () => {
   describe("scrollToBottom", () => {
@@ -94,27 +93,6 @@ describe("util", () => {
       globalConfig.SHORT_REVISION = "0123456789";
       const short = Util.shortRevision();
       expect(short).toEqual("01234567");
-    });
-  });
-
-  describe("validBotLocationData()", () => {
-    it("returns valid location_data object", () => {
-      const result = Util.validBotLocationData(undefined);
-      expect(result).toEqual({
-        position: { x: undefined, y: undefined, z: undefined },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: undefined, y: undefined, z: undefined }
-      });
-    });
-
-    it("returns valid location_data object when a partial is provided", () => {
-      const result = Util.validBotLocationData(
-        { raw_encoders: { x: 123 } } as LocationData);
-      expect(result).toEqual({
-        position: { x: undefined, y: undefined, z: undefined },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: 123, y: undefined, z: undefined }
-      });
     });
   });
 });

@@ -7,7 +7,7 @@ import {
   selectAllPointGroups,
   selectAllActivePoints,
 } from "../resources/selectors";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 import { UUID } from "../resources/interfaces";
 import {
   getFwHardwareValue,

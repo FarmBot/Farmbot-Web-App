@@ -502,7 +502,8 @@ CREATE TABLE public.fbos_configs (
     update_channel character varying(7) DEFAULT 'stable'::character varying,
     boot_sequence_id integer,
     safe_height integer DEFAULT 0,
-    soil_height integer DEFAULT 0
+    soil_height integer DEFAULT 0,
+    gantry_height integer DEFAULT 0
 );
 
 
@@ -924,7 +925,8 @@ CREATE TABLE public.tools (
     name character varying(280),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    device_id integer
+    device_id integer,
+    flow_rate_ml_per_s integer DEFAULT 0
 );
 
 
@@ -3836,6 +3838,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220819170955'),
 ('20221027211207'),
 ('20221028172528'),
-('20221103172100');
+('20221103172100'),
+('20221109233217');
 
 

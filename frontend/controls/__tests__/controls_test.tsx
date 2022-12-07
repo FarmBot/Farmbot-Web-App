@@ -24,6 +24,7 @@ describe("<DesignerControls />", () => {
     menuOpen: undefined,
     firmwareSettings: bot.hardware.mcu_params,
     getConfigValue: jest.fn(),
+    sourceFwConfig: () => ({ value: 0, consistent: true }),
     env: {},
     firmwareHardware: undefined,
     movementState: fakeMovementState(),

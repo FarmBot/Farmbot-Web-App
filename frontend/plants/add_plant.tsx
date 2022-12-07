@@ -14,7 +14,7 @@ import { Panel } from "../farm_designer/panel_header";
 import { PlantGrid } from "./grid/plant_grid";
 import { getWebAppConfig } from "../resources/getters";
 import { BotPosition } from "../devices/interfaces";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 
 export const mapStateToProps = (props: Everything): AddPlantProps => ({
   cropSearchResults: props

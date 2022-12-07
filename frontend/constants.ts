@@ -95,6 +95,9 @@ export namespace ToolTips {
     trim(`If stall detection or limit switches are enabled, home axis and
     determine maximum. Will set axis length value.`);
 
+  export const SET_AXIS_LENGTH =
+    trim(`Set axis length to the current FarmBot axis position.`);
+
   export const SET_HOME_POSITION =
     trim(`Set the current location as home (zero).`);
 
@@ -136,7 +139,7 @@ export namespace ToolTips {
 
   export const CALIBRATION_RETRY_RESET_DISTANCE =
     trim(`Distance in millimeters to group calibration retries. If the
-    distance travelled while detecting the axis end location exceeds this
+    distance traveled while detecting the axis end location exceeds this
     value, the calibration retry counter is reset.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
@@ -144,6 +147,12 @@ export namespace ToolTips {
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled.
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (disabled))`);
+
+  export const GANTRY_HEIGHT =
+    trim(`The **GANTRY HEIGHT** is the distance in millimeters between the
+    bottom of FarmBot's tool head and the bottom of the gantry main beam
+    when the Z-axis is fully raised. It is used to determine if a plant is
+    too tall for the gantry to pass over it. (default: {{ distance }})`);
 
   export const SAFE_HEIGHT =
     trim(`Z axis coordinate (millimeters) to which the z axis should be
@@ -588,6 +597,13 @@ export namespace ToolTips {
 
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
+
+  // Tools
+  export const WATER_FLOW_RATE =
+    trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
+    watering nozzle and click the **RUN WATER FOR 5 SECONDS** button.
+    Measure how much water FarmBot dispensed in milliliters (mL)
+    and then divide this number by 5. Enter the result in the field.`);
 
   // Logs
   export const LOGS =
@@ -1848,8 +1864,10 @@ export enum DeviceSetting {
   stopAtHome = `Stop at Home`,
   stopAtMax = `Stop at Max`,
   negativeCoordinatesOnly = `Negative Coordinates Only`,
-  findAxisLength = `Find axis length (mm)`,
-  axisLength = `Set Axis Length (mm)`,
+  findAxisLength = `Find axis length`,
+  setAxisLength = `Set axis length`,
+  axisLength = `Axis Length (mm)`,
+  gantryHeight = `Gantry Height`,
   safeHeight = `Safe Height`,
   fallbackSoilHeight = `Fallback Soil Height`,
 

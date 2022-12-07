@@ -22,7 +22,8 @@ import {
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { validBotLocationData, validFwConfig } from "./util";
+import { validFwConfig } from "./util";
+import { validBotLocationData } from "./util/location";
 import { BooleanSetting, StringSetting } from "./session_keys";
 import {
   getWebAppConfigValue, GetWebAppConfigValue,

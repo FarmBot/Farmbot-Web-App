@@ -208,8 +208,11 @@ GEM
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.7.1)
+    mail (2.8.0)
       mini_mime (>= 0.1.1)
+      net-imap
+      net-pop
+      net-smtp
     marcel (1.0.2)
     memoist (0.16.2)
     method_source (1.0.0)
@@ -219,6 +222,14 @@ GEM
     multipart-post (2.2.3)
     mutations (0.9.1)
       activesupport
+    net-imap (0.3.1)
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
+    net-protocol (0.2.0)
+      timeout
+    net-smtp (0.3.3)
+      net-protocol
     nio4r (2.5.8)
     nokogiri (1.13.9-x86_64-linux)
       racc (~> 1.4)
@@ -227,7 +238,7 @@ GEM
     passenger (6.0.15)
       rack
       rake (>= 0.8.1)
-    pg (1.4.4)
+    pg (1.4.5)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -240,7 +251,7 @@ GEM
       faraday_middleware (~> 1.2)
       hashie (~> 4.1)
       multi_json (~> 1.15)
-    racc (1.6.0)
+    racc (1.6.1)
     rack (2.2.4)
     rack-attack (6.6.1)
       rack (>= 1.0, < 3)
@@ -347,6 +358,7 @@ GEM
     thor (1.2.1)
     thwait (0.2.0)
       e2mmap
+    timeout (0.3.1)
     trailblazer-option (0.1.2)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
@@ -360,7 +372,7 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.4)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   x86_64-linux

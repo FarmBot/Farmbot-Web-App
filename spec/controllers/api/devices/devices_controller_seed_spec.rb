@@ -77,6 +77,10 @@ describe Api::DevicesController do
       device.fbos_config.soil_height
     end
 
+    def settings_gantry_height?(device)
+      device.fbos_config.gantry_height
+    end
+
     def settings_firmware?(device)
       device.fbos_config.firmware_hardware
     end
@@ -318,6 +322,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -389,6 +394,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -460,6 +466,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -531,6 +538,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -604,6 +612,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -678,6 +687,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -749,6 +759,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -822,6 +833,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -896,6 +908,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -917,7 +930,7 @@ describe Api::DevicesController do
       expect(tools_seed_trough_2?(device)).to be
       expect(tools_seeder?(device)).to_not be
       expect(tools_soil_sensor?(device)).to_not be
-      expect(tools_watering_nozzle?(device)).to_not be
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
@@ -963,6 +976,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -984,7 +998,7 @@ describe Api::DevicesController do
       expect(tools_seed_trough_2?(device)).to be
       expect(tools_seeder?(device)).to_not be
       expect(tools_soil_sensor?(device)).to_not be
-      expect(tools_watering_nozzle?(device)).to_not be
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
@@ -1030,6 +1044,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -1051,7 +1066,7 @@ describe Api::DevicesController do
       expect(tools_seed_trough_2?(device)).to be
       expect(tools_seeder?(device)).to_not be
       expect(tools_soil_sensor?(device)).to_not be
-      expect(tools_watering_nozzle?(device)).to_not be
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be
@@ -1097,6 +1112,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
       expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
@@ -1118,7 +1134,7 @@ describe Api::DevicesController do
       expect(tools_seed_trough_2?(device)).to be
       expect(tools_seeder?(device)).to_not be
       expect(tools_soil_sensor?(device)).to_not be
-      expect(tools_watering_nozzle?(device)).to_not be
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to_not be
       expect(sequences_pickup_seed_genesis?(device)).to_not be

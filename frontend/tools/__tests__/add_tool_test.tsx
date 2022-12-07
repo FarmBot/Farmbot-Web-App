@@ -30,6 +30,20 @@ describe("<AddTool />", () => {
   it("renders", () => {
     const wrapper = mount(<AddTool {...fakeProps()} />);
     expect(wrapper.text()).toContain("Add new");
+    expect(wrapper.text().toLowerCase()).not.toContain("flow rate");
+  });
+
+  it("renders watering nozzle", () => {
+    const wrapper = mount(<AddTool {...fakeProps()} />);
+    wrapper.setState({ toolName: "watering nozzle" });
+    expect(wrapper.text().toLowerCase()).toContain("flow rate");
+  });
+
+  it("changes flow rate", () => {
+    const wrapper = shallow<AddTool>(<AddTool {...fakeProps()} />);
+    expect(wrapper.state().flowRate).toEqual(0);
+    wrapper.instance().changeFlowRate(1);
+    expect(wrapper.state().flowRate).toEqual(1);
   });
 
   it("edits tool name", () => {
@@ -64,7 +78,9 @@ describe("<AddTool />", () => {
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
     await wrapper.find(SaveBtn).simulate("click");
-    expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
+    expect(init).toHaveBeenCalledWith("Tool", {
+      name: "Foo", flow_rate_ml_per_s: 0,
+    });
     expect(wrapper.state().uuid).toEqual(undefined);
     expect(push).toHaveBeenCalledWith(Path.tools());
   });
@@ -76,7 +92,9 @@ describe("<AddTool />", () => {
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
     await wrapper.find(SaveBtn).simulate("click");
-    expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
+    expect(init).toHaveBeenCalledWith("Tool", {
+      name: "Foo", flow_rate_ml_per_s: 0,
+    });
     expect(wrapper.state().uuid).toEqual("fake uuid");
     expect(push).not.toHaveBeenCalled();
     wrapper.unmount();
@@ -89,8 +107,8 @@ describe("<AddTool />", () => {
     ["farmduino_k14", 6],
     ["farmduino_k15", 8],
     ["farmduino_k16", 9],
-    ["express_k10", 2],
-    ["express_k11", 2],
+    ["express_k10", 3],
+    ["express_k11", 3],
   ])("adds peripherals: %s", (firmware, expectedAdds) => {
     const p = fakeProps();
     p.firmwareHardware = firmware;
@@ -106,7 +124,7 @@ describe("<AddTool />", () => {
     p.existingToolNames = ["Seed Trough 1"];
     const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(initSave).toHaveBeenCalledTimes(1);
+    expect(initSave).toHaveBeenCalledTimes(2);
     expect(push).toHaveBeenCalledWith(Path.tools());
   });
 
@@ -122,9 +140,11 @@ describe("<AddTool />", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const wrapper = mount<AddTool>(<AddTool {...p} />);
-    expect(wrapper.state().toAdd).toEqual(["Seed Trough 1", "Seed Trough 2"]);
+    expect(wrapper.state().toAdd).toEqual([
+      "Watering Nozzle", "Seed Trough 1", "Seed Trough 2",
+    ]);
     wrapper.find("input").last().simulate("change");
-    expect(wrapper.state().toAdd).toEqual(["Seed Trough 1"]);
+    expect(wrapper.state().toAdd).toEqual(["Watering Nozzle", "Seed Trough 1"]);
   });
 
   it("selects a tool", () => {
@@ -139,7 +159,7 @@ describe("<AddTool />", () => {
   it("disables when all already added", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    p.existingToolNames = ["Seed Trough 1", "Seed Trough 2"];
+    p.existingToolNames = ["Seed Trough 1", "Seed Trough 2", "Watering Nozzle"];
     const wrapper = mount<AddTool>(<AddTool {...p} />);
     expect(wrapper.find("button").last().hasClass("pseudo-disabled"))
       .toBeTruthy();

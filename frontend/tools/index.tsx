@@ -69,6 +69,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             { mounted_tool_id: tool_id }));
           this.props.dispatch(save(this.props.device.uuid));
         }}
+        noUTM={this.noUTM}
         isActive={this.props.isActive}
         filterSelectedTool={true}
         filterActiveTools={false} />
@@ -79,10 +80,11 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           mountedToolInfo={{
             name: this.mountedTool?.body.name,
             pulloutDirection: ToolPulloutDirection.POSITIVE_X,
-            noUTM: !hasUTM(this.props.firmwareHardware),
+            noUTM: this.noUTM,
             flipped: false,
           }} reversed={false}
           hidePositionIndicator={true}
+          gantryHeight={0}
           botPosition={{ x: 0, y: 0, z: 0 }} />
       </svg>
       <ToolVerification sensors={this.props.sensors} bot={this.props.bot} />
@@ -108,6 +110,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             toolSlot={toolSlot}
             isActive={this.props.isActive}
             tools={this.props.tools}
+            noUTM={this.noUTM}
             toolTransformProps={this.props.toolTransformProps} />)}
     </div>;
 
@@ -253,6 +256,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
                 props.dispatch(edit(props.toolSlot, update));
                 props.dispatch(save(props.toolSlot.uuid));
               }}
+              noUTM={props.noUTM}
               isActive={props.isActive}
               filterSelectedTool={false}
               filterActiveTools={true} />

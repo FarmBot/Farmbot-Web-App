@@ -71,6 +71,7 @@ describe("<SelectPlants />", () => {
       groups: [],
       timeSettings: fakeTimeSettings(),
       bulkPlantSlug: undefined,
+      noUTM: false,
     };
   }
 

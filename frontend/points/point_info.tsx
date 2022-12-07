@@ -21,7 +21,7 @@ import { ColorPicker } from "../ui";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { BotPosition } from "../devices/interfaces";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 import { validGoButtonAxes } from "../farm_designer/move_to";
 
 export interface EditPointProps {

@@ -17,7 +17,7 @@ import { TaggedToolSlotPointer } from "farmbot";
 import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
 import { FilePath } from "../../../internal_urls";
 
-enum UTMDimensions {
+export enum UTMDimensions {
   height = 40,
   extrusion = 20,
 }
@@ -34,17 +34,21 @@ export const UTMProfile = (props: ProfileUtmProps) => {
     });
   const profileUtmH = props.getX(props.botPosition);
   const profileUtmV = Math.abs(props.botPosition.z || 0);
+  const extrusion = UTMDimensions.extrusion;
   if (!inProfile) { return <g id={"utm-not-in-profile"} />; }
   if (!props.expanded) {
     return <g id={"UTM-and-axis"} opacity={0.25}>
-      <line id={"z-axis"} strokeWidth={20} stroke={Color.darkGray}
+      <line id={"z-axis"} strokeWidth={extrusion} stroke={Color.darkGray}
         x1={profileUtmH} y1={0} x2={profileUtmH} y2={profileUtmV} />
       <rect id={"position-indicator"} fill={Color.black}
         x={profileUtmH - 5} y={profileUtmV - 5} width={10} height={10} />
     </g>;
   }
-  const extrusionOffset = (UTMDimensions.extrusion + ToolDimensions.diameter) / 2;
+  const extrusionOffset = (extrusion + ToolDimensions.diameter) / 2;
   const toolInfo = props.mountedToolInfo;
+  const xProfile = props.profileAxis == "x";
+  const yExtrusionX = profileUtmH + ToolDimensions.diameter / 2 - extrusion;
+  const utmTopY = profileUtmV - UTMDimensions.height;
   return <g id={"UTM-and-axis"} opacity={0.75}>
     <defs>
       <linearGradient id={"utm-gradient"}>
@@ -54,9 +58,17 @@ export const UTMProfile = (props: ProfileUtmProps) => {
         <stop offset={"100%"} stopColor={Color.darkGray} stopOpacity={1} />
       </linearGradient>
     </defs>
-    <line id={"z-axis"} strokeWidth={20} stroke={Color.darkGray} opacity={0.5}
+    {props.profileWidth &&
+      <rect id={"y-axis"}
+        x={xProfile ? yExtrusionX : 0}
+        y={-props.gantryHeight - extrusion * 3}
+        width={xProfile ? extrusion * 2 : props.profileWidth}
+        height={extrusion * 3}
+        fill={Color.darkGray} fillOpacity={0.5} stroke={"none"} />}
+    <line id={"z-axis"}
+      strokeWidth={extrusion} stroke={Color.darkGray} opacity={0.5}
       x1={profileUtmH + extrusionOffset}
-      y1={Math.min(0, profileUtmV - UTMDimensions.height)}
+      y1={-props.gantryHeight - (-props.gantryHeight < utmTopY ? 0 : extrusion * 3)}
       x2={profileUtmH + extrusionOffset}
       y2={profileUtmV} />
     <line id={"z-axis-separator"}

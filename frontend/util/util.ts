@@ -5,7 +5,6 @@ import {
   TaggedFbosConfig,
   ResourceName,
 } from "farmbot";
-import { BotLocationData } from "../devices/interfaces";
 import {
   sortBy,
   merge,
@@ -108,15 +107,6 @@ export function scrollToBottom(elementId: string) {
   if (!elToScroll) { return; }
   // Wait for the new element height and scroll to the bottom.
   setTimeout(() => elToScroll.scrollTop = elToScroll.scrollHeight, 1);
-}
-
-export function validBotLocationData(
-  botLocationData: BotLocationData | undefined): BotLocationData {
-  return betterMerge({
-    position: { x: undefined, y: undefined, z: undefined },
-    scaled_encoders: { x: undefined, y: undefined, z: undefined },
-    raw_encoders: { x: undefined, y: undefined, z: undefined },
-  }, botLocationData);
 }
 
 /**

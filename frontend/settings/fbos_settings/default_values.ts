@@ -27,6 +27,7 @@ const DEFAULT_FBOS_CONFIG_VALUES: Record<Key, Value> = {
   boot_sequence_id: undefined,
   safe_height: 0,
   soil_height: 0,
+  ["gantry_height" as Key]: 0,
 };
 
 export const modifiedFromDefault = (key: Key, value: Value) => {

@@ -8,7 +8,7 @@ import { findBySlug } from "../farm_designer/search_selectors";
 import { Everything } from "../interfaces";
 import { OFCropFetch } from "../farm_designer/util";
 import { unselectPlant, setDragIcon } from "../farm_designer/map/actions";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 import { createPlant } from "../farm_designer/map/layers/plants/plant_actions";
 import { round } from "../farm_designer/map/util";
 import { BotPosition } from "../devices/interfaces";

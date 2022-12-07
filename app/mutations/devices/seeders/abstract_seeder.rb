@@ -41,6 +41,7 @@ module Devices
         :settings_change_firmware_config_defaults,
         :settings_soil_height,
         :settings_firmware,
+        :settings_gantry_height,
         :settings_hide_sensors,
 
         # TOOLS ==================================
@@ -225,7 +226,10 @@ module Devices
       def tools_seed_trough_2; end
       def tools_seeder; end
       def tools_soil_sensor; end
-      def tools_watering_nozzle; end
+      def tools_watering_nozzle
+        @tools_watering_nozzle ||=
+          add_tool(ToolNames::WATERING_NOZZLE)
+      end
       def tools_weeder; end
       def tools_rotary; end
 

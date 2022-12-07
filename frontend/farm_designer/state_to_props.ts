@@ -21,9 +21,8 @@ import {
   selectAllTools,
   selectAllFarmwareEnvs,
 } from "../resources/selectors";
-import {
-  validBotLocationData, validFwConfig, unpackUUID, validFbosConfig,
-} from "../util";
+import { validFwConfig, unpackUUID, validFbosConfig } from "../util";
+import { validBotLocationData } from "../util/location";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { FarmDesignerProps, CameraCalibrationData } from "./interfaces";
 import { TaggedPlant, BotSize } from "./map/interfaces";

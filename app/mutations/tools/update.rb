@@ -6,6 +6,7 @@ module Tools
 
     optional do
       string :name
+      integer :flow_rate_ml_per_s
     end
 
     def execute

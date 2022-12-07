@@ -36,6 +36,7 @@ module Devices
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_soil_height; end
+      def settings_gantry_height; end
       def settings_firmware; end
       def settings_hide_sensors; end
       def tool_slots_slot_1; end

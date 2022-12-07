@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Popover } from "../../ui";
 import {
-  findAxisLength, findHome, moveAbsolute, moveToHome, setHome,
+  findAxisLength, findHome, moveAbsolute, moveToHome, setHome, updateMCU,
 } from "../../devices/actions";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
@@ -14,7 +14,9 @@ import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
 import { push } from "../../history";
-import { AxisActionsProps, BotPositionRowsProps } from "./interfaces";
+import {
+  AxisActionsProps, BotPositionRowsProps, SetAxisLengthProps,
+} from "./interfaces";
 import { lockedClass } from "../locked_class";
 import { Path } from "../../internal_urls";
 import { Xyz } from "farmbot";
@@ -22,6 +24,9 @@ import { BotPosition } from "../../devices/interfaces";
 import {
   setMovementState, setMovementStateFromPosition,
 } from "../../connectivity/log_handlers";
+import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
+import { isUndefined } from "lodash";
+import { calculateScale } from "../../settings/hardware_settings";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
@@ -32,6 +37,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     locked,
     dispatch: props.dispatch,
     botPosition: locationData.position,
+    sourceFwConfig: props.sourceFwConfig,
   };
   return <div className={"bot-position-rows"}>
     <div className={"axis-titles"}>
@@ -84,7 +90,10 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
 };
 
 export const AxisActions = (props: AxisActionsProps) => {
-  const { axis, arduinoBusy, locked, hardwareDisabled, botOnline } = props;
+  const {
+    axis, arduinoBusy, locked, hardwareDisabled, botOnline,
+    dispatch, botPosition, sourceFwConfig,
+  } = props;
   const className = lockedClass(locked);
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
     target={<i className="fa fa-ellipsis-v" />}
@@ -93,7 +102,7 @@ export const AxisActions = (props: AxisActionsProps) => {
         disabled={arduinoBusy || !botOnline}
         className={className}
         title={t("MOVE TO HOME")}
-        onClick={moveToHomeCommand(axis, props.botPosition, props.dispatch)}>
+        onClick={moveToHomeCommand(axis, botPosition, dispatch)}>
         {t("MOVE TO HOME")}
       </LockableButton>
       <LockableButton
@@ -102,7 +111,7 @@ export const AxisActions = (props: AxisActionsProps) => {
         title={t("FIND HOME")}
         onClick={() => {
           findHome(axis);
-          props.dispatch(setMovementStateFromPosition());
+          dispatch(setMovementStateFromPosition());
         }}>
         {t("FIND HOME")}
       </LockableButton>
@@ -119,11 +128,33 @@ export const AxisActions = (props: AxisActionsProps) => {
         onClick={() => findAxisLength(axis)}>
         {t("FIND LENGTH")}
       </LockableButton>
+      <LockableButton
+        disabled={!botOnline}
+        className={className}
+        title={t("SET LENGTH")}
+        onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
+        {t("SET LENGTH")}
+      </LockableButton>
       <a onClick={() => push(Path.settings("axes"))}>
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>
     </div>} />;
+};
+
+export const setAxisLength = (props: SetAxisLengthProps) => () => {
+  const { axis, dispatch, botPosition, sourceFwConfig } = props;
+  const axisPosition = botPosition[axis];
+  const axisSettingKeys: Record<Xyz, NumberConfigKey> = {
+    x: "movement_axis_nr_steps_x",
+    y: "movement_axis_nr_steps_y",
+    z: "movement_axis_nr_steps_z",
+  };
+  const key = axisSettingKeys[axis];
+  const value = isUndefined(axisPosition)
+    ? undefined
+    : "" + axisPosition * calculateScale(sourceFwConfig)[axis];
+  !isUndefined(value) && dispatch(updateMCU(key, value));
 };
 
 const moveToHomeCommand = (

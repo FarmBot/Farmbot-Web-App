@@ -4,6 +4,7 @@ import { EStopButton } from "./e_stop_btn";
 import { Row, Col, Popover } from "../ui";
 import { push } from "../history";
 import { updatePageInfo } from "../util";
+import { validBotLocationData } from "../util/location";
 import { NavLinks } from "./nav_links";
 import { TickerList } from "./ticker_list";
 import { AdditionalMenu } from "./additional_menu";
@@ -62,7 +63,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   Coordinates = () =>
     <p className={"nav-coordinates"} title={t("FarmBot position (X, Y, Z)")}>
-      {botPositionLabel(this.props.bot.hardware.location_data.position)}
+      {botPositionLabel(validBotLocationData(this.props.bot.hardware.location_data)
+        .position)}
     </p>;
 
   EstopButton = () =>

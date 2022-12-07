@@ -80,7 +80,6 @@ module Devices
 
       def tools_seeder; end
       def tools_soil_sensor; end
-      def tools_watering_nozzle; end
       def tools_weeder; end
       def tools_rotary; end
       def sequences_mount_tool; end
@@ -100,6 +99,10 @@ module Devices
         s.dig(:body, 4, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         Sequences::Create.run!(s, device: device)
+      end
+
+      def settings_gantry_height
+        device.fbos_config.update!(gantry_height: 140)
       end
 
       def settings_default_map_size_y

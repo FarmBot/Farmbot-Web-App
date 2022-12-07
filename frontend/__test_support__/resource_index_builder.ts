@@ -6,6 +6,7 @@ import {
   TaggedResource,
   TaggedSequence,
   TaggedRegimen,
+  Tool,
 } from "farmbot";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
@@ -308,6 +309,7 @@ const tr14: TaggedResource = {
   "body": {
     "id": 14,
     "name": "Trench Digging Tool",
+    ["flow_rate_ml_per_s" as keyof Tool]: 0,
   },
   "uuid": "Tool.14.49"
 };
@@ -318,6 +320,7 @@ const tr15: TaggedResource = {
   "body": {
     "id": 15,
     "name": "Berry Picking Tool",
+    ["flow_rate_ml_per_s" as keyof Tool]: 0,
   },
   "uuid": "Tool.15.50"
 };

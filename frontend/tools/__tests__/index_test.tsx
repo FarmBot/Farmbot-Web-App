@@ -285,6 +285,7 @@ describe("<ToolSlotInventoryItem />", () => {
     dispatch: jest.fn(),
     isActive: jest.fn(),
     toolTransformProps: fakeToolTransformProps(),
+    noUTM: false,
   });
 
   it("changes tool", () => {

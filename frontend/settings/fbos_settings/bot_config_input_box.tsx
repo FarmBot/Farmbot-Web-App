@@ -4,14 +4,16 @@ import { SourceFbosConfig } from "../../devices/interfaces";
 import { ConfigurationName } from "farmbot";
 import { updateConfig } from "../../devices/actions";
 import { parseIntInput } from "../../util";
-import { isNumber, isBoolean, isNaN } from "lodash";
+import { isNumber, isBoolean, isNaN, isUndefined } from "lodash";
 import { getModifiedClassName } from "./default_values";
+import { getModifiedClassNameSpecifyModified } from "../default_values";
 
 export interface BotConfigInputBoxProps {
   setting: ConfigurationName;
   dispatch: Function;
   disabled?: boolean;
   sourceFbosConfig: SourceFbosConfig;
+  modifiedOverride?: boolean;
 }
 
 export class BotConfigInputBox
@@ -39,7 +41,9 @@ export class BotConfigInputBox
     return <BlurableInput
       type="number"
       className={!this.config.consistent ? "dim" : ""}
-      wrapperClassName={getModifiedClassName(this.props.setting, current)}
+      wrapperClassName={!isUndefined(this.props.modifiedOverride)
+        ? getModifiedClassNameSpecifyModified(this.props.modifiedOverride)
+        : getModifiedClassName(this.props.setting, current)}
       onCommit={this.change(this.props.setting, this.props.dispatch)}
       value={boxValue}
       disabled={this.props.disabled} />;

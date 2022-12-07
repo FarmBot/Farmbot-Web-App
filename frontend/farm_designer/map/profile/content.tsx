@@ -1,6 +1,8 @@
 import React from "react";
 import { uniq, sortBy, ceil, range, cloneDeep, reverse } from "lodash";
-import { TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer } from "farmbot";
+import {
+  FullConfiguration, TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer,
+} from "farmbot";
 import {
   FlipProfileProps,
   GetProfileX, GetProfileXFromNumber, GetProfileXProps,
@@ -13,7 +15,7 @@ import {
 import { Color } from "../../../ui";
 import { getFbosZValue } from "../legend/z_display";
 import { BotOriginQuadrant } from "../../interfaces";
-import { ToolProfilePoint, UTMProfile } from "./tools";
+import { ToolProfilePoint, UTMDimensions, UTMProfile } from "./tools";
 import { TaggedPlant } from "../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { BooleanSetting } from "../../../session_keys";
@@ -39,19 +41,23 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   const width = ceil(props.botSize[profileAxis].value + 1, -2);
   const soilHeight = getFbosZValue(props.sourceFbosConfig, "soil_height");
   const safeHeight = getFbosZValue(props.sourceFbosConfig, "safe_height");
+  const gantryHeight = getFbosZValue(props.sourceFbosConfig,
+    "gantry_height" as keyof FullConfiguration);
   const maxHeight = Math.max(
     props.botSize.z.value + 1,
     Math.max(...props.allPoints.map(p => Math.abs(p.body.z))),
     soilHeight,
     safeHeight,
   );
-  const height = ceil(maxHeight, -2);
+  const gantryExtrusion = UTMDimensions.extrusion * 3;
+  const height = ceil(maxHeight + gantryHeight + gantryExtrusion, -2);
+  const yStart = Math.max(gantryHeight + gantryExtrusion, 40);
   const getX = getProfileX({ profileAxis, mapTransformProps, width });
   const reversed = flipProfile({ profileAxis, mapTransformProps });
   return <svg className={expanded ? "expand" : undefined}
     style={expanded ? {} : { display: "none" }}
     id={`${profileAxis}-axis-profile-at-${lineAxis}-eq-${position[lineAxis]}`}
-    viewBox={`-40 -20 ${width + 80} ${height + 40}`}
+    viewBox={`-40 ${-yStart} ${width + 80} ${height + 40}`}
     preserveAspectRatio={expanded ? undefined : "none"}>
     {expanded && <Grid
       getX={getX} height={height} width={width} negativeZ={props.negativeZ} />}
@@ -98,7 +104,8 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
       <UTMProfile profileAxis={profileAxis} expanded={expanded} getX={getX}
         position={position} selectionWidth={props.selectionWidth}
         mountedToolInfo={props.mountedToolInfo} reversed={reversed}
-        botPosition={props.botLocationData.position} />}
+        botPosition={props.botLocationData.position} profileWidth={width}
+        gantryHeight={gantryHeight} />}
     {getConfigValue(BooleanSetting.show_farmbot) &&
       getConfigValue(BooleanSetting.display_trail) &&
       <BotTrail

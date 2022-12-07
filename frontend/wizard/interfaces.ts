@@ -87,7 +87,7 @@ export interface WizardToCSection {
   steps: WizardStep[];
 }
 
-export type WizardToC = Partial<Record<WizardSectionSlug, WizardToCSection>>;
+export type WizardToC = Record<WizardSectionSlug, WizardToCSection>;
 export type WizardSteps = WizardStep[];
 
 export type WizardResults = Partial<Record<WizardStepSlug, WizardStepResult>>;

@@ -13,7 +13,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { selectMostRecentPoints } from "../farm_designer/location_info";
 import { soilHeightPoint } from "../points/soil_height";
 import { isBotOnlineFromState } from "../devices/must_be_online";
-import { validBotLocationData } from "../util";
+import { validBotLocationData } from "../util/location";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const openedSavedGarden =
