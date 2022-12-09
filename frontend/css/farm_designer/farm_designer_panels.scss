@@ -3245,9 +3245,6 @@ li {
         color: $medium_light_gray;
         margin-left: 1rem;
       }
-      p:first-of-type {
-        font-weight: bold;
-      }
     }
     .wizard-answer {
       button {
@@ -3338,6 +3335,9 @@ li {
         }
       }
     }
+    .wizard-step-question {
+      font-style: italic;
+    }
     .markdown {
       display: block;
       p {
@@ -3357,7 +3357,6 @@ li {
         float: none;
         padding: 0;
         padding-left: 0.25rem;
-        text-decoration: none !important;
       }
       .feedback {
         textarea {
@@ -3380,8 +3379,13 @@ li {
         background: $white;
         box-shadow: 0 1px 5px 0 $translucent;
       }
+      p {
+        font-size: 1.4rem;
+        line-height: 2rem;
+      }
       a {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
+        text-decoration: underline;
       }
       &.selected {
         border-color: $dark_gray;
@@ -3397,8 +3401,11 @@ li {
         }
       }
       .fb-button {
-        &:hover {
-          font-size: 1.15rem;
+        float: none;
+      }
+      .arrow-button {
+        p {
+          font-size: 0.9rem;
         }
       }
       .farmbot-origin {

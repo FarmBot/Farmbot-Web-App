@@ -406,7 +406,7 @@ export const InvertJogButton = (axis: Xyz) =>
 export const CheckForResistance = () =>
   <p>
     {t("Check hardware for resistance.")}&nbsp;
-    {t("Refer to the")}
+    {t("Refer to the")}&nbsp;
     <a href={genesisDocLink("why-is-my-farmbot-not-moving")}>
       {t("Why is my FarmBot not moving?")}
     </a>
@@ -419,13 +419,16 @@ export const MotorCurrentContent = () =>
     <p>{t("You may also try increasing motor current by 10%.")}</p>
   </fieldset>;
 
-const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string }) =>
+const FirmwareSettingToggle = (
+  setting: { key: NumberConfigKey, label: string },
+  showText: boolean,
+) =>
   (props: WizardOutcomeComponentProps) => {
     const sourceFwConfig = sourceFwConfigValue(validFwConfig(getFirmwareConfig(
       props.resources)), props.bot.hardware.mcu_params);
     const param = sourceFwConfig(setting.key);
     return <fieldset>
-      <CheckForResistance />
+      {showText && <CheckForResistance />}
       <label>{t(setting.label)}</label>
       <ToggleButton dispatch={props.dispatch}
         dim={!param.consistent}
@@ -435,13 +438,13 @@ const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string })
     </fieldset>;
   };
 
-export const DisableStallDetection = (axis: Xyz) => {
+export const DisableStallDetection = (axis: Xyz, showText = true) => {
   const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
     x: { key: "encoder_enabled_x", label: t("x-axis stall detection") },
     y: { key: "encoder_enabled_y", label: t("y-axis stall detection") },
     z: { key: "encoder_enabled_z", label: t("z-axis stall detection") },
   };
-  return FirmwareSettingToggle(setting[axis]);
+  return FirmwareSettingToggle(setting[axis], showText);
 };
 
 export const SwapJogButton = (props: WizardOutcomeComponentProps) =>

@@ -423,7 +423,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
           component: FlashFirmware,
         },
@@ -457,7 +457,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
         },
         {
@@ -490,7 +490,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
         },
         {
@@ -532,7 +532,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.xMotor, text: t("x-axis motor step") },
         },
@@ -567,7 +567,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.yMotor, text: t("y-axis motor step") },
         },
@@ -602,7 +602,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.zMotor, text: t("z-axis motor step") },
         },
@@ -863,10 +863,16 @@ export const WIZARD_STEPS = (
           tips: t(SetupWizardContent.AXIS_LENGTH),
           firmwareNumberSettings: [{
             key: "movement_axis_nr_steps_x",
-            label: t("x-axis length"),
+            label: t("x-axis length (mm)"),
             scale: "x",
             intSize: "long",
           }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("x", false),
         },
       ],
     },
@@ -890,10 +896,16 @@ export const WIZARD_STEPS = (
           tips: t(SetupWizardContent.AXIS_LENGTH),
           firmwareNumberSettings: [{
             key: "movement_axis_nr_steps_y",
-            label: t("y-axis length"),
+            label: t("y-axis length (mm)"),
             scale: "y",
             intSize: "long",
           }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("y", false),
         },
       ],
     },
@@ -917,10 +929,16 @@ export const WIZARD_STEPS = (
           tips: t(SetupWizardContent.AXIS_LENGTH),
           firmwareNumberSettings: [{
             key: "movement_axis_nr_steps_z",
-            label: t("z-axis length"),
+            label: t("z-axis length (mm)"),
             scale: "z",
             intSize: "long",
           }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("z", false),
         },
       ],
     },
@@ -946,7 +964,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the solenoid valve power cable connections."),
         },
         {
@@ -968,7 +986,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the vacuum pump power cable connections."),
         },
         {
@@ -990,7 +1008,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the LED light strip power cable connections."),
         },
       ],
