@@ -752,7 +752,7 @@ export namespace Content {
   export const FEEDBACK_NOTICE =
     trim(`Feedback submitted through this form will be linked to your user
     account and email so that we may follow up when necessary. If your
-    account email is not the best way for a support technician to reach
+    account email is not the best way for us to reach
     you, please include your phone number or preferred means of contact.`);
 
   export const MUST_REGISTER =
@@ -1585,8 +1585,21 @@ export namespace SetupWizardContent {
     tools, sensors, peripherals, sequences, and more to get you up
     and running faster.`);
 
+  export const PRE_POWER_POSITION =
+    trim(`With the FarmBot still powered off, manually move the gantry,
+    cross-slide, and Z-axis roughly 150mm away from any of its hardstops.
+    In other words, position the gantry partway along the tracks, position
+    the cross-slide partway across the gantry main beam, and position the
+    Z-axis halfway down.`);
+
   export const OFFLINE =
     trim(`Unable to connect to FarmBot. Please reconnect FarmBot to continue.`);
+
+  export const CANT_CONNECT =
+    trim(`I can see the farmbot-xxxx network by my device will not connect`);
+
+  export const CANT_CONNECT_TIP =
+    trim(`Try disabling cellular data or connection with a different device.`);
 
   export const NO_SETUP_NETWORK =
     trim(`Try waiting three minutes from power on. Check the Raspberry
@@ -1614,6 +1627,10 @@ export namespace SetupWizardContent {
 
   export const NO_MOTOR_MOVEMENT =
     trim(`It made sounds like it was trying to move, but didn't move`);
+
+  export const DID_AXIS_MOVE =
+    trim(`Did FarmBot's {{ axis }}-axis move? (Don't worry about the
+    direction right now)`);
 
   export const NO_MOTOR_ACTIVITY =
     trim(`Check motor cable connections. Try again while observing
@@ -1644,17 +1661,12 @@ export namespace SetupWizardContent {
     trim(`Did FarmBot move to the end of the axis and then move back to
     the home position for this axis?`);
 
-  export const HOME_X =
-    trim(`Press the home button or move FarmBot's x-axis (with the controls
-    or manually) until the plates hit the hardstops.`);
-
-  export const HOME_Y =
-    trim(`Press the home button or move FarmBot's y-axis (with the controls
-      or manually) until the plate hits the hardstop.`);
-
-  export const HOME_Z =
-    trim(`Press the home button or move FarmBot's z-axis (with the controls
-      or manually) until the plate hits the hardstop.`);
+  export const HOME_AXIS =
+    trim(`Try using the FIND HOME button a few more times. If FarmBot is
+    still unable to reach the home position, check the hardware for
+    resistance. You may also move FarmBot's {{ axis }}-axis with the controls
+    or manually until the plates hit the hardstop. Then open the ... menu
+    and click SET HOME.`);
 
   export const MOVEMENTS_VIDEO =
     trim(`Watch the video below demonstrating movements along the full
@@ -1684,6 +1696,10 @@ export namespace SetupWizardContent {
   export const Z_AXIS_MOVEMENTS_QUESTION =
     trim(`Is the FarmBot able to move reliably along the full length of the
     Z-axis in both directions?`);
+
+  export const AXIS_LENGTH =
+    trim(`Manually enter a value by measuring the usable distance FarmBot
+    can travel along the axis.`);
 
   export const MOVEMENT_STALLS =
     trim(`Inspect the wood raised bed (Express kits) or track extrusions
@@ -1779,12 +1795,19 @@ export namespace SetupWizardContent {
     trim(`Are you planning on using WiFi or have you connected the ethernet
     cable?`);
 
+  export const CONFIGURATOR_CONTENT =
+    trim(`Using another device, search for and connect to the
+    \`farmbot-xxxx\` WiFi network`);
+
   export const CONFIGURATOR_CONNECTION_PROMPT =
     trim(`Is your phone or computer connected to the FarmBot WiFi network?`);
 
   export const CHECK_CAMERA_CABLE =
-    trim(`Check that the camera is plugged in to a Raspberry Pi USB port
-    and ensure that all connectors are securely fastened.`);
+    trim(`Check that the camera is plugged in correctly to either a
+    Raspberry Pi USB port (Express v1.0 kits and all Genesis kits) or into
+    one of the vertically oriented USB ports on the Farmduino (Express v1.1
+    kits). For cameras with a 90 degree intermediary connector at the
+    cross-slide, ensure the connectors are fully connected.`);
 
   export const BLACK_IMAGE =
     trim(`Ensure that the camera lens is not covered and there is adequate
@@ -1826,6 +1849,14 @@ export namespace SetupWizardContent {
   export const READ_SOIL_SENSOR =
     trim(`Attach the soil sensor tool to the UTM and press the READ SENSOR
     for the SOIL MOISTURE sensor.`);
+
+  export const PROVIDE_A_DESCRIPTION_PART_1 =
+    trim(`If you already tried the troubleshooting tips above and looked
+    through the`);
+
+  export const PROVIDE_A_DESCRIPTION_PART_3 =
+    trim(`for help, please provide a detailed description of what you need
+    help with and we'll get in touch.`);
 }
 
 export enum DeviceSetting {

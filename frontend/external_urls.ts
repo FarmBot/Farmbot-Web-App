@@ -20,6 +20,7 @@ export namespace ExternalUrl {
   const GITHUB = "https://github.com";
   const GITHUB_RAW = "https://raw.githubusercontent.com";
   const OPENFARM = "https://openfarm.cc";
+  const DOCS_HUB = "https://docs.farm.bot";
   const GENESIS_DOCS = "https://genesis.farm.bot";
   const EXPRESS_DOCS = "https://express.farm.bot";
   const META_DOCS = "https://meta.farm.bot";
@@ -52,6 +53,7 @@ export namespace ExternalUrl {
   export const gitHubFarmBot = `${GITHUB}/${Org.FarmBot}`;
   export const webAppRepo = `${gitHubFarmBot}/${FarmBotRepo.FarmBotWebApp}`;
 
+  export const docsHub = DOCS_HUB;
   export const genesisDocs = `${GENESIS_DOCS}/docs`;
   export const genesisAssembly = `${GENESIS_DOCS}/docs/assembly-preparation`;
   export const expressDocs = `${EXPRESS_DOCS}/docs`;

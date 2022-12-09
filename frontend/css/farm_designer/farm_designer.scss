@@ -866,6 +866,12 @@
 .farmbot-origin {
   margin: auto;
   width: 120px;
+  &.xy-swap {
+    width: 60px;
+    .quadrant {
+      height: 48px;
+    }
+  }
   .quadrants {
     display: flex;
     flex-wrap: wrap;

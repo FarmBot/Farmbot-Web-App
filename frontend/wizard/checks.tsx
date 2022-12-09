@@ -31,7 +31,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
 import {
-  Checkbox, Col, docLink, docLinkClick, DropDownItem, FBSelect, Row, ToggleButton,
+  Checkbox, Col, docLink, DropDownItem, FBSelect, genesisDocLink, Row, ToggleButton,
 } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
@@ -43,7 +43,7 @@ import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
 import {
-  emergencyUnlock, findHome, setHome, settingToggle,
+  emergencyUnlock, findAxisLength, findHome, setHome, settingToggle,
 } from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
@@ -360,7 +360,7 @@ export class FirmwareHardwareSelection
 }
 
 export const ConfiguratorDocs = () => {
-  return <a onClick={docLinkClick("farmbot-os")}>
+  return <a href={docLink("farmbot-os")} target={"_blank"} rel={"noreferrer"}>
     {t("Installing FarmBot OS documentation")}
   </a>;
 };
@@ -368,6 +368,10 @@ export const ConfiguratorDocs = () => {
 export const EthernetPortImage = () =>
   <img style={{ width: "100%" }}
     src={FilePath.image("pi-ethernet-port", "jpg")} />;
+
+export const ConfiguratorImage = () =>
+  <img style={{ width: "100%" }}
+    src={FilePath.image("configurator", "png")} />;
 
 export const Connectivity = (props: WizardStepComponentProps) => {
   const data = connectivityData({
@@ -399,12 +403,29 @@ export const InvertJogButton = (axis: Xyz) =>
     </fieldset>;
   };
 
+export const CheckForResistance = () =>
+  <p>
+    {t("Check hardware for resistance.")}&nbsp;
+    {t("Refer to the")}
+    <a href={genesisDocLink("why-is-my-farmbot-not-moving")}>
+      {t("Why is my FarmBot not moving?")}
+    </a>
+    &nbsp;{t("documentation page for adjustment suggestions.")}
+  </p>;
+
+export const MotorCurrentContent = () =>
+  <fieldset>
+    <CheckForResistance />
+    <p>{t("You may also try increasing motor current by 10%.")}</p>
+  </fieldset>;
+
 const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string }) =>
   (props: WizardOutcomeComponentProps) => {
     const sourceFwConfig = sourceFwConfigValue(validFwConfig(getFirmwareConfig(
       props.resources)), props.bot.hardware.mcu_params);
     const param = sourceFwConfig(setting.key);
     return <fieldset>
+      <CheckForResistance />
       <label>{t(setting.label)}</label>
       <ToggleButton dispatch={props.dispatch}
         dim={!param.consistent}
@@ -584,6 +605,25 @@ export const AxisActions = (props: WizardStepComponentProps) => {
     firmwareSettings={firmwareSettings}
     firmwareHardware={firmwareHardware} />;
 };
+
+export const FindAxisLength = (axis: Xyz) =>
+  (props: WizardOutcomeComponentProps) => {
+    const botOnline = isBotOnlineFromState(props.bot);
+    const firmwareSettings = getFirmwareConfig(props.resources);
+    const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
+      || props.bot.hardware.mcu_params);
+    const { busy } = props.bot.hardware.informational_settings;
+    return <fieldset>
+      <p>{t("Then try finding the axis length again.")}</p>
+      <LockableButton
+        className={"wizard-find-length-btn"}
+        disabled={busy || hardwareDisabled[axis] || !botOnline}
+        title={t("FIND LENGTH")}
+        onClick={() => findAxisLength(axis)}>
+        {t("FIND LENGTH")}
+      </LockableButton>
+    </fieldset>;
+  };
 
 export const BootSequence = () => {
   return <BootSequenceSelector />;
