@@ -1596,10 +1596,10 @@ export namespace SetupWizardContent {
     trim(`Unable to connect to FarmBot. Please reconnect FarmBot to continue.`);
 
   export const CANT_CONNECT =
-    trim(`I can see the farmbot-xxxx network by my device will not connect`);
+    trim(`I can see the farmbot-xxxx network but my device will not connect`);
 
   export const CANT_CONNECT_TIP =
-    trim(`Try disabling cellular data or connection with a different device.`);
+    trim(`Try disabling cellular data or connecting with a different device.`);
 
   export const NO_SETUP_NETWORK =
     trim(`Try waiting three minutes from power on. Check the Raspberry

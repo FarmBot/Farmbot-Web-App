@@ -98,7 +98,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             bot={props.bot}
             resources={props.resources} />}
       </div>
-      <Markdown>{step.question}</Markdown>
+      <Markdown className={"wizard-step-question"}>{step.question}</Markdown>
       {!requirementsMet &&
         <p className={"prereq-not-met"}>
           {t("Fix issues above to continue.")}
@@ -132,7 +132,6 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
 const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   const otherSelected = props.selectedOutcome == "other";
   return <div className={"troubleshooting"}>
-    <p>{t("What happened?")}</p>
     {props.step.outcomes.map(outcome => {
       const selected = outcome.slug == props.selectedOutcome;
       const hidden = !selected && outcome.hidden;

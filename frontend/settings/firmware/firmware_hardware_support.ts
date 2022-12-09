@@ -27,7 +27,8 @@ const NO_TOOLS = [...EXPRESS_BOARDS];
 const NO_ETHERNET = ["express_k10"];
 const NO_EXTRA_BUTTONS = [...EXPRESS_BOARDS];
 const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
-const NO_ROTARY = ["arduino", "farmduino", "farmduino_k14", "farmduino_k15"];
+const NO_ROTARY = ["arduino", "farmduino", "farmduino_k14", "farmduino_k15"]
+  .concat(EXPRESS_BOARDS);
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TMC.includes(firmwareHardware);
