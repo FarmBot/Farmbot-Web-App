@@ -57,7 +57,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   return <svg className={expanded ? "expand" : undefined}
     style={expanded ? {} : { display: "none" }}
     id={`${profileAxis}-axis-profile-at-${lineAxis}-eq-${position[lineAxis]}`}
-    viewBox={`-40 ${-yStart} ${width + 80} ${height + 40}`}
+    viewBox={`-40 ${-yStart} ${width + 80} ${height + 90}`}
     preserveAspectRatio={expanded ? undefined : "none"}>
     {expanded && <Grid
       getX={getX} height={height} width={width} negativeZ={props.negativeZ} />}

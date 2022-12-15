@@ -38,10 +38,14 @@ import {
   DynamicMapToggle,
   BootSequence,
   FlowRateInput,
+  ConfiguratorImage,
+  CheckForResistance,
+  MotorCurrentContent,
+  FindAxisLength,
 } from "./checks";
 import { FirmwareHardware, TaggedWizardStepResult } from "farmbot";
 import {
-  hasEthernet, hasExtraButtons, hasUTM,
+  hasEthernet, hasExtraButtons, hasRotaryTool, hasUTM,
 } from "../settings/firmware/firmware_hardware_support";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
@@ -99,6 +103,7 @@ export enum WizardStepSlug {
   model = "model",
   sdCard = "sdCard",
   assembled = "assembled",
+  prePowerPosition = "prePowerPosition",
   networkPorts = "networkPorts",
   ethernetOption = "ethernetOption",
   power = "power",
@@ -222,6 +227,31 @@ export const WIZARD_STEPS = (
       ],
     },
     {
+      section: WizardSectionSlug.intro,
+      slug: WizardStepSlug.assembled,
+      title: t("Assembly"),
+      content: t("Assemble your FarmBot."),
+      component: AssemblyDocs,
+      question: t("Is FarmBot assembled and ready to power on?"),
+      outcomes: [
+        {
+          slug: "assemble",
+          description: t("I still need to assemble FarmBot"),
+          tips: t("Visit the documentation."),
+          component: AssemblyDocs,
+        },
+      ],
+    },
+    {
+      section: WizardSectionSlug.intro,
+      slug: WizardStepSlug.prePowerPosition,
+      title: t("Move FarmBot away from the hardstops"),
+      content: t(SetupWizardContent.PRE_POWER_POSITION),
+      question: t("Is FarmBot positioned away from the hardstops?"),
+      outcomes: [
+      ],
+    },
+    {
       section: WizardSectionSlug.connectivity,
       slug: WizardStepSlug.sdCard,
       title: t("SD card"),
@@ -234,22 +264,6 @@ export const WIZARD_STEPS = (
           description: t("I do not know where to get FarmBot OS"),
           tips: t("Visit the documentation."),
           component: ConfiguratorDocs,
-        },
-      ],
-    },
-    {
-      section: WizardSectionSlug.connectivity,
-      slug: WizardStepSlug.assembled,
-      title: t("Assembly"),
-      content: t("Assemble your FarmBot."),
-      component: AssemblyDocs,
-      question: t("Is FarmBot assembled and ready to power on?"),
-      outcomes: [
-        {
-          slug: "assemble",
-          description: t("I still need to assemble FarmBot"),
-          tips: t("Visit the documentation."),
-          component: AssemblyDocs,
         },
       ],
     },
@@ -297,13 +311,18 @@ export const WIZARD_STEPS = (
       section: WizardSectionSlug.connectivity,
       slug: WizardStepSlug.configuratorNetwork,
       title: t("Configurator network"),
-      content: t("Connect to the `farmbot-xxxx` WiFi network"),
+      content: t(SetupWizardContent.CONFIGURATOR_CONTENT),
       question: t(SetupWizardContent.CONFIGURATOR_CONNECTION_PROMPT),
       outcomes: [
         {
           slug: "noSetupNetwork",
           description: t("The FarmBot WiFi network isn't showing up"),
           tips: t(SetupWizardContent.NO_SETUP_NETWORK),
+        },
+        {
+          slug: "cantConnect",
+          description: t(SetupWizardContent.CANT_CONNECT),
+          tips: t(SetupWizardContent.CANT_CONNECT_TIP),
         },
       ],
     },
@@ -312,6 +331,7 @@ export const WIZARD_STEPS = (
       slug: WizardStepSlug.configuratorBrowser,
       title: t("Configurator"),
       content: t("Open a browser and navigate to `setup.farm.bot`"),
+      component: ConfiguratorImage,
       question: t("Is the configurator loaded?"),
       outcomes: [
         {
@@ -322,7 +342,7 @@ export const WIZARD_STEPS = (
         {
           slug: "redirect",
           description: t("I was redirected to a farm.bot page"),
-          tips: t("If using a phone, disable data and try again."),
+          tips: t("If using a phone, disable cellular data and try again."),
         },
       ],
     },
@@ -399,23 +419,24 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(xySwap),
       controlsCheckOptions: { axis: "x" },
-      question: t("Did FarmBot's x-axis move?"),
+      question: t(SetupWizardContent.DID_AXIS_MOVE, { axis: "x" }),
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
           component: FlashFirmware,
         },
         {
           slug: "noMovement",
           description: t(SetupWizardContent.NO_MOTOR_MOVEMENT),
-          tips: t("Check hardware for resistance."),
+          tips: "",
+          component: CheckForResistance,
         },
         {
           slug: "stall",
           description: t("It started to move, but stopped early"),
-          tips: t("Check hardware for resistance."),
+          tips: "",
           component: DisableStallDetection("x"),
         },
         {
@@ -432,22 +453,23 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: xyMovementInstruction(!xySwap),
       controlsCheckOptions: { axis: "y" },
-      question: t("Did FarmBot's y-axis move?"),
+      question: t(SetupWizardContent.DID_AXIS_MOVE, { axis: "y" }),
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
         },
         {
           slug: "noMovement",
           description: t(SetupWizardContent.NO_MOTOR_MOVEMENT),
-          tips: t("Check hardware for resistance."),
+          tips: "",
+          component: CheckForResistance,
         },
         {
           slug: "stall",
           description: t("It started to move, but stopped early"),
-          tips: t("Check hardware for resistance."),
+          tips: "",
           component: DisableStallDetection("y"),
         },
         {
@@ -464,22 +486,23 @@ export const WIZARD_STEPS = (
       prerequisites: [botOnlineReq],
       content: t("Press the down arrow."),
       controlsCheckOptions: { axis: "z" },
-      question: t("Did FarmBot's z-axis move?"),
+      question: t(SetupWizardContent.DID_AXIS_MOVE, { axis: "z" }),
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t(SetupWizardContent.NO_MOTOR_ACTIVITY),
         },
         {
           slug: "noMovement",
           description: t(SetupWizardContent.NO_MOTOR_MOVEMENT),
-          tips: t("Check hardware for resistance."),
+          tips: "",
+          component: CheckForResistance,
         },
         {
           slug: "stall",
           description: t("It started to move, but stopped early"),
-          tips: t("Check hardware for resistance."),
+          tips: "",
           component: DisableStallDetection("z"),
         },
         {
@@ -509,7 +532,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.xMotor, text: t("x-axis motor step") },
         },
@@ -544,7 +567,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.yMotor, text: t("y-axis motor step") },
         },
@@ -579,7 +602,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Return to the"),
           goToStep: { step: WizardStepSlug.zMotor, text: t("z-axis motor step") },
         },
@@ -615,7 +638,8 @@ export const WIZARD_STEPS = (
         {
           slug: "notAtHome",
           description: t("The axis is not at the home position"),
-          tips: t(SetupWizardContent.HOME_X),
+          tips: t(SetupWizardContent.HOME_AXIS, { axis: "x" }),
+          component: CheckForResistance,
           controlsCheckOptions: { home: true },
         },
         {
@@ -638,7 +662,8 @@ export const WIZARD_STEPS = (
         {
           slug: "notAtHome",
           description: t("The axis is not at the home position"),
-          tips: t(SetupWizardContent.HOME_Y),
+          tips: t(SetupWizardContent.HOME_AXIS, { axis: "y" }),
+          component: CheckForResistance,
           controlsCheckOptions: { home: true },
         },
         {
@@ -661,7 +686,8 @@ export const WIZARD_STEPS = (
         {
           slug: "notAtHome",
           description: t("The axis is not at the home position"),
-          tips: t(SetupWizardContent.HOME_Z),
+          tips: t(SetupWizardContent.HOME_AXIS, { axis: "z" }),
+          component: CheckForResistance,
           controlsCheckOptions: { home: true },
         },
         {
@@ -709,11 +735,19 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stalls or has trouble at certain locations"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_x", label: t("x-axis motor current")
+          }],
         },
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
           tips: t(SetupWizardContent.MOVEMENT_ALL_X),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_x", label: t("x-axis motor current")
+          }],
         },
         {
           slug: "untuned",
@@ -741,11 +775,19 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stalls or has trouble at certain locations"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_y", label: t("y-axis motor current")
+          }],
         },
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
           tips: t(SetupWizardContent.MOVEMENT_ALL_Y_AND_Z),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_y", label: t("y-axis motor current")
+          }],
         },
         {
           slug: "untuned",
@@ -773,11 +815,19 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stalls or has trouble at certain locations"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_z", label: t("z-axis motor current")
+          }],
         },
         {
           slug: "struggles",
           description: t("It struggles to move along the whole length of the axis"),
           tips: t(SetupWizardContent.MOVEMENT_ALL_Y_AND_Z),
+          component: MotorCurrentContent,
+          firmwareNumberSettings: [{
+            key: "movement_motor_current_z", label: t("z-axis motor current")
+          }],
         },
         {
           slug: "untuned",
@@ -805,6 +855,24 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stopped before reaching the axis end"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: FindAxisLength("x"),
+        },
+        {
+          slug: "incorrect",
+          description: t("The axis length value looks incorrect"),
+          tips: t(SetupWizardContent.AXIS_LENGTH),
+          firmwareNumberSettings: [{
+            key: "movement_axis_nr_steps_x",
+            label: t("x-axis length (mm)"),
+            scale: "x",
+            intSize: "long",
+          }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("x", false),
         },
       ],
     },
@@ -820,6 +888,24 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stopped before reaching the axis end"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: FindAxisLength("y"),
+        },
+        {
+          slug: "incorrect",
+          description: t("The axis length value looks incorrect"),
+          tips: t(SetupWizardContent.AXIS_LENGTH),
+          firmwareNumberSettings: [{
+            key: "movement_axis_nr_steps_y",
+            label: t("y-axis length (mm)"),
+            scale: "y",
+            intSize: "long",
+          }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("y", false),
         },
       ],
     },
@@ -835,6 +921,24 @@ export const WIZARD_STEPS = (
           slug: "stalls",
           description: t("It stopped before reaching the axis end"),
           tips: t(SetupWizardContent.MOVEMENT_STALLS),
+          component: FindAxisLength("z"),
+        },
+        {
+          slug: "incorrect",
+          description: t("The axis length value looks incorrect"),
+          tips: t(SetupWizardContent.AXIS_LENGTH),
+          firmwareNumberSettings: [{
+            key: "movement_axis_nr_steps_z",
+            label: t("z-axis length (mm)"),
+            scale: "z",
+            intSize: "long",
+          }],
+        },
+        {
+          slug: "disabled",
+          description: t("The FIND LENGTH button is disabled"),
+          tips: "",
+          component: DisableStallDetection("z", false),
         },
       ],
     },
@@ -860,7 +964,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the solenoid valve power cable connections."),
         },
         {
@@ -882,7 +986,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the vacuum pump power cable connections."),
         },
         {
@@ -904,7 +1008,7 @@ export const WIZARD_STEPS = (
       outcomes: [
         {
           slug: "nothing",
-          description: t("Nothing"),
+          description: t("Nothing happened"),
           tips: t("Check the LED light strip power cable connections."),
         },
       ],
@@ -1254,7 +1358,7 @@ export const WIZARD_STEPS = (
         ],
       }]
       : []),
-    ...(hasUTM(firmwareHardware)
+    ...(hasRotaryTool(firmwareHardware)
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryTool,
@@ -1273,7 +1377,7 @@ export const WIZARD_STEPS = (
         ],
       }]
       : []),
-    ...(hasUTM(firmwareHardware)
+    ...(hasRotaryTool(firmwareHardware)
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryToolForward,
@@ -1294,7 +1398,7 @@ export const WIZARD_STEPS = (
         ],
       }]
       : []),
-    ...(hasUTM(firmwareHardware)
+    ...(hasRotaryTool(firmwareHardware)
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.rotaryToolReverse,

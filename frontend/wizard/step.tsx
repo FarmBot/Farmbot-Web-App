@@ -11,6 +11,8 @@ import moment from "moment";
 import { FirmwareNumberSettings, Video } from "./step_components";
 import { formatTime } from "../util";
 import { ControlsCheck, PinBinding } from "./checks";
+import { SetupWizardContent } from "../constants";
+import { ExternalUrl } from "../external_urls";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -96,7 +98,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             bot={props.bot}
             resources={props.resources} />}
       </div>
-      <Markdown>{step.question}</Markdown>
+      <Markdown className={"wizard-step-question"}>{step.question}</Markdown>
       {!requirementsMet &&
         <p className={"prereq-not-met"}>
           {t("Fix issues above to continue.")}
@@ -130,7 +132,6 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
 const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   const otherSelected = props.selectedOutcome == "other";
   return <div className={"troubleshooting"}>
-    <p>{t("What happened?")}</p>
     {props.step.outcomes.map(outcome => {
       const selected = outcome.slug == props.selectedOutcome;
       const hidden = !selected && outcome.hidden;
@@ -178,8 +179,14 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
     })}
     <div className={`troubleshooting-tip ${otherSelected ? "selected" : ""}`}
       onClick={props.setSuccess(false, "other")}>
-      <p>{t("Something else")}</p>
-      {otherSelected && <p>{t("Provide a description:")}</p>}
+      <p>{t("Something else happened and I need additional help")}</p>
+      {otherSelected && <p>
+        {t(SetupWizardContent.PROVIDE_A_DESCRIPTION_PART_1)}
+        <a href={ExternalUrl.docsHub} target={"_blank"} rel={"noreferrer"}>
+          {t("hardware and software documentation hubs")}
+        </a>
+        &nbsp;{t(SetupWizardContent.PROVIDE_A_DESCRIPTION_PART_3)}
+      </p>}
       {otherSelected && <Feedback stepSlug={props.step.slug} keep={true} />}
     </div>
   </div>;

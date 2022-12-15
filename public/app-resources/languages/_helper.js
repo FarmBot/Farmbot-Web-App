@@ -48,20 +48,21 @@ var HelperNamespace = (function () {
   var T_REGEX = /[.{[(\s]t\(["`]([\w\s{}().,:'\-=\\?\/%!]*)["`],*\s*.*\)/g;
 
   // '``'
-  var C_REGEX = /[`]([\w\s{}().,:'\-=\/\\?"+!]*)[`].*/g;
+  var C_REGEX = /[`]([\w\s{}().,*:'\-=\/\\?"+!]*)[`].*/g;
 
   /** Some additional phrases the regex can't find. */
   var EXTRA_TAGS = [
-    "Fun", "Warn", "Controls", "Device", "Farm Designer", "on",
-    "Map Points", "Spread", "Row Spacing", "Height", "Taxon",
-    "Growing Degree Days", "Svg Icon", "Invalid date", "yes", "Tools",
-    "Messages", "Sequence Editor", "Commands", "Regimen Editor", "Scheduler",
-    "Farmware List", "SYNC NOW", "Test", "Run", "SYNCING", "SYNCED", "UNKNOWN",
+    "Fun", "Warn", "Map Points", "Row Spacing", "Height", "Taxon",
+    "Growing Degree Days", "Svg Icon", "Invalid date",
+    "Sequence Editor", "Commands", "back to sequences",
+    "SYNC NOW", "Run", "SYNCING", "SYNCED", "UNKNOWN",
     "Else Execute", "Connecting FarmBot to the Internet", "move to home",
     "emergency stop", "SYNC ERROR", "inactive", "error", "No messages.",
-    "back to regimens", "back to sequences", "back to farmware list",
     "Verify Password", "Camera Calibration", "Installing FarmBot OS",
-    "For IT Security Professionals", "visualize",
+    "For IT Security Professionals", "visualize", "{{ axis }}-axis profile",
+    "Using another device, search for and connect to the \`farmbot-xxxx\` WiFi network",
+    "GROUP MEMBERS ({{count}})", "FarmBot's current position", "# of plants",
+    "Binomial Name", "Common Names", "Sun Requirements", "Sowing Method",
   ];
 
   /**

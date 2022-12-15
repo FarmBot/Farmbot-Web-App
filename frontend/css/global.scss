@@ -1183,7 +1183,7 @@ ul {
   position: fixed;
   bottom: 3rem;
   right: 1rem;
-  z-index: 2;
+  z-index: 3;
   background: $dark_gray;
   border-radius: 3rem;
   height: 6rem;
@@ -1200,7 +1200,7 @@ ul {
   img {
     position: fixed;
     bottom: 3rem;
-    z-index: 3;
+    z-index: 4;
     width: 6rem;
     height: 6rem;
     border-radius: 3rem;

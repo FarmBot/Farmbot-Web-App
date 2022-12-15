@@ -23,6 +23,7 @@ export enum UTMDimensions {
 }
 
 /** Virtual UTM profile. */
+// eslint-disable-next-line complexity
 export const UTMProfile = (props: ProfileUtmProps) => {
   const { x, y } = props.botPosition;
   const inProfile = !isUndefined(x) && !isUndefined(y) &&
@@ -47,8 +48,9 @@ export const UTMProfile = (props: ProfileUtmProps) => {
   const extrusionOffset = (extrusion + ToolDimensions.diameter) / 2;
   const toolInfo = props.mountedToolInfo;
   const xProfile = props.profileAxis == "x";
-  const yExtrusionX = profileUtmH + ToolDimensions.diameter / 2 - extrusion;
+  const yExtrusionX = profileUtmH - (extrusion + extrusion / 2);
   const utmTopY = profileUtmV - UTMDimensions.height;
+  const zAxisCenter = profileUtmH + (xProfile ? 0 : extrusionOffset);
   return <g id={"UTM-and-axis"} opacity={0.75}>
     <defs>
       <linearGradient id={"utm-gradient"}>
@@ -60,17 +62,17 @@ export const UTMProfile = (props: ProfileUtmProps) => {
     </defs>
     {props.profileWidth &&
       <rect id={"y-axis"}
-        x={xProfile ? yExtrusionX : 0}
+        x={xProfile ? yExtrusionX : -100}
         y={-props.gantryHeight - extrusion * 3}
-        width={xProfile ? extrusion * 2 : props.profileWidth}
+        width={xProfile ? extrusion * 2 : props.profileWidth + 200}
         height={extrusion * 3}
         fill={Color.darkGray} fillOpacity={0.5} stroke={"none"} />}
     <line id={"z-axis"}
       strokeWidth={extrusion} stroke={Color.darkGray} opacity={0.5}
-      x1={profileUtmH + extrusionOffset}
+      x1={zAxisCenter}
       y1={-props.gantryHeight - (-props.gantryHeight < utmTopY ? 0 : extrusion * 3)}
-      x2={profileUtmH + extrusionOffset}
-      y2={profileUtmV} />
+      x2={zAxisCenter}
+      y2={xProfile ? utmTopY : profileUtmV} />
     <line id={"z-axis-separator"}
       strokeWidth={0.5} stroke={Color.darkGray} opacity={0.5}
       x1={profileUtmH + ToolDimensions.diameter / 2}

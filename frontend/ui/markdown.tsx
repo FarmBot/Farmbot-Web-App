@@ -42,6 +42,7 @@ export const md_for_tests = md;
 interface MarkdownProps {
   children?: React.ReactNode;
   html?: boolean;
+  className?: string;
 }
 
 export function Markdown(props: MarkdownProps) {
@@ -49,7 +50,7 @@ export function Markdown(props: MarkdownProps) {
     ? md_with_html.render(props.children)
     : md.render(props.children);
   return <span
-    className="markdown"
+    className={["markdown", props.className].join(" ")}
     dangerouslySetInnerHTML={{ __html: result }}>
   </span>;
 }

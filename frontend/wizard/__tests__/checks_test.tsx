@@ -24,6 +24,7 @@ const mockDevice = {
   findHome: jest.fn(() => Promise.resolve({})),
   setZero: jest.fn(() => Promise.resolve({})),
   emergencyUnlock: jest.fn(() => Promise.resolve({})),
+  calibrate: jest.fn(() => Promise.resolve({})),
 };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -48,6 +49,7 @@ import {
   CameraOffset,
   CameraReplacement,
   ConfiguratorDocs,
+  ConfiguratorImage,
   Connectivity,
   ControlsCheck,
   ControlsCheckProps,
@@ -55,6 +57,7 @@ import {
   DisableStallDetection,
   DynamicMapToggle,
   EthernetPortImage,
+  FindAxisLength,
   FindHome,
   FirmwareHardwareSelection,
   FlashFirmware,
@@ -62,6 +65,7 @@ import {
   InvertJogButton,
   lowVoltageProblemStatus,
   MapOrientation,
+  MotorCurrentContent,
   NetworkRequirementsLink,
   PeripheralsCheck,
   PinBinding,
@@ -92,7 +96,6 @@ import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { tourPath } from "../../help/tours";
-import { Path } from "../../internal_urls";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -401,16 +404,23 @@ describe("<FirmwareHardwareSelection />", () => {
 });
 
 describe("<ConfiguratorDocs />", () => {
-  it("follows link", () => {
+  it("has link", () => {
     const wrapper = mount(<ConfiguratorDocs />);
-    wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.help("farmbot-os"));
+    expect(wrapper.find("a").props().href)
+      .toEqual(ExternalUrl.softwareDocs + "/farmbot-os");
   });
 });
 
 describe("<EthernetPortImage />", () => {
   it("shows image", () => {
     const wrapper = mount(<EthernetPortImage />);
+    expect(wrapper.find("img").length).toEqual(1);
+  });
+});
+
+describe("<ConfiguratorImage />", () => {
+  it("shows image", () => {
+    const wrapper = mount(<ConfiguratorImage />);
     expect(wrapper.find("img").length).toEqual(1);
   });
 });
@@ -466,6 +476,13 @@ describe("<InvertJogButton />", () => {
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       x_axis_inverted: true
     });
+  });
+});
+
+describe("<MotorCurrentContent />", () => {
+  it("returns content", () => {
+    const wrapper = mount(<MotorCurrentContent />);
+    expect(wrapper.text().toLowerCase()).toContain("motor current");
   });
 });
 
@@ -622,6 +639,25 @@ describe("<AxisActions />", () => {
   it("handles missing settings", () => {
     const wrapper = mount(<AxisActions {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("current position");
+  });
+});
+
+describe("<FindAxisLength />", () => {
+  it("has config", () => {
+    const p = fakeProps();
+    const config = fakeFirmwareConfig();
+    config.body.encoder_enabled_x = 0;
+    p.resources = buildResourceIndex([config]).index;
+    const Component = FindAxisLength("x");
+    const wrapper = mount(<Component {...p} />);
+    expect(wrapper.find("button").first().props().disabled).toBeTruthy();
+  });
+
+  it("finds length", () => {
+    const Component = FindAxisLength("x");
+    const wrapper = mount(<Component {...fakeProps()} />);
+    wrapper.find("button").first().simulate("click");
+    expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "x" });
   });
 });
 

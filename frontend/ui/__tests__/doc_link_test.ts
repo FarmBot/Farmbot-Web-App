@@ -4,7 +4,9 @@ jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
-import { devDocLink, devDocLinkClick, docLink, docLinkClick } from "../doc_link";
+import {
+  devDocLink, devDocLinkClick, docLink, docLinkClick, genesisDocLink,
+} from "../doc_link";
 import { ExternalUrl } from "../../external_urls";
 import { push } from "../../history";
 import { Path } from "../../internal_urls";
@@ -20,6 +22,14 @@ describe("devDocLink", () => {
   it("creates doc links", () => {
     expect(devDocLink()).toEqual(ExternalUrl.developerDocs + "/");
     expect(devDocLink("lua")).toEqual(ExternalUrl.developerDocs + "/lua");
+  });
+});
+
+describe("genesisDocLink", () => {
+  it("creates doc links", () => {
+    expect(genesisDocLink()).toEqual(ExternalUrl.genesisDocs + "/");
+    expect(genesisDocLink("why-is-my-farmbot-not-moving"))
+      .toEqual(ExternalUrl.genesisDocs + "/why-is-my-farmbot-not-moving");
   });
 });
 
