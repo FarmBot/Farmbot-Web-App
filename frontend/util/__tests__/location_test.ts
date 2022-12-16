@@ -35,4 +35,17 @@ describe("validBotLocationData()", () => {
       raw_encoders: { x: 0, y: 0, z: 0 }
     });
   });
+
+  it("returns location for demo accounts", () => {
+    mockDemo = true;
+    localStorage.x = "1";
+    localStorage.y = "2";
+    localStorage.z = "3";
+    const result = validBotLocationData(undefined);
+    expect(result).toEqual({
+      position: { x: 1, y: 2, z: 3 },
+      scaled_encoders: { x: 0, y: 0, z: 0 },
+      raw_encoders: { x: 0, y: 0, z: 0 }
+    });
+  });
 });
