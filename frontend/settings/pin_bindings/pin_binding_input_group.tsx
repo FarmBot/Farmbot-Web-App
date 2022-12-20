@@ -197,13 +197,13 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
     dropDownList.push({ isNull: true, label: t("None"), value: "" });
 
     dropDownList.push({
-      label: "Actions", value: 0,
+      label: t("Actions"), value: 0,
       heading: true, headingId: PinBindingType.special,
     });
     specialActionList().map(ddi => dropDownList.push(ddi));
 
     dropDownList.push({
-      label: "Sequences", value: 0,
+      label: t("Sequences"), value: 0,
       heading: true, headingId: PinBindingType.standard,
     });
     selectAllSequences(resources)
