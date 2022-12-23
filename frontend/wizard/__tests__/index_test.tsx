@@ -121,7 +121,9 @@ describe("<SetupWizard />", () => {
 
   it("updates data and completes setup", async () => {
     const p = fakeProps();
-    p.wizardStepResults = WIZARD_STEPS(undefined).map(step => {
+    p.wizardStepResults = WIZARD_STEPS({
+      firmwareHardware: undefined,
+    }).map(step => {
       const stepResult = fakeWizardStepResult();
       stepResult.body.answer = true;
       stepResult.body.slug = step.slug;

@@ -34,8 +34,10 @@ export namespace ExternalUrl {
   const MY_FARMBOT_WEB_APP = "https://my.farm.bot";
   const OPEN_STREET_MAP = "https://www.openstreetmap.org";
   const LICENSES = "https://choosealicense.com/licenses";
+  const RASPBERRY_PI = "https://www.raspberrypi.com";
 
   export const mitLicense = `${LICENSES}/mit`;
+  export const rpiImager = `${RASPBERRY_PI}/software`;
 
   export const openStreetMap =
     (latitude: number | undefined, longitude: number | undefined) =>

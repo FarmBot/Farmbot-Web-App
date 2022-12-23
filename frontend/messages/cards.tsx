@@ -412,9 +412,12 @@ const DemoAccount = (props: CommonAlertCardProps) =>
   </AlertCardTemplate>;
 
 const SetupIncomplete = (props: SetupIncompleteProps) => {
+  const resources = store.getState().resources.index;
   const percentComplete = setupProgressString(
-    selectAllWizardStepResults(store.getState().resources.index),
-    validFirmwareHardware(props.apiFirmwareValue));
+    selectAllWizardStepResults(resources),
+    {
+      firmwareHardware: validFirmwareHardware(props.apiFirmwareValue),
+    });
   const buttonText = percentComplete != "0% complete"
     ? t("Continue setup")
     : t("Get Started");

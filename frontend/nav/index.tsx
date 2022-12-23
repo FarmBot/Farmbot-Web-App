@@ -141,7 +141,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         onClick={() => push(Path.setup())}>
         {t("Setup")}
         {window.innerWidth > 450 &&
-          `: ${setupProgressString(wizardStepResults, firmwareHardware)}`}
+          `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
       </a>
       : <div style={{ display: "inline" }} />;
   };

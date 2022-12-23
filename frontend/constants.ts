@@ -61,7 +61,7 @@ export namespace ToolTips {
 
   // FarmBot OS Settings: Firmware
   export const FIRMWARE_VALUE_API =
-    trim(`Firmware value from your choice in the dropdown to the left, as
+    trim(`Firmware value from your choice in the dropdown to the right, as
     understood by the Web App.`);
 
   export const FIRMWARE_VALUE_FBOS =
@@ -70,6 +70,14 @@ export namespace ToolTips {
 
   export const FIRMWARE_VALUE_MCU =
     trim(`Firmware value reported from the firmware.`);
+
+  export const RPI_VALUE_API =
+    trim(`Raspberry Pi model from your choice in the dropdown to the right,
+    as understood by the Web App.`);
+
+  export const RPI_VALUE_FBOS =
+    trim(`Raspberry Pi model reported from your device, as understood by
+    FarmBot OS.`);
 
   // Hardware Settings
   export const HW_SETTINGS =
@@ -1580,6 +1588,10 @@ export namespace SetupWizardContent {
     while answering no will display a list of results that can be selected for
     specific troubleshooting tips.`);
 
+  export const RPI =
+    trim(`Inspect the ports on the top edge of the Raspberry Pi and select
+    which Raspberry Pi model is in your FarmBot.`);
+
   export const SEED_DATA =
     trim(`Once you make a selection, we'll automatically add some
     tools, sensors, peripherals, sequences, and more to get you up
@@ -1591,6 +1603,40 @@ export namespace SetupWizardContent {
     In other words, position the gantry partway along the tracks, position
     the cross-slide partway across the gantry main beam, and position the
     Z-axis halfway down.`);
+
+  export const DOWNLOAD_OS =
+    trim(`Using a desktop computer or laptop, download the latest
+    FarmBot OS .img file:`);
+
+  export const IMAGER =
+    trim(`Using a desktop computer or laptop, download and install the
+    Raspberry Pi Imager program. This is necessary for installing
+    FarmBot OS onto the microSD card in the next step.`);
+
+  export const COMPUTER_SD_CARD =
+    trim(`Connect the microSD card to your computer using a card reader.
+    You may need to use the microSD card to SD card adapter included with
+    your kit.`);
+
+  export const FLASH_SD_CARD =
+    trim(`Open up the Raspberry Pi Imager program and click \`CHOOSE OS\`.
+    Then scroll to the bottom of the popup and select **Use custom** *Select a
+    custom .img file from your computer*. Then select the FarmBot OS \`.img\`
+    file you downloaded. Click the \`CHOOSE STORAGE\` button and then select
+    the microSD card (it should show up as a 7.9 GB option). Click \`WRITE\`
+    and if prompted, give your computer permission to perform this action.`);
+
+  export const INSERT_SD_CARD_GENESIS =
+    trim(`Remove the microSD card from your computer and insert it into
+    FarmBot's Raspberry Pi. The card slot is located on the back side of
+    the Raspberry Pi, on the right-hand edge. You do not need to remove the
+    Raspberry Pi from the electronics box to insert the card; we have left
+    enough access room.`);
+
+  export const INSERT_SD_CARD_EXPRESS =
+    trim(`Remove the microSD card from your computer and insert it into
+    FarmBot's Raspberry Pi. The card slot is located on the front side of
+    the Raspberry Pi, on the left-hand edge.`);
 
   export const OFFLINE =
     trim(`Unable to connect to FarmBot. Please reconnect FarmBot to continue.`);
@@ -1877,6 +1923,7 @@ export enum DeviceSetting {
   firmware = `Firmware`,
   firmwarePath = `Firmware path`,
   flashFirmware = `Flash firmware`,
+  raspberryPiModel = `Raspberry Pi model`,
 
   // Power and Reset
   powerAndReset = `Power and Reset`,

@@ -48,15 +48,14 @@ import {
   CameraImageOrigin,
   CameraOffset,
   CameraReplacement,
-  ConfiguratorDocs,
-  ConfiguratorImage,
   Connectivity,
   ControlsCheck,
   ControlsCheckProps,
   CurrentPosition,
   DisableStallDetection,
+  DownloadImager,
+  DownloadOS,
   DynamicMapToggle,
-  EthernetPortImage,
   FindAxisLength,
   FindHome,
   FirmwareHardwareSelection,
@@ -70,6 +69,7 @@ import {
   PeripheralsCheck,
   PinBinding,
   RotateMapToggle,
+  RpiSelection,
   SelectMapOrigin,
   SensorsCheck,
   SetHome,
@@ -96,10 +96,12 @@ import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { tourPath } from "../../help/tours";
+import { FBSelect } from "../../ui";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
-  resources: buildResourceIndex([]).index,
+  resources: buildResourceIndex([fakeDevice()]).index,
   bot: bot,
   dispatch: mockDispatch(),
   getConfigValue: jest.fn(),
@@ -315,6 +317,37 @@ describe("<AssemblyDocs />", () => {
   });
 });
 
+describe("<DownloadOS />", () => {
+  it.each<[string, string]>([
+    ["01", "1.0.0"],
+    ["02", "3.0.0"],
+    ["3", "3.0.0"],
+    ["4", "4.0.0"],
+  ])("shows correct link: %s", (rpi, expected) => {
+    globalConfig.rpi_release_tag = "1.0.0";
+    globalConfig.rpi3_release_tag = "3.0.0";
+    globalConfig.rpi4_release_tag = "4.0.0";
+    const p = fakeProps();
+    const device = fakeDevice();
+    device.body["rpi" as keyof DeviceAccountSettings] = rpi as never;
+    p.resources = buildResourceIndex([device]).index;
+    const wrapper = mount(<DownloadOS {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain(`download fbos v${expected}`);
+  });
+
+  it("handles missing model", () => {
+    const wrapper = mount(<DownloadOS {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("please select a model");
+  });
+});
+
+describe("<DownloadImager />", () => {
+  it("renders link", () => {
+    const wrapper = mount(<DownloadImager />);
+    expect(wrapper.text().toLowerCase()).toContain("download");
+  });
+});
+
 describe("<NetworkRequirementsLink />", () => {
   it("renders link", () => {
     const wrapper = mount(<NetworkRequirementsLink />);
@@ -329,7 +362,7 @@ describe("<FirmwareHardwareSelection />", () => {
 
   it("selects model", () => {
     const p = fakeProps();
-    p.resources = buildResourceIndex([fakeFbosConfig()]).index;
+    p.resources = buildResourceIndex([fakeFbosConfig(), fakeDevice()]).index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const wrapper = shallow(<FirmwareHardwareSelection {...p} />);
     wrapper.find("FBSelect").simulate("change", {
@@ -345,7 +378,7 @@ describe("<FirmwareHardwareSelection />", () => {
     const alert = fakeAlert();
     alert.body.id = 1;
     alert.body.problem_tag = "api.seed_data.missing";
-    p.resources = buildResourceIndex([alert]).index;
+    p.resources = buildResourceIndex([alert, fakeDevice()]).index;
     mockState.resources = buildResourceIndex([alert]);
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const wrapper = mount<FirmwareHardwareSelection>(
@@ -359,7 +392,7 @@ describe("<FirmwareHardwareSelection />", () => {
     const alert = fakeAlert();
     alert.body.id = 1;
     alert.body.problem_tag = "api.seed_data.missing";
-    p.resources = buildResourceIndex([alert]).index;
+    p.resources = buildResourceIndex([alert, fakeDevice()]).index;
     mockState.resources = buildResourceIndex([alert]);
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const wrapper = mount<FirmwareHardwareSelection>(
@@ -371,7 +404,7 @@ describe("<FirmwareHardwareSelection />", () => {
 
   it("doesn't seed account", () => {
     const p = fakeProps();
-    p.resources = buildResourceIndex([]).index;
+    p.resources = buildResourceIndex([fakeDevice()]).index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const wrapper = mount<FirmwareHardwareSelection>(
       <FirmwareHardwareSelection {...p} />);
@@ -382,7 +415,7 @@ describe("<FirmwareHardwareSelection />", () => {
 
   it("renders after account seeding", () => {
     const p = fakeProps();
-    p.resources = buildResourceIndex([]).index;
+    p.resources = buildResourceIndex([fakeDevice()]).index;
     const wrapper = mount<FirmwareHardwareSelection>(
       <FirmwareHardwareSelection {...p} />);
     wrapper.setState({ autoSeed: true });
@@ -394,7 +427,7 @@ describe("<FirmwareHardwareSelection />", () => {
     const alert = fakeAlert();
     alert.body.id = 1;
     alert.body.problem_tag = "api.seed_data.missing";
-    p.resources = buildResourceIndex([alert]).index;
+    p.resources = buildResourceIndex([alert, fakeDevice()]).index;
     const wrapper = shallow<FirmwareHardwareSelection>(
       <FirmwareHardwareSelection {...p} />);
     expect(wrapper.state().autoSeed).toEqual(true);
@@ -403,25 +436,12 @@ describe("<FirmwareHardwareSelection />", () => {
   });
 });
 
-describe("<ConfiguratorDocs />", () => {
-  it("has link", () => {
-    const wrapper = mount(<ConfiguratorDocs />);
-    expect(wrapper.find("a").props().href)
-      .toEqual(ExternalUrl.softwareDocs + "/farmbot-os");
-  });
-});
-
-describe("<EthernetPortImage />", () => {
-  it("shows image", () => {
-    const wrapper = mount(<EthernetPortImage />);
-    expect(wrapper.find("img").length).toEqual(1);
-  });
-});
-
-describe("<ConfiguratorImage />", () => {
-  it("shows image", () => {
-    const wrapper = mount(<ConfiguratorImage />);
-    expect(wrapper.find("img").length).toEqual(1);
+describe("<RpiSelection />", () => {
+  it("changes rpi model", () => {
+    const wrapper = shallow(<RpiSelection {...fakeProps()} />);
+    wrapper.find(FBSelect).simulate("change", { label: "", value: "3" });
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
+    expect(save).toHaveBeenCalledWith(expect.any(String));
   });
 });
 

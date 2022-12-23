@@ -315,7 +315,8 @@ CREATE TABLE public.devices (
     setup_completed_at timestamp without time zone,
     lat numeric,
     lng numeric,
-    indoor boolean DEFAULT false
+    indoor boolean DEFAULT false,
+    rpi character varying(3)
 );
 
 
@@ -3839,6 +3840,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221027211207'),
 ('20221028172528'),
 ('20221103172100'),
-('20221109233217');
+('20221109233217'),
+('20221222192831');
 
 

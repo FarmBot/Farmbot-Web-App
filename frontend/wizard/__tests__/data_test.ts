@@ -12,7 +12,9 @@ describe("setupProgressString()", () => {
     const result1 = fakeWizardStepResult();
     result1.body.answer = true;
     const results = [result0, result1];
-    const progressSting = setupProgressString(results, "arduino");
+    const progressSting = setupProgressString(results, {
+      firmwareHardware: "arduino",
+    });
     expect(progressSting).toContain("% complete");
     expect(progressSting).not.toEqual("100% complete");
   });
@@ -21,20 +23,31 @@ describe("setupProgressString()", () => {
 describe("data check", () => {
   it("WIZARD_STEP_SLUGS()", () => {
     const slugs = Object.values(WizardStepSlug);
-    const stepSlugs = WIZARD_STEP_SLUGS(undefined);
+    const stepSlugs = WIZARD_STEP_SLUGS({
+      firmwareHardware: "farmduino_k16",
+      getConfigValue: () => true,
+    });
     expect(uniq(stepSlugs).length).toEqual(stepSlugs.length);
     expect(slugs.length).toEqual(stepSlugs.length);
   });
 
   it("has fewer steps for express", () => {
-    const steps = WIZARD_STEPS(undefined);
-    const expressSteps = WIZARD_STEPS("express_k10");
+    const steps = WIZARD_STEPS({
+      firmwareHardware: undefined,
+    });
+    const expressSteps = WIZARD_STEPS({
+      firmwareHardware: "express_k10",
+    });
     expect(expressSteps.length).toBeLessThan(steps.length);
   });
 
   it("has the same number of sections for express", () => {
-    const sections = WIZARD_SECTIONS(undefined);
-    const expressSections = WIZARD_SECTIONS("express_k10");
+    const sections = WIZARD_SECTIONS({
+      firmwareHardware: undefined,
+    });
+    const expressSections = WIZARD_SECTIONS({
+      firmwareHardware: "express_k10",
+    });
     expect(expressSections.length).toEqual(sections.length);
   });
 });

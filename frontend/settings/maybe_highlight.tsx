@@ -25,6 +25,7 @@ const FARMBOT_PANEL = [
   DeviceSetting.firmware,
   DeviceSetting.flashFirmware,
   DeviceSetting.firmwarePath,
+  DeviceSetting.raspberryPiModel,
 ];
 const POWER_AND_RESET_PANEL = [
   DeviceSetting.powerAndReset,

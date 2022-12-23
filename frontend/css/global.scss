@@ -2118,7 +2118,12 @@ ul {
   }
 }
 
-.firmware-hardware-status-details {
+.status-details-target {
+  margin-left: -1rem;
+  margin-top: 0.25rem;
+}
+
+.status-details {
   max-width: 30rem;
   button {
     float: none !important;

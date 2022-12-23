@@ -15,6 +15,7 @@ import { GardenLocationRow } from "./garden_location_row";
 import { BoardType } from "../firmware/board_type";
 import { FirmwarePathRow } from "../firmware/firmware_path";
 import { validFirmwareHardware } from "../firmware/firmware_hardware_support";
+import { RpiModel } from "./rpi_model";
 
 export enum ColWidth {
   label = 3,
@@ -63,6 +64,12 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       <FirmwarePathRow
         dispatch={props.dispatch}
         firmwarePath={"" + sourceFbosConfig("firmware_path").value}
+        showAdvanced={props.showAdvanced} />
+      <RpiModel
+        dispatch={props.dispatch}
+        firmwareHardware={firmwareHardware}
+        device={props.device}
+        bot={props.bot}
         showAdvanced={props.showAdvanced} />
     </Collapse>
   </Highlight>;

@@ -13,6 +13,7 @@ import { formatTime } from "../util";
 import { ControlsCheck, PinBinding } from "./checks";
 import { SetupWizardContent } from "../constants";
 import { ExternalUrl } from "../external_urls";
+import { FilePath } from "../internal_urls";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -69,12 +70,13 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
           {step.prerequisites.map((prerequisite, index) =>
             !prerequisite.status() && <prerequisite.indicator key={index} />)}
         </div>}
-      <Markdown>{step.content}</Markdown>
+      <Markdown>{t(step.content)}</Markdown>
       {step.warning &&
         <div className={"warning-banner"}>
           <p>{t(step.warning)}</p>
         </div>}
       {step.video && <Video url={step.video} />}
+      {step.image && <Image imageFilename={step.image} />}
       <div className={[
         "wizard-components",
         step.componentOptions?.border ?? true ? "" : "no-border",
@@ -98,7 +100,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             bot={props.bot}
             resources={props.resources} />}
       </div>
-      <Markdown className={"wizard-step-question"}>{step.question}</Markdown>
+      <Markdown className={"wizard-step-question"}>{t(step.question)}</Markdown>
       {!requirementsMet &&
         <p className={"prereq-not-met"}>
           {t("Fix issues above to continue.")}
@@ -132,51 +134,54 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
 const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   const otherSelected = props.selectedOutcome == "other";
   return <div className={"troubleshooting"}>
-    {props.step.outcomes.map(outcome => {
-      const selected = outcome.slug == props.selectedOutcome;
-      const hidden = !selected && outcome.hidden;
-      const { goToStep } = outcome;
-      if (hidden) { return <div key={outcome.slug} />; }
-      return <div key={outcome.slug}
-        className={
-          `troubleshooting-tip ${selected ? "selected" : ""}`}
-        onClick={props.setSuccess(false, outcome.slug)}>
-        <p>{t(outcome.description)}</p>
-        {selected &&
-          <p>
-            {t(outcome.tips)}
-            {goToStep &&
-              <a className={"fb-button"}
-                onClick={e => {
-                  e.stopPropagation();
-                  props.openStep(goToStep.step)();
-                }}>
-                {t(goToStep.text)}
-              </a>}
-          </p>}
-        {selected && outcome.detectedProblems?.map(problem =>
-          !problem.status() &&
-          <p key={problem.description}>
-            {t(problem.description)}
-          </p>)}
-        {selected && outcome.video && <Video url={outcome.video} />}
-        {selected && outcome.component &&
-          <outcome.component
-            bot={props.bot}
-            dispatch={props.dispatch}
-            getConfigValue={props.getConfigValue}
-            resources={props.resources} />}
-        {selected && outcome.controlsCheckOptions &&
-          <ControlsCheck
-            dispatch={props.dispatch}
-            controlsCheckOptions={outcome.controlsCheckOptions} />}
-        {selected &&
-          <FirmwareNumberSettings bot={props.bot}
-            dispatch={props.dispatch}
-            firmwareNumberSettings={outcome.firmwareNumberSettings}
-            resources={props.resources} />}
-      </div>;
-    })}
+    {props.step.outcomes.map(
+      // eslint-disable-next-line complexity
+      outcome => {
+        const selected = outcome.slug == props.selectedOutcome;
+        const hidden = !selected && outcome.hidden;
+        const { goToStep } = outcome;
+        if (hidden) { return <div key={outcome.slug} />; }
+        return <div key={outcome.slug}
+          className={
+            `troubleshooting-tip ${selected ? "selected" : ""}`}
+          onClick={props.setSuccess(false, outcome.slug)}>
+          <p>{t(outcome.description)}</p>
+          {selected &&
+            <p>
+              {t(outcome.tips)}
+              {outcome.image && <Image imageFilename={outcome.image} />}
+              {goToStep &&
+                <a className={"fb-button"}
+                  onClick={e => {
+                    e.stopPropagation();
+                    props.openStep(goToStep.step)();
+                  }}>
+                  {t(goToStep.text)}
+                </a>}
+            </p>}
+          {selected && outcome.detectedProblems?.map(problem =>
+            !problem.status() &&
+            <p key={problem.description}>
+              {t(problem.description)}
+            </p>)}
+          {selected && outcome.video && <Video url={outcome.video} />}
+          {selected && outcome.component &&
+            <outcome.component
+              bot={props.bot}
+              dispatch={props.dispatch}
+              getConfigValue={props.getConfigValue}
+              resources={props.resources} />}
+          {selected && outcome.controlsCheckOptions &&
+            <ControlsCheck
+              dispatch={props.dispatch}
+              controlsCheckOptions={outcome.controlsCheckOptions} />}
+          {selected &&
+            <FirmwareNumberSettings bot={props.bot}
+              dispatch={props.dispatch}
+              firmwareNumberSettings={outcome.firmwareNumberSettings}
+              resources={props.resources} />}
+        </div>;
+      })}
     <div className={`troubleshooting-tip ${otherSelected ? "selected" : ""}`}
       onClick={props.setSuccess(false, "other")}>
       <p>{t("Something else happened and I need additional help")}</p>
@@ -191,3 +196,7 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
     </div>
   </div>;
 };
+
+const Image = ({ imageFilename }: { imageFilename: string }) =>
+  <img style={{ width: "100%" }}
+    src={FilePath.setupWizardImage(imageFilename)} />;

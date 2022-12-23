@@ -97,6 +97,8 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -264,6 +266,39 @@ export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
   </a>;
 };
 
+export const DownloadOS = (props: WizardOutcomeComponentProps) => {
+  const getRelease = (rpi: string | undefined) => {
+    switch (rpi) {
+      case "01": return {
+        imageUrl: globalConfig.rpi_release_url,
+        releaseTag: globalConfig.rpi_release_tag,
+      };
+      case "02":
+      case "3": return {
+        imageUrl: globalConfig.rpi3_release_url,
+        releaseTag: globalConfig.rpi3_release_tag,
+      };
+      case "4": return {
+        imageUrl: globalConfig.rpi4_release_url,
+        releaseTag: globalConfig.rpi4_release_tag,
+      };
+    }
+  };
+  const rpi = getDeviceAccountSettings(props.resources)
+    .body["rpi" as keyof DeviceAccountSettings] as string | undefined;
+  const release = getRelease(rpi);
+  return release
+    ? <a className={"download-os-link"} href={release.imageUrl}>
+      {`${t("DOWNLOAD")} FBOS v${release.releaseTag}`}
+    </a>
+    : <p>{t("Please select a model")}</p>;
+};
+
+export const DownloadImager = () =>
+  <a className={"download-imager-link"} href={ExternalUrl.rpiImager}>
+    {t("DOWNLOAD")}
+  </a>;
+
 export const NetworkRequirementsLink = () =>
   <a href={docLink("for-it-security-professionals")}
     target={"_blank"} rel={"noreferrer"}>
@@ -278,7 +313,7 @@ export const FlashFirmware = (props: WizardStepComponentProps) => {
     botOnline={botOnline} />;
 };
 
-const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
+const SEED_DATA_OPTION_TO_FW_HARDWARE: Record<string, FirmwareHardware> = {
   "genesis_1.2": "arduino",
   "genesis_1.3": "farmduino",
   "genesis_1.4": "farmduino_k14",
@@ -292,6 +327,17 @@ const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
   "express_xl_1.0": "express_k10",
   "express_xl_1.1": "express_k11",
   "none": "none",
+};
+
+const FW_HARDWARE_TO_RPI: Record<FirmwareHardware, string | undefined> = {
+  "arduino": "3",
+  "farmduino": "3",
+  "farmduino_k14": "3",
+  "farmduino_k15": "3",
+  "farmduino_k16": undefined,
+  "express_k10": "01",
+  "express_k11": "02",
+  "none": "3",
 };
 
 interface FirmwareHardwareSelectionState {
@@ -318,10 +364,14 @@ export class FirmwareHardwareSelection
     const { dispatch, resources } = this.props;
 
     this.setState({ selection: "" + ddi.value });
-    changeFirmwareHardware(dispatch)({
-      label: "",
-      value: FW_HARDWARE_TO_SEED_DATA_OPTION["" + ddi.value]
-    });
+    const firmwareHardware = SEED_DATA_OPTION_TO_FW_HARDWARE["" + ddi.value];
+    changeFirmwareHardware(dispatch)({ label: "", value: firmwareHardware });
+    const rpi = FW_HARDWARE_TO_RPI[firmwareHardware];
+    if (rpi) {
+      const device = getDeviceAccountSettings(this.props.resources);
+      dispatch(edit(device, { ["rpi" as keyof DeviceAccountSettings]: rpi }));
+      dispatch(save(device.uuid));
+    }
 
     const seedAlertId = this.seedAlerts[0]?.body.id;
     const dismiss = () => seedAlertId && dispatch(destroy(
@@ -359,19 +409,27 @@ export class FirmwareHardwareSelection
   }
 }
 
-export const ConfiguratorDocs = () => {
-  return <a href={docLink("farmbot-os")} target={"_blank"} rel={"noreferrer"}>
-    {t("Installing FarmBot OS documentation")}
-  </a>;
+export const RpiSelection = (props: WizardStepComponentProps) => {
+  const device = getDeviceAccountSettings(props.resources);
+  const selection = device.body["rpi" as keyof DeviceAccountSettings
+  ] as string | undefined;
+  return <div className={"rpi-selection"}>
+    <img style={{ width: "100%" }}
+      src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
+    <FBSelect
+      key={selection}
+      customNullLabel={t("Select one")}
+      list={Object.values(RPI_OPTIONS)
+        .filter(ddi => ["3", "4"].includes("" + ddi.value))}
+      selectedItem={RPI_OPTIONS["" + selection]}
+      onChange={ddi => {
+        const device = getDeviceAccountSettings(props.resources);
+        props.dispatch(edit(device,
+          { ["rpi" as keyof DeviceAccountSettings]: ddi.value }));
+        props.dispatch(save(device.uuid));
+      }} />
+  </div>;
 };
-
-export const EthernetPortImage = () =>
-  <img style={{ width: "100%" }}
-    src={FilePath.image("pi-ethernet-port", "jpg")} />;
-
-export const ConfiguratorImage = () =>
-  <img style={{ width: "100%" }}
-    src={FilePath.image("configurator", "png")} />;
 
 export const Connectivity = (props: WizardStepComponentProps) => {
   const data = connectivityData({

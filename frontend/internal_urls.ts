@@ -93,6 +93,7 @@ export namespace FilePath {
   export const language = (lang: string) => `${resource("languages")}/${lang}.json`;
   const images = (path: string) => resource("img") + "/" + path;
   export const image = (img: string, ext = "svg") => `${images(img)}.${ext}`;
+  export const setupWizardImage = (img: string) => images(`setup_wizard/${img}`);
   export const icon = (icon: Icon) => `${images("icons")}/${icon}.svg`;
   export const bug = (bug?: Bug) =>
     bug ? `${images("bugs")}/${bug}.svg` : images("bugs");

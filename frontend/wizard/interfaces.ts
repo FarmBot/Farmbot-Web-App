@@ -23,6 +23,7 @@ interface WizardStepOutcome {
   tips: string;
   hidden?: boolean;
   detectedProblems?: WizardOutcomeDetectedProblem[];
+  image?: string;
   component?: React.ComponentType<WizardOutcomeComponentProps>;
   controlsCheckOptions?: ControlsCheckOptions;
   video?: string;
@@ -69,6 +70,7 @@ export interface WizardStep {
   prerequisites?: WizardStepPrerequisite[];
   content: string;
   video?: string;
+  image?: string;
   component?: React.ComponentType<WizardStepComponentProps>;
   componentOptions?: ComponentOptions;
   warning?: string;
@@ -100,10 +102,15 @@ export interface SetupWizardState extends WizardSectionsOpen {
   stepOpen: WizardStepSlug | undefined;
 }
 
+export interface WizardStepDataProps {
+  firmwareHardware: FirmwareHardware | undefined;
+  getConfigValue?: GetWebAppConfigValue;
+}
+
 export interface WizardHeaderProps {
   reset(): void;
   results: TaggedWizardStepResult[];
-  firmwareHardware: FirmwareHardware | undefined;
+  stepDataProps: WizardStepDataProps;
 }
 
 export interface WizardSectionHeaderProps {

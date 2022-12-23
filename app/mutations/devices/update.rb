@@ -16,6 +16,7 @@ module Devices
       float :lat
       float :lng
       boolean :indoor
+      string :rpi
     end
 
     def validate
