@@ -289,14 +289,15 @@ export const DownloadOS = (props: WizardOutcomeComponentProps) => {
   const release = getRelease(rpi);
   return release
     ? <a className={"download-os-link"} href={release.imageUrl}>
-      {`${t("DOWNLOAD")} FBOS v${release.releaseTag}`}
+      {`${t("Download")} FBOS v${release.releaseTag}`}
     </a>
     : <p>{t("Please select a model")}</p>;
 };
 
 export const DownloadImager = () =>
-  <a className={"download-imager-link"} href={ExternalUrl.rpiImager}>
-    {t("DOWNLOAD")}
+  <a className={"download-imager-link"} href={ExternalUrl.rpiImager}
+    target={"_blank"} rel={"noreferrer"}>
+    {t("Download Raspberry Pi Imager")}
   </a>;
 
 export const NetworkRequirementsLink = () =>

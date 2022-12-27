@@ -76,7 +76,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
           <p>{t(step.warning)}</p>
         </div>}
       {step.video && <Video url={step.video} />}
-      {step.image && <Image imageFilename={step.image} />}
+      {step.images && <Image imageFilenames={step.images} />}
       <div className={[
         "wizard-components",
         step.componentOptions?.border ?? true ? "" : "no-border",
@@ -149,7 +149,7 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
           {selected &&
             <p>
               {t(outcome.tips)}
-              {outcome.image && <Image imageFilename={outcome.image} />}
+              {outcome.images && <Image imageFilenames={outcome.images} />}
               {goToStep &&
                 <a className={"fb-button"}
                   onClick={e => {
@@ -197,6 +197,9 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   </div>;
 };
 
-const Image = ({ imageFilename }: { imageFilename: string }) =>
-  <img style={{ width: "100%" }}
-    src={FilePath.setupWizardImage(imageFilename)} />;
+const Image = ({ imageFilenames }: { imageFilenames: string[] }) =>
+  <>
+    {imageFilenames.map(imageFilename =>
+      <img key={imageFilename}
+        src={FilePath.setupWizardImage(imageFilename)} />)}
+  </>;

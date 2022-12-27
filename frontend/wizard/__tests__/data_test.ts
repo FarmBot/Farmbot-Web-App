@@ -31,12 +31,22 @@ describe("data check", () => {
     expect(slugs.length).toEqual(stepSlugs.length);
   });
 
-  it("has fewer steps for express", () => {
+  it("has fewer steps for express v1.0", () => {
     const steps = WIZARD_STEPS({
       firmwareHardware: undefined,
     });
     const expressSteps = WIZARD_STEPS({
       firmwareHardware: "express_k10",
+    });
+    expect(expressSteps.length).toBeLessThan(steps.length);
+  });
+
+  it("has fewer steps for express v1.1", () => {
+    const steps = WIZARD_STEPS({
+      firmwareHardware: undefined,
+    });
+    const expressSteps = WIZARD_STEPS({
+      firmwareHardware: "express_k11",
     });
     expect(expressSteps.length).toBeLessThan(steps.length);
   });

@@ -1610,13 +1610,23 @@ export namespace SetupWizardContent {
 
   export const IMAGER =
     trim(`Using a desktop computer or laptop, download and install the
-    Raspberry Pi Imager program. This is necessary for installing
-    FarmBot OS onto the microSD card in the next step.`);
+    official Raspberry Pi Imager program from the Raspberry Pi Foundation.
+    This is necessary for installing FarmBot OS onto the microSD card in
+    the next step.`);
 
-  export const COMPUTER_SD_CARD =
-    trim(`Connect the microSD card to your computer using a card reader.
-    You may need to use the microSD card to SD card adapter included with
-    your kit.`);
+  export const COMPUTER_SD_CARD_GENESIS =
+    trim(`Remove the microSD card from the FarmBot's Raspberry Pi.
+    The card slot is located on the back side of the Raspberry Pi,
+    on the right-hand edge. Then connect the microSD card to your computer
+    using a card reader. You may need to use the microSD card to SD card
+    adapter included with your kit.`);
+
+  export const COMPUTER_SD_CARD_EXPRESS =
+    trim(`Remove the microSD card from the FarmBot's Raspberry Pi.
+    The card slot is located on the front side of the Raspberry Pi,
+    on the left-hand edge. Then connect the microSD card to your computer
+    using a card reader. You may need to use the microSD card to SD card
+    adapter included with your kit.`);
 
   export const FLASH_SD_CARD =
     trim(`Open up the Raspberry Pi Imager program and click \`CHOOSE OS\`.

@@ -282,7 +282,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       slug: WizardStepSlug.downloadImager,
       title: t("Download Raspberry Pi Imager"),
       content: SetupWizardContent.IMAGER,
-      image: "rpi_imager.png",
+      images: ["rpi_imager.png"],
       component: DownloadImager,
       question: t("Is Raspberry Pi Imager installed?"),
       outcomes: [
@@ -292,8 +292,15 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       section: WizardSectionSlug.os,
       slug: WizardStepSlug.computerSdCard,
       title: t("Connect the microSD card to your computer"),
-      content: SetupWizardContent.COMPUTER_SD_CARD,
-      image: "sd_card.jpg",
+      content: isExpress(firmwareHardware)
+        ? SetupWizardContent.COMPUTER_SD_CARD_EXPRESS
+        : SetupWizardContent.COMPUTER_SD_CARD_GENESIS,
+      images: [
+        ...(isExpress(firmwareHardware)
+          ? ["rpi_02_card_installed.png"]
+          : ["rpi_3_card_installed.jpeg"]),
+        "sd_card.jpg",
+      ],
       question: t("Is the card connected?"),
       outcomes: [
       ],
@@ -303,7 +310,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       slug: WizardStepSlug.flashSdCard,
       title: t("Install FarmBot OS onto the microSD card"),
       content: SetupWizardContent.FLASH_SD_CARD,
-      image: "rpi_imager_flash.png",
+      images: ["rpi_imager_flash.png"],
       question: t("Did the writing process complete?"),
       outcomes: [
       ],
@@ -315,9 +322,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       content: isExpress(firmwareHardware)
         ? SetupWizardContent.INSERT_SD_CARD_EXPRESS
         : SetupWizardContent.INSERT_SD_CARD_GENESIS,
-      image: isExpress(firmwareHardware)
-        ? "rpi_02_card_installed.png"
-        : "rpi_3_card_installed.jpeg",
+      images: isExpress(firmwareHardware)
+        ? ["rpi_02_card_installed.png"]
+        : ["rpi_3_card_installed.jpeg"],
       question: t("Have you inserted the microSD card into the Raspberry Pi?"),
       outcomes: [
       ],
@@ -343,7 +350,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
             slug: "ethernetPort",
             description: t("I do not know where to connect the ethernet cable"),
             tips: "",
-            image: "rpi_ethernet_port.jpg",
+            images: isExpress(firmwareHardware)
+              ? ["farmduino_ethernet_port.jpg"]
+              : ["rpi_ethernet_port.jpg"],
           },
         ],
       }]
@@ -386,7 +395,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       slug: WizardStepSlug.configuratorBrowser,
       title: t("Configurator"),
       content: t("Open a browser and navigate to `setup.farm.bot`"),
-      image: "configurator.png",
+      images: ["configurator.png"],
       question: t("Is the configurator loaded?"),
       outcomes: [
         {

@@ -3208,6 +3208,11 @@ li {
       .bp4-collapse-body {
         margin-bottom: 0;
       }
+      img {
+        width: 100%;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
     }
     .wizard-step-info {
       display: inline;
@@ -3261,8 +3266,9 @@ li {
     .wizard-components {
       margin: auto;
       width: fit-content;
-      border: 3px solid $gray;
-      padding: 0.5rem;
+      border-radius: 5px;
+      box-shadow: 0 0 7px $translucent;
+      padding: 1rem;
       background: $panel_light_gray;
       &.no-border {
         border: none;

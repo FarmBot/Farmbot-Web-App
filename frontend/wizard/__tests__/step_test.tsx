@@ -176,8 +176,8 @@ describe("<WizardStepContainer />", () => {
 
   it("renders images", () => {
     const p = fakeProps();
-    p.step.image = "url";
-    p.step.outcomes[0].image = "url";
+    p.step.images = ["url"];
+    p.step.outcomes[0].images = ["url"];
     const wrapper = mount(<WizardStepContainer {...p} />);
     expect(wrapper.find("img").length).toEqual(2);
   });
