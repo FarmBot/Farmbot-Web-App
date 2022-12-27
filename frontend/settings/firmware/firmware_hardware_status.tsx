@@ -12,19 +12,19 @@ import { Alert } from "farmbot";
 import { Help, Popover } from "../../ui";
 import { ToolTips } from "../../constants";
 
-export interface FirmwareHardwareStatusIconProps {
-  firmwareHardware: string | undefined;
+export interface StatusIconProps {
+  available: boolean;
   status: boolean;
 }
 
-export const FirmwareHardwareStatusIcon =
-  (props: FirmwareHardwareStatusIconProps) => {
+export const StatusIcon =
+  (props: StatusIconProps) => {
     const okNoStatus = props.status ? "ok" : "no";
-    const status = props.firmwareHardware ? okNoStatus : "unknown";
+    const status = props.available ? okNoStatus : "unknown";
     const okNoStatusText = props.status ? t("ok") : t("error");
-    const statusText = props.firmwareHardware ? okNoStatusText : t("unknown");
+    const statusText = props.available ? okNoStatusText : t("unknown");
     const okNoIcon = props.status ? "fa-check-circle" : "fa-times-circle";
-    const icon = props.firmwareHardware ? okNoIcon : "fa-question-circle";
+    const icon = props.available ? okNoIcon : "fa-question-circle";
     return <i className={`fa ${icon} status-icon ${status}`} title={statusText} />;
   };
 
@@ -62,7 +62,7 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
 
 export const FirmwareHardwareStatusDetails =
   (props: FirmwareHardwareStatusDetailsProps) => {
-    return <div className="firmware-hardware-status-details">
+    return <div className="status-details">
       <label>{t("Web App")}</label>
       <Help text={ToolTips.FIRMWARE_VALUE_API} />
       <p>{lookup(props.apiFirmwareValue) || t("unknown")}</p>
@@ -95,8 +95,8 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
   const status = props.apiFirmwareValue == firmware_hardware &&
     props.apiFirmwareValue == boardType(firmware_version);
   return <Popover position={Position.TOP}
-    target={<FirmwareHardwareStatusIcon
-      firmwareHardware={firmware_hardware}
+    target={<StatusIcon
+      available={!!firmware_hardware}
       status={status} />}
     content={<FirmwareHardwareStatusDetails
       alerts={props.alerts}

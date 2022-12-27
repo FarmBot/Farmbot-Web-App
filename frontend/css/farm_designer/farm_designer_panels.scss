@@ -2984,13 +2984,14 @@ li {
 
 .feedback {
   p {
-    color: $medium_light_gray !important;
+    color: $dark_gray !important;
     margin-bottom: 1rem !important;
     font-weight: normal !important;
     font-style: italic;
   }
   textarea {
     font-size: 1.1rem;
+    height: 7.5rem;
   }
   button {
     margin-top: 1rem;
@@ -3207,6 +3208,11 @@ li {
       .bp4-collapse-body {
         margin-bottom: 0;
       }
+      img {
+        width: 100%;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
     }
     .wizard-step-info {
       display: inline;
@@ -3235,14 +3241,14 @@ li {
       cursor: pointer;
       &.open {
         background: $lighter_gray;
+        h3 {
+          font-weight: bold;
+        }
       }
       p {
         display: inline;
         color: $medium_light_gray;
         margin-left: 1rem;
-      }
-      p:first-of-type {
-        font-weight: bold;
       }
     }
     .wizard-answer {
@@ -3260,8 +3266,9 @@ li {
     .wizard-components {
       margin: auto;
       width: fit-content;
-      border: 3px solid $gray;
-      padding: 0.5rem;
+      border-radius: 5px;
+      box-shadow: 0 0 7px $translucent;
+      padding: 1rem;
       background: $panel_light_gray;
       &.no-border {
         border: none;
@@ -3334,6 +3341,9 @@ li {
         }
       }
     }
+    .wizard-step-question {
+      font-style: italic;
+    }
     .markdown {
       display: block;
       p {
@@ -3353,7 +3363,6 @@ li {
         float: none;
         padding: 0;
         padding-left: 0.25rem;
-        text-decoration: none !important;
       }
       .feedback {
         textarea {
@@ -3366,26 +3375,43 @@ li {
       }
     }
     .troubleshooting-tip {
-      margin: 1rem;
-      border: 1px solid $black;
+      margin: 1rem 0;
+      border: 2px solid $medium_light_gray;
       border-radius: 5px;
       padding: 1rem;
       cursor: pointer;
+      background: $panel_light_gray;
       &:hover {
-        background: $light_gray;
+        background: $white;
+        box-shadow: 0 1px 5px 0 $translucent;
+      }
+      p {
+        font-size: 1.4rem;
+        line-height: 2rem;
       }
       a {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
+        text-decoration: underline;
       }
       &.selected {
+        border-color: $dark_gray;
+        background: $white;
         p:first-of-type {
           font-weight: bold;
           padding-bottom: 0.5rem;
         }
+        fieldset {
+          p {
+            font-weight: normal !important;
+          }
+        }
       }
       .fb-button {
-        &:hover {
-          font-size: 1.15rem;
+        float: none;
+      }
+      .arrow-button {
+        p {
+          font-size: 0.9rem;
         }
       }
       .farmbot-origin {

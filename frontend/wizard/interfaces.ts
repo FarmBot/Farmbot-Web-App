@@ -1,4 +1,6 @@
-import { FirmwareHardware, TaggedDevice, TaggedWizardStepResult } from "farmbot";
+import {
+  FirmwareHardware, TaggedDevice, TaggedWizardStepResult, Xyz,
+} from "farmbot";
 import { WizardStepResult } from "farmbot/dist/resources/api_resources";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -21,10 +23,11 @@ interface WizardStepOutcome {
   tips: string;
   hidden?: boolean;
   detectedProblems?: WizardOutcomeDetectedProblem[];
+  images?: string[];
   component?: React.ComponentType<WizardOutcomeComponentProps>;
   controlsCheckOptions?: ControlsCheckOptions;
   video?: string;
-  firmwareNumberSettings?: { key: NumberConfigKey, label: string }[];
+  firmwareNumberSettings?: FirmwareSettingInputProps[];
   goToStep?: GoToStep;
 }
 
@@ -67,6 +70,7 @@ export interface WizardStep {
   prerequisites?: WizardStepPrerequisite[];
   content: string;
   video?: string;
+  images?: string[];
   component?: React.ComponentType<WizardStepComponentProps>;
   componentOptions?: ComponentOptions;
   warning?: string;
@@ -98,10 +102,15 @@ export interface SetupWizardState extends WizardSectionsOpen {
   stepOpen: WizardStepSlug | undefined;
 }
 
+export interface WizardStepDataProps {
+  firmwareHardware: FirmwareHardware | undefined;
+  getConfigValue?: GetWebAppConfigValue;
+}
+
 export interface WizardHeaderProps {
   reset(): void;
   results: TaggedWizardStepResult[];
-  firmwareHardware: FirmwareHardware | undefined;
+  stepDataProps: WizardStepDataProps;
 }
 
 export interface WizardSectionHeaderProps {
@@ -150,8 +159,15 @@ export interface SetupWizardSettingsProps {
   device: TaggedDevice;
 }
 
+interface FirmwareSettingInputProps {
+  key: NumberConfigKey;
+  label: string;
+  scale?: Xyz;
+  intSize?: "long";
+}
+
 export interface FirmwareNumberSettingsProps {
-  firmwareNumberSettings?: { key: NumberConfigKey, label: string }[];
+  firmwareNumberSettings?: FirmwareSettingInputProps[];
   dispatch: Function;
   bot: BotState;
   resources: ResourceIndex;

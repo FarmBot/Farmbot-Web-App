@@ -18,6 +18,7 @@ import {
   WizardSectionHeaderProps, WizardSectionsOpen,
 } from "./interfaces";
 import {
+  getDeviceAccountSettings,
   maybeGetDevice,
   maybeGetTimeSettings, selectAllWizardStepResults,
 } from "../resources/selectors";
@@ -25,7 +26,9 @@ import { WizardStepContainer } from "./step";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
-import { WizardStepResult } from "farmbot/dist/resources/api_resources";
+import {
+  DeviceAccountSettings, WizardStepResult,
+} from "farmbot/dist/resources/api_resources";
 import {
   addOrUpdateWizardStepResult,
   destroyAllWizardStepResults,
@@ -47,7 +50,13 @@ export const mapStateToProps = (props: Everything): SetupWizardProps => ({
 export class RawSetupWizard
   extends React.Component<SetupWizardProps, SetupWizardState> {
 
-  get firmwareHardware() { return this.props.firmwareHardware; }
+  get stepDataProps() {
+    return {
+      firmwareHardware: this.props.firmwareHardware,
+      rpi: getDeviceAccountSettings(this.props.resources)
+        .body["rpi" as keyof DeviceAccountSettings] as string | undefined,
+    };
+  }
 
   get results() {
     const results: WizardResults = {};
@@ -60,7 +69,7 @@ export class RawSetupWizard
   sectionsOpen = () => {
     const open: Partial<WizardSectionsOpen> = {};
     let oneOpen = false;
-    WIZARD_SECTIONS(this.firmwareHardware).map(section => {
+    WIZARD_SECTIONS(this.stepDataProps).map(section => {
       if (!oneOpen) {
         const sectionOpen = some(section.steps.map(step =>
           !this.results[step.slug]?.answer));
@@ -73,7 +82,7 @@ export class RawSetupWizard
 
   state: SetupWizardState = {
     ...this.sectionsOpen(),
-    stepOpen: WIZARD_STEP_SLUGS(this.firmwareHardware)
+    stepOpen: WIZARD_STEP_SLUGS(this.stepDataProps)
       .filter(slug => !this.results[slug]?.answer)[0],
   };
 
@@ -82,7 +91,7 @@ export class RawSetupWizard
       this.props.wizardStepResults))
       .then(() => {
         this.setState({
-          stepOpen: WIZARD_STEP_SLUGS(this.firmwareHardware)[0],
+          stepOpen: WIZARD_STEP_SLUGS(this.stepDataProps)[0],
           ...this.closedSections,
           ...this.sectionsOpen(),
         });
@@ -93,7 +102,7 @@ export class RawSetupWizard
 
   get closedSections() {
     const sectionStates: Partial<Record<WizardSectionSlug, boolean>> = {};
-    WIZARD_SECTIONS(this.firmwareHardware)
+    WIZARD_SECTIONS(this.stepDataProps)
       .map(section => { sectionStates[section.slug] = false; });
     return sectionStates;
   }
@@ -112,13 +121,13 @@ export class RawSetupWizard
           ...(nextStepSlug ? { [this.stepSection(nextStepSlug)]: true } : {}),
         });
         this.props.wizardStepResults.filter(result => result.body.answer).length
-          == WIZARD_STEPS(this.firmwareHardware).length
+          == WIZARD_STEPS(this.stepDataProps).length
           && this.props.dispatch(completeSetup(this.props.device));
       });
   };
 
   getNextStepSlug = (stepSlug: WizardStepSlug) => {
-    const slugs = WIZARD_STEP_SLUGS(this.firmwareHardware)
+    const slugs = WIZARD_STEP_SLUGS(this.stepDataProps)
       .filter(slug => this.props.device?.body.setup_completed_at
         || !this.results[slug]?.answer);
     return slugs[slugs.indexOf(stepSlug) + 1];
@@ -140,7 +149,7 @@ export class RawSetupWizard
     this.setState({ ...this.state, [slug]: !this.state[slug] });
 
   stepSection = (stepSlug: WizardStepSlug): WizardSectionSlug =>
-    WIZARD_STEPS(this.firmwareHardware)
+    WIZARD_STEPS(this.stepDataProps)
       .filter(step => step.slug == stepSlug)[0].section;
 
   openStep = (stepSlug: WizardStepSlug) => () => this.setState({
@@ -155,8 +164,8 @@ export class RawSetupWizard
       <DesignerPanelTop panel={Panel.Controls} />
       <DesignerPanelContent panelName={panelName}>
         <WizardHeader reset={this.reset} results={this.props.wizardStepResults}
-          firmwareHardware={this.firmwareHardware} />
-        {WIZARD_SECTIONS(this.firmwareHardware, this.props.getConfigValue)
+          stepDataProps={this.stepDataProps} />
+        {WIZARD_SECTIONS(this.stepDataProps)
           .map(section =>
             <div className={"wizard-section"} key={section.slug}>
               <WizardSectionHeader
@@ -195,7 +204,7 @@ const WizardHeader = (props: WizardHeaderProps) =>
   <div className={"wizard-header"}>
     <h1>{t("Setup")}</h1>
     <p className={"progress-meter"}>
-      {setupProgressString(props.results, props.firmwareHardware)}
+      {setupProgressString(props.results, props.stepDataProps)}
     </p>
     <button className={"fb-button red start-over"}
       disabled={props.results.length < 1}

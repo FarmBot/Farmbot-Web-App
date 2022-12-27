@@ -31,7 +31,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
 import {
-  Checkbox, Col, docLink, docLinkClick, DropDownItem, FBSelect, Row, ToggleButton,
+  Checkbox, Col, docLink, DropDownItem, FBSelect, genesisDocLink, Row, ToggleButton,
 } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
@@ -43,7 +43,7 @@ import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { sourceFwConfigValue } from "../settings/source_config_value";
 import {
-  emergencyUnlock, findHome, setHome, settingToggle,
+  emergencyUnlock, findAxisLength, findHome, setHome, settingToggle,
 } from "../devices/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { calibrate } from "../photos/camera_calibration/actions";
@@ -97,6 +97,8 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 
@@ -264,6 +266,40 @@ export const AssemblyDocs = (props: WizardOutcomeComponentProps) => {
   </a>;
 };
 
+export const DownloadOS = (props: WizardOutcomeComponentProps) => {
+  const getRelease = (rpi: string | undefined) => {
+    switch (rpi) {
+      case "01": return {
+        imageUrl: globalConfig.rpi_release_url,
+        releaseTag: globalConfig.rpi_release_tag,
+      };
+      case "02":
+      case "3": return {
+        imageUrl: globalConfig.rpi3_release_url,
+        releaseTag: globalConfig.rpi3_release_tag,
+      };
+      case "4": return {
+        imageUrl: globalConfig.rpi4_release_url,
+        releaseTag: globalConfig.rpi4_release_tag,
+      };
+    }
+  };
+  const rpi = getDeviceAccountSettings(props.resources)
+    .body["rpi" as keyof DeviceAccountSettings] as string | undefined;
+  const release = getRelease(rpi);
+  return release
+    ? <a className={"download-os-link"} href={release.imageUrl}>
+      {`${t("Download")} FBOS v${release.releaseTag}`}
+    </a>
+    : <p>{t("Please select a model")}</p>;
+};
+
+export const DownloadImager = () =>
+  <a className={"download-imager-link"} href={ExternalUrl.rpiImager}
+    target={"_blank"} rel={"noreferrer"}>
+    {t("Download Raspberry Pi Imager")}
+  </a>;
+
 export const NetworkRequirementsLink = () =>
   <a href={docLink("for-it-security-professionals")}
     target={"_blank"} rel={"noreferrer"}>
@@ -278,7 +314,7 @@ export const FlashFirmware = (props: WizardStepComponentProps) => {
     botOnline={botOnline} />;
 };
 
-const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
+const SEED_DATA_OPTION_TO_FW_HARDWARE: Record<string, FirmwareHardware> = {
   "genesis_1.2": "arduino",
   "genesis_1.3": "farmduino",
   "genesis_1.4": "farmduino_k14",
@@ -292,6 +328,17 @@ const FW_HARDWARE_TO_SEED_DATA_OPTION: Record<string, FirmwareHardware> = {
   "express_xl_1.0": "express_k10",
   "express_xl_1.1": "express_k11",
   "none": "none",
+};
+
+const FW_HARDWARE_TO_RPI: Record<FirmwareHardware, string | undefined> = {
+  "arduino": "3",
+  "farmduino": "3",
+  "farmduino_k14": "3",
+  "farmduino_k15": "3",
+  "farmduino_k16": undefined,
+  "express_k10": "01",
+  "express_k11": "02",
+  "none": "3",
 };
 
 interface FirmwareHardwareSelectionState {
@@ -318,10 +365,14 @@ export class FirmwareHardwareSelection
     const { dispatch, resources } = this.props;
 
     this.setState({ selection: "" + ddi.value });
-    changeFirmwareHardware(dispatch)({
-      label: "",
-      value: FW_HARDWARE_TO_SEED_DATA_OPTION["" + ddi.value]
-    });
+    const firmwareHardware = SEED_DATA_OPTION_TO_FW_HARDWARE["" + ddi.value];
+    changeFirmwareHardware(dispatch)({ label: "", value: firmwareHardware });
+    const rpi = FW_HARDWARE_TO_RPI[firmwareHardware];
+    if (rpi) {
+      const device = getDeviceAccountSettings(this.props.resources);
+      dispatch(edit(device, { ["rpi" as keyof DeviceAccountSettings]: rpi }));
+      dispatch(save(device.uuid));
+    }
 
     const seedAlertId = this.seedAlerts[0]?.body.id;
     const dismiss = () => seedAlertId && dispatch(destroy(
@@ -359,15 +410,27 @@ export class FirmwareHardwareSelection
   }
 }
 
-export const ConfiguratorDocs = () => {
-  return <a onClick={docLinkClick("farmbot-os")}>
-    {t("Installing FarmBot OS documentation")}
-  </a>;
+export const RpiSelection = (props: WizardStepComponentProps) => {
+  const device = getDeviceAccountSettings(props.resources);
+  const selection = device.body["rpi" as keyof DeviceAccountSettings
+  ] as string | undefined;
+  return <div className={"rpi-selection"}>
+    <img style={{ width: "100%" }}
+      src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
+    <FBSelect
+      key={selection}
+      customNullLabel={t("Select one")}
+      list={Object.values(RPI_OPTIONS)
+        .filter(ddi => ["3", "4"].includes("" + ddi.value))}
+      selectedItem={RPI_OPTIONS["" + selection]}
+      onChange={ddi => {
+        const device = getDeviceAccountSettings(props.resources);
+        props.dispatch(edit(device,
+          { ["rpi" as keyof DeviceAccountSettings]: ddi.value }));
+        props.dispatch(save(device.uuid));
+      }} />
+  </div>;
 };
-
-export const EthernetPortImage = () =>
-  <img style={{ width: "100%" }}
-    src={FilePath.image("pi-ethernet-port", "jpg")} />;
 
 export const Connectivity = (props: WizardStepComponentProps) => {
   const data = connectivityData({
@@ -399,12 +462,32 @@ export const InvertJogButton = (axis: Xyz) =>
     </fieldset>;
   };
 
-const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string }) =>
+export const CheckForResistance = () =>
+  <p>
+    {t("Check hardware for resistance.")}&nbsp;
+    {t("Refer to the")}&nbsp;
+    <a href={genesisDocLink("why-is-my-farmbot-not-moving")}>
+      {t("Why is my FarmBot not moving?")}
+    </a>
+    &nbsp;{t("documentation page for adjustment suggestions.")}
+  </p>;
+
+export const MotorCurrentContent = () =>
+  <fieldset>
+    <CheckForResistance />
+    <p>{t("You may also try increasing motor current by 10%.")}</p>
+  </fieldset>;
+
+const FirmwareSettingToggle = (
+  setting: { key: NumberConfigKey, label: string },
+  showText: boolean,
+) =>
   (props: WizardOutcomeComponentProps) => {
     const sourceFwConfig = sourceFwConfigValue(validFwConfig(getFirmwareConfig(
       props.resources)), props.bot.hardware.mcu_params);
     const param = sourceFwConfig(setting.key);
     return <fieldset>
+      {showText && <CheckForResistance />}
       <label>{t(setting.label)}</label>
       <ToggleButton dispatch={props.dispatch}
         dim={!param.consistent}
@@ -414,13 +497,13 @@ const FirmwareSettingToggle = (setting: { key: NumberConfigKey, label: string })
     </fieldset>;
   };
 
-export const DisableStallDetection = (axis: Xyz) => {
+export const DisableStallDetection = (axis: Xyz, showText = true) => {
   const setting: Record<Xyz, { key: NumberConfigKey, label: string }> = {
     x: { key: "encoder_enabled_x", label: t("x-axis stall detection") },
     y: { key: "encoder_enabled_y", label: t("y-axis stall detection") },
     z: { key: "encoder_enabled_z", label: t("z-axis stall detection") },
   };
-  return FirmwareSettingToggle(setting[axis]);
+  return FirmwareSettingToggle(setting[axis], showText);
 };
 
 export const SwapJogButton = (props: WizardOutcomeComponentProps) =>
@@ -584,6 +667,25 @@ export const AxisActions = (props: WizardStepComponentProps) => {
     firmwareSettings={firmwareSettings}
     firmwareHardware={firmwareHardware} />;
 };
+
+export const FindAxisLength = (axis: Xyz) =>
+  (props: WizardOutcomeComponentProps) => {
+    const botOnline = isBotOnlineFromState(props.bot);
+    const firmwareSettings = getFirmwareConfig(props.resources);
+    const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
+      || props.bot.hardware.mcu_params);
+    const { busy } = props.bot.hardware.informational_settings;
+    return <fieldset>
+      <p>{t("Then try finding the axis length again.")}</p>
+      <LockableButton
+        className={"wizard-find-length-btn"}
+        disabled={busy || hardwareDisabled[axis] || !botOnline}
+        title={t("FIND LENGTH")}
+        onClick={() => findAxisLength(axis)}>
+        {t("FIND LENGTH")}
+      </LockableButton>
+    </fieldset>;
+  };
 
 export const BootSequence = () => {
   return <BootSequenceSelector />;

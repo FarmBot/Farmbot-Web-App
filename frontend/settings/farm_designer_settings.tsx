@@ -160,10 +160,15 @@ const DESIGNER_SETTINGS =
 
 export const OriginSelector = (props: DesignerSettingsPropsBase) => {
   const settingKey = NumericSetting.bot_origin_quadrant;
+  const swapXY = props.getConfigValue(BooleanSetting.xy_swap);
   const quadrant = props.getConfigValue(settingKey);
   const update = (value: number) => () =>
     props.dispatch(setWebAppConfigValue(settingKey, value));
-  return <div className={`farmbot-origin ${getModifiedClassName(settingKey)}`}>
+  return <div className={[
+    "farmbot-origin",
+    getModifiedClassName(settingKey),
+    swapXY ? "xy-swap" : "",
+  ].join(" ")}>
     <div className="quadrants">
       {[2, 1, 3, 4].map(q =>
         <div key={"quadrant_" + q}

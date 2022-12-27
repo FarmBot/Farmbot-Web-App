@@ -174,6 +174,14 @@ describe("<WizardStepContainer />", () => {
     wrapper.setProps(p);
   });
 
+  it("renders images", () => {
+    const p = fakeProps();
+    p.step.images = ["url"];
+    p.step.outcomes[0].images = ["url"];
+    const wrapper = mount(<WizardStepContainer {...p} />);
+    expect(wrapper.find("img").length).toEqual(2);
+  });
+
   it("renders controls check", () => {
     const p = fakeProps();
     p.step.controlsCheckOptions = {};

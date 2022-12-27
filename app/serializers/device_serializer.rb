@@ -9,6 +9,7 @@ class DeviceSerializer < ApplicationSerializer
              :name,
              :ota_hour_utc,
              :ota_hour,
+             :rpi,
              :serial_number,
              :setup_completed_at,
              :throttled_at,

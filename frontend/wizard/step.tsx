@@ -11,6 +11,9 @@ import moment from "moment";
 import { FirmwareNumberSettings, Video } from "./step_components";
 import { formatTime } from "../util";
 import { ControlsCheck, PinBinding } from "./checks";
+import { SetupWizardContent } from "../constants";
+import { ExternalUrl } from "../external_urls";
+import { FilePath } from "../internal_urls";
 
 export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const stepOpen = props.stepOpen == props.step.slug;
@@ -67,12 +70,13 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
           {step.prerequisites.map((prerequisite, index) =>
             !prerequisite.status() && <prerequisite.indicator key={index} />)}
         </div>}
-      <Markdown>{step.content}</Markdown>
+      <Markdown>{t(step.content)}</Markdown>
       {step.warning &&
         <div className={"warning-banner"}>
           <p>{t(step.warning)}</p>
         </div>}
       {step.video && <Video url={step.video} />}
+      {step.images && <Image imageFilenames={step.images} />}
       <div className={[
         "wizard-components",
         step.componentOptions?.border ?? true ? "" : "no-border",
@@ -96,7 +100,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             bot={props.bot}
             resources={props.resources} />}
       </div>
-      <Markdown>{step.question}</Markdown>
+      <Markdown className={"wizard-step-question"}>{t(step.question)}</Markdown>
       {!requirementsMet &&
         <p className={"prereq-not-met"}>
           {t("Fix issues above to continue.")}
@@ -130,57 +134,72 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
 const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   const otherSelected = props.selectedOutcome == "other";
   return <div className={"troubleshooting"}>
-    <p>{t("What happened?")}</p>
-    {props.step.outcomes.map(outcome => {
-      const selected = outcome.slug == props.selectedOutcome;
-      const hidden = !selected && outcome.hidden;
-      const { goToStep } = outcome;
-      if (hidden) { return <div key={outcome.slug} />; }
-      return <div key={outcome.slug}
-        className={
-          `troubleshooting-tip ${selected ? "selected" : ""}`}
-        onClick={props.setSuccess(false, outcome.slug)}>
-        <p>{t(outcome.description)}</p>
-        {selected &&
-          <p>
-            {t(outcome.tips)}
-            {goToStep &&
-              <a className={"fb-button"}
-                onClick={e => {
-                  e.stopPropagation();
-                  props.openStep(goToStep.step)();
-                }}>
-                {t(goToStep.text)}
-              </a>}
-          </p>}
-        {selected && outcome.detectedProblems?.map(problem =>
-          !problem.status() &&
-          <p key={problem.description}>
-            {t(problem.description)}
-          </p>)}
-        {selected && outcome.video && <Video url={outcome.video} />}
-        {selected && outcome.component &&
-          <outcome.component
-            bot={props.bot}
-            dispatch={props.dispatch}
-            getConfigValue={props.getConfigValue}
-            resources={props.resources} />}
-        {selected && outcome.controlsCheckOptions &&
-          <ControlsCheck
-            dispatch={props.dispatch}
-            controlsCheckOptions={outcome.controlsCheckOptions} />}
-        {selected &&
-          <FirmwareNumberSettings bot={props.bot}
-            dispatch={props.dispatch}
-            firmwareNumberSettings={outcome.firmwareNumberSettings}
-            resources={props.resources} />}
-      </div>;
-    })}
+    {props.step.outcomes.map(
+      // eslint-disable-next-line complexity
+      outcome => {
+        const selected = outcome.slug == props.selectedOutcome;
+        const hidden = !selected && outcome.hidden;
+        const { goToStep } = outcome;
+        if (hidden) { return <div key={outcome.slug} />; }
+        return <div key={outcome.slug}
+          className={
+            `troubleshooting-tip ${selected ? "selected" : ""}`}
+          onClick={props.setSuccess(false, outcome.slug)}>
+          <p>{t(outcome.description)}</p>
+          {selected &&
+            <p>
+              {t(outcome.tips)}
+              {outcome.images && <Image imageFilenames={outcome.images} />}
+              {goToStep &&
+                <a className={"fb-button"}
+                  onClick={e => {
+                    e.stopPropagation();
+                    props.openStep(goToStep.step)();
+                  }}>
+                  {t(goToStep.text)}
+                </a>}
+            </p>}
+          {selected && outcome.detectedProblems?.map(problem =>
+            !problem.status() &&
+            <p key={problem.description}>
+              {t(problem.description)}
+            </p>)}
+          {selected && outcome.video && <Video url={outcome.video} />}
+          {selected && outcome.component &&
+            <outcome.component
+              bot={props.bot}
+              dispatch={props.dispatch}
+              getConfigValue={props.getConfigValue}
+              resources={props.resources} />}
+          {selected && outcome.controlsCheckOptions &&
+            <ControlsCheck
+              dispatch={props.dispatch}
+              controlsCheckOptions={outcome.controlsCheckOptions} />}
+          {selected &&
+            <FirmwareNumberSettings bot={props.bot}
+              dispatch={props.dispatch}
+              firmwareNumberSettings={outcome.firmwareNumberSettings}
+              resources={props.resources} />}
+        </div>;
+      })}
     <div className={`troubleshooting-tip ${otherSelected ? "selected" : ""}`}
       onClick={props.setSuccess(false, "other")}>
-      <p>{t("Something else")}</p>
-      {otherSelected && <p>{t("Provide a description:")}</p>}
+      <p>{t("Something else happened and I need additional help")}</p>
+      {otherSelected && <p>
+        {t(SetupWizardContent.PROVIDE_A_DESCRIPTION_PART_1)}
+        <a href={ExternalUrl.docsHub} target={"_blank"} rel={"noreferrer"}>
+          {t("hardware and software documentation hubs")}
+        </a>
+        &nbsp;{t(SetupWizardContent.PROVIDE_A_DESCRIPTION_PART_3)}
+      </p>}
       {otherSelected && <Feedback stepSlug={props.step.slug} keep={true} />}
     </div>
   </div>;
 };
+
+const Image = ({ imageFilenames }: { imageFilenames: string[] }) =>
+  <>
+    {imageFilenames.map(imageFilename =>
+      <img key={imageFilename}
+        src={FilePath.setupWizardImage(imageFilename)} />)}
+  </>;

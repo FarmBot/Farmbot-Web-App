@@ -19,8 +19,13 @@ const DEV_DOC_SLUGS = {
   "lua": "Lua",
 };
 
+const GENESIS_DOC_SLUGS = {
+  "why-is-my-farmbot-not-moving": "Why is my FarmBot not moving?",
+};
+
 export type DocSlug = keyof typeof DOC_SLUGS;
 type DevDocSlug = keyof typeof DEV_DOC_SLUGS;
+type GenesisDocSlug = keyof typeof GENESIS_DOC_SLUGS;
 
 /** WHY?: The function keeps things DRY. It also makes life easier when the
  * documentation URL / slug name changes. */
@@ -29,6 +34,9 @@ export const docLink = (slug?: DocSlug) =>
 
 export const devDocLink = (slug?: DevDocSlug) =>
   `${ExternalUrl.developerDocs}/${slug || ""}`;
+
+export const genesisDocLink = (slug?: GenesisDocSlug) =>
+  `${ExternalUrl.genesisDocs}/${slug || ""}`;
 
 const genericDocLinkClick = <T>(slug: T, page: "help" | "developer") => () => {
   const path = page == "help" ? Path.help : Path.developer;

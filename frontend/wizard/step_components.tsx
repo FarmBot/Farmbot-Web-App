@@ -7,6 +7,7 @@ import { validFwConfig } from "../util";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
 import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import { McuInputBox } from "../settings/hardware_settings/mcu_input_box";
+import { calculateScale } from "../settings/hardware_settings";
 
 export class Video extends React.Component<{ url: string }> {
   shouldComponentUpdate = () => false;
@@ -17,8 +18,11 @@ export class Video extends React.Component<{ url: string }> {
   }
 }
 
-export const FirmwareNumberSettings = (props: FirmwareNumberSettingsProps) =>
-  <div className={"motor-settings"}>
+export const FirmwareNumberSettings = (props: FirmwareNumberSettingsProps) => {
+  const sourceFwConfig = sourceFwConfigValue(
+    validFwConfig(getFirmwareConfig(props.resources)),
+    props.bot.hardware.mcu_params);
+  return <div className={"motor-settings"}>
     {props.firmwareNumberSettings?.map(setting =>
       <Row key={setting.key}>
         <Col xs={6}>
@@ -27,12 +31,15 @@ export const FirmwareNumberSettings = (props: FirmwareNumberSettingsProps) =>
         <Col xs={6}>
           <McuInputBox
             dispatch={props.dispatch}
-            sourceFwConfig={sourceFwConfigValue(
-              validFwConfig(getFirmwareConfig(props.resources)),
-              props.bot.hardware.mcu_params)}
+            sourceFwConfig={sourceFwConfig}
             firmwareHardware={getFwHardwareValue(getFbosConfig(
               props.resources))}
+            scale={setting.scale
+              ? calculateScale(sourceFwConfig)[setting.scale]
+              : undefined}
+            intSize={setting.intSize}
             setting={setting.key} />
         </Col>
       </Row>)}
   </div>;
+};

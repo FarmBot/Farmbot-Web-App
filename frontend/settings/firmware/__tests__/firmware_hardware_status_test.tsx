@@ -2,11 +2,11 @@ jest.mock("../../../devices/actions", () => ({
   flashFirmware: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   FirmwareHardwareStatusDetailsProps, FirmwareHardwareStatusDetails,
-  FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon,
+  StatusIconProps, StatusIcon,
   FirmwareHardwareStatusProps, FirmwareHardwareStatus,
 } from "../firmware_hardware_status";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -36,34 +36,34 @@ describe("<FirmwareHardwareStatusDetails />", () => {
   });
 });
 
-describe("<FirmwareHardwareStatusIcon />", () => {
-  const fakeProps = (): FirmwareHardwareStatusIconProps => ({
-    firmwareHardware: undefined,
+describe("<StatusIcon />", () => {
+  const fakeProps = (): StatusIconProps => ({
+    available: false,
     status: false,
   });
 
   it("renders details: ok", () => {
     const p = fakeProps();
-    p.firmwareHardware = "arduino";
+    p.available = true;
     p.status = true;
-    const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
+    const wrapper = mount(<StatusIcon {...p} />);
     expect(wrapper.find("i").hasClass("ok")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-check-circle")).toEqual(true);
   });
 
   it("renders details: inconsistent", () => {
     const p = fakeProps();
-    p.firmwareHardware = "arduino";
+    p.available = true;
     p.status = false;
-    const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
+    const wrapper = mount(<StatusIcon {...p} />);
     expect(wrapper.find("i").hasClass("no")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-times-circle")).toEqual(true);
   });
 
   it("renders details: unknown", () => {
     const p = fakeProps();
-    p.firmwareHardware = undefined;
-    const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
+    p.available = false;
+    const wrapper = mount(<StatusIcon {...p} />);
     expect(wrapper.find("i").hasClass("unknown")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-question-circle")).toEqual(true);
   });
@@ -81,7 +81,7 @@ describe("<FirmwareHardwareStatus />", () => {
 
   it("renders: inconsistent", () => {
     const wrapper = mount(<FirmwareHardwareStatus {...fakeProps()} />);
-    expect(wrapper.find(FirmwareHardwareStatusIcon).props().status).toBeFalsy();
+    expect(wrapper.find(StatusIcon).props().status).toBeFalsy();
   });
 
   it("renders: consistent", () => {
@@ -90,6 +90,6 @@ describe("<FirmwareHardwareStatus />", () => {
     p.bot.hardware.configuration.firmware_hardware = "arduino";
     p.apiFirmwareValue = "arduino";
     const wrapper = mount(<FirmwareHardwareStatus {...p} />);
-    expect(wrapper.find(FirmwareHardwareStatusIcon).props().status).toBeTruthy();
+    expect(wrapper.find(StatusIcon).props().status).toBeTruthy();
   });
 });

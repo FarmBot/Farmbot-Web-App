@@ -27,6 +27,8 @@ const NO_TOOLS = [...EXPRESS_BOARDS];
 const NO_ETHERNET = ["express_k10"];
 const NO_EXTRA_BUTTONS = [...EXPRESS_BOARDS];
 const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
+const NO_ROTARY = ["arduino", "farmduino", "farmduino_k14", "farmduino_k15"]
+  .concat(EXPRESS_BOARDS);
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TMC.includes(firmwareHardware);
@@ -48,6 +50,9 @@ export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
 
 export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
+
+export const hasRotaryTool = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_ROTARY.includes(firmwareHardware);
 
 export const hasEthernet = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_ETHERNET.includes(firmwareHardware);
