@@ -720,7 +720,15 @@ describe("<CameraImageOrigin />", () => {
 });
 
 describe("<FlowRateInput />", () => {
-  it("renders tool verification button", () => {
+  it("adds new tool", () => {
+    const p = fakeProps();
+    p.resources = buildResourceIndex([]).index;
+    const wrapper = shallow(<FlowRateInput {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(initSave).toHaveBeenCalledWith("Tool", { name: "Watering Nozzle" });
+  });
+
+  it("changes flow rate", () => {
     const p = fakeProps();
     const tool = fakeTool();
     tool.body.name = "watering nozzle";

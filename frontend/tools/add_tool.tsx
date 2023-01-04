@@ -6,7 +6,7 @@ import {
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
 import { SaveBtn } from "../ui";
-import { SpecialStatus, Tool } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { push } from "../history";
@@ -27,6 +27,7 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "./edit_tool";
+import { Tool } from "farmbot/dist/resources/api_resources";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,

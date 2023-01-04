@@ -2,7 +2,7 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
-import { TaggedTool, TaggedToolSlotPointer, Tool } from "farmbot";
+import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import { saveOK } from "../actions";
 import { hasId, arrayUnwrap } from "../util";
 import {
@@ -11,6 +11,7 @@ import {
 import { resourceReducer, emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 import { chain } from "lodash";
+import { Tool } from "farmbot/dist/resources/api_resources";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
