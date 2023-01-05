@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { Content } from "../constants";
+import { Content, SetupWizardContent } from "../constants";
 import { FilePath } from "../internal_urls";
 
 interface ReleaseItem {
@@ -65,6 +65,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
     kits: [
       "Genesis v1.6.1 (white cable)",
       "Genesis XL v1.6.1 (white cable)",
+      "Genesis v1.6.2 (white cable or 2 HDMI ports)",
+      "Genesis XL v1.6.2 (white cable or 2 HDMI ports)",
     ],
   },
   {
@@ -152,6 +154,7 @@ const VERSIONS = () => ({
 enum Run {
   first = "first",
   second = "second",
+  third = "third",
 }
 
 const RUNS = () => ({
@@ -167,6 +170,24 @@ const RUNS = () => ({
       label: t("White"),
       image: "os_wizard/pi_power_cable_white",
       className: "white",
+    },
+  ]
+});
+
+enum Pi {
+  three = "three",
+  four = "four",
+}
+
+const PIS = () => ({
+  [Version["v1.6"]]: [
+    {
+      value: Pi.three,
+      label: t("Raspberry Pi Model 3"),
+    },
+    {
+      value: Pi.four,
+      label: t("Raspberry Pi Model 4"),
     },
   ]
 });
@@ -200,6 +221,7 @@ const DOWNLOADS = (): Downloads => ({
     [Version["v1.6"]]: {
       [Run.first]: RPI3(),
       [Run.second]: RPI4(),
+      [Run.third]: RPI4(),
     },
   }
 });
@@ -258,6 +280,7 @@ interface OsDownloadWizardState {
   model?: Model;
   version?: Version;
   run?: Run;
+  pi?: Pi;
 }
 
 interface OsDownloadWizardProps {
@@ -271,19 +294,24 @@ class OsDownloadWizard
     model: undefined,
     version: undefined,
     run: undefined,
+    pi: undefined,
   };
 
   select =
-    (key: keyof OsDownloadWizardState,
-      value: boolean | Run | Model | Version | undefined) =>
-      () => this.setState({ ...this.state, [key]: value });
+    (update: Partial<OsDownloadWizardState>) =>
+      () => this.setState({ ...this.state, ...update });
 
   back = ({ field }: { field: keyof OsDownloadWizardState }) =>
     <SimpleButton extraClass={"back"}
-      click={this.select(field, undefined)}
+      click={this.select({ [field]: undefined })}
       content={<i className={"fa fa-arrow-left"} />} />;
 
   render() {
+    const finalBack = () => {
+      if (this.state.version != Version["v1.6"]) { return "version"; }
+      if (this.state.pi) { return "pi"; }
+      return "run";
+    };
     if (!this.props.wizard) {
       return <div className={"os-download-wizard"}>
         <SimpleButton extraClass={"start"}
@@ -300,7 +328,7 @@ class OsDownloadWizard
           <div className={"buttons"}>
             {MODELS().map(model =>
               <ContentButton key={model.value}
-                click={this.select("model", model.value)}
+                click={this.select({ model: model.value })}
                 content={t(model.value)}
                 label={t(model.label)}
                 image={model.image} />)}
@@ -316,7 +344,7 @@ class OsDownloadWizard
           </p>
           {VERSIONS()[this.state.model].map(version =>
             <SimpleButton key={version}
-              click={this.select("version", version)}
+              click={this.select({ version: version })}
               content={`${this.state.model} ${t(version)}`} />)}
           <this.back field={"model"} />
         </div>
@@ -332,7 +360,7 @@ class OsDownloadWizard
           <div className={"buttons"}>
             {RUNS()[this.state.version].map(run =>
               <ContentButton key={run.value}
-                click={this.select("run", run.value)}
+                click={this.select({ run: run.value })}
                 content={t(run.label)}
                 image={run.image}
                 extraClass={run.className} />)}
@@ -341,7 +369,29 @@ class OsDownloadWizard
         </div>
       </div>;
     }
-    if (this.state.version != Version["v1.6"] || this.state.run) {
+    if (this.state.version == Version["v1.6"] && this.state.run != Run.second
+      && !this.state.pi) {
+      return <div className={"os-download-wizard"}>
+        <div className={"os-download-wizard-run"}>
+          <p className={"os-download-wizard-note"}>
+            {t(SetupWizardContent.RPI)}
+          </p>
+          <img src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
+          <div className={"buttons"}>
+            {PIS()[Version["v1.6"]].map(pi =>
+              <ContentButton key={pi.value}
+                click={this.select({
+                  run: pi.value == Pi.three ? Run.first : Run.third,
+                  pi: pi.value,
+                })}
+                content={t(pi.label)} />)}
+          </div>
+          <this.back field={"run"} />
+        </div>
+      </div>;
+    }
+    if (this.state.version != Version["v1.6"] || this.state.run == Run.second
+      || this.state.pi) {
       return <div className={"os-download-wizard"}>
         <p className={"os-download-wizard-note"}>
           {`${t("You have a FarmBot")} ${this.state.model} ${this.state.version}`}
@@ -349,9 +399,7 @@ class OsDownloadWizard
         <DownloadLink {...(DOWNLOADS()[this.state.model][
           this.state.version] as Record<Run, ReleaseItem>)[
           this.state.run || Run.first]} />
-        <this.back field={this.state.version == Version["v1.6"]
-          ? "run"
-          : "version"} />
+        <this.back field={finalBack()} />
       </div>;
     }
   }
