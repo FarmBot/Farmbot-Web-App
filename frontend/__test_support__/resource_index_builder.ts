@@ -6,7 +6,6 @@ import {
   TaggedResource,
   TaggedSequence,
   TaggedRegimen,
-  Tool,
 } from "farmbot";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
@@ -14,6 +13,7 @@ import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
+import { Tool } from "farmbot/dist/resources/api_resources";
 
 const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   id: 415,

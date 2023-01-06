@@ -28,11 +28,10 @@ import {
   TaggedWeedPointer,
   TaggedWizardStepResult,
   TaggedTelemetry,
-  Tool,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType, Folder,
+  ExecutableType, PinBindingType, Folder, Tool,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
