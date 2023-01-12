@@ -50,6 +50,7 @@ export const emptyState = (): RestResources => {
       byKind: {
         Alert: {},
         Crop: {},
+        Curve: {},
         Device: {},
         FarmEvent: {},
         FarmwareEnv: {},

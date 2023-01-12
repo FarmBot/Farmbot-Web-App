@@ -2,6 +2,7 @@ jest.mock("../../../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
   initSave: jest.fn(),
+  init: jest.fn(),
 }));
 
 const mockSpreads: { [x: string]: number } = { mint: 100 };
@@ -19,6 +20,11 @@ jest.mock("../../../../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
+let mockDev = false;
+jest.mock("../../../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import {
   newPlantKindAndBody, NewPlantKindAndBodyProps,
   maybeSavePlantLocation, MaybeSavePlantLocationProps,
@@ -28,8 +34,10 @@ import {
   createPlant, CreatePlantProps,
   dropPlant, DropPlantProps, jogPoints, JogPointsProps, savePoints, SavePointsProps,
 } from "../plant_actions";
-import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
-import { edit, save, initSave } from "../../../../../api/crud";
+import {
+  fakeCurve, fakePlant,
+} from "../../../../../__test_support__/fake_state/resources";
+import { edit, save, init, initSave } from "../../../../../api/crud";
 import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps,
@@ -101,6 +109,8 @@ describe("dropPlant()", () => {
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
+    plants: [],
+    curves: [],
   });
 
   it("drops plant", () => {
@@ -134,6 +144,58 @@ describe("dropPlant()", () => {
     dropPlant(p);
     expect(initSave).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("Missing crop.");
+  });
+
+  it("finds curves", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const result = fakeCropLiveSearchResult();
+    result.crop.slug = "mint";
+    p.cropSearchResults = [result];
+    const plant = fakePlant();
+    plant.body.openfarm_slug = "mint";
+    plant.body.water_curve_id = 1;
+    plant.body.spread_curve_id = 2;
+    plant.body.height_curve_id = 3;
+    p.plants = [plant];
+    const wCurve = fakeCurve();
+    wCurve.body.id = 1;
+    wCurve.body.type = "water";
+    const sCurve = fakeCurve();
+    sCurve.body.id = 2;
+    sCurve.body.type = "spread";
+    const hCurve = fakeCurve();
+    hCurve.body.id = 3;
+    hCurve.body.type = "height";
+    p.curves = [wCurve, sCurve, hCurve];
+    dropPlant(p);
+    expect(init).toHaveBeenCalledWith("Point",
+      expect.objectContaining({
+        name: "Mint",
+        x: 10, y: 20,
+        water_curve_id: 1,
+        spread_curve_id: 2,
+        height_curve_id: 3,
+      }));
+  });
+
+  it("doesn't find curves", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const result = fakeCropLiveSearchResult();
+    result.crop.slug = "mint";
+    p.cropSearchResults = [result];
+    p.plants = [];
+    p.curves = [];
+    dropPlant(p);
+    expect(init).toHaveBeenCalledWith("Point",
+      expect.objectContaining({
+        name: "Mint",
+        x: 10, y: 20,
+        water_curve_id: undefined,
+        spread_curve_id: undefined,
+        height_curve_id: undefined,
+      }));
   });
 
   it("throws error", () => {

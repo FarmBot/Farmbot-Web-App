@@ -23,6 +23,7 @@ import {
   TaggedFolder,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  TaggedCurve,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -78,6 +79,8 @@ export const selectAllPointGroups =
   (i: ResourceIndex) => findAll<TaggedPointGroup>(i, "PointGroup");
 export const selectAllActivePoints = (input: ResourceIndex) =>
   selectAllPoints(input).filter(x => x);
+export const selectAllCurves =
+  (i: ResourceIndex) => findAll<TaggedCurve>(i, "Curve");
 
 export const selectAllFarmwareEnvs =
   (i: ResourceIndex) => findAll<TaggedFarmwareEnv>(i, "FarmwareEnv");

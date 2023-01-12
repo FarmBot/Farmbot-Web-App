@@ -2,8 +2,10 @@ import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { push } from "../history";
 import { BlurableInput, Row, Col, Help } from "../ui";
-import { PlantOptions } from "../farm_designer/interfaces";
-import { PlantStage, TaggedFarmwareEnv, TaggedGenericPointer, Xyz } from "farmbot";
+import {
+  PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
+  TaggedPlantPointer, Xyz,
+} from "farmbot";
 import moment, { Moment } from "moment";
 import { Link } from "../link";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
@@ -19,12 +21,16 @@ import { Path } from "../internal_urls";
 import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
-import { BotPosition } from "../devices/interfaces";
+import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
+import { EditableAllCurveInfo } from "./crop_info";
+import { BotSize } from "../farm_designer/map/interfaces";
+import { UpdatePlant } from "./plant_info";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
   onDestroy(uuid: string): void;
-  updatePlant(uuid: string, update: PlantOptions): void;
+  updatePlant: UpdatePlant;
   inSavedGarden: boolean;
   dispatch: Function;
   timeSettings?: TimeSettings;
@@ -35,11 +41,15 @@ export interface PlantPanelProps {
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  curves: TaggedCurve[];
+  plants: TaggedPlantPointer[];
 }
 
 interface EditPlantProperty {
   uuid: string;
-  updatePlant(uuid: string, update: PlantOptions): void;
+  updatePlant: UpdatePlant;
 }
 
 export interface EditPlantStatusProps extends EditPlantProperty {
@@ -233,6 +243,14 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
+      {DevSettings.futureFeaturesEnabled() &&
+        <EditableAllCurveInfo
+          dispatch={props.dispatch}
+          sourceFbosConfig={props.sourceFbosConfig}
+          botSize={props.botSize}
+          curves={props.curves}
+          plant={info}
+          updatePlant={updatePlant} />}
       {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":

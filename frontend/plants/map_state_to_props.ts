@@ -3,8 +3,10 @@ import { Everything } from "../interfaces";
 import { EditPlantInfoProps } from "../farm_designer/interfaces";
 import {
   maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeSettings,
+  selectAllCurves,
   selectAllFarmwareEnvs,
   selectAllGenericPointers,
+  selectAllPlantPointers,
 } from "../resources/selectors";
 import { PlantStage, TaggedPoint } from "farmbot";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
@@ -14,6 +16,11 @@ import { selectMostRecentPoints } from "../farm_designer/location_info";
 import { soilHeightPoint } from "../points/soil_height";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { validBotLocationData } from "../util/location";
+import { botSize } from "../farm_designer/state_to_props";
+import { getFbosConfig } from "../resources/getters";
+import { sourceFbosConfigValue } from "../settings/source_config_value";
+import { validFbosConfig } from "../util";
+import { PlantPointer, PlantTemplate } from "farmbot/dist/resources/api_resources";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const openedSavedGarden =
@@ -44,6 +51,12 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     currentBotLocation: validBotLocationData(props.bot.hardware.location_data)
       .position,
     movementState: props.app.movement,
+    sourceFbosConfig: sourceFbosConfigValue(
+      validFbosConfig(getFbosConfig(props.resources.index)),
+      props.bot.hardware.configuration),
+    botSize: botSize(props),
+    curves: selectAllCurves(props.resources.index),
+    plants: selectAllPlantPointers(props.resources.index),
   };
 }
 
@@ -65,6 +78,9 @@ export interface FormattedPlantInfo {
   slug: string;
   plantStatus: PlantStage;
   meta?: Record<string, string | undefined>;
+  water_curve_id?: number;
+  spread_curve_id?: number;
+  height_curve_id?: number;
 }
 
 /** Get date planted or fallback to creation date. */
@@ -96,5 +112,11 @@ export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
     plantedAt: plantDate(plant),
     plantStatus: get(plant, "body.plant_stage", "planned") as PlantStage,
     meta: plant.kind == "Point" ? plant.body.meta : undefined,
+    water_curve_id: plant.body["water_curve_id" as keyof (
+      PlantPointer | PlantTemplate)] as number,
+    spread_curve_id: plant.body["spread_curve_id" as keyof (
+      PlantPointer | PlantTemplate)] as number,
+    height_curve_id: plant.body["height_curve_id" as keyof (
+      PlantPointer | PlantTemplate)] as number,
   };
 }

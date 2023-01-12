@@ -28,6 +28,7 @@ import {
   TaggedWeedPointer,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  TaggedCurve,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
@@ -540,6 +541,7 @@ export function fakeAlert(): TaggedAlert {
     priority: 100,
   });
 }
+
 export function fakePointGroup(): TaggedPointGroup {
   return fakeResource("PointGroup", {
     name: "Fake",
@@ -553,5 +555,13 @@ export function fakePointGroup(): TaggedPointGroup {
       string_eq: {}
     },
     member_count: 0,
+  });
+}
+
+export function fakeCurve(): TaggedCurve {
+  return fakeResource("Curve", {
+    name: "Fake",
+    type: "water",
+    data: { 1: 0, 2: 1 },
   });
 }

@@ -20,6 +20,7 @@ import { push } from "../../history";
 import { urlFriendly } from "../../util";
 import { edit, save } from "../../api/crud";
 import {
+  TaggedCurve,
   TaggedPoint, TaggedPointGroup, TaggedRegimen, TaggedSequence,
 } from "farmbot";
 import { Path } from "../../internal_urls";
@@ -88,6 +89,7 @@ export interface ResourceTitleProps {
   | TaggedRegimen
   | TaggedPoint
   | TaggedPointGroup
+  | TaggedCurve
   | undefined;
   readOnly?: boolean;
   fallback: string;

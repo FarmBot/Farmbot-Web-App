@@ -43,7 +43,6 @@ describe("gridLabels()", () => {
 
   it("renders labels", () => {
     const wrapper = shallow(<g>{gridLabels({ ...fakeProps() })}</g>);
-    expect(wrapper.find("RoundedSvgBox").length).toEqual(1);
-    expect(wrapper.find("text").length).toEqual(1);
+    expect(wrapper.find("TextInRoundedSvgBox").length).toEqual(1);
   });
 });

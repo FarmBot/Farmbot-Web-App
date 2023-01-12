@@ -181,4 +181,6 @@ export class API {
   get featuredSequencesPath() { return `${this.baseUrl}/api/featured_sequences`; }
   /** /api/wizard_step_results/:id */
   get wizardStepResultsPath() { return `${this.baseUrl}/api/wizard_step_results/`; }
+  /** /api/curves/:id */
+  get curvesPath() { return `${this.baseUrl}/api/curves/`; }
 }

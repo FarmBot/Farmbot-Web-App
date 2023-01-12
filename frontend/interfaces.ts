@@ -71,6 +71,12 @@ export interface PointsPanelState {
   soilHeight: boolean;
 }
 
+export interface CurvesPanelState {
+  water: boolean;
+  spread: boolean;
+  height: boolean;
+}
+
 export interface SequencesPanelState {
   sequences: boolean;
   featured: boolean;

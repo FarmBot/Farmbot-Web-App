@@ -1,12 +1,12 @@
 import { Actions, Content } from "../../../../constants";
-import { initSave, edit, save } from "../../../../api/crud";
+import { initSave, edit, save, init } from "../../../../api/crud";
 import {
   AxisNumberProperty, TaggedPlant, MapTransformProps,
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import moment from "moment";
 import { unpackUUID } from "../../../../util";
-import { isNumber, isString } from "lodash";
+import { isNumber, isString, random } from "lodash";
 import {
   CropLiveSearchResult, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
@@ -18,10 +18,15 @@ import { movePoints } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
-import { TaggedPlantTemplate, TaggedPoint } from "farmbot";
+import {
+  TaggedCurve, TaggedPlantPointer, TaggedPlantTemplate, TaggedPoint,
+} from "farmbot";
 import { Path } from "../../../../internal_urls";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { NumericSetting } from "../../../../session_keys";
+import { findMostUsedCurveForCrop } from "../../../../plants/crop_info";
+import { CurveType } from "../../../../curves/templates";
+import { DevSettings } from "../../../../settings/dev/dev_support";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -30,6 +35,9 @@ export interface NewPlantKindAndBodyProps {
   cropName: string;
   openedSavedGarden: string | undefined;
   depth: number;
+  water_curve_id?: number;
+  spread_curve_id?: number;
+  height_curve_id?: number;
 }
 
 /** Return a new plant or plantTemplate object. */
@@ -63,6 +71,9 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
         created_at: moment().toISOString(),
         radius: DEFAULT_PLANT_RADIUS,
         depth: props.depth,
+        water_curve_id: props.water_curve_id,
+        spread_curve_id: props.spread_curve_id,
+        height_curve_id: props.height_curve_id,
       })
     };
 };
@@ -75,6 +86,9 @@ export interface CreatePlantProps {
   dispatch: Function;
   openedSavedGarden: string | undefined;
   depth: number;
+  water_curve_id?: number;
+  spread_curve_id?: number;
+  height_curve_id?: number;
 }
 
 /** Create a new plant in the garden map. */
@@ -93,11 +107,16 @@ export const createPlant = (props: CreatePlantProps): void => {
   } else {
     const p = newPlantKindAndBody({
       x, y, slug, cropName, openedSavedGarden, depth,
+      water_curve_id: props.water_curve_id,
+      spread_curve_id: props.spread_curve_id,
+      height_curve_id: props.height_curve_id,
     });
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map
-      props.dispatch(initSave(p.kind, p.body));
+      DevSettings.futureFeaturesEnabled() // remove after curves API implementation
+        ? props.dispatch(init(p.kind, { ...p.body, id: random(1, 1000) }))
+        : props.dispatch(initSave(p.kind, p.body));
     }
   }
 };
@@ -110,6 +129,8 @@ export interface DropPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
+  plants: TaggedPlant[];
+  curves: TaggedCurve[];
 }
 
 /** Create a plant upon drop. */
@@ -124,6 +145,11 @@ export const dropPlant = (props: DropPlantProps) => {
       ? props.cropSearchResults[0]?.companions[props.companionIndex]
       : findBySlug(props.cropSearchResults, slug).crop;
     if (!crop) { console.log("Missing crop."); return; }
+    const findCurve = findMostUsedCurveForCrop({
+      plants: props.plants as TaggedPlantPointer[],
+      curves: props.curves,
+      openfarmSlug: slug,
+    });
     createPlant({
       cropName: crop.name,
       slug: crop.slug,
@@ -132,6 +158,9 @@ export const dropPlant = (props: DropPlantProps) => {
       dispatch,
       openedSavedGarden,
       depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
+      water_curve_id: findCurve(CurveType.water)?.body.id,
+      spread_curve_id: findCurve(CurveType.spread)?.body.id,
+      height_curve_id: findCurve(CurveType.height)?.body.id,
     });
     dispatch({ type: Actions.SET_COMPANION_INDEX, payload: undefined });
   } else {

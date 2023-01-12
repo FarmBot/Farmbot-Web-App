@@ -24,7 +24,8 @@ describe("<Grid />", () => {
       expect.objectContaining(expectedGridShape));
     expect(wrapper.find("#axis-arrows").find("line").first().props())
       .toEqual({ x1: 0, x2: 20, y1: 0, y2: 0 });
-    expect(wrapper.find("#axis-values").find("text").length).toEqual(43);
+    expect(wrapper.find("#axis-values").find("TextInRoundedSvgBox").length)
+      .toEqual(43);
   });
 
   it("renders grid: X&Y swapped", () => {
@@ -92,8 +93,8 @@ describe("<Grid />", () => {
       const yLabelNode = wrapper.find("#y-label").first();
       expect(xLabelNode.props().style?.transform).toEqual(xTransform);
       expect(yLabelNode.props().style?.transform).toEqual(yTransform);
-      const xTextNodeProps = xLabelNode.find("text").props();
-      const yTextNodeProps = yLabelNode.find("text").props();
+      const xTextNodeProps = xLabelNode.find("TextInRoundedSvgBox").props();
+      const yTextNodeProps = yLabelNode.find("TextInRoundedSvgBox").props();
       expect(xTextNodeProps.x).toEqual(xx);
       expect(xTextNodeProps.y).toEqual(xy);
       expect(yTextNodeProps.x).toEqual(yx);

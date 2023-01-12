@@ -17,6 +17,9 @@ import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
 import { validGoButtonAxes } from "../farm_designer/move_to";
 
+export type UpdatePlant =
+  (uuid: string, update: PlantOptions, draft?: boolean) => void;
+
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
   get stringyID() {
@@ -35,10 +38,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
     this.props.dispatch(destroy(plantUUID, !this.confirmDelete));
   };
 
-  updatePlant = (plantUUID: string, update: PlantOptions) => {
+  updatePlant = (plantUUID: string, update: PlantOptions, draft = false) => {
     if (this.plant) {
       this.props.dispatch(edit(this.plant, update));
-      this.props.dispatch(save(plantUUID));
+      !draft && this.props.dispatch(save(plantUUID));
     }
   };
 
@@ -85,7 +88,11 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         defaultAxes={validGoButtonAxes(this.props.getConfigValue)}
         soilHeightPoints={this.props.soilHeightPoints}
         farmwareEnvs={this.props.farmwareEnvs}
-        inSavedGarden={!!this.props.openedSavedGarden} />
+        inSavedGarden={!!this.props.openedSavedGarden}
+        sourceFbosConfig={this.props.sourceFbosConfig}
+        botSize={this.props.botSize}
+        curves={this.props.curves}
+        plants={this.props.plants} />
     </DesignerPanel>;
   };
 

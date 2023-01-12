@@ -1,6 +1,7 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
+  CurvesPanelState,
   MetricPanelState,
   MovementState,
   PlantsPanelState,
@@ -76,6 +77,17 @@ describe("resource reducer", () => {
     });
     expect(newState.pointsPanelState.groups)
       .toBe(!state.pointsPanelState.groups);
+  });
+
+  it("toggles curves panel options", () => {
+    const payload: keyof CurvesPanelState = "water";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_CURVES_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.curvesPanelState.water)
+      .toBe(!state.curvesPanelState.water);
   });
 
   it("toggles sequences panel options", () => {

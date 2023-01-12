@@ -237,6 +237,7 @@ export class RawFarmDesigner
           mountedToolInfo={this.props.mountedToolInfo}
           visualizedSequenceBody={this.props.visualizedSequenceBody}
           farmwareEnvs={this.props.farmwareEnvs}
+          curves={this.props.curves}
           dispatch={this.props.dispatch} />
       </div>
 

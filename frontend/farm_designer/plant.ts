@@ -18,6 +18,9 @@ export function Plant(options: PlantOptions): PlantPointer {
     radius: (options.radius || DEFAULT_PLANT_RADIUS),
     depth: options.depth || 0,
     openfarm_slug,
-    plant_stage: "planned"
+    plant_stage: "planned",
+    water_curve_id: options.water_curve_id,
+    spread_curve_id: options.spread_curve_id,
+    height_curve_id: options.height_curve_id,
   };
 }

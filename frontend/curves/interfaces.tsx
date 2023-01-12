@@ -1,0 +1,120 @@
+import { TaggedCurve, TaggedPlantPointer } from "farmbot";
+import { SourceFbosConfig } from "../devices/interfaces";
+import { BotSize } from "../farm_designer/map/interfaces";
+import { CurvesPanelState } from "../interfaces";
+import { FormattedPlantInfo } from "../plants/map_state_to_props";
+import { UpdatePlant } from "../plants/plant_info";
+import { CurveType } from "./templates";
+
+export interface CurvesProps {
+  dispatch: Function;
+  curves: TaggedCurve[];
+  curvesPanelState: CurvesPanelState;
+}
+
+export interface CurvesState {
+  searchTerm: string;
+}
+
+export interface CurveInventoryItemProps {
+  curve: TaggedCurve;
+  onClick(): void;
+}
+
+export interface EditCurveProps {
+  dispatch: Function;
+  findCurve(id: number): TaggedCurve | undefined;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+}
+
+export interface EditCurveState {
+  templates: boolean;
+  scale: boolean;
+}
+
+export interface CurveSvgProps {
+  dispatch: Function;
+  curve: TaggedCurve;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  editable: boolean;
+}
+
+export interface CurveInfoProps {
+  curveType: CurveType;
+  dispatch: Function;
+  curve: TaggedCurve | undefined;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  updatePlant?: UpdatePlant;
+  plant?: FormattedPlantInfo;
+  curves: TaggedCurve[];
+}
+
+export interface AllCurveInfoProps {
+  curves: TaggedCurve[];
+  openfarmSlug: string;
+  plants: TaggedPlantPointer[];
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+}
+
+export interface EditableAllCurveInfoProps {
+  updatePlant: UpdatePlant;
+  plant: FormattedPlantInfo;
+  curves: TaggedCurve[];
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+}
+
+export interface PlotTools {
+  normX(day: string | number): number;
+  normY(value: number): number;
+  xMax: number;
+  yMax: number;
+  xZero: number;
+  yZero: number;
+}
+
+export interface ActionMenuProps {
+  dispatch: Function;
+  curve: TaggedCurve;
+  click(): void;
+}
+
+export interface DataProps {
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+  hovered: string | undefined;
+  setHovered(day: string | undefined): void;
+  dragging: string | undefined;
+  setDragging(day: string | undefined): void;
+  dispatch: Function;
+  editable: boolean;
+}
+
+export interface DataLabelsProps {
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+  hovered: string | undefined;
+}
+
+export interface XAxisProps {
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+}
+
+export interface YAxisProps {
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+}
+
+export interface WarningLinesProps {
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+}

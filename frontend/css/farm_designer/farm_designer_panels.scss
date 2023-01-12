@@ -601,6 +601,7 @@
   }
 }
 
+.curve-info-panel,
 .weed-info-panel,
 .point-info-panel,
 .plant-info-panel {
@@ -1912,21 +1913,30 @@ li {
   }
 }
 
-.group-detail-panel {
-  .panel-header-icon-group {
-    display: flex;
-    float: right;
-    padding: 1.5rem;
-    .fa-sort {
-      margin-top: 0.25rem;
-      color: $white;
-    }
-    .fa-trash {
-      margin-top: 0.25rem;
-      margin-left: 2rem;
-      color: $white;
-    }
+.panel-header-icon-group {
+  display: flex;
+  float: right;
+  padding: 1.5rem;
+  .fa-copy,
+  .fa-sort {
+    margin-top: 0.25rem;
+    color: $white;
   }
+  .fa-trash {
+    margin-top: 0.25rem;
+    margin-left: 2rem;
+    color: $white;
+  }
+  .color-picker {
+    margin-right: 0.5rem;
+  }
+  .fa-expand {
+    margin-top: 0.25rem;
+    color: $dark_gray;
+  }
+}
+
+.group-detail-panel {
   .panel-content {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
@@ -2361,6 +2371,157 @@ li {
   }
 }
 
+.curve-action-popover {
+  .bp4-popover-content {
+    background: $dark_gray;
+  }
+  .bp4-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .curve-action-menu {
+    max-width: 150px;
+    .transparent-button {
+      position: absolute;
+      right: 0;
+      width: 50%;
+      color: $off_white
+    }
+    label {
+      width: 100%;
+      color: $off_white;
+      margin-top: 0.75rem;
+    }
+    .filter-search {
+      width: 100%;
+      button {
+        box-shadow: none !important;
+      }
+    }
+    input {
+      box-shadow: none;
+      width: 90%;
+    }
+    .curve-menu-row {
+      display: flex;
+      position: relative;
+      height: 3rem;
+      margin-top: 0.5rem;
+      &.last {
+        height: 2rem;
+      }
+    }
+  }
+}
+
+.curve-info-panel {
+  .panel-title {
+    .white-text {
+      color: $dark_gray;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
+  }
+  .panel-header-icon-group {
+    i {
+      color: $dark_gray;
+    }
+  }
+}
+
+.curve-info-panel-content-wrapper {
+  .bp4-popover-wrapper {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 1rem;
+  }
+  table {
+    th {
+      text-transform: uppercase;
+      color: $dark_gray;
+      font-size: 1.3rem;
+    }
+    td,
+    th {
+      background: $lighter_gray;
+      border: 1px solid $light_gray;
+      padding-left: 1rem;
+      p {
+        display: inline;
+        font-size: 1.4rem;
+        color: $dark_gray;
+      }
+      &.active {
+        background: $white;
+      }
+      &.active-input {
+        padding: 0;
+      }
+      .percent-green {
+        color: $green;
+      }
+      .percent-red {
+        color: $red;
+      }
+      input {
+        font-size: 1.4rem;
+        padding-left: 1rem;
+      }
+    }
+  }
+  .row-radio {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-left: 1rem;
+    margin-top: -0.5rem;
+    &.active {
+      background: $blue;
+    }
+  }
+}
+
+.curves-inventory-panel-content {
+  padding: 0;
+  .curve-search-item {
+    height: 4rem;
+    line-height: 4rem;
+    cursor: pointer;
+    .curve-search-item-info {
+      text-align: right;
+      font-size: 1rem;
+      padding-right: 1rem;
+      line-height: 4rem;
+      float: right;
+    }
+    .curve-search-item-name {
+      width: 40%;
+      margin-left: 1.25rem;
+    }
+  }
+}
+
+.crop-curve-info {
+  .header {
+    display: flex;
+    position: relative;
+    height: 4rem;
+  }
+  p {
+    line-height: 4rem;
+    font-size: 1.3rem;
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  i {
+    position: absolute;
+    right: 0;
+    line-height: 4rem;
+  }
+}
+
 .sensors-panel,
 .controls-panel {
   .panel-content {
@@ -2738,18 +2899,6 @@ li {
 }
 
 .designer-sequence-editor-panel {
-  .panel-header-icon-group {
-    display: flex;
-    float: right;
-    padding: 1.5rem;
-    .color-picker {
-      margin-right: 0.5rem;
-    }
-    .fa-expand {
-      margin-top: 0.25rem;
-      color: $dark_gray;
-    }
-  }
   .green,
   .red {
     .panel-title {

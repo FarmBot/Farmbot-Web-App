@@ -20,6 +20,7 @@ import {
   selectAllLogs,
   selectAllTools,
   selectAllFarmwareEnvs,
+  selectAllCurves,
 } from "../resources/selectors";
 import { validFwConfig, unpackUUID, validFbosConfig } from "../util";
 import { validBotLocationData } from "../util/location";
@@ -155,6 +156,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     logs: selectAllLogs(props.resources.index),
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
+    curves: selectAllCurves(props.resources.index),
   };
 }
 
