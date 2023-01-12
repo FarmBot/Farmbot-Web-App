@@ -19,7 +19,6 @@ import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
-import { SavedGarden } from "farmbot/dist/resources/api_resources";
 import { PointGroupItem } from "../point_groups/point_group_item";
 import {
   calcMaxCount, MoreIndicatorIcon,
@@ -91,8 +90,7 @@ interface EditGardenState {
 export class RawEditGarden
   extends React.Component<EditGardenProps, EditGardenState> {
   state: EditGardenState = {
-    notes: this.props.savedGarden?.body["notes" as keyof SavedGarden] as string
-      || "",
+    notes: this.props.savedGarden?.body.notes || "",
     expand: false,
   };
 
@@ -132,7 +130,7 @@ export class RawEditGarden
                 onChange={e => this.setState({ notes: e.currentTarget.value })}
                 onBlur={() => {
                   this.props.dispatch(edit(savedGarden, {
-                    ["notes" as keyof SavedGarden]: this.state.notes
+                    notes: this.state.notes
                   }));
                   this.props.dispatch(save(savedGarden.uuid));
                 }} />

@@ -12,7 +12,6 @@ import { edit, save } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { FBSelect } from "../../../ui";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { FirmwareHardware } from "farmbot";
 
 type TestCase = [string, string, FirmwareHardware, string];
@@ -43,7 +42,15 @@ describe("<RpiModel />", () => {
 
   it("shows error", () => {
     const p = fakeProps();
-    p.device.body["rpi" as keyof DeviceAccountSettings] = "3" as never;
+    p.device.body.rpi = "3";
+    p.bot.hardware.informational_settings.target = "rpi";
+    const wrapper = mount(<RpiModel {...p} />);
+    expect(wrapper.html()).toContain("fa-times-circle");
+  });
+
+  it("shows error: no selection", () => {
+    const p = fakeProps();
+    p.device.body.rpi = undefined;
     p.bot.hardware.informational_settings.target = "rpi";
     const wrapper = mount(<RpiModel {...p} />);
     expect(wrapper.html()).toContain("fa-times-circle");
@@ -52,7 +59,7 @@ describe("<RpiModel />", () => {
   it.each(TEST_CASES)("doesn't show error: %s %s",
     (selection, target, _firmwareHardware, _expected) => {
       const p = fakeProps();
-      p.device.body["rpi" as keyof DeviceAccountSettings] = selection as never;
+      p.device.body.rpi = selection;
       p.bot.hardware.informational_settings.target = target;
       const wrapper = mount(<RpiModel {...p} />);
       expect(wrapper.html()).not.toContain("fa-times-circle");

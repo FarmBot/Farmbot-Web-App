@@ -26,9 +26,7 @@ import { WizardStepContainer } from "./step";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
-import {
-  DeviceAccountSettings, WizardStepResult,
-} from "farmbot/dist/resources/api_resources";
+import { WizardStepResult } from "farmbot/dist/resources/api_resources";
 import {
   addOrUpdateWizardStepResult,
   destroyAllWizardStepResults,
@@ -53,8 +51,7 @@ export class RawSetupWizard
   get stepDataProps() {
     return {
       firmwareHardware: this.props.firmwareHardware,
-      rpi: getDeviceAccountSettings(this.props.resources)
-        .body["rpi" as keyof DeviceAccountSettings] as string | undefined,
+      rpi: getDeviceAccountSettings(this.props.resources).body.rpi,
     };
   }
 

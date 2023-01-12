@@ -13,7 +13,6 @@ import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
-import { Tool } from "farmbot/dist/resources/api_resources";
 
 const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   id: 415,
@@ -23,6 +22,7 @@ const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   lat: undefined,
   lng: undefined,
   indoor: false,
+  rpi: "3",
 };
 
 export function fakeDevice(body: Partial<TaggedDevice["body"]> = {}):
@@ -309,7 +309,7 @@ const tr14: TaggedResource = {
   "body": {
     "id": 14,
     "name": "Trench Digging Tool",
-    ["flow_rate_ml_per_s" as keyof Tool]: 0,
+    "flow_rate_ml_per_s": 0,
   },
   "uuid": "Tool.14.49"
 };
@@ -320,7 +320,7 @@ const tr15: TaggedResource = {
   "body": {
     "id": 15,
     "name": "Berry Picking Tool",
-    ["flow_rate_ml_per_s" as keyof Tool]: 0,
+    "flow_rate_ml_per_s": 0,
   },
   "uuid": "Tool.15.50"
 };

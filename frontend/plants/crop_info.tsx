@@ -421,8 +421,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
           selectedItem={curve ? curveToDdi(curve) : undefined}
           onChange={ddi => {
             ddi.headingId && updatePlant(plant.uuid, {
-              [CURVE_KEY_LOOKUP[ddi.headingId as CurveType
-              ] as keyof PlantPointer]: ddi.value,
+              [CURVE_KEY_LOOKUP[ddi.headingId as CurveType]]: ddi.value,
             }, true);
           }} />
         : <p>{curve?.body.name}</p>}
@@ -453,8 +452,7 @@ export const findMostUsedCurveForCrop = (props: FindCurveProps) =>
     const { openfarmSlug, plants, curves } = props;
     const counts = countBy(plants
       .filter(p => p.body.openfarm_slug == openfarmSlug)
-      .map(p =>
-        p.body[CURVE_KEY_LOOKUP[curveType] as keyof PlantPointer] as number)
+      .map(p => p.body[CURVE_KEY_LOOKUP[curveType]] as number | undefined)
       .filter(x => x));
     const maxCount = Math.max(...Object.values(counts));
     const curveId = Object.entries(counts)
@@ -463,7 +461,7 @@ export const findMostUsedCurveForCrop = (props: FindCurveProps) =>
     return curves.filter(curve => curve.body.id == parseInt(curveId))[0];
   };
 
-const CURVE_KEY_LOOKUP: Record<CurveType, string> = {
+const CURVE_KEY_LOOKUP: Record<CurveType, keyof PlantPointer> = {
   [CurveType.water]: "water_curve_id",
   [CurveType.spread]: "spread_curve_id",
   [CurveType.height]: "height_curve_id",

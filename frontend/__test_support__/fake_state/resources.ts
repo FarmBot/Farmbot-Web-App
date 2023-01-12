@@ -32,7 +32,7 @@ import {
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType, Folder, Tool,
+  ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
@@ -124,7 +124,7 @@ export function fakeImage(): TaggedImage {
 export function fakeTool(): TaggedTool {
   return fakeResource("Tool", {
     name: "Foo",
-    ["flow_rate_ml_per_s" as keyof Tool]: 0,
+    flow_rate_ml_per_s: 0,
   });
 }
 

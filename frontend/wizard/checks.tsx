@@ -97,7 +97,6 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
-import { DeviceAccountSettings, Tool } from "farmbot/dist/resources/api_resources";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
@@ -284,8 +283,7 @@ export const DownloadOS = (props: WizardOutcomeComponentProps) => {
       };
     }
   };
-  const rpi = getDeviceAccountSettings(props.resources)
-    .body["rpi" as keyof DeviceAccountSettings] as string | undefined;
+  const rpi = getDeviceAccountSettings(props.resources).body.rpi;
   const release = getRelease(rpi);
   return release
     ? <a className={"download-os-link"} href={release.imageUrl}>
@@ -370,7 +368,7 @@ export class FirmwareHardwareSelection
     const rpi = FW_HARDWARE_TO_RPI[firmwareHardware];
     if (rpi) {
       const device = getDeviceAccountSettings(this.props.resources);
-      dispatch(edit(device, { ["rpi" as keyof DeviceAccountSettings]: rpi }));
+      dispatch(edit(device, { rpi }));
       dispatch(save(device.uuid));
     }
 
@@ -412,8 +410,7 @@ export class FirmwareHardwareSelection
 
 export const RpiSelection = (props: WizardStepComponentProps) => {
   const device = getDeviceAccountSettings(props.resources);
-  const selection = device.body["rpi" as keyof DeviceAccountSettings
-  ] as string | undefined;
+  const selection = device.body.rpi;
   return <div className={"rpi-selection"}>
     <img style={{ width: "100%" }}
       src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
@@ -425,8 +422,7 @@ export const RpiSelection = (props: WizardStepComponentProps) => {
       selectedItem={RPI_OPTIONS["" + selection]}
       onChange={ddi => {
         const device = getDeviceAccountSettings(props.resources);
-        props.dispatch(edit(device,
-          { ["rpi" as keyof DeviceAccountSettings]: ddi.value }));
+        props.dispatch(edit(device, { rpi: "" + ddi.value }));
         props.dispatch(save(device.uuid));
       }} />
   </div>;
@@ -746,11 +742,11 @@ export const FlowRateInput = (props: WizardStepComponentProps) => {
     reduceToolName(tool.body.name) == ToolName.wateringNozzle)[0];
   return tool
     ? <WaterFlowRateInput
-      value={tool.body["flow_rate_ml_per_s" as keyof Tool] as number}
+      value={tool.body.flow_rate_ml_per_s}
       hideTooltip={true}
       onChange={flowRate => {
         props.dispatch(edit(tool, {
-          ["flow_rate_ml_per_s" as keyof Tool]: flowRate,
+          flow_rate_ml_per_s: flowRate,
         }));
         props.dispatch(save(tool.uuid));
       }} />

@@ -11,7 +11,6 @@ import {
   XAxisProps, YAxisProps,
 } from "./interfaces";
 import { curveColor, CurveType } from "./templates";
-import { FullConfiguration } from "farmbot";
 import { TextInRoundedSvgBox } from "../farm_designer/map/background/grid_labels";
 import { editCurve } from "./edit_curve";
 
@@ -239,8 +238,7 @@ const YAxis = (props: YAxisProps) => {
 
 const WarningLines = (props: WarningLinesProps) => {
   const { normY, xZero } = props.plotTools;
-  const gantryHeight = props.sourceFbosConfig(
-    "gantry_height" as keyof FullConfiguration).value as number;
+  const gantryHeight = props.sourceFbosConfig("gantry_height").value as number;
   const soilHeight = props.sourceFbosConfig("soil_height").value as number;
   const utmClearance = soilHeight;
   const gantryClearance = soilHeight + gantryHeight;

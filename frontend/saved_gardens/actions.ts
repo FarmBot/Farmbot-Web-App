@@ -10,7 +10,6 @@ import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
 import { Path } from "../internal_urls";
-import { SavedGarden } from "farmbot/dist/resources/api_resources";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (
@@ -76,7 +75,7 @@ export const newSavedGarden = (gardenName: string, gardenNotes: string) =>
   (dispatch: Function) => {
     dispatch(initSave("SavedGarden", {
       name: gardenName || "Untitled Garden",
-      ["notes" as keyof SavedGarden]: gardenNotes,
+      notes: gardenNotes,
     }))
       .then(() => {
         success(t("Garden Saved."));

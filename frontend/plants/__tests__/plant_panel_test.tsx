@@ -147,6 +147,7 @@ describe("<PlantPanel/>", () => {
     plant.body.water_curve_id = 1;
     p.plants = [plant];
     p.info.water_curve_id = 1;
+    p.info.uuid = "Point.0.0";
     const wrapper = mount(<PlantPanel {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("water: 0l over 2 days");
   });

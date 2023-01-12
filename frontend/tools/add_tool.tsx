@@ -27,7 +27,6 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "./edit_tool";
-import { Tool } from "farmbot/dist/resources/api_resources";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -58,7 +57,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   save = () => {
     const initTool = init("Tool", {
       name: this.state.toolName,
-      ["flow_rate_ml_per_s" as keyof Tool]: this.state.flowRate,
+      flow_rate_ml_per_s: this.state.flowRate,
     });
     this.props.dispatch(initTool);
     const { uuid } = initTool.payload;

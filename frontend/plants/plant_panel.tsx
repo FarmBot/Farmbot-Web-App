@@ -243,7 +243,7 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
-      {DevSettings.futureFeaturesEnabled() &&
+      {DevSettings.futureFeaturesEnabled() && info.uuid.startsWith("Point") &&
         <EditableAllCurveInfo
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig}

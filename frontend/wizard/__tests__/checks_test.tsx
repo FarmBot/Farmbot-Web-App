@@ -97,7 +97,6 @@ import { changeBlurableInput, clickButton } from "../../__test_support__/helpers
 import { Actions } from "../../constants";
 import { tourPath } from "../../help/tours";
 import { FBSelect } from "../../ui";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 const fakeProps = (): WizardStepComponentProps => ({
   setStepSuccess: jest.fn(() => jest.fn()),
@@ -329,14 +328,18 @@ describe("<DownloadOS />", () => {
     globalConfig.rpi4_release_tag = "4.0.0";
     const p = fakeProps();
     const device = fakeDevice();
-    device.body["rpi" as keyof DeviceAccountSettings] = rpi as never;
+    device.body.rpi = rpi;
     p.resources = buildResourceIndex([device]).index;
     const wrapper = mount(<DownloadOS {...p} />);
     expect(wrapper.text().toLowerCase()).toContain(`download fbos v${expected}`);
   });
 
   it("handles missing model", () => {
-    const wrapper = mount(<DownloadOS {...fakeProps()} />);
+    const p = fakeProps();
+    const device = fakeDevice();
+    device.body.rpi = undefined;
+    p.resources = buildResourceIndex([device]).index;
+    const wrapper = mount(<DownloadOS {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("please select a model");
   });
 });

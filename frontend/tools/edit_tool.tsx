@@ -26,7 +26,6 @@ import { Path } from "../internal_urls";
 import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
-import { Tool } from "farmbot/dist/resources/api_resources";
 import { ToolTips } from "../constants";
 import { sendRPC } from "../devices/actions";
 
@@ -78,7 +77,7 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
 export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   state: EditToolState = {
     toolName: this.tool?.body.name || "",
-    flowRate: this.tool?.body["flow_rate_ml_per_s" as keyof Tool] as number || 0,
+    flowRate: this.tool?.body.flow_rate_ml_per_s || 0,
   };
 
   get stringyID() { return Path.getSlug(Path.tools()); }
@@ -124,7 +123,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           onClick={() => {
             this.props.dispatch(edit(tool, {
               name: toolName,
-              ["flow_rate_ml_per_s" as keyof Tool]: this.state.flowRate,
+              flow_rate_ml_per_s: this.state.flowRate,
             }));
             this.props.dispatch(save(tool.uuid));
             push(Path.tools());

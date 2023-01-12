@@ -1,7 +1,7 @@
 import React from "react";
 import { uniq, sortBy, ceil, range, cloneDeep, reverse } from "lodash";
 import {
-  FullConfiguration, TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer,
+  TaggedPoint, TaggedToolSlotPointer, TaggedWeedPointer,
 } from "farmbot";
 import {
   FlipProfileProps,
@@ -41,8 +41,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
   const width = ceil(props.botSize[profileAxis].value + 1, -2);
   const soilHeight = getFbosZValue(props.sourceFbosConfig, "soil_height");
   const safeHeight = getFbosZValue(props.sourceFbosConfig, "safe_height");
-  const gantryHeight = getFbosZValue(props.sourceFbosConfig,
-    "gantry_height" as keyof FullConfiguration);
+  const gantryHeight = getFbosZValue(props.sourceFbosConfig, "gantry_height");
   const maxHeight = Math.max(
     props.botSize.z.value + 1,
     Math.max(...props.allPoints.map(p => Math.abs(p.body.z))),
