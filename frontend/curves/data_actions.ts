@@ -21,6 +21,9 @@ export const curveSum = (data: Curve["data"], day?: string | number): number =>
 export const inData = (data: Curve["data"], day: string | number) =>
   Object.keys(data).includes("" + day);
 
+/** Check if the maximum number of control points has been reached. */
+export const dataFull = (data: Curve["data"]) => Object.values(data).length > 9;
+
 /** Add or remove sparse values from curve data. */
 export const addOrRemoveItem =
   (data: Curve["data"], day: string | number, value: number): Curve["data"] => {
@@ -28,7 +31,7 @@ export const addOrRemoveItem =
     if (inData(data, day)) {
       delete dataCopy[parseInt("" + day)];
     } else {
-      if (Object.values(dataCopy).length > 10) {
+      if (dataFull(dataCopy)) {
         error(t("Curve already has the maximum number of control points."));
         return dataCopy;
       }
@@ -76,5 +79,8 @@ export const scaleData =
       const newValue = round(val * valueScale);
       newData[newDay] = newValue;
     });
+    if (Object.values(data).length < 2 && dayInput > 1) {
+      newData[dayScale] = newData[1];
+    }
     return newData;
   };

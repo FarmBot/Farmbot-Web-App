@@ -48,10 +48,10 @@ describe("addOrRemoveItem()", () => {
 
   it("doesn't add item", () => {
     expect(addOrRemoveItem({
-      1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11,
-    }, 12, 12))
+      1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10,
+    }, 11, 11))
       .toEqual({
-        1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11,
+        1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10,
       });
   });
 });
@@ -87,5 +87,9 @@ describe("interpolateDay()", () => {
 describe("scaleData()", () => {
   it("returns scaled data", () => {
     expect(scaleData({ 1: 1, 2: 2 }, 4, 8)).toEqual({ 1: 4, 4: 8 });
+  });
+
+  it("returns scaled data from single data point", () => {
+    expect(scaleData({ 1: 1 }, 4, 8)).toEqual({ 1: 8, 4: 8 });
   });
 });

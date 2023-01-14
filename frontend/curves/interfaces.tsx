@@ -85,10 +85,23 @@ export interface ActionMenuProps {
   click(): void;
 }
 
+export interface PercentChangeProps {
+  curve: TaggedCurve;
+  index: number;
+  value: number;
+}
+
+export interface ValueInputProps {
+  day: string;
+  value: number;
+  dispatch: Function;
+  curve: TaggedCurve;
+}
+
 export interface DataProps {
   curve: TaggedCurve;
   plotTools: PlotTools;
-  hovered: string | undefined;
+  showHoverEffect(day: string | undefined): boolean;
   setHovered(day: string | undefined): void;
   dragging: string | undefined;
   setDragging(day: string | undefined): void;
@@ -99,7 +112,7 @@ export interface DataProps {
 export interface DataLabelsProps {
   curve: TaggedCurve;
   plotTools: PlotTools;
-  hovered: string | undefined;
+  showHoverEffect(day: string | undefined): boolean;
 }
 
 export interface XAxisProps {

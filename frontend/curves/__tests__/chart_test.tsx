@@ -27,6 +27,34 @@ describe("<CurveSvg />", () => {
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(22);
     expect(wrapper.text()).not.toContain("!");
+    expect(wrapper.html()).toContain("row-resize");
+    expect(wrapper.html()).not.toContain("not-allowed");
+  });
+
+  it("renders chart: non-editable", () => {
+    const p = fakeProps();
+    p.curve.body.data = TEST_DATA;
+    p.editable = false;
+    const wrapper = mount(<CurveSvg {...p} />);
+    expect(wrapper.find("text").length).toEqual(22);
+    expect(wrapper.html()).not.toContain("row-resize");
+  });
+
+  it("renders chart: data full", () => {
+    const p = fakeProps();
+    p.curve.body.data = {
+      1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 12: 12,
+    };
+    const wrapper = mount(<CurveSvg {...p} />);
+    expect(wrapper.find("text").length).toEqual(13);
+    expect(wrapper.html()).toContain("not-allowed");
+  });
+
+  it("renders chart: max days", () => {
+    const p = fakeProps();
+    p.curve.body.data = { 1: 0, 200: 100 };
+    const wrapper = mount(<CurveSvg {...p} />);
+    expect(wrapper.find("text").length).toEqual(22);
   });
 
   it("hovers bar", () => {
@@ -34,9 +62,9 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.text()).not.toContain("Day 1: 0 mL");
-    wrapper.find("rect").first().simulate("mouseEnter");
+    wrapper.find("rect").at(1).simulate("mouseEnter");
     expect(wrapper.text()).toContain("Day 1: 0 mL");
-    wrapper.find("rect").first().simulate("mouseLeave");
+    wrapper.find("rect").at(1).simulate("mouseLeave");
     expect(wrapper.text()).not.toContain("Day 1: 0 mL");
   });
 
@@ -61,6 +89,16 @@ describe("<CurveSvg />", () => {
       { data: { 1: 3, 10: 10, 50: 500, 100: 1000 } });
     wrapper.find("svg").first().simulate("mouseUp");
     wrapper.find("svg").first().simulate("mouseLeave");
+  });
+
+  it("edits to zero", () => {
+    const p = fakeProps();
+    p.curve.body.data = TEST_DATA;
+    const wrapper = mount(<CurveSvg {...p} />);
+    wrapper.find("circle").first().simulate("mouseDown");
+    wrapper.find("svg").first().simulate("mouseMove", { movementY: 100 });
+    expect(editCurve).toHaveBeenCalledWith(p.curve,
+      { data: { 1: 0, 10: 10, 50: 500, 100: 1000 } });
   });
 
   it("doesn't start edit", () => {

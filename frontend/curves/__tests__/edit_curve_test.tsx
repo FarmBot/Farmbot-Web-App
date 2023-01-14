@@ -32,6 +32,7 @@ import { destroy, overwrite, initSaveGetId } from "../../api/crud";
 import { push } from "../../history";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
+import { changeBlurableInput } from "../../__test_support__/helpers";
 
 describe("<EditCurve />", () => {
   const fakeProps = (): EditCurveProps => ({
@@ -62,6 +63,19 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("fake");
     expect(wrapper.text().toLowerCase()).toContain("volume");
+    expect(wrapper.text().toLowerCase()).not.toContain("maximum");
+  });
+
+  it("renders: data full", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.data = {
+      1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10,
+    };
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("maximum");
   });
 
   it("adds data", () => {
@@ -167,28 +181,11 @@ describe("curveDataTableRow()", () => {
     const wrapper = mount(<table><tbody>
       {curveDataTableRow(curve, mockDispatch())(["5", 5], 0)}
     </tbody></table>);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "5" } });
+    changeBlurableInput(wrapper, "6", 0);
     expect(overwrite).toHaveBeenCalledWith(curve, {
       name: "Fake",
       type: "height",
-      data: { 1: 0, 5: 5, 10: 1 },
-    });
-  });
-
-  it("doesn't change value", () => {
-    const curve = fakeCurve();
-    curve.body.type = "height";
-    curve.body.data = { 1: 0, 5: 5, 10: 1 };
-    const wrapper = mount(<table><tbody>
-      {curveDataTableRow(curve, mockDispatch())(["5", 5], 0)}
-    </tbody></table>);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "" } });
-    expect(overwrite).toHaveBeenCalledWith(curve, {
-      name: "Fake",
-      type: "height",
-      data: { 1: 0, 5: 5, 10: 1 },
+      data: { 1: 0, 5: 6, 10: 1 },
     });
   });
 });

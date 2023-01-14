@@ -14,12 +14,16 @@ import { destroy, initSaveGetId, overwrite } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Curve } from "farmbot/dist/resources/api_resources";
-import { FBSelect, Popover } from "../ui";
+import { BlurableInput, FBSelect, Popover } from "../ui";
 import { CurveSvg } from "./chart";
 import {
-  populatedData, scaleData, addOrRemoveItem, curveSum, inData,
+  populatedData, scaleData, addOrRemoveItem, curveSum, inData, maxDay,
+  maxValue, dataFull,
 } from "./data_actions";
-import { ActionMenuProps, EditCurveProps, EditCurveState } from "./interfaces";
+import {
+  ActionMenuProps, EditCurveProps, EditCurveState, PercentChangeProps,
+  ValueInputProps,
+} from "./interfaces";
 import {
   curvePanelColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
   DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
@@ -114,6 +118,11 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               sourceFbosConfig={this.props.sourceFbosConfig}
               botSize={this.props.botSize}
               editable={true} />
+            <p className={"full-indicator"}>
+              {dataFull(curve.body.data)
+                ? t("Maximum number of control points reached.")
+                : ""}
+            </p>
             <table>
               <thead>
                 <tr>
@@ -139,33 +148,34 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 export const EditCurve = connect(mapStateToProps)(RawEditCurve);
 
 export const ScaleMenu = (props: ActionMenuProps) => {
-  const { type } = props.curve.body;
-  const [maxDay, setMaxDay] = React.useState(DEFAULT_DAY_SCALE[type]);
-  const [maxValue, setMaxValue] = React.useState(DEFAULT_VALUE_SCALE[type]);
+  const { data } = props.curve.body;
+  const [maxDayNum, setMaxDay] = React.useState(maxDay(data));
+  const [maxValueNum, setMaxValue] = React.useState(maxValue(data));
   return <div className={"curve-action-menu"}>
     <div className={"curve-menu-row"}>
       <label>{t("max value")}</label>
       <input type={"number"}
-        defaultValue={maxValue}
+        defaultValue={maxValueNum}
         onChange={e => {
           const value = parseInt(e.currentTarget.value);
-          isFinite(value) && setMaxValue(value);
+          isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
     <div className={"curve-menu-row"}>
       <label>{t("days")}</label>
       <input type={"number"}
-        defaultValue={maxDay}
+        defaultValue={maxDayNum}
+        min={1} max={200}
         onChange={e => {
           const day = parseInt(e.currentTarget.value);
-          isFinite(day) && setMaxDay(day);
+          isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
     <div className={"curve-menu-row last"}>
       <button className={"transparent-button"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
-            data: scaleData(props.curve.body.data, maxDay, maxValue)
+            data: scaleData(props.curve.body.data, maxDayNum, maxValueNum)
           }));
           props.click();
         }}>
@@ -194,16 +204,17 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
         defaultValue={maxValue}
         onChange={e => {
           const value = parseInt(e.currentTarget.value);
-          isFinite(value) && setMaxValue(value);
+          isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
     <div className={"curve-menu-row"}>
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDay}
+        min={1} max={200}
         onChange={e => {
           const day = parseInt(e.currentTarget.value);
-          isFinite(day) && setMaxDay(day);
+          isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
     <div className={"curve-menu-row last"}>
@@ -233,18 +244,6 @@ export const copyCurve = (curve: TaggedCurve, dispatch: Function) => () => {
 export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
   ([day, value]: [string, number], index: number) => {
     const active = inData(curve.body.data, day);
-    const percent = () => {
-      const prev = populatedData(curve.body.data)[index] || 0;
-      if (prev == 0) { return <p>-</p>; }
-      const val = round((value - prev) / prev * 100, -1);
-      const color = () => {
-        if (val > 0.1) { return "percent-green"; }
-        if (val < -0.1) { return "percent-red"; }
-      };
-      return <p className={color()}>
-        {`${val > 0 ? "+" : ""}${val}%`}
-      </p>;
-    };
     return <tr key={day}>
       <td className={active ? "active" : ""}>
         <p>{day}</p>
@@ -252,6 +251,7 @@ export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
           className={[
             "row-radio",
             active ? "active" : "",
+            dataFull(curve.body.data) ? "full" : "",
           ].join(" ")}
           onClick={() => {
             dispatch(editCurve(curve, {
@@ -261,26 +261,43 @@ export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
       </td>
       <td className={active ? "active-input" : ""}>
         {active
-          ? <input type={"number"}
-            defaultValue={value}
-            onChange={e => {
-              const value = parseInt(e.currentTarget.value);
-              isFinite(value) && dispatch(editCurve(curve, {
-                data: {
-                  ...curve.body.data,
-                  [day]: value,
-                }
-              }));
-            }} />
+          ? <ValueInput day={day} value={value} dispatch={dispatch} curve={curve} />
           : <p>{value}</p>}
       </td>
       <td>
         {curve.body.type == CurveType.water
           ? <p>{curveSum(curve.body.data, day)}</p>
-          : percent()}
+          : <PercentChange curve={curve} index={index} value={value} />}
       </td>
     </tr>;
   };
+
+const PercentChange = (props: PercentChangeProps) => {
+  const prev = populatedData(props.curve.body.data)[props.index] || 0;
+  if (prev == 0) { return <p>-</p>; }
+  const exactValue = (props.value - prev) / prev * 100;
+  const val = round(exactValue, exactValue < 10 ? 1 : 0);
+  const color = () => {
+    if (val > 0.1) { return "percent-green"; }
+    if (val < -0.1) { return "percent-red"; }
+  };
+  return <p className={color()}>
+    {`${val > 0 ? "+" : ""}${val}%`}
+  </p>;
+};
+
+const ValueInput = (props: ValueInputProps) =>
+  <BlurableInput
+    type={"number"}
+    value={props.value}
+    min={0}
+    onCommit={e =>
+      props.dispatch(editCurve(props.curve, {
+        data: {
+          ...props.curve.body.data,
+          [props.day]: parseInt(e.currentTarget.value),
+        }
+      }))} />;
 
 export const editCurve = (curve: TaggedCurve, update: Partial<Curve>) =>
   (dispatch: Function) => {

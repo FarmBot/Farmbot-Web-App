@@ -4,7 +4,7 @@ import { floor, range, round } from "lodash";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { Color } from "../ui";
 import {
-  maxValue, maxDay, populatedData, inData, addOrRemoveItem,
+  maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull,
 } from "./data_actions";
 import {
   CurveSvgProps, DataLabelsProps, DataProps, PlotTools, WarningLinesProps,
@@ -15,7 +15,7 @@ import { TextInRoundedSvgBox } from "../farm_designer/map/background/grid_labels
 import { editCurve } from "./edit_curve";
 
 const X_MAX = 120;
-const SVG_X_MAX = X_MAX + 25;
+const svgXMax = (data: Curve["data"]) => X_MAX + 25 + 1.5 * X_MAX / maxDay(data);
 const Y_MAX = 100;
 
 /** Plot x value normalized to plot extents. */
@@ -42,8 +42,10 @@ export const CurveSvg = (props: CurveSvgProps) => {
   const commonProps = { curve, plotTools };
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   const [dragging, setDragging] = React.useState<string | undefined>(undefined);
+  const showHoverEffect = (day: string | undefined) =>
+    dragging == day || (!dragging && hovered == day);
   return <svg width={"100%"} height={"100%"}
-    viewBox={`-15 -10 ${SVG_X_MAX} ${Y_MAX + 30}`}
+    viewBox={`-15 -10 ${svgXMax(data)} ${Y_MAX + 30}`}
     style={dragging ? { cursor: "grabbing" } : {}}
     onMouseUp={() => setDragging(undefined)}
     onMouseLeave={() => setDragging(undefined)}
@@ -51,33 +53,53 @@ export const CurveSvg = (props: CurveSvgProps) => {
       if (!dragging) { return; }
       const newValue = data[parseInt(dragging)]
         - round(e.movementY * maxValue(data) / Y_MAX / 3);
+      const value = newValue < 0 ? 0 : newValue;
       dispatch(editCurve(curve, {
         data: {
           ...curve.body.data,
-          [parseInt(dragging)]: newValue,
+          [parseInt(dragging)]: value,
         }
       }));
     }}>
     <Data {...commonProps} dispatch={dispatch} editable={editable}
-      setHovered={setHovered} hovered={hovered}
+      setHovered={setHovered} showHoverEffect={showHoverEffect}
       setDragging={setDragging} dragging={dragging} />
     <XAxis {...commonProps} />
     <YAxis {...commonProps} />
     <WarningLines {...commonProps}
       sourceFbosConfig={props.sourceFbosConfig}
       botSize={props.botSize} />
-    <DataLabels {...commonProps} hovered={hovered} />
+    <DataLabels {...commonProps} showHoverEffect={showHoverEffect} />
   </svg>;
 };
 
 const Data = (props: DataProps) => {
-  const { curve, setHovered, hovered } = props;
+  const { curve, setHovered, showHoverEffect, dragging } = props;
   const { normX, normY, yZero } = props.plotTools;
   const { data, type } = curve.body;
-  const width = barWidth(data);
+  const fullWidth = X_MAX / maxDay(data);
   const lastDay = maxDay(data) + 1;
   const [hoveredValue, setHoveredValue] =
     React.useState<string | undefined>(undefined);
+  const bar = (last?: boolean) => ([day, value]: [string, number]) => {
+    const x = (inputWidth: number) => normX(day) - inputWidth / 2;
+    const y = normY(value);
+    const height = yZero - y;
+    return <g key={day} id={last ? "last-bar" : "bar"}>
+      <rect id={"visible-bar"}
+        stroke={last || showHoverEffect(day) ? curveColor(curve) : "none"}
+        strokeWidth={0.5} strokeDasharray={last ? 0.5 : undefined}
+        x={x(fullWidth * 0.75)} y={y}
+        fill={last ? Color.white : undefined}
+        width={fullWidth * 0.75} height={height} />
+      <rect id={"hover-bar"}
+        onMouseEnter={() => setHovered(day)}
+        onMouseLeave={() => setHovered(undefined)}
+        fill={Color.white} opacity={0}
+        x={x(fullWidth)} y={y}
+        width={fullWidth} height={height} />
+    </g>;
+  };
   return <g id={"data"}>
     <defs>
       <linearGradient id={`${type}-bar-fill`}
@@ -87,23 +109,8 @@ const Data = (props: DataProps) => {
       </linearGradient>
     </defs>
     <g id={"bars"} stroke={"none"} fill={`url(#${type}-bar-fill)`}>
-      {Object.entries(populatedData(data))
-        .map(([day, value]) => {
-          return <rect key={day}
-            onMouseEnter={() => setHovered(day)}
-            onMouseLeave={() => setHovered(undefined)}
-            stroke={hovered == day ? curveColor(curve) : "none"}
-            strokeWidth={0.5}
-            x={normX(day) - width / 2} y={normY(value)}
-            width={width} height={yZero - normY(value)} />;
-        })}
-      <rect id={"last-bar"}
-        onMouseEnter={() => setHovered("" + lastDay)}
-        onMouseLeave={() => setHovered(undefined)}
-        stroke={curveColor(curve)} strokeDasharray={0.5}
-        x={normX(lastDay) - width / 2} y={normY(data[maxDay(data)])}
-        width={width} height={yZero - normY(data[maxDay(data)])}
-        fill={Color.white} strokeWidth={0.5} />
+      {Object.entries(populatedData(data)).map(bar())}
+      {bar(true)(["" + lastDay, data[maxDay(data)]])}
     </g>
     <path id={"line"}
       stroke={curveColor(curve)} strokeWidth={0.5} fill={"none"}
@@ -120,7 +127,7 @@ const Data = (props: DataProps) => {
       {Object.entries(data)
         .map(([day, value]) => {
           return <circle key={day}
-            style={props.editable ? { cursor: "grab" } : {}}
+            style={props.editable ? { cursor: "row-resize" } : {}}
             onMouseDown={() => props.editable && props.setDragging(day)}
             cx={normX(day)}
             cy={normY(value)}
@@ -135,9 +142,11 @@ const Data = (props: DataProps) => {
       {Object.entries(populatedData(data))
         .map(([day, value]) => {
           if (inData(data, day)) { return; }
-          const show = props.editable && hoveredValue == day && !props.dragging;
+          const show = props.editable && hoveredValue == day && !dragging;
           const opacity = show ? 1 : 0;
+          const cursor = dataFull(data) ? "not-allowed" : "copy";
           return <circle key={day}
+            style={props.editable ? { cursor } : {}}
             onMouseEnter={() => setHoveredValue(day)}
             onMouseLeave={() => setHoveredValue(undefined)}
             onClick={() => props.editable && props.dispatch(editCurve(curve, {
@@ -146,17 +155,14 @@ const Data = (props: DataProps) => {
             opacity={opacity} fillOpacity={opacity}
             cx={normX(day)}
             cy={normY(value)}
-            r={1} />;
+            r={1.5} />;
         })}
     </g>
   </g>;
 };
 
-const barWidth = (data: Curve["data"]) =>
-  Math.max(1, floor(X_MAX * 0.75 / maxDay(data)));
-
 const DataLabels = (props: DataLabelsProps) => {
-  const { curve, hovered } = props;
+  const { curve, showHoverEffect } = props;
   const { normX, normY } = props.plotTools;
   const { data } = curve.body;
   const label = (plus: string) =>
@@ -171,7 +177,7 @@ const DataLabels = (props: DataLabelsProps) => {
       };
       const position = getPosition();
       return <g id={day} key={day}>
-        {hovered == day &&
+        {showHoverEffect(day) &&
           <g id={"label"}>
             <TextInRoundedSvgBox x={xLabel} y={yLabel} radius={1}
               width={text.length * 2 + 6} height={6} fontSize={4}
@@ -191,7 +197,8 @@ const XAxis = (props: XAxisProps) => {
   const { data } = props.curve.body;
   const { normX, yZero, yMax, xMax } = props.plotTools;
   const lastLabel = floor(maxDay(data) + 1, -1);
-  const dayLabels = [1].concat(range(10, lastLabel + 1, 10));
+  const step = maxDay(data) > 100 ? 20 : 10;
+  const dayLabels = [1].concat(range(step, lastLabel + 1, step));
   return <g id={"x-axis"}>
     <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.darkGray}>
       {dayLabels.map(day => <text key={day} x={normX(day)} y={108}>{day}</text>)}
@@ -270,11 +277,13 @@ const WarningLines = (props: WarningLinesProps) => {
     {low.value &&
       <line id={"low-line"} strokeDasharray={2}
         stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
-        x1={xZero} y1={normY(low.value)} x2={SVG_X_MAX} y2={normY(low.value)} />}
+        x1={xZero} y1={normY(low.value)}
+        x2={svgXMax(props.curve.body.data)} y2={normY(low.value)} />}
     {high.value &&
       <line id={"high-line"}
         stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
-        x1={xZero} y1={normY(high.value)} x2={SVG_X_MAX} y2={normY(high.value)} />}
+        x1={xZero} y1={normY(high.value)}
+        x2={svgXMax(props.curve.body.data)} y2={normY(high.value)} />}
     {Object.values(lines()).map((clearance, index) =>
       clearance.value &&
       <text id={"warning-icon"} key={index}

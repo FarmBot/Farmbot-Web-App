@@ -2435,6 +2435,15 @@ li {
     margin-left: 1rem;
     margin-top: 1rem;
   }
+  .full-indicator {
+    height: 2rem;
+    text-align: center;
+    color: $darkest_red;
+  }
+  .input-error-wrapper {
+    position: absolute;
+    margin: 0;
+  }
   table {
     th {
       text-transform: uppercase;
@@ -2475,9 +2484,19 @@ li {
     border-radius: 50%;
     vertical-align: middle;
     margin-left: 1rem;
-    margin-top: -0.5rem;
+    margin-top: -0.25rem;
     &.active {
       background: $blue;
+      &.full {
+        background: $blue;
+        border: revert;
+        cursor: revert;
+      }
+    }
+    &.full {
+      background: $light_gray;
+      border: $gray;
+      cursor: not-allowed;
     }
   }
 }
