@@ -2541,6 +2541,15 @@ li {
   }
 }
 
+.curve-info-panel-content-wrapper,
+.all-curve-info {
+  svg {
+    text {
+      user-select: none;
+    }
+  }
+}
+
 .sensors-panel,
 .controls-panel {
   .panel-content {

@@ -273,9 +273,11 @@ export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
   };
 
 const PercentChange = (props: PercentChangeProps) => {
-  const prev = populatedData(props.curve.body.data)[props.index] || 0;
+  const exactData = populatedData(props.curve.body.data, true);
+  const prev = exactData[props.index] || 0;
+  const value = exactData[props.index + 1];
   if (prev == 0) { return <p>-</p>; }
-  const exactValue = (props.value - prev) / prev * 100;
+  const exactValue = (value - prev) / prev * 100;
   const val = round(exactValue, exactValue < 10 ? 1 : 0);
   const color = () => {
     if (val > 0.1) { return "percent-green"; }

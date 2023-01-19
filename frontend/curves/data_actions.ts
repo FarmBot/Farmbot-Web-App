@@ -41,17 +41,18 @@ export const addOrRemoveItem =
   };
 
 /** Generate full curve with interpolated values for each day from sparse data. */
-export const populatedData = (data: Curve["data"]): Curve["data"] => {
-  const fullData: Curve["data"] = {};
-  range(1, maxDay(data) + 1).map(day => {
-    fullData[day] = interpolateDay(data, day);
-  });
-  return fullData;
-};
+export const populatedData =
+  (data: Curve["data"], exact = false): Curve["data"] => {
+    const fullData: Curve["data"] = {};
+    range(1, maxDay(data) + 1).map(day => {
+      fullData[day] = interpolateDay(data, day, exact);
+    });
+    return fullData;
+  };
 
 /** Use linear interpolation to generate a curve value for the specified day. */
 export const interpolateDay =
-  (data: Curve["data"], day: string | number): number => {
+  (data: Curve["data"], day: string | number, exact: boolean): number => {
     if (inData(data, day)) { return data[parseInt("" + day)]; }
     const ascending = Object.entries(data)
       .sort((kv0, kv1) => parseInt(kv0[0]) - parseInt(kv1[0]));
@@ -64,8 +65,10 @@ export const interpolateDay =
     const thisDay = parseInt("" + day);
     const nextDay = parseInt(next[0]);
     const prevDay = parseInt(prev[0]);
-    return round((prev[1] * (nextDay - thisDay) + next[1] * (thisDay - prevDay))
-      / (nextDay - prevDay));
+    const exactValue =
+      (prev[1] * (nextDay - thisDay) + next[1] * (thisDay - prevDay))
+      / (nextDay - prevDay);
+    return exact ? exactValue : round(exactValue);
   };
 
 /** Scale data to the provided new maximum values. */

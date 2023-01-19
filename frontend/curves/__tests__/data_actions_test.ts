@@ -25,7 +25,8 @@ describe("maxValue()", () => {
 
 describe("curveSum()", () => {
   it("returns sum", () => {
-    expect(curveSum({ 1: 1, 2: 2, 3: 3, 4: 4 }, 3)).toEqual(0.01);
+    expect(curveSum({ 1: 1, 2: 2, 3: 3, 4: 40 }, 3)).toEqual(0.01);
+    expect(curveSum({ 1: 1, 2: 2, 3: 3, 4: 40 })).toEqual(0.05);
   });
 });
 
@@ -76,11 +77,20 @@ describe("interpolateDay()", () => {
     [3, 3],
     [1, 1],
   ])("returns value: %s", (day, expected) => {
-    expect(interpolateDay({ 1: 1, 5: 5, 7: 5, 10: 1 }, day)).toEqual(expected);
+    expect(interpolateDay({ 1: 1, 5: 5, 7: 5, 10: 1 }, day, false))
+      .toEqual(expected);
+  });
+
+  it("returns rounded value", () => {
+    expect(interpolateDay({ 1: 1, 5: 10, 7: 10, 10: 1 }, 3, false)).toEqual(6);
+  });
+
+  it("returns exact value", () => {
+    expect(interpolateDay({ 1: 1, 5: 10, 7: 10, 10: 1 }, 3, true)).toEqual(5.5);
   });
 
   it("handles empty data", () => {
-    expect(interpolateDay({}, 0)).toEqual(0);
+    expect(interpolateDay({}, 0, false)).toEqual(0);
   });
 });
 
