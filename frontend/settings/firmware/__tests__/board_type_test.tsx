@@ -54,6 +54,7 @@ describe("<BoardType/>", () => {
 
   it("calls updateConfig", () => {
     const p = fakeProps();
+    p.firmwareHardware = "arduino";
     const wrapper = mount<BoardType>(<BoardType {...p} />);
     const selection =
       shallow(<div>{wrapper.instance().FirmwareSelection()}</div>);

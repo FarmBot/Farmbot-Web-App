@@ -868,6 +868,11 @@ export namespace Content {
   export const RESTART_FIRMWARE =
     trim(`Restart the Farmduino or Arduino firmware.`);
 
+  export const FIRMWARE_UPGRADED =
+    trim(`If you are upgrading your FarmBot, you may need to manually add
+    any new peripherals, sensors, and tools that your new electronics board
+    supports.`);
+
   // FarmBot OS Settings: Power and Reset
   export const RESTART_FARMBOT =
     trim(`This will restart FarmBot's Raspberry Pi and controller
