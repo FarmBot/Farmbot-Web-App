@@ -22,6 +22,7 @@ describe("<SpreadLayer/>", () => {
     activeDragSpread: undefined,
     editing: false,
     animate: false,
+    hoveredSpread: undefined,
   });
 
   it("shows spread", () => {
@@ -55,14 +56,25 @@ describe("<SpreadCircle />", () => {
     mapTransformProps: fakeMapTransformProps(),
     visible: true,
     animate: true,
+    hoveredSpread: undefined,
+    selected: false,
   });
 
   it("uses spread value", () => {
     const wrapper = shallow(<SpreadCircle {...fakeProps()} />);
     wrapper.setState({ spread: 20, loaded: true });
-    expect(wrapper.find("circle").props().r).toEqual(100);
-    expect(wrapper.find("circle").hasClass("animate")).toBeTruthy();
-    expect(wrapper.find("circle").props().fill).toEqual("none");
+    expect(wrapper.find("circle").first().props().r).toEqual(100);
+    expect(wrapper.find("circle").first().hasClass("animate")).toBeTruthy();
+    expect(wrapper.find("circle").first().props().fill).toEqual("none");
+  });
+
+  it("shows hovered spread value", () => {
+    const p = fakeProps();
+    p.selected = true;
+    p.hoveredSpread = 100;
+    const wrapper = shallow(<SpreadCircle {...p} />);
+    wrapper.setState({ spread: 1000, loaded: true });
+    expect(wrapper.find("circle").last().props().r).toEqual(50);
   });
 
   it("fetches icon", () => {

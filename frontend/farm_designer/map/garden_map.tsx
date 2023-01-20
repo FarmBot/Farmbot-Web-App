@@ -552,6 +552,7 @@ export class GardenMap extends
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
     activeDragSpread={this.state.activeDragSpread}
+    hoveredSpread={this.props.designer.hoveredSpread}
     editing={this.isEditing}
     animate={this.animate} />;
   PlantRadiusLayer = () => <PlantRadiusLayer
@@ -632,6 +633,7 @@ export class GardenMap extends
     currentPlant={this.getPlant()}
     designer={this.props.designer}
     hoveredPlant={this.props.hoveredPlant}
+    hoveredSpread={this.props.designer.hoveredSpread}
     dragging={!!this.state.isDragging}
     animate={this.animate} />;
   DragHelper = () => <ActivePlantDragHelper

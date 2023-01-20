@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DesignerState } from "../../interfaces";
 import { transformXY, round, scaleIcon } from "../util";
 import { MapTransformProps, TaggedPlant } from "../interfaces";
@@ -22,6 +22,7 @@ export interface HoveredPlantProps {
   mapTransformProps: MapTransformProps;
   dragging: boolean;
   animate: boolean;
+  hoveredSpread: number | undefined;
 }
 
 export class HoveredPlant extends
@@ -58,8 +59,10 @@ export class HoveredPlant extends
               <SpreadCircle
                 plant={currentPlant}
                 key={currentPlant.uuid}
+                selected={true}
                 mapTransformProps={mapTransformProps}
                 visible={!spreadLayerVisible}
+                hoveredSpread={this.props.hoveredSpread}
                 animate={animate} />
             </g>}
           <g id="plant-indicator">

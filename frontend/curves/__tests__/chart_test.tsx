@@ -4,8 +4,10 @@ jest.mock("../edit_curve", () => ({
 
 import { mount } from "enzyme";
 import React from "react";
+import { Actions } from "../../constants";
+import { tagAsSoilHeight } from "../../points/soil_height";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
-import { fakeCurve } from "../../__test_support__/fake_state/resources";
+import { fakeCurve, fakePoint } from "../../__test_support__/fake_state/resources";
 import { CurveSvg } from "../chart";
 import { editCurve } from "../edit_curve";
 import { CurveSvgProps } from "../interfaces";
@@ -59,6 +61,8 @@ describe("<CurveSvg />", () => {
 
   it("hovers bar", () => {
     const p = fakeProps();
+    p.editable = true;
+    p.curve.body.type = "water";
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.text()).not.toContain("Day 1: 0 mL");
@@ -70,13 +74,21 @@ describe("<CurveSvg />", () => {
 
   it("hovers last bar", () => {
     const p = fakeProps();
+    p.editable = false;
+    p.curve.body.type = "spread";
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.text()).not.toContain("Day 101+: 1000 mL");
+    expect(wrapper.text()).not.toContain("Day 101+: 1000 mm");
     wrapper.find("rect").last().simulate("mouseEnter");
-    expect(wrapper.text()).toContain("Day 101+: 1000 mL");
+    expect(wrapper.text()).toContain("Day 101+: 1000 mm");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_SPREAD, payload: 1000,
+    });
     wrapper.find("rect").last().simulate("mouseLeave");
-    expect(wrapper.text()).not.toContain("Day 101+: 1000 mL");
+    expect(wrapper.text()).not.toContain("Day 101+: 1000 mm");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_SPREAD, payload: undefined,
+    });
   });
 
   it("starts edit", () => {
@@ -122,7 +134,7 @@ describe("<CurveSvg />", () => {
       { data: { 1: 0, 10: 10, 50: 500, 99: 990, 100: 1000 } });
   });
 
-  it("shows warning lines: spread", () => {
+  it("shows warning lines: general spread", () => {
     const p = fakeProps();
     p.curve.body.type = "spread";
     p.botSize.x.value = 100;
@@ -133,6 +145,35 @@ describe("<CurveSvg />", () => {
     expect(wrapper.text()).toContain("!");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("spread beyond");
+    wrapper.find("#warning-icon").first().simulate("mouseLeave");
+  });
+
+  it("shows warning lines: spread at location", () => {
+    const p = fakeProps();
+    p.x = 100;
+    p.y = 200;
+    const point0 = fakePoint();
+    point0.body.x = 500;
+    point0.body.y = 500;
+    point0.body.z = 400;
+    tagAsSoilHeight(point0);
+    const point1 = fakePoint();
+    point1.body.x = 0;
+    point1.body.y = 0;
+    point1.body.z = 100;
+    tagAsSoilHeight(point1);
+    p.soilHeightPoints = [point0, point1];
+    p.farmwareEnvs = [];
+    p.curve.body.type = "spread";
+    p.botSize.x.value = 2000;
+    p.botSize.y.value = 1000;
+    p.curve.body.data = TEST_DATA;
+    const wrapper = mount(<CurveSvg {...p} />);
+    expect(wrapper.find("text").length).toEqual(26);
+    expect(wrapper.text()).toContain("!");
+    wrapper.find("#warning-icon").first().simulate("mouseEnter");
+    expect(wrapper.text()).toContain("spread beyond");
+    expect(wrapper.text()).toContain("bleed");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 

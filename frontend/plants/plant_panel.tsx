@@ -15,7 +15,7 @@ import { t } from "../i18next_wrapper";
 import { MovementState, TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
 import {
-  fetchInterpolationOptions, interpolatedZ,
+  getZAtLocation,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { Path } from "../internal_urls";
 import { Actions } from "../constants";
@@ -80,9 +80,12 @@ export interface EditPlantLocationProps extends EditPlantProperty {
 
 export const EditPlantLocation = (props: EditPlantLocationProps) => {
   const { plantLocation, updatePlant, uuid } = props;
-  const soilZ = interpolatedZ({ x: plantLocation.x, y: plantLocation.y },
-    props.soilHeightPoints,
-    fetchInterpolationOptions(props.farmwareEnvs));
+  const soilZ = getZAtLocation({
+    x: plantLocation.x,
+    y: plantLocation.y,
+    points: props.soilHeightPoints,
+    farmwareEnvs: props.farmwareEnvs,
+  });
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
       <Col xs={4} key={axis}>
@@ -248,6 +251,8 @@ export function PlantPanel(props: PlantPanelProps) {
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig}
           botSize={props.botSize}
+          farmwareEnvs={props.farmwareEnvs}
+          soilHeightPoints={props.soilHeightPoints}
           curves={props.curves}
           plant={info}
           updatePlant={updatePlant} />}

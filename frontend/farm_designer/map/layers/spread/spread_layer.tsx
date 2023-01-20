@@ -17,11 +17,12 @@ export interface SpreadLayerProps {
   activeDragSpread: number | undefined;
   editing: boolean;
   animate: boolean;
+  hoveredSpread: number | undefined;
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
   const {
-    plants, visible, mapTransformProps, currentPlant,
+    plants, visible, mapTransformProps, currentPlant, hoveredSpread,
     dragging, zoomLvl, activeDragXY, activeDragSpread, editing, animate
   } = props;
   return <g id="spread-layer">
@@ -31,6 +32,8 @@ export function SpreadLayer(props: SpreadLayerProps) {
         {visible &&
           <SpreadCircle
             plant={p}
+            hoveredSpread={hoveredSpread}
+            selected={selected}
             key={"spread-" + p.uuid}
             mapTransformProps={mapTransformProps}
             visible={true}
@@ -53,6 +56,8 @@ export interface SpreadCircleProps {
   mapTransformProps: MapTransformProps;
   visible: boolean;
   animate: boolean;
+  hoveredSpread: number | undefined;
+  selected: boolean;
 }
 
 interface SpreadCircleState {
@@ -92,6 +97,15 @@ export class SpreadCircle extends
           r={spreadDiaCm / 2 * 10}
           strokeWidth={2}
           stroke={this.state.spread ? Color.darkGreen : Color.offWhite}
+          opacity={0.5}
+          fill={"none"} />}
+      {this.props.hoveredSpread && this.props.selected &&
+        <circle
+          cx={qx}
+          cy={qy}
+          r={this.props.hoveredSpread / 2}
+          strokeWidth={2}
+          stroke={Color.darkGreen}
           opacity={0.5}
           fill={"none"} />}
     </g>;

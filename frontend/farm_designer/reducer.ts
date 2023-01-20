@@ -24,6 +24,7 @@ export const initialState: DesignerState = {
     icon: ""
   },
   hoveredPoint: undefined,
+  hoveredSpread: undefined,
   hoveredPlantListItem: undefined,
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
@@ -95,6 +96,10 @@ export const designer = generateReducer<DesignerState>(initialState)
     })
   .add<HoveredPlantPayl>(Actions.TOGGLE_HOVERED_PLANT, (s, { payload }) => {
     s.hoveredPlant = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.TOGGLE_HOVERED_SPREAD, (s, { payload }) => {
+    s.hoveredSpread = payload;
     return s;
   })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {

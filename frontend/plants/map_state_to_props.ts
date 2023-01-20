@@ -12,7 +12,6 @@ import { PlantStage, TaggedPoint } from "farmbot";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import { isNumber, get } from "lodash";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { selectMostRecentPoints } from "../farm_designer/location_info";
 import { soilHeightPoint } from "../points/soil_height";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { validBotLocationData } from "../util/location";
@@ -44,7 +43,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     dispatch: props.dispatch,
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
-    soilHeightPoints: selectMostRecentPoints(soilHeightPoints),
+    soilHeightPoints,
     farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
     botOnline: isBotOnlineFromState(props.bot),
     arduinoBusy: props.bot.hardware.informational_settings.busy,

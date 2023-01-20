@@ -394,6 +394,8 @@ export const EditableAllCurveInfo = (props: EditableAllCurveInfoProps) =>
         updatePlant={props.updatePlant}
         curve={curve}
         curves={props.curves}
+        farmwareEnvs={props.farmwareEnvs}
+        soilHeightPoints={props.soilHeightPoints}
         sourceFbosConfig={props.sourceFbosConfig}
         botSize={props.botSize} />;
     })}
@@ -403,29 +405,36 @@ export const CurveInfo = (props: CurveInfoProps) => {
   const [open, setOpen] = React.useState(false);
   const { plant, updatePlant, curve } = props;
   return <div className={"crop-curve-info"}>
-    <div className={"header"}>
+    <div className={"header"} onClick={() => setOpen(!open)}>
       {curve
         ? <p><label>{t(CURVE_TYPES()[curve.body.type])}</label>
           : {curveInfo(curve)}</p>
         : <p><label>{t(CURVE_TYPES()[props.curveType])}</label>
           : {t("None")}</p>}
-      <i className={`fa fa-caret-${open ? "up" : "down"}`}
-        onClick={() => setOpen(!open)} />
+      <i className={`fa fa-caret-${open ? "up" : "down"}`} />
     </div>
     <Collapse isOpen={open}>
-      {updatePlant && plant
-        ? <FBSelect key={plant.uuid}
-          list={betterCompact(props.curves
-            .filter(c => c.body.type == props.curveType)
-            .map(curveToDdi))}
-          selectedItem={curve ? curveToDdi(curve) : undefined}
-          onChange={ddi => {
-            ddi.headingId && updatePlant(plant.uuid, {
-              [CURVE_KEY_LOOKUP[ddi.headingId as CurveType]]: ddi.value,
-            }, true);
-          }} />
-        : <p>{curve?.body.name}</p>}
+      <div className={"active-curve-name"}>
+        {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
+          <i className="fa fa-external-link" />
+        </Link>}
+        {updatePlant && plant
+          ? <FBSelect key={plant.uuid}
+            list={betterCompact(props.curves
+              .filter(c => c.body.type == props.curveType)
+              .map(curveToDdi))}
+            selectedItem={curve ? curveToDdi(curve) : undefined}
+            onChange={ddi => {
+              ddi.headingId && updatePlant(plant.uuid, {
+                [CURVE_KEY_LOOKUP[ddi.headingId as CurveType]]: ddi.value,
+              }, true);
+            }} />
+          : <p>{curve?.body.name}</p>}
+      </div>
       {curve && <CurveSvg dispatch={props.dispatch} curve={curve}
+        x={plant?.x} y={plant?.y}
+        farmwareEnvs={props.farmwareEnvs}
+        soilHeightPoints={props.soilHeightPoints}
         sourceFbosConfig={props.sourceFbosConfig}
         botSize={props.botSize} editable={false} />}
     </Collapse>

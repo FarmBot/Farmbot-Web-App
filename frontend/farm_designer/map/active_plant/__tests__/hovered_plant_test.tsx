@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { HoveredPlant, HoveredPlantProps } from "../hovered_plant";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
@@ -21,6 +21,7 @@ describe("<HoveredPlant/>", () => {
       isEditing: false,
       mapTransformProps: fakeMapTransformProps(),
       animate: false,
+      hoveredSpread: undefined,
     };
   }
 

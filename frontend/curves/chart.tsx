@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { floor, range, round } from "lodash";
+import { floor, isUndefined, range, round } from "lodash";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { Color } from "../ui";
 import {
@@ -13,6 +13,10 @@ import {
 import { curveColor, CurveType } from "./templates";
 import { TextInRoundedSvgBox } from "../farm_designer/map/background/grid_labels";
 import { editCurve } from "./edit_curve";
+import {
+  getZAtLocation,
+} from "../farm_designer/map/layers/points/interpolation_map";
+import { Actions } from "../constants";
 
 const X_MAX = 120;
 const svgXMax = (data: Curve["data"]) => X_MAX + 25 + 1.5 * X_MAX / maxDay(data);
@@ -68,6 +72,10 @@ export const CurveSvg = (props: CurveSvgProps) => {
     <YAxis {...commonProps} />
     <WarningLines {...commonProps}
       sourceFbosConfig={props.sourceFbosConfig}
+      x={props.x}
+      y={props.y}
+      farmwareEnvs={props.farmwareEnvs}
+      soilHeightPoints={props.soilHeightPoints}
       botSize={props.botSize} />
     <DataLabels {...commonProps} showHoverEffect={showHoverEffect} />
   </svg>;
@@ -81,6 +89,11 @@ const Data = (props: DataProps) => {
   const lastDay = maxDay(data) + 1;
   const [hoveredValue, setHoveredValue] =
     React.useState<string | undefined>(undefined);
+  const setHoveredSpread = (value: number | undefined) =>
+    props.dispatch({
+      type: Actions.TOGGLE_HOVERED_SPREAD,
+      payload: value,
+    });
   const bar = (last?: boolean) => ([day, value]: [string, number]) => {
     const x = (inputWidth: number) => normX(day) - inputWidth / 2;
     const y = normY(value);
@@ -93,8 +106,17 @@ const Data = (props: DataProps) => {
         fill={last ? Color.white : undefined}
         width={fullWidth * 0.75} height={height} />
       <rect id={"hover-bar"}
-        onMouseEnter={() => setHovered(day)}
-        onMouseLeave={() => setHovered(undefined)}
+        onMouseEnter={() => {
+          setHovered(day);
+          !props.editable && type == CurveType.spread &&
+            setHoveredSpread(value);
+        }}
+        onMouseLeave={() => {
+          setHovered(undefined);
+          !props.editable && type == CurveType.spread &&
+            setHoveredSpread(undefined);
+
+        }}
         fill={Color.white} opacity={0}
         x={x(fullWidth)} y={y}
         width={fullWidth} height={height} />
@@ -164,12 +186,13 @@ const Data = (props: DataProps) => {
 const DataLabels = (props: DataLabelsProps) => {
   const { curve, showHoverEffect } = props;
   const { normX, normY } = props.plotTools;
-  const { data } = curve.body;
+  const { data, type } = curve.body;
   const label = (plus: string) =>
     ([day, value]: [string, number]) => {
       const xLabel = normX(day);
       const yLabel = normY(value);
-      const text = `${t("Day {{ num }}", { num: day })}${plus}: ${value} mL`;
+      const unit = type == CurveType.water ? "mL" : "mm";
+      const text = `${t("Day {{ num }}", { num: day })}${plus}: ${value} ${unit}`;
       const getPosition = () => {
         if (xLabel < 0.25 * X_MAX) { return "left"; }
         if (xLabel > 0.75 * X_MAX) { return "right"; }
@@ -245,46 +268,89 @@ const YAxis = (props: YAxisProps) => {
 
 const WarningLines = (props: WarningLinesProps) => {
   const { normY, xZero } = props.plotTools;
+  const { x, y } = props;
   const gantryHeight = props.sourceFbosConfig("gantry_height").value as number;
-  const soilHeight = props.sourceFbosConfig("soil_height").value as number;
+  const locationSoilHeight = getZAtLocation({
+    x,
+    y,
+    points: props.soilHeightPoints,
+    farmwareEnvs: props.farmwareEnvs,
+  });
+  const soilHeight = locationSoilHeight
+    || props.sourceFbosConfig("soil_height").value as number;
   const utmClearance = soilHeight;
   const gantryClearance = soilHeight + gantryHeight;
   const xLength = props.botSize.x.value;
   const yLength = props.botSize.y.value;
-  interface Content { value: number | undefined, text: string | undefined }
-  const lines = (): Record<"low" | "high", Content> => {
+  const xPosition = x || (xLength / 2);
+  const yPosition = y || (yLength / 2);
+  const distanceToEdge = {
+    x: { min: xPosition * 2, max: (xLength - xPosition) * 2 },
+    y: { min: yPosition * 2, max: (yLength - yPosition) * 2 },
+  };
+  const maxValueNum = maxValue(props.curve.body.data);
+  const edgeBleed = {
+    x: {
+      min: (maxValueNum - distanceToEdge.x.min) / 2,
+      max: (maxValueNum - distanceToEdge.x.max) / 2,
+    },
+    y: {
+      min: (maxValueNum - distanceToEdge.y.min) / 2,
+      max: (maxValueNum - distanceToEdge.y.max) / 2,
+    },
+  };
+  interface Content {
+    value: number;
+    textValue?: number;
+    text: string;
+    style: "low" | "high";
+  }
+  const lines = (): Content[] => {
     switch (props.curve.body.type) {
-      case CurveType.spread: return {
-        low: { value: xLength, text: t("X-axis length") },
-        high: { value: yLength, text: t("Y-axis length") },
-      };
-      case CurveType.height: return {
-        low: { value: utmClearance, text: t("Fully raise tool head") },
-        high: { value: gantryClearance, text: t("Gantry main beam") },
-      };
-      default: return {
-        low: { value: undefined, text: undefined },
-        high: { value: undefined, text: undefined },
-      };
+      case CurveType.spread:
+        return isUndefined(x) || isUndefined(y)
+          ? [
+            { value: yLength, text: t("Y-axis length"), style: "high" },
+            { value: xLength, text: t("X-axis length"), style: "high" },
+          ]
+          : [
+            {
+              value: distanceToEdge.x.min, textValue: edgeBleed.x.min,
+              text: t("X-min bleed"), style: "low"
+            },
+            {
+              value: distanceToEdge.y.min, textValue: edgeBleed.y.min,
+              text: t("Y-min bleed"), style: "low"
+            },
+            {
+              value: distanceToEdge.x.max, textValue: edgeBleed.x.max,
+              text: t("X-max bleed"), style: "high"
+            },
+            {
+              value: distanceToEdge.y.max, textValue: edgeBleed.y.max,
+              text: t("Y-max bleed"), style: "high"
+            },
+          ];
+      case CurveType.height: return [
+        { value: gantryClearance, text: t("Gantry main beam"), style: "high" },
+        { value: utmClearance, text: t("Fully raised tool head"), style: "low" },
+      ];
+      default: return [];
     }
   };
-  const { low, high } = lines();
   const text = props.curve.body.type == CurveType.spread
     ? t("Plant may spread beyond the growing area")
     : t("Plant may exceed the distance between the soil and FarmBot");
   const [hovered, setHovered] = React.useState(false);
   return <g id={"warning-lines"}>
-    {low.value &&
-      <line id={"low-line"} strokeDasharray={2}
+    {lines().map((line, index) =>
+      line.value &&
+      <line id={"low-line"} key={index}
+        strokeDasharray={line.style == "low" ? 2 : undefined}
         stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
-        x1={xZero} y1={normY(low.value)}
-        x2={svgXMax(props.curve.body.data)} y2={normY(low.value)} />}
-    {high.value &&
-      <line id={"high-line"}
-        stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
-        x1={xZero} y1={normY(high.value)}
-        x2={svgXMax(props.curve.body.data)} y2={normY(high.value)} />}
-    {Object.values(lines()).map((clearance, index) =>
+        x1={xZero} y1={normY(line.value)}
+        x2={svgXMax(props.curve.body.data)} y2={normY(line.value)} />)}
+    {lines().map((clearance, index) =>
       clearance.value &&
       <text id={"warning-icon"} key={index}
         onMouseEnter={() => setHovered(true)}
@@ -294,7 +360,7 @@ const WarningLines = (props: WarningLinesProps) => {
         x={-5} y={normY(clearance.value)}>!</text>)}
     {hovered && <g id={"warning-content"}
       fontSize={5} fill={Color.offWhite}>
-      <rect x={0} y={0} width={X_MAX * 0.75} height={Y_MAX * 0.4}
+      <rect x={0} y={0} width={X_MAX * 0.75} height={Y_MAX * 0.45}
         fill={Color.darkGray} />
       <text x={5} y={10} fontWeight={"bold"}>
         {text.split(" ").slice(0, 5).join(" ")}
@@ -302,8 +368,12 @@ const WarningLines = (props: WarningLinesProps) => {
       <text x={5} y={15} fontWeight={"bold"}>
         {text.split(" ").slice(5).join(" ")}:
       </text>
-      <text x={5} y={25}>{high.text}: {high.value}mm</text>
-      <text x={5} y={30}>{low.text}: {low.value}mm</text>
+      {lines().map((line, index) => {
+        const value = line.textValue || line.value;
+        return value > 0 && <text key={index} x={5} y={25 + index * 5}>
+          {line.text}: {value}mm
+        </text>;
+      })}
     </g>}
   </g>;
 };

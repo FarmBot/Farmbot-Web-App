@@ -1,4 +1,6 @@
-import { TaggedCurve, TaggedPlantPointer } from "farmbot";
+import {
+  TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer, TaggedPlantPointer,
+} from "farmbot";
 import { SourceFbosConfig } from "../devices/interfaces";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { CurvesPanelState } from "../interfaces";
@@ -39,6 +41,10 @@ export interface CurveSvgProps {
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
   editable: boolean;
+  x?: number;
+  y?: number;
+  farmwareEnvs?: TaggedFarmwareEnv[];
+  soilHeightPoints?: TaggedGenericPointer[];
 }
 
 export interface CurveInfoProps {
@@ -50,6 +56,8 @@ export interface CurveInfoProps {
   updatePlant?: UpdatePlant;
   plant?: FormattedPlantInfo;
   curves: TaggedCurve[];
+  farmwareEnvs?: TaggedFarmwareEnv[];
+  soilHeightPoints?: TaggedGenericPointer[];
 }
 
 export interface AllCurveInfoProps {
@@ -68,6 +76,8 @@ export interface EditableAllCurveInfoProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
+  farmwareEnvs: TaggedFarmwareEnv[];
+  soilHeightPoints: TaggedGenericPointer[];
 }
 
 export interface PlotTools {
@@ -130,4 +140,8 @@ export interface WarningLinesProps {
   plotTools: PlotTools;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
+  x?: number;
+  y?: number;
+  farmwareEnvs?: TaggedFarmwareEnv[];
+  soilHeightPoints?: TaggedGenericPointer[];
 }

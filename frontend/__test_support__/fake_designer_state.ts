@@ -13,6 +13,7 @@ export const fakeDesignerState = (): DesignerState => ({
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
+  hoveredSpread: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,

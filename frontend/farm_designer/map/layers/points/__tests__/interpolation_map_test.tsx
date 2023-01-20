@@ -11,6 +11,7 @@ import {
   InterpolationOption,
   InterpolationSetting,
   InterpolationSettingProps,
+  getZAtLocation,
 } from "../interpolation_map";
 
 describe("getInterpolationData()", () => {
@@ -90,6 +91,25 @@ describe("fetchInterpolationOptions()", () => {
 
   it("fetches default options", () => {
     expect(fetchInterpolationOptions([])).toEqual(DEFAULT_INTERPOLATION_OPTIONS);
+  });
+});
+
+describe("getZAtLocation()", () => {
+  it("returns z", () => {
+    const env1 = fakeFarmwareEnv();
+    env1.body.key = InterpolationOption.useNearest;
+    env1.body.value = "1";
+    const farmwareEnvs = [env1];
+    const point0 = fakePoint();
+    point0.body.x = 0;
+    point0.body.y = 0;
+    point0.body.z = 0;
+    const point1 = fakePoint();
+    point1.body.x = 100;
+    point1.body.y = 100;
+    point1.body.z = 100;
+    const points = [point0, point1];
+    expect(getZAtLocation({ x: 60, y: 60, points, farmwareEnvs })).toEqual(100);
   });
 });
 

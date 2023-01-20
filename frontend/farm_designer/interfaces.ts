@@ -143,6 +143,7 @@ export interface DesignerState {
   selectionPointType: PointType[] | undefined;
   hoveredPlant: HoveredPlantPayl;
   hoveredPoint: string | undefined;
+  hoveredSpread: number | undefined;
   hoveredPlantListItem: string | undefined;
   hoveredToolSlot: string | undefined;
   hoveredSensorReading: string | undefined;

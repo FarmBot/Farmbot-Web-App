@@ -66,6 +66,15 @@ describe("designer reducer", () => {
     });
   });
 
+  it("sets hovered spread", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.TOGGLE_HOVERED_SPREAD,
+      payload: 100,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredSpread).toEqual(100);
+  });
+
   it("sets hovered plant list item", () => {
     const action: ReduxAction<string> = {
       type: Actions.HOVER_PLANT_LIST_ITEM,

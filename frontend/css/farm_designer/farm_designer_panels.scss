@@ -2519,13 +2519,37 @@ li {
       margin-left: 1.25rem;
     }
   }
+  .section-header {
+    .fb-button {
+      margin-top: 0.75rem;
+    }
+    .fa-caret-up,
+    .fa-caret-down {
+      line-height: 3.75rem;
+      margin-top: 0 !important;
+    }
+  }
 }
 
 .crop-curve-info {
+  .bp4-collapse {
+    padding-top: 0.5rem;
+  }
   .header {
     display: flex;
     position: relative;
     height: 4rem;
+    cursor: pointer;
+    margin-left: -1rem;
+    padding-left: 1rem;
+    margin-right: -1rem;
+    padding-right: 1rem;
+    &:hover {
+      background: $light_gray;
+    }
+    label {
+      cursor: pointer;
+    }
   }
   p {
     line-height: 4rem;
@@ -2536,8 +2560,27 @@ li {
   }
   i {
     position: absolute;
-    right: 0;
+    right: 2rem;
     line-height: 4rem;
+  }
+  .active-curve-name {
+    position: relative;
+    height: 4rem;
+    line-height: 3rem;
+    a {
+      position: absolute;
+      top: -0.25rem;
+      left: 5rem;
+    }
+    .filter-search {
+      width: 90%;
+      float: right;
+    }
+    p {
+      width: 90%;
+      line-height: 3rem;
+      float: right;
+    }
   }
 }
 
