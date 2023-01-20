@@ -1,4 +1,4 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 22.04 Machine
+# How to install FarmBot Web API on a Fresh Ubuntu 22.10 Machine
 
 # IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
 # longterm support to self-hosted users. If you have never administered a
@@ -26,7 +26,7 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 sudo docker run hello-world # Should run!
 # Install docker-compose
 sudo mkdir -p /usr/local/lib/docker/cli-plugins
-sudo curl -SL "https://github.com/docker/compose/releases/download/v2.6.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo curl -SL "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 sudo docker compose version # test installation
 
