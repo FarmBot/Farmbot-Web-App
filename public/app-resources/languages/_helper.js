@@ -132,8 +132,7 @@ function generateMetrics() {
     markdown += " before the commands.\nFor example, `sudo docker compose";
     markdown += " run web npm run translation-check`._\n\n";
     markdown += "See the [README](https://github.com/FarmBot/Farmbot-Web-App";
-    markdown += "#translating-the-web-app-into-your-language) for contribution";
-    markdown += " instructions.\n\n";
+    markdown += "#translating-the-web-app) for contribution instructions.\n\n";
     markdown += "Total number of phrases identified by the language helper";
     markdown += " for translation: __" + metrics[0].current + "__\n\n";
     markdown += "|Language|Percent translated";
