@@ -24,7 +24,7 @@ Hosting your own server requires an understanding of how Ruby on Rails applicati
 
 ## Local setup
 
-We provide example setup instructions for software developers running Ubuntu [here](https://github.com/FarmBot/Farmbot-Web-App/blob/main/ubuntu_example.sh).
+We recommend all self hosted installations be installed on a fresh Ubuntu server using the instructions provided in [ubuntu_example.sh](https://github.com/FarmBot/Farmbot-Web-App/blob/main/ubuntu_example.sh). These instructions are reguarly checked and updated to ensure they work. **At this time we cannot provide assistance for running the web app in different environments.**
 
 If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use [my.farm.bot](https://my.farm.bot).* Running a self-hosted server is not easy!
 
