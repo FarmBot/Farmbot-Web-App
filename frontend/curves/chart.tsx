@@ -17,10 +17,12 @@ import {
   getZAtLocation,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { Actions } from "../constants";
+import { Path } from "../internal_urls";
 
 const X_MAX = 120;
 const svgXMax = (data: Curve["data"]) => X_MAX + 25 + 1.5 * X_MAX / maxDay(data);
-const Y_MAX = 100;
+const Y_MAX = 70;
+const svgYMax = () => Y_MAX / (Path.startsWith(Path.plants()) ? 2 : 1);
 
 /** Plot x value normalized to plot extents. */
 const normDay = (data: Curve["data"]) => (day: string | number) =>
@@ -28,10 +30,10 @@ const normDay = (data: Curve["data"]) => (day: string | number) =>
 
 /** Plot y value normalized to plot extents. */
 const normValue = (data: Curve["data"]) => (value: number) =>
-  round(Y_MAX - parseInt("" + value) / maxValue(data) * Y_MAX, 2);
+  round(svgYMax() - parseInt("" + value) / maxValue(data) * svgYMax(), 2);
 
 export const CurveSvg = (props: CurveSvgProps) => {
-  const { curve, dispatch, editable } = props;
+  const { curve, dispatch, editable, hovered, setHovered } = props;
   const { data } = curve.body;
   const normX = normDay(data);
   const normY = normValue(data);
@@ -44,19 +46,18 @@ export const CurveSvg = (props: CurveSvgProps) => {
     yZero: normY(0),
   };
   const commonProps = { curve, plotTools };
-  const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   const [dragging, setDragging] = React.useState<string | undefined>(undefined);
   const showHoverEffect = (day: string | undefined) =>
     dragging == day || (!dragging && hovered == day);
   return <svg width={"100%"} height={"100%"}
-    viewBox={`-15 -10 ${svgXMax(data)} ${Y_MAX + 30}`}
+    viewBox={`-15 -10 ${svgXMax(data)} ${svgYMax() + 30}`}
     style={dragging ? { cursor: "grabbing" } : {}}
     onMouseUp={() => setDragging(undefined)}
     onMouseLeave={() => setDragging(undefined)}
     onMouseMove={e => {
       if (!dragging) { return; }
       const newValue = data[parseInt(dragging)]
-        - round(e.movementY * maxValue(data) / Y_MAX / 3);
+        - round(e.movementY * maxValue(data) / svgYMax() / 3);
       const value = newValue < 0 ? 0 : newValue;
       dispatch(editCurve(curve, {
         data: {
@@ -224,7 +225,8 @@ const XAxis = (props: XAxisProps) => {
   const dayLabels = [1].concat(range(step, lastLabel + 1, step));
   return <g id={"x-axis"}>
     <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.darkGray}>
-      {dayLabels.map(day => <text key={day} x={normX(day)} y={108}>{day}</text>)}
+      {dayLabels.map(day =>
+        <text key={day} x={normX(day)} y={yZero + 10}>{day}</text>)}
     </g>
     <line id={"y-axis-vertical-line"}
       stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
@@ -232,7 +234,7 @@ const XAxis = (props: XAxisProps) => {
     <text id={"x-axis-label"}
       fontSize={5} textAnchor={"middle"}
       fill={Color.darkGray} fontWeight={"bold"}
-      x={xMax / 2} y={115}>
+      x={xMax / 2} y={yZero + 18}>
       {t("DAY")}
     </text>
   </g>;
@@ -278,8 +280,8 @@ const WarningLines = (props: WarningLinesProps) => {
   });
   const soilHeight = locationSoilHeight
     || props.sourceFbosConfig("soil_height").value as number;
-  const utmClearance = soilHeight;
-  const gantryClearance = soilHeight + gantryHeight;
+  const utmClearance = Math.abs(soilHeight);
+  const gantryClearance = utmClearance + gantryHeight;
   const xLength = props.botSize.x.value;
   const yLength = props.botSize.y.value;
   const xPosition = x || (xLength / 2);
@@ -357,20 +359,21 @@ const WarningLines = (props: WarningLinesProps) => {
         onMouseLeave={() => setHovered(false)}
         fontSize={5} textAnchor={"end"}
         fill={Color.darkOrange} fontWeight={"bold"}
-        x={-5} y={normY(clearance.value)}>!</text>)}
+        x={-5} y={normY(clearance.value)}>⚠</text>)}
     {hovered && <g id={"warning-content"}
       fontSize={5} fill={Color.offWhite}>
-      <rect x={0} y={0} width={X_MAX * 0.75} height={Y_MAX * 0.45}
+      <rect x={0} y={0} width={X_MAX * 0.75}
+        height={svgYMax() * (Path.startsWith(Path.plants()) ? 0.95 : 0.45)}
         fill={Color.darkGray} />
-      <text x={5} y={10} fontWeight={"bold"}>
+      <text x={5} y={5} fontWeight={"bold"}>
         {text.split(" ").slice(0, 5).join(" ")}
       </text>
-      <text x={5} y={15} fontWeight={"bold"}>
+      <text x={5} y={10} fontWeight={"bold"}>
         {text.split(" ").slice(5).join(" ")}:
       </text>
       {lines().map((line, index) => {
         const value = line.textValue || line.value;
-        return value > 0 && <text key={index} x={5} y={25 + index * 5}>
+        return value > 0 && <text key={index} x={5} y={15 + index * 5}>
           {line.text}: {value}mm
         </text>;
       })}

@@ -16,7 +16,8 @@ import { resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
 import {
-  fakeFolder, fakeSequence,
+  fakeCurve,
+  fakeFolder, fakePlant, fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 
 describe("resource reducer", () => {
@@ -127,6 +128,30 @@ describe("resource reducer", () => {
     resourceReducer(startingState, action);
     expect(console.error).toHaveBeenCalledWith(
       "Unknown is not an indexed resource.");
+  });
+
+  it("adds point to curve usage lookup", () => {
+    const otherCurve = fakeCurve();
+    otherCurve.body.id = 1;
+    const waterCurve = fakeCurve();
+    waterCurve.body.id = 2;
+    const spreadCurve = fakeCurve();
+    spreadCurve.body.id = 3;
+    const heightCurve = fakeCurve();
+    heightCurve.body.id = 4;
+    const plant = fakePlant();
+    plant.body.water_curve_id = waterCurve.body.id;
+    plant.body.spread_curve_id = spreadCurve.body.id;
+    plant.body.height_curve_id = heightCurve.body.id;
+    const startingState = buildResourceIndex([
+      otherCurve, waterCurve, spreadCurve, heightCurve,
+    ]);
+    const action = { type: Actions.INIT_RESOURCE, payload: plant };
+    const newState = resourceReducer(startingState, action);
+    expect(newState.index.inUse["Curve.Point"][waterCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][spreadCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][heightCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][otherCurve.uuid]).toBeFalsy();
   });
 
   it("covers destroy resource branches", () => {

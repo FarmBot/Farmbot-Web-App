@@ -15,7 +15,7 @@ import { resourceReady } from "../../sync/actions";
 
 describe("resourceUsageList", () => {
   it("Converts `UsageIndex` type Into Record<UUID, boolean>", () => {
-    const x = {
+    const usageIndex: UsageIndex = {
       "Regimen.FarmEvent": {
         "FarmEvent.0.0": { "Regimen.2.2": true, "Regimen.1.1": true }
       },
@@ -30,13 +30,17 @@ describe("resourceUsageList", () => {
       },
       "Sequence.FbosConfig": { "Sequence.12.12": { "FbosConfig.13.13": true } },
       "Sequence.PinBinding": { "Sequence.14.14": { "PinBinding.15.15": true } },
+      "Curve.Point": {
+        "Point.1.1": { "Curve.2.2": true, "Curve.3.3": true }
+      },
     };
-    const actual = Object.keys(resourceUsageList(x)).sort();
+    const actual = Object.keys(resourceUsageList(usageIndex)).sort();
     const expected = [
       "FarmEvent.0.0", "FarmEvent.3.3",
       "Regimen.6.6", "Regimen.9.9",
       "Sequence.12.12",
       "Sequence.14.14",
+      "Point.1.1",
     ].sort();
     expect(actual.length).toEqual(expected.length);
     expected.map(y => expect(actual).toContain(y));

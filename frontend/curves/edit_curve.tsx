@@ -21,10 +21,12 @@ import {
   maxValue, dataFull,
 } from "./data_actions";
 import {
-  ActionMenuProps, EditCurveProps, EditCurveState, PercentChangeProps,
+  ActionMenuProps, CurveDataTableRowProps, EditCurveProps, EditCurveState,
+  PercentChangeProps,
   ValueInputProps,
 } from "./interfaces";
 import {
+  curveColor,
   curvePanelColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
   DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
 } from "./templates";
@@ -32,6 +34,8 @@ import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { botSize } from "../farm_designer/state_to_props";
+import { resourceUsageList } from "../resources/in_use";
+import { error } from "../toast/toast";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -50,11 +54,12 @@ export const mapStateToProps = (props: Everything): EditCurveProps => {
       validFbosConfig(getFbosConfig(props.resources.index)),
       props.bot.hardware.configuration),
     botSize: botSize(props),
+    resourceUsage: resourceUsageList(props.resources.index.inUse),
   };
 };
 
 export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState> {
-  state: EditCurveState = { templates: false, scale: false };
+  state: EditCurveState = { templates: false, scale: false, hovered: undefined };
 
   get stringyID() { return Path.getSlug(Path.curves()); }
   get curve() {
@@ -66,9 +71,12 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
   toggle = (key: keyof EditCurveState) => () =>
     this.setState({ ...this.state, [key]: !this.state[key] });
 
+  setHovered = (hovered: string | undefined) => this.setState({ hovered });
+
   render() {
-    const { curve } = this;
+    const { curve, setHovered } = this;
     const { dispatch } = this.props;
+    const { hovered } = this.state;
     const curvesPath = Path.curves();
     !curve && Path.startsWith(curvesPath) && push(curvesPath);
     return <DesignerPanel panelName={"curve-info"} panel={Panel.Curves}>
@@ -90,7 +98,9 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
           {curve &&
             <i className={"fa fa-trash"}
               title={t("Delete curve")}
-              onClick={() => dispatch(destroy(curve.uuid))} />}
+              onClick={() => this.props.resourceUsage[curve.uuid]
+                ? error(t("Curve in use."))
+                : dispatch(destroy(curve.uuid))} />}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"curve-info"}>
@@ -117,6 +127,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <CurveSvg dispatch={dispatch} curve={curve}
               sourceFbosConfig={this.props.sourceFbosConfig}
               botSize={this.props.botSize}
+              hovered={hovered} setHovered={setHovered}
               editable={true} />
             <p className={"full-indicator"}>
               {dataFull(curve.body.data)
@@ -135,7 +146,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               </thead>
               <tbody>
                 {Object.entries(populatedData(curve.body.data))
-                  .map(curveDataTableRow(curve, dispatch))}
+                  .map(curveDataTableRow({ curve, dispatch, hovered, setHovered }))}
               </tbody>
             </table>
           </div>
@@ -241,10 +252,13 @@ export const copyCurve = (curve: TaggedCurve, dispatch: Function) => () => {
     .catch(() => { });
 };
 
-export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
+export const curveDataTableRow = (props: CurveDataTableRowProps) =>
   ([day, value]: [string, number], index: number) => {
+    const { dispatch, curve, hovered, setHovered } = props;
     const active = inData(curve.body.data, day);
-    return <tr key={day}>
+    return <tr key={day} className={hovered == day ? "hovered" : ""}
+      onMouseEnter={() => setHovered(day)}
+      onMouseLeave={() => setHovered(undefined)}>
       <td className={active ? "active" : ""}>
         <p>{day}</p>
         <button
@@ -253,6 +267,7 @@ export const curveDataTableRow = (curve: TaggedCurve, dispatch: Function) =>
             active ? "active" : "",
             dataFull(curve.body.data) ? "full" : "",
           ].join(" ")}
+          style={active ? { background: curveColor(curve) } : {}}
           onClick={() => {
             dispatch(editCurve(curve, {
               data: addOrRemoveItem(curve.body.data, day, value),

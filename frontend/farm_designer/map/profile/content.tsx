@@ -28,13 +28,14 @@ import { BotTrail } from "../layers/farmbot/bot_trail";
 /** Profile lines drawn through points of the same color in the selected region. */
 export const ProfileSvg = (props: ProfileSvgProps) => {
   const { expanded, mapTransformProps, tools, position, getConfigValue } = props;
-  const lineAxis = props.axis;
+  const lineAxis = props.designer.profileAxis;
+  const selectionWidth = props.designer.profileWidth;
   const profileAxis = lineAxis == "x" ? "y" : "x";
   const profilePoints = selectPoints({
     allPoints: props.allPoints,
     axis: lineAxis,
     position: position,
-    selectionWidth: props.selectionWidth,
+    selectionWidth,
     botPositionX: props.botLocationData.position.x,
   });
   const byColor = groupByColor(profilePoints, profileAxis);
@@ -63,7 +64,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     {expanded && getConfigValue(BooleanSetting.show_soil_interpolation_map) &&
       <InterpolatedSoil axis={lineAxis} getX={getX}
         farmwareEnvs={props.farmwareEnvs}
-        position={position} selectionWidth={props.selectionWidth} />}
+        position={position} selectionWidth={selectionWidth} />}
     <LabeledHorizontalLine id={"soil-height"} label={t("soil")}
       profileHeight={height} color={Color.gridSoil}
       y={soilHeight} width={width} expanded={expanded} />
@@ -79,6 +80,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
           if (index == 0) {
             return expanded
               ? <DrawPoint key={point.uuid} getX={getX} point={point}
+                designer={props.designer}
                 soilHeight={soilHeight} tools={tools} profileAxis={profileAxis}
                 reversed={reversed} getConfigValue={getConfigValue} />
               : <g id={"not-expanded-singular-point"} key={point.uuid} />;
@@ -94,6 +96,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
                 x1={getX(prev.body)} y1={Math.abs(prev.body.z)}
                 x2={getX(point.body)} y2={Math.abs(point.body.z)} />}
             {expanded && <DrawPoint point={point} getX={getX} tools={tools}
+              designer={props.designer}
               soilHeight={soilHeight} profileAxis={profileAxis}
               reversed={reversed} getConfigValue={getConfigValue} />}
           </g>;
@@ -101,7 +104,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
       </g>)}
     {getConfigValue(BooleanSetting.show_farmbot) &&
       <UTMProfile profileAxis={profileAxis} expanded={expanded} getX={getX}
-        position={position} selectionWidth={props.selectionWidth}
+        position={position} selectionWidth={selectionWidth}
         mountedToolInfo={props.mountedToolInfo} reversed={reversed}
         botPosition={props.botLocationData.position} profileWidth={width}
         gantryHeight={gantryHeight} />}
@@ -111,7 +114,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
         position={{ x: undefined, y: undefined, z: undefined }}
         getX={getX}
         profileAxis={lineAxis}
-        selectionWidth={props.selectionWidth}
+        selectionWidth={selectionWidth}
         profilePosition={position}
         missedSteps={props.botLocationData.load}
         displayMissedSteps={
@@ -169,6 +172,7 @@ const DrawPoint = (props: ProfilePointProps) => {
   const { point, tools } = props;
   return <g id={"profile-point"}>
     <PointGraphic point={point} getX={props.getX} tools={tools}
+      designer={props.designer}
       soilHeight={props.soilHeight} profileAxis={props.profileAxis}
       reversed={props.reversed} getConfigValue={props.getConfigValue} />
   </g>;

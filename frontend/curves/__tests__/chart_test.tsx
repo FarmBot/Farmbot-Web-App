@@ -2,6 +2,13 @@ jest.mock("../edit_curve", () => ({
   editCurve: jest.fn(),
 }));
 
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.curves(1));
+jest.mock("../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn(),
+}));
+
 import { mount } from "enzyme";
 import React from "react";
 import { Actions } from "../../constants";
@@ -21,6 +28,8 @@ describe("<CurveSvg />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     botSize: fakeBotSize(),
     editable: true,
+    hovered: undefined,
+    setHovered: jest.fn(),
   });
 
   it("renders chart", () => {
@@ -28,7 +37,7 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(22);
-    expect(wrapper.text()).not.toContain("!");
+    expect(wrapper.text()).not.toContain("⚠");
     expect(wrapper.html()).toContain("row-resize");
     expect(wrapper.html()).not.toContain("not-allowed");
   });
@@ -64,11 +73,17 @@ describe("<CurveSvg />", () => {
     p.editable = true;
     p.curve.body.type = "water";
     p.curve.body.data = TEST_DATA;
-    const wrapper = mount(<CurveSvg {...p} />);
+    const wrapper = mount<CurveSvgProps>(<CurveSvg {...p} />);
     expect(wrapper.text()).not.toContain("Day 1: 0 mL");
     wrapper.find("rect").at(1).simulate("mouseEnter");
+    expect(p.setHovered).toHaveBeenCalledWith("1");
+    p.hovered = "1";
+    wrapper.setProps(p);
     expect(wrapper.text()).toContain("Day 1: 0 mL");
     wrapper.find("rect").at(1).simulate("mouseLeave");
+    expect(p.setHovered).toHaveBeenCalledWith(undefined);
+    p.hovered = undefined;
+    wrapper.setProps(p);
     expect(wrapper.text()).not.toContain("Day 1: 0 mL");
   });
 
@@ -77,14 +92,20 @@ describe("<CurveSvg />", () => {
     p.editable = false;
     p.curve.body.type = "spread";
     p.curve.body.data = TEST_DATA;
-    const wrapper = mount(<CurveSvg {...p} />);
+    const wrapper = mount<CurveSvgProps>(<CurveSvg {...p} />);
     expect(wrapper.text()).not.toContain("Day 101+: 1000 mm");
     wrapper.find("rect").last().simulate("mouseEnter");
+    expect(p.setHovered).toHaveBeenCalledWith("101");
+    p.hovered = "101";
+    wrapper.setProps(p);
     expect(wrapper.text()).toContain("Day 101+: 1000 mm");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_SPREAD, payload: 1000,
     });
     wrapper.find("rect").last().simulate("mouseLeave");
+    expect(p.setHovered).toHaveBeenCalledWith(undefined);
+    p.hovered = undefined;
+    wrapper.setProps(p);
     expect(wrapper.text()).not.toContain("Day 101+: 1000 mm");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_SPREAD, payload: undefined,
@@ -98,7 +119,7 @@ describe("<CurveSvg />", () => {
     wrapper.find("circle").first().simulate("mouseDown");
     wrapper.find("svg").first().simulate("mouseMove", { movementY: -1 });
     expect(editCurve).toHaveBeenCalledWith(p.curve,
-      { data: { 1: 3, 10: 10, 50: 500, 100: 1000 } });
+      { data: { 1: 5, 10: 10, 50: 500, 100: 1000 } });
     wrapper.find("svg").first().simulate("mouseUp");
     wrapper.find("svg").first().simulate("mouseLeave");
   });
@@ -142,7 +163,7 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(24);
-    expect(wrapper.text()).toContain("!");
+    expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("spread beyond");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
@@ -170,7 +191,7 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(26);
-    expect(wrapper.text()).toContain("!");
+    expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("spread beyond");
     expect(wrapper.text()).toContain("bleed");
@@ -184,9 +205,25 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(24);
-    expect(wrapper.text()).toContain("!");
+    expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("exceed the distance");
+    expect(wrapper.find("rect").last().props().height).toEqual(31.5);
+    wrapper.find("#warning-icon").first().simulate("mouseLeave");
+  });
+
+  it("shows warning lines: height in plants panels", () => {
+    mockPath = Path.mock(Path.cropSearch());
+    const p = fakeProps();
+    p.curve.body.type = "height";
+    p.sourceFbosConfig = () => ({ value: 100, consistent: true });
+    p.curve.body.data = TEST_DATA;
+    const wrapper = mount(<CurveSvg {...p} />);
+    expect(wrapper.find("text").length).toEqual(24);
+    expect(wrapper.text()).toContain("⚠");
+    wrapper.find("#warning-icon").first().simulate("mouseEnter");
+    expect(wrapper.text()).toContain("exceed the distance");
+    expect(wrapper.find("rect").last().props().height).toEqual(33.25);
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 });

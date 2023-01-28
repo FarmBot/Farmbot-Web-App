@@ -22,7 +22,9 @@ import {
   ScaleMenu,
   TemplatesMenu,
 } from "../edit_curve";
-import { ActionMenuProps, EditCurveProps } from "../interfaces";
+import {
+  ActionMenuProps, CurveDataTableRowProps, EditCurveProps,
+} from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeCurve } from "../../__test_support__/fake_state/resources";
 import {
@@ -33,6 +35,7 @@ import { push } from "../../history";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
+import { error } from "../../toast/toast";
 
 describe("<EditCurve />", () => {
   const fakeProps = (): EditCurveProps => ({
@@ -40,6 +43,7 @@ describe("<EditCurve />", () => {
     findCurve: () => undefined,
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     botSize: fakeBotSize(),
+    resourceUsage: {},
   });
 
   it("redirects", () => {
@@ -102,6 +106,16 @@ describe("<EditCurve />", () => {
     expect(wrapper.text().toLowerCase()).toContain("volume");
   });
 
+  it("sets hovered state", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    p.findCurve = () => fakeCurve();
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    expect(wrapper.state().hovered).toEqual(undefined);
+    wrapper.instance().setHovered("1");
+    expect(wrapper.state().hovered).toEqual("1");
+  });
+
   it("deletes curve", () => {
     mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
@@ -110,6 +124,18 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(curve.uuid);
+  });
+
+  it("handles curve in use", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    const curve = fakeCurve();
+    p.findCurve = () => curve;
+    p.resourceUsage = { [curve.uuid]: true };
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
+    expect(destroy).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Curve in use.");
   });
 
   it("renders spread", () => {
@@ -149,25 +175,32 @@ describe("copyCurve()", () => {
 });
 
 describe("curveDataTableRow()", () => {
+  const fakeProps = (): CurveDataTableRowProps => ({
+    dispatch: mockDispatch(),
+    curve: fakeCurve(),
+    hovered: undefined,
+    setHovered: jest.fn(),
+  });
+
   it("renders percents", () => {
-    const curve = fakeCurve();
-    curve.body.type = "height";
-    curve.body.data = { 1: 1, 2: 5, 3: 1, 4: 2 };
+    const p = fakeProps();
+    p.curve.body.type = "height";
+    p.curve.body.data = { 1: 1, 2: 5, 3: 1, 4: 2 };
     const wrapper = mount(<table><tbody>
-      {Object.entries(curve.body.data).map((x, i) =>
-        curveDataTableRow(curve, mockDispatch())(x, i))}
+      {Object.entries(p.curve.body.data).map((x, i) =>
+        curveDataTableRow(p)(x, i))}
     </tbody></table>);
     expect(wrapper.text()).toEqual("1-2+400%3-80%4+100%");
   });
 
   it("sets row as active", () => {
-    const curve = fakeCurve();
-    curve.body.data = { 1: 0, 5: 5 };
+    const p = fakeProps();
+    p.curve.body.data = { 1: 0, 5: 5 };
     const wrapper = mount(<table><tbody>
-      {curveDataTableRow(curve, mockDispatch())(["3", 3], 0)}
+      {curveDataTableRow(p)(["3", 3], 0)}
     </tbody></table>);
     wrapper.find("button").first().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(curve, {
+    expect(overwrite).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "water",
       data: { 1: 0, 3: 3, 5: 5 },
@@ -175,18 +208,38 @@ describe("curveDataTableRow()", () => {
   });
 
   it("changes value", () => {
-    const curve = fakeCurve();
-    curve.body.type = "height";
-    curve.body.data = { 1: 0, 5: 5, 10: 1 };
+    const p = fakeProps();
+    p.curve.body.type = "height";
+    p.curve.body.data = { 1: 0, 5: 5, 10: 1 };
     const wrapper = mount(<table><tbody>
-      {curveDataTableRow(curve, mockDispatch())(["5", 5], 0)}
+      {curveDataTableRow(p)(["5", 5], 0)}
     </tbody></table>);
     changeBlurableInput(wrapper, "6", 0);
-    expect(overwrite).toHaveBeenCalledWith(curve, {
+    expect(overwrite).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "height",
       data: { 1: 0, 5: 6, 10: 1 },
     });
+  });
+
+  it("hovers row", () => {
+    const p = fakeProps();
+    const wrapper = mount(<table><tbody>
+      {curveDataTableRow(p)(["5", 5], 0)}
+    </tbody></table>);
+    wrapper.find("tr").first().simulate("mouseEnter");
+    expect(p.setHovered).toHaveBeenCalledWith("5");
+    wrapper.find("tr").first().simulate("mouseLeave");
+    expect(p.setHovered).toHaveBeenCalledWith(undefined);
+  });
+
+  it("has hover styling", () => {
+    const p = fakeProps();
+    p.hovered = "5";
+    const wrapper = mount(<table><tbody>
+      {curveDataTableRow(p)(["5", 5], 0)}
+    </tbody></table>);
+    expect(wrapper.find("tr").hasClass("hovered")).toBeTruthy();
   });
 });
 

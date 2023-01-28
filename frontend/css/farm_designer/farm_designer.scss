@@ -1094,13 +1094,20 @@
   position: fixed;
   bottom: 0;
   z-index: 2;
-  width: 100%;
+  width: calc(100% - 450px);
   background: #e5e5e5;
   transition: transform 0.5s ease-out;
   box-shadow: 0 0 1px rgba(0, 0, 0, .3);
-  transform: translateY(10rem);
+  transform: translateY(10rem) translateX(450px);
+  &.panel-closed {
+    width: 100%;
+    transform: translateY(10rem);
+  }
   &.none-chosen {
-    transform: translateY(21rem);
+    transform: translateY(21rem) translateX(450px);
+    &.panel-closed {
+      transform: translateY(21rem);
+    }
   }
   @media screen and (max-width: 450px) {
     &.panel-open {
@@ -1108,7 +1115,10 @@
     }
   }
   &.open {
-    transform: translateY(0);
+    transform: translateY(0) translateX(450px);
+    &.panel-closed {
+      transform: translateY(0);
+    }
     .profile-button {
       i {
         line-height: 6rem;

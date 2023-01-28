@@ -26,6 +26,7 @@ describe("<ProfileLine />", () => {
   it("renders when viewer is open: follow", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
+    p.designer.profileAxis = "x";
     p.designer.profileFollowBot = true;
     p.botPosition = { x: 1, y: 2, z: 3 };
     const wrapper = svgMount(<ProfileLine {...p} />);
@@ -37,6 +38,7 @@ describe("<ProfileLine />", () => {
   it("renders when viewer is open: follow (map rotated)", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
+    p.designer.profileAxis = "x";
     p.designer.profileFollowBot = true;
     p.mapTransformProps.xySwap = true;
     p.botPosition = { x: 1, y: 2, z: 3 };
@@ -49,6 +51,7 @@ describe("<ProfileLine />", () => {
   it("renders when viewer is open: x-axis = 2000", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
+    p.designer.profileAxis = "x";
     p.designer.profilePosition = { x: 2000, y: 1000 };
     const wrapper = svgMount(<ProfileLine {...p} />);
     expect(wrapper.find("rect").props()).toEqual({

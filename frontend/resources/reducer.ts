@@ -87,7 +87,8 @@ export const emptyState = (): RestResources => {
         "Sequence.Regimen": {},
         "Sequence.Sequence": {},
         "Sequence.PinBinding": {},
-        "Sequence.FbosConfig": {}
+        "Sequence.FbosConfig": {},
+        "Curve.Point": {},
       },
       sequenceFolders: {
         localMetaAttributes: {},

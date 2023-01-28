@@ -13,6 +13,7 @@ jest.mock("../actions", () => ({ selectSequence: jest.fn() }));
 
 jest.mock("../../resources/selectors", () => ({
   selectAllSequences: jest.fn(() => mockData.fakeSequences || []),
+  selectAllPlantPointers: jest.fn(() => []),
   findUuid: jest.fn(),
 }));
 

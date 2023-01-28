@@ -6,6 +6,7 @@ import { BotSize } from "../farm_designer/map/interfaces";
 import { CurvesPanelState } from "../interfaces";
 import { FormattedPlantInfo } from "../plants/map_state_to_props";
 import { UpdatePlant } from "../plants/plant_info";
+import { UUID } from "../resources/interfaces";
 import { CurveType } from "./templates";
 
 export interface CurvesProps {
@@ -28,11 +29,13 @@ export interface EditCurveProps {
   findCurve(id: number): TaggedCurve | undefined;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
+  resourceUsage: Record<UUID, boolean | undefined>;
 }
 
 export interface EditCurveState {
   templates: boolean;
   scale: boolean;
+  hovered: string | undefined;
 }
 
 export interface CurveSvgProps {
@@ -41,6 +44,8 @@ export interface CurveSvgProps {
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
   editable: boolean;
+  hovered: string | undefined;
+  setHovered(day: string | undefined): void;
   x?: number;
   y?: number;
   farmwareEnvs?: TaggedFarmwareEnv[];
@@ -93,6 +98,13 @@ export interface ActionMenuProps {
   dispatch: Function;
   curve: TaggedCurve;
   click(): void;
+}
+
+export interface CurveDataTableRowProps {
+  dispatch: Function;
+  curve: TaggedCurve;
+  hovered: string | undefined;
+  setHovered(day: string | undefined): void;
 }
 
 export interface PercentChangeProps {

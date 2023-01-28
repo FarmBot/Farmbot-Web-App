@@ -404,6 +404,7 @@ export const EditableAllCurveInfo = (props: EditableAllCurveInfoProps) =>
 export const CurveInfo = (props: CurveInfoProps) => {
   const [open, setOpen] = React.useState(false);
   const { plant, updatePlant, curve } = props;
+  const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   return <div className={"crop-curve-info"}>
     <div className={"header"} onClick={() => setOpen(!open)}>
       {curve
@@ -436,6 +437,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
         farmwareEnvs={props.farmwareEnvs}
         soilHeightPoints={props.soilHeightPoints}
         sourceFbosConfig={props.sourceFbosConfig}
+        hovered={hovered} setHovered={setHovered}
         botSize={props.botSize} editable={false} />}
     </Collapse>
   </div>;
@@ -444,7 +446,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
 const curveToDdi = (curve: TaggedCurve): DropDownItem | undefined =>
   curve.body.id
     ? ({
-      label: curve.body.name,
+      label: `${curve.body.name} - ${curveInfo(curve)}`,
       value: curve.body.id,
       headingId: curve.body.type,
     })

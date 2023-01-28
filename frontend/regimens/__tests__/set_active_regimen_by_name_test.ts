@@ -1,4 +1,6 @@
-import { fakeRegimen } from "../../__test_support__/fake_state/resources";
+import {
+  fakeRegimen,
+} from "../../__test_support__/fake_state/resources";
 const mockData = {
   lastUrlChunk: "Set me",
   fakeRegimens: [fakeRegimen()]
@@ -13,6 +15,7 @@ jest.mock("../actions", () => ({ selectRegimen: jest.fn() }));
 
 jest.mock("../../resources/selectors", () => ({
   selectAllRegimens: jest.fn(() => mockData.fakeRegimens || []),
+  selectAllPlantPointers: jest.fn(() => []),
   findUuid: jest.fn(),
 }));
 

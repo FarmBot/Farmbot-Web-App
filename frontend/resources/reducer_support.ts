@@ -24,7 +24,7 @@ import {
   selectAllActivePoints,
   selectAllPointGroups,
 } from "./selectors_by_kind";
-import { findUuid } from "./selectors";
+import { findUuid, selectAllPlantPointers } from "./selectors";
 import {
   ExecutableType, PinBindingType,
 } from "farmbot/dist/resources/api_resources";
@@ -224,6 +224,30 @@ const reindexAllPointGroups = (i: ResourceIndex) => {
     pointsSelectedByGroup(pg, selectAllActivePoints(i)).length);
 };
 
+const reindexAllPoints = (i: ResourceIndex) => {
+  reindexAllPointGroups(i);
+  i.inUse["Curve.Point"] = {};
+  const tracker = i.inUse["Curve.Point"];
+  selectAllPlantPointers(i)
+    .map(p => {
+      if (p.body.water_curve_id) {
+        const curveUuid = findUuid(i, "Curve", p.body.water_curve_id);
+        tracker[curveUuid] = tracker[curveUuid] || {};
+        tracker[curveUuid][p.uuid] = true;
+      }
+      if (p.body.spread_curve_id) {
+        const curveUuid = findUuid(i, "Curve", p.body.spread_curve_id);
+        tracker[curveUuid] = tracker[curveUuid] || {};
+        tracker[curveUuid][p.uuid] = true;
+      }
+      if (p.body.height_curve_id) {
+        const curveUuid = findUuid(i, "Curve", p.body.height_curve_id);
+        tracker[curveUuid] = tracker[curveUuid] || {};
+        tracker[curveUuid][p.uuid] = true;
+      }
+    });
+};
+
 const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
@@ -324,7 +348,7 @@ const AFTER_HOOKS: IndexerHook = {
       });
   },
   PointGroup: reindexAllPointGroups,
-  Point: reindexAllPointGroups,
+  Point: reindexAllPoints,
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
   Regimen: (i) => {

@@ -2477,6 +2477,13 @@ li {
         padding-left: 1rem;
       }
     }
+    tr {
+      &.hovered {
+        border: 2px solid $gray;
+        border-top-width: 0;
+        border-bottom-width: 0;
+      }
+    }
   }
   .row-radio {
     width: 1.5rem;
@@ -2486,11 +2493,10 @@ li {
     margin-left: 1rem;
     margin-top: -0.25rem;
     &.active {
-      background: $blue;
       &.full {
-        background: $blue;
+        background: revert;
         border: revert;
-        cursor: revert;
+        cursor: pointer;
       }
     }
     &.full {

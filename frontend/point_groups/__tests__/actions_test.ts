@@ -8,6 +8,7 @@ let mockPointGroup = { body: { id: 323232332 } };
 jest.mock("../../resources/selectors", () => ({
   findPointGroup: jest.fn(() => mockPointGroup),
   selectAllRegimens: jest.fn(),
+  selectAllPlantPointers: jest.fn(() => []),
   findUuid: jest.fn(),
 }));
 
