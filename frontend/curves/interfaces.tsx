@@ -52,6 +52,10 @@ export interface CurveSvgProps {
   soilHeightPoints?: TaggedGenericPointer[];
 }
 
+export interface CurveIconProps {
+  curve: TaggedCurve;
+}
+
 export interface CurveInfoProps {
   curveType: CurveType;
   dispatch: Function;

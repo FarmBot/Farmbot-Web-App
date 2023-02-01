@@ -15,9 +15,9 @@ import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeCurve, fakePoint } from "../../__test_support__/fake_state/resources";
-import { CurveSvg } from "../chart";
+import { CurveIcon, CurveSvg } from "../chart";
 import { editCurve } from "../edit_curve";
-import { CurveSvgProps } from "../interfaces";
+import { CurveIconProps, CurveSvgProps } from "../interfaces";
 
 const TEST_DATA = { 1: 0, 10: 10, 50: 500, 100: 1000 };
 
@@ -225,5 +225,16 @@ describe("<CurveSvg />", () => {
     expect(wrapper.text()).toContain("exceed the distance");
     expect(wrapper.find("rect").last().props().height).toEqual(33.25);
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
+  });
+});
+
+describe("<CurveIcon />", () => {
+  const fakeProps = (): CurveIconProps => ({
+    curve: fakeCurve(),
+  });
+
+  it("renders curve icon", () => {
+    const wrapper = mount(<CurveIcon {...fakeProps()} />);
+    expect(wrapper.find("path").length).toEqual(2);
   });
 });

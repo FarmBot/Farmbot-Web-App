@@ -559,6 +559,8 @@ export class GardenMap extends
     visible={!!this.props.showPlants}
     mapTransformProps={this.mapTransformProps}
     plants={this.props.plants}
+    currentPlant={this.getPlant()}
+    hoveredSpread={this.props.designer.hoveredSpread}
     animate={this.animate} />;
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
@@ -595,6 +597,7 @@ export class GardenMap extends
     plants={this.props.plants}
     currentPlant={this.getPlant()}
     hoveredPlant={this.props.hoveredPlant}
+    hoveredSpread={this.props.designer.hoveredSpread}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
     boxSelected={this.props.designer.selectedPoints}
@@ -633,7 +636,6 @@ export class GardenMap extends
     currentPlant={this.getPlant()}
     designer={this.props.designer}
     hoveredPlant={this.props.hoveredPlant}
-    hoveredSpread={this.props.designer.hoveredSpread}
     dragging={!!this.state.isDragging}
     animate={this.animate} />;
   DragHelper = () => <ActivePlantDragHelper

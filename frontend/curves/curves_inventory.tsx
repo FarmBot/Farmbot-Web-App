@@ -23,6 +23,7 @@ import {
   CurveShape, CurveType, CURVE_TEMPLATES, DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
 } from "./templates";
 import { Curve } from "farmbot/dist/resources/api_resources";
+import { CurveIcon } from "./chart";
 
 export const mapStateToProps = (props: Everything): CurvesProps => ({
   dispatch: props.dispatch,
@@ -141,6 +142,7 @@ const CurveInventoryItem = (props: CurveInventoryItemProps) => {
   return <div
     onClick={props.onClick}
     className={"curve-search-item"}>
+    <CurveIcon curve={props.curve} />
     <span className={"curve-search-item-name"}>
       {props.curve.body.name}
     </span>

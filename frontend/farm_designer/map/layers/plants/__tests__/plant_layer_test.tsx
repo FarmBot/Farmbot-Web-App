@@ -32,6 +32,7 @@ describe("<PlantLayer />", () => {
     activeDragXY: { x: undefined, y: undefined, z: undefined },
     animate: true,
     hoveredPlant: undefined,
+    hoveredSpread: undefined,
     interactions: true,
   });
 

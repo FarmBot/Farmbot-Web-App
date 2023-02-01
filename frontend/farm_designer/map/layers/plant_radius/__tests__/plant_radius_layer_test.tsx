@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   PlantRadiusLayer, PlantRadiusLayerProps, PlantRadius, PlantRadiusProps,
 } from "../plant_radius_layer";
@@ -14,6 +14,8 @@ describe("<PlantRadiusLayer />", () => {
     mapTransformProps: fakeMapTransformProps(),
     animate: false,
     visible: true,
+    currentPlant: undefined,
+    hoveredSpread: undefined,
   });
 
   it("shows plant radius", () => {
@@ -36,6 +38,8 @@ describe("<PlantRadius />", () => {
     mapTransformProps: fakeMapTransformProps(),
     visible: true,
     animate: true,
+    currentPlant: undefined,
+    hoveredSpread: undefined,
   });
 
   it("renders plant radius", () => {
@@ -44,6 +48,14 @@ describe("<PlantRadius />", () => {
     expect(wrapper.find("circle").hasClass("animate")).toBeTruthy();
     expect(wrapper.find("circle").props().fill)
       .toEqual("url(#PlantRadiusGradient)");
+  });
+
+  it("renders hovered spread plant radius", () => {
+    const p = fakeProps();
+    p.hoveredSpread = 1000;
+    p.currentPlant = p.plant;
+    const wrapper = shallow(<PlantRadius {...p} />);
+    expect(wrapper.find("circle").props().r).toEqual(500);
   });
 
   it("doesn't animate", () => {

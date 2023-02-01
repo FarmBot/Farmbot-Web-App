@@ -11,22 +11,21 @@ import { SpecialStatus } from "farmbot";
 import { cachedCrop } from "../../../../../open_farm/cached_crop";
 
 describe("<GardenPlant />", () => {
-  function fakeProps(): GardenPlantProps {
-    return {
-      mapTransformProps: fakeMapTransformProps(),
-      plant: fakePlant(),
-      current: false,
-      selected: false,
-      editing: false,
-      dragging: false,
-      dispatch: jest.fn(),
-      zoomLvl: 1.8,
-      activeDragXY: { x: undefined, y: undefined, z: undefined },
-      uuid: "plantUuid",
-      animate: false,
-      hovered: false,
-    };
-  }
+  const fakeProps = (): GardenPlantProps => ({
+    mapTransformProps: fakeMapTransformProps(),
+    plant: fakePlant(),
+    current: false,
+    selected: false,
+    editing: false,
+    dragging: false,
+    dispatch: jest.fn(),
+    zoomLvl: 1.8,
+    activeDragXY: { x: undefined, y: undefined, z: undefined },
+    uuid: "plantUuid",
+    animate: false,
+    hovered: false,
+    hoveredSpread: undefined,
+  });
 
   it("renders plant", () => {
     const p = fakeProps();
@@ -51,11 +50,23 @@ describe("<GardenPlant />", () => {
     p.selected = true;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
+    expect(wrapper.find(".soil-cloud").props().r).toEqual(20);
     expect(wrapper.find(".animate").length).toEqual(2);
     expect(wrapper.find("Circle").props().className).toContain("animate");
   });
 
-  it("Calls the onClick callback", () => {
+  it("renders hovered spread size", () => {
+    const p = fakeProps();
+    p.current = true;
+    p.animate = true;
+    p.hoveredSpread = 1000;
+    p.selected = true;
+    const wrapper = shallow(<GardenPlant {...p} />);
+    expect(wrapper.find(".soil-cloud").length).toEqual(1);
+    expect(wrapper.find(".soil-cloud").props().r).toEqual(100);
+  });
+
+  it("calls the onClick callback", () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenPlant {...p} />);
     wrapper.find("image").at(0).simulate("click");
@@ -82,13 +93,13 @@ describe("<GardenPlant />", () => {
     });
   });
 
-  it("indicator circle not rendered", () => {
+  it("doesn't render the indicator circle", () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".plant-indicator").length).toEqual(0);
   });
 
-  it("indicator circle is rendered", () => {
+  it("renders the indicator circle", () => {
     const p = fakeProps();
     p.selected = true;
     const wrapper = shallow(<GardenPlant {...p} />);

@@ -22,7 +22,6 @@ export interface HoveredPlantProps {
   mapTransformProps: MapTransformProps;
   dragging: boolean;
   animate: boolean;
-  hoveredSpread: number | undefined;
 }
 
 export class HoveredPlant extends
@@ -41,11 +40,14 @@ export class HoveredPlant extends
   render() {
     const {
       currentPlant, mapTransformProps, dragging, isEditing, visible, designer,
-      animate, spreadLayerVisible
+      animate, spreadLayerVisible,
     } = this.props;
     const { icon } = designer.hoveredPlant;
     const hovered = !!icon;
-    const { id, x, y, radius } = this.plantInfo;
+    const { id, x, y } = this.plantInfo;
+    const radius = designer.hoveredSpread
+      ? designer.hoveredSpread / 2
+      : this.plantInfo.radius;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const iconRadius = scaleIcon(radius);
     const scaledRadius = currentPlant ? iconRadius : iconRadius * 1.2;
@@ -62,7 +64,7 @@ export class HoveredPlant extends
                 selected={true}
                 mapTransformProps={mapTransformProps}
                 visible={!spreadLayerVisible}
-                hoveredSpread={this.props.hoveredSpread}
+                hoveredSpread={designer.hoveredSpread}
                 animate={animate} />
             </g>}
           <g id="plant-indicator">

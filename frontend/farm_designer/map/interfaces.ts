@@ -35,6 +35,7 @@ export interface PlantLayerProps {
   groupSelected: UUID[];
   animate: boolean;
   interactions: boolean;
+  hoveredSpread: number | undefined;
 }
 
 export interface GardenMapLegendProps {
@@ -84,6 +85,7 @@ export interface GardenPlantProps {
   uuid: string;
   animate: boolean;
   hovered: boolean;
+  hoveredSpread: number | undefined;
 }
 
 export interface GardenPlantState {

@@ -7,10 +7,11 @@ import {
   maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull,
 } from "./data_actions";
 import {
+  CurveIconProps,
   CurveSvgProps, DataLabelsProps, DataProps, PlotTools, WarningLinesProps,
   XAxisProps, YAxisProps,
 } from "./interfaces";
-import { curveColor, CurveType } from "./templates";
+import { curveColor, curvePanelColor, CurveType } from "./templates";
 import { TextInRoundedSvgBox } from "../farm_designer/map/background/grid_labels";
 import { editCurve } from "./edit_curve";
 import {
@@ -379,4 +380,29 @@ const WarningLines = (props: WarningLinesProps) => {
       })}
     </g>}
   </g>;
+};
+
+export const CurveIcon = (props: CurveIconProps) => {
+  const { data } = props.curve.body;
+  const normX = normDay(data);
+  const normY = normValue(data);
+  const curvePathArray = Object.entries(data)
+    .map(([day, value], index) => {
+      const prefix = index == 0 ? "M" : "L";
+      return `${prefix}${normX(day)},${normY(value)}`;
+    });
+  return <svg className={"curve-icon"}
+    width={"32px"} height={"32px"}
+    viewBox={`-15 -10 ${svgXMax(data)} ${svgYMax() + 30}`}>
+    <path id={"fill"} strokeWidth={0}
+      fill={curvePanelColor(props.curve)}
+      d={curvePathArray
+        .concat(`L${normX(maxDay(data))},${normY(0)}`)
+        .concat(`L${normX(0)},${normY(0)}z`)
+        .join(" ")} />
+    <path id={"line"}
+      stroke={curveColor(props.curve)} strokeWidth={5}
+      fill={"none"}
+      d={curvePathArray.join(" ")} />
+  </svg>;
 };
