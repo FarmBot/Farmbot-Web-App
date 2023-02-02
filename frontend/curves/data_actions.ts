@@ -1,4 +1,6 @@
-import { cloneDeep, first, last, max, range, round, sum } from "lodash";
+import {
+  cloneDeep, first, isUndefined, last, max, range, round, sum,
+} from "lodash";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { error } from "../toast/toast";
 import { t } from "../i18next_wrapper";
@@ -82,8 +84,9 @@ export const scaleData =
       const newValue = round(val * valueScale);
       newData[newDay] = newValue;
     });
-    if (Object.values(data).length < 2 && dayInput > 1) {
-      newData[dayScale] = newData[1];
+    if (Object.values(data).length < 2 && dayInput > 1
+      && !isUndefined(newData[1])) {
+      newData[dayInput] = newData[1];
     }
     return newData;
   };

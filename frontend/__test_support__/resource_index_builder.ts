@@ -9,7 +9,7 @@ import {
 } from "farmbot";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
-import { threeWayComparison as c3 } from "../util/move";
+import { threeWayComparison as compare3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
@@ -406,6 +406,7 @@ const KIND_PRIORITY: ResourceLookupTable = {
   FarmwareInstallation: 0,
   WebAppConfig: 0,
   SavedGarden: 0,
+  Curve: 0,
   PlantTemplate: 1,
   Peripheral: 1,
   Point: 1,
@@ -426,17 +427,17 @@ const KIND_PRIORITY: ResourceLookupTable = {
   WizardStepResult: 4,
   Telemetry: 4,
   Crop: 4,
-  Curve: 4,
 };
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   state = emptyState()) {
   const sortedResources = repairBrokeReferences(resources)
-    .sort((l, r) => c3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
+    .sort((l, r) => compare3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
   type K = keyof typeof KIND_PRIORITY;
   return chain(sortedResources)
     .groupBy(KIND)
     .toPairs()
-    .sort((l, r) => c3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
+    .sort((l, r) =>
+      compare3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
     .map((y) => resourceReady((y as TaggedResource["kind"][])[0], y[1]))
     .reduce(resourceReducer, state)
     .value();

@@ -51,7 +51,7 @@ export const findUuid =
     if (uuid) {
       return uuid;
     } else {
-      throw new Error("UUID not found for id " + id);
+      throw new Error("UUID not found for id " + id + " of kind " + kind);
     }
   };
 

@@ -4,7 +4,7 @@ import { floor, isUndefined, range, round } from "lodash";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { Color } from "../ui";
 import {
-  maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull,
+  maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull, scaleData,
 } from "./data_actions";
 import {
   CurveIconProps,
@@ -50,7 +50,7 @@ export const CurveSvg = (props: CurveSvgProps) => {
   const [dragging, setDragging] = React.useState<string | undefined>(undefined);
   const showHoverEffect = (day: string | undefined) =>
     dragging == day || (!dragging && hovered == day);
-  return <svg width={"100%"} height={"100%"}
+  return <svg className={"curve-svg"} width={"100%"} height={"100%"}
     viewBox={`-15 -10 ${svgXMax(data)} ${svgYMax() + 30}`}
     style={dragging ? { cursor: "grabbing" } : {}}
     onMouseUp={() => setDragging(undefined)}
@@ -251,11 +251,13 @@ const YAxis = (props: YAxisProps) => {
       {range(yStep, yStep * 10, yStep).map(value => {
         const y = normY(value);
         return <g id={"" + value} key={value}>
-          <text fontSize={5} textAnchor={"end"} fill={Color.darkGray}
-            x={-2} y={y + 1.5}>
-            {value}
-          </text>
-          <line stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
+          {y > -1 &&
+            <text fontSize={5} textAnchor={"end"} fill={Color.darkGray}
+              x={-2} y={y + 1.5}>
+              {value}
+            </text>}
+          <line className={"y-axis-line"}
+            stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
             x1={0} y1={y} x2={xMax} y2={y} />
         </g>;
       })}
@@ -323,11 +325,11 @@ const WarningLines = (props: WarningLinesProps) => {
             },
             {
               value: distanceToEdge.y.min, textValue: edgeBleed.y.min,
-              text: t("Y-min bleed"), style: "low"
+              text: t("Y-min bleed"), style: "high"
             },
             {
               value: distanceToEdge.x.max, textValue: edgeBleed.x.max,
-              text: t("X-max bleed"), style: "high"
+              text: t("X-max bleed"), style: "low"
             },
             {
               value: distanceToEdge.y.max, textValue: edgeBleed.y.max,
@@ -348,11 +350,11 @@ const WarningLines = (props: WarningLinesProps) => {
   return <g id={"warning-lines"}>
     {lines().map((line, index) =>
       line.value &&
-      <line id={"low-line"} key={index}
+      <line id={"warning-line"} className={"warning-line"} key={index}
         strokeDasharray={line.style == "low" ? 2 : undefined}
         stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
         x1={xZero} y1={normY(line.value)}
-        x2={svgXMax(props.curve.body.data)} y2={normY(line.value)} />)}
+        x2={svgXMax(props.curve.body.data) - 20} y2={normY(line.value)} />)}
     {lines().map((clearance, index) =>
       clearance.value &&
       <text id={"warning-icon"} key={index}
@@ -360,7 +362,9 @@ const WarningLines = (props: WarningLinesProps) => {
         onMouseLeave={() => setHovered(false)}
         fontSize={5} textAnchor={"end"}
         fill={Color.darkOrange} fontWeight={"bold"}
-        x={-5} y={normY(clearance.value)}>⚠</text>)}
+        x={svgXMax(props.curve.body.data) - 15} y={normY(clearance.value) + 1}>
+        ⚠
+      </text>)}
     {hovered && <g id={"warning-content"}
       fontSize={5} fill={Color.offWhite}>
       <rect x={0} y={0} width={X_MAX * 0.75}
@@ -383,22 +387,22 @@ const WarningLines = (props: WarningLinesProps) => {
 };
 
 export const CurveIcon = (props: CurveIconProps) => {
-  const { data } = props.curve.body;
+  const data = scaleData(props.curve.body.data, 100, 100);
   const normX = normDay(data);
   const normY = normValue(data);
-  const curvePathArray = Object.entries(data)
+  const curvePathArray = Object.entries(populatedData(data))
     .map(([day, value], index) => {
       const prefix = index == 0 ? "M" : "L";
       return `${prefix}${normX(day)},${normY(value)}`;
     });
   return <svg className={"curve-icon"}
     width={"32px"} height={"32px"}
-    viewBox={`-15 -10 ${svgXMax(data)} ${svgYMax() + 30}`}>
+    viewBox={`-15 -10 ${X_MAX + 25} ${svgYMax() + 30}`}>
     <path id={"fill"} strokeWidth={0}
       fill={curvePanelColor(props.curve)}
       d={curvePathArray
         .concat(`L${normX(maxDay(data))},${normY(0)}`)
-        .concat(`L${normX(0)},${normY(0)}z`)
+        .concat(`L${normX(1)},${normY(0)}z`)
         .join(" ")} />
     <path id={"line"}
       stroke={curveColor(props.curve)} strokeWidth={5}

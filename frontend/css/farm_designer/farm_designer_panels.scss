@@ -2413,6 +2413,13 @@ li {
   }
 }
 
+.curve-svg {
+  .y-axis-line,
+  .warning-line {
+    pointer-events: none;
+  }
+}
+
 .curve-info-panel {
   .panel-title {
     .white-text {
@@ -2538,24 +2545,9 @@ li {
 }
 
 .crop-curve-info {
+  margin-top: 1.5rem;
   .bp4-collapse {
     padding-top: 0.5rem;
-  }
-  .header {
-    display: flex;
-    position: relative;
-    height: 4rem;
-    cursor: pointer;
-    margin-left: -1rem;
-    padding-left: 1rem;
-    margin-right: -1rem;
-    padding-right: 1rem;
-    &:hover {
-      background: $light_gray;
-    }
-    label {
-      cursor: pointer;
-    }
   }
   p {
     line-height: 4rem;
@@ -2566,26 +2558,28 @@ li {
   }
   i {
     position: absolute;
-    right: 2rem;
+    right: 0.5rem;
     line-height: 4rem;
   }
   .active-curve-name {
     position: relative;
     height: 4rem;
     line-height: 3rem;
-    a {
-      position: absolute;
-      top: -0.25rem;
-      left: 5rem;
-    }
+    p,
     .filter-search {
-      width: 90%;
-      float: right;
+      display: inline-block;
+      position: absolute;
+      right: 3rem;
+      width: 75%;
+      margin-top: 0.5rem;
     }
     p {
-      width: 90%;
-      line-height: 3rem;
-      float: right;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    label {
+      line-height: 4rem;
     }
   }
 }

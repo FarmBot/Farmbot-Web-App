@@ -36,7 +36,7 @@ describe("<CurveSvg />", () => {
     const p = fakeProps();
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(22);
+    expect(wrapper.find("text").length).toEqual(16);
     expect(wrapper.text()).not.toContain("⚠");
     expect(wrapper.html()).toContain("row-resize");
     expect(wrapper.html()).not.toContain("not-allowed");
@@ -47,7 +47,7 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     p.editable = false;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(22);
+    expect(wrapper.find("text").length).toEqual(16);
     expect(wrapper.html()).not.toContain("row-resize");
   });
 
@@ -57,7 +57,7 @@ describe("<CurveSvg />", () => {
       1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 12: 12,
     };
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(13);
+    expect(wrapper.find("text").length).toEqual(7);
     expect(wrapper.html()).toContain("not-allowed");
   });
 
@@ -65,7 +65,7 @@ describe("<CurveSvg />", () => {
     const p = fakeProps();
     p.curve.body.data = { 1: 0, 200: 100 };
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(22);
+    expect(wrapper.find("text").length).toEqual(16);
   });
 
   it("hovers bar", () => {
@@ -162,7 +162,7 @@ describe("<CurveSvg />", () => {
     p.botSize.y.value = 200;
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(24);
+    expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("spread beyond");
@@ -190,7 +190,7 @@ describe("<CurveSvg />", () => {
     p.botSize.y.value = 1000;
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(26);
+    expect(wrapper.find("text").length).toEqual(20);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("spread beyond");
@@ -204,7 +204,7 @@ describe("<CurveSvg />", () => {
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(24);
+    expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("exceed the distance");
@@ -219,7 +219,7 @@ describe("<CurveSvg />", () => {
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
-    expect(wrapper.find("text").length).toEqual(24);
+    expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
     expect(wrapper.text()).toContain("exceed the distance");

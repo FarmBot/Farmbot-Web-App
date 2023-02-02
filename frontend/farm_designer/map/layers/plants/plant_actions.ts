@@ -24,7 +24,7 @@ import {
 import { Path } from "../../../../internal_urls";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { NumericSetting } from "../../../../session_keys";
-import { findMostUsedCurveForCrop } from "../../../../plants/crop_info";
+import { findMostUsedCurveForCrop } from "../../../../plants/curve_info";
 import { CurveType } from "../../../../curves/templates";
 import { DevSettings } from "../../../../settings/dev/dev_support";
 

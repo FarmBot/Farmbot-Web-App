@@ -7,6 +7,7 @@ import {
   ResourceName,
   TaggedResource,
   TaggedTool,
+  TaggedPlantPointer,
 } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
@@ -19,6 +20,7 @@ import {
   fakeCurve,
   fakeFolder, fakePlant, fakeSequence,
 } from "../../__test_support__/fake_state/resources";
+import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -100,6 +102,28 @@ describe("resource reducer", () => {
     const newTool = newState.index.references[uuid] as TaggedTool;
     expect(oldTool.body.name).not.toEqual("after");
     expect(newTool.body.name).toEqual("after");
+  });
+
+  it("sets a value as undefined while editing a resource", () => {
+    const waterCurve = fakeCurve();
+    waterCurve.body.id = 1;
+    const plant = fakePlant();
+    plant.body.water_curve_id = waterCurve.body.id;
+    const startingState = buildResourceIndex([waterCurve, plant]);
+    const { index } = startingState;
+    const { uuid } = plant;
+    const update: Partial<PlantPointer> = { water_curve_id: undefined };
+    const payload: EditResourceParams = {
+      uuid,
+      update,
+      specialStatus: SpecialStatus.SAVED
+    };
+    const action = { type: Actions.EDIT_RESOURCE, payload };
+    const newState = resourceReducer(startingState, action);
+    const oldPlant = index.references[uuid] as TaggedPlantPointer;
+    const newPlant = newState.index.references[uuid] as TaggedPlantPointer;
+    expect(oldPlant.body.water_curve_id).toEqual(1);
+    expect(newPlant.body.water_curve_id).toEqual(undefined);
   });
 
   it("handles resource failures", () => {

@@ -22,7 +22,7 @@ import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
-import { EditableAllCurveInfo } from "./crop_info";
+import { EditableAllCurveInfo } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
 import { DevSettings } from "../settings/dev/dev_support";
