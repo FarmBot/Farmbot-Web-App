@@ -2,13 +2,16 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { floor, isUndefined, range, round } from "lodash";
 import { Curve } from "farmbot/dist/resources/api_resources";
-import { Color } from "../ui";
+import { Color, Popover } from "../ui";
 import {
   maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull, scaleData,
 } from "./data_actions";
 import {
   CurveIconProps,
-  CurveSvgProps, DataLabelsProps, DataProps, PlotTools, WarningLinesProps,
+  CurveSvgProps, CurveSvgWithPopoverProps, DataLabelsProps, DataProps, PlotTools,
+  WarningLinesContent,
+  WarningLinesContentProps,
+  WarningLinesProps,
   XAxisProps, YAxisProps,
 } from "./interfaces";
 import { curveColor, curvePanelColor, CurveType } from "./templates";
@@ -73,14 +76,45 @@ export const CurveSvg = (props: CurveSvgProps) => {
     <XAxis {...commonProps} />
     <YAxis {...commonProps} />
     <WarningLines {...commonProps}
-      sourceFbosConfig={props.sourceFbosConfig}
-      x={props.x}
-      y={props.y}
-      farmwareEnvs={props.farmwareEnvs}
-      soilHeightPoints={props.soilHeightPoints}
-      botSize={props.botSize} />
+      setOpen={props.setOpen}
+      warningLinesContent={props.warningLinesContent} />
     <DataLabels {...commonProps} showHoverEffect={showHoverEffect} />
   </svg>;
+};
+
+export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
+  const [open, setOpen] = React.useState(false);
+  const warningContents = warningLinesContent({
+    curve: props.curve,
+    sourceFbosConfig: props.sourceFbosConfig,
+    x: props.x,
+    y: props.y,
+    farmwareEnvs: props.farmwareEnvs,
+    soilHeightPoints: props.soilHeightPoints,
+    botSize: props.botSize,
+  });
+  return <div className={"curve-svg-wrapper"}>
+    <Popover
+      isOpen={open}
+      popoverClassName={"warning-line-text-popover"}
+      target={<div className={"target"} />}
+      content={<div className={"warning-text"}>
+        <p className={"top"}>{warningContents.text}</p>
+        {warningContents.lines.map((line, index) => {
+          const value = line.textValue || line.value;
+          return value > 0 && <p key={index}>
+            {line.text}: {value}mm
+          </p>;
+        })}
+      </div>} />
+    <CurveSvg dispatch={props.dispatch} curve={props.curve}
+      sourceFbosConfig={props.sourceFbosConfig}
+      botSize={props.botSize}
+      hovered={props.hovered} setHovered={props.setHovered}
+      warningLinesContent={warningContents}
+      setOpen={setOpen}
+      editable={props.editable} />
+  </div>;
 };
 
 const Data = (props: DataProps) => {
@@ -227,7 +261,7 @@ const XAxis = (props: XAxisProps) => {
   return <g id={"x-axis"}>
     <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.darkGray}>
       {dayLabels.map(day =>
-        <text key={day} x={normX(day)} y={yZero + 10}>{day}</text>)}
+        <text key={day} x={normX(day)} y={yZero + 6}>{day}</text>)}
     </g>
     <line id={"y-axis-vertical-line"}
       stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
@@ -235,7 +269,7 @@ const XAxis = (props: XAxisProps) => {
     <text id={"x-axis-label"}
       fontSize={5} textAnchor={"middle"}
       fill={Color.darkGray} fontWeight={"bold"}
-      x={xMax / 2} y={yZero + 18}>
+      x={xMax / 2} y={yZero + 14}>
       {t("DAY")}
     </text>
   </g>;
@@ -271,8 +305,7 @@ const YAxis = (props: YAxisProps) => {
   </g>;
 };
 
-const WarningLines = (props: WarningLinesProps) => {
-  const { normY, xZero } = props.plotTools;
+export const warningLinesContent = (props: WarningLinesContentProps) => {
   const { x, y } = props;
   const gantryHeight = props.sourceFbosConfig("gantry_height").value as number;
   const locationSoilHeight = getZAtLocation({
@@ -304,13 +337,7 @@ const WarningLines = (props: WarningLinesProps) => {
       max: (maxValueNum - distanceToEdge.y.max) / 2,
     },
   };
-  interface Content {
-    value: number;
-    textValue?: number;
-    text: string;
-    style: "low" | "high";
-  }
-  const lines = (): Content[] => {
+  const lines = (): WarningLinesContent[] => {
     switch (props.curve.body.type) {
       case CurveType.spread:
         return isUndefined(x) || isUndefined(y)
@@ -346,43 +373,30 @@ const WarningLines = (props: WarningLinesProps) => {
   const text = props.curve.body.type == CurveType.spread
     ? t("Plant may spread beyond the growing area")
     : t("Plant may exceed the distance between the soil and FarmBot");
-  const [hovered, setHovered] = React.useState(false);
+  return { lines: lines(), text };
+};
+
+const WarningLines = (props: WarningLinesProps) => {
+  const { normY, xZero } = props.plotTools;
+  const { lines } = props.warningLinesContent;
   return <g id={"warning-lines"}>
-    {lines().map((line, index) =>
+    {lines.map((line, index) =>
       line.value &&
       <line id={"warning-line"} className={"warning-line"} key={index}
         strokeDasharray={line.style == "low" ? 2 : undefined}
         stroke={Color.darkOrange} opacity={0.75} strokeWidth={0.3}
         x1={xZero} y1={normY(line.value)}
         x2={svgXMax(props.curve.body.data) - 20} y2={normY(line.value)} />)}
-    {lines().map((clearance, index) =>
+    {lines.map((clearance, index) =>
       clearance.value &&
       <text id={"warning-icon"} key={index}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseEnter={() => props.setOpen(true)}
+        onMouseLeave={() => props.setOpen(false)}
         fontSize={5} textAnchor={"end"}
         fill={Color.darkOrange} fontWeight={"bold"}
         x={svgXMax(props.curve.body.data) - 15} y={normY(clearance.value) + 1}>
         ⚠
       </text>)}
-    {hovered && <g id={"warning-content"}
-      fontSize={5} fill={Color.offWhite}>
-      <rect x={0} y={0} width={X_MAX * 0.75}
-        height={svgYMax() * (Path.startsWith(Path.plants()) ? 0.95 : 0.45)}
-        fill={Color.darkGray} />
-      <text x={5} y={5} fontWeight={"bold"}>
-        {text.split(" ").slice(0, 5).join(" ")}
-      </text>
-      <text x={5} y={10} fontWeight={"bold"}>
-        {text.split(" ").slice(5).join(" ")}:
-      </text>
-      {lines().map((line, index) => {
-        const value = line.textValue || line.value;
-        return value > 0 && <text key={index} x={5} y={15 + index * 5}>
-          {line.text}: {value}mm
-        </text>;
-      })}
-    </g>}
   </g>;
 };
 

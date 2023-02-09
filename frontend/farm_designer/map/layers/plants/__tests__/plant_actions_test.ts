@@ -48,6 +48,9 @@ import {
 } from "../../../../../__test_support__/fake_crop_search_result";
 import { error } from "../../../../../toast/toast";
 import { BotOriginQuadrant } from "../../../../interfaces";
+import {
+  fakeDesignerState,
+} from "../../../../../__test_support__/fake_designer_state";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
@@ -101,17 +104,19 @@ describe("createPlant()", () => {
 });
 
 describe("dropPlant()", () => {
-  const fakeProps = (): DropPlantProps => ({
-    gardenCoords: { x: 10, y: 20 },
-    cropSearchResults: [fakeCropLiveSearchResult()],
-    companionIndex: undefined,
-    openedSavedGarden: undefined,
-    gridSize: { x: 1000, y: 2000 },
-    dispatch: jest.fn(),
-    getConfigValue: jest.fn(),
-    plants: [],
-    curves: [],
-  });
+  const fakeProps = (): DropPlantProps => {
+    const designer = fakeDesignerState();
+    designer.cropSearchResults = [fakeCropLiveSearchResult()];
+    return {
+      designer,
+      gardenCoords: { x: 10, y: 20 },
+      gridSize: { x: 1000, y: 2000 },
+      dispatch: jest.fn(),
+      getConfigValue: jest.fn(),
+      plants: [],
+      curves: [],
+    };
+  };
 
   it("drops plant", () => {
     dropPlant(fakeProps());
@@ -121,7 +126,7 @@ describe("dropPlant()", () => {
 
   it("drops companion plant", () => {
     const p = fakeProps();
-    p.companionIndex = 0;
+    p.designer.companionIndex = 0;
     dropPlant(p);
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({ name: "Strawberry", x: 10, y: 20 }));
@@ -139,8 +144,8 @@ describe("dropPlant()", () => {
     console.log = jest.fn();
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.companionIndex = 1;
-    p.cropSearchResults = [];
+    p.designer.companionIndex = 1;
+    p.designer.cropSearchResults = [];
     dropPlant(p);
     expect(initSave).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("Missing crop.");
@@ -151,7 +156,7 @@ describe("dropPlant()", () => {
     const p = fakeProps();
     const result = fakeCropLiveSearchResult();
     result.crop.slug = "mint";
-    p.cropSearchResults = [result];
+    p.designer.cropSearchResults = [result];
     const plant = fakePlant();
     plant.body.openfarm_slug = "mint";
     plant.body.water_curve_id = 1;
@@ -168,6 +173,9 @@ describe("dropPlant()", () => {
     hCurve.body.id = 3;
     hCurve.body.type = "height";
     p.curves = [wCurve, sCurve, hCurve];
+    p.designer.cropWaterCurveId = 1;
+    p.designer.cropSpreadCurveId = 2;
+    p.designer.cropHeightCurveId = 3;
     dropPlant(p);
     expect(init).toHaveBeenCalledWith("Point",
       expect.objectContaining({
@@ -184,7 +192,7 @@ describe("dropPlant()", () => {
     const p = fakeProps();
     const result = fakeCropLiveSearchResult();
     result.crop.slug = "mint";
-    p.cropSearchResults = [result];
+    p.designer.cropSearchResults = [result];
     p.plants = [];
     p.curves = [];
     dropPlant(p);

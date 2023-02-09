@@ -15,7 +15,7 @@ import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { BlurableInput, FBSelect, Popover } from "../ui";
-import { CurveSvg } from "./chart";
+import { CurveSvgWithPopover } from "./chart";
 import {
   populatedData, scaleData, addOrRemoveItem, curveSum, inData, maxDay,
   maxValue, dataFull,
@@ -59,7 +59,9 @@ export const mapStateToProps = (props: Everything): EditCurveProps => {
 };
 
 export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState> {
-  state: EditCurveState = { templates: false, scale: false, hovered: undefined };
+  state: EditCurveState = {
+    templates: false, scale: false, hovered: undefined, warningText: false,
+  };
 
   get stringyID() { return Path.getSlug(Path.curves()); }
   get curve() {
@@ -124,7 +126,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               </button>}
               content={<TemplatesMenu dispatch={dispatch} curve={curve}
                 click={this.toggle("templates")} />} />
-            <CurveSvg dispatch={dispatch} curve={curve}
+            <CurveSvgWithPopover dispatch={dispatch} curve={curve}
               sourceFbosConfig={this.props.sourceFbosConfig}
               botSize={this.props.botSize}
               hovered={hovered} setHovered={setHovered}

@@ -1,3 +1,9 @@
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.cropSearch("mint"));
+jest.mock("../../history", () => ({
+  getPathArray: () => mockPath.split("/"),
+}));
+
 import React from "react";
 import { CurveInfo } from "../curve_info";
 import { mount, shallow } from "enzyme";
@@ -17,7 +23,8 @@ describe("<CurveInfo />", () => {
     curve: fakeCurve(),
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     botSize: fakeBotSize(),
-    updatePlant: jest.fn(),
+    onChange: jest.fn(),
+    plants: [],
     plant: formatPlantInfo(fakePlant()),
     curves: [],
   });
@@ -28,6 +35,26 @@ describe("<CurveInfo />", () => {
     curve.body.type = "water";
     curve.body.id = 1;
     p.curve = curve;
+    p.plant = undefined;
+    const wrapper = mount(<CurveInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("none");
+  });
+
+  it("displays curve with x, y", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.type = "water";
+    curve.body.id = 1;
+    p.curve = curve;
+    const plant = fakePlant();
+    plant.body.openfarm_slug = "mint";
+    plant.body.water_curve_id = 1;
+    plant.body.x = 100;
+    plant.body.y = 200;
+    p.plant = formatPlantInfo(plant);
+    p.plants = [plant];
+    p.curves = [curve];
     const wrapper = mount(<CurveInfo {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("none");
   });
@@ -39,28 +66,6 @@ describe("<CurveInfo />", () => {
     expect(wrapper.text().toLowerCase()).toContain("none");
   });
 
-  it("displays curve name", () => {
-    const p = fakeProps();
-    const curve = fakeCurve();
-    curve.body.type = "water";
-    curve.body.id = 1;
-    p.curve = curve;
-    p.updatePlant = undefined;
-    p.plant = undefined;
-    const wrapper = mount(<CurveInfo {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toEqual("waterfake - 0l over 2 days1dayml");
-  });
-
-  it("doesn't display curve name", () => {
-    const p = fakeProps();
-    p.curve = undefined;
-    p.updatePlant = undefined;
-    p.plant = undefined;
-    const wrapper = mount(<CurveInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toEqual("waternone");
-  });
-
   it("changes curve", () => {
     const p = fakeProps();
     const curve = fakeCurve();
@@ -70,9 +75,7 @@ describe("<CurveInfo />", () => {
     const wrapper = shallow(<CurveInfo {...p} />);
     wrapper.find(FBSelect).simulate("change",
       { label: "", value: 1, headingId: "water" });
-    p.plant &&
-      expect(p.updatePlant).toHaveBeenCalledWith(p.plant.uuid,
-        { water_curve_id: 1 }, true);
+    expect(p.onChange).toHaveBeenCalledWith(1, CurveType.water);
   });
 
   it("removes curve", () => {
@@ -84,8 +87,6 @@ describe("<CurveInfo />", () => {
     const wrapper = shallow(<CurveInfo {...p} />);
     wrapper.find(FBSelect).simulate("change",
       { label: "", value: "", isNull: true });
-    p.plant &&
-      expect(p.updatePlant).toHaveBeenCalledWith(p.plant.uuid,
-        { water_curve_id: undefined }, true);
+    expect(p.onChange).toHaveBeenCalledWith(undefined, CurveType.water);
   });
 });

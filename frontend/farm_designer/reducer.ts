@@ -60,6 +60,9 @@ export const initialState: DesignerState = {
   profilePosition: { x: undefined, y: undefined },
   profileWidth: 500,
   profileFollowBot: true,
+  cropWaterCurveId: undefined,
+  cropSpreadCurveId: undefined,
+  cropHeightCurveId: undefined,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -100,6 +103,18 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<number | undefined>(Actions.TOGGLE_HOVERED_SPREAD, (s, { payload }) => {
     s.hoveredSpread = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_CROP_WATER_CURVE_ID, (s, { payload }) => {
+    s.cropWaterCurveId = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_CROP_SPREAD_CURVE_ID, (s, { payload }) => {
+    s.cropSpreadCurveId = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_CROP_HEIGHT_CURVE_ID, (s, { payload }) => {
+    s.cropHeightCurveId = payload;
     return s;
   })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {

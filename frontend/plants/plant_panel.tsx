@@ -22,7 +22,7 @@ import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
-import { EditableAllCurveInfo } from "./curve_info";
+import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
 import { DevSettings } from "../settings/dev/dev_support";
@@ -247,15 +247,20 @@ export function PlantPanel(props: PlantPanelProps) {
           : t(startCase(plantStatus))}
       </ListItem>
       {DevSettings.futureFeaturesEnabled() && info.uuid.startsWith("Point") &&
-        <EditableAllCurveInfo
+        <AllCurveInfo
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig}
           botSize={props.botSize}
           farmwareEnvs={props.farmwareEnvs}
           soilHeightPoints={props.soilHeightPoints}
           curves={props.curves}
+          plants={props.plants}
           plant={info}
-          updatePlant={updatePlant} />}
+          findCurve={curveType => props.curves.filter(curve =>
+            curve.body.id == info[CURVE_KEY_LOOKUP[curveType
+            ] as keyof FormattedPlantInfo])[0]}
+          onChange={(id, curveType) =>
+            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id }, true)} />}
       {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":

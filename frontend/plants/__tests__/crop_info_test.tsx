@@ -11,6 +11,11 @@ jest.mock("../../farm_designer/map/actions", () => ({
   setDragIcon: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
@@ -34,19 +39,24 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
+import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import { CurveType } from "../../curves/templates";
 
 describe("<CropInfo />", () => {
+  beforeEach(() => {
+    mockDev = false;
+  });
+
   const fakeProps = (): CropInfoProps => {
     const cropSearchResult = fakeCropLiveSearchResult();
     cropSearchResult.crop.svg_icon = "fake_mint_svg";
     cropSearchResult.crop.row_spacing = 100;
+    const designer = fakeDesignerState();
+    designer.cropSearchResults = [cropSearchResult];
     return {
       openfarmCropFetch: jest.fn(),
       dispatch: jest.fn(),
-      cropSearchQuery: undefined,
-      cropSearchResults: [cropSearchResult],
-      cropSearchInProgress: false,
-      openedSavedGarden: undefined,
+      designer,
       botPosition: { x: undefined, y: undefined, z: undefined },
       xySwap: false,
       getConfigValue: jest.fn(),
@@ -60,7 +70,7 @@ describe("<CropInfo />", () => {
   it("renders", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.cropSearchResults[0].companions = [];
+    p.designer.cropSearchResults[0].companions = [];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Drag and drop into map");
@@ -80,10 +90,20 @@ describe("<CropInfo />", () => {
     });
   });
 
+  it("changes curve", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
+    wrapper.instance().changeCurve(1, CurveType.water);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_WATER_CURVE_ID, payload: 1,
+    });
+  });
+
   it("doesn't change search query", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.cropSearchQuery = "mint";
+    p.designer.cropSearchQuery = "mint";
     const wrapper = mount(<CropInfo {...p} />);
     wrapper.find(".back-arrow").simulate("click");
     expect(push).toHaveBeenCalledWith(Path.cropSearch());
@@ -121,16 +141,16 @@ describe("<CropInfo />", () => {
 
   it("renders cm in mm", () => {
     const p = fakeProps();
-    p.cropSearchResults[0].crop.spread = 1234;
+    p.designer.cropSearchResults[0].crop.spread = 1234;
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("12340mm");
   });
 
   it("renders missing values", () => {
     const p = fakeProps();
-    p.cropSearchResults[0].crop.svg_icon = undefined;
-    p.cropSearchResults[0].crop.row_spacing = undefined;
-    p.cropSearchResults[0].crop.common_names = [];
+    p.designer.cropSearchResults[0].crop.svg_icon = undefined;
+    p.designer.cropSearchResults[0].crop.row_spacing = undefined;
+    p.designer.cropSearchResults[0].crop.common_names = [];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("iconnot available");
     expect(wrapper.text().toLowerCase()).toContain("spacingnot available");
@@ -139,7 +159,8 @@ describe("<CropInfo />", () => {
 
   it("handles string of names", () => {
     const p = fakeProps();
-    p.cropSearchResults[0].crop.common_names = "names" as unknown as string[];
+    p.designer.cropSearchResults[0].crop.common_names =
+      "names" as unknown as string[];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("common namesnames");
   });
@@ -148,7 +169,10 @@ describe("<CropInfo />", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.openfarmCropFetch = jest.fn(() => jest.fn());
-    p.dispatch = jest.fn(x => { x(); return Promise.resolve(); });
+    p.dispatch = jest.fn(x => {
+      typeof x === "function" && x();
+      return Promise.resolve();
+    });
     const wrapper = mount(<CropInfo {...p} />);
     jest.clearAllMocks();
     expect(wrapper.text().toLowerCase()).toContain("strawberry");
@@ -182,6 +206,7 @@ describe("<CropInfo />", () => {
   });
 
   it("renders curves", () => {
+    mockDev = true;
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const curve = fakeCurve();
@@ -194,7 +219,7 @@ describe("<CropInfo />", () => {
     p.plants = [plant];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.text()).toContain("WaterFake - 0L over 2 days");
+    expect(wrapper.text()).toContain("Water");
   });
 });
 
@@ -226,7 +251,7 @@ describe("mapStateToProps()", () => {
     state.resources.consumers.farm_designer.cropSearchInProgress = true;
     state.bot.hardware.location_data.position = { x: 1, y: 2, z: 3 };
     const props = mapStateToProps(state);
-    expect(props.cropSearchInProgress).toEqual(true);
+    expect(props.designer.cropSearchInProgress).toEqual(true);
     expect(props.botPosition).toEqual({ x: 1, y: 2, z: 3 });
     expect(props.getConfigValue("show_plants")).toEqual(false);
   });

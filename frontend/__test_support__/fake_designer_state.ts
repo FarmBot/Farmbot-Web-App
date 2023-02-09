@@ -45,6 +45,9 @@ export const fakeDesignerState = (): DesignerState => ({
   profilePosition: { x: undefined, y: undefined },
   profileWidth: 100,
   profileFollowBot: false,
+  cropWaterCurveId: undefined,
+  cropSpreadCurveId: undefined,
+  cropHeightCurveId: undefined,
 });
 
 export const fakeHelpState = (): HelpState => ({

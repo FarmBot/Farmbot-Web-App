@@ -8,7 +8,7 @@ import moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString, random } from "lodash";
 import {
-  CropLiveSearchResult, GardenMapState, MovePointsProps,
+  DesignerState, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
 import { findBySlug } from "../../../search_selectors";
 import {
@@ -18,14 +18,10 @@ import { movePoints } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
-import {
-  TaggedCurve, TaggedPlantPointer, TaggedPlantTemplate, TaggedPoint,
-} from "farmbot";
+import { TaggedCurve, TaggedPlantTemplate, TaggedPoint } from "farmbot";
 import { Path } from "../../../../internal_urls";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { NumericSetting } from "../../../../session_keys";
-import { findMostUsedCurveForCrop } from "../../../../plants/curve_info";
-import { CurveType } from "../../../../curves/templates";
 import { DevSettings } from "../../../../settings/dev/dev_support";
 
 export interface NewPlantKindAndBodyProps {
@@ -123,33 +119,27 @@ export const createPlant = (props: CreatePlantProps): void => {
 
 export interface DropPlantProps {
   gardenCoords: AxisNumberProperty | undefined;
-  cropSearchResults: CropLiveSearchResult[];
-  companionIndex: number | undefined;
-  openedSavedGarden: string | undefined;
   gridSize: AxisNumberProperty;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   plants: TaggedPlant[];
   curves: TaggedCurve[];
+  designer: DesignerState;
 }
 
 /** Create a plant upon drop. */
 export const dropPlant = (props: DropPlantProps) => {
   const {
-    gardenCoords, openedSavedGarden, gridSize, dispatch, getConfigValue,
+    gardenCoords, gridSize, dispatch, getConfigValue,
   } = props;
+  const { companionIndex, cropSearchResults, openedSavedGarden } = props.designer;
   if (gardenCoords) {
     const slug = Path.getSlug(Path.plants(1));
     if (!slug) { console.log("Missing slug."); return; }
-    const crop = isNumber(props.companionIndex)
-      ? props.cropSearchResults[0]?.companions[props.companionIndex]
-      : findBySlug(props.cropSearchResults, slug).crop;
+    const crop = isNumber(companionIndex)
+      ? cropSearchResults[0]?.companions[companionIndex]
+      : findBySlug(cropSearchResults, slug).crop;
     if (!crop) { console.log("Missing crop."); return; }
-    const findCurve = findMostUsedCurveForCrop({
-      plants: props.plants as TaggedPlantPointer[],
-      curves: props.curves,
-      openfarmSlug: slug,
-    });
     createPlant({
       cropName: crop.name,
       slug: crop.slug,
@@ -158,9 +148,9 @@ export const dropPlant = (props: DropPlantProps) => {
       dispatch,
       openedSavedGarden,
       depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
-      water_curve_id: findCurve(CurveType.water)?.body.id,
-      spread_curve_id: findCurve(CurveType.spread)?.body.id,
-      height_curve_id: findCurve(CurveType.height)?.body.id,
+      water_curve_id: props.designer.cropWaterCurveId,
+      spread_curve_id: props.designer.cropSpreadCurveId,
+      height_curve_id: props.designer.cropHeightCurveId,
     });
     dispatch({ type: Actions.SET_COMPANION_INDEX, payload: undefined });
   } else {

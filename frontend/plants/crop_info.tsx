@@ -36,7 +36,12 @@ import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { validFbosConfig } from "../util";
 import { selectAllCurves } from "../resources/selectors_by_kind";
 import { selectAllPlantPointers } from "../resources/selectors";
-import { AllCurveInfo } from "./curve_info";
+import {
+  AllCurveInfo, CURVE_ACTION_LOOKUP, findMostUsedCurveForCrop,
+} from "./curve_info";
+import { CurveType } from "../curves/templates";
+import { TaggedCurve } from "farmbot";
+import { DevSettings } from "../settings/dev/dev_support";
 
 interface InfoFieldProps {
   title: string;
@@ -254,16 +259,9 @@ export const getCropHeaderProps = (props: {
 };
 
 export function mapStateToProps(props: Everything): CropInfoProps {
-  const {
-    cropSearchResults, openedSavedGarden, cropSearchInProgress, cropSearchQuery
-  } = props.resources.consumers.farm_designer;
   return {
     openfarmCropFetch: OFCropFetch,
     dispatch: props.dispatch,
-    cropSearchQuery,
-    cropSearchResults,
-    cropSearchInProgress,
-    openedSavedGarden,
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
     xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
     getConfigValue: getWebAppConfigValue(() => props),
@@ -273,6 +271,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
     botSize: botSize(props),
     curves: selectAllCurves(props.resources.index),
     plants: selectAllPlantPointers(props.resources.index),
+    designer: props.resources.consumers.farm_designer,
   };
 }
 /** Get OpenFarm crop search results for crop info page contents. */
@@ -283,23 +282,47 @@ export const searchForCurrentCrop = (openfarmCropFetch: OpenfarmSearch) =>
     unselectPlant(dispatch)();
   };
 
-export class RawCropInfo extends React.Component<CropInfoProps, {}> {
+export class RawCropInfo extends React.Component<CropInfoProps> {
 
   componentDidMount() {
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmCropFetch));
+    const findCurve = findMostUsedCurveForCrop({
+      plants: this.props.plants,
+      curves: this.props.curves,
+      openfarmSlug: Path.getSlug(Path.cropSearch()),
+    });
+    [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
+      const id = findCurve(curveType)?.body.id;
+      this.props.dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });
+    });
   }
 
   /** Clear the current crop search results. */
   clearCropSearchResults = (crop: string) => () => {
     const { dispatch } = this.props;
-    if (!this.props.cropSearchQuery) {
+    if (!this.props.designer.cropSearchQuery) {
       dispatch({ type: Actions.SEARCH_QUERY_CHANGE, payload: crop });
     }
     dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
   };
 
+  get curveId() {
+    return {
+      [CurveType.water]: this.props.designer.cropWaterCurveId,
+      [CurveType.spread]: this.props.designer.cropSpreadCurveId,
+      [CurveType.height]: this.props.designer.cropHeightCurveId,
+    };
+  }
+
+  findCurve = (curveType: CurveType): TaggedCurve | undefined =>
+    this.props.curves.filter(curve => curve.body.id == this.curveId[curveType])[0];
+
+  changeCurve = (id: string | number | undefined, curveType: CurveType) => {
+    this.props.dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });
+  };
+
   render() {
-    const { cropSearchResults, cropSearchInProgress } = this.props;
+    const { cropSearchResults, cropSearchInProgress } = this.props.designer;
     const { crop, result, basePath, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "crop-info";
@@ -323,16 +346,18 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
           <CropInfoList result={result}
             dispatch={this.props.dispatch}
             openfarmCropFetch={this.props.openfarmCropFetch} />
-          <AllCurveInfo
-            dispatch={this.props.dispatch}
-            sourceFbosConfig={this.props.sourceFbosConfig}
-            botSize={this.props.botSize}
-            curves={this.props.curves}
-            openfarmSlug={result.crop.slug}
-            plants={this.props.plants} />
+          {DevSettings.futureFeaturesEnabled() &&
+            <AllCurveInfo
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              botSize={this.props.botSize}
+              curves={this.props.curves}
+              findCurve={this.findCurve}
+              plants={this.props.plants}
+              onChange={this.changeCurve} />}
           <AddPlantHereButton
             botPosition={this.props.botPosition}
-            openedSavedGarden={this.props.openedSavedGarden}
+            openedSavedGarden={this.props.designer.openedSavedGarden}
             cropName={result.crop.name}
             slug={result.crop.slug}
             getConfigValue={this.props.getConfigValue}

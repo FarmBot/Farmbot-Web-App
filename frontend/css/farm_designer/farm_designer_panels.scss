@@ -2371,6 +2371,34 @@ li {
   }
 }
 
+.curve-svg-wrapper {
+  .bp4-popover-target {
+    width: 100%;
+  }
+}
+
+.warning-line-text-popover {
+  border-radius: 5px;
+  .bp4-popover-content {
+    background: $dark_gray;
+    border-radius: 5px;
+  }
+  .bp4-popover-arrow {
+    display: none;
+  }
+  p {
+    color: $white;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem !important;
+  }
+  .warning-text {
+    max-width: 200px;
+    .top {
+      font-weight: bold;
+    }
+  }
+}
+
 .curve-action-popover {
   .bp4-popover-content {
     background: $dark_gray;

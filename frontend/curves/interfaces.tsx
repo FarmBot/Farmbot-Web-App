@@ -5,7 +5,6 @@ import { SourceFbosConfig } from "../devices/interfaces";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { CurvesPanelState } from "../interfaces";
 import { FormattedPlantInfo } from "../plants/map_state_to_props";
-import { UpdatePlant } from "../plants/plant_info";
 import { UUID } from "../resources/interfaces";
 import { CurveType } from "./templates";
 
@@ -36,9 +35,10 @@ export interface EditCurveState {
   templates: boolean;
   scale: boolean;
   hovered: string | undefined;
+  warningText: boolean;
 }
 
-export interface CurveSvgProps {
+export interface CurveSvgWithPopoverProps {
   dispatch: Function;
   curve: TaggedCurve;
   sourceFbosConfig: SourceFbosConfig;
@@ -52,6 +52,11 @@ export interface CurveSvgProps {
   soilHeightPoints?: TaggedGenericPointer[];
 }
 
+export interface CurveSvgProps extends CurveSvgWithPopoverProps {
+  setOpen(state: boolean): void;
+  warningLinesContent: { lines: WarningLinesContent[], text: string };
+}
+
 export interface CurveIconProps {
   curve: TaggedCurve;
 }
@@ -62,7 +67,8 @@ export interface CurveInfoProps {
   curve: TaggedCurve | undefined;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
-  updatePlant?: UpdatePlant;
+  onChange(id: number | string | undefined, curveType: CurveType): void;
+  plants: TaggedPlantPointer[];
   plant?: FormattedPlantInfo;
   curves: TaggedCurve[];
   farmwareEnvs?: TaggedFarmwareEnv[];
@@ -71,22 +77,15 @@ export interface CurveInfoProps {
 
 export interface AllCurveInfoProps {
   curves: TaggedCurve[];
-  openfarmSlug: string;
+  findCurve(curveType: CurveType): TaggedCurve | undefined;
+  onChange(id: number | string | undefined, curveType: CurveType): void;
   plants: TaggedPlantPointer[];
+  plant?: FormattedPlantInfo;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
-}
-
-export interface EditableAllCurveInfoProps {
-  updatePlant: UpdatePlant;
-  plant: FormattedPlantInfo;
-  curves: TaggedCurve[];
-  dispatch: Function;
-  sourceFbosConfig: SourceFbosConfig;
-  botSize: BotSize;
-  farmwareEnvs: TaggedFarmwareEnv[];
-  soilHeightPoints: TaggedGenericPointer[];
+  farmwareEnvs?: TaggedFarmwareEnv[];
+  soilHeightPoints?: TaggedGenericPointer[];
 }
 
 export interface PlotTools {
@@ -151,13 +150,26 @@ export interface YAxisProps {
   plotTools: PlotTools;
 }
 
-export interface WarningLinesProps {
+export interface WarningLinesContent {
+  value: number;
+  textValue?: number;
+  text: string;
+  style: "low" | "high";
+}
+
+export interface WarningLinesContentProps {
   curve: TaggedCurve;
-  plotTools: PlotTools;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
   x?: number;
   y?: number;
   farmwareEnvs?: TaggedFarmwareEnv[];
   soilHeightPoints?: TaggedGenericPointer[];
+}
+
+export interface WarningLinesProps {
+  warningLinesContent: { lines: WarningLinesContent[], text: string };
+  curve: TaggedCurve;
+  plotTools: PlotTools;
+  setOpen(state: boolean): void;
 }

@@ -15,7 +15,7 @@ import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeCurve, fakePoint } from "../../__test_support__/fake_state/resources";
-import { CurveIcon, CurveSvg } from "../chart";
+import { CurveIcon, CurveSvg, warningLinesContent } from "../chart";
 import { editCurve } from "../edit_curve";
 import { CurveIconProps, CurveSvgProps } from "../interfaces";
 
@@ -30,6 +30,8 @@ describe("<CurveSvg />", () => {
     editable: true,
     hovered: undefined,
     setHovered: jest.fn(),
+    setOpen: jest.fn(),
+    warningLinesContent: { lines: [], text: "" },
   });
 
   it("renders chart", () => {
@@ -161,11 +163,12 @@ describe("<CurveSvg />", () => {
     p.botSize.x.value = 100;
     p.botSize.y.value = 200;
     p.curve.body.data = TEST_DATA;
+    p.warningLinesContent = warningLinesContent(p);
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
-    expect(wrapper.text()).toContain("spread beyond");
+    expect(p.warningLinesContent.text).toContain("spread beyond");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 
@@ -189,12 +192,13 @@ describe("<CurveSvg />", () => {
     p.botSize.x.value = 2000;
     p.botSize.y.value = 1000;
     p.curve.body.data = TEST_DATA;
+    p.warningLinesContent = warningLinesContent(p);
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(20);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
-    expect(wrapper.text()).toContain("spread beyond");
-    expect(wrapper.text()).toContain("bleed");
+    expect(p.warningLinesContent.text).toContain("spread beyond");
+    expect(p.warningLinesContent.lines[0].text).toContain("bleed");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 
@@ -203,12 +207,12 @@ describe("<CurveSvg />", () => {
     p.curve.body.type = "height";
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
     p.curve.body.data = TEST_DATA;
+    p.warningLinesContent = warningLinesContent(p);
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
-    expect(wrapper.text()).toContain("exceed the distance");
-    expect(wrapper.find("rect").last().props().height).toEqual(31.5);
+    expect(p.warningLinesContent.text).toContain("exceed the distance");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 
@@ -218,12 +222,12 @@ describe("<CurveSvg />", () => {
     p.curve.body.type = "height";
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
     p.curve.body.data = TEST_DATA;
+    p.warningLinesContent = warningLinesContent(p);
     const wrapper = mount(<CurveSvg {...p} />);
     expect(wrapper.find("text").length).toEqual(18);
     expect(wrapper.text()).toContain("⚠");
     wrapper.find("#warning-icon").first().simulate("mouseEnter");
-    expect(wrapper.text()).toContain("exceed the distance");
-    expect(wrapper.find("rect").last().props().height).toEqual(33.25);
+    expect(p.warningLinesContent.text).toContain("exceed the distance");
     wrapper.find("#warning-icon").first().simulate("mouseLeave");
   });
 });

@@ -179,6 +179,9 @@ export interface DesignerState {
   profilePosition: Record<"x" | "y", number | undefined>;
   profileWidth: number;
   profileFollowBot: boolean;
+  cropWaterCurveId: number | undefined;
+  cropSpreadCurveId: number | undefined;
+  cropHeightCurveId: number | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -341,10 +344,7 @@ export interface CropCatalogProps {
 
 export interface CropInfoProps {
   dispatch: Function;
-  cropSearchQuery: string | undefined;
-  cropSearchResults: CropLiveSearchResult[];
-  cropSearchInProgress: boolean;
-  openedSavedGarden: string | undefined;
+  designer: DesignerState;
   openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
