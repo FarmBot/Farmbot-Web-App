@@ -297,6 +297,14 @@ export class RawCropInfo extends React.Component<CropInfoProps> {
     });
   }
 
+  componentWillUnmount() {
+    [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
+      this.props.dispatch({
+        type: CURVE_ACTION_LOOKUP[curveType], payload: undefined,
+      });
+    });
+  }
+
   /** Clear the current crop search results. */
   clearCropSearchResults = (crop: string) => () => {
     const { dispatch } = this.props;

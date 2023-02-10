@@ -10,8 +10,9 @@ import { TaggedCurve, TaggedPlantPointer } from "farmbot";
 import { CurveType } from "../curves/templates";
 import { PlantPointer } from "farmbot/dist/resources/api_resources";
 import { curveInfo, CURVE_TYPES } from "../curves/curves_inventory";
-import { DropDownItem, FBSelect } from "../ui";
+import { DropDownItem, FBSelect, NULL_CHOICE } from "../ui";
 import { Actions } from "../constants";
+import { FormattedPlantInfo } from "./map_state_to_props";
 
 export const AllCurveInfo = (props: AllCurveInfoProps) => {
   return <div className={"all-curve-info"}>
@@ -39,8 +40,9 @@ export const CurveInfo = (props: CurveInfoProps) => {
     <div className={"active-curve-name"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
       <FBSelect key={curve?.uuid}
-        allowEmpty={true}
-        list={curvesDropdownList({ curves, curveType, current: curve, plants })}
+        list={curvesDropdownList({
+          curves, curveType, current: curve, plants, plant,
+        })}
         selectedItem={curve ? curveToDdi(curve) : undefined}
         onChange={ddi => {
           (ddi.headingId || ddi.isNull)
@@ -65,14 +67,17 @@ interface CurvesDropdownListProps {
   curveType: CurveType;
   current: TaggedCurve | undefined;
   plants: TaggedPlantPointer[];
+  plant?: FormattedPlantInfo;
 }
 
 const curvesDropdownList = (props: CurvesDropdownListProps) => {
+  const openfarmSlug = props.plant?.slug || Path.getSlug(Path.cropSearch());
   const list: (DropDownItem | undefined)[] = [];
+  list.push(NULL_CHOICE);
   const mostUsedCurve = findMostUsedCurveForCrop({
     plants: props.plants,
     curves: props.curves,
-    openfarmSlug: Path.getSlug(Path.cropSearch()),
+    openfarmSlug,
   })(props.curveType);
   if (mostUsedCurve && props.current?.body.id != mostUsedCurve.body.id) {
     list.push({
@@ -80,8 +85,10 @@ const curvesDropdownList = (props: CurvesDropdownListProps) => {
     });
     list.push(curveToDdi(mostUsedCurve));
   }
-  const usedIds = props.plants.map(plant =>
-    plant.body[CURVE_KEY_LOOKUP[props.curveType]]);
+  const usedIds = props.plants
+    .filter(plant => plant.body.openfarm_slug == openfarmSlug)
+    .map(plant =>
+      plant.body[CURVE_KEY_LOOKUP[props.curveType]]);
   list.push({
     label: t("Currently used with this crop"), value: "", heading: true,
   });

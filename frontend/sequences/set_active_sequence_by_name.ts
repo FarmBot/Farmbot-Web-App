@@ -1,13 +1,14 @@
 import { selectAllSequences } from "../resources/selectors";
 import { store } from "../redux/store";
-import { urlFriendly, lastUrlChunk } from "../util";
+import { urlFriendly } from "../util";
 import { selectSequence } from "./actions";
 import { setMenuOpen } from "./test_button";
+import { Path } from "../internal_urls";
 
 const setSequence = (uuid: string) => store.dispatch(selectSequence(uuid));
 
 export function setActiveSequenceByName() {
-  const chunk = lastUrlChunk();
+  const chunk = Path.getLastChunk();
   store.dispatch(setMenuOpen(undefined));
   if (!chunk || chunk == "sequences") {
     return;

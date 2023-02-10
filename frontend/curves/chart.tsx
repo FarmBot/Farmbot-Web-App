@@ -10,7 +10,7 @@ import {
   CurveIconProps,
   CurveSvgProps, CurveSvgWithPopoverProps, DataLabelsProps, DataProps, PlotTools,
   WarningLinesContent,
-  WarningLinesContentProps,
+  GetWarningLinesContentProps,
   WarningLinesProps,
   XAxisProps, YAxisProps,
 } from "./interfaces";
@@ -84,7 +84,7 @@ export const CurveSvg = (props: CurveSvgProps) => {
 
 export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
   const [open, setOpen] = React.useState(false);
-  const warningContents = warningLinesContent({
+  const warnings = getWarningLinesContent({
     curve: props.curve,
     sourceFbosConfig: props.sourceFbosConfig,
     x: props.x,
@@ -99,8 +99,8 @@ export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
       popoverClassName={"warning-line-text-popover"}
       target={<div className={"target"} />}
       content={<div className={"warning-text"}>
-        <p className={"top"}>{warningContents.text}</p>
-        {warningContents.lines.map((line, index) => {
+        <p className={"top"}>{warnings.title}</p>
+        {warnings.lines.map((line, index) => {
           const value = line.textValue || line.value;
           return value > 0 && <p key={index}>
             {line.text}: {value}mm
@@ -111,7 +111,7 @@ export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
       sourceFbosConfig={props.sourceFbosConfig}
       botSize={props.botSize}
       hovered={props.hovered} setHovered={props.setHovered}
-      warningLinesContent={warningContents}
+      warningLinesContent={warnings}
       setOpen={setOpen}
       editable={props.editable} />
   </div>;
@@ -305,76 +305,77 @@ const YAxis = (props: YAxisProps) => {
   </g>;
 };
 
-export const warningLinesContent = (props: WarningLinesContentProps) => {
-  const { x, y } = props;
-  const gantryHeight = props.sourceFbosConfig("gantry_height").value as number;
-  const locationSoilHeight = getZAtLocation({
-    x,
-    y,
-    points: props.soilHeightPoints,
-    farmwareEnvs: props.farmwareEnvs,
-  });
-  const soilHeight = locationSoilHeight
-    || props.sourceFbosConfig("soil_height").value as number;
-  const utmClearance = Math.abs(soilHeight);
-  const gantryClearance = utmClearance + gantryHeight;
-  const xLength = props.botSize.x.value;
-  const yLength = props.botSize.y.value;
-  const xPosition = x || (xLength / 2);
-  const yPosition = y || (yLength / 2);
-  const distanceToEdge = {
-    x: { min: xPosition * 2, max: (xLength - xPosition) * 2 },
-    y: { min: yPosition * 2, max: (yLength - yPosition) * 2 },
-  };
-  const maxValueNum = maxValue(props.curve.body.data);
-  const edgeBleed = {
-    x: {
-      min: (maxValueNum - distanceToEdge.x.min) / 2,
-      max: (maxValueNum - distanceToEdge.x.max) / 2,
-    },
-    y: {
-      min: (maxValueNum - distanceToEdge.y.min) / 2,
-      max: (maxValueNum - distanceToEdge.y.max) / 2,
-    },
-  };
-  const lines = (): WarningLinesContent[] => {
+export const getWarningLinesContent =
+  (props: GetWarningLinesContentProps): WarningLinesContent => {
+    const { x, y } = props;
+    const gantryHeight = props.sourceFbosConfig("gantry_height").value as number;
+    const locationSoilHeight = getZAtLocation({
+      x,
+      y,
+      points: props.soilHeightPoints,
+      farmwareEnvs: props.farmwareEnvs,
+    });
+    const soilHeight = locationSoilHeight
+      || props.sourceFbosConfig("soil_height").value as number;
+    const utmClearance = Math.abs(soilHeight);
+    const gantryClearance = utmClearance + gantryHeight;
+    const xLength = props.botSize.x.value;
+    const yLength = props.botSize.y.value;
+    const xPosition = x || (xLength / 2);
+    const yPosition = y || (yLength / 2);
+    const distanceToEdge = {
+      x: { min: xPosition * 2, max: (xLength - xPosition) * 2 },
+      y: { min: yPosition * 2, max: (yLength - yPosition) * 2 },
+    };
+    const maxValueNum = maxValue(props.curve.body.data);
+    const edgeBleed = {
+      x: {
+        min: (maxValueNum - distanceToEdge.x.min) / 2,
+        max: (maxValueNum - distanceToEdge.x.max) / 2,
+      },
+      y: {
+        min: (maxValueNum - distanceToEdge.y.min) / 2,
+        max: (maxValueNum - distanceToEdge.y.max) / 2,
+      },
+    };
     switch (props.curve.body.type) {
       case CurveType.spread:
-        return isUndefined(x) || isUndefined(y)
-          ? [
-            { value: yLength, text: t("Y-axis length"), style: "high" },
-            { value: xLength, text: t("X-axis length"), style: "high" },
-          ]
-          : [
-            {
-              value: distanceToEdge.x.min, textValue: edgeBleed.x.min,
-              text: t("X-min bleed"), style: "low"
-            },
-            {
-              value: distanceToEdge.y.min, textValue: edgeBleed.y.min,
-              text: t("Y-min bleed"), style: "high"
-            },
-            {
-              value: distanceToEdge.x.max, textValue: edgeBleed.x.max,
-              text: t("X-max bleed"), style: "low"
-            },
-            {
-              value: distanceToEdge.y.max, textValue: edgeBleed.y.max,
-              text: t("Y-max bleed"), style: "high"
-            },
-          ];
-      case CurveType.height: return [
-        { value: gantryClearance, text: t("Gantry main beam"), style: "high" },
-        { value: utmClearance, text: t("Fully raised tool head"), style: "low" },
-      ];
-      default: return [];
+        return {
+          title: t("Plant may spread beyond the growing area"),
+          lines: isUndefined(x) || isUndefined(y)
+            ? [
+              { value: yLength, text: t("Y-axis length"), style: "high" },
+              { value: xLength, text: t("X-axis length"), style: "high" },
+            ]
+            : [
+              {
+                value: distanceToEdge.x.min, textValue: edgeBleed.x.min,
+                text: t("X-min bleed"), style: "low"
+              },
+              {
+                value: distanceToEdge.y.min, textValue: edgeBleed.y.min,
+                text: t("Y-min bleed"), style: "high"
+              },
+              {
+                value: distanceToEdge.x.max, textValue: edgeBleed.x.max,
+                text: t("X-max bleed"), style: "low"
+              },
+              {
+                value: distanceToEdge.y.max, textValue: edgeBleed.y.max,
+                text: t("Y-max bleed"), style: "high"
+              },
+            ]
+        };
+      case CurveType.height: return {
+        title: t("Plant may exceed the distance between the soil and FarmBot"),
+        lines: [
+          { value: gantryClearance, text: t("Gantry main beam"), style: "high" },
+          { value: utmClearance, text: t("Fully raised tool head"), style: "low" },
+        ]
+      };
+      default: return { title: "", lines: [] };
     }
   };
-  const text = props.curve.body.type == CurveType.spread
-    ? t("Plant may spread beyond the growing area")
-    : t("Plant may exceed the distance between the soil and FarmBot");
-  return { lines: lines(), text };
-};
 
 const WarningLines = (props: WarningLinesProps) => {
   const { normY, xZero } = props.plotTools;

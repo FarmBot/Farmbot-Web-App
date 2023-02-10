@@ -54,12 +54,14 @@ export interface CurveSvgWithPopoverProps {
 
 export interface CurveSvgProps extends CurveSvgWithPopoverProps {
   setOpen(state: boolean): void;
-  warningLinesContent: { lines: WarningLinesContent[], text: string };
+  warningLinesContent: WarningLinesContent;
 }
 
 export interface CurveIconProps {
   curve: TaggedCurve;
 }
+
+type ChangeCurve = (id: number | string | undefined, curveType: CurveType) => void;
 
 export interface CurveInfoProps {
   curveType: CurveType;
@@ -67,7 +69,7 @@ export interface CurveInfoProps {
   curve: TaggedCurve | undefined;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
-  onChange(id: number | string | undefined, curveType: CurveType): void;
+  onChange: ChangeCurve;
   plants: TaggedPlantPointer[];
   plant?: FormattedPlantInfo;
   curves: TaggedCurve[];
@@ -78,7 +80,7 @@ export interface CurveInfoProps {
 export interface AllCurveInfoProps {
   curves: TaggedCurve[];
   findCurve(curveType: CurveType): TaggedCurve | undefined;
-  onChange(id: number | string | undefined, curveType: CurveType): void;
+  onChange: ChangeCurve;
   plants: TaggedPlantPointer[];
   plant?: FormattedPlantInfo;
   dispatch: Function;
@@ -150,14 +152,19 @@ export interface YAxisProps {
   plotTools: PlotTools;
 }
 
-export interface WarningLinesContent {
+export interface WarningLine {
   value: number;
   textValue?: number;
   text: string;
   style: "low" | "high";
 }
 
-export interface WarningLinesContentProps {
+export interface WarningLinesContent {
+  title: string;
+  lines: WarningLine[];
+}
+
+export interface GetWarningLinesContentProps {
   curve: TaggedCurve;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
@@ -168,7 +175,7 @@ export interface WarningLinesContentProps {
 }
 
 export interface WarningLinesProps {
-  warningLinesContent: { lines: WarningLinesContent[], text: string };
+  warningLinesContent: WarningLinesContent;
   curve: TaggedCurve;
   plotTools: PlotTools;
   setOpen(state: boolean): void;

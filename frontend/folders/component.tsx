@@ -36,7 +36,7 @@ import {
   sequenceEditMaybeSave,
 } from "./actions";
 import { Link } from "../link";
-import { urlFriendly, lastUrlChunk } from "../util";
+import { urlFriendly } from "../util";
 import {
   setActiveSequenceByName,
 } from "../sequences/set_active_sequence_by_name";
@@ -60,7 +60,7 @@ export const FolderListItem = (props: FolderItemProps) => {
   const url = Path.sequences(urlFriendly(seqName || ""));
   const moveSource = movedSequenceUuid === sequence.uuid ? "move-source" : "";
   const nameWithSaveIndicator = seqName + (sequence.specialStatus ? "*" : "");
-  const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
+  const active = Path.lastChunkEquals(urlFriendly(seqName)) ? "active" : "";
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [descriptionOpen, setDescriptionOpen] = React.useState(false);
   const hovered = props.menuOpen == sequence.uuid || settingsOpen || descriptionOpen

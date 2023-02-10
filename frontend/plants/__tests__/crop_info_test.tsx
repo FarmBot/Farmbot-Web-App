@@ -100,6 +100,22 @@ describe("<CropInfo />", () => {
     });
   });
 
+  it("clears selected curves", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_WATER_CURVE_ID, payload: undefined,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_SPREAD_CURVE_ID, payload: undefined,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_HEIGHT_CURVE_ID, payload: undefined,
+    });
+  });
+
   it("doesn't change search query", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();

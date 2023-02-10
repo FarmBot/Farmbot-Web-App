@@ -1,12 +1,13 @@
 import { store } from "../redux/store";
-import { lastUrlChunk, urlFriendly } from "../util";
+import { urlFriendly } from "../util";
 import { Actions } from "../constants";
+import { Path } from "../internal_urls";
 
 export const farmwareUrlFriendly = (farmwareName: string) =>
   urlFriendly(farmwareName).replace(/-/g, "_");
 
 export function setActiveFarmwareByName(farmwareNames: (string | undefined)[]) {
-  const chunk = farmwareUrlFriendly(lastUrlChunk());
+  const chunk = farmwareUrlFriendly(Path.getLastChunk());
   if (!chunk || chunk == "farmware") { return; }
 
   farmwareNames.map(farmwareName => {

@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { isUndefined, last } from "lodash";
 import { getPathArray } from "./history";
 import { t } from "./i18next_wrapper";
 
@@ -11,6 +11,9 @@ export namespace Path {
     getPathArray().join("/").startsWith(withApp(path));
   export const equals = (path: string) =>
     getPathArray().join("/") == withApp(path);
+  export const getLastChunk = () => last(getPathArray()) || "";
+  export const lastChunkEquals = (chunk: string) => chunk == getLastChunk();
+  export const lastChunkIsNum = (): boolean => !isNaN(parseInt(getLastChunk()));
 
   export const route = (path: string) => path.replace("/app", "");
   export const withApp = (path: string) =>
