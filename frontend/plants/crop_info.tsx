@@ -139,6 +139,7 @@ const handleDisplay = ([field, value]: string[], i: number) => {
 interface CropInfoListProps {
   result: CropLiveSearchResult;
   dispatch: Function;
+  selectMostUsedCurves(slug: string): void;
   openfarmCropFetch: OpenfarmSearch;
 }
 
@@ -167,6 +168,7 @@ const Companions = (props: CropInfoListProps) => {
         onClick={() => {
           openfarmCropFetch(companion.slug)(dispatch);
           unselectPlant(dispatch)();
+          props.selectMostUsedCurves(companion.slug);
         }}
         onDragStart={() => {
           dispatch({
@@ -282,28 +284,37 @@ export const searchForCurrentCrop = (openfarmCropFetch: OpenfarmSearch) =>
     unselectPlant(dispatch)();
   };
 
-export class RawCropInfo extends React.Component<CropInfoProps> {
+interface CropInfoState {
+  crop: string;
+}
+
+export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
+  state: CropInfoState = { crop: Path.getSlug(Path.cropSearch()) };
 
   componentDidMount() {
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmCropFetch));
+    this.selectMostUsedCurves(Path.getSlug(Path.cropSearch()));
+  }
+
+  componentDidUpdate() {
+    const crop = Path.getSlug(Path.cropSearch());
+    if (crop != this.state.crop) {
+      this.selectMostUsedCurves(crop);
+      this.setState({ crop });
+    }
+  }
+
+  selectMostUsedCurves = (slug: string) => {
     const findCurve = findMostUsedCurveForCrop({
       plants: this.props.plants,
       curves: this.props.curves,
-      openfarmSlug: Path.getSlug(Path.cropSearch()),
+      openfarmSlug: slug,
     });
     [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
       const id = findCurve(curveType)?.body.id;
-      this.props.dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });
+      this.changeCurve(id, curveType);
     });
-  }
-
-  componentWillUnmount() {
-    [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
-      this.props.dispatch({
-        type: CURVE_ACTION_LOOKUP[curveType], payload: undefined,
-      });
-    });
-  }
+  };
 
   /** Clear the current crop search results. */
   clearCropSearchResults = (crop: string) => () => {
@@ -353,6 +364,7 @@ export class RawCropInfo extends React.Component<CropInfoProps> {
           <EditOnOpenFarm slug={result.crop.slug} />
           <CropInfoList result={result}
             dispatch={this.props.dispatch}
+            selectMostUsedCurves={this.selectMostUsedCurves}
             openfarmCropFetch={this.props.openfarmCropFetch} />
           {DevSettings.futureFeaturesEnabled() &&
             <AllCurveInfo

@@ -15,6 +15,6 @@ export interface DropDownItem {
 }
 
 interface NullChoice extends DropDownItem { label: "None"; value: ""; }
-const nc: NullChoice = { label: "None", value: "" };
+const nc: NullChoice = { label: "None", value: "", isNull: true };
 /** Used as a placeholder for a selection of "none" when allowEmpty is true. */
 export const NULL_CHOICE = Object.freeze(nc);

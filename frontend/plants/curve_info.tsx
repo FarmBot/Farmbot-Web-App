@@ -1,5 +1,5 @@
 import React from "react";
-import { countBy } from "lodash";
+import { countBy, sortBy, uniq } from "lodash";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { Link } from "../link";
@@ -40,9 +40,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
     <div className={"active-curve-name"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
       <FBSelect key={curve?.uuid}
-        list={curvesDropdownList({
-          curves, curveType, current: curve, plants, plant,
-        })}
+        list={curvesDropdownList({ curves, curveType, plants, plant })}
         selectedItem={curve ? curveToDdi(curve) : undefined}
         onChange={ddi => {
           (ddi.headingId || ddi.isNull)
@@ -65,7 +63,6 @@ export const CurveInfo = (props: CurveInfoProps) => {
 interface CurvesDropdownListProps {
   curves: TaggedCurve[];
   curveType: CurveType;
-  current: TaggedCurve | undefined;
   plants: TaggedPlantPointer[];
   plant?: FormattedPlantInfo;
 }
@@ -74,46 +71,39 @@ const curvesDropdownList = (props: CurvesDropdownListProps) => {
   const openfarmSlug = props.plant?.slug || Path.getSlug(Path.cropSearch());
   const list: (DropDownItem | undefined)[] = [];
   list.push(NULL_CHOICE);
-  const mostUsedCurve = findMostUsedCurveForCrop({
-    plants: props.plants,
-    curves: props.curves,
-    openfarmSlug,
-  })(props.curveType);
-  if (mostUsedCurve && props.current?.body.id != mostUsedCurve.body.id) {
-    list.push({
-      label: t("Most used"), value: "", heading: true,
-    });
-    list.push(curveToDdi(mostUsedCurve));
-  }
   const usedIds = props.plants
     .filter(plant => plant.body.openfarm_slug == openfarmSlug)
-    .map(plant =>
-      plant.body[CURVE_KEY_LOOKUP[props.curveType]]);
+    .map(plant => plant.body[CURVE_KEY_LOOKUP[props.curveType]])
+    .filter(id => id);
   list.push({
     label: t("Currently used with this crop"), value: "", heading: true,
   });
-  const curvesOfType = props.curves.filter(curve =>
-    curve.body.type == props.curveType);
-  curvesOfType.filter(curve =>
-    usedIds.includes(curve.body.id))
-    .map(curve => list.push(curveToDdi(curve)));
+  sortBy(Object.entries(countBy(usedIds)), ([_id, count]) => count)
+    .reverse()
+    .map(([id, count]) => {
+      const curve = props.curves.filter(c => c.body.id == parseInt(id))[0];
+      list.push(curveToDdi(curve, count));
+    });
   list.push({
     label: t("Other curves"), value: "", heading: true,
   });
-  curvesOfType
-    .filter(curve => !usedIds.includes(curve.body.id))
+  props.curves.filter(curve => curve.body.type == props.curveType)
+    .filter(curve => !uniq(usedIds).includes(curve.body.id))
     .map(curve => list.push(curveToDdi(curve)));
   return betterCompact(list);
 };
 
-const curveToDdi = (curve: TaggedCurve): DropDownItem | undefined =>
-  curve.body.id
-    ? ({
-      label: `${curve.body.name} - ${curveInfo(curve)}`,
-      value: curve.body.id,
-      headingId: curve.body.type,
-    })
-    : undefined;
+const curveToDdi =
+  (curve: TaggedCurve, useCount?: number): DropDownItem | undefined => {
+    const uses = useCount ? ` (${useCount})` : "";
+    return curve.body.id
+      ? ({
+        label: `${curve.body.name} - ${curveInfo(curve)}${uses}`,
+        value: curve.body.id,
+        headingId: curve.body.type,
+      })
+      : undefined;
+  };
 
 interface FindCurveProps {
   openfarmSlug: string;

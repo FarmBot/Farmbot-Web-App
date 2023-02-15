@@ -144,7 +144,7 @@ describe("IfBlockDropDownHandler()", () => {
   it("selectedItem(): null", () => {
     const { selectedItem } = IfBlockDropDownHandler(fakeThenElseProps("_then"));
     const item = selectedItem();
-    expect(item).toEqual({ label: "None", value: "" });
+    expect(item).toEqual({ label: "None", value: "", isNull: true });
   });
 
   it("edits variables", () => {
