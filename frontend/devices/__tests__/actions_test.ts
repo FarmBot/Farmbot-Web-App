@@ -576,8 +576,6 @@ describe("changeStepSize()", () => {
 
 describe("fetchMinOsFeatureData()", () => {
   const EXPECTED_URL = expect.stringContaining("FEATURE_MIN_VERSIONS.json");
-  afterEach(() =>
-    jest.restoreAllMocks());
 
   it("fetches min OS feature data: empty", async () => {
     mockGet = Promise.resolve({ data: {} });
@@ -606,22 +604,22 @@ describe("fetchMinOsFeatureData()", () => {
   it("fetches bad min OS feature data: not an object", async () => {
     mockGet = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
-    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    console.log = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockConsole).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining("\"bad\""));
   });
 
   it("fetches bad min OS feature data", async () => {
     mockGet = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
-    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    console.log = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockConsole).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining("{\"a\":\"0\",\"b\":0}"));
   });
 

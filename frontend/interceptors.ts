@@ -1,7 +1,7 @@
 import { SafeError, isSafeError } from "./interceptor_support";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
-import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";
 import { outstandingRequests } from "./connectivity/data_consistency";
@@ -65,7 +65,7 @@ export function responseRejected(x: SafeError | undefined) {
 }
 
 export function requestFulfilled(auth: AuthState) {
-  return (config: AxiosRequestConfig) => {
+  return (config: InternalAxiosRequestConfig) => {
     const req = config.url || "";
     const isAPIRequest = req.includes(API.current.baseUrl);
     if (isAPIRequest) {
