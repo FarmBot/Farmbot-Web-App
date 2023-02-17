@@ -88,6 +88,20 @@ export function sendRPC(command: RpcRequestBodyItem) {
     .then(maybeNoop, commandErr());
 }
 
+/** Request bot state update. */
+export function readStatus() {
+  getDevice()
+    .readStatus()
+    .then(noop, noop);
+}
+
+/** Request bot state update and return promise. */
+export function readStatusReturnPromise() {
+  return getDevice()
+    .readStatus()
+    .then(noop, noop);
+}
+
 /** Update FBOS. */
 export function checkControllerUpdates() {
   const noun = t("Check for Updates");

@@ -20,7 +20,7 @@ import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { MetricPanelState, TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
-import { restartFirmware, sync } from "../actions";
+import { readStatus, restartFirmware, sync } from "../actions";
 import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 import { Actions } from "../../constants";
 
@@ -51,6 +51,7 @@ export class Connectivity
   componentDidMount = () => {
     this.props.dispatch(refresh(this.props.device));
     this.props.dispatch(sync());
+    readStatus();
   };
 
   hover = (connectionName: string) =>

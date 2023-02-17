@@ -19,7 +19,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   findHome: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   send: jest.fn(() => Promise.resolve()),
-  readStatus: jest.fn(() => Promise.resolve())
+  readStatus: jest.fn(() => Promise.resolve()),
 };
 
 const mockDevice = { current: mockDeviceDefault };
@@ -74,6 +74,20 @@ describe("sendRPC()", () => {
       args: { label: expect.any(String), priority: 600 },
       body: [{ kind: "sync", args: {} }],
     });
+  });
+});
+
+describe("readStatus()", () => {
+  it("calls readStatus", async () => {
+    await actions.readStatus();
+    expect(mockDevice.current.readStatus).toHaveBeenCalled();
+  });
+});
+
+describe("readStatusReturnPromise()", () => {
+  it("calls readStatusReturnPromise", async () => {
+    await actions.readStatusReturnPromise();
+    expect(mockDevice.current.readStatus).toHaveBeenCalled();
   });
 });
 

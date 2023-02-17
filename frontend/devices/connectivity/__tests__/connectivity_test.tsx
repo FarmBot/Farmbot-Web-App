@@ -3,6 +3,7 @@ jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
 jest.mock("../../actions", () => ({
   restartFirmware: jest.fn(),
   sync: jest.fn(),
+  readStatus: jest.fn(),
 }));
 
 import React from "react";
@@ -17,7 +18,7 @@ import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
-import { sync } from "../../actions";
+import { sync, readStatus } from "../../actions";
 import { clickButton } from "../../../__test_support__/helpers";
 import { metricPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
@@ -101,6 +102,7 @@ describe("<Connectivity />", () => {
     mount(<Connectivity {...p} />);
     expect(refresh).toHaveBeenCalledWith(p.device);
     expect(sync).toHaveBeenCalled();
+    expect(readStatus).toHaveBeenCalled();
   });
 
   it("displays fbos_version", () => {
