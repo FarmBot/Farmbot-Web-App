@@ -101,15 +101,16 @@ describe("resource reducer", () => {
       .toBe(!state.sequencesPanelState.featured);
   });
 
-  it("toggles metric panel options", () => {
+  it("sets metric panel options", () => {
     const payload: keyof MetricPanelState = "history";
     const state = app;
     const newState = appReducer(state, {
-      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      type: Actions.SET_METRIC_PANEL_OPTION,
       payload,
     });
-    expect(newState.metricPanelState.history)
-      .toBe(!state.metricPanelState.history);
+    expect(newState.metricPanelState.realtime).toBeFalsy();
+    expect(newState.metricPanelState.network).toBeFalsy();
+    expect(newState.metricPanelState.history).toBeTruthy();
   });
 
   it("sets controls popup state", () => {

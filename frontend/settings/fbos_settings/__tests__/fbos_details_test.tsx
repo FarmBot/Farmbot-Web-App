@@ -199,14 +199,14 @@ describe("<FbosDetails />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.throttled = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("voltage");
+    expect(wrapper.html()).not.toContain("voltage-saucer");
   });
 
   it("displays voltage indicator", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.throttled = "0x0";
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("voltage");
+    expect(wrapper.html()).toContain("voltage-saucer");
   });
 
   it("displays cpu usage", () => {

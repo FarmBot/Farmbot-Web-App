@@ -83,6 +83,8 @@ export interface SequencesPanelState {
 }
 
 export interface MetricPanelState {
+  realtime: boolean;
+  network: boolean;
   history: boolean;
 }
 

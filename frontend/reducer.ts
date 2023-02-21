@@ -73,6 +73,8 @@ export const emptyState = (): AppState => {
       featured: false,
     },
     metricPanelState: {
+      realtime: true,
+      network: false,
       history: false,
     },
     toasts: {},
@@ -115,11 +117,13 @@ export const appReducer =
         s.sequencesPanelState[a.payload] = !s.sequencesPanelState[a.payload];
         return s;
       })
-    .add<keyof MetricPanelState>(
-      Actions.TOGGLE_METRIC_PANEL_OPTION, (s, a) => {
-        s.metricPanelState[a.payload] = !s.metricPanelState[a.payload];
-        return s;
-      })
+    .add<keyof MetricPanelState>(Actions.SET_METRIC_PANEL_OPTION, (s, a) => {
+      s.metricPanelState.realtime = false;
+      s.metricPanelState.network = false;
+      s.metricPanelState.history = false;
+      s.metricPanelState[a.payload] = true;
+      return s;
+    })
     .add<boolean>(
       Actions.BULK_TOGGLE_SETTINGS_PANEL, (s, a) => {
         s.settingsPanelState.farmbot_settings = a.payload;

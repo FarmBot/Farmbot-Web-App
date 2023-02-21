@@ -290,17 +290,16 @@ interface VoltageDisplayProps {
 
 /** RPI throttle state display row: label, indicator. */
 export const VoltageDisplay = ({ chip, throttleData }: VoltageDisplayProps) => {
-  if (!throttleData) { return <div className="voltage-display" />; }
   const voltageColor = colorFromThrottle(throttleData, ThrottleType.UnderVoltage);
   return <div className="voltage-display">
     <p><b>{chip && chip.toUpperCase()} {t("Voltage")}</b></p>
     <Help text={ToolTips.VOLTAGE_STATUS} />
     <p>:&nbsp;{VOLTAGE_COLOR_KEY()[voltageColor]}</p>
-    <Popover usePortal={false} className={"voltage-saucer"}
+    {throttleData && <Popover usePortal={false} className={"voltage-saucer"}
       target={<ThrottleIndicator
         throttleDataString={throttleData}
         throttleType={ThrottleType.UnderVoltage} />}
-      content={ThrottleDisplay(throttleData)} />
+      content={ThrottleDisplay(throttleData)} />}
   </div>;
 };
 

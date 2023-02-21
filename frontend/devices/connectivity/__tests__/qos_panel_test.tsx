@@ -11,7 +11,22 @@ describe("<QosPanel />", () => {
   it("renders", () => {
     const wrapper = mount(<QosPanel {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("percent ok: 50 %");
+    expect(wrapper.html()).toContain("green");
     expect(wrapper.text()).not.toContain("---");
+  });
+
+  it("renders slow pings", () => {
+    const p = fakeProps();
+    p.pings = { "ping": { kind: "complete", start: 0, end: 700 } };
+    const wrapper = mount(<QosPanel {...p} />);
+    expect(wrapper.html()).toContain("yellow");
+  });
+
+  it("renders slower pings", () => {
+    const p = fakeProps();
+    p.pings = { "ping": { kind: "complete", start: 0, end: 1000 } };
+    const wrapper = mount(<QosPanel {...p} />);
+    expect(wrapper.html()).toContain("red");
   });
 
   it("renders when empty", () => {

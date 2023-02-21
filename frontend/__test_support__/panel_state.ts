@@ -60,5 +60,7 @@ export const sequencesPanelState = (): SequencesPanelState => ({
 });
 
 export const metricPanelState = (): MetricPanelState => ({
-  history: true,
+  realtime: true,
+  network: false,
+  history: false,
 });
