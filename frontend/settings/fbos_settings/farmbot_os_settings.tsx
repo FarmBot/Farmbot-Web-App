@@ -25,11 +25,11 @@ export enum ColWidth {
 
 export const FarmBotSettings = (props: FarmbotSettingsProps) => {
   const {
-    dispatch, device, timeSettings, sourceFbosConfig, botOnline,
+    dispatch, device, timeSettings, sourceFbosConfig, botOnline, showAdvanced, bot,
   } = props;
   const { value } = props.sourceFbosConfig("firmware_hardware");
   const firmwareHardware = validFirmwareHardware(value);
-  const commonProps = { dispatch, device };
+  const commonProps = { dispatch, device, showAdvanced, sourceFbosConfig, bot };
   return <Highlight className={"section"}
     settingName={DeviceSetting.farmbotSettings}>
     <Header {...commonProps}
@@ -43,34 +43,21 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       <TimezoneRow {...commonProps} />
       <GardenLocationRow {...commonProps} />
       <OtaTimeSelectorRow {...commonProps}
-        timeSettings={timeSettings}
-        sourceFbosConfig={sourceFbosConfig} />
-      <AutoUpdateRow {...commonProps}
-        sourceFbosConfig={sourceFbosConfig} />
+        timeSettings={timeSettings} />
+      <AutoUpdateRow {...commonProps} />
       <FarmbotOsRow {...commonProps}
-        bot={props.bot}
-        sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
         timeSettings={timeSettings} />
       <BootSequenceSelector />
-      <BoardType
+      <BoardType {...commonProps}
         botOnline={botOnline}
-        bot={props.bot}
         alerts={props.alerts}
-        dispatch={props.dispatch}
         timeSettings={props.timeSettings}
-        firmwareHardware={firmwareHardware}
-        sourceFbosConfig={sourceFbosConfig} />
-      <FirmwarePathRow
-        dispatch={props.dispatch}
-        firmwarePath={"" + sourceFbosConfig("firmware_path").value}
-        showAdvanced={props.showAdvanced} />
-      <RpiModel
-        dispatch={props.dispatch}
-        firmwareHardware={firmwareHardware}
-        device={props.device}
-        bot={props.bot}
-        showAdvanced={props.showAdvanced} />
+        firmwareHardware={firmwareHardware} />
+      <FirmwarePathRow {...commonProps}
+        firmwarePath={"" + sourceFbosConfig("firmware_path").value} />
+      <RpiModel {...commonProps}
+        firmwareHardware={firmwareHardware} />
     </Collapse>
   </Highlight>;
 };

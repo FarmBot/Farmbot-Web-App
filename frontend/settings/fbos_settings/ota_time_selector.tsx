@@ -66,7 +66,9 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps) => {
 };
 
 export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
-  return <Highlight settingName={DeviceSetting.osAutoUpdate}>
+  return <Highlight settingName={DeviceSetting.osAutoUpdate}
+    hidden={!props.showAdvanced}
+    className={"advanced"}>
     <Row>
       <Col xs={5}>
         <label>

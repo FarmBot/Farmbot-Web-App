@@ -24,6 +24,7 @@ describe("<FarmbotOsRow />", () => {
     botOnline: false,
     device: fakeDevice(),
     timeSettings: fakeTimeSettings(),
+    showAdvanced: true,
   });
 
   it("renders", () => {

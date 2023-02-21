@@ -93,7 +93,9 @@ export class FarmbotOsRow
   };
 
   render() {
-    return <Highlight settingName={DeviceSetting.farmbotOS}>
+    return <Highlight settingName={DeviceSetting.farmbotOS}
+      hidden={!this.props.showAdvanced}
+      className={"advanced"}>
       <Row>
         <Col xs={5}>
           <label>

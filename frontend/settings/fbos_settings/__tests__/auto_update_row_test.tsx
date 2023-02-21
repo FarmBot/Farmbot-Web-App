@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { AutoUpdateRow } from "../auto_update_row";
 import { mount } from "enzyme";
 import { AutoUpdateRowProps } from "../interfaces";
