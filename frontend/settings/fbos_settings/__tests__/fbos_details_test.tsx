@@ -160,7 +160,7 @@ describe("<FbosDetails />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.soc_temp = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text()).toContain("CPU temperature: unknown");
+    expect(wrapper.text()).toContain("CPU temperature: Unknown");
     expect(wrapper.text()).not.toContain("&deg;C");
   });
 
@@ -193,13 +193,6 @@ describe("<FbosDetails />", () => {
     p.bot.hardware.informational_settings.uptime = 172800;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 days");
-  });
-
-  it("doesn't display when throttled value is undefined", () => {
-    const p = fakeProps();
-    p.bot.hardware.informational_settings.throttled = undefined;
-    const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.html()).not.toContain("voltage-saucer");
   });
 
   it("displays voltage indicator", () => {
@@ -304,7 +297,7 @@ describe("<PiDisplay />", () => {
     ["3", "rpi3", "arduino"],
     ["Zero 2 W", "rpi3", "express_k11"],
     ["4", "rpi4", "arduino"],
-    ["unknown", "", undefined],
+    ["Unknown", "", undefined],
   ])("returns correct pi model: %s", (expected, chip, firmware) => {
     const p = fakeProps();
     p.chip = chip;
@@ -340,8 +333,8 @@ describe("<MacAddress />", () => {
   });
 
   it.each<[string, string | undefined, string | undefined, boolean]>([
-    ["", undefined, undefined, false],
-    ["", "---", "rpi", false],
+    ["MAC address: ---", undefined, undefined, false],
+    ["MAC address: ---", "---", "rpi", false],
     ["MAC address: b8:27:eb:34:56:78", "farmbot-12345678.local", undefined, false],
     ["MAC address: dc:a6:32:cd:ef:gh", "farmbot-00000000abcdefgh", "rpi4", false],
     ["MAC address: dc:a6:32:55:98:ba", "farmbot-00000000abcdefgh", "rpi4", true],
@@ -395,6 +388,6 @@ describe("reformatFbosVersion()", () => {
   });
 
   it("returns null version string", () => {
-    expect(reformatFbosVersion(undefined)).toEqual("unknown");
+    expect(reformatFbosVersion(undefined)).toEqual("Unknown");
   });
 });

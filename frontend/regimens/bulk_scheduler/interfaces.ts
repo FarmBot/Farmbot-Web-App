@@ -1,4 +1,4 @@
-import { TaggedRegimen, TaggedSequence } from "farmbot";
+import { TaggedDevice, TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 
 export interface RegimenSchedulerProps {
@@ -9,6 +9,7 @@ export interface RegimenSchedulerProps {
   selectedSequence: TaggedSequence | undefined;
   dailyOffsetMs: number;
   weeks: Week[];
+  device: TaggedDevice;
 }
 
 export interface BulkEditorProps {
@@ -18,6 +19,7 @@ export interface BulkEditorProps {
   resources: ResourceIndex;
   sequences: TaggedSequence[];
   dispatch: Function;
+  device: TaggedDevice;
 }
 
 type WeekDay =

@@ -11,7 +11,7 @@ import { AddButton } from "../bulk_scheduler/add_button";
 import { commitBulkEditor } from "../bulk_scheduler/actions";
 import { Everything } from "../../interfaces";
 import {
-  maybeGetRegimen, selectAllSequences, maybeGetSequence,
+  maybeGetRegimen, selectAllSequences, maybeGetSequence, getDeviceAccountSettings,
 } from "../../resources/selectors";
 import { RegimenSchedulerProps } from "./interfaces";
 import { Path } from "../../internal_urls";
@@ -31,6 +31,7 @@ export const mapStateToProps = (props: Everything): RegimenSchedulerProps => {
     selectedSequence,
     dailyOffsetMs,
     weeks,
+    device: getDeviceAccountSettings(props.resources.index),
   };
 };
 
@@ -57,6 +58,7 @@ export class RawDesignerRegimenScheduler
             weeks={this.props.weeks}
             sequences={this.props.sequences}
             resources={this.props.resources}
+            device={this.props.device}
             dispatch={this.props.dispatch} />
         </div>
       </DesignerPanelContent>

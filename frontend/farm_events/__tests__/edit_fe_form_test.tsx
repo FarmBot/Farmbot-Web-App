@@ -30,15 +30,16 @@ import { SpecialStatus, ParameterApplication } from "farmbot";
 import moment from "moment";
 import { push } from "../../history";
 import {
-  buildResourceIndex,
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { save, destroy } from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { error, success } from "../../toast/toast";
+import { error, success, warning } from "../../toast/toast";
 import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
+import { Content } from "../../constants";
 
 const mockSequence = fakeSequence();
 
@@ -299,6 +300,21 @@ describe("<EditFEForm />", () => {
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     await expect(save).toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Unable to save event.");
+  });
+
+  it("displays warning", async () => {
+    const p = fakeProps();
+    const device = fakeDevice();
+    device.body.ota_hour = 3;
+    p.resources = buildResourceIndex([device]).index;
+    p.farmEvent.body.start_time = "2017-05-22T03:00:00.000Z";
+    p.farmEvent.body.end_time = "2017-06-22T06:00:00.000Z";
+    const i = instance(p);
+    await i.commitViewModel(moment("2017-05-21T03:00:00.000Z"));
+    await expect(save).toHaveBeenCalled();
+    expect(success).toHaveBeenCalledWith(
+      "The next item in this event will run in a day.");
+    expect(warning).toHaveBeenCalledWith(Content.WITHIN_HOUR_OF_OS_UPDATE);
   });
 
   it("throws error for invalid executable_type", () => {

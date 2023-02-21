@@ -2,10 +2,12 @@ import React from "react";
 import { QosPanel, QosPanelProps, colorFromPercentOK } from "../qos_panel";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
 import { mount } from "enzyme";
+import { Actions } from "../../../constants";
 
 describe("<QosPanel />", () => {
   const fakeProps = (): QosPanelProps => ({
     pings: fakePings(),
+    dispatch: jest.fn(),
   });
 
   it("renders", () => {
@@ -34,6 +36,16 @@ describe("<QosPanel />", () => {
     p.pings = {};
     const wrapper = mount(<QosPanel {...p} />);
     expect(wrapper.text()).toContain("---");
+  });
+
+  it("calls onFocus callback", () => {
+    const p = fakeProps();
+    const wrapper = mount<QosPanel>(<QosPanel {...p} />);
+    wrapper.mount();
+    wrapper.instance().onFocus();
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.CLEAR_PINGS, payload: undefined });
+    wrapper.unmount();
   });
 });
 

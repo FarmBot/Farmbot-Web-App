@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import { success, error } from "../toast/toast";
+import { success, error, warning } from "../toast/toast";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
   ParameterApplication,
@@ -26,7 +26,7 @@ import { Content } from "../constants";
 import { EventTimePicker } from "./event_time_picker";
 import { TzWarning } from "./tz_warning";
 import { nextRegItemTimes } from "./map_state_to_props";
-import { first } from "lodash";
+import { first, some } from "lodash";
 import {
   TimeUnit, ExecutableType, FarmEvent,
 } from "farmbot/dist/resources/api_resources";
@@ -44,6 +44,9 @@ import { ErrorBoundary } from "../error_boundary";
 import { Path } from "../internal_urls";
 import { Collapse } from "@blueprintjs/core";
 import { SectionHeader } from "../sequences/sequence_editor_middle_active";
+import { nearOsUpdateTime } from "../regimens/bulk_scheduler/bulk_scheduler";
+import { timeToMs } from "../regimens/bulk_scheduler/utils";
+import { getDeviceAccountSettings } from "../resources/selectors";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -275,8 +278,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   fieldGet = (key: FarmEventViewModelKey): string =>
     (this.state.fe[key] || this.viewModel[key] || "").toString();
 
-  nextItemTime = (fe: FarmEvent, now: moment.Moment,
-  ): moment.Moment | undefined => {
+  allItemTimes = (fe: FarmEvent, now: moment.Moment,
+  ): moment.Moment[] | undefined => {
     const { timeSettings } = this.props;
     const kind = fe.executable_type;
     const start = fe.start_time;
@@ -284,19 +287,25 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       !!(x.kind === "Regimen");
     switch (kind) {
       case "Sequence":
-        return first(scheduleForFarmEvent(fe, now).items);
+        return scheduleForFarmEvent(fe, now).items;
       case "Regimen":
         const r = this.props.findExecutable(kind, fe.executable_id);
-        const nextItem = isRegimen(r)
-          ? first(nextRegItemTimes(r.body.regimen_items, start, now, timeSettings))
+        const items = isRegimen(r)
+          ? nextRegItemTimes(r.body.regimen_items, start, now, timeSettings)
           : undefined;
-        const futureStartTimeFallback = moment(start) > now
-          ? moment(start)
-          : undefined;
-        return nextItem || futureStartTimeFallback;
+        return items;
       default:
         throw new Error(`${kind} is not a valid executable_type`);
     }
+  };
+
+  nextItemTime = (fe: FarmEvent, now: moment.Moment,
+  ): moment.Moment | undefined => {
+    const items = this.allItemTimes(fe, now);
+    const futureStartTimeFallback = moment(fe.start_time) > now
+      ? moment(fe.start_time)
+      : undefined;
+    return first(items) || futureStartTimeFallback;
   };
 
   /** Rejects save of Farm Event if: */
@@ -346,6 +355,11 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
         success(t("The next item in this event will run {{timeFromNow}}.",
           { timeFromNow: nextRun.from(now) }));
+        const warn = some(
+          (this.allItemTimes(this.updatedFarmEvent, now) as moment.Moment[])
+            .map(item => nearOsUpdateTime(timeToMs(item.format("HH:mm")),
+              getDeviceAccountSettings(this.props.resources).body.ota_hour)));
+        warn && warning(Content.WITHIN_HOUR_OF_OS_UPDATE);
         push(Path.farmEvents());
       })
       .catch(() => {

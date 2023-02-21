@@ -1125,6 +1125,10 @@ export namespace Content {
   export const NO_REGIMENS =
     trim(`Click "+" to create a new regimen.`);
 
+  export const WITHIN_HOUR_OF_OS_UPDATE =
+    trim(`Warning: One or more items are scheduled to run within one hour
+    of the FarmBot OS update time setting.`);
+
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
@@ -2383,6 +2387,7 @@ export enum Actions {
   PING_START = "PING_START",
   PING_OK = "PING_OK",
   PING_NO = "PING_NO",
+  CLEAR_PINGS = "CLEAR_PINGS",
 
   // Sequence Folders
   FOLDER_TOGGLE = "FOLDER_TOGGLE",

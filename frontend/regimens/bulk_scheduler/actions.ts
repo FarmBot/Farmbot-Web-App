@@ -2,14 +2,17 @@ import { isNaN, isNumber } from "lodash";
 import { error, warning, success } from "../../toast/toast";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
-import { findSequence, findRegimen } from "../../resources/selectors";
+import {
+  findSequence, findRegimen, getDeviceAccountSettings,
+} from "../../resources/selectors";
 import { groupRegimenItemsByWeek } from "./group_regimen_items_by_week";
 import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { assertUuid } from "../../resources/util";
 import { mergeDeclarations } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";
+import { nearOsUpdateTime } from "./bulk_scheduler";
 
 export function pushWeek() {
   return {
@@ -95,6 +98,9 @@ export function commitBulkEditor(): Thunk {
           console.log(JSON.stringify(clonedRegimen.body, undefined, 2));
           dispatch(overwrite(regimen, clonedRegimen));
           success(t("Item(s) added."));
+          const device = getDeviceAccountSettings(resources.index);
+          const warn = nearOsUpdateTime(dailyOffsetMs, device.body.ota_hour);
+          warn && warning(Content.WITHIN_HOUR_OF_OS_UPDATE);
         } else {
           return error(t("No day(s) selected."));
         }

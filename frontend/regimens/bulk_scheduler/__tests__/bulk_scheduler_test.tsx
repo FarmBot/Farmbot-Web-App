@@ -1,9 +1,9 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { BulkScheduler } from "../bulk_scheduler";
+import { BulkScheduler, nearOsUpdateTime } from "../bulk_scheduler";
 import { BulkEditorProps } from "../interfaces";
 import {
-  buildResourceIndex,
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
@@ -26,6 +26,7 @@ describe("<BulkScheduler />", () => {
       sequences: [fakeSequence(), fakeSequence(), sequenceWithoutId],
       resources: buildResourceIndex([]).index,
       dispatch: jest.fn(),
+      device: fakeDevice(),
     };
   }
 
@@ -96,5 +97,46 @@ describe("<BulkScheduler />", () => {
     const change = () => sequenceInput.simulate("change", { value: 4 });
     expect(change).toThrow("WARNING: Not a sequence UUID.");
     expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("shows warning", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    p.device.body.ota_hour = 3;
+    p.dailyOffsetMs = 10800000;
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().TimeSelection());
+    const timeInput = wrapper.find("BlurableInput").first();
+    timeInput.simulate("commit", { currentTarget: { value: "03:00" } });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: 10800000,
+      type: Actions.SET_TIME_OFFSET
+    });
+    expect(wrapper.html()).toContain(" input-error");
+  });
+
+  it("doesn't show warning", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    p.device.body.ota_hour = undefined;
+    p.dailyOffsetMs = 10800000;
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().TimeSelection());
+    const timeInput = wrapper.find("BlurableInput").first();
+    timeInput.simulate("commit", { currentTarget: { value: "03:00" } });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: 10800000,
+      type: Actions.SET_TIME_OFFSET
+    });
+    expect(wrapper.html()).not.toContain(" input-error");
+  });
+});
+
+describe("nearOsUpdateTime()", () => {
+  it("returns result", () => {
+    expect(nearOsUpdateTime(0, 0)).toBeTruthy();
+    expect(nearOsUpdateTime(23.5 * 60 * 60 * 1000, 0)).toBeTruthy();
+    expect(nearOsUpdateTime(0, undefined)).toBeFalsy();
+    expect(nearOsUpdateTime(2.5 * 60 * 60 * 1000, 3)).toBeTruthy();
   });
 });

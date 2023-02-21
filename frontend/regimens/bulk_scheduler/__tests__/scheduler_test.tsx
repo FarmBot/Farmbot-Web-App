@@ -9,7 +9,7 @@ import {
   fakeRegimen,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex,
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { AddButton } from "../../bulk_scheduler/add_button";
 import { RegimenSchedulerProps } from "../interfaces";
@@ -20,11 +20,12 @@ describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): RegimenSchedulerProps => ({
     dispatch: jest.fn(),
     sequences: [],
-    resources: buildResourceIndex([]).index,
+    resources: buildResourceIndex([fakeDevice()]).index,
     current: fakeRegimen(),
     selectedSequence: undefined,
     dailyOffsetMs: 1000,
     weeks: [],
+    device: fakeDevice(),
   });
 
   it("renders", () => {
@@ -54,7 +55,7 @@ describe("<DesignerRegimenScheduler />", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
-    state.resources = buildResourceIndex([]);
+    state.resources = buildResourceIndex([fakeDevice()]);
     const props = mapStateToProps(state);
     expect(props.sequences).toEqual([]);
   });

@@ -143,13 +143,13 @@ export class Connectivity
       <Col md={12} lg={4} lgOffset={2} className={"connectivity-left-column"}>
         <div className="fbos-info">
           <label>{t("FarmBot Connection")}</label>
-          <p><b>{t("Connection type")}: </b>{wifi ? "WiFi" : t("unknown")}</p>
+          <p><b>{t("Connection type")}: </b>{wifi ? "WiFi" : t("Unknown")}</p>
           <WiFiStrengthDisplay wifiStrength={wifi_level}
             wifiStrengthPercent={wifi_level_percent} />
           <MacAddress nodeName={node_name} target={target} wifi={wifi} />
           <LocalIpAddress address={private_ip} />
         </div>
-        <QosPanel pings={this.props.pings} />
+        <QosPanel pings={this.props.pings} dispatch={this.props.dispatch} />
       </Col>
       <Col md={12} lg={4} className={"connectivity-right-column"}>
         <div className="port-info">
@@ -158,7 +158,7 @@ export class Connectivity
           <PortRow port={"80 - HTTP"} status={flags["userAPI"]} />
           <PortRow port={"443 - HTTPS"} status={flags["userAPI"]} />
           <PortRow port={"3002 - WebSockets"} status={flags["userMQTT"]} />
-          <i>{t("FarmBot")}</i>
+          <i style={{ marginTop: "1rem" }}>{t("FarmBot")}</i>
           <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
           <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
           <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />

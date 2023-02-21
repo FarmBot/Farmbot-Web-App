@@ -148,17 +148,6 @@ describe("<Connectivity />", () => {
     expect(wrapper.text().toLowerCase()).toContain("connection type: unknown");
   });
 
-  it("doesn't display more network info", () => {
-    const p = fakeProps();
-    p.metricPanelState.realtime = false;
-    p.metricPanelState.network = true;
-    p.bot.hardware.informational_settings.private_ip = undefined;
-    p.bot.hardware.informational_settings.node_name = "---";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("ip");
-    expect(wrapper.text().toLowerCase()).not.toContain("mac");
-  });
-
   it("displays fix firmware buttons", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;

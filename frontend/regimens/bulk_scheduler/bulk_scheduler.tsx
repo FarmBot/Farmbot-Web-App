@@ -6,10 +6,11 @@ import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE,
 } from "../../ui";
 import moment from "moment";
-import { isString } from "lodash";
+import { isString, isUndefined } from "lodash";
 import { betterCompact, bail } from "../../util";
 import { msToTime, timeToMs } from "./utils";
 import { t } from "../../i18next_wrapper";
+import { Content } from "../../constants";
 
 const BAD_UUID = "WARNING: Not a sequence UUID.";
 
@@ -57,6 +58,11 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
             moment().add(3, "minutes").format("HH:mm"))))} />
         <BlurableInput type="time"
           value={msToTime(this.props.dailyOffsetMs)}
+          error={nearOsUpdateTime(
+            this.props.dailyOffsetMs,
+            this.props.device.body.ota_hour)
+            ? t(Content.WITHIN_HOUR_OF_OS_UPDATE)
+            : undefined}
           onCommit={({ currentTarget }) => {
             this.props.dispatch(setTimeOffset(timeToMs(currentTarget.value)));
           }} />
@@ -74,3 +80,13 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
     </div>;
   }
 }
+
+export const nearOsUpdateTime =
+  (dailyOffsetMs: number, otaHour: number | undefined) => {
+    if (isUndefined(otaHour)) { return; }
+    const otaHourString = otaHour + ":00";
+    const oneHourInMs = 60 * 60 * 1000;
+    const difference = dailyOffsetMs - timeToMs(otaHourString);
+    const spillover = otaHour == 0 && dailyOffsetMs > 23 * 60 * 60 * 1000;
+    return Math.abs(difference) < oneHourInMs || spillover;
+  };

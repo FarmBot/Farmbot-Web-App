@@ -125,6 +125,17 @@ describe("botReducer", () => {
       .toEqual("synced");
   });
 
+  it("clears pings", () => {
+    const state = initialState();
+    state.connectivity.pings = {
+      "a": { kind: "pending", start: 50 },
+      "b": { kind: "complete", start: 100, end: 200 },
+    };
+    const action = { type: Actions.CLEAR_PINGS, payload: undefined };
+    const nextState = botReducer(state, action);
+    expect(nextState.connectivity.pings).toEqual({});
+  });
+
   it("handles STASH_STATUS / _RESOURCE_NO", () => {
     const step1 = initialState();
     step1.statusStash = "booting";
