@@ -13,6 +13,14 @@ jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
   savePoints: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+    quickDeleteEnabled: jest.fn(),
+  }
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -72,6 +80,7 @@ describe("<SelectPlants />", () => {
       timeSettings: fakeTimeSettings(),
       bulkPlantSlug: undefined,
       noUTM: false,
+      curves: [],
     };
   }
 
@@ -241,6 +250,14 @@ describe("<SelectPlants />", () => {
     wrapper.find(".more-button").last().simulate("click");
     expect(wrapper.state().moreActions).toEqual(true);
     expect(wrapper.find(".more-content").last().props().hidden).toBeFalsy();
+  });
+
+  it("displays curve options", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
+    wrapper.find(".more-button").last().simulate("click");
+    expect(wrapper.text().toLowerCase()).toContain("curve");
   });
 
   it("selects group items", () => {

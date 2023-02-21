@@ -93,7 +93,7 @@ const curvesDropdownList = (props: CurvesDropdownListProps) => {
   return betterCompact(list);
 };
 
-const curveToDdi =
+export const curveToDdi =
   (curve: TaggedCurve, useCount?: number): DropDownItem | undefined => {
     const uses = useCount ? ` (${useCount})` : "";
     return curve.body.id

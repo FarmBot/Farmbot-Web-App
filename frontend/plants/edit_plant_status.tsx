@@ -4,6 +4,7 @@ import { PlantOptions } from "../farm_designer/interfaces";
 import {
   PlantStage, TaggedWeedPointer, PointType, TaggedPoint, TaggedPlantPointer,
   TaggedGenericPointer,
+  TaggedCurve,
 } from "farmbot";
 import moment from "moment";
 import { t } from "../i18next_wrapper";
@@ -16,6 +17,10 @@ import { Link } from "../link";
 import { Path } from "../internal_urls";
 import { push } from "../history";
 import { Actions } from "../constants";
+import { CurveType } from "../curves/templates";
+import { curveToDdi, CURVE_KEY_LOOKUP } from "./curve_info";
+import { CURVE_TYPES } from "../curves/curves_inventory";
+import { betterCompact } from "../util";
 
 export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   planned: { label: t("Planned"), value: "planned" },
@@ -217,6 +222,51 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
             props.dispatch(save(point.uuid));
           });
       }} />
+  </div>;
+};
+
+export interface PlantCurvesBulkUpdateProps extends BulkUpdateBaseProps {
+  curves: TaggedCurve[];
+}
+
+export interface PlantCurveBulkUpdateProps extends PlantCurvesBulkUpdateProps {
+  curveType: CurveType;
+}
+
+export const PlantCurveBulkUpdate = (props: PlantCurveBulkUpdateProps) => {
+  const points = props.allPoints.filter(point =>
+    props.selected.includes(point.uuid) && point.kind === "Point" &&
+    point.body.pointer_type == "Plant")
+    .map((p: TaggedPlantPointer) => p);
+  const curveName = CURVE_TYPES()[props.curveType];
+  const curveKey = CURVE_KEY_LOOKUP[props.curveType];
+  return <div className={"plant-curve-bulk-update"}>
+    <p>{t("Update {{ curveName }} curve to", { curveName })}</p>
+    <FBSelect
+      key={JSON.stringify(props.selected)}
+      list={betterCompact(props.curves
+        .filter(curve => curve.body.type == props.curveType)
+        .map(curve => curveToDdi(curve)))}
+      selectedItem={undefined}
+      customNullLabel={t("Select a curve")}
+      onChange={ddi => {
+        const id = parseInt("" + ddi.value);
+        id && isFinite(id) && points.length > 0 && confirm(
+          t("Change {{ curveName }} curve for {{ num }} items?",
+            { curveName, num: points.length }))
+          && points.map(point => {
+            props.dispatch(edit(point, { [curveKey]: id }));
+            props.dispatch(save(point.uuid));
+          });
+      }} />
+  </div>;
+};
+
+/** Update curves for multiple points at once. */
+export const PlantCurvesBulkUpdate = (props: PlantCurvesBulkUpdateProps) => {
+  return <div className={"plant-curves-bulk-update"}>
+    {[CurveType.water, CurveType.spread, CurveType.height].map(curveType =>
+      <PlantCurveBulkUpdate key={curveType} {...props} curveType={curveType} />)}
   </div>;
 };
 

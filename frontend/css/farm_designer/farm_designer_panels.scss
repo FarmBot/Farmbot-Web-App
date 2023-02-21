@@ -474,6 +474,7 @@
     .filter-search {
       padding-right: 1rem;
     }
+    .plant-curves-bulk-update,
     .point-size-bulk-update,
     .plant-depth-bulk-update,
     .plant-date-bulk-update,
@@ -482,17 +483,18 @@
     .plant-status-bulk-update {
       display: inline-block;
       width: 100%;
+      line-height: 3.5rem;
     }
+    .plant-curves-bulk-update,
     .plant-status-bulk-update {
       .filter-search {
         display: inline-block;
         width: 50% !important;
-        margin-left: 0.5rem;
+        margin-top: 0.5rem;
       }
       p {
         display: inline-block;
         font-size: 1.2rem;
-        line-height: 4.1rem;
         vertical-align: top;
       }
     }
@@ -507,20 +509,11 @@
         margin: 0;
         width: 48%;
         height: 3rem;
-        margin-left: 0.5rem;
-      }
-    }
-    .plant-depth-bulk-update {
-      input {
-        margin-top: 1rem;
-        margin-left: 0.8rem;
       }
     }
     .plant-date-bulk-update {
       .input {
         display: inline-block;
-        margin-left: 1.5rem;
-        margin-bottom: 1rem;
         width: 48%;
         input {
           height: 3rem;
@@ -531,17 +524,12 @@
       }
     }
     .point-color-bulk-update {
-      margin-top: 1rem;
       .color-picker {
         display: inline-block;
-        margin-left: 0.5rem;
         margin-bottom: -0.5rem;
       }
     }
     .plant-slug-bulk-update {
-      a {
-        margin-left: 2rem;
-      }
       .fa-pencil {
         margin-left: 1rem;
       }
@@ -550,8 +538,7 @@
         height: 2rem;
         line-height: 1.75rem;
         margin-left: 1rem;
-        margin-top: 1rem;
-        vertical-align: bottom;
+        vertical-align: top;
       }
     }
     .more {
@@ -570,12 +557,22 @@
       margin-right: 1rem;
     }
     .more-content {
+      margin-top: 0.5rem;
+      max-height: 20.5rem;
+      overflow: scroll;
+      width: 330px;
       label {
         width: 100%;
       }
       .filter-search {
         display: inline-block;
-        width: 100%;
+        width: 50.75% !important;
+        line-height: 1rem;
+      }
+      p {
+        display: inline-block;
+        width: 150px;
+        line-height: 3.5rem;
       }
     }
   }
