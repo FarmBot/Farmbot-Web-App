@@ -460,7 +460,7 @@
     "Next": "Suivant",
     "No day(s) selected.": "Aucun jour sélectionné.",
     "No events scheduled.": "Aucun événement planifié.",
-    "No groups yet.": "Aucun groupe actuellement",
+    "No groups yet.": "Aucun groupe actuellement.",
     "No inputs provided.": "Aucune entrée fournie.",
     "No logs to display. Visit Logs page to view filters.": "Aucun journal à afficher. Visitez la page Journaux pour voir les filtres.",
     "No logs yet.": "Aucun log pour le moment.",
@@ -928,7 +928,7 @@
     "{{axis}}-Offset": "{{axis}}-Décalage",
     "{{count}} items": "{{count}} éléments",
     "{{length}} {{name}} selected": "{{length}} {{name}} selectionné",
-    "{{seconds}} seconds!": "{{seconds}} secondes !",
+    "{{seconds}} seconds!": "{{seconds}} secondes !"
   },
   "untranslated": {
     " Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:": " Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
@@ -2267,7 +2267,7 @@
     "{{ amount }}mm": "{{ amount }}mm",
     "{{ axis }}-axis profile": "{{ axis }}-axis profile",
     "{{ name }} Grid": "{{ name }} Grid",
-    "{{ resetMethod }} resetting your FarmBot will not affect any of your data or settings from your web app account, allowing you to do a complete restore to your device once it is back online and paired with your web app account.": "{{ resetMethod }} resetting your FarmBot will not affect any of your data or settings from your web app account, allowing you to do a complete restore to your device once it is back online and paired with your web app account.",
+    "{{ resetMethod }} resetting your FarmBot will not affect any of your data or settings from your web app account, allowing you to do a complete restore to your device once it is back online and paired with your web app account.": "{{ resetMethod }} resetting your FarmBot will not affect any of your data or settings from your web app account, allowing you to do a complete restore to your device once it is back online and paired with your web app account."
   },
   "other_translations": {
     " regimen": "Posologie",
@@ -2704,7 +2704,7 @@
     "You must set a timezone before using the event feature.": "Vous devez définir une zone de temps avant d'utiliser les événements.",
     "You must set a timezone before using the FarmEvent feature.": "Vous devez définir un fuseau horaire avant de pouvoir utiliser la fonction FarmEvent.",
     "Your browser is connected correctly, but we have no recent record of FarmBot connecting to the internet. This usually happens because of a bad WiFi signal in the garden, a bad password during configuration, or a very long power outage.": "Votre navigateur est bien connecté, mais nous n'avons trouvé aucune trace récente de FarmBot s'étant connecté à internet. Cela peut arriver à cause d'un mauvais signal WiFi dans le potager, d'un mauvais mot de passe lors de la configuration ou d'une panne électrique prolongée.",
-    "zero {{axis}}": "zéro {{axe}}"
-    "{{length}} plants selected": "{{length}} plantes sélectionnées",
+    "zero {{axis}}": "zéro {{axe}}",
+    "{{length}} plants selected": "{{length}} plantes sélectionnées"
   }
 }
