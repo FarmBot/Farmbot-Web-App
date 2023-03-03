@@ -4,7 +4,6 @@ import { DeviceSetting, ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { edit, save } from "../../api/crud";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { FirmwareHardware, TaggedDevice } from "farmbot";
 import { BotState } from "../../devices/interfaces";
 import { StatusIcon } from "../firmware/firmware_hardware_status";
@@ -34,8 +33,7 @@ export interface RpiModelProps {
 }
 
 export const RpiModel = (props: RpiModelProps) => {
-  const selection = props.device.body["rpi" as keyof DeviceAccountSettings
-  ] as string | undefined;
+  const selection = props.device.body.rpi;
   const check = (rpi: string | undefined, target: string) => {
     switch (rpi) {
       case "02":
@@ -69,8 +67,7 @@ export const RpiModel = (props: RpiModelProps) => {
           list={Object.values(RPI_OPTIONS)}
           selectedItem={RPI_OPTIONS["" + selection]}
           onChange={ddi => {
-            props.dispatch(edit(props.device,
-              { ["rpi" as keyof DeviceAccountSettings]: "" + ddi.value }));
+            props.dispatch(edit(props.device, { rpi: "" + ddi.value }));
             props.dispatch(save(props.device.uuid));
           }} />
       </Col>

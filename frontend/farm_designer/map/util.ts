@@ -5,7 +5,7 @@ import {
   CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode,
   TaggedPlant,
 } from "./interfaces";
-import { lastUrlChunk, trim } from "../../util";
+import { trim } from "../../util";
 import { store } from "../../redux/store";
 import { Path } from "../../internal_urls";
 
@@ -294,7 +294,7 @@ export const getMode = (): Mode => {
     return Mode.clickToAdd;
   }
   if (savedGardenOpen()) { return Mode.templateView; }
-  if (!isNaN(parseInt(lastUrlChunk()))) { return Mode.editPlant; }
+  if (Path.lastChunkIsNum()) { return Mode.editPlant; }
   if (Path.getSlug(Path.plants()) === "select") {
     return Mode.boxSelect;
   }

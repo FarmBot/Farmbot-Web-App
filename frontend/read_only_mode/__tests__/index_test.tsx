@@ -5,20 +5,20 @@ jest.mock("../app_is_read_only", () => ({
 
 import React from "react";
 import { shallow } from "enzyme";
-import { AxiosRequestConfig } from "axios";
+import { InternalAxiosRequestConfig } from "axios";
 import { ReadOnlyIcon, readOnlyInterceptor } from "../index";
 import { warning } from "../../toast/toast";
 
 describe("readOnlyInterceptor", () => {
   it("resolves the config when app is not read-only", async () => {
-    const conf = {};
+    const conf = {} as InternalAxiosRequestConfig;
     await expect(readOnlyInterceptor(conf)).resolves.toEqual(conf);
     expect(warning).not.toHaveBeenCalled();
   });
 
   it("rejects non-GET HTTP requests when app is read-only", async () => {
     mockReadonlyState = true;
-    const conf: AxiosRequestConfig = { method: "PUT" };
+    const conf = { method: "PUT" } as InternalAxiosRequestConfig;
     await expect(readOnlyInterceptor(conf)).rejects.toEqual(conf);
     expect(warning)
       .toHaveBeenCalledWith("Refusing to modify data in read-only mode");
@@ -26,7 +26,7 @@ describe("readOnlyInterceptor", () => {
 
   it("allows HTTP GET requests when app is read-only", async () => {
     mockReadonlyState = true;
-    const conf: AxiosRequestConfig = { method: "GET" };
+    const conf = { method: "GET" } as InternalAxiosRequestConfig;
     await expect(readOnlyInterceptor(conf)).resolves.toEqual(conf);
     expect(warning).not.toHaveBeenCalled();
   });

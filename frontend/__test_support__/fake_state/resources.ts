@@ -28,10 +28,11 @@ import {
   TaggedWeedPointer,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  TaggedCurve,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType, Folder, Tool,
+  ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
@@ -123,7 +124,7 @@ export function fakeImage(): TaggedImage {
 export function fakeTool(): TaggedTool {
   return fakeResource("Tool", {
     name: "Foo",
-    ["flow_rate_ml_per_s" as keyof Tool]: 0,
+    flow_rate_ml_per_s: 0,
   });
 }
 
@@ -540,6 +541,7 @@ export function fakeAlert(): TaggedAlert {
     priority: 100,
   });
 }
+
 export function fakePointGroup(): TaggedPointGroup {
   return fakeResource("PointGroup", {
     name: "Fake",
@@ -553,5 +555,13 @@ export function fakePointGroup(): TaggedPointGroup {
       string_eq: {}
     },
     member_count: 0,
+  });
+}
+
+export function fakeCurve(): TaggedCurve {
+  return fakeResource("Curve", {
+    name: "Fake",
+    type: "water",
+    data: { 1: 0, 2: 1 },
   });
 }

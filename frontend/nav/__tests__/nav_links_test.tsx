@@ -11,6 +11,13 @@ jest.mock("../../settings/firmware/firmware_hardware_support", () => ({
   isExpress: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
@@ -68,6 +75,12 @@ describe("<NavLinks />", () => {
     const p = fakeProps();
     const wrapper = shallow(<NavLinks {...p} />);
     expect(wrapper.html().toLowerCase()).toContain("sensors");
+  });
+
+  it("shows new links", () => {
+    mockDev = true;
+    const wrapper = shallow(<NavLinks {...fakeProps()} />);
+    expect(wrapper.html().toLowerCase()).toContain("curves");
   });
 
   it("doesn't show farmware link", () => {

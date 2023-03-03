@@ -31,7 +31,7 @@ describe FarmEvents::OccurrenceHelpers do
   ]
 
   it "calculates item count" do
-    now = Time.now + 1.hour
+    now = Time.parse("2023-01-01T11:22:33.000Z") # `Time.now + 1.hour` was blinky
     params = { start_time: now, end_time: now + 1.year }
     FE_EXAMPLES.map do |(expected, repeat, time_unit)|
       i = params.merge(repeat: repeat, time_unit: time_unit)

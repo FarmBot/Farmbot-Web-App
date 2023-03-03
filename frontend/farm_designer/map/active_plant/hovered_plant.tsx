@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DesignerState } from "../../interfaces";
 import { transformXY, round, scaleIcon } from "../util";
 import { MapTransformProps, TaggedPlant } from "../interfaces";
@@ -40,11 +40,14 @@ export class HoveredPlant extends
   render() {
     const {
       currentPlant, mapTransformProps, dragging, isEditing, visible, designer,
-      animate, spreadLayerVisible
+      animate, spreadLayerVisible,
     } = this.props;
     const { icon } = designer.hoveredPlant;
     const hovered = !!icon;
-    const { id, x, y, radius } = this.plantInfo;
+    const { id, x, y } = this.plantInfo;
+    const radius = designer.hoveredSpread
+      ? designer.hoveredSpread / 2
+      : this.plantInfo.radius;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const iconRadius = scaleIcon(radius);
     const scaledRadius = currentPlant ? iconRadius : iconRadius * 1.2;
@@ -58,8 +61,10 @@ export class HoveredPlant extends
               <SpreadCircle
                 plant={currentPlant}
                 key={currentPlant.uuid}
+                selected={true}
                 mapTransformProps={mapTransformProps}
                 visible={!spreadLayerVisible}
+                hoveredSpread={designer.hoveredSpread}
                 animate={animate} />
             </g>}
           <g id="plant-indicator">

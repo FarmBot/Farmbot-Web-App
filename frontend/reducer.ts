@@ -2,6 +2,7 @@ import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import {
+  CurvesPanelState,
   MetricPanelState,
   MovementState,
   PlantsPanelState,
@@ -17,6 +18,7 @@ export interface AppState {
   plantsPanelState: PlantsPanelState;
   weedsPanelState: WeedsPanelState;
   pointsPanelState: PointsPanelState;
+  curvesPanelState: CurvesPanelState;
   sequencesPanelState: SequencesPanelState;
   metricPanelState: MetricPanelState;
   toasts: ToastMessages;
@@ -61,11 +63,18 @@ export const emptyState = (): AppState => {
       points: true,
       soilHeight: false,
     },
+    curvesPanelState: {
+      water: true,
+      spread: true,
+      height: true,
+    },
     sequencesPanelState: {
       sequences: true,
       featured: false,
     },
     metricPanelState: {
+      realtime: true,
+      network: false,
       history: false,
     },
     toasts: {},
@@ -99,16 +108,22 @@ export const appReducer =
       s.pointsPanelState[a.payload] = !s.pointsPanelState[a.payload];
       return s;
     })
+    .add<keyof CurvesPanelState>(Actions.TOGGLE_CURVES_PANEL_OPTION, (s, a) => {
+      s.curvesPanelState[a.payload] = !s.curvesPanelState[a.payload];
+      return s;
+    })
     .add<keyof SequencesPanelState>(
       Actions.TOGGLE_SEQUENCES_PANEL_OPTION, (s, a) => {
         s.sequencesPanelState[a.payload] = !s.sequencesPanelState[a.payload];
         return s;
       })
-    .add<keyof MetricPanelState>(
-      Actions.TOGGLE_METRIC_PANEL_OPTION, (s, a) => {
-        s.metricPanelState[a.payload] = !s.metricPanelState[a.payload];
-        return s;
-      })
+    .add<keyof MetricPanelState>(Actions.SET_METRIC_PANEL_OPTION, (s, a) => {
+      s.metricPanelState.realtime = false;
+      s.metricPanelState.network = false;
+      s.metricPanelState.history = false;
+      s.metricPanelState[a.payload] = true;
+      return s;
+    })
     .add<boolean>(
       Actions.BULK_TOGGLE_SETTINGS_PANEL, (s, a) => {
         s.settingsPanelState.farmbot_settings = a.payload;

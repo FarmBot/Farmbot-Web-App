@@ -2,7 +2,7 @@ import React from "react";
 import { BotState } from "../interfaces";
 import { Diagnosis, ConnectionStatusFlags, getDiagnosisCode } from "./diagnosis";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
-import { Row, Col } from "../../ui";
+import { Row, Col, docLinkClick, Saucer } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
@@ -20,7 +20,7 @@ import { firmwareAlerts, FirmwareAlerts } from "../../messages/alerts";
 import { MetricPanelState, TimeSettings } from "../../interfaces";
 import { getKitName } from "../../settings/firmware/firmware_hardware_support";
 import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_status";
-import { restartFirmware, sync } from "../actions";
+import { readStatus, restartFirmware, sync } from "../actions";
 import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 import { Actions } from "../../constants";
 
@@ -51,29 +51,23 @@ export class Connectivity
   componentDidMount = () => {
     this.props.dispatch(refresh(this.props.device));
     this.props.dispatch(sync());
+    readStatus();
   };
 
   hover = (connectionName: string) =>
     () => this.setState({ hoveredConnection: connectionName });
 
-  setHistoryOpen = (action: boolean) => () => {
-    const historyOpen = this.props.metricPanelState.history;
-    if ((action && !historyOpen) || (!action && historyOpen)) {
-      this.togglePanelState("history");
-    }
-  };
-
-  togglePanelState = (key: keyof MetricPanelState) =>
+  setPanelState = (key: keyof MetricPanelState) => () =>
     this.props.dispatch({
-      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      type: Actions.SET_METRIC_PANEL_OPTION,
       payload: key,
     });
 
   Realtime = () => {
     const { informational_settings } = this.props.bot.hardware;
     const {
-      soc_temp, wifi_level, throttled, wifi_level_percent, controller_version,
-      firmware_version, private_ip, node_name, target, memory_usage, sync_status,
+      soc_temp, throttled, controller_version,
+      firmware_version, target, memory_usage, sync_status,
       video_devices,
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
@@ -95,18 +89,12 @@ export class Connectivity
           <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
           <ChipTemperatureDisplay temperature={soc_temp} />
           <MemoryUsageDisplay usage={memory_usage} />
-          <WiFiStrengthDisplay wifiStrength={wifi_level}
-            wifiStrengthPercent={wifi_level_percent} />
-          <MacAddress nodeName={node_name} target={target}
-            wifi={isWifi(wifi_level, wifi_level_percent)} />
-          <LocalIpAddress address={private_ip} />
           <VoltageDisplay throttleData={throttled} />
           <CameraIndicator videoDevices={video_devices} />
           <PiDisplay chip={target} firmware={this.props.apiFirmwareValue} />
           <p><b>{t("Connectivity code")}: </b>{
             getDiagnosisCode(this.props.flags)}</p>
         </div>
-        <QosPanel pings={this.props.pings} />
       </Col>
       <Col md={12} lg={8} className={"connectivity-right-column"}>
         <ConnectivityRow from={t("from")} to={t("to")} header={true} />
@@ -144,20 +132,61 @@ export class Connectivity
     </div>;
   };
 
+  Network = () => {
+    const { flags } = this.props;
+    const { informational_settings } = this.props.bot.hardware;
+    const {
+      wifi_level, wifi_level_percent, private_ip, node_name, target,
+    } = informational_settings;
+    const wifi = isWifi(wifi_level, wifi_level_percent);
+    return <div className={"realtime-wrapper"}>
+      <Col md={12} lg={4} lgOffset={2} className={"connectivity-left-column"}>
+        <div className="fbos-info">
+          <label>{t("FarmBot Connection")}</label>
+          <p><b>{t("Connection type")}: </b>{wifi ? "WiFi" : t("Unknown")}</p>
+          <WiFiStrengthDisplay wifiStrength={wifi_level}
+            wifiStrengthPercent={wifi_level_percent} />
+          <MacAddress nodeName={node_name} target={target} wifi={wifi} />
+          <LocalIpAddress address={private_ip} />
+        </div>
+        <QosPanel pings={this.props.pings} dispatch={this.props.dispatch} />
+      </Col>
+      <Col md={12} lg={4} className={"connectivity-right-column"}>
+        <div className="port-info">
+          <label>{t("Ports")}</label>
+          <i>{window.innerWidth <= 450 ? t("This phone") : t("This computer")}</i>
+          <PortRow port={"80 - HTTP"} status={flags["userAPI"]} />
+          <PortRow port={"443 - HTTPS"} status={flags["userAPI"]} />
+          <PortRow port={"3002 - WebSockets"} status={flags["userMQTT"]} />
+          <i style={{ marginTop: "1rem" }}>{t("FarmBot")}</i>
+          <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
+          <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
+          <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
+          <a onClick={docLinkClick("for-it-security-professionals")}>
+            <i className="fa fa-external-link" />
+            {t("Learn more about ports")}
+          </a>
+        </div>
+      </Col>
+    </div>;
+  };
+
   render() {
-    const historyOpen = this.props.metricPanelState.history;
+    const { realtime, network, history } = this.props.metricPanelState;
     return <div className="connectivity">
       <Row className={"connectivity-content"}>
         <div className={"tabs"}>
-          <label className={historyOpen ? "" : "selected"}
-            onClick={this.setHistoryOpen(false)}>{t("realtime")}</label>
-          <label className={historyOpen ? "selected" : ""}
-            onClick={this.setHistoryOpen(true)}>{t("history")}</label>
+          <label className={realtime ? "selected" : ""}
+            onClick={this.setPanelState("realtime")}>{t("realtime")}</label>
+          <label className={network ? "selected" : ""}
+            onClick={this.setPanelState("network")}>{t("network")}</label>
+          <label className={history ? "selected" : ""}
+            onClick={this.setPanelState("history")}>{t("history")}</label>
         </div>
-        {historyOpen
-          ? <FbosMetricHistoryTable telemetry={this.props.telemetry}
-            timeSettings={this.props.timeSettings} />
-          : <this.Realtime />}
+        {realtime && <this.Realtime />}
+        {network && <this.Network />}
+        {history && <FbosMetricHistoryTable telemetry={this.props.telemetry}
+          timeSettings={this.props.timeSettings} />}
       </Row>
       {firmwareAlerts(this.props.alerts).length > 0 &&
         <Row>
@@ -170,3 +199,23 @@ export class Connectivity
     </div>;
   }
 }
+
+interface PortRowProps {
+  port: string;
+  status: boolean;
+}
+
+const PortRow = (props: PortRowProps) => {
+  return <div>
+    <Saucer color={portStatus(props.status).color} />
+    <p><b>{props.port}: </b><span>{portStatus(props.status).text}</span></p>
+  </div>;
+};
+
+const portStatus = (status: boolean) => {
+  switch (status) {
+    case true: return { color: "green", text: t("Open") };
+    // case false: return { color: "red", text: t("Closed") };
+    default: return { color: "gray", text: t("Unknown") };
+  }
+};

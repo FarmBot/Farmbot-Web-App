@@ -7,12 +7,14 @@ import {
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
 import { maybeBeacon } from "../help/tours";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export const getLinks = (): Panel[] => [
   Panel.Map,
   Panel.Plants,
   Panel.Weeds,
   Panel.Points,
+  ...(DevSettings.futureFeaturesEnabled() ? [Panel.Curves] : []),
   Panel.Sequences,
   Panel.Regimens,
   Panel.FarmEvents,

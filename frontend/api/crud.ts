@@ -262,6 +262,7 @@ export function saveAll(input: TaggedResource[],
 export function urlFor(tag: ResourceName) {
   const OPTIONS: Partial<Record<ResourceName, string>> = {
     Alert: API.current.alertPath,
+    Curve: API.current.curvesPath,
     Device: API.current.devicePath,
     FarmEvent: API.current.farmEventsPath,
     FarmwareEnv: API.current.farmwareEnvPath,

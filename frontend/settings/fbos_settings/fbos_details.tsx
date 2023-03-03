@@ -47,7 +47,7 @@ export function ChipTemperatureDisplay(
   return <div className="chip-temp-display">
     <p>
       <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
-      {isNumber(temperature) ? <span>{temperature}&deg;C</span> : t("unknown")}
+      {isNumber(temperature) ? <span>{temperature}&deg;C</span> : t("Unknown")}
     </p>
     <Saucer color={colorFromTemp(temperature)} className={"small-inline"} />
   </div>;
@@ -65,7 +65,7 @@ export const PiDisplay = ({ chip, firmware }: PiDisplayProps): JSX.Element => {
       case "rpi": return "Zero W";
       case "rpi3": return firmware == "express_k11" ? "Zero 2 W" : "3";
       case "rpi4": return "4";
-      default: return t("unknown");
+      default: return t("Unknown");
     }
   };
   return <div className={"pi-display"}>
@@ -94,7 +94,7 @@ export const MemoryUsageDisplay = ({ usage }: MemoryUsageDisplayProps) =>
   <div className={"memory-usage-display"}>
     <p>
       <b>{t("Memory usage")}: </b>
-      {isNumber(usage) ? <span>{usage}MB</span> : t("unknown")}
+      {isNumber(usage) ? <span>{usage}MB</span> : t("Unknown")}
     </p>
     <Saucer color={colorFromMemoryUsage(usage)} className={"small-inline"} />
   </div>;
@@ -110,7 +110,7 @@ export const CameraIndicator = ({ videoDevices }: CameraIndicatorProps) => {
   return <div className={"camera-connection-indicator"}>
     <p>
       <b>{t("Camera")}: </b>
-      <span>{camera ? t("connected") : t("unknown")}</span>
+      <span>{camera ? t("Connected") : t("Unknown")}</span>
     </p>
     <Saucer color={camera ? "green" : "gray"} className={"small-inline"} />
   </div>;
@@ -177,12 +177,13 @@ export const isWifi = (
   isNumber(wifiStrength) || isNumber(wifiStrengthPercent);
 
 export const LocalIpAddress = ({ address }: { address: string | undefined }) =>
-  isString(address)
-    ? <p className={"ip-address"}><b>{t("Local IP")}: </b>{address}</p>
-    : <div className={"no-local-ip"} />;
+  <p className={"ip-address"}><b>{t("Local IP")}: </b>{address || "---"}</p>;
 
 const calcMac =
-  (nodeName: string, target: string | undefined, wifi: boolean) => {
+  (nodeName: string | undefined, target: string | undefined, wifi: boolean) => {
+    if (!isString(nodeName) || nodeName.includes("---") || !nodeName) {
+      return "---";
+    }
     const firstHalf = target == "rpi4" ? "dca632" : "b827eb";
     const snLast6 = nodeName.split(".")[0].slice(-6);
     const lastHalf = wifi
@@ -201,11 +202,9 @@ export interface MacAddressProps {
 }
 
 export const MacAddress = ({ wifi, nodeName, target }: MacAddressProps) =>
-  isString(nodeName) && !nodeName.includes("---") && nodeName
-    ? <p className={"mac-address"}>
-      <b>{t("MAC address")}: </b>{calcMac(nodeName, target, wifi)}
-    </p>
-    : <div className={"no-mac-address"} />;
+  <p className={"mac-address"}>
+    <b>{t("MAC address")}: </b>{calcMac(nodeName, target, wifi)}
+  </p>;
 
 /** Available throttle info. */
 export enum ThrottleType {
@@ -245,17 +244,17 @@ export const colorFromThrottle =
   };
 
 const THROTTLE_COLOR_KEY = () => ({
-  red: t("active"),
-  yellow: t("occurred"),
-  green: t("ok"),
-  gray: t("unknown"),
+  red: t("Active"),
+  yellow: t("Occurred"),
+  green: t("Ok"),
+  gray: t("Unknown"),
 });
 
 const VOLTAGE_COLOR_KEY = () => ({
-  red: t("low"),
-  yellow: t("ok"),
-  green: t("good"),
-  gray: t("unknown"),
+  red: t("Low"),
+  yellow: t("Ok"),
+  green: t("Good"),
+  gray: t("Unknown"),
 });
 
 interface ThrottleIndicatorProps {
@@ -273,7 +272,7 @@ export const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
 };
 
 /** Visual representation of throttle state. */
-const ThrottleDisplay = (dataString: string) =>
+const ThrottleDisplay = (dataString: string | undefined) =>
   <div className="throttle-display">
     {Object.keys(THROTTLE_BIT_LOOKUP).map((key: ThrottleType) =>
       <div className="throttle-row" key={key}>
@@ -290,7 +289,6 @@ interface VoltageDisplayProps {
 
 /** RPI throttle state display row: label, indicator. */
 export const VoltageDisplay = ({ chip, throttleData }: VoltageDisplayProps) => {
-  if (!throttleData) { return <div className="voltage-display" />; }
   const voltageColor = colorFromThrottle(throttleData, ThrottleType.UnderVoltage);
   return <div className="voltage-display">
     <p><b>{chip && chip.toUpperCase()} {t("Voltage")}</b></p>
@@ -391,7 +389,7 @@ export const reformatFwVersion =
   };
 
 export const reformatFbosVersion = (fbosVersion: string | undefined): string =>
-  fbosVersion ? "v" + fbosVersion : t("unknown");
+  fbosVersion ? "v" + fbosVersion : t("Unknown");
 
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {

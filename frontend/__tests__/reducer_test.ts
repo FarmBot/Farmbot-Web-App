@@ -1,6 +1,7 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
+  CurvesPanelState,
   MetricPanelState,
   MovementState,
   PlantsPanelState,
@@ -78,6 +79,17 @@ describe("resource reducer", () => {
       .toBe(!state.pointsPanelState.groups);
   });
 
+  it("toggles curves panel options", () => {
+    const payload: keyof CurvesPanelState = "water";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.TOGGLE_CURVES_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.curvesPanelState.water)
+      .toBe(!state.curvesPanelState.water);
+  });
+
   it("toggles sequences panel options", () => {
     const payload: keyof SequencesPanelState = "featured";
     const state = app;
@@ -89,15 +101,16 @@ describe("resource reducer", () => {
       .toBe(!state.sequencesPanelState.featured);
   });
 
-  it("toggles metric panel options", () => {
+  it("sets metric panel options", () => {
     const payload: keyof MetricPanelState = "history";
     const state = app;
     const newState = appReducer(state, {
-      type: Actions.TOGGLE_METRIC_PANEL_OPTION,
+      type: Actions.SET_METRIC_PANEL_OPTION,
       payload,
     });
-    expect(newState.metricPanelState.history)
-      .toBe(!state.metricPanelState.history);
+    expect(newState.metricPanelState.realtime).toBeFalsy();
+    expect(newState.metricPanelState.network).toBeFalsy();
+    expect(newState.metricPanelState.history).toBeTruthy();
   });
 
   it("sets controls popup state", () => {

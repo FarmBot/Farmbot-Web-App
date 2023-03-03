@@ -71,6 +71,7 @@ describe("<FarmDesigner />", () => {
     deviceTarget: "",
     sourceFbosConfig: jest.fn(),
     farmwareEnvs: [],
+    curves: [],
   });
 
   it("loads default map settings", () => {

@@ -52,6 +52,7 @@ export interface OtaTimeSelectorRowProps {
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
   timeSettings: TimeSettings;
+  showAdvanced: boolean;
 }
 
 export interface PowerAndResetProps {
@@ -72,6 +73,7 @@ export interface FarmbotOsRowProps {
   botOnline: boolean;
   timeSettings: TimeSettings;
   device: TaggedDevice;
+  showAdvanced: boolean;
 }
 
 export interface FarmbotOsRowState {

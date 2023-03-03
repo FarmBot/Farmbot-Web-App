@@ -66,6 +66,42 @@ describe("designer reducer", () => {
     });
   });
 
+  it("sets hovered spread", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.TOGGLE_HOVERED_SPREAD,
+      payload: 100,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredSpread).toEqual(100);
+  });
+
+  it("sets crop water curve id", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_CROP_WATER_CURVE_ID,
+      payload: 1,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropWaterCurveId).toEqual(1);
+  });
+
+  it("sets crop spread curve id", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_CROP_SPREAD_CURVE_ID,
+      payload: 2,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropSpreadCurveId).toEqual(2);
+  });
+
+  it("sets crop height curve id", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_CROP_HEIGHT_CURVE_ID,
+      payload: 3,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropHeightCurveId).toEqual(3);
+  });
+
   it("sets hovered plant list item", () => {
     const action: ReduxAction<string> = {
       type: Actions.HOVER_PLANT_LIST_ITEM,

@@ -95,6 +95,7 @@ describe("<OtaTimeSelectorRow />", () => {
     sourceFbosConfig: () => ({ value: "", consistent: true }),
     device: fakeDevice(),
     timeSettings: fakeTimeSettings(),
+    showAdvanced: true,
   });
 
   it("shows 12h formatted times", () => {

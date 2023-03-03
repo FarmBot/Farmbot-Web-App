@@ -21,6 +21,7 @@ import {
   TaggedFarmwareEnv,
   TaggedPlantTemplate,
   TaggedPlantPointer,
+  TaggedCurve,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -111,6 +112,7 @@ export interface FarmDesignerProps {
   sourceFbosConfig: SourceFbosConfig;
   farmwareEnvs: TaggedFarmwareEnv[];
   children?: React.ReactNode;
+  curves: TaggedCurve[];
 }
 
 export interface MovePointsProps {
@@ -141,6 +143,7 @@ export interface DesignerState {
   selectionPointType: PointType[] | undefined;
   hoveredPlant: HoveredPlantPayl;
   hoveredPoint: string | undefined;
+  hoveredSpread: number | undefined;
   hoveredPlantListItem: string | undefined;
   hoveredToolSlot: string | undefined;
   hoveredSensorReading: string | undefined;
@@ -176,6 +179,9 @@ export interface DesignerState {
   profilePosition: Record<"x" | "y", number | undefined>;
   profileWidth: number;
   profileFollowBot: boolean;
+  cropWaterCurveId: number | undefined;
+  cropSpreadCurveId: number | undefined;
+  cropHeightCurveId: number | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -276,6 +282,7 @@ export interface GardenMapProps {
   logs: TaggedLog[];
   deviceTarget: string;
   farmwareEnvs: TaggedFarmwareEnv[];
+  curves: TaggedCurve[];
 }
 
 export interface GardenMapState {
@@ -304,6 +311,10 @@ export interface EditPlantInfoProps {
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  curves: TaggedCurve[];
+  plants: TaggedPlantPointer[];
 }
 
 export interface DraggableEvent {
@@ -333,14 +344,15 @@ export interface CropCatalogProps {
 
 export interface CropInfoProps {
   dispatch: Function;
-  cropSearchQuery: string | undefined;
-  cropSearchResults: CropLiveSearchResult[];
-  cropSearchInProgress: boolean;
-  openedSavedGarden: string | undefined;
+  designer: DesignerState;
   openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
   getConfigValue: GetWebAppConfigValue;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  curves: TaggedCurve[];
+  plants: TaggedPlantPointer[];
 }
 
 export interface CameraCalibrationData {

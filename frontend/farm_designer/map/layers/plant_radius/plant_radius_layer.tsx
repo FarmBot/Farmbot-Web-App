@@ -7,6 +7,8 @@ export interface PlantRadiusLayerProps {
   plants: TaggedPlant[];
   mapTransformProps: MapTransformProps;
   animate: boolean;
+  currentPlant: TaggedPlant | undefined;
+  hoveredSpread: number | undefined;
 }
 
 export function PlantRadiusLayer(props: PlantRadiusLayerProps) {
@@ -21,6 +23,8 @@ export function PlantRadiusLayer(props: PlantRadiusLayerProps) {
     {visible && plants.map(p =>
       <PlantRadius
         plant={p}
+        currentPlant={props.currentPlant}
+        hoveredSpread={props.hoveredSpread}
         key={`plant-radius-${p.uuid}`}
         mapTransformProps={mapTransformProps}
         visible={true}
@@ -29,6 +33,8 @@ export function PlantRadiusLayer(props: PlantRadiusLayerProps) {
 }
 
 export interface PlantRadiusProps {
+  currentPlant: TaggedPlant | undefined;
+  hoveredSpread: number | undefined;
   plant: TaggedPlant;
   mapTransformProps: MapTransformProps;
   visible: boolean;
@@ -36,8 +42,13 @@ export interface PlantRadiusProps {
 }
 
 export const PlantRadius = (props: PlantRadiusProps) => {
-  const { radius, x, y, id } = props.plant.body;
-  const { visible, mapTransformProps, animate } = props;
+  const {
+    visible, mapTransformProps, animate, plant, currentPlant, hoveredSpread,
+  } = props;
+  const { x, y, id } = plant.body;
+  const radius = plant.uuid == currentPlant?.uuid && hoveredSpread
+    ? hoveredSpread / 2
+    : props.plant.body.radius;
   const { qx, qy } = transformXY(x, y, mapTransformProps);
   return <g id={`plant-radius-${id}`}>
     {visible &&

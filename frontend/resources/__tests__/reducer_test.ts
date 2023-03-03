@@ -7,6 +7,7 @@ import {
   ResourceName,
   TaggedResource,
   TaggedTool,
+  TaggedPlantPointer,
 } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
@@ -16,8 +17,10 @@ import { resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
 import {
-  fakeFolder, fakeSequence,
+  fakeCurve,
+  fakeFolder, fakePlant, fakeSequence,
 } from "../../__test_support__/fake_state/resources";
+import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -101,6 +104,28 @@ describe("resource reducer", () => {
     expect(newTool.body.name).toEqual("after");
   });
 
+  it("sets a value as undefined while editing a resource", () => {
+    const waterCurve = fakeCurve();
+    waterCurve.body.id = 1;
+    const plant = fakePlant();
+    plant.body.water_curve_id = waterCurve.body.id;
+    const startingState = buildResourceIndex([waterCurve, plant]);
+    const { index } = startingState;
+    const { uuid } = plant;
+    const update: Partial<PlantPointer> = { water_curve_id: undefined };
+    const payload: EditResourceParams = {
+      uuid,
+      update,
+      specialStatus: SpecialStatus.SAVED
+    };
+    const action = { type: Actions.EDIT_RESOURCE, payload };
+    const newState = resourceReducer(startingState, action);
+    const oldPlant = index.references[uuid] as TaggedPlantPointer;
+    const newPlant = newState.index.references[uuid] as TaggedPlantPointer;
+    expect(oldPlant.body.water_curve_id).toEqual(1);
+    expect(newPlant.body.water_curve_id).toEqual(undefined);
+  });
+
   it("handles resource failures", () => {
     const startingState = fakeState().resources;
     const uuid = Object.keys(startingState.index.byKind.Tool)[0];
@@ -127,6 +152,30 @@ describe("resource reducer", () => {
     resourceReducer(startingState, action);
     expect(console.error).toHaveBeenCalledWith(
       "Unknown is not an indexed resource.");
+  });
+
+  it("adds point to curve usage lookup", () => {
+    const otherCurve = fakeCurve();
+    otherCurve.body.id = 1;
+    const waterCurve = fakeCurve();
+    waterCurve.body.id = 2;
+    const spreadCurve = fakeCurve();
+    spreadCurve.body.id = 3;
+    const heightCurve = fakeCurve();
+    heightCurve.body.id = 4;
+    const plant = fakePlant();
+    plant.body.water_curve_id = waterCurve.body.id;
+    plant.body.spread_curve_id = spreadCurve.body.id;
+    plant.body.height_curve_id = heightCurve.body.id;
+    const startingState = buildResourceIndex([
+      otherCurve, waterCurve, spreadCurve, heightCurve,
+    ]);
+    const action = { type: Actions.INIT_RESOURCE, payload: plant };
+    const newState = resourceReducer(startingState, action);
+    expect(newState.index.inUse["Curve.Point"][waterCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][spreadCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][heightCurve.uuid]).toBeTruthy();
+    expect(newState.index.inUse["Curve.Point"][otherCurve.uuid]).toBeFalsy();
   });
 
   it("covers destroy resource branches", () => {

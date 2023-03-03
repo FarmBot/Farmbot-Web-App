@@ -40,17 +40,14 @@ export interface ProfileLineProps {
 
 export interface ProfileOptionsProps {
   dispatch: Function;
-  axis: "x" | "y";
-  selectionWidth: number;
-  followBot: boolean;
+  designer: DesignerState;
   expanded: boolean;
   setExpanded(expanded: boolean): void;
 }
 
 export interface ProfileSvgProps {
   allPoints: TaggedPoint[];
-  axis: "x" | "y";
-  selectionWidth: number;
+  designer: DesignerState;
   position: AxisNumberProperty;
   expanded: boolean;
   botSize: BotSize;
@@ -132,6 +129,7 @@ export interface ProfilePointProps<T = TaggedPoint> {
   profileAxis: "x" | "y";
   reversed: boolean;
   getConfigValue: GetWebAppConfigValue;
+  designer: DesignerState;
 }
 
 export interface ProfileToolProps {

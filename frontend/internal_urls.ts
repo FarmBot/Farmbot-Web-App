@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { isUndefined, last } from "lodash";
 import { getPathArray } from "./history";
 import { t } from "./i18next_wrapper";
 
@@ -11,6 +11,9 @@ export namespace Path {
     getPathArray().join("/").startsWith(withApp(path));
   export const equals = (path: string) =>
     getPathArray().join("/") == withApp(path);
+  export const getLastChunk = () => last(getPathArray()) || "";
+  export const lastChunkEquals = (chunk: string) => chunk == getLastChunk();
+  export const lastChunkIsNum = (): boolean => !isNaN(parseInt(getLastChunk()));
 
   export const route = (path: string) => path.replace("/app", "");
   export const withApp = (path: string) =>
@@ -48,6 +51,8 @@ export namespace Path {
     designer("tools") + appended(path);
   export const toolSlots = (path?: string | number) =>
     designer("tool-slots") + appended(path);
+  export const curves = (path?: string | number) =>
+    designer("curves") + appended(path);
 
   export const messages = () => designer("messages");
   export const controls = () => designer("controls");
@@ -108,6 +113,7 @@ export enum Icon {
   weeds = "weeds",
   point = "point",
   groups = "groups",
+  curves = "groups",
   sequence = "sequence",
   regimens = "regimen",
   gardens = "gardens",
@@ -157,6 +163,7 @@ export const PAGE_SLUGS = (): { [x: string]: string } => ({
   "plants": t("Plants"),
   "weeds": t("Weeds"),
   "points": t("Points"),
+  "curves": t("Curves"),
   "sequences": t("Sequences"),
   "regimens": t("Regimens"),
   "events": t("Events"),

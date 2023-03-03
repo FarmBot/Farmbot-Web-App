@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { HoveredPlant, HoveredPlantProps } from "../hovered_plant";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
@@ -9,20 +9,18 @@ import {
   fakeDesignerState,
 } from "../../../../__test_support__/fake_designer_state";
 
-describe("<HoveredPlant/>", () => {
-  function fakeProps(): HoveredPlantProps {
-    return {
-      visible: true,
-      spreadLayerVisible: false,
-      dragging: false,
-      currentPlant: undefined,
-      designer: fakeDesignerState(),
-      hoveredPlant: fakePlant(),
-      isEditing: false,
-      mapTransformProps: fakeMapTransformProps(),
-      animate: false,
-    };
-  }
+describe("<HoveredPlant />", () => {
+  const fakeProps = (): HoveredPlantProps => ({
+    visible: true,
+    spreadLayerVisible: false,
+    dragging: false,
+    currentPlant: undefined,
+    designer: fakeDesignerState(),
+    hoveredPlant: fakePlant(),
+    isEditing: false,
+    mapTransformProps: fakeMapTransformProps(),
+    animate: false,
+  });
 
   it("shows hovered plant icon", () => {
     const p = fakeProps();
@@ -37,6 +35,15 @@ describe("<HoveredPlant/>", () => {
     expect(wrapper.find("#plant-indicator").length).toEqual(1);
     expect(wrapper.find("Circle").length).toEqual(1);
     expect(wrapper.find("Circle").props().selected).toBeTruthy();
+  });
+
+  it("shows hovered plant icon with hovered spread size", () => {
+    const p = fakeProps();
+    p.designer.hoveredPlant.icon = "fake icon";
+    p.designer.hoveredSpread = 1000;
+    const wrapper = shallow(<HoveredPlant {...p} />);
+    const icon = wrapper.find("image").props();
+    expect(icon.width).toEqual(240);
   });
 
   it("shows hovered plant icon while dragging", () => {

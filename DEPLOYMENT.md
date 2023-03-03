@@ -14,7 +14,7 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 
 **Affordability:** :heart: :heart: :heart:
 
- 1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#q-how-do-i-setup-an-instance-locally).
+ 1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#self-hosting).
 
 # Deployment Using Heroku (best reliability)
 

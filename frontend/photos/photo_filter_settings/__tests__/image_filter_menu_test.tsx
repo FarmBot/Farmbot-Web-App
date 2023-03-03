@@ -12,6 +12,7 @@ jest.mock("../../../resources/selectors", () => ({
   getWebAppConfig: () => mockConfig,
   assertUuid: jest.fn(),
   findUuid: jest.fn(),
+  selectAllPlantPointers: jest.fn(() => []),
 }));
 
 import React from "react";

@@ -1,11 +1,11 @@
-import { AxiosRequestConfig } from "axios";
+import { InternalAxiosRequestConfig } from "axios";
 import { store } from "../redux/store";
 import { warning } from "../toast/toast";
 import React from "react";
 import { appIsReadonly } from "./app_is_read_only";
 import { t } from "../i18next_wrapper";
 
-export const readOnlyInterceptor = (config: AxiosRequestConfig) => {
+export const readOnlyInterceptor = (config: InternalAxiosRequestConfig) => {
   const method = (config.method || "get").toLowerCase();
   const relevant = ["put", "patch", "delete"].includes(method);
 

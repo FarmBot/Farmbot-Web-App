@@ -13,22 +13,75 @@ export const calcAxisLabelStepSize = (zoomLvl: number) => {
 };
 
 interface RoundedBoxProps {
-  position: { qx: number, qy: number };
+  x: number;
+  y: number;
   width: number;
   height: number;
   fill: Color;
+  children: string;
+  radius?: number;
+  caret?: boolean;
+  position?: "left" | "right" | "center";
+  fontSize?: number;
 }
 
 /** For label text background. */
-const RoundedSvgBox = (props: RoundedBoxProps) => {
-  const { position, width, height, fill } = props;
-  const r = 4;
-  return <path fill={fill}
-    d={trim(`M${position.qx - width / 2 + r},${position.qy - height / 2 - r / 2}
-             h${width - r * 2} a${r},${r} 0 0 1 ${r},${r}
-             v${height - r} a${r},${r} 0 0 1 -${r},${r}
-             h${-(width - r * 2)} a${r},${r} 0 0 1 -${r},-${r}
-             v${-(height - r)} a${r},${r} 0 0 1 ${r},-${r} z`)} />;
+export const TextInRoundedSvgBox = (props: RoundedBoxProps) => {
+  const { x, y, width, height, fill, radius } = props;
+  const r = radius || 4;
+  const upperRightCorner = `a${r},${r} 0 0 1 ${r},${r}`;
+  const lowerRightCorner = `a${r},${r} 0 0 1 -${r},${r}`;
+  const lowerLeftCorner = `a${r},${r} 0 0 1 -${r},-${r}`;
+  const upperLeftCorner = `a${r},${r} 0 0 1 ${r},-${r}`;
+  const caretSize = props.caret ? 2 : 0;
+  const yOffset = props.caret ? caretSize + 3 : 0;
+  const halfWidth = (width - r * 2) / 2 - caretSize;
+  const bottomLength = () => {
+    switch (props.position || "center") {
+      case "left":
+        return {
+          xOffset: -caretSize,
+          textOffset: width / 2 - caretSize - r,
+          left: 0,
+          right: halfWidth * 2,
+        };
+      case "right":
+        return {
+          xOffset: -width + r * 2 + caretSize,
+          textOffset: -width / 2 + caretSize + r,
+          left: halfWidth * 2,
+          right: 0,
+        };
+      case "center":
+        return {
+          xOffset: -width / 2 + r,
+          textOffset: 0,
+          left: halfWidth,
+          right: halfWidth,
+        };
+    }
+  };
+  const dimensions = bottomLength();
+  const caretPath = props.caret
+    ? `l-${caretSize},${caretSize} l-${caretSize},-${caretSize}`
+    : "";
+  return <g id={"label"}>
+    <path fill={fill}
+      d={trim(`M${x + dimensions.xOffset},${y - yOffset - height / 2 - r / 2}
+             h${width - r * 2} ${upperRightCorner}
+             v${height - r} ${lowerRightCorner}
+             h${-dimensions.right}
+             ${caretPath}
+             h${-dimensions.left} ${lowerLeftCorner}
+             v${-(height - r)} ${upperLeftCorner} z`)} />
+    <text fontFamily={"Arial"} fontSize={props.fontSize || 14}
+      textAnchor={"middle"} dominantBaseline={"central"}
+      fill={Color.white}
+      fontWeight={"bold"}
+      x={x + dimensions.textOffset} y={y - yOffset}>
+      {props.children}
+    </text>
+  </g>;
 };
 
 export interface GenerateTransformStyleProps {
@@ -104,14 +157,12 @@ export const gridLabels = (props: GridLabelsProps) => {
       : transformXY(position, 0, mapTransformProps);
     return <g key={`${axis}-label-${position}`}
       id={`${axis}-label`}
-      fontFamily={"Arial"} fontSize={14} textAnchor={"middle"}
-      dominantBaseline={"central"} fill={Color.white} fontWeight={"bold"}
       opacity={0.9}
       style={generateTransformStyle({ zoomLvl, mapTransformProps, axis })}>
-      <RoundedSvgBox position={location} width={36} height={14} fill={fill} />
-      <text x={location.qx} y={location.qy}>
-        {position}
-      </text>
+      <TextInRoundedSvgBox x={location.qx} y={location.qy} width={36} height={14}
+        fill={fill}>
+        {"" + position}
+      </TextInRoundedSvgBox>
     </g>;
   });
 };

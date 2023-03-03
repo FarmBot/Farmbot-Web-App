@@ -474,6 +474,7 @@
     .filter-search {
       padding-right: 1rem;
     }
+    .plant-curves-bulk-update,
     .point-size-bulk-update,
     .plant-depth-bulk-update,
     .plant-date-bulk-update,
@@ -482,17 +483,18 @@
     .plant-status-bulk-update {
       display: inline-block;
       width: 100%;
+      line-height: 3.5rem;
     }
+    .plant-curves-bulk-update,
     .plant-status-bulk-update {
       .filter-search {
         display: inline-block;
         width: 50% !important;
-        margin-left: 0.5rem;
+        margin-top: 0.5rem;
       }
       p {
         display: inline-block;
         font-size: 1.2rem;
-        line-height: 4.1rem;
         vertical-align: top;
       }
     }
@@ -507,20 +509,11 @@
         margin: 0;
         width: 48%;
         height: 3rem;
-        margin-left: 0.5rem;
-      }
-    }
-    .plant-depth-bulk-update {
-      input {
-        margin-top: 1rem;
-        margin-left: 0.8rem;
       }
     }
     .plant-date-bulk-update {
       .input {
         display: inline-block;
-        margin-left: 1.5rem;
-        margin-bottom: 1rem;
         width: 48%;
         input {
           height: 3rem;
@@ -531,17 +524,12 @@
       }
     }
     .point-color-bulk-update {
-      margin-top: 1rem;
       .color-picker {
         display: inline-block;
-        margin-left: 0.5rem;
         margin-bottom: -0.5rem;
       }
     }
     .plant-slug-bulk-update {
-      a {
-        margin-left: 2rem;
-      }
       .fa-pencil {
         margin-left: 1rem;
       }
@@ -550,8 +538,7 @@
         height: 2rem;
         line-height: 1.75rem;
         margin-left: 1rem;
-        margin-top: 1rem;
-        vertical-align: bottom;
+        vertical-align: top;
       }
     }
     .more {
@@ -570,12 +557,22 @@
       margin-right: 1rem;
     }
     .more-content {
+      margin-top: 0.5rem;
+      max-height: 20.5rem;
+      overflow: scroll;
+      width: 330px;
       label {
         width: 100%;
       }
       .filter-search {
         display: inline-block;
-        width: 100%;
+        width: 50.75% !important;
+        line-height: 1rem;
+      }
+      p {
+        display: inline-block;
+        width: 150px;
+        line-height: 3.5rem;
       }
     }
   }
@@ -601,6 +598,7 @@
   }
 }
 
+.curve-info-panel,
 .weed-info-panel,
 .point-info-panel,
 .plant-info-panel {
@@ -1912,21 +1910,30 @@ li {
   }
 }
 
-.group-detail-panel {
-  .panel-header-icon-group {
-    display: flex;
-    float: right;
-    padding: 1.5rem;
-    .fa-sort {
-      margin-top: 0.25rem;
-      color: $white;
-    }
-    .fa-trash {
-      margin-top: 0.25rem;
-      margin-left: 2rem;
-      color: $white;
-    }
+.panel-header-icon-group {
+  display: flex;
+  float: right;
+  padding: 1.5rem;
+  .fa-copy,
+  .fa-sort {
+    margin-top: 0.25rem;
+    color: $white;
   }
+  .fa-trash {
+    margin-top: 0.25rem;
+    margin-left: 2rem;
+    color: $white;
+  }
+  .color-picker {
+    margin-right: 0.5rem;
+  }
+  .fa-expand {
+    margin-top: 0.25rem;
+    color: $dark_gray;
+  }
+}
+
+.group-detail-panel {
   .panel-content {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
@@ -2361,6 +2368,261 @@ li {
   }
 }
 
+.curve-svg-wrapper {
+  .bp4-popover-target {
+    width: 100%;
+  }
+}
+
+.warning-line-text-popover {
+  border-radius: 5px;
+  .bp4-popover-content {
+    background: $dark_gray;
+    border-radius: 5px;
+  }
+  .bp4-popover-arrow {
+    display: none;
+  }
+  p {
+    color: $white;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem !important;
+  }
+  .warning-text {
+    max-width: 200px;
+    .top {
+      font-weight: bold;
+    }
+  }
+}
+
+.curve-action-popover {
+  .bp4-popover-content {
+    background: $dark_gray;
+  }
+  .bp4-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .curve-action-menu {
+    max-width: 150px;
+    .transparent-button {
+      position: absolute;
+      right: 0;
+      width: 50%;
+      color: $off_white
+    }
+    label {
+      width: 100%;
+      color: $off_white;
+      margin-top: 0.75rem;
+    }
+    .filter-search {
+      width: 100%;
+      button {
+        box-shadow: none !important;
+      }
+    }
+    input {
+      box-shadow: none;
+      width: 90%;
+    }
+    .curve-menu-row {
+      display: flex;
+      position: relative;
+      height: 3rem;
+      margin-top: 0.5rem;
+      &.last {
+        height: 2rem;
+      }
+    }
+  }
+}
+
+.curve-svg {
+  .y-axis-line,
+  .warning-line {
+    pointer-events: none;
+  }
+}
+
+.curve-info-panel {
+  .panel-title {
+    .white-text {
+      color: $dark_gray;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
+  }
+  .panel-header-icon-group {
+    i {
+      color: $dark_gray;
+    }
+  }
+}
+
+.curve-info-panel-content-wrapper {
+  .bp4-popover-wrapper {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 1rem;
+  }
+  .full-indicator {
+    height: 2rem;
+    text-align: center;
+    color: $darkest_red;
+  }
+  .input-error-wrapper {
+    position: absolute;
+    margin: 0;
+  }
+  table {
+    th {
+      text-transform: uppercase;
+      color: $dark_gray;
+      font-size: 1.3rem;
+    }
+    td,
+    th {
+      background: $lighter_gray;
+      border: 1px solid $light_gray;
+      padding-left: 1rem;
+      p {
+        display: inline;
+        font-size: 1.4rem;
+        color: $dark_gray;
+      }
+      &.active {
+        background: $white;
+      }
+      &.active-input {
+        padding: 0;
+      }
+      .percent-green {
+        color: $green;
+      }
+      .percent-red {
+        color: $red;
+      }
+      input {
+        font-size: 1.4rem;
+        padding-left: 1rem;
+      }
+    }
+    tr {
+      &.hovered {
+        border: 2px solid $gray;
+        border-top-width: 0;
+        border-bottom-width: 0;
+      }
+    }
+  }
+  .row-radio {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-left: 1rem;
+    margin-top: -0.25rem;
+    &.active {
+      &.full {
+        background: revert;
+        border: revert;
+        cursor: pointer;
+      }
+    }
+    &.full {
+      background: $light_gray;
+      border: $gray;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.curves-inventory-panel-content {
+  padding: 0;
+  .curve-search-item {
+    height: 4rem;
+    line-height: 4rem;
+    cursor: pointer;
+    .curve-search-item-info {
+      text-align: right;
+      font-size: 1rem;
+      padding-right: 1rem;
+      line-height: 4rem;
+      float: right;
+    }
+    .curve-search-item-name {
+      width: 40%;
+      margin-left: 1.25rem;
+    }
+  }
+  .section-header {
+    .fb-button {
+      margin-top: 0.75rem;
+    }
+    .fa-caret-up,
+    .fa-caret-down {
+      line-height: 3.75rem;
+      margin-top: 0 !important;
+    }
+  }
+}
+
+.crop-curve-info {
+  margin-top: 1.5rem;
+  .bp4-collapse {
+    padding-top: 0.5rem;
+  }
+  p {
+    line-height: 4rem;
+    font-size: 1.3rem;
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  i {
+    position: absolute;
+    right: 0.5rem;
+    line-height: 4rem;
+  }
+  .active-curve-name {
+    position: relative;
+    height: 4rem;
+    line-height: 3rem;
+    p,
+    .filter-search {
+      display: inline-block;
+      position: absolute;
+      right: 3rem;
+      width: 75%;
+      margin-top: 0.5rem;
+    }
+    p {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    label {
+      line-height: 4rem;
+    }
+  }
+}
+
+.curve-info-panel-content-wrapper,
+.all-curve-info {
+  svg {
+    text {
+      user-select: none;
+    }
+  }
+}
+
+.curve-icon {
+  margin-left: 1rem;
+  vertical-align: middle;
+}
+
 .sensors-panel,
 .controls-panel {
   .panel-content {
@@ -2738,18 +3000,6 @@ li {
 }
 
 .designer-sequence-editor-panel {
-  .panel-header-icon-group {
-    display: flex;
-    float: right;
-    padding: 1.5rem;
-    .color-picker {
-      margin-right: 0.5rem;
-    }
-    .fa-expand {
-      margin-top: 0.25rem;
-      color: $dark_gray;
-    }
-  }
   .green,
   .red {
     .panel-title {

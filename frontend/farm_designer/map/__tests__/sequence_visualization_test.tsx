@@ -10,6 +10,7 @@ let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
 jest.mock("../../../resources/selectors", () => ({
   findPointerByTypeAndId: () => fakePoint(),
   findSlotByToolId: () => mockToolSlot,
+  selectAllPlantPointers: jest.fn(() => []),
   findUuid: jest.fn(),
 }));
 

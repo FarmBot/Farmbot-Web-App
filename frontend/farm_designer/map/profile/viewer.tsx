@@ -10,14 +10,12 @@ import { ProfileOptions } from "./options";
 /** View a profile of the points in the selected map region. */
 export const ProfileViewer = (props: ProfileViewerProps) => {
   const { dispatch } = props;
-  const {
-    profileOpen, profilePosition, profileWidth, profileFollowBot,
-  } = props.designer;
+  const { profileOpen, profileFollowBot } = props.designer;
   const axis = props.designer.profileAxis;
   const panelStatus = getPanelStatus();
   const { x, y } = profileFollowBot
     ? props.botLocationData.position
-    : profilePosition;
+    : props.designer.profilePosition;
   const noProfile = isUndefined(x) || isUndefined(y)
     || (!profileOpen && profileFollowBot);
   const className = [
@@ -46,9 +44,8 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
           </label>
           {expanded && <p className={"left-label"}>Z</p>}
           <ProfileSvg allPoints={props.allPoints}
-            axis={axis}
+            designer={props.designer}
             position={{ x, y }}
-            selectionWidth={profileWidth}
             expanded={expanded}
             botLocationData={props.botLocationData}
             peripheralValues={props.peripheralValues}
@@ -64,9 +61,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
         </div>}
       <ProfileOptions
         dispatch={dispatch}
-        axis={axis}
-        selectionWidth={profileWidth}
-        followBot={profileFollowBot}
+        designer={props.designer}
         expanded={expanded}
         setExpanded={setExpanded} />
     </div>

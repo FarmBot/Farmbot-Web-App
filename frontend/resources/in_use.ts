@@ -23,7 +23,8 @@ type UsageKind =
   | "Sequence.FarmEvent"
   | "Sequence.Sequence"
   | "Sequence.PinBinding"
-  | "Sequence.FbosConfig";
+  | "Sequence.FbosConfig"
+  | "Curve.Point";
 
 /** This variable ensures that `EVERY_USAGE_KIND` does not have typos and is
  * up-to-date all `UsageKind`s */
@@ -33,7 +34,8 @@ const values: Record<UsageKind, UsageKind> = {
   "Sequence.FarmEvent": "Sequence.FarmEvent",
   "Sequence.Sequence": "Sequence.Sequence",
   "Sequence.PinBinding": "Sequence.PinBinding",
-  "Sequence.FbosConfig": "Sequence.FbosConfig"
+  "Sequence.FbosConfig": "Sequence.FbosConfig",
+  "Curve.Point": "Curve.Point",
 };
 
 /** Array that contains every `UsageKind` token for easy runtime iteration. */

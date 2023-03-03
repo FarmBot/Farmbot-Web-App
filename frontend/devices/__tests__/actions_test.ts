@@ -19,7 +19,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   findHome: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   send: jest.fn(() => Promise.resolve()),
-  readStatus: jest.fn(() => Promise.resolve())
+  readStatus: jest.fn(() => Promise.resolve()),
 };
 
 const mockDevice = { current: mockDeviceDefault };
@@ -74,6 +74,20 @@ describe("sendRPC()", () => {
       args: { label: expect.any(String), priority: 600 },
       body: [{ kind: "sync", args: {} }],
     });
+  });
+});
+
+describe("readStatus()", () => {
+  it("calls readStatus", async () => {
+    await actions.readStatus();
+    expect(mockDevice.current.readStatus).toHaveBeenCalled();
+  });
+});
+
+describe("readStatusReturnPromise()", () => {
+  it("calls readStatusReturnPromise", async () => {
+    await actions.readStatusReturnPromise();
+    expect(mockDevice.current.readStatus).toHaveBeenCalled();
   });
 });
 
@@ -576,8 +590,6 @@ describe("changeStepSize()", () => {
 
 describe("fetchMinOsFeatureData()", () => {
   const EXPECTED_URL = expect.stringContaining("FEATURE_MIN_VERSIONS.json");
-  afterEach(() =>
-    jest.restoreAllMocks());
 
   it("fetches min OS feature data: empty", async () => {
     mockGet = Promise.resolve({ data: {} });
@@ -606,22 +618,22 @@ describe("fetchMinOsFeatureData()", () => {
   it("fetches bad min OS feature data: not an object", async () => {
     mockGet = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
-    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    console.log = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockConsole).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining("\"bad\""));
   });
 
   it("fetches bad min OS feature data", async () => {
     mockGet = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
-    const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
+    console.log = jest.fn();
     await actions.fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockConsole).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining("{\"a\":\"0\",\"b\":0}"));
   });
 

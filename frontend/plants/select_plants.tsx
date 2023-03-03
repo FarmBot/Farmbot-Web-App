@@ -22,6 +22,7 @@ import {
   PointColorBulkUpdate,
   PointSizeBulkUpdate,
   PlantDepthBulkUpdate,
+  PlantCurvesBulkUpdate,
 } from "./edit_plant_status";
 import { FBSelect, DropDownItem } from "../ui";
 import {
@@ -29,12 +30,14 @@ import {
   TaggedTool,
   TaggedWeedPointer,
   SpecialStatus,
+  TaggedCurve,
 } from "farmbot";
 import { TaggedPointGroup, UUID } from "../resources/interfaces";
 import {
   selectAllActivePoints, selectAllToolSlotPointers, selectAllTools,
   selectAllPointGroups,
   maybeGetTimeSettings,
+  selectAllCurves,
 } from "../resources/selectors";
 import { PointInventoryItem } from "../points/point_inventory_item";
 import { ToolSlotInventoryItem } from "../tools";
@@ -56,6 +59,7 @@ import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
 } from "../settings/firmware/firmware_hardware_support";
+import { DevSettings } from "../settings/dev/dev_support";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -121,6 +125,7 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     bulkPlantSlug,
     noUTM: !hasUTM(getFwHardwareValue(getFbosConfig(props.resources.index))),
+    curves: selectAllCurves(props.resources.index),
   };
 };
 
@@ -139,6 +144,7 @@ export interface SelectPlantsProps {
   timeSettings: TimeSettings;
   bulkPlantSlug: string | undefined;
   noUTM: boolean;
+  curves: TaggedCurve[];
 }
 
 interface SelectPlantsState {
@@ -220,6 +226,12 @@ export class RawSelectPlants
     const unsavedPoints = betterCompact(this.selected.map(uuid =>
       this.props.allPoints.filter(p => p.uuid == uuid)[0])
       .filter(p => p?.specialStatus == SpecialStatus.DIRTY));
+    const bulkUpdateProps = {
+      pointerType: this.selectionPointType,
+      allPoints: this.props.allPoints,
+      selected: this.selected,
+      dispatch: this.props.dispatch,
+    };
     return <div className={["panel-action-buttons",
       this.state.moreSelections ? "more-select" : "",
       this.state.moreActions ? "more-action" : "",
@@ -298,42 +310,28 @@ export class RawSelectPlants
             this.setState({ moreActions: !this.state.moreActions })}>
           {(this.selectionPointType == "Plant" ||
             this.selectionPointType == "Weed") &&
-            <PlantStatusBulkUpdate
-              pointerType={this.selectionPointType}
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              dispatch={this.props.dispatch} />}
+            <PlantStatusBulkUpdate {...bulkUpdateProps}
+              pointerType={this.selectionPointType} />}
           {["Plant"].includes(this.selectionPointType) &&
-            <PlantDateBulkUpdate
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              timeSettings={this.props.timeSettings}
-              dispatch={this.props.dispatch} />}
+            <PlantDateBulkUpdate {...bulkUpdateProps}
+              timeSettings={this.props.timeSettings} />}
           {["Plant", "Weed", "GenericPointer"]
             .includes(this.selectionPointType) &&
-            <PointSizeBulkUpdate
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              dispatch={this.props.dispatch} />}
+            <PointSizeBulkUpdate {...bulkUpdateProps} />}
           {["Plant"]
             .includes(this.selectionPointType) &&
-            <PlantDepthBulkUpdate
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              dispatch={this.props.dispatch} />}
+            <PlantDepthBulkUpdate {...bulkUpdateProps} />}
+          {DevSettings.futureFeaturesEnabled() &&
+            ["Plant"].includes(this.selectionPointType) &&
+            <PlantCurvesBulkUpdate {...bulkUpdateProps}
+              curves={this.props.curves} />}
           {["Weed", "GenericPointer"]
             .includes(this.selectionPointType) &&
-            <PointColorBulkUpdate
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              dispatch={this.props.dispatch} />}
+            <PointColorBulkUpdate {...bulkUpdateProps} />}
           {["Plant"]
             .includes(this.selectionPointType) &&
-            <PlantSlugBulkUpdate
-              allPoints={this.props.allPoints}
-              selected={this.selected}
-              bulkPlantSlug={this.props.bulkPlantSlug}
-              dispatch={this.props.dispatch} />}
+            <PlantSlugBulkUpdate {...bulkUpdateProps}
+              bulkPlantSlug={this.props.bulkPlantSlug} />}
         </More>
       </div>
     </div>;

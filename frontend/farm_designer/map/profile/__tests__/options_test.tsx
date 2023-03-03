@@ -3,19 +3,21 @@ import { mount, shallow } from "enzyme";
 import { ProfileOptions } from "../options";
 import { ProfileOptionsProps } from "../interfaces";
 import { Actions } from "../../../../constants";
+import {
+  fakeDesignerState,
+} from "../../../../__test_support__/fake_designer_state";
 
 describe("<ProfileOptions />", () => {
   const fakeProps = (): ProfileOptionsProps => ({
     dispatch: jest.fn(),
-    axis: "x",
-    selectionWidth: 100,
-    followBot: false,
+    designer: fakeDesignerState(),
     expanded: false,
     setExpanded: jest.fn(),
   });
 
   it("changes axis to y", () => {
     const p = fakeProps();
+    p.designer.profileAxis = "x";
     const wrapper = mount(<ProfileOptions {...p} />);
     wrapper.find("button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -26,7 +28,7 @@ describe("<ProfileOptions />", () => {
 
   it("changes axis to x", () => {
     const p = fakeProps();
-    p.axis = "y";
+    p.designer.profileAxis = "y";
     const wrapper = mount(<ProfileOptions {...p} />);
     wrapper.find("button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({

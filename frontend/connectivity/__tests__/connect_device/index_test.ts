@@ -3,9 +3,6 @@ jest.mock("../../index", () => ({
   dispatchNetworkDown: jest.fn()
 }));
 
-const mockDevice = { readStatus: jest.fn(() => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 let mockConfigValue: boolean | number = false;
 jest.mock("../../../config_storage/actions", () => ({
   getWebAppConfigValue: () => () => mockConfigValue,
@@ -23,7 +20,6 @@ import {
   TITLE,
   bothUp,
   initLog,
-  readStatus,
   onOffline,
   changeLastClientConnected,
   onSent,
@@ -38,7 +34,6 @@ import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
-import { getDevice } from "../../../device";
 import { talk } from "browser-speech";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
@@ -51,13 +46,6 @@ import { globalQueue } from "../../batch_queue";
 import { beep } from "../../../util/beep";
 
 const ANY_NUMBER = expect.any(Number);
-
-describe("readStatus()", () => {
-  it("forces a read_status request to FarmBot", () => {
-    readStatus();
-    expect(getDevice().readStatus).toHaveBeenCalled();
-  });
-});
 
 describe("incomingStatus", () => {
   it("creates an action", () => {

@@ -144,6 +144,7 @@ const fakeProps = (): GardenMapProps => ({
   logs: [],
   deviceTarget: "",
   farmwareEnvs: [],
+  curves: [],
 });
 
 describe("<GardenMap/>", () => {

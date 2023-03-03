@@ -60,6 +60,23 @@ export const fetchInterpolationOptions =
     return options;
   };
 
+export interface GetZAtLocationProps {
+  x: number | undefined;
+  y: number | undefined;
+  farmwareEnvs: TaggedFarmwareEnv[] | undefined;
+  points: TaggedGenericPointer[] | undefined;
+}
+
+export const getZAtLocation =
+  (props: GetZAtLocationProps) => {
+    const { x, y, farmwareEnvs, points } = props;
+    if (isUndefined(x) || isUndefined(y)
+      || isUndefined(farmwareEnvs) || isUndefined(points)) { return; }
+    const options = fetchInterpolationOptions(farmwareEnvs);
+    const interpolationPoints = selectMostRecentPoints(points);
+    return interpolatedZ({ x, y }, interpolationPoints, options);
+  };
+
 interface GenerateInterpolationMapDataProps {
   kind: "Point" | "SensorReading";
   points: (TaggedGenericPointer | TaggedSensorReading)[];

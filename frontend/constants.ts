@@ -868,6 +868,11 @@ export namespace Content {
   export const RESTART_FIRMWARE =
     trim(`Restart the Farmduino or Arduino firmware.`);
 
+  export const FIRMWARE_UPGRADED =
+    trim(`If you are upgrading your FarmBot, you may need to manually add
+    any new peripherals, sensors, and tools that your new electronics board
+    supports.`);
+
   // FarmBot OS Settings: Power and Reset
   export const RESTART_FARMBOT =
     trim(`This will restart FarmBot's Raspberry Pi and controller
@@ -1120,6 +1125,10 @@ export namespace Content {
   export const NO_REGIMENS =
     trim(`Click "+" to create a new regimen.`);
 
+  export const WITHIN_HOUR_OF_OS_UPDATE =
+    trim(`Warning: One or more items are scheduled to run within one hour
+    of the FarmBot OS update time setting.`);
+
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
@@ -1167,6 +1176,9 @@ export namespace Content {
 
   export const NO_ZONES =
     trim(`Press "+" to add a zone.`);
+
+  export const NO_CURVES =
+    trim(`Press "+" to add a curve.`);
 
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
@@ -2264,8 +2276,9 @@ export enum Actions {
   TOGGLE_WEEDS_PANEL_OPTION = "TOGGLE_WEEDS_PANEL_OPTION",
   TOGGLE_POINTS_PANEL_OPTION = "TOGGLE_POINTS_PANEL_OPTION",
   TOGGLE_SETTINGS_PANEL_OPTION = "TOGGLE_SETTINGS_PANEL_OPTION",
+  TOGGLE_CURVES_PANEL_OPTION = "TOGGLE_CURVES_PANEL_OPTION",
   TOGGLE_SEQUENCES_PANEL_OPTION = "TOGGLE_SEQUENCES_PANEL_OPTION",
-  TOGGLE_METRIC_PANEL_OPTION = "TOGGLE_METRIC_PANEL_OPTION",
+  SET_METRIC_PANEL_OPTION = "SET_METRIC_PANEL_OPTION",
   BULK_TOGGLE_SETTINGS_PANEL = "BULK_TOGGLE_SETTINGS_PANEL",
 
   // Devices
@@ -2292,6 +2305,7 @@ export enum Actions {
   SET_SELECTION_POINT_TYPE = "SET_SELECTION_POINT_TYPE",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
+  TOGGLE_HOVERED_SPREAD = "TOGGLE_HOVERED_SPREAD",
   HOVER_SENSOR_READING = "HOVER_SENSOR_READING",
   HOVER_IMAGE = "HOVER_IMAGE",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
@@ -2329,6 +2343,9 @@ export enum Actions {
   SET_PROFILE_POSITION = "SET_PROFILE_POSITION",
   SET_PROFILE_WIDTH = "SET_PROFILE_WIDTH",
   SET_PROFILE_FOLLOW_BOT = "SET_PROFILE_FOLLOW_BOT",
+  SET_CROP_WATER_CURVE_ID = "SET_CROP_WATER_CURVE_ID",
+  SET_CROP_SPREAD_CURVE_ID = "SET_CROP_SPREAD_CURVE_ID",
+  SET_CROP_HEIGHT_CURVE_ID = "SET_CROP_HEIGHT_CURVE_ID",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",
@@ -2370,6 +2387,7 @@ export enum Actions {
   PING_START = "PING_START",
   PING_OK = "PING_OK",
   PING_NO = "PING_NO",
+  CLEAR_PINGS = "CLEAR_PINGS",
 
   // Sequence Folders
   FOLDER_TOGGLE = "FOLDER_TOGGLE",

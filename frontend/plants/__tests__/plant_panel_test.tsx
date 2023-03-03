@@ -4,6 +4,11 @@ jest.mock("../../ui/help", () => ({
 
 jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import {
   PlantPanel, PlantPanelProps,
@@ -20,14 +25,19 @@ import { clickButton } from "../../__test_support__/helpers";
 import { push } from "../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { fakePoint } from "../../__test_support__/fake_state/resources";
+import {
+  fakeCurve, fakePlant, fakePoint,
+} from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import { move } from "../../devices/actions";
-import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import {
+  fakeBotSize, fakeMovementState,
+} from "../../__test_support__/fake_bot_data";
+import { CurveType } from "../../curves/templates";
 
-describe("<PlantPanel/>", () => {
+describe("<PlantPanel />", () => {
   const info: FormattedPlantInfo = {
     x: 12,
     y: 34,
@@ -36,7 +46,7 @@ describe("<PlantPanel/>", () => {
     depth: 0,
     id: undefined,
     name: "tomato",
-    uuid: "Plant.0.0",
+    uuid: "Point.0.0",
     daysOld: 1,
     plantedAt: moment("2017-06-19T08:02:22.466-05:00"),
     slug: "tomato",
@@ -57,6 +67,10 @@ describe("<PlantPanel/>", () => {
     botOnline: true,
     defaultAxes: "XY",
     movementState: fakeMovementState(),
+    sourceFbosConfig: () => ({ value: 0, consistent: true }),
+    botSize: fakeBotSize(),
+    curves: [],
+    plants: [],
   });
 
   it("renders: editing", () => {
@@ -78,7 +92,7 @@ describe("<PlantPanel/>", () => {
     p.info.meta = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 3, "Delete");
-    expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
+    expect(p.onDestroy).toHaveBeenCalledWith("Point.0.0");
   });
 
   it("renders", () => {
@@ -120,6 +134,42 @@ describe("<PlantPanel/>", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
     });
+  });
+
+  it("renders curves", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.type = "water";
+    curve.body.id = 1;
+    p.curves = [curve];
+    const plant = fakePlant();
+    plant.body.openfarm_slug = "mint";
+    plant.body.water_curve_id = 1;
+    p.plants = [plant];
+    p.info.water_curve_id = 1;
+    p.info.uuid = "Point.0.0";
+    const wrapper = mount(<PlantPanel {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("waterfake - 0l over 2 days");
+  });
+
+  it("changes curve", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.type = "water";
+    curve.body.id = 1;
+    p.curves = [curve];
+    const plant = fakePlant();
+    plant.body.openfarm_slug = "mint";
+    plant.body.water_curve_id = 1;
+    p.plants = [plant];
+    p.info.water_curve_id = 1;
+    p.info.uuid = "Point.0.0";
+    const wrapper = shallow(<PlantPanel {...p} />);
+    wrapper.find("AllCurveInfo").simulate("change", 1, CurveType.water);
+    expect(p.updatePlant).toHaveBeenCalledWith(info.uuid,
+      { water_curve_id: 1 }, true);
   });
 });
 

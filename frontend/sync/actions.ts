@@ -70,6 +70,7 @@ export async function fetchSyncData(dispatch: Function) {
       get("FarmwareInstallation", API.current.farmwareInstallationPath),
       get("WebAppConfig", API.current.webAppConfigPath),
       get("SavedGarden", API.current.savedGardensPath),
+      // get("Curve", API.current.curvesPath),
     ]),
     1: () => Promise.all<{}>([
       get("PlantTemplate", API.current.plantTemplatePath),

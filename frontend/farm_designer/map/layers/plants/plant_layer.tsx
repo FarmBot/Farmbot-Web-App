@@ -21,6 +21,7 @@ export function PlantLayer(props: PlantLayerProps) {
     groupSelected,
     animate,
     hoveredPlant,
+    hoveredSpread,
   } = props;
 
   return <g id="plant-layer">
@@ -44,6 +45,7 @@ export function PlantLayer(props: PlantLayerProps) {
         zoomLvl={zoomLvl}
         activeDragXY={activeDragXY}
         hovered={hovered}
+        hoveredSpread={hoveredSpread}
         animate={animate} />;
       const style: React.SVGProps<SVGGElement>["style"] =
         (props.interactions && p.body.id)

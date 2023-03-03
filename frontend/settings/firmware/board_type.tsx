@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../ui";
-import { info } from "../../toast/toast";
+import { info, warning } from "../../toast/toast";
 import { updateConfig } from "../../devices/actions";
 import { BoardTypeProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
@@ -8,10 +8,10 @@ import {
   FirmwareHardwareStatus, FlashFirmwareBtn,
 } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
+  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI, isUpgrade,
 } from "./firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
-import { DeviceSetting } from "../../constants";
+import { Content, DeviceSetting } from "../../constants";
 import { getModifiedClassName } from "../fbos_settings/default_values";
 
 export class BoardType extends React.Component<BoardTypeProps, {}> {
@@ -29,6 +29,9 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
     const firmware_hardware = selectedItem.value;
     if (selectedItem && isFwHardwareValue(firmware_hardware)) {
       info(t("Sending firmware configuration..."), { title: t("Sending") });
+      isUpgrade(this.props.firmwareHardware, firmware_hardware) &&
+        warning(t(Content.FIRMWARE_UPGRADED),
+          { title: t("Action may be required") });
       this.props.dispatch(updateConfig({ firmware_hardware }));
       this.forceUpdate();
     }

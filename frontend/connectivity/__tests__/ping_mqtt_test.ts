@@ -27,8 +27,7 @@ function fakeBot(): Farmbot {
     publish: jest.fn(),
     on: jest.fn(),
     ping: jest.fn((_timeout: number, _now: number) => Promise.resolve(1)),
-    // TODO: Fix this typing (should be `FarmBotInternalConfig[typeof key]`).
-    getConfig: jest.fn((key: keyof FarmBotInternalConfig) => state[key] as never),
+    getConfig: jest.fn(key => state[key] as never),
   };
 
   return fb as Farmbot;

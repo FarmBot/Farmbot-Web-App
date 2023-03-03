@@ -7,6 +7,7 @@ import React from "react";
 import { EditPlantStatusProps } from "../plant_panel";
 import { shallow } from "enzyme";
 import {
+  fakeCurve,
   fakePlant, fakePoint, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { edit } from "../../api/crud";
@@ -20,11 +21,16 @@ import {
   PlantSlugBulkUpdate,
   PlantSlugBulkUpdateProps,
   PlantDepthBulkUpdate,
+  PlantCurvesBulkUpdate,
+  PlantCurvesBulkUpdateProps,
+  PlantCurveBulkUpdate,
+  PlantCurveBulkUpdateProps,
 } from "../edit_plant_status";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { push } from "../../history";
+import { CurveType } from "../../curves/templates";
 
 describe("<EditPlantStatus />", () => {
   const fakeProps = (): EditPlantStatusProps => ({
@@ -200,6 +206,14 @@ describe("<PointSizeBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledWith(plant1, { radius: 1 });
     expect(edit).toHaveBeenCalledWith(plant2, { radius: 1 });
   });
+});
+
+describe("<PlantDepthBulkUpdate />", () => {
+  const fakeProps = (): BulkUpdateBaseProps => ({
+    allPoints: [],
+    selected: [],
+    dispatch: jest.fn(),
+  });
 
   it("updates plant depths", () => {
     const p = fakeProps();
@@ -217,6 +231,48 @@ describe("<PointSizeBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledTimes(2);
     expect(edit).toHaveBeenCalledWith(plant1, { depth: 1 });
     expect(edit).toHaveBeenCalledWith(plant2, { depth: 1 });
+  });
+});
+
+describe("<PlantCurveBulkUpdate />", () => {
+  const fakeProps = (): PlantCurveBulkUpdateProps => ({
+    allPoints: [],
+    selected: [],
+    dispatch: jest.fn(),
+    curves: [fakeCurve()],
+    curveType: CurveType.water,
+  });
+
+  it("updates plant curves", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.allPoints = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PlantCurveBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("FBSelect").first().simulate("change", { label: "", value: "1" });
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change Water curve for 2 items?");
+    expect(edit).toHaveBeenCalledTimes(2);
+    expect(edit).toHaveBeenCalledWith(plant1, { water_curve_id: 1 });
+    expect(edit).toHaveBeenCalledWith(plant2, { water_curve_id: 1 });
+  });
+});
+
+describe("<PlantCurvesBulkUpdate />", () => {
+  const fakeProps = (): PlantCurvesBulkUpdateProps => ({
+    allPoints: [],
+    selected: [],
+    dispatch: jest.fn(),
+    curves: [],
+  });
+
+  it("updates plant curves", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<PlantCurvesBulkUpdate {...p} />);
+    expect(wrapper.text()).toContain("PlantCurveBulkUpdate");
   });
 });
 

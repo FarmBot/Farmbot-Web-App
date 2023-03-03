@@ -37,6 +37,10 @@ export const connectivityReducer =
       }
       return s;
     })
+    .add<void>(Actions.CLEAR_PINGS, (s) => {
+      s.pings = {};
+      return s;
+    })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
       if (payload.name == "bot.mqtt") {
         return s; // <= Let PING_OK / PING_NO handle it.

@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../../i18next_wrapper";
 import { Actions } from "../../../constants";
-import { ToggleButton } from "../../../ui/toggle_button";
+import { ToggleButton } from "../../../ui";
 import { ProfileOptionsProps } from "./interfaces";
 
 /** Profile viewer settings. */
@@ -9,15 +9,15 @@ export const ProfileOptions = (props: ProfileOptionsProps) =>
   <div className={"profile-options"}>
     <label>{t("axis")}</label>
     <ToggleButton
-      toggleValue={props.axis == "y"}
+      toggleValue={props.designer.profileAxis == "y"}
       toggleAction={() => props.dispatch({
         type: Actions.SET_PROFILE_AXIS,
-        payload: props.axis == "x" ? "y" : "x",
+        payload: props.designer.profileAxis == "x" ? "y" : "x",
       })}
       customText={{ textTrue: "x", textFalse: "y" }} />
 
     <label>{t("width")}</label>
-    <input type={"number"} value={props.selectionWidth}
+    <input type={"number"} value={props.designer.profileWidth}
       onChange={e => props.dispatch({
         type: Actions.SET_PROFILE_WIDTH,
         payload: parseInt(e.currentTarget.value),
@@ -25,10 +25,10 @@ export const ProfileOptions = (props: ProfileOptionsProps) =>
 
     <label>{t("follow")}</label>
     <ToggleButton
-      toggleValue={props.followBot}
+      toggleValue={props.designer.profileFollowBot}
       toggleAction={() => props.dispatch({
         type: Actions.SET_PROFILE_FOLLOW_BOT,
-        payload: !props.followBot,
+        payload: !props.designer.profileFollowBot,
       })} />
 
     <i className={`fa fa-chevron-${props.expanded ? "down" : "up"}`}

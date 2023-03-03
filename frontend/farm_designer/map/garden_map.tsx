@@ -295,12 +295,12 @@ export class GardenMap extends
       e.preventDefault();
       dropPlant({
         gardenCoords: this.getGardenCoordinates(e),
-        cropSearchResults: this.props.designer.cropSearchResults,
-        companionIndex: this.props.designer.companionIndex,
-        openedSavedGarden: this.props.designer.openedSavedGarden,
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
         getConfigValue: this.props.getConfigValue,
+        plants: this.props.plants,
+        curves: this.props.curves,
+        designer: this.props.designer,
       });
     };
 
@@ -550,12 +550,15 @@ export class GardenMap extends
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
     activeDragSpread={this.state.activeDragSpread}
+    hoveredSpread={this.props.designer.hoveredSpread}
     editing={this.isEditing}
     animate={this.animate} />;
   PlantRadiusLayer = () => <PlantRadiusLayer
     visible={!!this.props.showPlants}
     mapTransformProps={this.mapTransformProps}
     plants={this.props.plants}
+    currentPlant={this.getPlant()}
+    hoveredSpread={this.props.designer.hoveredSpread}
     animate={this.animate} />;
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
@@ -592,6 +595,7 @@ export class GardenMap extends
     plants={this.props.plants}
     currentPlant={this.getPlant()}
     hoveredPlant={this.props.hoveredPlant}
+    hoveredSpread={this.props.designer.hoveredSpread}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
     boxSelected={this.props.designer.selectedPoints}

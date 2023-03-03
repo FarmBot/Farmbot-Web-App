@@ -2,8 +2,10 @@ import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { push } from "../history";
 import { BlurableInput, Row, Col, Help } from "../ui";
-import { PlantOptions } from "../farm_designer/interfaces";
-import { PlantStage, TaggedFarmwareEnv, TaggedGenericPointer, Xyz } from "farmbot";
+import {
+  PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
+  TaggedPlantPointer, Xyz,
+} from "farmbot";
 import moment, { Moment } from "moment";
 import { Link } from "../link";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
@@ -13,18 +15,22 @@ import { t } from "../i18next_wrapper";
 import { MovementState, TimeSettings } from "../interfaces";
 import { EditPlantStatus } from "./edit_plant_status";
 import {
-  fetchInterpolationOptions, interpolatedZ,
+  getZAtLocation,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { Path } from "../internal_urls";
 import { Actions } from "../constants";
 import { daysOldText } from "./plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
-import { BotPosition } from "../devices/interfaces";
+import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
+import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
+import { BotSize } from "../farm_designer/map/interfaces";
+import { UpdatePlant } from "./plant_info";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
   onDestroy(uuid: string): void;
-  updatePlant(uuid: string, update: PlantOptions): void;
+  updatePlant: UpdatePlant;
   inSavedGarden: boolean;
   dispatch: Function;
   timeSettings?: TimeSettings;
@@ -35,11 +41,15 @@ export interface PlantPanelProps {
   arduinoBusy: boolean;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+  sourceFbosConfig: SourceFbosConfig;
+  botSize: BotSize;
+  curves: TaggedCurve[];
+  plants: TaggedPlantPointer[];
 }
 
 interface EditPlantProperty {
   uuid: string;
-  updatePlant(uuid: string, update: PlantOptions): void;
+  updatePlant: UpdatePlant;
 }
 
 export interface EditPlantStatusProps extends EditPlantProperty {
@@ -70,9 +80,12 @@ export interface EditPlantLocationProps extends EditPlantProperty {
 
 export const EditPlantLocation = (props: EditPlantLocationProps) => {
   const { plantLocation, updatePlant, uuid } = props;
-  const soilZ = interpolatedZ({ x: plantLocation.x, y: plantLocation.y },
-    props.soilHeightPoints,
-    fetchInterpolationOptions(props.farmwareEnvs));
+  const soilZ = getZAtLocation({
+    x: plantLocation.x,
+    y: plantLocation.y,
+    points: props.soilHeightPoints,
+    farmwareEnvs: props.farmwareEnvs,
+  });
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
       <Col xs={4} key={axis}>
@@ -233,6 +246,21 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
+      {DevSettings.futureFeaturesEnabled() && info.uuid.startsWith("Point") &&
+        <AllCurveInfo
+          dispatch={props.dispatch}
+          sourceFbosConfig={props.sourceFbosConfig}
+          botSize={props.botSize}
+          farmwareEnvs={props.farmwareEnvs}
+          soilHeightPoints={props.soilHeightPoints}
+          curves={props.curves}
+          plants={props.plants}
+          plant={info}
+          findCurve={curveType => props.curves.filter(curve =>
+            curve.body.id == info[CURVE_KEY_LOOKUP[curveType
+            ] as keyof FormattedPlantInfo])[0]}
+          onChange={(id, curveType) =>
+            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id }, true)} />}
       {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":

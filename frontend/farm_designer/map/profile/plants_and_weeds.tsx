@@ -24,9 +24,12 @@ export class PlantPoint
   }
 
   render() {
-    const { point, getX, soilHeight, getConfigValue } = this.props;
+    const { point, getX, soilHeight, getConfigValue, designer } = this.props;
     const { icon, spreadDiaCm } = this.state;
-    const { radius } = point.body;
+    const currentPlantUuid = designer.selectedPoints?.[0];
+    const radius = point.uuid == currentPlantUuid && designer.hoveredSpread
+      ? designer.hoveredSpread / 2
+      : point.body.radius;
     const plantIconSize = scaleIcon(radius) * 2;
     const spreadRadius = (spreadDiaCm || defaultSpreadCmDia(radius)) / 2 * 10;
     const profileX = getX(point.body);

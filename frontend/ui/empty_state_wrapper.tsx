@@ -7,6 +7,7 @@ export enum EmptyStateGraphic {
   plants = "plants",
   crops = "crops",
   no_crop_results = "no_crop_results",
+  curves = "no_crop_results",
   sequences = "sequences",
   regimens = "regimens",
   farm_events = "farm_events",
@@ -25,7 +26,7 @@ export interface EmptyStateWrapperProps {
   graphic: string;
   colorScheme?: "plants" | "events" | "gardens" | "points" | "tools"
   | "groups" | "weeds" | "zones" | "farmware" | "peripherals" | "sensors"
-  | "location";
+  | "location" | "curves";
   children?: React.ReactNode;
 }
 

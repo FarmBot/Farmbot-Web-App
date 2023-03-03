@@ -1,18 +1,20 @@
-import { fakeRegimen } from "../../__test_support__/fake_state/resources";
-const mockData = {
-  lastUrlChunk: "Set me",
-  fakeRegimens: [fakeRegimen()]
-};
-
-jest.mock("../../util/urls", () => ({
-  urlFriendly: jest.fn(x => x),
-  lastUrlChunk: jest.fn(() => mockData.lastUrlChunk)
+import { Path } from "../../internal_urls";
+let mockPath = Path.mock(Path.regimens("my_regimen"));
+jest.mock("../../history", () => ({
+  getPathArray: () => mockPath.split("/"),
 }));
 
 jest.mock("../actions", () => ({ selectRegimen: jest.fn() }));
 
+import {
+  fakeRegimen,
+} from "../../__test_support__/fake_state/resources";
+const regimen = fakeRegimen();
+regimen.body.name = "regimen";
+const mockRegimens = [regimen];
 jest.mock("../../resources/selectors", () => ({
-  selectAllRegimens: jest.fn(() => mockData.fakeRegimens || []),
+  selectAllRegimens: jest.fn(() => mockRegimens),
+  selectAllPlantPointers: jest.fn(() => []),
   findUuid: jest.fn(),
 }));
 
@@ -27,29 +29,26 @@ import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { selectRegimen } from "../actions";
 import { selectAllRegimens } from "../../resources/selectors";
 
-describe("setActiveRegimenByName", () => {
-
+describe("setActiveRegimenByName()", () => {
   it("returns early if there is nothing to compare", () => {
-    mockData.lastUrlChunk = "regimens";
+    mockPath = Path.mock(Path.regimens());
     setActiveRegimenByName();
     expect(selectRegimen).not.toHaveBeenCalled();
   });
 
   it("sometimes can't find a regimen by name", () => {
-    const body = mockData.fakeRegimens[0].body;
-    const regimenName = "a different value than " + body.name;
-    mockData.lastUrlChunk = regimenName;
+    const regimen = mockRegimens[0];
+    mockPath = Path.mock(Path.regimens("not_" + regimen.body.name));
     setActiveRegimenByName();
     expect(selectAllRegimens).toHaveBeenCalled();
     expect(selectRegimen).not.toHaveBeenCalled();
   });
 
   it("finds a regimen by name", () => {
-    const tr = mockData.fakeRegimens[0];
-    const body = tr.body;
+    const regimen = mockRegimens[0];
     jest.clearAllTimers();
-    mockData.lastUrlChunk = body.name;
+    mockPath = Path.mock(Path.regimens(regimen.body.name));
     setActiveRegimenByName();
-    expect(selectRegimen).toHaveBeenCalledWith(tr.uuid);
+    expect(selectRegimen).toHaveBeenCalledWith(regimen.uuid);
   });
 });

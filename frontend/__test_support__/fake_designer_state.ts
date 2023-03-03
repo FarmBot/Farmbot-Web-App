@@ -13,6 +13,7 @@ export const fakeDesignerState = (): DesignerState => ({
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
+  hoveredSpread: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
@@ -44,6 +45,9 @@ export const fakeDesignerState = (): DesignerState => ({
   profilePosition: { x: undefined, y: undefined },
   profileWidth: 100,
   profileFollowBot: false,
+  cropWaterCurveId: undefined,
+  cropSpreadCurveId: undefined,
+  cropHeightCurveId: undefined,
 });
 
 export const fakeHelpState = (): HelpState => ({

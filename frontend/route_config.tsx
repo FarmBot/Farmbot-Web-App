@@ -213,6 +213,22 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: Path.route(Path.curves()),
+    getModule,
+    key,
+    getChild: () => import("./curves/curves_inventory"),
+    childKey: "Curves"
+  }),
+  route({
+    children: true,
+    $: Path.route(Path.curves(":curve_id")),
+    getModule,
+    key,
+    getChild: () => import("./curves/edit_curve"),
+    childKey: "EditCurve"
+  }),
+  route({
+    children: true,
     $: Path.route(Path.cropSearch()),
     getModule,
     key,

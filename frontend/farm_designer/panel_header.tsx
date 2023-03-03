@@ -21,6 +21,7 @@ export enum Panel {
   Weeds = "Weeds",
   Points = "Points",
   Groups = "Groups",
+  Curves = "Curves",
   SavedGardens = "SavedGardens",
   Sequences = "Sequences",
   Regimens = "Regimens",
@@ -60,6 +61,7 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Weeds]: PanelColor.red,
   [Panel.Points]: PanelColor.teal,
   [Panel.Groups]: PanelColor.blue,
+  [Panel.Curves]: PanelColor.gray,
   [Panel.Sequences]: PanelColor.gray,
   [Panel.Regimens]: PanelColor.gray,
   [Panel.SavedGardens]: PanelColor.navy,
@@ -83,6 +85,7 @@ export const TAB_ICON: Record<Panel, string> = {
   [Panel.Weeds]: FilePath.icon(Icon.weeds),
   [Panel.Points]: FilePath.icon(Icon.point),
   [Panel.Groups]: FilePath.icon(Icon.groups),
+  [Panel.Curves]: FilePath.icon(Icon.curves),
   [Panel.Sequences]: FilePath.icon(Icon.sequence),
   [Panel.Regimens]: FilePath.icon(Icon.regimens),
   [Panel.SavedGardens]: FilePath.icon(Icon.gardens),
@@ -106,6 +109,7 @@ export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Weeds]: "weeds",
   [Panel.Points]: "points",
   [Panel.Groups]: "groups",
+  [Panel.Curves]: "curves",
   [Panel.Sequences]: "sequences",
   [Panel.Regimens]: "regimens",
   [Panel.SavedGardens]: "gardens",
@@ -144,6 +148,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Weeds]: t("Weeds"),
   [Panel.Points]: t("Points"),
   [Panel.Groups]: t("Groups"),
+  [Panel.Curves]: t("Curves"),
   [Panel.Sequences]: t("Sequences"),
   [Panel.Regimens]: t("Regimens"),
   [Panel.SavedGardens]: t("Gardens"),
@@ -256,6 +261,7 @@ export class DesignerNavTabs
         <NavTab panel={Panel.Plants} />
         <NavTab panel={Panel.Weeds} />
         <NavTab panel={Panel.Points} />
+        {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Curves} />}
         <NavTab panel={Panel.Sequences} />
         <NavTab panel={Panel.Regimens} />
         <NavTab panel={Panel.FarmEvents} />

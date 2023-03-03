@@ -13,6 +13,7 @@ jest.mock("../../../resources/selectors", () => ({
   selectAllFarmEvents: () => [mockSeqFarmEvent, mockRegFarmEvent],
   indexSequenceById: () => ({ 1: mockSequence }),
   indexRegimenById: () => ({ 2: mockRegimen }),
+  selectAllPlantPointers: () => [],
   findUuid: jest.fn(),
 }));
 

@@ -5,6 +5,7 @@ import {
   PointsPanelState,
   SequencesPanelState,
   MetricPanelState,
+  CurvesPanelState,
 } from "../interfaces";
 
 export const settingsPanelState = (): SettingsPanelState => {
@@ -47,11 +48,19 @@ export const pointsPanelState = (): PointsPanelState => ({
   soilHeight: false,
 });
 
+export const curvesPanelState = (): CurvesPanelState => ({
+  water: false,
+  spread: false,
+  height: false,
+});
+
 export const sequencesPanelState = (): SequencesPanelState => ({
   sequences: true,
   featured: false,
 });
 
 export const metricPanelState = (): MetricPanelState => ({
-  history: true,
+  realtime: true,
+  network: false,
+  history: false,
 });

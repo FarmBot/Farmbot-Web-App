@@ -202,9 +202,12 @@ fieldset {
           padding-bottom: 0.5rem;
           :first-child {
             margin-left: 1rem;
-            margin-right: 0.3rem;
+            margin-right: 0.2rem;
             border-bottom-left-radius: 7px;
             border-top-left-radius: 7px;
+          }
+          :nth-child(2) {
+            margin-right: 0.2rem;
           }
           :last-child {
             margin-right: 1rem;
@@ -247,6 +250,7 @@ fieldset {
       .connectivity-diagram svg {
         max-height: 200px !important;
       }
+      .port-info,
       .network-info,
       .fbos-info {
         @media (max-width:767px) {
@@ -359,17 +363,29 @@ fieldset {
   }
 }
 
+.port-info,
 .network-info,
 .fbos-info {
   margin: auto;
   margin-bottom: 1rem;
   margin-top: 1rem;
+  margin-left: 1rem;
   background: $white;
   padding: 1rem;
   box-shadow: 0px 0px 10px $light_gray;
+  border-radius: 5px;
   width: 20rem;
   .ip-address {
     word-break: break-all;
+  }
+  a {
+    display: block;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    text-decoration: underline !important;
+    i {
+      margin-right: 0.5rem;
+    }
   }
 }
 
@@ -388,12 +404,23 @@ fieldset {
   }
 }
 
+.port-info,
 .qos-display {
   .saucer {
     float: right;
     width: 1rem;
     height: 1rem;
     cursor: unset;
+  }
+}
+
+.port-info {
+  i {
+    display: block;
+    font-size: 1.2rem;
+  }
+  .fa {
+    display: inline;
   }
 }
 

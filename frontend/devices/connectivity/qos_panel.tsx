@@ -5,10 +5,12 @@ import {
 } from "./qos";
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { Saucer } from "../../ui";
+import { docLinkClick, Saucer } from "../../ui";
+import { Actions } from "../../constants";
 
 export interface QosPanelProps {
   pings: PingDictionary;
+  dispatch: Function;
 }
 
 interface KeyValProps {
@@ -38,6 +40,17 @@ const pct = (n: string | number, unit: string): string => {
 };
 
 export class QosPanel extends React.Component<QosPanelProps, {}> {
+  onFocus = () => {
+    this.props.dispatch({ type: Actions.CLEAR_PINGS, payload: undefined });
+  };
+
+  componentDidMount() {
+    window.addEventListener("focus", this.onFocus);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("focus", this.onFocus);
+  }
+
   get pingState(): PingDictionary {
     return this.props.pings;
   }
@@ -52,21 +65,27 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
 
   render() {
     const r = { ...this.latencyReport, ...this.qualityReport };
-    const errorRateDecimal = ((r.complete) / r.total);
-    const errorRate = Math.round(100 * errorRateDecimal).toFixed(0);
-    const color = colorFromPercentOK(errorRateDecimal);
+    const errorRateDecimal = r.complete / r.total;
+    const errorRate = isFinite(errorRateDecimal)
+      ? Math.round(100 * errorRateDecimal).toFixed(0)
+      : "";
 
     return <div className="network-info">
-      <label>{t("Network Quality")}</label>
+      <label>{t("Connection Quality")}</label>
       <div className="qos-display">
-        <Saucer color={color} />
-        <QosRow k={t("Percent OK")} v={pct(errorRate, PCT)} />
         <QosRow k={t("Pings sent")} v={pct(r.total, NONE)} />
         <QosRow k={t("Pings received")} v={pct(r.complete, NONE)} />
+        <Saucer color={colorFromPercentOK(errorRateDecimal)} />
+        <QosRow k={t("Percent OK")} v={pct(errorRate, PCT)} />
         <QosRow k={t("Best time")} v={pct(r.best, MS)} />
         <QosRow k={t("Worst time")} v={pct(r.worst, MS)} />
+        <Saucer color={colorFromAverageTime(r.average)} />
         <QosRow k={t("Average time")} v={pct(r.average, MS)} />
       </div>
+      <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
+        <i className="fa fa-external-link" />
+        {t("Learn more about connecting")}
+      </a>
     </div>;
 
   }
@@ -78,7 +97,20 @@ export const colorFromPercentOK = (percent: number): string => {
     return "red";
   } else if (percent < 0.9) {
     return "yellow";
-  } else {
+  } else if (percent >= 0.9) {
     return "green";
   }
+  return "gray";
+};
+
+/** Return an indicator color for the given ping average time value. */
+export const colorFromAverageTime = (averageTime: number): string => {
+  if (averageTime > 800) {
+    return "red";
+  } else if (averageTime < 500 && averageTime > 0) {
+    return "green";
+  } else if (averageTime >= 500 && averageTime <= 800) {
+    return "yellow";
+  }
+  return "gray";
 };

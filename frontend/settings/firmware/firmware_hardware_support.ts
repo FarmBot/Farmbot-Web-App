@@ -10,6 +10,21 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   return !!values.includes(x as FirmwareHardware);
 };
 
+const ordered: FirmwareHardware[] = [
+  "express_k10",
+  "express_k11",
+  "arduino",
+  "farmduino",
+  "farmduino_k14",
+  "farmduino_k15",
+  "farmduino_k16",
+  "none",
+];
+
+export const isUpgrade =
+  (prev: FirmwareHardware | undefined, next: FirmwareHardware): boolean =>
+    !!(prev && (ordered.indexOf(next) - ordered.indexOf(prev)) > 0);
+
 export const validFirmwareHardware = (value: unknown) =>
   isFwHardwareValue(value) ? value : undefined;
 

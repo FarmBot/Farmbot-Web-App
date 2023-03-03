@@ -49,6 +49,7 @@ describe("<ProfileViewer />", () => {
   it("renders when open: y-axis", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
+    p.designer.profileAxis = "x";
     const wrapper = mount(<ProfileViewer {...p} />);
     expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
     expect(wrapper.find(".profile-button").props().title).toContain("close");
@@ -81,6 +82,7 @@ describe("<ProfileViewer />", () => {
   it("renders when open: follow", () => {
     const p = fakeProps();
     p.designer.profileOpen = true;
+    p.designer.profileAxis = "x";
     const wrapper = mount(<ProfileViewer {...p} />);
     expect(wrapper.find("div").first().hasClass("open")).toBeTruthy();
     expect(wrapper.find(".profile-button").props().title).toContain("close");

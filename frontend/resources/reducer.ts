@@ -15,7 +15,7 @@ import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
 import { EditResourceParams } from "../api/interfaces";
 import { defensiveClone, equals } from "../util";
-import { merge } from "lodash";
+import { isUndefined, merge } from "lodash";
 import { SyncBodyContents } from "../sync/actions";
 import { GeneralizedError } from "./actions";
 import { initialState as helpState } from "../help/reducer";
@@ -50,6 +50,7 @@ export const emptyState = (): RestResources => {
       byKind: {
         Alert: {},
         Crop: {},
+        Curve: {},
         Device: {},
         FarmEvent: {},
         FarmwareEnv: {},
@@ -86,7 +87,8 @@ export const emptyState = (): RestResources => {
         "Sequence.Regimen": {},
         "Sequence.Sequence": {},
         "Sequence.PinBinding": {},
-        "Sequence.FbosConfig": {}
+        "Sequence.FbosConfig": {},
+        "Curve.Point": {},
       },
       sequenceFolders: {
         localMetaAttributes: {},
@@ -114,6 +116,13 @@ export const resourceReducer =
       const target = findByUuid(s.index, payload.uuid);
       const before = defensiveClone(target.body);
       merge(target, { body: update });
+      // apply non-nested undefined values in update that merge() ignores
+      Object.entries(update)
+        .map(([key, value]: [keyof typeof target.body, unknown]) => {
+          if (isUndefined(value)) {
+            target.body[key] = undefined;
+          }
+        });
       const didChange = !equals(before, target.body);
       if (didChange) {
         mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);

@@ -1,4 +1,4 @@
-import { fetchNewDevice, getDevice } from "../device";
+import { fetchNewDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
@@ -10,7 +10,7 @@ import {
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-import { commandOK, badVersion, commandErr } from "../devices/actions";
+import { badVersion, readStatusReturnPromise } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
 import { autoSync } from "./auto_sync";
@@ -96,13 +96,6 @@ export const batchInitResources =
 
 export const bothUp = () => dispatchNetworkUp("user.mqtt", now());
 
-export function readStatus() {
-  const noun = "'Read Status' command";
-  return getDevice()
-    .readStatus()
-    .then(() => { commandOK(noun); }, commandErr(noun));
-}
-
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
@@ -173,7 +166,7 @@ export const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
       startPinging(bot);
-      readStatus().then(changeLastClientConnected(bot), noop);
+      readStatusReturnPromise().then(changeLastClientConnected(bot), noop);
       bot.on(FbjsEventName.online, onOnline);
       bot.on(FbjsEventName.online, () => bot.readStatus().then(noop, noop));
       bot.on(FbjsEventName.offline, onOffline);

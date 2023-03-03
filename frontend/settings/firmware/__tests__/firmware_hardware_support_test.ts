@@ -1,5 +1,5 @@
 import {
-  boardType, getFwHardwareValue, getBoardCategory, hasSensors, isExpress,
+  boardType, getFwHardwareValue, getBoardCategory, hasSensors, isExpress, isUpgrade,
 } from "../firmware_hardware_support";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 
@@ -88,5 +88,14 @@ describe("isExpress()", () => {
     expect(isExpress(undefined)).toEqual(false);
     expect(isExpress("arduino")).toEqual(false);
     expect(isExpress("farmduino")).toEqual(false);
+  });
+});
+
+describe("isUpgrade()", () => {
+  it("returns result", () => {
+    expect(isUpgrade("arduino", "farmduino")).toBeTruthy();
+    expect(isUpgrade("arduino", "farmduino_k16")).toBeTruthy();
+    expect(isUpgrade("farmduino_k16", "arduino")).toBeFalsy();
+    expect(isUpgrade(undefined, "farmduino_k16")).toBeFalsy();
   });
 });

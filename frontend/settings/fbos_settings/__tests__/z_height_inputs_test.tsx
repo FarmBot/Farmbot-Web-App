@@ -7,7 +7,7 @@ import { mount } from "enzyme";
 import { GantryHeight, SafeHeight, SoilHeight } from "../z_height_inputs";
 import { ZHeightInputProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { FirmwareHardware, FullConfiguration } from "farmbot";
+import { FirmwareHardware } from "farmbot";
 
 describe("<GantryHeight />", () => {
   const fakeProps = (): ZHeightInputProps => ({
@@ -21,8 +21,7 @@ describe("<GantryHeight />", () => {
     ["express_k10", 140],
   ])("renders: %s", (firmwareHardware, value) => {
     bot.hardware.configuration.firmware_hardware = firmwareHardware;
-    bot.hardware.configuration["gantry_height" as keyof FullConfiguration] =
-      value as never;
+    bot.hardware.configuration.gantry_height = value;
     const wrapper = mount(<GantryHeight {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("gantry height");
     expect(wrapper.find(".input").hasClass("modified")).toBeFalsy();
@@ -30,8 +29,7 @@ describe("<GantryHeight />", () => {
 
   it("renders: modified", () => {
     bot.hardware.configuration.firmware_hardware = "arduino";
-    bot.hardware.configuration["gantry_height" as keyof FullConfiguration] =
-      100 as never;
+    bot.hardware.configuration.gantry_height = 100;
     const wrapper = mount(<GantryHeight {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("gantry height");
     expect(wrapper.find(".input").hasClass("modified")).toBeTruthy();
