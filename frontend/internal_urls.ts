@@ -113,7 +113,7 @@ export enum Icon {
   weeds = "weeds",
   point = "point",
   groups = "groups",
-  curves = "groups",
+  curves = "curves",
   sequence = "sequence",
   regimens = "regimen",
   gardens = "gardens",
