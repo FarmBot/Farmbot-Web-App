@@ -21,6 +21,9 @@ module Points
       time :planted_at
       hstore :meta
       boolean :gantry_mounted
+      integer :water_curve_id
+      integer :spread_curve_id
+      integer :height_curve_id
     end
 
     def validate

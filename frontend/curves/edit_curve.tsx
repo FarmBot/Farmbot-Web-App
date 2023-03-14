@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { connect } from "react-redux";
 import { push } from "../history";
-import { TaggedCurve } from "farmbot";
+import { SpecialStatus, TaggedCurve } from "farmbot";
 import { round } from "lodash";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
@@ -10,7 +10,7 @@ import {
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
 import { selectAllCurves } from "../resources/selectors";
-import { destroy, initSaveGetId, overwrite } from "../api/crud";
+import { destroy, initSaveGetId, overwrite, save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Curve } from "farmbot/dist/resources/api_resources";
@@ -31,7 +31,7 @@ import {
   DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
 } from "./templates";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
-import { validFbosConfig } from "../util";
+import { unpackUUID, validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { botSize } from "../farm_designer/state_to_props";
 import { resourceUsageList } from "../resources/in_use";
@@ -61,7 +61,17 @@ export const mapStateToProps = (props: Everything): EditCurveProps => {
 export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState> {
   state: EditCurveState = {
     templates: false, scale: false, hovered: undefined, warningText: false,
+    uuid: this.curve?.uuid,
   };
+
+  componentWillUnmount() {
+    if (!this.state.uuid) { return; }
+    const id = unpackUUID(this.state.uuid).remoteId;
+    if (!id) { return; }
+    const curve = this.props.findCurve(id);
+    if (!(curve?.specialStatus == SpecialStatus.DIRTY)) { return; }
+    this.props.dispatch(save(this.state.uuid));
+  }
 
   get stringyID() { return Path.getSlug(Path.curves()); }
   get curve() {
@@ -248,7 +258,6 @@ export const copyCurve = (curve: TaggedCurve, dispatch: Function) => () => {
   dispatch(initSaveGetId("Curve", {
     ...curve.body,
     name: `${curve.body.name} ${t("copy")}`,
-    id: curve.body.id || 0 + 1, // remove after API implementation
   }))
     .then((id: number) => push(Path.curves(id)))
     .catch(() => { });
@@ -321,5 +330,4 @@ const ValueInput = (props: ValueInputProps) =>
 export const editCurve = (curve: TaggedCurve, update: Partial<Curve>) =>
   (dispatch: Function) => {
     dispatch(overwrite(curve, { ...curve.body, ...update }));
-    // dispatch(save(curve.uuid)); // uncomment after API implementation
   };

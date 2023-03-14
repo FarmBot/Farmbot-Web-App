@@ -2,7 +2,6 @@ jest.mock("../../../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
   initSave: jest.fn(),
-  init: jest.fn(),
 }));
 
 const mockSpreads: { [x: string]: number } = { mint: 100 };
@@ -20,11 +19,6 @@ jest.mock("../../../../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
-let mockDev = false;
-jest.mock("../../../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import {
   newPlantKindAndBody, NewPlantKindAndBodyProps,
   maybeSavePlantLocation, MaybeSavePlantLocationProps,
@@ -37,7 +31,7 @@ import {
 import {
   fakeCurve, fakePlant,
 } from "../../../../../__test_support__/fake_state/resources";
-import { edit, save, init, initSave } from "../../../../../api/crud";
+import { edit, save, initSave } from "../../../../../api/crud";
 import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps,
@@ -152,7 +146,6 @@ describe("dropPlant()", () => {
   });
 
   it("finds curves", () => {
-    mockDev = true;
     const p = fakeProps();
     const result = fakeCropLiveSearchResult();
     result.crop.slug = "mint";
@@ -177,7 +170,7 @@ describe("dropPlant()", () => {
     p.designer.cropSpreadCurveId = 2;
     p.designer.cropHeightCurveId = 3;
     dropPlant(p);
-    expect(init).toHaveBeenCalledWith("Point",
+    expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
         x: 10, y: 20,
@@ -188,7 +181,6 @@ describe("dropPlant()", () => {
   });
 
   it("doesn't find curves", () => {
-    mockDev = true;
     const p = fakeProps();
     const result = fakeCropLiveSearchResult();
     result.crop.slug = "mint";
@@ -196,7 +188,7 @@ describe("dropPlant()", () => {
     p.plants = [];
     p.curves = [];
     dropPlant(p);
-    expect(init).toHaveBeenCalledWith("Point",
+    expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
         x: 10, y: 20,

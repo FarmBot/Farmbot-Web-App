@@ -169,7 +169,7 @@ describe("<PlantPanel />", () => {
     const wrapper = shallow(<PlantPanel {...p} />);
     wrapper.find("AllCurveInfo").simulate("change", 1, CurveType.water);
     expect(p.updatePlant).toHaveBeenCalledWith(info.uuid,
-      { water_curve_id: 1 }, true);
+      { water_curve_id: 1 });
   });
 });
 

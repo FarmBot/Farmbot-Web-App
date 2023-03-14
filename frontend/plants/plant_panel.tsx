@@ -260,7 +260,7 @@ export function PlantPanel(props: PlantPanelProps) {
             curve.body.id == info[CURVE_KEY_LOOKUP[curveType
             ] as keyof FormattedPlantInfo])[0]}
           onChange={(id, curveType) =>
-            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id }, true)} />}
+            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id })} />}
       {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":

@@ -57,6 +57,9 @@ module Points
       time :created_at # TODO: Are we still using this?
       time :planted_at, default: 0
       boolean :gantry_mounted
+      integer :water_curve_id
+      integer :spread_curve_id
+      integer :height_curve_id
     end
 
     def validate

@@ -36,6 +36,7 @@ export interface EditCurveState {
   scale: boolean;
   hovered: string | undefined;
   warningText: boolean;
+  uuid: UUID | undefined;
 }
 
 export interface CurveSvgWithPopoverProps {

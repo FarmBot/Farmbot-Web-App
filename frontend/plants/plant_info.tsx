@@ -17,8 +17,7 @@ import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
 import { validGoButtonAxes } from "../farm_designer/move_to";
 
-export type UpdatePlant =
-  (uuid: string, update: PlantOptions, draft?: boolean) => void;
+export type UpdatePlant = (uuid: string, update: PlantOptions) => void;
 
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
@@ -38,10 +37,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
     this.props.dispatch(destroy(plantUUID, !this.confirmDelete));
   };
 
-  updatePlant = (plantUUID: string, update: PlantOptions, draft = false) => {
+  updatePlant = (plantUUID: string, update: PlantOptions) => {
     if (this.plant) {
       this.props.dispatch(edit(this.plant, update));
-      !draft && this.props.dispatch(save(plantUUID));
+      this.props.dispatch(save(plantUUID));
     }
   };
 

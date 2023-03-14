@@ -58,7 +58,6 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
         CURVE_TEMPLATES[CurveShape.table],
         DEFAULT_DAY_SCALE[type],
         DEFAULT_VALUE_SCALE[type]),
-      id: this.props.curves.length + 1, // remove after API implementation
     }))
       .then((id: number) => this.navigate(id))
       .catch(() => { });

@@ -1,12 +1,12 @@
 import { Actions, Content } from "../../../../constants";
-import { initSave, edit, save, init } from "../../../../api/crud";
+import { initSave, edit, save } from "../../../../api/crud";
 import {
   AxisNumberProperty, TaggedPlant, MapTransformProps,
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import moment from "moment";
 import { unpackUUID } from "../../../../util";
-import { isNumber, isString, random } from "lodash";
+import { isNumber, isString } from "lodash";
 import {
   DesignerState, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
@@ -22,7 +22,6 @@ import { TaggedCurve, TaggedPlantTemplate, TaggedPoint } from "farmbot";
 import { Path } from "../../../../internal_urls";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { NumericSetting } from "../../../../session_keys";
-import { DevSettings } from "../../../../settings/dev/dev_support";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -110,9 +109,7 @@ export const createPlant = (props: CreatePlantProps): void => {
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map
-      DevSettings.futureFeaturesEnabled() // remove after curves API implementation
-        ? props.dispatch(init(p.kind, { ...p.body, id: random(1, 1000) }))
-        : props.dispatch(initSave(p.kind, p.body));
+      props.dispatch(initSave(p.kind, p.body));
     }
   }
 };

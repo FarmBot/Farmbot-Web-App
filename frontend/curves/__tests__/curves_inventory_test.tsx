@@ -93,7 +93,6 @@ describe("<Curves> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 250, 30: 500, 45: 500, 60: 250 },
-      id: 2,
     });
     expect(push).toHaveBeenCalledWith(Path.curves(1));
   });
@@ -106,7 +105,6 @@ describe("<Curves> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
       name: "Spread curve 1", type: "spread",
       data: { 1: 150, 30: 300, 45: 300, 60: 150 },
-      id: 1,
     });
     expect(push).toHaveBeenCalledWith(Path.curves(1));
   });
@@ -119,7 +117,6 @@ describe("<Curves> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
       name: "Water curve 1", type: "water",
       data: { 1: 250, 30: 500, 45: 500, 60: 250 },
-      id: 1,
     });
     expect(push).not.toHaveBeenCalled();
   });

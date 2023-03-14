@@ -30,12 +30,13 @@ import { fakeCurve } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { destroy, overwrite, initSaveGetId } from "../../api/crud";
+import { destroy, overwrite, initSaveGetId, save } from "../../api/crud";
 import { push } from "../../history";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
 import { error } from "../../toast/toast";
+import { SpecialStatus } from "farmbot";
 
 describe("<EditCurve />", () => {
   const fakeProps = (): EditCurveProps => ({
@@ -94,6 +95,58 @@ describe("<EditCurve />", () => {
       type: "water",
       data: { 1: 0, 10: 10, 99: 989, 100: 1000 },
     });
+  });
+
+  it("saves data", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).toHaveBeenCalledWith(curve.uuid);
+  });
+
+  it("doesn't save data: no uuid", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: undefined });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
+  });
+
+  it("doesn't save data: no id", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.0.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
+  });
+
+  it("doesn't save data: no curve", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => undefined;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
   });
 
   it("toggles state", () => {
@@ -168,7 +221,6 @@ describe("copyCurve()", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy",
-      id: 1,
     });
     copyCurve(curve, jest.fn(() => Promise.reject()))();
   });
