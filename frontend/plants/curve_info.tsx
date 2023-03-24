@@ -55,7 +55,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
       farmwareEnvs={props.farmwareEnvs}
       soilHeightPoints={props.soilHeightPoints}
       sourceFbosConfig={props.sourceFbosConfig}
-      hovered={hovered} setHovered={setHovered}
+      hovered={hovered || "" + plant?.daysOld} setHovered={setHovered}
       botSize={props.botSize} editable={false} />}
   </div>;
 };

@@ -7,6 +7,7 @@ class Curve < ApplicationRecord
 
   belongs_to :device
   validates :device, presence: true
+  validates :name, uniqueness: { scope: :device }
   validates_inclusion_of :type, in: CURVE_TYPES,
                                 message: BAD_TYPE
   serialize :data

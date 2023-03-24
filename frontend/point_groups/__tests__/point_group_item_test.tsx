@@ -8,6 +8,8 @@ jest.mock("../../farm_designer/map/actions", () => ({
 }));
 jest.mock("../actions", () => ({ overwriteGroup: jest.fn() }));
 
+jest.mock("../../history", () => ({ push: jest.fn() }));
+
 import React from "react";
 import {
   PointGroupItem, PointGroupItemProps, genericPointIcon,
@@ -29,7 +31,8 @@ import { svgToUrl } from "../../open_farm/icons";
 import { overwriteGroup } from "../actions";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
-import { FilePath } from "../../internal_urls";
+import { FilePath, Path } from "../../internal_urls";
+import { push } from "../../history";
 
 describe("<PointGroupItem/>", () => {
   const fakeProps = (): PointGroupItemProps => ({
@@ -222,5 +225,18 @@ describe("<PointGroupItem/>", () => {
     i.click();
     expect(overwriteGroup).not.toHaveBeenCalled();
     expect(setHoveredPlant).not.toHaveBeenCalled();
+  });
+
+  it("handles clicks: navigates", () => {
+    const p = fakeProps();
+    p.point.body.id = 1;
+    p.group = undefined;
+    p.dispatch = undefined;
+    p.navigate = true;
+    const i = new PointGroupItem(p);
+    i.click();
+    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith(Path.plants(1));
   });
 });

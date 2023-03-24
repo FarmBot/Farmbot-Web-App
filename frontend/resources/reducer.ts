@@ -120,7 +120,8 @@ export const resourceReducer =
       Object.entries(update)
         .map(([key, value]: [keyof typeof target.body, unknown]) => {
           if (isUndefined(value)) {
-            target.body[key] = undefined;
+            // eslint-disable-next-line no-null/no-null
+            target.body[key] = null as unknown as undefined;
           }
         });
       const didChange = !equals(before, target.body);

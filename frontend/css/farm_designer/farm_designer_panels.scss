@@ -2404,7 +2404,6 @@ li {
     fill: $dark_gray;
   }
   .curve-action-menu {
-    max-width: 150px;
     .transparent-button {
       position: absolute;
       right: 0;
@@ -2415,16 +2414,20 @@ li {
       width: 100%;
       color: $off_white;
       margin-top: 0.75rem;
+      margin-right: 1rem;
     }
     .filter-search {
       width: 100%;
+      .bp4-popover-wrapper {
+        width: 120px;
+      }
       button {
         box-shadow: none !important;
       }
     }
     input {
       box-shadow: none;
-      width: 90%;
+      width: 120px;
     }
     .curve-menu-row {
       display: flex;
@@ -2621,6 +2624,24 @@ li {
 .curve-icon {
   margin-left: 1rem;
   vertical-align: middle;
+}
+
+.curve-usage-display {
+  margin-bottom: 2rem;
+  i[class*=fa-caret-] {
+    float: right;
+    font-size: 2rem;
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  .bp4-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+  }
+  img {
+    cursor: pointer;
+  }
 }
 
 .sensors-panel,

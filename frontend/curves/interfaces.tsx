@@ -25,6 +25,8 @@ export interface CurveInventoryItemProps {
 
 export interface EditCurveProps {
   dispatch: Function;
+  curves: TaggedCurve[];
+  plants: TaggedPlantPointer[];
   findCurve(id: number): TaggedCurve | undefined;
   sourceFbosConfig: SourceFbosConfig;
   botSize: BotSize;
@@ -37,6 +39,8 @@ export interface EditCurveState {
   hovered: string | undefined;
   warningText: boolean;
   uuid: UUID | undefined;
+  maxCount: number;
+  iconDisplay: boolean;
 }
 
 export interface CurveSvgWithPopoverProps {

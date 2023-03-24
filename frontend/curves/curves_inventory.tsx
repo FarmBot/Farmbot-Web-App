@@ -12,7 +12,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { selectAllCurves } from "../resources/selectors";
 import { push } from "../history";
-import { initSaveGetId } from "../api/crud";
+import { init, save } from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
 import { PanelSection } from "../plants/plant_inventory";
@@ -20,14 +20,16 @@ import { scaleData, curveSum, maxValue, maxDay } from "./data_actions";
 import { CurveInventoryItemProps, CurvesProps, CurvesState } from "./interfaces";
 import { TaggedCurve } from "farmbot";
 import {
-  CurveShape, CurveType, CURVE_TEMPLATES, DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
+  CurveShape, CurveType, TemplateOption,
+  getTemplateScale, getTemplateShape, getTemplateShapeData,
 } from "./templates";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { CurveIcon } from "./chart";
+import { noop } from "lodash";
 
 export const mapStateToProps = (props: Everything): CurvesProps => ({
   dispatch: props.dispatch,
-  curves: selectAllCurves(props.resources.index),
+  curves: selectAllCurves(props.resources.index).filter(curve => curve.body.id),
   curvesPanelState: props.app.curvesPanelState,
 });
 
@@ -48,18 +50,27 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
   navigate = (id: number) => push(Path.curves(id));
 
   addNew = (type: Curve["type"]) => () => {
-    const num = this.props.curves
-      .filter(curve => curve.body.type == type)
-      .length + 1;
-    this.props.dispatch(initSaveGetId("Curve", {
-      name: `${t(CURVE_TYPES()[type])} ${t("curve")} ${num}`,
+    let num = 1;
+    const newName = (count: number) =>
+      `${t(CURVE_TYPES()[type])} ${t("curve")} ${count}`;
+    while (this.props.curves.filter(curve => curve.body.type == type)
+      .map(curve => curve.body.name).includes(newName(num))) { num++; }
+    const action = init("Curve", {
+      name: newName(num),
       type,
       data: scaleData(
-        CURVE_TEMPLATES[CurveShape.table],
-        DEFAULT_DAY_SCALE[type],
-        DEFAULT_VALUE_SCALE[type]),
-    }))
-      .then((id: number) => this.navigate(id))
+        getTemplateShapeData(type),
+        getTemplateScale(type, TemplateOption.day),
+        getTemplateScale(type, TemplateOption.value),
+        getTemplateShape(type) != CurveShape.constant),
+    });
+    this.props.dispatch(action).then(noop, noop);
+    this.props.dispatch(save(action.payload.uuid))
+      .then(() => {
+        const id = this.props.curves.filter(curve =>
+          curve.uuid == action.payload.uuid)[0]?.body.id;
+        id && this.navigate(id);
+      })
       .catch(() => { });
   };
 

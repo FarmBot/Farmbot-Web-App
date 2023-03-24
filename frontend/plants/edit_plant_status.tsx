@@ -1,5 +1,7 @@
 import React from "react";
-import { FBSelect, DropDownItem, ColorPicker, BlurableInput } from "../ui";
+import {
+  FBSelect, DropDownItem, ColorPicker, BlurableInput, NULL_CHOICE,
+} from "../ui";
 import { PlantOptions } from "../farm_designer/interfaces";
 import {
   PlantStage, TaggedWeedPointer, PointType, TaggedPoint, TaggedPlantPointer,
@@ -244,18 +246,21 @@ export const PlantCurveBulkUpdate = (props: PlantCurveBulkUpdateProps) => {
     <p>{t("Update {{ curveName }} curve to", { curveName })}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
-      list={betterCompact(props.curves
-        .filter(curve => curve.body.type == props.curveType)
-        .map(curve => curveToDdi(curve)))}
+      list={([NULL_CHOICE] as DropDownItem[])
+        .concat(betterCompact(props.curves
+          .filter(curve => curve.body.type == props.curveType)
+          .map(curve => curveToDdi(curve))))}
       selectedItem={undefined}
       customNullLabel={t("Select a curve")}
       onChange={ddi => {
         const id = parseInt("" + ddi.value);
-        id && isFinite(id) && points.length > 0 && confirm(
+        ((id && isFinite(id)) || ddi.isNull) && points.length > 0 && confirm(
           t("Change {{ curveName }} curve for {{ num }} items?",
             { curveName, num: points.length }))
           && points.map(point => {
-            props.dispatch(edit(point, { [curveKey]: id }));
+            props.dispatch(edit(point, {
+              [curveKey]: ddi.isNull ? undefined : id,
+            }));
             props.dispatch(save(point.uuid));
           });
       }} />

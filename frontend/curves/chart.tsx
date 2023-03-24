@@ -51,8 +51,14 @@ export const CurveSvg = (props: CurveSvgProps) => {
   };
   const commonProps = { curve, plotTools };
   const [dragging, setDragging] = React.useState<string | undefined>(undefined);
-  const showHoverEffect = (day: string | undefined) =>
-    dragging == day || (!dragging && hovered == day);
+  const showHoverEffect = (day: string | undefined) => {
+    const dragHover = dragging == day;
+    const hoveredDay = hovered == day;
+    const lastDay = day == "" + (maxDay(data) + 1);
+    const greaterThanLast = parseInt("" + hovered) > parseInt("" + day);
+    const hover = hoveredDay || (lastDay && greaterThanLast);
+    return dragHover || (!dragging && hover);
+  };
   return <svg className={"curve-svg"} width={"100%"} height={"100%"}
     viewBox={`-15 -10 ${svgXMax(data)} ${svgYMax() + 30}`}
     style={dragging ? { cursor: "grabbing" } : {}}
@@ -103,7 +109,7 @@ export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
         {warnings.lines.map((line, index) => {
           const value = line.textValue || line.value;
           return value > 0 && <p key={index}>
-            {line.text}: {value}mm
+            {line.text}: {round(value)}mm
           </p>;
         })}
       </div>} />
@@ -119,9 +125,10 @@ export const CurveSvgWithPopover = (props: CurveSvgWithPopoverProps) => {
 
 const Data = (props: DataProps) => {
   const { curve, setHovered, showHoverEffect, dragging } = props;
-  const { normX, normY, yZero } = props.plotTools;
+  const { normX, normY, yZero, yMax } = props.plotTools;
   const { data, type } = curve.body;
   const fullWidth = X_MAX / maxDay(data);
+  const fullHeight = yZero - yMax;
   const lastDay = maxDay(data) + 1;
   const [hoveredValue, setHoveredValue] =
     React.useState<string | undefined>(undefined);
@@ -154,8 +161,8 @@ const Data = (props: DataProps) => {
 
         }}
         fill={Color.white} opacity={0}
-        x={x(fullWidth)} y={y}
-        width={fullWidth} height={height} />
+        x={x(fullWidth)} y={0}
+        width={fullWidth} height={fullHeight} />
     </g>;
   };
   return <g id={"data"}>
