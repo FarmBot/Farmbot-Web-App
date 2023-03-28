@@ -29,6 +29,7 @@ const HIDDEN_PREFIXES = [
 export const EnvEditor = (props: EnvEditorProps) => {
   const [newKey, setNewKey] = React.useState("");
   const [newValue, setNewValue] = React.useState("");
+  const sortedFarmware = sortBy(props.farmwareEnvs, "body.id").reverse();
   return <div className={"farmware-env-editor"}>
     <label>{props.title}</label>
     {props.title && <Help text={Content.FARMWARE_ENV_EDITOR_INFO} />}
@@ -64,7 +65,7 @@ export const EnvEditor = (props: EnvEditorProps) => {
       </Col>
     </Row>
     <hr />
-    {sortBy(props.farmwareEnvs, "body.id").reverse()
+    {sortedFarmware
       .filter(farmwareEnv => !some(HIDDEN_PREFIXES.map(prefix =>
         farmwareEnv.body.key.startsWith(prefix))))
       .map(farmwareEnv =>
@@ -80,7 +81,7 @@ export const EnvEditor = (props: EnvEditorProps) => {
         <p>{t(Content.FARMWARE_ENV_EDITOR_WARNING)}</p>
       </div>}
     {DevSettings.showInternalEnvsEnabled() &&
-      sortBy(props.farmwareEnvs, "body.id").reverse()
+      sortedFarmware
         .filter(farmwareEnv => some(HIDDEN_PREFIXES.map(prefix =>
           farmwareEnv.body.key.startsWith(prefix))))
         .map(farmwareEnv =>

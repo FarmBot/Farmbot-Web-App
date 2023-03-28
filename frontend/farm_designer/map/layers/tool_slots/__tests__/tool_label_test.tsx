@@ -1,3 +1,5 @@
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { BotOriginQuadrant } from "../../../../interfaces";
 import { textAnchorPosition } from "../tool_label";
 
 describe("textAnchorPosition()", () => {
@@ -62,6 +64,11 @@ describe("textAnchorPosition()", () => {
   });
 
   it("handles bad data", () => {
-    expect(textAnchorPosition(1.1, 1.1, false, false)).toEqual(START);
+    expect(textAnchorPosition(
+      1.1 as ToolPulloutDirection,
+      1.1 as BotOriginQuadrant,
+      false,
+      false,
+    )).toEqual(START);
   });
 });

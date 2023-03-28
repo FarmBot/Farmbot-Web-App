@@ -116,6 +116,8 @@ export class FbosMetricHistoryTable
       onHover: this.hoverMetric,
     };
     const rightAlignProps = { ...commonProps, rightAlign: true };
+    const sortedTelemetry = sortBy(cloneDeep(this.telemetry), "body.created_at")
+      .reverse();
     return <div className={"fbos-metric-history"}>
       <FbosMetricHistoryPlot {...commonProps} telemetry={this.telemetry} />
       <div className={"fbos-metric-history-table-wrapper"}>
@@ -136,7 +138,7 @@ export class FbosMetricHistoryTable
             </tr>
           </thead>
           <tbody>
-            {sortBy(cloneDeep(this.telemetry), "body.created_at").reverse()
+            {sortedTelemetry
               .map(m => {
                 const recordSelected = this.state.hoveredTime == m.body.created_at;
                 const recordProps = {
