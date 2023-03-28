@@ -7,7 +7,7 @@ import { maybeGetCachedPlantIcon } from "../open_farm/cached_crop";
 import {
   selectPoint, setHoveredPlant, mapPointClickAction,
 } from "../farm_designer/map/actions";
-import { plantAge } from "./map_state_to_props";
+import { PlantStageAndAge, plantAgeAndStage } from "./map_state_to_props";
 import { getMode } from "../farm_designer/map/util";
 import { isUndefined, round } from "lodash";
 import { FilePath, Path } from "../internal_urls";
@@ -79,13 +79,15 @@ export class PlantInventoryItem extends
         {!isUndefined(this.props.distance)
           ? `(${plant.body.x}, ${plant.body.y})
              ${round(this.props.distance)}mm ${t("away")}`
-          : daysOldText(plantAge(plant))}
+          : daysOldText(plantAgeAndStage(plant))}
       </i>
     </div>;
   }
 }
 
-export const daysOldText = (daysOld: number) =>
-  `${daysOld} ${daysOld == 1
+export const daysOldText = ({ age, stage }: PlantStageAndAge) => {
+  if (isUndefined(age)) { return "" + stage; }
+  return `${age} ${age == 1
     ? t("day old")
     : t("days old")}`;
+};

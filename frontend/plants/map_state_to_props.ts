@@ -72,8 +72,8 @@ export interface FormattedPlantInfo {
   id: number | undefined;
   name: string;
   uuid: string;
-  daysOld: number;
-  plantedAt: moment.Moment;
+  daysOld: number | undefined;
+  plantedAt: moment.Moment | undefined;
   slug: string;
   plantStatus: PlantStage;
   meta?: Record<string, string | undefined>;
@@ -89,26 +89,37 @@ const plantDate = (plant: TaggedPlant | TaggedPoint): moment.Moment => {
   return plantedAt ? moment(plantedAt) : moment(createdAt);
 };
 
-/** Compare planted or created date vs time now to determine age. */
-export const plantAge = (plant: TaggedPlant | TaggedPoint): number => {
-  const currentDate = moment();
-  const daysOld = currentDate.diff(plantDate(plant), "days") + 1;
-  return daysOld;
-};
+export interface PlantStageAndAge { age?: number, stage?: string }
+
+/** Compare planted or created date vs time to determine age, or return stage. */
+export const plantAgeAndStage =
+  (plant: TaggedPlant | TaggedPoint): PlantStageAndAge => {
+    // Plants and PlantTemplates should show stage instead of age if not planted
+    if (get(plant, "body.pointer_type") != "Weed" &&
+      !get(plant, "body.planted_at")) {
+      return { stage: get(plant, "body.plant_stage", "planned") };
+    }
+    const currentDate = moment();
+    const daysOld = currentDate.diff(plantDate(plant), "days") + 1;
+    return { age: daysOld };
+  };
 
 export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
   return {
     slug: plant.body.openfarm_slug,
     id: plant.body.id,
     name: plant.body.name,
-    daysOld: plantAge(plant),
+    daysOld: plantAgeAndStage(plant).age,
     x: plant.body.x,
     y: plant.body.y,
     z: plant.body.z,
     radius: plant.body.radius,
     depth: plant.kind == "Point" ? plant.body.depth : undefined,
     uuid: plant.uuid,
-    plantedAt: plantDate(plant),
+    plantedAt: (get(plant, "body.planted_at")
+      || get(plant, "body.pointer_type") == "Weed")
+      ? plantDate(plant)
+      : undefined,
     plantStatus: get(plant, "body.plant_stage", "planned") as PlantStage,
     meta: plant.kind == "Point" ? plant.body.meta : undefined,
     water_curve_id: plant.body["water_curve_id" as keyof (

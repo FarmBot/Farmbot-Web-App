@@ -334,7 +334,8 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
   }
 
   findCurve = (curveType: CurveType): TaggedCurve | undefined =>
-    this.props.curves.filter(curve => curve.body.id == this.curveId[curveType])[0];
+    this.props.curves.filter(curve => curve.body.id &&
+      curve.body.id == this.curveId[curveType])[0];
 
   changeCurve = (id: string | number | undefined, curveType: CurveType) => {
     this.props.dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });

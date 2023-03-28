@@ -29,6 +29,7 @@ import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import {
   mapPointClickAction, setHoveredPlant, selectPoint,
 } from "../../farm_designer/map/actions";
+import moment from "moment";
 
 describe("<PlantInventoryItem />", () => {
   const fakeProps = (): PlantInventoryItemProps => ({
@@ -39,13 +40,16 @@ describe("<PlantInventoryItem />", () => {
 
   it("renders", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Strawberry Plant 11 day old");
+    expect(wrapper.text()).toEqual("Strawberry Plant 1planned");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
   });
 
   it("handles missing plant name", () => {
     const p = fakeProps();
-    p.plant.body.name = "";
+    const plant = fakePlant();
+    plant.body.name = "";
+    plant.body.planted_at = moment().toISOString();
+    p.plant = plant;
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     expect(wrapper.text()).toEqual("Unknown plant1 day old");
     expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
@@ -132,8 +136,10 @@ describe("<PlantInventoryItem />", () => {
 
 describe("daysOldText()", () => {
   it("returns correct text", () => {
-    expect(daysOldText(1)).toEqual("1 day old");
-    expect(daysOldText(0)).toEqual("0 days old");
-    expect(daysOldText(2)).toEqual("2 days old");
+    expect(daysOldText({ age: 1 })).toEqual("1 day old");
+    expect(daysOldText({ age: 0 })).toEqual("0 days old");
+    expect(daysOldText({ age: 2 })).toEqual("2 days old");
+    expect(daysOldText({ age: 2, stage: "planted" })).toEqual("2 days old");
+    expect(daysOldText({ age: undefined, stage: "planned" })).toEqual("planned");
   });
 });

@@ -3,7 +3,7 @@ import { t } from "../i18next_wrapper";
 import { connect } from "react-redux";
 import { push } from "../history";
 import { SpecialStatus, TaggedCurve } from "farmbot";
-import { noop, round, take } from "lodash";
+import { round, take } from "lodash";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
@@ -332,7 +332,7 @@ export const copyCurve =
           name: newName(i),
           id: undefined,
         });
-        dispatch(action).then(noop, noop);
+        dispatch(action);
         dispatch(save(action.payload.uuid))
           .then(() => {
             const id = selectAllCurves(getState().resources.index).filter(curve =>

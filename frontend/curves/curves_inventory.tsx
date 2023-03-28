@@ -25,7 +25,6 @@ import {
 } from "./templates";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { CurveIcon } from "./chart";
-import { noop } from "lodash";
 
 export const mapStateToProps = (props: Everything): CurvesProps => ({
   dispatch: props.dispatch,
@@ -64,7 +63,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
         getTemplateScale(type, TemplateOption.value),
         getTemplateShape(type) != CurveShape.constant),
     });
-    this.props.dispatch(action).then(noop, noop);
+    this.props.dispatch(action);
     this.props.dispatch(save(action.payload.uuid))
       .then(() => {
         const id = this.props.curves.filter(curve =>

@@ -253,7 +253,7 @@ const DataLabels = (props: DataLabelsProps) => {
           </g>}
       </g>;
     };
-  return <g id={"data-labels"}>
+  return <g id={"data-labels"} className={"data-labels"}>
     {Object.entries(populatedData(data)).map(label(""))}
     {label("+")(["" + (maxDay(data) + 1), data[maxDay(data)]])}
   </g>;

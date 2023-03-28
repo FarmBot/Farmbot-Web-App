@@ -130,7 +130,6 @@ describe Api::PointsController do
       get :index
       expect(response.status).to eq(200)
       expect(json.length).to eq(3)
-      json.map { |json| expect(json[:created_at]).to eq(json[:planted_at]) }
     end
     it "lists all tool slots" do
       Point.destroy_all

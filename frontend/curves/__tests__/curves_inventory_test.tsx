@@ -143,7 +143,9 @@ describe("<Curves> />", () => {
 
   it("handles curve creation error", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.reject());
+    p.dispatch = jest.fn()
+      .mockImplementationOnce(jest.fn())
+      .mockImplementationOnce(() => Promise.reject());
     const wrapper = mount<Curves>(<Curves {...p} />);
     await wrapper.instance().addNew("water")();
     expect(init).toHaveBeenCalledWith("Curve", {

@@ -10,7 +10,7 @@ import { round, cloneDeep } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../ui";
 import { parseIntInput } from "../util";
 import { UUID } from "../resources/interfaces";
-import { plantAge } from "../plants/map_state_to_props";
+import { plantAgeAndStage } from "../plants/map_state_to_props";
 import { EditWeedStatus } from "../plants/edit_plant_status";
 import {
   MEASURE_SOIL_HEIGHT_NAME, soilHeightPoint, toggleSoilHeight,
@@ -81,7 +81,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
 export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
   <ul className="additional-weed-properties">
     <ListItem name={t("Age")}>
-      {daysOldText(plantAge(props.point))}
+      {daysOldText(plantAgeAndStage(props.point))}
     </ListItem>
     <ListItem name={t("Status")}>
       <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />

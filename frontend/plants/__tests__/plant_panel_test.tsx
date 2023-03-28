@@ -103,6 +103,16 @@ describe("<PlantPanel />", () => {
     expect(wrapper.find("button").length).toEqual(5);
   });
 
+  it("renders plant stage", () => {
+    const p = fakeProps();
+    p.info.daysOld = undefined;
+    p.info.plantStatus = "planned";
+    const wrapper = mount(<PlantPanel {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    expect(txt).not.toContain("1 day old");
+    expect(txt).toContain("planned");
+  });
+
   it("renders in saved garden", () => {
     const p = fakeProps();
     p.inSavedGarden = true;

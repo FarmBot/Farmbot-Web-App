@@ -57,7 +57,7 @@ export interface EditPlantStatusProps extends EditPlantProperty {
 }
 
 export interface EditDatePlantedProps extends EditPlantProperty {
-  datePlanted: Moment;
+  datePlanted: Moment | undefined;
   timeSettings: TimeSettings;
 }
 
@@ -65,7 +65,8 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
   const { datePlanted, updatePlant, uuid, timeSettings } = props;
   return <BlurableInput
     type="date"
-    value={datePlanted.utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD")}
+    value={datePlanted?.utcOffset(timeSettings.utcOffset)
+      .format("YYYY-MM-DD") || ""}
     onCommit={e => updatePlant(uuid, {
       planted_at: moment(e.currentTarget.value)
         .utcOffset(timeSettings.utcOffset).toISOString()
@@ -217,7 +218,7 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
           <Col xs={5}>
             <ListItem name={t("Age")}>
-              {daysOldText(daysOld)}
+              {daysOldText({ age: daysOld, stage: plantStatus })}
             </ListItem>
           </Col>
         </Row>}
@@ -256,7 +257,7 @@ export function PlantPanel(props: PlantPanelProps) {
           curves={props.curves}
           plants={props.plants}
           plant={info}
-          findCurve={curveType => props.curves.filter(curve =>
+          findCurve={curveType => props.curves.filter(curve => curve.body.id &&
             curve.body.id == info[CURVE_KEY_LOOKUP[curveType
             ] as keyof FormattedPlantInfo])[0]}
           onChange={(id, curveType) =>

@@ -308,7 +308,10 @@ describe("copyCurve()", () => {
   });
 
   it("handles promise rejection", async () => {
-    await copyCurve([], fakeCurve())(jest.fn(() => Promise.reject()), jest.fn())();
+    const dispatch = jest.fn()
+      .mockImplementationOnce(jest.fn())
+      .mockImplementationOnce(() => Promise.reject());
+    await copyCurve([], fakeCurve())(dispatch, jest.fn())();
     expect(save).toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
   });
