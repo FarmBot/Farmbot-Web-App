@@ -41,7 +41,6 @@ import {
 } from "./curve_info";
 import { CurveType } from "../curves/templates";
 import { TaggedCurve } from "farmbot";
-import { DevSettings } from "../settings/dev/dev_support";
 
 interface InfoFieldProps {
   title: string;
@@ -367,15 +366,14 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
             dispatch={this.props.dispatch}
             selectMostUsedCurves={this.selectMostUsedCurves}
             openfarmCropFetch={this.props.openfarmCropFetch} />
-          {DevSettings.futureFeaturesEnabled() &&
-            <AllCurveInfo
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={this.props.sourceFbosConfig}
-              botSize={this.props.botSize}
-              curves={this.props.curves}
-              findCurve={this.findCurve}
-              plants={this.props.plants}
-              onChange={this.changeCurve} />}
+          <AllCurveInfo
+            dispatch={this.props.dispatch}
+            sourceFbosConfig={this.props.sourceFbosConfig}
+            botSize={this.props.botSize}
+            curves={this.props.curves}
+            findCurve={this.findCurve}
+            plants={this.props.plants}
+            onChange={this.changeCurve} />
           <AddPlantHereButton
             botPosition={this.props.botPosition}
             openedSavedGarden={this.props.designer.openedSavedGarden}

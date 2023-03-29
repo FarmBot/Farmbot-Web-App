@@ -59,7 +59,6 @@ import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
 } from "../settings/firmware/firmware_hardware_support";
-import { DevSettings } from "../settings/dev/dev_support";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -321,8 +320,7 @@ export class RawSelectPlants
           {["Plant"]
             .includes(this.selectionPointType) &&
             <PlantDepthBulkUpdate {...bulkUpdateProps} />}
-          {DevSettings.futureFeaturesEnabled() &&
-            ["Plant"].includes(this.selectionPointType) &&
+          {["Plant"].includes(this.selectionPointType) &&
             <PlantCurvesBulkUpdate {...bulkUpdateProps}
               curves={this.props.curves} />}
           {["Weed", "GenericPointer"]

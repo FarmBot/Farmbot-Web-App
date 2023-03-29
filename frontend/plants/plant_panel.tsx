@@ -25,7 +25,6 @@ import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
-import { DevSettings } from "../settings/dev/dev_support";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -247,7 +246,7 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
-      {DevSettings.futureFeaturesEnabled() && info.uuid.startsWith("Point") &&
+      {info.uuid.startsWith("Point") &&
         <AllCurveInfo
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig}
