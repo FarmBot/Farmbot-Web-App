@@ -3,6 +3,7 @@ import { startTracking } from "../connectivity/data_consistency";
 import { unpackUUID } from "../util";
 
 const IGNORE_LIST: ResourceName[] = [
+  "Curve",
   "FbosConfig",
   "FirmwareConfig",
   "Image",

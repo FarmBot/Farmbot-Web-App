@@ -11,11 +11,6 @@ jest.mock("../../farm_designer/map/actions", () => ({
   setDragIcon: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
@@ -43,10 +38,6 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { CurveType } from "../../curves/templates";
 
 describe("<CropInfo />", () => {
-  beforeEach(() => {
-    mockDev = false;
-  });
-
   const fakeProps = (): CropInfoProps => {
     const cropSearchResult = fakeCropLiveSearchResult();
     cropSearchResult.crop.svg_icon = "fake_mint_svg";
@@ -91,7 +82,6 @@ describe("<CropInfo />", () => {
   });
 
   it("changes curve", () => {
-    mockDev = true;
     const p = fakeProps();
     const wrapper = mount<CropInfo>(<CropInfo {...p} />);
     wrapper.instance().changeCurve(1, CurveType.water);
@@ -101,7 +91,6 @@ describe("<CropInfo />", () => {
   });
 
   it("updates curves", () => {
-    mockDev = true;
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const wrapper = mount<CropInfo>(<CropInfo {...p} />);
@@ -134,7 +123,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 0, "location (100, 200)", { partial_match: true });
+    clickButton(wrapper, 3, "location (100, 200)", { partial_match: true });
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -148,7 +137,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 0, "location (unknown)", { partial_match: true });
+    clickButton(wrapper, 3, "location (unknown)", { partial_match: true });
     expect(initSave).not.toHaveBeenCalled();
   });
 
@@ -219,7 +208,6 @@ describe("<CropInfo />", () => {
   });
 
   it("renders curves", () => {
-    mockDev = true;
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const curve = fakeCurve();

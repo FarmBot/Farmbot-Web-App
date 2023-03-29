@@ -1,6 +1,6 @@
 module Devices
   class Dump < Mutations::Command
-    RESOURCES = [:farmware_envs, :farm_events, :farmware_installations,
+    RESOURCES = [:curves, :farmware_envs, :farm_events, :farmware_installations,
                  :folders, :images, :logs, :peripherals, :pin_bindings,
                  :plant_templates, :point_groups, :regimens, :saved_gardens,
                  :sensor_readings, :sensors, :sequences, :token_issuances, :telemetries,

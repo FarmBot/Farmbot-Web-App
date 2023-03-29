@@ -13,7 +13,8 @@ import { uniq } from "lodash";
 import { overwriteGroup } from "./actions";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolTransformProps } from "../tools/interfaces";
-import { FilePath } from "../internal_urls";
+import { FilePath, Path } from "../internal_urls";
+import { push } from "../history";
 
 export interface PointGroupItemProps {
   point: TaggedPoint | TaggedPlantTemplate;
@@ -22,6 +23,7 @@ export interface PointGroupItemProps {
   hovered?: boolean;
   tools?: TaggedTool[];
   toolTransformProps?: ToolTransformProps;
+  navigate?: boolean;
 }
 
 interface PointGroupItemState { icon: string; }
@@ -69,6 +71,7 @@ export class PointGroupItem
   leave = () => this.props.dispatch?.(setHoveredPlant(undefined));
 
   click = () => {
+    if (this.props.navigate) { push(Path.plants(this.props.point.body.id)); }
     if (this.criteriaIcon) {
       return error(t("Cannot remove points selected by filters."));
     }

@@ -67,8 +67,8 @@ describe("<ToolbaySlot />", () => {
 
   it("handles bad data", () => {
     const p = fakeProps();
-    p.pulloutDirection = 1.1;
-    p.quadrant = 1.1;
+    p.pulloutDirection = 1.1 as ToolPulloutDirection;
+    p.quadrant = 1.1 as BotOriginQuadrant;
     const wrapper = svgMount(<ToolbaySlot {...p} />);
     expect(wrapper.find("use").props().transform).toEqual("rotate(0, 10, 20)");
   });

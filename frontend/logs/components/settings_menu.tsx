@@ -45,7 +45,7 @@ const LogSetting = (props: LogSettingProps) => {
   const updateMinFilterLevel = (key: keyof Filters, level: number) => {
     const currentLevel =
       props.getConfigValue(safeNumericSetting(key + "_log")) || 0;
-    if (currentLevel < level) { setFilterLevel(key)(level); }
+    if (+currentLevel < level) { setFilterLevel(key)(level); }
   };
   const config = sourceFbosConfig(setting);
   return <fieldset>

@@ -18,9 +18,12 @@ module Points
       string :openfarm_slug
       integer :pullout_direction, in: ToolSlot::PULLOUT_DIRECTIONS
       string :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
-      time :planted_at
+      time :planted_at, nils: true
       hstore :meta
       boolean :gantry_mounted
+      integer :water_curve_id, nils: true
+      integer :spread_curve_id, nils: true
+      integer :height_curve_id, nils: true
     end
 
     def validate

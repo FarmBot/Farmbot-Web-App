@@ -1334,6 +1334,11 @@ ul {
       color: $panel_green;
     }
   }
+  &.curves {
+    .empty-state-graphic {
+      filter: grayscale(1);
+    }
+  }
   &.gardens {
     p,
     h5,

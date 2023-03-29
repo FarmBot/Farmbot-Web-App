@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+--
 -- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -245,6 +252,40 @@ CREATE SEQUENCE public.arg_sets_id_seq
 --
 
 ALTER SEQUENCE public.arg_sets_id_seq OWNED BY public.arg_sets.id;
+
+
+--
+-- Name: curves; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.curves (
+    id bigint NOT NULL,
+    device_id bigint NOT NULL,
+    name character varying(80) NOT NULL,
+    type character varying(10) NOT NULL,
+    data character varying(500) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: curves_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.curves_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: curves_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.curves_id_seq OWNED BY public.curves.id;
 
 
 --
@@ -872,7 +913,10 @@ CREATE TABLE public.points (
     pullout_direction integer DEFAULT 0,
     discarded_at timestamp without time zone,
     gantry_mounted boolean DEFAULT false,
-    depth integer DEFAULT 0
+    depth integer DEFAULT 0,
+    water_curve_id integer,
+    spread_curve_id integer,
+    height_curve_id integer
 );
 
 
@@ -2086,6 +2130,13 @@ ALTER TABLE ONLY public.arg_sets ALTER COLUMN id SET DEFAULT nextval('public.arg
 
 
 --
+-- Name: curves id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.curves ALTER COLUMN id SET DEFAULT nextval('public.curves_id_seq'::regclass);
+
+
+--
 -- Name: delayed_jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2433,6 +2484,14 @@ ALTER TABLE ONLY public.arg_names
 
 ALTER TABLE ONLY public.arg_sets
     ADD CONSTRAINT arg_sets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: curves curves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.curves
+    ADD CONSTRAINT curves_pkey PRIMARY KEY (id);
 
 
 --
@@ -2833,6 +2892,13 @@ CREATE INDEX index_arg_sets_on_fragment_id ON public.arg_sets USING btree (fragm
 --
 
 CREATE INDEX index_arg_sets_on_node_id ON public.arg_sets USING btree (node_id);
+
+
+--
+-- Name: index_curves_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_curves_on_device_id ON public.curves USING btree (device_id);
 
 
 --
@@ -3841,6 +3907,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221028172528'),
 ('20221103172100'),
 ('20221109233217'),
-('20221222192831');
+('20221222192831'),
+('20230210010108');
 
 

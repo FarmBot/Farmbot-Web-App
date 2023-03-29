@@ -7,8 +7,8 @@ jest.mock("../../history", () => ({
 
 jest.mock("../../api/crud", () => ({
   overwrite: jest.fn(),
+  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
   save: jest.fn(),
-  initSaveGetId: jest.fn(),
   destroy: jest.fn(),
 }));
 
@@ -26,16 +26,17 @@ import {
   ActionMenuProps, CurveDataTableRowProps, EditCurveProps,
 } from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
-import { fakeCurve } from "../../__test_support__/fake_state/resources";
+import { fakeCurve, fakePlant } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { destroy, overwrite, initSaveGetId } from "../../api/crud";
+import { destroy, overwrite, init, save } from "../../api/crud";
 import { push } from "../../history";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
 import { error } from "../../toast/toast";
+import { SpecialStatus } from "farmbot";
 
 describe("<EditCurve />", () => {
   const fakeProps = (): EditCurveProps => ({
@@ -44,6 +45,8 @@ describe("<EditCurve />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     botSize: fakeBotSize(),
     resourceUsage: {},
+    curves: [],
+    plants: [],
   });
 
   it("redirects", () => {
@@ -96,6 +99,58 @@ describe("<EditCurve />", () => {
     });
   });
 
+  it("saves data", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).toHaveBeenCalledWith(curve.uuid);
+  });
+
+  it("doesn't save data: no uuid", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: undefined });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
+  });
+
+  it("doesn't save data: no id", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.0.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => curve;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
+  });
+
+  it("doesn't save data: no curve", () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "Curve.1.1";
+    curve.body.data = { 1: 0, 10: 10, 100: 1000 };
+    curve.specialStatus = SpecialStatus.DIRTY;
+    p.findCurve = () => undefined;
+    const wrapper = mount(<EditCurve {...p} />);
+    wrapper.setState({ uuid: curve.uuid });
+    wrapper.unmount();
+    expect(save).not.toHaveBeenCalledWith();
+  });
+
   it("toggles state", () => {
     mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
@@ -114,6 +169,81 @@ describe("<EditCurve />", () => {
     expect(wrapper.state().hovered).toEqual(undefined);
     wrapper.instance().setHovered("1");
     expect(wrapper.state().hovered).toEqual("1");
+  });
+
+  it("sets maxCount state high", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    p.findCurve = () => fakeCurve();
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    expect(wrapper.state().maxCount).toEqual(41);
+    wrapper.instance().toggleExpand();
+    expect(wrapper.state().maxCount).toEqual(1000);
+  });
+
+  it("sets maxCount state low", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    p.findCurve = () => fakeCurve();
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    wrapper.setState({ maxCount: 1000 });
+    expect(wrapper.state().maxCount).toEqual(1000);
+    wrapper.instance().toggleExpand();
+    expect(wrapper.state().maxCount).toEqual(41);
+  });
+
+  it("sets iconDisplay state", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    p.findCurve = () => fakeCurve();
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    expect(wrapper.state().iconDisplay).toEqual(true);
+    wrapper.instance().toggleIconShow();
+    expect(wrapper.state().iconDisplay).toEqual(false);
+  });
+
+  it("renders no icons", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    p.findCurve = () => undefined;
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    const elWrapper = mount(wrapper.instance().UsingThisCurve());
+    expect(elWrapper.text()).toContain("(0)");
+  });
+
+  it("renders icons", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.id = 1;
+    const plant0 = fakePlant();
+    plant0.body.water_curve_id = 1;
+    const plant1 = fakePlant();
+    plant1.body.water_curve_id = 1;
+    const plant2 = fakePlant();
+    plant2.body.water_curve_id = 2;
+    p.plants = [plant0, plant1, plant2];
+    p.findCurve = () => curve;
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    const elWrapper = mount(wrapper.instance().UsingThisCurve());
+    expect(elWrapper.text()).toContain("(2)");
+    expect(elWrapper.find("img").length).toEqual(2);
+  });
+
+  it("hides icons", () => {
+    mockPath = Path.mock(Path.curves(1));
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.body.id = 1;
+    const plant0 = fakePlant();
+    plant0.body.water_curve_id = 1;
+    p.plants = [plant0];
+    p.findCurve = () => curve;
+    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
+    wrapper.setState({ iconDisplay: false });
+    const elWrapper = mount(wrapper.instance().UsingThisCurve());
+    expect(elWrapper.text()).toContain("(1)");
+    expect(elWrapper.find("img").length).toEqual(0);
   });
 
   it("deletes curve", () => {
@@ -162,15 +292,66 @@ describe("<EditCurve />", () => {
 });
 
 describe("copyCurve()", () => {
-  it("copies curve", () => {
+  it("copies curve", async () => {
+    const existingCurve = fakeCurve();
+    existingCurve.body.name = "Fake copy 1";
+    const curves = [existingCurve];
     const curve = fakeCurve();
-    copyCurve(curve, jest.fn(() => Promise.resolve()))();
-    expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
+    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), jest.fn())();
+    expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
-      name: "Fake copy",
-      id: 1,
+      name: "Fake copy 2",
+      id: undefined,
     });
-    copyCurve(curve, jest.fn(() => Promise.reject()))();
+    expect(save).toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("handles promise rejection", async () => {
+    const dispatch = jest.fn()
+      .mockImplementationOnce(jest.fn())
+      .mockImplementationOnce(() => Promise.reject());
+    await copyCurve([], fakeCurve())(dispatch, jest.fn())();
+    expect(save).toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("copies curve and navigates", async () => {
+    const existingCurve = fakeCurve();
+    existingCurve.body.name = "Fake copy 1";
+    const curves = [existingCurve];
+    const curve = fakeCurve();
+    curve.uuid = "uuid";
+    curve.body.id = 1;
+    const state = fakeState();
+    state.resources = buildResourceIndex([curve]);
+    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    expect(init).toHaveBeenCalledWith("Curve", {
+      ...curve.body,
+      name: "Fake copy 2",
+      id: undefined,
+    });
+    expect(save).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith(Path.curves(1));
+  });
+
+  it("copies curve and doesn't navigate", async () => {
+    const existingCurve = fakeCurve();
+    existingCurve.body.name = "Fake copy 1";
+    const curves = [existingCurve];
+    const curve = fakeCurve();
+    curve.uuid = "not uuid";
+    curve.body.id = 1;
+    const state = fakeState();
+    state.resources = buildResourceIndex([curve]);
+    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    expect(init).toHaveBeenCalledWith("Curve", {
+      ...curve.body,
+      name: "Fake copy 2",
+      id: undefined,
+    });
+    expect(save).toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 });
 

@@ -54,9 +54,11 @@ module Points
       string :openfarm_slug, default: "not-set"
       string :plant_stage,
              in: CeleryScriptSettingsBag::PLANT_STAGES
-      time :created_at # TODO: Are we still using this?
-      time :planted_at, default: 0
+      time :planted_at
       boolean :gantry_mounted
+      integer :water_curve_id
+      integer :spread_curve_id
+      integer :height_curve_id
     end
 
     def validate

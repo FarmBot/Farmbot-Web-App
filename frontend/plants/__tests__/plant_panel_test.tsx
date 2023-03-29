@@ -4,11 +4,6 @@ jest.mock("../../ui/help", () => ({
 
 jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import React from "react";
 import {
   PlantPanel, PlantPanelProps,
@@ -91,7 +86,7 @@ describe("<PlantPanel />", () => {
     const p = fakeProps();
     p.info.meta = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 3, "Delete");
+    clickButton(wrapper, 6, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Point.0.0");
   });
 
@@ -100,7 +95,17 @@ describe("<PlantPanel />", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 day old");
-    expect(wrapper.find("button").length).toEqual(5);
+    expect(wrapper.find("button").length).toEqual(8);
+  });
+
+  it("renders plant stage", () => {
+    const p = fakeProps();
+    p.info.daysOld = undefined;
+    p.info.plantStatus = "planned";
+    const wrapper = mount(<PlantPanel {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    expect(txt).not.toContain("1 day old");
+    expect(txt).toContain("planned");
   });
 
   it("renders in saved garden", () => {
@@ -109,13 +114,13 @@ describe("<PlantPanel />", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("old");
-    expect(wrapper.find("button").length).toEqual(4);
+    expect(wrapper.find("button").length).toEqual(7);
   });
 
   it("enters select mode", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 4, "Delete multiple");
+    clickButton(wrapper, 7, "Delete multiple");
     expect(push).toHaveBeenCalledWith(Path.plants("select"));
   });
 
@@ -137,7 +142,6 @@ describe("<PlantPanel />", () => {
   });
 
   it("renders curves", () => {
-    mockDev = true;
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "water";
@@ -154,7 +158,6 @@ describe("<PlantPanel />", () => {
   });
 
   it("changes curve", () => {
-    mockDev = true;
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "water";
@@ -169,7 +172,7 @@ describe("<PlantPanel />", () => {
     const wrapper = shallow(<PlantPanel {...p} />);
     wrapper.find("AllCurveInfo").simulate("change", 1, CurveType.water);
     expect(p.updatePlant).toHaveBeenCalledWith(info.uuid,
-      { water_curve_id: 1 }, true);
+      { water_curve_id: 1 });
   });
 });
 

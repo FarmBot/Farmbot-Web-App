@@ -138,6 +138,7 @@ def destroy_everything!
   Device.update_all(mounted_tool_id: nil)
   [
     Primitive,
+    Curve,
     FarmEvent,
     Release,
     WizardStepResult,

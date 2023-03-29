@@ -2,15 +2,15 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { connect } from "react-redux";
 import { push } from "../history";
-import { TaggedCurve } from "farmbot";
-import { round } from "lodash";
+import { SpecialStatus, TaggedCurve } from "farmbot";
+import { round, take } from "lodash";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
-import { selectAllCurves } from "../resources/selectors";
-import { destroy, initSaveGetId, overwrite } from "../api/crud";
+import { selectAllCurves, selectAllPlantPointers } from "../resources/selectors";
+import { destroy, init, overwrite, save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Curve } from "farmbot/dist/resources/api_resources";
@@ -28,14 +28,20 @@ import {
 import {
   curveColor,
   curvePanelColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
-  DEFAULT_DAY_SCALE, DEFAULT_VALUE_SCALE,
+  TemplateOption, templateScale, templateShape,
 } from "./templates";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
-import { validFbosConfig } from "../util";
+import { unpackUUID, validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { botSize } from "../farm_designer/state_to_props";
 import { resourceUsageList } from "../resources/in_use";
 import { error } from "../toast/toast";
+import { PointGroupItem } from "../point_groups/point_group_item";
+import { CURVE_KEY_LOOKUP } from "../plants/curve_info";
+import {
+  calcMaxCount, MoreIndicatorIcon,
+} from "../point_groups/criteria/component";
+import { GetState } from "../redux/interfaces";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -46,10 +52,12 @@ const columnTitle = (curve: TaggedCurve) => {
 };
 
 export const mapStateToProps = (props: Everything): EditCurveProps => {
+  const curves = selectAllCurves(props.resources.index);
   return {
     dispatch: props.dispatch,
-    findCurve: id => selectAllCurves(props.resources.index)
-      .filter(g => g.body.id == id)[0],
+    curves,
+    plants: selectAllPlantPointers(props.resources.index),
+    findCurve: id => curves.filter(g => g.body.id == id)[0],
     sourceFbosConfig: sourceFbosConfigValue(
       validFbosConfig(getFbosConfig(props.resources.index)),
       props.bot.hardware.configuration),
@@ -61,7 +69,25 @@ export const mapStateToProps = (props: Everything): EditCurveProps => {
 export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState> {
   state: EditCurveState = {
     templates: false, scale: false, hovered: undefined, warningText: false,
+    uuid: this.curve?.uuid, maxCount: calcMaxCount(), iconDisplay: true,
   };
+
+  componentDidMount = () => this.setState({ maxCount: calcMaxCount() });
+
+  toggleExpand = () => this.setState({
+    maxCount: this.state.maxCount > 100 ? calcMaxCount() : 1000,
+  });
+
+  toggleIconShow = () => this.setState({ iconDisplay: !this.state.iconDisplay });
+
+  componentWillUnmount() {
+    if (!this.state.uuid) { return; }
+    const id = unpackUUID(this.state.uuid).remoteId;
+    if (!id) { return; }
+    const curve = this.props.findCurve(id);
+    if (!(curve?.specialStatus == SpecialStatus.DIRTY)) { return; }
+    this.props.dispatch(save(this.state.uuid));
+  }
 
   get stringyID() { return Path.getSlug(Path.curves()); }
   get curve() {
@@ -74,6 +100,34 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     this.setState({ ...this.state, [key]: !this.state[key] });
 
   setHovered = (hovered: string | undefined) => this.setState({ hovered });
+
+  UsingThisCurve = () => {
+    const { curve } = this;
+    const plantsUsingCurve = curve
+      ? this.props.plants.filter(plant =>
+        plant.body[CURVE_KEY_LOOKUP[curve.body.type]] == curve.body.id)
+      : [];
+    return <div className={"curve-usage-display"}>
+      <label>
+        {t("USING THIS CURVE ({{count}})", {
+          count: plantsUsingCurve.length
+        })}
+      </label>
+      <i onClick={this.toggleIconShow}
+        className={`fa fa-caret-${this.state.iconDisplay ? "up" : "down"}`}
+        title={this.state.iconDisplay
+          ? t("hide icons")
+          : t("show icons")} />
+      {this.state.iconDisplay && plantsUsingCurve.length > 0 &&
+        <div className={"point-list-wrapper"}>
+          {take(plantsUsingCurve, this.state.maxCount).map(point =>
+            <PointGroupItem key={point.uuid}
+              point={point} navigate={true} />)}
+          <MoreIndicatorIcon count={plantsUsingCurve.length}
+            maxCount={this.state.maxCount} onClick={this.toggleExpand} />
+        </div>}
+    </div>;
+  };
 
   render() {
     const { curve, setHovered } = this;
@@ -96,7 +150,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
           {curve &&
             <i className={"fa fa-copy"}
               title={t("Copy curve")}
-              onClick={copyCurve(curve, dispatch)} />}
+              onClick={dispatch(copyCurve(this.props.curves, curve))} />}
           {curve &&
             <i className={"fa fa-trash"}
               title={t("Delete curve")}
@@ -113,7 +167,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               popoverClassName={"curve-action-popover"}
               target={<button className={"transparent-button"}
                 onClick={this.toggle("scale")}>
-                {t("quick scale")}
+                {t("scale")}
               </button>}
               content={<ScaleMenu dispatch={dispatch} curve={curve}
                 click={this.toggle("scale")} />} />
@@ -136,6 +190,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
                 ? t("Maximum number of control points reached.")
                 : ""}
             </p>
+            <this.UsingThisCurve />
             <table>
               <thead>
                 <tr>
@@ -199,17 +254,33 @@ export const ScaleMenu = (props: ActionMenuProps) => {
 };
 
 export const TemplatesMenu = (props: ActionMenuProps) => {
-  const [shape, setShape] = React.useState(CurveShape.linear);
   const { type } = props.curve.body;
-  const [maxDay, setMaxDay] = React.useState(DEFAULT_DAY_SCALE[type]);
-  const [maxValue, setMaxValue] = React.useState(DEFAULT_VALUE_SCALE[type]);
+  const [shapeCache, setShapeCache] = templateShape(type);
+  const [shape, setShapeState] = React.useState(shapeCache);
+  const [maxDayCache, setMaxDayCache] = templateScale(type, TemplateOption.day);
+  const [maxDay, setMaxDayState] = React.useState(maxDayCache);
+  const [maxValueCache, setMaxValueCache] =
+    templateScale(type, TemplateOption.value);
+  const [maxValue, setMaxValueState] = React.useState(maxValueCache);
+  const setShape = (value: string) => {
+    setShapeState(value as CurveShape);
+    setShapeCache(value);
+  };
+  const setMaxDay = (value: number) => {
+    setMaxDayState(value);
+    setMaxDayCache(value);
+  };
+  const setMaxValue = (value: number) => {
+    setMaxValueState(value);
+    setMaxValueCache(value);
+  };
   return <div className={"curve-action-menu"}>
     <div className={"curve-menu-row"}>
       <label>{t("shape")}</label>
       <FBSelect key={shape}
         list={Object.values(CURVE_SHAPE_DDIS())}
         selectedItem={CURVE_SHAPE_DDIS()[shape]}
-        onChange={ddi => setShape(ddi.value as CurveShape)} />
+        onChange={ddi => setShape("" + ddi.value)} />
     </div>
     <div className={"curve-menu-row"}>
       <label>{t("max value")}</label>
@@ -234,7 +305,8 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
       <button className={"transparent-button"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
-            data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue)
+            data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue,
+              shape != CurveShape.constant)
           }));
           props.click();
         }}>
@@ -244,15 +316,31 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
   </div>;
 };
 
-export const copyCurve = (curve: TaggedCurve, dispatch: Function) => () => {
-  dispatch(initSaveGetId("Curve", {
-    ...curve.body,
-    name: `${curve.body.name} ${t("copy")}`,
-    id: curve.body.id || 0 + 1, // remove after API implementation
-  }))
-    .then((id: number) => push(Path.curves(id)))
-    .catch(() => { });
-};
+export const copyCurve =
+  (curves: TaggedCurve[], curve: TaggedCurve) =>
+    (dispatch: Function, getState: GetState) =>
+      () => {
+        const existingNames = curves.map(c => c.body.name);
+        let i = 1;
+        const newName = (count: number) =>
+          `${curve.body.name} ${t("copy")} ${count}`;
+        while (existingNames.includes(newName(i))) {
+          i++;
+        }
+        const action = init("Curve", {
+          ...curve.body,
+          name: newName(i),
+          id: undefined,
+        });
+        dispatch(action);
+        dispatch(save(action.payload.uuid))
+          .then(() => {
+            const id = selectAllCurves(getState().resources.index).filter(curve =>
+              curve.uuid == action.payload.uuid)[0]?.body.id;
+            id && push(Path.curves(id));
+          })
+          .catch(() => { });
+      };
 
 export const curveDataTableRow = (props: CurveDataTableRowProps) =>
   ([day, value]: [string, number], index: number) => {
@@ -321,5 +409,4 @@ const ValueInput = (props: ValueInputProps) =>
 export const editCurve = (curve: TaggedCurve, update: Partial<Curve>) =>
   (dispatch: Function) => {
     dispatch(overwrite(curve, { ...curve.body, ...update }));
-    // dispatch(save(curve.uuid)); // uncomment after API implementation
   };

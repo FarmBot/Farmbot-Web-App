@@ -261,7 +261,7 @@ export class DesignerNavTabs
         <NavTab panel={Panel.Plants} />
         <NavTab panel={Panel.Weeds} />
         <NavTab panel={Panel.Points} />
-        {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Curves} />}
+        <NavTab panel={Panel.Curves} />
         <NavTab panel={Panel.Sequences} />
         <NavTab panel={Panel.Regimens} />
         <NavTab panel={Panel.FarmEvents} />

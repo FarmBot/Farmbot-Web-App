@@ -80,7 +80,7 @@ export function logBeep(getState: GetState) {
   return (log: Log) => {
     const getConfigValue = getWebAppConfigValue(getState);
     const beepVerbosity = getConfigValue(NumericSetting.beep_verbosity);
-    if (beepVerbosity && (log.verbosity || 1) <= beepVerbosity) {
+    if (beepVerbosity && (log.verbosity || 1) <= +beepVerbosity) {
       beep(log.type);
     }
   };

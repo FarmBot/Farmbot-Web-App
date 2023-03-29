@@ -259,6 +259,24 @@ describe("<PlantCurveBulkUpdate />", () => {
     expect(edit).toHaveBeenCalledWith(plant1, { water_curve_id: 1 });
     expect(edit).toHaveBeenCalledWith(plant2, { water_curve_id: 1 });
   });
+
+  it("updates plant curves to None", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.allPoints = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PlantCurveBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("FBSelect").first().simulate("change",
+      { label: "", value: "", isNull: true });
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change Water curve for 2 items?");
+    expect(edit).toHaveBeenCalledTimes(2);
+    expect(edit).toHaveBeenCalledWith(plant1, { water_curve_id: undefined });
+    expect(edit).toHaveBeenCalledWith(plant2, { water_curve_id: undefined });
+  });
 });
 
 describe("<PlantCurvesBulkUpdate />", () => {

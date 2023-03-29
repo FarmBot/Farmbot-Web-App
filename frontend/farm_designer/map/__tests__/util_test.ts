@@ -35,6 +35,7 @@ import {
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
+import { BotOriginQuadrant } from "../../interfaces";
 
 describe("round()", () => {
   it("rounds a number", () => {
@@ -337,7 +338,7 @@ describe("transformXY", () => {
   it("calculates transformed coordinate: quadrant 0 (invalid)", () => {
     const original = { qx: 100, qy: 200 };
     const transformed = { qx: 100, qy: 200 };
-    mapTransformProps.quadrant = 0;
+    mapTransformProps.quadrant = 0 as BotOriginQuadrant;
     transformCheck(original, transformed, mapTransformProps);
   });
 });

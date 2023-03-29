@@ -1,4 +1,7 @@
-jest.mock("../../api/crud", () => ({ initSaveGetId: jest.fn() }));
+jest.mock("../../api/crud", () => ({
+  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
+  save: jest.fn(),
+}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -6,12 +9,13 @@ import { RawCurves as Curves, mapStateToProps } from "../curves_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeCurve } from "../../__test_support__/fake_state/resources";
 import { push } from "../../history";
-import { initSaveGetId } from "../../api/crud";
+import { init, save } from "../../api/crud";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import { curvesPanelState } from "../../__test_support__/panel_state";
 import { CurvesProps } from "../interfaces";
 import { Actions } from "../../constants";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("<Curves> />", () => {
   const fakeProps = (): CurvesProps => ({
@@ -86,41 +90,69 @@ describe("<Curves> />", () => {
 
   it("creates new curve: water", async () => {
     const p = fakeProps();
-    p.curves = [fakeCurve()];
-    p.dispatch = jest.fn(() => Promise.resolve(1));
+    const curve = fakeCurve();
+    curve.uuid = "uuid";
+    curve.body.id = 1;
+    curve.body.name = "Water curve 1";
+    p.curves = [curve];
+    p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount<Curves>(<Curves {...p} />);
     await wrapper.instance().addNew("water")();
-    expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
+    expect(init).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
-      data: { 1: 250, 30: 500, 45: 500, 60: 250 },
-      id: 2,
+      data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
+    expect(save).toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith(Path.curves(1));
+  });
+
+  it("creates new curve: missing curve", async () => {
+    const p = fakeProps();
+    const curve = fakeCurve();
+    curve.uuid = "not uuid";
+    curve.body.id = 1;
+    curve.body.name = "Water curve 1";
+    p.curves = [curve];
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const wrapper = mount<Curves>(<Curves {...p} />);
+    await wrapper.instance().addNew("water")();
+    expect(init).toHaveBeenCalledWith("Curve", {
+      name: "Water curve 2", type: "water",
+      data: { 1: 1, 30: 500, 45: 500, 60: 250 },
+    });
+    expect(save).toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("creates new curve: spread", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve(1));
+    const curve = fakeCurve();
+    curve.uuid = "uuid";
+    curve.body.id = 1;
+    p.curves = [curve];
+    p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount<Curves>(<Curves {...p} />);
     await wrapper.instance().addNew("spread")();
-    expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
+    expect(init).toHaveBeenCalledWith("Curve", {
       name: "Spread curve 1", type: "spread",
-      data: { 1: 150, 30: 300, 45: 300, 60: 150 },
-      id: 1,
+      data: { 1: 1, 30: 300, 45: 300, 60: 150 },
     });
+    expect(save).toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("handles curve creation error", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.reject());
+    p.dispatch = jest.fn()
+      .mockImplementationOnce(jest.fn())
+      .mockImplementationOnce(() => Promise.reject());
     const wrapper = mount<Curves>(<Curves {...p} />);
     await wrapper.instance().addNew("water")();
-    expect(initSaveGetId).toHaveBeenCalledWith("Curve", {
+    expect(init).toHaveBeenCalledWith("Curve", {
       name: "Water curve 1", type: "water",
-      data: { 1: 250, 30: 500, 45: 500, 60: 250 },
-      id: 1,
+      data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
+    expect(save).toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
   });
 });
@@ -128,7 +160,13 @@ describe("<Curves> />", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
+    const curve0 = fakeCurve();
+    curve0.body.id = 0;
+    const curve1 = fakeCurve();
+    curve1.body.id = 1;
+    state.resources = buildResourceIndex([curve0, curve1]);
     const props = mapStateToProps(state);
     expect(props.dispatch).toEqual(expect.any(Function));
+    expect(props.curves).toEqual([curve1]);
   });
 });

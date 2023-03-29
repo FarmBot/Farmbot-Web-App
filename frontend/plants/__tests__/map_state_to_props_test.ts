@@ -1,11 +1,14 @@
-import { mapStateToProps, plantAge, formatPlantInfo } from "../map_state_to_props";
+import {
+  mapStateToProps, plantAgeAndStage, formatPlantInfo,
+} from "../map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate, fakeWebAppConfig,
+  fakePlant, fakePlantTemplate, fakeWebAppConfig, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
+import moment from "moment";
 
 describe("mapStateToProps()", () => {
   it("returns findPlant()", () => {
@@ -42,28 +45,36 @@ describe("mapStateToProps()", () => {
   });
 });
 
-describe("plantAge()", () => {
+describe("plantAgeAndStage()", () => {
   it("returns planted at date", () => {
     const plant = fakePlant();
     plant.body.planted_at = "2018-01-11T20:20:38.362Z";
     plant.body.created_at = undefined;
-    expect(plantAge(plant)).toBeGreaterThan(100);
+    expect(plantAgeAndStage(plant).age).toBeGreaterThan(100);
   });
 
-  it("returns created at date", () => {
+  it("returns plant stage", () => {
     const plant = fakePlant();
     plant.body.planted_at = undefined;
     plant.body.created_at = "2018-01-11T20:20:38.362Z";
-    expect(plantAge(plant)).toBeGreaterThan(100);
+    expect(plantAgeAndStage(plant).stage).toEqual("planned");
+  });
+
+  it("returns created at date", () => {
+    const plant = fakeWeed();
+    plant.body.created_at = "2018-01-11T20:20:38.362Z";
+    expect(plantAgeAndStage(plant).age).toBeGreaterThan(100);
   });
 });
 
 describe("formatPlantInfo()", () => {
   it("returns info for plant", () => {
     const plant = fakePlant();
+    plant.body.planted_at = "2018-01-11T20:20:38.362Z";
     plant.body.plant_stage = "planted";
     const result = formatPlantInfo(plant);
     expect(result.meta).toEqual({});
+    expect(result.plantedAt).toEqual(moment("2018-01-11T20:20:38.362Z"));
     expect(result.plantStatus).toEqual("planted");
   });
 
@@ -71,6 +82,7 @@ describe("formatPlantInfo()", () => {
     const plant = fakePlantTemplate();
     const result = formatPlantInfo(plant);
     expect(result.meta).toBeUndefined();
+    expect(result.plantedAt).toEqual(undefined);
     expect(result.plantStatus).toEqual("planned");
   });
 });

@@ -74,19 +74,20 @@ export const interpolateDay =
   };
 
 /** Scale data to the provided new maximum values. */
-export const scaleData =
-  (data: Curve["data"], dayInput: number, valueInput: number): Curve["data"] => {
-    const dayScale = dayInput / maxDay(data);
-    const valueScale = valueInput / maxValue(data);
-    const newData: Curve["data"] = {};
-    Object.entries(data).map(([key, val]) => {
-      const newDay = key == "1" ? 1 : round(parseInt(key) * dayScale);
-      const newValue = round(val * valueScale);
-      newData[newDay] = newValue;
-    });
-    if (Object.values(data).length < 2 && dayInput > 1
-      && !isUndefined(newData[1])) {
-      newData[dayInput] = newData[1];
-    }
-    return newData;
-  };
+export const scaleData = (
+  data: Curve["data"], dayInput: number, valueInput: number, startAt1 = false,
+): Curve["data"] => {
+  const dayScale = dayInput / maxDay(data);
+  const valueScale = valueInput / maxValue(data);
+  const newData: Curve["data"] = {};
+  Object.entries(data).map(([key, val]) => {
+    const newDay = key == "1" ? 1 : round(parseInt(key) * dayScale);
+    const newValue = key == "1" && startAt1 ? 1 : round(val * valueScale);
+    newData[newDay] = newValue;
+  });
+  if (Object.values(data).length < 2 && dayInput > 1
+    && !isUndefined(newData[1])) {
+    newData[dayInput] = newData[1];
+  }
+  return newData;
+};

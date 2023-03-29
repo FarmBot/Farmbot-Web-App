@@ -61,6 +61,13 @@ namespace :releases do
              "#{r.platform.ljust(6)} #{r.version.ljust(14)} #{r.created_at}"
       end
       puts ""
+      Release.all.map do |r|
+        if r.platform == "rpi"
+          puts "#{r.channel.ljust(8)} #{r.version.ljust(14)}" +
+               "#{r.created_at.to_s.slice(0, 10)}"
+        end
+      end
+      puts ""
     end
 
     def self.create_releases(metadata, channel)

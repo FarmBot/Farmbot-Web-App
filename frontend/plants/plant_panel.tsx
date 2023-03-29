@@ -25,7 +25,6 @@ import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
-import { DevSettings } from "../settings/dev/dev_support";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -57,7 +56,7 @@ export interface EditPlantStatusProps extends EditPlantProperty {
 }
 
 export interface EditDatePlantedProps extends EditPlantProperty {
-  datePlanted: Moment;
+  datePlanted: Moment | undefined;
   timeSettings: TimeSettings;
 }
 
@@ -65,7 +64,8 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
   const { datePlanted, updatePlant, uuid, timeSettings } = props;
   return <BlurableInput
     type="date"
-    value={datePlanted.utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD")}
+    value={datePlanted?.utcOffset(timeSettings.utcOffset)
+      .format("YYYY-MM-DD") || ""}
     onCommit={e => updatePlant(uuid, {
       planted_at: moment(e.currentTarget.value)
         .utcOffset(timeSettings.utcOffset).toISOString()
@@ -217,7 +217,7 @@ export function PlantPanel(props: PlantPanelProps) {
           </Col>
           <Col xs={5}>
             <ListItem name={t("Age")}>
-              {daysOldText(daysOld)}
+              {daysOldText({ age: daysOld, stage: plantStatus })}
             </ListItem>
           </Col>
         </Row>}
@@ -246,7 +246,7 @@ export function PlantPanel(props: PlantPanelProps) {
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}
       </ListItem>
-      {DevSettings.futureFeaturesEnabled() && info.uuid.startsWith("Point") &&
+      {info.uuid.startsWith("Point") &&
         <AllCurveInfo
           dispatch={props.dispatch}
           sourceFbosConfig={props.sourceFbosConfig}
@@ -256,11 +256,11 @@ export function PlantPanel(props: PlantPanelProps) {
           curves={props.curves}
           plants={props.plants}
           plant={info}
-          findCurve={curveType => props.curves.filter(curve =>
+          findCurve={curveType => props.curves.filter(curve => curve.body.id &&
             curve.body.id == info[CURVE_KEY_LOOKUP[curveType
             ] as keyof FormattedPlantInfo])[0]}
           onChange={(id, curveType) =>
-            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id }, true)} />}
+            updatePlant(info.uuid, { [CURVE_KEY_LOOKUP[curveType]]: id })} />}
       {Object.entries(info.meta || {}).map(([key, value]) => {
         switch (key) {
           case "gridId":

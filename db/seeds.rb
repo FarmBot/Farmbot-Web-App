@@ -11,6 +11,7 @@ if Rails.env == "development"
                tomato turnip zucchini)
 
   [
+    Curve,
     FarmwareEnv,
     WizardStepResult,
     Alert,

@@ -104,7 +104,7 @@ describe("resource reducer", () => {
     expect(newTool.body.name).toEqual("after");
   });
 
-  it("sets a value as undefined while editing a resource", () => {
+  it("sets a value as null while editing a resource", () => {
     const waterCurve = fakeCurve();
     waterCurve.body.id = 1;
     const plant = fakePlant();
@@ -123,7 +123,8 @@ describe("resource reducer", () => {
     const oldPlant = index.references[uuid] as TaggedPlantPointer;
     const newPlant = newState.index.references[uuid] as TaggedPlantPointer;
     expect(oldPlant.body.water_curve_id).toEqual(1);
-    expect(newPlant.body.water_curve_id).toEqual(undefined);
+    // eslint-disable-next-line no-null/no-null
+    expect(newPlant.body.water_curve_id).toEqual(null);
   });
 
   it("handles resource failures", () => {
