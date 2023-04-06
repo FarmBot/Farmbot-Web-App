@@ -617,6 +617,7 @@
     "Enable use of rotary encoders for stall detection, finding axis length, and homing. (default: x: {{ x }}, y: {{ y }}, z: {{ z }})": "로터리 엔코더 사용하여 스톨 검출, 축 길이 및 홈링. (기본값: x: {{ x }}, y: {{ y }}, z: {{ z }})",
     "enabled": "활성화됨",
     "Encoder Scaling": "엔코더 스케일링",
+    "encoder scaling factor = 10000 * (motor resolution) / (encoder resolution). (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))": "엔코더 스케일링 팩터 = 10000 * (모터 해상도) / (엔코더 해상도). (기본값: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))",
     "ENCODER TYPE": "엔코더 유형",
     "Encoders": "엔코더",
     "End date must not be before start date.": "종료 날짜는 시작 날짜 이후여야 합니다.",
@@ -722,6 +723,7 @@
     "FIND LENGTH": "길이 찾기",
     "Find out more": "자세히 알아보기",
     "Finish creating the group": "그룹 생성 완료",
+    "Finish setting up your account and FarmBot using our setup wizard. To open the setup wizard, click the **Setup: {{ percentComplete }}** button in the main navigation bar.": "계정 및 FarmBot 설정 마무리하기. 설정 마법사를 열려면 메인 내비게이션 바의 **설정: {{ percentComplete }}** 버튼을 클릭하세요.",
     "Finish setup": "설정 완료",
     "Firmware": "펌웨어",
     "FIRMWARE": "펌웨어",
@@ -2127,6 +2129,7 @@
     "Using a desktop computer or laptop, download and install the official Raspberry Pi Imager program from the Raspberry Pi Foundation. This is necessary for installing FarmBot OS onto the microSD card in the next step.": "데스크탑 컴퓨터나 노트북을 사용하여 Raspberry Pi Foundation에서 공식 Raspberry Pi Imager 프로그램을 다운로드하고 설치하십시오. 이 작업은 다음 단계에서 마이크로SD 카드에 FarmBot OS를 설치하는 데 필요합니다.",
     "Using a desktop computer or laptop, download the latest FarmBot OS .img file:": "데스크탑 컴퓨터나 노트북을 사용하여 최신 FarmBot OS .img 파일을 다운로드하십시오.",
     "Using another device, search for and connect to the \\": "다른 기기를 사용하여 \\을(를) 검색하고 연결하십시오.",
+    "Using another device, search for and connect to the `farmbot-xxxx` WiFi network": "다른 기기를 사용하여 `farmbot-xxxx` WiFi 네트워크를 검색하고 연결하십시오.",
     "Using the manual controls, instruct FarmBot to move towards the seed trough. As you get closer, change the MOVE AMOUNT to a smaller value for finer movements. Your goal is to position the needle just above the trough and then descend down into it until the tip of the needle is 3 to 5mm from the bottom of the trough. Click the blue button next to the slot's X, Y, and Z fields to save FarmBot's current position to the slot.": "수동 컨트롤을 사용하여 FarmBot을 씨 맽으로 이동시킵니다. 점점 가까이 갈수록 미세한 이동을 위해 MOVE AMOUNT를 더 작은 값으로 변경합니다. 목표는 바늘을 씨 맽 위로 위치시킨 다음 바닥에서 3~5mm 거리에 바늘 끝이 있도록 내려가는 것입니다. 슬롯의 X, Y 및 Z 필드 옆에있는 파란색 버튼을 클릭하여 FarmBot의 현재 위치를 슬롯에 저장합니다.",
     "Using the manual controls, instruct FarmBot to move towards the tool and slot. As you get closer, change the MOVE AMOUNT to a smaller value for finer movements. Your goal is to position the UTM just above the tool and then descend down onto it (mounting it). Once the UTM has mounted the tool, click the blue button next to the slot's X, Y, and Z fields to save FarmBot's current position to the slot.": "수동 컨트롤을 사용하여 FarmBot을 도구 및 슬롯 방향으로 이동시킵니다. 점점 가까이 갈수록 미세한 이동을 위해 MOVE AMOUNT를 더 작은 값으로 변경합니다. 목표는 UTM을 도구 바로 위에 위치시키고 그 위로 내려가서 (설치) 도구를 장착하는 것입니다. UTM이 도구를 장착하면 슬롯의 X, Y 및 Z 필드 옆에있는 파란색 버튼을 클릭하여 FarmBot의 현재 위치를 슬롯에 저장합니다.",
     "UTM": "도구 위치 결정 모듈(UTM)",
@@ -2348,14 +2351,6 @@
     "zoom in": "확대",
     "zoom out": "축소"
   },
-  "untranslated": {
-    "encoder scaling factor = 10000 * (motor resolution) / (encoder resolution). (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))": "encoder scaling factor = 10000 * (motor resolution) / (encoder resolution). (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000*200/360))",
-    "Finish setting up your account and FarmBot using our setup wizard. To open the setup wizard, click the **Setup: {{ percentComplete }}** button in the main navigation bar.": "Finish setting up your account and FarmBot using our setup wizard. To open the setup wizard, click the **Setup: {{ percentComplete }}** button in the main navigation bar.",
-    "Using another device, search for and connect to the `farmbot-xxxx` WiFi network": "Using another device, search for and connect to the `farmbot-xxxx` WiFi network"
-  },
-  "other_translations": {
-    "encoder scaling factor = 10000 * (motor resolution) / (encoder resolution). (default: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000200/360))": "엔코더 스케일링 팩터 = 10000 * (모터 해상도) / (엔코더 해상도). (기본값: x: {{ x }}, y: {{ y }}, z: {{ z }} (10000200/360))",
-    "Finish setting up your account and FarmBot using our setup wizard. To open the setup wizard, click the Setup: {{ percentComplete }} button in the main navigation bar.": "계정 및 FarmBot 설정 마무리하기. 설정 마법사를 열려면 메인 내비게이션 바의 설정: {{ percentComplete }} 버튼을 클릭하세요.",
-    "Using another device, search for and connect to the farmbot-xxxx WiFi network": "다른 기기를 사용하여 `farmbot-xxxx` WiFi 네트워크를 검색하고 연결하십시오."
-  }
+  "untranslated": {},
+  "other_translations": {}
 }
