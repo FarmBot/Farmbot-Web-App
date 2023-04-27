@@ -10,10 +10,10 @@ end
 SimpleCov.coverage_dir("coverage_api")
 
 if ENV["CODECOV_TOKEN"]
-  require "codecov"
+  require "simplecov-cobertura"
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::Codecov,
+    SimpleCov::Formatter::CoberturaFormatter,
   ])
 else
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([

@@ -56,6 +56,17 @@ commands:
           name: Run Ruby Tests
           command: |
             sudo docker compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+      - run:
+          name: Upload to Codecov
+          command: |
+            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+            curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+            gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+            shasum -a 256 -c codecov.SHA256SUM
+            chmod +x codecov
+            ./codecov -t $CODECOV_TOKEN -f coverage_api/coverage.xml
   jest-commands:
     steps:
       - run:

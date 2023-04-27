@@ -28,7 +28,6 @@ gem "thwait"
 gem "lograge" # Used to filter repetitive RabbitMQ logs.
 
 group :development, :test do
-  gem "codecov", require: false
   gem "climate_control"
   gem "database_cleaner"
   gem "factory_bot_rails"
@@ -40,6 +39,7 @@ group :development, :test do
   gem "rspec"
   gem "rspec_junit_formatter"
   gem "simplecov"
+  gem "simplecov-cobertura"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
 end
 
