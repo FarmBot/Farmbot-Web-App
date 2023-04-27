@@ -7,6 +7,10 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+jest.mock("../../request_auto_generation", () => ({
+  requestAutoGeneration: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -31,8 +35,13 @@ import { Path } from "../../../internal_urls";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Color } from "farmbot";
 import { edit, save } from "../../../api/crud";
+import { requestAutoGeneration } from "../../request_auto_generation";
+import { API } from "../../../api";
+import { error } from "../../../toast/toast";
 
 describe("<DesignerSequenceEditor />", () => {
+  API.setBaseUrl("");
+
   const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
@@ -69,6 +78,40 @@ describe("<DesignerSequenceEditor />", () => {
     const wrapper = shallow(<DesignerSequenceEditor {...p} />);
     wrapper.find("ColorPicker").simulate("change", "red");
     expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+  });
+
+  it("generates name and color", () => {
+    const p = fakeProps();
+    const wrapper = mount<DesignerSequenceEditor>(
+      <DesignerSequenceEditor {...p} />);
+    expect(wrapper.state().processingTitle).toEqual(false);
+    expect(wrapper.state().processingColor).toEqual(false);
+    wrapper.find(".fa-magic").first().simulate("click");
+    expect(wrapper.state().processingTitle).toEqual(true);
+    expect(wrapper.state().processingColor).toEqual(true);
+    expect(requestAutoGeneration).toHaveBeenCalled();
+    const { mock } = requestAutoGeneration as jest.Mock;
+    mock.calls[0][0].onSuccess("title");
+    expect(edit).toHaveBeenCalledWith(p.sequence, { name: "title" });
+    mock.calls[0][0].onError();
+    mock.calls[1][0].onSuccess("red");
+    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+    mock.calls[1][0].onSuccess("nope");
+    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "gray" });
+    mock.calls[1][0].onError();
+    expect(wrapper.state().processingTitle).toEqual(false);
+    expect(wrapper.state().processingColor).toEqual(false);
+  });
+
+  it("doesn't generate name and color", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.id = 0;
+    p.sequence = sequence;
+    const wrapper = mount(<DesignerSequenceEditor {...p} />);
+    wrapper.find(".fa-magic").first().simulate("click");
+    expect(requestAutoGeneration).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 
   it("navigates to full page editor", () => {

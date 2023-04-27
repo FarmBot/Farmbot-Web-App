@@ -42,6 +42,7 @@ module Api
         new_password: user[:new_password],
         new_password_confirmation: user[:new_password_confirmation],
         agree_to_terms: user[:agree_to_terms],
+        language: user[:language],
         skip_email: User::SKIP_EMAIL_VALIDATION }
     end
   end

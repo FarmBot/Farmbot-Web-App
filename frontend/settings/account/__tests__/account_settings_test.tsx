@@ -36,6 +36,7 @@ import { FBSelect, ToggleButton } from "../../../ui";
 import { clickButton } from "../../../__test_support__/helpers";
 import { requestAccountExport } from "../request_account_export";
 import { changeEvent } from "../../../__test_support__/fake_html_events";
+import { User } from "farmbot/dist/resources/api_resources";
 
 describe("<AccountSettings />", () => {
   const fakeProps = (): AccountSettingsProps => ({
@@ -66,6 +67,17 @@ describe("<AccountSettings />", () => {
     expect(edit).toHaveBeenCalledWith(p.user, { email: "new email" });
     expect(save).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
+  });
+
+  it("changes language", () => {
+    const p = fakeProps();
+    p.user.body["language" as keyof User] = "" as never;
+    const wrapper = shallow(<AccountSettings {...p} />);
+    wrapper.find("BlurableInput").at(2).simulate("commit", {
+      currentTarget: { value: "new language" }
+    });
+    expect(edit).toHaveBeenCalledWith(p.user, { language: "new language" });
+    expect(save).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("requests export", () => {

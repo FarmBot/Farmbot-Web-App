@@ -23,6 +23,7 @@ import {
 } from "../default_values";
 import { PAGE_SLUGS } from "../../internal_urls";
 import { DevSettings } from "../dev/dev_support";
+import { User } from "farmbot/dist/resources/api_resources";
 
 export const AccountSettings = (props: AccountSettingsProps) =>
   <Highlight className={"section"}
@@ -73,6 +74,27 @@ export const AccountSettings = (props: AccountSettingsProps) =>
       </Highlight>
       <Highlight settingName={DeviceSetting.changePassword}>
         <ChangePassword />
+      </Highlight>
+      <Highlight settingName={DeviceSetting.language}>
+        <Row>
+          <Col xs={3}>
+            <label>
+              {t(DeviceSetting.language)}
+            </label>
+          </Col>
+          <Col xs={9}>
+            <BlurableInput
+              type="text"
+              name="language"
+              value={props.user.body["language" as keyof User] || ""}
+              onCommit={e => {
+                props.dispatch(edit(
+                  props.user,
+                  { ["language" as keyof User]: e.currentTarget.value }));
+                props.dispatch(save(props.user.uuid));
+              }} />
+          </Col>
+        </Row>
       </Highlight>
       {APP_SETTINGS().map(setting => <Setting key={setting.title}
         {...setting} {...props} useToolTip={true} />)}

@@ -34,6 +34,7 @@ FarmBot::Application.routes.draw do
 
     # Singular API Resources:
     {
+      ai: [:create],
       feedback: [:create],
       demo_account: [:create],
       device: [:create, :destroy, :show, :update],

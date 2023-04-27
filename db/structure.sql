@@ -1896,7 +1896,8 @@ CREATE TABLE public.users (
     agreed_to_terms_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    inactivity_warning_sent_at timestamp without time zone
+    inactivity_warning_sent_at timestamp without time zone,
+    language character varying(100) DEFAULT 'English'::character varying
 );
 
 
@@ -3908,6 +3909,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221103172100'),
 ('20221109233217'),
 ('20221222192831'),
-('20230210010108');
+('20230210010108'),
+('20230413204758');
 
 

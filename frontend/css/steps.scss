@@ -47,11 +47,13 @@
 }
 
 .step-header {
-  display: flex;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  .step-header-flex {
+    display: flex;
+  }
   &.pinned.no-inputs {
     border-radius: 3px;
   }
@@ -60,25 +62,25 @@
     float: right;
     margin-top: 0.35rem;
   }
-  ::-webkit-input-placeholder {
-    color: $dark_gray;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  ::-moz-placeholder {
-    color: $dark_gray;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  :-ms-input-placeholder {
-    color: $dark_gray;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
   .step-comment {
     display: inline;
     width: 100%;
     overflow: hidden;
+    ::-webkit-input-placeholder {
+      color: $dark_gray;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    ::-moz-placeholder {
+      color: $dark_gray;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    :-ms-input-placeholder {
+      color: $dark_gray;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
   }
   .input {
     width: 100%;
@@ -210,6 +212,24 @@
   }
   .input {
     display: inline-block;
+  }
+  .prompt-wrapper {
+    margin-top: 1rem;
+    textarea {
+      font-size: 1rem;
+      height: 8rem;
+    }
+    .generate-code {
+      height: 3rem;
+      p {
+        display: inline-block;
+        line-height: 3rem;
+        color: $medium_gray;
+      }
+      button {
+        margin-top: 0.5rem;
+      }
+    }
   }
 }
 

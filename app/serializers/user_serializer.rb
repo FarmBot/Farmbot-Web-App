@@ -1,3 +1,3 @@
 class UserSerializer < ApplicationSerializer
-  attributes :name, :email
+  attributes :name, :email, :language
 end

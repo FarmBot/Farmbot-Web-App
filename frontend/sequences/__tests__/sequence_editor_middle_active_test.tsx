@@ -51,6 +51,10 @@ jest.mock("../panel/preview_support", () => ({
   SequencePreviewContent: () => <div />,
 }));
 
+jest.mock("../request_auto_generation", () => ({
+  requestAutoGeneration: jest.fn(),
+}));
+
 import React from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
@@ -100,8 +104,11 @@ import { VariableType } from "../locals_list/locals_list_support";
 import { generateNewVariableLabel } from "../locals_list/locals_list";
 import { StepButtonCluster } from "../step_button_cluster";
 import { changeEvent } from "../../__test_support__/fake_html_events";
+import { requestAutoGeneration } from "../request_auto_generation";
 
 describe("<SequenceEditorMiddleActive />", () => {
+  API.setBaseUrl("");
+
   const fakeProps = (): ActiveMiddleProps => {
     const sequence = fakeSequence();
     sequence.specialStatus = SpecialStatus.DIRTY;
@@ -457,6 +464,31 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.find(".sequence-description").length).toEqual(0);
     wrapper.setState({ descriptionCollapsed: false });
     expect(wrapper.find(".sequence-description").length).toEqual(1);
+  });
+
+  it("generates description", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const p = fakeProps();
+    p.sequence.body.description = "";
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.setState({ descriptionCollapsed: false });
+    wrapper.find(".fa-magic").first().simulate("click");
+    expect(requestAutoGeneration).toHaveBeenCalled();
+    const { mock } = requestAutoGeneration as jest.Mock;
+    act(() => mock.calls[0][0].onSuccess("description"));
+    expect(edit).toHaveBeenCalledWith(p.sequence, { description: "description" });
+    act(() => mock.calls[0][0].onError());
+  });
+
+  it("doesn't generate description", () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.id = 0;
+    p.sequence = sequence;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.find(".fa-magic").first().simulate("click");
+    expect(requestAutoGeneration).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 
   it("shows add variable options", () => {

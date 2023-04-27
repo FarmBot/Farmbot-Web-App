@@ -25,6 +25,8 @@ export interface StepIconBarProps {
   links: React.ReactElement[] | undefined;
   readOnly: boolean;
   enableMarkdown?: boolean;
+  isProcessing: boolean;
+  togglePrompt(): void;
 }
 
 export function StepUpDownButtonPopover(
@@ -55,6 +57,10 @@ export function StepIconGroup(props: StepIconBarProps) {
   };
 
   return <span className={"step-control-icons"}>
+    {!readOnly && props.step.kind == "lua" &&
+      <i className={`fa fa-${props.isProcessing ? "spinner fa-pulse" : "magic"}`}
+        title={t("auto-generate Lua code")}
+        onClick={props.togglePrompt} />}
     {props.executeSequenceName &&
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}

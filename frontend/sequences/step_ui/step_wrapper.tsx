@@ -48,6 +48,8 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
       : undefined;
   }
 
+  setKey = (updateKey: string) => this.setState({ updateKey });
+
   render() {
     const confirmStepDeletion =
       !!this.getConfigValue(BooleanSetting.confirm_step_deletion);
@@ -71,6 +73,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         toggleViewRaw={this.toggleViewRaw}
         monacoEditor={this.props.monacoEditor}
         toggleMonacoEditor={this.props.toggleMonacoEditor}
+        setKey={this.setKey}
         confirmStepDeletion={confirmStepDeletion}>
         {this.props.warning}
       </StepHeader>
@@ -81,7 +84,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
             <div className={[
               "step-content", this.props.className, executeSequence?.color,
             ].join(" ")}>
-              <ErrorBoundary>
+              <ErrorBoundary key={this.state.updateKey}>
                 {this.props.children}
               </ErrorBoundary>
             </div>

@@ -12,6 +12,7 @@ module Users
       string :password
       string :new_password
       string :new_password_confirmation
+      string :language
     end
 
     def validate

@@ -27,6 +27,8 @@ describe("<StepIconGroup />", () => {
     links: undefined,
     helpText: "helpful text",
     confirmStepDeletion: false,
+    isProcessing: false,
+    togglePrompt: jest.fn(),
   });
 
   it("renders", () => {
@@ -56,6 +58,24 @@ describe("<StepIconGroup />", () => {
     p.toggleViewRaw = () => false;
     const wrapper = mount(<StepIconGroup {...p} />);
     expect(wrapper.find(".fa-code").hasClass("enabled")).toEqual(true);
+  });
+
+  it("renders prompt", () => {
+    const p = fakeProps();
+    p.step.kind = "lua";
+    p.readOnly = false;
+    p.isProcessing = false;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-magic").length).toEqual(1);
+  });
+
+  it("renders prompt running", () => {
+    const p = fakeProps();
+    p.step.kind = "lua";
+    p.readOnly = false;
+    p.isProcessing = true;
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-spinner").length).toEqual(1);
   });
 
   it("renders celery script view disabled", () => {

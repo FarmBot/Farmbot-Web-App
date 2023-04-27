@@ -183,4 +183,6 @@ export class API {
   get wizardStepResultsPath() { return `${this.baseUrl}/api/wizard_step_results/`; }
   /** /api/curves/:id */
   get curvesPath() { return `${this.baseUrl}/api/curves/`; }
+  /** /api/ai */
+  get aiPath() { return `${this.baseUrl}/api/ai`; }
 }

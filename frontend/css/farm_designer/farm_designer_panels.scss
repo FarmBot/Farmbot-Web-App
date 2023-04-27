@@ -1931,6 +1931,12 @@ li {
     margin-top: 0.25rem;
     color: $dark_gray;
   }
+  .fa-magic,
+  .fa-spinner {
+    margin-top: 0.25rem;
+    margin-right: 2rem;
+    color: $dark_gray;
+  }
 }
 
 .group-detail-panel {
@@ -3030,7 +3036,9 @@ li {
           color: $white;
         }
       }
-      .fa-expand {
+      .fa-expand,
+      .fa-magic,
+      .fa-spinner {
         color: $white;
       }
     }

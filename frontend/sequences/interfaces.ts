@@ -232,4 +232,5 @@ export interface StepParams<T = SequenceBodyItem> {
 
 export interface StepState {
   viewRaw?: boolean;
+  updateKey?: string;
 }

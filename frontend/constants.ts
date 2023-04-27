@@ -2072,6 +2072,7 @@ export enum DeviceSetting {
   accountName = `Your Name`,
   accountEmail = `Email`,
   changePassword = `Change password`,
+  language = `Language`,
   resetAccount = `Reset account`,
   deleteAccount = `Delete account`,
   exportAccountData = `Export data`,

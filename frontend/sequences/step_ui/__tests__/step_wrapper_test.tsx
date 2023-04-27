@@ -53,4 +53,12 @@ describe("<StepWrapper />", () => {
     expect(wrapper.state().viewRaw).toEqual(false);
     expect(wrapper.text().toLowerCase()).not.toContain("args");
   });
+
+  it("sets element key", () => {
+    const p = fakeProps();
+    const wrapper = mount<StepWrapper>(<StepWrapper {...p} />);
+    expect(wrapper.state().updateKey).toEqual(undefined);
+    wrapper.instance().setKey("code");
+    expect(wrapper.state().updateKey).toEqual("code");
+  });
 });
