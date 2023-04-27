@@ -69,6 +69,7 @@ export class StepHeader
       <div className={"generate-code"}>
         <p>{t("Always review and test auto-generated code")}</p>
         <button className={"fb-button gray"}
+          disabled={this.state.isProcessing}
           onClick={() => {
             this.setState({ isProcessing: true });
             requestAutoGeneration({
@@ -87,7 +88,9 @@ export class StepHeader
               onError: () => this.setState({ isProcessing: false }),
             });
           }}>
-          {t("generate code")}
+          {this.state.isProcessing
+            ? t("generating")
+            : t("generate code")}
         </button>
       </div>
     </div>;

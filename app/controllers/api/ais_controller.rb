@@ -10,10 +10,12 @@ module Api
       if sequence_id.nil?
         prompt = lua_prompt
       else
+        remove_field = context_key == "title" ? "name" : context_key
         prompt = SEQUENCE_PROMPT_PREFIX \
           + " " + sequence_inner_prompts.fetch(context_key) \
-          + " " + clean_sequence(sequence_celery_script)
+          + " " + clean_sequence(sequence_celery_script, remove_field)
       end
+      puts "AI #{context_key} prompt length: #{prompt.length}"
 
       violation = THROTTLE_POLICY.violation_for(current_device.id)
 
@@ -27,8 +29,10 @@ module Api
         api_error = result["error"] && result["error"]["message"]
         error = api_error || limit_error
         if error
+          puts "AI #{context_key} error: #{error}"
           render json: {error: error}, status: 403
         else
+          puts "AI #{context_key}: #{result["usage"].to_json}"
           output = result["choices"][0]["message"]["content"]
           render json: output
         end
@@ -37,16 +41,13 @@ module Api
 
     private
 
-    SEQUENCE_PROMPT_PREFIX = "Below is a sequence for controlling a FarmBot " \
-    "machine and interacting with the FarmBot Web App API. A FarmBot is a " \
-    "3-axis CNC machine used for precision farming and gardening. " \
-    "FarmBots can move in the X, Y, and Z directions to plant seeds, " \
-    "water, remove weeds, measure soil moisture, take photos, and more."
+    SEQUENCE_PROMPT_PREFIX = "Below is a sequence for controlling a FarmBot."
 
     def sequence_inner_prompts
       {
-        "description" => "Write a description of the sequence in " \
-          "#{user.language} in 75 words or less. Limit prose.",
+        "description" => "Write a concise description of the sequence body in " \
+          "#{user.language}. Don't mention anything the sequence doesn't " \
+          "explicitly perform. Use 75 words or less. Limit prose.",
         "color" => "Choose a color that best represents the primary concern " \
           "of the sequence.\nExamples:\n" \
           "- Red if concerned with removing weeds or error conditions\n" \
@@ -60,7 +61,8 @@ module Api
           "a clear primary concern\n" \
           "Limit prose and only return the color.",
         "title" => "Write a title for the sequence in #{user.language} " \
-          "in 25 characters or less. Limit prose.",
+          "in 25 characters or less. Don't use the words \"FarmBot\", " \
+          "\"Sequence\", or \"Script\" in the title. Limit prose.",
       }
     end
 
@@ -75,7 +77,8 @@ module Api
       url = "https://api.openai.com/v1/chat/completions"
       payload = {
         "model" => "gpt-3.5-turbo",
-        "messages" => [{"role" => "user", "content": prompt}]
+        "messages" => [{"role" => "user", "content": prompt}],
+        "temperature" => ENV["OPENAI_API_TEMPERATURE"],
       }.to_json
       begin
         response = Faraday.post(
@@ -101,8 +104,8 @@ module Api
       @sequence_celery_script ||= Sequences::Show.run!(sequence: sequence)
     end
 
-    def clean_sequence(sequence_cs)
-      cleaned = sequence_cs.except("created_at", "updated_at")
+    def clean_sequence(sequence_cs, remove_field)
+      cleaned = sequence_cs.except("created_at", "updated_at", remove_field)
       cleaned.to_json.gsub(/\s+/, " ").slice(0, 10000)
     end
 
@@ -179,7 +182,7 @@ module Api
       begin
         URI.open(url).read
       rescue SocketError => exception
-        puts "Lua docs fetch error: #{exception.message}"
+        puts "AI Lua docs fetch error: #{exception.message}"
       end
     end
 
@@ -212,7 +215,9 @@ module Api
         page_content = page_data.split("---").slice(2, page_data.length).join("---")
         function_docs += page_content
       end
-      shorten_docs(function_docs)
+      short_docs = shorten_docs(function_docs)
+      puts "AI Lua docs fetched: #{short_docs.length} characters"
+      short_docs
     end
 
     def lua_function_docs

@@ -81,6 +81,7 @@ describe("<StepHeader />", () => {
     const prompt = mount(wrapper.instance().AutoLuaPrompt());
     prompt.find("textarea").simulate("change",
       { currentTarget: { value: "write" } });
+    expect(prompt.text()).toContain("generate code");
     prompt.find("button").simulate("click");
     expect(wrapper.state().isProcessing).toEqual(true);
     expect(requestAutoGeneration).toHaveBeenCalled();
@@ -89,5 +90,13 @@ describe("<StepHeader />", () => {
     expect(p.setKey).toHaveBeenCalledWith("code");
     mock.calls[0][0].onError();
     expect(wrapper.state().isProcessing).toEqual(false);
+  });
+
+  it("renders while in progress", () => {
+    const p = fakeProps();
+    const wrapper = mount<StepHeader>(<StepHeader {...p} />);
+    wrapper.setState({ isProcessing: true });
+    const prompt = mount(wrapper.instance().AutoLuaPrompt());
+    expect(prompt.text()).toContain("generating");
   });
 });

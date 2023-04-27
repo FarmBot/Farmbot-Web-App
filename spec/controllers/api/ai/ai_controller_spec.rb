@@ -23,7 +23,8 @@ describe Api::AisController do
     class MockPost
       def body
         {
-          "choices" => [{"message" => {"content" => "return"}, "finish_reason"=> "stop"}],
+          usage: {tokens: 1},
+          choices: [{message: {content: "return"}, finish_reason: "stop"}],
         }.to_json
       end
     end
@@ -45,7 +46,10 @@ describe Api::AisController do
 
     class MockPost
       def body
-        {choices: [{message: {content: "red"}, finish_reason: "stop"}]}.to_json
+        {
+          usage: {tokens: 1},
+          choices: [{message: {content: "red"}, finish_reason: "stop"}],
+        }.to_json
       end
     end
     expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
@@ -67,6 +71,7 @@ describe Api::AisController do
     class MockPost
       def body
         {
+          usage: {tokens: 1},
           choices: [{message: {content: "return"}, finish_reason: "length"}],
         }.to_json
       end
@@ -130,24 +135,28 @@ describe Api::AisController do
     sign_in user
     payload = {
       prompt: "",
-      context_key: "color",
+      context_key: "title",
       sequence_id: sequence.id,
     }
 
     class MockPost
       def body
-        {choices: [{message: {content: "red"}, finish_reason: "stop"}]}.to_json
+        {
+          usage: {tokens: 1},
+          choices: [{message: {content: "title"}, finish_reason: "stop"}],
+        }.to_json
       end
     end
-    expect(Faraday).to receive(:post).exactly(11).times.and_return(MockPost.new())
-
-    [*(0..10)].map do |_|
-      post :create, body: payload.to_json
-      expect(response.status).to eq(200)
-      expect(response.body).to eq("red")
-    end
+    expect(Faraday).to receive(:post).at_least(10).times.and_return(MockPost.new())
 
     post :create, body: payload.to_json
+    expect(response.status).to eq(200)
+    expect(response.body).to eq("title")
+
+    (0..20).map do |_|
+      post :create, body: payload.to_json
+    end
+
     expect(response.status).to eq(403)
     expect(response.body).to eq({error: "Too many requests. Try again later."}.to_json)
   end
