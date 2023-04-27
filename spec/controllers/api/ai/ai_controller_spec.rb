@@ -54,7 +54,9 @@ describe Api::AisController do
     end
     expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
 
-    post :create, body: payload.to_json
+    with_modified_env OPENAI_API_TEMPERATURE: "0.5" do
+      post :create, body: payload.to_json
+    end
     expect(response.status).to eq(200)
     expect(response.body).to eq("red")
   end

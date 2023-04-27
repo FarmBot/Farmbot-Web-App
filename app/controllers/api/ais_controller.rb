@@ -78,7 +78,7 @@ module Api
       payload = {
         "model" => "gpt-3.5-turbo",
         "messages" => [{"role" => "user", "content": prompt}],
-        "temperature" => ENV["OPENAI_API_TEMPERATURE"],
+        "temperature" => (ENV["OPENAI_API_TEMPERATURE"] || 1).to_f,
       }.to_json
       begin
         response = Faraday.post(
