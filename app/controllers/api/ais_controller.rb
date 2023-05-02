@@ -52,8 +52,10 @@ module Api
           "of the sequence.\nExamples:\n" \
           "- Red if concerned with removing weeds or error conditions\n" \
           "- Green if concerned with taking care of plants\n" \
-          "- Yellow if concerned with lights\n- Blue if concerned with watering\n" \
-          "- Orange if concerned with warnings\n- Purple if concerned with logic, " \
+          "- Yellow if concerned with lights\n" \
+          "- Blue if concerned with watering\n" \
+          "- Orange if concerned with warnings\n" \
+          "- Purple if concerned with logic, " \
           "data manipulation, or using 3rd party APIs\n" \
           "- Pink if concerned with taking photos, detecting weeds, or " \
           "measuring soil height\n" \
@@ -195,9 +197,10 @@ module Api
         clean = function_section
           .split("\n").map{ |line| line.strip() }.join("\n")
           .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
-          .gsub(/\{%\ninclude callout.html([\s\S]*)content="/, " ")
-          .gsub(/\"\n%}/, " ")
+          .gsub(/\{%([\s\S]*)%}/, " ") # remove call-outs
           .gsub(/\n\n/, "\n")
+          # remove all content between function name and example code
+          .split("```lua").slice(1, 999).prepend(function_name + "\n").join("```lua")
           .strip()
         keep.push("# " + clean)
         end

@@ -5,7 +5,7 @@ jest.mock("axios", () => ({
 
 import { API } from "../../api";
 import { error } from "../../toast/toast";
-import { requestAutoGeneration } from "../request_auto_generation";
+import { requestAutoGeneration, retrievePrompt } from "../request_auto_generation";
 
 describe("requestAutoGeneration()", () => {
   API.setBaseUrl("");
@@ -27,5 +27,23 @@ describe("requestAutoGeneration()", () => {
     await expect(onSuccess).not.toHaveBeenCalled();
     await expect(onError).toHaveBeenCalled();
     await expect(error).toHaveBeenCalledWith("Error: error");
+  });
+});
+
+describe("retrievePrompt()", () => {
+  it("returns prompt", () => {
+    const result = retrievePrompt({
+      kind: "lua",
+      args: { lua: "return" },
+      body: [
+        { kind: "pair", args: { label: "prompt", value: "write code" } } as never,
+      ]
+    });
+    expect(result).toEqual("write code");
+  });
+
+  it("doesn't return prompt", () => {
+    expect(retrievePrompt({ kind: "lua", args: { lua: "return" } })).toEqual("");
+    expect(retrievePrompt({ kind: "sync", args: {} })).toEqual("");
   });
 });

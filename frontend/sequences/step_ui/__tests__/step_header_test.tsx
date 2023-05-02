@@ -1,6 +1,7 @@
 jest.mock("../../request_auto_generation", () => ({
   requestAutoGeneration: jest.fn(),
   PLACEHOLDER_PROMPTS: ["1", "2", "3"],
+  retrievePrompt: () => "",
 }));
 
 import React from "react";

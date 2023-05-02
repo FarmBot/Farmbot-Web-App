@@ -7,7 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
 import { random } from "lodash";
 import {
-  PLACEHOLDER_PROMPTS, requestAutoGeneration,
+  PLACEHOLDER_PROMPTS, requestAutoGeneration, retrievePrompt,
 } from "../request_auto_generation";
 import { editStep } from "../../api/crud";
 
@@ -45,7 +45,7 @@ export class StepHeader
     draggable: true,
     isProcessing: false,
     promptOpen: false,
-    promptText: "",
+    promptText: retrievePrompt(this.props.currentStep),
     placeholderIndex: this.newPlaceholderIndex,
   };
 
@@ -60,8 +60,11 @@ export class StepHeader
 
   AutoLuaPrompt = () => {
     const { promptText, placeholderIndex } = this.state;
+    const aiPrompt = promptText || PLACEHOLDER_PROMPTS[placeholderIndex];
     return <div className={"prompt-wrapper"}>
       <textarea className={"prompt"}
+        onMouseEnter={this.toggle("enter")}
+        onMouseLeave={this.toggle("leave")}
         value={promptText}
         placeholder={PLACEHOLDER_PROMPTS[placeholderIndex]}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -73,15 +76,21 @@ export class StepHeader
           onClick={() => {
             this.setState({ isProcessing: true });
             requestAutoGeneration({
-              prompt: promptText || PLACEHOLDER_PROMPTS[placeholderIndex],
+              prompt: aiPrompt,
               contextKey: "lua",
               onSuccess: code => {
-                this.setState({ isProcessing: false });
+                this.setState({ isProcessing: false, promptText: aiPrompt });
                 this.props.dispatch(editStep({
                   step: this.props.currentStep,
                   index: this.props.index,
                   sequence: this.props.currentSequence,
-                  executor(c: Lua) { c.args.lua = code; },
+                  executor(c: Lua) {
+                    c.args.lua = code;
+                    c.body = [{
+                      kind: "pair",
+                      args: { label: "prompt", value: aiPrompt },
+                    } as never];
+                  },
                 }));
                 this.props.setKey(code);
               },

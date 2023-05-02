@@ -1,6 +1,8 @@
 import axios from "axios";
 import { API } from "../api";
 import { toastErrors } from "../toast_errors";
+import { Pair, SequenceBodyItem } from "farmbot";
+import { first } from "lodash";
 
 export interface RequestAutoGenerationProps {
   prompt?: string;
@@ -26,7 +28,8 @@ export const requestAutoGeneration = (props: RequestAutoGenerationProps) => {
 export const PLACEHOLDER_PROMPTS = [
   "Write me code that uses the API to add a grid of points starting at"
   + " coordinates (100,100,0) and going to (200,300,0), spaced apart by"
-  + " 100mm in the X and Y and directions.",
+  + " 100mm in the X and Y and directions. The points should be blue and"
+  + " have a radius of 25.",
   "Move FarmBot over an XY grid of points 150mm apart, starting at"
   + " (0,0,0) and ending at the maximum X and Y coordinates FarmBot"
   + " can reach. At each point, take a photo. Track the percent"
@@ -37,3 +40,11 @@ export const PLACEHOLDER_PROMPTS = [
   + " each point, turn on the lights, then take a photo, and then turn"
   + " the lights off. Track the percent completion with a job.",
 ];
+
+export const retrievePrompt = (step: SequenceBodyItem): string => {
+  if (step.kind != "lua") { return ""; }
+  const body = (step.body || []) as Pair[];
+  const promptPair = first(body.filter(x =>
+    x.kind == "pair" && x.args.label == "prompt"));
+  return promptPair ? "" + promptPair.args.value : "";
+};
