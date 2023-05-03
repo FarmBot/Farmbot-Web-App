@@ -20,6 +20,7 @@ module Api
       violation = THROTTLE_POLICY.violation_for(current_device.id)
 
       if violation
+        puts "AI #{context_key} error: throttled" unless Rails.env.test?
         render json: { error: "Too many requests. Try again later." }, status: 403
       else
         THROTTLE_POLICY.track(current_device.id)
@@ -32,9 +33,12 @@ module Api
           puts "AI #{context_key} error: #{error}" unless Rails.env.test?
           render json: {error: error}, status: 403
         else
-          puts "AI #{context_key}: #{result["usage"].to_json}" unless Rails.env.test?
-          output = result["choices"][0]["message"]["content"]
-          render json: output
+          usage = result["usage"].to_json
+          output = result["choices"][0]
+          content = output["message"]["content"]
+          finish_reason = output["finish_reason"]
+          puts "AI #{context_key}: #{usage} #{finish_reason}" unless Rails.env.test?
+          render json: content
         end
       end
     end
@@ -89,7 +93,7 @@ module Api
           "Content-Type" => "application/json",
           "Authorization" => "Bearer #{ENV["OPENAI_API_KEY"]}")
         JSON.parse(response.body)
-      rescue Faraday::ConnectionFailed => exception
+      rescue *[Faraday::ConnectionFailed, Faraday::TimeoutError] => exception
         return {"error" => {"message" => exception.message}}
       end
     end
