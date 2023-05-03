@@ -7,7 +7,7 @@ describe Api::AisController do
 
   class MockGet
     def read
-      "---\n---# section\ncontent"
+      "---\n---# section\ncontent```lua\n```"
     end
   end
 
@@ -131,6 +131,36 @@ describe Api::AisController do
     post :create, body: payload.to_json
     expect(response.status).to eq(403)
     expect(response.body).to eq({error: "error"}.to_json)
+  end
+
+  it "handles empty content" do
+    sign_in user
+    payload = {
+      prompt: "write code",
+      context_key: "lua",
+      sequence_id: nil,
+    }
+
+    class MockGetEmpty
+      def read
+        "---\n---# \n"
+      end
+    end
+    expect(URI).to receive(:open).at_least(1).times.and_return(MockGetEmpty.new())
+
+    class MockPost
+      def body
+        {
+          usage: {tokens: 1},
+          choices: [{message: {content: "red"}, finish_reason: "stop"}],
+        }.to_json
+      end
+    end
+    expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
+
+    post :create, body: payload.to_json
+    expect(response.status).to eq(200)
+    expect(response.body).to eq("red")
   end
 
   it "throttles requests" do

@@ -15,7 +15,7 @@ module Api
           + " " + sequence_inner_prompts.fetch(context_key) \
           + " " + clean_sequence(sequence_celery_script, remove_field)
       end
-      puts "AI #{context_key} prompt length: #{prompt.length}"
+      puts "AI #{context_key} prompt length: #{prompt.length}" unless Rails.env.test?
 
       violation = THROTTLE_POLICY.violation_for(current_device.id)
 
@@ -29,10 +29,10 @@ module Api
         api_error = result["error"] && result["error"]["message"]
         error = api_error || limit_error
         if error
-          puts "AI #{context_key} error: #{error}"
+          puts "AI #{context_key} error: #{error}" unless Rails.env.test?
           render json: {error: error}, status: 403
         else
-          puts "AI #{context_key}: #{result["usage"].to_json}"
+          puts "AI #{context_key}: #{result["usage"].to_json}" unless Rails.env.test?
           output = result["choices"][0]["message"]["content"]
           render json: output
         end
@@ -184,7 +184,7 @@ module Api
       begin
         URI.open(url).read
       rescue SocketError => exception
-        puts "AI Lua docs fetch error: #{exception.message}"
+        puts "AI Lua docs fetch error: #{exception.message}" unless Rails.env.test?
       end
     end
 
@@ -193,7 +193,9 @@ module Api
       keep = []
       for function_section in functions
         function_name = function_section.split("\n")[0] || ""
-        if not REMOVE.any? { |remove| function_name.start_with?(remove) }
+        if REMOVE.any? { |remove| function_name.start_with?(remove) } || !function_section.include?("```lua")
+          next
+        end
         clean = function_section
           .split("\n").map{ |line| line.strip() }.join("\n")
           .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
@@ -203,7 +205,6 @@ module Api
           .split("```lua").slice(1, 999).prepend(function_name + "\n").join("```lua")
           .strip()
         keep.push("# " + clean)
-        end
       end
       keep.join("\n")
     end
@@ -219,7 +220,7 @@ module Api
         function_docs += page_content
       end
       short_docs = shorten_docs(function_docs)
-      puts "AI Lua docs fetched: #{short_docs.length} characters"
+      puts "AI Lua docs fetched: #{short_docs.length} characters" unless Rails.env.test?
       short_docs
     end
 
