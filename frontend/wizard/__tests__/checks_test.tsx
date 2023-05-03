@@ -62,6 +62,7 @@ import {
   FlashFirmware,
   FlowRateInput,
   InvertJogButton,
+  Language,
   lowVoltageProblemStatus,
   MapOrientation,
   MotorCurrentContent,
@@ -84,6 +85,7 @@ import {
   fakeAlert,
   fakeFarmwareEnv, fakeFarmwareInstallation, fakeFbosConfig,
   fakeFirmwareConfig, fakeImage, fakeLog, fakePinBinding, fakeTool,
+  fakeUser,
   fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { destroy, edit, initSave, save } from "../../api/crud";
@@ -104,6 +106,17 @@ const fakeProps = (): WizardStepComponentProps => ({
   bot: bot,
   dispatch: mockDispatch(),
   getConfigValue: jest.fn(),
+});
+
+describe("<Language />", () => {
+  it("changes setting", () => {
+    const p = fakeProps();
+    p.resources = buildResourceIndex([fakeUser()]).index;
+    const wrapper = shallow(<Language {...p} />);
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: "English" } });
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { language: "English" });
+  });
 });
 
 describe("<CameraCheck />", () => {

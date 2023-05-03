@@ -9,7 +9,8 @@ import {
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import {
   findUuid,
-  getDeviceAccountSettings, selectAllAlerts, selectAllFarmwareEnvs,
+  getDeviceAccountSettings, getUserAccountSettings, selectAllAlerts,
+  selectAllFarmwareEnvs,
   selectAllImages, selectAllLogs, selectAllPeripherals, selectAllSensors,
   selectAllTools,
 } from "../resources/selectors";
@@ -31,6 +32,7 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { t } from "../i18next_wrapper";
 import {
+  BlurableInput,
   Checkbox, Col, docLink, DropDownItem, FBSelect, genesisDocLink, Row, ToggleButton,
 } from "../ui";
 import {
@@ -98,6 +100,21 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
+import { User } from "farmbot/dist/resources/api_resources";
+
+export const Language = (props: WizardStepComponentProps) => {
+  const user = getUserAccountSettings(props.resources);
+  return <BlurableInput
+    type="text"
+    name="language"
+    value={user.body["language" as keyof User] || ""}
+    onCommit={e => {
+      props.dispatch(edit(
+        user,
+        { ["language" as keyof User]: e.currentTarget.value }));
+      props.dispatch(save(user.uuid));
+    }} />;
+};
 
 const CAMERA_ERRORS = ["Camera not detected.", "Problem getting image."];
 

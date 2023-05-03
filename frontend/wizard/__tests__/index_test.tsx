@@ -18,6 +18,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { WizardSectionSlug, WizardStepSlug, WIZARD_STEPS } from "../data";
 import { BooleanSetting } from "../../session_keys";
 import {
+  fakeUser,
   fakeWebAppConfig, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
 import {
@@ -28,7 +29,7 @@ import {
 
 describe("<SetupWizard />", () => {
   const fakeProps = (): SetupWizardProps => ({
-    resources: buildResourceIndex([fakeDevice()]).index,
+    resources: buildResourceIndex([fakeDevice(), fakeUser()]).index,
     bot: bot,
     dispatch: jest.fn(() => Promise.resolve()),
     getConfigValue: jest.fn(),
