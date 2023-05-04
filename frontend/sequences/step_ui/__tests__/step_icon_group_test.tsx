@@ -69,15 +69,6 @@ describe("<StepIconGroup />", () => {
     expect(wrapper.find(".fa-magic").length).toEqual(1);
   });
 
-  it("renders prompt running", () => {
-    const p = fakeProps();
-    p.step.kind = "lua";
-    p.readOnly = false;
-    p.isProcessing = true;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-spinner").length).toEqual(1);
-  });
-
   it("renders celery script view disabled", () => {
     const p = fakeProps();
     p.viewRaw = false;

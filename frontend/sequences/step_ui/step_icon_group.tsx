@@ -58,7 +58,7 @@ export function StepIconGroup(props: StepIconBarProps) {
 
   return <span className={"step-control-icons"}>
     {!readOnly && props.step.kind == "lua" &&
-      <i className={`fa fa-${props.isProcessing ? "spinner fa-pulse" : "magic"}`}
+      <i className={"fa fa-magic"}
         title={t("auto-generate Lua code")}
         onClick={props.togglePrompt} />}
     {props.executeSequenceName &&

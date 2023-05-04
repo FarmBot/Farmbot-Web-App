@@ -36,6 +36,8 @@ module Api
           usage = result["usage"].to_json
           output = result["choices"][0]
           content = output["message"]["content"]
+          content.slice!("```lua\n")
+          content.slice!("```")
           finish_reason = output["finish_reason"]
           puts "AI #{context_key}: #{usage} #{finish_reason}" unless Rails.env.test?
           render json: content
@@ -82,7 +84,7 @@ module Api
     def make_request(prompt)
       url = "https://api.openai.com/v1/chat/completions"
       payload = {
-        "model" => "gpt-3.5-turbo",
+        "model" => raw_json[:context_key] == "lua" ? "gpt-4" : "gpt-3.5-turbo",
         "messages" => [{"role" => "user", "content": prompt}],
         "temperature" => (ENV["OPENAI_API_TEMPERATURE"] || 1).to_f,
       }.to_json
@@ -197,16 +199,15 @@ module Api
       keep = []
       for function_section in functions
         function_name = function_section.split("\n")[0] || ""
-        if REMOVE.any? { |remove| function_name.start_with?(remove) } || !function_section.include?("```lua")
+        if REMOVE.any? { |remove| function_name.start_with?(remove) }
           next
         end
         clean = function_section
           .split("\n").map{ |line| line.strip() }.join("\n")
           .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
-          .gsub(/\{%([\s\S]*)%}/, " ") # remove call-outs
+          .gsub(/\{%\ninclude callout.html([\s\S]*)content="/, " ")
+          .gsub(/\"\n%}/, " ")
           .gsub(/\n\n/, "\n")
-          # remove all content between function name and example code
-          .split("```lua").slice(1, 999).prepend(function_name + "\n").join("```lua")
           .strip()
         keep.push("# " + clean)
       end
