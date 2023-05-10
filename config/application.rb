@@ -24,7 +24,7 @@ module FarmBot
     config.load_defaults 6.0
     config.active_storage.service = gcs_enabled ?
       :google : :local
-    config.cache_store = :redis_cache_store, { url: REDIS_URL }
+    config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE } }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
     config.active_record.belongs_to_required_by_default = false
