@@ -48,6 +48,8 @@ export const fakeDesignerState = (): DesignerState => ({
   cropWaterCurveId: undefined,
   cropSpreadCurveId: undefined,
   cropHeightCurveId: undefined,
+  cropStage: undefined,
+  cropPlantedAt: undefined,
 });
 
 export const fakeHelpState = (): HelpState => ({

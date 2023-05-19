@@ -1,7 +1,7 @@
 import React from "react";
 import { svgToUrl } from "../open_farm/icons";
 import {
-  CropInfoProps, CropLiveSearchResult, OpenfarmSearch,
+  CropInfoProps, CropLiveSearchResult, DesignerState, OpenfarmSearch,
 } from "../farm_designer/interfaces";
 import { connect } from "react-redux";
 import { findBySlug } from "../farm_designer/search_selectors";
@@ -37,10 +37,12 @@ import { validFbosConfig } from "../util";
 import { selectAllCurves } from "../resources/selectors_by_kind";
 import { selectAllPlantPointers } from "../resources/selectors";
 import {
-  AllCurveInfo, CURVE_ACTION_LOOKUP, findMostUsedCurveForCrop,
+  AllCurveInfo, changeCurve, findCurve, findMostUsedCurveForCrop,
 } from "./curve_info";
 import { CurveType } from "../curves/templates";
-import { TaggedCurve } from "farmbot";
+import { BlurableInput, FBSelect } from "../ui";
+import { PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST } from "./edit_plant_status";
+import moment from "moment";
 
 interface InfoFieldProps {
   title: string;
@@ -198,6 +200,7 @@ interface AddPlantHereButtonProps {
   slug: string;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
+  designer: DesignerState;
 }
 
 /** Button to add a plant to the garden at the current bot position. */
@@ -215,6 +218,7 @@ const AddPlantHereButton = (props: AddPlantHereButtonProps) => {
       cropName, slug, gardenCoords: botXY, gridSize: undefined,
       dispatch, openedSavedGarden,
       depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
+      designer: props.designer,
     });
   return <button className="fb-button gray no-float"
     title={t("Add plant at current location")}
@@ -311,7 +315,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
     });
     [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
       const id = findCurve(curveType)?.body.id;
-      this.changeCurve(id, curveType);
+      changeCurve(this.props.dispatch)(id, curveType);
     });
   };
 
@@ -324,24 +328,9 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
     dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
   };
 
-  get curveId() {
-    return {
-      [CurveType.water]: this.props.designer.cropWaterCurveId,
-      [CurveType.spread]: this.props.designer.cropSpreadCurveId,
-      [CurveType.height]: this.props.designer.cropHeightCurveId,
-    };
-  }
-
-  findCurve = (curveType: CurveType): TaggedCurve | undefined =>
-    this.props.curves.filter(curve => curve.body.id &&
-      curve.body.id == this.curveId[curveType])[0];
-
-  changeCurve = (id: string | number | undefined, curveType: CurveType) => {
-    this.props.dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });
-  };
-
   render() {
-    const { cropSearchResults, cropSearchInProgress } = this.props.designer;
+    const { dispatch, designer } = this.props;
+    const { cropSearchResults, cropSearchInProgress } = designer;
     const { crop, result, basePath, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "crop-info";
@@ -363,30 +352,57 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
           <CropDragInfoTile image={result.image} svgIcon={result.crop.svg_icon} />
           <EditOnOpenFarm slug={result.crop.slug} />
           <CropInfoList result={result}
-            dispatch={this.props.dispatch}
+            dispatch={dispatch}
             selectMostUsedCurves={this.selectMostUsedCurves}
             openfarmCropFetch={this.props.openfarmCropFetch} />
+          <div className={"plant-stage-selection"}>
+            <label className="stage">{t("status")}</label>
+            <FBSelect
+              list={PLANT_STAGE_LIST()}
+              selectedItem={designer.cropStage
+                ? PLANT_STAGE_DDI_LOOKUP()[designer.cropStage]
+                : undefined}
+              onChange={ddi => dispatch({
+                type: Actions.SET_CROP_STAGE,
+                payload: ddi.value,
+              })} />
+          </div>
+          <div className={"planted-at-selection"}>
+            <label className="planted-at">{t("start date")}</label>
+            <BlurableInput
+              type="date"
+              value={designer.cropPlantedAt
+                ? moment(designer.cropPlantedAt).format("YYYY-MM-DD")
+                : ""}
+              onCommit={e => dispatch({
+                type: Actions.SET_CROP_PLANTED_AT,
+                payload: e.currentTarget.value,
+              })
+              } />
+          </div>
           <AllCurveInfo
-            dispatch={this.props.dispatch}
+            dispatch={dispatch}
             sourceFbosConfig={this.props.sourceFbosConfig}
             botSize={this.props.botSize}
             curves={this.props.curves}
-            findCurve={this.findCurve}
+            findCurve={findCurve(this.props.curves, designer)}
             plants={this.props.plants}
-            onChange={this.changeCurve} />
+            onChange={changeCurve(dispatch)} />
           <AddPlantHereButton
             botPosition={this.props.botPosition}
-            openedSavedGarden={this.props.designer.openedSavedGarden}
+            openedSavedGarden={designer.openedSavedGarden}
             cropName={result.crop.name}
             slug={result.crop.slug}
             getConfigValue={this.props.getConfigValue}
-            dispatch={this.props.dispatch} />
+            designer={designer}
+            dispatch={dispatch} />
           <PlantGrid
             xy_swap={this.props.xySwap}
-            dispatch={this.props.dispatch}
+            dispatch={dispatch}
             openfarm_slug={result.crop.slug}
             spread={result.crop.spread}
             botPosition={this.props.botPosition}
+            designer={designer}
             itemName={result.crop.name} />
         </EmptyStateWrapper>
       </DesignerPanelContent>

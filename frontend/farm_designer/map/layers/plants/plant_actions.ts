@@ -4,7 +4,6 @@ import {
   AxisNumberProperty, TaggedPlant, MapTransformProps,
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
-import moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString } from "lodash";
 import {
@@ -30,9 +29,7 @@ export interface NewPlantKindAndBodyProps {
   cropName: string;
   openedSavedGarden: string | undefined;
   depth: number;
-  water_curve_id?: number;
-  spread_curve_id?: number;
-  height_curve_id?: number;
+  designer: DesignerState;
 }
 
 /** Return a new plant or plantTemplate object. */
@@ -63,12 +60,13 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
         y: props.y,
         openfarm_slug: props.slug,
         name: props.cropName,
-        created_at: moment().toISOString(),
         radius: DEFAULT_PLANT_RADIUS,
         depth: props.depth,
-        water_curve_id: props.water_curve_id,
-        spread_curve_id: props.spread_curve_id,
-        height_curve_id: props.height_curve_id,
+        plant_stage: props.designer.cropStage,
+        planted_at: props.designer.cropPlantedAt,
+        water_curve_id: props.designer.cropWaterCurveId,
+        spread_curve_id: props.designer.cropSpreadCurveId,
+        height_curve_id: props.designer.cropHeightCurveId,
       })
     };
 };
@@ -81,15 +79,13 @@ export interface CreatePlantProps {
   dispatch: Function;
   openedSavedGarden: string | undefined;
   depth: number;
-  water_curve_id?: number;
-  spread_curve_id?: number;
-  height_curve_id?: number;
+  designer: DesignerState;
 }
 
 /** Create a new plant in the garden map. */
 export const createPlant = (props: CreatePlantProps): void => {
   const {
-    cropName, slug, gardenCoords, gridSize, openedSavedGarden, depth,
+    cropName, slug, gardenCoords, gridSize, openedSavedGarden, depth, designer,
   } = props;
   const { x, y } = gardenCoords;
   const tooLow = x < 0 || y < 0; // negative (beyond grid start)
@@ -101,10 +97,7 @@ export const createPlant = (props: CreatePlantProps): void => {
     error(t(Content.OUTSIDE_PLANTING_AREA));
   } else {
     const p = newPlantKindAndBody({
-      x, y, slug, cropName, openedSavedGarden, depth,
-      water_curve_id: props.water_curve_id,
-      spread_curve_id: props.spread_curve_id,
-      height_curve_id: props.height_curve_id,
+      x, y, slug, cropName, openedSavedGarden, depth, designer,
     });
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
@@ -145,9 +138,7 @@ export const dropPlant = (props: DropPlantProps) => {
       dispatch,
       openedSavedGarden,
       depth: parseInt("" + getConfigValue(NumericSetting.default_plant_depth)),
-      water_curve_id: props.designer.cropWaterCurveId,
-      spread_curve_id: props.designer.cropSpreadCurveId,
-      height_curve_id: props.designer.cropHeightCurveId,
+      designer: props.designer,
     });
     dispatch({ type: Actions.SET_COMPANION_INDEX, payload: undefined });
   } else {

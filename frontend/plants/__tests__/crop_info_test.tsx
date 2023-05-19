@@ -16,7 +16,7 @@ import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
   getCropHeaderProps,
 } from "../crop_info";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
 import { initSave } from "../../api/crud";
 import { push } from "../../history";
@@ -36,6 +36,8 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { CurveType } from "../../curves/templates";
+import { changeCurve, findCurve } from "../curve_info";
+import { BlurableInput, FBSelect } from "../../ui";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -81,12 +83,43 @@ describe("<CropInfo />", () => {
     });
   });
 
-  it("changes curve", () => {
+  it("renders stage", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
-    wrapper.instance().changeCurve(1, CurveType.water);
+    p.designer.cropStage = "planted";
+    const wrapper = shallow(<CropInfo {...p} />);
+    expect(wrapper.find(FBSelect).first().props().selectedItem).toEqual({
+      label: "Planted", value: "planted",
+    });
+  });
+
+  it("updates stage", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const wrapper = shallow(<CropInfo {...p} />);
+    wrapper.find("FBSelect").first().simulate("change",
+      { label: "", value: "planned" });
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_CROP_WATER_CURVE_ID, payload: 1,
+      type: Actions.SET_CROP_STAGE, payload: "planned",
+    });
+  });
+
+  it("renders planted at", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.designer.cropPlantedAt = "2020-01-20T20:00:00.000Z";
+    const wrapper = shallow(<CropInfo {...p} />);
+    expect(wrapper.find(BlurableInput).first().props().value).toEqual("2020-01-20");
+  });
+
+  it("updates planted at", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const wrapper = shallow(<CropInfo {...p} />);
+    wrapper.find("BlurableInput").first().simulate("commit",
+      { currentTarget: { value: "2020-01-20T20:00:00.000Z" } });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_PLANTED_AT, payload: "2020-01-20T20:00:00.000Z",
     });
   });
 
@@ -123,7 +156,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 3, "location (100, 200)", { partial_match: true });
+    clickButton(wrapper, 4, "location (100, 200)", { partial_match: true });
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -137,7 +170,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 3, "location (unknown)", { partial_match: true });
+    clickButton(wrapper, 4, "location (unknown)", { partial_match: true });
     expect(initSave).not.toHaveBeenCalled();
   });
 
@@ -255,5 +288,26 @@ describe("mapStateToProps()", () => {
     expect(props.designer.cropSearchInProgress).toEqual(true);
     expect(props.botPosition).toEqual({ x: 1, y: 2, z: 3 });
     expect(props.getConfigValue("show_plants")).toEqual(false);
+  });
+});
+
+describe("findCurve()", () => {
+  it("finds curve", () => {
+    const curve = fakeCurve();
+    curve.body.id = 1;
+    const designer = fakeDesignerState();
+    designer.cropWaterCurveId = curve.body.id;
+    const result = findCurve([curve], designer)(CurveType.water);
+    expect(result).toEqual(curve);
+  });
+});
+
+describe("changeCurve()", () => {
+  it("changes curve", () => {
+    const dispatch = jest.fn();
+    changeCurve(dispatch)(1, CurveType.water);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_WATER_CURVE_ID, payload: 1,
+    });
   });
 });

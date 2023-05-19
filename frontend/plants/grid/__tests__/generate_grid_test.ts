@@ -1,5 +1,6 @@
 import { vectorGrid, initPlantGrid } from "../generate_grid";
 import { PlantGridData, PlantGridKey } from "../interfaces";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 const testGridInputs = (): PlantGridData => ({
   startX: 11,
@@ -50,6 +51,7 @@ describe("initPlantGrid", () => {
       gridId: "123",
       offsetPacking: false,
       z: 0,
+      designer: fakeDesignerState(),
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("Plant");
@@ -66,6 +68,7 @@ describe("initPlantGrid", () => {
       radius: 100,
       z: 0,
       meta: { color: "green" },
+      designer: fakeDesignerState(),
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("GenericPointer");

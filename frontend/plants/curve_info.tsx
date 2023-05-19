@@ -13,6 +13,7 @@ import { curveInfo, CURVE_TYPES } from "../curves/curves_inventory";
 import { DropDownItem, FBSelect, NULL_CHOICE } from "../ui";
 import { Actions } from "../constants";
 import { FormattedPlantInfo } from "./map_state_to_props";
+import { DesignerState } from "../farm_designer/interfaces";
 
 export const AllCurveInfo = (props: AllCurveInfoProps) => {
   return <div className={"all-curve-info"}>
@@ -136,3 +137,21 @@ export const CURVE_ACTION_LOOKUP: Record<CurveType, Actions> = {
   [CurveType.spread]: Actions.SET_CROP_SPREAD_CURVE_ID,
   [CurveType.height]: Actions.SET_CROP_HEIGHT_CURVE_ID,
 };
+
+export const curveId = (designer: DesignerState) => {
+  return {
+    [CurveType.water]: designer.cropWaterCurveId,
+    [CurveType.spread]: designer.cropSpreadCurveId,
+    [CurveType.height]: designer.cropHeightCurveId,
+  };
+};
+
+export const findCurve = (curves: TaggedCurve[], designer: DesignerState) =>
+  (curveType: CurveType): TaggedCurve | undefined =>
+    curves.filter(curve => curve.body.id &&
+      curve.body.id == curveId(designer)[curveType])[0];
+
+export const changeCurve = (dispatch: Function) =>
+  (id: string | number | undefined, curveType: CurveType) => {
+    dispatch({ type: CURVE_ACTION_LOOKUP[curveType], payload: id });
+  };
