@@ -93,7 +93,7 @@ commands:
           command: |
             if [ "$COVERAGE_AVAILABLE" ]
             then
-              sudo docker compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
+              sudo docker compose run -e COVERALLS_REPO_TOKEN="$COVERALLS_REPO_TOKEN" web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
             fi
           when: always # change to `on_success` for a stricter comparison
 
