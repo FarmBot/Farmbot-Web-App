@@ -1771,7 +1771,10 @@ export namespace SetupWizardContent {
 
   export const MOVEMENT_STALLS =
     trim(`Inspect the wood raised bed (Express kits) or track extrusions
-    (Genesis kits) for bumps. Use sand paper to smooth out imperfections.`);
+    (Genesis kits) for bumps. Use sand paper to smooth out imperfections.
+    Check the cable carrier for any snap-in tabs that are not fully snapped
+    into place. Tabs may be catching on the cable carrier supports or other
+    parts of the cable carrier.`);
 
   export const MOVEMENT_ALL_X =
     trim(`"Break in" the cable carrier, double check belt tension, and
@@ -1816,7 +1819,7 @@ export namespace SetupWizardContent {
     trim(`Press the UNLOCK button below.`);
 
   export const UNLOCK_BUTTON_QUESTION =
-    trim(`Did FarmBot's motors power back on? (Try moving the Y-axis by hand)`);
+    trim(`Did FarmBot unlock? (Check the logs or try sending a movement command)`);
 
   export const CUSTOM_BUTTONS =
     trim(`Customize which Action or Sequence you want FarmBot to execute
