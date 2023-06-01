@@ -475,6 +475,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     wrapper.find(".fa-magic").first().simulate("click");
     expect(requestAutoGeneration).toHaveBeenCalled();
     const { mock } = requestAutoGeneration as jest.Mock;
+    act(() => mock.calls[0][0].onUpdate("description"));
     act(() => mock.calls[0][0].onSuccess("description"));
     expect(edit).toHaveBeenCalledWith(p.sequence, { description: "description" });
     act(() => mock.calls[0][0].onError());

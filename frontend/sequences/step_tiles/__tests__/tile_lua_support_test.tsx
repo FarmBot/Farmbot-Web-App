@@ -11,7 +11,7 @@ jest.mock("../../../history", () => ({
 }));
 
 import React from "react";
-import { shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
 import Editor from "@monaco-editor/react";
@@ -75,5 +75,20 @@ describe("<LuaTextArea />", () => {
     mockPath = Path.mock(Path.sequencePage());
     const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
     expect(wrapper.find(".lua-editor").hasClass("full")).toBeTruthy();
+  });
+
+  it("updates scroll position", () => {
+    const p = fakeProps();
+    p.useMonacoEditor = false;
+    p.index = 0;
+    localStorage.setItem("lua_code_0", "code");
+    const fakeEl = { scrollTop: 0 };
+    Object.defineProperty(document, "getElementById", {
+      value: () => fakeEl,
+      configurable: true,
+    });
+    const wrapper = mount<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    wrapper.instance().componentDidUpdate();
+    expect(fakeEl.scrollTop).toEqual(99999);
   });
 });

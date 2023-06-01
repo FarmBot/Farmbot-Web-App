@@ -91,6 +91,7 @@ describe("<DesignerSequenceEditor />", () => {
     expect(wrapper.state().processingColor).toEqual(true);
     expect(requestAutoGeneration).toHaveBeenCalled();
     const { mock } = requestAutoGeneration as jest.Mock;
+    mock.calls[0][0].onUpdate("title");
     mock.calls[0][0].onSuccess("title");
     expect(edit).toHaveBeenCalledWith(p.sequence, { name: "title" });
     mock.calls[0][0].onError();

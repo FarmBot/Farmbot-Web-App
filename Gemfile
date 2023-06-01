@@ -41,6 +41,7 @@ group :development, :test do
   gem "simplecov"
   gem "simplecov-cobertura"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
+  gem "webmock"
 end
 
 gem "passenger"

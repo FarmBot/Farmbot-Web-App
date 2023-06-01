@@ -27,6 +27,7 @@ import {
 import { Path } from "../../internal_urls";
 import { requestAutoGeneration } from "../request_auto_generation";
 import { error } from "../../toast/toast";
+import { noop } from "lodash";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -64,7 +65,7 @@ export class RawDesignerSequenceEditor
         backTo={Path.sequences()}>
         <div className={"panel-header-icon-group"}>
           {sequence &&
-            <i title={t("auto-generate sequence title")}
+            <i title={t("auto-generate sequence title and color")}
               className={`fa fa-${this.isProcessing
                 ? "spinner fa-pulse"
                 : "magic"}`}
@@ -77,7 +78,12 @@ export class RawDesignerSequenceEditor
                 requestAutoGeneration({
                   contextKey: "title",
                   sequenceId: sequence.body.id,
-                  onSuccess: title => {
+                  onUpdate: potentialTitle => {
+                    const title = potentialTitle.replace(/"*/g, "");
+                    this.props.dispatch(edit(sequence, { name: title }));
+                  },
+                  onSuccess: potentialTitle => {
+                    const title = potentialTitle.replace(/"*/g, "");
                     this.setState({ processingTitle: false });
                     this.props.dispatch(edit(sequence, { name: title }));
                   },
@@ -87,6 +93,7 @@ export class RawDesignerSequenceEditor
                 requestAutoGeneration({
                   contextKey: "color",
                   sequenceId: sequence.body.id,
+                  onUpdate: noop,
                   onSuccess: potentialColor => {
                     this.setState({ processingColor: false });
                     const pColor = potentialColor.toLowerCase().split(".")[0];

@@ -61,6 +61,7 @@ export class StepHeader
   AutoLuaPrompt = () => {
     const { promptText, placeholderIndex } = this.state;
     const aiPrompt = promptText || PLACEHOLDER_PROMPTS[placeholderIndex];
+    const key = `lua_code_${this.props.index}`;
     return <div className={"prompt-wrapper"}>
       <textarea className={"prompt"}
         onMouseEnter={this.toggle("enter")}
@@ -78,6 +79,10 @@ export class StepHeader
             requestAutoGeneration({
               prompt: aiPrompt,
               contextKey: "lua",
+              onUpdate: code => {
+                localStorage.setItem(key, code);
+                this.props.setKey(code);
+              },
               onSuccess: code => {
                 this.setState({ isProcessing: false, promptText: aiPrompt });
                 this.props.dispatch(editStep({
@@ -92,7 +97,8 @@ export class StepHeader
                     } as never];
                   },
                 }));
-                this.props.setKey(code);
+                localStorage.removeItem(key);
+                setTimeout(() => this.props.setKey(code + " success"), 1000);
               },
               onError: () => this.setState({ isProcessing: false }),
             });

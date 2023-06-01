@@ -1,4 +1,5 @@
 require "spec_helper"
+WebMock.allow_net_connect!
 
 describe Image do
   let(:device) { FactoryBot.create(:device) }

@@ -11,8 +11,17 @@ describe Api::AisController do
     end
   end
 
+  def chunk(content, done=nil)
+    "data: {\"id\":\"id\",\"object\":\"chat.completion.chunk\"," \
+    "\"created\":12345,\"model\":\"gpt-4\",\"choices\":[{\"delta\":{" \
+    "\"content\":\"#{content}\"},\"index\":0,\"finish_reason\":#{done.to_json}}]}"
+  end
+
   it "makes a successful request for code" do
     sign_in user
+    FactoryBot.create(:peripheral, device: user.device)
+    FactoryBot.create(:sensor, device: user.device)
+    FactoryBot.create(:tool, device: user.device)
     payload = {
       prompt: "write code",
       context_key: "lua",
@@ -20,15 +29,8 @@ describe Api::AisController do
     }
     expect(URI).to receive(:open).exactly(15).times.and_return(MockGet.new())
 
-    class MockPost
-      def body
-        {
-          usage: {tokens: 1},
-          choices: [{message: {content: "return"}, finish_reason: "stop"}],
-        }.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      body: chunk("return") + chunk("done", done="stop"))
 
     post :create, body: payload.to_json
     expect(response.status).to eq(200)
@@ -44,45 +46,14 @@ describe Api::AisController do
     }
     expect(URI).to receive(:open).exactly(0).times
 
-    class MockPost
-      def body
-        {
-          usage: {tokens: 1},
-          choices: [{message: {content: "red"}, finish_reason: "stop"}],
-        }.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      body: chunk("red"))
 
     with_modified_env OPENAI_API_TEMPERATURE: "0.5" do
       post :create, body: payload.to_json
     end
     expect(response.status).to eq(200)
     expect(response.body).to eq("red")
-  end
-
-  it "handles truncated output" do
-    sign_in user
-    payload = {
-      prompt: "write code",
-      context_key: "lua",
-      sequence_id: nil,
-    }
-    expect(URI).to receive(:open).exactly(15).times.and_return(MockGet.new())
-
-    class MockPost
-      def body
-        {
-          usage: {tokens: 1},
-          choices: [{message: {content: "return"}, finish_reason: "length"}],
-        }.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).and_return(MockPost.new())
-
-    post :create, body: payload.to_json
-    expect(response.status).to eq(403)
-    expect(response.body).to eq({error: "Result length exceeded."}.to_json)
   end
 
   it "handles errors" do
@@ -94,16 +65,10 @@ describe Api::AisController do
     }
     expect(URI).to receive(:open).exactly(15).times.and_return(MockGet.new())
 
-    class MockPost
-      def body
-        {error: {message: "error message"}}.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
     post :create, body: payload.to_json
-    expect(response.status).to eq(403)
-    expect(response.body).to eq({error: "error message"}.to_json)
+    expect(response.status).to eq(200)
   end
 
   it "handles connection issues" do
@@ -121,16 +86,10 @@ describe Api::AisController do
     end
     expect(URI).to receive(:open).exactly(1).times.and_return(MockGetError.new())
 
-    class MockPost
-      def body
-        raise Faraday::ConnectionFailed, "error"
-      end
-    end
-    expect(Faraday).to receive(:post).and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
     post :create, body: payload.to_json
-    expect(response.status).to eq(403)
-    expect(response.body).to eq({error: "error"}.to_json)
+    expect(response.status).to eq(200)
   end
 
   it "handles empty content" do
@@ -148,15 +107,8 @@ describe Api::AisController do
     end
     expect(URI).to receive(:open).at_least(1).times.and_return(MockGetEmpty.new())
 
-    class MockPost
-      def body
-        {
-          usage: {tokens: 1},
-          choices: [{message: {content: "red"}, finish_reason: "stop"}],
-        }.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).with(any_args).and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      body: chunk("red"))
 
     post :create, body: payload.to_json
     expect(response.status).to eq(200)
@@ -171,15 +123,8 @@ describe Api::AisController do
       sequence_id: sequence.id,
     }
 
-    class MockPost
-      def body
-        {
-          usage: {tokens: 1},
-          choices: [{message: {content: "title"}, finish_reason: "stop"}],
-        }.to_json
-      end
-    end
-    expect(Faraday).to receive(:post).at_least(10).times.and_return(MockPost.new())
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      body: chunk("title"))
 
     post :create, body: payload.to_json
     expect(response.status).to eq(200)

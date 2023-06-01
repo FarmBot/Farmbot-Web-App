@@ -648,6 +648,7 @@ const Description = (props: DescriptionProps) => {
           requestAutoGeneration({
             contextKey: "description",
             sequenceId: props.sequence.body.id,
+            onUpdate: description => setDescription(description),
             onSuccess: description => {
               setIsProcessing(false);
               props.dispatch(edit(props.sequence, { description }));

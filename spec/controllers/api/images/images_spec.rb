@@ -1,4 +1,5 @@
 require "spec_helper"
+WebMock.allow_net_connect!
 
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers

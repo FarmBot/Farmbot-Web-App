@@ -1,28 +1,76 @@
-import axios from "axios";
 import { API } from "../api";
 import { toastErrors } from "../toast_errors";
 import { Pair, SequenceBodyItem } from "farmbot";
-import { first } from "lodash";
+import { first, noop } from "lodash";
+import { store } from "../redux/store";
 
 export interface RequestAutoGenerationProps {
   prompt?: string;
   sequenceId?: number;
   contextKey: string;
+  onUpdate(data: string): void;
   onSuccess(data: string): void;
   onError(): void;
 }
 
 export const requestAutoGeneration = (props: RequestAutoGenerationProps) => {
-  axios.post<string>(API.current.aiPath, {
-    prompt: props.prompt,
-    sequence_id: props.sequenceId,
-    context_key: props.contextKey,
+  fetch(API.current.aiPath, {
+    method: "post",
+    headers: {
+      Authorization: `Bearer: ${store.getState().auth?.token.encoded}`,
+    },
+    body: JSON.stringify({
+      prompt: props.prompt,
+      sequence_id: props.sequenceId,
+      context_key: props.contextKey,
+    }),
   })
-    .then(response => props.onSuccess(response.data))
-    .catch(err => {
-      props.onError();
-      toastErrors({ err });
-    });
+    .then(response => {
+      if (response.ok && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        const output = "";
+        return readStream({
+          reader, decoder, output,
+          onUpdate: props.onUpdate,
+          onSuccess: props.onSuccess,
+        });
+      } else {
+        props.onError();
+        toastErrors({ err: { response: { data: response.statusText } } });
+        return Promise.reject(response);
+      }
+    })
+    .catch(noop);
+};
+
+interface ReadStreamProps {
+  reader: ReadableStreamDefaultReader<Uint8Array>;
+  decoder: TextDecoder;
+  output: string;
+  onUpdate(data: string): void;
+  onSuccess(data: string): void;
+}
+
+const readStream = (props: ReadStreamProps): Promise<void> | undefined => {
+  const { reader, decoder, onUpdate, onSuccess } = props;
+  let { output } = props;
+  return reader.read()
+    .then(({ done, value }) => {
+      if (done) {
+        onSuccess(output);
+        reader.cancel();
+        return;
+      }
+      const chunk = decoder.decode(value);
+      output += chunk;
+      output = output.split("\n")
+        .filter(line => line != "```lua" && line != "lua" && line != "```")
+        .join("\n");
+      onUpdate(output);
+      return readStream({ ...props, output });
+    })
+    .catch(noop);
 };
 
 export const PLACEHOLDER_PROMPTS = [

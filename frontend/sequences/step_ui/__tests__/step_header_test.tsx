@@ -75,6 +75,7 @@ describe("<StepHeader />", () => {
   });
 
   it("prompt succeeds", () => {
+    jest.useFakeTimers();
     const p = fakeProps();
     const wrapper = mount<StepHeader>(<StepHeader {...p} />);
     expect(wrapper.state().promptText).toEqual("");
@@ -87,8 +88,11 @@ describe("<StepHeader />", () => {
     expect(wrapper.state().isProcessing).toEqual(true);
     expect(requestAutoGeneration).toHaveBeenCalled();
     const { mock } = requestAutoGeneration as jest.Mock;
-    mock.calls[0][0].onSuccess("code");
+    mock.calls[0][0].onUpdate("code");
     expect(p.setKey).toHaveBeenCalledWith("code");
+    mock.calls[0][0].onSuccess("code");
+    jest.runAllTimers();
+    expect(p.setKey).toHaveBeenCalledWith("code success");
     mock.calls[0][0].onError();
     expect(wrapper.state().isProcessing).toEqual(false);
   });

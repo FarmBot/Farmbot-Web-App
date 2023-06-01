@@ -1,8 +1,13 @@
-let mockPost = Promise.resolve({});
-jest.mock("axios", () => ({
-  post: jest.fn(() => mockPost),
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({
+  store: {
+    getState: () => mockState,
+    dispatch: jest.fn(),
+  },
 }));
 
+import { fetchResponse } from "../../__test_support__/helpers";
 import { API } from "../../api";
 import { error } from "../../toast/toast";
 import { requestAutoGeneration, retrievePrompt } from "../request_auto_generation";
@@ -10,23 +15,47 @@ import { requestAutoGeneration, retrievePrompt } from "../request_auto_generatio
 describe("requestAutoGeneration()", () => {
   API.setBaseUrl("");
 
+  const fakeProps = () => ({
+    contextKey: "color",
+    onUpdate: jest.fn(),
+    onSuccess: jest.fn(),
+    onError: jest.fn(),
+  });
+
   it("succeeds", async () => {
-    mockPost = Promise.resolve({ data: "red" });
-    const onSuccess = jest.fn();
-    const onError = jest.fn();
-    await requestAutoGeneration({ contextKey: "color", onSuccess, onError });
-    expect(onSuccess).toHaveBeenCalledWith("red");
-    expect(onError).not.toHaveBeenCalled();
+    global.fetch = jest.fn();
+    jest.spyOn(global, "fetch")
+      .mockResolvedValue(fetchResponse(
+        jest.fn()
+          .mockResolvedValue({ done: true, value: "done" })
+          .mockResolvedValueOnce({ done: false, value: "r" })
+          .mockResolvedValueOnce({ done: false, value: "e" })
+          .mockResolvedValueOnce({ done: false, value: "d" }),
+      ));
+    const p = fakeProps();
+    p.contextKey = "color";
+    await requestAutoGeneration(p);
+    await expect(p.onError).not.toHaveBeenCalled();
+    await expect(p.onUpdate).toHaveBeenCalledWith("r");
+    await expect(p.onUpdate).toHaveBeenCalledWith("re");
+    await expect(p.onUpdate).toHaveBeenCalledWith("red");
+    await expect(p.onSuccess).toHaveBeenCalledWith("red");
   });
 
   it("fails", async () => {
-    mockPost = Promise.reject({ response: { data: { error: "error" } } });
-    const onSuccess = jest.fn();
-    const onError = jest.fn();
-    await requestAutoGeneration({ contextKey: "lua", onSuccess, onError });
-    await expect(onSuccess).not.toHaveBeenCalled();
-    await expect(onError).toHaveBeenCalled();
-    await expect(error).toHaveBeenCalledWith("Error: error");
+    mockState.auth = undefined;
+    global.fetch = jest.fn();
+    jest.spyOn(global, "fetch")
+      .mockResolvedValue(fetchResponse(
+        jest.fn().mockResolvedValue({ done: true, value: "" }),
+        { ok: false, body: undefined },
+      ));
+    const p = fakeProps();
+    p.contextKey = "lua";
+    await requestAutoGeneration(p);
+    await expect(p.onSuccess).not.toHaveBeenCalled();
+    await expect(p.onError).toHaveBeenCalled();
+    await expect(error).toHaveBeenCalledWith("Error: status");
   });
 });
 

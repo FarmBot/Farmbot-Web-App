@@ -1,5 +1,5 @@
 module Api
-  class FeedbacksController < AbstractConfigController
+  class FeedbacksController < Api::AbstractController
     def create
       message = raw_json[:message]
       slug = raw_json[:slug]

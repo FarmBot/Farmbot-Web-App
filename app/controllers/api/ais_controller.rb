@@ -1,5 +1,7 @@
 module Api
-  class AisController < AbstractConfigController
+  class AisController < Api::AbstractController
+    include ActionController::Live
+
     EXPIRY = Rails.env.test? ? 0.seconds : 1.day
     THROTTLE_POLICY = ThrottlePolicy.new(name, min: 10, hour: 100, day: 200)
 
@@ -15,6 +17,7 @@ module Api
           + " " + sequence_inner_prompts.fetch(context_key) \
           + " " + clean_sequence(sequence_celery_script, remove_field)
       end
+      # puts prompt
       puts "AI #{context_key} prompt length: #{prompt.length}" unless Rails.env.test?
 
       violation = THROTTLE_POLICY.violation_for(current_device.id)
@@ -24,25 +27,12 @@ module Api
         render json: { error: "Too many requests. Try again later." }, status: 403
       else
         THROTTLE_POLICY.track(current_device.id)
-        result = make_request(prompt)
-        limited = result["choices"] && result["choices"][0]["finish_reason"] == "length"
-        limit_error = limited ? "Result length exceeded." : nil
-        api_error = result["error"] && result["error"]["message"]
-        error = api_error || limit_error
-        if error
-          puts "AI #{context_key} error: #{error}" unless Rails.env.test?
-          render json: {error: error}, status: 403
-        else
-          usage = result["usage"].to_json
-          output = result["choices"][0]
-          content = output["message"]["content"]
-          content.slice!("```lua\n")
-          content.slice!("```")
-          finish_reason = output["finish_reason"]
-          puts "AI #{context_key}: #{usage} #{finish_reason}" unless Rails.env.test?
-          render json: content
-        end
+        response.headers["Content-Type"] = "text/event-stream"
+        response.headers["Last-Modified"] = Time.now.httpdate
+        result = make_request(prompt, response.stream)
       end
+    ensure
+      response.stream.close
     end
 
     private
@@ -77,24 +67,56 @@ module Api
     def lua_prompt
       "Below is the documentation for writing Lua scripts that can control " \
       "a FarmBot machine and interact with the FarmBot Web App API. " \
-      "#{raw_json[:prompt]}\nComment the code in #{user.language}. " \
+      "\n#{named_resources}\n" \
+      "#{raw_json[:prompt]}\n" \
+      "Comment the code in #{user.language}. " \
       "Limit prose and only return the commented code.\n#{lua_function_docs}"
     end
 
-    def make_request(prompt)
+    def make_request(prompt, stream)
       url = "https://api.openai.com/v1/chat/completions"
+      lua_request = raw_json[:context_key] == "lua"
       payload = {
-        "model" => raw_json[:context_key] == "lua" ? "gpt-4" : "gpt-3.5-turbo",
+        "model" => lua_request ? "gpt-4" : "gpt-3.5-turbo",
         "messages" => [{"role" => "user", "content": prompt}],
         "temperature" => (ENV["OPENAI_API_TEMPERATURE"] || 1).to_f,
+        "stream" => true,
       }.to_json
       begin
-        response = Faraday.post(
-          url,
-          payload,
-          "Content-Type" => "application/json",
-          "Authorization" => "Bearer #{ENV["OPENAI_API_KEY"]}")
-        JSON.parse(response.body)
+        conn = Faraday.new(
+          url: "https://api.openai.com/v1/chat/completions",
+          headers: {
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer #{ENV["OPENAI_API_KEY"]}",
+          },
+        )
+        full = ""
+        response = conn.post("") do |req|
+          req.body = payload
+          total = 0
+          missed = false
+          req.options.on_data = Proc.new do |chunk, size|
+            total += chunk.bytes.length
+            diff = size - total
+            if (diff != 0 && !missed) || Rails.env.test?
+              current_device.tell("Response stream incomplete.", ["toast"], "warn")
+              missed = true
+            end
+            data_strings = chunk.split("data: ")[1,999]
+            for data_str in data_strings
+              data = JSON.parse(data_str)
+              output = data["choices"][0]
+              if output["finish_reason"].nil?
+                content = output["delta"].dig("content") || ""
+                full += content
+                stream.write(content)
+              else
+                puts "AI #{raw_json[:context_key]} result: #{full.to_json}"
+              end
+            end
+          end
+        end
+        {}
       rescue *[Faraday::ConnectionFailed, Faraday::TimeoutError] => exception
         return {"error" => {"message" => exception.message}}
       end
@@ -119,6 +141,17 @@ module Api
 
     def user
       @user ||= User.find_by!(device: current_device)
+    end
+
+    def named_resources
+      {
+        peripherals: Peripheral.where(device: current_device)
+          .map{ |p| { name: p.label, id: p.id, pin_number: p.pin } },
+        sensors: Sensor.where(device: current_device)
+          .map{ |s| { name: s.label, id: s.id, pin_number: s.pin } },
+        tools: Tool.where(device: current_device)
+          .map{ |t| { name: t.name, id: t.id } },
+    }.to_json
     end
 
     PAGE_NAMES = [
