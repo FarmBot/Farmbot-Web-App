@@ -222,6 +222,14 @@
     .generate-code {
       display: flex;
       height: 3rem;
+      .feedback {
+        width: 7rem;
+        margin-top: 0.75rem;
+        transition: opacity 2s ease;
+        i:first-of-type {
+          margin-right: 0.5rem;
+        }
+      }
       p {
         display: inline-block;
         width: 100%;

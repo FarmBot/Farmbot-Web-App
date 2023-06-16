@@ -143,6 +143,7 @@ def destroy_everything!
     FarmEvent,
     Release,
     WizardStepResult,
+    AiFeedback,
     FarmwareEnv,
     Alert,
     Sensor,

@@ -5,11 +5,13 @@ import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "./step_icon_group";
 import { t } from "../../i18next_wrapper";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
-import { random } from "lodash";
+import { noop, random } from "lodash";
 import {
   PLACEHOLDER_PROMPTS, requestAutoGeneration, retrievePrompt,
 } from "../request_auto_generation";
 import { editStep } from "../../api/crud";
+import axios from "axios";
+import { API } from "../../api";
 
 export interface StepHeaderProps {
   children?: React.ReactNode;
@@ -37,6 +39,9 @@ interface StepHeaderState {
   promptOpen: boolean;
   promptText: string;
   placeholderIndex: number;
+  showFeedback: boolean;
+  cachedPrompt: string;
+  reaction?: string;
 }
 
 export class StepHeader
@@ -47,6 +52,9 @@ export class StepHeader
     promptOpen: false,
     promptText: retrievePrompt(this.props.currentStep),
     placeholderIndex: this.newPlaceholderIndex,
+    showFeedback: false,
+    cachedPrompt: "",
+    reaction: undefined,
   };
 
   get newPlaceholderIndex() { return random(PLACEHOLDER_PROMPTS.length - 1); }
@@ -58,8 +66,19 @@ export class StepHeader
     this.setState({ promptOpen: !this.state.promptOpen });
   };
 
+  submitFeedback = (prompt: string, reaction: string) => () => {
+    this.setState({ showFeedback: false, cachedPrompt: "", reaction });
+    axios.post(API.current.aiFeedbacksPath, {
+      prompt: prompt.slice(0, 500),
+      reaction,
+    }).then(noop, noop);
+    setTimeout(() => this.setState({ reaction: undefined }), 2000);
+  };
+
   AutoLuaPrompt = () => {
-    const { promptText, placeholderIndex } = this.state;
+    const {
+      promptText, placeholderIndex, showFeedback, cachedPrompt, reaction,
+    } = this.state;
     const aiPrompt = promptText || PLACEHOLDER_PROMPTS[placeholderIndex];
     const key = `lua_code_${this.props.index}`;
     return <div className={"prompt-wrapper"}>
@@ -72,6 +91,15 @@ export class StepHeader
           this.setState({ promptText: e.currentTarget.value })} />
       <div className={"generate-code"}>
         <p>{t("Always review and test auto-generated code")}</p>
+        <div className={"feedback"} style={{
+          opacity: showFeedback ? 1 : 0,
+          pointerEvents: showFeedback ? "unset" : "none",
+        }}>
+          <i className={`fa fa-thumbs${reaction == "good" ? "" : "-o"}-up`}
+            onClick={this.submitFeedback(cachedPrompt, "good")} />
+          <i className={`fa fa-thumbs${reaction == "bad" ? "" : "-o"}-down`}
+            onClick={this.submitFeedback(cachedPrompt, "bad")} />
+        </div>
         <button className={"fb-button gray"}
           disabled={this.state.isProcessing}
           onClick={() => {
@@ -84,7 +112,12 @@ export class StepHeader
                 this.props.setKey(code);
               },
               onSuccess: code => {
-                this.setState({ isProcessing: false, promptText: aiPrompt });
+                this.setState({
+                  isProcessing: false,
+                  promptText: aiPrompt,
+                  showFeedback: true,
+                  cachedPrompt: aiPrompt,
+                });
                 this.props.dispatch(editStep({
                   step: this.props.currentStep,
                   index: this.props.index,

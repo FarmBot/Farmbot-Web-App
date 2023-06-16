@@ -150,6 +150,39 @@ ALTER SEQUENCE public.active_storage_variant_records_id_seq OWNED BY public.acti
 
 
 --
+-- Name: ai_feedbacks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ai_feedbacks (
+    id bigint NOT NULL,
+    device_id bigint,
+    prompt character varying(500),
+    reaction character varying(25),
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: ai_feedbacks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ai_feedbacks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ai_feedbacks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ai_feedbacks_id_seq OWNED BY public.ai_feedbacks.id;
+
+
+--
 -- Name: alerts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2110,6 +2143,13 @@ ALTER TABLE ONLY public.active_storage_variant_records ALTER COLUMN id SET DEFAU
 
 
 --
+-- Name: ai_feedbacks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_feedbacks ALTER COLUMN id SET DEFAULT nextval('public.ai_feedbacks_id_seq'::regclass);
+
+
+--
 -- Name: alerts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2453,6 +2493,14 @@ ALTER TABLE ONLY public.active_storage_blobs
 
 ALTER TABLE ONLY public.active_storage_variant_records
     ADD CONSTRAINT active_storage_variant_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ai_feedbacks ai_feedbacks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_feedbacks
+    ADD CONSTRAINT ai_feedbacks_pkey PRIMARY KEY (id);
 
 
 --
@@ -2872,6 +2920,13 @@ CREATE UNIQUE INDEX index_active_storage_blobs_on_key ON public.active_storage_b
 --
 
 CREATE UNIQUE INDEX index_active_storage_variant_records_uniqueness ON public.active_storage_variant_records USING btree (blob_id, variation_digest);
+
+
+--
+-- Name: index_ai_feedbacks_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ai_feedbacks_on_device_id ON public.ai_feedbacks USING btree (device_id);
 
 
 --
@@ -3576,6 +3631,14 @@ ALTER TABLE ONLY public.edge_nodes
 
 
 --
+-- Name: ai_feedbacks fk_rails_d25a0df7d7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ai_feedbacks
+    ADD CONSTRAINT fk_rails_d25a0df7d7 FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: points fk_rails_d6f3cdbe9a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3910,6 +3973,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221109233217'),
 ('20221222192831'),
 ('20230210010108'),
-('20230413204758');
+('20230413204758'),
+('20230616184850');
 
 

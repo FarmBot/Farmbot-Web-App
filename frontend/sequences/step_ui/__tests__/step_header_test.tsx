@@ -104,4 +104,29 @@ describe("<StepHeader />", () => {
     const prompt = mount(wrapper.instance().AutoLuaPrompt());
     expect(prompt.text()).toContain("generating");
   });
+
+  it.each<[string, string]>([
+    ["good", "fa-thumbs-up"],
+    ["bad", "fa-thumbs-down"],
+  ])("shows feedback: %s", (reaction, expected) => {
+    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
+    wrapper.setState({
+      cachedPrompt: "write code", showFeedback: true, reaction,
+    });
+    const prompt = mount(wrapper.instance().AutoLuaPrompt());
+    expect(prompt.html()).toContain(expected);
+  });
+
+  it("submits feedback", () => {
+    jest.useFakeTimers();
+    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
+    wrapper.setState({
+      cachedPrompt: "write code", showFeedback: true, reaction: "good",
+    });
+    wrapper.instance().submitFeedback("write code", "good")();
+    jest.runAllTimers();
+    expect(wrapper.state().cachedPrompt).toEqual("");
+    expect(wrapper.state().showFeedback).toEqual(false);
+    expect(wrapper.state().reaction).toEqual(undefined);
+  });
 });
