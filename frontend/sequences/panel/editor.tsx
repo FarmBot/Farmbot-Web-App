@@ -28,6 +28,7 @@ import { Path } from "../../internal_urls";
 import { requestAutoGeneration } from "../request_auto_generation";
 import { error } from "../../toast/toast";
 import { noop } from "lodash";
+import { addNewSequenceToFolder } from "../../folders/actions";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -117,6 +118,12 @@ export class RawDesignerSequenceEditor
               title={t("open full-page editor")}
               onClick={() =>
                 push(Path.sequencePage(urlFriendly(sequence.body.name)))} />}
+          {!sequence && <button
+            className={"fb-button green"}
+            title={t("add new sequence")}
+            onClick={() => addNewSequenceToFolder()}>
+            <i className="fa fa-plus" />
+          </button>}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>

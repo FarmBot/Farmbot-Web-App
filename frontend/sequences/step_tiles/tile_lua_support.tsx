@@ -41,14 +41,9 @@ export class LuaTextArea<Step extends Lua | Assertion>
     this.updateStep(this.lua);
   };
 
-  componentDidUpdate() {
-    if (this.luaCodeBuffer) {
-      const textarea = document.getElementById(`lua-textarea-${this.props.index}`);
-      if (textarea) { textarea.scrollTop = 99999; }
-    }
+  get luaCodeBuffer() {
+    return localStorage.getItem(`lua_code_${this.props.index}`);
   }
-
-  get luaCodeBuffer() { return localStorage.getItem(`lua_code_${this.props.index}`); }
   get lua() {
     return this.state.controlled
       ? this.state.lua
@@ -58,9 +53,8 @@ export class LuaTextArea<Step extends Lua | Assertion>
   setLua = (value: string) => !this.props.readOnly && this.setState({ lua: value });
 
   FallbackEditor = ({ loading }: { loading?: boolean }) =>
-    <textarea id={`lua-textarea-${this.props.index}`}
+    <textarea
       className={(loading ? "" : "fallback-lua-editor")}
-      autoFocus={!!this.luaCodeBuffer}
       value={this.lua}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
         this.setLua(e.currentTarget.value)}
@@ -73,7 +67,11 @@ export class LuaTextArea<Step extends Lua | Assertion>
         {this.props.useMonacoEditor && !this.luaCodeBuffer
           ? <Editor
             language={"lua"}
-            options={{ minimap: { enabled: false } }}
+            options={{
+              minimap: { enabled: false },
+              lineNumbersMinChars: 4,
+              wordWrap: "on",
+            }}
             value={this.lua}
             loading={<this.FallbackEditor loading={true} />}
             onChange={this.onChange} />

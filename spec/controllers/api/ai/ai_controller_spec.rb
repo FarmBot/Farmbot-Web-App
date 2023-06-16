@@ -102,7 +102,7 @@ describe Api::AisController do
 
     class MockGetEmpty
       def read
-        "---\n---# uart\n"
+        "---\n---# nothing for now\n"
       end
     end
     expect(URI).to receive(:open).at_least(1).times.and_return(MockGetEmpty.new())

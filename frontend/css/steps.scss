@@ -220,14 +220,19 @@
       height: 8rem;
     }
     .generate-code {
+      display: flex;
       height: 3rem;
       p {
         display: inline-block;
-        line-height: 3rem;
+        width: 100%;
+        line-height: 1rem;
         color: $medium_gray;
+        padding: 0.75rem;
       }
       button {
+        height: 1.75rem;
         margin-top: 0.5rem;
+        white-space: nowrap;
       }
     }
   }

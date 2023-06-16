@@ -11,6 +11,10 @@ jest.mock("../../request_auto_generation", () => ({
   requestAutoGeneration: jest.fn(),
 }));
 
+jest.mock("../../../folders/actions", () => ({
+  addNewSequenceToFolder: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -38,6 +42,7 @@ import { edit, save } from "../../../api/crud";
 import { requestAutoGeneration } from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
+import { addNewSequenceToFolder } from "../../../folders/actions";
 
 describe("<DesignerSequenceEditor />", () => {
   API.setBaseUrl("");
@@ -68,6 +73,9 @@ describe("<DesignerSequenceEditor />", () => {
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
+    expect(wrapper.html()).not.toContain("select color");
+    wrapper.find("button").first().simulate("click");
+    expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 
   it("changes color", () => {

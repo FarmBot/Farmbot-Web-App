@@ -10,13 +10,16 @@ module Api
       context_key = raw_json[:context_key]
       sequence_id = raw_json[:sequence_id]
       if sequence_id.nil?
-        prompt = lua_prompt
+        system_prompt = lua_system_prompt
+        user_prompt = lua_user_prompt
       else
         remove_field = context_key == "title" ? "name" : context_key
-        prompt = SEQUENCE_PROMPT_PREFIX \
+        system_prompt = ""
+        user_prompt = SEQUENCE_PROMPT_PREFIX \
           + " " + sequence_inner_prompts.fetch(context_key) \
           + " " + clean_sequence(sequence_celery_script, remove_field)
       end
+      prompt = system_prompt + user_prompt
       # puts prompt
       puts "AI #{context_key} prompt length: #{prompt.length}" unless Rails.env.test?
 
@@ -29,7 +32,7 @@ module Api
         THROTTLE_POLICY.track(current_device.id)
         response.headers["Content-Type"] = "text/event-stream"
         response.headers["Last-Modified"] = Time.now.httpdate
-        result = make_request(prompt, response.stream)
+        result = make_request(system_prompt, user_prompt, response.stream)
       end
     ensure
       response.stream.close
@@ -64,21 +67,38 @@ module Api
       }
     end
 
-    def lua_prompt
-      "Below is the documentation for writing Lua scripts that can control " \
-      "a FarmBot machine and interact with the FarmBot Web App API. " \
-      "\n#{named_resources}\n" \
-      "#{raw_json[:prompt]}\n" \
-      "Comment the code in #{user.language}. " \
-      "Limit prose and only return the commented code.\n#{lua_function_docs}"
+    def lua_system_prompt
+      "You will be provided with the documentation for writing Lua scripts " \
+      "that can control a FarmBot machine and interact with the FarmBot Web " \
+      "App API. Using only the functions available in the documentation " \
+      "and the Lua standard library, write concise code that satisfies the " \
+      "user's prompt. Comment the code in #{user.language}. " \
+      "Limit prose and only return the commented code."
     end
 
-    def make_request(prompt, stream)
+    def lua_user_prompt
+      "Documentation:\n" \
+      "#{lua_function_docs}\n" \
+      "---\n" \
+      "The user's FarmBot has the following Peripherals, Sensors, and Tools:\n" \
+      "#{named_resources}\n" \
+      "Peripherals can be operated using their pin_number, " \
+      "Sensors can be read using their pin_number, " \
+      "and Tool objects can be fetched from the API by their id.\n" \
+      "---\n" \
+      "User prompt:\n" \
+      "#{raw_json[:prompt]}"
+    end
+
+    def make_request(system_prompt, user_prompt, stream)
       url = "https://api.openai.com/v1/chat/completions"
       lua_request = raw_json[:context_key] == "lua"
       payload = {
-        "model" => lua_request ? "gpt-4" : "gpt-3.5-turbo",
-        "messages" => [{"role" => "user", "content": prompt}],
+        "model" => lua_request ? "gpt-3.5-turbo-16k" : "gpt-3.5-turbo",
+        "messages" => [
+          {role: "system", content: system_prompt},
+          {role: "user", content: user_prompt},
+        ],
         "temperature" => (ENV["OPENAI_API_TEMPERATURE"] || 1).to_f,
         "stream" => true,
       }.to_json
@@ -146,9 +166,9 @@ module Api
     def named_resources
       {
         peripherals: Peripheral.where(device: current_device)
-          .map{ |p| { name: p.label, id: p.id, pin_number: p.pin } },
+          .map{ |p| { name: p.label, pin_number: p.pin } },
         sensors: Sensor.where(device: current_device)
-          .map{ |s| { name: s.label, id: s.id, pin_number: s.pin } },
+          .map{ |s| { name: s.label, pin_number: s.pin } },
         tools: Tool.where(device: current_device)
           .map{ |t| { name: t.name, id: t.id } },
     }.to_json
@@ -173,44 +193,7 @@ module Api
     ]
 
     REMOVE = [
-      "uart",
-      "verify_tool",
-      "current_",
-      "rpc",
-      "cs_eval",
-      "move_absolute",
-      "find_axis_length",
-      "set_job_progress",
-      "get_job_progress",
-      "calibrate_camera",
-      "read_status",
-      "fbos_version",
-      "firmware_version",
-      "get_device",
-      "get_fbos_config",
-      "get_firmware_config",
-      "update_device",
-      "update_fbos_config",
-      "update_firmware_config",
-      "auth_token",
-      "inspect",
-      "coordinate",
-      "check_position",
-      "go_to_home",
-      "set_pin_io_mode",
-      "debug",
-      "gcode",
-      "watch_pin",
-      "soft_stop",
-      "emergency_",
-      "dispense",
-      "photo_grid",
-      "grid",
-      "sort",
-      "new_sensor_reading",
-      "base64",
-      "take_photo_raw",
-      "measure_soil_height",
+      "nothing for now",
     ]
 
     def page_url(page_name)
@@ -237,7 +220,7 @@ module Api
         end
         clean = function_section
           .split("\n").map{ |line| line.strip() }.join("\n")
-          .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
+          # .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
           .gsub(/\{%\ninclude callout.html([\s\S]*)content="/, " ")
           .gsub(/\"\n%}/, " ")
           .gsub(/\n\n/, "\n")
@@ -263,7 +246,7 @@ module Api
     end
 
     def lua_function_docs
-      Rails.cache.fetch("lua_function_docs", expires_in: EXPIRY) do
+      Rails.cache.fetch("lua_function_docs_#{ENV["DOCS_CACHE_NUM"]}", expires_in: EXPIRY) do
         get_docs()
       end
     end

@@ -83,7 +83,7 @@ export const PLACEHOLDER_PROMPTS = [
   + " can reach. At each point, take a photo. Track the percent"
   + " completion with a job.",
   "Move in a 200mm diameter circle centered around a location"
-  + " variable named “Plant”, stopping at 10 different points along"
+  + " variable named \"Plant\", stopping at 10 different points along"
   + " the circle. The Z coordinate value should be 0 for all points. At"
   + " each point, turn on the lights, then take a photo, and then turn"
   + " the lights off. Track the percent completion with a job.",
