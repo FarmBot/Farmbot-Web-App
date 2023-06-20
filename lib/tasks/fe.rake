@@ -10,12 +10,17 @@ EXCLUDE = [
   {
     packages: ["@types/enzyme"],
     reason: "@types/react",
-    version: "18.2.7 (errors)",
+    version: "18.2.13 (errors)",
   },
   {
     packages: ["@types/react"],
     reason: "@blueprintjs/popover2",
-    version: "1.14.7 (error)",
+    version: "1.14.11 (error)",
+  },
+  {
+    packages: ["typescript"],
+    reason: "typescript",
+    version: "5.1.3 (crash)",
   },
 ]
 
