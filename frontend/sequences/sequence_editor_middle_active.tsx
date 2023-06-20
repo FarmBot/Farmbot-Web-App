@@ -261,7 +261,7 @@ export const SequenceBtnGroup = ({
   sequence,
   syncStatus,
   resources,
-  menuOpen,
+  sequencesState,
   getWebAppConfigValue,
   toggleViewSequenceCeleryScript,
   viewCeleryScript,
@@ -276,7 +276,7 @@ export const SequenceBtnGroup = ({
       syncStatus={syncStatus}
       sequence={sequence}
       resources={resources}
-      menuOpen={menuOpen}
+      menuOpen={sequencesState.menuOpen}
       dispatch={dispatch} />
     <div className={"settings-menu-button"}>
       <Popover position={Position.BOTTOM_RIGHT}
@@ -374,7 +374,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
-      menuOpen={props.menuOpen} />
+      sequencesState={props.sequencesState} />
     {props.showName &&
       <SequenceName {...sequenceAndDispatch} />}
   </div>;
@@ -415,6 +415,7 @@ export class SequenceEditorMiddleActive extends
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
       hoveredStep: this.props.hoveredStep,
+      sequencesState: this.props.sequencesState,
     };
   }
 
@@ -495,7 +496,7 @@ export class SequenceEditorMiddleActive extends
           viewCeleryScript={viewSequenceCeleryScript}
           getWebAppConfigValue={this.props.getWebAppConfigValue}
           visualized={this.props.visualized}
-          menuOpen={this.props.menuOpen} />
+          sequencesState={this.props.sequencesState} />
         : <PublicCopyToolbar
           sequence={sequence}
           sequencePreview={this.state.sequencePreview}
@@ -614,6 +615,7 @@ export class SequenceEditorMiddleActive extends
           dispatch={this.props.dispatch}
           resources={this.props.resources}
           toggleSection={this.toggleSection}
+          sequencesState={this.props.sequencesState}
           {...this.state}
           sequence={this.state.sequencePreview} />}
     </div>;

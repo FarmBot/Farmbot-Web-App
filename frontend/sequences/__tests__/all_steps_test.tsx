@@ -5,6 +5,7 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
 import { DropArea } from "../../draggable/drop_area";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { emptyState } from "../../resources/reducer";
 
 describe("<AllSteps />", () => {
   const fakeProps = (): AllStepsProps => ({
@@ -14,6 +15,7 @@ describe("<AllSteps />", () => {
     dispatch: jest.fn(),
     readOnly: false,
     resources: buildResourceIndex([]).index,
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders empty sequence", () => {

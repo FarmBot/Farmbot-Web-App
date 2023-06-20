@@ -11,6 +11,8 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { splice, remove, move } from "../../step_tiles";
 import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
+import { emptyState } from "../../../resources/reducer";
+import { StateToggleKey } from "../step_wrapper";
 
 describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({
@@ -22,13 +24,12 @@ describe("<StepIconGroup />", () => {
     executeSequenceName: undefined,
     viewRaw: undefined,
     toggleViewRaw: undefined,
-    monacoEditor: undefined,
-    toggleMonacoEditor: undefined,
     links: undefined,
     helpText: "helpful text",
     confirmStepDeletion: false,
     isProcessing: false,
     togglePrompt: jest.fn(),
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders", () => {
@@ -38,18 +39,40 @@ describe("<StepIconGroup />", () => {
 
   it("renders monaco editor enabled", () => {
     const p = fakeProps();
-    p.monacoEditor = true;
-    p.toggleMonacoEditor = () => false;
+    p.stateToggles = {
+      [StateToggleKey.monacoEditor]: { enabled: true, toggle: () => false }
+    };
     const wrapper = mount(<StepIconGroup {...p} />);
     expect(wrapper.find(".fa-font").hasClass("enabled")).toEqual(true);
   });
 
   it("renders monaco editor disabled", () => {
     const p = fakeProps();
-    p.monacoEditor = false;
-    p.toggleMonacoEditor = () => true;
+    p.stateToggles = {
+      [StateToggleKey.monacoEditor]: { enabled: false, toggle: () => true }
+    };
     const wrapper = mount(<StepIconGroup {...p} />);
     expect(wrapper.find(".fa-font").hasClass("enabled")).toEqual(false);
+  });
+
+  it("renders expanded editor enabled", () => {
+    const p = fakeProps();
+    p.stateToggles = {
+      [StateToggleKey.luaExpanded]: { enabled: true, toggle: () => false }
+    };
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-expand").length).toEqual(0);
+    expect(wrapper.find(".fa-compress").length).toEqual(1);
+  });
+
+  it("renders expanded editor disabled", () => {
+    const p = fakeProps();
+    p.stateToggles = {
+      [StateToggleKey.luaExpanded]: { enabled: false, toggle: () => true }
+    };
+    const wrapper = mount(<StepIconGroup {...p} />);
+    expect(wrapper.find(".fa-expand").length).toEqual(1);
+    expect(wrapper.find(".fa-compress").length).toEqual(0);
   });
 
   it("renders celery script view enabled", () => {

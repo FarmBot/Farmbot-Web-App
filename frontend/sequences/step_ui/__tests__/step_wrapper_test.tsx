@@ -7,6 +7,7 @@ import {
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<StepWrapper />", () => {
   const fakeProps = (): StepWrapperProps => ({
@@ -19,6 +20,7 @@ describe("<StepWrapper />", () => {
     index: 0,
     children: "child",
     resources: buildResourceIndex([]).index,
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders", () => {

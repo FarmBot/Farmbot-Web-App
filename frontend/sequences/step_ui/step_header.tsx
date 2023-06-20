@@ -12,6 +12,8 @@ import {
 import { editStep } from "../../api/crud";
 import axios from "axios";
 import { API } from "../../api";
+import { SequenceReducerState } from "../interfaces";
+import { StateToggles } from "./step_wrapper";
 
 export interface StepHeaderProps {
   children?: React.ReactNode;
@@ -26,11 +28,11 @@ export interface StepHeaderProps {
   confirmStepDeletion: boolean;
   viewRaw: boolean | undefined;
   toggleViewRaw: (() => void) | undefined;
-  monacoEditor: boolean | undefined;
-  toggleMonacoEditor: (() => void) | undefined;
+  stateToggles?: StateToggles;
   links: React.ReactElement[] | undefined;
   enableMarkdown?: boolean;
   setKey(key: string | undefined): void;
+  sequencesState: SequenceReducerState;
 }
 
 interface StepHeaderState {
@@ -180,10 +182,10 @@ export class StepHeader
               links={this.props.links}
               viewRaw={this.props.viewRaw}
               toggleViewRaw={this.props.toggleViewRaw}
-              monacoEditor={this.props.monacoEditor}
-              toggleMonacoEditor={this.props.toggleMonacoEditor}
+              stateToggles={this.props.stateToggles}
               isProcessing={this.state.isProcessing}
               togglePrompt={this.togglePrompt}
+              sequencesState={this.props.sequencesState}
               confirmStepDeletion={this.props.confirmStepDeletion} />
           </div>
           {this.state.promptOpen && <this.AutoLuaPrompt />}

@@ -40,7 +40,7 @@ interface SequencePropsBase {
   dispatch: Function;
   syncStatus: SyncStatus;
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  sequencesState: SequenceReducerState;
   getWebAppConfigValue: GetWebAppConfigValue;
   visualized?: boolean;
 }
@@ -50,7 +50,6 @@ export interface SequencesProps extends SequencePropsBase {
   sequence: TaggedSequence | undefined;
   hardwareFlags: HardwareFlags;
   farmwareData: FarmwareData;
-  stepIndex: number | undefined;
   folderData: Folders["props"];
   hoveredStep?: string | undefined;
   sequencesPanelState: SequencesPanelState;
@@ -228,6 +227,7 @@ export interface StepParams<T = SequenceBodyItem> {
   farmwareData?: FarmwareData;
   showPins?: boolean;
   expandStepOptions?: boolean;
+  sequencesState: SequenceReducerState;
 }
 
 export interface StepState {

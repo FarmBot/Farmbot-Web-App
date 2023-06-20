@@ -31,5 +31,6 @@ export const fakeStepParams =
       readOnly: false,
       index: 0,
       resources: emptyState().index,
+      sequencesState: emptyState().consumers.sequences,
     };
   };

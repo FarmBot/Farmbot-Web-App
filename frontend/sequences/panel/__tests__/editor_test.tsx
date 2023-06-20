@@ -43,6 +43,7 @@ import { requestAutoGeneration } from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
 import { addNewSequenceToFolder } from "../../../folders/actions";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<DesignerSequenceEditor />", () => {
   API.setBaseUrl("");
@@ -56,8 +57,7 @@ describe("<DesignerSequenceEditor />", () => {
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),
     getWebAppConfigValue: jest.fn(),
-    menuOpen: undefined,
-    stepIndex: undefined,
+    sequencesState: emptyState().consumers.sequences,
     folderData: mapStateToFolderProps(fakeState()),
     sequencesPanelState: sequencesPanelState(),
   });

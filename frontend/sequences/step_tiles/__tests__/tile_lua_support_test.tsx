@@ -16,15 +16,18 @@ import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
 import Editor from "@monaco-editor/react";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import { StateToggleKey } from "../../step_ui";
 
 describe("<LuaTextArea />", () => {
   const fakeProps = (): LuaTextAreaProps<Lua> => ({
     ...fakeStepParams({ kind: "lua", args: { lua: "lua" } }),
-    useMonacoEditor: true,
+    stateToggles: {},
   });
 
   it("changes lua", () => {
     const p = fakeProps();
+    p.stateToggles[StateToggleKey.monacoEditor] =
+      { enabled: true, toggle: jest.fn() };
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
     expect(wrapper.state().lua).toEqual("lua");
     wrapper.find(Editor).simulate("change", "123");
@@ -35,6 +38,8 @@ describe("<LuaTextArea />", () => {
 
   it("handles undefined value", () => {
     const p = fakeProps();
+    p.stateToggles[StateToggleKey.monacoEditor] =
+      { enabled: true, toggle: jest.fn() };
     const wrapper = shallow(<LuaTextArea {...p} />);
     wrapper.find(Editor).simulate("change", undefined);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
@@ -75,5 +80,21 @@ describe("<LuaTextArea />", () => {
     mockPath = Path.mock(Path.sequencePage());
     const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
     expect(wrapper.find(".lua-editor").hasClass("full")).toBeTruthy();
+  });
+
+  it("renders as loading", () => {
+    const p = fakeProps();
+    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const fallback = shallow(wrapper.instance().FallbackEditor({ loading: true }));
+    expect(fallback.hasClass("fallback-lua-editor")).toBeFalsy();
+  });
+
+  it("renders expanded", () => {
+    mockPath = Path.mock(Path.sequencePage());
+    const p = fakeProps();
+    p.stateToggles[StateToggleKey.luaExpanded] =
+      { enabled: true, toggle: jest.fn() };
+    const wrapper = shallow(<LuaTextArea {...p} />);
+    expect(wrapper.find(".lua-editor").hasClass("expanded")).toBeTruthy();
   });
 });

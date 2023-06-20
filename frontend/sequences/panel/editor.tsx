@@ -144,7 +144,7 @@ export class RawDesignerSequenceEditor
             getWebAppConfigValue={this.props.getWebAppConfigValue}
             visualized={this.props.visualized}
             hoveredStep={this.props.hoveredStep}
-            menuOpen={this.props.menuOpen} />}
+            sequencesState={this.props.sequencesState} />}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

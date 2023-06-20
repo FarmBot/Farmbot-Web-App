@@ -1,7 +1,7 @@
 import { sequenceReducer } from "../reducer";
 import { Actions } from "../../constants";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { SequenceReducerState } from "../interfaces";
+import { emptyState } from "../../resources/reducer";
 
 describe("sequence reducer", () => {
   function resourcePayload(
@@ -10,9 +10,8 @@ describe("sequence reducer", () => {
     after: string | undefined) {
     const sequence = fakeSequence();
     sequence.uuid = "sequence";
-    const state: SequenceReducerState = {
-      current: before, menuOpen: undefined, stepIndex: undefined
-    };
+    const state = emptyState().consumers.sequences;
+    state.current = before;
     const action = { type: actionType, payload: sequence };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe(after);
@@ -23,18 +22,14 @@ describe("sequence reducer", () => {
   });
 
   it("sets current sequence with string", () => {
-    const state: SequenceReducerState = {
-      current: undefined, menuOpen: undefined, stepIndex: undefined
-    };
+    const state = emptyState().consumers.sequences;
     const action = { type: Actions.SELECT_SEQUENCE, payload: "sequence" };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe("sequence");
   });
 
   it("sets step position", () => {
-    const state: SequenceReducerState = {
-      current: undefined, menuOpen: undefined, stepIndex: undefined
-    };
+    const state = emptyState().consumers.sequences;
     const action = { type: Actions.SET_SEQUENCE_STEP_POSITION, payload: 1 };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.stepIndex).toBe(1);

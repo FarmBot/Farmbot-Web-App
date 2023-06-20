@@ -4,7 +4,9 @@ jest.mock("../../history", () => ({
   getPathArray: () => mockPath.split("/"),
 }));
 
-jest.mock("../actions", () => ({ selectSequence: jest.fn() }));
+jest.mock("../actions", () => ({
+  selectSequence: jest.fn(),
+}));
 
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 const sequence = fakeSequence();

@@ -15,6 +15,7 @@ import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
 import { sequencesPanelState } from "../../__test_support__/panel_state";
+import { emptyState } from "../../resources/reducer";
 
 describe("<Sequences />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -26,8 +27,7 @@ describe("<Sequences />", () => {
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),
     getWebAppConfigValue: jest.fn(),
-    menuOpen: undefined,
-    stepIndex: undefined,
+    sequencesState: emptyState().consumers.sequences,
     folderData: mapStateToFolderProps(fakeState()),
     sequencesPanelState: sequencesPanelState(),
   });
@@ -49,7 +49,7 @@ describe("<Sequences />", () => {
 
   it("makes inserting step mode active", () => {
     const p = fakeProps();
-    p.stepIndex = 2;
+    p.sequencesState.stepIndex = 2;
     const wrapper = shallow(<Sequences {...p} />);
     expect(wrapper.html()).toContain("inserting-step");
   });

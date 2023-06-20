@@ -24,6 +24,7 @@ import { API } from "../../../api";
 import { push } from "../../../history";
 import { installSequence } from "../../actions";
 import { Path } from "../../../internal_urls";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<DesignerSequencePreview />", () => {
   API.setBaseUrl("");
@@ -32,6 +33,7 @@ describe("<DesignerSequencePreview />", () => {
     dispatch: jest.fn(),
     resources: buildResourceIndex().index,
     getWebAppConfigValue: jest.fn(),
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders", () => {

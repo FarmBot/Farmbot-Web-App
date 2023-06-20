@@ -105,6 +105,7 @@ import { generateNewVariableLabel } from "../locals_list/locals_list";
 import { StepButtonCluster } from "../step_button_cluster";
 import { changeEvent } from "../../__test_support__/fake_html_events";
 import { requestAutoGeneration } from "../request_auto_generation";
+import { emptyState } from "../../resources/reducer";
 
 describe("<SequenceEditorMiddleActive />", () => {
   API.setBaseUrl("");
@@ -121,7 +122,7 @@ describe("<SequenceEditorMiddleActive />", () => {
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
       getWebAppConfigValue: jest.fn(),
-      menuOpen: undefined,
+      sequencesState: emptyState().consumers.sequences,
       showName: true,
     };
   };
@@ -565,7 +566,7 @@ describe("<SequenceBtnGroup />", () => {
     syncStatus: "synced",
     getWebAppConfigValue: jest.fn(),
     toggleViewSequenceCeleryScript: jest.fn(),
-    menuOpen: undefined,
+    sequencesState: emptyState().consumers.sequences,
     viewCeleryScript: true,
   });
 

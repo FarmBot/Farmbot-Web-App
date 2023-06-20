@@ -7,10 +7,11 @@ import { editStep } from "../../api/crud";
 import { InputLengthIndicator } from "../inputs/input_length_indicator";
 import { debounce } from "lodash";
 import { Path } from "../../internal_urls";
+import { StateToggleKey, StateToggles } from "../step_ui";
 
 export interface LuaTextAreaProps<Step extends Lua | Assertion>
   extends StepParams<Step> {
-  useMonacoEditor: boolean;
+  stateToggles: StateToggles;
 }
 
 interface LuaTextAreaState {
@@ -62,14 +63,19 @@ export class LuaTextArea<Step extends Lua | Assertion>
       style={getTextAreaStyleHeight(this.lua)} />;
 
   render() {
+    const monaco = this.props.stateToggles[StateToggleKey.monacoEditor]?.enabled;
+    const expanded = this.props.stateToggles[StateToggleKey.luaExpanded]?.enabled;
     return <div className={"lua-input"}>
-      <div className={`lua-editor ${Path.inDesigner() ? "" : "full"}`}>
-        {this.props.useMonacoEditor && !this.luaCodeBuffer
+      <div className={["lua-editor",
+        Path.inDesigner() ? "" : "full",
+        expanded ? "expanded" : "",
+      ].join(" ")}>
+        {monaco && !this.luaCodeBuffer
           ? <Editor
             language={"lua"}
             options={{
               minimap: { enabled: false },
-              lineNumbersMinChars: 4,
+              lineNumbers: "off",
               wordWrap: "on",
             }}
             value={this.lua}

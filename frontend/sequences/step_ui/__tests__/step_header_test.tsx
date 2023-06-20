@@ -10,6 +10,7 @@ import { StepHeader, StepHeaderProps } from "../step_header";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { API } from "../../../api";
 import { requestAutoGeneration } from "../../request_auto_generation";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<StepHeader />", () => {
   API.setBaseUrl("");
@@ -25,12 +26,11 @@ describe("<StepHeader />", () => {
     executeSequence: undefined,
     viewRaw: undefined,
     toggleViewRaw: undefined,
-    monacoEditor: undefined,
-    toggleMonacoEditor: undefined,
     links: undefined,
     children: "child",
     confirmStepDeletion: false,
     setKey: jest.fn(),
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders", () => {

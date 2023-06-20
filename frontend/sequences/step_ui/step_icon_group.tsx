@@ -9,6 +9,8 @@ import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { t } from "../../i18next_wrapper";
 import { Popover } from "../../ui";
 import { Path } from "../../internal_urls";
+import { SequenceReducerState } from "../interfaces";
+import { StateToggleKey, StateToggles } from "./step_wrapper";
 
 export interface StepIconBarProps {
   index: number;
@@ -20,13 +22,13 @@ export interface StepIconBarProps {
   confirmStepDeletion: boolean;
   viewRaw: boolean | undefined;
   toggleViewRaw: (() => void) | undefined;
-  monacoEditor: boolean | undefined;
-  toggleMonacoEditor: (() => void) | undefined;
+  stateToggles?: StateToggles;
   links: React.ReactElement[] | undefined;
   readOnly: boolean;
   enableMarkdown?: boolean;
   isProcessing: boolean;
   togglePrompt(): void;
+  sequencesState: SequenceReducerState;
 }
 
 export function StepUpDownButtonPopover(
@@ -44,9 +46,12 @@ export function StepIconGroup(props: StepIconBarProps) {
     index, dispatch, step, sequence, helpText, confirmStepDeletion, readOnly,
   } = props;
 
-  const onClone = () => dispatch(splice({ step, index, sequence }));
-  const onTrash = () =>
+  const onClone = () => {
+    dispatch(splice({ step, index, sequence }));
+  };
+  const onTrash = () => {
     remove({ dispatch, index, sequence, confirmStepDeletion });
+  };
   const onMove = (delta: number) => () => {
     const to = Math.max(index + delta, 0);
     dispatch(move({ step, sequence, from: index, to }));
@@ -55,6 +60,8 @@ export function StepIconGroup(props: StepIconBarProps) {
     push(Path.sequences(urlFriendly(sequenceName)));
     setActiveSequenceByName();
   };
+  const monaco = props.stateToggles?.[StateToggleKey.monacoEditor];
+  const expanded = props.stateToggles?.[StateToggleKey.luaExpanded];
 
   return <span className={"step-control-icons"}>
     {!readOnly && props.step.kind == "lua" &&
@@ -65,10 +72,14 @@ export function StepIconGroup(props: StepIconBarProps) {
       <i className={"fa fa-external-link"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
-    {props.toggleMonacoEditor &&
-      <i className={`fa fa-font ${props.monacoEditor ? "enabled" : ""}`}
+    {monaco &&
+      <i className={`fa fa-font ${monaco.enabled ? "enabled" : ""}`}
         title={t("toggle fancy editor")}
-        onClick={props.toggleMonacoEditor} />}
+        onClick={monaco.toggle} />}
+    {expanded &&
+      <i className={`fa fa-${expanded.enabled ? "compress" : "expand"}`}
+        title={t("toggle increased editor height")}
+        onClick={expanded.toggle} />}
     {props.toggleViewRaw &&
       <i className={`fa fa-code ${props.viewRaw ? "enabled" : ""}`}
         title={t("toggle code view")}
