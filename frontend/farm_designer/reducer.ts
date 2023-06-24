@@ -7,7 +7,7 @@ import {
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { cloneDeep, isUndefined } from "lodash";
-import { TaggedResource, PointType } from "farmbot";
+import { TaggedResource, PointType, PlantStage } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -63,6 +63,8 @@ export const initialState: DesignerState = {
   cropWaterCurveId: undefined,
   cropSpreadCurveId: undefined,
   cropHeightCurveId: undefined,
+  cropStage: undefined,
+  cropPlantedAt: undefined,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -115,6 +117,14 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<number | undefined>(Actions.SET_CROP_HEIGHT_CURVE_ID, (s, { payload }) => {
     s.cropHeightCurveId = payload;
+    return s;
+  })
+  .add<PlantStage | undefined>(Actions.SET_CROP_STAGE, (s, { payload }) => {
+    s.cropStage = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_CROP_PLANTED_AT, (s, { payload }) => {
+    s.cropPlantedAt = payload;
     return s;
   })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {

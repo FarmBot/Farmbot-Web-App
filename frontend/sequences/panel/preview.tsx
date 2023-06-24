@@ -65,6 +65,7 @@ export class RawDesignerSequencePreview
             dispatch={this.props.dispatch}
             resources={this.props.resources}
             toggleSection={this.toggleSection}
+            sequencesState={this.props.sequencesState}
             showToolbar={true}
             {...this.state} />
         </div>

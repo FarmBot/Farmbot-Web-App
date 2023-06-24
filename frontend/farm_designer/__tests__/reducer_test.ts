@@ -17,7 +17,7 @@ import {
 } from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
-import { PointType } from "farmbot";
+import { PlantStage, PointType } from "farmbot";
 import { UUID } from "../../resources/interfaces";
 import { push } from "../../history";
 
@@ -100,6 +100,24 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.cropHeightCurveId).toEqual(3);
+  });
+
+  it("sets crop stage", () => {
+    const action: ReduxAction<PlantStage | undefined> = {
+      type: Actions.SET_CROP_STAGE,
+      payload: "planned",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropStage).toEqual("planned");
+  });
+
+  it("sets crop planted at", () => {
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_CROP_PLANTED_AT,
+      payload: "2020-01-20T20:00:00.000Z",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropPlantedAt).toEqual("2020-01-20T20:00:00.000Z");
   });
 
   it("sets hovered plant list item", () => {

@@ -2,7 +2,7 @@ import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
 import { svgToUrl } from "../open_farm/icons";
-import { CropLiveSearchResult, OpenfarmSearch } from "../farm_designer/interfaces";
+import { DesignerState, OpenfarmSearch } from "../farm_designer/interfaces";
 import { setDragIcon } from "../farm_designer/map/actions";
 import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import {
@@ -17,11 +17,7 @@ import { BotPosition } from "../devices/interfaces";
 import { validBotLocationData } from "../util/location";
 
 export const mapStateToProps = (props: Everything): AddPlantProps => ({
-  cropSearchResults: props
-    .resources
-    .consumers
-    .farm_designer
-    .cropSearchResults,
+  designer: props.resources.consumers.farm_designer,
   xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
   dispatch: props.dispatch,
   openfarmCropFetch: OFCropFetch,
@@ -50,11 +46,11 @@ const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
   </div>;
 
 export interface AddPlantProps {
-  cropSearchResults: CropLiveSearchResult[];
   dispatch: Function;
   openfarmCropFetch: OpenfarmSearch;
   xy_swap: boolean;
   botPosition: BotPosition;
+  designer: DesignerState;
 }
 
 export class RawAddPlant extends React.Component<AddPlantProps, {}> {
@@ -64,7 +60,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
   }
 
   render() {
-    const { cropSearchResults } = this.props;
+    const { cropSearchResults } = this.props.designer;
     const { result, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
@@ -75,6 +71,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         openfarm_slug={result.crop.slug}
         spread={result.crop.spread}
         botPosition={this.props.botPosition}
+        designer={this.props.designer}
         itemName={result.crop.name} />
     </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>

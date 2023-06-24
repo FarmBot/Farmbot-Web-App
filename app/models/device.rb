@@ -13,7 +13,7 @@ class Device < ApplicationRecord
   THROTTLE_OFF = "Cooldown period has ended. " \
                  "Resuming log storage."
 
-  PLURAL_RESOURCES = %i(alerts curves farm_events farmware_envs farmware_installations
+  PLURAL_RESOURCES = %i(ai_feedbacks alerts curves farm_events farmware_envs farmware_installations
                         folders fragments images logs peripherals pin_bindings plant_templates
                         point_groups points regimens saved_gardens sensor_readings sensors sequences
                         telemetries token_issuances tools webcam_feeds wizard_step_results)

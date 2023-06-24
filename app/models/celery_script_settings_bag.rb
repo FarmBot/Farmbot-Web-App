@@ -533,6 +533,7 @@ module CeleryScriptSettingsBag
       tags: [:data],
     },
     lua: {
+      body: [:pair],
       args: [:lua],
       tags: [:*],
     },

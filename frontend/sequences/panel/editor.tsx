@@ -17,18 +17,37 @@ import {
   setActiveSequenceByName,
 } from "../set_active_sequence_by_name";
 import { push } from "../../history";
-import { urlFriendly } from "../../util";
+import { colors, urlFriendly } from "../../util";
 import { edit, save } from "../../api/crud";
 import {
+  Color,
   TaggedCurve,
   TaggedPoint, TaggedPointGroup, TaggedRegimen, TaggedSequence,
 } from "farmbot";
 import { Path } from "../../internal_urls";
+import { requestAutoGeneration } from "../request_auto_generation";
+import { error } from "../../toast/toast";
+import { noop } from "lodash";
+import { addNewSequenceToFolder } from "../../folders/actions";
 
-export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
+interface SequencesState {
+  processingTitle: boolean;
+  processingColor: boolean;
+}
+
+export class RawDesignerSequenceEditor
+  extends React.Component<SequencesProps, SequencesState> {
+  state: SequencesState = {
+    processingTitle: false,
+    processingColor: false,
+  };
 
   componentDidMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
+  }
+
+  get isProcessing() {
+    return this.state.processingColor || this.state.processingTitle;
   }
 
   render() {
@@ -46,6 +65,49 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
           dispatch={this.props.dispatch} />}
         backTo={Path.sequences()}>
         <div className={"panel-header-icon-group"}>
+          {sequence &&
+            <i title={t("auto-generate sequence title and color")}
+              className={`fa fa-${this.isProcessing
+                ? "spinner fa-pulse"
+                : "magic"}`}
+              onClick={() => {
+                if (!sequence.body.id) {
+                  error(t("Save sequence first."));
+                  return;
+                }
+                this.setState({ processingTitle: true });
+                requestAutoGeneration({
+                  contextKey: "title",
+                  sequenceId: sequence.body.id,
+                  onUpdate: potentialTitle => {
+                    const title = potentialTitle.replace(/"*/g, "");
+                    this.props.dispatch(edit(sequence, { name: title }));
+                  },
+                  onSuccess: potentialTitle => {
+                    const title = potentialTitle.replace(/"*/g, "");
+                    this.setState({ processingTitle: false });
+                    this.props.dispatch(edit(sequence, { name: title }));
+                  },
+                  onError: () => this.setState({ processingTitle: false }),
+                });
+                this.setState({ processingColor: true });
+                requestAutoGeneration({
+                  contextKey: "color",
+                  sequenceId: sequence.body.id,
+                  onUpdate: noop,
+                  onSuccess: potentialColor => {
+                    this.setState({ processingColor: false });
+                    const pColor = potentialColor.toLowerCase().split(".")[0];
+                    const color = colors.includes(pColor as Color)
+                      ? pColor
+                      : "gray";
+                    this.props.dispatch(edit(sequence, {
+                      color: color as Color
+                    }));
+                  },
+                  onError: () => this.setState({ processingColor: false }),
+                });
+              }} />}
           {sequence && <ColorPicker
             current={sequence.body.color || "gray"}
             targetElement={<i title={t("select color")}
@@ -56,6 +118,12 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
               title={t("open full-page editor")}
               onClick={() =>
                 push(Path.sequencePage(urlFriendly(sequence.body.name)))} />}
+          {!sequence && <button
+            className={"fb-button green"}
+            title={t("add new sequence")}
+            onClick={() => addNewSequenceToFolder()}>
+            <i className="fa fa-plus" />
+          </button>}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
@@ -76,7 +144,7 @@ export class RawDesignerSequenceEditor extends React.Component<SequencesProps> {
             getWebAppConfigValue={this.props.getWebAppConfigValue}
             visualized={this.props.visualized}
             hoveredStep={this.props.hoveredStep}
-            menuOpen={this.props.menuOpen} />}
+            sequencesState={this.props.sequencesState} />}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

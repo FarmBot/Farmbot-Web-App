@@ -7,6 +7,7 @@ FarmBot::Application.routes.draw do
 
     # Standard API Resources:
     {
+      ai_feedbacks: [:create],
       alerts: [:create, :destroy, :index],
       curves: [:create, :destroy, :index, :show, :update],
       farm_events: [:create, :destroy, :index, :show, :update],
@@ -34,6 +35,7 @@ FarmBot::Application.routes.draw do
 
     # Singular API Resources:
     {
+      ai: [:create],
       feedback: [:create],
       demo_account: [:create],
       device: [:create, :destroy, :show, :update],

@@ -151,6 +151,7 @@ const ACCOUNT_PANEL = [
   DeviceSetting.accountName,
   DeviceSetting.accountEmail,
   DeviceSetting.changePassword,
+  DeviceSetting.language,
   DeviceSetting.resetAccount,
   DeviceSetting.deleteAccount,
   DeviceSetting.exportAccountData,

@@ -21,7 +21,9 @@ window.location = {
 
 window.alert = jest.fn();
 
-window.TextDecoder = jest.fn();
+window.TextDecoder = jest.fn(() => ({
+  decode: jest.fn(x => "" + x), encoding: "", fatal: false, ignoreBOM: false,
+}));
 
 jest.mock("../error_boundary", () => ({
   ErrorBoundary: (p: { children: React.ReactChild }) => <div>{p.children}</div>,

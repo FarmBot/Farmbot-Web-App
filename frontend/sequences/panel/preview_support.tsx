@@ -29,6 +29,7 @@ import moment from "moment";
 import { edit } from "../../api/crud";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
+import { SequenceReducerState } from "../interfaces";
 
 interface LoadSequenceVersionProps {
   id: string;
@@ -55,6 +56,7 @@ export interface SequencePreviewProps {
   dispatch: Function;
   resources: ResourceIndex;
   getWebAppConfigValue: GetWebAppConfigValue;
+  sequencesState: SequenceReducerState;
 }
 
 export function mapStateToProps(props: Everything): SequencePreviewProps {
@@ -62,6 +64,7 @@ export function mapStateToProps(props: Everything): SequencePreviewProps {
     dispatch: props.dispatch,
     resources: props.resources.index,
     getWebAppConfigValue: getWebAppConfigValue(() => props),
+    sequencesState: props.resources.consumers.sequences,
   };
 }
 
@@ -88,6 +91,7 @@ interface SequencePreviewContentProps {
   licenseCollapsed: boolean;
   toggleSection(key: string): () => void;
   showToolbar?: boolean;
+  sequencesState: SequenceReducerState;
 }
 
 export const SequencePreviewContent = (props: SequencePreviewContentProps) => {
@@ -122,6 +126,7 @@ export const SequencePreviewContent = (props: SequencePreviewContentProps) => {
               sequence={sequence}
               resources={props.resources}
               dispatch={props.dispatch}
+              sequencesState={props.sequencesState}
               toggle={props.toggleSection("stepsCollapsed")} />}
           <License
             collapsed={props.licenseCollapsed}
@@ -223,6 +228,7 @@ const Variables = (props: VariablesProps) => {
 interface StepsProps extends SectionBaseProps {
   resources: ResourceIndex;
   dispatch: Function;
+  sequencesState: SequenceReducerState;
 }
 
 const Steps = (props: StepsProps) =>
@@ -240,6 +246,7 @@ const Steps = (props: StepsProps) =>
               onDrop={noop}
               dispatch={props.dispatch}
               readOnly={true}
+              sequencesState={props.sequencesState}
               resources={props.resources} />
           </ErrorBoundary>
         </div>

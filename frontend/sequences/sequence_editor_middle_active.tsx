@@ -57,6 +57,7 @@ import { Path } from "../internal_urls";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import { newVariableDataValue, newVariableLabel } from "./locals_list/new_variable";
 import { StepButtonCluster } from "./step_button_cluster";
+import { requestAutoGeneration } from "./request_auto_generation";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -260,7 +261,7 @@ export const SequenceBtnGroup = ({
   sequence,
   syncStatus,
   resources,
-  menuOpen,
+  sequencesState,
   getWebAppConfigValue,
   toggleViewSequenceCeleryScript,
   viewCeleryScript,
@@ -275,7 +276,7 @@ export const SequenceBtnGroup = ({
       syncStatus={syncStatus}
       sequence={sequence}
       resources={resources}
-      menuOpen={menuOpen}
+      menuOpen={sequencesState.menuOpen}
       dispatch={dispatch} />
     <div className={"settings-menu-button"}>
       <Popover position={Position.BOTTOM_RIGHT}
@@ -373,7 +374,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
-      menuOpen={props.menuOpen} />
+      sequencesState={props.sequencesState} />
     {props.showName &&
       <SequenceName {...sequenceAndDispatch} />}
   </div>;
@@ -414,6 +415,7 @@ export class SequenceEditorMiddleActive extends
       expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
       visualized: this.props.visualized,
       hoveredStep: this.props.hoveredStep,
+      sequencesState: this.props.sequencesState,
     };
   }
 
@@ -494,7 +496,7 @@ export class SequenceEditorMiddleActive extends
           viewCeleryScript={viewSequenceCeleryScript}
           getWebAppConfigValue={this.props.getWebAppConfigValue}
           visualized={this.props.visualized}
-          menuOpen={this.props.menuOpen} />
+          sequencesState={this.props.sequencesState} />
         : <PublicCopyToolbar
           sequence={sequence}
           sequencePreview={this.state.sequencePreview}
@@ -507,15 +509,12 @@ export class SequenceEditorMiddleActive extends
       <hr />
       {view == "local"
         ? <div className={"sequence-editor-sections"}>
-          <SectionHeader title={t("Description")}
-            collapsed={this.state.descriptionCollapsed}
-            toggle={this.toggleSection("descriptionCollapsed")} />
-          <Collapse isOpen={!this.state.descriptionCollapsed}>
-            <Description
-              key={sequence.uuid + sequence.body.description}
-              dispatch={dispatch}
-              sequence={sequence} />
-          </Collapse>
+          <Description
+            isOpen={!this.state.descriptionCollapsed}
+            toggleOpen={this.toggleSection("descriptionCollapsed")}
+            key={sequence.uuid + sequence.body.description}
+            dispatch={dispatch}
+            sequence={sequence} />
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("Variables")}
               count={Object.values(variableData).length}
@@ -616,6 +615,7 @@ export class SequenceEditorMiddleActive extends
           dispatch={this.props.dispatch}
           resources={this.props.resources}
           toggleSection={this.toggleSection}
+          sequencesState={this.props.sequencesState}
           {...this.state}
           sequence={this.state.sequencePreview} />}
     </div>;
@@ -625,29 +625,63 @@ export class SequenceEditorMiddleActive extends
 interface DescriptionProps {
   dispatch: Function;
   sequence: TaggedSequence;
+  isOpen: boolean;
+  toggleOpen(): void;
 }
 
 const Description = (props: DescriptionProps) => {
   const sequenceDescription = props.sequence.body.description || "";
   const [description, setDescription] = React.useState(sequenceDescription);
   const [isEditing, setIsEditing] = React.useState(false);
-  return <div className={"sequence-description"}>
-    {isEditing
-      ? <div className={"description-input"}>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.currentTarget.value)}
-          onBlur={() => props.dispatch(edit(props.sequence, { description }))} />
-      </div>
-      : <Markdown>{description}</Markdown>}
-    <div className={"description-editor-tools"}>
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  return <div className={"sequence-description-wrapper"}>
+    <SectionHeader title={t("Description")}
+      collapsed={!props.isOpen}
+      toggle={props.toggleOpen} />
+    {props.isOpen &&
+      <i className={`fa fa-${isProcessing ? "spinner fa-pulse" : "magic"}`}
+        title={t("auto-generate sequence description")}
+        onClick={() => {
+          if (!props.sequence.body.id) {
+            error(t("Save sequence first."));
+            return;
+          }
+          setIsProcessing(true);
+          requestAutoGeneration({
+            contextKey: "description",
+            sequenceId: props.sequence.body.id,
+            onUpdate: description => setDescription(description),
+            onSuccess: description => {
+              setIsProcessing(false);
+              props.dispatch(edit(props.sequence, { description }));
+            },
+            onError: () => setIsProcessing(false),
+          });
+        }} />}
+    {props.isOpen &&
       <i className={`fa fa-${isEditing ? "eye" : "pencil"}`}
         title={t("toggle editor view")}
-        onClick={() => setIsEditing(!isEditing)} />
-      {isEditing && <InputLengthIndicator field={"description"}
-        alwaysShow={true}
-        value={description} />}
-    </div>
+        onClick={() => setIsEditing(!isEditing)} />}
+    <Collapse isOpen={props.isOpen}>
+      <div className={"sequence-description"}
+        key={props.sequence.uuid + props.sequence.body.description}>
+        {isEditing
+          ? <div className={"description-input"}>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.currentTarget.value)}
+              onBlur={() => props.dispatch(edit(props.sequence, {
+                description
+              }))} />
+          </div>
+          : <Markdown>{description}</Markdown>}
+        <div className={"description-editor-tools"}>
+          {isEditing && <InputLengthIndicator field={"description"}
+            alwaysShow={true}
+            value={description} />}
+        </div>
+      </div>
+    </Collapse>
   </div>;
 };
 

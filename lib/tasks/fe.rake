@@ -2,8 +2,26 @@ PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
-  "react", "react-dom", "react-test-renderer", "cheerio", # enzyme
-  "parse5", # @types/jsdom
+  {
+    packages: ["react", "react-dom", "react-test-renderer", "cheerio"],
+    reason: "enzyme",
+    version: "3.11.0 (latest working)",
+  },
+  {
+    packages: ["@types/enzyme"],
+    reason: "@types/react",
+    version: "18.2.13 (errors)",
+  },
+  {
+    packages: ["@types/react"],
+    reason: "@blueprintjs/popover2",
+    version: "1.14.11 (error)",
+  },
+  {
+    packages: ["typescript"],
+    reason: "typescript",
+    version: "5.1.3 (crash)",
+  },
 ]
 
 # Load package.json as JSON.
@@ -28,8 +46,19 @@ def fetch_available_upgrades()
   end
   latest_versions = {}
   latest_json.each do |dep, data|
-    unless EXCLUDE.include?(dep) || data["latest"].nil? ||
-      data["latest"].include?("beta")
+    any_excluded = false
+    for exclude in EXCLUDE
+      excluded = exclude[:packages].include?(dep)
+      if excluded
+        any_excluded = true
+        puts "excluding #{dep} v#{data["latest"]} because of " \
+              "#{exclude[:reason]} v#{exclude[:version]}\n"
+      end
+      if exclude[:reason].include?(dep)
+        puts "  #{dep} latest v#{data["latest"]}\n"
+      end
+    end
+    unless any_excluded || data["latest"].nil? || data["latest"].include?("beta")
       latest_versions[dep] = data["latest"]
     end
   end
@@ -75,6 +104,7 @@ namespace :fe do
         puts "Aborted. No changes made."
       end
     else
+      puts "\n"
       puts "No updates available."
     end
   end

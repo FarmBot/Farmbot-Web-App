@@ -2,13 +2,20 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { StepParams } from "../interfaces";
 import { Row, Col, devDocLinkClick } from "../../ui";
-import { StepWrapper } from "../step_ui";
+import { StateToggleKey, StepWrapper } from "../step_ui";
 import { Lua } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 
 export const TileLua = (props: StepParams<Lua>) => {
   const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
+  const [expanded, setExpanded] = React.useState(false);
+  const stateToggles = {
+    [StateToggleKey.monacoEditor]:
+      { enabled: monaco, toggle: () => setMonaco(!monaco) },
+    [StateToggleKey.luaExpanded]:
+      { enabled: expanded, toggle: () => setExpanded(!expanded) },
+  };
   return <StepWrapper {...props}
     className={"lua-step"}
     helpText={ToolTips.LUA}
@@ -17,11 +24,10 @@ export const TileLua = (props: StepParams<Lua>) => {
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}
-    monacoEditor={monaco}
-    toggleMonacoEditor={() => setMonaco(!monaco)}>
+    stateToggles={stateToggles}>
     <Row>
       <Col xs={12}>
-        <LuaTextArea<Lua> {...props} useMonacoEditor={monaco} />
+        <LuaTextArea<Lua> {...props} stateToggles={stateToggles} />
       </Col>
     </Row>
   </StepWrapper>;

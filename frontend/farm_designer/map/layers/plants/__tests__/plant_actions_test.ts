@@ -55,6 +55,7 @@ describe("newPlantKindAndBody()", () => {
       cropName: "Mint",
       openedSavedGarden: "SavedGarden.1.1",
       depth: 0,
+      designer: fakeDesignerState(),
     };
     const result = newPlantKindAndBody(p);
     expect(result).toEqual(expect.objectContaining({
@@ -72,6 +73,7 @@ describe("createPlant()", () => {
     dispatch: jest.fn(),
     openedSavedGarden: undefined,
     depth: 0,
+    designer: fakeDesignerState(),
   });
 
   it("creates plant", () => {

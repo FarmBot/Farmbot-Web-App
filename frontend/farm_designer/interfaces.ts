@@ -22,6 +22,7 @@ import {
   TaggedPlantTemplate,
   TaggedPlantPointer,
   TaggedCurve,
+  PlantStage,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
@@ -182,6 +183,8 @@ export interface DesignerState {
   cropWaterCurveId: number | undefined;
   cropSpreadCurveId: number | undefined;
   cropHeightCurveId: number | undefined;
+  cropStage: PlantStage | undefined;
+  cropPlantedAt: string | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

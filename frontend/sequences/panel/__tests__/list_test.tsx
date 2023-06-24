@@ -53,6 +53,7 @@ import {
 import { installSequence } from "../../actions";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
+import { emptyState } from "../../../resources/reducer";
 
 API.setBaseUrl("");
 
@@ -66,8 +67,7 @@ describe("<DesignerSequenceList />", () => {
     hardwareFlags: fakeHardwareFlags(),
     farmwareData: fakeFarmwareData(),
     getWebAppConfigValue: jest.fn(),
-    menuOpen: undefined,
-    stepIndex: undefined,
+    sequencesState: emptyState().consumers.sequences,
     folderData: mapStateToFolderProps(fakeState()),
     sequencesPanelState: sequencesPanelState(),
   });

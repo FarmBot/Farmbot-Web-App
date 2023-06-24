@@ -10,10 +10,10 @@ end
 SimpleCov.coverage_dir("coverage_api")
 
 if ENV["CODECOV_TOKEN"]
-  require "codecov"
+  require "simplecov-cobertura"
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::Codecov,
+    SimpleCov::Formatter::CoberturaFormatter,
   ])
 else
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
@@ -21,6 +21,7 @@ else
   ])
 end
 require "pry"
+require "webmock/rspec"
 
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
@@ -142,6 +143,7 @@ def destroy_everything!
     FarmEvent,
     Release,
     WizardStepResult,
+    AiFeedback,
     FarmwareEnv,
     Alert,
     Sensor,

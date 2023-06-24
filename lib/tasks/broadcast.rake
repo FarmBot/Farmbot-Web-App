@@ -61,7 +61,7 @@ class BroadcastToAll < Mutations::Command
   end
 end
 
-def prompt(query)
+def simple_prompt(query)
   puts "=== #{query}"
   output = STDIN.gets.chomp
   output.length == 0 ? nil : output
@@ -83,10 +83,10 @@ namespace :broadcast do
   desc "Create a global bulletin for all users"
   task to_all: :environment do
     puts "BEGIN"
-    BroadcastToAll.run!(type: prompt("(optional) Enter `type`"),
-                        href: prompt("(optional) Enter href"),
-                        href_label: prompt("(optional) Enter href label"),
-                        title: prompt("Enter title"),
+    BroadcastToAll.run!(type: simple_prompt("(optional) Enter `type`"),
+                        href: simple_prompt("(optional) Enter href"),
+                        href_label: simple_prompt("(optional) Enter href label"),
+                        title: simple_prompt("Enter title"),
                         content: multiline_prompt("Enter content"))
     puts "DONE"
   end

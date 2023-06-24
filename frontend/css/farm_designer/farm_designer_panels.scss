@@ -681,6 +681,7 @@
       label {
         color: $dark_gray;
       }
+      .update-button,
       .preview-button,
       .cancel-button,
       .save-button {
@@ -925,6 +926,7 @@
       label {
         color: $dark_gray;
       }
+      .update-button,
       .preview-button,
       .cancel-button,
       .save-button {
@@ -1119,11 +1121,15 @@ li {
   .grid-planting-toggle {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    label {
+      margin-top: 1rem;
+    }
   }
   .fb-toggle-button {
     float: none;
     margin-left: 1rem;
   }
+  .update-button,
   .preview-button,
   .cancel-button,
   .save-button {
@@ -1138,6 +1144,13 @@ li {
     margin-top: 1.25rem;
     margin-right: 1.5rem;
     &:hover { color: $white; }
+  }
+}
+
+.planted-at-selection,
+.plant-stage-selection {
+  label {
+    margin-top: 1rem !important;
   }
 }
 
@@ -1929,6 +1942,13 @@ li {
   }
   .fa-expand {
     margin-top: 0.25rem;
+    color: $dark_gray;
+  }
+  .fa-magic,
+  .fa-spinner {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    margin-right: 2rem;
     color: $dark_gray;
   }
 }
@@ -3030,7 +3050,9 @@ li {
           color: $white;
         }
       }
-      .fa-expand {
+      .fa-expand,
+      .fa-magic,
+      .fa-spinner {
         color: $white;
       }
     }

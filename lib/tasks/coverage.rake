@@ -102,6 +102,7 @@ def fetch_build_data()
   end
   clean_build_data = build_data
     .reject { |build| build["covered_percent"].nil? }
+    .reject { |build| build["branch"].nil? }
     .reject { |build| build["branch"].include? "/" }
   puts "Using data from #{clean_build_data.length} of #{build_data.length}" \
        " recent coverage builds."

@@ -15,6 +15,7 @@ import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
 import { init } from "../../../api/crud";
 import { Actions } from "../../../constants";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("<PlantGrid />", () => {
   const fakeProps = (): PlantGridProps => ({
@@ -42,6 +43,24 @@ describe("<PlantGrid />", () => {
     expect(cancel.text()).toContain("Cancel");
     expect(save.text()).toContain("Save");
     expect(el.state().status).toEqual("dirty");
+  });
+
+  it("renders update button", () => {
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ autoPreview: false });
+    const previewButton = wrapper.find("a.preview-button");
+    expect(previewButton.text()).toContain("Preview");
+    previewButton.simulate("click");
+    expect(init).toHaveBeenCalledTimes(6);
+    wrapper.setState({ offsetPacking: true });
+    const cancel = wrapper.find("a.cancel-button");
+    const update = wrapper.find("a.update-button");
+    expect(cancel.text()).toContain("Cancel");
+    expect(update.text()).toContain("Update");
+    expect(wrapper.state().status).toEqual("dirty");
+    expect(wrapper.text()).not.toContain("save");
+    expect(wrapper.find("a.save-button").length).toEqual(0);
   });
 
   it("saves a grid", async () => {
@@ -81,7 +100,7 @@ describe("<PlantGrid />", () => {
         numPlantsV: 11
       }
     });
-    wrapper.instance().performPreview();
+    wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
       "Please make a grid with less than 100 plants");
   });
@@ -97,9 +116,49 @@ describe("<PlantGrid />", () => {
         numPlantsV: 11
       }
     });
-    wrapper.instance().performPreview();
+    wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
       "Please make a grid with less than 100 points");
+  });
+
+  it("doesn't perform preview", () => {
+    const p = fakeProps();
+    p.openfarm_slug = undefined;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({
+      autoPreview: false,
+      grid: {
+        ...wrapper.state().grid,
+        numPlantsH: 10,
+        numPlantsV: 11
+      },
+    });
+    wrapper.instance().performPreview()();
+    expect(error).not.toHaveBeenCalled();
+    expect(init).not.toHaveBeenCalled();
+  });
+
+  it("performs preview", () => {
+    const p = fakeProps();
+    p.openfarm_slug = "beet";
+    const designer = fakeDesignerState();
+    designer.cropStage = "planted";
+    designer.cropPlantedAt = "2020-01-20T20:00:00.000Z";
+    designer.cropWaterCurveId = 1;
+    designer.cropSpreadCurveId = 2;
+    designer.cropHeightCurveId = 3;
+    p.designer = designer;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.instance().performPreview()();
+    expect(error).not.toHaveBeenCalled();
+    expect(init).toHaveBeenCalledTimes(6);
+    expect(init).toHaveBeenCalledWith("Point", expect.objectContaining({
+      plant_stage: "planted",
+      planted_at: "2020-01-20T20:00:00.000Z",
+      water_curve_id: 1,
+      spread_curve_id: 2,
+      height_curve_id: 3,
+    }));
   });
 
   it("discards unsaved changes", () => {
@@ -155,7 +214,7 @@ describe("<PlantGrid />", () => {
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     expect(wrapper.state().cameraView).toBeFalsy();
-    wrapper.find(".grid-planting-toggle").last().find("button")
+    wrapper.find(".grid-planting-toggle").at(1).find("button")
       .simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SHOW_CAMERA_VIEW_POINTS,
@@ -170,7 +229,7 @@ describe("<PlantGrid />", () => {
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     wrapper.setState({ cameraView: true });
-    wrapper.find(".grid-planting-toggle").last().find("button")
+    wrapper.find(".grid-planting-toggle").at(1).find("button")
       .simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SHOW_CAMERA_VIEW_POINTS,
@@ -178,5 +237,21 @@ describe("<PlantGrid />", () => {
     });
     expect(wrapper.state().cameraView).toBeFalsy();
     expect(init).toHaveBeenCalledTimes(6);
+  });
+
+  it("toggles auto-preview off", () => {
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ autoPreview: true });
+    wrapper.find(".grid-planting-toggle").at(1).find("button").simulate("click");
+    expect(wrapper.state().autoPreview).toBeFalsy();
+  });
+
+  it("toggles auto-preview on", () => {
+    const p = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    wrapper.setState({ autoPreview: false });
+    wrapper.find(".grid-planting-toggle").at(1).find("button").simulate("click");
+    expect(wrapper.state().autoPreview).toBeTruthy();
   });
 });

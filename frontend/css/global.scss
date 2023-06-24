@@ -2000,6 +2000,9 @@ ul {
     &.full {
       height: 40rem;
     }
+    &.expanded {
+      height: 70vh;
+    }
   }
   .char-limit {
     padding: 0.5rem;
@@ -2008,6 +2011,9 @@ ul {
     height: 100% !important;
     font-family: monospace;
     pointer-events: revert !important;
+    font-size: 1.4rem;
+    padding: 0 3rem 0 2.6rem;
+    line-height: 1.9rem;
   }
 }
 

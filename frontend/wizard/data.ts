@@ -42,6 +42,7 @@ import {
   RpiSelection,
   DownloadOS,
   DownloadImager,
+  Language,
 } from "./checks";
 import { TaggedWizardStepResult } from "farmbot";
 import {
@@ -100,6 +101,7 @@ const WIZARD_TOC =
 
 export enum WizardStepSlug {
   intro = "intro",
+  language = "language",
   orderInfo = "orderInfo",
   model = "model",
   rpi = "rpi",
@@ -198,6 +200,16 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           description: t("I pressed the wrong button"),
           tips: t("Press YES."),
         },
+      ],
+    },
+    {
+      section: WizardSectionSlug.intro,
+      slug: WizardStepSlug.language,
+      title: t("Language"),
+      content: t("What is your preferred language?"),
+      component: Language,
+      question: t("Continue?"),
+      outcomes: [
       ],
     },
     {

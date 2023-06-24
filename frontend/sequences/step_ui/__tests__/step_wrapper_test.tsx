@@ -7,6 +7,7 @@ import {
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<StepWrapper />", () => {
   const fakeProps = (): StepWrapperProps => ({
@@ -19,6 +20,7 @@ describe("<StepWrapper />", () => {
     index: 0,
     children: "child",
     resources: buildResourceIndex([]).index,
+    sequencesState: emptyState().consumers.sequences,
   });
 
   it("renders", () => {
@@ -52,5 +54,13 @@ describe("<StepWrapper />", () => {
     wrapper.instance().toggleViewRaw?.();
     expect(wrapper.state().viewRaw).toEqual(false);
     expect(wrapper.text().toLowerCase()).not.toContain("args");
+  });
+
+  it("sets element key", () => {
+    const p = fakeProps();
+    const wrapper = mount<StepWrapper>(<StepWrapper {...p} />);
+    expect(wrapper.state().updateKey).toEqual(undefined);
+    wrapper.instance().setKey("code");
+    expect(wrapper.state().updateKey).toEqual("code");
   });
 });

@@ -1,4 +1,5 @@
 import { BotPosition } from "../../devices/interfaces";
+import { DesignerState } from "../../farm_designer/interfaces";
 
 export type PlantGridKey =
   | "startX"
@@ -16,6 +17,7 @@ export interface PlantGridState {
   offsetPacking: boolean;
   cameraView: boolean;
   previous: string;
+  autoPreview: boolean;
 }
 
 export interface PlantGridProps {
@@ -29,6 +31,7 @@ export interface PlantGridProps {
   close?: () => void;
   z?: number;
   meta?: Record<string, string | undefined>;
+  designer?: DesignerState;
 }
 
 export interface PlantGridInitOption {
@@ -40,6 +43,7 @@ export interface PlantGridInitOption {
   radius?: number;
   z?: number;
   meta?: Record<string, string | undefined>;
+  designer?: DesignerState;
 }
 
 interface GridInputPropsBase {

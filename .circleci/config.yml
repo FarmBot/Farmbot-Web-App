@@ -56,6 +56,17 @@ commands:
           name: Run Ruby Tests
           command: |
             sudo docker compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+      - run:
+          name: Upload to Codecov
+          command: |
+            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+            curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+            gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+            shasum -a 256 -c codecov.SHA256SUM
+            chmod +x codecov
+            ./codecov -t $CODECOV_TOKEN -f coverage_api/coverage.xml
   jest-commands:
     steps:
       - run:
@@ -82,7 +93,7 @@ commands:
           command: |
             if [ "$COVERAGE_AVAILABLE" ]
             then
-              sudo docker compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
+              sudo docker compose run -e COVERALLS_REPO_TOKEN="$COVERALLS_REPO_TOKEN" web npm run coverage || [ $CIRCLE_BRANCH == "staging" ]
             fi
           when: always # change to `on_success` for a stricter comparison
 

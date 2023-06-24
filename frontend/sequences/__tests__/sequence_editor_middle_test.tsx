@@ -7,6 +7,7 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import {
   fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
+import { emptyState } from "../../resources/reducer";
 
 describe("<SequenceEditorMiddle/>", () => {
   function fakeProps(): SequenceEditorMiddleProps {
@@ -19,7 +20,7 @@ describe("<SequenceEditorMiddle/>", () => {
       hardwareFlags: fakeHardwareFlags(),
       farmwareData: fakeFarmwareData(),
       getWebAppConfigValue: jest.fn(),
-      menuOpen: undefined,
+      sequencesState: emptyState().consumers.sequences,
     };
   }
 

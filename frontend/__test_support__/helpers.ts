@@ -38,3 +38,40 @@ export function changeBlurableInput(
   input.simulate("change", { currentTarget: { value } });
   input.simulate("blur", { currentTarget: { value } });
 }
+
+export const fetchResponse = (
+  read: () => Promise<ReadableStreamReadResult<never>>,
+  response?: Partial<Response>,
+): Response => ({
+  ok: true,
+  body: {
+    getReader: () => ({
+      read,
+      cancel: jest.fn(),
+      releaseLock: jest.fn(),
+      closed: Promise.resolve(undefined),
+    }),
+    locked: false,
+    cancel: jest.fn(),
+    pipeThrough: jest.fn(),
+    pipeTo: jest.fn(),
+    tee: jest.fn(),
+  },
+  headers: {
+    append: jest.fn(), delete: jest.fn(),
+    get: jest.fn(), has: jest.fn(), set: jest.fn(), forEach: jest.fn()
+  },
+  redirected: false,
+  status: 200,
+  statusText: "status",
+  type: "default",
+  url: "",
+  clone: jest.fn(),
+  bodyUsed: false,
+  arrayBuffer: jest.fn(),
+  blob: jest.fn(),
+  formData: jest.fn(),
+  json: jest.fn(),
+  text: jest.fn(),
+  ...response,
+} as Response);

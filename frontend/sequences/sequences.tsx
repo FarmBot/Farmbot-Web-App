@@ -33,10 +33,11 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
   }
 
   render() {
-    const { sequence } = this.props;
+    const { sequence, sequencesState } = this.props;
+    const { stepIndex } = sequencesState;
     const sequenceSelected = sequence && isTaggedSequence(sequence);
     const sequenceOpen = sequenceSelected ? "open" : "";
-    const insertingStep = isNumber(this.props.stepIndex) ? "inserting-step" : "";
+    const insertingStep = isNumber(stepIndex) ? "inserting-step" : "";
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
     return <Page className="sequence-page">
       <Row>
@@ -61,7 +62,7 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
             hardwareFlags={this.props.hardwareFlags}
             farmwareData={this.props.farmwareData}
             getWebAppConfigValue={this.props.getWebAppConfigValue}
-            menuOpen={this.props.menuOpen} />
+            sequencesState={sequencesState} />
         </CenterPanel>
         <RightPanel
           className={`step-button-cluster-panel ${activeClasses}`}
@@ -78,7 +79,7 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
             farmwareData={this.props.farmwareData}
             sequences={this.props.sequences}
             resources={this.props.resources}
-            stepIndex={this.props.stepIndex} />
+            stepIndex={stepIndex} />
         </RightPanel>
       </Row>
     </Page>;

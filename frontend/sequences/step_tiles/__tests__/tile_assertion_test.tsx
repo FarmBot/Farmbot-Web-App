@@ -31,4 +31,11 @@ describe("<TileAssertion />", () => {
     wrapper.find(".fa-font").simulate("click");
     expect(wrapper.find(".fallback-lua-editor").length).toEqual(1);
   });
+
+  it("toggles expanded view", () => {
+    const wrapper = mount(<TileAssertion {...fakeAssertProps()} />);
+    expect(wrapper.find(".expanded").length).toEqual(0);
+    wrapper.find(".fa-expand").simulate("click");
+    expect(wrapper.find(".expanded").length).toEqual(1);
+  });
 });

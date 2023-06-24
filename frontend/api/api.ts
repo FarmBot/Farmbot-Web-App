@@ -177,10 +177,14 @@ export class API {
   get releasesPath() { return `${this.baseUrl}/api/releases?platform=`; }
   /** /api/feedback */
   get feedbackPath() { return `${this.baseUrl}/api/feedback`; }
+  /** /api/ai_feedbacks */
+  get aiFeedbacksPath() { return `${this.baseUrl}/api/ai_feedbacks`; }
   /** /api/featured_sequences */
   get featuredSequencesPath() { return `${this.baseUrl}/api/featured_sequences`; }
   /** /api/wizard_step_results/:id */
   get wizardStepResultsPath() { return `${this.baseUrl}/api/wizard_step_results/`; }
   /** /api/curves/:id */
   get curvesPath() { return `${this.baseUrl}/api/curves/`; }
+  /** /api/ai */
+  get aiPath() { return `${this.baseUrl}/api/ai`; }
 }

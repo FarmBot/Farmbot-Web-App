@@ -153,7 +153,7 @@ export const setAxisLength = (props: SetAxisLengthProps) => () => {
   const key = axisSettingKeys[axis];
   const value = isUndefined(axisPosition)
     ? undefined
-    : "" + axisPosition * calculateScale(sourceFwConfig)[axis];
+    : "" + Math.abs(axisPosition) * calculateScale(sourceFwConfig)[axis];
   !isUndefined(value) && dispatch(updateMCU(key, value));
 };
 
