@@ -2,7 +2,7 @@ module Api
   class AisController < Api::AbstractController
     include ActionController::Live
 
-    EXPIRY = Rails.env.test? ? 0.seconds : 1.day
+    EXPIRY = Rails.env.test? ? 0.seconds : 1.week
     THROTTLE_POLICY = ThrottlePolicy.new(name, min: 10, hour: 100, day: 200)
 
     def create
