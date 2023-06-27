@@ -58,19 +58,22 @@ const readStream = (props: ReadStreamProps): Promise<void> | undefined => {
   return reader.read()
     .then(({ done, value }) => {
       if (done) {
-        onSuccess(output);
+        onSuccess(extractLuaCode(output));
         reader.cancel();
         return;
       }
       const chunk = decoder.decode(value);
       output += chunk;
-      output = output.split("\n")
-        .filter(line => line != "```lua" && line != "lua" && line != "```")
-        .join("\n");
       onUpdate(output);
       return readStream({ ...props, output });
     })
     .catch(noop);
+};
+
+export const extractLuaCode = (generatedOutput: string) => {
+  if (!generatedOutput.includes("```lua")) { return generatedOutput; }
+  const luaCode = generatedOutput.split("```lua")[1].split("```")[0].trim();
+  return luaCode;
 };
 
 export const PLACEHOLDER_PROMPTS = [

@@ -21,6 +21,7 @@ module Api
       end
       prompt = system_prompt + user_prompt
       # puts prompt
+      puts "AI #{context_key} written prompt: #{inner_prompt}" unless Rails.env.test?
       puts "AI #{context_key} prompt length: #{prompt.length}" unless Rails.env.test?
 
       violation = THROTTLE_POLICY.violation_for(current_device.id)

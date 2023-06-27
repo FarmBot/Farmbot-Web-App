@@ -10,7 +10,9 @@ jest.mock("../../redux/store", () => ({
 import { fetchResponse } from "../../__test_support__/helpers";
 import { API } from "../../api";
 import { error } from "../../toast/toast";
-import { requestAutoGeneration, retrievePrompt } from "../request_auto_generation";
+import {
+  extractLuaCode, requestAutoGeneration, retrievePrompt,
+} from "../request_auto_generation";
 
 describe("requestAutoGeneration()", () => {
   API.setBaseUrl("");
@@ -74,5 +76,15 @@ describe("retrievePrompt()", () => {
   it("doesn't return prompt", () => {
     expect(retrievePrompt({ kind: "lua", args: { lua: "return" } })).toEqual("");
     expect(retrievePrompt({ kind: "sync", args: {} })).toEqual("");
+  });
+});
+
+describe("extractLuaCode()", () => {
+  it("extracts lua code", () => {
+    expect(extractLuaCode(
+      "Here is the code:\n```lua\n-- Return\nreturn\n```\nThe code returns."))
+      .toEqual("-- Return\nreturn");
+    expect(extractLuaCode("```lua\nreturn\n```")).toEqual("return");
+    expect(extractLuaCode("return")).toEqual("return");
   });
 });
