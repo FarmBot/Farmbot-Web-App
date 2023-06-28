@@ -144,6 +144,7 @@ describe("<ResourceTitle />", () => {
 
   it("changes name", () => {
     const wrapper = mount(<ResourceTitle {...fakeProps()} />);
+    expect(wrapper.find("span").first().props().style).toEqual({});
     wrapper.find("span").first().simulate("click");
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "abc" } });
@@ -162,5 +163,13 @@ describe("<ResourceTitle />", () => {
     wrapper.find("input").first().simulate("blur");
     expect(edit).toHaveBeenCalled();
     expect(save).toHaveBeenCalled();
+  });
+
+  it("is read-only", () => {
+    const p = fakeProps();
+    p.readOnly = true;
+    const wrapper = mount(<ResourceTitle {...p} />);
+    expect(wrapper.find("span").first().props().style)
+      .toEqual({ pointerEvents: "none" });
   });
 });

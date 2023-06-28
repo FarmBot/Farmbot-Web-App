@@ -34,6 +34,9 @@ module Api
         response.headers["Content-Type"] = "text/event-stream"
         response.headers["Last-Modified"] = Time.now.httpdate
         result = make_request(system_prompt, user_prompt, response.stream)
+        if !result.dig("error").nil?
+          render json: result, status: 422
+        end
       end
     ensure
       response.stream.close
@@ -71,29 +74,43 @@ module Api
     def lua_system_prompt
       "You will be provided with the documentation for writing Lua scripts " \
       "that can control a FarmBot machine and interact with the FarmBot Web " \
-      "App API. Using only the functions available in the documentation " \
-      "and the Lua standard library, write concise code that satisfies the " \
-      "user's prompt. Comment the code in #{user.language}. " \
-      "Limit prose and only return the commented code."
+      "App API. " \
+      "#{instructions}\n" \
+      "---\n" \
+      "Documentation:\n" \
+      "#{lua_function_docs}"
     end
 
     def lua_user_prompt
-      "Documentation:\n" \
-      "#{lua_function_docs}\n" \
-      "---\n" \
       "The user's FarmBot has the following Peripherals, Sensors, and Tools:\n" \
       "#{named_resources}\n" \
-      "Peripherals can be operated using their pin_number, " \
+      "Define and use the `pin_number` values from the above JSON directly " \
+      "in the code when necessary. " \
+      "Peripherals can be turned on, turned off, and toggled using their pin_number, " \
+      "(for example, to toggle a peripheral, use `toggle_pin(pin_number)`) " \
       "Sensors can be read using their pin_number, " \
       "and Tool objects can be fetched from the API by their id.\n" \
       "---\n" \
       "User prompt:\n" \
-      "#{raw_json[:prompt]}"
+      "#{raw_json[:prompt]}\n" \
+      "---\n" \
+      "Instructions:\n" \
+      "#{instructions}"
+    end
+
+    def instructions
+      "Using only the functions available in the documentation " \
+      "and the Lua standard library, write concise code that satisfies the " \
+      "user's prompt. Comment the code in #{user.language}. " \
+      "Limit prose and only return the commented code. " \
+      "Do not write additional prose or information before or after " \
+      "the commented code."
     end
 
     def make_request(system_prompt, user_prompt, stream)
       url = "https://api.openai.com/v1/chat/completions"
-      lua_request = raw_json[:context_key] == "lua"
+      context_key = raw_json[:context_key]
+      lua_request = context_key == "lua"
       payload = {
         "model" => lua_request ? "gpt-3.5-turbo-16k" : "gpt-3.5-turbo",
         "messages" => [
@@ -120,6 +137,8 @@ module Api
             total += chunk.bytes.length
             diff = size - total
             if (diff != 0 && !missed) || Rails.env.test?
+              puts "AI #{context_key} error: diff" \
+                   " (#{size} - #{total} = #{diff})" unless Rails.env.test?
               current_device.tell("Response stream incomplete.", ["toast"], "warn")
               missed = true
             end
@@ -132,13 +151,21 @@ module Api
                 full += content
                 stream.write(content)
               else
-                puts "AI #{raw_json[:context_key]} result: #{full.to_json}"
+                puts "AI #{context_key} result: #{full.to_json}"
+                puts "AI #{context_key} finish reason:" \
+                     " #{output["finish_reason"]}" unless Rails.env.test?
+                stream.close
+                return {}
               end
             end
           end
         end
         {}
-      rescue *[Faraday::ConnectionFailed, Faraday::TimeoutError] => exception
+      rescue => exception
+        puts "AI #{context_key} error:" \
+             " (#{exception.message})" unless Rails.env.test?
+        current_device.tell("Please try again", ["toast"], "error")
+        stream.close
         return {"error" => {"message" => exception.message}}
       end
     end

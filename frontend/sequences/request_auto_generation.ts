@@ -81,10 +81,10 @@ export const PLACEHOLDER_PROMPTS = [
   + " coordinates (100,100,0) and going to (200,300,0), spaced apart by"
   + " 100mm in the X and Y and directions. The points should be blue and"
   + " have a radius of 25.",
-  "Move FarmBot over an XY grid of points 150mm apart, starting at"
-  + " (0,0,0) and ending at the maximum X and Y coordinates FarmBot"
-  + " can reach. At each point, take a photo. Track the percent"
-  + " completion with a job.",
+  "Move FarmBot over an XY grid of points starting at (0,0,0) and ending"
+  + " at the max X and max Y coordinates of the garden. Grid points should"
+  + " have a spacing of 150mm. At each point, take a photo. Track the"
+  + " percent completion with a job.",
   "Move in a 200mm diameter circle centered around a location"
   + " variable named \"Plant\", stopping at 10 different points along"
   + " the circle. The Z coordinate value should be 0 for all points. At"
