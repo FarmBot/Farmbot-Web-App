@@ -66,48 +66,14 @@ export class RawDesignerSequenceEditor
         backTo={Path.sequences()}>
         <div className={"panel-header-icon-group"}>
           {sequence &&
-            <i title={t("auto-generate sequence title and color")}
-              className={`fa fa-${this.isProcessing
-                ? "spinner fa-pulse"
-                : "magic"}`}
-              onClick={() => {
-                if (!sequence.body.id) {
-                  error(t("Save sequence first."));
-                  return;
-                }
-                this.setState({ processingTitle: true });
-                requestAutoGeneration({
-                  contextKey: "title",
-                  sequenceId: sequence.body.id,
-                  onUpdate: potentialTitle => {
-                    const title = potentialTitle.replace(/"*/g, "");
-                    this.props.dispatch(edit(sequence, { name: title }));
-                  },
-                  onSuccess: potentialTitle => {
-                    const title = potentialTitle.replace(/"*/g, "");
-                    this.setState({ processingTitle: false });
-                    this.props.dispatch(edit(sequence, { name: title }));
-                  },
-                  onError: () => this.setState({ processingTitle: false }),
-                });
-                this.setState({ processingColor: true });
-                requestAutoGeneration({
-                  contextKey: "color",
-                  sequenceId: sequence.body.id,
-                  onUpdate: noop,
-                  onSuccess: potentialColor => {
-                    this.setState({ processingColor: false });
-                    const pColor = potentialColor.toLowerCase().split(".")[0];
-                    const color = colors.includes(pColor as Color)
-                      ? pColor
-                      : "gray";
-                    this.props.dispatch(edit(sequence, {
-                      color: color as Color
-                    }));
-                  },
-                  onError: () => this.setState({ processingColor: false }),
-                });
-              }} />}
+            <AutoGenerateButton
+              dispatch={this.props.dispatch}
+              sequence={sequence}
+              isProcessing={this.isProcessing}
+              setTitleProcessing={processingTitle =>
+                this.setState({ processingTitle })}
+              setColorProcessing={processingColor =>
+                this.setState({ processingColor })} />}
           {sequence && <ColorPicker
             current={sequence.body.color || "gray"}
             targetElement={<i title={t("select color")}
@@ -185,6 +151,62 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
       onClick={() => setIsEditing(true)}>
       {props.resource?.body.name || props.fallback}
     </span>;
+};
+
+interface AutoGenerateButtonProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+  isProcessing: boolean;
+  setTitleProcessing(state: boolean): void;
+  setColorProcessing(state: boolean): void;
+}
+
+const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
+  const {
+    dispatch, sequence, isProcessing, setTitleProcessing, setColorProcessing,
+  } = props;
+  return <i title={t("auto-generate sequence title and color")}
+    className={`fa fa-${isProcessing
+      ? "spinner fa-pulse"
+      : "magic"}`}
+    onClick={() => {
+      if (!sequence.body.id) {
+        error(t("Save sequence first."));
+        return;
+      }
+      setTitleProcessing(true);
+      const updateTitle = (title: string) =>
+        dispatch(edit(sequence, { name: title.replace(/"*/g, "") }));
+      requestAutoGeneration({
+        contextKey: "title",
+        sequenceId: sequence.body.id,
+        onUpdate: title => {
+          updateTitle(title);
+        },
+        onSuccess: title => {
+          setTitleProcessing(false);
+          updateTitle(title);
+        },
+        onError: () => setTitleProcessing(false),
+      });
+      setColorProcessing(true);
+      requestAutoGeneration({
+        contextKey: "color",
+        sequenceId: sequence.body.id,
+        onUpdate: noop,
+        onSuccess: potentialColor => {
+          setColorProcessing(false);
+          const pColor = potentialColor.toLowerCase().split(".")[0];
+          const color = colors.includes(pColor as Color)
+            ? pColor
+            : "gray";
+          dispatch(edit(sequence, {
+            color: color as Color
+          }));
+        },
+        onError: () => setColorProcessing(false),
+      });
+    }} />;
 };
 
 export const DesignerSequenceEditor =

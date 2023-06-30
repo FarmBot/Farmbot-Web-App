@@ -58,19 +58,22 @@ const readStream = (props: ReadStreamProps): Promise<void> | undefined => {
   return reader.read()
     .then(({ done, value }) => {
       if (done) {
-        onSuccess(output);
+        onSuccess(extractLuaCode(output));
         reader.cancel();
         return;
       }
       const chunk = decoder.decode(value);
       output += chunk;
-      output = output.split("\n")
-        .filter(line => line != "```lua" && line != "lua" && line != "```")
-        .join("\n");
       onUpdate(output);
       return readStream({ ...props, output });
     })
     .catch(noop);
+};
+
+export const extractLuaCode = (generatedOutput: string) => {
+  if (!generatedOutput.includes("```lua")) { return generatedOutput; }
+  const luaCode = generatedOutput.split("```lua")[1].split("```")[0].trim();
+  return luaCode;
 };
 
 export const PLACEHOLDER_PROMPTS = [
@@ -78,10 +81,10 @@ export const PLACEHOLDER_PROMPTS = [
   + " coordinates (100,100,0) and going to (200,300,0), spaced apart by"
   + " 100mm in the X and Y and directions. The points should be blue and"
   + " have a radius of 25.",
-  "Move FarmBot over an XY grid of points 150mm apart, starting at"
-  + " (0,0,0) and ending at the maximum X and Y coordinates FarmBot"
-  + " can reach. At each point, take a photo. Track the percent"
-  + " completion with a job.",
+  "Move FarmBot over an XY grid of points starting at (0,0,0) and ending"
+  + " at the max X and max Y coordinates of the garden. Grid points should"
+  + " have a spacing of 150mm. At each point, take a photo. Track the"
+  + " percent completion with a job.",
   "Move in a 200mm diameter circle centered around a location"
   + " variable named \"Plant\", stopping at 10 different points along"
   + " the circle. The Z coordinate value should be 0 for all points. At"

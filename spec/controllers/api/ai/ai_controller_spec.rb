@@ -68,7 +68,7 @@ describe Api::AisController do
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
     post :create, body: payload.to_json
-    expect(response.status).to eq(200)
+    expect(response.status).to eq(422)
   end
 
   it "handles connection issues" do
@@ -89,7 +89,7 @@ describe Api::AisController do
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
     post :create, body: payload.to_json
-    expect(response.status).to eq(200)
+    expect(response.status).to eq(422)
   end
 
   it "handles empty content" do
