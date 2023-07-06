@@ -92,3 +92,14 @@ export interface MovementState {
   start: BotPosition;
   distance: Record<Xyz, number>;
 }
+
+export interface JobsAndLogsState {
+  jobs: boolean;
+  logs: boolean;
+}
+
+export interface ControlsState {
+  move: boolean;
+  peripherals: boolean;
+  webcams: boolean;
+}

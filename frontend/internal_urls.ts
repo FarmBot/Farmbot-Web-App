@@ -43,6 +43,8 @@ export namespace Path {
     designer("regimens") + appended(path);
   export const farmEvents = (path?: string | number) =>
     designer("events") + appended(path);
+  export const sensors = (path?: string | number) =>
+    designer("sensors") + appended(path);
   export const zones = (path?: string | number) =>
     designer("zones") + appended(path);
   export const farmware = (path?: string) =>

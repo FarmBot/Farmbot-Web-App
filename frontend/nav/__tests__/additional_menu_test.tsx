@@ -38,6 +38,6 @@ describe("AdditionalMenu", () => {
 
   it("navigates to help page", () => {
     const wrapper = shallow(<AdditionalMenu {...fakeProps()} />);
-    wrapper.find("Link").at(3).simulate("click");
+    wrapper.find("Link").at(2).simulate("click");
   });
 });

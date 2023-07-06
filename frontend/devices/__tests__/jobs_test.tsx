@@ -3,10 +3,14 @@ import { mount } from "enzyme";
 import {
   RawJobsPanel as JobsPanel, JobsPanelProps, mapStateToProps, JobsTable,
   JobsTableProps, jobNameLookup, addTitleToJobProgress,
+  JobsAndLogs, JobsAndLogsProps,
 } from "../jobs";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeBytesJob, fakePercentJob } from "../../__test_support__/fake_bot_data";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { bot } from "../../__test_support__/fake_state/bot";
+import { jobsState } from "../../__test_support__/panel_state";
+import { Actions } from "../../constants";
 
 describe("<JobsPanel />", () => {
   const fakeProps = (): JobsPanelProps => ({
@@ -28,6 +32,47 @@ describe("<JobsPanel />", () => {
       "job2", "50", "working",
       "job3", "99%", "working",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+});
+
+describe("<JobsAndLogs />", () => {
+  const fakeProps = (): JobsAndLogsProps => ({
+    dispatch: jest.fn(),
+    logs: [],
+    timeSettings: fakeTimeSettings(),
+    sourceFbosConfig: jest.fn(),
+    getConfigValue: jest.fn(),
+    bot,
+    fbosVersion: undefined,
+    jobsPanelState: jobsState(),
+    jobs: {},
+  });
+
+  it("renders jobs", () => {
+    const p = fakeProps();
+    p.jobsPanelState.jobs = true;
+    p.jobsPanelState.logs = false;
+    const wrapper = mount(<JobsAndLogs {...p} />);
+    expect(wrapper.html()).toContain("jobs-tab");
+    expect(wrapper.html()).not.toContain("logs-tab");
+  });
+
+  it("renders logs", () => {
+    const p = fakeProps();
+    p.jobsPanelState.jobs = false;
+    p.jobsPanelState.logs = true;
+    const wrapper = mount(<JobsAndLogs {...p} />);
+    expect(wrapper.html()).not.toContain("jobs-tab");
+    expect(wrapper.html()).toContain("logs-tab");
+  });
+
+  it("sets state", () => {
+    const p = fakeProps();
+    const wrapper = mount<JobsAndLogs>(<JobsAndLogs {...p} />);
+    wrapper.instance().setPanelState("logs")();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs",
+    });
   });
 });
 

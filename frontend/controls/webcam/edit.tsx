@@ -1,6 +1,4 @@
 import React from "react";
-import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
-import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "./key_val_edit_row";
 import { SpecialStatus, TaggedWebcamFeed } from "farmbot";
@@ -27,8 +25,11 @@ export function Edit(props: WebcamPanelProps) {
   const unsaved = props
     .feeds
     .filter(x => x.specialStatus === SpecialStatus.DIRTY);
-  return <Widget className="webcam-widget">
-    <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
+  return <div className={"webcam-widget"}>
+    <div className={"webcam-rows"}>
+      {rows}
+    </div>
+    <div className={"webcam-buttons"}>
       <button
         className="fb-button gray"
         disabled={unsaved.length > 0}
@@ -48,9 +49,6 @@ export function Edit(props: WebcamPanelProps) {
         onClick={props.init}>
         <i className="fa fa-plus" />
       </button>
-    </WidgetHeader>
-    <WidgetBody>
-      {rows}
-    </WidgetBody>
-  </Widget>;
+    </div>
+  </div>;
 }

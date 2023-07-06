@@ -3313,11 +3313,14 @@ li {
   }
 }
 
-.jobs-panel {
+.jobs-tab {
   &.bp4-popover {
     margin-top: 1.5rem;
   }
   table {
+    display: block;
+    overflow: scroll;
+    max-height: 26rem;
     margin-right: 1rem;
     p {
       padding: 1rem;
@@ -3325,11 +3328,20 @@ li {
     .job-clear-notice {
       text-align: center;
       color: $medium_gray;
+      i {
+        white-space: normal;
+      }
     }
     .job-name {
       max-width: 20rem;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: $white;
     }
     tr {
       transform: scale(1);
@@ -3359,9 +3371,8 @@ li {
   .bp4-popover-content {
     padding: 0;
     max-width: 450px;
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    max-height: 510px;
+    overflow: hidden;
     padding-top: 1rem;
     padding-bottom: 2rem;
   }

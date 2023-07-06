@@ -1,11 +1,11 @@
 import React from "react";
 import { LogsFilterMenuProps, LogsState, Filters } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-import { startCase } from "lodash";
+import { mean, range, round, startCase } from "lodash";
 import { MESSAGE_TYPES, MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
 import {
-  getModifiedClassName, getModifiedClassNameDefaultFalse,
+  getModifiedClassName,
   getModifiedClassNameSpecifyModified,
 } from "../../settings/default_values";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
@@ -36,29 +36,33 @@ export const filterStateKeys = (state: LogsState) =>
   Object.keys(state).filter(key => !NON_FILTER_SETTINGS.includes(key));
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
-  /** Filter level 0: logs hidden. */
-  const btnColor = (x: keyof Filters) => props.state[x] != 0
-    ? "green"
-    : "red";
   /** Set the filter level to the same value for all log message types. */
   const setAll = (level: number) => () => {
     MESSAGE_TYPES.map((x: keyof Filters) => props.setFilterLevel(x)(level));
   };
-  return <div className={"logs-settings-menu"}>
+  const values = filterStateKeys(props.state)
+    .map((key: keyof LogsState) => props.state[key]);
+  const [value, setValue] = React.useState(round(mean(values)));
+  return <div className={"logs-filter-menu"}>
+    <div className={"lines"}>
+      {range(0, 4).map(i =>
+        <div key={i} className={"line"}
+          style={{ left: `${10.5 + i * 5}rem` }}>
+          <div className={"line-label"}>{i}</div>
+        </div>)}
+    </div>
     <fieldset>
       <label>
-        {t("Presets")}
+        <div className={"saucer"} style={{
+          background: "white",
+          border: "2px black solid",
+        }} />
+        {t("All")}
       </label>
-      <button className={"fb-button gray"}
-        title={t("show all")}
-        onClick={setAll(3)}>
-        {t("max")}
-      </button>
-      <button className={"fb-button gray"}
-        title={t("default")}
-        onClick={setAll(1)}>
-        {t("normal")}
-      </button>
+      <Slider min={0} max={3} stepSize={1} labelRenderer={false}
+        onChange={val => setValue(val)}
+        onRelease={val => setAll(val)()}
+        value={value} />
     </fieldset>
     {filterStateKeys(props.state).sort(menuSort)
       .map((logType: keyof Filters) =>
@@ -67,16 +71,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
             <div className={`saucer ${logType}`} />
             {t(startCase(logType))}
           </label>
-          <button
-            className={[
-              "fb-button fb-toggle-button " + btnColor(logType),
-              getModifiedClassNameDefaultFalse(props.state[logType] == 0),
-            ].join(" ")}
-            title={t("toggle logs")}
-            onClick={props.toggle(logType)}>
-            {props.state[logType] > 0 ? t("on") : t("off")}
-          </button>
-          <Slider min={0} max={3} stepSize={1}
+          <Slider min={0} max={3} stepSize={1} labelRenderer={false}
             className={getModifiedClassName(logType + "_log" as keyof WebAppConfig)}
             onChange={props.setFilterLevel(logType)}
             value={props.state[logType]} />

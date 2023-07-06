@@ -152,11 +152,6 @@ const APP_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.time_format_seconds,
   },
   {
-    title: DeviceSetting.hideWebcamWidget,
-    description: Content.HIDE_WEBCAM_WIDGET,
-    setting: BooleanSetting.hide_webcam_widget,
-  },
-  {
     title: DeviceSetting.hideSensorsPanel,
     description: Content.HIDE_SENSORS_WIDGET,
     setting: BooleanSetting.hide_sensors,

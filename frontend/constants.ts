@@ -778,10 +778,6 @@ export namespace Content {
   export const TIME_FORMAT_SECONDS =
     trim(`Display seconds in time, i.e., 10:00:00am instead of 10:00am`);
 
-  export const HIDE_WEBCAM_WIDGET =
-    trim(`If not using a webcam, use this setting to remove the
-    widget from the Controls panel.`);
-
   export const HIDE_SENSORS_WIDGET =
     trim(`If not using sensors, use this setting to remove the
     panel from the Farm Designer.`);
@@ -1369,12 +1365,28 @@ export namespace TourContent {
     Clicking a weed will open up the weed details panel where you can
     manually edit it.`);
 
+  export const CURVES_PANEL =
+    trim(`This is the curves panel. Here you can view and manage all of the
+    water, spread, and height curves for your plants. Pressing the + button
+    will create a new curve.`);
+
   export const CONTROLS_PANEL =
-    trim(`This is the controls panel. Here you can control your FarmBot in
+    trim(`Click the current position indicator to open the controls panel.
+    Here you can control your FarmBot in
     realtime by pressing the movement arrow buttons, toggling peripherals,
     and executing pinned sequences. You can also view current status
     information about your FarmBot including its position and an optional
     webcam stream.`);
+
+  export const SENSORS_PANEL =
+    trim(`This is the sensors panel. Here you can view and manage your
+    sensors and sensor readings. Click the Read Sensor buttons to read the
+    current value of your sensors. Create and view historical sensor
+    readings in the Sensor History section.`);
+
+  export const JOBS_AND_LOGS_PANEL =
+    trim(`Click the job status button to open the Jobs panel. Here you can
+    view running and completed jobs as well as log messages.`);
 
   export const PHOTOS_PANEL =
     trim(`This is the photos panel. Here you can view and manage all of the
@@ -1503,7 +1515,8 @@ export namespace TourContent {
   export const SORT_BY =
     trim(`When you program your FarmBot to perform an operation on a group
     of plants, you may want to control the ordering at which FarmBot visits
-    each plant in the group. To do this, select one of the available Sort
+    each plant in the group. To do this, click the sort icon to open the
+    sort menu and select one of the available Sort
     By methods. Once you have chosen a method, advance the tour.`);
 
   export const FINISH_CREATING_THE_GROUP =
@@ -1578,14 +1591,20 @@ export namespace TourContent {
 
   // Monitoring
   export const LOCATION_GRID =
-    trim(`View FarmBot's current location using the axis position display.`);
+    trim(`Click the current position indicator to open the controls pop-up
+    and view FarmBot's current location using the axis position display.`);
 
   export const VIRTUAL_FARMBOT =
     trim(`Or view FarmBot's current location in the virtual garden.`);
 
+  export const VIRTUAL_FARMBOT_PROFILE =
+    trim(`For a profile view of FarmBot's current location in the virtual
+    garden, open the profile viewer.`);
+
   export const LOGS_TABLE =
-    trim(`View recent log messages here. More detailed log messages can be
-    shown by adjusting filter settings.`);
+    trim(`Click the job status button to open the jobs and logs pop-up
+    and view recent log messages.
+    More detailed log messages can be shown by adjusting filter settings.`);
 
   export const PHOTOS =
     trim(`View photos your FarmBot has taken here.`);
@@ -2275,7 +2294,6 @@ export enum Actions {
   LOGOUT = "LOGOUT",
 
   // App
-  OPEN_CONTROLS_POPUP = "OPEN_CONTROLS_POPUP",
   TOGGLE_PLANTS_PANEL_OPTION = "TOGGLE_PLANTS_PANEL_OPTION",
   TOGGLE_WEEDS_PANEL_OPTION = "TOGGLE_WEEDS_PANEL_OPTION",
   TOGGLE_POINTS_PANEL_OPTION = "TOGGLE_POINTS_PANEL_OPTION",
@@ -2284,6 +2302,8 @@ export enum Actions {
   TOGGLE_SEQUENCES_PANEL_OPTION = "TOGGLE_SEQUENCES_PANEL_OPTION",
   SET_METRIC_PANEL_OPTION = "SET_METRIC_PANEL_OPTION",
   BULK_TOGGLE_SETTINGS_PANEL = "BULK_TOGGLE_SETTINGS_PANEL",
+  SET_CONTROLS_PANEL_OPTION = "SET_CONTROLS_PANEL_OPTION",
+  SET_JOBS_PANEL_OPTION = "SET_JOBS_PANEL_OPTION",
 
   // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",

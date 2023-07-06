@@ -2,14 +2,11 @@ import React from "react";
 import { error } from "../../toast/toast";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
-import {
-  Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
-  EmptyStateGraphic,
-} from "../../ui";
+import { SaveBtn, EmptyStateWrapper, EmptyStateGraphic } from "../../ui";
 import { PeripheralsProps, PeripheralState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
-import { ToolTips, Content } from "../../constants";
+import { Content } from "../../constants";
 import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { DIGITAL } from "farmbot";
@@ -113,8 +110,25 @@ export class Peripherals
     const editButtonText = isEditing
       ? t("Back")
       : t("Edit");
-    return <Widget className="peripherals-widget">
-      <WidgetHeader title={t("Peripherals")} helpText={ToolTips.PERIPHERALS}>
+    return <div className={"peripherals-widget"}>
+      <EmptyStateWrapper
+        notEmpty={this.props.peripherals.length > 0 || isEditing}
+        graphic={EmptyStateGraphic.regimens}
+        title={t("No Peripherals yet.")}
+        text={Content.NO_PERIPHERALS}
+        colorScheme={"peripherals"}>
+        {this.showPins()}
+      </EmptyStateWrapper>
+      {!this.props.hidePinBindings &&
+        <BoxTopButtons
+          firmwareHardware={this.props.firmwareHardware}
+          dispatch={this.props.dispatch}
+          resources={this.props.resources}
+          botOnline={isBotOnlineFromState(this.props.bot)}
+          syncStatus={this.props.bot.hardware.informational_settings.sync_status}
+          locked={this.props.bot.hardware.informational_settings.locked}
+          isEditing={isEditing} />}
+      <div className={"peripherals-buttons"}>
         <button
           className="fb-button gray"
           onClick={this.toggle}
@@ -144,26 +158,7 @@ export class Peripherals
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
           {t("Stock")}
         </button>
-      </WidgetHeader>
-      <WidgetBody>
-        <EmptyStateWrapper
-          notEmpty={this.props.peripherals.length > 0 || isEditing}
-          graphic={EmptyStateGraphic.regimens}
-          title={t("No Peripherals yet.")}
-          text={Content.NO_PERIPHERALS}
-          colorScheme={"peripherals"}>
-          {this.showPins()}
-        </EmptyStateWrapper>
-        {!this.props.hidePinBindings &&
-          <BoxTopButtons
-            firmwareHardware={this.props.firmwareHardware}
-            dispatch={this.props.dispatch}
-            resources={this.props.resources}
-            botOnline={isBotOnlineFromState(this.props.bot)}
-            syncStatus={this.props.bot.hardware.informational_settings.sync_status}
-            locked={this.props.bot.hardware.informational_settings.locked}
-            isEditing={isEditing} />}
-      </WidgetBody>
-    </Widget>;
+      </div>
+    </div>;
   }
 }

@@ -5,7 +5,7 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { WebcamPanel, preToggleCleanup } from "../index";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
@@ -13,17 +13,18 @@ import { destroy, save, init, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 
-describe("<WebcamPanel/>", () => {
+describe("<WebcamPanel />", () => {
   const fakeProps = () => ({
     feeds: [],
     dispatch: jest.fn(),
   });
+
   it("toggles form state to edit", () => {
     const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
     expect(wrapper.instance().state.activeMenu).toEqual("show");
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("view");
-    clickButton(wrapper, 0, "edit");
+    clickButton(wrapper, 2, "edit");
     expect(wrapper.instance().state.activeMenu).toEqual("edit");
   });
 

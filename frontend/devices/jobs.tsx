@@ -4,9 +4,9 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
-import { Everything, TimeSettings } from "../interfaces";
+import { Everything, JobsAndLogsState, TimeSettings } from "../interfaces";
 import {
-  BytesProgress, Dictionary, JobProgress, PercentageProgress,
+  BytesProgress, Dictionary, JobProgress, PercentageProgress, TaggedLog,
 } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { maybeGetTimeSettings } from "../resources/selectors";
@@ -14,7 +14,10 @@ import moment from "moment";
 import { betterCompact, formatTime } from "../util";
 import { Color } from "../ui";
 import { round, sortBy } from "lodash";
-import { Content } from "../constants";
+import { Actions, Content } from "../constants";
+import { BotState, SourceFbosConfig } from "./interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
+import { LogsPanel } from "../logs";
 
 export interface JobsPanelProps {
   jobs: Dictionary<JobProgress | undefined>;
@@ -40,6 +43,63 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
 }
 
 export const JobsPanel = connect(mapStateToProps)(RawJobsPanel);
+
+export interface JobsAndLogsProps {
+  dispatch: Function;
+  logs: TaggedLog[];
+  timeSettings: TimeSettings;
+  sourceFbosConfig: SourceFbosConfig;
+  getConfigValue: GetWebAppConfigValue;
+  bot: BotState;
+  fbosVersion: string | undefined;
+  jobsPanelState: JobsAndLogsState;
+  jobs: Dictionary<JobProgress | undefined>;
+}
+
+export class JobsAndLogs
+  extends React.Component<JobsAndLogsProps> {
+
+  setPanelState = (key: keyof JobsAndLogsState) => () =>
+    this.props.dispatch({
+      type: Actions.SET_JOBS_PANEL_OPTION,
+      payload: key,
+    });
+
+  Jobs = () => {
+    return <div className={"jobs-tab"}>
+      <JobsTable jobs={this.props.bot.hardware.jobs}
+        timeSettings={this.props.timeSettings} />
+    </div>;
+  };
+
+  Logs = () => {
+    return <div className={"logs-tab"}>
+      <LogsPanel
+        logs={this.props.logs}
+        timeSettings={this.props.timeSettings}
+        dispatch={this.props.dispatch}
+        sourceFbosConfig={this.props.sourceFbosConfig}
+        getConfigValue={this.props.getConfigValue}
+        bot={this.props.bot}
+        fbosVersion={this.props.fbosVersion}
+      />
+    </div>;
+  };
+
+  render() {
+    const { jobs, logs } = this.props.jobsPanelState;
+    return <div className={"jobs-and-logs"}>
+      <div className={"tabs"}>
+        <label className={jobs ? "selected" : ""}
+          onClick={this.setPanelState("jobs")}>{t("jobs")}</label>
+        <label className={logs ? "selected" : ""}
+          onClick={this.setPanelState("logs")}>{t("logs")}</label>
+      </div>
+      {jobs && <this.Jobs />}
+      {logs && <this.Logs />}
+    </div>;
+  }
+}
 
 export interface JobsTableProps {
   jobs: Dictionary<JobProgress | undefined>;

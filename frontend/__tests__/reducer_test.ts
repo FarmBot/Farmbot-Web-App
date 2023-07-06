@@ -1,7 +1,9 @@
 import { Actions } from "../constants";
 import { appReducer } from "../reducer";
 import {
+  ControlsState,
   CurvesPanelState,
+  JobsAndLogsState,
   MetricPanelState,
   MovementState,
   PlantsPanelState,
@@ -113,12 +115,27 @@ describe("resource reducer", () => {
     expect(newState.metricPanelState.history).toBeTruthy();
   });
 
-  it("sets controls popup state", () => {
-    const newState = appReducer(app, {
-      type: Actions.OPEN_CONTROLS_POPUP,
-      payload: true,
+  it("sets controls panel options", () => {
+    const payload: keyof ControlsState = "webcams";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.SET_CONTROLS_PANEL_OPTION,
+      payload,
     });
-    expect(newState.controlsPopupOpen).toEqual(true);
+    expect(newState.controls.move).toBeFalsy();
+    expect(newState.controls.peripherals).toBeFalsy();
+    expect(newState.controls.webcams).toBeTruthy();
+  });
+
+  it("sets jobs panel options", () => {
+    const payload: keyof JobsAndLogsState = "logs";
+    const state = app;
+    const newState = appReducer(state, {
+      type: Actions.SET_JOBS_PANEL_OPTION,
+      payload,
+    });
+    expect(newState.jobs.jobs).toBeFalsy();
+    expect(newState.jobs.logs).toBeTruthy();
   });
 
   it("adds toast", () => {

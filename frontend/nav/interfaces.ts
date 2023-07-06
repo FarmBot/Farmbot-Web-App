@@ -1,13 +1,21 @@
-import { BotState } from "../devices/interfaces";
+import {
+  BotState, SourceFbosConfig, SourceFwConfig, UserEnv,
+} from "../devices/interfaces";
 import {
   TaggedUser, TaggedLog, TaggedDevice, Alert, FirmwareHardware,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  TaggedPeripheral,
+  TaggedSequence,
+  TaggedWebcamFeed,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { MetricPanelState, TimeSettings } from "../interfaces";
+import { TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
 import { HelpState } from "../help/reducer";
+import { AppState } from "../reducer";
+import { ResourceIndex, UUID } from "../resources/interfaces";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 export interface NavBarProps {
   logs: TaggedLog[];
@@ -16,6 +24,10 @@ export interface NavBarProps {
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
+  sourceFwConfig: SourceFwConfig;
+  sourceFbosConfig: SourceFbosConfig;
+  firmwareConfig: FirmwareConfig | undefined;
+  resources: ResourceIndex;
   device: TaggedDevice;
   alertCount: number;
   pings: PingDictionary;
@@ -25,12 +37,16 @@ export interface NavBarProps {
   wizardStepResults: TaggedWizardStepResult[];
   helpState: HelpState;
   telemetry: TaggedTelemetry[];
-  metricPanelState: MetricPanelState;
+  appState: AppState;
+  menuOpen: UUID | undefined;
+  env: UserEnv;
+  feeds: TaggedWebcamFeed[];
+  peripherals: TaggedPeripheral[];
+  sequences: TaggedSequence[];
 }
 
 export interface NavBarState {
   mobileMenuOpen: boolean;
-  tickerListOpen: boolean;
   accountMenuOpen: boolean;
   documentTitle: string;
 }
@@ -47,7 +63,6 @@ export interface MobileMenuProps {
 export interface TickerListProps {
   toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: TaggedLog[]
-  tickerListOpen: boolean;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;

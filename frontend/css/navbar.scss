@@ -26,13 +26,20 @@ nav {
 }
 
 .nav-coordinates {
+  display: inline;
+  border: 1px solid $white;
+  border-radius: 5px;
+  padding: 0.8rem;
   font-style: italic;
+  font-weight: bold;
+  font-size: 1.1rem;
   color: $white;
+  margin-right: 0.75rem;
+  margin-left: 0.5rem;
   line-height: 0;
-  float: left;
-  margin-top: 2.1rem;
-  border-radius: 10px;
-  padding: 1rem 0.5rem;
+  &:hover {
+    background: $medium_gray;
+  }
 }
 
 .links {

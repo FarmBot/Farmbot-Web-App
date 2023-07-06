@@ -266,7 +266,6 @@ export class DesignerNavTabs
         <NavTab panel={Panel.Regimens} />
         <NavTab panel={Panel.FarmEvents} />
         {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
-        <NavTab panel={Panel.Controls} />
         {showSensors() && <NavTab panel={Panel.Sensors} />}
         <NavTab panel={Panel.Photos} />
         {showFarmware() && <NavTab panel={Panel.Farmware} />}

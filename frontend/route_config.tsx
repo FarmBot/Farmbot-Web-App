@@ -80,17 +80,27 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
   };
 }
 
-/** The 404 handler. All unresolved routes end up here. MUST BE LAST ITEM IN
- * ROUTE CONFIG!!! */
-const NOT_FOUND_ROUTE = route({
-  children: false,
-  $: "*",
-  getModule: () => import("./404"),
-  key: "FourOhFour"
-});
-
 const getModule = () => import("./farm_designer");
 const key = "FarmDesigner";
+
+/** The 404 handler. All unresolved routes end up here. MUST BE LAST ITEM IN
+ * ROUTE CONFIG!!! */
+const NOT_FOUND_ROUTES = [
+  route({
+    children: true,
+    $: "*",
+    getModule,
+    key,
+    getChild: () => import("./404"),
+    childKey: "FourOhFour"
+  }),
+  route({
+    children: false,
+    $: "*",
+    getModule: () => import("./404"),
+    key: "FourOhFour"
+  }),
+];
 
 /** Bind the route to a callback by calling in a function that passes the
   callback in as the first argument.
@@ -603,4 +613,4 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./zones/edit_zone"),
     childKey: "EditZone"
   }),
-].concat([NOT_FOUND_ROUTE]);
+].concat(NOT_FOUND_ROUTES);

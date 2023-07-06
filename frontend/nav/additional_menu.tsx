@@ -16,12 +16,6 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Account Settings")}
       </Link>
     </div>
-    <div className={"logs-link"}>
-      <Link to={Path.logs()} onClick={props.close("accountMenuOpen")}>
-        <img width={12} height={12} src={FilePath.icon(Icon.logs)} />
-        {t("Logs")}
-      </Link>
-    </div>
     <div className={"setup-link"}>
       <Link to={Path.setup()} onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-magic" />

@@ -1,11 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Col, Row, Page, Popover } from "../ui";
-import { mapStateToProps } from "./state_to_props";
+import { Page, Popover } from "../ui";
 import { Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { LogsSettingsMenu } from "./components/settings_menu";
-import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
+import { filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
 import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
@@ -17,7 +16,17 @@ import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
 
-export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
+export class RawLogs extends React.Component {
+  render() {
+    return <Page className="logs-page">
+      <p>Logs have moved to the navigation bar.</p>
+    </Page>;
+  }
+}
+
+export const Logs = connect()(RawLogs);
+
+export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Initialize log type verbosity level to the configured or default value. */
   initialize = (key: NumberConfigKey, defaultValue: number): number => {
@@ -82,60 +91,37 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 
   render() {
     const { dispatch, bot } = this.props;
-    const filterBtnColor = this.filterActive ? "green" : "gray";
-    return <Page className="logs-page">
-      <Row>
-        <Col xs={6}>
-          <h3>
-            <i>{t("Logs")}</i>
-          </h3>
-        </Col>
-        <Col xs={6}>
-          <div className={"settings-menu-button"}>
-            <Popover position={Position.TOP_RIGHT}
-              target={<i className="fa fa-gear" />}
-              content={<LogsSettingsMenu
-                markdown={this.state.markdown}
-                toggleMarkdown={this.toggleMarkdown}
-                setFilterLevel={this.setFilterLevel}
-                dispatch={dispatch}
-                sourceFbosConfig={this.props.sourceFbosConfig}
-                bot={bot}
-                getConfigValue={this.props.getConfigValue} />} />
-          </div>
-          <div className={"settings-menu-button"}>
-            <Popover position={Position.TOP_RIGHT}
-              target={<button className={`fb-button ${filterBtnColor}`}
-                title={t("edit filter settings")}>
-                {this.filterActive ? t("Filters active") : t("filter")}
-              </button>}
-              content={<LogsFilterMenu
-                toggle={this.toggle} state={this.state}
-                toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
-                setFilterLevel={this.setFilterLevel} />} />
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12} md={5} lg={4}>
-          <SearchField
-            placeholder={t("Search logs...")}
-            searchTerm={this.state.searchTerm}
-            onChange={searchTerm => this.setState({ searchTerm })} />
-        </Col>
-      </Row>
-      <Row>
-        <LogsTable
-          logs={this.props.logs.
-            concat(forceOnline() ? [demoAccountLog()] : [])}
-          dispatch={dispatch}
-          state={this.state}
-          fbosVersion={bot.hardware.informational_settings.controller_version
-            || this.props.fbosVersion}
-          timeSettings={this.props.timeSettings} />
-      </Row>
-    </Page>;
+    return <div className={"logs-tab"}>
+      <div className={"search-row"}>
+        <SearchField
+          placeholder={t("Search logs...")}
+          searchTerm={this.state.searchTerm}
+          onChange={searchTerm => this.setState({ searchTerm })} />
+        <div className={"logs-settings-menu-button"}>
+          <Popover position={Position.TOP_RIGHT}
+            target={<i className="fa fa-gear" />}
+            content={<LogsSettingsMenu
+              markdown={this.state.markdown}
+              toggleMarkdown={this.toggleMarkdown}
+              setFilterLevel={this.setFilterLevel}
+              dispatch={dispatch}
+              sourceFbosConfig={this.props.sourceFbosConfig}
+              bot={bot}
+              getConfigValue={this.props.getConfigValue} />} />
+        </div>
+      </div>
+      <LogsTable
+        logs={this.props.logs.
+          concat(forceOnline() ? [demoAccountLog()] : [])}
+        dispatch={dispatch}
+        state={this.state}
+        fbosVersion={bot.hardware.informational_settings.controller_version
+          || this.props.fbosVersion}
+        filterActive={this.filterActive}
+        toggle={this.toggle}
+        setFilterLevel={this.setFilterLevel}
+        toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
+        timeSettings={this.props.timeSettings} />
+    </div>;
   }
 }
-
-export const Logs = connect(mapStateToProps)(RawLogs);

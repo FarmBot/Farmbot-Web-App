@@ -1,9 +1,9 @@
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { LogsFilterMenu, NON_FILTER_SETTINGS } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
-import { clickButton } from "../../../__test_support__/helpers";
-import { MESSAGE_TYPES, MessageType } from "../../../sequences/interfaces";
+import { MESSAGE_TYPES } from "../../../sequences/interfaces";
+import { Slider } from "@blueprintjs/core";
 
 const logTypes = MESSAGE_TYPES;
 
@@ -46,37 +46,14 @@ describe("<LogsFilterMenu />", () => {
       .toBeTruthy();
   });
 
-  it("filters logs", () => {
-    const toggle = jest.fn();
-    const setFilterLevel = jest.fn();
-    const p = fakeProps();
-    p.toggle = (x) => () => toggle(x);
-    p.setFilterLevel = (x) => () => setFilterLevel(x);
-    const wrapper = mount(<LogsFilterMenu {...p} />);
-    wrapper.find("button").at(2).simulate("click");
-    expect(toggle).toHaveBeenCalledWith(MessageType.success);
-  });
-
-  it("shows filter status", () => {
-    fakeState.debug = 3;
-    fakeState.success = 0;
-    const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
-    const toggles = wrapper.find("button");
-    expect(toggles.last().hasClass("green")).toBeTruthy();
-    expect(toggles.at(2).hasClass("red")).toBeTruthy();
-  });
-
   it("bulk toggles filter levels", () => {
     const setFilterLevel = jest.fn();
     const p = fakeProps();
-    p.setFilterLevel = (x) => () => setFilterLevel(x);
-    const wrapper = mount(<LogsFilterMenu {...p} />);
-    clickButton(wrapper, 0, "max");
+    p.setFilterLevel = (x) => (v) => setFilterLevel(x, v);
+    const wrapper = shallow(<LogsFilterMenu {...p} />);
+    wrapper.find(Slider).first().simulate("change", 2);
+    wrapper.find(Slider).first().simulate("release", 2);
     logTypes.map(logType =>
-      expect(setFilterLevel).toHaveBeenCalledWith(logType));
-    jest.clearAllMocks();
-    clickButton(wrapper, 1, "normal");
-    logTypes.map(logType =>
-      expect(setFilterLevel).toHaveBeenCalledWith(logType));
+      expect(setFilterLevel).toHaveBeenCalledWith(logType, 2));
   });
 });

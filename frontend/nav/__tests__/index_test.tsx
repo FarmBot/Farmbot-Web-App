@@ -9,7 +9,9 @@ import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { NavBarProps } from "../interfaces";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
 import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
@@ -19,8 +21,10 @@ import { push } from "../../history";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
 import { fakePercentJob } from "../../__test_support__/fake_bot_data";
-import { metricPanelState } from "../../__test_support__/panel_state";
-import { fakeUser } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFirmwareConfig, fakeUser,
+} from "../../__test_support__/fake_state/resources";
+import { app } from "../../__test_support__/fake_state/app";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -39,7 +43,16 @@ describe("<NavBar />", () => {
     authAud: undefined,
     wizardStepResults: [],
     telemetry: [],
-    metricPanelState: metricPanelState(),
+    appState: app,
+    sourceFwConfig: jest.fn(),
+    sourceFbosConfig: jest.fn(),
+    firmwareConfig: fakeFirmwareConfig().body,
+    resources: buildResourceIndex([]).index,
+    menuOpen: undefined,
+    env: {},
+    feeds: [],
+    peripherals: [],
+    sequences: [],
   });
 
   it("has correct parent className", () => {

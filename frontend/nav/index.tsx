@@ -26,13 +26,13 @@ import { Path } from "../internal_urls";
 import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
-import { jobNameLookup, JobsTable, sortJobs } from "../devices/jobs";
+import { jobNameLookup, JobsAndLogs, sortJobs } from "../devices/jobs";
 import { round } from "lodash";
+import { ControlsPanel } from "../controls/controls";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
     mobileMenuOpen: false,
-    tickerListOpen: false,
     accountMenuOpen: false,
     documentTitle: "",
   };
@@ -61,11 +61,33 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     <ReadOnlyIcon locked={!!this.props.getConfigValue(
       BooleanSetting.user_interface_read_only_mode)} />;
 
-  Coordinates = () =>
-    <p className={"nav-coordinates"} title={t("FarmBot position (X, Y, Z)")}>
-      {botPositionLabel(validBotLocationData(this.props.bot.hardware.location_data)
-        .position)}
-    </p>;
+  Coordinates = () => {
+    const { hardware } = this.props.bot;
+    return <Popover position={Position.BOTTOM_RIGHT}
+      portalClassName={"controls-popover-portal"}
+      popoverClassName="controls-popover"
+      target={<p className={"nav-coordinates"}
+        title={t("FarmBot position (X, Y, Z)")}>
+        {botPositionLabel(validBotLocationData(hardware.location_data)
+          .position)}
+      </p>}
+      content={<ControlsPanel
+        dispatch={this.props.dispatch}
+        appState={this.props.appState}
+        bot={this.props.bot}
+        getConfigValue={this.props.getConfigValue}
+        sourceFwConfig={this.props.sourceFwConfig}
+        env={this.props.env}
+        firmwareHardware={this.props.apiFirmwareValue}
+        logs={this.props.logs}
+        feeds={this.props.feeds}
+        peripherals={this.props.peripherals}
+        sequences={this.props.sequences}
+        resources={this.props.resources}
+        menuOpen={this.props.menuOpen}
+        firmwareSettings={this.props.firmwareConfig || hardware.mcu_params}
+      />} />;
+  };
 
   EstopButton = () =>
     <div className={"e-stop-btn"}>
@@ -126,7 +148,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
               alerts={this.props.alerts}
               apiFirmwareValue={this.props.apiFirmwareValue}
               telemetry={this.props.telemetry}
-              metricPanelState={this.props.metricPanelState}
+              metricPanelState={this.props.appState.metricPanelState}
               timeSettings={this.props.timeSettings} />
           </ErrorBoundary>} />
       </ErrorBoundary>
@@ -153,7 +175,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const isPercent = job?.unit == "percent";
     const percent = isPercent ? round(job.percent, 1) : "";
     const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
-    const inactiveText = window.innerWidth > 450 ? t("no active jobs") : t("jobs");
+    const inactiveText = window.innerWidth > 450 ? t("idle") : t("jobs");
     const jobProgress = isPercent ? `${percent}%` : "";
     return <Popover position={Position.BOTTOM_RIGHT}
       portalClassName={"jobs-panel-portal"}
@@ -164,7 +186,15 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {jobActive && <div className={"jobs-button-progress-bar"}
           style={{ width: jobProgress }} />}
       </a>}
-      content={<JobsTable jobs={this.props.bot.hardware.jobs}
+      content={<JobsAndLogs
+        dispatch={this.props.dispatch}
+        bot={this.props.bot}
+        getConfigValue={this.props.getConfigValue}
+        logs={this.props.logs}
+        jobsPanelState={this.props.appState.jobs}
+        sourceFbosConfig={this.props.sourceFbosConfig}
+        fbosVersion={this.props.device.body.fbos_version}
+        jobs={this.props.bot.hardware.jobs}
         timeSettings={this.props.timeSettings} />} />;
   };
 
@@ -186,7 +216,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   TickerList = () =>
     <TickerList
       logs={this.props.logs}
-      tickerListOpen={this.state.tickerListOpen}
       toggle={this.toggle}
       timeSettings={this.props.timeSettings}
       getConfigValue={this.props.getConfigValue}

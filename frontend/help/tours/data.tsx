@@ -46,6 +46,13 @@ export const TOURS = (
         url: Path.points(),
       },
       {
+        slug: "curves",
+        title: t("Curves"),
+        content: TourContent.CURVES_PANEL,
+        beacons: ["curves", "curves-inventory"],
+        url: Path.curves(),
+      },
+      {
         slug: "sequences",
         title: t("Sequences"),
         content: TourContent.SEQUENCES_PANEL,
@@ -66,13 +73,15 @@ export const TOURS = (
         beacons: ["events", "farm-event"],
         url: Path.farmEvents(),
       },
-      {
-        slug: "controls",
-        title: t("Controls"),
-        content: TourContent.CONTROLS_PANEL,
-        beacons: ["controls"],
-        url: Path.controls(),
-      },
+      ...(isExpress(firmwareHardware)
+        ? []
+        : [{
+          slug: "sensors",
+          title: t("Sensors"),
+          content: TourContent.SENSORS_PANEL,
+          beacons: ["sensors"],
+          url: Path.sensors(),
+        } as TourStep]),
       {
         slug: "photos",
         title: t("Photos"),
@@ -109,6 +118,26 @@ export const TOURS = (
         url: Path.settings(),
       },
       {
+        slug: "controls",
+        title: t("Controls"),
+        content: TourContent.CONTROLS_PANEL,
+        beacons: undefined,
+        activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
+        url: undefined,
+        dispatchAction: {
+          type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move"
+        },
+      },
+      {
+        slug: "jobs",
+        title: t("Jobs and Logs"),
+        content: TourContent.JOBS_AND_LOGS_PANEL,
+        beacons: undefined,
+        activeBeacons: [{ class: "jobs-button", type: "soft", keep: true }],
+        url: undefined,
+        dispatchAction: { type: Actions.SET_JOBS_PANEL_OPTION, payload: "jobs" },
+      },
+      {
         slug: "connectivityPopup",
         title: t("Connectivity"),
         content: TourContent.CONNECTIVITY_POPUP,
@@ -117,14 +146,6 @@ export const TOURS = (
           { class: "connectivity-button", type: "hard" },
           { class: "connectivity-icon", type: "hard" },
         ],
-        url: undefined,
-      },
-      {
-        slug: "coordinates",
-        title: t("Current position"),
-        content: TourContent.CURRENT_POSITION,
-        beacons: undefined,
-        activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
         url: undefined,
       },
       {
@@ -267,7 +288,7 @@ export const TOURS = (
         title: t("Sort by"),
         content: TourContent.SORT_BY,
         beacons: undefined,
-        activeBeacons: [{ class: "group-sort-section", type: "hard" }],
+        activeBeacons: [{ class: "fa-sort", type: "soft", keep: true }],
         url: undefined,
       },
       {
@@ -323,7 +344,6 @@ export const TOURS = (
           { class: "controls-popup-menu-inner", type: "hard" },
           { class: "controls-popup", type: "hard" },
         ],
-        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: true },
         url: undefined,
       },
       {
@@ -337,7 +357,6 @@ export const TOURS = (
           { class: "controls-popup-menu-inner", type: "hard" },
           { class: "fb-button.blue", type: "hard" },
         ],
-        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: true },
         url: undefined,
       },
       {
@@ -346,7 +365,6 @@ export const TOURS = (
         content: TourContent.SETTING_UP_SLOTS_MINOR_ADJUSTMENTS,
         beacons: undefined,
         activeBeacons: [{ class: "axis-inputs", type: "soft", keep: true }],
-        dispatchAction: { type: Actions.OPEN_CONTROLS_POPUP, payload: false },
         url: undefined,
       },
       {
@@ -377,24 +395,36 @@ export const TOURS = (
         title: t("View current location"),
         content: TourContent.LOCATION_GRID,
         beacons: undefined,
-        activeBeacons: [{ class: "bot-position-rows", type: "soft" }],
-        url: Path.controls(),
+        activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
+        url: undefined,
+        dispatchAction: {
+          type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move"
+        },
       },
       {
         slug: "virtual",
         title: t("View current location"),
         content: TourContent.VIRTUAL_FARMBOT,
         beacons: undefined,
-        activeBeacons: [{ class: "farm-designer", type: "soft" }],
-        url: Path.controls(),
+        activeBeacons: [{ class: "farm-designer", type: "soft", keep: true }],
+        url: undefined,
+      },
+      {
+        slug: "profile",
+        title: t("View profile"),
+        content: TourContent.VIRTUAL_FARMBOT_PROFILE,
+        beacons: undefined,
+        activeBeacons: [{ class: "profile-button", type: "hard", keep: true }],
+        url: undefined,
       },
       {
         slug: "logs",
         title: t("View log messages"),
         content: TourContent.LOGS_TABLE,
         beacons: undefined,
-        activeBeacons: [{ class: "logs-page", type: "soft" }],
-        url: Path.logs(),
+        activeBeacons: [{ class: "jobs-button", type: "soft", keep: true }],
+        url: undefined,
+        dispatchAction: { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" },
       },
       {
         slug: "photos",
