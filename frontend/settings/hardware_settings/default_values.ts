@@ -175,9 +175,12 @@ export const getDefaultFwConfigValue =
 
 export const getModifiedClassName = (
   key: McuParamName,
-  value: number | undefined,
+  valueRaw: number | undefined,
   firmwareHardware: FirmwareHardware | undefined,
+  func?: (n: number | undefined) => number,
 ) => {
-  const defaultValue = getDefaultFwConfigValue(firmwareHardware)(key);
+  const defaultValueRaw = getDefaultFwConfigValue(firmwareHardware)(key);
+  const defaultValue = func ? func(defaultValueRaw) : defaultValueRaw;
+  const value = func ? func(valueRaw) : valueRaw;
   return getModifiedClassNameSpecifyDefault(value, defaultValue);
 };

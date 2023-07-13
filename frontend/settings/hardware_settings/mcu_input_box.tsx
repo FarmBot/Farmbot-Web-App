@@ -37,12 +37,16 @@ export class McuInputBox
     const value = microstepScaledConfig(this.key)
       ? (this.config.value || 1) / (this.props.scale || 1)
       : this.config.value;
-    return getModifiedClassName(this.key, value, firmwareHardware);
+    return getModifiedClassName(this.key, value, firmwareHardware,
+      this.props.toInput);
   }
 
   get showValue() {
+    const { toInput } = this.props;
+    const intValue = parseInt(this.value);
+    if (toInput) { return "" + toInput(intValue); }
     return this.props.scale
-      ? "" + parseInt(this.value) / this.props.scale
+      ? "" + intValue / this.props.scale
       : this.value;
   }
 
@@ -75,9 +79,12 @@ export class McuInputBox
 
   commit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
+    const { fromInput } = this.props;
+    const floatValue = parseFloat(value);
+    const funcScaledValue = fromInput ? "" + fromInput(floatValue) : value;
     const scaledValue = this.props.scale
-      ? "" + Math.round(parseFloat(value) * this.props.scale)
-      : value;
+      ? "" + Math.round(floatValue * this.props.scale)
+      : funcScaledValue;
     const actuallyDifferent = this.value !== scaledValue;
     if (actuallyDifferent) {
       const result = this.props.float
@@ -114,7 +121,8 @@ export class McuInputBox
           ? t("Warning: low value")
           : this.props.warning}
         min={this.props.min || 0}
-        max={this.props.max || getMaxInputFromIntSize(this.props.intSize)} />
+        max={this.props.inputMax || this.props.max
+          || getMaxInputFromIntSize(this.props.intSize)} />
       <SettingStatusIndicator
         dispatch={this.props.dispatch}
         wasSyncing={this.state.syncing}

@@ -60,10 +60,13 @@ export interface McuInputBoxProps {
   intSize?: IntegerSize;
   float?: boolean;
   scale?: number;
+  toInput?: (input: number) => number;
+  fromInput?: (input: number) => number;
   filter?: number;
   gray?: boolean;
   min?: number;
   max?: number;
+  inputMax?: number;
   disabled?: boolean;
   title?: string;
   firmwareHardware: FirmwareHardware | undefined;
@@ -83,11 +86,14 @@ export interface NumericMCUInputGroupProps {
   yScale?: number;
   z: McuParamName;
   zScale?: number;
+  toInput?: (input: number) => number;
+  fromInput?: (input: number) => number;
   float?: boolean;
   intSize?: IntegerSize;
   gray?: Record<Xyz, boolean>;
   min?: number;
   max?: number;
+  inputMax?: number;
   disabled?: boolean;
   disabledBy?: string;
   advanced?: boolean;

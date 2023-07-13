@@ -229,8 +229,8 @@ export namespace ToolTips {
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MOTOR_CURRENT =
-    trim(`Motor current in milliamps.
-    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+    trim(`Motor current as a percent of maximum.
+    (default: x: {{ x }}%, y: {{ y }}%, z: {{ z }}%)`);
 
   export const QUIET_MODE =
     trim(`Enable quiet motors.
@@ -2002,7 +2002,7 @@ export enum DeviceSetting {
   microstepsPerStep = `Microsteps per step`,
   alwaysPowerMotors = `Always Power Motors`,
   invertMotors = `Invert Motors`,
-  motorCurrent = `Motor Current`,
+  motorCurrent = `Motor Current (%)`,
   quietMode = `Quiet Mode`,
   enable2ndXMotor = `Enable 2nd X Motor`,
   invert2ndXMotor = `Invert 2nd X Motor`,
